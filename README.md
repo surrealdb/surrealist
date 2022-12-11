@@ -1,15 +1,15 @@
-<p align="center">
+<div align="center">
 	<a href="https://github.com/StarlaneStudios/Surrealist#gh-light-mode-only">
 		<img src=".github/branding/logo-dark.png" height="80">
 	</a>
 	<a href="https://github.com/StarlaneStudios/Surrealist#gh-dark-mode-only">
 		<img src=".github/branding/logo-light.png" height="80">
 	</a>
-</p>
+</div>
 
-<p align="center">
+<div align="center">
 	<img src=".github/branding/promo.png">
-</p>
+</div>
 
 ## About
 
