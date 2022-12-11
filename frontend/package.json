@@ -9,11 +9,12 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@devbookhq/splitter": "^1.4.0",
 		"@emotion/react": "^11.10.5",
 		"@mantine/core": "^5.9.3",
 		"@mantine/hooks": "^5.9.3",
+		"@mdi/js": "^7.0.96",
 		"@reduxjs/toolkit": "^1.9.1",
-		"add": "^2.0.6",
 		"immer": "^9.0.16",
 		"radash": "^9.5.0",
 		"react": "^18.2.0",
@@ -29,6 +30,7 @@
 		"@types/react": "^18.0.17",
 		"@types/react-dom": "^18.0.6",
 		"@vitejs/plugin-react": "^2.0.1",
+		"sass": "^1.56.2",
 		"typescript": "^4.6.4",
 		"vite": "^3.0.7"
 	}

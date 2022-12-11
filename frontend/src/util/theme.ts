@@ -11,6 +11,7 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 		colorScheme: colorScheme,
 		fontFamily: 'Montserrat',
 		primaryColor: 'surreal',
+		primaryShade: 5,
 		defaultRadius: 'md',
 		fontSizes: {
 			xs: 12,
@@ -50,8 +51,6 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 			Button: {
 				styles: {
 					root: {
-						textTransform: 'uppercase',
-						letterSpacing: 1
 					}
 				}
 			},

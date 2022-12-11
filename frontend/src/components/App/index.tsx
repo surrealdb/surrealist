@@ -19,6 +19,7 @@ export function App() {
 			<Global
 				styles={{
 					'body': {
+						backgroundColor: '#F4F5FB',
 						fontWeight: 500
 					}
 				}}

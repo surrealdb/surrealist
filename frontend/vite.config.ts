@@ -9,5 +9,10 @@ export default defineConfig({
 		alias: {
 			'~': fileURLToPath(new URL('src', import.meta.url))
 		}
+	},
+	css: {
+		modules: {
+			localsConvention: 'dashesOnly'
+		}
 	}
 });
