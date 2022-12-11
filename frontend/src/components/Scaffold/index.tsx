@@ -13,6 +13,7 @@ import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
 import { useState } from 'react';
 import { Form } from '../Form';
+import { updateConfig } from '~/util/helpers';
 
 export function Scaffold() {
 	const activeTab = useStoreValue(state => state.activeTab);
@@ -35,7 +36,14 @@ export function Scaffold() {
 		}));
 
 		store.dispatch(actions.setActiveTab(tabId));
+
+		updateConfig();
 	});
+
+	const removeTab = useStable((id: string) => {
+		store.dispatch(actions.removeTab(id));
+		updateConfig();
+	})
 	
 	const openTabEditor = useStable((tabId: string) => {
 		const tab = tabList.find(tab => tab.id == tabId);
@@ -58,6 +66,7 @@ export function Scaffold() {
 			name: tabName
 		}));
 
+		updateConfig();
 		closeEditingTab();
 	});
 
@@ -80,7 +89,7 @@ export function Scaffold() {
 					<ViewTab
 						key={tab.id}
 						active={tab.id == activeTab}
-						onDismiss={() => store.dispatch(actions.removeTab(tab.id))}
+						onDismiss={() => removeTab(tab.id)}
 						onRename={() => openTabEditor(tab.id)}
 						onActivate={() => store.dispatch(actions.setActiveTab(tab.id))}
 					>
@@ -158,26 +167,27 @@ export function Scaffold() {
 					</Box>
 				</>
 			) : (
-				<>
-					<Image
-						className={classes.emptyImage}
-						src={surrealistLogo}
-						width={120}
-						mx="auto"
-						mt={90}
-					/>
-					<Title color="light" align="center" mt="md">
-						Surrealist
-					</Title>
-					<Text color="light.2" align="center">
-						Open or create a new tab to continue
-					</Text>
-					<Center mt="lg">
-						<Button size="xs" onClick={addNewTab}>
-							Create tab
-						</Button>
-					</Center>
-				</>
+				<Center h="100%">
+					<div>
+						<Image
+							className={classes.emptyImage}
+							src={surrealistLogo}
+							width={120}
+							mx="auto"
+						/>
+						<Title color="light" align="center" mt="md">
+							Surrealist
+						</Title>
+						<Text color="light.2" align="center">
+							Open or create a new tab to continue
+						</Text>
+						<Center mt="lg">
+							<Button size="xs" onClick={addNewTab}>
+								Create tab
+							</Button>
+						</Center>
+					</div>
+				</Center>
 			)}
 			
 			{/* ANCHOR Tab rename modal */}

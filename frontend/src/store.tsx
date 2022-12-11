@@ -12,6 +12,16 @@ const mainSlice = createSlice({
 		activeTab: null as string|null
 	},
 	reducers: {
+		initialize(state, action: PayloadAction<any>) {
+			console.log(action.payload);
+
+			const config = JSON.parse(action.payload.trim());
+
+
+			state.colorScheme = config.theme;
+			state.knownTabs = config.tabs;
+		},
+
 		setColorScheme(state, action: PayloadAction<ColorScheme>) {
 			state.colorScheme = action.payload;
 		},
