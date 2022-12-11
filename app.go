@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"os"
 	"path"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 const DEFAULT_CONFIG = "{\"theme\":\"light\",\"tabs\":[]}"
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx      context.Context
+	isPinned bool
 }
 
 // NewApp creates a new App application struct
@@ -61,4 +64,11 @@ func (a *App) SaveConfig(config string) {
 	if err != nil {
 		fmt.Println("Error saving config:", err)
 	}
+}
+
+// Toggle the pinned status of the window
+func (a *App) TogglePinned() {
+	a.isPinned = !a.isPinned
+
+	runtime.WindowSetAlwaysOnTop(a.ctx, a.isPinned)
 }

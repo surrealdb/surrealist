@@ -9,3 +9,7 @@ export function LoadConfig() {
 export function SaveConfig(arg1) {
   return window['go']['main']['App']['SaveConfig'](arg1);
 }
+
+export function TogglePinned() {
+  return window['go']['main']['App']['TogglePinned']();
+}

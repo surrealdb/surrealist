@@ -1,3 +1,4 @@
+import { TogglePinned } from "$/go/main/App";
 import { ColorScheme } from "@mantine/core";
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
@@ -6,10 +7,11 @@ import { renameWindow } from "./util/helpers";
 
 const mainSlice = createSlice({
 	name: 'main',
-	initialState: {	
+	initialState: {
 		colorScheme: 'light' as ColorScheme,
 		knownTabs: [] as SurrealistTab[],
-		activeTab: null as string|null
+		activeTab: null as string|null,
+		isPinned: false
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -67,6 +69,11 @@ const mainSlice = createSlice({
 			const theTab = state.knownTabs.find(tab => tab.id === action.payload);
 
 			renameWindow(theTab?.name);
+		},
+		
+		togglePinned(state) {
+			state.isPinned = !state.isPinned;
+			TogglePinned();
 		}
 	}
 });

@@ -1,7 +1,7 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
 import { Box, Button, Center, Dialog, Group, Image, Modal, Paper, Text, TextInput, Title } from "@mantine/core";
-import { mdiCodeJson, mdiCog, mdiDatabase, mdiPin, mdiPlus, mdiTune } from "@mdi/js";
+import { mdiCodeJson, mdiCog, mdiDatabase, mdiPin, mdiPinOff, mdiPlus, mdiTune } from "@mdi/js";
 import { Icon } from "../Icon";
 import { ViewTab } from "../ViewTab";
 import { Spacer } from "./Spacer";
@@ -16,6 +16,7 @@ import { Form } from '../Form';
 import { updateConfig } from '~/util/helpers';
 
 export function Scaffold() {
+	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
 
@@ -71,6 +72,10 @@ export function Scaffold() {
 	});
 
 	const [ editingCon, setEditingCon] = useState(false);
+
+	const togglePinned = useStable(() => {
+		store.dispatch(actions.togglePinned());
+	});
 	
 	return (
 		<div className={classes.root}>
@@ -110,11 +115,12 @@ export function Scaffold() {
 				<Spacer />
 
 				<Button
-					color="light.0"
 					px="xs"
+					color="light.0"
+					onClick={togglePinned}
 				>
 					<Icon
-						path={mdiPin}
+						path={isPinned ? mdiPinOff : mdiPin}
 						color="light.8"
 					/>
 				</Button>

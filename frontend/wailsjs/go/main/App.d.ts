@@ -4,3 +4,5 @@
 export function LoadConfig():Promise<string>;
 
 export function SaveConfig(arg1:string):Promise<void>;
+
+export function TogglePinned():Promise<void>;
