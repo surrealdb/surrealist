@@ -1,4 +1,4 @@
-module changeme
+module surrealist
 
 go 1.18
 

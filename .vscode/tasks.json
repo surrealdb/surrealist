@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"group": "build",
+			"command": "wails dev",
+			"problemMatcher": [],
+			"label": "Development",
+			"detail": "Start the development server"
+		}
+	]
+}

@@ -44,8 +44,8 @@ export function EventsOn(eventName, callback) {
     EventsOnMultiple(eventName, callback, -1);
 }
 
-export function EventsOff(eventName) {
-    return window.runtime.EventsOff(eventName);
+export function EventsOff(eventName, ...additionalEventNames) {
+    return window.runtime.EventsOff(eventName, ...additionalEventNames);
 }
 
 export function EventsOnce(eventName, callback) {
@@ -91,6 +91,10 @@ export function WindowFullscreen() {
 
 export function WindowUnfullscreen() {
     window.runtime.WindowUnfullscreen();
+}
+
+export function WindowIsFullscreen() {
+    return window.runtime.WindowIsFullscreen();
 }
 
 export function WindowGetSize() {

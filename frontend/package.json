@@ -9,8 +9,20 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@emotion/react": "^11.10.5",
+		"@mantine/core": "^5.9.3",
+		"@mantine/hooks": "^5.9.3",
+		"@reduxjs/toolkit": "^1.9.1",
+		"add": "^2.0.6",
+		"immer": "^9.0.16",
+		"radash": "^9.5.0",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"react-redux": "^8.0.5",
+		"react-router-dom": "^6.4.5",
+		"react-split-pane": "^0.1.92",
+		"remove": "^0.1.5",
+		"use-immer": "^0.8.1"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.13",
