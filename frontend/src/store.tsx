@@ -24,11 +24,16 @@ const mainSlice = createSlice({
 			state.knownTabs = state.knownTabs.filter(tab => tab.id !== action.payload);
 
 			if (state.activeTab === action.payload) {
-				const firstTab = state.knownTabs[0];
+				if (state.knownTabs.length === 0) {
+					state.activeTab = null;
+					renameWindow();
+				} else {
+					const firstTab = state.knownTabs[0];
 
-				state.activeTab = firstTab.id;
+					state.activeTab = firstTab.id;
 
-				renameWindow(firstTab.name);
+					renameWindow(firstTab.name);
+				}
 			}
 		},
 

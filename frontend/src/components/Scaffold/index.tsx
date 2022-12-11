@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { Box, Button, Dialog, Group, Image, Modal, Paper, Text, TextInput } from "@mantine/core";
+import { Box, Button, Center, Dialog, Group, Image, Modal, Paper, Text, TextInput, Title } from "@mantine/core";
 import { mdiCodeJson, mdiCog, mdiDatabase, mdiPin, mdiPlus, mdiTune } from "@mdi/js";
 import { Icon } from "../Icon";
 import { ViewTab } from "../ViewTab";
@@ -111,49 +111,74 @@ export function Scaffold() {
 				</Button>
 			</Group>
 
-			<Group p="xs">
-				<Image
-					style={{ pointerEvents: 'none', userSelect: 'none' }}
-					src={surrealistLogo}
-					width={42}
-				/>
+			{activeTab ? (
+				<>
+					<Group p="xs">
+						<Image
+							style={{ pointerEvents: 'none', userSelect: 'none' }}
+							src={surrealistLogo}
+							width={42}
+						/>
 
-				<Paper className={classes.input}>
-					<Paper
-						bg="light.0"
-						px="xs"
-					>
-						root
-					</Paper>
-					<Text>
-						https://localhost:8000/
+						<Paper className={classes.input}>
+							<Paper
+								bg="light.0"
+								px="xs"
+							>
+								root
+							</Paper>
+							<Text>
+								https://localhost:8000/
+							</Text>
+							<Spacer />
+							<Button
+								color="surreal"
+								style={{ borderRadius: 0 }}
+							>
+								Send Query
+							</Button>
+						</Paper>
+					</Group>
+
+					<Box p="xs" className={classes.content}>
+						<PanelSplitter>
+							<PanelSplitter direction={SplitDirection.Vertical}>
+								<Panel title="Query" icon={mdiDatabase}>
+									
+								</Panel>
+								<Panel title="Variables" icon={mdiTune}>
+									
+								</Panel>
+							</PanelSplitter>
+							
+							<Panel title="Result" icon={mdiCodeJson}>
+								
+							</Panel>
+						</PanelSplitter>
+					</Box>
+				</>
+			) : (
+				<>
+					<Image
+						className={classes.emptyImage}
+						src={surrealistLogo}
+						width={120}
+						mx="auto"
+						mt={90}
+					/>
+					<Title color="light" align="center" mt="md">
+						Surrealist
+					</Title>
+					<Text color="light.2" align="center">
+						Open or create a new tab to continue
 					</Text>
-					<Spacer />
-					<Button
-						color="surreal"
-						style={{ borderRadius: 0 }}
-					>
-						Send Query
-					</Button>
-				</Paper>
-			</Group>
-
-			<Box p="xs" className={classes.content}>
-				<PanelSplitter>
-					<PanelSplitter direction={SplitDirection.Vertical}>
-						<Panel title="Query" icon={mdiDatabase}>
-							
-						</Panel>
-						<Panel title="Variables" icon={mdiTune}>
-							
-						</Panel>
-					</PanelSplitter>
-					
-					<Panel title="Result" icon={mdiCodeJson}>
-						
-					</Panel>
-				</PanelSplitter>
-			</Box>
+					<Center mt="lg">
+						<Button size="xs" onClick={addNewTab}>
+							Create tab
+						</Button>
+					</Center>
+				</>
+			)}
 			
 			{/* ANCHOR Tab rename modal */}
 			<Modal
