@@ -4,6 +4,8 @@ import { PropsWithChildren } from "react";
 import { Icon } from "../Icon";
 
 export interface ViewTabProps {
+	onActivate?: () => void;
+	onRename?: () => void;
 	onDismiss?: () => void;
 	active?: boolean;
 }
@@ -19,6 +21,8 @@ export function ViewTab(props: PropsWithChildren<ViewTabProps>) {
 				miw={100}
 				c={fgColor}
 				color={bgColor}
+				onClick={props.onActivate}
+				onDoubleClick={props.onRename}
 				styles={{
 					inner: {
 						justifyContent: 'start',

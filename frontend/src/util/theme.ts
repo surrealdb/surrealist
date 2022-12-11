@@ -35,7 +35,9 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 		components: {
 			Modal: {
 				defaultProps: {
-					centered: true
+					centered: true,
+					exitTransitionDuration: 100,
+					overlayColor: '#12111C'
 				}
 			},
 			Menu: {

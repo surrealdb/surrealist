@@ -5,6 +5,7 @@ specifiers:
   '@emotion/react': ^11.10.5
   '@mantine/core': ^5.9.3
   '@mantine/hooks': ^5.9.3
+  '@mantine/modals': ^5.9.3
   '@mdi/js': ^7.0.96
   '@reduxjs/toolkit': ^1.9.1
   '@types/node': ^18.11.13
@@ -29,6 +30,7 @@ dependencies:
   '@emotion/react': 11.10.5_kzbn2opkn2327fwg5yzwzya5o4
   '@mantine/core': 5.9.3_iajqo5n73ce7zix5dsuwk7nqni
   '@mantine/hooks': 5.9.3_react@18.2.0
+  '@mantine/modals': 5.9.3_sjagjo43i65pzqxzmiml53xcga
   '@mdi/js': 7.0.96
   '@reduxjs/toolkit': 1.9.1_k4ae6lp43ej6mezo3ztvx6pykq
   immer: 9.0.16
@@ -546,6 +548,21 @@ packages:
       react: '>=16.8.0'
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /@mantine/modals/5.9.3_sjagjo43i65pzqxzmiml53xcga:
+    resolution: {integrity: sha512-8dqOsjT+Y5nY205SuuAs6egCoGyswFhd4qmPJTrlddXfwdTUeN+CoP2hlr0UVPYO/9KHeETdINe8Zcf0xAdqew==}
+    peerDependencies:
+      '@mantine/core': 5.9.3
+      '@mantine/hooks': 5.9.3
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@mantine/core': 5.9.3_iajqo5n73ce7zix5dsuwk7nqni
+      '@mantine/hooks': 5.9.3_react@18.2.0
+      '@mantine/utils': 5.9.3_react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@mantine/styles/5.9.3_sogmqz4enknxtkxk3k5s6bqwnq:

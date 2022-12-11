@@ -13,6 +13,7 @@
 		"@emotion/react": "^11.10.5",
 		"@mantine/core": "^5.9.3",
 		"@mantine/hooks": "^5.9.3",
+		"@mantine/modals": "^5.9.3",
 		"@mdi/js": "^7.0.96",
 		"@reduxjs/toolkit": "^1.9.1",
 		"immer": "^9.0.16",

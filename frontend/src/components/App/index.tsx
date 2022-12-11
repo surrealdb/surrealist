@@ -1,4 +1,5 @@
 import { Global, MantineProvider } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { useStoreValue } from "~/store";
 import { useSurrealistTheme } from "~/util/theme";
 import { Scaffold } from "../Scaffold";
@@ -14,7 +15,9 @@ export function App() {
 			withCSSVariables
 			theme={mantineTheme}
 		>
-			<Scaffold />
+			<ModalsProvider>
+				<Scaffold />
+			</ModalsProvider>
 
 			<Global
 				styles={{

@@ -1,8 +1,6 @@
 import { createRoot } from 'react-dom/client';
-import { Scaffold } from './components/Scaffold';
 import { Provider } from "react-redux";
 import { store } from './store';
-import { MantineProvider } from '@mantine/core';
 import { App } from './components/App';
 
 // Render the app component

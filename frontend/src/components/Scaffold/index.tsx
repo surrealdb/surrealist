@@ -1,15 +1,68 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { Box, Button, Group, Image, Paper, Text, TextInput } from "@mantine/core";
+import { Box, Button, Dialog, Group, Image, Modal, Paper, Text, TextInput } from "@mantine/core";
 import { mdiCodeJson, mdiCog, mdiDatabase, mdiPin, mdiPlus, mdiTune } from "@mdi/js";
 import { Icon } from "../Icon";
-import { ViewTab } from "../Tab";
+import { ViewTab } from "../ViewTab";
 import { Spacer } from "./Spacer";
 import { PanelSplitter } from '../PanelSplitter';
 import { SplitDirection } from '@devbookhq/splitter';
 import { Panel } from '../Panel';
+import { actions, store, useStoreValue } from '~/store';
+import { useStable } from '~/hooks/stable';
+import { uid } from 'radash';
+import { useState } from 'react';
+import { Form } from '../Form';
 
 export function Scaffold() {
+	const activeTab = useStoreValue(state => state.activeTab);
+	const tabList = useStoreValue(state => state.knownTabs);
+
+	const [ editingTab, setEditingTab ] = useState<string|null>(null);
+	const [ tabName, setTabName ] = useState('');
+	
+	const addNewTab = useStable(() => {
+		const tabId = uid(5);
+
+		store.dispatch(actions.addTab({
+			id: tabId,
+			name: `Tab ${tabList.length + 1}`,
+			endpoint: '',
+			username: '',
+			password: '',
+			query: '',
+			variables: {}
+		}));
+
+		store.dispatch(actions.setActiveTab(tabId));
+	});
+	
+	const openTabEditor = useStable((tabId: string) => {
+		const tab = tabList.find(tab => tab.id == tabId);
+		
+		if (!tab) {
+			return;
+		}
+		
+		setTabName(tab.name);
+		setEditingTab(tab.id);
+	});
+	
+	const closeEditingTab = useStable(() => {
+		setEditingTab(null);
+	});
+	
+	const saveTabName = useStable(() => {
+		store.dispatch(actions.updateTab({
+			id: editingTab!,
+			name: tabName
+		}));
+
+		closeEditingTab();
+	});
+
+	const [ editingCon, setEditingCon] = useState(false);
+	
 	return (
 		<div className={classes.root}>
 			<Group p="xs" spacing="sm" bg="white">
@@ -23,23 +76,24 @@ export function Scaffold() {
 					/>
 				</Button>
 
-				<ViewTab active>
-					Tab 1
-				</ViewTab>
-
-				<ViewTab>
-					Tab 2
-				</ViewTab>
-
-				<ViewTab>
-					Tab 3
-				</ViewTab>
+				{tabList.map(tab => (
+					<ViewTab
+						key={tab.id}
+						active={tab.id == activeTab}
+						onDismiss={() => store.dispatch(actions.removeTab(tab.id))}
+						onRename={() => openTabEditor(tab.id)}
+						onActivate={() => store.dispatch(actions.setActiveTab(tab.id))}
+					>
+						{tab.name}
+					</ViewTab>
+				))}
 
 				<Button
 					px="xs"
 					variant="subtle"
 					color="light"
 					leftIcon={<Icon path={mdiPlus} />}
+					onClick={addNewTab}
 				>
 					New tab
 				</Button>
@@ -100,6 +154,52 @@ export function Scaffold() {
 					</Panel>
 				</PanelSplitter>
 			</Box>
+			
+			{/* ANCHOR Tab rename modal */}
+			<Modal
+				opened={!!editingTab}
+				onClose={closeEditingTab}
+				withCloseButton={false}
+			>
+				<Form onSubmit={saveTabName}>
+					<Group>
+						<TextInput
+							style={{ flex: 1 }}
+							placeholder="Enter tab name"
+							value={tabName}
+							onChange={e => setTabName(e.target.value)}
+							autoFocus
+							onFocus={e => e.target.select()}
+						/>
+						<Button type="submit">
+							Rename
+						</Button>
+					</Group>
+				</Form>
+			</Modal>
+
+			{/* ANCHOR Connection details modal */}
+			<Modal
+				opened={!!editingTab}
+				onClose={closeEditingTab}
+				withCloseButton={false}
+			>
+				<Form onSubmit={saveTabName}>
+					<Group>
+						<TextInput
+							style={{ flex: 1 }}
+							placeholder="Enter tab name"
+							value={tabName}
+							onChange={e => setTabName(e.target.value)}
+							autoFocus
+							onFocus={e => e.target.select()}
+						/>
+						<Button type="submit">
+							Rename
+						</Button>
+					</Group>
+				</Form>
+			</Modal>
 		</div>
 	)
 }
