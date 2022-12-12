@@ -12,18 +12,14 @@ import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
 import { useState } from 'react';
-import { Form } from '../Form';
 import { updateConfig } from '~/util/helpers';
+import { TabBar } from '../TabBar';
 
 export function Scaffold() {
-	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
 
-	const [ editingTab, setEditingTab ] = useState<string|null>(null);
-	const [ tabName, setTabName ] = useState('');
-	
-	const addNewTab = useStable(() => {
+	const createNewTab = useStable(() => {
 		const tabId = uid(5);
 
 		store.dispatch(actions.addTab({
@@ -41,90 +37,13 @@ export function Scaffold() {
 		updateConfig();
 	});
 
-	const removeTab = useStable((id: string) => {
-		store.dispatch(actions.removeTab(id));
-		updateConfig();
-	})
-	
-	const openTabEditor = useStable((tabId: string) => {
-		const tab = tabList.find(tab => tab.id == tabId);
-		
-		if (!tab) {
-			return;
-		}
-		
-		setTabName(tab.name);
-		setEditingTab(tab.id);
-	});
-	
-	const closeEditingTab = useStable(() => {
-		setEditingTab(null);
-	});
-	
-	const saveTabName = useStable(() => {
-		store.dispatch(actions.updateTab({
-			id: editingTab!,
-			name: tabName
-		}));
-
-		updateConfig();
-		closeEditingTab();
-	});
-
 	const [ editingCon, setEditingCon] = useState(false);
 
-	const togglePinned = useStable(() => {
-		store.dispatch(actions.togglePinned());
-	});
-	
 	return (
 		<div className={classes.root}>
-			<Group p="xs" spacing="sm" bg="white">
-				<Button
-					color="light.0"
-					px="xs"
-				>
-					<Icon
-						path={mdiCog}
-						color="light.8"
-					/>
-				</Button>
-
-				{tabList.map(tab => (
-					<ViewTab
-						key={tab.id}
-						active={tab.id == activeTab}
-						onDismiss={() => removeTab(tab.id)}
-						onRename={() => openTabEditor(tab.id)}
-						onActivate={() => store.dispatch(actions.setActiveTab(tab.id))}
-					>
-						{tab.name}
-					</ViewTab>
-				))}
-
-				<Button
-					px="xs"
-					variant="subtle"
-					color="light"
-					leftIcon={<Icon path={mdiPlus} />}
-					onClick={addNewTab}
-				>
-					New tab
-				</Button>
-
-				<Spacer />
-
-				<Button
-					px="xs"
-					color="light.0"
-					onClick={togglePinned}
-				>
-					<Icon
-						path={isPinned ? mdiPinOff : mdiPin}
-						color="light.8"
-					/>
-				</Button>
-			</Group>
+			<TabBar
+				onCreateTab={createNewTab}
+			/>
 
 			{activeTab ? (
 				<>
@@ -188,39 +107,16 @@ export function Scaffold() {
 							Open or create a new tab to continue
 						</Text>
 						<Center mt="lg">
-							<Button size="xs" onClick={addNewTab}>
+							<Button size="xs" onClick={createNewTab}>
 								Create tab
 							</Button>
 						</Center>
 					</div>
 				</Center>
 			)}
-			
-			{/* ANCHOR Tab rename modal */}
-			<Modal
-				opened={!!editingTab}
-				onClose={closeEditingTab}
-				withCloseButton={false}
-			>
-				<Form onSubmit={saveTabName}>
-					<Group>
-						<TextInput
-							style={{ flex: 1 }}
-							placeholder="Enter tab name"
-							value={tabName}
-							onChange={e => setTabName(e.target.value)}
-							autoFocus
-							onFocus={e => e.target.select()}
-						/>
-						<Button type="submit">
-							Rename
-						</Button>
-					</Group>
-				</Form>
-			</Modal>
 
 			{/* ANCHOR Connection details modal */}
-			<Modal
+			{/* <Modal
 				opened={!!editingTab}
 				onClose={closeEditingTab}
 				withCloseButton={false}
@@ -240,7 +136,7 @@ export function Scaffold() {
 						</Button>
 					</Group>
 				</Form>
-			</Modal>
+			</Modal> */}
 		</div>
 	)
 }
