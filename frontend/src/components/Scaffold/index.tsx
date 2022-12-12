@@ -1,6 +1,7 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { Box, Button, Center, Dialog, Group, Image, Modal, Paper, Text, TextInput, Title } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import { Box, Button, Center, Dialog, Group, Image, Modal, Paper, Stack, Text, TextInput, Title } from "@mantine/core";
 import { mdiCodeJson, mdiCog, mdiDatabase, mdiPin, mdiPinOff, mdiPlus, mdiTune } from "@mdi/js";
 import { Icon } from "../Icon";
 import { ViewTab } from "../ViewTab";
@@ -14,6 +15,7 @@ import { uid } from 'radash';
 import { useState } from 'react';
 import { updateConfig } from '~/util/helpers';
 import { TabBar } from '../TabBar';
+import { Form } from '../Form';
 
 export function Scaffold() {
 	const activeTab = useStoreValue(state => state.activeTab);
@@ -25,9 +27,9 @@ export function Scaffold() {
 		store.dispatch(actions.addTab({
 			id: tabId,
 			name: `Tab ${tabList.length + 1}`,
-			endpoint: '',
-			username: '',
-			password: '',
+			endpoint: 'http://localhost:8080/',
+			username: 'root',
+			password: 'root',
 			query: '',
 			variables: {}
 		}));
@@ -37,7 +39,36 @@ export function Scaffold() {
 		updateConfig();
 	});
 
-	const [ editingCon, setEditingCon] = useState(false);
+	const tabInfo = tabList.find(tab => tab.id === activeTab)!;
+
+	const [ editingInfo, setEditingInfo ] = useState(false);
+	const [ infoEndpoint, setInfoEndpoint ] = useInputState('');
+	const [ infoUsername, setInfoUsername ] = useInputState('');
+	const [ infoPassword, setInfoPassword ] = useInputState('');
+
+	const openInfoEditor = useStable(() => {
+		setEditingInfo(true);
+
+		setInfoEndpoint(tabInfo.endpoint);
+		setInfoUsername(tabInfo.username);
+		setInfoPassword(tabInfo.password);
+	});
+
+	const closeEditingInfo = useStable(() => {
+		setEditingInfo(false);
+	});
+
+	const saveInfo = useStable(() => {
+		store.dispatch(actions.updateTab({
+			id: activeTab!,
+			endpoint: infoEndpoint,
+			username: infoUsername,
+			password: infoPassword
+		}));
+
+		updateConfig();
+		closeEditingInfo();
+	});
 
 	return (
 		<div className={classes.root}>
@@ -54,15 +85,31 @@ export function Scaffold() {
 							width={42}
 						/>
 
-						<Paper className={classes.input}>
+						<Paper
+							className={classes.input}
+							onClick={openInfoEditor}
+						>
+							{/* <Paper
+								bg="red.6"
+								px="xs"
+							>
+								<Text
+									color="white"
+									size="xs"
+									py={2}
+									weight={600}
+								>
+									OFFLINE
+								</Text>
+							</Paper> */}
 							<Paper
 								bg="light.0"
 								px="xs"
 							>
-								root
+								{tabInfo.username}
 							</Paper>
 							<Text>
-								https://localhost:8000/
+								{tabInfo.endpoint}
 							</Text>
 							<Spacer />
 							<Button
@@ -116,27 +163,50 @@ export function Scaffold() {
 			)}
 
 			{/* ANCHOR Connection details modal */}
-			{/* <Modal
-				opened={!!editingTab}
-				onClose={closeEditingTab}
-				withCloseButton={false}
+			<Modal
+				opened={!!editingInfo}
+				onClose={closeEditingInfo}
+				title={
+					<Title size={16}>
+						Connection details
+					</Title>
+				}
 			>
-				<Form onSubmit={saveTabName}>
-					<Group>
+				<Form onSubmit={saveInfo}>
+					<Stack>
 						<TextInput
 							style={{ flex: 1 }}
-							placeholder="Enter tab name"
-							value={tabName}
-							onChange={e => setTabName(e.target.value)}
+							label="Eendpoint URL"
+							value={infoEndpoint}
+							onChange={setInfoEndpoint}
 							autoFocus
-							onFocus={e => e.target.select()}
 						/>
-						<Button type="submit">
-							Rename
-						</Button>
-					</Group>
+						<TextInput
+							style={{ flex: 1 }}
+							label="Username"
+							value={infoUsername}
+							onChange={setInfoUsername}
+							autoFocus
+						/>
+						<TextInput
+							style={{ flex: 1 }}
+							label="Password"
+							value={infoPassword}
+							onChange={setInfoPassword}
+							autoFocus
+						/>
+						<Group>
+							<Button color="light.2" onClick={closeEditingInfo}>
+								Back
+							</Button>
+							<Spacer />
+							<Button type="submit">
+								Save
+							</Button>
+						</Group>
+					</Stack>
 				</Form>
-			</Modal> */}
+			</Modal>
 		</div>
 	)
 }
