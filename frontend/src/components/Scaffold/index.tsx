@@ -1,7 +1,7 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
 import { useInputState } from "@mantine/hooks";
-import { Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { mdiCodeJson, mdiDatabase, mdiTune } from "@mdi/js";
 import { Spacer } from "./Spacer";
 import { PanelSplitter } from '../PanelSplitter';
@@ -10,14 +10,21 @@ import { Panel } from '../Panel';
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import { updateConfig, updateTitle } from '~/util/helpers';
 import { TabBar } from '../TabBar';
 import { Form } from '../Form';
+import { useImmer } from 'use-immer';
+import { createSurreal, SurrealConnection, SurrealHandle } from '~/surreal';
 
 export function Scaffold() {
+	const theme = useMantineTheme();
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
+
+	const [isOnline, setIsOnline] = useState(false);
+	const [isConnecting, setIsConnecting] = useState(false);
+	const [surreal, setSurreal] = useState<SurrealHandle | null>();
 
 	const createNewTab = useStable(() => {
 		const tabId = uid(5);
@@ -25,11 +32,15 @@ export function Scaffold() {
 		store.dispatch(actions.addTab({
 			id: tabId,
 			name: `Tab ${tabList.length + 1}`,
-			endpoint: 'http://localhost:8080/',
-			username: 'root',
-			password: 'root',
 			query: '',
-			variables: {}
+			variables: {},
+			connection: {
+				endpoint: 'http://localhost:8000/',
+				username: 'root',
+				password: 'root',
+				namespace: '',
+				database: ''
+			}
 		}));
 
 		store.dispatch(actions.setActiveTab(tabId));
@@ -41,33 +52,70 @@ export function Scaffold() {
 	const tabInfo = tabList.find(tab => tab.id === activeTab)!;
 
 	const [ editingInfo, setEditingInfo ] = useState(false);
-	const [ infoEndpoint, setInfoEndpoint ] = useInputState('');
-	const [ infoUsername, setInfoUsername ] = useInputState('');
-	const [ infoPassword, setInfoPassword ] = useInputState('');
+	const [ infoDetails, setInfoDetails ] = useImmer<SurrealConnection>({
+		endpoint: '',
+		username: '',
+		password: '',
+		namespace: '',
+		database: ''
+	});
 
 	const openInfoEditor = useStable(() => {
 		setEditingInfo(true);
-
-		setInfoEndpoint(tabInfo.endpoint);
-		setInfoUsername(tabInfo.username);
-		setInfoPassword(tabInfo.password);
+		setInfoDetails(tabInfo.connection);
 	});
 
 	const closeEditingInfo = useStable(() => {
 		setEditingInfo(false);
+
+		if (isOnline) {
+			surreal?.close();
+		}
 	});
 
 	const saveInfo = useStable(() => {
 		store.dispatch(actions.updateTab({
 			id: activeTab!,
-			endpoint: infoEndpoint,
-			username: infoUsername,
-			password: infoPassword
+			connection: {
+				...infoDetails
+			}
 		}));
 
 		updateConfig();
 		closeEditingInfo();
 	});
+
+	const openConnection = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+
+		if (isConnecting) {
+			return;
+		}
+
+		const activeTab = store.getState().activeTab;
+		const tabInfo = store.getState().knownTabs.find(tab => tab.id === activeTab);
+
+		if (!tabInfo) {
+			return;
+		}
+
+		const conn = createSurreal({
+			connection: tabInfo.connection,
+			onConnect() {
+				setIsConnecting(false);
+				setIsOnline(true)
+			},
+			onDisconnect() {
+				setIsConnecting(false);
+				setIsOnline(false)
+			},
+		})
+
+		setIsConnecting(true);
+		setSurreal(conn);
+	});
+
+	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 
 	return (
 		<div className={classes.root}>
@@ -87,36 +135,50 @@ export function Scaffold() {
 						<Paper
 							className={classes.input}
 							onClick={openInfoEditor}
+							style={{ borderColor: borderColor }}
 						>
-							{/* <Paper
-								bg="red.6"
-								px="xs"
-							>
-								<Text
-									color="white"
-									size="xs"
-									py={2}
-									weight={600}
+							{!isOnline ? (
+								<Paper
+									bg="light"
+									px="xs"
 								>
-									OFFLINE
-								</Text>
-							</Paper> */}
-							<Paper
-								bg="light.0"
-								px="xs"
-							>
-								{tabInfo.username}
-							</Paper>
+									<Text
+										color="white"
+										size="xs"
+										py={2}
+										weight={600}
+									>
+										OFFLINE
+									</Text>
+								</Paper>
+							) : (
+								<Paper
+									bg="light.0"
+									px="xs"
+								>
+									{tabInfo.connection.username}
+								</Paper>
+							)}
 							<Text>
-								{tabInfo.endpoint}
+								{tabInfo.connection.endpoint}
 							</Text>
 							<Spacer />
-							<Button
-								color="surreal"
-								style={{ borderRadius: 0 }}
-							>
-								Send Query
-							</Button>
+							{isOnline ? (
+								<Button
+									color="surreal"
+									style={{ borderRadius: 0 }}
+								>
+									Send Query
+								</Button>
+							) : (
+								<Button
+									color="light"
+									style={{ borderRadius: 0 }}
+									onClick={openConnection}
+								>
+									{isConnecting ? 'Connecting...' : 'Connect'}
+								</Button>
+							)}
 						</Paper>
 					</Group>
 
@@ -176,26 +238,46 @@ export function Scaffold() {
 						<TextInput
 							style={{ flex: 1 }}
 							label="Eendpoint URL"
-							value={infoEndpoint}
-							onChange={setInfoEndpoint}
+							value={infoDetails.endpoint}
+							onChange={(e) => setInfoDetails(draft => {
+								draft.endpoint = e.target.value
+							})}
 							autoFocus
 						/>
 						<TextInput
 							style={{ flex: 1 }}
 							label="Username"
-							value={infoUsername}
-							onChange={setInfoUsername}
-							autoFocus
+							value={infoDetails.username}
+							onChange={(e) => setInfoDetails(draft => {
+								draft.username = e.target.value
+							})}
 						/>
 						<TextInput
 							style={{ flex: 1 }}
 							label="Password"
-							value={infoPassword}
-							onChange={setInfoPassword}
-							autoFocus
+							value={infoDetails.password}
+							onChange={(e) => setInfoDetails(draft => {
+								draft.password = e.target.value
+							})}
+						/>
+						<TextInput
+							style={{ flex: 1 }}
+							label="Namespace (optional)"
+							value={infoDetails.namespace}
+							onChange={(e) => setInfoDetails(draft => {
+								draft.namespace = e.target.value
+							})}
+						/>
+						<TextInput
+							style={{ flex: 1 }}
+							label="Database (optional)"
+							value={infoDetails.database}
+							onChange={(e) => setInfoDetails(draft => {
+								draft.database = e.target.value
+							})}
 						/>
 						<Group>
-							<Button color="light.2" onClick={closeEditingInfo}>
+							<Button color="light" onClick={closeEditingInfo}>
 								Back
 							</Button>
 							<Spacer />

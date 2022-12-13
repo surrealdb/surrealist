@@ -14,10 +14,7 @@ const mainSlice = createSlice({
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
-			console.log(action.payload);
-
 			const config = JSON.parse(action.payload.trim());
-
 
 			state.colorScheme = config.theme;
 			state.knownTabs = config.tabs;
