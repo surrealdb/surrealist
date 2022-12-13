@@ -2,12 +2,24 @@ import { SaveConfig } from "$/go/main/App";
 import { WindowSetTitle } from "$/runtime/runtime";
 import { store } from "~/store";
 
-export function renameWindow(name?: string) {
-	if (name) {
-		WindowSetTitle(`Surrealist - ${name}`);
-	} else {
-		WindowSetTitle(`Surrealist`);
+export function updateTitle() {
+	const { activeTab, isPinned, knownTabs } = store.getState();
+
+	let title = 'Surrealist';
+
+	if (activeTab) {
+		const tab = knownTabs.find(t => t.id === activeTab);
+
+		if (tab) {
+			title += ` - ${tab.name}`;
+		}
 	}
+
+	if (isPinned) {
+		title += ' (Pinned)';
+	}
+
+	WindowSetTitle(title);
 }
 
 /**

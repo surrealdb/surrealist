@@ -3,7 +3,7 @@ import { mdiCog, mdiPlus, mdiPinOff, mdiPin } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { store, actions, useStoreValue } from "~/store";
-import { updateConfig } from "~/util/helpers";
+import { updateConfig, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { Spacer } from "../Scaffold/Spacer";
@@ -23,6 +23,8 @@ export function TabBar(props: TabBarProps) {
 	
 	const removeTab = useStable((id: string) => {
 		store.dispatch(actions.removeTab(id));
+
+		updateTitle();
 		updateConfig();
 	})
 	
@@ -47,12 +49,21 @@ export function TabBar(props: TabBarProps) {
 			name: tabName
 		}));
 
+		updateTitle();
 		updateConfig();
 		closeEditingTab();
 	});
 
+	const selectTab = useStable((id: string) => {
+		store.dispatch(actions.setActiveTab(id));
+
+		updateTitle();
+	});
+
 	const togglePinned = useStable(() => {
 		store.dispatch(actions.togglePinned());
+
+		updateTitle();
 	});
 	
 	return (
@@ -73,7 +84,7 @@ export function TabBar(props: TabBarProps) {
 					active={tab.id == activeTab}
 					onDismiss={() => removeTab(tab.id)}
 					onRename={() => openTabEditor(tab.id)}
-					onActivate={() => store.dispatch(actions.setActiveTab(tab.id))}
+					onActivate={() => selectTab(tab.id)}
 				>
 					{tab.name}
 				</ViewTab>

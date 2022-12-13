@@ -1,10 +1,8 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
 import { useInputState } from "@mantine/hooks";
-import { Box, Button, Center, Dialog, Group, Image, Modal, Paper, Stack, Text, TextInput, Title } from "@mantine/core";
-import { mdiCodeJson, mdiCog, mdiDatabase, mdiPin, mdiPinOff, mdiPlus, mdiTune } from "@mdi/js";
-import { Icon } from "../Icon";
-import { ViewTab } from "../ViewTab";
+import { Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title } from "@mantine/core";
+import { mdiCodeJson, mdiDatabase, mdiTune } from "@mdi/js";
 import { Spacer } from "./Spacer";
 import { PanelSplitter } from '../PanelSplitter';
 import { SplitDirection } from '@devbookhq/splitter';
@@ -13,7 +11,7 @@ import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
 import { useState } from 'react';
-import { updateConfig } from '~/util/helpers';
+import { updateConfig, updateTitle } from '~/util/helpers';
 import { TabBar } from '../TabBar';
 import { Form } from '../Form';
 
@@ -36,6 +34,7 @@ export function Scaffold() {
 
 		store.dispatch(actions.setActiveTab(tabId));
 
+		updateTitle();
 		updateConfig();
 	});
 

@@ -3,7 +3,6 @@ import { ColorScheme } from "@mantine/core";
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { SurrealistTab } from "./typings";
-import { renameWindow } from "./util/helpers";
 
 const mainSlice = createSlice({
 	name: 'main',
@@ -38,13 +37,10 @@ const mainSlice = createSlice({
 			if (state.activeTab === action.payload) {
 				if (state.knownTabs.length === 0) {
 					state.activeTab = null;
-					renameWindow();
 				} else {
 					const firstTab = state.knownTabs[0];
 
 					state.activeTab = firstTab.id;
-
-					renameWindow(firstTab.name);
 				}
 			}
 		},
@@ -56,10 +52,6 @@ const mainSlice = createSlice({
 				const tab = state.knownTabs[tabIndex];
 
 				state.knownTabs[tabIndex] = { ...tab, ...action.payload };
-
-				if (tab.id === state.activeTab) {
-					renameWindow(action.payload.name);
-				}
 			}
 		},
 
@@ -67,8 +59,6 @@ const mainSlice = createSlice({
 			state.activeTab = action.payload;
 
 			const theTab = state.knownTabs.find(tab => tab.id === action.payload);
-
-			renameWindow(theTab?.name);
 		},
 		
 		togglePinned(state) {
