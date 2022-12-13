@@ -1,7 +1,5 @@
 import { uid } from "radash";
 
-const id = () => uid(7);
-
 export interface SurrealConnection {
 	endpoint: string;
 	username: string;
@@ -18,49 +16,87 @@ export interface SurrealOptions {
 
 export interface SurrealHandle {
 	close(): void;
+	query(query: string): Promise<any>;
 }
 
 export function createSurreal(options: SurrealOptions): SurrealHandle {
 	const endpoint = new URL('rpc', options.connection.endpoint.replace('http', 'ws'));
 	const socket = new WebSocket(endpoint.toString());
+	const requestMap = new Map<string, (data: any) => void>();
 
-	const message = (id: string, method: string, params: string[] = []) => {
-		socket.send(JSON.stringify({
-			id,
-			method,
-			params
-		}));
+	let isClosed = false;
+
+	const message = (method: string, params: string[] = []) => {
+		const id = uid(7);
+
+		return new Promise((success, reject) => {
+			requestMap.set(id, success);
+
+			socket.send(JSON.stringify({
+				id,
+				method,
+				params
+			}));
+
+			setTimeout(() => {
+				if (requestMap.delete(id)) {
+					reject(new Error('Request timed out'));
+				}
+			}, 10_000);
+		})
 	}
 
 	const pinger = setInterval(() => {
-		message(id(), 'ping');
+		message('ping');
 	}, 30_000);
 
 	socket.addEventListener('open', () => {
-		console.log('Connection opened');
+		const { namespace, database } = options.connection;
 
 		options.onConnect();
+
+		if (namespace && database) {
+			message('use', [namespace, database]);
+		}
 	});
 
 	socket.addEventListener('close', () => {
-		console.log('Connection closed');
-
-		options.onDisconnect();
-		clearInterval(pinger);
-	});
-
-	socket.addEventListener('error', () => {
-		console.log('Connection error');
+		if (!isClosed) {
+			options.onDisconnect();
+			clearInterval(pinger);
+		}
 	});
 
 	socket.addEventListener('message', (event) => {
-		console.log('Message received', event.data);
+		const { id, result, method } = JSON.parse(event.data);
+
+		if (method === 'notify') {
+			return;
+		}
+		
+		const cb = requestMap.get(id);
+
+		if (!cb) {
+			console.warn('No callback for message', event.data);
+		} else {
+			requestMap.delete(id);
+			cb(result);
+		}
 	});
 
+	function close() {
+		isClosed = true;
+		clearInterval(pinger);
+		options.onDisconnect();
+		socket.close();
+	}
+
+	async function query(query: string) {
+		return message('query', [query]);
+	}
+
 	return {
-		close() {
-			clearInterval(pinger);
-			socket.close();
-		}
+		close,
+		query,
 	}
 }

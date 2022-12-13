@@ -10,7 +10,8 @@ const mainSlice = createSlice({
 		colorScheme: 'light' as ColorScheme,
 		knownTabs: [] as SurrealistTab[],
 		activeTab: null as string|null,
-		isPinned: false
+		isPinned: false,
+		results: [] as any,
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -54,13 +55,15 @@ const mainSlice = createSlice({
 
 		setActiveTab(state, action: PayloadAction<string>) {
 			state.activeTab = action.payload;
-
-			const theTab = state.knownTabs.find(tab => tab.id === action.payload);
 		},
 		
 		togglePinned(state) {
 			state.isPinned = !state.isPinned;
 			TogglePinned();
+		},
+
+		setResults(state, action: PayloadAction<any>) {
+			state.results = action.payload;
 		}
 	}
 });

@@ -16,11 +16,15 @@ import { TabBar } from '../TabBar';
 import { Form } from '../Form';
 import { useImmer } from 'use-immer';
 import { createSurreal, SurrealConnection, SurrealHandle } from '~/surreal';
+import { QueryPane } from '../QueryPane';
+import { useActiveTab } from '~/hooks/tab';
+import { ResultPane } from '../ResultPane';
 
 export function Scaffold() {
 	const theme = useMantineTheme();
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
+	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
@@ -49,8 +53,6 @@ export function Scaffold() {
 		updateConfig();
 	});
 
-	const tabInfo = tabList.find(tab => tab.id === activeTab)!;
-
 	const [ editingInfo, setEditingInfo ] = useState(false);
 	const [ infoDetails, setInfoDetails ] = useImmer<SurrealConnection>({
 		endpoint: '',
@@ -62,7 +64,7 @@ export function Scaffold() {
 
 	const openInfoEditor = useStable(() => {
 		setEditingInfo(true);
-		setInfoDetails(tabInfo.connection);
+		setInfoDetails(tabInfo!.connection);
 	});
 
 	const closeEditingInfo = useStable(() => {
@@ -115,12 +117,28 @@ export function Scaffold() {
 		setSurreal(conn);
 	});
 
+	const sendQuery = useStable(async (e: MouseEvent) => {
+		e.stopPropagation();
+
+		const query = tabInfo!.query;
+		const result = await surreal!.query(query);
+
+		store.dispatch(actions.setResults(result));
+	});
+
+	const closeConnection = useStable(() => {
+		surreal?.close();
+		setIsConnecting(false);
+		setIsOnline(false);
+	});
+
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 
 	return (
 		<div className={classes.root}>
 			<TabBar
 				onCreateTab={createNewTab}
+				onSwitchTab={closeConnection}
 			/>
 
 			{activeTab ? (
@@ -156,17 +174,18 @@ export function Scaffold() {
 									bg="light.0"
 									px="xs"
 								>
-									{tabInfo.connection.username}
+									{tabInfo!.connection.username}
 								</Paper>
 							)}
 							<Text>
-								{tabInfo.connection.endpoint}
+								{tabInfo!.connection.endpoint}
 							</Text>
 							<Spacer />
 							{isOnline ? (
 								<Button
 									color="surreal"
 									style={{ borderRadius: 0 }}
+									onClick={sendQuery}
 								>
 									Send Query
 								</Button>
@@ -186,7 +205,7 @@ export function Scaffold() {
 						<PanelSplitter>
 							<PanelSplitter direction={SplitDirection.Vertical}>
 								<Panel title="Query" icon={mdiDatabase}>
-									
+									<QueryPane />
 								</Panel>
 								<Panel title="Variables" icon={mdiTune}>
 									
@@ -194,7 +213,7 @@ export function Scaffold() {
 							</PanelSplitter>
 							
 							<Panel title="Result" icon={mdiCodeJson}>
-								
+								<ResultPane />
 							</Panel>
 						</PanelSplitter>
 					</Box>

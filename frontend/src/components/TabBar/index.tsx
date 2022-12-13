@@ -11,6 +11,7 @@ import { ViewTab } from "../ViewTab";
 
 export interface TabBarProps {
 	onCreateTab: () => void;
+	onSwitchTab: () => void;
 }
 
 export function TabBar(props: TabBarProps) {
@@ -57,6 +58,7 @@ export function TabBar(props: TabBarProps) {
 	const selectTab = useStable((id: string) => {
 		store.dispatch(actions.setActiveTab(id));
 
+		props.onSwitchTab();
 		updateTitle();
 	});
 

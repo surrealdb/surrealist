@@ -27,8 +27,7 @@ export function Panel(props: PanelProps) {
 				<Spacer />
 				{props.rightSection}
 			</Group>
-			{/* <Divider size={1}/> */}
-			<Box p="xs">
+			<Box p="xs" className={classes.content}>
 				{props.children}
 			</Box>
 		</Paper>
