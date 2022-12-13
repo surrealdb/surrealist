@@ -1,12 +1,8 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { useInputState } from "@mantine/hooks";
 import { Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
-import { mdiCodeJson, mdiDatabase, mdiTune } from "@mdi/js";
 import { Spacer } from "./Spacer";
 import { PanelSplitter } from '../PanelSplitter';
-import { SplitDirection } from '@devbookhq/splitter';
-import { Panel } from '../Panel';
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
@@ -20,7 +16,6 @@ import { QueryPane } from '../QueryPane';
 import { useActiveTab } from '~/hooks/tab';
 import { ResultPane } from '../ResultPane';
 import { showNotification } from '@mantine/notifications';
-import { VariablesPane } from '../VariablesPane';
 
 export function Scaffold() {
 	const theme = useMantineTheme();

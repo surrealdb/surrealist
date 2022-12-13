@@ -7,6 +7,7 @@ import { updateConfig, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { Spacer } from "../Scaffold/Spacer";
+import { Settings } from "../Settings";
 import { ViewTab } from "../ViewTab";
 
 export interface TabBarProps {
@@ -70,15 +71,7 @@ export function TabBar(props: TabBarProps) {
 	
 	return (
 		<Group p="xs" spacing="sm" bg="white">
-			<Button
-				color="light.0"
-				px="xs"
-			>
-				<Icon
-					path={mdiCog}
-					color="light.8"
-				/>
-			</Button>
+			<Settings />
 
 			{tabList.map(tab => (
 				<ViewTab
