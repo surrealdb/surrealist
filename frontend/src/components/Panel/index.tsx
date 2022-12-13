@@ -13,10 +13,11 @@ export function Panel(props: PanelProps) {
 	return (
 		<Paper className={classes.root}>
 			<Group
-				px="xs"
-				py={6}
+				px="sm"
+				py="xs"
 				c="light.9"
 				spacing="xs"
+				noWrap
 			>
 				<Icon
 					path={props.icon}
@@ -27,7 +28,12 @@ export function Panel(props: PanelProps) {
 				<Spacer />
 				{props.rightSection}
 			</Group>
-			<Box p="xs" className={classes.content}>
+			<Box
+				p="sm"
+				pt={0}
+				pos="relative"
+				className={classes.content}
+			>
 				{props.children}
 			</Box>
 		</Paper>

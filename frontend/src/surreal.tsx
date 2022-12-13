@@ -20,18 +20,24 @@ export interface SurrealHandle {
 	query(query: string): Promise<any>;
 }
 
+type Request = [(data: any) => void, (error: any) => void];
+
 export function createSurreal(options: SurrealOptions): SurrealHandle {
 	const endpoint = new URL('rpc', options.connection.endpoint.replace('http', 'ws'));
 	const socket = new WebSocket(endpoint.toString());
-	const requestMap = new Map<string, (data: any) => void>();
+	const requestMap = new Map<string, Request>();
+	const pinger = setInterval(() => { message('ping'); }, 30_000);
 
 	let isClosed = false;
 
-	const message = (method: string, params: string[] = []) => {
+	/**
+	 * Send a message to the database
+	 */
+	const message = (method: string, params: any[] = []) => {
 		const id = uid(7);
 
 		return new Promise((success, reject) => {
-			requestMap.set(id, success);
+			requestMap.set(id, [success, reject]);
 
 			socket.send(JSON.stringify({
 				id,
@@ -44,32 +50,49 @@ export function createSurreal(options: SurrealOptions): SurrealHandle {
 					reject(new Error('Request timed out'));
 				}
 			}, 10_000);
-		})
+		});
 	}
 
+	/**
+	 * Clean up any resources
+	 */
 	const cleanUp = () => {
 		clearInterval(pinger);
 		options.onDisconnect?.();
 	}
 
+	/**
+	 * Forcefully close the connection
+	 */
 	const close = () => {
 		isClosed = true;
 		socket.close();
 		cleanUp();
 	};
 
+	/**
+	 * Send a general query to the database
+	 */
 	const query = async (query: string) => {
 		return message('query', [query]);
 	};
 
-	const pinger = setInterval(() => {
-		message('ping');
-	}, 30_000);
-
-	socket.addEventListener('open', () => {
-		const { namespace, database } = options.connection;
+	socket.addEventListener('open', async () => {
+		const { username, password, namespace, database } = options.connection;
 
 		options.onConnect?.();
+ 
+		try {
+			await message('signin', [{
+				user: username,
+				pass: password,
+				// NS: namespace,
+				// DB: database
+			}]);
+		} catch {
+			close();
+			return;
+		}
 
 		if (namespace && database) {
 			message('use', [namespace, database]);
@@ -87,19 +110,24 @@ export function createSurreal(options: SurrealOptions): SurrealHandle {
 	});
 
 	socket.addEventListener('message', (event) => {
-		const { id, result, method } = JSON.parse(event.data);
+		const { id, result, method, error } = JSON.parse(event.data);
 
 		if (method === 'notify') {
 			return;
 		}
 		
-		const cb = requestMap.get(id);
-
-		if (!cb) {
+		if (!requestMap.has(id)) {
 			console.warn('No callback for message', event.data);
 		} else {
+			const [resolve, reject] = requestMap.get(id)!;
+
 			requestMap.delete(id);
-			cb(result);
+
+			if (error) {
+				reject(error);
+			} else {
+				resolve(result);
+			}
 		}
 	});
 

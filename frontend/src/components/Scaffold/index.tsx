@@ -20,6 +20,7 @@ import { QueryPane } from '../QueryPane';
 import { useActiveTab } from '~/hooks/tab';
 import { ResultPane } from '../ResultPane';
 import { showNotification } from '@mantine/notifications';
+import { VariablesPane } from '../VariablesPane';
 
 export function Scaffold() {
 	const theme = useMantineTheme();
@@ -220,17 +221,10 @@ export function Scaffold() {
 					<Box p="xs" className={classes.content}>
 						<PanelSplitter>
 							<PanelSplitter direction={SplitDirection.Vertical}>
-								<Panel title="Query" icon={mdiDatabase}>
-									<QueryPane />
-								</Panel>
-								<Panel title="Variables" icon={mdiTune}>
-									
-								</Panel>
+								<QueryPane />
+								<VariablesPane />
 							</PanelSplitter>
-							
-							<Panel title="Result" icon={mdiCodeJson}>
-								<ResultPane />
-							</Panel>
+							<ResultPane />
 						</PanelSplitter>
 					</Box>
 				</>
@@ -272,7 +266,7 @@ export function Scaffold() {
 					<Stack>
 						<TextInput
 							style={{ flex: 1 }}
-							label="Eendpoint URL"
+							label="Endpoint URL"
 							value={infoDetails.endpoint}
 							onChange={(e) => setInfoDetails(draft => {
 								draft.endpoint = e.target.value
