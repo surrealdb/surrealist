@@ -19,6 +19,7 @@ import { createSurreal, SurrealConnection, SurrealHandle } from '~/surreal';
 import { QueryPane } from '../QueryPane';
 import { useActiveTab } from '~/hooks/tab';
 import { ResultPane } from '../ResultPane';
+import { showNotification } from '@mantine/notifications';
 
 export function Scaffold() {
 	const theme = useMantineTheme();
@@ -110,6 +111,21 @@ export function Scaffold() {
 			onDisconnect() {
 				setIsConnecting(false);
 				setIsOnline(false)
+			},
+			onError(code, message) {
+				const reason = `${message || 'Unknown reason'} (${code})`;
+
+				showNotification({
+					disallowClose: true,
+					color: 'red.4',
+					bg: 'red.6',
+					message: (
+						<div>
+							<Text color="white" weight={600}>Connection Closed</Text>
+							<Text color="white" opacity={0.8} size="sm">{reason}</Text>
+						</div>
+					)
+				});
 			},
 		})
 

@@ -10,8 +10,9 @@ export interface SurrealConnection {
 
 export interface SurrealOptions {
 	connection: SurrealConnection;
-	onConnect: () => void;
-	onDisconnect: () => void;
+	onConnect?: () => void;
+	onDisconnect?: () => void;
+	onError?: (code: number, reason: string) => void;
 }
 
 export interface SurrealHandle {
@@ -46,6 +47,21 @@ export function createSurreal(options: SurrealOptions): SurrealHandle {
 		})
 	}
 
+	const cleanUp = () => {
+		clearInterval(pinger);
+		options.onDisconnect?.();
+	}
+
+	const close = () => {
+		isClosed = true;
+		socket.close();
+		cleanUp();
+	};
+
+	const query = async (query: string) => {
+		return message('query', [query]);
+	};
+
 	const pinger = setInterval(() => {
 		message('ping');
 	}, 30_000);
@@ -53,17 +69,20 @@ export function createSurreal(options: SurrealOptions): SurrealHandle {
 	socket.addEventListener('open', () => {
 		const { namespace, database } = options.connection;
 
-		options.onConnect();
+		options.onConnect?.();
 
 		if (namespace && database) {
 			message('use', [namespace, database]);
 		}
 	});
 
-	socket.addEventListener('close', () => {
+	socket.addEventListener('close', (event) => {
 		if (!isClosed) {
-			options.onDisconnect();
-			clearInterval(pinger);
+			cleanUp();
+		}
+
+		if (event.code !== 1000) {
+			options.onError?.(event.code, event.reason);
 		}
 	});
 
@@ -83,17 +102,6 @@ export function createSurreal(options: SurrealOptions): SurrealHandle {
 			cb(result);
 		}
 	});
-
-	function close() {
-		isClosed = true;
-		clearInterval(pinger);
-		options.onDisconnect();
-		socket.close();
-	}
-
-	async function query(query: string) {
-		return message('query', [query]);
-	}
 
 	return {
 		close,

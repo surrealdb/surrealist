@@ -1,5 +1,5 @@
 import { Global, MantineProvider } from "@mantine/core";
-import { ModalsProvider } from "@mantine/modals";
+import { NotificationsProvider } from "@mantine/notifications";
 import { useStoreValue } from "~/store";
 import { useSurrealistTheme } from "~/util/theme";
 import { Scaffold } from "../Scaffold";
@@ -15,9 +15,11 @@ export function App() {
 			withCSSVariables
 			theme={mantineTheme}
 		>
-			<ModalsProvider>
+			<NotificationsProvider
+				position="bottom-center"
+			>
 				<Scaffold />
-			</ModalsProvider>
+			</NotificationsProvider>
 
 			<Global
 				styles={{
