@@ -220,10 +220,10 @@ export function Scaffold() {
 
 					<Box p="xs" className={classes.content}>
 						<PanelSplitter>
-							<PanelSplitter direction={SplitDirection.Vertical}>
+							{/* <PanelSplitter direction={SplitDirection.Vertical}> */}
 								<QueryPane />
-								<VariablesPane />
-							</PanelSplitter>
+								{/* <VariablesPane /> */}
+							{/* </PanelSplitter> */}
 							<ResultPane />
 						</PanelSplitter>
 					</Box>

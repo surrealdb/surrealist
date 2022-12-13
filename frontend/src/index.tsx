@@ -24,10 +24,36 @@ loader.init().then(monaco => {
 	monaco.editor.defineTheme('surrealist', {
 		base: 'vs',
 		inherit: true,
-		rules: [],
+		rules: [
+			{ token: 'keyword', foreground: '#e600a4' },
+		],
 		colors: {
 			'editorLineNumber.foreground': '#9BA9C6',
 			'editorLineNumber.activeForeground': '#465671'
+		}
+	});
+
+	monaco.languages.register({ id: 'surrealql' });
+
+	monaco.languages.setMonarchTokensProvider('surrealql', {
+		keywords: [
+			'USE', 'LET', 'BEGIN', 'CANCEL', 'COMMIT', 'IF', 'ELSE', 'SELECT', 'INSERT', 'CREATE',
+			'UPDATE', 'RELATE', 'DELETE', 'DEFINE', 'REMOVE', 'INFO', 'FROM', 'SET', 'FOR', 'NS', 'DB',
+			'TRANSACTION', 'THEN', 'END', 'WHERE', 'SPLIT', 'AT', 'GROUP', 'BY', 'ORDER', 'ASC', 'DESC',
+			'COLLATE', 'NUMERIC', 'LIMIT', 'START', 'FETCH', 'TIMEOUT', 'PARALLEL', 'CONTENT', 'RETURN',
+			'NONE', 'BEFORE', 'AFTER', 'DIFF', 'MERGE', 'PATCH', 'SCOPE', 'TABLE'
+		],
+		tokenizer: {
+			root: [
+				[/@?[a-zA-Z][\w$]*/, {
+					cases: {
+						'@keywords': 'keyword',
+						'@default': 'variable'
+					}
+				}],
+				[/".*?"/, 'string'],
+				[/(\/\/|#|--)/, 'comment']
+			]
 		}
 	});
 })

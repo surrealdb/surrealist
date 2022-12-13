@@ -25,11 +25,8 @@ interface PreviewProps {
 }
 
 function Preview(props: PreviewProps) {
-	const ref = useRef<editor.IStandaloneCodeEditor|null>(null);
-
+	
 	const setEditor = useStable((editor: editor.IStandaloneCodeEditor) => {
-		ref.current = editor;
-
 		let ignoreEvent = false;
 
 		const updateHeight = () => {
@@ -49,7 +46,7 @@ function Preview(props: PreviewProps) {
 		};
 
 		editor.onDidContentSizeChange(updateHeight);
-	})
+	});
 
 	const contents = useMemo(() => {
 		return JSON.stringify(props.result, null, 4);
@@ -67,6 +64,7 @@ function Preview(props: PreviewProps) {
 			glyphMargin: false,
 			theme: 'surrealist',
 			wordWrap: 'on',
+			wrappingStrategy: 'advanced',
 			minimap: {
 				enabled: false
 			}
@@ -115,9 +113,15 @@ export function ResultPane() {
 									<Divider mb="xs" />
 								</>
 							)}
-							<Text ff="monospace">
-								<Preview result={result.result} />
-							</Text>
+							{result.result.length > 0 ? (
+								<Text ff="monospace">
+									<Preview result={result.result} />
+								</Text>
+							) : (
+								<Text color="light.4">
+									No results found for query
+								</Text>
+							)}
 						</div>
 					))}
 				</Stack>

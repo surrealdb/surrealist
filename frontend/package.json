@@ -9,9 +9,6 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@codemirror/lang-json": "^6.0.1",
-		"@codemirror/state": "^6.1.4",
-		"@codemirror/view": "^6.7.1",
 		"@devbookhq/splitter": "^1.4.0",
 		"@emotion/react": "^11.10.5",
 		"@mantine/core": "^5.9.3",
@@ -20,7 +17,6 @@
 		"@mdi/js": "^7.0.96",
 		"@monaco-editor/react": "^4.4.6",
 		"@reduxjs/toolkit": "^1.9.1",
-		"codemirror": "^6.0.1",
 		"immer": "^9.0.16",
 		"monaco-editor": "^0.34.1",
 		"radash": "^9.5.0",
