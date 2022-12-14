@@ -150,12 +150,23 @@ export function Scaffold() {
 
 		const query = tabInfo!.query;
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
-		const response = await surreal!.query(query, variables);
+		
+		try {
+			const response = await surreal!.query(query, variables);
 
-		store.dispatch(actions.updateTab({
-			id: activeTab!,
-			lastResponse: response
-		}));
+			store.dispatch(actions.updateTab({
+				id: activeTab!,
+				lastResponse: response
+			}));
+		} catch(err: any) {
+			store.dispatch(actions.updateTab({
+				id: activeTab!,
+				lastResponse: [{
+					status: 'ERR',
+					detail: err.message
+				}]
+			}));
+		}
 
 		await updateConfig();
 	});

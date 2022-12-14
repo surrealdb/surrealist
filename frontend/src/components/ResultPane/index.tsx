@@ -69,7 +69,7 @@ export function ResultPane() {
 		<Panel
 			title="Result"
 			icon={mdiCodeJson}
-			rightSection={result && <Duration time={result.time} />}
+			rightSection={result?.time && <Duration time={result.time} />}
 		>
 			{showTabs && (
 				<Tabs
@@ -78,7 +78,10 @@ export function ResultPane() {
 				>
 					<Tabs.List>
 						{results.map((_: any, i: number) => (
-							<Tabs.Tab value={i.toString()}>
+							<Tabs.Tab
+								key={i}
+								value={i.toString()}
+							>
 								Query {i + 1}
 							</Tabs.Tab>
 						))}
@@ -93,11 +96,11 @@ export function ResultPane() {
 					top: showTabs ? 48 : 0
 				}}
 			>
-				{results.length > 0 && (
+				{result && (
 					<>
 						{result.status == 'ERR' ? (
 							<Text color="red">
-								{results[0].detail}
+								{result.detail}
 							</Text>
 						) : result.result?.length > 0 ? (
 							<Preview result={result.result} />
