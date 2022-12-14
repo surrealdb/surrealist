@@ -1,6 +1,6 @@
 import type { editor } from "monaco-editor";
 import { Divider, Group, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
-import { mdiCodeJson } from "@mdi/js";
+import { mdiClock, mdiCodeJson, mdiListBox, mdiTable, mdiTableRow } from "@mdi/js";
 import { useMemo } from "react";
 import { Panel } from "../Panel";
 import { Spacer } from "../Scaffold/Spacer";
@@ -11,18 +11,7 @@ import { useActiveTab } from "~/hooks/tab";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
-
-interface DurationProps {
-	time: string;
-}
-
-function Duration(props: DurationProps) {
-	return (
-		<Text color="light.4" lineClamp={1}>
-			Query took {props.time}
-		</Text>
-	)
-}
+import { Icon } from "../Icon";
 
 interface PreviewProps {
 	result: any;
@@ -69,7 +58,26 @@ export function ResultPane() {
 		<Panel
 			title="Result"
 			icon={mdiCodeJson}
-			rightSection={result?.time && <Duration time={result.time} />}
+			rightSection={
+				<Group align="center">
+					{result?.result && (
+						<>
+							<Icon color="light.4" path={mdiTable} mr={-10} />
+							<Text color="light.4" lineClamp={1}>
+								{result.result.length} rows
+							</Text>
+						</>
+					)}
+					{result?.time && (
+						<>
+							<Icon color="light.4" path={mdiClock} mr={-10}  />
+							<Text color="light.4" lineClamp={1}>
+								{result.time}
+							</Text>
+						</>
+					)}
+				</Group>
+			}
 		>
 			{showTabs && (
 				<Tabs
