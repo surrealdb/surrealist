@@ -31,7 +31,7 @@ export function Scaffold() {
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [surreal, setSurreal] = useState<SurrealHandle | null>();
 
-	const createNewTab = useStable(() => {
+	const createNewTab = useStable(async () => {
 		const tabId = uid(5);
 
 		store.dispatch(actions.addTab({
@@ -52,7 +52,7 @@ export function Scaffold() {
 		store.dispatch(actions.setActiveTab(tabId));
 
 		updateTitle();
-		updateConfig();
+		await updateConfig();
 	});
 
 	const [ editingInfo, setEditingInfo ] = useState(false);
@@ -73,7 +73,7 @@ export function Scaffold() {
 		setEditingInfo(false);
 	});
 
-	const saveInfo = useStable(() => {
+	const saveInfo = useStable(async () => {
 		store.dispatch(actions.updateTab({
 			id: activeTab!,
 			connection: {
@@ -85,7 +85,7 @@ export function Scaffold() {
 			surreal?.close();
 		}
 
-		updateConfig();
+		await updateConfig();
 		closeEditingInfo();
 	});
 
@@ -157,7 +157,7 @@ export function Scaffold() {
 			lastResponse: response
 		}));
 
-		updateConfig();
+		await updateConfig();
 	});
 
 	const closeConnection = useStable(() => {
@@ -278,7 +278,7 @@ export function Scaffold() {
 
 			{/* ANCHOR Connection details modal */}
 			<Modal
-				opened={!!editingInfo}
+				opened={editingInfo}
 				onClose={closeEditingInfo}
 				title={
 					<Title size={16} color={isLight ? 'light.6' : 'white'}>
