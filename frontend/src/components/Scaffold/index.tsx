@@ -18,8 +18,10 @@ import { ResultPane } from '../ResultPane';
 import { showNotification } from '@mantine/notifications';
 import { VariablesPane } from '../VariablesPane';
 import { SplitDirection } from '@devbookhq/splitter';
+import { useIsLight } from '~/hooks/theme';
 
 export function Scaffold() {
+	const isLight = useIsLight();
 	const theme = useMantineTheme();
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
@@ -203,13 +205,14 @@ export function Scaffold() {
 								</Paper>
 							) : (
 								<Paper
-									bg="light.0"
+									bg={isLight ? 'light.0' : 'light.6'}
+									c={isLight ? 'light.6' : 'white'}
 									px="xs"
 								>
 									{tabInfo!.connection.username}
 								</Paper>
 							)}
-							<Text>
+							<Text color={isLight ? 'light.6' : 'white'}>
 								{tabInfo!.connection.endpoint}
 							</Text>
 							<Spacer />
@@ -278,7 +281,7 @@ export function Scaffold() {
 				opened={!!editingInfo}
 				onClose={closeEditingInfo}
 				title={
-					<Title size={16}>
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
 						Connection details
 					</Title>
 				}

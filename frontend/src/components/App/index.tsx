@@ -7,6 +7,7 @@ import { Scaffold } from "../Scaffold";
 export function App() {
 	const colorScheme = useStoreValue(state => state.colorScheme);
 	const mantineTheme = useSurrealistTheme(colorScheme);
+	const isLight = colorScheme === 'light';
 
 	return (
 		<MantineProvider
@@ -24,7 +25,7 @@ export function App() {
 			<Global
 				styles={{
 					'body': {
-						backgroundColor: '#F4F5FB',
+						backgroundColor: isLight ? '#F4F5FB' : '#09090a',
 						fontWeight: 500
 					}
 				}}

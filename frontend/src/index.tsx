@@ -34,6 +34,20 @@ loader.init().then(monaco => {
 		}
 	});
 
+	monaco.editor.defineTheme('surrealist-dark', {
+		base: 'vs-dark',
+		inherit: true,
+		rules: [
+			{ token: 'keyword', foreground: '#e600a4' },
+			{ token: 'param', foreground: '#e67a15' },
+		],
+		colors: {
+			'editor.background': '#1a1b1e',
+			'editorLineNumber.foreground': '#465671',
+			'editorLineNumber.activeForeground': '#9BA9C6'
+		}
+	});
+
 	monaco.languages.register({ id: 'surrealql' });
 
 	monaco.languages.setMonarchTokensProvider('surrealql', {

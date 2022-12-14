@@ -9,9 +9,11 @@ import { Panel } from "../Panel";
 import { useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
 import { Text } from "@mantine/core";
+import { useIsLight } from "~/hooks/theme";
 
 export function VariablesPane() {
 	const activeTab = useActiveTab();
+	const isLight = useIsLight();
 
 	if (!activeTab) {
 		throw new Error('This should not happen');
@@ -69,10 +71,10 @@ export function VariablesPane() {
 				}}
 			>
 				<Editor
+					theme={isLight ? 'surrealist' : 'surrealist-dark'}
 					value={activeTab?.variables?.toString()}
 					onChange={setVariables}
 					options={options}
-					theme="surrealist"
 					language="json"
 				/>
 			</div>

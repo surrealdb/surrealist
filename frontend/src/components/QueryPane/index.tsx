@@ -8,6 +8,7 @@ import { updateConfig } from "~/util/helpers";
 import { Panel } from "../Panel";
 import { useMemo } from "react";
 import { baseEditorConfig } from "~/util/editor";
+import { useIsLight } from "~/hooks/theme";
 
 export interface QueryPaneProps {
 	onExecuteQuery: () => void;
@@ -15,7 +16,7 @@ export interface QueryPaneProps {
 
 export function QueryPane(props: QueryPaneProps) {
 	const activeTab = useActiveTab();
-
+	const isLight = useIsLight();
 	if (!activeTab) {
 		throw new Error('This should not happen');
 	}
@@ -62,10 +63,10 @@ export function QueryPane(props: QueryPaneProps) {
 			>
 				<Editor
 					onMount={setEditor}
+					theme={isLight ? 'surrealist' : 'surrealist-dark'}
 					value={activeTab?.query}
 					onChange={setQuery}
 					options={options}
-					theme="surrealist"
 					language="surrealql"
 				/>
 			</div>

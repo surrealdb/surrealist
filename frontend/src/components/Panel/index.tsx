@@ -1,4 +1,5 @@
 import { Box, Divider, Group, Paper, PaperProps, Text } from "@mantine/core";
+import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Scaffold/Spacer";
 import classes from './style.module.scss';
@@ -10,12 +11,17 @@ export interface PanelProps extends PaperProps {
 }
 
 export function Panel(props: PanelProps) {
+	const isLight = useIsLight();
+	
 	return (
-		<Paper className={classes.root}>
+		<Paper
+			className={classes.root}
+			bg={isLight ? 'white' : 'dark.7'}
+		>
 			<Group
 				px="sm"
 				py="xs"
-				c="light.9"
+				c={isLight ? 'light.9' : 'light.4'}
 				spacing="xs"
 				noWrap
 			>

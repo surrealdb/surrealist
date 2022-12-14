@@ -2,6 +2,7 @@ import { Group, Button, Modal, TextInput } from "@mantine/core";
 import { mdiCog, mdiPlus, mdiPinOff, mdiPin } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { store, actions, useStoreValue } from "~/store";
 import { updateConfig, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
@@ -16,6 +17,7 @@ export interface TabBarProps {
 }
 
 export function TabBar(props: TabBarProps) {
+	const isLight = useIsLight();
 	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
@@ -70,7 +72,7 @@ export function TabBar(props: TabBarProps) {
 	});
 	
 	return (
-		<Group p="xs" spacing="sm" bg="white">
+		<Group p="xs" spacing="sm" bg={isLight ? 'white' : 'dark.7'}>
 			<Settings />
 
 			{tabList.map(tab => (
@@ -99,12 +101,12 @@ export function TabBar(props: TabBarProps) {
 
 			<Button
 				px="xs"
-				color="light.0"
+				color={isLight ? 'light.0' : 'dark.4'}
 				onClick={togglePinned}
 			>
 				<Icon
 					path={isPinned ? mdiPinOff : mdiPin}
-					color="light.8"
+					color={isLight ? 'light.8' : 'white'}
 				/>
 			</Button>
 

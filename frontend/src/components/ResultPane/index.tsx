@@ -1,14 +1,14 @@
 import type { editor } from "monaco-editor";
-import { Center, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { mdiCodeJson } from "@mdi/js";
 import { useMemo } from "react";
-import { useStoreValue } from "~/store";
 import { Panel } from "../Panel";
 import { Spacer } from "../Scaffold/Spacer";
 import Editor from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
 import { baseEditorConfig } from "~/util/editor";
 import { useActiveTab } from "~/hooks/tab";
+import { useIsLight } from "~/hooks/theme";
 
 interface DurationProps {
 	time: string;
@@ -27,6 +27,7 @@ interface PreviewProps {
 }
 
 function Preview(props: PreviewProps) {
+	const isLight = useIsLight();
 	
 	const setEditor = useStable((editor: editor.IStandaloneCodeEditor) => {
 		let ignoreEvent = false;
@@ -65,10 +66,10 @@ function Preview(props: PreviewProps) {
 	return (
 		<Editor
 			onMount={setEditor}
+			theme={isLight ? 'surrealist' : 'surrealist-dark'}
 			defaultLanguage="json"
 			value={contents}
 			options={options}
-			theme="surrealist"
 		/>
 	)
 }
