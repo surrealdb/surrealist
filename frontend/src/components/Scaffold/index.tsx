@@ -133,8 +133,15 @@ export function Scaffold() {
 		setSurreal(conn);
 	});
 
-	const sendQuery = useStable(async (e: MouseEvent) => {
-		e.stopPropagation();
+	const sendQuery = useStable(async (e?: MouseEvent) => {
+		e?.stopPropagation();
+
+		if (!isOnline) {
+			showNotification({
+				message: 'You must be connected to send a query',
+			});
+			return;
+		}
 
 		const query = tabInfo!.query;
 		const result = await surreal!.query(query);
@@ -221,7 +228,9 @@ export function Scaffold() {
 					<Box p="xs" className={classes.content}>
 						<PanelSplitter>
 							{/* <PanelSplitter direction={SplitDirection.Vertical}> */}
-								<QueryPane />
+								<QueryPane
+									onExecuteQuery={sendQuery}
+								/>
 								{/* <VariablesPane /> */}
 							{/* </PanelSplitter> */}
 							<ResultPane />

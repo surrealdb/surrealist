@@ -1,4 +1,4 @@
-import { editor } from "monaco-editor";
+import { editor, KeyCode, KeyMod } from "monaco-editor";
 import { mdiDatabase } from "@mdi/js";
 import Editor from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
@@ -9,7 +9,11 @@ import { Panel } from "../Panel";
 import { useMemo } from "react";
 import { baseEditorConfig } from "~/util/editor";
 
-export function QueryPane() {
+export interface QueryPaneProps {
+	onExecuteQuery: () => void;
+}
+
+export function QueryPane(props: QueryPaneProps) {
 	const activeTab = useActiveTab();
 
 	if (!activeTab) {
@@ -26,7 +30,17 @@ export function QueryPane() {
 	});
 
 	const setEditor = useStable((editor: editor.IStandaloneCodeEditor) => {
-		// TODO
+		editor.addAction({
+			id: 'run-query',
+			label: 'Run Query',
+			keybindings: [
+				KeyMod.CtrlCmd | KeyCode.Enter
+			],
+			run: () => {
+				props.onExecuteQuery();
+			}
+		})
+
 	});
 
 	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
