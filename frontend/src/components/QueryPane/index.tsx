@@ -49,14 +49,22 @@ export function QueryPane() {
 
 	return (
 		<Panel title="Query" icon={mdiDatabase}>
-			<Editor
-				onMount={setEditor}
-				value={activeTab?.query}
-				onChange={setQuery}
-				options={options}
-				theme="surrealist"
-				language="surrealql"
-			/>
+			<div
+				style={{
+					position: 'absolute',
+					insetBlock: 0,
+					insetInline: 24
+				}}
+			>
+				<Editor
+					onMount={setEditor}
+					value={activeTab?.query}
+					onChange={setQuery}
+					options={options}
+					theme="surrealist"
+					language="surrealql"
+				/>
+			</div>
 		</Panel>
 	)
 }

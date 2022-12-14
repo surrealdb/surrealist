@@ -1,11 +1,11 @@
 import type { editor } from "monaco-editor";
-import { Divider, Group, ScrollArea, Stack, Text, useMantineTheme } from "@mantine/core";
+import { Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { mdiCodeJson } from "@mdi/js";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { useStoreValue } from "~/store";
 import { Panel } from "../Panel";
 import { Spacer } from "../Scaffold/Spacer";
-import Editor, { Monaco } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
 
 interface DurationProps {
