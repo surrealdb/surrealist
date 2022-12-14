@@ -15,15 +15,14 @@
 
 ## About
 
-Surrealist is a simple Desktop based query playground for [SurrealDB](https://surrealdb.com/). Easily and quickly connect to any SurrealDB database in order to execute and preview query responses.
-
-While Surrealist is still in active development it is suitable for general use.
+Surrealist is a simple Desktop based query playground for [SurrealDB](https://surrealdb.com/). Easily connect to any SurrealDB database in order to execute and preview query responses.
 
 ## Features
-- Multi-tab query editing
-- Support for multiple queries in one request
-- Provides a clean and foldable view of your query result
-- SurrealQL syntax highlighting
+- 📌 Multi-tab query editing
+- 💫 Support for multiple queries in one request
+- 🔍 Provides a clean and foldable view of your query result
+- ⚡ SurrealQL syntax highlighting
+- ✏️ Define variables in a seperate panel
 
 ## Download
 You can download the latest version of Surrealist from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.
