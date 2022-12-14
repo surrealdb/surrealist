@@ -30,6 +30,9 @@ export function App() {
 					}
 				}}
 			/>
+
+			{/* See https://github.com/microsoft/monaco-editor/issues/2689 */}
+			<span style={{ fontFamily: 'JetBrains Mono' }} />
 		</MantineProvider>
 	)
 }
