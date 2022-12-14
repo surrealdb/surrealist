@@ -77,18 +77,14 @@ export function Settings() {
 						onChange={setColorScheme}
 					/>
 
-					<Paper
-						bg={isLight ? 'light.0' : 'dark.9'}
-						p="sm"
-					>
-						<Text color={isLight ? 'light.4' : 'dark.3'}>
-							Version {version} by {author}
-						</Text>
-					</Paper>
 					<Group>
 						<Button color="light" onClick={closeSettings}>
 							Close
 						</Button>
+						<Spacer />
+						<Text color={isLight ? 'light.4' : 'dark.3'}>
+							Version {version} by {author}
+						</Text>
 					</Group>
 				</Stack>
 			</Modal>
