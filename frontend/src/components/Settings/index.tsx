@@ -74,11 +74,7 @@ export function Settings() {
 					</Paper>
 					<Group>
 						<Button color="light" onClick={closeSettings}>
-							Back
-						</Button>
-						<Spacer />
-						<Button type="submit" disabled>
-							Save
+							Close
 						</Button>
 					</Group>
 				</Stack>

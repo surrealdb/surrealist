@@ -71,10 +71,6 @@ export function Scaffold() {
 
 	const closeEditingInfo = useStable(() => {
 		setEditingInfo(false);
-
-		if (isOnline) {
-			surreal?.close();
-		}
 	});
 
 	const saveInfo = useStable(() => {
@@ -84,6 +80,10 @@ export function Scaffold() {
 				...infoDetails
 			}
 		}));
+
+		if (isOnline) {
+			surreal?.close();
+		}
 
 		updateConfig();
 		closeEditingInfo();
@@ -331,7 +331,7 @@ export function Scaffold() {
 						/>
 						<Group>
 							<Button color="light" onClick={closeEditingInfo}>
-								Back
+								Close
 							</Button>
 							<Spacer />
 							<Button type="submit">
