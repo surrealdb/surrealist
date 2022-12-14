@@ -16,6 +16,8 @@ import { QueryPane } from '../QueryPane';
 import { useActiveTab } from '~/hooks/tab';
 import { ResultPane } from '../ResultPane';
 import { showNotification } from '@mantine/notifications';
+import { VariablesPane } from '../VariablesPane';
+import { SplitDirection } from '@devbookhq/splitter';
 
 export function Scaffold() {
 	const theme = useMantineTheme();
@@ -34,7 +36,7 @@ export function Scaffold() {
 			id: tabId,
 			name: `Tab ${tabList.length + 1}`,
 			query: '',
-			variables: {},
+			variables: '{}',
 			connection: {
 				endpoint: 'http://localhost:8000/',
 				username: 'root',
@@ -144,7 +146,8 @@ export function Scaffold() {
 		}
 
 		const query = tabInfo!.query;
-		const result = await surreal!.query(query);
+		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
+		const result = await surreal!.query(query, variables);
 
 		store.dispatch(actions.setResults(result));
 	});
@@ -227,12 +230,15 @@ export function Scaffold() {
 
 					<Box p="xs" className={classes.content}>
 						<PanelSplitter>
-							{/* <PanelSplitter direction={SplitDirection.Vertical}> */}
+							<PanelSplitter
+								direction={SplitDirection.Vertical}
+								initialSizes={[120]}
+							>
 								<QueryPane
 									onExecuteQuery={sendQuery}
 								/>
-								{/* <VariablesPane /> */}
-							{/* </PanelSplitter> */}
+								<VariablesPane />
+							</PanelSplitter>
 							<ResultPane />
 						</PanelSplitter>
 					</Box>

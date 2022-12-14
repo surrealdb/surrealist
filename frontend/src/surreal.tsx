@@ -17,7 +17,7 @@ export interface SurrealOptions {
 
 export interface SurrealHandle {
 	close(): void;
-	query(query: string): Promise<any>;
+	query(query: string, params?: Record<string, any>): Promise<any>;
 }
 
 type Request = [(data: any) => void, (error: any) => void];
@@ -73,8 +73,8 @@ export function createSurreal(options: SurrealOptions): SurrealHandle {
 	/**
 	 * Send a general query to the database
 	 */
-	const query = async (query: string) => {
-		return message('query', [query]);
+	const query = async (query: string, params: Record<string, any>) => {
+		return message('query', params ? [query, params] : [query]);
 	};
 
 	socket.addEventListener('open', async () => {

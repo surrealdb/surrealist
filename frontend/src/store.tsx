@@ -11,14 +11,14 @@ const mainSlice = createSlice({
 		knownTabs: [] as SurrealistTab[],
 		activeTab: null as string|null,
 		isPinned: false,
-		results: [] as any,
+		results: [] as any
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
 			const config = JSON.parse(action.payload.trim());
 
-			state.colorScheme = config.theme;
-			state.knownTabs = config.tabs;
+			state.colorScheme = config.theme || 'light';
+			state.knownTabs = config.tabs || [];
 		},
 
 		setColorScheme(state, action: PayloadAction<ColorScheme>) {

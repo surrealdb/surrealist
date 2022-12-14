@@ -26,6 +26,7 @@ loader.init().then(monaco => {
 		inherit: true,
 		rules: [
 			{ token: 'keyword', foreground: '#e600a4' },
+			{ token: 'param', foreground: '#e67a15' },
 		],
 		colors: {
 			'editorLineNumber.foreground': '#9BA9C6',
@@ -45,14 +46,15 @@ loader.init().then(monaco => {
 		],
 		tokenizer: {
 			root: [
-				[/@?[a-zA-Z][\w$]*/, {
+				[/\b\w+\b/, {
 					cases: {
 						'@keywords': 'keyword',
 						'@default': 'variable'
 					}
 				}],
 				[/".*?"/, 'string'],
-				[/(\/\/|#|--)/, 'comment']
+				[/(\/\/|#|--)/, 'comment'],
+				[/\$\w+/, 'param']
 			]
 		}
 	});

@@ -4,6 +4,6 @@ export interface SurrealistTab {
 	id: string;
 	name: string;
 	query: string;
-	variables: Record<string, string>;
+	variables: string;
 	connection: SurrealConnection;
 }
