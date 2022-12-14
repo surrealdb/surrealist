@@ -6,7 +6,7 @@ import { PanelSplitter } from '../PanelSplitter';
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { updateConfig, updateTitle } from '~/util/helpers';
 import { TabBar } from '../TabBar';
 import { Form } from '../Form';
@@ -25,6 +25,7 @@ export function Scaffold() {
 	const theme = useMantineTheme();
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
+	const autoConnect = useStoreValue(state => state.autoConnect);
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
@@ -90,8 +91,8 @@ export function Scaffold() {
 		closeEditingInfo();
 	});
 
-	const openConnection = useStable((e: MouseEvent) => {
-		e.stopPropagation();
+	const openConnection = useStable((e?: MouseEvent) => {
+		e?.stopPropagation();
 
 		if (isConnecting) {
 			return;
@@ -177,6 +178,12 @@ export function Scaffold() {
 		setIsConnecting(false);
 		setIsOnline(false);
 	});
+
+	useEffect(() => {
+		if (autoConnect) {
+			openConnection();
+		}
+	}, [autoConnect, activeTab]);
 
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 

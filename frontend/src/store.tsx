@@ -11,6 +11,7 @@ const mainSlice = createSlice({
 		knownTabs: [] as SurrealistTab[],
 		activeTab: null as string|null,
 		isPinned: false,
+		autoConnect: true
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -18,10 +19,15 @@ const mainSlice = createSlice({
 
 			state.colorScheme = config.theme || 'light';
 			state.knownTabs = config.tabs || [];
+			state.autoConnect = config.autoConnect || true;
 		},
 
 		setColorScheme(state, action: PayloadAction<ColorScheme>) {
 			state.colorScheme = action.payload;
+		},
+
+		setAutoConnect(state, action: PayloadAction<boolean>) {
+			state.autoConnect = action.payload;
 		},
 
 		addTab(state, action: PayloadAction<SurrealistTab>) {

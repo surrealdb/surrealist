@@ -1,4 +1,4 @@
-import { Button, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Text, Title, useMantineColorScheme } from "@mantine/core";
+import { Button, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Switch, Text, Title, useMantineColorScheme } from "@mantine/core";
 import { mdiCog } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -16,6 +16,7 @@ const THEMES = [
 export function Settings() {
 	const isLight = useIsLight();
 	const colorScheme = useStoreValue(state => state.colorScheme);
+	const autoConnect = useStoreValue(state => state.autoConnect);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -32,6 +33,11 @@ export function Settings() {
 	const setColorScheme = useStable((scheme: ColorScheme) => {
 		store.dispatch(actions.setColorScheme(scheme));
 		updateConfig();
+	});
+
+	const setAutoConnect = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setAutoConnect(e.target.checked));
+		updateConfig();	
 	});
 
 	return (
@@ -58,12 +64,19 @@ export function Settings() {
 				}
 			>
 				<Stack>
+					<Switch
+						label="Auto connect"
+						checked={autoConnect}
+						onChange={setAutoConnect}
+					/>
+
 					<Select
 						data={THEMES}
 						label="Theme"
 						value={colorScheme}
 						onChange={setColorScheme}
 					/>
+
 					<Paper
 						bg={isLight ? 'light.0' : 'dark.9'}
 						p="sm"
