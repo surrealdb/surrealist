@@ -109,6 +109,10 @@ export function Scaffold() {
 				setIsOnline(false)
 			},
 			onError(code, message) {
+				if (code === 1005) {
+					return; // Client closed connection
+				}
+
 				const reason = `${message || 'Unknown reason'} (${code})`;
 
 				showNotification({
@@ -198,6 +202,7 @@ export function Scaffold() {
 									color="surreal"
 									style={{ borderRadius: 0 }}
 									onClick={sendQuery}
+									title="Send Query (Ctrl+Enter)"
 								>
 									Send Query
 								</Button>
