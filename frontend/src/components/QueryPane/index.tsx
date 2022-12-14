@@ -7,6 +7,7 @@ import { actions, store } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "../Panel";
 import { useMemo } from "react";
+import { baseEditorConfig } from "~/util/editor";
 
 export function QueryPane() {
 	const activeTab = useActiveTab();
@@ -30,20 +31,9 @@ export function QueryPane() {
 
 	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
 		return {
-			scrollBeyondLastLine: false,
-			overviewRulerLanes: 0,
-			fontFamily: 'JetBrains Mono',
-			renderLineHighlight: 'none',
-			lineDecorationsWidth: 12,
-			lineNumbersMinChars: 1,
-			glyphMargin: false,
-			theme: 'surrealist',
-			wordWrap: 'on',
+			...baseEditorConfig,
 			wrappingStrategy: 'advanced',
-			automaticLayout: true,
-			minimap: {
-				enabled: false
-			}
+			wordWrap: 'on',
 		}
 	}, []);
 

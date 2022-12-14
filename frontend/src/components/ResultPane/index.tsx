@@ -7,6 +7,7 @@ import { Panel } from "../Panel";
 import { Spacer } from "../Scaffold/Spacer";
 import Editor from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
+import { baseEditorConfig } from "~/util/editor";
 
 interface DurationProps {
 	time: string;
@@ -54,20 +55,9 @@ function Preview(props: PreviewProps) {
 
 	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
 		return {
+			...baseEditorConfig,
 			readOnly: true,
-			scrollBeyondLastLine: false,
-			overviewRulerLanes: 0,
-			fontFamily: 'JetBrains Mono',
-			renderLineHighlight: 'none',
-			lineDecorationsWidth: 12,
-			lineNumbersMinChars: 1,
-			glyphMargin: false,
-			theme: 'surrealist',
-			wordWrap: 'on',
-			wrappingStrategy: 'advanced',
-			minimap: {
-				enabled: false
-			}
+			wordWrap: 'off',
 		}
 	}, []);
 
