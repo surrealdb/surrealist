@@ -1,5 +1,5 @@
 import type { editor } from "monaco-editor";
-import { Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Center, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { mdiCodeJson } from "@mdi/js";
 import { useMemo } from "react";
 import { useStoreValue } from "~/store";
@@ -8,6 +8,7 @@ import { Spacer } from "../Scaffold/Spacer";
 import Editor from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
 import { baseEditorConfig } from "~/util/editor";
+import { useActiveTab } from "~/hooks/tab";
 
 interface DurationProps {
 	time: string;
@@ -73,7 +74,8 @@ function Preview(props: PreviewProps) {
 }
 
 export function ResultPane() {
-	const results = useStoreValue(state => state.results);
+	const activeTab = useActiveTab();
+	const results = activeTab?.lastResponse || [];
 
 	return (
 		<Panel

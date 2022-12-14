@@ -37,6 +37,7 @@ export function Scaffold() {
 			name: `Tab ${tabList.length + 1}`,
 			query: '',
 			variables: '{}',
+			lastResponse: [],
 			connection: {
 				endpoint: 'http://localhost:8000/',
 				username: 'root',
@@ -147,9 +148,14 @@ export function Scaffold() {
 
 		const query = tabInfo!.query;
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
-		const result = await surreal!.query(query, variables);
+		const response = await surreal!.query(query, variables);
 
-		store.dispatch(actions.setResults(result));
+		store.dispatch(actions.updateTab({
+			id: activeTab!,
+			lastResponse: response
+		}));
+
+		updateConfig();
 	});
 
 	const closeConnection = useStable(() => {

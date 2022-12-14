@@ -6,4 +6,5 @@ export interface SurrealistTab {
 	query: string;
 	variables: string;
 	connection: SurrealConnection;
+	lastResponse: any;
 }

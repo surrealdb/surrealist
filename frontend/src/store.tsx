@@ -11,7 +11,6 @@ const mainSlice = createSlice({
 		knownTabs: [] as SurrealistTab[],
 		activeTab: null as string|null,
 		isPinned: false,
-		results: [] as any
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -61,10 +60,7 @@ const mainSlice = createSlice({
 			state.isPinned = !state.isPinned;
 			TogglePinned();
 		},
-
-		setResults(state, action: PayloadAction<any>) {
-			state.results = action.payload;
-		}
+		
 	}
 });
 
