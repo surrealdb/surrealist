@@ -113,7 +113,11 @@ export function ResultPane() {
 									<Divider mb="xs" />
 								</>
 							)}
-							{result.result.length > 0 ? (
+							{result.status == 'ERR' ? (
+								<Text color="red">
+									{result.detail}
+								</Text>
+							) : result.result?.length > 0 ? (
 								<Text ff="monospace">
 									<Preview result={result.result} />
 								</Text>
