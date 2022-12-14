@@ -1,12 +1,37 @@
 import Splitter, { SplitProps, SplitDirection } from '@devbookhq/splitter';
+import { useStable } from '~/hooks/stable';
+import { useActiveTab } from '~/hooks/tab';
 import { useIsLight } from '~/hooks/theme';
+import { actions, store } from '~/store';
+import { updateConfig } from '~/util/helpers';
 import classes from './style.module.scss';
 
-export function PanelSplitter(props: SplitProps) {
+export interface PanelSplitterProps extends SplitProps {
+	id: string;
+}
+
+export function PanelSplitter(props: PanelSplitterProps) {
 	const isLight = useIsLight();
+	const tabInfo = useActiveTab();
 	const draggerClass = props.direction === SplitDirection.Vertical
 		? classes.contentDraggerVertical
 		: classes.contentDraggerHorizontal;
+
+	const handleResize = useStable(async (_: number, sizes: number[]) => {
+		if (tabInfo) {
+			store.dispatch(actions.updateTab({
+				id: tabInfo.id,
+				layout: {
+					...tabInfo.layout,
+					[props.id]: sizes
+				}
+			}));
+
+			await updateConfig();
+		}
+	});
+
+	const sizes = tabInfo?.layout?.[props.id] || props.initialSizes;
 
 	return (
 		<div
@@ -18,9 +43,11 @@ export function PanelSplitter(props: SplitProps) {
 			} as any}
 		>
 			<Splitter
+				{...props}
 				gutterClassName={classes.contentGutter}
 				draggerClassName={draggerClass}
-				{...props}
+				onResizeFinished={handleResize}
+				initialSizes={sizes}
 			>
 				{props.children}
 			</Splitter>

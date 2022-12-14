@@ -40,6 +40,7 @@ export function Scaffold() {
 			query: '',
 			variables: '{}',
 			lastResponse: [],
+			layout: {},
 			connection: {
 				endpoint: 'http://localhost:8000/',
 				username: 'root',
@@ -249,8 +250,9 @@ export function Scaffold() {
 					</Group>
 
 					<Box p="xs" className={classes.content}>
-						<PanelSplitter>
+						<PanelSplitter id="input-result">
 							<PanelSplitter
+								id="query-variables"
 								direction={SplitDirection.Vertical}
 								initialSizes={[120]}
 							>

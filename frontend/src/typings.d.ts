@@ -7,4 +7,5 @@ export interface SurrealistTab {
 	variables: string;
 	connection: SurrealConnection;
 	lastResponse: any;
+	layout: any;
 }
