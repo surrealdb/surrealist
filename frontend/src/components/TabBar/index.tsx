@@ -73,29 +73,37 @@ export function TabBar(props: TabBarProps) {
 	});
 	
 	return (
-		<Group p="xs" spacing="sm" bg={isLight ? 'white' : 'dark.7'}>
+		<Group
+			p="xs"
+			spacing="sm"
+			bg={isLight ? 'white' : 'dark.7'}
+			align="start"
+			noWrap
+		>
 
-			{tabList.map(tab => (
-				<ViewTab
-					key={tab.id}
-					active={tab.id == activeTab}
-					onDismiss={() => removeTab(tab.id)}
-					onRename={() => openTabEditor(tab.id)}
-					onActivate={() => selectTab(tab.id)}
+			<Group>
+				{tabList.map(tab => (
+					<ViewTab
+						key={tab.id}
+						active={tab.id == activeTab}
+						onDismiss={() => removeTab(tab.id)}
+						onRename={() => openTabEditor(tab.id)}
+						onActivate={() => selectTab(tab.id)}
+					>
+						{tab.name}
+					</ViewTab>
+				))}
+
+				<Button
+					px="xs"
+					variant="subtle"
+					color="light"
+					leftIcon={<Icon path={mdiPlus} />}
+					onClick={props.onCreateTab}
 				>
-					{tab.name}
-				</ViewTab>
-			))}
-
-			<Button
-				px="xs"
-				variant="subtle"
-				color="light"
-				leftIcon={<Icon path={mdiPlus} />}
-				onClick={props.onCreateTab}
-			>
-				New tab
-			</Button>
+					New tab
+				</Button>
+			</Group>
 
 			<Spacer />
 
