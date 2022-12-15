@@ -11,7 +11,7 @@ import { updateConfig, updateTitle } from '~/util/helpers';
 import { TabBar } from '../TabBar';
 import { Form } from '../Form';
 import { useImmer } from 'use-immer';
-import { createSurreal, SurrealConnection, SurrealHandle } from '~/surreal';
+import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { QueryPane } from '../QueryPane';
 import { useActiveTab } from '~/hooks/tab';
 import { ResultPane } from '../ResultPane';
@@ -30,7 +30,6 @@ export function Scaffold() {
 
 	const [isOnline, setIsOnline] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
-	const [surreal, setSurreal] = useState<SurrealHandle | null>();
 
 	const createNewTab = useStable(async () => {
 		const tabId = uid(5);
@@ -75,22 +74,6 @@ export function Scaffold() {
 		setEditingInfo(false);
 	});
 
-	const saveInfo = useStable(async () => {
-		store.dispatch(actions.updateTab({
-			id: activeTab!,
-			connection: {
-				...infoDetails
-			}
-		}));
-
-		if (isOnline) {
-			surreal?.close();
-		}
-
-		await updateConfig();
-		closeEditingInfo();
-	});
-
 	const openConnection = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
 
@@ -105,7 +88,7 @@ export function Scaffold() {
 			return;
 		}
 
-		const conn = createSurreal({
+		openSurreal({
 			connection: tabInfo.connection,
 			onConnect() {
 				setIsConnecting(false);
@@ -134,10 +117,9 @@ export function Scaffold() {
 					)
 				});
 			},
-		})
+		});
 
 		setIsConnecting(true);
-		setSurreal(conn);
 	});
 
 	const sendQuery = useStable(async (e?: MouseEvent) => {
@@ -154,7 +136,7 @@ export function Scaffold() {
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
 		
 		try {
-			const response = await surreal!.query(query, variables);
+			const response = await getSurreal()?.query(query, variables);
 
 			store.dispatch(actions.updateTab({
 				id: activeTab!,
@@ -173,8 +155,28 @@ export function Scaffold() {
 		await updateConfig();
 	});
 
+	const saveInfo = useStable(async () => {
+		store.dispatch(actions.updateTab({
+			id: activeTab!,
+			connection: {
+				...infoDetails
+			}
+		}));
+
+		if (isOnline) {
+			getSurreal()?.close();
+		}
+
+		await updateConfig();
+		closeEditingInfo();
+
+		if (autoConnect) {
+			openConnection();
+		}
+	});
+
 	const closeConnection = useStable(() => {
-		surreal?.close();
+		getSurreal()?.close();
 		setIsConnecting(false);
 		setIsOnline(false);
 	});
@@ -264,7 +266,6 @@ export function Scaffold() {
 								initialSizes={[120]}
 							>
 								<QueryPane
-									surreal={surreal!}
 									isConnected={isOnline}
 									onExecuteQuery={sendQuery}
 								/>

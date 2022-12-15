@@ -22,7 +22,7 @@ export interface SurrealHandle {
 
 type Request = [(data: any) => void, (error: any) => void];
 
-export function createSurreal(options: SurrealOptions): SurrealHandle {
+function createSurreal(options: SurrealOptions): SurrealHandle {
 	const endpoint = new URL('rpc', options.connection.endpoint.replace('http', 'ws'));
 	const socket = new WebSocket(endpoint.toString());
 	const requestMap = new Map<string, Request>();
@@ -135,4 +135,21 @@ export function createSurreal(options: SurrealOptions): SurrealHandle {
 		close,
 		query,
 	}
+}
+
+let instance: SurrealHandle | null = null;
+
+/**
+ * Open a connection to the given database
+ */
+export function openSurreal(options: SurrealOptions) {
+	instance?.close();
+	instance = createSurreal(options);
+}
+
+/**
+ * Retrieve the current database connection
+ */
+export function getSurreal(): SurrealHandle | null {
+	return instance;
 }

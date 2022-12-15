@@ -2,6 +2,7 @@ import { TogglePinned } from "$/go/main/App";
 import { ColorScheme } from "@mantine/core";
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { SurrealHandle } from "./surreal";
 import { SurrealistTab } from "./typings";
 
 const mainSlice = createSlice({

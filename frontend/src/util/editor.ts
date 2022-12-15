@@ -1,5 +1,8 @@
+import { Modal } from "@mantine/core";
 import { Monaco } from "@monaco-editor/react";
-import { editor } from "monaco-editor";
+import { editor, languages } from "monaco-editor";
+import { store } from "~/store";
+import { getSurreal } from "~/surreal";
 
 export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	scrollBeyondLastLine: false,
@@ -72,6 +75,39 @@ export function initializeEditor(monaco: Monaco) {
 				[/(\/\/|#|--).+/, 'comment'],
 				[/\$\w+/, 'param']
 			]
+		}
+	});
+
+	monaco.languages.registerCompletionItemProvider('surrealql', {
+		triggerCharacters: [' '],
+		provideCompletionItems: async (model, position) => {
+			const { tableSuggest } = store.getState();
+			const surreal = getSurreal();
+
+			if (!tableSuggest || !surreal) {
+				return undefined;
+			}
+
+			const linePrefix = model.getLineContent(position.lineNumber).substring(0, position.column);
+
+			if (!linePrefix.toUpperCase().endsWith('FROM ')) {
+				return undefined;
+			}
+
+			const response = await surreal.query('INFO FOR DB');
+			const result = response[0].result;
+			const tables = Object.keys(result.tb);
+
+			const entries = tables.map(table => ({
+				label: table,
+				insertText: table,
+				kind: languages.CompletionItemKind.Class,
+				range: monaco.Range.fromPositions(position, position)
+			}));
+
+			return {
+				suggestions: entries
+			}
 		}
 	});
 }
