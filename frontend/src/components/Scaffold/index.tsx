@@ -264,6 +264,8 @@ export function Scaffold() {
 								initialSizes={[120]}
 							>
 								<QueryPane
+									surreal={surreal!}
+									isConnected={isOnline}
 									onExecuteQuery={sendQuery}
 								/>
 								<VariablesPane />
