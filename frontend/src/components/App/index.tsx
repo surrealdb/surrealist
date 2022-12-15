@@ -27,6 +27,9 @@ export function App() {
 					'body': {
 						backgroundColor: isLight ? '#F4F5FB' : '#09090a',
 						fontWeight: 500
+					},
+					'.__dbk__container': {
+						overflow: 'visible'
 					}
 				}}
 			/>
