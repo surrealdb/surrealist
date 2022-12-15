@@ -57,6 +57,7 @@ export function Settings() {
 			<Button
 				color={isLight ? 'light.0' : 'dark.4'}
 				onClick={openSettings}
+				title="Settings"
 				px="xs"
 			>
 				<Icon

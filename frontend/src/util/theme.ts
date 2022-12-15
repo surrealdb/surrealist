@@ -37,7 +37,14 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 				defaultProps: {
 					centered: true,
 					exitTransitionDuration: 100,
-					overlayColor: '#12111C'
+					overlayColor: '#12111C',
+					overlayBlur: 1
+				}
+			},
+			Drawer: {
+				defaultProps: {
+					overlayColor: '#12111C',
+					overlayBlur: 1
 				}
 			},
 			Menu: {

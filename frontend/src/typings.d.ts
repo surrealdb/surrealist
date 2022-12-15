@@ -9,3 +9,9 @@ export interface SurrealistTab {
 	lastResponse: any;
 	layout: any;
 }
+
+export interface HistoryEntry {
+	query: string;
+	timestamp: number;
+	tabName: string;
+}

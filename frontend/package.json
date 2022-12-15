@@ -18,6 +18,7 @@
 		"@mdi/js": "^7.0.96",
 		"@monaco-editor/react": "^4.4.6",
 		"@reduxjs/toolkit": "^1.9.1",
+		"dayjs": "^1.11.7",
 		"immer": "^9.0.16",
 		"monaco-editor": "^0.34.1",
 		"radash": "^9.5.0",

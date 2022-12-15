@@ -1,11 +1,12 @@
-import { Group, Button, Modal, TextInput } from "@mantine/core";
-import { mdiCog, mdiPlus, mdiPinOff, mdiPin } from "@mdi/js";
+import { Group, Button, Modal, TextInput, Drawer, Title } from "@mantine/core";
+import { mdiCog, mdiPlus, mdiPinOff, mdiPin, mdiHistory } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, actions, useStoreValue } from "~/store";
 import { updateConfig, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
+import { History } from "../History";
 import { Icon } from "../Icon";
 import { Spacer } from "../Scaffold/Spacer";
 import { Settings } from "../Settings";
@@ -73,7 +74,6 @@ export function TabBar(props: TabBarProps) {
 	
 	return (
 		<Group p="xs" spacing="sm" bg={isLight ? 'white' : 'dark.7'}>
-			<Settings />
 
 			{tabList.map(tab => (
 				<ViewTab
@@ -99,9 +99,12 @@ export function TabBar(props: TabBarProps) {
 
 			<Spacer />
 
+			<History />
+			
 			<Button
 				px="xs"
 				color={isLight ? 'light.0' : 'dark.4'}
+				title={isPinned ? 'Unpin window' : 'Pin window'}
 				onClick={togglePinned}
 			>
 				<Icon
@@ -110,7 +113,8 @@ export function TabBar(props: TabBarProps) {
 				/>
 			</Button>
 
-			{/* ANCHOR Tab rename modal */}
+			<Settings />
+
 			<Modal
 				opened={!!editingTab}
 				onClose={closeEditingTab}
@@ -132,6 +136,7 @@ export function TabBar(props: TabBarProps) {
 					</Group>
 				</Form>
 			</Modal>
+		
 		</Group>
 	);
 }

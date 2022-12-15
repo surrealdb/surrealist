@@ -2,8 +2,7 @@ import { TogglePinned } from "$/go/main/App";
 import { ColorScheme } from "@mantine/core";
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
-import { SurrealHandle } from "./surreal";
-import { SurrealistTab } from "./typings";
+import { HistoryEntry, SurrealistTab } from "./typings";
 
 const mainSlice = createSlice({
 	name: 'main',
@@ -15,6 +14,7 @@ const mainSlice = createSlice({
 		autoConnect: true,
 		tableSuggest: true,
 		wordWrap: true,
+		history: [] as HistoryEntry[],
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -25,6 +25,7 @@ const mainSlice = createSlice({
 			state.autoConnect = config.autoConnect ?? true;
 			state.tableSuggest = config.tableSuggest ?? true;
 			state.wordWrap = config.wordWrap ?? true;
+			state.history = config.history || [];
 		},
 
 		setColorScheme(state, action: PayloadAction<ColorScheme>) {
@@ -78,6 +79,22 @@ const mainSlice = createSlice({
 		togglePinned(state) {
 			state.isPinned = !state.isPinned;
 			TogglePinned();
+		},
+
+		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {
+			if (state.history.length > 0 && state.history[0].query === action.payload.query) {
+				return;
+			}
+			
+			state.history.unshift(action.payload);
+
+			if (state.history.length > 50) {
+				state.history.pop();
+			}
+		},
+
+		clearHistory(state) {
+			state.history = [];
 		},
 		
 	}

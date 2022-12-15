@@ -5,6 +5,10 @@ import { App } from './components/App';
 import { LoadConfig } from '$/go/main/App';
 import { loader } from '@monaco-editor/react';
 import { initializeEditor } from './util/editor';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from 'dayjs';
+
+dayjs.extend(relativeTime);
 
 // Load existing config
 LoadConfig().then(config => {

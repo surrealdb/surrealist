@@ -132,7 +132,7 @@ export function Scaffold() {
 			return;
 		}
 
-		const query = tabInfo!.query;
+		const { query, name } = tabInfo!;
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
 		
 		try {
@@ -151,6 +151,12 @@ export function Scaffold() {
 				}]
 			}));
 		}
+
+		store.dispatch(actions.addHistoryEntry({
+			query: query,
+			tabName: name,
+			timestamp: Date.now()
+		}));
 
 		await updateConfig();
 	});
