@@ -80,7 +80,7 @@ export function initializeEditor(monaco: Monaco) {
 
 	monaco.languages.registerCompletionItemProvider('surrealql', {
 		triggerCharacters: [' '],
-		provideCompletionItems: async (model, position) => {
+		provideCompletionItems: async (model, position, context) => {
 			const { tableSuggest } = store.getState();
 			const surreal = getSurreal();
 
@@ -89,8 +89,9 @@ export function initializeEditor(monaco: Monaco) {
 			}
 
 			const linePrefix = model.getLineContent(position.lineNumber).substring(0, position.column);
+			const isAuto = context.triggerKind === languages.CompletionTriggerKind.TriggerCharacter;
 
-			if (!linePrefix.toUpperCase().endsWith('FROM ')) {
+			if (isAuto && !linePrefix.toUpperCase().endsWith('FROM ')) {
 				return undefined;
 			}
 
