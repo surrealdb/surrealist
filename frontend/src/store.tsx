@@ -14,6 +14,7 @@ const mainSlice = createSlice({
 		isPinned: false,
 		autoConnect: true,
 		tableSuggest: true,
+		wordWrap: true,
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -23,6 +24,7 @@ const mainSlice = createSlice({
 			state.knownTabs = config.tabs || [];
 			state.autoConnect = config.autoConnect ?? true;
 			state.tableSuggest = config.tableSuggest ?? true;
+			state.wordWrap = config.wordWrap ?? true;
 		},
 
 		setColorScheme(state, action: PayloadAction<ColorScheme>) {
@@ -35,6 +37,10 @@ const mainSlice = createSlice({
 		
 		setTableSuggest(state, action: PayloadAction<boolean>) {
 			state.tableSuggest = action.payload;
+		},
+
+		setWordWrap(state, action: PayloadAction<boolean>) {
+			state.wordWrap = action.payload;
 		},
 
 		addTab(state, action: PayloadAction<SurrealistTab>) {

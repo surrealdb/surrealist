@@ -26,12 +26,13 @@ export function updateTitle() {
  * Update the config on disk with the current state of the app
  */
 export async function updateConfig() {
-	const { colorScheme, knownTabs, autoConnect, tableSuggest } = store.getState();
+	const { colorScheme, knownTabs, autoConnect, tableSuggest, wordWrap } = store.getState();
 
 	return SaveConfig(JSON.stringify({
 		theme: colorScheme,
 		tabs: knownTabs,
 		autoConnect: autoConnect,
-		tableSuggest: tableSuggest
+		tableSuggest: tableSuggest,
+		wordWrap: wordWrap,
 	}));
 }

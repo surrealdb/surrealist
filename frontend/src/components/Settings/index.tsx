@@ -18,6 +18,7 @@ export function Settings() {
 	const colorScheme = useStoreValue(state => state.colorScheme);
 	const autoConnect = useStoreValue(state => state.autoConnect);
 	const tableSuggest = useStoreValue(state => state.tableSuggest);
+	const wordWrap = useStoreValue(state => state.wordWrap);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -43,6 +44,11 @@ export function Settings() {
 
 	const setTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setTableSuggest(e.target.checked));
+		updateConfig();
+	});
+
+	const setWordWrap = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setWordWrap(e.target.checked));
 		updateConfig();
 	});
 
@@ -80,6 +86,12 @@ export function Settings() {
 						label="Suggest table names"
 						checked={tableSuggest}
 						onChange={setTableSuggest}
+					/>
+
+					<Checkbox
+						label="Wrap query results"
+						checked={wordWrap}
+						onChange={setWordWrap}
 					/>
 
 					<Select

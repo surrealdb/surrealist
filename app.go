@@ -10,7 +10,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-const DEFAULT_CONFIG = "{\"theme\":\"light\",\"autoConnect\":true,\"tableSuggest\":true,\"tabs\":[]}"
+const DEFAULT_CONFIG = "{\"theme\":\"light\",\"autoConnect\":true,\"tableSuggest\":true,\"wordWrap\":true,\"tabs\":[]}"
 
 // App struct
 type App struct {

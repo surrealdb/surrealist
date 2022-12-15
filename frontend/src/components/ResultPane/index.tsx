@@ -10,6 +10,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
 import { Icon } from "../Icon";
+import { useStoreValue } from "~/store";
 
 interface PreviewProps {
 	result: any;
@@ -17,6 +18,7 @@ interface PreviewProps {
 
 function Preview(props: PreviewProps) {
 	const isLight = useIsLight();
+	const wordWrap = useStoreValue(state => state.wordWrap);
 
 	const contents = useMemo(() => {
 		return JSON.stringify(props.result, null, 4);
@@ -26,9 +28,9 @@ function Preview(props: PreviewProps) {
 		return {
 			...baseEditorConfig,
 			readOnly: true,
-			wordWrap: 'off'
+			wordWrap: wordWrap ? 'on' : 'off'
 		}
-	}, []);
+	}, [wordWrap]);
 
 	return (
 		<Editor
