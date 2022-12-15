@@ -96,13 +96,14 @@ export function History() {
 							>
 								<Text
 									ff="JetBrains Mono"
+									c={isLight ? 'black' : 'white'}
 									lineClamp={3}
 									weight={600}
 								>
 									{entry.query}
 								</Text>
 								<Text
-									c={isLight ? 'light.3' : 'white'}
+									c={isLight ? 'light.3' : 'light.1'}
 									mt={6}
 								>
 									{dayjs(entry.timestamp).fromNow()}
