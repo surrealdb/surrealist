@@ -24,6 +24,7 @@ Surrealist is a simple Desktop based query playground for [SurrealDB](https://su
 - 💫 Support for multiple queries in one request
 - ✏️ Define variables in a seperate panel
 - 🔍 A clean and foldable view of your query results
+- 📜 Query history drawer
 
 ## Download
 You can download the latest version of Surrealist from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.

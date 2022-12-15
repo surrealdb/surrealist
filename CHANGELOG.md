@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.2 - Query history
+- Query history drawer
+- Result wrapping setting
+- Ctrl+Space to suggest table names at any time
+- Various UI fixes
+
 ## 1.1.1 - UX Improvements
 - Fixed indentation issues
 - Improved query result consistency
