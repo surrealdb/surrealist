@@ -1,4 +1,4 @@
-import { Button, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Switch, Text, Title, useMantineColorScheme } from "@mantine/core";
+import { Button, Checkbox, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Switch, Text, Title, useMantineColorScheme } from "@mantine/core";
 import { mdiCog } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -17,6 +17,7 @@ export function Settings() {
 	const isLight = useIsLight();
 	const colorScheme = useStoreValue(state => state.colorScheme);
 	const autoConnect = useStoreValue(state => state.autoConnect);
+	const tableSuggest = useStoreValue(state => state.tableSuggest);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -38,6 +39,11 @@ export function Settings() {
 	const setAutoConnect = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setAutoConnect(e.target.checked));
 		updateConfig();	
+	});
+
+	const setTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setTableSuggest(e.target.checked));
+		updateConfig();
 	});
 
 	return (
@@ -64,10 +70,16 @@ export function Settings() {
 				}
 			>
 				<Stack>
-					<Switch
+					<Checkbox
 						label="Auto connect"
 						checked={autoConnect}
 						onChange={setAutoConnect}
+					/>
+
+					<Checkbox
+						label="Suggest table names"
+						checked={tableSuggest}
+						onChange={setTableSuggest}
 					/>
 
 					<Select

@@ -3,7 +3,7 @@ import { mdiDatabase } from "@mdi/js";
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/tab";
-import { actions, store } from "~/store";
+import { actions, store, useStoreValue } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "../Panel";
 import { useMemo, useRef } from "react";
@@ -52,6 +52,12 @@ export function QueryPane(props: QueryPaneProps) {
 		monaco!.languages.registerCompletionItemProvider('surrealql', {
 			triggerCharacters: [' '],
 			provideCompletionItems: async (model, position) => {
+				const tableSuggest = store.getState().tableSuggest;
+
+				if (!tableSuggest) {
+					return undefined;
+				}
+
 				const linePrefix = model.getLineContent(position.lineNumber).substring(0, position.column);
 
 				if (!linePrefix.toUpperCase().endsWith('FROM ')) {
