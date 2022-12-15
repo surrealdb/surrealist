@@ -240,8 +240,8 @@ export function Scaffold() {
 							{isOnline ? (
 								<Button
 									color="surreal"
-									style={{ borderRadius: 0 }}
 									onClick={sendQuery}
+									className={classes.sendButton}
 									title="Send Query (Ctrl+Enter)"
 								>
 									Send Query

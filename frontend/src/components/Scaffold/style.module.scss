@@ -27,3 +27,8 @@
 .empty-image {
 	filter: grayscale(100%) opacity(0.15);
 }
+
+.send-button {
+	border-radius: 0;
+	transform: none !important;
+}
