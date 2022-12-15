@@ -42,12 +42,7 @@ function Preview(props: PreviewProps) {
 
 export function ResultPane() {
 	const activeTab = useActiveTab();
-	const results = (activeTab?.lastResponse || []).map((res: any) => {
-		return {
-			...res,
-			result: Array.isArray(res.result) ? res.result : [res.result]
-		};
-	});
+	const results = activeTab?.lastResponse || [];
 
 	const [resultTab, setResultTab] = useState<string|null>(null);
 	const result = results[parseInt(resultTab || '0')];
@@ -113,12 +108,12 @@ export function ResultPane() {
 							<Text color="red">
 								{result.detail}
 							</Text>
-						) : result.result?.length > 0 ? (
-							<Preview result={result.result} />
-						) : (
+						) : result.result?.length === 0 ? (
 							<Text color="light.4">
 								No results found for query
 							</Text>
+						) : (
+							<Preview result={result.result} />
 						)}
 					</>
 				)}
