@@ -1,11 +1,9 @@
 import type { editor } from "monaco-editor";
-import { Divider, Group, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
-import { mdiClock, mdiCodeJson, mdiListBox, mdiTable, mdiTableRow } from "@mdi/js";
+import { Group, Tabs, Text } from "@mantine/core";
+import { mdiClock, mdiCodeJson, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import { Panel } from "../Panel";
-import { Spacer } from "../Scaffold/Spacer";
 import Editor from "@monaco-editor/react";
-import { useStable } from "~/hooks/stable";
 import { baseEditorConfig } from "~/util/editor";
 import { useActiveTab } from "~/hooks/tab";
 import { useIsLight } from "~/hooks/theme";
@@ -44,7 +42,12 @@ function Preview(props: PreviewProps) {
 
 export function ResultPane() {
 	const activeTab = useActiveTab();
-	const results = activeTab?.lastResponse || [];
+	const results = (activeTab?.lastResponse || []).map((res: any) => {
+		return {
+			...res,
+			result: Array.isArray(res.result) ? res.result : [res.result]
+		};
+	});
 
 	const [resultTab, setResultTab] = useState<string|null>(null);
 	const result = results[parseInt(resultTab || '0')];
@@ -60,7 +63,7 @@ export function ResultPane() {
 			icon={mdiCodeJson}
 			rightSection={
 				<Group align="center">
-					{result?.result && (
+					{result?.result?.length > 0 && (
 						<>
 							<Icon color="light.4" path={mdiTable} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
