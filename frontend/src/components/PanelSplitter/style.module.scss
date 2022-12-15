@@ -9,6 +9,7 @@
 	height: 30px !important;
 	position: absolute;
 	border-radius: 100px !important;
+	z-index: 1;
 	
 	&::after {
 		content: '';
