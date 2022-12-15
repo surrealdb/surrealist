@@ -5,8 +5,8 @@
 .content-dragger-vertical,
 .content-dragger-horizontal {
 	background-color: var(--dragger-color);
-	width: 30px !important;
-	height: 30px !important;
+	width: 22px !important;
+	height: 22px !important;
 	position: absolute;
 	border-radius: 100px !important;
 	z-index: 1;
@@ -27,5 +27,6 @@
 
 .content-dragger-vertical::after {
 	background-image: url(~/assets/dragger-vertical.svg);
-	background-size: 35%;
+	background-size: 36%;
+	background-position: 7px;
 }
