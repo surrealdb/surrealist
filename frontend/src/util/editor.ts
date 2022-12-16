@@ -78,6 +78,7 @@ export function initializeEditor(monaco: Monaco) {
 		}
 	});
 
+	// table intellisense
 	monaco.languages.registerCompletionItemProvider('surrealql', {
 		triggerCharacters: [' '],
 		provideCompletionItems: async (model, position, context) => {
@@ -99,7 +100,7 @@ export function initializeEditor(monaco: Monaco) {
 			const result = response[0].result;
 			const tables = Object.keys(result.tb);
 
-			const entries = tables.map(table => ({
+			const suggestions = tables.map(table => ({
 				label: table,
 				insertText: table,
 				kind: languages.CompletionItemKind.Class,
@@ -107,7 +108,40 @@ export function initializeEditor(monaco: Monaco) {
 			}));
 
 			return {
-				suggestions: entries
+				suggestions
+			}
+		}
+	});
+
+	// variable intellisense
+	monaco.languages.registerCompletionItemProvider('surrealql', {
+		triggerCharacters: ['$'],
+		provideCompletionItems(_, position, context) {
+			const { activeTab, knownTabs } = store.getState();
+			const tab = knownTabs.find(tab => tab.id == activeTab);
+
+			if(!tab) {
+				return undefined;
+			}
+
+			const variables = JSON.parse(tab.variables);
+			const variableNames = Object.keys(variables);
+			
+			if(!variableNames.length) {
+				return undefined;
+			}
+
+			const isAuto = context.triggerKind === languages.CompletionTriggerKind.TriggerCharacter;
+			const suggestions: languages.CompletionItem[] = variableNames.map(variableName => ({
+				label: `$${variableName}`,
+				insertText: (isAuto ? '' : '$') + variableName,
+				detail: `${variables[variableName]}`,
+				kind: languages.CompletionItemKind.Variable,
+				range: monaco.Range.fromPositions(position, position)
+			}));
+
+			return {
+				suggestions
 			}
 		}
 	});
