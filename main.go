@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"surrealist/backend"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -12,19 +13,18 @@ import (
 var assets embed.FS
 
 func main() {
-	// Create an instance of the app structure
-	app := NewApp()
+	app := backend.NewApp()
 
-	// Create application with options
+	// Launch application
 	err := wails.Run(&options.App{
-		Title:     "Surrealist",
-		Width:     1024,
-		Height:    672,
-		OnStartup: app.startup,
+		Title:            "Surrealist",
+		Width:            1024,
+		Height:           672,
+		OnStartup:        app.Startup,
+		BackgroundColour: options.NewRGB(244, 245, 251),
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: options.NewRGB(244, 245, 251),
 		Bind: []interface{}{
 			app,
 		},

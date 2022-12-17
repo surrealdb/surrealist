@@ -1,4 +1,3 @@
-import { TogglePinned } from "$/go/main/App";
 import { ColorScheme } from "@mantine/core";
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
@@ -15,6 +14,9 @@ const mainSlice = createSlice({
 		tableSuggest: true,
 		wordWrap: true,
 		history: [] as HistoryEntry[],
+		isServing: false,
+		localDriver: 'memory',
+		localStorage: '',
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -26,6 +28,8 @@ const mainSlice = createSlice({
 			state.tableSuggest = config.tableSuggest ?? true;
 			state.wordWrap = config.wordWrap ?? true;
 			state.history = config.history || [];
+			state.localDriver = config.localDriver || 'memory';
+			state.localStorage = config.localStorage || '';
 		},
 
 		setColorScheme(state, action: PayloadAction<ColorScheme>) {
@@ -78,7 +82,6 @@ const mainSlice = createSlice({
 		
 		togglePinned(state) {
 			state.isPinned = !state.isPinned;
-			TogglePinned();
 		},
 
 		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {
@@ -96,6 +99,18 @@ const mainSlice = createSlice({
 		clearHistory(state) {
 			state.history = [];
 		},
+
+		setIsServing(state, action: PayloadAction<boolean>) {
+			state.isServing = action.payload;
+		},
+
+		setLocalDatabaseDriver(state, action: PayloadAction<string>) {
+			state.localDriver = action.payload;
+		},
+
+		setLocalDatabaseStorage(state, action: PayloadAction<string>) {
+			state.localStorage = action.payload;
+		}
 		
 	}
 });

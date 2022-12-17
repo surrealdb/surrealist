@@ -2,11 +2,12 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { actions, store } from './store';
 import { App } from './components/App';
-import { LoadConfig } from '$/go/main/App';
 import { loader } from '@monaco-editor/react';
 import { initializeEditor } from './util/editor';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
+import { LoadConfig } from '$/go/backend/Surrealist';
+import { initializeListeners } from './util/database';
 
 dayjs.extend(relativeTime);
 
@@ -27,4 +28,7 @@ createRoot(root).render(
 // Init monaco
 loader.init().then(monaco => {
 	initializeEditor(monaco);
-})
+});
+
+// Listen to database events
+initializeListeners();

@@ -19,6 +19,8 @@ import { showNotification } from '@mantine/notifications';
 import { VariablesPane } from '../VariablesPane';
 import { SplitDirection } from '@devbookhq/splitter';
 import { useIsLight } from '~/hooks/theme';
+import { Icon } from '../Icon';
+import { mdiPlay } from '@mdi/js';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -74,7 +76,7 @@ export function Scaffold() {
 		setEditingInfo(false);
 	});
 
-	const openConnection = useStable((e?: MouseEvent) => {
+	const openConnection = useStable((e?: MouseEvent, silent?: boolean) => {
 		e?.stopPropagation();
 
 		if (isConnecting) {
@@ -90,6 +92,7 @@ export function Scaffold() {
 
 		openSurreal({
 			connection: tabInfo.connection,
+			silent: silent,
 			onConnect() {
 				setIsConnecting(false);
 				setIsOnline(true)
@@ -189,7 +192,7 @@ export function Scaffold() {
 
 	useEffect(() => {
 		if (autoConnect) {
-			openConnection();
+			openConnection(undefined, true);
 		}
 	}, [autoConnect, activeTab]);
 
@@ -198,6 +201,8 @@ export function Scaffold() {
 	return (
 		<div className={classes.root}>
 			<TabBar
+				openConnection={openConnection}
+				closeConnection={closeConnection}
 				onCreateTab={createNewTab}
 				onSwitchTab={closeConnection}
 			/>

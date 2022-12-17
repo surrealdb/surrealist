@@ -1,4 +1,4 @@
-import { Button, Checkbox, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Switch, Text, Title, useMantineColorScheme } from "@mantine/core";
+import { Button, Checkbox, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Switch, Text, TextInput, Title, useMantineColorScheme } from "@mantine/core";
 import { mdiCog } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -11,6 +11,12 @@ import { Spacer } from "../Scaffold/Spacer";
 const THEMES = [
 	{ label: 'Light', value: 'light' },
 	{ label: 'Dark', value: 'dark' }
+];
+
+const DRIVERS = [
+	{ label: 'Memory', value: 'memory' },
+	{ label: 'File storage', value: 'file' },
+	{ label: 'TiKV cluster', value: 'tikv' }
 ]
 
 export function Settings() {
@@ -19,6 +25,8 @@ export function Settings() {
 	const autoConnect = useStoreValue(state => state.autoConnect);
 	const tableSuggest = useStoreValue(state => state.tableSuggest);
 	const wordWrap = useStoreValue(state => state.wordWrap);
+	const localDriver = useStoreValue(state => state.localDriver);
+	const localPath = useStoreValue(state => state.localStorage);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -49,6 +57,16 @@ export function Settings() {
 
 	const setWordWrap = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setWordWrap(e.target.checked));
+		updateConfig();
+	});
+
+	const setLocalDriver = useStable((driver: string) => {
+		store.dispatch(actions.setLocalDatabaseDriver(driver));
+		updateConfig();
+	});
+
+	const setLocalPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setLocalDatabaseStorage(e.target.value));
 		updateConfig();
 	});
 
@@ -101,6 +119,31 @@ export function Settings() {
 						value={colorScheme}
 						onChange={setColorScheme}
 					/>
+
+					<Select
+						data={DRIVERS}
+						label="Local database storage"
+						value={localDriver}
+						onChange={setLocalDriver}
+					/>
+
+					{localDriver === 'file' && (
+						<TextInput
+							label="Local database path"
+							placeholder="/path/to/database"
+							value={localPath}
+							onChange={setLocalPath}
+						/>
+					)}
+
+					{localDriver === 'tikv' && (
+						<TextInput
+							label="Local database cluster address (WIP)"
+							placeholder="address:port"
+							value={localPath}
+							onChange={setLocalPath}
+						/>
+					)}
 
 					<Group>
 						<Button color="light" onClick={closeSettings}>

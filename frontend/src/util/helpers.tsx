@@ -1,4 +1,4 @@
-import { SaveConfig } from "$/go/main/App";
+import { SaveConfig } from "$/go/backend/Surrealist";
 import { WindowSetTitle } from "$/runtime/runtime";
 import { store } from "~/store";
 
@@ -32,7 +32,9 @@ export async function updateConfig() {
 		autoConnect,
 		tableSuggest,
 		wordWrap,
-		history
+		history,
+		localDriver,
+		localStorage,
 	} = store.getState();
 
 	return SaveConfig(JSON.stringify({
@@ -41,6 +43,8 @@ export async function updateConfig() {
 		autoConnect: autoConnect,
 		tableSuggest: tableSuggest,
 		wordWrap: wordWrap,
-		history: history
+		history: history,
+		localDriver: localDriver,
+		localStorage: localStorage,
 	}));
 }

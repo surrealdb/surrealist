@@ -10,6 +10,7 @@ export interface SurrealConnection {
 
 export interface SurrealOptions {
 	connection: SurrealConnection;
+	silent?: boolean;
 	onConnect?: () => void;
 	onDisconnect?: () => void;
 	onError?: (code: number, reason: string) => void;
@@ -29,6 +30,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	const pinger = setInterval(() => { message('ping'); }, 30_000);
 
 	let isClosed = false;
+	let isSuccess = false;
 
 	/**
 	 * Send a message to the database
@@ -97,6 +99,8 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 		if (namespace && database) {
 			message('use', [namespace, database]);
 		}
+
+		isSuccess = true;
 	});
 
 	socket.addEventListener('close', (event) => {
@@ -104,7 +108,9 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 			cleanUp();
 		}
 
-		if (event.code !== 1000) {
+		const sendError = !options.silent || isSuccess;
+
+		if (event.code !== 1000 && sendError) {
 			options.onError?.(event.code, event.reason);
 		}
 	});

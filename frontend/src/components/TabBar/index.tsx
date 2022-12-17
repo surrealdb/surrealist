@@ -1,5 +1,6 @@
-import { Group, Button, Modal, TextInput, Drawer, Title } from "@mantine/core";
-import { mdiCog, mdiPlus, mdiPinOff, mdiPin, mdiHistory } from "@mdi/js";
+import { TogglePinned } from "$/go/backend/Surrealist";
+import { Group, Button, Modal, TextInput } from "@mantine/core";
+import { mdiPlus, mdiPinOff, mdiPin } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -8,11 +9,14 @@ import { updateConfig, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { History } from "../History";
 import { Icon } from "../Icon";
+import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Scaffold/Spacer";
 import { Settings } from "../Settings";
 import { ViewTab } from "../ViewTab";
 
 export interface TabBarProps {
+	openConnection: () => void;
+	closeConnection: () => void;
 	onCreateTab: () => void;
 	onSwitchTab: () => void;
 }
@@ -69,6 +73,7 @@ export function TabBar(props: TabBarProps) {
 	const togglePinned = useStable(() => {
 		store.dispatch(actions.togglePinned());
 
+		TogglePinned();
 		updateTitle();
 	});
 	
@@ -106,6 +111,11 @@ export function TabBar(props: TabBarProps) {
 			</Group>
 
 			<Spacer />
+
+			<LocalDatabase
+				openConnection={props.openConnection}
+				closeConnection={props.closeConnection}
+			/>
 
 			<History />
 			

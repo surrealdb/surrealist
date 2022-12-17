@@ -5,4 +5,8 @@ export function LoadConfig():Promise<string>;
 
 export function SaveConfig(arg1:string):Promise<void>;
 
+export function StartDatabase(arg1:string,arg2:string,arg3:number,arg4:string,arg5:string):Promise<void>;
+
+export function StopDatabase():Promise<void>;
+
 export function TogglePinned():Promise<void>;

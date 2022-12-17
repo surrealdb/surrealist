@@ -1,7 +1,6 @@
-package main
+package backend
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -9,19 +8,6 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
-
-const DEFAULT_CONFIG = "{\"theme\":\"light\",\"autoConnect\":true,\"tableSuggest\":true,\"wordWrap\":true,\"tabs\":[],\"history\":[]}"
-
-// App struct
-type App struct {
-	ctx      context.Context
-	isPinned bool
-}
-
-// NewApp creates a new App application struct
-func NewApp() *App {
-	return &App{}
-}
 
 func getConfigPath() string {
 	homeDir, err := os.UserHomeDir()
@@ -34,14 +20,8 @@ func getConfigPath() string {
 	return path.Join(homeDir, ".surrealist.json")
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
-func (a *App) startup(ctx context.Context) {
-	a.ctx = ctx
-}
-
 // Load the config from disk
-func (a *App) LoadConfig() string {
+func (a *Surrealist) LoadConfig() string {
 	contents, err := os.ReadFile(getConfigPath())
 
 	if err != nil {
@@ -53,7 +33,7 @@ func (a *App) LoadConfig() string {
 }
 
 // Save the config to disk
-func (a *App) SaveConfig(config string) {
+func (a *Surrealist) SaveConfig(config string) {
 	if !json.Valid([]byte(config)) {
 		fmt.Println("Error saving config: Invalid JSON")
 		return
@@ -67,7 +47,7 @@ func (a *App) SaveConfig(config string) {
 }
 
 // Toggle the pinned status of the window
-func (a *App) TogglePinned() {
+func (a *Surrealist) TogglePinned() {
 	a.isPinned = !a.isPinned
 
 	runtime.WindowSetAlwaysOnTop(a.ctx, a.isPinned)
