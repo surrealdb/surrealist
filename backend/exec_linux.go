@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build linux
+// +build linux
 
 package backend
 
@@ -13,6 +13,7 @@ import (
 func buildCommand(args []string) []string {
 	return []string{
 		"bash",
+		"-l",
 		"-c",
 		strings.Join(args, " "),
 	}
