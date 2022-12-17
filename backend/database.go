@@ -14,6 +14,7 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 	}
 
 	args := []string{
+		"surreal",
 		"start",
 		"--bind", fmt.Sprintf("0.0.0.0:%d", port),
 		"--user", user,
@@ -40,7 +41,8 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 			runtime.LogInfo(a.ctx, "Local database stopped")
 		}()
 
-		cmd := exec.Command("surreal", args...)
+		cmdArgs := buildCommand(args)
+		cmd := exec.Command(cmdArgs[0], args[1:]...)
 
 		spawnInBackground(cmd)
 
@@ -51,7 +53,7 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		a.serverHandle = cmd.Process
 
 		runtime.EventsEmit(a.ctx, "database:start")
-		runtime.LogInfo(a.ctx, fmt.Sprintf("Local database started with args: %v", args))
+		runtime.LogInfo(a.ctx, fmt.Sprintf("Local database started with args: %v", cmdArgs))
 
 		cmd.Wait()
 	}()

@@ -8,6 +8,10 @@ import (
 	"syscall"
 )
 
+func buildCommand(args []string) []string {
+	return args
+}
+
 func spawnInBackground(cmd *exec.Cmd) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 }
