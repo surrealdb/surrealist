@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"bytes"
 	"fmt"
 	"os/exec"
 
@@ -35,18 +34,16 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		a.isServing = true
 
 		defer func() {
+			runtime.LogInfo(a.ctx, "it has exited")
+
 			a.isServing = false
 			a.serverHandle = nil
 		}()
 
 		cmdArgs := buildCommand(args)
-		cmd := exec.Command(cmdArgs[0], args[1:]...)
+		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 
 		spawnInBackground(cmd)
-
-		var outb, errb bytes.Buffer
-		cmd.Stdout = &outb
-		cmd.Stderr = &errb
 
 		if err := cmd.Start(); err != nil {
 			runtime.EventsEmit(a.ctx, "database:error", err.Error())
@@ -62,20 +59,20 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		runtime.EventsEmit(a.ctx, "database:stop")
 		runtime.LogInfo(a.ctx, "Local database stopped")
-		runtime.LogInfo(a.ctx, outb.String())
-		runtime.LogInfo(a.ctx, errb.String())
 	}()
 }
 
 // Stop the local database
 func (a *Surrealist) StopDatabase() {
+	runtime.LogInfo(a.ctx, "Stopping local database")
+
 	if !a.isServing {
 		return
 	}
 
 	// We should probably not kill but send a SIGINT, right?
 	// But this works for now.
-	err := a.serverHandle.Kill()
+	err := killProcess(a.serverHandle)
 
 	if err != nil {
 		runtime.LogError(a.ctx, fmt.Sprintf("Failed to kill local database: %v", err))
