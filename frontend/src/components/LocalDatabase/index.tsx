@@ -1,7 +1,7 @@
 import { StartDatabase, StopDatabase } from "$/go/backend/Surrealist";
 import { Button, Loader } from "@mantine/core";
 import { mdiPlay, mdiStop } from "@mdi/js";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/tab";
 import { useIsLight } from "~/hooks/theme";
@@ -62,6 +62,12 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 
 	const isActive = isServing && !isPending;
 	const isDisabled = !isLocal && !isPending && !isServing;
+
+	useEffect(() => {
+		if (isActive) {
+			props.openConnection();
+		}
+	}, [isActive]);
 
 	return (
 		<>
