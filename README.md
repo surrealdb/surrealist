@@ -38,9 +38,10 @@ You can download the latest version of Surrealist from our [Releases](https://gi
 ### Running on MacOS
 When running Surrealist on MacOS, as the application is not signed, you may be prompted that the file is damaged and can't be opened. If this happens, you can follow the following steps to bypass this.
 
-- Move the downloaded `surrealist-xxx-darwin-arm64.tgz` outside your Downloads folder
-- Extract the file as usual
-- Open the Terminal app and navigate to the folder you extracted Surrealist in
+- Move the downloaded `surrealist-xxx-darwin-arm64.tgz` outside your Downloads folder (to add the application to Launchpad, move it to the "/Applications" folder)
+- Extract the application from the tgz file
+- Delete the tgz file, as it is no-longer needed
+- Open the Terminal app and navigate to the folder you extracted Surrealist into
 - Run the command `sudo xattr -rd com.apple.quarantine Surrealist.app` (You may be prompted to enter your password)
 
 If these steps don't work, please open an issue ticket.
