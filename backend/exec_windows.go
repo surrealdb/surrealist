@@ -24,5 +24,8 @@ func spawnInBackground(cmd *exec.Cmd) {
 }
 
 func killProcess(proc *os.Process) error {
-	return exec.Command("taskkill", "/pid", fmt.Sprint(proc.Pid), "/f", "/t").Run()
+	cmd := exec.Command("taskkill", "/pid", fmt.Sprint(proc.Pid), "/f", "/t")
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+
+	return cmd.Run()
 }
