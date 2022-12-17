@@ -1,13 +1,17 @@
 import { Global, MantineProvider } from "@mantine/core";
+
 import { NotificationsProvider } from "@mantine/notifications";
+import { Scaffold } from "../Scaffold";
+import { useColorScheme } from "@mantine/hooks";
 import { useStoreValue } from "~/store";
 import { useSurrealistTheme } from "~/util/theme";
-import { Scaffold } from "../Scaffold";
 
 export function App() {
 	const colorScheme = useStoreValue(state => state.colorScheme);
-	const mantineTheme = useSurrealistTheme(colorScheme);
-	const isLight = colorScheme === 'light';
+	const defaultScheme = useColorScheme();
+	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
+	const mantineTheme = useSurrealistTheme(actualTheme);
+	const isLight = actualTheme === 'light';
 
 	return (
 		<MantineProvider

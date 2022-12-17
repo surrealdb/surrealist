@@ -1,14 +1,16 @@
 import { Button, Checkbox, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Switch, Text, TextInput, Title, useMantineColorScheme } from "@mantine/core";
-import { mdiCog } from "@mdi/js";
-import { useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
-import { updateConfig } from "~/util/helpers";
+
 import { Icon } from "../Icon";
 import { Spacer } from "../Scaffold/Spacer";
+import { mdiCog } from "@mdi/js";
+import { updateConfig } from "~/util/helpers";
+import { useIsLight } from "~/hooks/theme";
+import { useStable } from "~/hooks/stable";
+import { useState } from "react";
 
 const THEMES = [
+	{ label: 'Automatic', value: 'automatic' },
 	{ label: 'Light', value: 'light' },
 	{ label: 'Dark', value: 'dark' }
 ];

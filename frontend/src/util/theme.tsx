@@ -1,10 +1,13 @@
 import { ColorScheme, MantineThemeOverride, Tuple } from "@mantine/core";
+
 import { useMemo } from "react";
 
 export const LIGHT_BORDER = 'light.0';
 export const LIGHT_TEXT_1 = 'light.3';
 export const LIGHT_TEXT_2 = 'light.6';
 export const LIGHT_TEXT_3 = 'light.9';
+
+export type ThemeOption = ColorScheme | "automatic"
 
 export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverride {
 	return useMemo(() => ({

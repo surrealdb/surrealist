@@ -1,12 +1,13 @@
-import { ColorScheme } from "@mantine/core";
-import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { HistoryEntry, SurrealistTab } from "./typings";
+import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
+import { TypedUseSelectorHook, useSelector } from "react-redux";
+
+import { ThemeOption } from "./util/theme";
 
 const mainSlice = createSlice({
 	name: 'main',
 	initialState: {
-		colorScheme: 'light' as ColorScheme,
+		colorScheme: 'automatic' as ThemeOption,
 		knownTabs: [] as SurrealistTab[],
 		activeTab: null as string|null,
 		isPinned: false,
@@ -24,7 +25,7 @@ const mainSlice = createSlice({
 		initialize(state, action: PayloadAction<any>) {
 			const config = JSON.parse(action.payload.trim());
 
-			state.colorScheme = config.theme || 'light';
+			state.colorScheme = config.theme || 'automatic';
 			state.knownTabs = config.tabs || [];
 			state.autoConnect = config.autoConnect ?? true;
 			state.tableSuggest = config.tableSuggest ?? true;
@@ -34,7 +35,7 @@ const mainSlice = createSlice({
 			state.localStorage = config.localStorage || '';
 		},
 
-		setColorScheme(state, action: PayloadAction<ColorScheme>) {
+		setColorScheme(state, action: PayloadAction<ThemeOption>) {
 			state.colorScheme = action.payload;
 		},
 
