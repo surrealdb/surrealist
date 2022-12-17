@@ -36,12 +36,12 @@ You can choose whether the local database is stored in memory or stored on disk 
 You can download the latest version of Surrealist from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.
 
 ### Running on MacOS
-When running Surrealist on MacOS, as the application is not signed, you may be prompted that the file is damaged and can't be opened. If this happens, you can follow the following steps to bypass this.
+When running Surrealist on MacOS, as the application is not signed, you may be prompted that the file is damaged and can't be opened. If this happens, try the following steps:
 
-- Move the downloaded `surrealist-xxx-darwin-arm64.tgz` outside your Downloads folder (to add the application to Launchpad, move it to the "/Applications" folder)
+- Move the downloaded `surrealist-xxx-darwin-arm64.tgz` outside of your Downloads folder (to add Surrealist to your Launchpad, place it in the `/Applications` directory)
 - Extract the application from the tgz file
 - Delete the tgz file, as it is no-longer needed
-- Open the Terminal app and navigate to the folder you extracted Surrealist into
+- Open the Terminal app and navigate to the directory you extracted Surrealist into
 - Run the command `sudo xattr -rd com.apple.quarantine Surrealist.app` (You may be prompted to enter your password)
 
 If these steps don't work, please open an issue ticket.
