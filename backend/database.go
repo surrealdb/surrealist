@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 
@@ -45,6 +46,10 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		spawnInBackground(cmd)
 
+		var outb, errb bytes.Buffer
+		cmd.Stdout = &outb
+		cmd.Stderr = &errb
+
 		if err := cmd.Start(); err != nil {
 			runtime.EventsEmit(a.ctx, "database:error", err.Error())
 			return
@@ -59,6 +64,8 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		runtime.EventsEmit(a.ctx, "database:stop")
 		runtime.LogInfo(a.ctx, "Local database stopped")
+		runtime.LogInfo(a.ctx, outb.String())
+		runtime.LogInfo(a.ctx, errb.String())
 	}()
 }
 
