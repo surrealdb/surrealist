@@ -3,7 +3,6 @@ package backend
 import (
 	"fmt"
 	"os/exec"
-	"syscall"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -42,7 +41,8 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		}()
 
 		cmd := exec.Command("surreal", args...)
-		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+
+		spawnInBackground(cmd)
 
 		if err := cmd.Start(); err != nil {
 			return
