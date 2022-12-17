@@ -14,6 +14,12 @@ dayjs.extend(relativeTime);
 // Load existing config
 LoadConfig().then(config => {
 	store.dispatch(actions.initialize(config));
+
+	const tabs = store.getState().knownTabs;
+
+	if (tabs.length > 0) {
+		store.dispatch(actions.setActiveTab(tabs[0].id));
+	}
 });
 
 // Render the app component
