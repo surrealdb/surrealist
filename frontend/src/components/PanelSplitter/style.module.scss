@@ -18,15 +18,16 @@
 		inset: 0;
 		position: absolute;
 		background-image: url(~/assets/dragger-horizontal.svg);
-		background-position: center;
 		background-repeat: no-repeat;
-		background-size: 65%;
+		background-position: center;
+		background-size: 70%;
 		opacity: var(--dragger-opacity);
 	}	
 }
 
 .content-dragger-vertical::after {
 	background-image: url(~/assets/dragger-vertical.svg);
-	background-size: 36%;
-	background-position: 7px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 40%;
 }
