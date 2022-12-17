@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.2.0 - Local database
+- Added the ability to start and stop a local database directly from Surrealist
+	- Will use the username, password, and port entered for the current tab
+	- The tab hosting the database will display an indication icon
+- Added an "Automatic" theme option that uses your operating system theme
+	- This is now the default
+- Added auto completion support for variables
+
 ## 1.1.2 - Query history
 - Query history drawer
 - Result wrapping setting

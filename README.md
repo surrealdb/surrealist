@@ -15,7 +15,7 @@
 
 ## About
 
-Surrealist is a simple Desktop based query playground for [SurrealDB](https://surrealdb.com/). Easily connect to any SurrealDB database in order to execute and preview query responses.
+Surrealist is a simple to use Desktop based query playground for [SurrealDB](https://surrealdb.com/). You can connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more.
 
 ## Features
 - 📌 Multi-tab query editing
@@ -24,10 +24,26 @@ Surrealist is a simple Desktop based query playground for [SurrealDB](https://su
 - 💫 Support for multiple queries in one request
 - ✏️ Define variables in a seperate panel
 - 🔍 A clean and foldable view of your query results
+- 🔭 Start a local database directly from the application
 - 📜 Query history drawer
+
+## Local database
+You can start a local database directly from the application by pressing the start button in the top right. Doing so will start up a SurrealDB instance using the credentials and port entered for the current tab.
+
+You can choose whether the local database is stored in memory or stored on disk on the Settings screen.
 
 ## Download
 You can download the latest version of Surrealist from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.
+
+### Running on MacOS
+When running Surrealist on MacOS, as the application is not signed, you may be prompted that the file is damaged and can't be opened. If this happens, you can follow the following steps to bypass this.
+
+- Move the downloaded `surrealist-xxx-darwin-arm64.tgz` outside your Downloads folder
+- Extract the file as usual
+- Open the Terminal app and navigate to the folder you extracted Surrealist in
+- Run the command `sudo xattr -rd com.apple.quarantine Surrealist.app` (You may be prompted to enter your password)
+
+If these steps don't work, please open an issue ticket.
 
 ## Development
 This project is built using [Wails v2](https://wails.io/) and [React](https://reactjs.org/).
