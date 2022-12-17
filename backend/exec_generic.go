@@ -10,9 +10,9 @@ import (
 
 func buildCommand(args []string) []string {
 	return []string{
-		"/bin/sh",
+		"bash",
 		"-c",
-		strings.Join(args, " ")
+		strings.Join(args, " "),
 	}
 }
 

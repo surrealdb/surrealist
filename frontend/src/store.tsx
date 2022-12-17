@@ -15,6 +15,7 @@ const mainSlice = createSlice({
 		wordWrap: true,
 		history: [] as HistoryEntry[],
 		isServing: false,
+		servePending: false,
 		servingTab: null as string|null,
 		localDriver: 'memory',
 		localStorage: '',
@@ -101,16 +102,20 @@ const mainSlice = createSlice({
 			state.history = [];
 		},
 
-		setIsServing(state, action: PayloadAction<boolean>) {
-			state.isServing = action.payload;
-
-			if (!state.isServing) {
-				state.servingTab = null;
-			}
+		prepareServe(state, action: PayloadAction<string>) {
+			state.servingTab = action.payload;
+			state.servePending = true;
 		},
 
-		setServingTab(state, action: PayloadAction<string>) {
-			state.servingTab = action.payload;
+		confirmServing(state) {
+			state.isServing = true;
+			state.servePending = false;
+		},
+
+		stopServing(state) {
+			state.isServing = false;
+			state.servePending = false;
+			state.servingTab = null;
 		},
 
 		setLocalDatabaseDriver(state, action: PayloadAction<string>) {

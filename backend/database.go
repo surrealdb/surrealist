@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 
@@ -36,9 +37,6 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		defer func() {
 			a.isServing = false
 			a.serverHandle = nil
-
-			runtime.EventsEmit(a.ctx, "database:stop")
-			runtime.LogInfo(a.ctx, "Local database stopped")
 		}()
 
 		cmdArgs := buildCommand(args)
@@ -46,7 +44,12 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		spawnInBackground(cmd)
 
+		var outb, errb bytes.Buffer
+		cmd.Stdout = &outb
+		cmd.Stderr = &errb
+
 		if err := cmd.Start(); err != nil {
+			runtime.EventsEmit(a.ctx, "database:error", err.Error())
 			return
 		}
 
@@ -56,6 +59,11 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		runtime.LogInfo(a.ctx, fmt.Sprintf("Local database started with args: %v", cmdArgs))
 
 		cmd.Wait()
+
+		runtime.EventsEmit(a.ctx, "database:stop")
+		runtime.LogInfo(a.ctx, "Local database stopped")
+		runtime.LogInfo(a.ctx, outb.String())
+		runtime.LogInfo(a.ctx, errb.String())
 	}()
 }
 

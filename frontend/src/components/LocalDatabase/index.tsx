@@ -1,16 +1,13 @@
 import { StartDatabase, StopDatabase } from "$/go/backend/Surrealist";
-import { Button, Loader, Stack, Text } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { Button, Loader } from "@mantine/core";
 import { mdiPlay, mdiStop } from "@mdi/js";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/tab";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
-import { showOnlineAlert } from "~/util/database";
 import { Icon } from "../Icon";
 
-const WAIT_DURATION = 1000;
 const ENDPOINT_PATTERN = /^https?:\/\/([\w\d\.]+):(\d+)\/?/i;
 const LOCAL_ENDPOINTS = [ '127.0.0.1', 'localhost' ];
 
@@ -22,10 +19,10 @@ export interface LocalDatabaseProps {
 export function LocalDatabase(props: LocalDatabaseProps) {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
-	const isRunning = useStoreValue(state => state.isServing);
+	const isServing = useStoreValue(state => state.isServing);
+	const isPending = useStoreValue(state => state.servePending);
 	const localDriver = useStoreValue(state => state.localDriver);
 	const localPath = useStoreValue(state => state.localStorage);
-	const [isPending, setIsPending] = useState(false);
 
 	const endpoint = activeTab?.connection?.endpoint;
 
@@ -43,9 +40,13 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 	}, [endpoint]);
 
 	const handleToggle = useStable(() => {
+		if (isPending) {
+			return;
+		}
+
 		const { username, password } = activeTab!.connection;
 
-		if (isRunning) {
+		if (isServing) {
 			props.closeConnection();
 			StopDatabase();
 		} else {
@@ -54,20 +55,13 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 			}
 
 			StartDatabase(username, password, port || 80, localDriver, localPath);
-			setIsPending(true);
 
-			store.dispatch(actions.setServingTab(activeTab.id));
-
-			setTimeout(() => {
-				showOnlineAlert();
-				setIsPending(false);
-				props.openConnection();
-			}, WAIT_DURATION);
+			store.dispatch(actions.prepareServe(activeTab.id));
 		}
 	});
 
-	const isActive = isRunning && !isPending;
-	const isDisabled = !isLocal && !isPending && !isRunning;
+	const isActive = isServing && !isPending;
+	const isDisabled = !isLocal && !isPending && !isServing;
 
 	return (
 		<>
