@@ -5,7 +5,6 @@ package backend
 
 import (
 	"os/exec"
-	"syscall"
 )
 
 func spawnInBackground(cmd *exec.Cmd) {
