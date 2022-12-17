@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/tab";
 import { useIsLight } from "~/hooks/theme";
-import { useStoreValue } from "~/store";
+import { actions, store, useStoreValue } from "~/store";
 import { showOnlineAlert } from "~/util/database";
 import { Icon } from "../Icon";
 
@@ -49,8 +49,14 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 			props.closeConnection();
 			StopDatabase();
 		} else {
+			if(!activeTab) {
+				return;
+			}
+
 			StartDatabase(username, password, port || 80, localDriver, localPath);
 			setIsPending(true);
+
+			store.dispatch(actions.setServingTab(activeTab.id));
 
 			setTimeout(() => {
 				showOnlineAlert();

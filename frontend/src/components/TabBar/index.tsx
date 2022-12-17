@@ -89,6 +89,7 @@ export function TabBar(props: TabBarProps) {
 			<Group>
 				{tabList.map(tab => (
 					<ViewTab
+						id={tab.id}
 						key={tab.id}
 						active={tab.id == activeTab}
 						onDismiss={() => removeTab(tab.id)}

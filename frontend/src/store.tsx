@@ -15,6 +15,7 @@ const mainSlice = createSlice({
 		wordWrap: true,
 		history: [] as HistoryEntry[],
 		isServing: false,
+		servingTab: null as string|null,
 		localDriver: 'memory',
 		localStorage: '',
 	},
@@ -102,6 +103,14 @@ const mainSlice = createSlice({
 
 		setIsServing(state, action: PayloadAction<boolean>) {
 			state.isServing = action.payload;
+
+			if (!state.isServing) {
+				state.servingTab = null;
+			}
+		},
+
+		setServingTab(state, action: PayloadAction<string>) {
+			state.servingTab = action.payload;
 		},
 
 		setLocalDatabaseDriver(state, action: PayloadAction<string>) {
