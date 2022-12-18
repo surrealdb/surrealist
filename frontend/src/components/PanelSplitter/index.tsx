@@ -29,6 +29,8 @@ export function PanelSplitter(props: PanelSplitterProps) {
 
 			await updateConfig();
 		}
+
+		window.getSelection()?.removeAllRanges();
 	});
 
 	const sizes = tabInfo?.layout?.[props.id] || props.initialSizes;

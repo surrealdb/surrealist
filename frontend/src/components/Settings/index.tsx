@@ -29,6 +29,7 @@ export function Settings() {
 	const wordWrap = useStoreValue(state => state.wordWrap);
 	const localDriver = useStoreValue(state => state.localDriver);
 	const localPath = useStoreValue(state => state.localStorage);
+	const enableConsole = useStoreValue(state => state.enableConsole);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -69,6 +70,11 @@ export function Settings() {
 
 	const setLocalPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setLocalDatabaseStorage(e.target.value));
+		updateConfig();
+	});
+
+	const setConsoleEnabled = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setConsoleEnabled(e.target.checked));
 		updateConfig();
 	});
 
@@ -113,6 +119,12 @@ export function Settings() {
 						label="Wrap query results"
 						checked={wordWrap}
 						onChange={setWordWrap}
+					/>
+
+					<Checkbox
+						label="Enable database console"
+						checked={enableConsole}
+						onChange={setConsoleEnabled}
 					/>
 
 					<Select

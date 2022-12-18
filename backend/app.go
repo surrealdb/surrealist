@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const DEFAULT_CONFIG = "{\"theme\":\"automatic\",\"autoConnect\":true,\"tableSuggest\":true,\"wordWrap\":true,\"localDriver\":\"memory\",\"localStorage\":\"\",\"tabs\":[],\"history\":[]}"
+const DEFAULT_CONFIG = "{}"
 
 type Surrealist struct {
 	ctx          context.Context

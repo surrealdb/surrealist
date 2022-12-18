@@ -14,6 +14,7 @@ export function initializeListeners() {
 			store.dispatch(actions.confirmServing());
 
 			showNotification({
+				autoClose: 1500,
 				color: 'green.6',
 				message: (
 					<Stack spacing={0}>
@@ -37,6 +38,7 @@ export function initializeListeners() {
 		store.dispatch(actions.stopServing());
 
 		showNotification({
+			autoClose: 1500,
 			color: 'red.6',
 			message: (
 				<Stack spacing={0}>

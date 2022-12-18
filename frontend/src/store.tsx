@@ -20,6 +20,7 @@ const mainSlice = createSlice({
 		servingTab: null as string|null,
 		localDriver: 'memory',
 		localStorage: '',
+		enableConsole: true,
 		consoleOutput: [] as ConsoleOutputMessage[],
 	},
 	reducers: {
@@ -34,6 +35,7 @@ const mainSlice = createSlice({
 			state.history = config.history || [];
 			state.localDriver = config.localDriver || 'memory';
 			state.localStorage = config.localStorage || '';
+			state.enableConsole = config.enableConsole ?? true;
 			state.consoleOutput = [];
 		},
 
@@ -120,6 +122,10 @@ const mainSlice = createSlice({
 			state.servePending = false;
 			state.servingTab = null;
 			state.consoleOutput = [];
+		},
+
+		setConsoleEnabled(state, action: PayloadAction<boolean>) {
+			state.enableConsole = action.payload;
 		},
 
 		pushConsoleLine(state, action: PayloadAction<ConsoleOutputMessage>) {

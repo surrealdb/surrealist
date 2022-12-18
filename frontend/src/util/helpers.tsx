@@ -35,6 +35,7 @@ export async function updateConfig() {
 		history,
 		localDriver,
 		localStorage,
+		enableConsole
 	} = store.getState();
 
 	return SaveConfig(JSON.stringify({
@@ -46,5 +47,6 @@ export async function updateConfig() {
 		history: history,
 		localDriver: localDriver,
 		localStorage: localStorage,
+		enableConsole: enableConsole
 	}));
 }

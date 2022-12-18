@@ -21,7 +21,7 @@ export function App() {
 			theme={mantineTheme}
 		>
 			<NotificationsProvider
-				position="bottom-center"
+				position="bottom-right"
 			>
 				<Scaffold />
 			</NotificationsProvider>

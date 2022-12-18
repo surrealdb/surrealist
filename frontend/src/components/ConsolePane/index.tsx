@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { Panel } from "~/components/Panel";
-import { mdiConsole, mdiDelete, mdiWindowMinimize } from "@mdi/js";
+import { mdiClose, mdiConsole, mdiDelete, mdiWindowMinimize } from "@mdi/js";
 import { ActionIcon, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { actions, store, useStoreValue } from "~/store";
@@ -8,63 +8,32 @@ import { ConsoleOutputMessage } from "~/typings";
 import AnsiToHtml from "ansi-to-html";
 import { useStable } from "~/hooks/stable";
 
-function ConsoleActions({ toggleConsoleMinimize }: { toggleConsoleMinimize: () => void }) {
+function ConsoleActions() {
 
 	const clearConsole = useStable(() => {
 		store.dispatch(actions.clearConsole());
 	});
 
+	const hideConsole = useStable(async () => {
+		store.dispatch(actions.setConsoleEnabled(false));
+	});
+
 	return (
 		<Group align="center">
-			<ActionIcon onClick={clearConsole} >
+			<ActionIcon
+				onClick={clearConsole}
+				title="Clear console"
+			>
 				<Icon color="light.4" path={mdiDelete} />
 			</ActionIcon>
 
-			<ActionIcon onClick={toggleConsoleMinimize} >
-				<Icon color="light.4" path={mdiWindowMinimize} />
+			<ActionIcon
+				onClick={hideConsole}
+				title="Hide console"
+			>
+				<Icon color="light.4" path={mdiClose} />
 			</ActionIcon>
 		</Group>
-	);
-}
-
-function ConsoleBody() {
-	const messages = useStoreValue(state => state.consoleOutput);
-	const scroller = useRef<HTMLDivElement>(null);
-	const theme = useMantineTheme();
-
-	const convert = new AnsiToHtml({
-		fg: theme.fn.themeColor("light.4"),
-		bg: theme.fn.themeColor("dark.0"),
-		newline: true,
-		colors: {
-			4: '#3993d4'
-		}
-	});
-
-	useEffect(() => {
-		if (scroller.current) {
-			const { scrollTop, scrollHeight, clientHeight } = scroller.current;
-
-			if (scrollHeight - scrollTop < clientHeight + 100) {
-				scroller.current.scrollTop = scrollHeight;
-			}
-		}
-	}, [messages]);
-
-	return (
-		<ScrollArea
-			style={{ position: 'absolute', inset: 12, top: 0 }}
-			viewportRef={scroller}
-		>
-			{messages.map((message, index) =>
-				<ConsoleOutputEntry
-					key={index}
-					index={index}
-					message={message}
-					formatter={convert}
-				/>
-			)}
-		</ScrollArea>
 	);
 }
 
@@ -85,28 +54,48 @@ function ConsoleOutputEntry({ index, message, formatter }: {
 }
 
 export function ConsolePane() {
-	const [isMinimized, setMinimized] = useState(true);
+	const messages = useStoreValue(state => state.consoleOutput);
+	const scroller = useRef<HTMLDivElement>(null);
+	const theme = useMantineTheme();
 
-	const toggleConsoleMinimize = () => {
-		setMinimized(!isMinimized);
-	};
+	const convert = useMemo(() => new AnsiToHtml({
+		fg: theme.fn.themeColor("light.4"),
+		bg: theme.fn.themeColor("dark.0"),
+		newline: true,
+		colors: {
+			4: '#3993d4'
+		}
+	}), []);
 
-	// const [containerHeight, setContainerHeight] = useState(120);
+	useEffect(() => {
+		if (scroller.current) {
+			const { scrollTop, scrollHeight, clientHeight } = scroller.current;
 
-	// const containerRef = useRef<HTMLDivElement>(null);
-
-	// useEffect(() => {
-	// 	setContainerHeight(containerRef.current!.clientHeight);
-	// });
-
+			if (scrollHeight - scrollTop < clientHeight + 100) {
+				scroller.current.scrollTop = scrollHeight;
+			}
+		}
+	}, [messages]);
+	
 	return (
 		<Panel
 			title="Console"
 			icon={mdiConsole}
-			rightSection={<ConsoleActions toggleConsoleMinimize={toggleConsoleMinimize} />}
+			rightSection={<ConsoleActions />}
 		>
-			{/*{isMinimized ? (<></>) : (<ConsoleBody />)}*/}
-			<ConsoleBody />
+			<ScrollArea
+			style={{ position: 'absolute', inset: 12, top: 0 }}
+			viewportRef={scroller}
+		>
+			{messages.map((message, index) =>
+				<ConsoleOutputEntry
+					key={index}
+					index={index}
+					message={message}
+					formatter={convert}
+				/>
+			)}
+		</ScrollArea>
 		</Panel>
 	);
 }

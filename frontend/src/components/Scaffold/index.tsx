@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { Spacer } from "./Spacer";
 import { PanelSplitter } from '../PanelSplitter';
 import { actions, store, useStoreValue } from '~/store';
@@ -20,9 +20,9 @@ import { VariablesPane } from '../VariablesPane';
 import { SplitDirection } from '@devbookhq/splitter';
 import { useIsLight } from '~/hooks/theme';
 import { Icon } from '../Icon';
-import { mdiPlay } from '@mdi/js';
+import { mdiConsole, mdiPlay } from '@mdi/js';
 import {ConsolePane} from "~/components/ConsolePane";
-import { editor } from 'monaco-editor';
+import { isPending } from '@reduxjs/toolkit';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -32,6 +32,7 @@ export function Scaffold() {
 	const autoConnect = useStoreValue(state => state.autoConnect);
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
+	const enableConsole = useStoreValue(state => state.enableConsole);
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
@@ -200,15 +201,24 @@ export function Scaffold() {
 		}
 	}, [autoConnect, activeTab]);
 
-	const showConsole = servePending || isServing;
+	const revealConsole = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+		store.dispatch(actions.setConsoleEnabled(true));
+	});
+
+	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 
 	const editorGrid = (
-		<PanelSplitter id="input-result">
+		<PanelSplitter
+			id="input-result"
+			minWidths={[300, 400]}
+		>
 			<PanelSplitter
 				id="query-variables"
 				direction={SplitDirection.Vertical}
 				initialSizes={[120]}
+				minHeights={[80, 80]}
 			>
 				<QueryPane
 					isConnected={isOnline}
@@ -270,6 +280,14 @@ export function Scaffold() {
 								{tabInfo!.connection.endpoint}
 							</Text>
 							<Spacer />
+							{(servePending || isServing) && !showConsole && (
+								<ActionIcon
+									onClick={revealConsole}
+									title="Reveal console"
+								>
+									<Icon color="light.4" path={mdiConsole} />
+								</ActionIcon>
+							)}
 							{isOnline ? (
 								<Button
 									color="surreal"
@@ -296,6 +314,7 @@ export function Scaffold() {
 							<PanelSplitter
 								id="console-splitter"
 								direction={SplitDirection.Vertical}
+								minHeights={[300, 50]}
 							>
 								{editorGrid}
 								<ConsolePane />
