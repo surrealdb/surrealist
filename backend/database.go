@@ -1,8 +1,9 @@
 package backend
 
 import (
-	"bytes"
+	"bufio"
 	"fmt"
+	"io"
 	"os/exec"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -20,6 +21,7 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		"--bind", fmt.Sprintf("0.0.0.0:%d", port),
 		"--user", user,
 		"--pass", pass,
+		"--log", "debug",
 	}
 
 	switch driver {
@@ -46,9 +48,12 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		spawnInBackground(cmd)
 
-		var outb, errb bytes.Buffer
-		cmd.Stdout = &outb
-		cmd.Stderr = &errb
+		stderr, _ := cmd.StderrPipe()
+		stdout, _ := cmd.StdoutPipe()
+
+		//var outb, errb bytes.Buffer
+		//cmd.Stdout = &outb
+		//cmd.Stderr = &errb
 
 		if err := cmd.Start(); err != nil {
 			runtime.EventsEmit(a.ctx, "database:error", err.Error())
@@ -56,6 +61,8 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		}
 
 		a.serverHandle = cmd.Process
+		go a.watchStd("stdout", stdout)
+		go a.watchStd("stderr", stderr)
 
 		runtime.EventsEmit(a.ctx, "database:start")
 		runtime.LogInfo(a.ctx, fmt.Sprintf("Local database started with args: %v", cmdArgs))
@@ -64,8 +71,8 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		runtime.EventsEmit(a.ctx, "database:stop")
 		runtime.LogInfo(a.ctx, "Local database stopped")
-		runtime.LogInfo(a.ctx, outb.String())
-		runtime.LogInfo(a.ctx, errb.String())
+		//runtime.LogInfo(a.ctx, outb.String())
+		//runtime.LogInfo(a.ctx, errb.String())
 	}()
 }
 
@@ -83,5 +90,16 @@ func (a *Surrealist) StopDatabase() {
 
 	if err != nil {
 		runtime.LogError(a.ctx, fmt.Sprintf("Failed to kill local database: %v", err))
+	}
+}
+
+func (a *Surrealist) watchStd(kind string, r io.Reader) {
+	reader := bufio.NewReader(r)
+	line, err := reader.ReadString('\n')
+	for err == nil {
+		runtime.EventsEmit(a.ctx, "database:output", kind, line)
+		runtime.LogInfo(a.ctx, "["+kind+"] "+line)
+
+		line, err = reader.ReadString('\n')
 	}
 }

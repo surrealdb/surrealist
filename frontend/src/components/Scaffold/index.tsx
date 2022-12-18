@@ -21,6 +21,7 @@ import { SplitDirection } from '@devbookhq/splitter';
 import { useIsLight } from '~/hooks/theme';
 import { Icon } from '../Icon';
 import { mdiPlay } from '@mdi/js';
+import {ConsolePane} from "~/components/ConsolePane";
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -137,7 +138,7 @@ export function Scaffold() {
 
 		const { query, name } = tabInfo!;
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
-		
+
 		try {
 			const response = await getSurreal()?.query(query, variables);
 
@@ -270,19 +271,25 @@ export function Scaffold() {
 					</Group>
 
 					<Box p="xs" className={classes.content}>
-						<PanelSplitter id="input-result">
-							<PanelSplitter
-								id="query-variables"
-								direction={SplitDirection.Vertical}
-								initialSizes={[120]}
-							>
-								<QueryPane
-									isConnected={isOnline}
-									onExecuteQuery={sendQuery}
-								/>
-								<VariablesPane />
+						<PanelSplitter
+							id="console-splitter"
+			                direction={SplitDirection.Vertical}
+						>
+							<PanelSplitter id="input-result">
+								<PanelSplitter
+									id="query-variables"
+									direction={SplitDirection.Vertical}
+									initialSizes={[120]}
+								>
+									<QueryPane
+										isConnected={isOnline}
+										onExecuteQuery={sendQuery}
+									/>
+									<VariablesPane />
+								</PanelSplitter>
+								<ResultPane />
 							</PanelSplitter>
-							<ResultPane />
+							<ConsolePane />
 						</PanelSplitter>
 					</Box>
 				</>

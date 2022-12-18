@@ -33,7 +33,7 @@ export function initializeListeners() {
 		if (startTask) {
 			clearTimeout(startTask);
 		}
-		
+
 		store.dispatch(actions.stopServing());
 
 		showNotification({
@@ -49,6 +49,10 @@ export function initializeListeners() {
 				</Stack>
 			)
 		});
+	});
+
+	EventsOn('database:output', (kind, message) => {
+		store.dispatch(actions.databaseConsoleOutput({kind, message}));
 	});
 
 	EventsOn('database:error', (msg) => {

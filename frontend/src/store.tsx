@@ -1,4 +1,4 @@
-import { HistoryEntry, SurrealistTab } from "./typings";
+import {HistoryEntry, SurrealistTab, ConsoleOutputMessage} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 
@@ -20,6 +20,7 @@ const mainSlice = createSlice({
 		servingTab: null as string|null,
 		localDriver: 'memory',
 		localStorage: '',
+		consoleOutput: [] as ConsoleOutputMessage[],
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -33,6 +34,7 @@ const mainSlice = createSlice({
 			state.history = config.history || [];
 			state.localDriver = config.localDriver || 'memory';
 			state.localStorage = config.localStorage || '';
+			state.consoleOutput = [];
 		},
 
 		setColorScheme(state, action: PayloadAction<ThemeOption>) {
@@ -42,7 +44,7 @@ const mainSlice = createSlice({
 		setAutoConnect(state, action: PayloadAction<boolean>) {
 			state.autoConnect = action.payload;
 		},
-		
+
 		setTableSuggest(state, action: PayloadAction<boolean>) {
 			state.tableSuggest = action.payload;
 		},
@@ -82,7 +84,7 @@ const mainSlice = createSlice({
 		setActiveTab(state, action: PayloadAction<string>) {
 			state.activeTab = action.payload;
 		},
-		
+
 		togglePinned(state) {
 			state.isPinned = !state.isPinned;
 		},
@@ -91,7 +93,7 @@ const mainSlice = createSlice({
 			if (state.history.length > 0 && state.history[0].query === action.payload.query) {
 				return;
 			}
-			
+
 			state.history.unshift(action.payload);
 
 			if (state.history.length > 50) {
@@ -111,12 +113,22 @@ const mainSlice = createSlice({
 		confirmServing(state) {
 			state.isServing = true;
 			state.servePending = false;
+			state.consoleOutput = [];
 		},
 
 		stopServing(state) {
 			state.isServing = false;
 			state.servePending = false;
 			state.servingTab = null;
+			state.consoleOutput = [];
+		},
+
+		databaseConsoleOutput(state, action: PayloadAction<{ kind : string, message:string }>) {
+			console.log(action.payload);
+			state.consoleOutput.push({
+				kind    : action.payload.kind as ConsoleOutputMessage["kind"],
+				message : action.payload.message,
+			});
 		},
 
 		setLocalDatabaseDriver(state, action: PayloadAction<string>) {
@@ -126,7 +138,7 @@ const mainSlice = createSlice({
 		setLocalDatabaseStorage(state, action: PayloadAction<string>) {
 			state.localStorage = action.payload;
 		}
-		
+
 	}
 });
 
