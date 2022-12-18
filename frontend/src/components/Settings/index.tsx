@@ -135,6 +135,8 @@ export function Settings() {
 							placeholder="/path/to/database"
 							value={localPath}
 							onChange={setLocalPath}
+							autoComplete="off"
+							spellCheck="false"
 						/>
 					)}
 
@@ -144,6 +146,8 @@ export function Settings() {
 							placeholder="address:port"
 							value={localPath}
 							onChange={setLocalPath}
+							autoComplete="off"
+							spellCheck="false"
 						/>
 					)}
 

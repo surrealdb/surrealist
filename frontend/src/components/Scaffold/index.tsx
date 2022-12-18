@@ -330,6 +330,8 @@ export function Scaffold() {
 								draft.endpoint = e.target.value
 							})}
 							autoFocus
+							autoComplete="off"
+							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -338,6 +340,8 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.username = e.target.value
 							})}
+							autoComplete="off"
+							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -346,6 +350,8 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.password = e.target.value
 							})}
+							autoComplete="off"
+							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -354,6 +360,8 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.namespace = e.target.value
 							})}
+							autoComplete="off"
+							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -362,6 +370,8 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.database = e.target.value
 							})}
+							autoComplete="off"
+							spellCheck="false"
 						/>
 						<Group>
 							<Button color="light" onClick={closeEditingInfo}>

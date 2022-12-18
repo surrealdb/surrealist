@@ -148,6 +148,8 @@ export function TabBar(props: TabBarProps) {
 							onChange={e => setTabName(e.target.value)}
 							autoFocus
 							onFocus={e => e.target.select()}
+							autoComplete="off"
+							spellCheck="false"
 						/>
 						<Button type="submit">
 							Rename
