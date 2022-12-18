@@ -52,7 +52,7 @@ export function initializeListeners() {
 	});
 
 	EventsOn('database:output', (kind, message) => {
-		store.dispatch(actions.databaseConsoleOutput({kind, message}));
+		store.dispatch(actions.pushConsoleLine({ kind, message }));
 	});
 
 	EventsOn('database:error', (msg) => {

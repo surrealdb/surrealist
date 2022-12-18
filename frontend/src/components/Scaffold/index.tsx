@@ -22,6 +22,7 @@ import { useIsLight } from '~/hooks/theme';
 import { Icon } from '../Icon';
 import { mdiPlay } from '@mdi/js';
 import {ConsolePane} from "~/components/ConsolePane";
+import { editor } from 'monaco-editor';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -29,6 +30,8 @@ export function Scaffold() {
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.knownTabs);
 	const autoConnect = useStoreValue(state => state.autoConnect);
+	const servePending = useStoreValue(state => state.servePending);
+	const isServing = useStoreValue(state => state.isServing);
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
@@ -197,7 +200,25 @@ export function Scaffold() {
 		}
 	}, [autoConnect, activeTab]);
 
+	const showConsole = servePending || isServing;
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
+
+	const editorGrid = (
+		<PanelSplitter id="input-result">
+			<PanelSplitter
+				id="query-variables"
+				direction={SplitDirection.Vertical}
+				initialSizes={[120]}
+			>
+				<QueryPane
+					isConnected={isOnline}
+					onExecuteQuery={sendQuery}
+				/>
+				<VariablesPane />
+			</PanelSplitter>
+			<ResultPane />
+		</PanelSplitter>
+	);
 
 	return (
 		<div className={classes.root}>
@@ -271,26 +292,15 @@ export function Scaffold() {
 					</Group>
 
 					<Box p="xs" className={classes.content}>
-						<PanelSplitter
-							id="console-splitter"
-			                direction={SplitDirection.Vertical}
-						>
-							<PanelSplitter id="input-result">
-								<PanelSplitter
-									id="query-variables"
-									direction={SplitDirection.Vertical}
-									initialSizes={[120]}
-								>
-									<QueryPane
-										isConnected={isOnline}
-										onExecuteQuery={sendQuery}
-									/>
-									<VariablesPane />
-								</PanelSplitter>
-								<ResultPane />
+						{showConsole ? (
+							<PanelSplitter
+								id="console-splitter"
+								direction={SplitDirection.Vertical}
+							>
+								{editorGrid}
+								<ConsolePane />
 							</PanelSplitter>
-							<ConsolePane />
-						</PanelSplitter>
+						) : editorGrid}
 					</Box>
 				</>
 			) : (

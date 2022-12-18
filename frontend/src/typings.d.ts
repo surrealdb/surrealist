@@ -18,5 +18,5 @@ export interface HistoryEntry {
 
 export interface ConsoleOutputMessage {
 	kind: "stdout" | "stderr";
-	message:string;
+	message: string;
 }

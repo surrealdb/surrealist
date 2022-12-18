@@ -113,7 +113,6 @@ const mainSlice = createSlice({
 		confirmServing(state) {
 			state.isServing = true;
 			state.servePending = false;
-			state.consoleOutput = [];
 		},
 
 		stopServing(state) {
@@ -123,12 +122,19 @@ const mainSlice = createSlice({
 			state.consoleOutput = [];
 		},
 
-		databaseConsoleOutput(state, action: PayloadAction<{ kind : string, message:string }>) {
-			console.log(action.payload);
+		pushConsoleLine(state, action: PayloadAction<ConsoleOutputMessage>) {
 			state.consoleOutput.push({
-				kind    : action.payload.kind as ConsoleOutputMessage["kind"],
-				message : action.payload.message,
+				kind: action.payload.kind,
+				message: action.payload.message,
 			});
+
+			if (state.consoleOutput.length > 250) {
+				state.consoleOutput.shift();
+			}
+		},
+
+		clearConsole(state) {
+			state.consoleOutput = [];
 		},
 
 		setLocalDatabaseDriver(state, action: PayloadAction<string>) {

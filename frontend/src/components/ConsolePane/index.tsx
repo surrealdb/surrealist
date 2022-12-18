@@ -1,51 +1,60 @@
-import {useActiveTab} from "~/hooks/tab";
-import {useState, useLayoutEffect, useEffect, useRef} from "react";
-import {Panel} from "~/components/Panel";
-import {mdiCodeJson, mdiTable, mdiClock, mdiConsole, mdiWindowMinimize} from "@mdi/js";
-import {Group, Text, Tabs, useMantineTheme} from "@mantine/core";
-import {Icon} from "~/components/Icon";
-import {useStoreValue} from "~/store";
-import {ConsoleOutputMessage} from "~/typings";
+import { useState, useEffect, useRef } from "react";
+import { Panel } from "~/components/Panel";
+import { mdiConsole, mdiDelete, mdiWindowMinimize } from "@mdi/js";
+import { ActionIcon, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
+import { Icon } from "~/components/Icon";
+import { actions, store, useStoreValue } from "~/store";
+import { ConsoleOutputMessage } from "~/typings";
 import AnsiToHtml from "ansi-to-html";
+import { useStable } from "~/hooks/stable";
 
-function ConsoleTitle({toggleConsoleMinimize}: { toggleConsoleMinimize: () => void }) {
+function ConsoleActions({ toggleConsoleMinimize }: { toggleConsoleMinimize: () => void }) {
+
+	const clearConsole = useStable(() => {
+		store.dispatch(actions.clearConsole());
+	});
+
 	return (
 		<Group align="center">
-			<a type="button" onClick={toggleConsoleMinimize}>
+			<ActionIcon onClick={clearConsole} >
+				<Icon color="light.4" path={mdiDelete} />
+			</ActionIcon>
+
+			<ActionIcon onClick={toggleConsoleMinimize} >
 				<Icon color="light.4" path={mdiWindowMinimize} />
-			</a>
+			</ActionIcon>
 		</Group>
 	);
 }
 
-function ConsoleBody({height}: { height: number }) {
-	const messages       = useStoreValue(state => state.consoleOutput);
-	const theme          = useMantineTheme();
-	const consoleWrapper = useRef<HTMLDivElement>(null);
+function ConsoleBody() {
+	const messages = useStoreValue(state => state.consoleOutput);
+	const scroller = useRef<HTMLDivElement>(null);
+	const theme = useMantineTheme();
 
 	const convert = new AnsiToHtml({
-		fg      : theme.fn.themeColor("light.4"),
-		bg      : theme.fn.themeColor("dark.0"),
-		newline : true,
+		fg: theme.fn.themeColor("light.4"),
+		bg: theme.fn.themeColor("dark.0"),
+		newline: true,
+		colors: {
+			4: '#3993d4'
+		}
 	});
 
-	const originalColors            = (convert as any).options.colors;
-	originalColors[4]               = "#3993d4"; //theme.fn.themeColor("light.4");
-	(convert as any).options.colors = originalColors;
-
 	useEffect(() => {
-		if (consoleWrapper.current) {
-			const {scrollTop, scrollHeight, clientHeight} = consoleWrapper.current;
+		if (scroller.current) {
+			const { scrollTop, scrollHeight, clientHeight } = scroller.current;
+
 			if (scrollHeight - scrollTop < clientHeight + 100) {
-				consoleWrapper.current.scrollTop = scrollHeight;
+				scroller.current.scrollTop = scrollHeight;
 			}
 		}
 	}, [messages]);
 
 	return (
-		<div
-			ref={consoleWrapper}
-			style={{overflowY : "auto", flex : "auto", height : "100%", maxHeight : height > 250 ? 250 : height}}
+		<ScrollArea
+			style={{ position: 'absolute', inset: 12, top: 0 }}
+			viewportRef={scroller}
 		>
 			{messages.map((message, index) =>
 				<ConsoleOutputEntry
@@ -55,11 +64,11 @@ function ConsoleBody({height}: { height: number }) {
 					formatter={convert}
 				/>
 			)}
-		</div>
+		</ScrollArea>
 	);
 }
 
-function ConsoleOutputEntry({index, message, formatter}: {
+function ConsoleOutputEntry({ index, message, formatter }: {
 	index: number,
 	message: ConsoleOutputMessage,
 	formatter: AnsiToHtml,
@@ -68,7 +77,8 @@ function ConsoleOutputEntry({index, message, formatter}: {
 		<Text
 			key={index}
 			color="light.4"
-			dangerouslySetInnerHTML={{__html : formatter.toHtml(message.message)}}
+			ff="JetBrains Mono"
+			dangerouslySetInnerHTML={{ __html: formatter.toHtml(message.message) }}
 		>
 		</Text>
 	);
@@ -81,24 +91,22 @@ export function ConsolePane() {
 		setMinimized(!isMinimized);
 	};
 
-	const [containerHeight, setContainerHeight] = useState(120);
+	// const [containerHeight, setContainerHeight] = useState(120);
 
-	const containerRef = useRef<HTMLDivElement>(null);
+	// const containerRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		setContainerHeight(containerRef.current!.clientHeight);
-	});
+	// useEffect(() => {
+	// 	setContainerHeight(containerRef.current!.clientHeight);
+	// });
 
 	return (
-		<div ref={containerRef} style={{flex : 1}}>
-			<Panel
-				title="Console"
-				icon={mdiConsole}
-				rightSection={<ConsoleTitle toggleConsoleMinimize={toggleConsoleMinimize} />}
-			>
-				{/*{isMinimized ? (<></>) : (<ConsoleBody />)}*/}
-				<ConsoleBody height={containerHeight} />
-			</Panel>
-		</div>
+		<Panel
+			title="Console"
+			icon={mdiConsole}
+			rightSection={<ConsoleActions toggleConsoleMinimize={toggleConsoleMinimize} />}
+		>
+			{/*{isMinimized ? (<></>) : (<ConsoleBody />)}*/}
+			<ConsoleBody />
+		</Panel>
 	);
 }
