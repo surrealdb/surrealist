@@ -22,6 +22,7 @@ const mainSlice = createSlice({
 		localStorage: '',
 		enableConsole: true,
 		consoleOutput: [] as ConsoleOutputMessage[],
+		queryTimeout: 10
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -37,6 +38,7 @@ const mainSlice = createSlice({
 			state.localStorage = config.localStorage || '';
 			state.enableConsole = config.enableConsole ?? true;
 			state.consoleOutput = [];
+			state.queryTimeout = config.queryTimeout ?? 10;
 		},
 
 		setColorScheme(state, action: PayloadAction<ThemeOption>) {
@@ -149,6 +151,10 @@ const mainSlice = createSlice({
 
 		setLocalDatabaseStorage(state, action: PayloadAction<string>) {
 			state.localStorage = action.payload;
+		},
+
+		setQueryTimeout(state, action: PayloadAction<number>) {
+			state.queryTimeout = action.payload;
 		}
 
 	}

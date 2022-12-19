@@ -1,4 +1,4 @@
-import { Button, Checkbox, ColorScheme, Divider, Group, Modal, Paper, Select, Stack, Switch, Text, TextInput, Title, useMantineColorScheme } from "@mantine/core";
+import { Button, Checkbox, ColorScheme, Divider, Group, Modal, NumberInput, Paper, Select, Stack, Switch, Text, TextInput, Title, useMantineColorScheme } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 
 import { Icon } from "../Icon";
@@ -30,6 +30,7 @@ export function Settings() {
 	const localDriver = useStoreValue(state => state.localDriver);
 	const localPath = useStoreValue(state => state.localStorage);
 	const enableConsole = useStoreValue(state => state.enableConsole);
+	const queryTimeout = useStoreValue(state => state.queryTimeout);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -75,6 +76,11 @@ export function Settings() {
 
 	const setConsoleEnabled = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setConsoleEnabled(e.target.checked));
+		updateConfig();
+	});
+
+	const setQueryTimeout = useStable((value: number) => {
+		store.dispatch(actions.setQueryTimeout(value));
 		updateConfig();
 	});
 
@@ -132,6 +138,13 @@ export function Settings() {
 						label="Theme"
 						value={colorScheme}
 						onChange={setColorScheme}
+					/>
+
+					<NumberInput
+						label="Query timeout (seconds)"
+						value={queryTimeout}
+						min={1}
+						onChange={setQueryTimeout}
 					/>
 
 					<Select

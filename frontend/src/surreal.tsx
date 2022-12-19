@@ -1,4 +1,5 @@
 import { uid } from "radash";
+import { store } from "./store";
 
 export interface SurrealConnection {
 	endpoint: string;
@@ -36,6 +37,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	 * Send a message to the database
 	 */
 	const message = (method: string, params: any[] = []) => {
+		const timeout = store.getState().queryTimeout * 1000;
 		const id = uid(7);
 
 		return new Promise((success, reject) => {
@@ -51,7 +53,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 				if (requestMap.delete(id)) {
 					reject(new Error('Request timed out'));
 				}
-			}, 10_000);
+			}, timeout);
 		});
 	}
 
