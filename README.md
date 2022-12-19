@@ -1,19 +1,25 @@
 <br>
 
 <div align="center">
-	<a href="https://github.com/StarlaneStudios/Surrealist#gh-light-mode-only">
-		<img src=".github/branding/logo-dark.png" height="80">
-	</a>
-	<a href="https://github.com/StarlaneStudios/Surrealist#gh-dark-mode-only">
-		<img src=".github/branding/logo-light.png" height="80">
-	</a>
+	<img src=".github/branding/banner.png">
 </div>
 
-<div align="center">
-	<img src=".github/branding/promo.png">
-</div>
+<br>
 
-## About
+<h1 align="center">
+	Surrealist for SurrealDB
+</h1>
+
+<p align="center">
+  <a href="https://github.com/StarlaneStudios/surrealist/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/StarlaneStudios/surrealist"> 
+  </a>
+  <a href="https://discord.gg/exaQDX2">
+  	<img src="https://img.shields.io/discord/414532188722298881">
+  </a>
+  <img src="https://img.shields.io/github/repo-size/StarlaneStudios/surrealist">
+  <img src="https://img.shields.io/github/contributors/StarlaneStudios/surrealist">
+</p>
 
 Surrealist is a simple to use Desktop based query playground for [SurrealDB](https://surrealdb.com/). You can connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more.
 
@@ -46,6 +52,11 @@ When running Surrealist on MacOS, as the application is not signed, you may be p
 
 If these steps don't work, please open an issue ticket.
 
+## Contributing
+We welcome any issues and PRs submitted to Surrealist. Since we currently work on multiple other projects and our time is limited, we value any community help in supporting a rich future for Surrealist.
+
+Before you open an issue or PR please read our [Contributor Guide](CONTRIBUTING.md).
+
 ## Development
 This project is built using [Wails v2](https://wails.io/) and [React](https://reactjs.org/).
 
@@ -65,3 +76,19 @@ to this in your browser, and you can call your Go code from devtools.
 ### Building
 
 To build a redistributable, production mode package, use `wails build`.
+
+## Maintainers
+<a href="https://starlane.studio#gh-light-mode-only">
+  <img src=".github/branding/starlane-dark.png" height="64">
+</a>
+<a href="https://starlane.studio#gh-dark-mode-only">
+  <img src=".github/branding/starlane-light.png" height="64">
+</a>
+
+Surrealist is built and maintained by <a href="https://starlane.studio/">Starlane Studios</a> at no cost. If you would like to support our work feel free to [donate to us](https://paypal.me/ExodiusStudios) ⚡
+
+## License
+
+Surrealist is licensed under [MIT](LICENSE)
+
+Copyright (c) 2022, Starlane Studios
