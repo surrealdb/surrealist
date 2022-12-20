@@ -18,6 +18,7 @@
 		"@mdi/js": "^7.0.96",
 		"@monaco-editor/react": "^4.4.6",
 		"@reduxjs/toolkit": "^1.9.1",
+		"@types/semver": "^7.3.13",
 		"ansi-to-html": "^0.7.2",
 		"dayjs": "^1.11.7",
 		"immer": "^9.0.16",
@@ -29,6 +30,7 @@
 		"react-router-dom": "^6.4.5",
 		"react-split-pane": "^0.1.92",
 		"remove": "^0.1.5",
+		"semver": "^7.3.8",
 		"use-immer": "^0.8.1"
 	},
 	"devDependencies": {

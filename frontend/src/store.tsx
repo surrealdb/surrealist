@@ -22,7 +22,10 @@ const mainSlice = createSlice({
 		localStorage: '',
 		enableConsole: true,
 		consoleOutput: [] as ConsoleOutputMessage[],
-		queryTimeout: 10
+		queryTimeout: 10,
+		updateChecker: true,
+		availableUpdate: '',
+		showAvailableUpdate: false,
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -39,6 +42,7 @@ const mainSlice = createSlice({
 			state.enableConsole = config.enableConsole ?? true;
 			state.consoleOutput = [];
 			state.queryTimeout = config.queryTimeout ?? 10;
+			state.updateChecker = config.updateChecker ?? true;
 		},
 
 		setColorScheme(state, action: PayloadAction<ThemeOption>) {
@@ -155,6 +159,19 @@ const mainSlice = createSlice({
 
 		setQueryTimeout(state, action: PayloadAction<number>) {
 			state.queryTimeout = action.payload;
+		},
+
+		setUpdateChecker(state, action: PayloadAction<boolean>) {
+			state.updateChecker = action.payload;
+		},
+
+		setAvailableUpdate(state, action: PayloadAction<string>) {
+			state.showAvailableUpdate = true;
+			state.availableUpdate = action.payload;
+		},
+
+		hideAvailableUpdate(state) {
+			state.showAvailableUpdate = false;
 		}
 
 	}

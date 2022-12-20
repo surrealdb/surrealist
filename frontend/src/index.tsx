@@ -8,6 +8,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
 import { LoadConfig } from '$/go/backend/Surrealist';
 import { initializeListeners } from './util/database';
+import { runUpdateChecker } from './util/updater';
 
 dayjs.extend(relativeTime);
 
@@ -15,10 +16,16 @@ dayjs.extend(relativeTime);
 LoadConfig().then(config => {
 	store.dispatch(actions.initialize(config));
 
-	const tabs = store.getState().knownTabs;
+	const { knownTabs, updateChecker } = store.getState();
 
-	if (tabs.length > 0) {
-		store.dispatch(actions.setActiveTab(tabs[0].id));
+	// Select the first tab
+	if (knownTabs.length > 0) {
+		store.dispatch(actions.setActiveTab(knownTabs[0].id));
+	}
+
+	// Check for updates
+	if (updateChecker) {
+		runUpdateChecker();
 	}
 });
 

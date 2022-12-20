@@ -36,7 +36,8 @@ export async function updateConfig() {
 		localDriver,
 		localStorage,
 		enableConsole,
-		queryTimeout
+		queryTimeout,
+		updateChecker
 	} = store.getState();
 
 	return SaveConfig(JSON.stringify({
@@ -49,6 +50,7 @@ export async function updateConfig() {
 		localDriver: localDriver,
 		localStorage: localStorage,
 		enableConsole: enableConsole,
-		queryTimeout: queryTimeout
+		queryTimeout: queryTimeout,
+		updateChecker: updateChecker
 	}));
 }

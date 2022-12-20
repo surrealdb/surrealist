@@ -31,6 +31,7 @@ export function Settings() {
 	const localPath = useStoreValue(state => state.localStorage);
 	const enableConsole = useStoreValue(state => state.enableConsole);
 	const queryTimeout = useStoreValue(state => state.queryTimeout);
+	const updateChecker = useStoreValue(state => state.updateChecker);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -84,6 +85,11 @@ export function Settings() {
 		updateConfig();
 	});
 
+	const setUpdateChecker = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setUpdateChecker(e.target.checked));
+		updateConfig();
+	});
+
 	return (
 		<>
 			<Button
@@ -131,6 +137,12 @@ export function Settings() {
 						label="Enable database console"
 						checked={enableConsole}
 						onChange={setConsoleEnabled}
+					/>
+
+					<Checkbox
+						label="Check for updates"
+						checked={updateChecker}
+						onChange={setUpdateChecker}
 					/>
 
 					<Select
