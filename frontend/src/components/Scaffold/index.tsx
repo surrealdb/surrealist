@@ -209,27 +209,6 @@ export function Scaffold() {
 	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 
-	const editorGrid = (
-		<PanelSplitter
-			id="input-result"
-			minWidths={[300, 400]}
-		>
-			<PanelSplitter
-				id="query-variables"
-				direction={SplitDirection.Vertical}
-				initialSizes={[120]}
-				minHeights={[80, 80]}
-			>
-				<QueryPane
-					isConnected={isOnline}
-					onExecuteQuery={sendQuery}
-				/>
-				<VariablesPane />
-			</PanelSplitter>
-			<ResultPane />
-		</PanelSplitter>
-	);
-
 	return (
 		<div className={classes.root}>
 			<TabBar
@@ -310,16 +289,34 @@ export function Scaffold() {
 					</Group>
 
 					<Box p="xs" className={classes.content}>
-						{showConsole ? (
+						<PanelSplitter
+							id="console-splitter"
+							direction={SplitDirection.Vertical}
+							minHeights={[300, 50]}
+							frozen={!showConsole}
+						>
 							<PanelSplitter
-								id="console-splitter"
-								direction={SplitDirection.Vertical}
-								minHeights={[300, 50]}
+								id="input-result"
+								minWidths={[300, 400]}
 							>
-								{editorGrid}
-								<ConsolePane />
+								<PanelSplitter
+									id="query-variables"
+									direction={SplitDirection.Vertical}
+									initialSizes={[120]}
+									minHeights={[80, 80]}
+								>
+									<QueryPane
+										isConnected={isOnline}
+										onExecuteQuery={sendQuery}
+									/>
+									<VariablesPane />
+								</PanelSplitter>
+								<ResultPane />
 							</PanelSplitter>
-						) : editorGrid}
+							{showConsole && (
+								<ConsolePane />
+							)}
+						</PanelSplitter>
 					</Box>
 				</>
 			) : (

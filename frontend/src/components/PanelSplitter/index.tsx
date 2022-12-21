@@ -7,6 +7,7 @@ import { updateConfig } from '~/util/helpers';
 import classes from './style.module.scss';
 
 export interface PanelSplitterProps extends SplitProps {
+	frozen?: boolean;
 	id: string;
 }
 
@@ -49,7 +50,7 @@ export function PanelSplitter(props: PanelSplitterProps) {
 				gutterClassName={classes.contentGutter}
 				draggerClassName={draggerClass}
 				onResizeFinished={handleResize}
-				initialSizes={sizes}
+				initialSizes={props.frozen ? undefined : sizes}
 			>
 				{props.children}
 			</Splitter>
