@@ -52,37 +52,41 @@ export function QueryPane(props: QueryPaneProps) {
             ],
             run: (editor) => {
                 const selection = editor.getSelection();
+				const model = editor.getModel();
 
-                if (!selection) {
+				console.log('wieieuw');
+
+                if (!selection || !model) {
                     return;
                 }
 
                 const range = {
-                    endLineNumber: selection.endLineNumber,
-                    endColumn: selection.endColumn,
                     startLineNumber: selection.startLineNumber,
-                    startColumn: selection.startColumn
+                    startColumn: 0,
+                    endLineNumber: selection.endLineNumber,
+                    endColumn: model.getLineMaxColumn(selection.endLineNumber),
                 }
-
-                const model = editor.getModel();
-
-                if(!model) {
-                    return;
-                }
-
+                               
                 const text = model.getValueInRange(range);
+
+				console.log(range);
+				console.log(text);
+
                 const lines = text.split('\n');
 
                 if(!lines) {
                     return;
                 }
 
-                const comment = lines.filter(line => !line.startsWith('#'))
-                    .map(line => `# ${line}`).join('\n');
+				const hasComment = lines.some(line => line.trim().startsWith('#'));
+
+                const comment = lines.map(line => {
+					return hasComment ? line.replace(/^# /, '') : `# ${line}`;
+				}).join('\n');
 
                 editor.executeEdits('comment-query', [{
                     range,
-                    text: comment || ""
+                    text: comment
                 }]);
             }
         });
