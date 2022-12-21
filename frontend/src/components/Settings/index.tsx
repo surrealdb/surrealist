@@ -1,4 +1,4 @@
-import { Button, Checkbox, ColorScheme, Divider, Group, Modal, NumberInput, Paper, Select, Stack, Switch, Text, TextInput, Title, useMantineColorScheme } from "@mantine/core";
+import { Button, Checkbox, ColorScheme, Divider, Group, Modal, NumberInput, Paper, Select, SimpleGrid, Stack, Switch, Text, TextInput, Title, useMantineColorScheme } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 
 import { Icon } from "../Icon";
@@ -114,90 +114,89 @@ export function Settings() {
 					</Title>
 				}
 			>
-				<Stack>
-					<Checkbox
-						label="Auto connect"
-						checked={autoConnect}
-						onChange={setAutoConnect}
-					/>
-
-					<Checkbox
-						label="Suggest table names"
-						checked={tableSuggest}
-						onChange={setTableSuggest}
-					/>
-
-					<Checkbox
-						label="Wrap query results"
-						checked={wordWrap}
-						onChange={setWordWrap}
-					/>
-
-					<Checkbox
-						label="Enable database console"
-						checked={enableConsole}
-						onChange={setConsoleEnabled}
-					/>
-
-					<Checkbox
-						label="Check for updates"
-						checked={updateChecker}
-						onChange={setUpdateChecker}
-					/>
-
-					<Select
-						data={THEMES}
-						label="Theme"
-						value={colorScheme}
-						onChange={setColorScheme}
-					/>
-
-					<NumberInput
-						label="Query timeout (seconds)"
-						value={queryTimeout}
-						min={1}
-						onChange={setQueryTimeout}
-					/>
-
-					<Select
-						data={DRIVERS}
-						label="Local database storage"
-						value={localDriver}
-						onChange={setLocalDriver}
-					/>
-
-					{localDriver === 'file' && (
-						<TextInput
-							label="Local database path"
-							placeholder="/path/to/database"
-							value={localPath}
-							onChange={setLocalPath}
-							autoComplete="off"
-							spellCheck="false"
+				<SimpleGrid cols={2}>
+					<Stack style={{ height: '100%' }}>
+						<Checkbox
+							label="Auto connect"
+							checked={autoConnect}
+							onChange={setAutoConnect}
 						/>
-					)}
 
-					{localDriver === 'tikv' && (
-						<TextInput
-							label="Local database cluster address (WIP)"
-							placeholder="address:port"
-							value={localPath}
-							onChange={setLocalPath}
-							autoComplete="off"
-							spellCheck="false"
+						<Checkbox
+							label="Suggest table names"
+							checked={tableSuggest}
+							onChange={setTableSuggest}
 						/>
-					)}
 
-					<Group>
-						<Button color="light" onClick={closeSettings}>
-							Close
-						</Button>
+						<Checkbox
+							label="Wrap query results"
+							checked={wordWrap}
+							onChange={setWordWrap}
+						/>
+
+						<Checkbox
+							label="Enable database console"
+							checked={enableConsole}
+							onChange={setConsoleEnabled}
+						/>
+
+						<Checkbox
+							label="Check for updates"
+							checked={updateChecker}
+							onChange={setUpdateChecker}
+						/>
+
 						<Spacer />
+
 						<Text color={isLight ? 'light.4' : 'dark.3'}>
 							Version {version} by {author}
 						</Text>
-					</Group>
-				</Stack>
+					</Stack>
+					<Stack>
+						<Select
+							data={THEMES}
+							label="Theme"
+							value={colorScheme}
+							onChange={setColorScheme}
+						/>
+
+						<NumberInput
+							label="Query timeout (seconds)"
+							value={queryTimeout}
+							min={1}
+							onChange={setQueryTimeout}
+						/>
+
+						<Select
+							data={DRIVERS}
+							label="Local database storage"
+							value={localDriver}
+							onChange={setLocalDriver}
+						/>
+
+						{localDriver === 'file' && (
+							<TextInput
+								label="Local database path"
+								placeholder="/path/to/database"
+								value={localPath}
+								onChange={setLocalPath}
+								autoComplete="off"
+								spellCheck="false"
+							/>
+						)}
+
+						{localDriver === 'tikv' && (
+							<TextInput
+								label="Local database cluster address (WIP)"
+								placeholder="address:port"
+								value={localPath}
+								onChange={setLocalPath}
+								autoComplete="off"
+								spellCheck="false"
+							/>
+						)}
+					</Stack>
+				</SimpleGrid>
 			</Modal>
 		</>
 	)
