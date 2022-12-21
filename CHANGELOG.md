@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.3.0 - Console panel
+- Added a console panel to view logs for the integrated database (#1)
+	- Can be hidden and revealed on the fly or from the setting screen
+- Disabled uneccecary auto completion for input fields (#3)
+- Added configurable global query timeout setting
+- Added update checker to prompt about new releases
+	- Can be disabled from the settings screen
+- Added comment toggle shortcut to the query editor (Ctrl + /)
+- Updated the setting screen UI
+
 ## 1.2.0 - Local database
 - Added the ability to start and stop a local database directly from Surrealist
 	- Will use the username, password, and port entered for the current tab
