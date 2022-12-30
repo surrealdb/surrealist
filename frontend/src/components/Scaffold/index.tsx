@@ -15,14 +15,14 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { QueryPane } from '../QueryPane';
 import { useActiveTab } from '~/hooks/tab';
 import { ResultPane } from '../ResultPane';
+import { ConsolePane } from "~/components/ConsolePane";
 import { showNotification } from '@mantine/notifications';
 import { VariablesPane } from '../VariablesPane';
 import { SplitDirection } from '@devbookhq/splitter';
 import { useIsLight } from '~/hooks/theme';
+import { mdiConsole } from '@mdi/js';
 import { Icon } from '../Icon';
-import { mdiConsole, mdiPlay } from '@mdi/js';
-import {ConsolePane} from "~/components/ConsolePane";
-import { isPending } from '@reduxjs/toolkit';
+import { HistoryPane } from '../HistoryPane';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -33,6 +33,7 @@ export function Scaffold() {
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
+	const enableHistory = useStoreValue(state => state.config.enableHistory);
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
@@ -312,6 +313,9 @@ export function Scaffold() {
 									<VariablesPane />
 								</PanelSplitter>
 								<ResultPane />
+								{enableHistory && (
+									<HistoryPane />
+								)}
 							</PanelSplitter>
 							{showConsole && (
 								<ConsolePane />

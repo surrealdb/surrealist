@@ -1,13 +1,12 @@
 import { TogglePinned } from "$/go/backend/Surrealist";
 import { Group, Button, Modal, TextInput } from "@mantine/core";
-import { mdiPlus, mdiPinOff, mdiPin } from "@mdi/js";
+import { mdiPlus, mdiPinOff, mdiPin, mdiHistory } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, actions, useStoreValue } from "~/store";
 import { updateConfig, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
-import { History } from "../History";
 import { Icon } from "../Icon";
 import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Scaffold/Spacer";
@@ -26,6 +25,7 @@ export function TabBar(props: TabBarProps) {
 	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.config.tabs);
+	const enableHistory = useStoreValue(state => state.config.enableHistory);
 
 	const [ editingTab, setEditingTab ] = useState<string|null>(null);
 	const [ tabName, setTabName ] = useState('');
@@ -76,6 +76,10 @@ export function TabBar(props: TabBarProps) {
 		TogglePinned();
 		updateTitle();
 	});
+
+	const toggleHistory = useStable(() => {
+		store.dispatch(actions.setShowHistory(!enableHistory));
+	});
 	
 	return (
 		<Group
@@ -118,7 +122,17 @@ export function TabBar(props: TabBarProps) {
 				closeConnection={props.closeConnection}
 			/>
 
-			<History />
+			<Button
+				px="xs"
+				color={isLight ? 'light.0' : 'dark.4'}
+				title="Query history"
+				onClick={toggleHistory}
+			>
+				<Icon
+					path={mdiHistory}
+					color={isLight ? 'light.8' : 'white'}
+				/>
+			</Button>
 			
 			<Button
 				px="xs"

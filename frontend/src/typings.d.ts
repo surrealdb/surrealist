@@ -13,6 +13,7 @@ export interface SurrealistConfig {
 	localDriver: DriverType;
 	localStorage: string;
 	enableConsole: boolean;
+	enableHistory: boolean;
 	queryTimeout: number;
 	updateChecker: boolean;
 }

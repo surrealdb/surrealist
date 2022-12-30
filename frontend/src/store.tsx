@@ -154,7 +154,11 @@ const mainSlice = createSlice({
 
 		hideAvailableUpdate(state) {
 			state.showAvailableUpdate = false;
-		}
+		},
+
+		setShowHistory(state, action: PayloadAction<boolean>) {
+			state.config.enableHistory = action.payload;
+		},
 
 	}
 });
