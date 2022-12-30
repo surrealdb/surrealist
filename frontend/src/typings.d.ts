@@ -1,4 +1,21 @@
+import { ColorScheme } from "@mantine/core";
 import {SurrealConnection} from "./surreal";
+
+export type DriverType = "file" | "memory" | "tikv";
+
+export interface SurrealistConfig {
+	theme: ColorScheme | 'automatic';
+	tabs: SurrealistTab[];
+	autoConnect: boolean;
+	tableSuggest: boolean;
+	wordWrap: boolean;
+	history: any[];
+	localDriver: DriverType;
+	localStorage: string;
+	enableConsole: boolean;
+	queryTimeout: number;
+	updateChecker: boolean;
+}
 
 export interface SurrealistTab {
 	id: string;

@@ -18,7 +18,7 @@ interface PreviewProps {
 
 function Preview(props: PreviewProps) {
 	const isLight = useIsLight();
-	const wordWrap = useStoreValue(state => state.wordWrap);
+	const wordWrap = useStoreValue(state => state.config.wordWrap);
 
 	const contents = useMemo(() => {
 		return JSON.stringify(props.result, null, 4);

@@ -21,8 +21,8 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 	const activeTab = useActiveTab();
 	const isServing = useStoreValue(state => state.isServing);
 	const isPending = useStoreValue(state => state.servePending);
-	const localDriver = useStoreValue(state => state.localDriver);
-	const localPath = useStoreValue(state => state.localStorage);
+	const localDriver = useStoreValue(state => state.config.localDriver);
+	const localPath = useStoreValue(state => state.config.localStorage);
 
 	const endpoint = activeTab?.connection?.endpoint;
 

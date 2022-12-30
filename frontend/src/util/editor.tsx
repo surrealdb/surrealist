@@ -82,7 +82,7 @@ export function initializeEditor(monaco: Monaco) {
 	monaco.languages.registerCompletionItemProvider('surrealql', {
 		triggerCharacters: [' '],
 		provideCompletionItems: async (model, position, context) => {
-			const { tableSuggest } = store.getState();
+			const { tableSuggest } = store.getState().config;
 			const surreal = getSurreal();
 
 			if (!tableSuggest || !surreal) {
@@ -117,8 +117,8 @@ export function initializeEditor(monaco: Monaco) {
 	monaco.languages.registerCompletionItemProvider('surrealql', {
 		triggerCharacters: ['$'],
 		provideCompletionItems(_, position, context) {
-			const { activeTab, knownTabs } = store.getState();
-			const tab = knownTabs.find(tab => tab.id == activeTab);
+			const { activeTab, config } = store.getState();
+			const tab = config.tabs.find(tab => tab.id == activeTab);
 
 			if(!tab) {
 				return undefined;

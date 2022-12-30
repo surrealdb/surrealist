@@ -25,7 +25,7 @@ export function TabBar(props: TabBarProps) {
 	const isLight = useIsLight();
 	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.activeTab);
-	const tabList = useStoreValue(state => state.knownTabs);
+	const tabList = useStoreValue(state => state.config.tabs);
 
 	const [ editingTab, setEditingTab ] = useState<string|null>(null);
 	const [ tabName, setTabName ] = useState('');

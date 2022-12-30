@@ -37,7 +37,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	 * Send a message to the database
 	 */
 	const message = (method: string, params: any[] = []) => {
-		const timeout = store.getState().queryTimeout * 1000;
+		const timeout = store.getState().config.queryTimeout * 1000;
 		const id = uid(7);
 
 		return new Promise((success, reject) => {

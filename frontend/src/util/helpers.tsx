@@ -3,12 +3,12 @@ import { WindowSetTitle } from "$/runtime/runtime";
 import { store } from "~/store";
 
 export function updateTitle() {
-	const { activeTab, isPinned, knownTabs } = store.getState();
+	const { activeTab, isPinned, config } = store.getState();
 
 	let title = 'Surrealist';
 
 	if (activeTab) {
-		const tab = knownTabs.find(t => t.id === activeTab);
+		const tab = config.tabs.find(t => t.id === activeTab);
 
 		if (tab) {
 			title += ` - ${tab.name}`;
@@ -26,31 +26,5 @@ export function updateTitle() {
  * Update the config on disk with the current state of the app
  */
 export async function updateConfig() {
-	const {
-		colorScheme,
-		knownTabs,
-		autoConnect,
-		tableSuggest,
-		wordWrap,
-		history,
-		localDriver,
-		localStorage,
-		enableConsole,
-		queryTimeout,
-		updateChecker
-	} = store.getState();
-
-	return SaveConfig(JSON.stringify({
-		theme: colorScheme,
-		tabs: knownTabs,
-		autoConnect: autoConnect,
-		tableSuggest: tableSuggest,
-		wordWrap: wordWrap,
-		history: history,
-		localDriver: localDriver,
-		localStorage: localStorage,
-		enableConsole: enableConsole,
-		queryTimeout: queryTimeout,
-		updateChecker: updateChecker
-	}));
+	return SaveConfig(JSON.stringify(store.getState().config));
 }

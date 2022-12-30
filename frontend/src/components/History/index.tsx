@@ -14,7 +14,7 @@ export function History() {
 	const isLight = useIsLight();
 	const theme = useMantineTheme();
 	const activeTab = useActiveTab();
-	const entries = useStoreValue(state => state.history);
+	const entries = useStoreValue(state => state.config.history);
 
 	const [ showHistory, setShowHistory ] = useState(false);
 

@@ -28,11 +28,11 @@ export function Scaffold() {
 	const isLight = useIsLight();
 	const theme = useMantineTheme();
 	const activeTab = useStoreValue(state => state.activeTab);
-	const tabList = useStoreValue(state => state.knownTabs);
-	const autoConnect = useStoreValue(state => state.autoConnect);
+	const tabList = useStoreValue(state => state.config.tabs);
+	const autoConnect = useStoreValue(state => state.config.autoConnect);
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
-	const enableConsole = useStoreValue(state => state.enableConsole);
+	const enableConsole = useStoreValue(state => state.config.enableConsole);
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
@@ -89,7 +89,7 @@ export function Scaffold() {
 		}
 
 		const activeTab = store.getState().activeTab;
-		const tabInfo = store.getState().knownTabs.find(tab => tab.id === activeTab);
+		const tabInfo = store.getState().config.tabs.find(tab => tab.id === activeTab);
 
 		if (!tabInfo) {
 			return;

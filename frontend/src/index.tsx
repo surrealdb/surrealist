@@ -1,11 +1,11 @@
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { actions, store } from './store';
 import { App } from './components/App';
 import { loader } from '@monaco-editor/react';
 import { initializeEditor } from './util/editor';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import dayjs from 'dayjs';
 import { LoadConfig } from '$/go/backend/Surrealist';
 import { initializeListeners } from './util/database';
 import { runUpdateChecker } from './util/updater';
@@ -16,11 +16,11 @@ dayjs.extend(relativeTime);
 LoadConfig().then(config => {
 	store.dispatch(actions.initialize(config));
 
-	const { knownTabs, updateChecker } = store.getState();
+	const { tabs, updateChecker } = store.getState().config;
 
 	// Select the first tab
-	if (knownTabs.length > 0) {
-		store.dispatch(actions.setActiveTab(knownTabs[0].id));
+	if (tabs.length > 0) {
+		store.dispatch(actions.setActiveTab(tabs[0].id));
 	}
 
 	// Check for updates

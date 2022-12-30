@@ -8,6 +8,7 @@ import { updateConfig } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { useState } from "react";
+import { DriverType } from "~/typings";
 
 const THEMES = [
 	{ label: 'Automatic', value: 'automatic' },
@@ -23,15 +24,7 @@ const DRIVERS = [
 
 export function Settings() {
 	const isLight = useIsLight();
-	const colorScheme = useStoreValue(state => state.colorScheme);
-	const autoConnect = useStoreValue(state => state.autoConnect);
-	const tableSuggest = useStoreValue(state => state.tableSuggest);
-	const wordWrap = useStoreValue(state => state.wordWrap);
-	const localDriver = useStoreValue(state => state.localDriver);
-	const localPath = useStoreValue(state => state.localStorage);
-	const enableConsole = useStoreValue(state => state.enableConsole);
-	const queryTimeout = useStoreValue(state => state.queryTimeout);
-	const updateChecker = useStoreValue(state => state.updateChecker);
+	const config = useStoreValue(state => state.config);
 	const [showSettings, setShowSettings] = useState(false);
 
 	const version = import.meta.env.VERSION;
@@ -66,7 +59,7 @@ export function Settings() {
 	});
 
 	const setLocalDriver = useStable((driver: string) => {
-		store.dispatch(actions.setLocalDatabaseDriver(driver));
+		store.dispatch(actions.setLocalDatabaseDriver(driver as DriverType));
 		updateConfig();
 	});
 
@@ -118,31 +111,31 @@ export function Settings() {
 					<Stack style={{ height: '100%' }}>
 						<Checkbox
 							label="Auto connect"
-							checked={autoConnect}
+							checked={config.autoConnect}
 							onChange={setAutoConnect}
 						/>
 
 						<Checkbox
 							label="Suggest table names"
-							checked={tableSuggest}
+							checked={config.tableSuggest}
 							onChange={setTableSuggest}
 						/>
 
 						<Checkbox
 							label="Wrap query results"
-							checked={wordWrap}
+							checked={config.wordWrap}
 							onChange={setWordWrap}
 						/>
 
 						<Checkbox
 							label="Enable database console"
-							checked={enableConsole}
+							checked={config.enableConsole}
 							onChange={setConsoleEnabled}
 						/>
 
 						<Checkbox
 							label="Check for updates"
-							checked={updateChecker}
+							checked={config.updateChecker}
 							onChange={setUpdateChecker}
 						/>
 
@@ -156,13 +149,13 @@ export function Settings() {
 						<Select
 							data={THEMES}
 							label="Theme"
-							value={colorScheme}
+							value={config.theme}
 							onChange={setColorScheme}
 						/>
 
 						<NumberInput
 							label="Query timeout (seconds)"
-							value={queryTimeout}
+							value={config.queryTimeout}
 							min={1}
 							onChange={setQueryTimeout}
 						/>
@@ -170,26 +163,26 @@ export function Settings() {
 						<Select
 							data={DRIVERS}
 							label="Local database storage"
-							value={localDriver}
+							value={config.localDriver}
 							onChange={setLocalDriver}
 						/>
 
-						{localDriver === 'file' && (
+						{config.localDriver === 'file' && (
 							<TextInput
 								label="Local database path"
 								placeholder="/path/to/database"
-								value={localPath}
+								value={config.localStorage}
 								onChange={setLocalPath}
 								autoComplete="off"
 								spellCheck="false"
 							/>
 						)}
 
-						{localDriver === 'tikv' && (
+						{config.localDriver === 'tikv' && (
 							<TextInput
 								label="Local database cluster address (WIP)"
 								placeholder="address:port"
-								value={localPath}
+								value={config.localStorage}
 								onChange={setLocalPath}
 								autoComplete="off"
 								spellCheck="false"

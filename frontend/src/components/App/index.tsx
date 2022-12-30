@@ -15,7 +15,7 @@ import { MouseEvent } from "react";
 export function App() {
 	const update = useStoreValue(state => state.availableUpdate);
 	const showUpdate = useStoreValue(state => state.showAvailableUpdate);
-	const colorScheme = useStoreValue(state => state.colorScheme);
+	const colorScheme = useStoreValue(state => state.config.theme);
 	const defaultScheme = useColorScheme();
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	const mantineTheme = useSurrealistTheme(actualTheme);
