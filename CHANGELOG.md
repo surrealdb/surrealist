@@ -2,6 +2,7 @@
 
 ## 1.4.0 - Saved queries
 - Added query saving functionality
+- Added a button to render query results as table
 - Redesigned the query history UI
 - Added F9 as shortcut for "Execute query"
 - F9 and Ctrl + Space now work outside the editor
