@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.4.0 - Saved queries
+- Added query saving functionality
+- Redesigned the query history UI
+- Added F9 as shortcut for "Execute query"
+- F9 and Ctrl + Space now work outside the editor
+- Improved the panel resizing behavior
+
 ## 1.3.0 - Console panel
 - Added a console panel to view logs for the integrated database (#1)
 	- Can be hidden and revealed on the fly or from the setting screen
