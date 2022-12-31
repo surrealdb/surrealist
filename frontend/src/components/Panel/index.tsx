@@ -1,22 +1,26 @@
 import { Box, Group, Paper, PaperProps, Text } from "@mantine/core";
+import { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from './style.module.scss';
 
-export interface PanelProps extends PaperProps {
+export interface PanelProps extends PaperProps, HTMLAttributes<HTMLDivElement> {
 	title: string;
 	icon: string;
 	rightSection?: React.ReactNode;
 }
 
 export function Panel(props: PanelProps) {
+	const { children, title, icon, rightSection, ...rest } = props;
+
 	const isLight = useIsLight();
 	
 	return (
 		<Paper
 			className={classes.root}
 			bg={isLight ? 'white' : 'dark.7'}
+			{...rest}
 		>
 			<Group
 				px="sm"
@@ -26,13 +30,13 @@ export function Panel(props: PanelProps) {
 				noWrap
 			>
 				<Icon
-					path={props.icon}
+					path={icon}
 				/>
 				<Text weight={600}>
-					{props.title}
+					{title}
 				</Text>
 				<Spacer />
-				{props.rightSection}
+				{rightSection}
 			</Group>
 			<Box
 				p="sm"
@@ -40,7 +44,7 @@ export function Panel(props: PanelProps) {
 				pos="relative"
 				className={classes.content}
 			>
-				{props.children}
+				{children}
 			</Box>
 		</Paper>
 	);

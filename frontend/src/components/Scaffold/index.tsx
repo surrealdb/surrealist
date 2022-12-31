@@ -161,6 +161,7 @@ export function Scaffold() {
 		}
 
 		store.dispatch(actions.addHistoryEntry({
+			id: uid(5),
 			query: query,
 			tabName: name,
 			timestamp: Date.now()
@@ -314,7 +315,9 @@ export function Scaffold() {
 									</Splitter>
 								}
 								endPane={enableHistory && (
-									<HistoryPane />
+									<HistoryPane
+										onExecuteQuery={sendQuery}
+									/>
 								)}
 							>
 								<ResultPane />

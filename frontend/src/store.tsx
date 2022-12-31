@@ -80,19 +80,23 @@ const mainSlice = createSlice({
 		},
 
 		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {
-			if (state.config.history.length > 0 && state.config.history[0].query === action.payload.query) {
+			if (state.config.queryHistory.length > 0 && state.config.queryHistory[0].query === action.payload.query) {
 				return;
 			}
 
-			state.config.history.unshift(action.payload);
+			state.config.queryHistory.unshift(action.payload);
 
-			if (state.config.history.length > 50) {
-				state.config.history.pop();
+			if (state.config.queryHistory.length > 50) {
+				state.config.queryHistory.pop();
 			}
 		},
 
 		clearHistory(state) {
-			state.config.history = [];
+			state.config.queryHistory = [];
+		},
+
+		removeHistoryEntry(state, action: PayloadAction<string>) {
+			state.config.queryHistory = state.config.queryHistory.filter(entry => entry.id !== action.payload);
 		},
 
 		prepareServe(state, action: PayloadAction<string>) {

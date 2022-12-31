@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from "react";
 import { Panel } from "~/components/Panel";
-import { mdiClose, mdiConsole, mdiDelete, mdiWindowMinimize } from "@mdi/js";
+import { mdiClose, mdiConsole, mdiDelete } from "@mdi/js";
 import { ActionIcon, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { actions, store, useStoreValue } from "~/store";
@@ -14,7 +14,7 @@ function ConsoleActions() {
 		store.dispatch(actions.clearConsole());
 	});
 
-	const hideConsole = useStable(async () => {
+	const hideConsole = useStable(() => {
 		store.dispatch(actions.setConsoleEnabled(false));
 	});
 

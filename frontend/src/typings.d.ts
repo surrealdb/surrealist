@@ -9,7 +9,8 @@ export interface SurrealistConfig {
 	autoConnect: boolean;
 	tableSuggest: boolean;
 	wordWrap: boolean;
-	history: any[];
+	queryHistory: HistoryEntry[];
+	queryFavorites: string[];
 	localDriver: DriverType;
 	localStorage: string;
 	enableConsole: boolean;
@@ -29,6 +30,7 @@ export interface SurrealistTab {
 }
 
 export interface HistoryEntry {
+	id: string;
 	query: string;
 	timestamp: number;
 	tabName: string;

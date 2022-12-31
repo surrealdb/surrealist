@@ -1,4 +1,3 @@
-import { Modal } from "@mantine/core";
 import { Monaco } from "@monaco-editor/react";
 import { editor, languages } from "monaco-editor";
 import { store } from "~/store";
