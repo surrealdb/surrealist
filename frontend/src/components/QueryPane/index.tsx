@@ -54,8 +54,6 @@ export function QueryPane(props: QueryPaneProps) {
                 const selection = editor.getSelection();
 				const model = editor.getModel();
 
-				console.log('wieieuw');
-
                 if (!selection || !model) {
                     return;
                 }
@@ -68,10 +66,6 @@ export function QueryPane(props: QueryPaneProps) {
                 }
                                
                 const text = model.getValueInRange(range);
-
-				console.log(range);
-				console.log(text);
-
                 const lines = text.split('\n');
 
                 if(!lines) {
