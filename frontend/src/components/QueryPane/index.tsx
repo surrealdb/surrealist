@@ -9,6 +9,7 @@ import {Panel} from "../Panel";
 import {useMemo} from "react";
 import {baseEditorConfig} from "~/util/editor";
 import {useIsLight} from "~/hooks/theme";
+import { useHotkeys } from "@mantine/hooks";
 
 export interface QueryPaneProps {
     isConnected: boolean;
@@ -37,7 +38,8 @@ export function QueryPane(props: QueryPaneProps) {
             id: 'run-query',
             label: 'Run Query',
             keybindings: [
-                KeyMod.CtrlCmd | KeyCode.Enter
+                KeyMod.CtrlCmd | KeyCode.Enter,
+                KeyCode.F9
             ],
             run: () => {
                 props.onExecuteQuery();
@@ -95,6 +97,11 @@ export function QueryPane(props: QueryPaneProps) {
             wordWrap: 'on',
         }
     }, []);
+
+	useHotkeys([
+		['F9', props.onExecuteQuery],
+		['mod+Enter', props.onExecuteQuery],
+	])
 
     return (
         <Panel

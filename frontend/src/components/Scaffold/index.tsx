@@ -17,14 +17,11 @@ import { ResultPane } from '../ResultPane';
 import { ConsolePane } from "~/components/ConsolePane";
 import { showNotification } from '@mantine/notifications';
 import { VariablesPane } from '../VariablesPane';
-import { SplitDirection } from '@devbookhq/splitter';
 import { useIsLight } from '~/hooks/theme';
-import { mdiConsole, mdiInformation } from '@mdi/js';
+import { mdiConsole } from '@mdi/js';
 import { Icon } from '../Icon';
 import { HistoryPane } from '../HistoryPane';
 import { Splitter } from '../Splitter';
-import { Pane } from 'react-split-pane';
-import { Panel } from '../Panel';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -275,7 +272,7 @@ export function Scaffold() {
 									color="surreal"
 									onClick={sendQuery}
 									className={classes.sendButton}
-									title="Send Query (Ctrl+Enter)"
+									title="Send Query (F9)"
 								>
 									Send Query
 								</Button>
