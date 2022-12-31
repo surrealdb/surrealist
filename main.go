@@ -20,6 +20,8 @@ func main() {
 		Title:            "Surrealist",
 		Width:            1024,
 		Height:           672,
+		MinWidth:         790,
+		MinHeight:        510,
 		OnStartup:        app.Startup,
 		BackgroundColour: options.NewRGB(244, 245, 251),
 		AssetServer: &assetserver.Options{
