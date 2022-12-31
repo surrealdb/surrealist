@@ -1,6 +1,6 @@
 import { TogglePinned } from "$/go/backend/Surrealist";
 import { Group, Button, Modal, TextInput } from "@mantine/core";
-import { mdiPlus, mdiPinOff, mdiPin, mdiHistory } from "@mdi/js";
+import { mdiPlus, mdiPinOff, mdiPin, mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -25,7 +25,8 @@ export function TabBar(props: TabBarProps) {
 	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.activeTab);
 	const tabList = useStoreValue(state => state.config.tabs);
-	const enableHistory = useStoreValue(state => state.config.enableHistory);
+	const enableListing = useStoreValue(state => state.config.enableListing);
+	const queryListing = useStoreValue(state => state.config.queryListing);
 
 	const [ editingTab, setEditingTab ] = useState<string|null>(null);
 	const [ tabName, setTabName ] = useState('');
@@ -78,9 +79,23 @@ export function TabBar(props: TabBarProps) {
 	});
 
 	const toggleHistory = useStable(() => {
-		store.dispatch(actions.setShowHistory(!enableHistory));
+		if (queryListing !== 'history') {
+			store.dispatch(actions.setListingMode('history'));
+			store.dispatch(actions.setShowQueryListing(true));
+		} else {
+			store.dispatch(actions.setShowQueryListing(!enableListing));
+		}
 	});
-	
+
+	const toggleFavorites = useStable(() => {
+		if (queryListing !== 'favorites') {
+			store.dispatch(actions.setListingMode('favorites'));
+			store.dispatch(actions.setShowQueryListing(true));
+		} else {
+			store.dispatch(actions.setShowQueryListing(!enableListing));
+		}
+	});
+
 	return (
 		<Group
 			p="xs"
@@ -125,11 +140,23 @@ export function TabBar(props: TabBarProps) {
 			<Button
 				px="xs"
 				color={isLight ? 'light.0' : 'dark.4'}
-				title="Query history"
+				title="Toggle history"
 				onClick={toggleHistory}
 			>
 				<Icon
 					path={mdiHistory}
+					color={isLight ? 'light.8' : 'white'}
+				/>
+			</Button>
+
+			<Button
+				px="xs"
+				color={isLight ? 'light.0' : 'dark.4'}
+				title="Toggle favorites"
+				onClick={toggleFavorites}
+			>
+				<Icon
+					path={mdiStar}
 					color={isLight ? 'light.8' : 'white'}
 				/>
 			</Button>
@@ -162,8 +189,6 @@ export function TabBar(props: TabBarProps) {
 							onChange={e => setTabName(e.target.value)}
 							autoFocus
 							onFocus={e => e.target.select()}
-							autoComplete="off"
-							spellCheck="false"
 						/>
 						<Button type="submit">
 							Rename

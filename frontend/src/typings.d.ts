@@ -2,6 +2,7 @@ import { ColorScheme } from "@mantine/core";
 import {SurrealConnection} from "./surreal";
 
 export type DriverType = "file" | "memory" | "tikv";
+export type QueryListing = "history" | "favorites";
 
 export interface SurrealistConfig {
 	theme: ColorScheme | 'automatic';
@@ -10,13 +11,14 @@ export interface SurrealistConfig {
 	tableSuggest: boolean;
 	wordWrap: boolean;
 	queryHistory: HistoryEntry[];
-	queryFavorites: string[];
+	queryFavorites: FavoritesEntry[];
 	localDriver: DriverType;
 	localStorage: string;
 	enableConsole: boolean;
-	enableHistory: boolean;
+	enableListing: boolean;
 	queryTimeout: number;
 	updateChecker: boolean;
+	queryListing: QueryListing;
 }
 
 export interface SurrealistTab {
@@ -34,6 +36,12 @@ export interface HistoryEntry {
 	query: string;
 	timestamp: number;
 	tabName: string;
+}
+
+export interface FavoritesEntry {
+	id: string;
+	query: string;
+	name: string;
 }
 
 export interface ConsoleOutputMessage {

@@ -173,8 +173,6 @@ export function Settings() {
 								placeholder="/path/to/database"
 								value={config.localStorage}
 								onChange={setLocalPath}
-								autoComplete="off"
-								spellCheck="false"
 							/>
 						)}
 
@@ -184,8 +182,6 @@ export function Settings() {
 								placeholder="address:port"
 								value={config.localStorage}
 								onChange={setLocalPath}
-								autoComplete="off"
-								spellCheck="false"
 							/>
 						)}
 					</Stack>

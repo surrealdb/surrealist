@@ -22,6 +22,7 @@ import { mdiConsole } from '@mdi/js';
 import { Icon } from '../Icon';
 import { HistoryPane } from '../HistoryPane';
 import { Splitter } from '../Splitter';
+import { FavoritesPane } from '../FavoritesPane';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -32,7 +33,8 @@ export function Scaffold() {
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
-	const enableHistory = useStoreValue(state => state.config.enableHistory);
+	const enableListing = useStoreValue(state => state.config.enableListing);
+	const queryListing = useStoreValue(state => state.config.queryListing);
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
@@ -314,8 +316,12 @@ export function Scaffold() {
 										/>
 									</Splitter>
 								}
-								endPane={enableHistory && (
+								endPane={!enableListing ? null : queryListing == 'history' ? (
 									<HistoryPane
+										onExecuteQuery={sendQuery}
+									/>
+								) : (
+									<FavoritesPane
 										onExecuteQuery={sendQuery}
 									/>
 								)}
@@ -369,8 +375,6 @@ export function Scaffold() {
 								draft.endpoint = e.target.value
 							})}
 							autoFocus
-							autoComplete="off"
-							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -379,8 +383,6 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.username = e.target.value
 							})}
-							autoComplete="off"
-							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -389,8 +391,6 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.password = e.target.value
 							})}
-							autoComplete="off"
-							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -399,8 +399,6 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.namespace = e.target.value
 							})}
-							autoComplete="off"
-							spellCheck="false"
 						/>
 						<TextInput
 							style={{ flex: 1 }}
@@ -409,8 +407,6 @@ export function Scaffold() {
 							onChange={(e) => setInfoDetails(draft => {
 								draft.database = e.target.value
 							})}
-							autoComplete="off"
-							spellCheck="false"
 						/>
 						<Group>
 							<Button color="light" onClick={closeEditingInfo}>

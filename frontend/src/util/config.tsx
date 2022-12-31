@@ -11,7 +11,8 @@ export const BASE_CONFIG: SurrealistConfig = {
 	localDriver: 'memory',
 	localStorage: '',
 	enableConsole: true,
-	enableHistory: false,
+	enableListing: false,
 	queryTimeout: 10,
 	updateChecker: true,
+	queryListing: 'history',
 }

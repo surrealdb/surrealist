@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, ConsoleOutputMessage, SurrealistConfig, DriverType} from "./typings";
+import {HistoryEntry, SurrealistTab, ConsoleOutputMessage, SurrealistConfig, DriverType, QueryListing, FavoritesEntry} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 
@@ -101,6 +101,14 @@ const mainSlice = createSlice({
 			state.config.queryHistory = state.config.queryHistory.filter(entry => entry.id !== action.payload);
 		},
 
+		addFavoritesEntry(state, action: PayloadAction<FavoritesEntry>) {
+			state.config.queryFavorites.push(action.payload);
+		},
+
+		removeFavoritesEntry(state, action: PayloadAction<string>) {
+			state.config.queryFavorites = state.config.queryFavorites.filter(entry => entry.id !== action.payload);
+		},
+
 		prepareServe(state, action: PayloadAction<string>) {
 			state.servingTab = action.payload;
 			state.servePending = true;
@@ -162,9 +170,13 @@ const mainSlice = createSlice({
 			state.showAvailableUpdate = false;
 		},
 
-		setShowHistory(state, action: PayloadAction<boolean>) {
-			state.config.enableHistory = action.payload;
+		setShowQueryListing(state, action: PayloadAction<boolean>) {
+			state.config.enableListing = action.payload;
 		},
+
+		setListingMode(state, action: PayloadAction<QueryListing>) {
+			state.config.queryListing = action.payload;
+		}
 
 	}
 });

@@ -40,13 +40,7 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 				defaultProps: {
 					centered: true,
 					exitTransitionDuration: 100,
-					overlayColor: '#12111C',
-					overlayBlur: 1
-				}
-			},
-			Drawer: {
-				defaultProps: {
-					overlayColor: '#12111C',
+					overlayColor: '#0c0a12',
 					overlayBlur: 1
 				}
 			},
@@ -89,7 +83,11 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 							color: theme.fn.themeColor('light.4')
 						}
 					}
-				})
+				}),
+				defaultProps: {
+					autoComplete: 'off',
+					spellCheck: 'false'
+				}
 			},
 			Radio: {
 				styles: {

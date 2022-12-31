@@ -1,32 +1,36 @@
 import classes from './style.module.scss';
-import { ActionIcon, Box, Collapse, Divider, Group, ScrollArea, Stack, Text, TextInput, useMantineTheme } from "@mantine/core";
-import { mdiClose, mdiContentCopy, mdiDelete, mdiHistory, mdiMagnify, mdiPencil, mdiPlay } from "@mdi/js";
-import { Fragment, useMemo } from "react";
+import { ActionIcon, Box, Button, Collapse, Divider, Group, Modal, ScrollArea, Stack, Text, Textarea, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { mdiClose, mdiContentCopy, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar, mdiStarOff } from "@mdi/js";
+import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { Panel } from "../Panel";
-import dayjs from 'dayjs';
 import { useStable } from '~/hooks/stable';
 import { Icon } from '../Icon';
 import { useHover, useInputState } from '@mantine/hooks';
-import { HistoryEntry, SurrealistTab } from '~/typings';
+import { FavoritesEntry, SurrealistTab } from '~/typings';
 import { showNotification } from '@mantine/notifications';
 import { useActiveTab } from '~/hooks/tab';
+import { Form } from '../Form';
+import { Spacer } from '../Spacer';
+import { uid } from 'radash';
 
-export interface HistoryPaneProps {
+export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
 }
 
-export function HistoryPane(props: HistoryPaneProps) {
+export function FavoritesPane(props: FavoritesPaneProps) {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
-	const entries = useStoreValue(state => state.config.queryHistory);
+	const entries = useStoreValue(state => state.config.queryFavorites);
 	const [search, setSearch] = useInputState('');
 
 	const filtered = useMemo(() => {
 		const needle = search.toLowerCase();
 
-		return entries.filter(entry => entry.query.toLowerCase().includes(needle));
+		return entries
+			.filter(entry => entry.name.toLowerCase().includes(needle) || entry.query.toLowerCase().includes(needle))
+			.sort((a, b) => a.name.localeCompare(b.name));
 	}, [search, entries]);
 
 	const historyList = useMemo(() => {
@@ -40,7 +44,7 @@ export function HistoryPane(props: HistoryPaneProps) {
 
 		return filtered.map((entry, i) => (
 			<Fragment key={i}>
-				<HistoryRow
+				<FavoriteRow
 					entry={entry}
 					isLight={isLight}
 					activeTab={activeTab}
@@ -57,10 +61,14 @@ export function HistoryPane(props: HistoryPaneProps) {
 
 	return (
 		<Panel
-            title="History"
-            icon={mdiHistory}
+            title="Saved queries"
+            icon={mdiStar}
 			onMouseDownCapture={e => e.stopPropagation()}
-			rightSection={<HistoryActions />}
+			rightSection={
+				<FavoritesActions
+					activeTab={activeTab}
+				/>
+			}
         >
 			<ScrollArea
 				style={{
@@ -70,7 +78,7 @@ export function HistoryPane(props: HistoryPaneProps) {
 				}}
 			>
 				<TextInput
-					placeholder="Search history..."
+					placeholder="Search queries..."
 					icon={<Icon path={mdiMagnify} />}
 					value={search}
 					onChange={setSearch}
@@ -86,22 +94,18 @@ export function HistoryPane(props: HistoryPaneProps) {
 }
 
 interface HistoryRowProps {
-	entry: HistoryEntry;
+	entry: FavoritesEntry;
 	isLight: boolean;
 	activeTab: SurrealistTab | undefined;
 	onExecuteQuery: () => void;
 }
 
-function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowProps) {
+function FavoriteRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowProps) {
 	const theme = useMantineTheme();
 	const { ref, hovered } = useHover();
 
 	const removeEntry = useStable(() => {
-		store.dispatch(actions.removeHistoryEntry(entry.id));
-	});
-
-	const toggleFavorite = useStable(() => {
-		// store.dispatch(actions.toggleHistoryEntryFavorite(entry.id));
+		store.dispatch(actions.removeFavoritesEntry(entry.id));
 	});
 
 	const copyQuery = useStable(() => {
@@ -134,10 +138,10 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 			style={{ borderColor: theme.fn.themeColor(isLight ? 'light.0' : 'dark.3') }}
 		>
 			<Text
-				c={isLight ? 'light.3' : 'light.4'}
+				c="yellow.8"
 				mb={4}
 			>
-				{dayjs(entry.timestamp).fromNow()}
+				{entry.name}
 			</Text>
 
 			<Text
@@ -160,7 +164,7 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 						title="Remove"
 						onClick={removeEntry}
 					>
-						<Icon path={mdiDelete} color="red" size={0.85} />
+						<Icon path={mdiStarOff} color="red" size={0.85} />
 					</ActionIcon>
 					<ActionIcon
 						color="light.5"
@@ -192,31 +196,96 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 	);
 }
 
-function HistoryActions() {
+interface FavoritesActionsProps {
+	activeTab: SurrealistTab | undefined;
+}
 
-	const clearHistory = useStable(() => {
-		store.dispatch(actions.clearHistory());
+function FavoritesActions(props: FavoritesActionsProps) {
+	const isLight = useIsLight();
+	const [isSaving, setIsSaving] = useState(false);
+	const [queryName, setQueryName] = useInputState('');
+	const [queryText, setQueryText] = useInputState('');
+
+	const query = props.activeTab?.query?.trim() || '';
+	const canSave = query.length > 0;
+
+	const hideFavorites = useStable(() => {
+		store.dispatch(actions.setShowQueryListing(false));
 	});
 
-	const hideHistory = useStable(() => {
-		store.dispatch(actions.setShowQueryListing(false));
+	const openSaveBox = useStable(() => {
+		setIsSaving(true);
+		setQueryName('');
+		setQueryText(query);
+	});
+
+	const closeSaving = useStable(() => {
+		setIsSaving(false);
+	});
+
+	const saveQuery = useStable(() => {
+		setIsSaving(false);
+
+		store.dispatch(actions.addFavoritesEntry({
+			id: uid(5),
+			name: queryName,
+			query: queryText
+		}));
 	});
 
 	return (
 		<Group align="center">
+			{canSave && (
+				<ActionIcon
+					onClick={openSaveBox}
+					title="Save current query"
+				>
+					<Icon color="light.4" path={mdiPlus} />
+				</ActionIcon>
+			)}
 			<ActionIcon
-				onClick={clearHistory}
-				title="Clear history"
-			>
-				<Icon color="light.4" path={mdiDelete} />
-			</ActionIcon>
-
-			<ActionIcon
-				onClick={hideHistory}
-				title="Hide history"
+				onClick={hideFavorites}
+				title="Hide favorites"
 			>
 				<Icon color="light.4" path={mdiClose} />
 			</ActionIcon>
+
+			<Modal
+				opened={isSaving}
+				onClose={closeSaving}
+				trapFocus={false}
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Save query
+					</Title>
+				}
+			>
+				<Form onSubmit={saveQuery}>
+					<Stack>
+						<TextInput
+							placeholder="Enter query name"
+							value={queryName}
+							onChange={setQueryName}
+							autoFocus
+						/>
+						<Textarea
+							placeholder="SELECT * FROM ..."
+							value={queryText}
+							onChange={setQueryText}
+							minRows={8}
+						/>
+						<Group>
+							<Button color="light" onClick={closeSaving}>
+								Close
+							</Button>
+							<Spacer />
+							<Button type="submit">
+								Save
+							</Button>
+						</Group>
+					</Stack>
+				</Form>
+			</Modal>
 		</Group>
 	);
 }
