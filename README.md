@@ -31,7 +31,7 @@ Surrealist is a simple to use Desktop based query playground for [SurrealDB](htt
 - ✏️ Define variables in a seperate panel
 - 🔍 A clean and foldable view of your query results
 - 🔭 Start a local database directly from the application
-- 📜 Query history drawer
+- 📜 Query history & Query favoriting
 
 ## Local database
 You can start a local database directly from the application by pressing the start button in the top right. Doing so will start up a SurrealDB instance using the credentials and port entered for the current tab.
