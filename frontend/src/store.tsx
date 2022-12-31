@@ -80,7 +80,9 @@ const mainSlice = createSlice({
 		},
 
 		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {
-			if (state.config.queryHistory.length > 0 && state.config.queryHistory[0].query === action.payload.query) {
+			const query = action.payload.query;
+
+			if (query.length === 0 || state.config.queryHistory.length > 0 && state.config.queryHistory[0].query === query) {
 				return;
 			}
 
