@@ -84,18 +84,18 @@ export function ConsolePane() {
 			rightSection={<ConsoleActions />}
 		>
 			<ScrollArea
-			style={{ position: 'absolute', inset: 12, top: 0 }}
-			viewportRef={scroller}
-		>
-			{messages.map((message, index) =>
-				<ConsoleOutputEntry
-					key={index}
-					index={index}
-					message={message}
-					formatter={convert}
-				/>
-			)}
-		</ScrollArea>
+				style={{ position: 'absolute', inset: 12, top: 0 }}
+				viewportRef={scroller}
+			>
+				{messages.map((message, index) =>
+					<ConsoleOutputEntry
+						key={index}
+						index={index}
+						message={message}
+						formatter={convert}
+					/>
+				)}
+			</ScrollArea>
 		</Panel>
 	);
 }

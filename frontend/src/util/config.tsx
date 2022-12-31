@@ -15,4 +15,5 @@ export const BASE_CONFIG: SurrealistConfig = {
 	queryTimeout: 10,
 	updateChecker: true,
 	queryListing: 'history',
+	resultListing: 'json',
 }

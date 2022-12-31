@@ -1,0 +1,16 @@
+.table-container {
+	position: relative;
+	height: 100%;
+}
+
+.table-wrapper {
+	position: absolute;
+	inset: 12;
+	top: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.table {
+	user-select: text;
+}

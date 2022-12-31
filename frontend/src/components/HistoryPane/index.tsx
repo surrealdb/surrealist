@@ -101,10 +101,6 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 		store.dispatch(actions.removeHistoryEntry(entry.id));
 	});
 
-	const toggleFavorite = useStable(() => {
-		// store.dispatch(actions.toggleHistoryEntryFavorite(entry.id));
-	});
-
 	const copyQuery = useStable(() => {
 		navigator.clipboard.writeText(entry.query);
 
