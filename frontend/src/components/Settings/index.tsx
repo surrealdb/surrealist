@@ -2,7 +2,7 @@ import { Button, Checkbox, ColorScheme, Divider, Group, Modal, NumberInput, Pape
 import { actions, store, useStoreValue } from "~/store";
 
 import { Icon } from "../Icon";
-import { Spacer } from "../Scaffold/Spacer";
+import { Spacer } from "../Spacer";
 import { mdiCog } from "@mdi/js";
 import { updateConfig } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";

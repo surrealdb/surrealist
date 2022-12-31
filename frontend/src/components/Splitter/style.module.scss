@@ -1,0 +1,33 @@
+.root {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.container {
+	inset: 0;
+	position: absolute;
+	overflow: hidden;
+	display: flex;
+}
+
+.content {
+	flex: 1;
+}
+
+.divider-vertical {
+	width: 5px;
+	min-height: 100%;
+	cursor: col-resize;
+}
+
+.divider-horizontal {
+	height: 5px;
+	min-width: 100%;
+	cursor: row-resize;
+}
+
+.divider-vertical,
+.divider-horizontal {
+	flex-shrink: 0;
+}

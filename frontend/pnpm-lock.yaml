@@ -23,7 +23,6 @@ specifiers:
   react-dom: ^18.2.0
   react-redux: ^8.0.5
   react-router-dom: ^6.4.5
-  react-split-pane: ^0.1.92
   remove: ^0.1.5
   sass: ^1.56.2
   semver: ^7.3.8
@@ -50,7 +49,6 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-redux: 8.0.5_yqqa5ithnjtlkxisuaub7c4kpa
   react-router-dom: 6.4.5_biqbaboplfbrettd7655fr4n2y
-  react-split-pane: 0.1.92_biqbaboplfbrettd7655fr4n2y
   remove: 0.1.5
   semver: 7.3.8
   use-immer: 0.8.1_immer@9.0.16+react@18.2.0
@@ -1492,10 +1490,6 @@ packages:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
     dev: false
 
-  /react-lifecycles-compat/3.0.4:
-    resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
-    dev: false
-
   /react-redux/8.0.5_yqqa5ithnjtlkxisuaub7c4kpa:
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
@@ -1555,25 +1549,6 @@ packages:
     dependencies:
       '@remix-run/router': 1.0.5
       react: 18.2.0
-    dev: false
-
-  /react-split-pane/0.1.92_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-GfXP1xSzLMcLJI5BM36Vh7GgZBpy+U/X0no+VM3fxayv+p1Jly5HpMofZJraeaMl73b3hvlr+N9zJKvLB/uz9w==}
-    peerDependencies:
-      react: ^16.0.0-0
-      react-dom: ^16.0.0-0
-    dependencies:
-      prop-types: 15.8.1
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-lifecycles-compat: 3.0.4
-      react-style-proptype: 3.2.2
-    dev: false
-
-  /react-style-proptype/3.2.2:
-    resolution: {integrity: sha512-ywYLSjNkxKHiZOqNlso9PZByNEY+FTyh3C+7uuziK0xFXu9xzdyfHwg4S9iyiRRoPCR4k2LqaBBsWVmSBwCWYQ==}
-    dependencies:
-      prop-types: 15.8.1
     dev: false
 
   /react-textarea-autosize/8.3.4_kzbn2opkn2327fwg5yzwzya5o4:

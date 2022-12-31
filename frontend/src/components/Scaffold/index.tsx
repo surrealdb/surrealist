@@ -1,8 +1,7 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
 import { ActionIcon, Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
-import { Spacer } from "./Spacer";
-import { PanelSplitter } from '../PanelSplitter';
+import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
@@ -20,9 +19,12 @@ import { showNotification } from '@mantine/notifications';
 import { VariablesPane } from '../VariablesPane';
 import { SplitDirection } from '@devbookhq/splitter';
 import { useIsLight } from '~/hooks/theme';
-import { mdiConsole } from '@mdi/js';
+import { mdiConsole, mdiInformation } from '@mdi/js';
 import { Icon } from '../Icon';
 import { HistoryPane } from '../HistoryPane';
+import { Splitter } from '../Splitter';
+import { Pane } from 'react-split-pane';
+import { Panel } from '../Panel';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -290,37 +292,37 @@ export function Scaffold() {
 					</Group>
 
 					<Box p="xs" className={classes.content}>
-						<PanelSplitter
-							id="console-splitter"
-							direction={SplitDirection.Vertical}
-							minHeights={[300, 50]}
-							frozen={!showConsole}
-						>
-							<PanelSplitter
-								id="input-result"
-								minWidths={[300, 400]}
-							>
-								<PanelSplitter
-									id="query-variables"
-									direction={SplitDirection.Vertical}
-									initialSizes={[120]}
-									minHeights={[80, 80]}
-								>
-									<QueryPane
-										isConnected={isOnline}
-										onExecuteQuery={sendQuery}
-									/>
-									<VariablesPane />
-								</PanelSplitter>
-								<ResultPane />
-								{enableHistory && (
-									<HistoryPane />
-								)}
-							</PanelSplitter>
-							{showConsole && (
+						<Splitter
+							minSize={100}
+							direction="vertical"
+							endPane={showConsole && (
 								<ConsolePane />
 							)}
-						</PanelSplitter>
+						>
+							<Splitter
+								minSize={300}
+								direction="horizontal"
+								startPane={
+									<Splitter
+										minSize={120}
+										direction="vertical"
+										endPane={
+											<VariablesPane />
+										}
+									>
+										<QueryPane
+											isConnected={isOnline}
+											onExecuteQuery={sendQuery}
+										/>
+									</Splitter>
+								}
+								endPane={enableHistory && (
+									<HistoryPane />
+								)}
+							>
+								<ResultPane />
+							</Splitter>
+						</Splitter>
 					</Box>
 				</>
 			) : (

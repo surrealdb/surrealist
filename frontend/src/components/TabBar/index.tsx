@@ -9,7 +9,7 @@ import { updateConfig, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { LocalDatabase } from "../LocalDatabase";
-import { Spacer } from "../Scaffold/Spacer";
+import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { ViewTab } from "../ViewTab";
 

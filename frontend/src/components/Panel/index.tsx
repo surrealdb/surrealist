@@ -1,7 +1,7 @@
-import { Box, Divider, Group, Paper, PaperProps, Text } from "@mantine/core";
+import { Box, Group, Paper, PaperProps, Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
-import { Spacer } from "../Scaffold/Spacer";
+import { Spacer } from "../Spacer";
 import classes from './style.module.scss';
 
 export interface PanelProps extends PaperProps {

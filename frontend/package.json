@@ -28,7 +28,6 @@
 		"react-dom": "^18.2.0",
 		"react-redux": "^8.0.5",
 		"react-router-dom": "^6.4.5",
-		"react-split-pane": "^0.1.92",
 		"remove": "^0.1.5",
 		"semver": "^7.3.8",
 		"use-immer": "^0.8.1"
