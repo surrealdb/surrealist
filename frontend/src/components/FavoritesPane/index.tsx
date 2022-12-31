@@ -14,6 +14,7 @@ import { useActiveTab } from '~/hooks/tab';
 import { Form } from '../Form';
 import { Spacer } from '../Spacer';
 import { uid } from 'radash';
+import { updateConfig } from '~/util/helpers';
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
@@ -211,6 +212,7 @@ function FavoritesActions(props: FavoritesActionsProps) {
 
 	const hideFavorites = useStable(() => {
 		store.dispatch(actions.setShowQueryListing(false));
+		updateConfig();
 	});
 
 	const openSaveBox = useStable(() => {

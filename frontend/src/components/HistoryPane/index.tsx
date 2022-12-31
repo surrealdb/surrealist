@@ -12,6 +12,7 @@ import { useHover, useInputState } from '@mantine/hooks';
 import { HistoryEntry, SurrealistTab } from '~/typings';
 import { showNotification } from '@mantine/notifications';
 import { useActiveTab } from '~/hooks/tab';
+import { updateConfig } from '~/util/helpers';
 
 export interface HistoryPaneProps {
 	onExecuteQuery: () => void;
@@ -200,6 +201,7 @@ function HistoryActions() {
 
 	const hideHistory = useStable(() => {
 		store.dispatch(actions.setShowQueryListing(false));
+		updateConfig();
 	});
 
 	return (

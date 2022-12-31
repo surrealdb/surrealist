@@ -80,20 +80,24 @@ export function TabBar(props: TabBarProps) {
 
 	const toggleHistory = useStable(() => {
 		if (queryListing !== 'history') {
-			store.dispatch(actions.setListingMode('history'));
+			store.dispatch(actions.setQueryListingMode('history'));
 			store.dispatch(actions.setShowQueryListing(true));
 		} else {
 			store.dispatch(actions.setShowQueryListing(!enableListing));
 		}
+		
+		updateConfig();
 	});
 
 	const toggleFavorites = useStable(() => {
 		if (queryListing !== 'favorites') {
-			store.dispatch(actions.setListingMode('favorites'));
+			store.dispatch(actions.setQueryListingMode('favorites'));
 			store.dispatch(actions.setShowQueryListing(true));
 		} else {
 			store.dispatch(actions.setShowQueryListing(!enableListing));
 		}
+
+		updateConfig();
 	});
 
 	return (
