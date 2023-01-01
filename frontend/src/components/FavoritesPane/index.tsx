@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { ActionIcon, Box, Button, Collapse, Divider, Group, Modal, ScrollArea, Stack, Text, Textarea, TextInput, Title, useMantineTheme } from "@mantine/core";
-import { mdiClose, mdiContentCopy, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar, mdiStarOff } from "@mdi/js";
+import { mdiClose, mdiContentCopy, mdiDelete, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
@@ -165,7 +165,7 @@ function FavoriteRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPr
 						title="Remove"
 						onClick={removeEntry}
 					>
-						<Icon path={mdiStarOff} color="red" size={0.85} />
+						<Icon path={mdiDelete} color="red" size={0.85} />
 					</ActionIcon>
 					<ActionIcon
 						color="light.5"
