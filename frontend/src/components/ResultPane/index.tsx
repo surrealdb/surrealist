@@ -50,24 +50,26 @@ function TablePreview({ result }: PreviewProps) {
 		const keys: string[] = [];
 		const values: any[] = [];
 	
-		for (let i = 0; i < result.length; i++) {
-			const row: any = {};
+		if (Array.isArray(result)) {
+			for (let i = 0; i < result.length; i++) {
+				const row: any = {};
+				
+				propertyVisitor(result[i], (path, value) => {
+					const pathName = path.join('.');
 			
-			propertyVisitor(result[i], (path, value) => {
-				const pathName = path.join('.');
-		
-				if (!keys.includes(pathName)) {
-					if (pathName === 'id') {
-						keys.unshift(pathName);
-					} else {
-						keys.push(pathName);
+					if (!keys.includes(pathName)) {
+						if (pathName === 'id') {
+							keys.unshift(pathName);
+						} else {
+							keys.push(pathName);
+						}
 					}
-				}
 
-				row[pathName] = value;
-			});
+					row[pathName] = value;
+				});
 
-			values.push(row);
+				values.push(row);
+			}
 		}
 
 		return [keys, values];
@@ -128,6 +130,14 @@ function TablePreview({ result }: PreviewProps) {
 			)
 		});
 	}, [keys, values]);
+
+	if (!Array.isArray(result)) {
+		return (
+			<Text color="light.4">
+				Result could not be displayed as a table.
+			</Text>
+		);
+	}
 
 	return (
 		<div className={classes.tableContainer}>
