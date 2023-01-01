@@ -246,8 +246,7 @@ export function ResultPane() {
 				style={{
 					position: 'absolute',
 					insetBlock: 0,
-					right: 0,
-					left: 14,
+					insetInline: 14,
 					top: showTabs ? 48 : 0
 				}}
 			>
