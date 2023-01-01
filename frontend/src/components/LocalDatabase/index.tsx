@@ -49,6 +49,8 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 		if (isServing) {
 			props.closeConnection();
 			StopDatabase();
+
+			store.dispatch(actions.cancelServe());
 		} else {
 			if(!activeTab) {
 				return;
@@ -60,31 +62,30 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 		}
 	});
 
-	const isActive = isServing && !isPending;
-	const isDisabled = !isLocal && !isPending && !isServing;
+	const showLoading = !isLocal || isPending;
 
 	useEffect(() => {
-		if (isActive) {
+		if (isServing) {
 			props.openConnection();
 		}
-	}, [isActive]);
+	}, [isServing]);
 
 	return (
 		<>
 			<Button
 				px="xs"
-				color={isActive ? 'red' : isLight ? 'light.0' : 'dark.4'}
-				title={isActive ? 'Stop local database' : 'Start local database'}
-				style={{ opacity: isDisabled ? 0.5 : 1 }}
-				disabled={isDisabled}
+				color={isServing ? 'red' : isLight ? 'light.0' : 'dark.4'}
+				title={isServing ? 'Stop local database' : 'Start local database'}
+				style={{ opacity: showLoading ? 0.5 : 1 }}
+				disabled={showLoading}
 				onClick={handleToggle}
 			>
 				{isPending ? (
 					<Loader size="xs" color="blue" mx={1} />
 				) : (
 					<Icon
-						path={isActive ? mdiStop : mdiPlay}
-						color={isActive ? 'white' : isLight ? 'light.8' : 'white'}
+						path={isServing ? mdiStop : mdiPlay}
+						color={isServing ? 'white' : isLight ? 'light.8' : 'white'}
 					/>
 				)}
 			</Button>

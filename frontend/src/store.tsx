@@ -126,6 +126,10 @@ const mainSlice = createSlice({
 			state.consoleOutput = [];
 		},
 
+		cancelServe(state) {
+			state.servePending = true;
+		},
+
 		setConsoleEnabled(state, action: PayloadAction<boolean>) {
 			state.config.enableConsole = action.payload;
 		},
