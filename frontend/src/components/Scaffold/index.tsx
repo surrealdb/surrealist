@@ -43,9 +43,21 @@ export function Scaffold() {
 	const createNewTab = useStable(async () => {
 		const tabId = uid(5);
 
+		function name(n: number) {
+			return `New tab ${n ? n + 1 : ''}`.trim();
+		}
+
+		let tabName = '';
+		let counter = 0;
+
+		do {
+			tabName = name(counter);
+			counter++;
+		} while(tabList.find(tab => tab.name === tabName));
+
 		store.dispatch(actions.addTab({
 			id: tabId,
-			name: `Tab ${tabList.length + 1}`,
+			name: tabName,
 			query: '',
 			variables: '{}',
 			lastResponse: [],
