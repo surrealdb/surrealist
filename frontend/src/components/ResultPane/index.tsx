@@ -190,17 +190,21 @@ export function ResultPane() {
 			icon={mdiCodeJson}
 			rightSection={
 				<Group align="center">
-					<ActionIcon
-						onClick={toggleResultView}
-						title={listingTitle}
-					>
-						<Icon color="light.4" path={listingIcon} />
-					</ActionIcon>
+					{result?.result !== undefined && (
+						<>
+							<ActionIcon
+								onClick={toggleResultView}
+								title={listingTitle}
+							>
+								<Icon color="light.4" path={listingIcon} />
+							</ActionIcon>
 
-					<Divider
-						orientation="vertical"
-						color={isLight ? 'light.0' : 'dark.5'}
-					/>
+							<Divider
+								orientation="vertical"
+								color={isLight ? 'light.0' : 'dark.5'}
+							/>
+						</>
+					)}
 
 					{result?.result?.length > 0 && (
 						<>
