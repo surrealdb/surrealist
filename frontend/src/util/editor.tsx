@@ -27,6 +27,7 @@ export function initializeEditor(monaco: Monaco) {
 			{ token: 'keyword', foreground: '#e600a4' },
 			{ token: 'param', foreground: '#e67a15' },
 			{ token: 'comment', foreground: '#606475' },
+			{ token: 'regex', foreground: '#09b8ac' },
 		],
 		colors: {
 			'editorLineNumber.foreground': '#9BA9C6',
@@ -41,6 +42,7 @@ export function initializeEditor(monaco: Monaco) {
 			{ token: 'keyword', foreground: '#e600a4' },
 			{ token: 'param', foreground: '#e67a15' },
 			{ token: 'comment', foreground: '#606475' },
+			{ token: 'regex', foreground: '#09b8ac' },
 		],
 		colors: {
 			'editor.background': '#1a1b1e',
@@ -60,7 +62,8 @@ export function initializeEditor(monaco: Monaco) {
 			'COLLATE', 'NUMERIC', 'LIMIT', 'START', 'FETCH', 'TIMEOUT', 'PARALLEL', 'CONTENT', 'RETURN',
 			'NONE', 'BEFORE', 'AFTER', 'DIFF', 'MERGE', 'PATCH', 'SCOPE', 'TABLE', 'AS', 'AND', 'OR',
 			'CONTAINS', 'CONTAINSNOT', 'CONTAINSALL', 'CONTAINSANY', 'CONTAINSNONE', 'INSIDE', 'NOTINSIDE',
-			'ALLINSIDE', 'ANYINSIDE', 'NONEINSIDE', 'OUTSIDE', 'INTERSECTS', 'KV'
+			'ALLINSIDE', 'ANYINSIDE', 'NONEINSIDE', 'OUTSIDE', 'INTERSECTS', 'KV', 'SCHEMALESS', 'SCHEMAFULL',
+			'PERMISSIONS', 'FULL'
 		],
 		tokenizer: {
 			root: [
@@ -71,6 +74,7 @@ export function initializeEditor(monaco: Monaco) {
 					}
 				}],
 				[/".*?"/, 'string'],
+				[/\/.*?[^\\]\//, 'regex'],
 				[/(\/\/|#|--).+/, 'comment'],
 				[/\$\w+/, 'param']
 			]
