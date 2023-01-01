@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.4.1 - Saved queries (Fixed)
+- Highlight regex correctly in the query editor
+- Fixed updater not working
+- Fixed issues with the table viewer
+- Improve database start/stop button behavior
+- Changed default tab names
+
 ## 1.4.0 - Saved queries
 - Added query saving functionality
 - Added a button to render query results as table
