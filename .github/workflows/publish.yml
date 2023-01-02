@@ -63,13 +63,15 @@ jobs:
       - name: Zip binary (Linux)
         if: matrix.platform == 'ubuntu-latest'
         run: |
-          tar -czf ./surrealist-linux.tgz ./build/bin/surrealist
+          cd ./build/bin
+          tar -czf ../../surrealist-linux.tgz ./surrealist
 
       - name: Zip binary (Darwin AMD)
         if: matrix.platform == 'macos-latest'
         run: |
-          tar -czf ./surrealist-amd.tgz ./build/bin/Surrealist.app
-          rm -rf build/bin/Surrealist.app
+          cd ./build/bin
+          tar -czf ../../surrealist-amd.tgz ./Surrealist.app
+          rm -rf ./Surrealist.app
       
       - name: Build Wails app (Darwin ARM)
         if: matrix.platform == 'macos-latest'
@@ -78,8 +80,9 @@ jobs:
       - name: Zip binary (Darwin ARM)
         if: matrix.platform == 'macos-latest'
         run: |
-          tar -czf ./surrealist-arm.tgz ./build/bin/Surrealist.app
-          rm -rf build/bin/Surrealist.app
+          cd ./build/bin
+          tar -czf ../../surrealist-arm.tgz ./Surrealist.app
+          rm -rf ./Surrealist.app
       
       - name: Upload binary (Windows)
         uses: actions/upload-artifact@v2
