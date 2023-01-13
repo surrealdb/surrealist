@@ -54,7 +54,7 @@ export function HistoryPane(props: HistoryPaneProps) {
 				)}
 			</Fragment>
 		));
-	}, [filtered, isLight]);
+	}, [activeTab, filtered, isLight]);
 
 	return (
 		<Panel

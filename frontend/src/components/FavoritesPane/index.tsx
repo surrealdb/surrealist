@@ -58,7 +58,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 				)}
 			</Fragment>
 		));
-	}, [filtered, isLight]);
+	}, [activeTab, filtered, isLight]);
 
 	return (
 		<Panel
