@@ -41,7 +41,7 @@ export function Splitter(props: SplitterProps) {
 	const leftBase = sizes[0] || 160;
 	const rightBase = sizes[1] || 160;
 	const buffer = props.bufferSize || 300;
-	const totalWidth = containerRef.current!.clientWidth;
+	const totalWidth = containerRef.current?.clientWidth || 0;
 	const clampLeft = useStable((value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || (totalWidth - rightBase - buffer)));
 	const clampRight = useStable((value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || (totalWidth - leftBase - buffer)));
 
