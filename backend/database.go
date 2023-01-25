@@ -48,8 +48,9 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		spawnInBackground(cmd)
 
+		// NOTE only stream err as stdout is only used for the banner right now
 		stderr, _ := cmd.StderrPipe()
-		stdout, _ := cmd.StdoutPipe()
+		// stdout, _ := cmd.StdoutPipe()
 
 		//var outb, errb bytes.Buffer
 		//cmd.Stdout = &outb
@@ -61,7 +62,7 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		}
 
 		a.serverHandle = cmd.Process
-		go a.watchStd("stdout", stdout)
+		// go a.watchStd("stdout", stdout)
 		go a.watchStd("stderr", stderr)
 
 		runtime.EventsEmit(a.ctx, "database:start")
