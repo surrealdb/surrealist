@@ -1,30 +1,36 @@
 import classes from './style.module.scss';
 import { Fragment, useEffect, useRef } from "react";
 import { useStable } from '~/hooks/stable';
-import { useMove, useWindowEvent } from '@mantine/hooks';
+import { useWindowEvent } from '@mantine/hooks';
 import { useState } from 'react';
 import { Box } from '@mantine/core';
 
 export type SplitDirection = 'horizontal' | 'vertical';
-export type SplitValues = [number|undefined, number|undefined];
+export type SplitValues = [number | undefined, number | undefined];
 export type SplitBounds = SplitValues | number;
 
 export interface SplitterProps {
 	startPane?: React.ReactNode;
-	endPane?: React.ReactNode; 
+	endPane?: React.ReactNode;
 	children: React.ReactNode;
 	direction?: SplitDirection;
 	values?: SplitValues;
 	minSize?: SplitBounds;
 	maxSize?: SplitBounds;
+	bufferSize?: number;
 	onChange?: (values: SplitValues) => void;
 }
+
+const getLeft = (bounds?: SplitBounds) => typeof bounds === 'number' ? bounds : bounds?.[0];
+const getRight = (bounds?: SplitBounds) => typeof bounds === 'number' ? bounds : bounds?.[1];
 
 export function Splitter(props: SplitterProps) {
 	const isHorizontal = (props.direction || 'horizontal') == 'horizontal';
 	const contents: React.ReactNode[] = [];
-	const draggerRef = useRef<string|null>(null);
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	const frameId = useRef(0);
 
+	const [draggerId, setDraggerId] = useState<string | null>(null);
 	const [sizes, setSizes] = useState(props.values || []);
 
 	useEffect(() => {
@@ -32,44 +38,72 @@ export function Splitter(props: SplitterProps) {
 	}, [props.values]);
 
 	// Compute left and right sizes
-	const getLeft = (bounds?: SplitBounds) => typeof bounds === 'number' ? bounds : bounds?.[0];
-	const getRight = (bounds?: SplitBounds) => typeof bounds === 'number' ? bounds : bounds?.[1];
-	const clampLeft = (value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || Infinity);
-	const clampRight = (value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || Infinity);
+	const leftBase = sizes[0] || 160;
+	const rightBase = sizes[1] || 160;
+	const buffer = props.bufferSize || 300;
+	const totalWidth = containerRef.current!.clientWidth;
+	const clampLeft = useStable((value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || (totalWidth - rightBase - buffer)));
+	const clampRight = useStable((value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || (totalWidth - leftBase - buffer)));
 
-	const leftSize = clampLeft(sizes[0] || 160);
-	const rightSize = clampRight(sizes[1] || 160);
+	const leftSize = clampLeft(leftBase);
+	const rightSize = clampRight(rightBase);
 
 	// Detect dragged divider
 	const onActivate = useStable((id: string) => {
-		draggerRef.current = id;
-		document.body.style.cursor = isHorizontal ? 'col-resize' : 'row-resize';
+		const { style } = containerRef.current!;
+
+		style.userSelect = 'none';
+		style.cursor = isHorizontal ? 'col-resize' : 'row-resize';
+
+		setDraggerId(id);
 	});
 
+	// Stop dragging
 	useWindowEvent('mouseup', () => {
-		draggerRef.current = null;
-		document.body.style.cursor = '';
+		const { style } = containerRef.current!;
+
+		style.userSelect = '';
+		style.cursor = '';
+		
+		setDraggerId(null);
 	});
 
 	// Handle mouse dragging
-	const { ref } = useMove((res) => {
-		if (draggerRef.current === null) return;
+	useEffect(() => {
+		const onDrag = (x: number, y: number) => {
+			cancelAnimationFrame(frameId.current);
 
-		const value = isHorizontal ? res.x : res.y;
-		const totalSize = isHorizontal ? ref.current.clientWidth : ref.current.clientHeight;
+			frameId.current = requestAnimationFrame(() => {
+				const bounds = containerRef.current!.getBoundingClientRect();
+				const value = isHorizontal ? x - bounds.left : y - bounds.top;
+				const total = isHorizontal ? bounds.width : bounds.height;
 
-		if (draggerRef.current === 'left') {
-			const newLeftSize = clampLeft(value * totalSize);
+				if (draggerId === 'left') {
+					const newLeftSize = clampLeft(value);
 
-			setSizes([newLeftSize, rightSize]);
-			props.onChange?.([newLeftSize, rightSize]);
-		} else {
-			const newRightSize = clampRight((1 - value) * totalSize);
+					setSizes([newLeftSize, rightSize]);
+					props.onChange?.([newLeftSize, rightSize]);
+				} else {
+					const newRightSize = clampRight(total - value);
 
-			setSizes([leftSize, newRightSize]);
-			props.onChange?.([leftSize, newRightSize]);
+					setSizes([leftSize, newRightSize]);
+					props.onChange?.([leftSize, newRightSize]);
+				}
+			});
+		};
+
+		const onMove = (e: MouseEvent) => onDrag(e.clientX, e.clientY);
+
+		if (draggerId) {
+			containerRef.current!.addEventListener('mousemove', onMove);
 		}
-	});
+
+		return () => {
+			containerRef.current!.removeEventListener('mousemove', onMove);
+		}
+	}, [isHorizontal, draggerId]);
+
+	console.log('render')
 
 	// Display left section
 	if (props.startPane) {
@@ -126,11 +160,11 @@ export function Splitter(props: SplitterProps) {
 			</Fragment>
 		);
 	}
-	
+
 	return (
 		<div className={classes.root}>
 			<div
-				ref={ref}
+				ref={containerRef}
 				className={classes.container}
 				style={{
 					flexDirection: props.direction === 'vertical' ? 'column' : 'row'
