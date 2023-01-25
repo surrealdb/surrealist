@@ -60,7 +60,6 @@ export function HistoryPane(props: HistoryPaneProps) {
 		<Panel
             title="History"
             icon={mdiHistory}
-			onMouseDownCapture={e => e.stopPropagation()}
 			rightSection={<HistoryActions />}
         >
 			<ScrollArea

@@ -64,7 +64,6 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 		<Panel
             title="Saved queries"
             icon={mdiStar}
-			onMouseDownCapture={e => e.stopPropagation()}
 			rightSection={
 				<FavoritesActions
 					activeTab={activeTab}

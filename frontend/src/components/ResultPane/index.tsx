@@ -144,7 +144,6 @@ function TablePreview({ result }: PreviewProps) {
 			<ScrollArea className={classes.tableWrapper}>
 				<Table
 					striped
-					onMouseDownCapture={e => e.stopPropagation()}
 					className={classes.table}
 				>
 					<thead>
