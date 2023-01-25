@@ -306,7 +306,7 @@ export function Scaffold() {
 					<Box p="xs" className={classes.content}>
 						<Splitter
 							minSize={100}
-							bufferSize={0}
+							bufferSize={53}
 							direction="vertical"
 							endPane={showConsole && (
 								<ConsolePane />
