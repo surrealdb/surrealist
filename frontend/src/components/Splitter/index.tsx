@@ -25,7 +25,7 @@ const getLeft = (bounds?: SplitBounds) => typeof bounds === 'number' ? bounds : 
 const getRight = (bounds?: SplitBounds) => typeof bounds === 'number' ? bounds : bounds?.[1];
 
 export function Splitter(props: SplitterProps) {
-	const isHorizontal = (props.direction || 'horizontal') == 'horizontal';
+	const isHorizontal = props.direction !== 'vertical';
 	const contents: React.ReactNode[] = [];
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const frameId = useRef(0);
@@ -37,16 +37,17 @@ export function Splitter(props: SplitterProps) {
 		setSizes(props.values || []);
 	}, [props.values]);
 
-	// Compute left and right sizes
-	const leftBase = sizes[0] || 160;
-	const rightBase = sizes[1] || 160;
-	const buffer = props.bufferSize || 300;
-	const totalWidth = containerRef.current?.clientWidth || 0;
-	const clampLeft = useStable((value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || (totalWidth - rightBase - buffer)));
-	const clampRight = useStable((value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || (totalWidth - leftBase - buffer)));
+	// Compute left and right clamp values
+	const buffer = props.bufferSize ?? 300;
+	const leftReserve = props.startPane && sizes[0] || 0;
+	const rightReserve = props.endPane && sizes[1] || 0;
+	const totalSize = (isHorizontal ? containerRef.current?.clientWidth : containerRef.current?.clientHeight) || 0;
+	const clampLeft = useStable((value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || (totalSize - rightReserve - buffer)));
+	const clampRight = useStable((value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || (totalSize - leftReserve - buffer)));
 
-	const leftSize = clampLeft(leftBase);
-	const rightSize = clampRight(rightBase);
+	// Calculate actual pane sizes
+	const leftSize = clampLeft(sizes[0] || 160);
+	const rightSize = clampRight(sizes[1] || 160);
 
 	// Detect dragged divider
 	const onActivate = useStable((id: string) => {
