@@ -12,6 +12,8 @@ import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { ViewTab } from "../ViewTab";
+import { Sortable } from "../Sortable";
+import { SurrealistTab } from "~/typings";
 
 export interface TabBarProps {
 	openConnection: () => void;
@@ -100,6 +102,11 @@ export function TabBar(props: TabBarProps) {
 		updateConfig();
 	});
 
+	const saveTabOrder = useStable((items: SurrealistTab[]) => {
+		store.dispatch(actions.setTabs(items));
+		updateConfig();
+	});
+
 	return (
 		<Group
 			p="xs"
@@ -110,18 +117,29 @@ export function TabBar(props: TabBarProps) {
 		>
 
 			<Group>
-				{tabList.map(tab => (
-					<ViewTab
-						id={tab.id}
-						key={tab.id}
-						active={tab.id == activeTab}
-						onDismiss={() => removeTab(tab.id)}
-						onRename={() => openTabEditor(tab.id)}
-						onActivate={() => selectTab(tab.id)}
-					>
-						{tab.name}
-					</ViewTab>
-				))}
+				<Sortable
+					items={tabList}
+					onSorted={saveTabOrder}
+					direction="grid"
+					constraint={{
+						distance: 12
+					}}
+				>
+					{({ item, handleProps }) => (
+						<div {...handleProps}>
+							<ViewTab
+								id={item.id}
+								key={item.id}
+								active={item.id == activeTab}
+								onDismiss={() => removeTab(item.id)}
+								onRename={() => openTabEditor(item.id)}
+								onActivate={() => selectTab(item.id)}
+							>
+								{item.name}
+							</ViewTab>
+						</div>
+					)}
+				</Sortable>
 
 				<Button
 					px="xs"

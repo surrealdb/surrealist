@@ -1,5 +1,5 @@
 import { arrayMove, horizontalListSortingStrategy, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, UniqueIdentifier, DragEndEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, UniqueIdentifier, DragEndEvent, PointerActivationConstraint } from '@dnd-kit/core';
 import { restrictToHorizontalAxis, restrictToVerticalAxis, restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -70,6 +70,7 @@ function SortableChild<T extends SortableItem>({ item, children }: SortableChild
 export interface SortableProps<T> {
 	items: T[];
 	direction?: 'vertical' | 'horizontal' | 'grid';
+	constraint?: PointerActivationConstraint;
 	onSorted: (value: T[]) => void;
 	children: (drag: SortableDrag<T>) => ReactNode;
 }
@@ -78,7 +79,9 @@ export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
 	const [strategy, modifier] = DIRECTIONS[props.direction || 'vertical'];
 
 	const sensors = useSensors(
-		useSensor(PointerSensor),
+		useSensor(PointerSensor, {
+			activationConstraint: props.constraint
+		}),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
 		})

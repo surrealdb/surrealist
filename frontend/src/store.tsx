@@ -71,6 +71,10 @@ const mainSlice = createSlice({
 			}
 		},
 
+		setTabs(state, action: PayloadAction<SurrealistTab[]>) {
+			state.config.tabs = action.payload;
+		},
+
 		setActiveTab(state, action: PayloadAction<string>) {
 			state.activeTab = action.payload;
 		},
