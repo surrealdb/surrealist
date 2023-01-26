@@ -96,11 +96,11 @@ export function Splitter(props: SplitterProps) {
 		const onMove = (e: MouseEvent) => onDrag(e.clientX, e.clientY);
 
 		if (draggerId) {
-			containerRef.current!.addEventListener('mousemove', onMove);
+			containerRef.current?.addEventListener('mousemove', onMove);
 		}
 
 		return () => {
-			containerRef.current!.removeEventListener('mousemove', onMove);
+			containerRef.current?.removeEventListener('mousemove', onMove);
 		}
 	}, [isHorizontal, draggerId]);
 
