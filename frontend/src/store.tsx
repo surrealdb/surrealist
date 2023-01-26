@@ -51,13 +51,13 @@ const mainSlice = createSlice({
 			state.config.tabs = state.config.tabs.filter(tab => tab.id !== action.payload);
 
 			if (state.activeTab === action.payload) {
-				if (state.config.tabs.length === 0) {
-					state.activeTab = null;
-				} else {
-					const firstTab = state.config.tabs[0];
+				// if (state.config.tabs.length === 0) {
+				state.activeTab = null;
+				// } else {
+				// 	const firstTab = state.config.tabs[0];
 
-					state.activeTab = firstTab.id;
-				}
+				// 	state.activeTab = firstTab.id;
+				// }
 			}
 		},
 
