@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.4.2 - Improved favorites
+- Redesigned the favorites UI/UX
+	- Queries are now be opened by clicking rather than hovering
+	- You can now edit and rename queries in a dialog
+	- Favorites can be manually sorted by dragging
+	- Added the option to open a query in a new tab
+- New tabs now use the connection details of the previous tab
+- Hide the Surreal banner in the console
+- Improved the pane dragging behavior
+- Fixed text moving within the editor when selected
+
 ## 1.4.1 - Saved queries (Fixed)
 - Highlight regex correctly in the query editor
 - Fixed updater not working
