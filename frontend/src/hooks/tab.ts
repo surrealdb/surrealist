@@ -11,6 +11,14 @@ export function useActiveTab() {
 	return knownTabs.find(tab => tab.id === activeTab);
 }
 
+const NEW_CONNECTION = {
+	endpoint: 'http://localhost:8000/',
+	username: 'root',
+	password: 'root',
+	namespace: '',
+	database: ''
+}
+
 /**
  * Create a new tab with the given name and query
  * 
@@ -19,6 +27,7 @@ export function useActiveTab() {
  */
 export function useTabCreator(): (name: string, query?: string) => string {
 	const tabList = useStoreValue(state => state.config.tabs);
+	const connection = useActiveTab()?.connection;
 	
 	return (name, query) => {
 		const tabId = uid(5);
@@ -43,11 +52,8 @@ export function useTabCreator(): (name: string, query?: string) => string {
 			lastResponse: [],
 			layout: {},
 			connection: {
-				endpoint: 'http://localhost:8000/',
-				username: 'root',
-				password: 'root',
-				namespace: '',
-				database: ''
+				...NEW_CONNECTION,
+				...connection
 			}
 		}));
 
