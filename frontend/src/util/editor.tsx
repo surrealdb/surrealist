@@ -3,6 +3,14 @@ import { editor, languages } from "monaco-editor";
 import { store } from "~/store";
 import { getSurreal } from "~/surreal";
 
+const tablePrefixes = [
+	'FROM ',
+	'UPDATE ',
+	'CREATE ',
+	'DELETE ',
+	'INTO '
+]
+
 export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	scrollBeyondLastLine: false,
 	overviewRulerLanes: 0,
@@ -60,7 +68,7 @@ export function initializeEditor(monaco: Monaco) {
 	monaco.languages.setMonarchTokensProvider('surrealql', {
 		ignoreCase: true,
 		keywords: [
-			'USE', 'LET', 'BEGIN', 'CANCEL', 'COMMIT', 'IF', 'ELSE', 'SELECT', 'INSERT', 'CREATE',
+			'USE', 'LET', 'BEGIN', 'CANCEL', 'COMMIT', 'IF', 'ELSE', 'SELECT', 'INSERT', 'INTO', 'CREATE',
 			'UPDATE', 'RELATE', 'DELETE', 'DEFINE', 'REMOVE', 'INFO', 'FROM', 'SET', 'FOR', 'NS', 'DB',
 			'TRANSACTION', 'THEN', 'END', 'WHERE', 'SPLIT', 'AT', 'GROUP', 'BY', 'ORDER', 'ASC', 'DESC',
 			'COLLATE', 'NUMERIC', 'LIMIT', 'START', 'FETCH', 'TIMEOUT', 'PARALLEL', 'CONTENT', 'RETURN',
@@ -99,7 +107,7 @@ export function initializeEditor(monaco: Monaco) {
 			const linePrefix = model.getLineContent(position.lineNumber).substring(0, position.column);
 			const isAuto = context.triggerKind === languages.CompletionTriggerKind.TriggerCharacter;
 
-			if (isAuto && !linePrefix.toUpperCase().endsWith('FROM ')) {
+			if (isAuto && !tablePrefixes.some(pre => linePrefix.toUpperCase().endsWith(pre))) {
 				return undefined;
 			}
 
