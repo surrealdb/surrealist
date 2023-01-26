@@ -1,5 +1,5 @@
 import classes from './style.module.scss';
-import { ActionIcon, Box, Collapse, Divider, Group, ScrollArea, Stack, Text, TextInput, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Box, Button, Collapse, Divider, Group, Paper, ScrollArea, SimpleGrid, Stack, Text, TextInput, useMantineTheme } from "@mantine/core";
 import { mdiClose, mdiContentCopy, mdiDelete, mdiHistory, mdiMagnify, mdiPencil, mdiPlay } from "@mdi/js";
 import { Fragment, useMemo } from "react";
 import { useIsLight } from "~/hooks/theme";
@@ -100,15 +100,6 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 		store.dispatch(actions.removeHistoryEntry(entry.id));
 	});
 
-	const copyQuery = useStable(() => {
-		navigator.clipboard.writeText(entry.query);
-
-		showNotification({
-			color: 'green.6',
-			message: 'Query copied to clipboard'
-		});
-	});
-
 	const editQuery = useStable(() => {
 		store.dispatch(actions.updateTab({
 			id: activeTab?.id,
@@ -136,53 +127,57 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 				{dayjs(entry.timestamp).fromNow()}
 			</Text>
 
-			<Text
-				ff="JetBrains Mono"
-				c={isLight ? 'black' : 'white'}
-				className={classes.queryText}
-				lineClamp={5}
-				weight={600}
+			<Paper
+				withBorder
+				mt="xs"
+				p="xs"
 			>
-				{entry.query}
-			</Text>
+				<Text
+					ff="JetBrains Mono"
+					c={isLight ? 'black' : 'white'}
+					className={classes.queryText}
+					lineClamp={8}
+					weight={600}
+				>
+					{entry.query}
+				</Text>
+			</Paper>
 
 			<Collapse
 				in={hovered}
 			>
-				<Group mr="lg" mt="xs" pb="xs" spacing="xs">
-					<ActionIcon
+				<SimpleGrid cols={3} mt="xs" pb="xs" spacing="xs">
+					<Button
+						size="xs"
+						variant="light"
 						color="red"
 						radius="sm"
 						title="Remove"
 						onClick={removeEntry}
 					>
-						<Icon path={mdiDelete} color="red" size={0.85} />
-					</ActionIcon>
-					<ActionIcon
-						color="light.5"
-						radius="sm"
-						title="Copy to clipboard"
-						onClick={copyQuery}
-					>
-						<Icon path={mdiContentCopy} color="light.5" size={0.85} />
-					</ActionIcon>
-					<ActionIcon
+						<Icon path={mdiDelete} color="red" />
+					</Button>
+					<Button
+						size="xs"
+						variant="light"
 						color="violet"
 						radius="sm"
 						title="Edit query"
 						onClick={editQuery}
 					>
-						<Icon path={mdiPencil} color="violet" size={0.85} />
-					</ActionIcon>
-					<ActionIcon
-						color="surreal"
+						<Icon path={mdiPencil} color="violet" />
+					</Button>
+					<Button
+						size="xs"
+						variant="light"
+						color="pink"
 						radius="sm"
 						title="Run query"
 						onClick={executeQuery}
 					>
-						<Icon path={mdiPlay} color="surreal" size={0.85} />
-					</ActionIcon>
-				</Group>
+						<Icon path={mdiPlay} color="pink" />
+					</Button>
+				</SimpleGrid>
 			</Collapse>
 		</Box>
 	);
