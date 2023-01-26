@@ -1,5 +1,5 @@
 import { arrayMove, horizontalListSortingStrategy, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, UniqueIdentifier, DragEndEvent, PointerActivationConstraint } from '@dnd-kit/core';
+import { DndContext, rectIntersection, KeyboardSensor, PointerSensor, useSensor, useSensors, UniqueIdentifier, DragEndEvent, PointerActivationConstraint, closestCorners } from '@dnd-kit/core';
 import { restrictToHorizontalAxis, restrictToVerticalAxis, restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -44,8 +44,10 @@ function SortableChild<T extends SortableItem>({ item, children }: SortableChild
 		cursor: 'grab'
 	};
 
+	// NOTE - The translate property appears to cause font weight to drop for me, seems like an Edge skill issue
+
 	const childStyle: React.CSSProperties = {
-		transform: CSS.Transform.toString(transform),
+		transform: CSS.Translate.toString(transform),
 		transition,
 		zIndex: isDragging ? 9999 : 0
 	};
@@ -71,6 +73,7 @@ export interface SortableProps<T> {
 	items: T[];
 	direction?: 'vertical' | 'horizontal' | 'grid';
 	constraint?: PointerActivationConstraint;
+	onSorting?: () => void;
 	onSorted: (value: T[]) => void;
 	children: (drag: SortableDrag<T>) => ReactNode;
 }
@@ -104,7 +107,8 @@ export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
 	return (
 		<DndContext
 			sensors={sensors}
-			collisionDetection={closestCenter}
+			collisionDetection={closestCorners}
+			onDragStart={props.onSorting}
 			onDragEnd={handleDragEnd}
 			modifiers={[
 				restrictToWindowEdges,

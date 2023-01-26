@@ -1,15 +1,14 @@
 import classes from './style.module.scss';
 import { ActionIcon, Box, Button, Collapse, Divider, Group, Modal, Paper, ScrollArea, SimpleGrid, Stack, Text, Textarea, TextInput, Title, useMantineTheme } from "@mantine/core";
-import { mdiChevronDown, mdiChevronUp, mdiClose, mdiContentCopy, mdiDelete, mdiDrag, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
+import { mdiChevronDown, mdiChevronUp, mdiClose, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { Panel } from "../Panel";
 import { useStable } from '~/hooks/stable';
 import { Icon } from '../Icon';
-import { useHover, useInputState } from '@mantine/hooks';
+import { useInputState } from '@mantine/hooks';
 import { FavoritesEntry, SurrealistTab } from '~/typings';
-import { showNotification } from '@mantine/notifications';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { Form } from '../Form';
 import { Spacer } from '../Spacer';
@@ -86,6 +85,10 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 		store.dispatch(actions.setFavorites(favorites));
 	});
 
+	const closeActive = useStable(() => {
+		setActiveEntry('');
+	});
+
 	const historyList = useMemo(() => {
 		if (filtered.length === 0) {
 			return (
@@ -98,7 +101,11 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 		return (
 			<Sortable
 				items={filtered}
+				onSorting={closeActive}
 				onSorted={saveOrder}
+				constraint={{
+					distance: 12
+				}}
 			>
 				{({ index, item, handleProps }) => (
 					<Fragment key={index}>
@@ -274,27 +281,22 @@ function FavoriteRow(props: HistoryRowProps) {
 			className={classes.entry}
 			style={{ borderColor: theme.fn.themeColor(isLight ? 'light.0' : 'dark.3') }}
 		>
-			<Group noWrap mb="sm">
-				{enableDrag && (
-					<Icon
-						path={mdiDrag}
-						{...handleProps}
-					/>
-				)}
-				<Group
-					noWrap
-					className={classes.entryHeader}
-					onClick={handleClick}
-				>
-					<Text c="surreal" weight={600}>
-						{entry.name}
-					</Text>
-					<Spacer />
-					<Icon
-						path={isActive ? mdiChevronDown : mdiChevronUp}
-						style={{ flexShrink: 0 }}
-					/>
-				</Group>
+			<Group
+				mb="sm"
+				noWrap
+				className={classes.entryHeader}
+				onClick={handleClick}
+				title="Drag to reorder"
+				{...(enableDrag ? handleProps : {})}
+			>
+				<Text c="surreal" weight={500}>
+					{entry.name}
+				</Text>
+				<Spacer />
+				<Icon
+					path={isActive ? mdiChevronDown : mdiChevronUp}
+					style={{ flexShrink: 0 }}
+				/>
 			</Group>
 
 			<Collapse
