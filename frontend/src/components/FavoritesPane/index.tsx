@@ -245,7 +245,7 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const openQuery = useStable(async () => {
-		const tabId = createTab(entry.name.slice(0, 25));
+		const tabId = createTab(entry.name.slice(0, 25), entry.query);
 
 		store.dispatch(actions.setActiveTab(tabId));
 
