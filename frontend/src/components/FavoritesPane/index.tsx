@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { ActionIcon, Box, Button, Collapse, Divider, Group, Modal, Paper, ScrollArea, SimpleGrid, Stack, Text, Textarea, TextInput, Title, useMantineTheme } from "@mantine/core";
-import { mdiChevronDown, mdiChevronUp, mdiClose, mdiContentCopy, mdiDelete, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
+import { mdiChevronDown, mdiChevronUp, mdiClose, mdiContentCopy, mdiDelete, mdiDrag, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
@@ -15,6 +15,7 @@ import { Form } from '../Form';
 import { Spacer } from '../Spacer';
 import { uid } from 'radash';
 import { updateConfig, updateTitle } from '~/util/helpers';
+import { Sortable } from '../Sortable';
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
@@ -56,10 +57,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 
 	const filtered = useMemo(() => {
 		const needle = search.toLowerCase();
-
-		return entries
-			.filter(entry => entry.name.toLowerCase().includes(needle) || entry.query.toLowerCase().includes(needle))
-			.sort((a, b) => a.name.localeCompare(b.name));
+		return entries.filter(entry => entry.name.toLowerCase().includes(needle) || entry.query.toLowerCase().includes(needle))
 	}, [search, entries]);
 
 	const activateEntry = useStable((id: string) => {
@@ -84,6 +82,10 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 		store.dispatch(actions.removeFavoritesEntry(editingId));
 	});
 
+	const saveOrder = useStable((favorites: FavoritesEntry[]) => {
+		store.dispatch(actions.setFavorites(favorites));
+	});
+
 	const historyList = useMemo(() => {
 		if (filtered.length === 0) {
 			return (
@@ -93,24 +95,33 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 			)
 		}
 
-		return filtered.map((entry, i) => (
-			<Fragment key={i}>
-				<FavoriteRow
-					entry={entry}
-					isActive={activeEntry === entry.id}
-					isLight={isLight}
-					activeTab={activeTab}
-					onExecuteQuery={props.onExecuteQuery}
-					onActivate={activateEntry}
-					onEdit={openEditor}
-				/>
-				{i !== entries.length - 1 && (
-					<Divider
-						color={isLight ? 'light.0' : 'dark.5'}
-					/>
+		return (
+			<Sortable
+				items={filtered}
+				onSorted={saveOrder}
+			>
+				{({ index, item, handleProps }) => (
+					<Fragment key={index}>
+						<FavoriteRow
+							entry={item}
+							isActive={activeEntry === item.id}
+							isLight={isLight}
+							activeTab={activeTab}
+							enableDrag={!search}
+							handleProps={handleProps}
+							onExecuteQuery={props.onExecuteQuery}
+							onActivate={activateEntry}
+							onEdit={openEditor}
+						/>
+						{index !== filtered.length - 1 && (
+							<Divider
+								color={isLight ? 'light.0' : 'dark.5'}
+							/>
+						)}
+					</Fragment>
 				)}
-			</Fragment>
-		));
+			</Sortable>
+		);
 	}, [activeEntry, activeTab, filtered, isLight]);
 
 	return (
@@ -202,6 +213,8 @@ interface HistoryRowProps {
 	entry: FavoritesEntry;
 	isLight: boolean;
 	activeTab: SurrealistTab | undefined;
+	enableDrag: boolean;
+	handleProps: Record<string, any>;
 	onExecuteQuery: () => void;
 	onActivate: (id: string) => void;
 	onEdit: (id: string) => void;
@@ -213,6 +226,8 @@ function FavoriteRow(props: HistoryRowProps) {
 		activeTab,
 		entry,
 		isLight,
+		enableDrag,
+		handleProps,
 		onExecuteQuery,
 		onActivate,
 		onEdit
@@ -259,22 +274,27 @@ function FavoriteRow(props: HistoryRowProps) {
 			className={classes.entry}
 			style={{ borderColor: theme.fn.themeColor(isLight ? 'light.0' : 'dark.3') }}
 		>
-			<Group
-				noWrap
-				className={classes.entryHeader}
-				onClick={handleClick}
-			>
-				<Text
-					c="surreal"
-					weight={600}
+			<Group noWrap mb="sm">
+				{enableDrag && (
+					<Icon
+						path={mdiDrag}
+						{...handleProps}
+					/>
+				)}
+				<Group
+					noWrap
+					className={classes.entryHeader}
+					onClick={handleClick}
 				>
-					{entry.name}
-				</Text>
-				<Spacer />
-				<Icon
-					path={isActive ? mdiChevronDown : mdiChevronUp}
-					style={{ flexShrink: 0 }}
-				/>
+					<Text c="surreal" weight={600}>
+						{entry.name}
+					</Text>
+					<Spacer />
+					<Icon
+						path={isActive ? mdiChevronDown : mdiChevronUp}
+						style={{ flexShrink: 0 }}
+					/>
+				</Group>
 			</Group>
 
 			<Collapse
@@ -282,7 +302,6 @@ function FavoriteRow(props: HistoryRowProps) {
 			>
 				<Paper
 					withBorder
-					mt="xs"
 					p="xs"
 				>
 					<Text

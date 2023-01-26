@@ -11,6 +11,10 @@
 	},
 	"dependencies": {
 		"@devbookhq/splitter": "^1.4.0",
+		"@dnd-kit/core": "^6.0.7",
+		"@dnd-kit/modifiers": "^6.0.1",
+		"@dnd-kit/sortable": "^7.0.2",
+		"@dnd-kit/utilities": "^3.2.1",
 		"@emotion/react": "^11.10.5",
 		"@mantine/core": "^5.9.3",
 		"@mantine/hooks": "^5.9.3",

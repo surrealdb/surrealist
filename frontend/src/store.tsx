@@ -115,6 +115,10 @@ const mainSlice = createSlice({
 			state.config.queryFavorites = state.config.queryFavorites.filter(entry => entry.id !== action.payload);
 		},
 
+		setFavorites(state, action: PayloadAction<FavoritesEntry[]>) {
+			state.config.queryFavorites = action.payload;
+		},
+
 		prepareServe(state, action: PayloadAction<string>) {
 			state.servingTab = action.payload;
 			state.servePending = true;
