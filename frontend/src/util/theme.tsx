@@ -39,8 +39,8 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 			Modal: {
 				defaultProps: {
 					centered: true,
-					exitTransitionDuration: 100,
-					overlayColor: '#0c0a12',
+					exitTransitionDuration: 150,
+					overlayColor: colorScheme == 'light' ? '#0c0a12' : '#090612',
 					overlayBlur: 1
 				}
 			},

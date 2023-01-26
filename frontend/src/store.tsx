@@ -101,8 +101,14 @@ const mainSlice = createSlice({
 			state.config.queryHistory = state.config.queryHistory.filter(entry => entry.id !== action.payload);
 		},
 
-		addFavoritesEntry(state, action: PayloadAction<FavoritesEntry>) {
-			state.config.queryFavorites.push(action.payload);
+		saveFavoritesEntry(state, action: PayloadAction<FavoritesEntry>) {
+			const index = state.config.queryFavorites.findIndex(entry => entry.id === action.payload.id);
+
+			if (index < 0) {
+				state.config.queryFavorites.push(action.payload);
+			} else {
+				state.config.queryFavorites[index] = action.payload;
+			}
 		},
 
 		removeFavoritesEntry(state, action: PayloadAction<string>) {

@@ -12,7 +12,7 @@ import { Form } from '../Form';
 import { useImmer } from 'use-immer';
 import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { QueryPane } from '../QueryPane';
-import { useActiveTab } from '~/hooks/tab';
+import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { ResultPane } from '../ResultPane';
 import { ConsolePane } from "~/components/ConsolePane";
 import { showNotification } from '@mantine/notifications';
@@ -28,48 +28,20 @@ export function Scaffold() {
 	const isLight = useIsLight();
 	const theme = useMantineTheme();
 	const activeTab = useStoreValue(state => state.activeTab);
-	const tabList = useStoreValue(state => state.config.tabs);
 	const autoConnect = useStoreValue(state => state.config.autoConnect);
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
 	const enableListing = useStoreValue(state => state.config.enableListing);
 	const queryListing = useStoreValue(state => state.config.queryListing);
+	const createTab = useTabCreator();
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
 
 	const createNewTab = useStable(async () => {
-		const tabId = uid(5);
-
-		function name(n: number) {
-			return `New tab ${n ? n + 1 : ''}`.trim();
-		}
-
-		let tabName = '';
-		let counter = 0;
-
-		do {
-			tabName = name(counter);
-			counter++;
-		} while(tabList.find(tab => tab.name === tabName));
-
-		store.dispatch(actions.addTab({
-			id: tabId,
-			name: tabName,
-			query: '',
-			variables: '{}',
-			lastResponse: [],
-			layout: {},
-			connection: {
-				endpoint: 'http://localhost:8000/',
-				username: 'root',
-				password: 'root',
-				namespace: '',
-				database: ''
-			}
-		}));
+		const tabId = createTab('New tab');
 
 		store.dispatch(actions.setActiveTab(tabId));
 
@@ -423,7 +395,11 @@ export function Scaffold() {
 							})}
 						/>
 						<Group>
-							<Button color="light" onClick={closeEditingInfo}>
+							<Button
+								color={isLight ? 'light.5' : 'light.3'}
+								variant="light"
+								onClick={closeEditingInfo}
+							>
 								Close
 							</Button>
 							<Spacer />
