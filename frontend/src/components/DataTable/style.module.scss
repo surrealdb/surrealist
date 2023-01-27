@@ -13,6 +13,14 @@
 
 .table {
 	user-select: text;
+
+	th:not(:first-child) {
+		text-align: right;
+	}
+
+	td:not(:first-child) {
+		text-align: right;
+	}
 }
 
 .table-value {

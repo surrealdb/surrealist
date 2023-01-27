@@ -102,9 +102,7 @@ export function TablesPane(props: TablesPaneProps) {
 									size="sm"
 								/>
 
-								<Text
-									color={isActive ? 'white' : 'light.1'}
-								>
+								<Text color={isActive ? 'white' : 'light.1'}>
 									{table.name}
 								</Text>
 								<Spacer />
