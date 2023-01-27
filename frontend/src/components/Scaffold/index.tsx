@@ -14,11 +14,13 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiConsole, mdiDatabase, mdiMagnify } from '@mdi/js';
+import { mdiCodeJson, mdiCompass, mdiConsole, mdiDatabase, mdiLightningBolt, mdiMagnify, mdiTable, mdiTableSearch } from '@mdi/js';
 import { Icon } from '../Icon';
 import { QueryView } from '../QueryView';
 import { ExplorerView } from '../ExplorerView';
 import { ViewMode } from '~/typings';
+import { Splitter } from '../Splitter';
+import { ConsolePane } from '../ConsolePane';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -28,12 +30,12 @@ export function Scaffold() {
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
+	const viewMode = useStoreValue(state => state.viewMode);
 	const createTab = useTabCreator();
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
-	const [viewMode, setViewMode] = useState<ViewMode>('query');
 
 	const createNewTab = useStable(async () => {
 		const tabId = createTab('New tab');
@@ -182,7 +184,11 @@ export function Scaffold() {
 	});
 
 	const toggleViewMode = useStable(() => {
-		setViewMode(viewMode === 'query' ? 'explorer' : 'query');
+		store.dispatch(actions.setViewMode(
+			viewMode === 'query' ? 'explorer' : 'query'
+		));
+
+		updateTitle();
 	});
 
 	useEffect(() => {
@@ -198,6 +204,7 @@ export function Scaffold() {
 
 	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
+	const isQuery = viewMode === 'query';
 
 	return (
 		<div className={classes.root}>
@@ -216,9 +223,13 @@ export function Scaffold() {
 							px="sm"
 							color="dark.4"
 							onClick={toggleViewMode}
-							title={viewMode == 'query' ? 'Explorer View' : 'Query View'}
+							title={`Switch to ${isQuery ? 'Explorer' : 'Query'} View`}
 						>
-							<Icon path={viewMode == 'query' ? mdiDatabase : mdiMagnify} />
+							<Icon
+								path={isQuery ? mdiTableSearch : mdiLightningBolt}
+								left
+							/>
+							{isQuery ? 'Explorer' : 'Query'}
 						</Button>
 						<Paper
 							className={classes.input}
@@ -260,41 +271,49 @@ export function Scaffold() {
 									<Icon color="light.4" path={mdiConsole} />
 								</ActionIcon>
 							)}
-							{viewMode == 'query' && (
-								<>
-									{isOnline ? (
-										<Button
-											color="surreal"
-											onClick={sendQuery}
-											className={classes.sendButton}
-											title="Send Query (F9)"
-										>
-											Send Query
-										</Button>
-									) : (
-										<Button
-											color="light"
-											style={{ borderRadius: 0 }}
-											onClick={openConnection}
-										>
-											{isConnecting ? 'Connecting...' : 'Connect'}
-										</Button>
-									)}
-								</>
+							{!isOnline ? (
+								<Button
+									color="light"
+									style={{ borderRadius: 0 }}
+									onClick={openConnection}
+								>
+									{isConnecting ? 'Connecting...' : 'Connect'}
+								</Button>
+							) : viewMode == 'query' ? (
+								<Button
+									color="surreal"
+									onClick={sendQuery}
+									className={classes.sendButton}
+									title="Send Query (F9)"
+								>
+									Send Query
+								</Button>
+							) : (
+								<div />
 							)}
 						</Paper>
 					</Group>
 
 					<Box p="xs" className={classes.content}>
-						{viewMode == 'query' ? (
-							<QueryView
-								showConsole={showConsole}
-								isOnline={isOnline}
-								sendQuery={sendQuery}
-							/>
-						) : (
-							<ExplorerView />
-						)}
+						<Splitter
+							minSize={100}
+							bufferSize={53}
+							direction="vertical"
+							endPane={showConsole && (
+								<ConsolePane />
+							)}
+						>
+							{viewMode == 'query' ? (
+								<QueryView
+									isOnline={isOnline}
+									sendQuery={sendQuery}
+								/>
+							) : (
+								<ExplorerView
+									isOnline={isOnline}
+								/>
+							)}
+						</Splitter>
 					</Box>
 				</>
 			) : (

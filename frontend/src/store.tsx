@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, ConsoleOutputMessage, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing} from "./typings";
+import {HistoryEntry, SurrealistTab, ConsoleOutputMessage, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 
@@ -17,6 +17,7 @@ const mainSlice = createSlice({
 		consoleOutput: [] as ConsoleOutputMessage[],
 		availableUpdate: '',
 		showAvailableUpdate: false,
+		viewMode: 'query' as ViewMode
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -198,6 +199,10 @@ const mainSlice = createSlice({
 
 		setResultListingMode(state, action: PayloadAction<ResultListing>) {
 			state.config.resultListing = action.payload;
+		},
+
+		setViewMode(state, action: PayloadAction<ViewMode>) {
+			state.viewMode = action.payload;
 		}
 
 	}

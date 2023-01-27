@@ -104,8 +104,6 @@ export function Splitter(props: SplitterProps) {
 		}
 	}, [isHorizontal, draggerId]);
 
-	console.log('render')
-
 	// Display left section
 	if (props.startPane) {
 		const attrs = {

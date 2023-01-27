@@ -1,7 +1,6 @@
-import classes from './style.module.scss';
 import type { editor } from "monaco-editor";
-import { ActionIcon, Divider, Group, ScrollArea, Table, Tabs, Text } from "@mantine/core";
-import { mdiClock, mdiCodeJson, mdiDatabase, mdiTable } from "@mdi/js";
+import { ActionIcon, Divider, Group, Tabs, Text } from "@mantine/core";
+import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import { Panel } from "../Panel";
 import Editor from "@monaco-editor/react";
@@ -13,7 +12,7 @@ import { useLayoutEffect } from "react";
 import { Icon } from "../Icon";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
-import { propertyVisitor } from "~/util/visitor";
+import { DataTable } from "../DataTable";
 
 interface PreviewProps {
 	result: any;
@@ -45,121 +44,6 @@ function JsonPreview({ result }: PreviewProps) {
 	)
 }
 
-function TablePreview({ result }: PreviewProps) {
-	const [keys, values] = useMemo(() => {
-		const keys: string[] = [];
-		const values: any[] = [];
-	
-		if (Array.isArray(result)) {
-			for (let i = 0; i < result.length; i++) {
-				const row: any = {};
-				
-				propertyVisitor(result[i], (path, value) => {
-					const pathName = path.join('.');
-			
-					if (!keys.includes(pathName)) {
-						if (pathName === 'id') {
-							keys.unshift(pathName);
-						} else {
-							keys.push(pathName);
-						}
-					}
-
-					row[pathName] = value;
-				});
-
-				values.push(row);
-			}
-		}
-
-		return [keys, values];
-	}, [result]);
-
-	const headers = useMemo(() => {
-		const headers: any = [];
-
-		keys.forEach(key => {
-			headers.push(
-				<th>{key}</th>
-			);
-		});
-		
-		return headers;
-	}, [keys]);
-
-	const rows = useMemo(() => {
-		return values.map(value => {
-			let hasId = false;
-
-			const columns = Array.from(keys).map(key => {
-				const text = value[key];
-
-				if (!hasId) {
-					hasId = true;
-
-					return (
-						<td>
-							<Text c="surreal" ff="JetBrains Mono">
-								{text}
-							</Text>
-						</td>
-					);
-				}
-
-				if (text !== undefined) {
-					return (
-						<td>
-							{text.toString()}
-						</td>
-					);
-				} else {
-					return (
-						<td>
-							<Text size="sm" color="light.5">
-								&mdash;
-							</Text>
-						</td>
-					);
-				}
-			});
-
-			return (
-				<tr>
-					{columns}
-				</tr>
-			)
-		});
-	}, [keys, values]);
-
-	if (!Array.isArray(result)) {
-		return (
-			<Text color="light.4">
-				Result could not be displayed as a table.
-			</Text>
-		);
-	}
-
-	return (
-		<div className={classes.tableContainer}>
-			<ScrollArea className={classes.tableWrapper}>
-				<Table
-					striped
-					className={classes.table}
-				>
-					<thead>
-						<tr>
-							{headers}
-						</tr>
-					</thead>
-					<tbody>
-						{rows}
-					</tbody>
-				</Table>
-			</ScrollArea>
-		</div>
-	)
-}
-
 export function ResultPane() {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
@@ -186,7 +70,7 @@ export function ResultPane() {
 	return (
 		<Panel
 			title="Result"
-			icon={mdiCodeJson}
+			icon={mdiLightningBolt}
 			rightSection={
 				<Group align="center">
 					{result?.result !== undefined && (
@@ -260,7 +144,7 @@ export function ResultPane() {
 								No results found for query
 							</Text>
 						) : resultListing == 'table' ? (
-							<TablePreview result={result.result} />
+							<DataTable data={result.result} />
 						) : (
 							<JsonPreview result={result.result} />
 						)}

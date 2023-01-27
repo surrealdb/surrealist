@@ -1,19 +1,24 @@
 import { SaveConfig } from "$/go/backend/Surrealist";
 import { WindowSetTitle } from "$/runtime/runtime";
-import { uid } from "radash";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 
 export function updateTitle() {
-	const { activeTab, isPinned, config } = store.getState();
+	const { activeTab, isPinned, config, viewMode } = store.getState();
 
-	let title = 'Surrealist';
+	let title = '';
 
 	if (activeTab) {
 		const tab = config.tabs.find(t => t.id === activeTab);
 
 		if (tab) {
-			title += ` - ${tab.name}`;
+			title += `${tab.name} - `;
 		}
+	}
+
+	if (viewMode === 'query') {
+		title += 'Surrealist Query';
+	} else if (viewMode === 'explorer') {
+		title += 'Surrealist Explorer';
 	}
 
 	if (isPinned) {

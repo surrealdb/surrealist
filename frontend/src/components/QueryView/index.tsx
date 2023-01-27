@@ -9,7 +9,6 @@ import { Splitter } from "../Splitter";
 import { VariablesPane } from "../VariablesPane";
 
 export interface QueryViewProps {
-	showConsole: boolean;
 	isOnline: boolean;
 	sendQuery: (e?: MouseEvent) => any;
 }
@@ -20,43 +19,34 @@ export function QueryView(props: QueryViewProps) {
 	
 	return (
 		<Splitter
-			minSize={100}
-			bufferSize={53}
-			direction="vertical"
-			endPane={props.showConsole && (
-				<ConsolePane />
+			minSize={300}
+			direction="horizontal"
+			startPane={
+				<Splitter
+					minSize={120}
+					bufferSize={0}
+					direction="vertical"
+					endPane={
+						<VariablesPane />
+					}
+				>
+					<QueryPane
+						isConnected={props.isOnline}
+						onExecuteQuery={props.sendQuery}
+					/>
+				</Splitter>
+			}
+			endPane={!enableListing ? null : queryListing == 'history' ? (
+				<HistoryPane
+					onExecuteQuery={props.sendQuery}
+				/>
+			) : (
+				<FavoritesPane
+					onExecuteQuery={props.sendQuery}
+				/>
 			)}
 		>
-			<Splitter
-				minSize={300}
-				direction="horizontal"
-				startPane={
-					<Splitter
-						minSize={120}
-						bufferSize={0}
-						direction="vertical"
-						endPane={
-							<VariablesPane />
-						}
-					>
-						<QueryPane
-							isConnected={props.isOnline}
-							onExecuteQuery={props.sendQuery}
-						/>
-					</Splitter>
-				}
-				endPane={!enableListing ? null : queryListing == 'history' ? (
-					<HistoryPane
-						onExecuteQuery={props.sendQuery}
-					/>
-				) : (
-					<FavoritesPane
-						onExecuteQuery={props.sendQuery}
-					/>
-				)}
-			>
-				<ResultPane />
-			</Splitter>
+			<ResultPane />
 		</Splitter>
 	);
 }
