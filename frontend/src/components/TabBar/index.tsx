@@ -1,5 +1,6 @@
+import surrealistLogo from '~/assets/icon.png';
 import { TogglePinned } from "$/go/backend/Surrealist";
-import { Group, Button, Modal, TextInput } from "@mantine/core";
+import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
 import { mdiPlus, mdiPinOff, mdiPin, mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -13,9 +14,10 @@ import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { ViewTab } from "../ViewTab";
 import { Sortable } from "../Sortable";
-import { SurrealistTab } from "~/typings";
+import { SurrealistTab, ViewMode } from "~/typings";
 
 export interface TabBarProps {
+	viewMode: ViewMode;
 	openConnection: () => void;
 	closeConnection: () => void;
 	onCreateTab: () => void;
@@ -112,9 +114,14 @@ export function TabBar(props: TabBarProps) {
 			p="xs"
 			spacing="sm"
 			bg={isLight ? 'white' : 'dark.7'}
-			align="start"
+			align="center"
 			noWrap
 		>
+			<Image
+				style={{ pointerEvents: 'none', userSelect: 'none' }}
+				src={surrealistLogo}
+				width={38}
+			/>
 
 			<Group>
 				<Sortable
@@ -159,29 +166,33 @@ export function TabBar(props: TabBarProps) {
 				closeConnection={props.closeConnection}
 			/>
 
-			<Button
-				px="xs"
-				color={isLight ? 'light.0' : 'dark.4'}
-				title="Toggle history"
-				onClick={toggleHistory}
-			>
-				<Icon
-					path={mdiHistory}
-					color={isLight ? 'light.8' : 'white'}
-				/>
-			</Button>
+			{props.viewMode == 'query' && (
+				<>
+					<Button
+						px="xs"
+						color={isLight ? 'light.0' : 'dark.4'}
+						title="Toggle history"
+						onClick={toggleHistory}
+					>
+						<Icon
+							path={mdiHistory}
+							color={isLight ? 'light.8' : 'white'}
+						/>
+					</Button>
 
-			<Button
-				px="xs"
-				color={isLight ? 'light.0' : 'dark.4'}
-				title="Toggle favorites"
-				onClick={toggleFavorites}
-			>
-				<Icon
-					path={mdiStar}
-					color={isLight ? 'light.8' : 'white'}
-				/>
-			</Button>
+					<Button
+						px="xs"
+						color={isLight ? 'light.0' : 'dark.4'}
+						title="Toggle favorites"
+						onClick={toggleFavorites}
+					>
+						<Icon
+							path={mdiStar}
+							color={isLight ? 'light.8' : 'white'}
+						/>
+					</Button>
+				</>
+			)}
 			
 			<Button
 				px="xs"

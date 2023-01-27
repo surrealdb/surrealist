@@ -4,6 +4,7 @@ import {SurrealConnection} from "./surreal";
 export type DriverType = "file" | "memory" | "tikv";
 export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json";
+export type ViewMode = 'query' | 'explorer';
 
 export interface SurrealistConfig {
 	theme: ColorScheme | 'automatic';

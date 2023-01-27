@@ -11,18 +11,14 @@ import { TabBar } from '../TabBar';
 import { Form } from '../Form';
 import { useImmer } from 'use-immer';
 import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
-import { QueryPane } from '../QueryPane';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
-import { ResultPane } from '../ResultPane';
-import { ConsolePane } from "~/components/ConsolePane";
 import { showNotification } from '@mantine/notifications';
-import { VariablesPane } from '../VariablesPane';
 import { useIsLight } from '~/hooks/theme';
-import { mdiConsole } from '@mdi/js';
+import { mdiConsole, mdiDatabase, mdiMagnify } from '@mdi/js';
 import { Icon } from '../Icon';
-import { HistoryPane } from '../HistoryPane';
-import { Splitter } from '../Splitter';
-import { FavoritesPane } from '../FavoritesPane';
+import { QueryView } from '../QueryView';
+import { ExplorerView } from '../ExplorerView';
+import { ViewMode } from '~/typings';
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -32,13 +28,12 @@ export function Scaffold() {
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
-	const enableListing = useStoreValue(state => state.config.enableListing);
-	const queryListing = useStoreValue(state => state.config.queryListing);
 	const createTab = useTabCreator();
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
+	const [viewMode, setViewMode] = useState<ViewMode>('query');
 
 	const createNewTab = useStable(async () => {
 		const tabId = createTab('New tab');
@@ -117,6 +112,10 @@ export function Scaffold() {
 	});
 
 	const sendQuery = useStable(async (e?: MouseEvent) => {
+		if (viewMode !== 'query') {
+			return;
+		}
+
 		e?.stopPropagation();
 
 		if (!isOnline) {
@@ -182,6 +181,10 @@ export function Scaffold() {
 		setIsOnline(false);
 	});
 
+	const toggleViewMode = useStable(() => {
+		setViewMode(viewMode === 'query' ? 'explorer' : 'query');
+	});
+
 	useEffect(() => {
 		if (autoConnect) {
 			openConnection(undefined, true);
@@ -199,6 +202,7 @@ export function Scaffold() {
 	return (
 		<div className={classes.root}>
 			<TabBar
+				viewMode={viewMode}
 				openConnection={openConnection}
 				closeConnection={closeConnection}
 				onCreateTab={createNewTab}
@@ -208,12 +212,14 @@ export function Scaffold() {
 			{activeTab ? (
 				<>
 					<Group p="xs">
-						<Image
-							style={{ pointerEvents: 'none', userSelect: 'none' }}
-							src={surrealistLogo}
-							width={42}
-						/>
-
+						<Button
+							px="sm"
+							color="dark.4"
+							onClick={toggleViewMode}
+							title={viewMode == 'query' ? 'Explorer View' : 'Query View'}
+						>
+							<Icon path={viewMode == 'query' ? mdiDatabase : mdiMagnify} />
+						</Button>
 						<Paper
 							className={classes.input}
 							onClick={openInfoEditor}
@@ -254,67 +260,41 @@ export function Scaffold() {
 									<Icon color="light.4" path={mdiConsole} />
 								</ActionIcon>
 							)}
-							{isOnline ? (
-								<Button
-									color="surreal"
-									onClick={sendQuery}
-									className={classes.sendButton}
-									title="Send Query (F9)"
-								>
-									Send Query
-								</Button>
-							) : (
-								<Button
-									color="light"
-									style={{ borderRadius: 0 }}
-									onClick={openConnection}
-								>
-									{isConnecting ? 'Connecting...' : 'Connect'}
-								</Button>
+							{viewMode == 'query' && (
+								<>
+									{isOnline ? (
+										<Button
+											color="surreal"
+											onClick={sendQuery}
+											className={classes.sendButton}
+											title="Send Query (F9)"
+										>
+											Send Query
+										</Button>
+									) : (
+										<Button
+											color="light"
+											style={{ borderRadius: 0 }}
+											onClick={openConnection}
+										>
+											{isConnecting ? 'Connecting...' : 'Connect'}
+										</Button>
+									)}
+								</>
 							)}
 						</Paper>
 					</Group>
 
 					<Box p="xs" className={classes.content}>
-						<Splitter
-							minSize={100}
-							bufferSize={53}
-							direction="vertical"
-							endPane={showConsole && (
-								<ConsolePane />
-							)}
-						>
-							<Splitter
-								minSize={300}
-								direction="horizontal"
-								startPane={
-									<Splitter
-										minSize={120}
-										bufferSize={0}
-										direction="vertical"
-										endPane={
-											<VariablesPane />
-										}
-									>
-										<QueryPane
-											isConnected={isOnline}
-											onExecuteQuery={sendQuery}
-										/>
-									</Splitter>
-								}
-								endPane={!enableListing ? null : queryListing == 'history' ? (
-									<HistoryPane
-										onExecuteQuery={sendQuery}
-									/>
-								) : (
-									<FavoritesPane
-										onExecuteQuery={sendQuery}
-									/>
-								)}
-							>
-								<ResultPane />
-							</Splitter>
-						</Splitter>
+						{viewMode == 'query' ? (
+							<QueryView
+								showConsole={showConsole}
+								isOnline={isOnline}
+								sendQuery={sendQuery}
+							/>
+						) : (
+							<ExplorerView />
+						)}
 					</Box>
 				</>
 			) : (
