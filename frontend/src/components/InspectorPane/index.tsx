@@ -10,6 +10,7 @@ import { Icon } from "../Icon";
 import { useStable } from "~/hooks/stable";
 import { RecordLink } from "../RecordLink";
 import { OpenFn } from "~/typings";
+import { Spacer } from "../Spacer";
 
 export interface InspectorPaneProps {
 	record: any;
@@ -25,6 +26,8 @@ export function InspectorPane(props: InspectorPaneProps) {
 	const jsonAlert = isInvalid
 		? <Text color="red">Invalid record JSON</Text>
 		: undefined;
+	
+	const isEdge = props.record.content?.in && props.record.content?.out;
 
 	return (
 		<Panel
@@ -59,7 +62,19 @@ export function InspectorPane(props: InspectorPaneProps) {
 				p="xs"
 				mb="xs"
 			>
-				{props.record.content.id}
+				<Group noWrap spacing="xs">
+					{isEdge && (
+						<Paper
+							title="This record is an edge"
+							bg={isLight ? 'light.0' : 'light.6'}
+							c={isLight ? 'light.6' : 'white'}
+							px="xs"
+						>
+							Edge
+						</Paper>	
+					)}
+					{props.record.content.id}
+				</Group>
 			</Paper>
 
 			<Tabs defaultValue="content">
@@ -205,7 +220,7 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 			}}
 		>
 			<Text
-				color="white"
+				color="light.0"
 				size="lg"
 			>
 				Input relations
@@ -219,7 +234,7 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 			/>
 
 			<Text
-				color="white"
+				color="light.0"
 				size="lg"
 				mt="xl"
 			>

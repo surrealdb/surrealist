@@ -1,6 +1,6 @@
-import { ActionIcon, Box, Button, Divider, Group, NumberInput, Pagination, ScrollArea, Select, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Divider, Group, Image, NumberInput, Pagination, ScrollArea, Select, Stack, Text, TextInput, Title } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiRefresh, mdiTableSearch, mdiViewSequential } from "@mdi/js";
+import { mdiArrowLeft, mdiArrowRight, mdiChatQuestion, mdiDatabase, mdiRefresh, mdiTableSearch, mdiViewSequential } from "@mdi/js";
 import { ChangeEvent, FocusEvent, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { useStable } from "~/hooks/stable";
@@ -135,71 +135,79 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 				</Group>
 			}
 		>
-			<ScrollArea
-				style={{ position: 'absolute', inset: 12, top: 0, bottom: 54 }}
-			>
-				<DataTable
-					data={records}
-					openRecord={props.onSelectRecord}
-					active={props.activeRecordId}
-				/>
-			</ScrollArea>
-
-			<Group
-				style={{ position: 'absolute', insetInline: 12, bottom: 12 }}
-				spacing="xl"
-			>
-				<Group spacing="xs">
-					<Button
-						color="dark.5"
-						variant="outline"
-						c="light.4"
-						px="xs"
-						onClick={previousPage}
-						disabled={page <= 1}
-						style={{ opacity: page <= 1 ? 0.4 : 1 }}
+			{props.activeTable ? (
+				<>
+					<ScrollArea
+						style={{ position: 'absolute', inset: 12, top: 0, bottom: 54 }}
 					>
-						<Icon path={mdiArrowLeft} />
-					</Button>
-					
-					<TextInput
-						value={pageText}
-						onChange={setPageText}
-						maw={46}
-						withAsterisk
-						onBlur={gotoPage}
-						onKeyDown={gotoPage}
-						styles={{
-							input: {
-								textAlign: 'center',
-								paddingInline: 0
-							}
-						}}
-					/>
+						<DataTable
+							data={records}
+							openRecord={props.onSelectRecord}
+							active={props.activeRecordId}
+						/>
+					</ScrollArea>
 
-					<Text color="light.3">
-						of {pageCount} pages
-					</Text>
-
-					<Button
-						color="dark.5"
-						variant="outline"
-						c="light.4"
-						px="xs"
-						onClick={nextPage}
-						disabled={page >= pageCount}
-						style={{ opacity: page >= pageCount ? 0.4 : 1 }}
+					<Group
+						style={{ position: 'absolute', insetInline: 12, bottom: 12 }}
+						spacing="xl"
 					>
-						<Icon path={mdiArrowRight} />
-					</Button>
-				</Group>
+						<Group spacing="xs">
+							<Button
+								color="dark.5"
+								variant="outline"
+								c="light.4"
+								px="xs"
+								onClick={previousPage}
+								disabled={page <= 1}
+								style={{ opacity: page <= 1 ? 0.4 : 1 }}
+							>
+								<Icon path={mdiArrowLeft} />
+							</Button>
+							
+							<TextInput
+								value={pageText}
+								onChange={setPageText}
+								maw={46}
+								withAsterisk
+								onBlur={gotoPage}
+								onKeyDown={gotoPage}
+								styles={{
+									input: {
+										textAlign: 'center',
+										paddingInline: 0
+									}
+								}}
+							/>
 
-				<Select
-					value={pageSize}
-					onChange={setPageSize}
-					data={PAGE_SIZES}
-				/>
-			</Group>
+							<Text color="light.3">
+								of {pageCount} pages
+							</Text>
+
+							<Button
+								color="dark.5"
+								variant="outline"
+								c="light.4"
+								px="xs"
+								onClick={nextPage}
+								disabled={page >= pageCount}
+								style={{ opacity: page >= pageCount ? 0.4 : 1 }}
+							>
+								<Icon path={mdiArrowRight} />
+							</Button>
+						</Group>
+
+						<Select
+							value={pageSize}
+							onChange={setPageSize}
+							data={PAGE_SIZES}
+						/>
+					</Group>
+				</>
+			) : (
+				<Center h="100%" c="light.5">
+					Select a table to view its records
+				</Center>
+			)}
 		</Panel>
 	)
 }

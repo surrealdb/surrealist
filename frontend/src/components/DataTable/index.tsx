@@ -1,8 +1,7 @@
 import classes from './style.module.scss';
-import { Box, clsx, Text, useMantineTheme } from "@mantine/core";
+import { Box, Text, useMantineTheme } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { useMemo } from "react";
-import { propertyVisitor } from "~/util/visitor";
 import { renderDataCell } from './datatypes';
 import { OpenFn } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
@@ -24,19 +23,17 @@ export function DataTable({ data, active, openRecord }: DataTableProps) {
 		if (Array.isArray(data)) {
 			for (let i = 0; i < data.length; i++) {
 				const row: any = {};
-				
-				propertyVisitor(data[i], (path, value) => {
-					const pathName = path.join('.');
-			
-					if (!keys.includes(pathName)) {
-						if (pathName === 'id') {
-							keys.unshift(pathName);
+
+				Object.entries(data[i]).forEach(([key, value]) => {
+					if (!keys.includes(key)) {
+						if (key === 'id') {
+							keys.unshift(key);
 						} else {
-							keys.push(pathName);
+							keys.push(key);
 						}
 					}
 
-					row[pathName] = value;
+					row[key] = value;
 				});
 
 				values.push(row);
@@ -51,7 +48,11 @@ export function DataTable({ data, active, openRecord }: DataTableProps) {
 
 		keys.forEach(key => {
 			headers.push(
-				<th key={key}>{key}</th>
+				<th key={key}>
+					<Text>
+						{key}
+					</Text>
+				</th>
 			);
 		});
 		

@@ -1,4 +1,4 @@
-import { Text } from "@mantine/core";
+import { HoverCard, Text } from "@mantine/core";
 import { mdiArrowTopRight, mdiCheck, mdiClose } from "@mdi/js";
 import { ReactNode } from "react";
 import { OpenFn } from "~/typings";
@@ -26,11 +26,17 @@ function NullishCell(_props: DataCellProps) {
 }
 
 function BooleanCell(props: DataCellProps) {
-	return props.value ? (
+	console.log('reee');
+
+	const icon = props.value ? (
 		<Icon path={mdiCheck} color="green" />
 	) : (
 		<Icon path={mdiClose} color="red" />
 	);
+
+	return (
+		<div>{icon}</div>
+	)
 }
 
 function StringCell(props: DataCellProps) {
@@ -76,19 +82,39 @@ function DateTimeCell(props: DataCellProps) {
 	);
 }
 
-function ArrayCell(props: DataCellProps) {
-	return (
-		<Text>
-			Array: {props.value.length}
-		</Text>
-	);
-}
+function ArrayObjectCell(props: DataCellProps) {
+	const name = Array.isArray(props.value) ? 'Array' : 'Object';
+	const size = Array.isArray(props.value) ? props.value.length : Object.keys(props.value).length;
 
-function ObjectCell(props: DataCellProps) {
 	return (
-		<Text>
-			Object: {Object.keys(props.value).length}
-		</Text>
+		<div>
+			<HoverCard
+				width={280}
+				shadow="md"
+				withinPortal
+				withArrow
+			>
+				<HoverCard.Target>
+					<Text
+						span
+						ff="JetBrains Mono"
+						style={{ cursor: 'help' }}
+					>
+						{name}({size})
+					</Text>
+				</HoverCard.Target>
+				<HoverCard.Dropdown>
+					<Text
+						size="sm"
+						ff="JetBrains Mono"
+						style={{ whiteSpace: 'pre' }}
+						lineClamp={10}
+					>
+						{JSON.stringify(props.value, null, 4)}
+					</Text>
+				</HoverCard.Dropdown>
+			</HoverCard>
+		</div>
 	);
 }
 
@@ -118,12 +144,8 @@ const DataCellTypes = [
 		component: NumberCell
 	},
 	{
-		match: (value: any) => Array.isArray(value),
-		component: ArrayCell
-	},
-	{
 		match: (value: any) => typeof value === 'object',
-		component: ObjectCell
+		component: ArrayObjectCell
 	}
 ];
 

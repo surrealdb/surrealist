@@ -13,6 +13,18 @@
 
 .table {
 	user-select: text;
+
+	th > *, td > * {
+		padding-inline: 24px;
+	}
+
+	th:first-child > *, td:first-child > * {
+		padding-inline-start: 0;
+	}
+
+	th:last-child > *, td:last-child > * {
+		padding-inline-end: 0;
+	}
 }
 
 .table-value {

@@ -63,12 +63,13 @@ export function TablesPane(props: TablesPaneProps) {
 					>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
-					<ActionIcon
+					{/* TODO Implement table creation w/ schema builder */}
+					{/* <ActionIcon
 						title="Create table"
 						onClick={fetchTables}
 					>
 						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
+					</ActionIcon> */}
 				</Group>
 			}
 		>
@@ -119,7 +120,7 @@ export function TablesPane(props: TablesPaneProps) {
 					})}
 				</ScrollArea>
 			) : (
-				<Text align="center" pt="xl">
+				<Text align="center" pt="xl" c="light.5">
 					Not connected
 				</Text>
 			)}

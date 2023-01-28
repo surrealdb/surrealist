@@ -1,5 +1,5 @@
 import type { editor } from "monaco-editor";
-import { ActionIcon, Divider, Group, Tabs, Text } from "@mantine/core";
+import { ActionIcon, Center, Divider, Group, Tabs, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import { Panel } from "../Panel";
@@ -133,7 +133,7 @@ export function ResultPane() {
 					top: showTabs ? 48 : 0
 				}}
 			>
-				{result && (
+				{result ? (
 					<>
 						{result.status == 'ERR' ? (
 							<Text color="red">
@@ -149,6 +149,10 @@ export function ResultPane() {
 							<JsonPreview result={result.result} />
 						)}
 					</>
+				) : (
+					<Center h="100%" c="light.5">
+						Execute a query to view the results
+					</Center>
 				)}
 			</div>
 		</Panel>
