@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Box, Button, Center, Group, Image, Modal, Paper, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Divider, Group, Image, Modal, Paper, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
@@ -20,6 +20,14 @@ import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/query/QueryView';
 import { ExplorerView } from '~/explorer/ExplorerView';
+import { AuthMode } from '~/typings';
+
+const AUTH_MODES = [
+	{ label: 'Root authentication', value: 'root' },
+	{ label: 'Namespace authentication', value: 'namespace' },
+	{ label: 'Database authentication', value: 'database' },
+	{ label: 'Scope authentication', value: 'scope' }
+];
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -56,10 +64,12 @@ export function Scaffold() {
 	const [ editingInfo, setEditingInfo ] = useState(false);
 	const [ infoDetails, setInfoDetails ] = useImmer<SurrealConnection>({
 		endpoint: '',
+		namespace: '',
+		database: '',
 		username: '',
 		password: '',
-		namespace: '',
-		database: ''
+		authMode: 'root',
+		scope: ''
 	});
 
 	const openInfoEditor = useStable(() => {
@@ -209,6 +219,7 @@ export function Scaffold() {
 		store.dispatch(actions.setConsoleEnabled(true));
 	});
 
+	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
 	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 	const isQuery = viewMode === 'query';
@@ -355,6 +366,7 @@ export function Scaffold() {
 			<Modal
 				opened={editingInfo}
 				onClose={closeEditingInfo}
+				size="lg"
 				title={
 					<Title size={16} color={isLight ? 'light.6' : 'white'}>
 						Connection details
@@ -362,62 +374,85 @@ export function Scaffold() {
 				}
 			>
 				<Form onSubmit={saveInfo}>
-					<Stack>
-						<TextInput
-							style={{ flex: 1 }}
-							label="Endpoint URL"
-							value={infoDetails.endpoint}
-							onChange={(e) => setInfoDetails(draft => {
-								draft.endpoint = e.target.value
-							})}
-							autoFocus
-						/>
-						<TextInput
-							style={{ flex: 1 }}
-							label="Username"
-							value={infoDetails.username}
-							onChange={(e) => setInfoDetails(draft => {
-								draft.username = e.target.value
-							})}
-						/>
-						<TextInput
-							style={{ flex: 1 }}
-							label="Password"
-							value={infoDetails.password}
-							onChange={(e) => setInfoDetails(draft => {
-								draft.password = e.target.value
-							})}
-						/>
-						<TextInput
-							style={{ flex: 1 }}
-							label="Namespace (optional)"
-							value={infoDetails.namespace}
-							onChange={(e) => setInfoDetails(draft => {
-								draft.namespace = e.target.value
-							})}
-						/>
-						<TextInput
-							style={{ flex: 1 }}
-							label="Database (optional)"
-							value={infoDetails.database}
-							onChange={(e) => setInfoDetails(draft => {
-								draft.database = e.target.value
-							})}
-						/>
-						<Group>
-							<Button
-								color={isLight ? 'light.5' : 'light.3'}
-								variant="light"
-								onClick={closeEditingInfo}
-							>
-								Close
-							</Button>
-							<Spacer />
-							<Button type="submit">
-								Save
-							</Button>
-						</Group>
-					</Stack>
+					<SimpleGrid cols={2} spacing="xl">
+						<Stack>
+							<TextInput
+								required
+								label="Endpoint URL"
+								value={infoDetails.endpoint}
+								onChange={(e) => setInfoDetails(draft => {
+									draft.endpoint = e.target.value
+								})}
+								autoFocus
+							/>
+							<TextInput
+								required
+								label="Namespace"
+								value={infoDetails.namespace}
+								onChange={(e) => setInfoDetails(draft => {
+									draft.namespace = e.target.value
+								})}
+							/>
+							<TextInput
+								required
+								label="Database"
+								value={infoDetails.database}
+								onChange={(e) => setInfoDetails(draft => {
+									draft.database = e.target.value
+								})}
+							/>
+						</Stack>
+						<Stack>
+							<Select
+								label="Authentication mode"
+								value={infoDetails.authMode}
+								onChange={(value) => setInfoDetails(draft => {
+									draft.authMode = value as AuthMode;
+								})}
+								data={AUTH_MODES}
+							/>
+							<TextInput
+								required
+								label="Username"
+								value={infoDetails.username}
+								onChange={(e) => setInfoDetails(draft => {
+									draft.username = e.target.value
+								})}
+							/>
+							<TextInput
+								required
+								label="Password"
+								value={infoDetails.password}
+								onChange={(e) => setInfoDetails(draft => {
+									draft.password = e.target.value
+								})}
+							/>
+							<TextInput
+								label="Scope"
+								disabled={infoDetails.authMode !== 'scope'}
+								value={infoDetails.scope}
+								onChange={(e) => setInfoDetails(draft => {
+									draft.scope = e.target.value
+								})}
+							/>
+						</Stack>
+					</SimpleGrid>
+					<Group mt="lg">
+						<Button
+							color={isLight ? 'light.5' : 'light.3'}
+							variant="light"
+							onClick={closeEditingInfo}
+						>
+							Close
+						</Button>
+						<Spacer />
+						<Button
+							disabled={connectionSaveDisabled}
+							type="submit"
+						>
+							Save details
+						</Button>
+					</Group>
 				</Form>
 			</Modal>
 		</div>

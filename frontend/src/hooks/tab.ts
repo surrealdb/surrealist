@@ -1,5 +1,6 @@
 import { uid } from "radash";
 import { actions, store, useStoreValue } from "~/store";
+import { SurrealConnection } from "~/surreal";
 
 /**
  * Returns the active tab
@@ -11,12 +12,14 @@ export function useActiveTab() {
 	return knownTabs.find(tab => tab.id === activeTab);
 }
 
-const NEW_CONNECTION = {
+const NEW_CONNECTION: SurrealConnection = {
 	endpoint: 'http://localhost:8000/',
+	namespace: 'test',
+	database: 'test',
 	username: 'root',
 	password: 'root',
-	namespace: '',
-	database: ''
+	authMode: 'root',
+	scope: ''
 }
 
 /**

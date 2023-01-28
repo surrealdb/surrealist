@@ -1,12 +1,15 @@
 import { uid } from "radash";
 import { store } from "./store";
+import { AuthMode } from "./typings";
 
 export interface SurrealConnection {
+	namespace: string;
+	database: string;
 	endpoint: string;
 	username: string;
 	password: string;
-	namespace: string;
-	database: string;
+	authMode: AuthMode;
+	scope: string;
 }
 
 export interface SurrealOptions {
@@ -82,27 +85,38 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	};
 
 	socket.addEventListener('open', async () => {
-		const { username, password, namespace, database } = options.connection;
+		const { username, password, namespace, database, authMode, scope } = options.connection;
 
-		options.onConnect?.();
- 
+		const details: any = {
+			user: username,
+			pass: password
+		};
+
+		if (authMode == 'namespace') {
+			details.NS = namespace || '';
+		}
+
+		if (authMode == 'database') {
+			details.DB = database || '';
+		}
+
+		if (authMode !== 'scope') {
+			details.scope = scope || '';
+		}
+		
 		try {
-			await message('signin', [{
-				user: username,
-				pass: password,
-				// NS: namespace,
-				// DB: database
-			}]);
+			await message('signin', [details]);
 		} catch {
 			close();
 			return;
 		}
-
+		
 		if (namespace && database) {
 			message('use', [namespace, database]);
 		}
-
+		
 		isSuccess = true;
+		options.onConnect?.();
 	});
 
 	socket.addEventListener('close', (event) => {

@@ -34,8 +34,6 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
 	const [page, setPage] = useState(1);
 
-	console.log(sortMode)
-
 	const pageCount = Math.ceil(recordCount / parseInt(pageSize));
 
 	function setCurrentPage(number: number) {
@@ -113,8 +111,6 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		setCurrentPage(page + 1);
 	});
-
-	console.log('do', sortMode);
 
 	return (
 		<Panel
