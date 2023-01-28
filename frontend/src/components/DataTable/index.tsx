@@ -1,21 +1,40 @@
 import classes from './style.module.scss';
 import { Box, Text, useMantineTheme } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
-import { useMemo } from "react";
+import { MouseEvent, useMemo, useState } from "react";
 import { renderDataCell } from './datatypes';
-import { OpenFn } from '~/typings';
+import { OpenFn, ColumnSort } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
+import { useStable } from '~/hooks/stable';
+import { Icon } from '../Icon';
+import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 
 interface DataTableProps {
 	data: any;
 	active?: string | null;
+	sorting?: ColumnSort | null;
 	openRecord?: OpenFn;
+	onSortingChange?: (order: ColumnSort | null) => void;
 }
 
-export function DataTable({ data, active, openRecord }: DataTableProps) {
+export function DataTable({ data, active, sorting, openRecord, onSortingChange }: DataTableProps) {
 	const theme = useMantineTheme();
 	const isLight = useIsLight();
 
+	const handleSortClick = useStable((col: string) => {
+		if (!onSortingChange) return;
+
+		const [column, direction] = sorting || [];
+
+		if (column === col && direction === 'asc') {
+			onSortingChange([col, 'desc']);
+		} else if (column === col && direction === 'desc') {
+			onSortingChange(null);
+		} else {
+			onSortingChange([col, 'asc']);
+		}
+	});
+	
 	const [keys, values] = useMemo(() => {
 		const keys: string[] = [];
 		const values: any[] = [];
@@ -42,22 +61,35 @@ export function DataTable({ data, active, openRecord }: DataTableProps) {
 
 		return [keys, values];
 	}, [data, active]);
-
+	
 	const headers = useMemo(() => {
 		const headers: any = [];
 
 		keys.forEach(key => {
 			headers.push(
 				<th key={key}>
-					<Text>
+					<Text
+						span
+						onClick={() => handleSortClick(key)}
+						style={{
+							cursor: onSortingChange ? 'pointer' : undefined,
+							userSelect: 'none'
+						}}
+					>
 						{key}
+						{sorting?.[0] == key && (
+							<Icon
+								path={sorting[1] == 'asc' ? mdiChevronDown : mdiChevronUp}
+								pos="absolute"
+							/>
+						)}
 					</Text>
 				</th>
 			);
 		});
 		
 		return headers;
-	}, [keys]);
+	}, [keys, sorting]);
 
 	const activeColor = useMemo(() => {
 		return theme.fn.rgba(theme.fn.themeColor('light.6'), isLight ? 0.15 : 0.4);

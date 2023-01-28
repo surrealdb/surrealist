@@ -227,7 +227,7 @@ export function Scaffold() {
 				<>
 					<Group p="xs">
 						<Button
-							px="md"
+							px="lg"
 							h="100%"
 							variant="gradient"
 							color="surreal.4"

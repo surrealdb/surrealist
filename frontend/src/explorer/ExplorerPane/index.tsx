@@ -9,7 +9,7 @@ import { Panel } from "~/components/Panel";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getSurreal } from "~/surreal";
-import { OpenFn } from "~/typings";
+import { ColumnSort, OpenFn } from "~/typings";
 
 const PAGE_SIZES = [
 	{ label: '10 Results per page', value: '10' },
@@ -31,7 +31,10 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [recordCount, setRecordCount] = useState(0);
 	const [pageText, setPageText] = useInputState('1');
 	const [pageSize, setPageSize] = useInputState('25');
+	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
 	const [page, setPage] = useState(1);
+
+	console.log(sortMode)
 
 	const pageCount = Math.ceil(recordCount / parseInt(pageSize));
 
@@ -54,10 +57,11 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		const limitBy = parseInt(pageSize);
 		const startAt = (page - 1) * parseInt(pageSize);
+		const [sortCol, sortDir] = sortMode || ['id', 'asc'];
 
 		const countQuery = `SELECT count() AS count FROM ${props.activeTable} GROUP BY ALL`;
-		const fetchQuery = `SELECT * FROM ${props.activeTable} LIMIT ${limitBy} ${startAt > 0 ? `START ${startAt}` : ''}`;
-
+		const fetchQuery = `SELECT * FROM ${props.activeTable} ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy} ${startAt > 0 ? `START ${startAt}` : ''}`;
+ 
 		const response = await surreal.query(`${countQuery};${fetchQuery}`);
 		const resultCount = response[0].result?.[0]?.count || 0;
 		const resultRecords = response[1].result || [];
@@ -72,7 +76,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeTable, props.refreshId, pageSize, page]);
+	}, [props.activeTable, props.refreshId, pageSize, page, sortMode]);
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === 'keydown' && (e as KeyboardEvent).key !== 'Enter') {
@@ -110,6 +114,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		setCurrentPage(page + 1);
 	});
 
+	console.log('do', sortMode);
+
 	return (
 		<Panel
 			title="Record Explorer"
@@ -130,7 +136,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 					<Icon color="light.4" path={mdiDatabase} mr={-10} />
 					<Text color="light.4" lineClamp={1}>
-						{recordCount || 'no'} rows
+						{recordCount || 'no'} total rows
 					</Text>
 				</Group>
 			}
@@ -144,6 +150,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 							data={records}
 							openRecord={props.onSelectRecord}
 							active={props.activeRecordId}
+							sorting={sortMode}
+							onSortingChange={setSortMode}
 						/>
 					</ScrollArea>
 

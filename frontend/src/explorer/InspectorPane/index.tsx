@@ -1,4 +1,4 @@
-import { mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiSwapVertical, mdiWrench } from "@mdi/js";
+import { mdiBookEdit, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeBraces, mdiCodeJson, mdiPencil, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { editor } from "monaco-editor";
 import Editor from "@monaco-editor/react";
 import { FocusEvent, Fragment, KeyboardEvent, useEffect, useMemo, useState } from "react";
@@ -99,11 +99,11 @@ export function InspectorPane(props: InspectorPaneProps) {
 				<Tabs.List grow>
 					<Tabs.Tab value="content">
 						Content
-						<Icon path={mdiCodeJson} size={0.9} right />
+						<Icon path={mdiCodeJson} size={0.85} right />
 					</Tabs.Tab>
 					<Tabs.Tab value="relations">
 						Relations
-						<Icon path={mdiSwapVertical} size={0.9} right />
+						<Icon path={mdiSwapVertical} size={0.85} right />
 					</Tabs.Tab>
 				</Tabs.List>
 
@@ -240,12 +240,13 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 			<Text
 				color={isLight ? 'blue.9' : 'light.0'}
 				size="lg"
+				mt={4}
 			>
-				Input relations
+				Incoming relations
 			</Text>
 
 			<RelationsList
-				name="input"
+				name="incoming"
 				isLight={isLight}
 				relations={inputs}
 				onSelectRecord={onSelectRecord}
@@ -256,11 +257,11 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 				size="lg"
 				mt="xl"
 			>
-				Output relations
+				Outgoing relations
 			</Text>
 
 			<RelationsList
-				name="output"
+				name="outgoing"
 				isLight={isLight}
 				relations={outputs}
 				onSelectRecord={onSelectRecord}
