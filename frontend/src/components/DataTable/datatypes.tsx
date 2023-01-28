@@ -26,8 +26,6 @@ function NullishCell(_props: DataCellProps) {
 }
 
 function BooleanCell(props: DataCellProps) {
-	console.log('reee');
-
 	const icon = props.value ? (
 		<Icon path={mdiCheck} color="green" />
 	) : (

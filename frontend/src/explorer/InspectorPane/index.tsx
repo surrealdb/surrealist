@@ -1,15 +1,16 @@
 import { mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { editor } from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { FocusEvent, Fragment, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
-import { ActionIcon, Button, Divider, Group, Paper, Tabs, Text } from "@mantine/core";
+import { ActionIcon, Button, Divider, Group, Paper, Tabs, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/typings";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
+import { useInputState } from "@mantine/hooks";
 
 export interface InspectorPaneProps {
 	record: any;
@@ -21,12 +22,25 @@ export interface InspectorPaneProps {
 export function InspectorPane(props: InspectorPaneProps) {
 	const isLight = useIsLight();
 	const [isInvalid, setIsInvalid] = useState(false);
+	const [recordId, setRecordId] = useInputState('');
+
+	useEffect(() => {
+		setRecordId(props.record.content.id || '');
+	}, [props.record.content.id]);
 
 	const jsonAlert = isInvalid
 		? <Text color="red">Invalid record JSON</Text>
 		: undefined;
 	
 	const isEdge = props.record.content?.in && props.record.content?.out;
+
+	const gotoRecord = useStable((e: FocusEvent | KeyboardEvent) => {
+		if (e.type === 'keydown' && (e as KeyboardEvent).key !== 'Enter') {
+			return;
+		}
+
+		props.onSelectRecord((e.target as HTMLInputElement).value);
+	});
 
 	return (
 		<Panel
@@ -53,29 +67,34 @@ export function InspectorPane(props: InspectorPaneProps) {
 				</Group>
 			}
 		>
-			<Paper
-				c="surreal"
-				ff="JetBrains Mono"
-				radius="md"
-				bg="dark.9"
-				p="xs"
+			<TextInput
 				mb="xs"
-			>
-				<Group noWrap spacing="xs">
-					{isEdge && (
-						<Paper
-							title="This record is an edge"
-							bg={isLight ? 'light.0' : 'light.6'}
-							c={isLight ? 'light.6' : 'white'}
-							px="xs"
-						>
-							Edge
-						</Paper>	
-					)}
-					{props.record.content.id}
-				</Group>
-			</Paper>
-
+				value={recordId}
+				onBlur={gotoRecord}
+				onKeyDown={gotoRecord}
+				onChange={setRecordId}
+				onFocus={e => e.target.select()}
+				rightSectionWidth={76}
+				rightSection={isEdge && (
+					<Paper
+						title="This record is an edge"
+						bg={isLight ? 'light.0' : 'light.6'}
+						c={isLight ? 'light.6' : 'white'}
+						px="xs"
+					>
+						Edge
+					</Paper>	
+				)}
+				styles={theme => ({
+					input: {
+						backgroundColor: theme.fn.themeColor(isLight ? 'white' : 'dark.9'),
+						color: theme.fn.themeColor('surreal'),
+						fontFamily: 'JetBrains Mono',
+						fontSize: 14,
+						height: 42
+					}
+				})}
+			/>
 			<Tabs defaultValue="content">
 				<Tabs.List grow>
 					<Tabs.Tab value="content">
@@ -159,11 +178,11 @@ function ContentTab(props: ContentTabProps) {
 
 	const saveRecord = useStable(() => {
 		props.onContentChange(contentText);
+		setIsDirty(false);
 	});
 
 	useEffect(() => {
 		setContentText(JSON.stringify(props.content, null, 4));
-		setIsDirty(false);
 	}, [props.content]);
 
 	return (

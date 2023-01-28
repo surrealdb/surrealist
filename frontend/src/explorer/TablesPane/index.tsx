@@ -8,6 +8,7 @@ import { Icon } from "../../components/Icon";
 import { Panel } from "../../components/Panel";
 import { Spacer } from "../../components/Spacer";
 import { OpenFn } from '~/typings';
+import { useIsLight } from '~/hooks/theme';
 
 interface Table {
 	name: string;
@@ -20,6 +21,7 @@ export interface TablesPaneProps {
 }
 
 export function TablesPane(props: TablesPaneProps) {
+	const isLight = useIsLight();
 	const [tables, setTables] = useState<Table[]>([]);
 	const [selectedTable, setSelectedTable] = useState<Table | null>(null);
 
@@ -99,12 +101,12 @@ export function TablesPane(props: TablesPaneProps) {
 								})}
 							>
 								<Icon
-									color={isActive ? 'surreal' : 'light.5'}
+									color={isActive ? 'surreal' : isLight ? 'light.3' : 'light.5'}
 									path={mdiTable}
 									size="sm"
 								/>
 
-								<Text color={isActive ? 'white' : 'light.1'}>
+								<Text color={isActive ? (isLight ? 'black' : 'white') : (isLight ? 'light.7' : 'light.1')}>
 									{table.name}
 								</Text>
 								<Spacer />
