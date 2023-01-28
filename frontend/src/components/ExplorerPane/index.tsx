@@ -6,6 +6,7 @@ import { useImmer } from "use-immer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getSurreal } from "~/surreal";
+import { OpenFn } from "~/typings";
 import { DataTable } from "../DataTable";
 import { Icon } from "../Icon";
 import { Panel } from "../Panel";
@@ -18,7 +19,10 @@ const PAGE_SIZES = [
 ];
 
 export interface ExplorerPaneProps {
+	refreshId: number;
 	activeTable: string | null;
+	activeRecordId: string | null;
+	onSelectRecord: OpenFn;
 }
 
 export function ExplorerPane(props: ExplorerPaneProps) {
@@ -48,6 +52,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			return;
 		}
 
+		console.log('fetching records');
+
 		const limitBy = parseInt(pageSize);
 		const startAt = (page - 1) * parseInt(pageSize);
 
@@ -68,7 +74,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeTable, pageSize, page]);
+	}, [props.activeTable, props.refreshId, pageSize, page]);
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === 'keydown' && (e as KeyboardEvent).key !== 'Enter') {
@@ -136,6 +142,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			>
 				<DataTable
 					data={records}
+					openRecord={props.onSelectRecord}
+					active={props.activeRecordId}
 				/>
 			</ScrollArea>
 

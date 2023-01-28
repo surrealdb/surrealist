@@ -1,14 +1,13 @@
 import classes from './style.module.scss';
-import { ClassNames } from "@emotion/react";
-import { ActionIcon, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { mdiAlphaSCircle, mdiAlphaSCircleOutline, mdiCircle, mdiCircleSlice1, mdiDotNet, mdiFileTree, mdiFolder, mdiFolderOpen, mdiFolderStar, mdiFolderTable, mdiFolderWrench, mdiPlus, mdiRefresh, mdiTable, mdiTableBorder, mdiTableEye, mdiTableLarge, mdiViewSequential, mdiViewWeek } from "@mdi/js";
-import { Fragment, useEffect, useState } from "react";
+import { ActionIcon, Group, ScrollArea, Text } from "@mantine/core";
+import { mdiAlphaSCircleOutline, mdiPlus, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
+import { useEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
 import { Icon } from "../Icon";
 import { Panel } from "../Panel";
 import { Spacer } from "../Spacer";
-import { useIsLight } from '~/hooks/theme';
+import { OpenFn } from '~/typings';
 
 interface Table {
 	name: string;
@@ -17,7 +16,7 @@ interface Table {
 
 export interface TablesPaneProps {
 	isOnline: boolean;
-	onSelectTable: (table: string) => void;
+	onSelectTable: OpenFn;
 }
 
 export function TablesPane(props: TablesPaneProps) {

@@ -221,7 +221,7 @@ export function Scaffold() {
 					<Group p="xs">
 						<Button
 							px="sm"
-							color="dark.4"
+							color="light.6"
 							onClick={toggleViewMode}
 							title={`Switch to ${isQuery ? 'Explorer' : 'Query'} View`}
 						>

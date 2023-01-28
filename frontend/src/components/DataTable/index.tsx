@@ -1,14 +1,22 @@
 import classes from './style.module.scss';
-import { Text } from "@mantine/core";
+import { Box, clsx, Text, useMantineTheme } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { useMemo } from "react";
 import { propertyVisitor } from "~/util/visitor";
+import { renderDataCell } from './datatypes';
+import { OpenFn } from '~/typings';
+import { useIsLight } from '~/hooks/theme';
 
 interface DataTableProps {
 	data: any;
+	active?: string | null;
+	openRecord?: OpenFn;
 }
 
-export function DataTable({ data }: DataTableProps) {
+export function DataTable({ data, active, openRecord }: DataTableProps) {
+	const theme = useMantineTheme();
+	const isLight = useIsLight();
+
 	const [keys, values] = useMemo(() => {
 		const keys: string[] = [];
 		const values: any[] = [];
@@ -36,63 +44,51 @@ export function DataTable({ data }: DataTableProps) {
 		}
 
 		return [keys, values];
-	}, [data]);
+	}, [data, active]);
 
 	const headers = useMemo(() => {
 		const headers: any = [];
 
 		keys.forEach(key => {
 			headers.push(
-				<th>{key}</th>
+				<th key={key}>{key}</th>
 			);
 		});
 		
 		return headers;
 	}, [keys]);
 
+	const activeColor = useMemo(() => {
+		return theme.fn.rgba(theme.fn.themeColor('light.6'), isLight ? 0.15 : 0.4);
+	}, [isLight]);
+
 	const rows = useMemo(() => {
-		return values.map(value => {
-			let hasId = false;
+		return values.map((value, i) => {
+			const columns = Array.from(keys).map((key, j) => {
+				const cellValue = value[key];
 
-			const columns = Array.from(keys).map(key => {
-				const text = value[key];
-
-				if (!hasId) {
-					hasId = true;
-
-					return (
-						<td>
-							<Text c="surreal" ff="JetBrains Mono">
-								{text}
-							</Text>
-						</td>
-					);
-				}
-
-				if (text !== undefined) {
-					return (
-						<td className={classes.tableValue}>
-							{text.toString()}
-						</td>
-					);
-				} else {
-					return (
-						<td>
-							<Text size="sm" color="light.5">
-								&mdash;
-							</Text>
-						</td>
-					);
-				}
+				return (
+					<td key={j} className={classes.tableValue}>
+						{renderDataCell(cellValue, openRecord)}
+					</td>
+				);
 			});
 
+			const isActive = value.id == active;
+
 			return (
-				<tr>
+				<Box
+					key={i}
+					component="tr"
+					sx={{
+						backgroundColor: `${isActive ? activeColor : undefined} !important`,
+					}}
+				>
 					{columns}
-				</tr>
+				</Box>
 			)
 		});
-	}, [keys, values]);
+	}, [keys, values, isLight]);
 
 	if (!Array.isArray(data)) {
 		return (

@@ -6,6 +6,8 @@ export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json";
 export type ViewMode = 'query' | 'explorer';
 
+export type OpenFn = (id: string) => void;
+
 export interface SurrealistConfig {
 	theme: ColorScheme | 'automatic';
 	tabs: SurrealistTab[];
