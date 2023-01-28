@@ -3,6 +3,7 @@ import { mdiArrowTopRight, mdiCheck, mdiClose } from "@mdi/js";
 import { ReactNode } from "react";
 import { OpenFn } from "~/typings";
 import { Icon } from "../Icon";
+import { RecordLink } from "../RecordLink";
 
 export interface DataCellType {
 	match: (value: any) => boolean;
@@ -57,26 +58,12 @@ function NumberCell(props: DataCellProps) {
 }
 
 function ThingCell(props: DataCellProps) {
-	const handleOpen = props.openRecord
-		? () => props.openRecord?.(props.value)
-		: undefined;
-
 	return (
-		<Text
-			color="surreal"
-			ff="JetBrains Mono"
-			style={{ cursor: props.openRecord ? 'pointer' : undefined }}
-			onClick={handleOpen}
-		>
-			{props.value}
-			{props.openRecord && (
-				<Icon
-					path={mdiArrowTopRight}
-					right
-				/>
-			)}
-		</Text>
-	);
+		<RecordLink
+			value={props.value}
+			onRecordClick={props.openRecord}
+		/>
+	)
 }
 
 function DateTimeCell(props: DataCellProps) {

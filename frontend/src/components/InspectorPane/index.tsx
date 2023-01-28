@@ -1,17 +1,20 @@
+import { mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { editor } from "monaco-editor";
-import { mdiArrowDown, mdiArrowUp, mdiCheck, mdiClose, mdiCodeJson, mdiWrench } from "@mdi/js";
 import Editor from "@monaco-editor/react";
 import { Panel } from "../Panel";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
 import { ActionIcon, Button, Divider, Group, Paper, Tabs, Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { useStable } from "~/hooks/stable";
+import { RecordLink } from "../RecordLink";
+import { OpenFn } from "~/typings";
 
 export interface InspectorPaneProps {
 	record: any;
 	onClose: () => void;
+	onSelectRecord: OpenFn;
 	onContentChange: (json: string) => void;
 }
 
@@ -65,13 +68,9 @@ export function InspectorPane(props: InspectorPaneProps) {
 						Content
 						<Icon path={mdiCodeJson} size={0.9} right />
 					</Tabs.Tab>
-					<Tabs.Tab value="inputs">
-						Inputs
-						<Icon path={mdiArrowDown} size={0.9} right />
-					</Tabs.Tab>
-					<Tabs.Tab value="outputs">
-						Outputs
-						<Icon path={mdiArrowUp} size={0.9} right />
+					<Tabs.Tab value="relations">
+						Relations
+						<Icon path={mdiSwapVertical} size={0.9} right />
 					</Tabs.Tab>
 				</Tabs.List>
 
@@ -85,15 +84,12 @@ export function InspectorPane(props: InspectorPaneProps) {
 					/>
 				</Tabs.Panel>
 
-				<Tabs.Panel value="inputs">
-					<InputsOutputsTab
-						relations={props.record.inputs}
-					/>
-				</Tabs.Panel>
-
-				<Tabs.Panel value="outputs">
-				<InputsOutputsTab
-						relations={props.record.outputs}
+				<Tabs.Panel value="relations">
+					<RelationsTab
+						isLight={isLight}
+						inputs={props.record.inputs}
+						outputs={props.record.outputs}
+						onSelectRecord={props.onSelectRecord}
 					/>
 				</Tabs.Panel>
 			</Tabs>
@@ -163,7 +159,7 @@ function ContentTab(props: ContentTabProps) {
 					position: 'absolute',
 					insetInline: 12,
 					bottom: 62,
-					top: 102
+					top: 109
 				}}
 			>
 				<Editor
@@ -191,11 +187,14 @@ function ContentTab(props: ContentTabProps) {
 	);
 }
 
-interface InputsOutputsTabProps {
-	relations: any; 
+interface RelationsTabProps {
+	isLight: boolean;
+	inputs: any[];
+	outputs: any[];
+	onSelectRecord: OpenFn;
 }
 
-function InputsOutputsTab(props: InputsOutputsTabProps) {
+function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTabProps) {
 	return (
 		<div
 			style={{
@@ -205,7 +204,74 @@ function InputsOutputsTab(props: InputsOutputsTabProps) {
 				top: 102
 			}}
 		>
-			{JSON.stringify(props.relations, null, 4)}
+			<Text
+				color="white"
+				size="lg"
+			>
+				Input relations
+			</Text>
+
+			<RelationsList
+				name="input"
+				isLight={isLight}
+				relations={inputs}
+				onSelectRecord={onSelectRecord}
+			/>
+
+			<Text
+				color="white"
+				size="lg"
+				mt="xl"
+			>
+				Output relations
+			</Text>
+
+			<RelationsList
+				name="output"
+				isLight={isLight}
+				relations={outputs}
+				onSelectRecord={onSelectRecord}
+			/>
 		</div>
+	);
+}
+
+interface RelationsListProps {
+	name: string;
+	isLight: boolean;
+	relations: any[];
+	onSelectRecord: OpenFn;
+}
+
+function RelationsList({ name, isLight, relations, onSelectRecord }: RelationsListProps) {
+	if (relations.length === 0) {
+		return (
+			<Text>
+				No {name} relations found
+			</Text>
+		)
+	}
+
+	return (
+		<>
+			{relations.map((relation, i) => (
+				<Fragment key={relation}>
+					<Group spacing="xs">
+						<Icon
+							path={mdiCircleMedium}
+						/>
+						<RecordLink
+							value={relation}
+							onRecordClick={onSelectRecord}
+						/>
+					</Group>
+					{i !== relations.length - 1 && (
+						<Divider
+							color={isLight ? 'light.0' : 'dark.5'}
+						/>
+					)}
+				</Fragment>
+			))}
+		</>
 	);
 }

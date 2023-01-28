@@ -52,8 +52,6 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			return;
 		}
 
-		console.log('fetching records');
-
 		const limitBy = parseInt(pageSize);
 		const startAt = (page - 1) * parseInt(pageSize);
 

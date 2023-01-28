@@ -5,6 +5,8 @@ import { useState } from "react";
 import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
+import { showNotification } from "@mantine/notifications";
+import { Text } from "@mantine/core";
 
 export interface ExplorerViewProps {
 	isOnline: boolean;
@@ -29,11 +31,21 @@ export function ExplorerView(props: ExplorerViewProps) {
 		const outputsQuery = `SELECT ->? AS relations FROM ${id}`;
 
 		const response = await surreal.query(`${contentQuery};${inputQuery};${outputsQuery}`);
+		const content = response[0].result[0];
+		const inputs = response[1].result[0]?.relations || [];
+		const outputs = response[2].result[0]?.relations || [];
+
+		if (!content?.id) {
+			showNotification({
+				message: 'Record link has no destination',
+			});
+			return;
+		}
 
 		setActiveRecord({
-			content: response[0].result[0],
-			inputs: response[1].result,
-			outputs: response[2].result
+			content,
+			inputs,
+			outputs
 		});
 	});
 
@@ -59,7 +71,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	
 	return (
 		<Splitter
-			minSize={[225, 400]}
+			minSize={[225, 450]}
 			bufferSize={500}
 			direction="horizontal"
 			startPane={
@@ -74,6 +86,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 						record={activeRecord}
 						onClose={handleCloseRecord}
 						onContentChange={handleContentChange}
+						onSelectRecord={fetchRecord}
 					/>
 				)
 			}
