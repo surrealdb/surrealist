@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiRefresh, mdiTableSearch } from "@mdi/js";
+import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiRefresh, mdiTable } from "@mdi/js";
 import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { DataTable } from "~/components/DataTable";
@@ -13,9 +13,9 @@ import { OpenFn } from "~/typings";
 
 const PAGE_SIZES = [
 	{ label: '10 Results per page', value: '10' },
+	{ label: '25 Results per page', value: '25' },
 	{ label: '50 Results per page', value: '50' },
 	{ label: '100 Results per page', value: '100' },
-	{ label: '250 Results per page', value: '250' }
 ];
 
 export interface ExplorerPaneProps {
@@ -30,7 +30,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [records, setRecords] = useImmer<any[]>([]);
 	const [recordCount, setRecordCount] = useState(0);
 	const [pageText, setPageText] = useInputState('1');
-	const [pageSize, setPageSize] = useInputState('50');
+	const [pageSize, setPageSize] = useInputState('25');
 	const [page, setPage] = useState(1);
 
 	const pageCount = Math.ceil(recordCount / parseInt(pageSize));
@@ -112,8 +112,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	return (
 		<Panel
-			title="Data Explorer"
-			icon={mdiTableSearch}
+			title="Record Explorer"
+			icon={mdiTable}
 			rightSection={
 				<Group align="center">
 					<ActionIcon

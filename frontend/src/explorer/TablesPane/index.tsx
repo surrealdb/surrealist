@@ -1,12 +1,11 @@
 import classes from './style.module.scss';
-import { ActionIcon, Group, ScrollArea, Text } from "@mantine/core";
+import { ActionIcon, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { mdiAlphaSCircleOutline, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
 import { useEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
 import { Icon } from "../../components/Icon";
 import { Panel } from "../../components/Panel";
-import { Spacer } from "../../components/Spacer";
 import { OpenFn } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
 
@@ -25,6 +24,11 @@ export function TablesPane(props: TablesPaneProps) {
 	const [tables, setTables] = useState<Table[]>([]);
 	const [selectedTable, setSelectedTable] = useState<Table | null>(null);
 
+	const selectTable = (table: Table | null) => {
+		setSelectedTable(table);
+		props.onSelectTable(table?.name || null);
+	};
+
 	const fetchTables = useStable(async () => {
 		const surreal = getSurreal();
 
@@ -40,12 +44,8 @@ export function TablesPane(props: TablesPaneProps) {
 		}));
 
 		setTables(tables);
+		selectTable(null);
 	});
-
-	const selectTable = (table: Table) => {
-		setSelectedTable(table);
-		props.onSelectTable(table.name);
-	};
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -109,14 +109,6 @@ export function TablesPane(props: TablesPaneProps) {
 								<Text color={isActive ? (isLight ? 'black' : 'white') : (isLight ? 'light.7' : 'light.1')}>
 									{table.name}
 								</Text>
-								<Spacer />
-								{table.schemafull && (
-									<Icon
-										color="light.5"
-										path={mdiAlphaSCircleOutline}
-										title="Schemafull table"
-									/>
-								)}
 							</Group>
 						)
 					})}

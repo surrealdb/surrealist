@@ -27,6 +27,7 @@ export function Panel(props: PanelProps) {
 				py="xs"
 				c={isLight ? 'light.9' : 'light.4'}
 				spacing="xs"
+				h={48}
 				noWrap
 			>
 				<Icon

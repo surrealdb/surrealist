@@ -18,10 +18,10 @@ export function ExplorerView(props: ExplorerViewProps) {
 
 	const activeRecordId = activeRecord?.content?.id || null;
 
-	const fetchRecord = useStable(async (id: string) => {
+	const fetchRecord = useStable(async (id: string | null) => {
 		const surreal = getSurreal();
 
-		if (!surreal) {
+		if (!surreal || !id) {
 			return;
 		}
 
@@ -70,7 +70,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	
 	return (
 		<Splitter
-			minSize={[225, 450]}
+			minSize={[250, 450]}
 			bufferSize={500}
 			direction="horizontal"
 			startPane={

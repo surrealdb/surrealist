@@ -14,7 +14,7 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiConsole, mdiLightningBolt, mdiTableSearch } from '@mdi/js';
+import { mdiConsole, mdiLightningBolt, mdiTable } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
@@ -227,13 +227,15 @@ export function Scaffold() {
 				<>
 					<Group p="xs">
 						<Button
-							px="sm"
-							color="light.6"
+							px="md"
+							h="100%"
+							variant="gradient"
+							color="surreal.4"
 							onClick={toggleViewMode}
 							title={`Switch to ${isQuery ? 'Explorer' : 'Query'} View`}
 						>
 							<Icon
-								path={isQuery ? mdiTableSearch : mdiLightningBolt}
+								path={isQuery ? mdiTable : mdiLightningBolt}
 								left
 							/>
 							{isQuery ? 'Explorer' : 'Query'}

@@ -1,5 +1,5 @@
 import { HoverCard, Text } from "@mantine/core";
-import { mdiArrowTopRight, mdiCheck, mdiClose } from "@mdi/js";
+import { mdiCheck, mdiClose } from "@mdi/js";
 import { ReactNode } from "react";
 import { OpenFn } from "~/typings";
 import { Icon } from "../Icon";
@@ -17,10 +17,13 @@ export interface DataCellProps {
 
 // ----- Data Cell Types -----
 
-function NullishCell(_props: DataCellProps) {
+function NullishCell(props: DataCellProps) {
 	return (
-		<Text color="light.5">
-			&mdash;
+		<Text
+			color="light.5"
+			ff="JetBrains Mono"
+		>
+			{props.value === null ? 'null' : '—'}
 		</Text>
 	);
 }

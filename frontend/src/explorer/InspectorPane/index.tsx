@@ -87,7 +87,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 				)}
 				styles={theme => ({
 					input: {
-						backgroundColor: theme.fn.themeColor(isLight ? 'white' : 'dark.9'),
+						backgroundColor: isLight ? 'white' : theme.fn.themeColor('dark.9'),
 						color: theme.fn.themeColor('surreal'),
 						fontFamily: 'JetBrains Mono',
 						fontSize: 14,
@@ -238,7 +238,7 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 			}}
 		>
 			<Text
-				color="light.0"
+				color={isLight ? 'blue.9' : 'light.0'}
 				size="lg"
 			>
 				Input relations
@@ -252,7 +252,7 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 			/>
 
 			<Text
-				color="light.0"
+				color={isLight ? 'blue.9' : 'light.0'}
 				size="lg"
 				mt="xl"
 			>

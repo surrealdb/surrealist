@@ -1,4 +1,4 @@
-import { ColorScheme, MantineThemeOverride, Tuple } from "@mantine/core";
+import { ColorScheme, MantineThemeOverride } from "@mantine/core";
 
 import { useMemo } from "react";
 
@@ -34,6 +34,10 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 		colors: {
 			light: [ '#E8EDF2', '#C9D4DE', '#ADBACA', '#9BA9C6', '#8391AE', '#67748F', '#465671', '#384768', '#2D3A5D', '#212E59' ],
 			surreal: [ '#ffe2fd', '#ffb1eb', '#ff7fdc', '#ff4ccc', '#ff1abe', '#e600a4', '#b40080', '#81005c', '#500038', '#1f0015' ]
+		},
+		defaultGradient: {
+			from: '#c95dbb',
+			to: '#6a64ed'
 		},
 		components: {
 			Modal: {

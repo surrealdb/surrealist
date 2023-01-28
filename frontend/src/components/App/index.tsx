@@ -89,7 +89,7 @@ export function App() {
 			<Global
 				styles={{
 					'body': {
-						backgroundColor: isLight ? '#F4F5FB' : '#09090a',
+						backgroundColor: isLight ? '#f0f1fa' : '#09090a',
 						fontWeight: 500
 					},
 					'.__dbk__container': {
