@@ -11,3 +11,7 @@
 - Explorer: indicator for edge tables
 - Explorer: fix table names not being cut off
 - Query: further improve IntelliSense
+
+## Development
+
+- Add ESLint

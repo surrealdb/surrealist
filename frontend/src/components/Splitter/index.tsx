@@ -1,5 +1,5 @@
 import classes from './style.module.scss';
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef } from "react";
 import { useStable } from '~/hooks/stable';
 import { useWindowEvent } from '@mantine/hooks';
 import { useState } from 'react';
@@ -32,22 +32,26 @@ export function Splitter(props: SplitterProps) {
 
 	const [draggerId, setDraggerId] = useState<string | null>(null);
 	const [sizes, setSizes] = useState(props.values || []);
+	const [leftSize, setLeftSize] = useState(0);
+	const [rightSize, setRightSize] = useState(0);
 
 	useEffect(() => {
 		setSizes(props.values || []);
 	}, [props.values]);
 
-	// Compute left and right clamp values
-	const buffer = props.bufferSize ?? 300;
-	const leftReserve = props.startPane && sizes[0] || 0;
-	const rightReserve = props.endPane && sizes[1] || 0;
-	const totalSize = (isHorizontal ? containerRef.current?.clientWidth : containerRef.current?.clientHeight) || 0;
-	const clampLeft = useStable((value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || (totalSize - rightReserve - buffer)));
-	const clampRight = useStable((value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || (totalSize - leftReserve - buffer)));
+	// Update the size of the panes
+	useLayoutEffect(() => {
+		const buffer = props.bufferSize ?? 300;
+		const leftReserve = props.startPane && sizes[0] || 0;
+		const rightReserve = props.endPane && sizes[1] || 0;
+		const totalSize = (isHorizontal ? containerRef.current?.clientWidth : containerRef.current?.clientHeight) || 0;
+		const clampLeft = (value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || (totalSize - rightReserve - buffer));
+		const clampRight = (value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || (totalSize - leftReserve - buffer));
 
-	// Calculate actual pane sizes
-	const leftSize = clampLeft(sizes[0] || 160);
-	const rightSize = clampRight(sizes[1] || 160);
+		// Calculate actual pane sizes
+		setLeftSize(clampLeft(sizes[0] || 160));
+		setRightSize(clampRight(sizes[1] || 160));
+	});
 
 	// Detect dragged divider
 	const onActivate = useStable((id: string) => {
@@ -80,12 +84,12 @@ export function Splitter(props: SplitterProps) {
 				const total = isHorizontal ? bounds.width : bounds.height;
 
 				if (draggerId === 'left') {
-					const newLeftSize = clampLeft(value);
+					const newLeftSize = value;
 
 					setSizes([newLeftSize, rightSize]);
 					props.onChange?.([newLeftSize, rightSize]);
 				} else {
-					const newRightSize = clampRight(total - value);
+					const newRightSize = total - value;
 
 					setSizes([leftSize, newRightSize]);
 					props.onChange?.([leftSize, newRightSize]);
@@ -106,15 +110,15 @@ export function Splitter(props: SplitterProps) {
 
 	// Display left section
 	if (props.startPane) {
-		const attrs = {
-			[isHorizontal ? 'w' : 'h']: leftSize
+		const style = {
+			[isHorizontal ? 'width' : 'height']: leftSize
 		};
 
 		contents.push(
 			<Fragment key="left">
 				<Box
 					className={classes.leftPane}
-					{...attrs}
+					style={style}
 				>
 					{props.startPane}
 				</Box>
@@ -139,8 +143,8 @@ export function Splitter(props: SplitterProps) {
 
 	// Display right section
 	if (props.endPane) {
-		const attrs = {
-			[isHorizontal ? 'w' : 'h']: rightSize
+		const style = {
+			[isHorizontal ? 'width' : 'height']: rightSize
 		};
 
 		contents.push(
@@ -152,7 +156,7 @@ export function Splitter(props: SplitterProps) {
 				/>
 				<Box
 					className={classes.rightPane}
-					{...attrs}
+					style={style}
 				>
 					{props.endPane}
 				</Box>

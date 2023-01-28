@@ -1,12 +1,11 @@
 import { MouseEvent } from "react";
 import { useStoreValue } from "~/store";
-import { ConsolePane } from "../ConsolePane";
 import { FavoritesPane } from "../FavoritesPane";
 import { HistoryPane } from "../HistoryPane";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
-import { Splitter } from "../Splitter";
-import { VariablesPane } from "../VariablesPane";
+import { VariablesPane } from "../../query/VariablesPane";
+import { Splitter } from "~/components/Splitter";
 
 export interface QueryViewProps {
 	isOnline: boolean;

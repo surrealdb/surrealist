@@ -1,12 +1,12 @@
 import classes from './style.module.scss';
 import { ActionIcon, Group, ScrollArea, Text } from "@mantine/core";
-import { mdiAlphaSCircleOutline, mdiPlus, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
+import { mdiAlphaSCircleOutline, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
 import { useEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
-import { Icon } from "../Icon";
-import { Panel } from "../Panel";
-import { Spacer } from "../Spacer";
+import { Icon } from "../../components/Icon";
+import { Panel } from "../../components/Panel";
+import { Spacer } from "../../components/Spacer";
 import { OpenFn } from '~/typings';
 
 interface Table {

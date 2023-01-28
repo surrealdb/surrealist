@@ -5,7 +5,7 @@ import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
-import { MouseEvent, useEffect, useState } from 'react';
+import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
 import { updateConfig, updateTitle } from '~/util/helpers';
 import { TabBar } from '../TabBar';
 import { Form } from '../Form';
@@ -14,13 +14,20 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiCodeJson, mdiCompass, mdiConsole, mdiDatabase, mdiLightningBolt, mdiMagnify, mdiTable, mdiTableSearch } from '@mdi/js';
+import { mdiConsole, mdiLightningBolt, mdiTableSearch } from '@mdi/js';
 import { Icon } from '../Icon';
-import { QueryView } from '../QueryView';
-import { ExplorerView } from '../ExplorerView';
-import { ViewMode } from '~/typings';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
+import { QueryView } from '~/query/QueryView';
+import { ExplorerView } from '~/explorer/ExplorerView';
+
+function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
+	return (
+		<div style={{ display: props.visible ? 'initial' : 'none' }}>
+			{props.children}
+		</div>
+	)
+}
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -303,16 +310,18 @@ export function Scaffold() {
 								<ConsolePane />
 							)}
 						>
-							{viewMode == 'query' ? (
+							<ViewSlot visible={viewMode == 'query'}>
 								<QueryView
 									isOnline={isOnline}
 									sendQuery={sendQuery}
 								/>
-							) : (
+							</ViewSlot>
+
+							<ViewSlot visible={viewMode == 'explorer'}>
 								<ExplorerView
 									isOnline={isOnline}
 								/>
-							)}
+							</ViewSlot>
 						</Splitter>
 					</Box>
 				</>

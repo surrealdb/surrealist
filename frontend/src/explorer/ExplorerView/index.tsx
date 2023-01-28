@@ -1,11 +1,11 @@
 import { ExplorerPane } from "../ExplorerPane";
 import { TablesPane } from "../TablesPane";
-import { Splitter } from "../Splitter";
 import { useState } from "react";
 import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
 import { showNotification } from "@mantine/notifications";
+import { Splitter } from "~/components/Splitter";
 
 export interface ExplorerViewProps {
 	isOnline: boolean;

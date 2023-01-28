@@ -4,17 +4,17 @@ import { mdiChevronDown, mdiChevronUp, mdiClose, mdiMagnify, mdiPencil, mdiPlay,
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
-import { Panel } from "../Panel";
 import { useStable } from '~/hooks/stable';
-import { Icon } from '../Icon';
 import { useInputState } from '@mantine/hooks';
 import { FavoritesEntry, SurrealistTab } from '~/typings';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
-import { Form } from '../Form';
-import { Spacer } from '../Spacer';
 import { uid } from 'radash';
 import { updateConfig, updateTitle } from '~/util/helpers';
-import { Sortable } from '../Sortable';
+import { Sortable } from '~/components/Sortable';
+import { Panel } from '~/components/Panel';
+import { Icon } from '~/components/Icon';
+import { Form } from 'react-router-dom';
+import { Spacer } from '~/components/Spacer';
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;

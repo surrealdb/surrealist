@@ -2,17 +2,17 @@ import type { editor } from "monaco-editor";
 import { ActionIcon, Center, Divider, Group, Tabs, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
-import { Panel } from "../Panel";
 import Editor from "@monaco-editor/react";
 import { baseEditorConfig } from "~/util/editor";
 import { useActiveTab } from "~/hooks/tab";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
-import { Icon } from "../Icon";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
-import { DataTable } from "../DataTable";
+import { Icon } from "~/components/Icon";
+import { Panel } from "~/components/Panel";
+import { DataTable } from "~/components/DataTable";
 
 interface PreviewProps {
 	result: any;

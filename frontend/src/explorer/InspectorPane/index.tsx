@@ -1,16 +1,15 @@
 import { mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { editor } from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import { Panel } from "../Panel";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
 import { ActionIcon, Button, Divider, Group, Paper, Tabs, Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
-import { Icon } from "../Icon";
 import { useStable } from "~/hooks/stable";
-import { RecordLink } from "../RecordLink";
 import { OpenFn } from "~/typings";
-import { Spacer } from "../Spacer";
+import { Panel } from "~/components/Panel";
+import { Icon } from "~/components/Icon";
+import { RecordLink } from "~/components/RecordLink";
 
 export interface InspectorPaneProps {
 	record: any;

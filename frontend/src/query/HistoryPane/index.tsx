@@ -1,18 +1,17 @@
 import classes from './style.module.scss';
 import { ActionIcon, Box, Button, Collapse, Divider, Group, Paper, ScrollArea, SimpleGrid, Stack, Text, TextInput, useMantineTheme } from "@mantine/core";
-import { mdiClose, mdiContentCopy, mdiDelete, mdiHistory, mdiMagnify, mdiPencil, mdiPlay } from "@mdi/js";
+import { mdiClose, mdiDelete, mdiHistory, mdiMagnify, mdiPencil, mdiPlay } from "@mdi/js";
 import { Fragment, useMemo } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
-import { Panel } from "../Panel";
 import dayjs from 'dayjs';
 import { useStable } from '~/hooks/stable';
-import { Icon } from '../Icon';
 import { useHover, useInputState } from '@mantine/hooks';
 import { HistoryEntry, SurrealistTab } from '~/typings';
-import { showNotification } from '@mantine/notifications';
 import { useActiveTab } from '~/hooks/tab';
 import { updateConfig } from '~/util/helpers';
+import { Panel } from '~/components/Panel';
+import { Icon } from '~/components/Icon';
 
 export interface HistoryPaneProps {
 	onExecuteQuery: () => void;

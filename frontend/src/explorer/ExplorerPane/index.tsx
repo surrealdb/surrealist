@@ -1,15 +1,15 @@
-import { ActionIcon, Box, Button, Center, Divider, Group, Image, NumberInput, Pagination, ScrollArea, Select, Stack, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiArrowLeft, mdiArrowRight, mdiChatQuestion, mdiDatabase, mdiRefresh, mdiTableSearch, mdiViewSequential } from "@mdi/js";
-import { ChangeEvent, FocusEvent, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
+import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiRefresh, mdiTableSearch } from "@mdi/js";
+import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
+import { DataTable } from "~/components/DataTable";
+import { Icon } from "~/components/Icon";
+import { Panel } from "~/components/Panel";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getSurreal } from "~/surreal";
 import { OpenFn } from "~/typings";
-import { DataTable } from "../DataTable";
-import { Icon } from "../Icon";
-import { Panel } from "../Panel";
 
 const PAGE_SIZES = [
 	{ label: '10 Results per page', value: '10' },
