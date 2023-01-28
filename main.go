@@ -18,10 +18,10 @@ func main() {
 	// Launch application
 	err := wails.Run(&options.App{
 		Title:            "Surrealist",
-		Width:            1024,
-		Height:           672,
-		MinWidth:         790,
-		MinHeight:        510,
+		Width:            1464,
+		Height:           816,
+		MinWidth:         1317,
+		MinHeight:        734,
 		OnStartup:        app.Startup,
 		BackgroundColour: options.NewRGB(244, 245, 251),
 		AssetServer: &assetserver.Options{

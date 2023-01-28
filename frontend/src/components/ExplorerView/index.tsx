@@ -6,7 +6,6 @@ import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
 import { showNotification } from "@mantine/notifications";
-import { Text } from "@mantine/core";
 
 export interface ExplorerViewProps {
 	isOnline: boolean;

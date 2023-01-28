@@ -46,7 +46,9 @@ export function TablesPane(props: TablesPaneProps) {
 	};
 
 	useEffect(() => {
-		fetchTables();
+		setTimeout(() => {
+			fetchTables();
+		}, 150);
 	}, [props.isOnline]);
 
 	return (
