@@ -1,5 +1,22 @@
 # Change Log
 
+## 1.5.0 - Explorer view
+- Added an explorer view to view and edit tables and their data
+	- You can switch between Query and Explorer view using the button in the top left
+	- Edit records directly as JSON
+	- View and traverse record relations
+	- Columns can be sorted by clicking on the header
+- Redesigned the table view
+	- Improved cell rendering based on data type
+	- Objects and arrays can be hovered for a preview
+	- Null and undefined values are now styled differently
+- Added namespace, database, and scope authentication
+	- Redesigned the connection details dialog to include new fields
+- Added additional keywords for highlighting
+- Table completion will now be triggered in more situations
+- Tabs can be dragged to reorder them
+- Improved favorites dragging behavior
+
 ## 1.4.2 - Improved favorites
 - Redesigned the favorites UI/UX
 	- Queries are now be opened by clicking rather than hovering
