@@ -6,24 +6,24 @@ on:
       - "v*"
 
 jobs:
-  # doctor:
-  #   name: Wails Doctor
-  #   strategy:
-  #     matrix:
-  #       go-version: [ 1.19 ]
-  #       platform: [ macos-latest, ubuntu-latest, windows-latest ]
-  #   runs-on: ${{ matrix.platform }}
-  #   steps:
-  #     - name: Setup golang
-  #       uses: actions/setup-go@v2
-  #       with:
-  #         go-version: ${{ matrix.go-version }}
+  doctor:
+    name: Wails Doctor
+    strategy:
+      matrix:
+        go-version: [ 1.19 ]
+        platform: [ macos-latest, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Setup golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
 
-  #     - name: Setup wails
-  #       run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+      - name: Setup wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@2.2.0
 
-  #     - name: Wails Doctor
-  #       run: wails doctor
+      - name: Wails Doctor
+        run: wails doctor
   
   package:
     name: Package
@@ -55,7 +55,7 @@ jobs:
         run: npm i -g pnpm
 
       - name: Setup wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@2.2.0
 
       - name: Build Wails app
         run: wails build
