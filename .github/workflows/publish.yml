@@ -21,7 +21,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Setup wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@2.2.0
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.2.0
 
       - name: Wails Doctor
         run: wails doctor
@@ -56,7 +56,7 @@ jobs:
         run: npm i -g pnpm
 
       - name: Setup wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@2.2.0
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.2.0
 
       - name: Build Wails app
         run: wails build
