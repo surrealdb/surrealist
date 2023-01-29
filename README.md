@@ -21,15 +21,15 @@
   <img src="https://img.shields.io/github/contributors/StarlaneStudios/surrealist">
 </p>
 
-Surrealist is a simple to use Desktop based query playground for [SurrealDB](https://surrealdb.com/). You can connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more.
+Surrealist is a simple to use Desktop based query playground and database explorer for [SurrealDB](https://surrealdb.com/). You can connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more. Switch to the explorer view to browse database tables, edit record contents, and traverse graph relationships.
 
 ## Features
 - 📌 Multi-tab query editing
 - ⚡ SurrealQL syntax highlighting
+- 🔍 Database explorer & record inspector
 - 📋 Automatic table name completion
 - 💫 Support for multiple queries in one request
 - ✏️ Define variables in a seperate panel
-- 🔍 A clean and foldable view of your query results
 - 🔭 Start a local database directly from the application
 - 📜 Query history & Query favoriting
 
@@ -51,6 +51,18 @@ When running Surrealist on MacOS, as the application is not signed, you may be p
 - Run the command `sudo xattr -rd com.apple.quarantine Surrealist.app` (You may be prompted to enter your password)
 
 If these steps don't work, please open an issue ticket.
+
+## Query view
+Use the Query View to execute queries against your database. You can define variables in the Variables panel and use them in your queries, and browse the results in the Results panel.
+
+Executed queries are saved to the Query History or can be manually saved to the Favorites panel to quickly access previous queries.
+
+![Query View](.github/branding/query-view.png)
+
+## Explorer view
+The Explorer View is used to browse your database and inspect individual records. When you select a table in the left panel, the table contents will be displayed in the Record Explorer. You can click on a record id to open the Record Inspector, in which you can edit the record contents and traverse graph relationships.
+
+![Explorer View](.github/branding/explorer-view.png)
 
 ## Contributing
 We welcome any issues and PRs submitted to Surrealist. Since we currently work on multiple other projects and our time is limited, we value any community help in supporting a rich future for Surrealist.
