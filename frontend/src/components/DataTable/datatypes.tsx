@@ -125,7 +125,7 @@ const DataCellTypes = [
 		component: NullishCell
 	},
 	{
-		match: (value: any) => typeof value == 'string' && /\w+:\w+$/.test(value),
+		match: (value: any) => typeof value == 'string' && /^\w+:\w+$/.test(value),
 		component: ThingCell
 	},
 	{
