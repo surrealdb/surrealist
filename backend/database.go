@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -15,6 +16,7 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 		a.StopDatabase()
 	}
 
+	startAt := time.Now().UnixMilli()
 	args := []string{
 		"surreal",
 		"start",
@@ -70,10 +72,15 @@ func (a *Surrealist) StartDatabase(user string, pass string, port uint32, driver
 
 		cmd.Wait()
 
-		runtime.EventsEmit(a.ctx, "database:stop")
-		runtime.LogInfo(a.ctx, "Local database stopped")
-		//runtime.LogInfo(a.ctx, outb.String())
-		//runtime.LogInfo(a.ctx, errb.String())
+		stopAt := time.Now().UnixMilli()
+
+		if stopAt-startAt < 1000 {
+			runtime.EventsEmit(a.ctx, "database:error", "Surreal executable not found. Make sure the SurrealDB CLI is available in the command line.")
+			runtime.LogInfo(a.ctx, "Surreal executable not found")
+		} else {
+			runtime.EventsEmit(a.ctx, "database:stop")
+			runtime.LogInfo(a.ctx, "Local database stopped")
+		}
 	}()
 }
 

@@ -107,7 +107,7 @@ export function Scaffold() {
 				setIsOnline(false)
 			},
 			onError(code, message) {
-				if (code === 1005) {
+				if (code === 1006) {
 					return; // Client closed connection
 				}
 

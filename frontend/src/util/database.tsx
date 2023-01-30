@@ -58,6 +58,10 @@ export function initializeListeners() {
 	});
 
 	EventsOn('database:error', (msg) => {
+		if (startTask) {
+			clearTimeout(startTask);
+		}
+		
 		store.dispatch(actions.stopServing());
 
 		showNotification({
