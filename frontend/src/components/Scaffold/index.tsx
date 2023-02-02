@@ -14,13 +14,14 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiConsole, mdiLightningBolt, mdiTable } from '@mdi/js';
+import { mdiConsole, mdiGraph, mdiLightningBolt, mdiNetwork, mdiTable } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/query/QueryView';
 import { ExplorerView } from '~/explorer/ExplorerView';
-import { AuthMode } from '~/typings';
+import { AuthMode, ViewMode } from '~/typings';
+import { VisualizerView } from '~/visualizer/VisualizerView';
 
 const AUTH_MODES = [
 	{ label: 'Root authentication', value: 'root' },
@@ -28,6 +29,21 @@ const AUTH_MODES = [
 	{ label: 'Database authentication', value: 'database' },
 	{ label: 'Scope authentication', value: 'scope' }
 ];
+
+const VIEW_MODES: Record<ViewMode, any> = {
+	query: {
+		name: 'Query',
+		icon: mdiLightningBolt
+	},
+	explorer: {
+		name: 'Explorer',
+		icon: mdiTable
+	},
+	visualizer: {
+		name: 'Visualizer',
+		icon: mdiGraph
+	}
+}
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -201,9 +217,9 @@ export function Scaffold() {
 	});
 
 	const toggleViewMode = useStable(() => {
-		store.dispatch(actions.setViewMode(
-			viewMode === 'query' ? 'explorer' : 'query'
-		));
+		const newMode = viewMode === 'query' ? 'explorer' : viewMode == 'visualizer' ? 'query' : 'visualizer';
+
+		store.dispatch(actions.setViewMode(newMode));
 
 		updateTitle();
 	});
@@ -222,7 +238,7 @@ export function Scaffold() {
 	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
 	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
-	const isQuery = viewMode === 'query';
+	const viewInfo = VIEW_MODES[viewMode];
 
 	return (
 		<div className={classes.root}>
@@ -243,13 +259,13 @@ export function Scaffold() {
 							variant="gradient"
 							color="surreal.4"
 							onClick={toggleViewMode}
-							title={`Switch to ${isQuery ? 'Explorer' : 'Query'} View`}
+							title={`Switch to ${viewInfo.name} View`}
 						>
 							<Icon
-								path={isQuery ? mdiTable : mdiLightningBolt}
+								path={viewInfo.icon}
 								left
 							/>
-							{isQuery ? 'Explorer' : 'Query'}
+							{viewInfo.name}
 						</Button>
 						<Paper
 							className={classes.input}
@@ -332,6 +348,12 @@ export function Scaffold() {
 
 							<ViewSlot visible={viewMode == 'explorer'}>
 								<ExplorerView
+									isOnline={isOnline}
+								/>
+							</ViewSlot>
+
+							<ViewSlot visible={viewMode == 'visualizer'}>
+								<VisualizerView
 									isOnline={isOnline}
 								/>
 							</ViewSlot>

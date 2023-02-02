@@ -24,6 +24,7 @@
 		"@reduxjs/toolkit": "^1.9.1",
 		"@types/semver": "^7.3.13",
 		"ansi-to-html": "^0.7.2",
+		"cytoscape": "^3.23.0",
 		"dayjs": "^1.11.7",
 		"immer": "^9.0.16",
 		"monaco-editor": "^0.34.1",
@@ -37,6 +38,7 @@
 		"use-immer": "^0.8.1"
 	},
 	"devDependencies": {
+		"@types/cytoscape": "^3.19.9",
 		"@types/node": "^18.11.13",
 		"@types/react": "^18.0.17",
 		"@types/react-dom": "^18.0.6",

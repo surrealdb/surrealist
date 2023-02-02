@@ -22,5 +22,6 @@ export default defineConfig({
 	define: {
 		'import.meta.env.VERSION': `"${version}"`,
 		'import.meta.env.AUTHOR': `"${author}"`,
+		'global': {}
 	}
 });

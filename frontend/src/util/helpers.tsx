@@ -19,6 +19,8 @@ export function updateTitle() {
 		title += 'Surrealist Query';
 	} else if (viewMode === 'explorer') {
 		title += 'Surrealist Explorer';
+	} else if (viewMode === 'visualizer') {
+		title += 'Surrealist Visualizer';
 	}
 
 	if (isPinned) {
