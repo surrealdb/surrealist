@@ -48,6 +48,10 @@ export function ExplorerView(props: ExplorerViewProps) {
 		});
 	});
 
+	const doRefresh = useStable(() => {
+		setRefreshId(num => num + 1);
+	});
+
 	const updateRecord = useStable(async (json: string) => {
 		const surreal = getSurreal();
 
@@ -57,7 +61,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 
 		await surreal.query(`UPDATE ${activeRecordId} CONTENT ${json}`);
 
-		setRefreshId(num => num + 1);
+		doRefresh();
 	});
 
 	const handleCloseRecord = useStable(() => {
@@ -86,6 +90,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 						onClose={handleCloseRecord}
 						onContentChange={handleContentChange}
 						onSelectRecord={fetchRecord}
+						onRefresh={doRefresh}
 					/>
 				)
 			}

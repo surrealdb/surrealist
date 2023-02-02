@@ -1,9 +1,9 @@
-import { mdiBookEdit, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeBraces, mdiCodeJson, mdiPencil, mdiSwapVertical, mdiWrench } from "@mdi/js";
+import { mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { editor } from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import { FocusEvent, Fragment, KeyboardEvent, useEffect, useMemo, useState } from "react";
+import { FocusEvent, Fragment, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
-import { ActionIcon, Button, Divider, Group, Paper, Tabs, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Divider, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/typings";
@@ -11,18 +11,24 @@ import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
 import { useInputState } from "@mantine/hooks";
+import { Spacer } from "~/components/Spacer";
+import { useActiveKeys } from "~/hooks/keys";
+import { getSurreal } from "~/surreal";
 
 export interface InspectorPaneProps {
 	record: any;
 	onClose: () => void;
 	onSelectRecord: OpenFn;
 	onContentChange: (json: string) => void;
+	onRefresh: () => void;
 }
 
 export function InspectorPane(props: InspectorPaneProps) {
 	const isLight = useIsLight();
+	const isShifting = useActiveKeys('Shift');
 	const [isInvalid, setIsInvalid] = useState(false);
 	const [recordId, setRecordId] = useInputState('');
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	useEffect(() => {
 		setRecordId(props.record.content.id || '');
@@ -42,6 +48,33 @@ export function InspectorPane(props: InspectorPaneProps) {
 		props.onSelectRecord((e.target as HTMLInputElement).value);
 	});
 
+	const handleDelete = useStable(async () => {
+		const surreal = getSurreal();
+
+		if (!surreal) {
+			return;
+		}
+
+		setIsDeleting(false);
+		props.onClose();
+
+		await surreal.query(`DELETE ${recordId}`);
+
+		props.onRefresh();
+	});
+
+	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {
+		if (e.shiftKey) {
+			handleDelete();
+		} else {
+			setIsDeleting(true);
+		}
+	});
+
+	const closeDelete = useStable(() => {
+		setIsDeleting(false);
+	});
+
 	return (
 		<Panel
 			title="Inspector"
@@ -57,6 +90,13 @@ export function InspectorPane(props: InspectorPaneProps) {
 							/>
 						</>
 					)}
+
+					<ActionIcon
+						onClick={requestDelete}
+						title={isShifting ? 'Delete record forcefully' : 'Delete record'}
+					>
+						<Icon color={isShifting ? 'red' : 'light.4'} path={mdiDelete} />
+					</ActionIcon>
 
 					<ActionIcon
 						onClick={props.onClose}
@@ -126,6 +166,36 @@ export function InspectorPane(props: InspectorPaneProps) {
 					/>
 				</Tabs.Panel>
 			</Tabs>
+
+			<Modal
+				opened={isDeleting}
+				onClose={closeDelete}
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Are you sure?
+					</Title>
+				}
+			>
+				<Text color={isLight ? 'light.6' : 'light.1'}>
+					You are about to delete this record. This action cannot be undone.
+				</Text>
+				<Group mt="lg">
+					<Button
+						onClick={closeDelete}
+						color={isLight ? 'light.5' : 'light.3'}
+						variant="light"
+					>
+						Close
+					</Button>
+					<Spacer />
+					<Button
+						color="red"
+						onClick={handleDelete}
+					>
+						Delete
+					</Button>
+				</Group>
+			</Modal>
 			
 		</Panel>
 	)
