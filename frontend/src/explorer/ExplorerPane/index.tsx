@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiRefresh, mdiTable } from "@mdi/js";
+import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
 import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { DataTable } from "~/components/DataTable";
@@ -23,6 +23,7 @@ export interface ExplorerPaneProps {
 	activeTable: string | null;
 	activeRecordId: string | null;
 	onSelectRecord: OpenFn;
+	onRequestCreate: () => void;
 }
 
 export function ExplorerPane(props: ExplorerPaneProps) {
@@ -118,6 +119,13 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			icon={mdiTable}
 			rightSection={
 				<Group align="center">
+					<ActionIcon
+						title="Create record"
+						onClick={props.onRequestCreate}
+					>
+						<Icon color="light.4" path={mdiPlus} />
+					</ActionIcon>
+
 					<ActionIcon
 						title="Refresh"
 						onClick={fetchRecords}
