@@ -24,8 +24,10 @@
 		"@reduxjs/toolkit": "^1.9.1",
 		"@types/semver": "^7.3.13",
 		"ansi-to-html": "^0.7.2",
-		"cytoscape": "^3.23.0",
 		"dayjs": "^1.11.7",
+		"graphology": "^0.25.1",
+		"graphology-layout": "^0.6.1",
+		"graphology-layout-forceatlas2": "^0.10.1",
 		"immer": "^9.0.16",
 		"monaco-editor": "^0.34.1",
 		"radash": "^9.5.0",
@@ -35,6 +37,7 @@
 		"react-router-dom": "^6.4.5",
 		"remove": "^0.1.5",
 		"semver": "^7.3.8",
+		"sigma": "^2.4.0",
 		"use-immer": "^0.8.1"
 	},
 	"devDependencies": {
@@ -43,6 +46,7 @@
 		"@types/react": "^18.0.17",
 		"@types/react-dom": "^18.0.6",
 		"@vitejs/plugin-react": "^2.0.1",
+		"graphology-types": "^0.24.7",
 		"sass": "^1.56.2",
 		"typescript": "^4.6.4",
 		"vite": "^3.0.7"
