@@ -4,6 +4,7 @@ import { useStable } from '~/hooks/stable';
 import { useWindowEvent } from '@mantine/hooks';
 import { useState } from 'react';
 import { Box } from '@mantine/core';
+import { useStoreValue } from '~/store';
 
 export type SplitDirection = 'horizontal' | 'vertical';
 export type SplitValues = [number | undefined, number | undefined];
@@ -28,6 +29,7 @@ export function Splitter(props: SplitterProps) {
 	const isHorizontal = props.direction !== 'vertical';
 	const contents: React.ReactNode[] = [];
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const zoomLevel = useStoreValue(state => state.config.zoomLevel);
 	const frameId = useRef(0);
 
 	const [draggerId, setDraggerId] = useState<string | null>(null);
@@ -79,6 +81,9 @@ export function Splitter(props: SplitterProps) {
 			cancelAnimationFrame(frameId.current);
 
 			frameId.current = requestAnimationFrame(() => {
+				x /= zoomLevel;
+				y /= zoomLevel;
+
 				const bounds = containerRef.current!.getBoundingClientRect();
 				const value = isHorizontal ? x - bounds.left : y - bounds.top;
 				const total = isHorizontal ? bounds.width : bounds.height;
