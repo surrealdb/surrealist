@@ -359,22 +359,15 @@ function RelationsList({ name, isLight, relations, onSelectRecord }: RelationsLi
 	return (
 		<>
 			{relations.map((relation, i) => (
-				<Fragment key={relation}>
-					<Group spacing="xs">
-						<Icon
-							path={mdiCircleMedium}
-						/>
-						<RecordLink
-							value={relation}
-							onRecordClick={onSelectRecord}
-						/>
-					</Group>
-					{i !== relations.length - 1 && (
-						<Divider
-							color={isLight ? 'light.0' : 'dark.5'}
-						/>
-					)}
-				</Fragment>
+				<Group key={relation} spacing="xs">
+					<Icon
+						path={mdiCircleMedium}
+					/>
+					<RecordLink
+						value={relation}
+						onRecordClick={onSelectRecord}
+					/>
+				</Group>
 			))}
 		</>
 	);
