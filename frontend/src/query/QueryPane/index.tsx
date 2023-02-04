@@ -10,6 +10,7 @@ import {useMemo} from "react";
 import {baseEditorConfig} from "~/util/editor";
 import {useIsLight} from "~/hooks/theme";
 import { useHotkeys } from "@mantine/hooks";
+import { useDebouncedCallback } from "~/hooks/debounce";
 
 export interface QueryPaneProps {
     isConnected: boolean;
@@ -24,14 +25,14 @@ export function QueryPane(props: QueryPaneProps) {
         throw new Error('This should not happen');
     }
 
-    const setQuery = useStable((content: string | undefined) => {
-        store.dispatch(actions.updateTab({
+	const setQuery = useDebouncedCallback(200, (content: string | undefined) => {
+		store.dispatch(actions.updateTab({
             id: activeTab.id,
             query: content || ''
         }));
 
         updateConfig();
-    });
+	});
 
     const setEditor = useStable((editor: editor.IStandaloneCodeEditor) => {
         editor.addAction({
