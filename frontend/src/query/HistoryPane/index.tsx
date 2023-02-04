@@ -186,6 +186,7 @@ function HistoryActions() {
 
 	const clearHistory = useStable(() => {
 		store.dispatch(actions.clearHistory());
+		updateConfig();
 	});
 
 	const hideHistory = useStable(() => {
