@@ -36,8 +36,8 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 			surreal: [ '#ffe2fd', '#ffb1eb', '#ff7fdc', '#ff4ccc', '#ff1abe', '#e600a4', '#b40080', '#81005c', '#500038', '#1f0015' ]
 		},
 		defaultGradient: {
-			from: '#c95dbb',
-			to: '#6a64ed'
+			from: '#de3ec9',
+			to: '#6861ff'
 		},
 		components: {
 			Modal: {
