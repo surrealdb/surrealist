@@ -1,5 +1,27 @@
 # Change Log
 
+## 1.5.1 - New shortcuts
+- Added new keyboard shortcuts
+	- `Ctrl + number` to switch to another tab
+	- `Ctrl + Q` to switch to the Query View
+	- `Ctrl + E` to switch to the Explorer View
+	- `Ctrl + S` to start / stop the local server
+	- `Ctrl + -` to zoom out
+	- `Ctrl + +` to zoom in
+- Added editor zooming
+	- Experimental, may not work on all systems (This cannot be fixed at the moment)
+	- Can cause issues with draggable elements
+- Added the ability to create new records in explorer view
+- Added the ability to delete records in explorer view
+- Add button to disconnect from the database when connected
+- Improve automatic theme and prevent potential flashing of the wrong theme
+- Fixed history not saving when all entries are cleared
+- Added syntax highlighting for SurrealDB functions
+- Improve WebSocket handling to result in more consistent behavior
+- Fixed table view incorrectly marking certain strings as records
+- Tweak some default values
+- Various UI/UX improvements
+
 ## 1.5.0 - Explorer view
 - Added an explorer view to view and edit tables and their data
 	- You can switch between Query and Explorer view using the button in the top left
