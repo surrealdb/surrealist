@@ -108,30 +108,41 @@ export function Scaffold() {
 
 		openSurreal({
 			connection: tabInfo.connection,
-			silent: silent,
 			onConnect() {
 				setIsConnecting(false);
 				setIsOnline(true)
 			},
-			onDisconnect() {
+			onDisconnect(code, reason) {
 				setIsConnecting(false);
-				setIsOnline(false)
-			},
-			onError(code, message) {
-				if (code === 1006) {
-					message = 'No response from server'
+				setIsOnline(false);
+
+				if (code != 1000 && !silent) {
+					const subtitle = code === 1006
+						? 'Unexpected connection close'
+						: reason || `Unknown reason`;
+
+					showNotification({
+						disallowClose: true,
+						color: 'red.4',
+						bg: 'red.6',
+						message: (
+							<div>
+								<Text color="white" weight={600}>Connection Closed</Text>
+								<Text color="white" opacity={0.8} size="sm">{subtitle} ({code})</Text>
+							</div>
+						)
+					});
 				}
-
-				const reason = `${message || 'Unknown reason'} (${code})`;
-
+			},
+			onError(err) {
 				showNotification({
 					disallowClose: true,
 					color: 'red.4',
 					bg: 'red.6',
 					message: (
 						<div>
-							<Text color="white" weight={600}>Connection Closed</Text>
-							<Text color="white" opacity={0.8} size="sm">{reason}</Text>
+							<Text color="white" weight={600}>Connection Error</Text>
+							<Text color="white" opacity={0.8} size="sm">{err.message}</Text>
 						</div>
 					)
 				});

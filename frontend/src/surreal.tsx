@@ -14,10 +14,9 @@ export interface SurrealConnection {
 
 export interface SurrealOptions {
 	connection: SurrealConnection;
-	silent?: boolean;
 	onConnect?: () => void;
-	onDisconnect?: () => void;
-	onError?: (code: number, reason: string) => void;
+	onDisconnect?: (code: number, reason: string) => void;
+	onError?: (error: any) => void;
 }
 
 export interface SurrealHandle {
@@ -34,7 +33,6 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	const pinger = setInterval(() => { message('ping'); }, 30_000);
 
 	let isClosed = false;
-	let isSuccess = false;
 
 	/**
 	 * Send a message to the database
@@ -63,18 +61,20 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	/**
 	 * Clean up any resources
 	 */
-	const cleanUp = () => {
+	const cleanUp = (code: number, reason: string) => {
 		clearInterval(pinger);
-		options.onDisconnect?.();
+		options.onDisconnect?.(code, reason);
 	}
 
 	/**
 	 * Forcefully close the connection
 	 */
 	const close = () => {
+		if (isClosed) return;
+
 		isClosed = true;
 		socket.close(1000, 'Closed by user');
-		cleanUp();
+		cleanUp(1000, 'Closed by user');
 	};
 
 	/**
@@ -115,19 +115,12 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 			message('use', [namespace, database]);
 		}
 		
-		isSuccess = true;
 		options.onConnect?.();
 	});
 
 	socket.addEventListener('close', (event) => {
 		if (!isClosed) {
-			cleanUp();
-		}
-
-		const sendError = !options.silent || isSuccess;
-		
-		if (event.code !== 1000 && sendError) {
-			options.onError?.(event.code, event.reason);
+			cleanUp(event.code, event.reason);
 		}
 	});
 
@@ -151,6 +144,10 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 				resolve(result);
 			}
 		}
+	});
+
+	socket.addEventListener('error', (e: any) => {
+		options.onError?.(e.error);
 	});
 
 	return {
