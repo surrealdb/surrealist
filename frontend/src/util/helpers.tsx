@@ -36,3 +36,12 @@ export function updateTitle() {
 export async function updateConfig() {
 	return SaveConfig(JSON.stringify(store.getState().config));
 }
+
+/**
+ * Apply the current zoom level to the document
+ */
+export function updateZoom() {
+	const zoom = store.getState().config.zoomLevel;
+
+	(document.documentElement.style as any).zoom = `${zoom}`;
+}

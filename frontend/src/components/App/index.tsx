@@ -3,7 +3,7 @@ import { ActionIcon, Box, Global, Group, Image, MantineProvider, Paper, Text, Tr
 import surrealistIcon from '~/assets/icon.png';
 import { NotificationsProvider } from "@mantine/notifications";
 import { Scaffold } from "../Scaffold";
-import { useColorScheme } from "@mantine/hooks";
+import { useColorScheme, useHotkeys } from "@mantine/hooks";
 import { actions, store, useStoreValue } from "~/store";
 import { useSurrealistTheme } from "~/util/theme";
 import { mdiClose } from "@mdi/js";
@@ -11,6 +11,7 @@ import { Icon } from "../Icon";
 import { useStable } from "~/hooks/stable";
 import { BrowserOpenURL } from "$/runtime/runtime";
 import { MouseEvent } from "react";
+import { updateConfig, updateZoom } from "~/util/helpers";
 
 export function App() {
 	const update = useStoreValue(state => state.availableUpdate);
@@ -28,8 +29,21 @@ export function App() {
 
 	const openRelease = useStable(() => {
 		BrowserOpenURL(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`);
-		closeUpdate();
+		closeUpdate(); 
 	});
+
+	useHotkeys([
+		['ctrl+equal', () => {
+			store.dispatch(actions.increaseZoomLevel());
+			updateConfig();
+			updateZoom();
+		}],
+		['ctrl+minus', () => {
+			store.dispatch(actions.decreaseZoomLevel());
+			updateConfig();
+			updateZoom();
+		}],
+	])
 
 	return (
 		<MantineProvider
@@ -88,6 +102,9 @@ export function App() {
 
 			<Global
 				styles={{
+					'html, body, #root': {
+						height: '100%'
+					},
 					'body': {
 						backgroundColor: isLight ? '#f0f1fa' : '#09090a',
 						fontWeight: 500

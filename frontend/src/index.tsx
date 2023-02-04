@@ -9,6 +9,7 @@ import { initializeEditor } from './util/editor';
 import { LoadConfig } from '$/go/backend/Surrealist';
 import { initializeListeners } from './util/database';
 import { runUpdateChecker } from './util/updater';
+import { updateZoom } from './util/helpers';
 
 dayjs.extend(relativeTime);
 
@@ -27,6 +28,9 @@ LoadConfig().then(config => {
 	if (updateChecker) {
 		runUpdateChecker();
 	}
+
+	// Apply zoom level
+	updateZoom();
 });
 
 // Render the app component

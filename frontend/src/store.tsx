@@ -203,7 +203,15 @@ const mainSlice = createSlice({
 
 		setViewMode(state, action: PayloadAction<ViewMode>) {
 			state.viewMode = action.payload;
-		}
+		},
+
+		increaseZoomLevel(state) {
+			state.config.zoomLevel = Math.min(state.config.zoomLevel + 0.1, 2);
+		},
+
+		decreaseZoomLevel(state) {
+			state.config.zoomLevel = Math.max(state.config.zoomLevel - 0.1, 0.5);
+		},
 
 	}
 });

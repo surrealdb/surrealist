@@ -16,4 +16,5 @@ export const BASE_CONFIG: SurrealistConfig = {
 	updateChecker: true,
 	queryListing: 'history',
 	resultListing: 'json',
+	zoomLevel: 1
 }

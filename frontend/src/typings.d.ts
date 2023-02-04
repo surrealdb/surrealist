@@ -27,6 +27,7 @@ export interface SurrealistConfig {
 	updateChecker: boolean;
 	queryListing: QueryListing;
 	resultListing: ResultListing;
+	zoomLevel: number;
 }
 
 export interface SurrealistTab {
