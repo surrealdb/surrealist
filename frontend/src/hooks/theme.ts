@@ -1,4 +1,3 @@
-import { useColorScheme } from "@mantine/hooks";
 import { useStoreValue } from "~/store";
 
 /**
@@ -6,8 +5,8 @@ import { useStoreValue } from "~/store";
  */
 export function useIsLight() {
 	const colorScheme = useStoreValue(state => state.config.theme);
-	const defaultScheme = useColorScheme();
+	const defaultScheme = useStoreValue(state => state.nativeTheme);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	
 	return actualTheme == 'light';
-}
+} 

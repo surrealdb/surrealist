@@ -1,6 +1,7 @@
 import {HistoryEntry, SurrealistTab, ConsoleOutputMessage, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { ColorScheme } from "@mantine/core";
 
 import { ThemeOption } from "./util/theme";
 import { BASE_CONFIG } from "./util/config";
@@ -9,6 +10,7 @@ const mainSlice = createSlice({
 	name: 'main',
 	initialState: {
 		config: BASE_CONFIG as SurrealistConfig,
+		nativeTheme: 'light' as ColorScheme,
 		activeTab: null as string|null,
 		isPinned: false,
 		isServing: false,
@@ -30,6 +32,10 @@ const mainSlice = createSlice({
 
 		setColorScheme(state, action: PayloadAction<ThemeOption>) {
 			state.config.theme = action.payload;
+		},
+
+		setNativeTheme(state, action: PayloadAction<ColorScheme>) {
+			state.nativeTheme = action.payload;
 		},
 
 		setAutoConnect(state, action: PayloadAction<boolean>) {

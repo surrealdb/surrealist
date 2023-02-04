@@ -1,6 +1,6 @@
 import { SaveConfig } from "$/go/backend/Surrealist";
 import { WindowSetTitle } from "$/runtime/runtime";
-import { store } from "~/store";
+import { actions, store } from "~/store";
 
 export function updateTitle() {
 	const { activeTab, isPinned, config, viewMode } = store.getState();
@@ -44,4 +44,19 @@ export function updateZoom() {
 	const zoom = store.getState().config.zoomLevel;
 
 	(document.documentElement.style as any).zoom = `${zoom}`;
+}
+
+/**
+ * Watch for changes to the native theme
+ */
+export function watchNativeTheme() {
+	const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)');
+
+	store.dispatch(actions.setNativeTheme(mediaMatch.matches ? 'dark' : 'light'));
+
+	mediaMatch.addEventListener('change', event => {
+		console.log('media change');
+
+		store.dispatch(actions.setNativeTheme(event.matches ? 'dark' : 'light'));
+	});
 }

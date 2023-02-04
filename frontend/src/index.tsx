@@ -9,7 +9,7 @@ import { initializeEditor } from './util/editor';
 import { LoadConfig } from '$/go/backend/Surrealist';
 import { initializeListeners } from './util/database';
 import { runUpdateChecker } from './util/updater';
-import { updateZoom } from './util/helpers';
+import { updateZoom, watchNativeTheme } from './util/helpers';
 
 dayjs.extend(relativeTime);
 
@@ -49,3 +49,6 @@ loader.init().then(monaco => {
 
 // Listen to database events
 initializeListeners();
+
+// Listen for theme changes
+watchNativeTheme();

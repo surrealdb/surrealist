@@ -3,7 +3,7 @@ import { ActionIcon, Box, Global, Group, Image, MantineProvider, Paper, Text, Tr
 import surrealistIcon from '~/assets/icon.png';
 import { NotificationsProvider } from "@mantine/notifications";
 import { Scaffold } from "../Scaffold";
-import { useColorScheme, useHotkeys } from "@mantine/hooks";
+import { useHotkeys } from "@mantine/hooks";
 import { actions, store, useStoreValue } from "~/store";
 import { useSurrealistTheme } from "~/util/theme";
 import { mdiClose } from "@mdi/js";
@@ -17,7 +17,7 @@ export function App() {
 	const update = useStoreValue(state => state.availableUpdate);
 	const showUpdate = useStoreValue(state => state.showAvailableUpdate);
 	const colorScheme = useStoreValue(state => state.config.theme);
-	const defaultScheme = useColorScheme();
+	const defaultScheme = useStoreValue(state => state.nativeTheme);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	const mantineTheme = useSurrealistTheme(actualTheme);
 	const isLight = actualTheme === 'light';
