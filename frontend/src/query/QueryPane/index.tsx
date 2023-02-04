@@ -9,7 +9,7 @@ import {Panel} from "../../components/Panel";
 import {useMemo} from "react";
 import {baseEditorConfig} from "~/util/editor";
 import {useIsLight} from "~/hooks/theme";
-import { useHotkeys } from "@mantine/hooks";
+import { useHotkeys, useWindowEvent } from "@mantine/hooks";
 import { useDebouncedCallback } from "~/hooks/debounce";
 
 export interface QueryPaneProps {
@@ -102,7 +102,7 @@ export function QueryPane(props: QueryPaneProps) {
 	useHotkeys([
 		['F9', props.onExecuteQuery],
 		['mod+Enter', props.onExecuteQuery],
-	])
+	]);
 
     return (
         <Panel

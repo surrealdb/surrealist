@@ -1,9 +1,9 @@
 # Roadmap
 
 - Support more views e.g. Accounts
-- Add more keybinds for common actions
+- ~~Add more keybinds for common actions~~
 - ~~Add support for NS, DB, and Scope authentication~~
-- Fix issues with monaco incorrectly switching theme
+- ~~Fix issues with monaco incorrectly switching theme~~
 - ~~Explorer: support light theme correctly~~
 - Explorer: table creation button (Schema builder)
 - Explorer: modify existing table schemas

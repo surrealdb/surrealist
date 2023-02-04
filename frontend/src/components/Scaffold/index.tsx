@@ -21,6 +21,7 @@ import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/query/QueryView';
 import { ExplorerView } from '~/explorer/ExplorerView';
 import { AuthMode, ViewMode } from '~/typings';
+import { useHotkeys } from '@mantine/hooks';
 
 const AUTH_MODES = [
 	{ label: 'Root authentication', value: 'root' },
@@ -227,7 +228,6 @@ export function Scaffold() {
 		const newMode = viewMode === 'query' ? 'explorer': 'query';
 
 		store.dispatch(actions.setViewMode(newMode));
-
 		updateTitle();
 	});
 
@@ -241,6 +241,17 @@ export function Scaffold() {
 		e.stopPropagation();
 		store.dispatch(actions.setConsoleEnabled(true));
 	});
+
+	useHotkeys([
+		['ctrl+q', () => {
+			store.dispatch(actions.setViewMode('query'));
+			updateTitle();
+		}],
+		['ctrl+e', () => {
+			store.dispatch(actions.setViewMode('explorer'));
+			updateTitle();
+		}]
+	], []);
 
 	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
 	const showConsole = enableConsole && (servePending || isServing);

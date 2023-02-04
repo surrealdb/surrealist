@@ -15,6 +15,7 @@ import { Settings } from "../Settings";
 import { ViewTab } from "../ViewTab";
 import { Sortable } from "../Sortable";
 import { SurrealistTab, ViewMode } from "~/typings";
+import { useHotkeys } from '@mantine/hooks';
 
 export interface TabBarProps {
 	viewMode: ViewMode;
@@ -75,6 +76,14 @@ export function TabBar(props: TabBarProps) {
 		updateTitle();
 	});
 
+	const selectTabByIndex = useStable((index: number) => {
+		const tab = tabList[index];
+
+		if (tab) {
+			selectTab(tab.id);
+		}
+	});
+
 	const togglePinned = useStable(() => {
 		store.dispatch(actions.togglePinned());
 
@@ -108,6 +117,21 @@ export function TabBar(props: TabBarProps) {
 		store.dispatch(actions.setTabs(items));
 		updateConfig();
 	});
+
+	useHotkeys([
+		['ctrl+n', props.onCreateTab],
+
+		['ctrl+1', () => selectTabByIndex(0)],
+		['ctrl+2', () => selectTabByIndex(1)],
+		['ctrl+3', () => selectTabByIndex(2)],
+		['ctrl+4', () => selectTabByIndex(3)],
+		['ctrl+5', () => selectTabByIndex(4)],
+		['ctrl+6', () => selectTabByIndex(5)],
+		['ctrl+7', () => selectTabByIndex(6)],
+		['ctrl+8', () => selectTabByIndex(7)],
+		['ctrl+9', () => selectTabByIndex(8)],
+		['ctrl+0', () => selectTabByIndex(9)],
+	], []);
 
 	return (
 		<Group

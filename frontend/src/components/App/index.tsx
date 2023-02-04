@@ -42,8 +42,8 @@ export function App() {
 			store.dispatch(actions.decreaseZoomLevel());
 			updateConfig();
 			updateZoom();
-		}],
-	])
+		}]
+	], []);
 
 	return (
 		<MantineProvider

@@ -55,8 +55,6 @@ export function watchNativeTheme() {
 	store.dispatch(actions.setNativeTheme(mediaMatch.matches ? 'dark' : 'light'));
 
 	mediaMatch.addEventListener('change', event => {
-		console.log('media change');
-
 		store.dispatch(actions.setNativeTheme(event.matches ? 'dark' : 'light'));
 	});
 }

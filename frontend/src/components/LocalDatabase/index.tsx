@@ -1,5 +1,6 @@
 import { StartDatabase, StopDatabase } from "$/go/backend/Surrealist";
 import { Button, Loader } from "@mantine/core";
+import { useHotkeys } from "@mantine/hooks";
 import { mdiPlay, mdiStop } from "@mdi/js";
 import { useEffect, useMemo } from "react";
 import { useStable } from "~/hooks/stable";
@@ -69,6 +70,10 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 			props.openConnection();
 		}
 	}, [isServing]);
+
+	useHotkeys([
+		['ctrl+s', handleToggle],
+	], []);
 
 	return (
 		<>
