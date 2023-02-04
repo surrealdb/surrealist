@@ -147,17 +147,23 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		>
 			{props.activeTable ? (
 				<>
-					<ScrollArea
-						style={{ position: 'absolute', inset: 12, top: 0, bottom: 54 }}
-					>
-						<DataTable
-							data={records}
-							openRecord={props.onSelectRecord}
-							active={props.activeRecordId}
-							sorting={sortMode}
-							onSortingChange={setSortMode}
-						/>
-					</ScrollArea>
+					{records.length > 0 ? (
+						<ScrollArea
+							style={{ position: 'absolute', inset: 12, top: 0, bottom: 54 }}
+						>
+							<DataTable
+								data={records}
+								openRecord={props.onSelectRecord}
+								active={props.activeRecordId}
+								sorting={sortMode}
+								onSortingChange={setSortMode}
+							/>
+						</ScrollArea>
+					) : (
+						<Center h="90%" c="light.5">
+							Table has no records
+						</Center>
+					)}
 
 					<Group
 						style={{ position: 'absolute', insetInline: 12, bottom: 12 }}
