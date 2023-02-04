@@ -73,7 +73,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	 */
 	const close = () => {
 		isClosed = true;
-		socket.close();
+		socket.close(1000, 'Closed by user');
 		cleanUp();
 	};
 
@@ -125,7 +125,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 		}
 
 		const sendError = !options.silent || isSuccess;
-
+		
 		if (event.code !== 1000 && sendError) {
 			options.onError?.(event.code, event.reason);
 		}

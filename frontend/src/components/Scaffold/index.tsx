@@ -119,7 +119,7 @@ export function Scaffold() {
 			},
 			onError(code, message) {
 				if (code === 1006) {
-					return; // Client closed connection
+					message = 'No response from server'
 				}
 
 				const reason = `${message || 'Unknown reason'} (${code})`;
