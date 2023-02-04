@@ -40,6 +40,7 @@ export function initializeEditor(monaco: Monaco) {
 			{ token: 'param', foreground: '#e67a15' },
 			{ token: 'comment', foreground: '#606475' },
 			{ token: 'regex', foreground: '#09b8ac' },
+			{ token: 'function', foreground: '#9565cf' },
 		],
 		colors: {
 			'editorLineNumber.foreground': '#9BA9C6',
@@ -55,6 +56,7 @@ export function initializeEditor(monaco: Monaco) {
 			{ token: 'param', foreground: '#e67a15' },
 			{ token: 'comment', foreground: '#606475' },
 			{ token: 'regex', foreground: '#09b8ac' },
+			{ token: 'function', foreground: '#cb96ff' },
 		],
 		colors: {
 			'editor.background': '#1a1b1e',
@@ -80,16 +82,17 @@ export function initializeEditor(monaco: Monaco) {
 		],
 		tokenizer: {
 			root: [
+				[/(count|\w+::\w+)(?=\()/, 'function'],
+				[/".*?"/, 'string'],
+				[/\/.*?[^\\]\//, 'regex'],
+				[/(\/\/|#|--).+/, 'comment'],
+				[/\$\w+/, 'param'],
 				[/\b\w+\b/, {
 					cases: {
 						'@keywords': 'keyword',
 						'@default': 'variable'
 					}
-				}],
-				[/".*?"/, 'string'],
-				[/\/.*?[^\\]\//, 'regex'],
-				[/(\/\/|#|--).+/, 'comment'],
-				[/\$\w+/, 'param']
+				}]
 			]
 		}
 	});
