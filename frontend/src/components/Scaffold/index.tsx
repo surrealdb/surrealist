@@ -14,7 +14,7 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiConsole, mdiGraph, mdiLightningBolt, mdiTable } from '@mdi/js';
+import { mdiArrowLeftCircle, mdiBlackMesa, mdiClose, mdiConsole, mdiGraph, mdiLanDisconnect, mdiLightningBolt, mdiPowerSocket, mdiPowerSocketUk, mdiTable } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
@@ -216,7 +216,8 @@ export function Scaffold() {
 		}
 	});
 
-	const closeConnection = useStable(() => {
+	const closeConnection = useStable((e?: MouseEvent) => {
+		e?.stopPropagation();
 		getSurreal()?.close();
 		setIsConnecting(false);
 		setIsOnline(false);
@@ -311,6 +312,14 @@ export function Scaffold() {
 									title="Reveal console"
 								>
 									<Icon color="light.4" path={mdiConsole} />
+								</ActionIcon>
+							)}
+							{isOnline && (
+								<ActionIcon
+									onClick={closeConnection}
+									title="Disconnect"
+								>
+									<Icon color="light.4" path={mdiClose} />
 								</ActionIcon>
 							)}
 							{!isOnline ? (
