@@ -112,19 +112,25 @@ export function initializeEditor(monaco: Monaco) {
 				return undefined;
 			}
 
-			const response = await surreal.query('INFO FOR DB');
-			const result = response[0].result;
-			const tables = Object.keys(result.tb);
+			try {
+				const response = await surreal.query('INFO FOR DB');
+				const result = response[0].result;
+				const tables = Object.keys(result.tb);
 
-			const suggestions = tables.map(table => ({
-				label: table,
-				insertText: table,
-				kind: languages.CompletionItemKind.Class,
-				range: monaco.Range.fromPositions(position, position)
-			}));
+				const suggestions = tables.map(table => ({
+					label: table,
+					insertText: table,
+					kind: languages.CompletionItemKind.Class,
+					range: monaco.Range.fromPositions(position, position)
+				}));
 
-			return {
-				suggestions
+				return {
+					suggestions
+				}
+			} catch (e) {
+				return {
+					suggestions: []
+				}
 			}
 		}
 	});

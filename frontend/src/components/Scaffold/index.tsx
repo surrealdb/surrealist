@@ -134,19 +134,19 @@ export function Scaffold() {
 					});
 				}
 			},
-			onError(err) {
-				showNotification({
-					disallowClose: true,
-					color: 'red.4',
-					bg: 'red.6',
-					message: (
-						<div>
-							<Text color="white" weight={600}>Connection Error</Text>
-							<Text color="white" opacity={0.8} size="sm">{err.message}</Text>
-						</div>
-					)
-				});
-			},
+			// onError(err) {
+			// 	showNotification({
+			// 		disallowClose: true,
+			// 		color: 'red.4',
+			// 		bg: 'red.6',
+			// 		message: (
+			// 			<div>
+			// 				<Text color="white" weight={600}>Connection Error</Text>
+			// 				<Text color="white" opacity={0.8} size="sm">{err}</Text>
+			// 			</div>
+			// 		)
+			// 	});
+			// },
 		});
 
 		setIsConnecting(true);

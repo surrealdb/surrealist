@@ -32,12 +32,14 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	const requestMap = new Map<string, Request>();
 	const pinger = setInterval(() => { message('ping'); }, 30_000);
 
-	let isClosed = false;
-
 	/**
 	 * Send a message to the database
 	 */
 	const message = (method: string, params: any[] = []) => {
+		if (socket.readyState !== WebSocket.OPEN) {
+			return Promise.reject(new Error('Connection is not open'));
+		}
+
 		const timeout = store.getState().config.queryTimeout * 1000;
 		const id = uid(7);
 
@@ -70,9 +72,10 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	 * Forcefully close the connection
 	 */
 	const close = () => {
-		if (isClosed) return;
+		if (socket.readyState == WebSocket.CLOSING || socket.readyState == WebSocket.CLOSED) {
+			return;
+		}
 
-		isClosed = true;
 		socket.close(1000, 'Closed by user');
 		cleanUp(1000, 'Closed by user');
 	};
@@ -119,7 +122,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	});
 
 	socket.addEventListener('close', (event) => {
-		if (!isClosed) {
+		if (event.code !== 1000) {
 			cleanUp(event.code, event.reason);
 		}
 	});
