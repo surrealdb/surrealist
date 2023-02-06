@@ -1,6 +1,7 @@
 # Change Log
 
 ## 1.5.2 - Bug fixes
+- Add new anonymous connection authentication mode
 - Improve record link detection
 - Fixed database and scope authentication not working
 - Add more syntax highlighting keywords
