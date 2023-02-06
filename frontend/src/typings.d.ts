@@ -1,7 +1,7 @@
 import { ColorScheme } from "@mantine/core";
 import {SurrealConnection} from "./surreal";
 
-export type AuthMode = 'root' | 'namespace' | 'database' | 'scope';
+export type AuthMode = 'none' | 'root' | 'namespace' | 'database' | 'scope';
 export type DriverType = "file" | "memory" | "tikv";
 export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json";

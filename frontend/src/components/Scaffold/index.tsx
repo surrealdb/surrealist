@@ -27,7 +27,8 @@ const AUTH_MODES = [
 	{ label: 'Root authentication', value: 'root' },
 	{ label: 'Namespace authentication', value: 'namespace' },
 	{ label: 'Database authentication', value: 'database' },
-	{ label: 'Scope authentication', value: 'scope' }
+	{ label: 'Scope authentication', value: 'scope' },
+	{ label: 'Anonymous', value: 'none' }
 ];
 
 const VIEW_MODES: Record<ViewMode, any> = {
@@ -454,16 +455,18 @@ export function Scaffold() {
 								data={AUTH_MODES}
 							/>
 							<TextInput
-								required
 								label="Username"
+								disabled={infoDetails.authMode == 'none'}
+								required={infoDetails.authMode != 'none'}
 								value={infoDetails.username}
 								onChange={(e) => setInfoDetails(draft => {
 									draft.username = e.target.value
 								})}
 							/>
 							<TextInput
-								required
 								label="Password"
+								disabled={infoDetails.authMode == 'none'}
+								required={infoDetails.authMode != 'none'}
 								value={infoDetails.password}
 								onChange={(e) => setInfoDetails(draft => {
 									draft.password = e.target.value
@@ -471,7 +474,8 @@ export function Scaffold() {
 							/>
 							<TextInput
 								label="Scope"
-								disabled={infoDetails.authMode !== 'scope'}
+								disabled={infoDetails.authMode != 'scope'}
+								required={infoDetails.authMode == 'scope'}
 								value={infoDetails.scope}
 								onChange={(e) => setInfoDetails(draft => {
 									draft.scope = e.target.value

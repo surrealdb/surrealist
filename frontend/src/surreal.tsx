@@ -90,31 +90,33 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	socket.addEventListener('open', async () => {
 		const { username, password, namespace, database, authMode, scope } = options.connection;
 
-		const details: any = {
-			user: username,
-			pass: password
-		};
-
-		if (authMode == 'namespace') {
-			details.NS = namespace || '';
-		}
-
-		if (authMode == 'database') {
-			details.NS = namespace || '';
-			details.DB = database || '';
-		}
-
-		if (authMode == 'scope') {
-			details.NS = namespace || '';
-			details.DB = database || '';
-			details.SC = scope || '';
-		}
-		
-		try {
-			await message('signin', [details]);
-		} catch {
-			close();
-			return;
+		if (authMode !== 'none') {
+			const details: any = {
+				user: username,
+				pass: password
+			};
+	
+			if (authMode == 'namespace') {
+				details.NS = namespace || '';
+			}
+	
+			if (authMode == 'database') {
+				details.NS = namespace || '';
+				details.DB = database || '';
+			}
+	
+			if (authMode == 'scope') {
+				details.NS = namespace || '';
+				details.DB = database || '';
+				details.SC = scope || '';
+			}
+			
+			try {
+				await message('signin', [details]);
+			} catch {
+				close();
+				return;
+			}
 		}
 		
 		if (namespace && database) {
