@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.5.2 - Bug fixes
+- Improve record link detection
+- Fixed database and scope authentication not working
+- Add more syntax highlighting keywords
+- Fixed certain functions not being matched correctly
+- Fixed crash when editing a saved query
+- Fixed horizontal scrollbar in history and favorites panel
+
 ## 1.5.1 - New shortcuts
 - Added new keyboard shortcuts
 	- `Ctrl + number` to switch to another tab
