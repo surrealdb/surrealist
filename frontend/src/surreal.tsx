@@ -100,11 +100,14 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 		}
 
 		if (authMode == 'database') {
+			details.NS = namespace || '';
 			details.DB = database || '';
 		}
 
-		if (authMode !== 'scope') {
-			details.scope = scope || '';
+		if (authMode == 'scope') {
+			details.NS = namespace || '';
+			details.DB = database || '';
+			details.SC = scope || '';
 		}
 		
 		try {
