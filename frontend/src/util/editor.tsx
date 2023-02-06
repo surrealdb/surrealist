@@ -79,11 +79,11 @@ export function initializeEditor(monaco: Monaco) {
 			'ALLINSIDE', 'ANYINSIDE', 'NONEINSIDE', 'OUTSIDE', 'INTERSECTS', 'KV', 'SCHEMALESS', 'SCHEMAFULL',
 			'PERMISSIONS', 'FULL', 'NAMESPACE', 'DATABASE', 'LOGIN', 'ON', 'PASSWORD', 'PASSHASH', 'TYPE', 'VALUE',
 			'TOKEN', 'DROP', 'EVENT', 'FIELD', 'ON', 'WHEN', 'ASSERT', 'INDEX', 'FIELDS', 'COLUMNS', 'UNIQUE',
-			'FUNCTION', 'LIVE', 'KILL', 'FULLTEXT'
+			'FUNCTION', 'LIVE', 'KILL', 'FULLTEXT', 'SESSION', 'SIGNUP', 'SIGNIN'
 		],
 		tokenizer: {
 			root: [
-				[/(count|\w+::\w+)(?=\()/, 'function'],
+				[/(count|(\w+::)+\w+)(?=\()/, 'function'],
 				[/".*?"/, 'string'],
 				[/\/.*?[^\\]\//, 'regex'],
 				[/(\/\/|#|--).+/, 'comment'],
