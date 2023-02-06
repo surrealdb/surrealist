@@ -14,7 +14,7 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiArrowLeftCircle, mdiBlackMesa, mdiClose, mdiConsole, mdiGraph, mdiLanDisconnect, mdiLightningBolt, mdiPowerSocket, mdiPowerSocketUk, mdiTable } from '@mdi/js';
+import { mdiClose, mdiConsole, mdiLightningBolt, mdiTable } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';

@@ -13,8 +13,8 @@ import { updateConfig, updateTitle } from '~/util/helpers';
 import { Sortable } from '~/components/Sortable';
 import { Panel } from '~/components/Panel';
 import { Icon } from '~/components/Icon';
-import { Form } from 'react-router-dom';
 import { Spacer } from '~/components/Spacer';
+import { Form } from '~/components/Form';
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
