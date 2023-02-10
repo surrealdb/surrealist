@@ -30,7 +30,9 @@ export function QueryView(props: QueryViewProps) {
 					bufferSize={0}
 					direction="vertical"
 					endPane={
-						<VariablesPane />
+						<VariablesPane
+							onExecuteQuery={props.sendQuery}
+						/>
 					}
 				>
 					<QueryPane

@@ -1,5 +1,5 @@
 import { Monaco } from "@monaco-editor/react";
-import { editor, languages } from "monaco-editor";
+import { editor, KeyCode, KeyMod, languages } from "monaco-editor";
 import { store } from "~/store";
 import { getSurreal } from "~/surreal";
 
@@ -169,6 +169,66 @@ export function initializeEditor(monaco: Monaco) {
 			return {
 				suggestions
 			}
+		}
+	});
+}
+
+/**
+ * Configure an editor to run queries on Ctrl+Enter or F9
+ * and support commenting with Ctrl+/
+ * 
+ * @param editor The editor instance
+ * @param onExecute The execute callback
+ */
+export function configureQueryEditor(editor: editor.IStandaloneCodeEditor, onExecute: () => void) {
+	editor.addAction({
+		id: 'run-query',
+		label: 'Run Query',
+		keybindings: [
+			KeyMod.CtrlCmd | KeyCode.Enter,
+			KeyCode.F9
+		],
+		run: () => onExecute()
+	});
+
+	editor.addAction({
+		id: 'comment-query',
+		label: 'Comment Query',
+		keybindings: [
+			KeyMod.CtrlCmd | KeyCode.Slash
+		],
+		run: (editor) => {
+			const selection = editor.getSelection();
+			const model = editor.getModel();
+
+			if (!selection || !model) {
+				return;
+			}
+
+			const range = {
+				startLineNumber: selection.startLineNumber,
+				startColumn: 0,
+				endLineNumber: selection.endLineNumber,
+				endColumn: model.getLineMaxColumn(selection.endLineNumber),
+			}
+						   
+			const text = model.getValueInRange(range);
+			const lines = text.split('\n');
+
+			if(!lines) {
+				return;
+			}
+
+			const hasComment = lines.some(line => line.trim().startsWith('#'));
+
+			const comment = lines.map(line => {
+				return hasComment ? line.replace(/^# /, '') : `# ${line}`;
+			}).join('\n');
+
+			editor.executeEdits('comment-query', [{
+				range,
+				text: comment
+			}]);
 		}
 	});
 }

@@ -155,6 +155,8 @@ export function Scaffold() {
 	});
 
 	const sendQuery = useStable(async (e?: MouseEvent) => {
+		console.log(e);
+		
 		if (viewMode !== 'query') {
 			return;
 		}
@@ -251,8 +253,13 @@ export function Scaffold() {
 		['ctrl+e', () => {
 			store.dispatch(actions.setViewMode('explorer'));
 			updateTitle();
-		}]
+		}],
 	], []);
+
+	useHotkeys([
+		['F9', () => sendQuery()],
+		['mod+Enter', () => sendQuery()],
+	]);
 
 	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
 	const showConsole = enableConsole && (servePending || isServing);

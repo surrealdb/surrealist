@@ -7,11 +7,15 @@ import { actions, store } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "../../components/Panel";
 import { useMemo, useState } from "react";
-import { baseEditorConfig } from "~/util/editor";
+import { baseEditorConfig, configureQueryEditor } from "~/util/editor";
 import { Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 
-export function VariablesPane() {
+export interface VariablesPaneProps {
+	onExecuteQuery: () => void;
+}
+
+export function VariablesPane(props: VariablesPaneProps) {
 	const activeTab = useActiveTab();
 	const isLight = useIsLight();
 
@@ -42,6 +46,10 @@ export function VariablesPane() {
 		}
 	});
 
+	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
+		configureQueryEditor(editor, props.onExecuteQuery);
+    });
+
 	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
 		return {
 			...baseEditorConfig,
@@ -71,6 +79,7 @@ export function VariablesPane() {
 				}}
 			>
 				<Editor
+					onMount={configure}
 					theme={isLight ? 'surrealist' : 'surrealist-dark'}
 					value={activeTab?.variables?.toString()}
 					onChange={setVariables}

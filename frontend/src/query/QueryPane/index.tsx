@@ -7,9 +7,8 @@ import {actions, store} from "~/store";
 import {updateConfig} from "~/util/helpers";
 import {Panel} from "../../components/Panel";
 import {useMemo} from "react";
-import {baseEditorConfig} from "~/util/editor";
+import {baseEditorConfig, configureQueryEditor} from "~/util/editor";
 import {useIsLight} from "~/hooks/theme";
-import { useHotkeys, useWindowEvent } from "@mantine/hooks";
 import { useDebouncedCallback } from "~/hooks/debounce";
 
 export interface QueryPaneProps {
@@ -34,59 +33,8 @@ export function QueryPane(props: QueryPaneProps) {
         updateConfig();
 	});
 
-    const setEditor = useStable((editor: editor.IStandaloneCodeEditor) => {
-        editor.addAction({
-            id: 'run-query',
-            label: 'Run Query',
-            keybindings: [
-                KeyMod.CtrlCmd | KeyCode.Enter,
-                KeyCode.F9
-            ],
-            run: () => {
-                props.onExecuteQuery();
-            }
-        });
-
-        editor.addAction({
-            id: 'comment-query',
-            label: 'Comment Query',
-            keybindings: [
-                KeyMod.CtrlCmd | KeyCode.Slash
-            ],
-            run: (editor) => {
-                const selection = editor.getSelection();
-				const model = editor.getModel();
-
-                if (!selection || !model) {
-                    return;
-                }
-
-                const range = {
-                    startLineNumber: selection.startLineNumber,
-                    startColumn: 0,
-                    endLineNumber: selection.endLineNumber,
-                    endColumn: model.getLineMaxColumn(selection.endLineNumber),
-                }
-                               
-                const text = model.getValueInRange(range);
-                const lines = text.split('\n');
-
-                if(!lines) {
-                    return;
-                }
-
-				const hasComment = lines.some(line => line.trim().startsWith('#'));
-
-                const comment = lines.map(line => {
-					return hasComment ? line.replace(/^# /, '') : `# ${line}`;
-				}).join('\n');
-
-                editor.executeEdits('comment-query', [{
-                    range,
-                    text: comment
-                }]);
-            }
-        });
+    const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
+		configureQueryEditor(editor, props.onExecuteQuery);
     });
 
     const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
@@ -98,11 +46,6 @@ export function QueryPane(props: QueryPaneProps) {
             wordWrap: 'on',
         }
     }, []);
-
-	useHotkeys([
-		['F9', props.onExecuteQuery],
-		['mod+Enter', props.onExecuteQuery],
-	]);
 
     return (
         <Panel
@@ -117,7 +60,7 @@ export function QueryPane(props: QueryPaneProps) {
                 }}
             >
                 <Editor
-                    onMount={setEditor}
+                    onMount={configure}
                     theme={isLight ? 'surrealist' : 'surrealist-dark'}
                     value={activeTab?.query}
                     onChange={setQuery}
