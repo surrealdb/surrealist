@@ -155,8 +155,6 @@ export function Scaffold() {
 	});
 
 	const sendQuery = useStable(async (e?: MouseEvent) => {
-		console.log(e);
-		
 		if (viewMode !== 'query') {
 			return;
 		}

@@ -84,7 +84,7 @@ export function initializeEditor(monaco: Monaco) {
 		tokenizer: {
 			root: [
 				[/(count|(\w+::)+\w+)(?=\()/, 'function'],
-				[/".*?"/, 'string'],
+				[/["'].*?["']/, 'string'],
 				[/\/.*?[^\\]\//, 'regex'],
 				[/(\/\/|#|--).+/, 'comment'],
 				[/\$\w+/, 'param'],
