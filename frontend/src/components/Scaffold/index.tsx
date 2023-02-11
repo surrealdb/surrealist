@@ -154,12 +154,10 @@ export function Scaffold() {
 		setIsConnecting(true);
 	});
 
-	const sendQuery = useStable(async (e?: MouseEvent) => {
+	const sendQuery = useStable(async (override?: string) => {
 		if (viewMode !== 'query') {
 			return;
 		}
-
-		e?.stopPropagation();
 
 		if (!isOnline) {
 			showNotification({
@@ -172,7 +170,7 @@ export function Scaffold() {
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
 
 		try {
-			const response = await getSurreal()?.query(query, variables);
+			const response = await getSurreal()?.query(override?.trim() || query, variables);
 
 			store.dispatch(actions.updateTab({
 				id: activeTab!,
@@ -264,6 +262,11 @@ export function Scaffold() {
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 	const viewInfo = VIEW_MODES[viewMode];
 
+	const handleSendQuery = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+		sendQuery();
+	});
+
 	return (
 		<div className={classes.root}>
 			<TabBar
@@ -350,7 +353,7 @@ export function Scaffold() {
 							) : viewMode == 'query' ? (
 								<Button
 									color="surreal"
-									onClick={sendQuery}
+									onClick={handleSendQuery}
 									className={classes.sendButton}
 									title="Send Query (F9)"
 								>

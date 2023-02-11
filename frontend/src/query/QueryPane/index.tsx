@@ -10,10 +10,11 @@ import {useMemo} from "react";
 import {baseEditorConfig, configureQueryEditor} from "~/util/editor";
 import {useIsLight} from "~/hooks/theme";
 import { useDebouncedCallback } from "~/hooks/debounce";
+import { showNotification } from "@mantine/notifications";
 
 export interface QueryPaneProps {
     isConnected: boolean;
-    onExecuteQuery: () => void;
+    onExecuteQuery: (override?: string) => void;
 }
 
 export function QueryPane(props: QueryPaneProps) {
@@ -35,7 +36,25 @@ export function QueryPane(props: QueryPaneProps) {
 
     const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
-    });
+    
+		editor.addAction({
+			id: 'run-query-selection',
+			label: 'Execute Selection',
+			contextMenuGroupId: "navigation",
+			contextMenuOrder: 0,
+			precondition: 'editorHasSelection',
+			run: () => {
+				const sel = editor.getSelection();
+				const model = editor.getModel()
+
+				if (!sel || !model) {
+					return;
+				}
+				
+				props.onExecuteQuery(model.getValueInRange(sel));
+			}
+		});
+	});
 
     const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
         return {

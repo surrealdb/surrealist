@@ -9,7 +9,7 @@ import { Splitter, SplitValues } from "~/components/Splitter";
 
 export interface QueryViewProps {
 	isOnline: boolean;
-	sendQuery: (e?: MouseEvent) => any;
+	sendQuery: (override?: string) => any;
 }
 
 export function QueryView(props: QueryViewProps) {
