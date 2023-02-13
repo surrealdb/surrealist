@@ -6,6 +6,11 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   doctor:
     name: Wails Doctor
