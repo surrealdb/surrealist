@@ -100,6 +100,43 @@ export function App() {
 				)}
 			</Transition>
 
+			{/* Font registration */}
+			<Global
+				styles={[
+					{
+						'@font-face': {
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-VariableFont.ttf') format("truetype-variations")`,
+							fontWeight: `400 500 600 700`
+						}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-Italic-VariableFont.ttf') format("truetype-variations")`,
+							fontWeight: `400 500 600 700`,
+							fontStyle: 'italic'
+						}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'Jetbrains Mono',
+							src: `url('/JetBrainsMono-VariableFont.ttf') format("truetype-variations")`,
+							fontWeight: `400 700`
+						}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'Jetbrains Mono',
+							src: `url('/JetBrainsMono-Italic-VariableFont.ttf') format("truetype-variations")`,
+							fontWeight: `400 700`,
+							fontStyle: 'italic'
+						}
+					}
+				]}
+			/>
+
+			{/* Global styles */}
 			<Global
 				styles={{
 					'html, body, #root': {
@@ -114,9 +151,6 @@ export function App() {
 					}
 				}}
 			/>
-
-			{/* See https://github.com/microsoft/monaco-editor/issues/2689 */}
-			<span style={{ fontFamily: 'JetBrains Mono' }} />
 		</MantineProvider>
 	)
 }
