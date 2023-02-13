@@ -116,6 +116,12 @@ jobs:
         with:
           name: surrealist-darwin-arm64
           path: ./surrealist-arm.tgz
+      
+      - name: Upload web app (Linux)
+        uses: actions/upload-pages-artifact@v1
+        if: matrix.platform == 'ubuntu-latest'
+        with:
+          path: ./frontend/dist
   
   release:
     runs-on: ubuntu-latest
@@ -160,3 +166,7 @@ jobs:
             ./surrealist-${{ github.ref_name }}-linux-amd64.tgz
             ./surrealist-${{ github.ref_name }}-darwin-amd64.tgz
             ./surrealist-${{ github.ref_name }}-darwin-arm64.tgz
+      
+      - name: Publish web app (Linux)
+        uses: actions/deploy-pages@v1
+        id: deployment
