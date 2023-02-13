@@ -6,15 +6,14 @@ import { actions, store } from './store';
 import { App } from './components/App';
 import { loader } from '@monaco-editor/react';
 import { initializeEditor } from './util/editor';
-import { LoadConfig } from '$/go/backend/Surrealist';
-import { initializeListeners } from './util/database';
 import { runUpdateChecker } from './util/updater';
 import { updateZoom, watchNativeTheme } from './util/helpers';
+import { adapter } from './adapter';
 
 dayjs.extend(relativeTime);
 
 // Load existing config
-LoadConfig().then(config => {
+adapter.loadConfig().then(config => {
 	store.dispatch(actions.initialize(config));
 
 	const { tabs, updateChecker } = store.getState().config;
@@ -25,7 +24,7 @@ LoadConfig().then(config => {
 	}
 
 	// Check for updates
-	if (updateChecker) {
+	if (adapter.isUpdateCheckSupported && updateChecker) {
 		runUpdateChecker();
 	}
 
@@ -46,9 +45,6 @@ createRoot(root).render(
 loader.init().then(monaco => {
 	initializeEditor(monaco);
 });
-
-// Listen to database events
-initializeListeners();
 
 // Listen for theme changes
 watchNativeTheme();

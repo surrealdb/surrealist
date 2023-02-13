@@ -9,6 +9,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { useState } from "react";
 import { DriverType } from "~/typings";
+import { adapter } from "~/adapter";
 
 const THEMES = [
 	{ label: 'Automatic', value: 'automatic' },
@@ -127,17 +128,21 @@ export function Settings() {
 							onChange={setWordWrap}
 						/>
 
-						<Checkbox
-							label="Enable database console"
-							checked={config.enableConsole}
-							onChange={setConsoleEnabled}
-						/>
+						{adapter.isServeSupported && (
+							<Checkbox
+								label="Enable database console"
+								checked={config.enableConsole}
+								onChange={setConsoleEnabled}
+							/>
+						)}
 
-						<Checkbox
-							label="Check for updates"
-							checked={config.updateChecker}
-							onChange={setUpdateChecker}
-						/>
+						{adapter.isUpdateCheckSupported && (
+							<Checkbox
+								label="Check for updates"
+								checked={config.updateChecker}
+								onChange={setUpdateChecker}
+							/>
+						)}
 
 						<Spacer />
 
@@ -186,6 +191,42 @@ export function Settings() {
 						)}
 					</Stack>
 				</SimpleGrid>
+
+				{adapter.isPromotionSupported && (
+					<Paper
+						mt="xl"
+						c="white"
+						sx={theme => ({
+							background: `url(/desktop.png), ${theme.fn.gradient()}`,
+							overflow: 'hidden',
+							backgroundSize: 'contain',
+							backgroundRepeat: 'no-repeat',
+							backgroundPosition: 'center right'
+						})}
+					>
+						<Stack spacing="xs" p="md">
+							<Text size="xl" weight={600}>
+								Surrealist Desktop
+							</Text>
+							<Text style={{ maxWidth: '80%' }}>
+								Download Surrealist for desktop to gain additional features including database running and offline support.
+							</Text>
+							<div>
+								<a
+									href="https://github.com/StarlaneStudios/Surrealist/releases"
+									target="_blank"
+								>
+									<Button
+										color="light.0"
+										variant="outline"
+									>
+										Download
+									</Button>
+								</a>
+							</div>
+						</Stack>
+					</Paper>
+				)}
 			</Modal>
 		</>
 	)

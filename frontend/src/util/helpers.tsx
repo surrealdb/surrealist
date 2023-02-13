@@ -1,5 +1,4 @@
-import { SaveConfig } from "$/go/backend/Surrealist";
-import { WindowSetTitle } from "$/runtime/runtime";
+import { adapter } from "~/adapter";
 import { actions, store } from "~/store";
 
 export function updateTitle() {
@@ -27,14 +26,14 @@ export function updateTitle() {
 		title += ' (Pinned)';
 	}
 
-	WindowSetTitle(title);
+	adapter.setWindowTitle(title);
 }
 
 /**
  * Update the config on disk with the current state of the app
  */
 export async function updateConfig() {
-	return SaveConfig(JSON.stringify(store.getState().config));
+	return adapter.saveConfig(JSON.stringify(store.getState().config));
 }
 
 /**

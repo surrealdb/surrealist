@@ -1,8 +1,8 @@
-import { StartDatabase, StopDatabase } from "$/go/backend/Surrealist";
 import { Button, Loader } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
 import { mdiPlay, mdiStop } from "@mdi/js";
 import { useEffect, useMemo } from "react";
+import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/tab";
 import { useIsLight } from "~/hooks/theme";
@@ -49,7 +49,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 
 		if (isServing) {
 			props.closeConnection();
-			StopDatabase();
+			adapter.stopDatabase();
 
 			store.dispatch(actions.cancelServe());
 		} else {
@@ -57,8 +57,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 				return;
 			}
 
-			StartDatabase(username, password, port || 80, localDriver, localPath);
-
+			adapter.startDatabase(username, password, port || 80, localDriver, localPath);
 			store.dispatch(actions.prepareServe(activeTab.id));
 		}
 	});

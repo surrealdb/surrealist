@@ -1,5 +1,4 @@
 import surrealistLogo from '~/assets/icon.png';
-import { TogglePinned } from "$/go/backend/Surrealist";
 import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
 import { mdiPlus, mdiPinOff, mdiPin, mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
@@ -16,6 +15,7 @@ import { ViewTab } from "../ViewTab";
 import { Sortable } from "../Sortable";
 import { SurrealistTab, ViewMode } from "~/typings";
 import { useHotkeys } from '@mantine/hooks';
+import { adapter } from '~/adapter';
 
 export interface TabBarProps {
 	viewMode: ViewMode;
@@ -87,7 +87,7 @@ export function TabBar(props: TabBarProps) {
 	const togglePinned = useStable(() => {
 		store.dispatch(actions.togglePinned());
 
-		TogglePinned();
+		adapter.togglePinned();
 		updateTitle();
 	});
 
@@ -185,10 +185,12 @@ export function TabBar(props: TabBarProps) {
 
 			<Spacer />
 
-			<LocalDatabase
-				openConnection={props.openConnection}
-				closeConnection={props.closeConnection}
-			/>
+			{adapter.isServeSupported && (
+				<LocalDatabase
+					openConnection={props.openConnection}
+					closeConnection={props.closeConnection}
+				/>	
+			)}
 
 			{props.viewMode == 'query' && (
 				<>
@@ -218,17 +220,19 @@ export function TabBar(props: TabBarProps) {
 				</>
 			)}
 			
-			<Button
-				px="xs"
-				color={isLight ? 'light.0' : 'dark.4'}
-				title={isPinned ? 'Unpin window' : 'Pin window'}
-				onClick={togglePinned}
-			>
-				<Icon
-					path={isPinned ? mdiPinOff : mdiPin}
-					color={isLight ? 'light.8' : 'white'}
-				/>
-			</Button>
+			{adapter.isPinningSupported && (
+				<Button
+					px="xs"
+					color={isLight ? 'light.0' : 'dark.4'}
+					title={isPinned ? 'Unpin window' : 'Pin window'}
+					onClick={togglePinned}
+				>
+					<Icon
+						path={isPinned ? mdiPinOff : mdiPin}
+						color={isLight ? 'light.8' : 'white'}
+					/>
+				</Button>
+			)}
 
 			<Settings />
 
