@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/github/contributors/StarlaneStudios/surrealist">
 </p>
 
-Surrealist is a simple to use Desktop based query playground and database explorer for [SurrealDB](https://surrealdb.com/). You can connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more. Switch to the explorer view to browse database tables, edit record contents, and traverse graph relationships.
+Surrealist is a simple to use Browser and Desktop based query playground and database explorer for [SurrealDB](https://surrealdb.com/). You can connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more. Switch to the explorer view to browse database tables, edit record contents, and traverse graph relationships.
 
 ## Features
 - 📌 Multi-tab query editing
@@ -33,13 +33,13 @@ Surrealist is a simple to use Desktop based query playground and database explor
 - 🔭 Start a local database directly from the application
 - 📜 Query history & Query favoriting
 
-## Local database
-You can start a local database directly from the application by pressing the start button in the top right. Doing so will start up a SurrealDB instance using the credentials and port entered for the current tab.
+## Web App
+You can use Surrealist by visiting https://surrealist.app/
 
-You can choose whether the local database is stored in memory or stored on disk on the Settings screen.
+While the web app provides a convenient and easy way to use Surrealist, the desktop app offers additional features such as an integrated database runner and offline support.
 
 ## Download
-You can download the latest version of Surrealist from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.
+You can download the latest version of Surrealist Desktop from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.
 
 ### Running on MacOS
 When running Surrealist on MacOS, as the application is not signed, you may be prompted that the file is damaged and can't be opened. If this happens, try the following steps:
@@ -51,6 +51,13 @@ When running Surrealist on MacOS, as the application is not signed, you may be p
 - Run the command `sudo xattr -rd com.apple.quarantine Surrealist.app` (You may be prompted to enter your password)
 
 If these steps don't work, please open an issue ticket.
+
+## Local database
+You can start a local database directly from the application by pressing the start button in the top right. Doing so will start up a SurrealDB instance using the credentials and port entered for the current tab.
+
+You can choose whether the local database is stored in memory or stored on disk on the Settings screen.
+
+This functionality is currently only available in the desktop app.
 
 ## Query view
 Use the Query View to execute queries against your database. You can define variables in the Variables panel and use them in your queries, and browse the results in the Results panel.
