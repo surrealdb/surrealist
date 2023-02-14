@@ -5,7 +5,7 @@ export type AuthMode = 'none' | 'root' | 'namespace' | 'database' | 'scope';
 export type DriverType = "file" | "memory" | "tikv";
 export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json";
-export type ViewMode = 'query' | 'explorer';
+export type ViewMode = 'query' | 'explorer' | 'visualizer';
 export type SourceMode = 'schema' | 'infer';
 
 export type OpenFn = (id: string | null) => void;

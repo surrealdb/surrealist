@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Box, Button, Center, Group, Image, Modal, Paper, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Divider, Group, Image, Modal, Paper, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
@@ -14,13 +14,14 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiClose, mdiConsole, mdiLightningBolt, mdiTable } from '@mdi/js';
+import { mdiClose, mdiConsole, mdiGraph, mdiLightningBolt, mdiNetwork, mdiTable } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/query/QueryView';
 import { ExplorerView } from '~/explorer/ExplorerView';
 import { AuthMode, ViewMode } from '~/typings';
+import { VisualizerView } from '~/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
 
 const AUTH_MODES = [
@@ -39,6 +40,10 @@ const VIEW_MODES: Record<ViewMode, any> = {
 	explorer: {
 		name: 'Explorer',
 		icon: mdiTable
+	},
+	visualizer: {
+		name: 'Visualizer',
+		icon: mdiGraph
 	}
 }
 
@@ -224,7 +229,7 @@ export function Scaffold() {
 	});
 
 	const toggleViewMode = useStable(() => {
-		const newMode = viewMode === 'query' ? 'explorer': 'query';
+		const newMode = viewMode === 'query' ? 'explorer' : viewMode == 'visualizer' ? 'query' : 'visualizer';
 
 		store.dispatch(actions.setViewMode(newMode));
 		updateTitle();
@@ -383,6 +388,12 @@ export function Scaffold() {
 
 							<ViewSlot visible={viewMode == 'explorer'}>
 								<ExplorerView
+									isOnline={isOnline}
+								/>
+							</ViewSlot>
+
+							<ViewSlot visible={viewMode == 'visualizer'}>
+								<VisualizerView
 									isOnline={isOnline}
 								/>
 							</ViewSlot>
