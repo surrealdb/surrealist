@@ -1,9 +1,13 @@
 import { HoverCard, Text } from "@mantine/core";
-import { mdiCheck, mdiClose } from "@mdi/js";
+import { mdiCalendar, mdiCheck, mdiClock, mdiClockOutline, mdiClose } from "@mdi/js";
+import dayjs from "dayjs";
 import { ReactNode } from "react";
 import { OpenFn } from "~/typings";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
+
+const THING_REGEX = /^\w+:(\w+|[`⟨][^`⟩]+[`⟩])$/;
+const DATETIME_REGEX = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
 
 export interface DataCellType {
 	match: (value: any) => boolean;
@@ -75,9 +79,11 @@ function ThingCell(props: DataCellProps) {
 
 function DateTimeCell(props: DataCellProps) {
 	const date = new Date(props.value);
-
+	const relative = dayjs(date).fromNow();
+	
 	return (
-		<Text title={date.toISOString()}>
+		<Text title={`${date.toISOString()} (${relative})`}>
+			<Icon path={mdiClockOutline} left mt={-3} />
 			{date.toLocaleString()}
 		</Text>
 	);
@@ -125,11 +131,11 @@ const DataCellTypes = [
 		component: NullishCell
 	},
 	{
-		match: (value: any) => typeof value == 'string' && /^\w+:[`⟨]?[^`⟩]+[`⟩]?$/.test(value),
+		match: (value: any) => typeof value == 'string' && THING_REGEX.test(value),
 		component: ThingCell
 	},
 	{
-		match: (value: any) => typeof value == 'string' && !isNaN(Date.parse(value)),
+		match: (value: any) => typeof value == 'string' && DATETIME_REGEX.test(value),
 		component: DateTimeCell
 	},
 	{
