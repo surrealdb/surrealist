@@ -25,7 +25,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 	const localDriver = useStoreValue(state => state.config.localDriver);
 	const localPath = useStoreValue(state => state.config.localStorage);
 
-	const endpoint = activeTab?.connection?.endpoint;
+	const { endpoint, authMode } = activeTab?.connection || {};
 
 	const [isLocal, port] = useMemo(() => {
 		const [_, hostname, port] = ENDPOINT_PATTERN.exec(endpoint || '') || [];
@@ -34,11 +34,11 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 			return [false];
 		}
 
-		const isValid = LOCAL_ENDPOINTS.includes(hostname);
+		const isValid = LOCAL_ENDPOINTS.includes(hostname) && authMode == 'root';
 		const portNum = parseInt(port);
 
 		return [isValid, portNum];
-	}, [endpoint]);
+	}, [endpoint, authMode]);
 
 	const handleToggle = useStable(() => {
 		if (isPending) {
