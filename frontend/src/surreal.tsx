@@ -180,3 +180,14 @@ export function openSurreal(options: SurrealOptions) {
 export function getSurreal(): SurrealHandle | null {
 	return instance;
 }
+
+/**
+ * Retrieve the current database connection, throwing an error if it doesn't exist
+ */
+export function getActiveSurreal() {
+	if (!instance) {
+		throw new Error('No database connection');
+	}
+
+	return instance;
+}

@@ -23,11 +23,11 @@ const COLORS = [
 	'#4a69bd'
 ];
 
-export interface ExplorerViewProps {
+export interface VisualizerViewProps {
 	isOnline: boolean;
 }
 
-export function VisualizerView(props: ExplorerViewProps) {
+export function VisualizerView(props: VisualizerViewProps) {
 	const [sourceMode, setSourceMode] = useState<SourceMode>('infer');
 	const [recordLimit, setRecordLimit] = useState(5000);
 	const [graph, setGraph] = useState<Graph | null>(null);

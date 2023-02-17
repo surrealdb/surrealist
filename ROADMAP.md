@@ -2,10 +2,10 @@
 
 ## 1.6
 - Account view
-- Execute line / selection
+- ~~Execute line / selection~~
+- ~~Cloud version~~
 
 ## Other
-- Cloud version
 - Explorer: table creation button (Schema builder)
 - Explorer: modify existing table schemas
 - Explorer: in-table editing with double click (maybe)

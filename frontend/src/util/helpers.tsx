@@ -1,3 +1,6 @@
+import { Text } from "@mantine/core";
+import { Stack } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { actions, store } from "~/store";
@@ -50,5 +53,27 @@ export function watchNativeTheme() {
 
 	mediaMatch.addEventListener('change', event => {
 		store.dispatch(actions.setNativeTheme(event.matches ? 'dark' : 'light'));
+	});
+}
+
+/**
+ * Display an error notification
+ * 
+ * @param title The title message
+ * @param subtitle The subtitle message
+ */
+export function showError(title: string, subtitle: string) {
+	showNotification({
+		color: 'red.6',
+		message: (
+			<Stack spacing={0}>
+				<Text weight={600}>
+					{title}
+				</Text>
+				<Text color="light.5">
+					{subtitle}
+				</Text>
+			</Stack>
+		)
 	});
 }

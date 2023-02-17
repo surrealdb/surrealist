@@ -24,6 +24,8 @@ import { AuthMode, ViewMode } from '~/typings';
 import { VisualizerView } from '~/views/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
 import { AUTH_MODES, VIEW_MODES } from '~/constants';
+import { DesignerView } from '~/views/designer/DesignerView';
+import { AuthenticationView } from '~/views/authentication/AuthenticationView';
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -424,6 +426,16 @@ export function Scaffold() {
 
 							<ViewSlot visible={viewMode == 'visualizer'}>
 								<VisualizerView
+									isOnline={isOnline}
+								/>
+							</ViewSlot>
+
+							<ViewSlot visible={viewMode == 'designer'}>
+								<DesignerView />
+							</ViewSlot>
+
+							<ViewSlot visible={viewMode == 'auth'}>
+								<AuthenticationView
 									isOnline={isOnline}
 								/>
 							</ViewSlot>

@@ -58,6 +58,7 @@ export function ViewTab(props: PropsWithChildren<ViewTabProps>) {
 					c={props.active ? 'gray.0' : 'gray.5'}
 					onClick={handleClose}
 					className={classes.closeButton}
+					component="div"
 				>
 					<Icon
 						path={mdiClose}
