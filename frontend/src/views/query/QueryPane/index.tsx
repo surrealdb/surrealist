@@ -5,7 +5,7 @@ import {useStable} from "~/hooks/stable";
 import {useActiveTab} from "~/hooks/tab";
 import {actions, store} from "~/store";
 import {updateConfig} from "~/util/helpers";
-import {Panel} from "../../components/Panel";
+import {Panel} from "~/components/Panel";
 import {useMemo} from "react";
 import {baseEditorConfig, configureQueryEditor} from "~/util/editor";
 import {useIsLight} from "~/hooks/theme";

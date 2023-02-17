@@ -1,5 +1,5 @@
 import Graph, { MultiDirectedGraph } from "graphology";
-import { map, shuffle, sleep } from "radash";
+import { shuffle } from "radash";
 import { useState } from "react";
 import { Splitter } from "~/components/Splitter";
 import { useStable } from "~/hooks/stable";
@@ -7,7 +7,7 @@ import { getSurreal, SurrealHandle } from "~/surreal";
 import { SourceMode } from "~/typings";
 import { GraphPane } from "../GraphPane";
 import { OptionsPane } from "../OptionsPane";
-import { random, circlepack } from 'graphology-layout';
+import { random } from 'graphology-layout';
 import forceAtlas2 from 'graphology-layout-forceatlas2';
 
 const COLORS = [

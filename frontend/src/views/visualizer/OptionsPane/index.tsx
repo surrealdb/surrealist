@@ -3,7 +3,7 @@ import { FancyRadio } from "~/components/FancyRadio";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { SourceMode } from "~/typings";
-import { Panel } from "../../components/Panel";
+import { Panel } from "~/components/Panel";
 
 export interface OptionsPaneProps {
 	sourceMode: SourceMode;

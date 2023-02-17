@@ -1,7 +1,7 @@
 import { ActionIcon, Group, useMantineTheme } from "@mantine/core";
-import { mdiAdjust, mdiGraph, mdiRefresh } from "@mdi/js";
-import { Icon } from "../../components/Icon";
-import { Panel } from "../../components/Panel";
+import { mdiAdjust, mdiRefresh } from "@mdi/js";
+import { Icon } from "~/components/Icon";
+import { Panel } from "~/components/Panel";
 import { useEffect, useRef } from "react";
 import Graph from "graphology";
 import Sigma from "sigma/sigma";

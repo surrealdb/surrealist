@@ -1,11 +1,11 @@
 import classes from './style.module.scss';
-import { ActionIcon, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { mdiAlphaSCircleOutline, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
+import { ActionIcon, Group, ScrollArea, Text } from "@mantine/core";
+import { mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
 import { useEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
-import { Icon } from "../../components/Icon";
-import { Panel } from "../../components/Panel";
+import { Icon } from "~/components/Icon";
+import { Panel } from "~/components/Panel";
 import { OpenFn } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
 

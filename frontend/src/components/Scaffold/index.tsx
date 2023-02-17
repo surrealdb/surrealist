@@ -18,10 +18,10 @@ import { mdiClose, mdiConsole } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
-import { QueryView } from '~/query/QueryView';
-import { ExplorerView } from '~/explorer/ExplorerView';
+import { QueryView } from '~/views/query/QueryView';
+import { ExplorerView } from '~/views/explorer/ExplorerView';
 import { AuthMode, ViewMode } from '~/typings';
-import { VisualizerView } from '~/visualizer/VisualizerView';
+import { VisualizerView } from '~/views/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
 import { AUTH_MODES, VIEW_MODES } from '~/constants';
 
