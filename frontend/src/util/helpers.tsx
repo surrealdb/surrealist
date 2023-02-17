@@ -1,8 +1,9 @@
 import { adapter } from "~/adapter";
+import { VIEW_MODES } from "~/constants";
 import { actions, store } from "~/store";
 
 export function updateTitle() {
-	const { activeTab, isPinned, config, viewMode } = store.getState();
+	const { activeTab, isPinned, config } = store.getState();
 
 	let title = '';
 
@@ -10,16 +11,10 @@ export function updateTitle() {
 		const tab = config.tabs.find(t => t.id === activeTab);
 
 		if (tab) {
-			title += `${tab.name} - `;
-		}
-	}
+			const viewInfo = VIEW_MODES.find(v => v.id === tab.activeView);
 
-	if (viewMode === 'query') {
-		title += 'Surrealist Query';
-	} else if (viewMode === 'explorer') {
-		title += 'Surrealist Explorer';
-	} else if (viewMode === 'visualizer') {
-		title += 'Surrealist Visualizer';
+			title += `${tab.name} - Surrealist ${viewInfo?.name}`;
+		}
 	}
 
 	if (isPinned) {

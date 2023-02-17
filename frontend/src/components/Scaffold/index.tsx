@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Box, Button, Center, Divider, Group, Image, Modal, Paper, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
@@ -14,7 +14,7 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiClose, mdiConsole, mdiGraph, mdiLightningBolt, mdiNetwork, mdiTable } from '@mdi/js';
+import { mdiClose, mdiConsole } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
@@ -23,29 +23,7 @@ import { ExplorerView } from '~/explorer/ExplorerView';
 import { AuthMode, ViewMode } from '~/typings';
 import { VisualizerView } from '~/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
-
-const AUTH_MODES = [
-	{ label: 'Root authentication', value: 'root' },
-	{ label: 'Namespace authentication', value: 'namespace' },
-	{ label: 'Database authentication', value: 'database' },
-	{ label: 'Scope authentication', value: 'scope' },
-	{ label: 'Anonymous', value: 'none' }
-];
-
-const VIEW_MODES: Record<ViewMode, any> = {
-	query: {
-		name: 'Query',
-		icon: mdiLightningBolt
-	},
-	explorer: {
-		name: 'Explorer',
-		icon: mdiTable
-	},
-	visualizer: {
-		name: 'Visualizer',
-		icon: mdiGraph
-	}
-}
+import { AUTH_MODES, VIEW_MODES } from '~/constants';
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -63,12 +41,12 @@ export function Scaffold() {
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
-	const viewMode = useStoreValue(state => state.viewMode);
 	const createTab = useTabCreator();
 	const tabInfo = useActiveTab();
 
 	const [isOnline, setIsOnline] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
+	const [isViewListing, setIsViewListing] = useState(false);
 
 	const createNewTab = useStable(async () => {
 		const tabId = createTab('New tab');
@@ -160,7 +138,7 @@ export function Scaffold() {
 	});
 
 	const sendQuery = useStable(async (override?: string) => {
-		if (viewMode !== 'query') {
+		if (tabInfo?.activeView !== 'query') {
 			return;
 		}
 
@@ -228,10 +206,15 @@ export function Scaffold() {
 		setIsOnline(false);
 	});
 
-	const toggleViewMode = useStable(() => {
-		const newMode = viewMode === 'query' ? 'explorer' : viewMode == 'visualizer' ? 'query' : 'visualizer';
+	const setViewMode = useStable((id: ViewMode) => {
+		setIsViewListing(false);
 
-		store.dispatch(actions.setViewMode(newMode));
+		store.dispatch(actions.updateTab({
+			id: activeTab!,
+			activeView: id
+		}));
+
+		updateConfig();
 		updateTitle();
 	});
 
@@ -248,12 +231,10 @@ export function Scaffold() {
 
 	useHotkeys([
 		['ctrl+q', () => {
-			store.dispatch(actions.setViewMode('query'));
-			updateTitle();
+			setViewMode('query');
 		}],
 		['ctrl+e', () => {
-			store.dispatch(actions.setViewMode('explorer'));
-			updateTitle();
+			setViewMode('explorer');
 		}],
 	], []);
 
@@ -265,7 +246,8 @@ export function Scaffold() {
 	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
 	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
-	const viewInfo = VIEW_MODES[viewMode];
+	const viewMode = tabInfo?.activeView || 'query';
+	const viewInfo = VIEW_MODES.find(v => v.id == viewMode)!;
 
 	const handleSendQuery = useStable((e: MouseEvent) => {
 		e.stopPropagation();
@@ -285,20 +267,68 @@ export function Scaffold() {
 			{activeTab ? (
 				<>
 					<Group p="xs">
-						<Button
-							px="lg"
-							h="100%"
-							variant="gradient"
-							color="surreal.4"
-							onClick={toggleViewMode}
-							title={`Switch to ${viewInfo.name} View`}
+						<Popover
+							opened={isViewListing}
+							onChange={setIsViewListing}
+							position="bottom-start"
+							closeOnEscape
+							shadow="lg"
+							withArrow
 						>
-							<Icon
-								path={viewInfo.icon}
-								left
-							/>
-							{viewInfo.name}
-						</Button>
+							<Popover.Target>
+								<Button
+									px="lg"
+									h="100%"
+									color="surreal.4"
+									variant="gradient"
+									title="Select view"
+									onClick={() => setIsViewListing(!isViewListing)}
+								>
+									<Icon
+										path={viewInfo.icon}
+										left
+									/>
+									{viewInfo.name}
+								</Button>
+							</Popover.Target>
+							<Popover.Dropdown px="xs">
+								<Stack spacing="xs">
+									{VIEW_MODES.map(info => {
+										const isActive = info.id === viewMode;
+
+										return (
+											<Button
+												key={info.id}
+												w={264}
+												px={0}
+												h="unset"
+												color="pink"
+												variant={isActive ? 'light' : 'subtle'}
+												className={classes.viewModeButton}
+												onClick={() => setViewMode(info.id as ViewMode)}
+											>
+												<NavLink
+													component="div"
+													label={info.name}
+													description={info.desc}
+													icon={<Icon color="surreal.5" path={info.icon} />}
+													className={classes.viewModeContent}
+													styles={{
+														label: {
+															color: isLight ? 'black' : 'white',
+															fontWeight: 600
+														},
+														description: {
+															whiteSpace: 'normal'
+														}
+													}}
+												/>
+											</Button>
+										)
+									})}
+								</Stack>
+							</Popover.Dropdown>
+						</Popover>
 						<Paper
 							className={classes.input}
 							onClick={openInfoEditor}

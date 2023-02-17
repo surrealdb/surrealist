@@ -10,7 +10,6 @@ import {useMemo} from "react";
 import {baseEditorConfig, configureQueryEditor} from "~/util/editor";
 import {useIsLight} from "~/hooks/theme";
 import { useDebouncedCallback } from "~/hooks/debounce";
-import { showNotification } from "@mantine/notifications";
 
 export interface QueryPaneProps {
     isConnected: boolean;

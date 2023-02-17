@@ -53,7 +53,7 @@ export function useTabCreator(): (name: string, query?: string) => string {
 			query: query || '',
 			variables: '{}',
 			lastResponse: [],
-			layout: {},
+			activeView: 'query',
 			connection: {
 				...NEW_CONNECTION,
 				...connection

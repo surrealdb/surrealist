@@ -1,4 +1,4 @@
-import { Button, Radio, Stack, Text, Title } from "@mantine/core";
+import { Button, NumberInput, Radio, Stack, Text, TextInput, Title } from "@mantine/core";
 import { FancyRadio } from "~/components/FancyRadio";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
@@ -17,6 +17,30 @@ export function OptionsPane(props: OptionsPaneProps) {
 	return (
 		<Panel>
 			<Stack spacing="xs" h="100%">
+				<div>
+					<Title mt="md" size={16} color={isLight ? 'light.6' : 'white'}>
+						Configuration
+					</Title>
+
+					<Text color="light.5">
+						How should we visualize
+					</Text>
+				</div>
+
+				<TextInput
+					label="Table"
+				/>
+
+				<NumberInput
+					label="Graph depth"
+					value={3}
+				/>
+
+				<NumberInput
+					label="Record limit"
+					value={3}
+				/>
+
 				<div>
 					<Title mt="md" size={16} color={isLight ? 'light.6' : 'white'}>
 						Source mode

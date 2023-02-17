@@ -18,16 +18,23 @@ const mainSlice = createSlice({
 		servingTab: null as string|null,
 		consoleOutput: [] as ConsoleOutputMessage[],
 		availableUpdate: '',
-		showAvailableUpdate: false,
-		viewMode: 'query' as ViewMode
+		showAvailableUpdate: false
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
-			state.consoleOutput = [];
-			state.config = {
+			const theConfig: SurrealistConfig = {
 				...BASE_CONFIG,
 				...JSON.parse(action.payload.trim())
 			};
+
+			theConfig.tabs.forEach(tab => {
+				if (!tab.activeView) {
+					tab.activeView = 'query';
+				}
+			});
+
+			state.consoleOutput = [];
+			state.config = theConfig;
 		},
 
 		setColorScheme(state, action: PayloadAction<ThemeOption>) {
@@ -205,10 +212,6 @@ const mainSlice = createSlice({
 
 		setResultListingMode(state, action: PayloadAction<ResultListing>) {
 			state.config.resultListing = action.payload;
-		},
-
-		setViewMode(state, action: PayloadAction<ViewMode>) {
-			state.viewMode = action.payload;
 		},
 
 		increaseZoomLevel(state) {

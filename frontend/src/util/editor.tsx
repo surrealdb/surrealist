@@ -29,7 +29,9 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 export function initializeEditor(monaco: Monaco) {
 
 	document.fonts.ready.then(() => {
-		monaco.editor.remeasureFonts();
+		setTimeout(() => {
+			monaco.editor.remeasureFonts();
+		}, 50);
 	});
 
 	monaco.editor.defineTheme('surrealist', {

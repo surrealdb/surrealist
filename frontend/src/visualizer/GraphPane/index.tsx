@@ -1,5 +1,5 @@
 import { ActionIcon, Group, useMantineTheme } from "@mantine/core";
-import { mdiGraph, mdiRefresh } from "@mdi/js";
+import { mdiAdjust, mdiGraph, mdiRefresh } from "@mdi/js";
 import { Icon } from "../../components/Icon";
 import { Panel } from "../../components/Panel";
 import { useEffect, useRef } from "react";
@@ -39,7 +39,7 @@ export function GraphPane(props: GraphPaneProps) {
 	return (
 		<Panel
 			title="Database Visualizer"
-			icon={mdiGraph}
+			icon={mdiAdjust}
 			rightSection={
 				<Group noWrap>
 					<ActionIcon
