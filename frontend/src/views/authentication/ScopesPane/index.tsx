@@ -1,8 +1,7 @@
 import { Text, Textarea } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput, Title } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
-import { mdiAccountGroup, mdiAccountKey, mdiAccountLock, mdiAccountSchool, mdiCollage, mdiDelete, mdiDotsVertical, mdiInboxArrowDown, mdiKeyChain, mdiKeyChainVariant, mdiKeyVariant, mdiLock, mdiOfficeBuilding, mdiPencil, mdiPlus, mdiRefresh, mdiShield, mdiShieldKey, mdiStethoscope, mdiTarget, mdiTargetVariant, mdiWrench } from "@mdi/js";
+import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from "@mdi/js";
 import { useState, useEffect } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -258,6 +257,11 @@ export function ScopePane(props: ScopePaneProps) {
 							value={editingSignin}
 							onChange={setEditingSignin}
 							minRows={4}
+							styles={{
+								input: {
+									fontFamily: "JetBrains Mono"
+								}
+							}}
 						/>
 						<Textarea
 							label="Sign up query"
@@ -265,6 +269,11 @@ export function ScopePane(props: ScopePaneProps) {
 							value={editingSignup}
 							onChange={setEditingSignup}
 							minRows={4}
+							styles={{
+								input: {
+									fontFamily: "JetBrains Mono"
+								}
+							}}
 						/>
 						<TextInput
 							label="Session duration"

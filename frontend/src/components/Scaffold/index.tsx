@@ -273,6 +273,7 @@ export function Scaffold() {
 							opened={isViewListing}
 							onChange={setIsViewListing}
 							position="bottom-start"
+							exitTransitionDuration={100}
 							closeOnEscape
 							shadow="lg"
 							withArrow

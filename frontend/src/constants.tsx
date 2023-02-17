@@ -22,12 +22,12 @@ export const VIEW_MODES = [
 		icon: mdiTable,
 		desc: 'Explore the database tables, records, and relations'
 	},
-	{
-		id: 'visualizer',
-		name: 'Visualizer',
-		icon: mdiAdjust,
-		desc: 'Plot your database into an interactive graph visualization'
-	},
+	// {
+	// 	id: 'visualizer',
+	// 	name: 'Visualizer',
+	// 	icon: mdiAdjust,
+	// 	desc: 'Plot your database into an interactive graph visualization'
+	// },
 	{
 		id: 'designer',
 		name: 'Designer',

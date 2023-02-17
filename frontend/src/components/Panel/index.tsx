@@ -36,7 +36,7 @@ export function Panel(props: PanelProps) {
 							path={props.icon}
 						/>
 					)}
-					<Text weight={600}>
+					<Text weight={600} className={classes.title}>
 						{title}
 					</Text>
 					<Spacer />
