@@ -1,5 +1,5 @@
 import { ExplorerPane } from "../ExplorerPane";
-import { TablesPane } from "../TablesPane";
+import { TablesPane } from "../../../components/TablesPane";
 import { useState } from "react";
 import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";

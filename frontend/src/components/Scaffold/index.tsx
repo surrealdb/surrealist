@@ -432,7 +432,9 @@ export function Scaffold() {
 							</ViewSlot>
 
 							<ViewSlot visible={viewMode == 'designer'}>
-								<DesignerView />
+								<DesignerView
+									isOnline={isOnline}
+								/>
 							</ViewSlot>
 
 							<ViewSlot visible={viewMode == 'auth'}>

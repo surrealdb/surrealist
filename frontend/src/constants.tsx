@@ -1,5 +1,6 @@
-import { mdiLightningBolt, mdiTable, mdiAdjust, mdiBrush, mdiLock, mdiLockOpen } from "@mdi/js";
-import { ViewMode } from "./typings";
+import { mdiLightningBolt, mdiTable, mdiBrush, mdiLockOpen, mdiChartArc, mdiViewColumn, mdiEye, mdiChartBubble, mdiCodeJson, mdiBookshelf, mdiLandRowsHorizontal } from "@mdi/js";
+
+export type StructureTab = 'graph' | 'schema' | 'fields' | 'indexes' | 'events';
 
 export const AUTH_MODES = [
 	{ label: 'Root authentication', value: 'root' },
@@ -40,4 +41,27 @@ export const VIEW_MODES = [
 		icon: mdiLockOpen,
 		desc: 'Manage account details and database scopes'
 	}
-];
+] as const;
+
+export const STRUCTURE_TABS = [
+	{
+		id: 'schema',
+		name: 'Schema',
+		icon: mdiTable,
+	},
+	{
+		id: 'fields',
+		name: 'Fields',
+		icon: mdiLandRowsHorizontal,
+	},
+	{
+		id: 'indexes',
+		name: 'Indexes',
+		icon: mdiBookshelf,
+	},
+	{
+		id: 'events',
+		name: 'Events',
+		icon: mdiLightningBolt,
+	}
+] as const;
