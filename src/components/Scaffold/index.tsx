@@ -296,7 +296,7 @@ export function Scaffold() {
 							</Popover.Target>
 							<Popover.Dropdown px="xs">
 								<Stack spacing="xs">
-									{VIEW_MODES.map(info => {
+									{VIEW_MODES.filter(m => m.when()).map(info => {
 										const isActive = info.id === viewMode;
 
 										return (

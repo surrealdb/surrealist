@@ -1,4 +1,6 @@
 import { mdiLightningBolt, mdiTable, mdiBrush, mdiLockOpen, mdiChartArc, mdiViewColumn, mdiEye, mdiChartBubble, mdiCodeJson, mdiBookshelf, mdiLandRowsHorizontal } from "@mdi/js";
+import { adapter } from "./adapter";
+import { DesktopAdapter } from "./adapter/desktop";
 
 export type StructureTab = 'graph' | 'schema' | 'fields' | 'indexes' | 'events';
 
@@ -15,13 +17,15 @@ export const VIEW_MODES = [
 		id: 'query',
 		name: 'Query',
 		icon: mdiLightningBolt,
-		desc: 'Execute queries against the database and inspect the results'
+		desc: 'Execute queries against the database and inspect the results',
+		when: () => true
 	},
 	{
 		id: 'explorer',
 		name: 'Explorer',
 		icon: mdiTable,
-		desc: 'Explore the database tables, records, and relations'
+		desc: 'Explore the database tables, records, and relations',
+		when: () => true
 	},
 	// {
 	// 	id: 'visualizer',
@@ -33,13 +37,15 @@ export const VIEW_MODES = [
 		id: 'designer',
 		name: 'Designer',
 		icon: mdiBrush,
-		desc: 'Define the database schemas and relations'
+		desc: 'Define the database schemas and relations',
+		when: () => adapter instanceof DesktopAdapter
 	},
 	{
 		id: 'auth',
 		name: 'Authentication',
 		icon: mdiLockOpen,
-		desc: 'Manage account details and database scopes'
+		desc: 'Manage account details and database scopes',
+		when: () => adapter instanceof DesktopAdapter
 	}
 ] as const;
 

@@ -4,13 +4,14 @@
 )]
 
 mod config;
+mod schema;
 
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
 			config::load_config,
 			config::save_config,
-			config::extract_scope_fields
+			schema::extract_scope_fields
 		])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

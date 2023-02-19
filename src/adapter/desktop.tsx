@@ -28,6 +28,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	isUpdateCheckSupported = true;
 	isPromotionSupported = false;
 
+	#isPinned = false;
+
 	async setWindowTitle(title: string) {
 		appWindow.setTitle(title || 'Surrealist');
 	}
@@ -57,7 +59,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	async togglePinned() {
-		appWindow.setAlwaysOnTop(true);
+		this.#isPinned = !this.#isPinned;
+		
+		appWindow.setAlwaysOnTop(this.#isPinned);
 	}
 
 	async openUrl(url: string) {

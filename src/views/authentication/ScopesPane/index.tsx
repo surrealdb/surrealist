@@ -2,6 +2,8 @@ import { Text, Textarea } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput, Title } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from "@mdi/js";
+import { invoke } from "@tauri-apps/api/tauri";
+import { map } from "radash";
 import { useState, useEffect } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -11,9 +13,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getActiveSurreal } from "~/surreal";
 import { showError } from "~/util/helpers";
-
-const SIGN_IN_UP_REGEX = /(?:SIGNUP \((.+)\) SIGNIN \((.+)\)$|(SIGNUP|SIGNIN) \((.+)\)$)/i;
-const SESSION_REGEX = /SESSION (\w+)/i;
 
 interface ScopeInfo {
 	name: string;
@@ -38,43 +37,14 @@ export function ScopePane(props: ScopePaneProps) {
 	const [editingSession, setEditingSession] = useInputState('');
 
 	const fetchScopes = useStable(async () => {
+		
 		const response = await getActiveSurreal().query(`INFO FOR DB`);
 		const scopeMap = response[0].result.sc;
 		
-		const scopeInfo = Object.keys(scopeMap).map(name => {
-			const scope = scopeMap[name];
-			const signInUpResult = SIGN_IN_UP_REGEX.exec(scope);
-			const sessionResult = SESSION_REGEX.exec(scope);
+		const scopeInfo = await map(Object.values(scopeMap), async definition => {
+			const result = await invoke('extract_scope_fields', { definition });
 
-			let signin: string|null = null;
-			let signup: string|null = null;
-			let session: string|null = null;
-
-			if (signInUpResult) {
-				if (signInUpResult[1] && signInUpResult[2]) {
-					signup = signInUpResult[1];
-					signin = signInUpResult[2];
-				}
-
-				if (signInUpResult[3] && signInUpResult[4]) {
-					if (signInUpResult[3] === 'SIGNUP') {
-						signup = signInUpResult[4];
-					} else {
-						signin = signInUpResult[4];
-					}
-				}
-			}
-
-			if (sessionResult) {
-				session = sessionResult[1];
-			}
-
-			return {
-				name,
-				signup,
-				signin,
-				session
-			} as ScopeInfo;
+			return result as ScopeInfo;
 		});
 
 		setScopes(scopeInfo);
