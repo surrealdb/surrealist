@@ -3,11 +3,18 @@
     windows_subsystem = "windows"
 )]
 
+use database::DatabaseState;
+
 mod config;
 mod schema;
+mod database;
 
 fn main() {
     tauri::Builder::default()
+		.manage(DatabaseState {
+			is_serving: false,
+			process: None
+		})
         .invoke_handler(tauri::generate_handler![
 			config::load_config,
 			config::save_config,
