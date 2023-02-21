@@ -45,12 +45,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	async startDatabase(username: string, password: string, port: number, localDriver: string, localPath: string) {
-		return invoke<void>('save_config', {
+		return invoke<void>('start_database', {
 			username: username,
 			password: password,
 			port: port,
-			local_driver: localDriver,
-			local_path: localPath
+			driver: localDriver,
+			storage: localPath
 		});
 	}
 
