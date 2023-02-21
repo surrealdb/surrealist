@@ -1,16 +1,16 @@
-use std::{process::{Child, Command, Stdio}, thread};
+use std::{process::{Child, Command, Stdio}, thread::{self, Thread}, sync::Mutex, io::{BufReader, BufRead}};
 
 mod embedded;
 mod shell;
-pub struct DatabaseState(pub Option<Child>);
+pub struct DatabaseState(pub Mutex<Option<Child>>);
 
 #[tauri::command]
 pub fn start_database(state: tauri::State<DatabaseState>, username: &str, password: &str, port: u32, driver: &str, storage: &str) -> Result<(), String> {
-	let process = state.0;
+	let mut process = state.0.lock().unwrap();
 
 	if process.is_some() {
-		process.unwrap().kill().ok();
-		state.0 = None;
+		process.as_mut().unwrap().kill().ok();
+		*process = None;
 	}
 
 	let bind_addr = format!("0.0.0.0:{}", port);
@@ -45,38 +45,41 @@ pub fn start_database(state: tauri::State<DatabaseState>, username: &str, passwo
 		.spawn()
 		.expect("failed to execute process");
 
-	// NOTE Pass ownership of child to state
-	// state.0 = Some(child_proc);
+	let stream = child_proc.stdout.unwrap();
 
-	thread::spawn(move || {
-		child_proc;
+	// NOTE - Create the thread to read the output
+	thread::spawn(|| {
+		let lines = BufReader::new(stream).lines().enumerate().take(10);
+		
+		for (counter, line) in lines {
+			println!("{}, {:?}", counter, line);
+		}
 	});
 
-	// NOTE - Pass ownership to state.process
+	// NOTE Pass ownership of child to state
+	*process = Some(child_proc);
 
-	
-	// *process = Some(child_proc); 
-	// if let Some(stdout) = child.stdout {
-    //     let lines = BufReader::new(stdout).lines().enumerate().take(10);
+	// if let Some(stdout) = console_stream {
+	//     let lines = BufReader::new(stdout).lines().enumerate().take(10);
 		
-    //     for (counter, line) in lines {
-    //         println!("{}, {:?}", counter, line);
-    //     }
-    // }
+	//     for (counter, line) in lines {
+	//         println!("{}, {:?}", counter, line);
+	//     }
+	// }
 
 	Ok(())
 }
 
 #[tauri::command]
 pub fn stop_database(state: tauri::State<DatabaseState>) -> Result<bool, String> {
-	// let mut process = state.0;
+	let mut process = state.0.lock().unwrap();
 
-	// if process.is_some() {
-	// 	process.as_mut().unwrap().kill().map_err(|_| "Failed to kill database process")?;
-	// 	state.0 = None;
+	return if process.is_some() {
+		process.as_mut().unwrap().kill().map_err(|_| "Failed to kill database process")?;
+		*process = None;
 
-	// 	return Ok(true)
-	// }
-
-	Ok(false)
+		Ok(true)
+	} else {
+		Ok(false)
+	}
 }
