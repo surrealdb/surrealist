@@ -8,13 +8,14 @@
 	},
 	"package": {
 		"productName": "Surrealist",
-		"version": "0.0.0"
+		"version": "1.6.0"
 	},
 	"tauri": {
 		"allowlist": {
 			"window": {
 				"setAlwaysOnTop": true,
-				"setTitle": true
+				"setTitle": true,
+				"show": true
 			},
 			"shell": {
 				"open": true
@@ -67,7 +68,8 @@
 				"height": 816,
 				"width": 1464,
 				"minHeight": 734,
-				"minWidth": 1317
+				"minWidth": 1317,
+				"visible": false
 			}
 		]
 	}

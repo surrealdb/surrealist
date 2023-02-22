@@ -20,6 +20,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		this.initDatabaseEvents();
 
 		(window as any).invoke = invoke;
+
+		document.addEventListener('DOMContentLoaded', () => {
+			setTimeout(() => {
+				appWindow.show();
+			}, 500);
+		});
 	}
 	
 	isServeSupported = true;
