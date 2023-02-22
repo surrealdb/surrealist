@@ -6,6 +6,12 @@
 			"script": "tauri:dev",
 			"label": "Development",
 			"detail": "Run tauri dev"
+		},
+		{
+			"type": "npm",
+			"script": "tauri:build",
+			"label": "Release build",
+			"detail": "Run tauri build"
 		}
 	]
 }
