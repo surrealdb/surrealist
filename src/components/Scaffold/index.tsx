@@ -343,6 +343,15 @@ export function Scaffold() {
 										OFFLINE
 									</Text>
 								</Paper>
+							) : tabInfo!.connection.authMode == 'none' ? (
+								<Paper
+									bg={isLight ? 'light.0' : 'light.6'}
+									c={isLight ? 'light.4' : 'light.3'}
+									fs="italic"
+									px="xs"
+								>
+									Anon
+								</Paper>
 							) : (
 								<Paper
 									bg={isLight ? 'light.0' : 'light.6'}
