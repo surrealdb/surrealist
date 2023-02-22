@@ -52,8 +52,3 @@ export interface FavoritesEntry {
 	query: string;
 	name: string;
 }
-
-export interface ConsoleOutputMessage {
-	kind: "stdout" | "stderr";
-	message: string;
-}

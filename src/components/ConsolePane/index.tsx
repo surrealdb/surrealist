@@ -4,7 +4,6 @@ import { mdiClose, mdiConsole, mdiDelete } from "@mdi/js";
 import { ActionIcon, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { actions, store, useStoreValue } from "~/store";
-import { ConsoleOutputMessage } from "~/typings";
 import AnsiToHtml from "ansi-to-html";
 import { useStable } from "~/hooks/stable";
 
@@ -39,7 +38,7 @@ function ConsoleActions() {
 
 function ConsoleOutputEntry({ index, message, formatter }: {
 	index: number,
-	message: ConsoleOutputMessage,
+	message: string,
 	formatter: AnsiToHtml,
 }) {
 	return (
@@ -47,7 +46,7 @@ function ConsoleOutputEntry({ index, message, formatter }: {
 			key={index}
 			color="light.4"
 			ff="JetBrains Mono"
-			dangerouslySetInnerHTML={{ __html: formatter.toHtml(message.message) }}
+			dangerouslySetInnerHTML={{ __html: formatter.toHtml(message) }}
 		>
 		</Text>
 	);

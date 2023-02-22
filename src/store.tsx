@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, ConsoleOutputMessage, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode} from "./typings";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
@@ -16,7 +16,7 @@ const mainSlice = createSlice({
 		isServing: false,
 		servePending: false,
 		servingTab: null as string|null,
-		consoleOutput: [] as ConsoleOutputMessage[],
+		consoleOutput: [] as string[],
 		availableUpdate: '',
 		showAvailableUpdate: false
 	},
@@ -162,11 +162,8 @@ const mainSlice = createSlice({
 			state.config.enableConsole = action.payload;
 		},
 
-		pushConsoleLine(state, action: PayloadAction<ConsoleOutputMessage>) {
-			state.consoleOutput.push({
-				kind: action.payload.kind,
-				message: action.payload.message,
-			});
+		pushConsoleLine(state, action: PayloadAction<string>) {
+			state.consoleOutput.push(action.payload);
 
 			if (state.consoleOutput.length > 250) {
 				state.consoleOutput.shift();

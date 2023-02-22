@@ -93,6 +93,8 @@ export function Scaffold() {
 			return;
 		}
 
+		console.log('CREATING CONNECTION')
+
 		openSurreal({
 			connection: tabInfo.connection,
 			onConnect() {
@@ -100,6 +102,8 @@ export function Scaffold() {
 				setIsOnline(true)
 			},
 			onDisconnect(code, reason) {
+				console.log('CLOSING CONNECTION');
+
 				setIsConnecting(false);
 				setIsOnline(false);
 
@@ -204,8 +208,10 @@ export function Scaffold() {
 	const closeConnection = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
 		getSurreal()?.close();
+		console.log('Connection should be closed');
 		setIsConnecting(false);
 		setIsOnline(false);
+
 	});
 
 	const setViewMode = useStable((id: ViewMode) => {

@@ -32,6 +32,8 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	const requestMap = new Map<string, Request>();
 	const pinger = setInterval(() => { message('ping'); }, 30_000);
 
+	let cleanedUp = false;
+
 	/**
 	 * Send a message to the database
 	 */
@@ -64,8 +66,13 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	 * Clean up any resources
 	 */
 	const cleanUp = (code: number, reason: string) => {
+		if (cleanedUp) {
+			return;
+		}
+
 		clearInterval(pinger);
 		options.onDisconnect?.(code, reason);
+		cleanedUp = true;
 	}
 
 	/**

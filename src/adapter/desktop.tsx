@@ -115,13 +115,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	
 		listen('database:output', (event) => {
-			const { kind, message } = event.payload as any;
-
-			store.dispatch(actions.pushConsoleLine({ kind, message }));
+			store.dispatch(actions.pushConsoleLine(event.payload as string));
 		});
 	
 		listen('database:error', (event) => {
-			const { msg } = event.payload as any;
+			const msg = event.payload as string;
 			
 			if (this.#startTask) {
 				clearTimeout(this.#startTask);
