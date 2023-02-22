@@ -6,7 +6,7 @@ import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
 import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
-import { updateConfig, updateTitle } from '~/util/helpers';
+import { showError, updateConfig, updateTitle } from '~/util/helpers';
 import { TabBar } from '../TabBar';
 import { Form } from '../Form';
 import { useImmer } from 'use-immer';
@@ -93,54 +93,41 @@ export function Scaffold() {
 			return;
 		}
 
-		console.log('CREATING CONNECTION')
-
-		openSurreal({
-			connection: tabInfo.connection,
-			onConnect() {
-				setIsConnecting(false);
-				setIsOnline(true)
-			},
-			onDisconnect(code, reason) {
-				console.log('CLOSING CONNECTION');
-
-				setIsConnecting(false);
-				setIsOnline(false);
-
-				if (code != 1000 && !silent) {
-					const subtitle = code === 1006
-						? 'Unexpected connection close'
-						: reason || `Unknown reason`;
-
-					showNotification({
-						disallowClose: true,
-						color: 'red.4',
-						bg: 'red.6',
-						message: (
-							<div>
-								<Text color="white" weight={600}>Connection Closed</Text>
-								<Text color="white" opacity={0.8} size="sm">{subtitle} ({code})</Text>
-							</div>
-						)
-					});
+		try {
+			openSurreal({
+				connection: tabInfo.connection,
+				onConnect() {
+					setIsConnecting(false);
+					setIsOnline(true)
+				},
+				onDisconnect(code, reason) {
+					setIsConnecting(false);
+					setIsOnline(false);
+	
+					if (code != 1000 && !silent) {
+						const subtitle = code === 1006
+							? 'Unexpected connection close'
+							: reason || `Unknown reason`;
+	
+						showNotification({
+							disallowClose: true,
+							color: 'red.4',
+							bg: 'red.6',
+							message: (
+								<div>
+									<Text color="white" weight={600}>Connection Closed</Text>
+									<Text color="white" opacity={0.8} size="sm">{subtitle} ({code})</Text>
+								</div>
+							)
+						});
+					}
 				}
-			},
-			// onError(err) {
-			// 	showNotification({
-			// 		disallowClose: true,
-			// 		color: 'red.4',
-			// 		bg: 'red.6',
-			// 		message: (
-			// 			<div>
-			// 				<Text color="white" weight={600}>Connection Error</Text>
-			// 				<Text color="white" opacity={0.8} size="sm">{err}</Text>
-			// 			</div>
-			// 		)
-			// 	});
-			// },
-		});
-
-		setIsConnecting(true);
+			});
+	
+			setIsConnecting(true);
+		} catch(err: any) {
+			showError('Failed to open connection', err.message);
+		}
 	});
 
 	const sendQuery = useStable(async (override?: string) => {
@@ -208,7 +195,6 @@ export function Scaffold() {
 	const closeConnection = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
 		getSurreal()?.close();
-		console.log('Connection should be closed');
 		setIsConnecting(false);
 		setIsOnline(false);
 

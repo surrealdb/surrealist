@@ -55,15 +55,11 @@ export function VisualizerView(props: VisualizerViewProps) {
 		const records = await surreal.query('SELECT * FROM array::flatten([' + queries + '])');
 		const colors = shuffle(COLORS);
 
-		console.log(records);
-
 		let colorMap: Record<string, number> = {};
 		let colorNum = 0;
 
 		for (const record of records[0].result) {
 			if (!record.in && !record.out) {
-				console.log(record.tb);
-
 				if (!colorMap[record.tb]) {
 					colorMap[record.tb] = colorNum;
 					colorNum = (colorNum + 1) % colors.length;
