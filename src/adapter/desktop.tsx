@@ -26,6 +26,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 				appWindow.show();
 			}, 500);
 		});
+
+		document.addEventListener('contextmenu', e => {
+			e.preventDefault();
+		});
 	}
 	
 	isServeSupported = true;
