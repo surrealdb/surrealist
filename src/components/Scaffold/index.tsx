@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Box, Button, Center, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Center, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
@@ -26,6 +26,8 @@ import { useHotkeys } from '@mantine/hooks';
 import { AUTH_MODES, VIEW_MODES } from '~/constants';
 import { DesignerView } from '~/views/designer/DesignerView';
 import { AuthenticationView } from '~/views/authentication/AuthenticationView';
+import { adapter } from '~/adapter';
+import { DesktopAdapter } from '~/adapter/desktop';
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -242,6 +244,7 @@ export function Scaffold() {
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
 	const viewMode = tabInfo?.activeView || 'query';
 	const viewInfo = VIEW_MODES.find(v => v.id == viewMode)!;
+	const isDesktop = adapter instanceof DesktopAdapter;
 
 	const handleSendQuery = useStable((e: MouseEvent) => {
 		e.stopPropagation();
@@ -288,8 +291,9 @@ export function Scaffold() {
 							</Popover.Target>
 							<Popover.Dropdown px="xs">
 								<Stack spacing="xs">
-									{VIEW_MODES.filter(m => m.when()).map(info => {
+									{VIEW_MODES.map(info => {
 										const isActive = info.id === viewMode;
+										const isDisabled = !isDesktop && info.desktop;
 
 										return (
 											<Button
@@ -301,13 +305,28 @@ export function Scaffold() {
 												variant={isActive ? 'light' : 'subtle'}
 												className={classes.viewModeButton}
 												onClick={() => setViewMode(info.id as ViewMode)}
+												bg={isDisabled ? 'transparent !important' : undefined}
+												disabled={isDisabled}
 											>
 												<NavLink
 													component="div"
-													label={info.name}
-													description={info.desc}
-													icon={<Icon color="surreal.5" path={info.icon} />}
 													className={classes.viewModeContent}
+													label={info.name}
+													icon={
+														<Icon color={isDisabled ? 'light.5' : 'surreal'} path={info.icon} />
+													}
+													description={
+														<Stack spacing={6}>
+															{info.desc}
+															{isDisabled && (
+																<div>
+																	<Badge color="blue" variant="filled" radius="sm">
+																		Surreal Desktop
+																	</Badge>
+																</div>
+															)}
+														</Stack>
+													}
 													styles={{
 														label: {
 															color: isLight ? 'black' : 'white',
@@ -432,17 +451,21 @@ export function Scaffold() {
 								/>
 							</ViewSlot>
 
-							<ViewSlot visible={viewMode == 'designer'}>
-								<DesignerView
-									isOnline={isOnline}
-								/>
-							</ViewSlot>
+							{isDesktop && (
+								<ViewSlot visible={viewMode == 'designer'}>
+									<DesignerView
+										isOnline={isOnline}
+									/>
+								</ViewSlot>
+							)}
 
-							<ViewSlot visible={viewMode == 'auth'}>
-								<AuthenticationView
-									isOnline={isOnline}
-								/>
-							</ViewSlot>
+							{isDesktop && (
+								<ViewSlot visible={viewMode == 'auth'}>
+									<AuthenticationView
+										isOnline={isOnline}
+									/>
+								</ViewSlot>
+							)}
 						</Splitter>
 					</Box>
 				</>

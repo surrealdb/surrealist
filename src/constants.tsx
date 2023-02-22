@@ -18,14 +18,14 @@ export const VIEW_MODES = [
 		name: 'Query',
 		icon: mdiLightningBolt,
 		desc: 'Execute queries against the database and inspect the results',
-		when: () => true
+		desktop: false
 	},
 	{
 		id: 'explorer',
 		name: 'Explorer',
 		icon: mdiTable,
 		desc: 'Explore the database tables, records, and relations',
-		when: () => true
+		desktop: false
 	},
 	// {
 	// 	id: 'visualizer',
@@ -38,14 +38,14 @@ export const VIEW_MODES = [
 		name: 'Designer',
 		icon: mdiBrush,
 		desc: 'Define the database schemas and relations',
-		when: () => adapter instanceof DesktopAdapter
+		desktop: true
 	},
 	{
 		id: 'auth',
 		name: 'Authentication',
 		icon: mdiLockOpen,
 		desc: 'Manage account details and database scopes',
-		when: () => adapter instanceof DesktopAdapter
+		desktop: true
 	}
 ] as const;
 
