@@ -18,7 +18,7 @@ pub fn load_config() -> String {
 
 	match read_op {
 		Ok(mut file) => {
-			file.read_to_string(&mut result).expect("Failed to read config");
+			file.read_to_string(&mut result).expect("config should be readable");
 		}
 		Err(_) => {
 			save_config(DEFAULT_CONFIG);
@@ -33,5 +33,5 @@ pub fn load_config() -> String {
 pub fn save_config(config: &str) {
 	let mut write_op = File::create(get_config_path()).unwrap();
 
-	write_op.write_all(config.as_bytes()).expect("Failed to write config");
+	write_op.write_all(config.as_bytes()).expect("config should be writable");
 }

@@ -20,5 +20,5 @@ fn main() {
 			database::stop_database
 		])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("tauri should start successfully");
 }

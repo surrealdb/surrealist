@@ -18,7 +18,7 @@ pub fn start_database(window: tauri::Window, state: tauri::State<DatabaseState>,
 	let mut child_proc = match child_result {
 		Ok(child) => child,
 		Err(err) => {
-			window.emit("database:error", err).expect("Failed to deliver error result");
+			window.emit("database:error", err).expect("error result should be delivered");
 
 			return Err("Failed to start database".to_owned());
 		}
@@ -28,7 +28,7 @@ pub fn start_database(window: tauri::Window, state: tauri::State<DatabaseState>,
 
 	*process = Some(child_proc);
 
-	window.emit("database:start", true).expect("Failed to deliver start result");
+	window.emit("database:start", true).expect("start result should be delivered");
 
 	thread::spawn(move || {
 		let reader = BufReader::new(output);
@@ -38,15 +38,15 @@ pub fn start_database(window: tauri::Window, state: tauri::State<DatabaseState>,
 
 			println!("Surreal: {}", message);
 			
-			window.emit("database:output", message).expect("Failed to deliver console message");
+			window.emit("database:output", message).expect("console output should be delivered");
 		}
 
 		let elapsed = start_at.elapsed().as_millis();
 
 		if elapsed <= 500 {
-			window.emit("database:error", "Surreal executable not found. Make sure the SurrealDB CLI is available in the command line.").expect("Failed to deliver error result");
+			window.emit("database:error", "Surreal executable not found. Make sure the SurrealDB CLI is available in the command line.").expect("error result should be delivered");
 		} else {
-			window.emit("database:stop", true).expect("Failed to deliver stop result");
+			window.emit("database:stop", true).expect("stop result should be delivered");
 		}
 	});
 
@@ -76,7 +76,7 @@ fn kill_surreal_process(id: u32) {
 	Command::new(&shell_cmd[0])
 		.args(&shell_cmd[1..])
 		.output()
-		.expect("failed to execute kill process");
+		.expect("surreal process should be killed");
 }
 
 ///
@@ -110,7 +110,7 @@ fn start_surreal_process(username: &str, password: &str, port: u32, driver: &str
 		.stdout(Stdio::null())
 		.stderr(Stdio::piped())
 		.spawn()
-		.expect("failed to execute spawn process");
+		.expect("surreal process should be spawned");
 
 	Ok(child_proc)
 }
