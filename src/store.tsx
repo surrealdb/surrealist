@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode} from "./typings";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, Table} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
@@ -18,7 +18,8 @@ const mainSlice = createSlice({
 		servingTab: null as string|null,
 		consoleOutput: [] as string[],
 		availableUpdate: '',
-		showAvailableUpdate: false
+		showAvailableUpdate: false,
+		tables: [] as Table[]
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -218,6 +219,10 @@ const mainSlice = createSlice({
 		decreaseZoomLevel(state) {
 			state.config.zoomLevel = Math.max(state.config.zoomLevel - 0.1, 0.5);
 		},
+
+		setTables(state, action: PayloadAction<Table[]>) {
+			state.tables = action.payload;
+		}
 
 	}
 });

@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.6.0
+- Added table filtering
+- Added authentication view
+- Added designer view
+- Rewritten in Rust
+- Display Anon label
+- Allow executing queries from variables pane
+- Highlight single quotes
+- Added execute selection option
+- Improved matching of certain types in explorer view
+- Fixed crash on connecting to insecure endpoint
+
 ## 1.5.2 - Bug fixes
 - Add new anonymous connection authentication mode
 - Improve record link detection

@@ -28,10 +28,16 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 
 export function initializeEditor(monaco: Monaco) {
 
+	// monaco is truly inept at handling font loading hence
+	// this monstrous hack to force it to remeasure fonts
 	document.fonts.ready.then(() => {
-		setTimeout(() => {
+		let task = setInterval(() => {
 			monaco.editor.remeasureFonts();
-		}, 100);
+		}, 250);
+
+		setTimeout(() => {
+			clearInterval(task);
+		}, 3000);
 	});
 
 	monaco.editor.defineTheme('surrealist', {

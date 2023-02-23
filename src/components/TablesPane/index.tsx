@@ -1,57 +1,95 @@
 import classes from './style.module.scss';
-import { ActionIcon, Group, ScrollArea, Text } from "@mantine/core";
-import { mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
-import { useEffect, useState } from "react";
+import { ActionIcon, Button, Group, Modal, ScrollArea, Text, TextInput, Title } from "@mantine/core";
+import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
+import { useEffect, useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { getSurreal } from "~/surreal";
+import { getActiveSurreal } from "~/surreal";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
-import { OpenFn } from '~/typings';
+import { OpenFn, Table } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
-
-interface Table {
-	name: string;
-	schemafull: boolean;
-}
+import { useInputState } from '@mantine/hooks';
+import { Form } from '../Form';
+import { useStoreValue } from '~/store';
+import { fetchTables } from '~/util/schema';
+import { Spacer } from '../Spacer';
 
 export interface TablesPaneProps {
 	isOnline: boolean;
+	withModification?: boolean;
 	onSelectTable: OpenFn;
 }
 
 export function TablesPane(props: TablesPaneProps) {
 	const isLight = useIsLight();
-	const [tables, setTables] = useState<Table[]>([]);
 	const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+	const [showCreator, setShowCreator] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [tableName, setTableName] = useInputState('');
+	const [search, setSearch] = useInputState('');
+	const tables = useStoreValue(state => state.tables);
+
+	const tablesFiltered = useMemo(() => {
+		if (!search) {
+			return tables;
+		}
+
+		const needle = search.toLowerCase();
+
+		return tables.filter(table => table.name.toLowerCase().includes(needle));
+	}, [tables, search]);
 
 	const selectTable = (table: Table | null) => {
 		setSelectedTable(table);
 		props.onSelectTable(table?.name || null);
 	};
 
-	const fetchTables = useStable(async () => {
-		const surreal = getSurreal();
-
-		if (!props.isOnline || !surreal) {
-			return;
-		}
-
-		const response = await surreal.query('INFO FOR DB');
-		const result = response[0].result;
-		const tables = Object.keys(result.tb).map(name => ({
-			name: name,
-			schemafull: result.tb[name].includes('SCHEMAFULL')
-		}));
-
-		setTables(tables);
+	const refreshTables = useStable(async () => {
 		selectTable(null);
+		fetchTables();
 	});
 
 	useEffect(() => {
 		setTimeout(() => {
-			fetchTables();
+			refreshTables();
 		}, 150);
 	}, [props.isOnline]);
+
+	const openCreator = useStable(() => {
+		setShowCreator(true);
+		setTableName('');
+	});
+
+	const closeCreator = useStable(() => {
+		setShowCreator(false);
+	});
+
+	const createTable = useStable(async () => {
+		const surreal = getActiveSurreal();
+
+		await surreal.query('DEFINE TABLE ' + tableName);
+
+		closeCreator();
+		fetchTables();
+	});
+
+	const requestDelete = useStable((e: React.MouseEvent) => {
+		e.stopPropagation();
+		setIsDeleting(true);
+	});
+
+	const closeDelete = useStable(() => {
+		setIsDeleting(false);
+	});
+
+	const handleDelete = useStable(async () => {
+		const surreal = getActiveSurreal();
+
+		await surreal.query('REMOVE TABLE ' + selectedTable!.name);
+
+		closeDelete();
+		fetchTables();
+	});
 
 	return (
 		<Panel
@@ -61,29 +99,42 @@ export function TablesPane(props: TablesPaneProps) {
 				<Group noWrap>
 					<ActionIcon
 						title="Refresh"
-						onClick={fetchTables}
+						onClick={refreshTables}
 					>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
-					{/* TODO Implement table creation w/ schema builder */}
-					{/* <ActionIcon
-						title="Create table"
-						onClick={fetchTables}
-					>
-						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon> */}
+					{props.withModification && (
+						<ActionIcon
+							title="Create"
+							onClick={openCreator}
+						>
+							<Icon color="light.4" path={mdiPlus} />
+						</ActionIcon>
+					)}
 				</Group>
 			}
 		>
-			{props.isOnline ? (
+			<TextInput
+				placeholder="Search table..."
+				icon={<Icon path={mdiMagnify} />}
+				value={search}
+				onChange={setSearch}
+				mb="lg"
+			/>
+
+			{props.isOnline && !tablesFiltered.length ? (
+				<Text align="center" pt="sm" c="light.5">
+					No tables found
+				</Text>
+			) : props.isOnline ? (
 				<ScrollArea
 					style={{
 						position: 'absolute',
 						inset: 12,
-						top: 0
+						top: 46
 					}}
 				>
-					{tables.map((table, i) => {
+					{tablesFiltered.map(table => {
 						const isActive = selectedTable == table;
 
 						return (
@@ -109,15 +160,84 @@ export function TablesPane(props: TablesPaneProps) {
 								<Text color={isActive ? (isLight ? 'black' : 'white') : (isLight ? 'light.7' : 'light.1')}>
 									{table.name}
 								</Text>
+
+								<Spacer />
+								
+								{props.withModification && isActive && (
+									<ActionIcon
+										style={{ position: 'absolute', right: 8 }}
+										onClick={requestDelete}
+										title="Delete table"
+										color="surreal"
+									>
+										<Icon
+											path={mdiClose}
+										/>
+									</ActionIcon>
+								)}
 							</Group>
 						)
 					})}
 				</ScrollArea>
 			) : (
-				<Text align="center" pt="xl" c="light.5">
+				<Text align="center" pt="sm" c="light.5">
 					Not connected
 				</Text>
 			)}
+
+			<Modal
+				opened={showCreator}
+				onClose={closeCreator}
+				withCloseButton={false}
+				withFocusReturn={false}
+				padding="sm"
+			>
+				<Form onSubmit={createTable}>
+					<Group>
+						<TextInput
+							style={{ flex: 1 }}
+							placeholder="Enter table name"
+							value={tableName}
+							onChange={setTableName}
+							autoFocus
+						/>
+						<Button type="submit">
+							Create
+						</Button>
+					</Group>
+				</Form>
+			</Modal>
+
+			<Modal
+				opened={isDeleting}
+				onClose={closeDelete}
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Are you sure?
+					</Title>
+				}
+			>
+				<Text color={isLight ? 'light.6' : 'light.1'}>
+					You are about to delete this table. This action cannot be undone,
+					and all data within it will be lost.
+				</Text>
+				<Group mt="lg">
+					<Button
+						onClick={closeDelete}
+						color={isLight ? 'light.5' : 'light.3'}
+						variant="light"
+					>
+						Close
+					</Button>
+					<Spacer />
+					<Button
+						color="red"
+						onClick={handleDelete}
+					>
+						Delete
+					</Button>
+				</Group>
+			</Modal>
 		</Panel>
 	)
 }

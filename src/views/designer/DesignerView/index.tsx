@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Splitter } from "~/components/Splitter";
 import { TablesPane } from "~/components/TablesPane";
-import { useStable } from "~/hooks/stable";
-import { getActiveSurreal } from "~/surreal";
-import { GraphPane } from "../GraphPane";
-import { SchemaPane } from "../SchemaPane";
+import { useStoreValue } from "~/store";
+import { StructurePane } from "../StructurePane";
 
 export interface DesignerViewProps {
 	isOnline: boolean;
@@ -12,47 +10,23 @@ export interface DesignerViewProps {
 
 export function DesignerView(props: DesignerViewProps) {
 	const [activeTable, setActiveTable] = useState<string | null>(null);
-	const [tableInfo, setTableInfo] = useState<any>(null);
-
-	const fetchInfo = useStable(async () => {
-		if (!activeTable) {
-			return;
-		}
-
-		const surreal = getActiveSurreal();
-		const response = await surreal.query(`INFO FOR DB; INFO FOR TABLE ${activeTable};`);
-		const tableList = response[0].result;
-		const infoDefs = response[1].result;
-		
-		setTableInfo({
-			...infoDefs,
-			def: tableList.tb[activeTable] || ''
-		});
-	});
-
-	useEffect(() => {
-		if (props.isOnline) {
-			fetchInfo();
-		}
-	}, [props.isOnline, activeTable]);
+	const tables = useStoreValue(state => state.tables);
+	const table = tables.find(table => table.name === activeTable);
 
 	return (
 		<Splitter
-			minSize={[250, 400]}
+			minSize={[250, 250]}
 			bufferSize={550}
 			startPane={
 				<TablesPane
 					isOnline={props.isOnline}
 					onSelectTable={setActiveTable}
+					withModification
 				/>
 			}
-			endPane={
-				<GraphPane />
-			}
 		>
-			<SchemaPane
-				table={activeTable}
-				tableInfo={tableInfo}
+			<StructurePane
+				table={table}
 			/>
 		</Splitter>
 	);

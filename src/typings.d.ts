@@ -52,3 +52,25 @@ export interface FavoritesEntry {
 	query: string;
 	name: string;
 }
+
+export interface TableView {
+	expr: string;
+	what: string;
+	cond: string;
+	group: string;
+}
+
+export interface TablePermissions {
+	select: string;
+	create: string;
+	update: string;
+	delete: string;
+}
+
+export interface Table {
+	name: string;
+	drop: boolean;
+	schemafull: boolean;
+	view?: TableView;
+	permissions: TablePermissions;
+}

@@ -16,6 +16,7 @@ fn main() {
 			config::load_config,
 			config::save_config,
 			schema::extract_scope_fields,
+			schema::extract_table_fields,
 			database::start_database,
 			database::stop_database
 		])

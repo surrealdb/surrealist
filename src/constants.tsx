@@ -1,6 +1,4 @@
-import { mdiLightningBolt, mdiTable, mdiBrush, mdiLockOpen, mdiChartArc, mdiViewColumn, mdiEye, mdiChartBubble, mdiCodeJson, mdiBookshelf, mdiLandRowsHorizontal } from "@mdi/js";
-import { adapter } from "./adapter";
-import { DesktopAdapter } from "./adapter/desktop";
+import { mdiLightningBolt, mdiTable, mdiBrush, mdiLockOpen, mdiBookshelf, mdiLandRowsHorizontal, mdiGraph, mdiAdjust, mdiChartBoxOutline, mdiCodeJson } from "@mdi/js";
 
 export type StructureTab = 'graph' | 'schema' | 'fields' | 'indexes' | 'events';
 
@@ -25,7 +23,7 @@ export const VIEW_MODES = [
 		name: 'Explorer',
 		icon: mdiTable,
 		desc: 'Explore the database tables, records, and relations',
-		desktop: false
+		desktop: false 
 	},
 	// {
 	// 	id: 'visualizer',
@@ -58,7 +56,7 @@ export const STRUCTURE_TABS = [
 	{
 		id: 'fields',
 		name: 'Fields',
-		icon: mdiLandRowsHorizontal,
+		icon: mdiCodeJson,
 	},
 	{
 		id: 'indexes',
@@ -69,5 +67,10 @@ export const STRUCTURE_TABS = [
 		id: 'events',
 		name: 'Events',
 		icon: mdiLightningBolt,
-	}
+	},
+	{
+		id: 'graph',
+		name: 'Visualize',
+		icon: mdiChartBoxOutline,
+	},
 ] as const;
