@@ -42,7 +42,7 @@ export function ScopePane(props: ScopePaneProps) {
 		const scopeMap = response[0].result.sc;
 		
 		const scopeInfo = await map(Object.values(scopeMap), async definition => {
-			const result = await invoke('extract_scope_fields', { definition });
+			const result = await invoke('extract_scope_definition', { definition });
 
 			return result as ScopeInfo;
 		});

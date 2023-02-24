@@ -60,7 +60,7 @@ export interface TableView {
 	group: string;
 }
 
-export interface TablePermissions {
+export interface Permissions {
 	select: string;
 	create: string;
 	update: string;
@@ -72,5 +72,33 @@ export interface Table {
 	drop: boolean;
 	schemafull: boolean;
 	view?: TableView;
-	permissions: TablePermissions;
+	permissions: Permissions;
+}
+
+export interface TableField {
+	name: string;
+	flexible: boolean;
+	kind: string;
+	value: string;
+	assert: string;
+	permissions: Permissions;
+}
+
+export interface TableIndex {
+	name: string;
+	fields: string;
+	unique: boolean;
+}
+
+export interface TableEvent {
+	name: string;
+	cond: string;
+	then: string;
+}
+
+export interface TableSchema {
+	table: Table;
+	fields: TableField[];
+	indexes: TableIndex[];
+	events: TableEvent[];
 }

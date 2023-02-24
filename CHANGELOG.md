@@ -11,6 +11,7 @@
 - Added execute selection option
 - Improved matching of certain types in explorer view
 - Fixed crash on connecting to insecure endpoint
+- Make the current view scoped to the tab instead of global
 
 ## 1.5.2 - Bug fixes
 - Add new anonymous connection authentication mode

@@ -1,4 +1,4 @@
-import { mdiLightningBolt, mdiTable, mdiBrush, mdiLockOpen, mdiBookshelf, mdiLandRowsHorizontal, mdiGraph, mdiAdjust, mdiChartBoxOutline, mdiCodeJson } from "@mdi/js";
+import { mdiLightningBolt, mdiTable, mdiBrush, mdiLockOpen, mdiBookshelf, mdiLandRowsHorizontal, mdiGraph, mdiAdjust, mdiChartBoxOutline, mdiCodeJson, mdiWrench } from "@mdi/js";
 
 export type StructureTab = 'graph' | 'schema' | 'fields' | 'indexes' | 'events';
 
@@ -34,7 +34,7 @@ export const VIEW_MODES = [
 	{
 		id: 'designer',
 		name: 'Designer',
-		icon: mdiBrush,
+		icon: mdiWrench,
 		desc: 'Define the database schemas and relations',
 		desktop: true
 	},

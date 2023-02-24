@@ -4,7 +4,7 @@ import { FC, useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { StructureTab, STRUCTURE_TABS } from "~/constants";
-import { Table } from "~/typings";
+import { Table, TableSchema } from "~/typings";
 import { EventsTab } from "./tabs/events";
 import { FieldsTab } from "./tabs/fields";
 import { GraphTab } from "./tabs/graph";
@@ -20,7 +20,7 @@ const TABS = {
 } as const;
 
 export interface SchemaPaneProps {
-	table: Table | undefined;
+	table: TableSchema | null;
 }
 
 export function StructurePane(props: SchemaPaneProps) {

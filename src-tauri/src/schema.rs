@@ -1,41 +1,33 @@
-use surrealdb::sql::{parse, Statement, statements::DefineStatement};
+use surrealdb::sql::{parse, Statement, statements::DefineStatement, Permissions};
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct ScopeFields {
-	pub name: String,
-	pub signup: String,
-	pub signin: String,
-	pub session: String
-}
-
-#[derive(Serialize)]
-pub struct TableViewFields {
-	pub expr: String,
-	pub what: String,
-	pub cond: String,
-	pub group: String,
-}
-
-#[derive(Serialize)]
-pub struct TablePermissionFields {
+pub struct PermissionInfo {
 	pub select: String,
 	pub create: String,
 	pub update: String,
 	pub delete: String,
 }
 
+fn parse_permissions(perms: &Permissions) -> PermissionInfo {
+	PermissionInfo {
+		select: perms.select.to_string(),
+		create: perms.create.to_string(),
+		update: perms.update.to_string(),
+		delete: perms.delete.to_string()
+	}
+}
+
 #[derive(Serialize)]
-pub struct TableFields {
+pub struct ScopeInfo {
 	pub name: String,
-	pub drop: bool,
-	pub schemafull: bool,
-	pub view: Option<TableViewFields>,
-	pub permissions: TablePermissionFields
+	pub signup: String,
+	pub signin: String,
+	pub session: String
 }
 
 #[tauri::command]
-pub fn extract_scope_fields(definition: &str) -> Result<ScopeFields, String> {
+pub fn extract_scope_definition(definition: &str) -> Result<ScopeInfo, String> {
 	let parsed = parse(definition)?;
 	let query = &parsed[0];
 
@@ -54,7 +46,7 @@ pub fn extract_scope_fields(definition: &str) -> Result<ScopeFields, String> {
 				None => "()".to_owned()
 			};
 
-			return Ok(ScopeFields {
+			return Ok(ScopeInfo {
 				name: s.name.to_raw(),
 				signup: signup[1..signup.len() - 1].to_owned(),
 				signin: signin[1..signin.len() - 1].to_owned(),
@@ -66,15 +58,32 @@ pub fn extract_scope_fields(definition: &str) -> Result<ScopeFields, String> {
 	Err(String::from("Failed to extract scope"))
 }
 
+#[derive(Serialize)]
+pub struct TableViewInfo {
+	pub expr: String,
+	pub what: String,
+	pub cond: String,
+	pub group: String,
+}
+
+#[derive(Serialize)]
+pub struct TableInfo {
+	pub name: String,
+	pub drop: bool,
+	pub schemafull: bool,
+	pub view: Option<TableViewInfo>,
+	pub permissions: PermissionInfo
+}
+
 #[tauri::command]
-pub fn extract_table_fields(definition: &str) -> Result<TableFields, String> {
+pub fn extract_table_definition(definition: &str) -> Result<TableInfo, String> {
 	let parsed = parse(definition)?;
 	let query = &parsed[0];
 
 	if let Statement::Define(d) = query {
 		if let DefineStatement::Table(t) = d {
 			let view = match &t.view {
-				Some(v) => Some(TableViewFields {
+				Some(v) => Some(TableViewInfo {
 					expr: v.expr.to_string(),
 					what: v.what.to_string(),
 					cond: v.cond.as_ref().map_or("".to_owned(), |c| c.to_string()),
@@ -82,25 +91,99 @@ pub fn extract_table_fields(definition: &str) -> Result<TableFields, String> {
 				}),
 				None => None
 			};
-
-			let perms = &t.permissions;
-
-			let permissions = TablePermissionFields {
-				select: perms.select.to_string(),
-				create: perms.create.to_string(),
-				update: perms.update.to_string(),
-				delete: perms.delete.to_string()
-			};
-
-			return Ok(TableFields {
+ 
+			return Ok(TableInfo {
 				name: t.name.to_raw(),
 				drop: t.drop,
 				schemafull: t.full,
-				permissions,
+				permissions: parse_permissions(&t.permissions),
 				view
 			});
 		}
 	}
 
 	Err(String::from("Failed to extract table"))
+}
+
+#[derive(Serialize)]
+pub struct FieldInfo {
+	pub name: String,
+	pub flexible: bool,
+	pub kind: String,
+	pub value: String,
+	pub assert: String,
+	pub permissions: PermissionInfo,
+}
+
+#[tauri::command]
+pub fn extract_field_definition(definition: &str) -> Result<FieldInfo, String> {
+	let parsed = parse(definition)?;
+	let query = &parsed[0];
+
+	if let Statement::Define(d) = query {
+		if let DefineStatement::Field(f) = d {
+			return Ok(FieldInfo {
+				name: f.name.to_string(),
+				flexible: f.flex,
+				kind: f.kind.as_ref().map_or("".to_owned(), |k| k.to_string()),
+				value: f.value.as_ref().map_or("".to_owned(), |v| v.to_string()),
+				assert: f.assert.as_ref().map_or("".to_owned(), |a| a.to_string()),
+				permissions: parse_permissions(&f.permissions),
+			});
+		}
+	}
+
+	Err(String::from("Failed to extract field"))
+}
+
+#[derive(Serialize)]
+pub struct IndexInfo {
+	pub name: String,
+	pub fields: String,
+	pub unique: bool
+}
+
+#[tauri::command]
+pub fn extract_index_definition(definition: &str) -> Result<IndexInfo, String> {
+	let parsed = parse(definition)?;
+	let query = &parsed[0];
+
+	if let Statement::Define(d) = query {
+		if let DefineStatement::Index(i) = d {
+			return Ok(IndexInfo {
+				name: i.name.to_string(),
+				fields: i.cols.to_string(),
+				unique: i.uniq
+			});
+		}
+	}
+
+	Err(String::from("Failed to extract index"))
+}
+
+#[derive(Serialize)]
+pub struct EventInfo {
+	pub name: String,
+	pub cond: String,
+	pub then: String
+}
+
+#[tauri::command]
+pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
+	let parsed = parse(definition)?;
+	let query = &parsed[0];
+
+	if let Statement::Define(d) = query {
+		if let DefineStatement::Event(e) = d {
+			let then = e.then.to_string();
+
+			return Ok(EventInfo {
+				name: e.name.to_string(),
+				cond: e.when.to_string(),
+				then: then[1..then.len() - 1].to_owned()
+			});
+		}
+	}
+
+	Err(String::from("Failed to extract event"))
 }

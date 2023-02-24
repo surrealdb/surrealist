@@ -1,5 +1,5 @@
-import { Table } from "~/typings";
+import { TableSchema } from "~/typings";
 
 export interface SchemaTabProps {
-	table: Table | undefined;
+	table: TableSchema | null;
 }

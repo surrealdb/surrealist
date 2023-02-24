@@ -6,10 +6,13 @@ export function SchemaTab(props: SchemaTabProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Stack>
-			<Title size={16} color={isLight ? 'light.6' : 'white'}>
-				General details
-			</Title>
-		</Stack>
+		// <Stack>
+		// 	<Title size={16} color={isLight ? 'light.6' : 'white'}>
+		// 		General details
+		// 	</Title>
+		// </Stack>
+		<div>
+			{JSON.stringify(props.table?.table)}
+		</div>
 	)
 }
