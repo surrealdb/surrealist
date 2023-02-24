@@ -12,7 +12,7 @@ pub fn build_start_command(args: Vec<&str>) -> Vec<String> {
 }
 
 #[cfg(target_os="macos")]
-pub fn build_start_command() -> Vec<String> {
+pub fn build_start_command(args: Vec<&str>) -> Vec<String> {
 	return vec![
 		"zsh".to_owned(),
 		"-l".to_owned(),
@@ -22,7 +22,7 @@ pub fn build_start_command() -> Vec<String> {
 }
 
 #[cfg(target_os="linux")]
-pub fn build_start_command() -> Vec<String> {
+pub fn build_start_command(args: Vec<&str>) -> Vec<String> {
 	return vec![
 		"bash".to_owned(),
 		"-l".to_owned(),
