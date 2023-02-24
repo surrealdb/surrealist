@@ -77,24 +77,21 @@ We welcome any issues and PRs submitted to Surrealist. Since we currently work o
 Before you open an issue or PR please read our [Contributor Guide](CONTRIBUTING.md).
 
 ## Development
-This project is built using [Wails v2](https://wails.io/) and [React](https://reactjs.org/).
+This project is built using [Tauri](https://tauri.app) and [React](https://reactjs.org/).
 
 ### Requirements
-- [Go](https://go.dev/)
-- [Wails CLI](https://wails.io/docs/gettingstarted/installation)
+- [Rust](https://www.rust-lang.org/tools/install)
 - [Nodejs LTS](https://nodejs.org/en/)
 - [PNPM](https://pnpm.io/) (npm i -g pnpm)
 
 ### Live Development
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+To run in live development mode, run `npm run tauri:dev` in the project directory. This will run a Vite development
+server that will provide very fast hot reload of your frontend changes.
 
 ### Building
 
-To build a redistributable, production mode package, use `wails build`.
+To build a redistributable, production mode package, use `npm run tauri:build`.
 
 ## Maintainers
 <a href="https://starlane.studio#gh-light-mode-only">
