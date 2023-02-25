@@ -1,0 +1,18 @@
+.root {
+	width: 544px;
+	max-width: 100%;
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 32px;
+	margin-inline: auto;
+	transition: bottom 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+	box-shadow: 0 22px 45px hsla(247, 19%, 25%, 0.35);
+	border: none;
+	z-index: 10;
+}
+
+.hidden {
+	pointer-events: none;
+	bottom: -68px;
+}

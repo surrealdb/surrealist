@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, Table} from "./typings";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, TableSchema, TableDefinition} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
@@ -19,7 +19,7 @@ const mainSlice = createSlice({
 		consoleOutput: [] as string[],
 		availableUpdate: '',
 		showAvailableUpdate: false,
-		tables: [] as Table[]
+		databaseSchema: [] as TableDefinition[]
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -220,8 +220,8 @@ const mainSlice = createSlice({
 			state.config.zoomLevel = Math.max(state.config.zoomLevel - 0.1, 0.5);
 		},
 
-		setTables(state, action: PayloadAction<Table[]>) {
-			state.tables = action.payload;
+		setDatabaseSchema(state, action: PayloadAction<TableDefinition[]>) {
+			state.databaseSchema = action.payload;
 		}
 
 	}

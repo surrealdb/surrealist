@@ -6,13 +6,13 @@ import { useStable } from "~/hooks/stable";
 import { getActiveSurreal } from "~/surreal";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
-import { OpenFn, Table } from '~/typings';
+import { OpenFn, TableDefinition, TableSchema } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
 import { useInputState } from '@mantine/hooks';
 import { Form } from '../Form';
 import { useStoreValue } from '~/store';
-import { fetchTables } from '~/util/schema';
 import { Spacer } from '../Spacer';
+import { fetchDatabaseSchema } from '~/util/schema';
 
 export interface TablesPaneProps {
 	isOnline: boolean;
@@ -22,31 +22,37 @@ export interface TablesPaneProps {
 
 export function TablesPane(props: TablesPaneProps) {
 	const isLight = useIsLight();
-	const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+	const [selectedTable, setSelectedTable] = useState<string | null>(null);
 	const [showCreator, setShowCreator] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [tableName, setTableName] = useInputState('');
 	const [search, setSearch] = useInputState('');
-	const tables = useStoreValue(state => state.tables);
+	const schema = useStoreValue(state => state.databaseSchema);
 
 	const tablesFiltered = useMemo(() => {
 		if (!search) {
-			return tables;
+			return schema;
 		}
 
 		const needle = search.toLowerCase();
 
-		return tables.filter(table => table.name.toLowerCase().includes(needle));
-	}, [tables, search]);
+		return schema.filter(table => table.schema.name.toLowerCase().includes(needle));
+	}, [schema, search]);
 
-	const selectTable = (table: Table | null) => {
-		setSelectedTable(table);
-		props.onSelectTable(table?.name || null);
+	const activeTable = useMemo(() => {
+		return schema.find(table => table.schema.name === selectedTable);
+	}, [schema, selectedTable]);
+
+	const selectTable = (table: TableDefinition | null) => {
+		const newName = table?.schema?.name || null;
+
+		setSelectedTable(newName);
+		props.onSelectTable(newName);
 	};
 
 	const refreshTables = useStable(async () => {
-		selectTable(null);
-		fetchTables();
+		// selectTable(null);
+		fetchDatabaseSchema();
 	});
 
 	useEffect(() => {
@@ -70,7 +76,7 @@ export function TablesPane(props: TablesPaneProps) {
 		await surreal.query('DEFINE TABLE ' + tableName);
 
 		closeCreator();
-		fetchTables();
+		fetchDatabaseSchema();
 	});
 
 	const requestDelete = useStable((e: React.MouseEvent) => {
@@ -85,10 +91,10 @@ export function TablesPane(props: TablesPaneProps) {
 	const handleDelete = useStable(async () => {
 		const surreal = getActiveSurreal();
 
-		await surreal.query('REMOVE TABLE ' + selectedTable!.name);
-
+		await surreal.query('REMOVE TABLE ' + activeTable!.schema.name);
+ 
 		closeDelete();
-		fetchTables();
+		fetchDatabaseSchema();
 	});
 
 	return (
@@ -135,7 +141,7 @@ export function TablesPane(props: TablesPaneProps) {
 					}}
 				>
 					{tablesFiltered.map(table => {
-						const isActive = selectedTable == table;
+						const isActive = selectedTable == table.schema.name;
 
 						return (
 							<Group
@@ -143,7 +149,7 @@ export function TablesPane(props: TablesPaneProps) {
 								px="xs"
 								noWrap
 								spacing="xs"
-								key={table.name}
+								key={table.schema.name}
 								className={classes.tableEntry}
 								onClick={() => selectTable(table)}
 								sx={theme => ({
@@ -158,7 +164,7 @@ export function TablesPane(props: TablesPaneProps) {
 								/>
 
 								<Text color={isActive ? (isLight ? 'black' : 'white') : (isLight ? 'light.7' : 'light.1')}>
-									{table.name}
+									{table.schema.name}
 								</Text>
 
 								<Spacer />

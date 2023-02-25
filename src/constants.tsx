@@ -1,6 +1,6 @@
-import { mdiLightningBolt, mdiTable, mdiBrush, mdiLockOpen, mdiBookshelf, mdiLandRowsHorizontal, mdiGraph, mdiAdjust, mdiChartBoxOutline, mdiCodeJson, mdiWrench } from "@mdi/js";
+import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench } from "@mdi/js";
 
-export type StructureTab = 'graph' | 'schema' | 'fields' | 'indexes' | 'events';
+export type StructureTab = 'graph' | 'builder';
 
 export const AUTH_MODES = [
 	{ label: 'Root authentication', value: 'root' },
@@ -49,28 +49,13 @@ export const VIEW_MODES = [
 
 export const STRUCTURE_TABS = [
 	{
-		id: 'schema',
-		name: 'Schema',
+		id: 'builder',
+		name: 'Builder',
 		icon: mdiTable,
 	},
 	{
-		id: 'fields',
-		name: 'Fields',
-		icon: mdiCodeJson,
-	},
-	{
-		id: 'indexes',
-		name: 'Indexes',
-		icon: mdiBookshelf,
-	},
-	{
-		id: 'events',
-		name: 'Events',
-		icon: mdiLightningBolt,
-	},
-	{
 		id: 'graph',
-		name: 'Visualize',
+		name: 'Visualizer',
 		icon: mdiChartBoxOutline,
 	},
 ] as const;

@@ -67,7 +67,7 @@ export interface Permissions {
 	delete: string;
 }
 
-export interface Table {
+export interface TableSchema {
 	name: string;
 	drop: boolean;
 	schemafull: boolean;
@@ -96,8 +96,8 @@ export interface TableEvent {
 	then: string;
 }
 
-export interface TableSchema {
-	table: Table;
+export interface TableDefinition {
+	schema: TableSchema;
 	fields: TableField[];
 	indexes: TableIndex[];
 	events: TableEvent[];

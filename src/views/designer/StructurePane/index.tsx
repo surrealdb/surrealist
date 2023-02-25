@@ -1,33 +1,17 @@
-import { Button, Center, Group } from "@mantine/core";
 import { mdiDotsGrid } from "@mdi/js";
-import { FC, useLayoutEffect, useState } from "react";
-import { Icon } from "~/components/Icon";
+import { useLayoutEffect, useState } from "react";
 import { Panel } from "~/components/Panel";
-import { StructureTab, STRUCTURE_TABS } from "~/constants";
-import { Table, TableSchema } from "~/typings";
-import { EventsTab } from "./tabs/events";
-import { FieldsTab } from "./tabs/fields";
-import { GraphTab } from "./tabs/graph";
-import { IndexesTab } from "./tabs/indexes";
-import { SchemaTab } from "./tabs/schema";
-
-const TABS = {
-	graph: GraphTab,
-	schema: SchemaTab,
-	fields: FieldsTab,
-	indexes: IndexesTab,
-	events: EventsTab
-} as const;
+import { StructureTab } from "~/constants";
+import { TableDefinition } from "~/typings";
+import { BuilderTab } from "./builder";
 
 export interface SchemaPaneProps {
-	table: TableSchema | null;
+	table: TableDefinition | null;
 }
 
 export function StructurePane(props: SchemaPaneProps) {
-	const [activeTab, setActiveTab] = useState<StructureTab>('schema');
+	const [activeTab, setActiveTab] = useState<StructureTab>('builder');
 
-	const TabComponent = TABS[activeTab];
-	
 	useLayoutEffect(() => {
 		if (!props.table) {
 			setActiveTab('graph');
@@ -38,30 +22,39 @@ export function StructurePane(props: SchemaPaneProps) {
 		<Panel
 			icon={mdiDotsGrid}
 			title="Structure"
-			rightSection={
-				<Group>
-					<Button.Group
-						style={{ gap: 2 }}
-					>
-						{STRUCTURE_TABS.map(tab => (
-							<Button
-								key={tab.id}
-								leftIcon={<Icon path={tab.icon} />}
-								color={activeTab === tab.id ? 'surreal' : 'dark'}
-								onClick={() => setActiveTab(tab.id)}
-								disabled={!props.table && tab.id !== 'graph'}
-								size="xs"
-							>
-								{tab.name}
-							</Button>
-						))}
-					</Button.Group>
-				</Group>
-			}
+			// rightSection={
+			// 	<Group>
+			// 		<Button.Group
+			// 			style={{ gap: 2 }}
+			// 		>
+			// 			{STRUCTURE_TABS.map(tab => (
+			// 				<Button
+			// 					key={tab.id}
+			// 					leftIcon={<Icon path={tab.icon} />}
+			// 					color={activeTab === tab.id ? 'surreal' : 'dark'}
+			// 					onClick={() => setActiveTab(tab.id)}
+			// 					disabled={!props.table && tab.id === 'builder'}
+			// 					size="xs"
+			// 				>
+			// 					{tab.name}
+			// 				</Button>
+			// 			))}
+			// 		</Button.Group>
+			// 	</Group>
+			// }
 		>
-			<TabComponent
-				table={props.table}
-			/>
+			{props.table && (
+				<BuilderTab
+					table={props.table}
+				/>	
+			)}
+			{/* {activeTab == 'builder' && props.table ? (
+				<BuilderTab
+					table={props.table}
+				/>	
+			) : activeTab == 'graph' && (
+				<GraphTab />
+			)} */}
 		</Panel>
 	)
 }
