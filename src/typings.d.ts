@@ -71,7 +71,7 @@ export interface TableSchema {
 	name: string;
 	drop: boolean;
 	schemafull: boolean;
-	view?: TableView;
+	view: TableView | null;
 	permissions: Permissions;
 }
 

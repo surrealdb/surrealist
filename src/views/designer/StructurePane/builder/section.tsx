@@ -12,7 +12,8 @@ export function Section(props: PropsWithChildren<SectionProps>) {
 	return (
 		<Group
 			align="flex-start"
-			maw={750}
+			spacing={40}
+			maw={850}
 		>
 			<Box w={250}>
 				<Title size={18} color={props.isLight ? 'light.8' : 'white'}>

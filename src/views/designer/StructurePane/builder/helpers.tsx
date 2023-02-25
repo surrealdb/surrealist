@@ -1,6 +1,21 @@
 import { TableDefinition, TableSchema } from "~/typings";
 import { default as equals } from 'fast-deep-equal';
 
+export const QUERY_STYLE = {
+	input: {
+		fontFamily: 'JetBrains Mono'
+	}
+}
+
+export const TABLE_TYPES = [
+	{ label: 'Schemaless', value: 'schemaless' },
+	{ label: 'Schemafull', value: 'schemafull' }
+];
+
+function buildPermission(type: string, value: string) {
+	return ` FOR ${type} ${(value == 'FULL' || value == 'NONE') ? value : `WHERE ${value})`}`;
+}
+
 /**
  * Build the queries to update the entire table schema
  * 
@@ -49,7 +64,11 @@ export function buildSchemaDefinition(schema: TableSchema) {
 		}
 	}
 
-	// TODO Permissions
+	query += ' PERMISSIONS';
+	query += buildPermission('create', schema.permissions.create);
+	query += buildPermission('select', schema.permissions.select);
+	query += buildPermission('update', schema.permissions.update);
+	query += buildPermission('delete', schema.permissions.delete);
 
 	return query;
 }
