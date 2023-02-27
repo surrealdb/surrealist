@@ -1,12 +1,12 @@
 import classes from './style.module.scss';
 import { ActionIcon, Button, Group, Modal, ScrollArea, Text, TextInput, Title } from "@mantine/core";
 import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { getActiveSurreal } from "~/surreal";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
-import { OpenFn, TableDefinition, TableSchema } from '~/typings';
+import { OpenFn, TableDefinition } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
 import { useInputState } from '@mantine/hooks';
 import { Form } from '../Form';
@@ -51,15 +51,8 @@ export function TablesPane(props: TablesPaneProps) {
 	};
 
 	const refreshTables = useStable(async () => {
-		// selectTable(null);
 		fetchDatabaseSchema();
 	});
-
-	useEffect(() => {
-		setTimeout(() => {
-			refreshTables();
-		}, 150);
-	}, [props.isOnline]);
 
 	const openCreator = useStable(() => {
 		setShowCreator(true);
@@ -134,6 +127,9 @@ export function TablesPane(props: TablesPaneProps) {
 				</Text>
 			) : props.isOnline ? (
 				<ScrollArea
+					classNames={{
+						viewport: classes.viewport
+					}}
 					style={{
 						position: 'absolute',
 						inset: 12,
@@ -158,12 +154,21 @@ export function TablesPane(props: TablesPaneProps) {
 								})}
 							>
 								<Icon
+									style={{ flexShrink: 0 }}
 									color={isActive ? 'surreal' : isLight ? 'light.3' : 'light.5'}
 									path={mdiTable}
 									size="sm"
 								/>
 
-								<Text color={isActive ? (isLight ? 'black' : 'white') : (isLight ? 'light.7' : 'light.1')}>
+								<Text
+									color={isActive ? (isLight ? 'black' : 'white') : (isLight ? 'light.7' : 'light.1')}
+									style={{
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+										marginRight: 18
+									}}
+								>
 									{table.schema.name}
 								</Text>
 

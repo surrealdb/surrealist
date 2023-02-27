@@ -4,12 +4,11 @@
 - Account view
 - ~~Execute line / selection~~
 - ~~Cloud version~~
+- ~~Explorer: table creation button (Schema builder)~~
+- ~~Explorer: modify existing table schemas~~
+- ~~Explorer: fix table names not being cut off~~
 
 ## Other
-- Explorer: table creation button (Schema builder)
-- Explorer: modify existing table schemas
-- Explorer: in-table editing with double click (maybe)
-- Explorer: fix table names not being cut off
 - Query: further improve IntelliSense
 
 ## Development
