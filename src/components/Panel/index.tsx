@@ -8,11 +8,12 @@ import classes from './style.module.scss';
 export interface PanelProps extends PaperProps, HTMLAttributes<HTMLDivElement> {
 	title?: string;
 	icon?: string;
+	leftSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
 }
 
 export function Panel(props: PanelProps) {
-	const { children, title, icon, rightSection, ...rest } = props;
+	const { children, title, icon, leftSection, rightSection, ...rest } = props;
 
 	const isLight = useIsLight();
 	
@@ -39,6 +40,7 @@ export function Panel(props: PanelProps) {
 					<Text weight={600} className={classes.title}>
 						{title}
 					</Text>
+					{leftSection}
 					<Spacer />
 					{rightSection}
 				</Group>	

@@ -10,6 +10,7 @@ interface SaveBoxOptions<T> {
 	onPatch?: () => void;
 	onSave: (original?: T) => void;
 	onRevert?: (original: T) => void;
+	onChangedState?: (value: boolean) => void;
 }
 
 interface SaveBoxResult {
@@ -41,13 +42,13 @@ export function useSaveBox<T extends Record<string, any>>(options: SaveBoxOption
 		unskip();
 	});
 
-
 	const render = showSaveBox && !skipping ? React.createElement(SaveBox, {
 		value: options.track,
 		valid: options.valid,
 		onRevert: options.onRevert,
 		onSave: options.onSave,
-		onPatch: options.onPatch
+		onPatch: options.onPatch,
+		onChangedState: options.onChangedState,
 	}) : null;
 
 	return {

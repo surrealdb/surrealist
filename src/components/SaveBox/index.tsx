@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, clsx, Group, Notification, Text } from '@mantine/core';
 import { mdiCheck } from '@mdi/js';
 import { Spacer } from '../Spacer';
@@ -14,6 +14,7 @@ export interface SaveBoxProps {
 	onPatch?: () => any;
 	onRevert?: (original: any) => void;
 	onSave: (original: any) => any;
+	onChangedState?: (isChanged: boolean) => void;
 }
 
 /**
@@ -38,7 +39,7 @@ export interface SaveBoxProps {
  * Use the `onPatch` prop to make changes to the state
  * before saving.
  */
-export const SaveBox = ({ value, valid, onRevert, onPatch, onSave }: SaveBoxProps) => {
+export const SaveBox = ({ value, valid, onRevert, onPatch, onSave, onChangedState }: SaveBoxProps) => {
 	const [isSaving, setIsSaving] = useState(false);
 	const [original, setOriginal] = useState(klona(value));
 
@@ -63,42 +64,35 @@ export const SaveBox = ({ value, valid, onRevert, onPatch, onSave }: SaveBoxProp
 		triggerSave();
 	}, [onPatch, triggerSave]);
 
+	useEffect(() => {
+		if (onChangedState) {
+			onChangedState(isChanged);
+		}
+	}, [isChanged, onChangedState]);
+
 	return (
-		<Notification
-			disallowClose
-			className={clsx(classes.root, !isChanged && classes.hidden)}
-			sx={theme => ({
-				backgroundColor: theme.fn.primaryColor(),
-				zIndex: 999
-			})}
+		<Group
+			spacing={10}
+			align="center"
 		>
-			<Group
-				spacing={10}
-				align="center"
+			<Button
+				rightIcon={<Icon path={mdiCheck} size={1} />}
+				loaderPosition="right"
+				loading={isSaving}
+				disabled={!isChanged || valid === false}
+				onClick={doSave}
 			>
-				<Text color="white" size="md">
-					You have unsaved changes.
-				</Text>
-				<Spacer />
-				{onRevert && (
-					<Button
-						onClick={doRevert}
-					>
-						Revert
-					</Button>
-				)}
+				Apply schema
+			</Button>
+			{onRevert && (
 				<Button
-					color="gray.0"
-					sx={theme => ({ color: theme.fn.primaryColor() })}
-					rightIcon={<Icon path={mdiCheck} size={1} />}
-					loaderPosition="right"
-					loading={isSaving}
-					disabled={valid === undefined ? false : !valid}
-					onClick={doSave}
+					disabled={!isChanged || valid === false}
+					onClick={doRevert}
+					color="dark.4"
 				>
-					Apply
+					Revert
 				</Button>
-			</Group>
-		</Notification>
+			)}
+		</Group>
 	);
 };

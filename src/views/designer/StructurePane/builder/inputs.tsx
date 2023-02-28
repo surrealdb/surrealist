@@ -1,4 +1,4 @@
-import { ActionIcon, Stack, Textarea } from "@mantine/core";
+import { ActionIcon, Group, Stack, Textarea, TextInput } from "@mantine/core";
 import { mdiCheck, mdiClose } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { QUERY_STYLE } from "./helpers";
@@ -11,20 +11,20 @@ export interface PermissionInputProps {
 
 export function PermissionInput(props: PermissionInputProps) {
 	return (
-		<Textarea
+		<TextInput
 			required
-			minRows={2}
 			label={props.label}
 			placeholder="FULL"
 			styles={QUERY_STYLE}
 			value={props.value}
-			rightSectionWidth={0}
+			rightSectionWidth={122}
 			rightSection={
-				<Stack spacing="xs" ml={45}>
+				<Group spacing="xs" ml={45}>
 					<ActionIcon
 						color="green"
 						title="Grant full access"
 						onClick={() => props.onChange('FULL')}
+						variant={props.value.toUpperCase() === 'FULL' ? 'light' : 'subtle'}
 					>
 						<Icon path={mdiCheck} />
 					</ActionIcon>
@@ -32,10 +32,11 @@ export function PermissionInput(props: PermissionInputProps) {
 						color="red.5"
 						title="Reject all access"
 						onClick={() => props.onChange('NONE')}
+						variant={props.value.toUpperCase() === 'NONE' ? 'light' : 'subtle'}
 					>
 						<Icon path={mdiClose} />
 					</ActionIcon>
-				</Stack>
+				</Group>
 			}
 			onChange={(e) => props.onChange(e.currentTarget.value)}
 		/>

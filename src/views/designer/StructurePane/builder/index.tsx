@@ -1,5 +1,5 @@
-import { ActionIcon, Button, Checkbox, Collapse, Group, ScrollArea, Select, SimpleGrid, Stack, Textarea, TextInput } from "@mantine/core";
-import { ChangeEvent, useEffect, useState } from "react";
+import { Box, Checkbox, Collapse, ScrollArea, Select, Stack, TextInput } from "@mantine/core";
+import { ChangeEvent, useEffect } from "react";
 import { useImmer } from "use-immer";
 import { useSaveBox } from "~/hooks/save";
 import { useIsLight } from "~/hooks/theme";
@@ -11,12 +11,12 @@ import { showError } from "~/util/helpers";
 import { getActiveSurreal } from "~/surreal";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { useStable } from "~/hooks/stable";
-import { Icon } from "~/components/Icon";
-import { mdiCheck, mdiClose } from "@mdi/js";
 import { PermissionInput } from "./inputs";
+import { Lister } from "./lister";
 
 export interface BuilderTabProps {
 	table: TableDefinition;
+	onChangedState: (isChanged: boolean) => void;
 }
 
 export function BuilderTab(props: BuilderTabProps) {
@@ -26,9 +26,6 @@ export function BuilderTab(props: BuilderTabProps) {
 	const saveBox = useSaveBox({
 		track: data!,
 		onSave(original) {
-			console.log(original);
-			console.log(data);
-
 			if (!original?.schema) {
 				showError('Save failed', 'Could not determine previous state');
 				return;
@@ -41,11 +38,14 @@ export function BuilderTab(props: BuilderTabProps) {
 
 			surreal.query(query).then(() => {
 				fetchDatabaseSchema();
+			}).catch(err => {
+				showError('Failed to apply schema', err.message);
 			});
 		},
 		onRevert(original) {
 			setData(original);
 		},
+		onChangedState: props.onChangedState
 	});
 
 	useEffect(() => {
@@ -72,11 +72,67 @@ export function BuilderTab(props: BuilderTabProps) {
 		}
 	});
 
+	const addField = useStable(() => {
+		setData(d => {
+			d.fields.push({
+				name: '',
+				assert: '',
+				flexible: false,
+				kind: '',
+				value: '',
+				permissions: {
+					create: 'FULL',
+					select: 'FULL',
+					update: 'FULL',
+					delete: 'FULL'
+				}
+			})
+		});
+	});
+
+	const removeField = useStable((index: number) => {
+		setData(d => {
+			d.fields.splice(index, 1);
+		});
+	});
+
+	const addIndex = useStable(() => {
+		setData(d => {
+			d.indexes.push({
+				name: '',
+				fields: '',
+				unique: false
+			})
+		});
+	});
+
+	const removeIndex = useStable((index: number) => {
+		setData(d => {
+			d.indexes.splice(index, 1);
+		});
+	});
+
+	const addEvent = useStable(() => {
+		setData(d => {
+			d.events.push({
+				name: '',
+				cond: '',
+				then: ''
+			})
+		});
+	});
+
+	const removeEvent = useStable((index: number) => {
+		setData(d => {
+			d.events.splice(index, 1);
+		});
+	});
+
 	return (
 		<ScrollArea
 			style={{ position: 'absolute', inset: 12, top: 0 }}
 		>
-			<Stack pt="sm" pb={125} px="sm">
+			<Stack pt="sm" pb={64} px="sm">
 				<Section
 					isLight={isLight}
 					title="General"
@@ -196,11 +252,83 @@ export function BuilderTab(props: BuilderTabProps) {
 					title="Fields"
 					description="Definitions for the individual fields within the table"
 				>
-					<Stack>
-						<TextInput placeholder="Reeeee" />
-						<TextInput placeholder="Reeeee" />
-						<TextInput placeholder="Reeeee" />
-					</Stack>
+					<Lister
+						value={data.fields}
+						missing="No schema fields defined yet"
+						name="field"
+						onCreate={addField}
+						onRemove={removeField}
+					>
+						{(field, i) => (
+							<>
+								<TextInput
+									required
+									label="Field name"
+									placeholder="field_name"
+									value={field.name}
+									onChange={(e) => setData(draft => {
+										draft.fields[i].name = e.currentTarget.value;
+									})}
+								/>
+								<TextInput
+									label="Field kind"
+									value={field.kind}
+									onChange={(e) => setData(draft => {
+										draft.fields[i].kind = e.currentTarget.value;
+									})}
+								/>
+								<TextInput
+									label="Default field value"
+									value={field.value}
+									onChange={(e) => setData(draft => {
+										draft.fields[i].value = e.currentTarget.value;
+									})}
+								/>
+								<TextInput
+									label="Field assertion"
+									value={field.assert}
+									onChange={(e) => setData(draft => {
+										draft.fields[i].assert = e.currentTarget.value;
+									})}
+								/>
+								<PermissionInput
+									label="Create access"
+									value={field.permissions.create}
+									onChange={value => setData(draft => {
+										draft.fields[i].permissions.create = value;
+									})}
+								/>
+								<PermissionInput
+									label="Select access"
+									value={field.permissions.select}
+									onChange={value => setData(draft => {
+										draft.fields[i].permissions.select = value;
+									})}
+								/>
+								<PermissionInput
+									label="Update access"
+									value={field.permissions.update}
+									onChange={value => setData(draft => {
+										draft.fields[i].permissions.update = value;
+									})}
+								/>
+								<PermissionInput
+									label="Delete access"
+									value={field.permissions.delete}
+									onChange={value => setData(draft => {
+										draft.fields[i].permissions.delete = value;
+									})}
+								/>
+								<Checkbox
+									label="Is field flexible"
+									checked={field.flexible}
+									onChange={e => setData(draft => {
+										draft.fields[i].flexible = e.currentTarget.checked;
+									})}
+								/>
+							</>
+						)}
+					</Lister>
 				</Section>
 
 				<SectionDivider isLight={isLight} />
@@ -210,11 +338,41 @@ export function BuilderTab(props: BuilderTabProps) {
 					title="Indexes"
 					description="Define indexes for the table for commonly filtered fields"
 				>
-					<Stack>
-						<TextInput placeholder="Reeeee" />
-						<TextInput placeholder="Reeeee" />
-						<TextInput placeholder="Reeeee" />
-					</Stack>
+					<Lister
+						value={data.indexes}
+						missing="No schema indexes defined yet"
+						name="index"
+						onCreate={addIndex}
+						onRemove={removeIndex}
+					>
+						{(index, i) => (
+							<>
+								<TextInput
+									required
+									label="Index name"
+									placeholder="index_name"
+									value={index.name}
+									onChange={(e) => setData(draft => {
+										draft.indexes[i].name = e.currentTarget.value;
+									})}
+								/>
+								<TextInput
+									label="Indexed fields"
+									value={index.fields}
+									onChange={(e) => setData(draft => {
+										draft.indexes[i].fields = e.currentTarget.value;
+									})}
+								/>
+								<Checkbox
+									label="Unique index"
+									checked={index.unique}
+									onChange={e => setData(draft => {
+										draft.indexes[i].unique = e.currentTarget.checked;
+									})}
+								/>
+							</>
+						)}
+					</Lister>
 				</Section>
 
 				<SectionDivider isLight={isLight} />
@@ -224,15 +382,47 @@ export function BuilderTab(props: BuilderTabProps) {
 					title="Events"
 					description="Create events to trigger when certain actions are performed on the table"
 				>
-					<Stack>
-						<TextInput placeholder="Reeeee" />
-						<TextInput placeholder="Reeeee" />
-						<TextInput placeholder="Reeeee" />
-					</Stack>
+					<Lister
+						value={data.events}
+						missing="No schema events defined yet"
+						name="event"
+						onCreate={addEvent}
+						onRemove={removeEvent}
+					>
+						{(event, i) => (
+							<>
+								<TextInput
+									required
+									label="Event name"
+									placeholder="event_name"
+									value={event.name}
+									onChange={(e) => setData(draft => {
+										draft.events[i].name = e.currentTarget.value;
+									})}
+								/>
+								<TextInput
+									label="Event condition"
+									value={event.cond}
+									onChange={(e) => setData(draft => {
+										draft.events[i].cond = e.currentTarget.value;
+									})}
+								/>
+								<TextInput
+									label="Event result"
+									value={event.then}
+									onChange={(e) => setData(draft => {
+										draft.events[i].then = e.currentTarget.value;
+									})}
+								/>
+							</>
+						)}
+					</Lister>
 				</Section>
 			</Stack>
 
-			{saveBox.render}
+			<Box px="sm" pb="sm">
+				{saveBox.render}
+			</Box>
 		</ScrollArea>
 	)
 }
