@@ -1,5 +1,5 @@
 import classes from './style.module.scss';
-import { ActionIcon, Button, Group, Modal, ScrollArea, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, ScrollArea, Select, Stack, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { mdiClose, mdiLineScan, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -13,6 +13,7 @@ import { Form } from '../Form';
 import { useStoreValue } from '~/store';
 import { Spacer } from '../Spacer';
 import { fetchDatabaseSchema } from '~/util/schema';
+import { useTableNames } from '~/hooks/schema';
 
 export interface TablesPaneProps {
 	isOnline: boolean;
@@ -22,12 +23,16 @@ export interface TablesPaneProps {
 
 export function TablesPane(props: TablesPaneProps) {
 	const isLight = useIsLight();
+	const [createType, setCreateType] = useState('table');
 	const [selectedTable, setSelectedTable] = useState<string | null>(null);
 	const [showCreator, setShowCreator] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [tableName, setTableName] = useInputState('');
+	const [tableIn, setTableIn] = useState('');
+	const [tableOut, setTableOut] = useState('');
 	const [search, setSearch] = useInputState('');
 	const schema = useStoreValue(state => state.databaseSchema);
+	const tableList = useTableNames();
 
 	const tablesFiltered = useMemo(() => {
 		if (!search) {
@@ -66,7 +71,14 @@ export function TablesPane(props: TablesPaneProps) {
 	const createTable = useStable(async () => {
 		const surreal = getActiveSurreal();
 
-		await surreal.query('DEFINE TABLE ' + tableName);
+		let query = `DEFINE TABLE ${tableName};`;
+
+		if (createType === 'relation') {
+			query += 'DEFINE FIELD in ON ' + tableName + ' TYPE record(' + tableIn + ');';
+			query += 'DEFINE FIELD out ON ' + tableName + ' TYPE record(' + tableOut + ');';
+		}
+
+		await surreal.query(query);
 
 		closeCreator();
 		fetchDatabaseSchema();
@@ -210,23 +222,67 @@ export function TablesPane(props: TablesPaneProps) {
 			<Modal
 				opened={showCreator}
 				onClose={closeCreator}
-				withCloseButton={false}
-				withFocusReturn={false}
-				padding="sm"
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Create new {createType}
+					</Title>
+				}
 			>
+				<Tabs
+					mb="xl"
+					defaultValue="table"
+					value={createType}
+					onTabChange={setCreateType as any}
+				>
+					<Tabs.List grow>
+						<Tabs.Tab value="table" icon={<Icon path={mdiTable} />}>Table</Tabs.Tab>
+						<Tabs.Tab value="relation" icon={<Icon path={mdiVectorLine} />}>Relation</Tabs.Tab>
+					</Tabs.List>
+				</Tabs>
+
 				<Form onSubmit={createTable}>
-					<Group>
+					<Stack>
 						<TextInput
-							style={{ flex: 1 }}
 							placeholder="Enter table name"
 							value={tableName}
 							onChange={setTableName}
 							autoFocus
 						/>
-						<Button type="submit">
-							Create
-						</Button>
-					</Group>
+						{createType === 'relation' && (
+							<>
+								<Select
+									data={tableList}
+									placeholder="Enter in"
+									value={tableIn}
+									onChange={setTableIn as any}
+								/>
+								<Select
+									data={tableList}
+									placeholder="Enter out"
+									value={tableOut}
+									onChange={setTableOut as any}
+								/>
+							</>	
+						)}
+						<Group mt="lg">
+							<Button
+								onClick={closeCreator}
+								color={isLight ? 'light.5' : 'light.3'}
+								variant="light"
+							>
+								Close
+							</Button>
+							<Spacer />
+							<Button
+								color="surreal"
+								type="submit"
+								disabled={!tableName || (createType === 'relation' && (!tableIn || !tableOut))}
+								rightIcon={<Icon path={mdiPlus} />}
+							>
+								Create
+							</Button>
+						</Group>
+					</Stack>
 				</Form>
 			</Modal>
 

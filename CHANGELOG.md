@@ -1,17 +1,24 @@
 # Change Log
 
-## 1.6.0
-- Added table filtering
-- Added authentication view
+## 1.6.0 - Designer & Authentication
 - Added designer view
-- Rewritten in Rust
-- Display Anon label
+	- Allows graphically creating and modifying schemas
+	- Supports permissions, fields, indexes, and events
+	- Creating new tables and edge tables
+- Added authentication view
+	- Manage namespace & database logins
+	- Manage database scopes
+- Rewritten backend in Rust
+	- Will allow for more intelligent features in the future
+	- Dev tools are now available in release builds (Ctrl + Shift + I)
+- Added the ability to filter table lists
 - Allow executing queries from variables pane
-- Highlight single quotes
-- Added execute selection option
+- Highlighting for single quotes and &lt;future&gt;
+- Added "Execute selection" option to query editor context menu
 - Improved matching of certain types in explorer view
+- The current view is now scoped to the tab instead of global
+- Edge tables now display a different icon from normal tables
 - Fixed crash on connecting to insecure endpoint
-- Make the current view scoped to the tab instead of global
 
 ## 1.5.2 - Bug fixes
 - Add new anonymous connection authentication mode

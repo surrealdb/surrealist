@@ -36,9 +36,34 @@ export async function fetchDatabaseSchema() {
 			return invoke<TableEvent>('extract_event_definition', { definition });
 		});
 
+		const mappedFields = fieldInfo.map(field => {
+			let kind = field.kind;
+			let kindTables: string[] = [];
+			let kindGeometry: string[] = [];
+
+			if (field.kind.startsWith('record')) {
+				kindTables = field.kind.replace('record(', '').replace(')', '').split(',');
+				kind = 'record';
+			}
+
+			if (field.kind.startsWith('geometry')) {
+				kindGeometry = field.kind.replace('geometry(', '').replace(')', '').split(',');
+				kind = 'geometry';
+			}
+
+			return {
+				...field,
+				kind,
+				kindGeometry,
+				kindTables
+			};
+		});
+
+		console.log(mappedFields);
+
 		return {
 			schema: table,
-			fields: fieldInfo,
+			fields: mappedFields,
 			indexes: indexInfo,
 			events: eventInfo
 		};

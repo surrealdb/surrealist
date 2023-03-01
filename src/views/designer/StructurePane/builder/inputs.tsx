@@ -1,5 +1,5 @@
-import { ActionIcon, Group, Stack, Textarea, TextInput } from "@mantine/core";
-import { mdiCheck, mdiClose } from "@mdi/js";
+import { ActionIcon, Group, TextInput } from "@mantine/core";
+import { mdiCancel, mdiCheck } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { QUERY_STYLE } from "./helpers";
 
@@ -34,7 +34,7 @@ export function PermissionInput(props: PermissionInputProps) {
 						onClick={() => props.onChange('NONE')}
 						variant={props.value.toUpperCase() === 'NONE' ? 'light' : 'subtle'}
 					>
-						<Icon path={mdiClose} />
+						<Icon path={mdiCancel} />
 					</ActionIcon>
 				</Group>
 			}

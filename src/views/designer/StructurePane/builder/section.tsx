@@ -19,7 +19,7 @@ export function Section(props: PropsWithChildren<SectionProps>) {
 				<Title size={18} color={props.isLight ? 'light.8' : 'white'}>
 					{props.title}
 				</Title>
-				<Text color={props.isLight ? 'light.3' : 'light.4'} size="sm">
+				<Text color={props.isLight ? 'light.3' : 'light.4'} size="sm" mt={2}>
 					{props.description}
 				</Text>
 			</Box>

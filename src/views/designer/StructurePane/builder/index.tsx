@@ -15,6 +15,7 @@ import { PermissionInput } from "./inputs";
 import { Lister } from "./lister";
 import { GEOMETRY_TYPES, SURREAL_KINDS } from "~/constants";
 import { useStoreValue } from "~/store";
+import { useTableNames } from "~/hooks/schema";
 
 export interface BuilderTabProps {
 	table: TableDefinition;
@@ -24,7 +25,7 @@ export interface BuilderTabProps {
 export function BuilderTab(props: BuilderTabProps) {
 	const isLight = useIsLight();
 	const [data, setData] = useImmer(props.table!);
-	const tableList = useStoreValue(state => state.databaseSchema).map(t => t.schema.name);
+	const tableList = useTableNames();
 
 	const saveBox = useSaveBox({
 		track: data!,
@@ -141,7 +142,7 @@ export function BuilderTab(props: BuilderTabProps) {
 				<Section
 					isLight={isLight}
 					title="General"
-					description="General structural information about the table"
+					description="The general structural information that defines this table"
 				>
 					<Stack>
 						<Select
@@ -216,7 +217,7 @@ export function BuilderTab(props: BuilderTabProps) {
 				<Section
 					isLight={isLight}
 					title="Permissions"
-					description="Control read and write access to this table"
+					description="Control read and write access rules for this table"
 				>
 					<Stack>
 						<PermissionInput
@@ -255,7 +256,7 @@ export function BuilderTab(props: BuilderTabProps) {
 				<Section
 					isLight={isLight}
 					title="Fields"
-					description="Definitions for the individual fields within the table"
+					description="Define the fields that make up records within this table"
 				>
 					<Lister
 						value={data.fields}
@@ -370,7 +371,7 @@ export function BuilderTab(props: BuilderTabProps) {
 				<Section
 					isLight={isLight}
 					title="Indexes"
-					description="Define indexes for the table for commonly filtered fields"
+					description="Define fields to index for faster lookups and unique constraints"
 				>
 					<Lister
 						value={data.indexes}
@@ -415,7 +416,7 @@ export function BuilderTab(props: BuilderTabProps) {
 				<Section
 					isLight={isLight}
 					title="Events"
-					description="Create events to trigger when certain actions are performed on the table"
+					description="Define side effects to run when a record in this table is modified"
 				>
 					<Lister
 						value={data.events}
