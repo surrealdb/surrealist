@@ -5,7 +5,6 @@ import { Splitter } from "~/components/Splitter";
 import { GraphPane } from "../GraphPane";
 import { useStoreValue } from "~/store";
 import { extractEdgeRecords } from "~/util/schema";
-import { circular, random } from "graphology-layout";
 import { OptionsPane } from "../OptionsPane";
 import Sigma from "sigma";
 import { useStable } from "~/hooks/stable";

@@ -270,7 +270,7 @@ export function Scaffold() {
 							opened={isViewListing}
 							onChange={setIsViewListing}
 							position="bottom-start"
-							exitTransitionDuration={100}
+							exitTransitionDuration={75}
 							closeOnEscape
 							shadow="lg"
 							withArrow
@@ -303,7 +303,7 @@ export function Scaffold() {
 												w={264}
 												px={0}
 												h="unset"
-												color="pink"
+												color={isActive ? 'pink' : 'blue'}
 												variant={isActive ? 'light' : 'subtle'}
 												className={classes.viewModeButton}
 												onClick={() => setViewMode(info.id as ViewMode)}
