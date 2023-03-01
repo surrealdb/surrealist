@@ -47,7 +47,7 @@ export function initializeEditor(monaco: Monaco) {
 			{ token: 'keyword', foreground: '#e600a4' },
 			{ token: 'param', foreground: '#e67a15' },
 			{ token: 'comment', foreground: '#606475' },
-			{ token: 'regex', foreground: '#09b8ac' },
+			{ token: 'fancy', foreground: '#09b8ac' },
 			{ token: 'function', foreground: '#9565cf' },
 		],
 		colors: {
@@ -63,7 +63,7 @@ export function initializeEditor(monaco: Monaco) {
 			{ token: 'keyword', foreground: '#e600a4' },
 			{ token: 'param', foreground: '#e67a15' },
 			{ token: 'comment', foreground: '#606475' },
-			{ token: 'regex', foreground: '#09b8ac' },
+			{ token: 'fancy', foreground: '#09b8ac' },
 			{ token: 'function', foreground: '#cb96ff' },
 		],
 		colors: {
@@ -93,7 +93,7 @@ export function initializeEditor(monaco: Monaco) {
 			root: [
 				[/(count|(\w+::)+\w+)(?=\()/, 'function'],
 				[/["'].*?["']/, 'string'],
-				[/\/.*?[^\\]\//, 'regex'],
+				[/\/.*?[^\\]\/|<future>/, 'fancy'],
 				[/(\/\/|#|--).+/, 'comment'],
 				[/\$\w+/, 'param'],
 				[/\b\w+\b/, {
