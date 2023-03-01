@@ -81,6 +81,14 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 		if (field.kind) {
 			query += ` TYPE ${field.kind}`;
+
+			if (field.kind == 'record') {
+				query += `(${field.kindTables.join(', ')})`;
+			}
+
+			if (field.kind == 'geometry') {
+				query += `(${field.kindGeometry})`;
+			}
 		}
 
 		if (field.value) {

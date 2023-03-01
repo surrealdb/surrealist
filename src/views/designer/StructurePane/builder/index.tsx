@@ -1,4 +1,4 @@
-import { Box, Checkbox, Collapse, ScrollArea, Select, Stack, TextInput } from "@mantine/core";
+import { Box, Checkbox, Collapse, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { ChangeEvent, useEffect } from "react";
 import { useImmer } from "use-immer";
 import { useSaveBox } from "~/hooks/save";
@@ -13,6 +13,8 @@ import { fetchDatabaseSchema } from "~/util/schema";
 import { useStable } from "~/hooks/stable";
 import { PermissionInput } from "./inputs";
 import { Lister } from "./lister";
+import { GEOMETRY_TYPES, SURREAL_KINDS } from "~/constants";
+import { useStoreValue } from "~/store";
 
 export interface BuilderTabProps {
 	table: TableDefinition;
@@ -22,6 +24,7 @@ export interface BuilderTabProps {
 export function BuilderTab(props: BuilderTabProps) {
 	const isLight = useIsLight();
 	const [data, setData] = useImmer(props.table!);
+	const tableList = useStoreValue(state => state.databaseSchema).map(t => t.schema.name);
 
 	const saveBox = useSaveBox({
 		track: data!,
@@ -80,6 +83,8 @@ export function BuilderTab(props: BuilderTabProps) {
 				flexible: false,
 				kind: '',
 				value: '',
+				kindTables: [],
+				kindGeometry: [],
 				permissions: {
 					create: 'FULL',
 					select: 'FULL',
@@ -263,6 +268,7 @@ export function BuilderTab(props: BuilderTabProps) {
 							<>
 								<TextInput
 									required
+									autoFocus
 									label="Field name"
 									placeholder="field_name"
 									value={field.name}
@@ -270,13 +276,48 @@ export function BuilderTab(props: BuilderTabProps) {
 										draft.fields[i].name = e.currentTarget.value;
 									})}
 								/>
-								<TextInput
-									label="Field kind"
-									value={field.kind}
-									onChange={(e) => setData(draft => {
-										draft.fields[i].kind = e.currentTarget.value;
+								<Checkbox
+									label="Is field flexible"
+									checked={field.flexible}
+									onChange={e => setData(draft => {
+										draft.fields[i].flexible = e.currentTarget.checked;
 									})}
 								/>
+								<SimpleGrid cols={field.kind == 'record' || field.kind == 'geometry' ? 2 : 1}>
+									<Select
+										label="Field kind"
+										data={SURREAL_KINDS}
+										value={field.kind}
+										clearable
+										onChange={(value) => setData(draft => {
+											draft.fields[i].kind = value || '';
+										})}
+									/>
+									{field.kind == 'record' && (
+										<MultiSelect
+											required
+											label="Record types"
+											data={tableList}
+											value={field.kindTables}
+											searchable={false}
+											onChange={(value) => setData(draft => {
+												draft.fields[i].kindTables = value;
+											})}
+										/>
+									)}
+									{field.kind === 'geometry' && (
+										<MultiSelect
+											required
+											label="Geometry types"
+											data={GEOMETRY_TYPES}
+											value={field.kindGeometry}
+											searchable={false}
+											onChange={(value) => setData(draft => {
+												draft.fields[i].kindGeometry = value;
+											})}
+										/>
+									)}
+								</SimpleGrid>
 								<TextInput
 									label="Default field value"
 									value={field.value}
@@ -319,13 +360,6 @@ export function BuilderTab(props: BuilderTabProps) {
 										draft.fields[i].permissions.delete = value;
 									})}
 								/>
-								<Checkbox
-									label="Is field flexible"
-									checked={field.flexible}
-									onChange={e => setData(draft => {
-										draft.fields[i].flexible = e.currentTarget.checked;
-									})}
-								/>
 							</>
 						)}
 					</Lister>
@@ -349,6 +383,7 @@ export function BuilderTab(props: BuilderTabProps) {
 							<>
 								<TextInput
 									required
+									autoFocus
 									label="Index name"
 									placeholder="index_name"
 									value={index.name}
@@ -393,6 +428,7 @@ export function BuilderTab(props: BuilderTabProps) {
 							<>
 								<TextInput
 									required
+									autoFocus
 									label="Event name"
 									placeholder="event_name"
 									value={event.name}

@@ -59,3 +59,31 @@ export const STRUCTURE_TABS = [
 		icon: mdiChartBoxOutline,
 	},
 ] as const;
+
+export const SURREAL_KINDS = [
+	{ label: 'No kind specified', value: '' },
+	{ label: 'Any', value: 'any' },
+	{ label: 'Array', value: 'array' },
+	{ label: 'Bool', value: 'bool' },
+	{ label: 'Datetime', value: 'datetime' },
+	{ label: 'Decimal', value: 'decimal' },
+	{ label: 'Duration', value: 'duration' },
+	{ label: 'Float', value: 'float' },
+	{ label: 'Int', value: 'int' },
+	{ label: 'Number', value: 'number' },
+	{ label: 'Object', value: 'object' },
+	{ label: 'String', value: 'string' },
+	{ label: 'Record', value: 'record' },
+	{ label: 'Geometry', value: 'geometry' },
+];
+
+export const GEOMETRY_TYPES = [
+	{ label: 'Feature', value: 'feature' },
+	{ label: 'Point', value: 'point' },
+	{ label: 'Line', value: 'line' },
+	{ label: 'Polygon', value: 'polygon' },
+	{ label: 'MultiPoint', value: 'multipoint' },
+	{ label: 'MultiLine', value: 'multiline' },
+	{ label: 'MultiPolygon', value: 'multipolygon' },
+	{ label: 'Collection', value: 'collection' },
+]

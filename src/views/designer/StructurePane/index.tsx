@@ -24,9 +24,9 @@ export function StructurePane(props: SchemaPaneProps) {
 		<Panel
 			icon={mdiDotsGrid}
 			title="Structure"
-			leftSection={
-				isDirty && <Text color="red"> There are unsaved changes</Text>
-			}
+			// leftSection={
+			// 	isDirty && <Text color="red"> There are unsaved changes</Text>
+			// }
 			// rightSection={
 			// 	<Group>
 			// 		<Button.Group

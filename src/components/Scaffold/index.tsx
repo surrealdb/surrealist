@@ -28,6 +28,7 @@ import { DesignerView } from '~/views/designer/DesignerView';
 import { AuthenticationView } from '~/views/authentication/AuthenticationView';
 import { adapter } from '~/adapter';
 import { DesktopAdapter } from '~/adapter/desktop';
+import { fetchDatabaseSchema } from '~/util/schema';
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -100,7 +101,8 @@ export function Scaffold() {
 				connection: tabInfo.connection,
 				onConnect() {
 					setIsConnecting(false);
-					setIsOnline(true)
+					setIsOnline(true);
+					fetchDatabaseSchema();
 				},
 				onDisconnect(code, reason) {
 					setIsConnecting(false);
