@@ -1,5 +1,5 @@
-import { Accordion, Group, Stack, Button, Text, Space, ActionIcon, Box, Paper, Modal, Title } from "@mantine/core";
-import { mdiCircle, mdiClose, mdiDelete, mdiPlus } from "@mdi/js";
+import { Group, Stack, Button, Text, ActionIcon, Paper, Modal, Title } from "@mantine/core";
+import { mdiCircle, mdiClose, mdiPlus } from "@mdi/js";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";

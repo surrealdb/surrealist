@@ -14,7 +14,6 @@ export function PermissionInput(props: PermissionInputProps) {
 		<TextInput
 			required
 			label={props.label}
-			placeholder="FULL"
 			styles={QUERY_STYLE}
 			value={props.value}
 			rightSectionWidth={122}

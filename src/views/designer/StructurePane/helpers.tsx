@@ -138,3 +138,26 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 	return queries.join(';\n');
 }
+
+/**
+ * Returns whether the schema is valid
+ * 
+ * @param schema The schema to check
+ * @returns Whether the schema is valid
+ */
+export function isSchemaValid(schema: TableDefinition): boolean {
+	const result = schema.schema.name
+		&& schema.schema.permissions.create
+		&& schema.schema.permissions.select
+		&& schema.schema.permissions.update
+		&& schema.schema.permissions.delete
+		&& schema.fields.every(field => field.name
+			&& field.permissions.create
+			&& field.permissions.select
+			&& field.permissions.update
+			&& field.permissions.delete)
+		&& schema.indexes.every(index => index.name)
+		&& schema.events.every(event => event.name);
+	
+	return !!result;
+}
