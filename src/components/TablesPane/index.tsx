@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { ActionIcon, Button, Group, Modal, ScrollArea, Select, Stack, Tabs, Text, TextInput, Title } from "@mantine/core";
-import { mdiClose, mdiLineScan, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { getActiveSurreal } from "~/surreal";
@@ -13,7 +13,7 @@ import { Form } from '../Form';
 import { useStoreValue } from '~/store';
 import { Spacer } from '../Spacer';
 import { fetchDatabaseSchema } from '~/util/schema';
-import { useTableNames } from '~/hooks/schema';
+import { useHasSchemaAccess, useTableNames } from '~/hooks/schema';
 
 export interface TablesPaneProps {
 	isOnline: boolean;
@@ -32,6 +32,7 @@ export function TablesPane(props: TablesPaneProps) {
 	const [tableOut, setTableOut] = useState('');
 	const [search, setSearch] = useInputState('');
 	const schema = useStoreValue(state => state.databaseSchema);
+	const hasAccess = useHasSchemaAccess();
 	const tableList = useTableNames();
 
 	const tablesFiltered = useMemo(() => {
@@ -135,7 +136,7 @@ export function TablesPane(props: TablesPaneProps) {
 
 			{props.isOnline && !tablesFiltered.length ? (
 				<Text align="center" pt="sm" c="light.5">
-					No tables found
+					{!hasAccess ? 'Unsupported auth mode' : 'No tables found'}
 				</Text>
 			) : props.isOnline ? (
 				<ScrollArea

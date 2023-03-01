@@ -39,9 +39,14 @@ export function ScopePane(props: ScopePaneProps) {
 	const fetchScopes = useStable(async () => {
 		
 		const response = await getActiveSurreal().query(`INFO FOR DB`);
-		const scopeMap = response[0].result.sc;
-		
-		const scopeInfo = await map(Object.values(scopeMap), async definition => {
+		const result = response[0].result;
+
+		if (!result) {
+			setScopes([]);
+			return;
+		}
+
+		const scopeInfo = await map(Object.values(result.sc), async definition => {
 			const result = await invoke('extract_scope_definition', { definition });
 
 			return result as ScopeInfo;

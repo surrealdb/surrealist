@@ -12,11 +12,14 @@ import { TableSchema, TableEvent, TableField, TableIndex, TableDefinition } from
  */
 export async function fetchDatabaseSchema() {
 	const surreal = getActiveSurreal();
-
 	const dbResponse = await surreal.query('INFO FOR DB');
-	const tableMap = dbResponse[0].result.tb;
+	const dbResult = dbResponse[0].result;
 
-	const databaseInfo = await map(Object.values(tableMap), definition => {
+	if (!dbResult) {
+		return [];
+	}
+
+	const databaseInfo = await map(Object.values(dbResult.tb), definition => {
 		return invoke<TableSchema>('extract_table_definition', { definition });
 	});
 
@@ -58,8 +61,6 @@ export async function fetchDatabaseSchema() {
 				kindTables
 			};
 		});
-
-		console.log(mappedFields);
 
 		return {
 			schema: table,

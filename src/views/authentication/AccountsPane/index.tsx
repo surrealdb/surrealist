@@ -31,10 +31,14 @@ export function AccountsPane(props: AccountsPaneProps) {
 	const [editingPassword, setEditingPassword] = useInputState('');
 
 	const fetchLogins = useStable(async () => {
-		const result = await getActiveSurreal().query(`INFO FOR ${props.typeShort}`);
-		const accounts = result[0].result[props.field];
+		const response = await getActiveSurreal().query(`INFO FOR ${props.typeShort}`);
+		const result = response[0].result;
 
-		setLogins(Object.keys(accounts));
+		if (!result) {
+			return [];
+		}
+
+		setLogins(Object.keys(result[props.field]));
 	});
 
 	useEffect(() => {

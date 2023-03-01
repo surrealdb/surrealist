@@ -127,8 +127,14 @@ export function initializeEditor(monaco: Monaco) {
 			try {
 				const response = await surreal.query('INFO FOR DB');
 				const result = response[0].result;
-				const tables = Object.keys(result.tb);
+				
+				if (!result) {
+					return {
+						suggestions: []
+					}
+				}
 
+				const tables = Object.keys(result.tb);
 				const suggestions = tables.map(table => ({
 					label: table,
 					insertText: table,

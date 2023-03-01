@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import Graph from "graphology";
 import Sigma from "sigma/sigma";
 import { useIsLight } from "~/hooks/theme";
+import { useHasSchemaAccess } from "~/hooks/schema";
 
 export interface GraphPaneProps {
 	isOnline: boolean;
@@ -14,14 +15,17 @@ export interface GraphPaneProps {
 
 export function GraphPane(props: GraphPaneProps) {
 	const isLight = useIsLight();
+	const theme = useMantineTheme();
+	const hasAccess = useHasSchemaAccess();
 	const ref = useRef<HTMLDivElement>(null);
 	const sigma = useRef<Sigma | null>(null);
-	const theme = useMantineTheme();
 
 	const nodeColor = isLight? theme.colors.blue[5] : theme.colors.blue[5];
 	const edgeColor = isLight ? theme.colors.light[1] : theme.colors.dark[4];
 	const nodeLabelColor = isLight ? theme.colors.dark[9] : theme.colors.light[0];
 	const edgeLabelColor = isLight ? theme.colors.dark[3] : theme.colors.light[2];
+
+	const showGraph = props.isOnline && hasAccess;
 	
 	useEffect(() => {
 		const instance = new Sigma(props.graph || new Graph(), ref.current!, {
@@ -74,11 +78,17 @@ export function GraphPane(props: GraphPaneProps) {
 				style={{
 					width: '100%',
 					height: '100%',
-					display: props.isOnline ? undefined : 'none'
+					display: showGraph ? undefined : 'none'
 				}}
 			/>
 
-			{!props.isOnline&& (
+			{!hasAccess ? (
+				<Center h="100%">
+					<Text color="gray.5">
+						You are using an unsupported authentication mode
+					</Text>
+				</Center>
+			) : !props.isOnline && (
 				<Center h="100%">
 					<Text color="gray.5">
 						You must be connected to a database to view the schema graph

@@ -23,7 +23,7 @@ export const VIEW_MODES = [
 		name: 'Explorer',
 		icon: mdiTable,
 		desc: 'Explore the database tables, records, and relations',
-		desktop: false 
+		desktop: true 
 	},
 	{
 		id: 'designer',
@@ -36,7 +36,8 @@ export const VIEW_MODES = [
 		id: 'visualizer',
 		name: 'Visualizer',
 		icon: mdiAdjust,
-		desc: 'Visualize the database schema with tables and relationships'
+		desc: 'Visualize the database schema with tables and relationships',
+		desktop: true
 	},
 	{
 		id: 'auth',

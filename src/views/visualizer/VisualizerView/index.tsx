@@ -5,7 +5,7 @@ import { Splitter } from "~/components/Splitter";
 import { GraphPane } from "../GraphPane";
 import { useStoreValue } from "~/store";
 import { extractEdgeRecords } from "~/util/schema";
-import { random } from "graphology-layout";
+import { circular, random } from "graphology-layout";
 import { OptionsPane } from "../OptionsPane";
 import Sigma from "sigma";
 import { useStable } from "~/hooks/stable";
@@ -24,12 +24,16 @@ export function VisualizerView(props: VisualizerViewProps) {
 	});
 
 	const spreadNodes = useStable((graph: Graph) => {
-		random.assign(graph);
+		graph.nodes().forEach((node, i) => {
+			const angle = (i * 2 * Math.PI) / graph.order;
+
+			graph.setNodeAttribute(node, "x", 100 * Math.cos(angle));
+			graph.setNodeAttribute(node, "y", 100 * Math.sin(angle));
+		});
 
 		const layout = new ForceSupervisor(graph, {
 			settings: {
-				inertia: 0.6,
-				attraction: 0
+				
 			}
 		});
 		
@@ -57,7 +61,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 			if (!isEdge) {
 				graph.addNode(tableName, {
 					label: tableName,
-					size: 15
+					size: 12
 				});
 			}
 		}
@@ -84,7 +88,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 							graph.addDirectedEdgeWithKey(tableName, inTable, outTable, {
 								label: tableName,
 								type: 'arrow',
-								size: 5,
+								size: 3
 							});
 						}
 					}
