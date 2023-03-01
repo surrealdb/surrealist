@@ -1,13 +1,11 @@
-import { Button, NumberInput, Radio, Stack, Text, TextInput, Title } from "@mantine/core";
-import { FancyRadio } from "~/components/FancyRadio";
+import classes from './style.module.scss';
+import { Button, Kbd, Stack, Text, Title } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
-import { SourceMode } from "~/typings";
 import { Panel } from "~/components/Panel";
 
 export interface OptionsPaneProps {
-	sourceMode: SourceMode;
-	setSourceMode: (sourceMode: SourceMode) => void;
+	isOnline: boolean;
 	onGenerate: () => void;
 }
 
@@ -19,61 +17,41 @@ export function OptionsPane(props: OptionsPaneProps) {
 			<Stack spacing="xs" h="100%">
 				<div>
 					<Title mt="md" size={16} color={isLight ? 'light.6' : 'white'}>
-						Configuration
+						Database Visualizer
 					</Title>
 
-					<Text color="light.5">
-						How should we visualize
+					<Text color={isLight ? 'light.7' : 'light.3'} mt="sm">
+						The database visualizer view allows you to plot your tables and edges in a graph view.
+						You can use the Designer view to modify your schema and preview the changes in the visualizer.
+
+						<Title mt="md" size={14} color={isLight ? 'light.6' : 'light.0'}>
+							How it works
+						</Title>
+					
+						<ul className={classes.list}>
+							<li>
+								Edges are inferred from the schema fields <Kbd>type</Kbd> values
+							</li>
+							<li>
+								If there are multiple edges between two tables, only one is rendered.
+							</li>
+							<li>
+								A best attempt is made to position the nodes in a readable way.
+							</li>
+							<li>
+								You can press <Text span color="surreal">Shuffle nodes</Text> to rearrange the nodes in a random way.
+							</li>
+						</ul>
 					</Text>
 				</div>
-
-				<TextInput
-					label="Table"
-				/>
-
-				<NumberInput
-					label="Graph depth"
-					value={3}
-				/>
-
-				<NumberInput
-					label="Record limit"
-					value={3}
-				/>
-
-				<div>
-					<Title mt="md" size={16} color={isLight ? 'light.6' : 'white'}>
-						Source mode
-					</Title>
-
-					<Text color="light.5">
-						Choose how the graph is generated
-					</Text>
-				</div>
-				
-				<Radio.Group
-					value={props.sourceMode}
-					onChange={props.setSourceMode}
-					orientation="vertical"
-				>
-					<FancyRadio
-						value="schema"
-						title="Schema"
-						subtitle="Use the schema to generate the graph"
-					/>
-					<FancyRadio
-						value="infer"
-						title="Infer"
-						subtitle="Infer the graph from the database"
-					/>
-				</Radio.Group>
 
 				<Spacer />
 
 				<Button
 					onClick={props.onGenerate}
+					disabled={!props.isOnline}
 				>
-					Visualize
+					Shuffle nodes
 				</Button>
 			</Stack>
 		</Panel>
