@@ -32,9 +32,9 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 	const handleRemove = useStable((e: React.MouseEvent, index: number) => {
 		e.stopPropagation();
 		props.onRemove(index);
-		setEditingIndex(-1);
-		setIsEditing(false);
 	});
+
+	const editingData = props.value[editingIndex];
 
 	return (
 		<>
@@ -103,7 +103,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				}
 			>
 				<Stack>
-					{editingIndex >= 0 && props.children(props.value[editingIndex], editingIndex)}
+					{editingData && props.children(editingData, editingIndex)}
 				</Stack>
 				<Group mt="xl">
 					<Button

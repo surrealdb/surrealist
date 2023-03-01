@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { ActionIcon, Button, Group, Modal, ScrollArea, Text, TextInput, Title } from "@mantine/core";
-import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiViewSequential } from "@mdi/js";
+import { mdiClose, mdiLineScan, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { getActiveSurreal } from "~/surreal";
@@ -139,6 +139,17 @@ export function TablesPane(props: TablesPaneProps) {
 					{tablesFiltered.map(table => {
 						const isActive = selectedTable == table.schema.name;
 
+						let hasIn = false;
+						let hasOut = false;
+
+						table.fields.forEach(f => {
+							if (f.name === 'in') {
+								hasIn = true;
+							} else if (f.name === 'out') {
+								hasOut = true;
+							}
+						});
+
 						return (
 							<Group
 								py="xs"
@@ -156,7 +167,7 @@ export function TablesPane(props: TablesPaneProps) {
 								<Icon
 									style={{ flexShrink: 0 }}
 									color={isActive ? 'surreal' : isLight ? 'light.3' : 'light.5'}
-									path={mdiTable}
+									path={hasIn && hasOut ? mdiVectorLine : mdiTable}
 									size="sm"
 								/>
 
