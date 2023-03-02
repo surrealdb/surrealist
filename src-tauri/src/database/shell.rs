@@ -1,4 +1,4 @@
-// TODO Move shell implementation here
+use std::process::Command;
 
 // ----- Start command builder
 
@@ -60,4 +60,21 @@ pub fn build_kill_command(id: &u32) -> Vec<String> {
 		"-9".to_owned(),
 		id.to_string()
 	];
+}
+
+// ----- Command configuration
+
+#[cfg(target_os="windows")]
+pub fn configure_command(cmd: &mut Command) {
+	use std::os::windows::process::CommandExt;
+
+	cmd.creation_flags(0x08000000);
+}
+
+#[cfg(target_os="macos")]
+pub fn configure_command(cmd: &mut Command) {
+}
+
+#[cfg(target_os="linux")]
+pub fn configure_command(cmd: &mut Command) {
 }

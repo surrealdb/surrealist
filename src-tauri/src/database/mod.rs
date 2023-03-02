@@ -72,8 +72,11 @@ pub fn stop_database(state: tauri::State<DatabaseState>) -> Result<bool, String>
 ///
 fn kill_surreal_process(id: u32) {
 	let shell_cmd = shell::build_kill_command(&id);
+	let mut cmd_chain = Command::new(&shell_cmd[0]);
 
-	Command::new(&shell_cmd[0])
+	shell::configure_command(&mut cmd_chain);
+	
+	cmd_chain
 		.args(&shell_cmd[1..])
 		.output()
 		.expect("surreal process should be killed");
@@ -105,7 +108,11 @@ fn start_surreal_process(username: &str, password: &str, port: u32, driver: &str
 	}
 
 	let shell_cmd = shell::build_start_command(args);
-	let child_proc = Command::new(&shell_cmd[0])
+	let mut cmd_chain = Command::new(&shell_cmd[0]);
+
+	shell::configure_command(&mut cmd_chain);
+	
+	let child_proc = cmd_chain
 		.args(&shell_cmd[1..])
 		.stdout(Stdio::null())
 		.stderr(Stdio::piped())
