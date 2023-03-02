@@ -35,7 +35,7 @@ jobs:
       VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Information
-        runs: echo "Building Surrealist version $VERSION for ${{ matrix.platform }}"
+        run: echo "Building Surrealist version $VERSION for ${{ matrix.platform }}"
         
       - name: Code checkout
         uses: actions/checkout@v3
