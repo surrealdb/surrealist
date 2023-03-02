@@ -77,6 +77,7 @@ jobs:
           name: bundles-${{ matrix.platform }}
           path: ./src-tauri/target/release/bundle
   release:
+    name: Release binaries
     runs-on: ubuntu-latest
     needs:
       - version
@@ -92,10 +93,10 @@ jobs:
 
       - name: Rename binaries
         run: |
+          tar -czf ./surrealist-v${{ needs.version.outputs.version }}-darwin.tgz ./bundles-macos-latest/macos/Surrealist.app
           mv ./bundles-macos-latest/dmg/Surrealist_${{ needs.version.outputs.version }}_x64.dmg ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
-          mv ./bundles-macos-latest/macos/Surrealist.app ./surrealist-v${{ needs.version.outputs.version }}-darwin.app
           mv ./bundles-ubuntu-latest/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
-          mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64 ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
+          mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64.deb ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
           mv ./bundles-windows-latest/msi/Surrealist_${{ needs.version.outputs.version }}_x64_en-US.msi ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
 
       - name: Draft release
@@ -108,7 +109,7 @@ jobs:
           title: "v${{ needs.version.outputs.version }}"
           files: |
             ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
-            ./surrealist-v${{ needs.version.outputs.version }}-darwin.app
+            ./surrealist-v${{ needs.version.outputs.version }}-darwin.tgz
             ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
             ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
             ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
