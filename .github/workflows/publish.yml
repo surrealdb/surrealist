@@ -65,7 +65,7 @@ jobs:
           pnpm install
 
       - name: Build application
-        run: tauri build
+        run: pnpm tauri build
 
       - name: Upload web app (Linux)
         uses: actions/upload-pages-artifact@v1
