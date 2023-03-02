@@ -103,6 +103,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 				<TablesPane
 					isOnline={props.isOnline}
 					onSelectTable={setActiveTable}
+					withModification
 				/>
 			}
 			endPane={
