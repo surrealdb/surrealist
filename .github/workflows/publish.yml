@@ -89,29 +89,29 @@ jobs:
         run: |
           sudo apt install tree
           tree
-          ls
 
-      # - name: Rename binary (Windows)
-      #   run: |
-      #     mv ./surrealist.exe ./surrealist-${{ github.ref_name }}-windows-amd64.exe
-      #     mv ./surrealist-linux.tgz ./surrealist-${{ github.ref_name }}-linux-amd64.tgz
-      #     mv ./surrealist-amd.tgz ./surrealist-${{ github.ref_name }}-darwin-amd64.tgz
-      #     mv ./surrealist-arm.tgz ./surrealist-${{ github.ref_name }}-darwin-arm64.tgz
+      - name: Rename binaries
+        run: |
+          mv ./bundles-macos-latest/dmg/Surrealist_${{ needs.version.outputs.version }}_x64.dmg ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
+          mv ./bundles-macos-latest/macos/Surrealist.app ./surrealist-v${{ needs.version.outputs.version }}-darwin.app
+          mv ./bundles-ubuntu-latest/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
+          mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64 ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
+          mv ./bundles-windows-latest/msi/Surrealist_${{ needs.version.outputs.version }}_x64_en-US.msi ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
 
-      # - name: Draft release
-      #   uses: "marvinpinto/action-automatic-releases@latest"
-      #   with:
-      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-      #     automatic_release_tag: "v$VERSION"
-      #     prerelease: false
-      #     draft: true
-      #     title: "${{ github.ref_name }}"
-      #     files: |
-      #       ./surrealist-${{ github.ref_name }}-windows-amd64.exe
-      #       ./surrealist-${{ github.ref_name }}-linux-amd64.tgz
-      #       ./surrealist-${{ github.ref_name }}-darwin-amd64.tgz
-      #       ./surrealist-${{ github.ref_name }}-darwin-arm64.tgz
+      - name: Draft release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "v${{ needs.version.outputs.version }}"
+          prerelease: false
+          draft: true
+          title: "v${{ needs.version.outputs.version }}"
+          files: |
+            ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
+            ./surrealist-v${{ needs.version.outputs.version }}-darwin.app
+            ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
+            ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
+            ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
       
-      # - name: Publish web app (Linux)
-      #   uses: actions/deploy-pages@v1
-      #   id: deployment
+      - name: Publish web app (Linux)
+        uses: actions/deploy-pages@v1
