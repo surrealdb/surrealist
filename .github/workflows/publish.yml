@@ -9,15 +9,34 @@ on:
 permissions: write-all
 
 jobs:
+  version:
+    name: Extract version
+    runs-on: ubuntu-20.04
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Extract version
+        id: extract_version
+        uses: Saionaro/extract-package-version@v1.2.1
+
   package:
     name: Package
     strategy:
       fail-fast: false
       matrix:
         node-version: [ 18 ] 
-        platform: [ macos-latest, ubuntu-latest, windows-latest ]
+        platform: [ macos-latest, ubuntu-20.04, windows-latest ]
     runs-on: ${{ matrix.platform }}
+    needs: version
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
     steps:
+      - name: Information
+        runs: echo "Building Surrealist version $VERSION for ${{ matrix.platform }}"
+        
       - name: Code checkout
         uses: actions/checkout@v3
 
@@ -35,7 +54,7 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - name: Linux dependencies
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt update
           sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev
@@ -44,22 +63,93 @@ jobs:
         run: |
           npm i -g pnpm
           pnpm install
-      
+
       - name: Build application
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tagName: v__VERSION__
-          releaseName: 'v__VERSION__'
-          releaseDraft: true
+        run: tauri build
 
       - name: Upload web app (Linux)
         uses: actions/upload-pages-artifact@v1
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.platform == 'ubuntu-20.04'
         with:
           path: ./dist
-  
-      - name: Publish web app (Linux)
-        uses: actions/deploy-pages@v1
-        id: deployment
+      
+      - name: Upload binary (Windows EXE)
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'windows-latest'
+        with:
+          name: surrealist-windows-exe
+          path: ./src-tauri/target/release/Surrealist.exe
+
+      - name: Upload binary (Windows MSI)
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'windows-latest'
+        with:
+          name: surrealist-windows-msi
+          path: ./src-tauri/target/release/bundle/msi/Surrealist_${VERSION}.x64_en-US.msi
+      
+      - name: Upload binary (Darwin APP)
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'darwin-latest'
+        with:
+          name: surrealist-darwin-app
+          path: ./src-tauri/target/release/bundle/macos/Surrealist.app
+      
+      - name: Upload binary (Linux EXEC)
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'ubuntu-20.04'
+        with:
+          name: surrealist-linux-exec
+          path: ./src-tauri/target/release/surrealist
+      
+      - name: Upload binary (Linux APP IMAGE)
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'ubuntu-20.04'
+        with:
+          name: surrealist-linux-appimage
+          path: ./src-tauri/target/release/bundle/appimage/surrealist_${VERSION}_amd64.AppImage
+
+      - name: Upload binary (Linux DEB)
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'ubuntu-20.04'
+        with:
+          name: surrealist-linux-deb
+          path: ./src-tauri/target/release/bundle/deb/surrealist_${VERSION}_amd64.deb
+
+  release:
+    runs-on: ubuntu-20.04
+    needs:
+      - version
+      - package
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        run: |
+          echo "$VERSION"
+          ls
+
+      # - name: Rename binary (Windows)
+      #   run: |
+      #     mv ./surrealist.exe ./surrealist-${{ github.ref_name }}-windows-amd64.exe
+      #     mv ./surrealist-linux.tgz ./surrealist-${{ github.ref_name }}-linux-amd64.tgz
+      #     mv ./surrealist-amd.tgz ./surrealist-${{ github.ref_name }}-darwin-amd64.tgz
+      #     mv ./surrealist-arm.tgz ./surrealist-${{ github.ref_name }}-darwin-arm64.tgz
+
+      # - name: Draft release
+      #   uses: "marvinpinto/action-automatic-releases@latest"
+      #   with:
+      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+      #     automatic_release_tag: "v$VERSION"
+      #     prerelease: false
+      #     draft: true
+      #     title: "${{ github.ref_name }}"
+      #     files: |
+      #       ./surrealist-${{ github.ref_name }}-windows-amd64.exe
+      #       ./surrealist-${{ github.ref_name }}-linux-amd64.tgz
+      #       ./surrealist-${{ github.ref_name }}-darwin-amd64.tgz
+      #       ./surrealist-${{ github.ref_name }}-darwin-arm64.tgz
+      
+      # - name: Publish web app (Linux)
+      #   uses: actions/deploy-pages@v1
+      #   id: deployment
