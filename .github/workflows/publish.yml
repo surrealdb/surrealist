@@ -3,45 +3,21 @@ name: Publish Surrealist
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*"
+    branches:
+      - release
 
 permissions: write-all
 
 jobs:
-  doctor:
-    name: Wails Doctor
-    strategy:
-      matrix:
-        go-version: [ 1.19 ]
-        platform: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - name: Setup golang
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-
-      - name: Setup wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.2.0
-
-      - name: Wails Doctor
-        run: wails doctor
-  
   package:
     name: Package
     strategy:
+      fail-fast: false
       matrix:
-        go-version: [ 1.19 ]
         node-version: [ 18 ] 
         platform: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Setup golang
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-        
       - name: Code checkout
         uses: actions/checkout@v3
 
@@ -49,126 +25,42 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      
+      - name: install Rust
+        uses: dtolnay/rust-toolchain@stable
 
-      - name: Linux apt update
-        run: sudo apt update
-        if: matrix.platform == 'ubuntu-latest'
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
 
       - name: Linux dependencies
-        run: sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev
-        if: matrix.platform == 'ubuntu-latest'
-
-      - name: Setup pnpm
-        run: npm i -g pnpm
-
-      - name: Setup wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.2.0
-
-      - name: Build Wails app
-        run: wails build
-
-      - name: Zip binary (Linux)
         if: matrix.platform == 'ubuntu-latest'
         run: |
-          cd ./build/bin
-          tar -czf ../../surrealist-linux.tgz ./surrealist
+          sudo apt update
+          sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev
 
-      - name: Zip binary (Darwin AMD)
-        if: matrix.platform == 'macos-latest'
+      - name: Frontend dependencies
         run: |
-          cd ./build/bin
-          tar -czf ../../surrealist-amd.tgz ./Surrealist.app
-          rm -rf ./Surrealist.app
+          npm i -g pnpm
+          pnpm install
       
-      - name: Build Wails app (Darwin ARM)
-        if: matrix.platform == 'macos-latest'
-        run: wails build -platform darwin/arm64
-      
-      - name: Zip binary (Darwin ARM)
-        if: matrix.platform == 'macos-latest'
-        run: |
-          cd ./build/bin
-          tar -czf ../../surrealist-arm.tgz ./Surrealist.app
-          rm -rf ./Surrealist.app
-      
-      - name: Upload binary (Windows)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'windows-latest'
+      - name: Build application
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: surrealist-windows-amd64
-          path: ./build/bin/surrealist.exe
-      
-      - name: Upload binary (Linux)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'ubuntu-latest'
-        with:
-          name: surrealist-linux-amd64
-          path: ./surrealist-linux.tgz
+          tagName: v__VERSION__
+          releaseName: 'v__VERSION__'
+          releaseDraft: true
 
-      - name: Upload binary (Darwin AMD)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'macos-latest'
-        with:
-          name: surrealist-darwin-amd64
-          path: ./surrealist-amd.tgz
-      
-      - name: Upload binary (Darwin ARM)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'macos-latest'
-        with:
-          name: surrealist-darwin-arm64
-          path: ./surrealist-arm.tgz
-      
       - name: Upload web app (Linux)
         uses: actions/upload-pages-artifact@v1
         if: matrix.platform == 'ubuntu-latest'
         with:
-          path: ./frontend/dist
+          path: ./dist
   
-  release:
-    runs-on: ubuntu-latest
-    needs: package
-    steps:
-      - name: Download package (Windows)
-        uses: actions/download-artifact@v3
-        with:
-          name: surrealist-windows-amd64
-
-      - name: Download package (Linux)
-        uses: actions/download-artifact@v3
-        with:
-          name: surrealist-linux-amd64
-
-      - name: Download package (Darwin AMD)
-        uses: actions/download-artifact@v3
-        with:
-          name: surrealist-darwin-amd64
-
-      - name: Download package (Darwin ARM)
-        uses: actions/download-artifact@v3
-        with:
-          name: surrealist-darwin-arm64
-
-      - name: Rename binary (Windows)
-        run: |
-          mv ./surrealist.exe ./surrealist-${{ github.ref_name }}-windows-amd64.exe
-          mv ./surrealist-linux.tgz ./surrealist-${{ github.ref_name }}-linux-amd64.tgz
-          mv ./surrealist-amd.tgz ./surrealist-${{ github.ref_name }}-darwin-amd64.tgz
-          mv ./surrealist-arm.tgz ./surrealist-${{ github.ref_name }}-darwin-arm64.tgz
-
-      - name: Draft release
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
-          draft: true
-          title: "${{ github.ref_name }}"
-          files: |
-            ./surrealist-${{ github.ref_name }}-windows-amd64.exe
-            ./surrealist-${{ github.ref_name }}-linux-amd64.tgz
-            ./surrealist-${{ github.ref_name }}-darwin-amd64.tgz
-            ./surrealist-${{ github.ref_name }}-darwin-arm64.tgz
-      
       - name: Publish web app (Linux)
         uses: actions/deploy-pages@v1
         id: deployment

@@ -1,7 +1,7 @@
 {
 	"name": "frontend",
 	"private": true,
-	"version": "1.5.2",
+	"version": "1.6.0",
 	"type": "module",
 	"author": "Starlane Studios",
 	"scripts": {
@@ -10,7 +10,8 @@
 		"preview": "vite preview",
 		"tauri": "tauri",
 		"tauri:dev": "tauri dev",
-		"tauri:build": "tauri build"
+		"tauri:build": "tauri build",
+		"release": "git push origin main:release --force"
 	},
 	"dependencies": {
 		"@devbookhq/splitter": "^1.4.0",
