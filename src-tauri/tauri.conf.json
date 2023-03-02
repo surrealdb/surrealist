@@ -51,7 +51,11 @@
 			"windows": {
 				"certificateThumbprint": null,
 				"digestAlgorithm": "sha256",
-				"timestampUrl": ""
+				"timestampUrl": "",
+				"wix": {
+					"bannerPath": "res/wix-banner.png",
+					"dialogImagePath": "res/wix-image.png"
+				}
 			}
 		},
 		"security": {
