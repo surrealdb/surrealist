@@ -18,6 +18,7 @@
 - Improved matching of certain types in explorer view
 - The current view is now scoped to the tab instead of global
 - Edge tables now display a different icon from normal tables
+- Use left and right arrow keys to cycle between the available modes
 - Fixed crash on connecting to insecure endpoint
 
 ## 1.5.2 - Bug fixes

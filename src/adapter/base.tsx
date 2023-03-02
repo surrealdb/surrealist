@@ -1,3 +1,5 @@
+import { TableDefinition } from "~/typings";
+
 export interface SurrealistAdapter {
 
 	/**
@@ -65,5 +67,10 @@ export interface SurrealistAdapter {
 	 * @param url The URL to open
 	 */
 	openUrl(url: string): Promise<void>;
+
+	/**
+	 * Fetch the schema from the database
+	 */
+	fetchSchema(): Promise<TableDefinition[]>
 
 }

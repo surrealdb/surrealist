@@ -6,7 +6,7 @@ import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
 import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
-import { showError, updateConfig, updateTitle } from '~/util/helpers';
+import { mod, showError, updateConfig, updateTitle } from '~/util/helpers';
 import { TabBar } from '../TabBar';
 import { Form } from '../Form';
 import { useImmer } from 'use-immer';
@@ -227,20 +227,6 @@ export function Scaffold() {
 		store.dispatch(actions.setConsoleEnabled(true));
 	});
 
-	useHotkeys([
-		['ctrl+q', () => {
-			setViewMode('query');
-		}],
-		['ctrl+e', () => {
-			setViewMode('explorer');
-		}],
-	], []);
-
-	useHotkeys([
-		['F9', () => sendQuery()],
-		['mod+Enter', () => sendQuery()],
-	]);
-
 	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
 	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
@@ -252,6 +238,33 @@ export function Scaffold() {
 		e.stopPropagation();
 		sendQuery();
 	});
+
+	const relativeViewMode = useStable((value: number) => {
+		let available = VIEW_MODES;
+
+		if (!(adapter instanceof DesktopAdapter)) {
+			available = available.filter((v: any) => !v.desktop) as any;
+		}
+
+		const current = available.findIndex((v: any) => v.id == viewMode);
+		const next = mod(current + value, available.length);
+
+		setViewMode(VIEW_MODES[next].id);
+	});
+
+	useHotkeys([
+		['ctrl+arrowLeft', () => {
+			relativeViewMode(-1);
+		}],
+		['ctrl+arrowRight', () => {
+			relativeViewMode(1);
+		}],
+	], []);
+
+	useHotkeys([
+		['F9', () => sendQuery()],
+		['mod+Enter', () => sendQuery()],
+	]);
 
 	return (
 		<div className={classes.root}>

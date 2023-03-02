@@ -1,3 +1,5 @@
+import { getActiveSurreal } from "~/surreal";
+import { TableDefinition } from "~/typings";
 import { SurrealistAdapter } from "./base";
 
 /**
@@ -37,6 +39,34 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	async openUrl() {
 		throw new Error('Not supported');
+	}
+
+	async fetchSchema(): Promise<TableDefinition[]> {
+		const surreal = getActiveSurreal();
+		const dbResponse = await surreal.query('INFO FOR DB');
+		const dbResult = dbResponse[0].result;
+
+		if (!dbResult) {
+			return [];
+		}
+
+		return Object.keys(dbResult.tb).map(name => ({
+			schema: {
+				name: name,
+				view: null,
+				drop: false,
+				schemafull: false,
+				permissions: {
+					create: '',
+					select: '',
+					update: '',
+					delete: ''
+				}
+			},
+			fields: [],
+			indexes: [],
+			events: []
+		}));
 	}
 
 };

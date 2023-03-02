@@ -88,3 +88,13 @@ export function showError(title: string, subtitle: string) {
 export function printLog(label: string, color: string, ...message: any[]) {
 	console.log(`%c${label}:`, `color: ${color}; font-weight: bold`, ...message);
 }
+
+/**
+ * Returns the mod of the given numbers, even if the result is negative
+ * 
+ * @param n The number to mod
+ * @param m The mod
+ */
+export function mod(n: number, m: number) {
+	return ((n % m) + m) % m;
+}
