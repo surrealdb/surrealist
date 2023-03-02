@@ -4,14 +4,18 @@
 - Added designer view
 	- Allows graphically creating and modifying schemas
 	- Supports permissions, fields, indexes, and events
-	- Creating new tables and edge tables
+	- Create new tables and edge tables
+- Added visualizer view
+	- Plots your tables and relationships into a graph
+	- Provides a useful overview of your database design
+	- Early stages, will gain more functionality in the future
 - Added authentication view
 	- Manage namespace & database logins
 	- Manage database scopes
 - Rewritten backend in Rust
 	- Will allow for more intelligent features in the future
 	- Dev tools are now available in release builds (Ctrl + Shift + I)
-- Added the ability to filter table lists
+- Added the ability to search table lists
 - Allow executing queries from variables pane
 - Highlighting for single quotes and &lt;future&gt;
 - Added "Execute selection" option to query editor context menu
@@ -19,6 +23,7 @@
 - The current view is now scoped to the tab instead of global
 - Edge tables now display a different icon from normal tables
 - Use left and right arrow keys to cycle between the available modes
+- Fixed incorrect UI state due to lack of access (anonymous & scope auth)
 - Fixed crash on connecting to insecure endpoint
 
 ## 1.5.2 - Bug fixes
