@@ -31,11 +31,9 @@ jobs:
         platform: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.platform }}
     needs: version
-    env:
-      VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Information
-        run: echo "Building Surrealist version $VERSION for ${{ matrix.platform }}"
+        run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for ${{ matrix.platform }}"
         
       - name: Code checkout
         uses: actions/checkout@v3
@@ -67,68 +65,30 @@ jobs:
       - name: Build application
         run: pnpm tauri build
 
-      - name: Upload web app (Linux)
+      - name: Upload web app
         uses: actions/upload-pages-artifact@v1
         if: matrix.platform == 'ubuntu-latest'
         with:
           path: ./dist
-      
-      - name: Upload binary (Windows EXE)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'windows-latest'
-        with:
-          name: surrealist-windows-exe
-          path: ./src-tauri/target/release/Surrealist.exe
 
-      - name: Upload binary (Windows MSI)
+      - name: Upload bundles
         uses: actions/upload-artifact@v2
-        if: matrix.platform == 'windows-latest'
         with:
-          name: surrealist-windows-msi
-          path: ./src-tauri/target/release/bundle/msi/Surrealist_${VERSION}.x64_en-US.msi
-      
-      - name: Upload binary (Darwin APP)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'darwin-latest'
-        with:
-          name: surrealist-darwin-app
-          path: ./src-tauri/target/release/bundle/macos/Surrealist.app
-      
-      - name: Upload binary (Linux EXEC)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'ubuntu-latest'
-        with:
-          name: surrealist-linux-exec
-          path: ./src-tauri/target/release/surrealist
-      
-      - name: Upload binary (Linux APP IMAGE)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'ubuntu-latest'
-        with:
-          name: surrealist-linux-appimage
-          path: ./src-tauri/target/release/bundle/appimage/surrealist_${VERSION}_amd64.AppImage
-
-      - name: Upload binary (Linux DEB)
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'ubuntu-latest'
-        with:
-          name: surrealist-linux-deb
-          path: ./src-tauri/target/release/bundle/deb/surrealist_${VERSION}_amd64.deb
-
+          name: bundles-${{ matrix.platform }}
+          path: ./src-tauri/target/release/bundle
   release:
     runs-on: ubuntu-latest
     needs:
       - version
       - package
-    env:
-      VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
 
       - name: Debug
         run: |
-          echo "$VERSION"
+          sudo apt install tree
+          tree
           ls
 
       # - name: Rename binary (Windows)
