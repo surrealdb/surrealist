@@ -25,7 +25,7 @@ export function GraphPane(props: GraphPaneProps) {
 	const nodeLabelColor = isLight ? theme.colors.dark[9] : theme.colors.light[0];
 	const edgeLabelColor = isLight ? theme.colors.dark[3] : theme.colors.light[2];
 
-	const showGraph = props.isOnline && hasAccess;
+	const showGraph = props.isOnline && hasAccess && props.graph;
 	
 	useEffect(() => {
 		const instance = new Sigma(props.graph || new Graph(), ref.current!, {
@@ -88,10 +88,16 @@ export function GraphPane(props: GraphPaneProps) {
 						You are using an unsupported authentication mode
 					</Text>
 				</Center>
-			) : !props.isOnline && (
+			) : !props.isOnline ? (
 				<Center h="100%">
 					<Text color="gray.5">
 						You must be connected to a database to view the schema graph
+					</Text>
+				</Center>
+			) : !props.graph && (
+				<Center h="100%">
+					<Text color="gray.5">
+						Press "Visualize" to view the schema graph for the current database
 					</Text>
 				</Center>
 			)}

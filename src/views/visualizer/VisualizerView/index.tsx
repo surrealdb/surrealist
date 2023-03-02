@@ -1,6 +1,6 @@
 import ForceSupervisor from "graphology-layout-force/worker";
 import Graph, { MultiDirectedGraph } from "graphology";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Splitter } from "~/components/Splitter";
 import { GraphPane } from "../GraphPane";
 import { useStoreValue } from "~/store";
@@ -17,6 +17,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 	const layoutRef = useRef<any>(null);
 	const schema = useStoreValue(state => state.databaseSchema);
 	const sigmaRef = useRef<Sigma | null>(null);
+	const [graph, setGraph] = useState<MultiDirectedGraph | null>(null);
 
 	const saveSigma = useStable((sigma: Sigma) => {
 		sigmaRef.current = sigma;
@@ -43,12 +44,6 @@ export function VisualizerView(props: VisualizerViewProps) {
 	})
 
 	const refreshGraph = useStable(() => {
-		if (sigmaRef.current) {
-			spreadNodes(sigmaRef.current.getGraph());
-		}
-	});
-
-	const graph = useMemo(() => {
 		const graph = new MultiDirectedGraph();
 		const data = schema.map(table => [
 			table.schema.name,
@@ -70,35 +65,41 @@ export function VisualizerView(props: VisualizerViewProps) {
 			if (isEdge) {
 				for (const inTable of inTables) {
 					for (const outTable of outTables) {
-						const existing = graph.edges(inTable, outTable)[0];
+						try {
+							const existing = graph.edges(inTable, outTable)[0];
 
-						if (existing) {
-							const label = graph.getEdgeAttribute(existing, 'label');
-							const condensed = graph.getEdgeAttribute(existing, 'condensed');
-
-							if (condensed) {
-								continue;
+							if (existing) {
+								const label = graph.getEdgeAttribute(existing, 'label');
+								const condensed = graph.getEdgeAttribute(existing, 'condensed');
+	
+								if (condensed) {
+									continue;
+								}
+	
+								graph.setEdgeAttribute(existing, 'label', `${label} & more`);
+								graph.setEdgeAttribute(existing, 'condensed', true);
+								graph.setEdgeAttribute(existing, 'type', 'line');
+							} else {
+								graph.addDirectedEdgeWithKey(tableName, inTable, outTable, {
+									label: tableName,
+									type: 'arrow',
+									size: 3
+								});
 							}
-
-							graph.setEdgeAttribute(existing, 'label', `${label} & more`);
-							graph.setEdgeAttribute(existing, 'condensed', true);
-							graph.setEdgeAttribute(existing, 'type', 'line');
-						} else {
-							graph.addDirectedEdgeWithKey(tableName, inTable, outTable, {
-								label: tableName,
-								type: 'arrow',
-								size: 3
-							});
+						} catch(_) {
+							console.warn('Skipping edge', tableName);
 						}
 					}
 				}
 			}
 		}
 
-		spreadNodes(graph);
+		setGraph(graph);
 
-		return graph;
-	}, [schema]);
+		if (sigmaRef.current) {
+			spreadNodes(graph);
+		}
+	});
 
 	useEffect(() => {
 		return () => {

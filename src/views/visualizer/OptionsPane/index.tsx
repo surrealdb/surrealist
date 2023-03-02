@@ -39,7 +39,7 @@ export function OptionsPane(props: OptionsPaneProps) {
 								A best attempt is made to position the nodes in a readable way.
 							</li>
 							<li>
-								You can press <Text span color="surreal">Shuffle nodes</Text> to rearrange the nodes in a random way.
+								You can press <Text span color="surreal">Visualize</Text> to update the graph and rearrange the nodes in a random way.
 							</li>
 						</ul>
 					</Text>
@@ -51,7 +51,7 @@ export function OptionsPane(props: OptionsPaneProps) {
 					onClick={props.onGenerate}
 					disabled={!props.isOnline}
 				>
-					Shuffle nodes
+					Visualize
 				</Button>
 			</Stack>
 		</Panel>
