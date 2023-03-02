@@ -6,6 +6,7 @@ import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { actions, store } from "~/store";
 import { SurrealistAdapter } from "./base";
+import { printLog } from '~/util/helpers';
 
 const WAIT_DURATION = 1000;
 
@@ -81,6 +82,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	initDatabaseEvents() {
 
 		listen('database:start', () => {
+			printLog('Runner', '#f2415f', 'Received database start signal');
+
 			this.#startTask = setTimeout(() => {
 				store.dispatch(actions.confirmServing());
 	
@@ -102,6 +105,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	
 		listen('database:stop', () => {
+			printLog('Runner', '#f2415f', 'Received database stop signal');
+
 			if (this.#startTask) {
 				clearTimeout(this.#startTask);
 			}
@@ -129,6 +134,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	
 		listen('database:error', (event) => {
+			printLog('Runner', '#f2415f', 'Received database error signal');
+
 			const msg = event.payload as string;
 			
 			if (this.#startTask) {

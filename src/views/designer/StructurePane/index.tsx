@@ -42,8 +42,6 @@ export function StructurePane(props: SchemaPaneProps) {
 			const query = buildDefinitionQueries(original, data);
 			const surreal = getActiveSurreal();
 
-			console.log('executing', query);
-
 			surreal.query(query).then(() => {
 				fetchDatabaseSchema();
 			}).catch(err => {

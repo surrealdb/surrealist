@@ -87,7 +87,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 								});
 							}
 						} catch(_) {
-							console.warn('Skipping edge', tableName);
+							console.warn('Skipping edge', tableName, 'from', inTable, 'to', outTable);
 						}
 					}
 				}

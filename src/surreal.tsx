@@ -1,6 +1,7 @@
 import { uid } from "radash";
 import { store } from "./store";
 import { AuthMode } from "./typings";
+import { printLog } from "./util/helpers";
 
 export interface SurrealConnection {
 	namespace: string;
@@ -91,6 +92,8 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	 * Send a general query to the database
 	 */
 	const query = async (query: string, params: Record<string, any>) => {
+		printLog('Query', '#ff1abe', query);
+
 		return message('query', params ? [query, params] : [query]);
 	};
 

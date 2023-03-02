@@ -77,3 +77,14 @@ export function showError(title: string, subtitle: string) {
 		)
 	});
 }
+
+/**
+ * Print a log message to the console
+ * 
+ * @param label The label to use
+ * @param color The color to use
+ * @param message The message to print
+ */
+export function printLog(label: string, color: string, ...message: any[]) {
+	console.log(`%c${label}:`, `color: ${color}; font-weight: bold`, ...message);
+}
