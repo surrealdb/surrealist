@@ -103,36 +103,103 @@ export function App() {
 			{/* Font registration */}
 			<Global
 				styles={[
+					// Montserrat Regular
 					{
 						'@font-face': {
 							fontFamily: 'Montserrat',
-							src: `url('/Montserrat-VariableFont.ttf') format("truetype-variations")`,
-							fontWeight: `400 500 600 700`
+							src: `url('/Montserrat-Regular.ttf')`,
+							fontWeight: 400
 						}
 					},
 					{
 						'@font-face': {
 							fontFamily: 'Montserrat',
-							src: `url('/Montserrat-Italic-VariableFont.ttf') format("truetype-variations")`,
-							fontWeight: `400 500 600 700`,
+							src: `url('/Montserrat-Medium.ttf')`,
+							fontWeight: 500
+						}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-SemiBold.ttf')`,
+							fontWeight: 600
+						}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-Bold.ttf')`,
+							fontWeight: 700
+						}
+					},
+
+					// Montserrat Italic
+					{
+						'@font-face': {
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-RegularItalic.ttf')`,
+							fontWeight: 400,
 							fontStyle: 'italic'
 						}
 					},
 					{
 						'@font-face': {
-							fontFamily: 'Jetbrains Mono',
-							src: `url('/JetBrainsMono-VariableFont.ttf') format("truetype-variations")`,
-							fontWeight: `400 700`
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-MediumItalic.ttf')`,
+							fontWeight: 500,
+							fontStyle: 'italic'
 						}
 					},
 					{
 						'@font-face': {
-							fontFamily: 'Jetbrains Mono',
-							src: `url('/JetBrainsMono-Italic-VariableFont.ttf') format("truetype-variations")`,
-							fontWeight: `400 700`,
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-SemiBoldItalic.ttf')`,
+							fontWeight: 600,
 							fontStyle: 'italic'
 						}
-					}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'Montserrat',
+							src: `url('/Montserrat-BoldItalic.ttf')`,
+							fontWeight: 700,
+							fontStyle: 'italic'
+						}
+					},
+
+					// JetBrains Mono Regular
+					{
+						'@font-face': {
+							fontFamily: 'JetBrains Mono',
+							src: `url('/JetBrainsMono-Regular.ttf')`,
+							fontWeight: 400
+						}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'JetBrains Mono',
+							src: `url('/JetBrainsMono-Bold.ttf')`,
+							fontWeight: 700
+						}
+					},
+					
+					// JetBrains Mono Italic
+					{
+						'@font-face': {
+							fontFamily: 'JetBrains Mono',
+							src: `url('/JetBrainsMono-RegularItalic.ttf')`,
+							fontWeight: 400,
+							fontStyle: 'italic'
+						}
+					},
+					{
+						'@font-face': {
+							fontFamily: 'JetBrains Mono',
+							src: `url('/JetBrainsMono-BoldItalic.ttf')`,
+							fontWeight: 700,
+							fontStyle: 'italic'
+						}
+					},
 				]}
 			/>
 
