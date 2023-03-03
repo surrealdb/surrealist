@@ -1,13 +1,18 @@
 import classes from './style.module.scss';
 import { Box, Text, useMantineTheme } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
-import { MouseEvent, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { renderDataCell } from './datatypes';
 import { OpenFn, ColumnSort } from '~/typings';
 import { useIsLight } from '~/hooks/theme';
 import { useStable } from '~/hooks/stable';
 import { Icon } from '../Icon';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
+import { isObject } from 'radash';
+
+function isRenderable(value: any) {
+	return Array.isArray(value) && value.every(v => isObject(v));
+}
 
 interface DataTableProps {
 	data: any;
@@ -39,7 +44,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange }
 		const keys: string[] = [];
 		const values: any[] = [];
 	
-		if (Array.isArray(data)) {
+		if (isRenderable(data)) {
 			for (let i = 0; i < data.length; i++) {
 				const row: any = {};
 
@@ -123,7 +128,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange }
 		});
 	}, [keys, values, isLight]);
 
-	if (!Array.isArray(data)) {
+	if (!isRenderable(data)) {
 		return (
 			<Text color="light.4">
 				Result could not be displayed as a table.
