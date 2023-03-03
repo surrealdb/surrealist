@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.6.0 - Schema management
+## 1.6.1 - Schema management
 - Added designer view
 	- Allows graphically creating and modifying schemas
 	- Supports permissions, fields, indexes, and events
