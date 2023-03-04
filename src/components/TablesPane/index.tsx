@@ -34,7 +34,7 @@ export function TablesPane(props: TablesPaneProps) {
 	const [search, setSearch] = useInputState('');
 	const schema = useStoreValue(state => state.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
-	const tableList = useTableNames();
+	const tableList = useTableNames('TABLE');
 
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();

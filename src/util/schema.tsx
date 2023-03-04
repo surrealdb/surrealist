@@ -40,3 +40,13 @@ export function extractEdgeRecords(table: TableDefinition): [boolean, string[], 
 
 	return [hasIn && hasOut, inRecords, outRecords];
 }
+
+/**
+ * Returns true if the table is an edge table
+ * 
+ * @param table The table to check
+ * @returns True if the table is an edge table
+ */
+export function isEdgeTable(table: TableDefinition) {
+	return extractEdgeRecords(table)[0];
+}
