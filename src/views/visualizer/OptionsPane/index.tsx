@@ -41,7 +41,10 @@ export function OptionsPane(props: OptionsPaneProps) {
 								A best attempt is made to position the nodes in a readable way.
 							</li>
 							<li>
-								You can press <Text span color="surreal">Visualize</Text> to update the graph and rearrange the nodes in a random way.
+								Press <Text span color={isLight ? 'black' : 'light.0'}>Visualize</Text> to generate a graph of the current database schema.
+							</li>
+							<li>
+								Press <Text span color={isLight ? 'black' : 'light.0'}>Save snapshot</Text> to save the current graph as an image.
 							</li>
 						</ul>
 					</Text>
