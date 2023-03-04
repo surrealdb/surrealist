@@ -6,7 +6,7 @@ import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { actions, store } from "~/store";
 import { SurrealistAdapter } from "./base";
-import { printLog } from '~/util/helpers';
+import { extractTypeList, printLog } from '~/util/helpers';
 import { getActiveSurreal } from '~/surreal';
 import { map } from 'radash';
 import { TableSchema, TableField, TableIndex, TableEvent } from '~/typings';
@@ -117,12 +117,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 				let kindGeometry: string[] = [];
 
 				if (field.kind.startsWith('record')) {
-					kindTables = field.kind.replace('record(', '').replace(')', '').split(',');
+					kindTables = extractTypeList(field.kind, 'record');
 					kind = 'record';
 				}
 
 				if (field.kind.startsWith('geometry')) {
-					kindGeometry = field.kind.replace('geometry(', '').replace(')', '').split(',');
+					kindGeometry = extractTypeList(field.kind, 'geometry');
 					kind = 'geometry';
 				}
 

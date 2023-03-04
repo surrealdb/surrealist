@@ -98,3 +98,18 @@ export function printLog(label: string, color: string, ...message: any[]) {
 export function mod(n: number, m: number) {
 	return ((n % m) + m) % m;
 }
+
+/**
+ * Extracts items out of the syntax `prefix(item1, item2, item3)`
+ * 
+ * @param value The input string
+ * @param prefix The prefix to trim
+ * @returns The list of items
+ */
+export function extractTypeList(input: string, prefix: string) {
+	return input
+		.replace(`${prefix}(`, '')
+		.replace(')', '')
+		.split(',')
+		.map(t => t.trim());
+}
