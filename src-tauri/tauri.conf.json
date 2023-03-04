@@ -19,6 +19,12 @@
 			},
 			"shell": {
 				"open": true
+			},
+			"fs": {
+				"writeFile": true
+			},
+			"dialog": {
+				"save": true
 			}
 		},
 		"bundle": {

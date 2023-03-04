@@ -6,7 +6,9 @@ import { Panel } from "~/components/Panel";
 
 export interface OptionsPaneProps {
 	isOnline: boolean;
+	canSnapshot: boolean;
 	onGenerate: () => void;
+	onSnapshot: () => void;
 }
 
 export function OptionsPane(props: OptionsPaneProps) {
@@ -46,6 +48,15 @@ export function OptionsPane(props: OptionsPaneProps) {
 				</div>
 
 				<Spacer />
+
+				<Button
+					color="light"
+					variant="light"
+					onClick={props.onSnapshot}
+					disabled={!props.isOnline || !props.canSnapshot}
+				>
+					Save snapshot
+				</Button>
 
 				<Button
 					onClick={props.onGenerate}

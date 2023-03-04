@@ -8,22 +8,33 @@ import { OptionsPane } from "../OptionsPane";
 import { useStable } from "~/hooks/stable";
 import { circular } from 'graphology-layout';
 import { inferSettings } from 'graphology-layout-forceatlas2';
-import Sigma from "sigma";
+import { Button, Checkbox, Group, Modal, NumberInput, Stack, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { useIsLight } from "~/hooks/theme";
 import FA2Layout from 'graphology-layout-forceatlas2/worker';
+import Sigma from "sigma";
+import { Form } from "~/components/Form";
+import { save } from '@tauri-apps/api/dialog';
+import { writeBinaryFile } from '@tauri-apps/api/fs';
+import { Spacer } from "~/components/Spacer";
+import { createSnapshot } from "./snapshot";
+import { useInputState } from "@mantine/hooks";
+import { Settings } from "sigma/settings";
 
 export interface VisualizerViewProps {
 	isOnline: boolean;
 }
 
 export function VisualizerView(props: VisualizerViewProps) {
+	const isLight = useIsLight();
+	const theme = useMantineTheme();
 	const layoutRef = useRef<any>(null);
 	const schema = useStoreValue(state => state.databaseSchema);
-	const sigmaRef = useRef<Sigma | null>(null);
+	const [sigma, setSigma] = useState<Sigma | null>(null);
 	const [graph, setGraph] = useState<MultiDirectedGraph | null>(null);
-
-	const saveSigma = useStable((sigma: Sigma) => {
-		sigmaRef.current = sigma;
-	});
+	const [isExporting, setIsExporting] = useState(false);
+	const [isExportOpaque, setIsExportOpaque] = useInputState(true);
+	const [isExportDark, setIsExportDark] = useInputState(false);
+	const [exportZoom, setExportZoom] = useInputState('100%');
 
 	const spreadNodes = useStable((graph: Graph) => {
 		circular.assign(graph);
@@ -95,7 +106,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 
 		setGraph(graph);
 
-		if (sigmaRef.current) {
+		if (sigma) {
 			spreadNodes(graph);
 		}
 	});
@@ -106,23 +117,115 @@ export function VisualizerView(props: VisualizerViewProps) {
 		}
 	}, []);
 
+	const openExporter = useStable(() => {
+		setIsExporting(true);
+	});
+
+	const closeExporter = useStable(() => {
+		setIsExporting(false);
+	});
+
+	const saveSnapshot = useStable(async () => {
+		const filePath = await save({
+			title: 'Save snapshot',
+			defaultPath: 'snapshot.png',
+			filters: [{
+				name: 'Image',
+				extensions: ['png', 'jpg', 'jpeg']
+			}]
+		});
+
+		if (!filePath || !sigma) {
+			return;
+		}
+
+		const settings: Partial<Settings> = {
+			defaultNodeColor: isExportDark ? theme.colors.blue[5] : theme.colors.blue[5],
+			defaultEdgeColor: isExportDark ? theme.colors.dark[4] : theme.colors.light[1],
+			labelColor: { color: isExportDark ? theme.colors.light[0] : theme.colors.dark[9] },
+			edgeLabelColor: { color: isExportDark ? theme.colors.light[2] : theme.colors.dark[3] }
+		}
+
+		const zoom = Number.parseInt(exportZoom);
+		const type = filePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+		const background = isExportOpaque ? (isExportDark ? theme.colors.dark[7] : '#fff') : null;
+		const contents = await createSnapshot(sigma, type, background, zoom / 100, settings);
+	
+		await writeBinaryFile(filePath, await contents.arrayBuffer());
+
+		closeExporter();
+	});
+
 	return (
-		<Splitter
-			minSize={[undefined, 325]}
-			bufferSize={500}
-			direction="horizontal"
-			endPane={
-				<OptionsPane
+		<>
+			<Splitter
+				minSize={[undefined, 325]}
+				bufferSize={500}
+				direction="horizontal"
+				endPane={
+					<OptionsPane
+						isOnline={props.isOnline}
+						canSnapshot={!!graph}
+						onGenerate={refreshGraph}
+						onSnapshot={openExporter}
+					/>
+				}
+			>
+				<GraphPane
 					isOnline={props.isOnline}
-					onGenerate={refreshGraph}
+					graph={graph}
+					onCreated={setSigma}
 				/>
-			}
-		>
-			<GraphPane
-				isOnline={props.isOnline}
-				graph={graph}
-				onCreated={saveSigma}
-			/>
-		</Splitter>
+			</Splitter>
+			
+			{/* ANCHOR Connection details modal */}
+			<Modal
+				size="sm"
+				opened={isExporting}
+				onClose={closeExporter}
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Save snapshot
+					</Title>
+				}
+			>
+				<Form onSubmit={saveSnapshot}>
+					<Stack>
+						<TextInput
+							label="Resolution scale"
+							value={exportZoom}
+							onChange={setExportZoom}
+						/>
+						<Checkbox
+							checked={isExportDark}
+							onChange={setIsExportDark}
+							label="Dark theme"
+						/>
+						<Checkbox
+							checked={isExportOpaque}
+							onChange={setIsExportOpaque}
+							label="Include background"
+						/>
+					</Stack>
+				</Form>
+
+				<Group mt="lg">
+					<Button
+						onClick={closeExporter}
+						color={isLight ? 'light.5' : 'light.3'}
+						variant="light"
+					>
+						Close
+					</Button>
+					<Spacer />
+					<Button
+						color="surreal"
+						onClick={saveSnapshot}
+					>
+						Save
+					</Button>
+				</Group>
+			</Modal>
+		</>
 	);
 }
