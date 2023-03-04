@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.6.2 - Visualization export
+- Improvements to the visualizer view
+	- Graphs can be saved as png and jpg
+	- Improved node layout algorithm
+	- Fixed labels dissapearing close to the edge
+- Allow selecting multiple from and to tables when creating edges
+- Improved sorting on table list
+- Fixed an issue in the table view renderer causing a crash
+
 ## 1.6.1 - Schema management
 - Added designer view
 	- Allows graphically creating and modifying schemas
