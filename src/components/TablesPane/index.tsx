@@ -12,8 +12,9 @@ import { useInputState } from '@mantine/hooks';
 import { Form } from '../Form';
 import { useStoreValue } from '~/store';
 import { Spacer } from '../Spacer';
-import { fetchDatabaseSchema } from '~/util/schema';
+import { extractEdgeRecords, fetchDatabaseSchema } from '~/util/schema';
 import { useHasSchemaAccess, useTableNames } from '~/hooks/schema';
+import { sort } from 'radash';
 
 export interface TablesPaneProps {
 	isOnline: boolean;
@@ -36,13 +37,17 @@ export function TablesPane(props: TablesPaneProps) {
 	const tableList = useTableNames();
 
 	const tablesFiltered = useMemo(() => {
-		if (!search) {
-			return schema;
-		}
-
 		const needle = search.toLowerCase();
 
-		return schema.filter(table => table.schema.name.toLowerCase().includes(needle));
+		const tables = search
+			? schema.filter(table => table.schema.name.toLowerCase().includes(needle))
+			: schema;
+
+		return sort(tables, (table) => {
+			const [isEdge] = extractEdgeRecords(table);
+
+			return Number(isEdge);
+		});
 	}, [schema, search]);
 
 	const activeTable = useMemo(() => {
@@ -151,17 +156,7 @@ export function TablesPane(props: TablesPaneProps) {
 				>
 					{tablesFiltered.map(table => {
 						const isActive = selectedTable == table.schema.name;
-
-						let hasIn = false;
-						let hasOut = false;
-
-						table.fields.forEach(f => {
-							if (f.name === 'in') {
-								hasIn = true;
-							} else if (f.name === 'out') {
-								hasOut = true;
-							}
-						});
+						const [isEdge] = extractEdgeRecords(table);
 
 						return (
 							<Group
@@ -180,7 +175,7 @@ export function TablesPane(props: TablesPaneProps) {
 								<Icon
 									style={{ flexShrink: 0 }}
 									color={isActive ? 'surreal' : isLight ? 'light.3' : 'light.5'}
-									path={hasIn && hasOut ? mdiVectorLine : mdiTable}
+									path={isEdge ? mdiVectorLine : mdiTable}
 									size="sm"
 								/>
 
