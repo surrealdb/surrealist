@@ -1,13 +1,15 @@
-import ForceSupervisor from "graphology-layout-force/worker";
 import Graph, { MultiDirectedGraph } from "graphology";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Splitter } from "~/components/Splitter";
 import { GraphPane } from "../GraphPane";
 import { useStoreValue } from "~/store";
 import { extractEdgeRecords } from "~/util/schema";
 import { OptionsPane } from "../OptionsPane";
-import Sigma from "sigma";
 import { useStable } from "~/hooks/stable";
+import { circular } from 'graphology-layout';
+import { inferSettings } from 'graphology-layout-forceatlas2';
+import Sigma from "sigma";
+import FA2Layout from 'graphology-layout-forceatlas2/worker';
 
 export interface VisualizerViewProps {
 	isOnline: boolean;
@@ -24,17 +26,10 @@ export function VisualizerView(props: VisualizerViewProps) {
 	});
 
 	const spreadNodes = useStable((graph: Graph) => {
-		graph.nodes().forEach((node, i) => {
-			const angle = (i * 2 * Math.PI) / graph.order;
+		circular.assign(graph);
 
-			graph.setNodeAttribute(node, "x", 100 * Math.cos(angle));
-			graph.setNodeAttribute(node, "y", 100 * Math.sin(angle));
-		});
-
-		const layout = new ForceSupervisor(graph, {
-			settings: {
-				
-			}
+		const layout = new FA2Layout(graph, {
+			settings: inferSettings(graph)
 		});
 		
 		layout.start();
@@ -55,7 +50,8 @@ export function VisualizerView(props: VisualizerViewProps) {
 			if (!isEdge) {
 				graph.addNode(tableName, {
 					label: tableName,
-					size: 12
+					size: 12,
+					forceLabel: true
 				});
 			}
 		}
@@ -72,6 +68,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 								const label = graph.getEdgeAttribute(existing, 'label');
 								const condensed = graph.getEdgeAttribute(existing, 'condensed');
 	
+
 								if (condensed) {
 									continue;
 								}
@@ -80,14 +77,16 @@ export function VisualizerView(props: VisualizerViewProps) {
 								graph.setEdgeAttribute(existing, 'condensed', true);
 								graph.setEdgeAttribute(existing, 'type', 'line');
 							} else {
-								graph.addDirectedEdgeWithKey(tableName, inTable, outTable, {
+								graph.addDirectedEdgeWithKey(`${tableName}-${inTable}-${outTable}`, inTable, outTable, {
 									label: tableName,
 									type: 'arrow',
-									size: 3
+									size: 3,
+									forceLabel: true
 								});
 							}
-						} catch(_) {
+						} catch(e) {
 							console.warn('Skipping edge', tableName, 'from', inTable, 'to', outTable);
+							console.error(e);
 						}
 					}
 				}
