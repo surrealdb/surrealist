@@ -1,5 +1,5 @@
 import classes from './style.module.scss';
-import { ActionIcon, Button, Group, Modal, ScrollArea, Select, Stack, Tabs, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, MultiSelect, ScrollArea, Select, Stack, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -29,8 +29,8 @@ export function TablesPane(props: TablesPaneProps) {
 	const [showCreator, setShowCreator] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [tableName, setTableName] = useInputState('');
-	const [tableIn, setTableIn] = useState('');
-	const [tableOut, setTableOut] = useState('');
+	const [tableIn, setTableIn] = useState<string[]>([]);
+	const [tableOut, setTableOut] = useState<string[]>([]);
 	const [search, setSearch] = useInputState('');
 	const schema = useStoreValue(state => state.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
@@ -80,8 +80,8 @@ export function TablesPane(props: TablesPaneProps) {
 		let query = `DEFINE TABLE ${tableName};`;
 
 		if (createType === 'relation') {
-			query += 'DEFINE FIELD in ON ' + tableName + ' TYPE record(' + tableIn + ');';
-			query += 'DEFINE FIELD out ON ' + tableName + ' TYPE record(' + tableOut + ');';
+			query += 'DEFINE FIELD in ON ' + tableName + ' TYPE record(' + tableIn.join(',') + ');';
+			query += 'DEFINE FIELD out ON ' + tableName + ' TYPE record(' + tableOut.join(',') + ');';
 		}
 
 		await surreal.query(query);
@@ -218,6 +218,7 @@ export function TablesPane(props: TablesPaneProps) {
 			<Modal
 				opened={showCreator}
 				onClose={closeCreator}
+				trapFocus={false}
 				title={
 					<Title size={16} color={isLight ? 'light.6' : 'white'}>
 						Create new {createType}
@@ -246,17 +247,17 @@ export function TablesPane(props: TablesPaneProps) {
 						/>
 						{createType === 'relation' && (
 							<>
-								<Select
+								<MultiSelect
 									data={tableList}
 									placeholder="Enter in"
 									value={tableIn}
-									onChange={setTableIn as any}
+									onChange={setTableIn}
 								/>
-								<Select
+								<MultiSelect
 									data={tableList}
 									placeholder="Enter out"
 									value={tableOut}
-									onChange={setTableOut as any}
+									onChange={setTableOut}
 								/>
 							</>	
 						)}
