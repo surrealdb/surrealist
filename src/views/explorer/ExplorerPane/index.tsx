@@ -140,7 +140,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 					<Icon color="light.4" path={mdiDatabase} mr={-10} />
 					<Text color="light.4" lineClamp={1}>
-						{recordCount || 'no'} total rows
+						{recordCount || 'no'} rows
 					</Text>
 				</Group>
 			}
