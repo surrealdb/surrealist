@@ -4,6 +4,11 @@
 	flex-direction: column;
 }
 
+.input-wrapper {
+	flex: 1;
+	gap: 0;
+}
+
 .input {
 	height: 40px;
 	border: 2px solid var(--mantine-color-surreal-5);
@@ -11,10 +16,15 @@
 	display: flex;
 	flex: 1;
 	gap: 8px;
-	padding-left: 8px;
-	-webkit-user-select: none;
+	padding-inline: 8px;
 	user-select: none;
 	cursor: pointer;
+}
+
+.input-with-button {
+	border-right: 0;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
 }
 
 .content {
@@ -32,7 +42,9 @@
 }
 
 .send-button {
-	border-radius: 0;
+	height: 40px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
 	transform: none !important;
 }
 

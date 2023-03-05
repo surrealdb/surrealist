@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Badge, Box, Button, Center, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Center, clsx, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
@@ -358,72 +358,74 @@ export function Scaffold() {
 								</Stack>
 							</Popover.Dropdown>
 						</Popover>
-						<Paper
-							className={classes.input}
-							onClick={openInfoEditor}
-							style={{ borderColor: borderColor }}
-						>
-							{!isOnline ? (
-								<Paper
-									bg="light"
-									px="xs"
-								>
-									<Text
-										color="white"
-										size="xs"
-										py={2}
-										weight={600}
+						<Group className={classes.inputWrapper}>
+							<Paper
+								className={clsx(classes.input, (!isOnline || viewMode === 'query') && classes.inputWithButton)}
+								onClick={openInfoEditor}
+								style={{ borderColor: borderColor }}
+							>
+								{!isOnline ? (
+									<Paper
+										bg="light"
+										px="xs"
 									>
-										OFFLINE
-									</Text>
-								</Paper>
-							) : tabInfo!.connection.authMode == 'none' ? (
-								<Paper
-									bg={isLight ? 'light.0' : 'light.6'}
-									c={isLight ? 'light.4' : 'light.3'}
-									fs="italic"
-									px="xs"
-								>
-									Anon
-								</Paper>
-							) : (
-								<Paper
-									bg={isLight ? 'light.0' : 'light.6'}
-									c={isLight ? 'light.6' : 'white'}
-									px="xs"
-								>
-									{tabInfo!.connection.username}
-								</Paper>
-							)}
-							<Text color={isLight ? 'light.6' : 'white'}>
-								{tabInfo!.connection.endpoint}
-							</Text>
-							<Spacer />
-							{(servePending || isServing) && !showConsole && (
-								<ActionIcon
-									onClick={revealConsole}
-									title="Reveal console"
-								>
-									<Icon color="light.4" path={mdiConsole} />
-								</ActionIcon>
-							)}
-							{isOnline && (
-								<ActionIcon
-									onClick={closeConnection}
-									title="Disconnect"
-								>
-									<Icon color="light.4" path={mdiClose} />
-								</ActionIcon>
-							)}
+										<Text
+											color="white"
+											size="xs"
+											py={2}
+											weight={600}
+										>
+											OFFLINE
+										</Text>
+									</Paper>
+								) : tabInfo!.connection.authMode == 'none' ? (
+									<Paper
+										bg={isLight ? 'light.0' : 'light.6'}
+										c={isLight ? 'light.4' : 'light.3'}
+										fs="italic"
+										px="xs"
+									>
+										Anon
+									</Paper>
+								) : (
+									<Paper
+										bg={isLight ? 'light.0' : 'light.6'}
+										c={isLight ? 'light.6' : 'white'}
+										px="xs"
+									>
+										{tabInfo!.connection.username}
+									</Paper>
+								)}
+								<Text color={isLight ? 'light.6' : 'white'}>
+									{tabInfo!.connection.endpoint}
+								</Text>
+								<Spacer />
+								{(servePending || isServing) && !showConsole && (
+									<ActionIcon
+										onClick={revealConsole}
+										title="Reveal console"
+									>
+										<Icon color="light.4" path={mdiConsole} />
+									</ActionIcon>
+								)}
+								{isOnline && (
+									<ActionIcon
+										onClick={closeConnection}
+										title="Disconnect"
+									>
+										<Icon color="light.4" path={mdiClose} />
+									</ActionIcon>
+								)}
+							</Paper>
 							{!isOnline ? (
 								<Button
 									color="light"
-									style={{ borderRadius: 0 }}
+									className={classes.sendButton}
 									onClick={openConnection}
 								>
 									{isConnecting ? 'Connecting...' : 'Connect'}
 								</Button>
-							) : viewMode == 'query' ? (
+							) : viewMode == 'query' && (
 								<Button
 									color="surreal"
 									onClick={handleSendQuery}
@@ -432,10 +434,8 @@ export function Scaffold() {
 								>
 									Send Query
 								</Button>
-							) : (
-								<div />
 							)}
-						</Paper>
+						</Group>
 					</Group>
 
 					<Box p="xs" className={classes.content}>
