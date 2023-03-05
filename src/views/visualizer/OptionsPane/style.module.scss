@@ -5,3 +5,20 @@
 		color: var(--mantine-color-surreal-5);
 	}
 }
+
+.container {
+	padding: 24px;
+	padding-top: 12px;
+	display: flex;
+	position: absolute;
+	overflow-y: auto;
+}
+
+.content {
+	flex-grow: 2;
+}
+
+.buttons {
+	margin-left: 12px;
+	flex-shrink: 0;
+}

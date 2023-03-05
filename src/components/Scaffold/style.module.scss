@@ -7,13 +7,27 @@
 .input {
 	height: 40px;
 	border: 2px solid var(--mantine-color-surreal-5);
+	border-radius: 8px 0px 0px 8px;
+	border-right: none;
 	align-items: center;
 	display: flex;
-	flex: 1;
+	width: 100%;
 	gap: 8px;
 	padding-left: 8px;
+	padding-right: 8px;
+	-webkit-user-select: none;
 	user-select: none;
 	cursor: pointer;
+}
+
+.input-no-button {
+	border: 2px solid var(--mantine-color-surreal-5);
+	border-radius: 8px 8px 8px 8px;
+}
+
+.inputBar {
+	display: flex;
+	flex: 1;
 }
 
 .content {
@@ -31,8 +45,12 @@
 }
 
 .send-button {
-	border-radius: 0;
+	height: 40px;
 	transform: none !important;
+	border-radius: 0px 8px 8px 0px;
+	border: 2px solid var(--mantine-color-surreal-5);
+	border-left: none;
+	margin: 0;
 }
 
 .view-mode-button {
