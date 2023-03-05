@@ -1,8 +1,11 @@
-import { HoverCard, Text } from "@mantine/core";
-import { mdiCalendar, mdiCheck, mdiClock, mdiClockOutline, mdiClose } from "@mdi/js";
+import { Divider, Group, HoverCard, Stack, Text } from "@mantine/core";
+import { mdiCalendar, mdiCheck, mdiCircle, mdiCircleMedium, mdiClock, mdiClockOutline, mdiClose } from "@mdi/js";
 import dayjs from "dayjs";
 import { ReactNode } from "react";
+import { useIsLight } from "~/hooks/theme";
 import { OpenFn } from "~/typings";
+import { TRUNCATE_STYLE } from "~/util/helpers";
+import { SectionDivider } from "~/views/designer/StructurePane/divider";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 
@@ -49,9 +52,7 @@ function StringCell(props: DataCellProps) {
 		<Text
 			title={props.value}
 			style={{
-				whiteSpace: 'nowrap',
-				overflow: 'hidden',
-				textOverflow: 'ellipsis',
+				...TRUNCATE_STYLE,
 				maxWidth: 250
 			}}
 		>
@@ -89,10 +90,51 @@ function DateTimeCell(props: DataCellProps) {
 	);
 }
 
-function ArrayObjectCell(props: DataCellProps) {
-	const name = Array.isArray(props.value) ? 'Array' : 'Object';
-	const size = Array.isArray(props.value) ? props.value.length : Object.keys(props.value).length;
+function ArrayCell(props: DataCellProps) {
+	const items = props.value as any[];
+	
+	return (
+		<div>
+			<HoverCard
+				shadow="xl"
+				withinPortal
+				withArrow
+			>
+				<HoverCard.Target>
+					<Text
+						span
+						ff="JetBrains Mono"
+						style={{ cursor: 'help' }}
+					>
+						Array({props.value.length})
+					</Text>
+				</HoverCard.Target>
+				<HoverCard.Dropdown>
+					{items.length > 15 ? (
+						<Text size="sm">
+							Too large to preview
+						</Text>
+					) : (
+						<Stack spacing="sm">
+							{items.map((item, i) => (
+								<Group noWrap>
+									<span style={{ opacity: 0.5 }}>
+										#{i + 1}
+									</span>
+									<div key={i} style={TRUNCATE_STYLE}>
+										{renderDataCell(item, props.openRecord)}
+									</div>
+								</Group>
+							))}
+						</Stack>
+					)}
+				</HoverCard.Dropdown>
+			</HoverCard>
+		</div>
+	);
+}
 
+function ObjectCell(props: DataCellProps) {
 	return (
 		<div>
 			<HoverCard
@@ -107,7 +149,7 @@ function ArrayObjectCell(props: DataCellProps) {
 						ff="JetBrains Mono"
 						style={{ cursor: 'help' }}
 					>
-						{name}({size})
+						Object({Object.keys(props.value).length})
 					</Text>
 				</HoverCard.Target>
 				<HoverCard.Dropdown>
@@ -151,8 +193,12 @@ const DataCellTypes = [
 		component: NumberCell
 	},
 	{
+		match: (value: any) => Array.isArray(value),
+		component: ArrayCell
+	},
+	{
 		match: (value: any) => typeof value === 'object',
-		component: ArrayObjectCell
+		component: ObjectCell
 	}
 ];
 

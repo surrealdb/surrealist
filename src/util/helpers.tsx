@@ -1,9 +1,16 @@
 import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { CSSProperties } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { actions, store } from "~/store";
+
+export const TRUNCATE_STYLE: CSSProperties = {
+	whiteSpace: 'nowrap',
+	overflow: 'hidden',
+	textOverflow: 'ellipsis'
+}
 
 export function updateTitle() {
 	const { activeTab, isPinned, config } = store.getState();
