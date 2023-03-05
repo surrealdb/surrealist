@@ -1,10 +1,9 @@
 .table-container {
-	position: relative;
 	height: 100%;
 }
 
 .table-wrapper {
-	position: absolute;
+	position: absolute !important;
 	inset: 12;
 	top: 0;
 	height: 100%;
@@ -13,6 +12,11 @@
 
 .table {
 	user-select: text;
+
+	th {
+		position: sticky;
+		top: 0;
+	}
 
 	th > *, td > * {
 		padding-inline: 24px;

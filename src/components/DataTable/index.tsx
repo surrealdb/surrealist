@@ -72,13 +72,18 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange }
 
 		keys.forEach(key => {
 			headers.push(
-				<th key={key}>
+				<Box
+					key={key}
+					component="th"
+					bg={isLight ? 'white' : 'dark.7'}
+				>
 					<Text
 						span
 						onClick={() => handleSortClick(key)}
 						style={{
 							cursor: onSortingChange ? 'pointer' : undefined,
-							userSelect: 'none'
+							userSelect: 'none',
+							WebkitUserSelect: 'none'
 						}}
 					>
 						{key}
@@ -89,12 +94,12 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange }
 							/>
 						)}
 					</Text>
-				</th>
+				</Box>
 			);
 		});
 		
 		return headers;
-	}, [keys, sorting]);
+	}, [isLight, keys, sorting]);
 
 	const activeColor = useMemo(() => {
 		return theme.fn.rgba(theme.fn.themeColor('light.6'), isLight ? 0.15 : 0.4);
