@@ -8,6 +8,9 @@
 - Allow selecting multiple from and to tables when creating edges
 - Improved sorting on table list
 - Fixed an issue in the table view renderer causing a crash
+- Improve preview of array items within table views
+- Table headers are now sticky and always visible
+- Fixed various visual issues and inconsistencies
 
 ## 1.6.1 - Schema management
 - Added designer view
