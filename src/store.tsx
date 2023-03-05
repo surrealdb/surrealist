@@ -92,6 +92,7 @@ const mainSlice = createSlice({
 
 		setActiveTab(state, action: PayloadAction<string>) {
 			state.activeTab = action.payload;
+			state.databaseSchema = [];
 		},
 
 		togglePinned(state) {
