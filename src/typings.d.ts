@@ -14,6 +14,7 @@ export type ColumnSort = [string, 'asc' | 'desc'];
 export interface SurrealistConfig {
 	theme: ColorScheme | 'automatic';
 	tabs: SurrealistTab[];
+	activeTab: string | null;
 	autoConnect: boolean;
 	tableSuggest: boolean;
 	wordWrap: boolean;

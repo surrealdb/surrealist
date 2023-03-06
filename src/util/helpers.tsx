@@ -13,12 +13,12 @@ export const TRUNCATE_STYLE: CSSProperties = {
 }
 
 export function updateTitle() {
-	const { activeTab, isPinned, config } = store.getState();
+	const { isPinned, config } = store.getState();
 
 	let title = '';
 
-	if (activeTab) {
-		const tab = config.tabs.find(t => t.id === activeTab);
+	if (config.activeTab) {
+		const tab = config.tabs.find(t => t.id === config.activeTab);
 
 		if (tab) {
 			const viewInfo = VIEW_MODES.find(v => v.id === tab.activeView);

@@ -41,7 +41,7 @@ function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 export function Scaffold() {
 	const isLight = useIsLight();
 	const theme = useMantineTheme();
-	const activeTab = useStoreValue(state => state.activeTab);
+	const activeTab = useStoreValue(state => state.config.activeTab);
 	const autoConnect = useStoreValue(state => state.config.autoConnect);
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
@@ -53,13 +53,13 @@ export function Scaffold() {
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [isViewListing, setIsViewListing] = useState(false);
 
-	const createNewTab = useStable(async () => {
+	const createNewTab = useStable(() => {
 		const tabId = createTab('New tab');
 
 		store.dispatch(actions.setActiveTab(tabId));
 
 		updateTitle();
-		await updateConfig();
+		updateConfig();
 	});
 
 	const [ editingInfo, setEditingInfo ] = useState(false);
@@ -89,7 +89,6 @@ export function Scaffold() {
 			return;
 		}
 
-		const activeTab = store.getState().activeTab;
 		const tabInfo = store.getState().config.tabs.find(tab => tab.id === activeTab);
 
 		if (!tabInfo) {

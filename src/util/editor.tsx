@@ -157,8 +157,8 @@ export function initializeEditor(monaco: Monaco) {
 	monaco.languages.registerCompletionItemProvider('surrealql', {
 		triggerCharacters: ['$'],
 		provideCompletionItems(_, position, context) {
-			const { activeTab, config } = store.getState();
-			const tab = config.tabs.find(tab => tab.id == activeTab);
+			const { config } = store.getState();
+			const tab = config.tabs.find(tab => tab.id == config.activeTab);
 
 			if(!tab) {
 				return undefined;

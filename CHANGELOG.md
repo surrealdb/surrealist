@@ -9,6 +9,7 @@
 	- Exports the database schema to a `.surql` file
 	- Unlike `surreal export` this file only contains schema definitions, not data
 	- Useful when you want to save an existing schema and apply it to another database
+- Remember the active tab between application restarts
 - Allow selecting multiple from and to tables when creating edges
 - Improved sorting on table list
 - Fixed an issue in the table view renderer causing a crash

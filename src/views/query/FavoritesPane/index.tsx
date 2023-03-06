@@ -266,13 +266,13 @@ function FavoriteRow(props: HistoryRowProps) {
 		}
 	});
 
-	const openQuery = useStable(async () => {
+	const openQuery = useStable(() => {
 		const tabId = createTab(entry.name.slice(0, 25), entry.query);
 
 		store.dispatch(actions.setActiveTab(tabId));
 
 		updateTitle();
-		await updateConfig();
+		updateConfig();
 	});
 
 	return (

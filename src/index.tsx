@@ -7,7 +7,7 @@ import { App } from './components/App';
 import { loader } from '@monaco-editor/react';
 import { initializeEditor } from './util/editor';
 import { runUpdateChecker } from './util/updater';
-import { updateZoom, watchNativeTheme } from './util/helpers';
+import { updateTitle, updateZoom, watchNativeTheme } from './util/helpers';
 import { adapter } from './adapter';
 
 dayjs.extend(relativeTime);
@@ -16,12 +16,7 @@ dayjs.extend(relativeTime);
 adapter.loadConfig().then(config => {
 	store.dispatch(actions.initialize(config));
 
-	const { tabs, updateChecker } = store.getState().config;
-
-	// Select the first tab
-	if (tabs.length > 0) {
-		store.dispatch(actions.setActiveTab(tabs[0].id));
-	}
+	const { updateChecker } = store.getState().config;
 
 	// Check for updates
 	if (adapter.isUpdateCheckSupported && updateChecker) {
@@ -30,6 +25,9 @@ adapter.loadConfig().then(config => {
 
 	// Apply zoom level
 	updateZoom();
+
+	// Apply initial title
+	updateTitle();
 });
 
 // Render the app component

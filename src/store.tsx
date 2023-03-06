@@ -11,7 +11,6 @@ const mainSlice = createSlice({
 	initialState: {
 		config: BASE_CONFIG as SurrealistConfig,
 		nativeTheme: 'light' as ColorScheme,
-		activeTab: null as string|null,
 		isPinned: false,
 		isServing: false,
 		servePending: false,
@@ -65,14 +64,8 @@ const mainSlice = createSlice({
 		removeTab(state, action: PayloadAction<string>) {
 			state.config.tabs = state.config.tabs.filter(tab => tab.id !== action.payload);
 
-			if (state.activeTab === action.payload) {
-				// if (state.config.tabs.length === 0) {
-				state.activeTab = null;
-				// } else {
-				// 	const firstTab = state.config.tabs[0];
-
-				// 	state.activeTab = firstTab.id;
-				// }
+			if (state.config.activeTab === action.payload) {
+				state.config.activeTab = null;
 			}
 		},
 
@@ -91,7 +84,7 @@ const mainSlice = createSlice({
 		},
 
 		setActiveTab(state, action: PayloadAction<string>) {
-			state.activeTab = action.payload;
+			state.config.activeTab = action.payload;
 			state.databaseSchema = [];
 		},
 

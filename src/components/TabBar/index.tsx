@@ -29,7 +29,7 @@ export interface TabBarProps {
 export function TabBar(props: TabBarProps) {
 	const isLight = useIsLight();
 	const isPinned = useStoreValue(state => state.isPinned);
-	const activeTab = useStoreValue(state => state.activeTab);
+	const activeTab = useStoreValue(state => state.config.activeTab);
 	const tabList = useStoreValue(state => state.config.tabs);
 	const enableListing = useStoreValue(state => state.config.enableListing);
 	const queryListing = useStoreValue(state => state.config.queryListing);
@@ -75,6 +75,7 @@ export function TabBar(props: TabBarProps) {
 
 		props.onSwitchTab();
 		updateTitle();
+		updateConfig();
 	});
 
 	const selectTabByIndex = useStable((index: number) => {
