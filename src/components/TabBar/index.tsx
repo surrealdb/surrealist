@@ -1,6 +1,6 @@
 import surrealistLogo from '~/assets/icon.png';
 import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
-import { mdiPlus, mdiPinOff, mdiPin, mdiHistory, mdiStar } from "@mdi/js";
+import { mdiPlus, mdiPinOff, mdiPin, mdiHistory, mdiStar, mdiExport, mdiFolderDownload, mdiCloudDownload } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -16,6 +16,7 @@ import { Sortable } from "../Sortable";
 import { SurrealistTab, ViewMode } from "~/typings";
 import { useHotkeys } from '@mantine/hooks';
 import { adapter } from '~/adapter';
+import { saveSchemaExport } from '~/util/schema';
 
 export interface TabBarProps {
 	viewMode: ViewMode;
@@ -218,6 +219,20 @@ export function TabBar(props: TabBarProps) {
 						/>
 					</Button>
 				</>
+			)}
+
+			{props.viewMode == 'designer' && (
+				<Button
+					px="xs"
+					color={isLight ? 'light.0' : 'dark.4'}
+					title="Export schema to file"
+					onClick={saveSchemaExport}
+				>
+					<Icon
+						path={mdiCloudDownload}
+						color={isLight ? 'light.8' : 'white'}
+					/>
+				</Button>
 			)}
 			
 			{adapter.isPinningSupported && (

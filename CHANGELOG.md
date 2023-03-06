@@ -5,6 +5,10 @@
 	- Graphs can be saved as png and jpg
 	- Improved node layout algorithm
 	- Fixed labels dissapearing close to the edge
+- Add new "Export schema" toolbar button in designer view
+	- Exports the database schema to a `.surql` file
+	- Unlike `surreal export` this file only contains schema definitions, not data
+	- Useful when you want to save an existing schema and apply it to another database
 - Allow selecting multiple from and to tables when creating edges
 - Improved sorting on table list
 - Fixed an issue in the table view renderer causing a crash
