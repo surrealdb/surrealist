@@ -3,15 +3,16 @@ import { Button, Kbd, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { Panel } from "~/components/Panel";
+import { useIsConnected } from '~/hooks/connection';
 
 export interface OptionsPaneProps {
-	isOnline: boolean;
 	canSnapshot: boolean;
 	onGenerate: () => void;
 	onSnapshot: () => void;
 }
 
 export function OptionsPane(props: OptionsPaneProps) {
+	const isOnline = useIsConnected();
 	const isLight = useIsLight();
 
 	return (
@@ -57,14 +58,14 @@ export function OptionsPane(props: OptionsPaneProps) {
 						color="light"
 						variant="light"
 						onClick={props.onSnapshot}
-						disabled={!props.isOnline || !props.canSnapshot}
+						disabled={!isOnline || !props.canSnapshot}
 					>
 						Save snapshot
 					</Button>
 
 					<Button
 						onClick={props.onGenerate}
-						disabled={!props.isOnline}
+						disabled={!isOnline}
 					>
 						Visualize
 					</Button>

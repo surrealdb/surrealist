@@ -6,6 +6,7 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
+import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getActiveSurreal } from "~/surreal";
@@ -18,11 +19,11 @@ export interface AccountsPaneProps {
 	typeShort: string;
 	typeLong: string;
 	field: string;
-	isOnline: boolean;
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
 	const isLight = useIsLight();
+	const isOnline = useIsConnected();
 
 	const [logins, setLogins] = useState<string[]>([]);
 	const [isEditing, setIsEditing] = useState(false);
@@ -42,10 +43,10 @@ export function AccountsPane(props: AccountsPaneProps) {
 	});
 
 	useEffect(() => {
-		if (props.isOnline) {
+		if (isOnline) {
 			fetchLogins();
 		}
-	}, [props.isOnline]);
+	}, [isOnline]);
 
 	const closeSaving = useStable(() => {
 		setIsEditing(false);

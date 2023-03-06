@@ -17,6 +17,7 @@ import { SurrealistTab, ViewMode } from "~/typings";
 import { useHotkeys } from '@mantine/hooks';
 import { adapter } from '~/adapter';
 import { saveSchemaExport } from '~/util/schema';
+import { useIsConnected } from '~/hooks/connection';
 
 export interface TabBarProps {
 	viewMode: ViewMode;
@@ -28,6 +29,7 @@ export interface TabBarProps {
 
 export function TabBar(props: TabBarProps) {
 	const isLight = useIsLight();
+	const isOnline = useIsConnected();
 	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.config.activeTab);
 	const tabList = useStoreValue(state => state.config.tabs);
@@ -228,10 +230,11 @@ export function TabBar(props: TabBarProps) {
 					color={isLight ? 'light.0' : 'dark.4'}
 					title="Export schema to file"
 					onClick={saveSchemaExport}
+					disabled={!isOnline}
 				>
 					<Icon
 						path={mdiCloudDownload}
-						color={isLight ? 'light.8' : 'white'}
+						color={!isOnline ? undefined : isLight ? 'light.8' : 'white'}
 					/>
 				</Button>
 			)}

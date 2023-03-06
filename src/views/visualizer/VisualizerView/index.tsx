@@ -8,7 +8,7 @@ import { OptionsPane } from "../OptionsPane";
 import { useStable } from "~/hooks/stable";
 import { circular } from 'graphology-layout';
 import { inferSettings } from 'graphology-layout-forceatlas2';
-import { Button, Checkbox, Group, Modal, NumberInput, Stack, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { Button, Checkbox, Group, Modal, Stack, TextInput, Title, useMantineTheme } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import FA2Layout from 'graphology-layout-forceatlas2/worker';
 import Sigma from "sigma";
@@ -21,7 +21,6 @@ import { useInputState } from "@mantine/hooks";
 import { Settings } from "sigma/settings";
 
 export interface VisualizerViewProps {
-	isOnline: boolean;
 }
 
 export function VisualizerView(props: VisualizerViewProps) {
@@ -164,7 +163,6 @@ export function VisualizerView(props: VisualizerViewProps) {
 				direction="horizontal"
 				endPane={
 					<OptionsPane
-						isOnline={props.isOnline}
 						canSnapshot={!!graph}
 						onGenerate={refreshGraph}
 						onSnapshot={openExporter}
@@ -172,7 +170,6 @@ export function VisualizerView(props: VisualizerViewProps) {
 				}
 			>
 				<GraphPane
-					isOnline={props.isOnline}
 					graph={graph}
 					onCreated={setSigma}
 				/>

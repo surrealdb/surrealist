@@ -9,6 +9,7 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
+import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getActiveSurreal } from "~/surreal";
@@ -22,11 +23,11 @@ interface ScopeInfo {
 }
 
 export interface ScopePaneProps {
-	isOnline: boolean;
 }
 
 export function ScopePane(props: ScopePaneProps) {
 	const isLight = useIsLight();
+	const isOnline = useIsConnected();
 
 	const [scopes, setScopes] = useState<ScopeInfo[]>([]);
 	const [isEditing, setIsEditing] = useState(false);
@@ -56,10 +57,10 @@ export function ScopePane(props: ScopePaneProps) {
 	});
 
 	useEffect(() => {
-		if (props.isOnline) {
+		if (isOnline) {
 			fetchScopes();
 		}
-	}, [props.isOnline]);
+	}, [isOnline]);
 
 	const closeEditing = useStable(() => {
 		setIsEditing(false);

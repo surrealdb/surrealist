@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { Splitter } from "~/components/Splitter";
 import { TablesPane } from "~/components/TablesPane";
+import { useIsConnected } from "~/hooks/connection";
 import { useStoreValue } from "~/store";
 import { StructurePane } from "../StructurePane";
 
 export interface DesignerViewProps {
-	isOnline: boolean;
 }
 
 export function DesignerView(props: DesignerViewProps) {
@@ -22,7 +22,6 @@ export function DesignerView(props: DesignerViewProps) {
 			bufferSize={550}
 			startPane={
 				<TablesPane
-					isOnline={props.isOnline}
 					onSelectTable={setActiveTable}
 					withModification
 				/>

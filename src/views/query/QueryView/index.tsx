@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { useState } from "react";
 import { useStoreValue } from "~/store";
 import { FavoritesPane } from "../FavoritesPane";
 import { HistoryPane } from "../HistoryPane";
@@ -8,7 +8,6 @@ import { VariablesPane } from "../../query/VariablesPane";
 import { Splitter, SplitValues } from "~/components/Splitter";
 
 export interface QueryViewProps {
-	isOnline: boolean;
 	sendQuery: (override?: string) => any;
 }
 
@@ -36,7 +35,6 @@ export function QueryView(props: QueryViewProps) {
 					}
 				>
 					<QueryPane
-						isConnected={props.isOnline}
 						onExecuteQuery={props.sendQuery}
 					/>
 				</Splitter>

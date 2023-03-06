@@ -12,7 +12,6 @@ import {useIsLight} from "~/hooks/theme";
 import { useDebouncedCallback } from "~/hooks/debounce";
 
 export interface QueryPaneProps {
-    isConnected: boolean;
     onExecuteQuery: (override?: string) => void;
 }
 

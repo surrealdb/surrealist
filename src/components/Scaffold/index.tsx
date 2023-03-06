@@ -46,10 +46,10 @@ export function Scaffold() {
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
+	const isConnected = useStoreValue(state => state.isConnected);
 	const createTab = useTabCreator();
 	const tabInfo = useActiveTab();
 
-	const [isOnline, setIsOnline] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [isViewListing, setIsViewListing] = useState(false);
 
@@ -82,6 +82,10 @@ export function Scaffold() {
 		setEditingInfo(false);
 	});
 
+	const setIsConnected = useStable((value: boolean) => {
+		store.dispatch(actions.setIsConnected(value));
+	});
+
 	const openConnection = useStable((e?: MouseEvent, silent?: boolean) => {
 		e?.stopPropagation();
 
@@ -100,12 +104,12 @@ export function Scaffold() {
 				connection: tabInfo.connection,
 				onConnect() {
 					setIsConnecting(false);
-					setIsOnline(true);
+					setIsConnected(true);
 					fetchDatabaseSchema();
 				},
 				onDisconnect(code, reason) {
 					setIsConnecting(false);
-					setIsOnline(false);
+					setIsConnected(false);
 	
 					if (code != 1000 && !silent) {
 						const subtitle = code === 1006
@@ -138,7 +142,7 @@ export function Scaffold() {
 			return;
 		}
 
-		if (!isOnline) {
+		if (!isConnected) {
 			showNotification({
 				message: 'You must be connected to send a query',
 			});
@@ -183,7 +187,7 @@ export function Scaffold() {
 			}
 		}));
 
-		if (isOnline) {
+		if (isConnected) {
 			getSurreal()?.close();
 		}
 
@@ -199,8 +203,7 @@ export function Scaffold() {
 		e?.stopPropagation();
 		getSurreal()?.close();
 		setIsConnecting(false);
-		setIsOnline(false);
-
+		setIsConnected(false);
 	});
 
 	const setViewMode = useStable((id: ViewMode) => {
@@ -228,7 +231,7 @@ export function Scaffold() {
 
 	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
 	const showConsole = enableConsole && (servePending || isServing);
-	const borderColor = theme.fn.themeColor(isOnline ? 'surreal' : 'light');
+	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : 'light');
 	const viewMode = tabInfo?.activeView || 'query';
 	const viewInfo = VIEW_MODES.find(v => v.id == viewMode)!;
 	const isDesktop = adapter instanceof DesktopAdapter;
@@ -359,11 +362,11 @@ export function Scaffold() {
 						</Popover>
 						<Group className={classes.inputWrapper}>
 							<Paper
-								className={clsx(classes.input, (!isOnline || viewMode === 'query') && classes.inputWithButton)}
+								className={clsx(classes.input, (!isConnected || viewMode === 'query') && classes.inputWithButton)}
 								onClick={openInfoEditor}
 								style={{ borderColor: borderColor }}
 							>
-								{!isOnline ? (
+								{!isConnected ? (
 									<Paper
 										bg="light"
 										px="xs"
@@ -407,7 +410,7 @@ export function Scaffold() {
 										<Icon color="light.4" path={mdiConsole} />
 									</ActionIcon>
 								)}
-								{isOnline && (
+								{isConnected && (
 									<ActionIcon
 										onClick={closeConnection}
 										title="Disconnect"
@@ -416,7 +419,7 @@ export function Scaffold() {
 									</ActionIcon>
 								)}
 							</Paper>
-							{!isOnline ? (
+							{!isConnected ? (
 								<Button
 									color="light"
 									className={classes.sendButton}
@@ -448,36 +451,27 @@ export function Scaffold() {
 						>
 							<ViewSlot visible={viewMode == 'query'}>
 								<QueryView
-									isOnline={isOnline}
 									sendQuery={sendQuery}
 								/>
 							</ViewSlot>
 
 							<ViewSlot visible={viewMode == 'explorer'}>
-								<ExplorerView
-									isOnline={isOnline}
-								/>
+								<ExplorerView />
 							</ViewSlot>
 
 							<ViewSlot visible={viewMode == 'visualizer'}>
-								<VisualizerView
-									isOnline={isOnline}
-								/>
+								<VisualizerView />
 							</ViewSlot>
 
 							{isDesktop && (
 								<ViewSlot visible={viewMode == 'designer'}>
-									<DesignerView
-										isOnline={isOnline}
-									/>
+									<DesignerView />
 								</ViewSlot>
 							)}
 
 							{isDesktop && (
 								<ViewSlot visible={viewMode == 'auth'}>
-									<AuthenticationView
-										isOnline={isOnline}
-									/>
+									<AuthenticationView />
 								</ViewSlot>
 							)}
 						</Splitter>

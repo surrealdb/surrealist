@@ -14,6 +14,7 @@ const mainSlice = createSlice({
 		isPinned: false,
 		isServing: false,
 		servePending: false,
+		isConnected: false,
 		servingTab: null as string|null,
 		consoleOutput: [] as string[],
 		availableUpdate: '',
@@ -216,6 +217,10 @@ const mainSlice = createSlice({
 
 		setDatabaseSchema(state, action: PayloadAction<TableDefinition[]>) {
 			state.databaseSchema = action.payload;
+		},
+
+		setIsConnected(state, action: PayloadAction<boolean>) {
+			state.isConnected = action.payload;
 		}
 
 	}

@@ -9,7 +9,6 @@ import { Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
 
 export interface ExplorerViewProps {
-	isOnline: boolean;
 }
 
 export function ExplorerView(props: ExplorerViewProps) {
@@ -101,7 +100,6 @@ export function ExplorerView(props: ExplorerViewProps) {
 			direction="horizontal"
 			startPane={
 				<TablesPane
-					isOnline={props.isOnline}
 					onSelectTable={setActiveTable}
 					withModification
 				/>

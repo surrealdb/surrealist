@@ -15,9 +15,9 @@ import { Spacer } from '../Spacer';
 import { extractEdgeRecords, fetchDatabaseSchema } from '~/util/schema';
 import { useHasSchemaAccess, useTableNames } from '~/hooks/schema';
 import { sort } from 'radash';
+import { useIsConnected } from '~/hooks/connection';
 
 export interface TablesPaneProps {
-	isOnline: boolean;
 	withModification?: boolean;
 	onSelectTable: OpenFn;
 }
@@ -35,6 +35,7 @@ export function TablesPane(props: TablesPaneProps) {
 	const schema = useStoreValue(state => state.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
 	const tableList = useTableNames('TABLE');
+	const isOnline = useIsConnected();
 
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();
@@ -139,11 +140,11 @@ export function TablesPane(props: TablesPaneProps) {
 				mb="lg"
 			/>
 
-			{props.isOnline && !tablesFiltered.length ? (
+			{isOnline && !tablesFiltered.length ? (
 				<Text align="center" pt="sm" c="light.5">
 					{!hasAccess ? 'Unsupported auth mode' : 'No tables found'}
 				</Text>
-			) : props.isOnline ? (
+			) : isOnline ? (
 				<ScrollArea
 					classNames={{
 						viewport: classes.viewport
