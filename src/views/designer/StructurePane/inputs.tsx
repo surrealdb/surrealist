@@ -1,7 +1,129 @@
-import { ActionIcon, Group, TextInput } from "@mantine/core";
-import { mdiCancel, mdiCheck } from "@mdi/js";
+import classes from './style.module.scss';
+import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps, Title } from "@mantine/core";
+import { mdiCancel, mdiCheck, mdiWrench } from "@mdi/js";
+import Editor from "@monaco-editor/react";
+import { editor } from "monaco-editor";
+import { ChangeEvent, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { QUERY_STYLE } from "./helpers";
+import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { baseEditorConfig } from "~/util/editor";
+
+export interface QueryInputProps extends TextareaProps {
+	onChangeText?: (value: string) => void;
+}
+
+export function QueryInput(props: QueryInputProps) {
+	const isLight = useIsLight();
+
+	const [isEditorOpen, setIsEditorOpen] = useState(false);
+	const [editorText, setEditorText] = useState<string | undefined>();
+	
+	const openEditor = useStable(() => {
+		setIsEditorOpen(true);
+		setEditorText(props.value as string || '');
+	});
+
+	const closeEditor = useStable(() => {
+		setIsEditorOpen(false);
+	});
+
+	const saveEditor = useStable(() => {
+		if (props.onChangeText) {
+			props.onChangeText(editorText || '');
+		}
+
+		closeEditor();
+	});
+
+	const propagateChange = useStable((e: ChangeEvent<HTMLTextAreaElement>) => {
+		if (props.onChangeText) {
+			props.onChangeText(e.target.value);
+		}
+	});
+
+	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
+		return {
+			...baseEditorConfig,
+			wrappingStrategy: 'advanced',
+			wordWrap: 'on',
+			suggest: {
+				showProperties: false
+			}
+		}
+	}, []);
+
+	const color = isLight ? 'light' : undefined;
+
+	return (
+		<>
+			<Textarea
+				label="Query input"
+				rightSectionWidth={44}
+				{...props}
+				minRows={1}
+				maxRows={1}
+				className={classes.input}
+				onChange={propagateChange}
+				rightSection={
+					<Group spacing={8} noWrap>
+						{props.rightSection}
+						<ActionIcon
+							title="Advanced editor"
+							onClick={openEditor}
+							color={color}
+						>
+							<Icon
+								path={mdiWrench}
+								size="sm"
+								color={color}
+							/>
+						</ActionIcon>
+					</Group>
+				}
+			/>
+
+			<Modal
+				opened={isEditorOpen}
+				onClose={closeEditor}
+				trapFocus={false}
+				size="lg"
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Advanced editor
+					</Title>
+				}
+			>
+				<Editor
+                    theme={isLight ? 'surrealist' : 'surrealist-dark'}
+                    value={editorText}
+					onChange={setEditorText}
+                    options={options}
+                    language="surrealql"
+					height={300}
+                />
+				<Group mt="lg">
+					<Button
+						onClick={closeEditor}
+						color={isLight ? 'light.5' : 'light.3'}
+						variant="light"
+					>
+						Discard
+					</Button>
+					<Spacer />
+					<Button
+						color="surreal"
+						onClick={saveEditor}
+						type="submit"
+					>
+						Save
+					</Button>
+				</Group>
+			</Modal>
+		</>
+	)
+}
 
 export interface PermissionInputProps {
 	label: string;
@@ -11,14 +133,14 @@ export interface PermissionInputProps {
 
 export function PermissionInput(props: PermissionInputProps) {
 	return (
-		<TextInput
+		<QueryInput
 			required
 			label={props.label}
-			styles={QUERY_STYLE}
 			value={props.value}
-			rightSectionWidth={122}
+			onChangeText={value => props.onChange(value)}
+			rightSectionWidth={114}
 			rightSection={
-				<Group spacing="xs" ml={45}>
+				<>
 					<ActionIcon
 						color="green"
 						title="Grant full access"
@@ -35,9 +157,8 @@ export function PermissionInput(props: PermissionInputProps) {
 					>
 						<Icon path={mdiCancel} />
 					</ActionIcon>
-				</Group>
+				</>
 			}
-			onChange={(e) => props.onChange(e.currentTarget.value)}
 		/>
 	)
 }

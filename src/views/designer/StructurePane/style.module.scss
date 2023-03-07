@@ -1,0 +1,10 @@
+.input {
+	textarea {
+		font-family: 'JetBrains Mono';
+		scrollbar-width: none;
+	}
+
+	textarea::-webkit-scrollbar { 
+		display: none;
+	}
+}

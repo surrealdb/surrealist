@@ -1,4 +1,4 @@
-import { Badge, Box, Checkbox, Collapse, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { Badge, Box, Checkbox, Collapse, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, Textarea, TextInput } from "@mantine/core";
 import { mdiDotsGrid } from "@mdi/js";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
@@ -13,8 +13,8 @@ import { TableDefinition } from "~/typings";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { SectionDivider } from "./divider";
-import { buildDefinitionQueries, TABLE_TYPES, QUERY_STYLE, isSchemaValid } from "./helpers";
-import { PermissionInput } from "./inputs";
+import { buildDefinitionQueries, TABLE_TYPES, isSchemaValid } from "./helpers";
+import { PermissionInput, QueryInput } from "./inputs";
 import { Lister } from "./lister";
 import { Section } from "./section";
 
@@ -189,42 +189,38 @@ export function StructurePane(props: SchemaPaneProps) {
 									/>
 									<Collapse in={!!data.schema.view}>
 										<Stack pt="md">
-											<TextInput
+											<QueryInput
 												required
 												label="View projections"
 												placeholder="*"
-												styles={QUERY_STYLE}
 												value={data.schema.view?.expr}
-												onChange={(e) => setData(draft => {
-													draft.schema.view!.expr = e.target.value;
+												onChangeText={value => setData(draft => {
+													draft.schema.view!.expr = value;
 												})}
 											/>
-											<TextInput
+											<QueryInput
 												required
 												label="View source"
 												placeholder="table_name"
-												styles={QUERY_STYLE}
 												value={data.schema.view?.what}
-												onChange={(e) => setData(draft => {
-													draft.schema.view!.what = e.target.value;
+												onChangeText={value => setData(draft => {
+													draft.schema.view!.what = value;
 												})}
 											/>
-											<TextInput
+											<QueryInput
 												label="View condition"
 												placeholder="value > 10"
-												styles={QUERY_STYLE}
 												value={data.schema.view?.cond}
-												onChange={(e) => setData(draft => {
-													draft.schema.view!.cond = e.target.value;
+												onChangeText={value => setData(draft => {
+													draft.schema.view!.cond = value;
 												})}
 											/>
-											<TextInput
+											<QueryInput
 												label="View grouping"
 												placeholder="field_name"
-												styles={QUERY_STYLE}
 												value={data.schema.view?.group}
-												onChange={(e) => setData(draft => {
-													draft.schema.view!.group = e.target.value;
+												onChangeText={value => setData(draft => {
+													draft.schema.view!.group = value;
 												})}
 											/>
 										</Stack>
@@ -340,18 +336,18 @@ export function StructurePane(props: SchemaPaneProps) {
 												/>
 											)}
 										</SimpleGrid>
-										<TextInput
+										<QueryInput
 											label="Field value"
 											value={field.value}
-											onChange={(e) => setData(draft => {
-												draft.fields[i].value = e.target.value;
+											onChangeText={value => setData(draft => {
+												draft.fields[i].value = value;
 											})}
 										/>
-										<TextInput
+										<QueryInput
 											label="Field assertion"
 											value={field.assert}
-											onChange={(e) => setData(draft => {
-												draft.fields[i].assert = e.target.value;
+											onChangeText={value => setData(draft => {
+												draft.fields[i].assert = value;
 											})}
 										/>
 										<PermissionInput
@@ -413,11 +409,11 @@ export function StructurePane(props: SchemaPaneProps) {
 												draft.indexes[i].name = e.target.value;
 											})}
 										/>
-										<TextInput
+										<QueryInput
 											label="Indexed fields"
 											value={index.fields}
-											onChange={(e) => setData(draft => {
-												draft.indexes[i].fields = e.target.value;
+											onChangeText={value => setData(draft => {
+												draft.indexes[i].fields = value;
 											})}
 										/>
 										<Checkbox
@@ -458,18 +454,18 @@ export function StructurePane(props: SchemaPaneProps) {
 												draft.events[i].name = e.target.value;
 											})}
 										/>
-										<TextInput
+										<QueryInput
 											label="Event condition"
 											value={event.cond}
-											onChange={(e) => setData(draft => {
-												draft.events[i].cond = e.target.value;
+											onChangeText={value => setData(draft => {
+												draft.events[i].cond = value;
 											})}
 										/>
-										<TextInput
+										<QueryInput
 											label="Event result"
 											value={event.then}
-											onChange={(e) => setData(draft => {
-												draft.events[i].then = e.target.value;
+											onChangeText={value => setData(draft => {
+												draft.events[i].then = value;
 											})}
 										/>
 									</>

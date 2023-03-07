@@ -1,12 +1,6 @@
-import { TableDefinition, TableSchema } from "~/typings";
+import { TableDefinition } from "~/typings";
 import { default as equals } from 'fast-deep-equal';
 import { objectify } from "radash";
-
-export const QUERY_STYLE = {
-	input: {
-		fontFamily: 'JetBrains Mono'
-	}
-}
 
 export const TABLE_TYPES = [
 	{ label: 'Schemaless', value: 'schemaless' },

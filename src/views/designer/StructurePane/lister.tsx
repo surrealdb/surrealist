@@ -46,7 +46,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 							py="xs"
 							pr="xs"
 							pl="md"
-							bg="dark.9"
+							bg={isLight ? 'light.0' : 'dark.9'}
 							pos="relative"
 							radius="md"
 							style={{ border: 0, cursor: 'pointer' }}
@@ -59,8 +59,8 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 									size={0.45}
 								/>
 								{item.name
-									? <Text color="white">{item.name}</Text>
-									: <Text color="dark.3" italic>Unnamed {props.name}</Text>
+									? <Text color={isLight ? 'black' : 'white'}>{item.name}</Text>
+									: <Text color="dark.2" italic>Unnamed {props.name}</Text>
 								}
 								<Spacer />
 								<ActionIcon
@@ -96,6 +96,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				opened={isEditing}
 				onClose={closeEditor}
 				trapFocus={false}
+				size="lg"
 				title={
 					<Title size={16} color={isLight ? 'light.6' : 'white'}>
 						Editing {props.name}
