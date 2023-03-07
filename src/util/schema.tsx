@@ -16,7 +16,7 @@ export async function fetchDatabaseSchema() {
 
 	store.dispatch(actions.setDatabaseSchema(tables));
 
-	return tables
+	return tables;
 }
 
 /**

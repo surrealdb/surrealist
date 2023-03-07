@@ -341,7 +341,7 @@ export function StructurePane(props: SchemaPaneProps) {
 											)}
 										</SimpleGrid>
 										<TextInput
-											label="Default field value"
+											label="Field value"
 											value={field.value}
 											onChange={(e) => setData(draft => {
 												draft.fields[i].value = e.target.value;
