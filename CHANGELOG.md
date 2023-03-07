@@ -9,13 +9,17 @@
 	- Exports the database schema to a `.surql` file
 	- Unlike `surreal export` this file only contains schema definitions, not data
 	- Useful when you want to save an existing schema and apply it to another database
+- Added new "Advanced editor" buttons to some Designer view inputs
+	- Opens a dedicated dialog with a multiline syntax highted editor
+	- The regular input boxes can still be used and now accept multilines
 - Remember the active tab between application restarts
 - Allow selecting multiple from and to tables when creating edges
-- Improved sorting on table list
+- Improved table sorting in explorer and designer view
 - Fixed an issue in the table view renderer causing a crash
 - Improve preview of array items within table views
 - Table headers are now sticky and always visible
 - Fixed various visual issues and inconsistencies
+- Updated to latest SurrealDB nightly
 
 ## 1.6.1 - Schema management
 - Added designer view
