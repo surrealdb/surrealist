@@ -19,7 +19,8 @@ const NEW_CONNECTION: SurrealConnection = {
 	username: 'root',
 	password: 'root',
 	authMode: 'root',
-	scope: ''
+	scope: '',
+	scopeFields: []
 }
 
 /**
