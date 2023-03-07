@@ -1,7 +1,7 @@
-import { uid } from "radash";
-import { store } from "./store";
-import { AuthMode } from "./typings";
+import { AuthMode, ScopeField } from "./typings";
 import { printLog } from "./util/helpers";
+import { store } from "./store";
+import { uid } from "radash";
 
 export interface SurrealConnection {
 	namespace: string;
@@ -11,6 +11,7 @@ export interface SurrealConnection {
 	password: string;
 	authMode: AuthMode;
 	scope: string;
+	scopeFields: ScopeField[];
 }
 
 export interface SurrealOptions {
@@ -101,10 +102,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 		const { username, password, namespace, database, authMode, scope } = options.connection;
 
 		if (authMode !== 'none') {
-			const details: any = {
-				user: username,
-				pass: password
-			};
+			const details: any = {};
 	
 			if (authMode == 'namespace') {
 				details.NS = namespace || '';
@@ -119,6 +117,13 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 				details.NS = namespace || '';
 				details.DB = database || '';
 				details.SC = scope || '';
+				
+				options.connection.scopeFields.forEach((field) => {
+					details[field.subject] = field.value;
+				});
+			} else {
+				details.user = username;
+				details.pass = password;
 			}
 			
 			try {

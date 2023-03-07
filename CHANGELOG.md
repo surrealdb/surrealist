@@ -12,6 +12,7 @@
 - Added new "Advanced editor" buttons to some Designer view inputs
 	- Opens a dedicated dialog with a multiline syntax highted editor
 	- The regular input boxes can still be used and now accept multilines
+- Scope authentication fields can now be fully customized
 - Remember the active tab between application restarts
 - Allow selecting multiple from and to tables when creating edges
 - Improved table sorting in explorer and designer view

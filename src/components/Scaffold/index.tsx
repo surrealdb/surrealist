@@ -14,7 +14,7 @@ import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
 import { useActiveTab, useTabCreator } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiClose, mdiConsole } from '@mdi/js';
+import { mdiClose, mdiConsole, mdiDelete, mdiPlus } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
@@ -70,8 +70,11 @@ export function Scaffold() {
 		username: '',
 		password: '',
 		authMode: 'root',
-		scope: ''
+		scope: '',
+		scopeFields: []
 	});
+
+	const [ editingScope, setEditingScope ] = useState(false);
 
 	const openInfoEditor = useStable(() => {
 		setEditingInfo(true);
@@ -80,6 +83,23 @@ export function Scaffold() {
 
 	const closeEditingInfo = useStable(() => {
 		setEditingInfo(false);
+	});
+
+	const openScopeEditor = useStable(() => {
+		setEditingScope(true);
+	});
+
+	const closeEditingScope = useStable(() => {
+		setEditingScope(false);
+	});
+
+	const addScopeField = useStable(() => {
+		setInfoDetails(draft => {
+			draft.scopeFields.push({
+				subject: '',
+				value: ''
+			});
+		});
 	});
 
 	const setIsConnected = useStable((value: boolean) => {
@@ -550,33 +570,47 @@ export function Scaffold() {
 								})}
 								data={AUTH_MODES}
 							/>
-							<TextInput
-								label="Username"
-								disabled={infoDetails.authMode == 'none'}
-								required={infoDetails.authMode != 'none'}
-								value={infoDetails.username}
-								onChange={(e) => setInfoDetails(draft => {
-									draft.username = e.target.value
-								})}
-							/>
-							<TextInput
-								label="Password"
-								disabled={infoDetails.authMode == 'none'}
-								required={infoDetails.authMode != 'none'}
-								value={infoDetails.password}
-								onChange={(e) => setInfoDetails(draft => {
-									draft.password = e.target.value
-								})}
-							/>
-							<TextInput
-								label="Scope"
-								disabled={infoDetails.authMode != 'scope'}
-								required={infoDetails.authMode == 'scope'}
-								value={infoDetails.scope}
-								onChange={(e) => setInfoDetails(draft => {
-									draft.scope = e.target.value
-								})}
-							/>
+							{infoDetails.authMode !== 'scope' && infoDetails.authMode !== 'none' && (
+								<>
+									<TextInput
+										required
+										label="Username"
+										value={infoDetails.username}
+										onChange={(e) => setInfoDetails(draft => {
+											draft.username = e.target.value
+										})}
+									/>
+									<TextInput
+										required
+										label="Password"
+										value={infoDetails.password}
+										onChange={(e) => setInfoDetails(draft => {
+											draft.password = e.target.value
+										})}
+									/>
+								</>	
+							)}
+							
+							{infoDetails.authMode === 'scope' && (
+								<>
+									<TextInput
+										required
+										label="Scope"
+										value={infoDetails.scope}
+										onChange={(e) => setInfoDetails(draft => {
+											draft.scope = e.target.value
+										})}
+									/>
+									<Button
+										mt={21}
+										color="blue"
+										variant="outline"
+										onClick={openScopeEditor}
+									>
+										Edit scope data
+									</Button>
+								</>
+							)}
 						</Stack>
 					</SimpleGrid>
 					<Group mt="lg">
@@ -596,6 +630,83 @@ export function Scaffold() {
 						</Button>
 					</Group>
 				</Form>
+			</Modal>
+
+			{/* ANCHOR Scope data modal */}
+			<Modal
+				opened={editingScope}
+				onClose={closeEditingScope}
+				size={560}
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Editing scope data
+					</Title>
+				}
+			>
+				{infoDetails.scopeFields.length === 0 ? (
+					<Text
+						color="gray"
+						italic
+					>
+						No scope data defined
+					</Text>
+				) : (
+					<Stack>
+						{infoDetails.scopeFields.map((field, i) => (
+							<Paper key={i}>
+								<Group>
+									<TextInput
+										placeholder="Key"
+										style={{ flex: 1 }}
+										value={field.subject}
+										onChange={(e) => setInfoDetails(draft => {
+											draft.scopeFields[i].subject = e.target.value
+										})}
+									/>
+									<TextInput
+										placeholder="Value"
+										style={{ flex: 1 }}
+										value={field.value}
+										onChange={(e) => setInfoDetails(draft => {
+											draft.scopeFields[i].value = e.target.value
+										})}
+									/>
+									<ActionIcon
+										color="red"
+										title="Remove field"
+										onClick={() => setInfoDetails(draft => {
+											draft.scopeFields.splice(i, 1)
+										})}
+									>
+										<Icon
+											path={mdiClose}
+											color="red"
+										/>
+									</ActionIcon>
+								</Group>
+							</Paper>
+						))}
+					</Stack>
+				)}				
+
+				<Group mt="lg">
+					<Button
+						color={isLight ? 'light.5' : 'light.3'}
+						variant="light"
+						onClick={closeEditingScope}
+					>
+						Back
+					</Button>
+					<Spacer />
+					<Button
+						rightIcon={<Icon path={mdiPlus} />}
+						variant="light"
+						color="blue"
+						onClick={addScopeField}
+					>
+						Add field
+					</Button>
+				</Group>
 			</Modal>
 		</div>
 	)

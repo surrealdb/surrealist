@@ -41,6 +41,11 @@ export interface SurrealistTab {
 	activeView: ViewMode;
 }
 
+export interface ScopeField {
+	subject: string;
+	value: string;
+}
+
 export interface HistoryEntry {
 	id: string;
 	query: string;

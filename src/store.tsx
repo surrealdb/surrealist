@@ -32,6 +32,17 @@ const mainSlice = createSlice({
 				if (!tab.activeView) {
 					tab.activeView = 'query';
 				}
+
+				if (tab.connection.scopeFields === undefined) {
+					if (tab.connection.authMode == 'scope') {
+						tab.connection.scopeFields = [
+							{ subject: 'user', value: tab.connection.username },
+							{ subject: 'pass', value: tab.connection.password }
+						];
+					} else {
+						tab.connection.scopeFields = [];
+					}
+				}
 			});
 
 			state.consoleOutput = [];
