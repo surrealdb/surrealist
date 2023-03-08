@@ -34,6 +34,9 @@ Surrealist is a simple to use Browser and Desktop based query playground and dat
 - 🔭 Start a local database directly from the application
 - 📜 Query history & Query favoriting
 
+## How to use
+You can [read our documentation](https://surrealist.starlane.studio/) for information on how to use Surrealist.
+
 ## Web App
 You can use Surrealist by visiting https://surrealist.app/
 
