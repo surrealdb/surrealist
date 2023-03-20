@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Menu, Modal, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiLock, mdiPlus, mdiRefresh } from "@mdi/js";
 import { useEffect, useState } from "react";
@@ -139,8 +139,8 @@ export function AccountsPane(props: AccountsPaneProps) {
 							arrowOffset={18}
 						>
 							<Menu.Target>
-								<Button 
-									size="xs" 
+								<Button
+									size="xs"
 									px={5}
 									color="dark"
 									variant="subtle"
@@ -187,7 +187,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 								autoFocus
 							/>
 						)}
-						<TextInput
+						<PasswordInput
 							placeholder={editingLogin ? 'Enter new password' : 'Enter password'}
 							value={editingPassword}
 							onChange={setEditingPassword}

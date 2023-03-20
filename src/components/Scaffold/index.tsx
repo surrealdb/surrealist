@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Badge, Box, Button, Center, clsx, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Center, clsx, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme, PasswordInput } from '@mantine/core';
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
@@ -130,12 +130,12 @@ export function Scaffold() {
 				onDisconnect(code, reason) {
 					setIsConnecting(false);
 					setIsConnected(false);
-	
+
 					if (code != 1000 && !silent) {
 						const subtitle = code === 1006
 							? 'Unexpected connection close'
 							: reason || `Unknown reason`;
-	
+
 						showNotification({
 							disallowClose: true,
 							color: 'red.4',
@@ -150,7 +150,7 @@ export function Scaffold() {
 					}
 				}
 			});
-	
+
 			setIsConnecting(true);
 		} catch(err: any) {
 			showError('Failed to open connection', err.message);
@@ -580,7 +580,7 @@ export function Scaffold() {
 											draft.username = e.target.value
 										})}
 									/>
-									<TextInput
+									<PasswordInput
 										required
 										label="Password"
 										value={infoDetails.password}
@@ -588,7 +588,7 @@ export function Scaffold() {
 											draft.password = e.target.value
 										})}
 									/>
-								</>	
+								</>
 							)}
 							
 							{infoDetails.authMode === 'scope' && (
@@ -687,7 +687,7 @@ export function Scaffold() {
 							</Paper>
 						))}
 					</Stack>
-				)}				
+				)}
 
 				<Group mt="lg">
 					<Button
