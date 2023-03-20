@@ -359,7 +359,7 @@ function RelationsList({ name, isLight, relations, onSelectRecord }: RelationsLi
 	return (
 		<>
 			{relations.map((relation, i) => (
-				<Group key={relation} spacing="xs">
+				<Group key={relation} spacing="xs" noWrap>
 					<Icon
 						path={mdiCircleMedium}
 					/>

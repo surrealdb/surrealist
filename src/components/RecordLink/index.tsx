@@ -17,7 +17,7 @@ export function RecordLink({ value, onRecordClick }: RecordLinkProps) {
 		<Text
 			color="surreal"
 			ff="JetBrains Mono"
-			style={{ cursor: onRecordClick ? 'pointer' : undefined }}
+			style={{ cursor: onRecordClick ? 'pointer' : undefined, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
 			onClick={handleOpen}
 		>
 			{value}
