@@ -102,6 +102,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 				<TablesPane
 					onSelectTable={setActiveTable}
 					withModification
+					onRefresh={doRefresh}
 				/>
 			}
 			endPane={

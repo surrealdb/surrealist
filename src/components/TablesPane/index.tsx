@@ -20,6 +20,7 @@ import { useIsConnected } from '~/hooks/connection';
 export interface TablesPaneProps {
 	withModification?: boolean;
 	onSelectTable: OpenFn;
+	onRefresh?: () => void;
 }
 
 export function TablesPane(props: TablesPaneProps) {
@@ -107,6 +108,7 @@ export function TablesPane(props: TablesPaneProps) {
  
 		closeDelete();
 		fetchDatabaseSchema();
+		props?.onRefresh?.();
 	});
 
 	return (
