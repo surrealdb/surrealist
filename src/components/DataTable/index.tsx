@@ -111,9 +111,14 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange }
 				const cellValue = value[key];
 
 				return (
-					<td key={j} className={classes.tableValue}>
+					<Box
+						key={j}
+						component="td"
+						className={classes.tableValue}
+						h={37}
+					>
 						{renderDataCell(cellValue, openRecord)}
-					</td>
+					</Box>
 				);
 			});
 
