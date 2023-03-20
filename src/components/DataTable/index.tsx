@@ -20,9 +20,10 @@ interface DataTableProps {
 	sorting?: ColumnSort | null;
 	openRecord?: OpenFn;
 	onSortingChange?: (order: ColumnSort | null) => void;
+	onRowClick?: (value: any) => void;
 }
 
-export function DataTable({ data, active, sorting, openRecord, onSortingChange }: DataTableProps) {
+export function DataTable({ data, active, sorting, openRecord, onSortingChange, onRowClick }: DataTableProps) {
 	const theme = useMantineTheme();
 	const isLight = useIsLight();
 
@@ -128,6 +129,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange }
 				<Box
 					key={i}
 					component="tr"
+					onClick={() => onRowClick?.(value)}
 					sx={{
 						backgroundColor: `${isActive ? activeColor : undefined} !important`,
 					}}

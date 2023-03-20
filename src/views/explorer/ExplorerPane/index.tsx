@@ -113,6 +113,10 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		setCurrentPage(page + 1);
 	});
 
+	const handleOpenRow = useStable((record: any) => {
+		props.onSelectRecord(record.id);
+	});
+
 	return (
 		<Panel
 			title="Record Explorer"
@@ -157,6 +161,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 								active={props.activeRecordId}
 								sorting={sortMode}
 								onSortingChange={setSortMode}
+								onRowClick={handleOpenRow}
 							/>
 						</ScrollArea>
 					) : (
