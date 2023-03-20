@@ -58,11 +58,11 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		const startAt = (page - 1) * parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ['id', 'asc'];
 
-		const countQuery = `SELECT count() AS count FROM ${props.activeTable} GROUP BY count`;
+		const countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}))`;
 		const fetchQuery = `SELECT * FROM ${props.activeTable} ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy} ${startAt > 0 ? `START ${startAt}` : ''}`;
  
 		const response = await surreal.query(`${countQuery};${fetchQuery}`);
-		const resultCount = response[0].result?.[0]?.count || 0;
+		const resultCount = response[0].result?.[0] || 0;
 		const resultRecords = response[1].result || [];
 
 		setRecordCount(resultCount);
