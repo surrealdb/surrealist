@@ -8,7 +8,7 @@ import { useIsLight } from '~/hooks/theme';
 import { useStable } from '~/hooks/stable';
 import { Icon } from '../Icon';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
-import { isObject } from 'radash';
+import { alphabetical, isObject } from 'radash';
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every(v => isObject(v));
@@ -51,11 +51,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 
 				Object.entries(data[i]).forEach(([key, value]) => {
 					if (!keys.includes(key)) {
-						if (key === 'id') {
-							keys.unshift(key);
-						} else {
-							keys.push(key);
-						}
+						keys.push(key);
 					}
 
 					row[key] = value;
@@ -65,7 +61,9 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 			}
 		}
 
-		return [keys, values];
+		const headers = alphabetical(keys, (key) => key == 'id' ? '000000000000000000' : key);
+
+		return [headers, values];
 	}, [data, active]);
 	
 	const headers = useMemo(() => {
