@@ -409,7 +409,16 @@ export function Scaffold() {
 									>
 										Anon
 									</Paper>
-								) : (
+								) : tabInfo!.connection.authMode == 'scope' ? (
+									<Paper
+										bg={isLight ? 'light.0' : 'light.6'}
+										c={isLight ? 'light.4' : 'light.3'}
+										fs="italic"
+										px="xs"
+									>
+										{tabInfo!.connection.scope}
+									</Paper>
+								) :(
 									<Paper
 										bg={isLight ? 'light.0' : 'light.6'}
 										c={isLight ? 'light.6' : 'white'}
