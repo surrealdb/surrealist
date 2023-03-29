@@ -60,7 +60,7 @@ jobs:
       - name: Frontend dependencies
         run: |
           npm i -g pnpm
-          pnpm install
+          pnpm install --no-frozen-lockfile
 
       - name: Build application
         run: pnpm tauri build
