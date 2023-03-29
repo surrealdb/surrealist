@@ -33,11 +33,11 @@ export function initializeEditor(monaco: Monaco) {
 	document.fonts.ready.then(() => {
 		let task = setInterval(() => {
 			monaco.editor.remeasureFonts();
-		}, 250);
+		}, 1000);
 
 		setTimeout(() => {
 			clearInterval(task);
-		}, 3000);
+		}, 1000 * 15);
 	});
 
 	monaco.editor.defineTheme('surrealist', {
