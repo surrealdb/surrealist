@@ -11,6 +11,7 @@ import { Icon } from "../Icon";
 import { useStable } from "~/hooks/stable";
 import { MouseEvent } from "react";
 import { updateConfig, updateZoom } from "~/util/helpers";
+import { open } from "@tauri-apps/api/shell";
 
 export function App() {
 	const update = useStoreValue(state => state.availableUpdate);
@@ -27,8 +28,7 @@ export function App() {
 	});
 
 	const openRelease = useStable(() => {
-		// TODO Implement
-		// BrowserOpenURL(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`);
+		open(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`)
 		closeUpdate(); 
 	});
 
