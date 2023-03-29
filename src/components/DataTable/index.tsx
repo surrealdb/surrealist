@@ -121,7 +121,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 				);
 			});
 
-			const isActive = value.id == active;
+			const isActive = active && value.id == active;
 
 			return (
 				<Box
