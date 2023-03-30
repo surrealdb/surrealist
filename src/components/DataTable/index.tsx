@@ -61,7 +61,14 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 			}
 		}
 
-		const headers = alphabetical(keys, (key) => key == 'id' ? '000000000000000000' : key);
+		const headers = alphabetical(keys, (key) => {
+			switch (key) {
+				case 'id': return '00000000000';
+				case 'in': return '00000000001';
+				case 'out': return '00000000002';
+				default: return key;
+			}
+		});
 
 		return [headers, values];
 	}, [data, active]);
