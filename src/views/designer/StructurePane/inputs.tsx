@@ -135,6 +135,7 @@ export function PermissionInput(props: PermissionInputProps) {
 	return (
 		<QueryInput
 			required
+			placeholder="WHERE (user = $auth.id)"
 			label={props.label}
 			value={props.value}
 			onChangeText={value => props.onChange(value)}

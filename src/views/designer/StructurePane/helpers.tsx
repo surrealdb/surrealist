@@ -8,7 +8,7 @@ export const TABLE_TYPES = [
 ];
 
 function buildPermission(type: string, value: string) {
-	return ` FOR ${type} ${(value == 'FULL' || value == 'NONE') ? value : `WHERE ${value})`}`;
+	return ` FOR ${type} ${value}`;
 }
 
 /**
