@@ -70,7 +70,7 @@ pub fn stop_database(state: tauri::State<DatabaseState>) -> Result<bool, String>
 ///
 /// Kill the process with the given id
 ///
-fn kill_surreal_process(id: u32) {
+pub fn kill_surreal_process(id: u32) {
 	let shell_cmd = shell::build_kill_command(&id);
 	let mut cmd_chain = Command::new(&shell_cmd[0]);
 
@@ -85,7 +85,7 @@ fn kill_surreal_process(id: u32) {
 ///
 /// Start a new SurrealDB process and return the child process
 ///
-fn start_surreal_process(username: &str, password: &str, port: u32, driver: &str, storage: &str) -> Result<Child, String> {
+pub fn start_surreal_process(username: &str, password: &str, port: u32, driver: &str, storage: &str) -> Result<Child, String> {
 	let bind_addr = format!("0.0.0.0:{}", port);
 	let mut args = vec![
 		"surreal",

@@ -3,7 +3,8 @@
     windows_subsystem = "windows"
 )]
 
-use database::DatabaseState;
+use database::{DatabaseState};
+use tauri::{Manager, RunEvent};
 
 mod config;
 mod schema;
@@ -23,6 +24,18 @@ fn main() {
 			database::start_database,
 			database::stop_database
 		])
-        .run(tauri::generate_context!())
-        .expect("tauri should start successfully");
+        .build(tauri::generate_context!())
+        .expect("tauri should start successfully")
+		.run(move |app, event| match event {
+			RunEvent::Exit => {
+				let state = app.state::<DatabaseState>();
+				let process = state.0.lock().unwrap().take();
+
+				if let Some(child) = process {
+					database::kill_surreal_process(child.id())
+				}
+			}
+			_ => {}
+		})
+
 }
