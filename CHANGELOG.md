@@ -1,5 +1,24 @@
 # Change Log
 
+## 1.6.4 - Minor improvements
+- Updated internal version of surrealdb
+- Fixed surrealdb process sometimes staying alive after exit
+- Fixed unexpected behavior with permission inputs in designer view (#46)
+
+## 1.6.3 - UI/UX Improvements
+- Records are now opened in the explorer when the entire row is clicked
+- Passwords are no longer displayed in plaintext by default
+- Fixed wrapping issues with record links
+- Close explorer when table is deleted
+- Improved performance of total record count calculation
+- Fixed inconsistent row heights in explorer
+- Alphabetically sort headers
+- Impose a visual limit on the length of record links
+- Fixed update notification not opening the releases page
+- Fixed incorrect colors in query view table renderer
+- Scope name is now displayed in the connection bar
+- Further attempts to fix spaces behaving weirdly when selected
+
 ## 1.6.2 - Visualization export
 - Improvements to the visualizer view
 	- Graphs can be saved as png and jpg
