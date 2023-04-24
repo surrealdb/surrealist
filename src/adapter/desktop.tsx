@@ -95,9 +95,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return invoke<TableSchema>('extract_table_definition', { definition });
 		});
 
-		return map(databaseInfo, (async table => {
-			const tbResponse = await surreal.query(`INFO FOR TABLE ${table.name}`);
-			const tableInfo = tbResponse[0].result;
+		const tableQuery = databaseInfo.reduce((acc, table) => {
+			return acc +`INFO FOR TABLE ${table.name};`;
+		}, '');
+
+		const tableData = await surreal.query(tableQuery);
+
+		return map(databaseInfo, async (table, index) => {
+			const tableInfo = tableData[index].result;
 
 			const fieldInfo = await map(Object.values(tableInfo.fd), definition => {
 				return invoke<TableField>('extract_field_definition', { definition });
@@ -140,7 +145,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				indexes: indexInfo,
 				events: eventInfo
 			};
-		}));
+		});
 	}
 
 	async validateWhereClause(clause: string) {
