@@ -5,6 +5,8 @@
 	- Filter input can be toggled by pressing the filter icon on the top right of the explorer panel
 	- Validates the where clause and indicates when it is invalid
 - Improve table retrieval performance for explorer and designer view
+- Changed the way multiple responses are displayed in query view
+	- Tabs have been replaced by pagination
 
 ## 1.6.4 - Minor improvements
 - Updated internal version of surrealdb
