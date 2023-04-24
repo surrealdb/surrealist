@@ -1,8 +1,9 @@
 import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
-import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiFilterVariant, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
 import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
+import { adapter } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
@@ -30,6 +31,9 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const isLight = useIsLight();
 	const [records, setRecords] = useImmer<any[]>([]);
 	const [recordCount, setRecordCount] = useState(0);
+	const [filterValid, setFilterValid] = useState(false);
+	const [filter, setFilter] = useState(false);
+	const [filterText, setFilterText] = useInputState('');
 	const [pageText, setPageText] = useInputState('1');
 	const [pageSize, setPageSize] = useInputState('25');
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
@@ -42,6 +46,13 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		setPage(number);
 	}
 
+	const toggleFilter = useStable(() => {
+		setFilter(!filter);
+	});
+
+	const [showFilter] = useDebouncedValue(filter, 250);
+	const [filterClause] = useDebouncedValue(filterText, 500);
+
 	const fetchRecords = useStable(async () => {
 		if (!props.activeTable) {
 			setRecords([]);
@@ -50,7 +61,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		const surreal = getSurreal();
 
-		if (!surreal) {
+		if (!surreal || !filterValid) {
 			return;
 		}
 
@@ -58,9 +69,21 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		const startAt = (page - 1) * parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ['id', 'asc'];
 
-		const countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}))`;
-		const fetchQuery = `SELECT * FROM ${props.activeTable} ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy} ${startAt > 0 ? `START ${startAt}` : ''}`;
+		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}`;
+		let fetchQuery = `SELECT * FROM ${props.activeTable}`;
  
+		if (showFilter && filterClause) {
+			countQuery += ` WHERE ${filterClause}`;
+			fetchQuery += ` WHERE ${filterClause}`;
+		}
+
+		countQuery += '))';
+		fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
+
+		if (startAt > 0) {
+			fetchQuery = `START ${startAt}`;
+		}
+
 		const response = await surreal.query(`${countQuery};${fetchQuery}`);
 		const resultCount = response[0].result?.[0] || 0;
 		const resultRecords = response[1].result || [];
@@ -75,7 +98,17 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeTable, props.refreshId, pageSize, page, sortMode]);
+	}, [props.activeTable, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
+
+	useEffect(() => {
+		if (showFilter && filterText) {
+			adapter.validateWhereClause(filterText).then(isValid => {
+				setFilterValid(isValid);
+			});
+		} else {
+			setFilterValid(true);
+		}
+	}, [showFilter, filterText]);
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === 'keydown' && (e as KeyboardEvent).key !== 'Enter') {
@@ -137,6 +170,13 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 
+					<ActionIcon
+						title="Toggle filter"
+						onClick={toggleFilter}
+					>
+						<Icon color="light.4" path={mdiFilterVariant} />
+					</ActionIcon>
+
 					<Divider
 						orientation="vertical"
 						color={isLight ? 'light.0' : 'dark.5'}
@@ -151,9 +191,25 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		>
 			{props.activeTable ? (
 				<>
+					{filter && (
+						<TextInput
+							placeholder="Enter filter clause..."
+							icon={<Icon path={mdiFilterVariant} />}
+							value={filterText}
+							onChange={setFilterText}
+							error={!filterValid}
+							autoFocus
+							styles={theme => ({
+								input: {
+									fontFamily: 'JetBrains Mono',
+									borderColor: (filterValid ? theme.fn.themeColor('gray') : theme.fn.themeColor('red')) + ' !important'
+								}
+							})}
+						/>
+					)}
 					{records.length > 0 ? (
 						<ScrollArea
-							style={{ position: 'absolute', inset: 12, top: 0, bottom: 54 }}
+							style={{ position: 'absolute', inset: 12, top: filter ? 40 : 0, bottom: 54, transition: 'top .1s' }}
 						>
 							<DataTable
 								data={records}

@@ -1,4 +1,4 @@
-use surrealdb::sql::{parse, Statement, statements::DefineStatement, Permissions};
+use surrealdb::sql::{parse, Statement, statements::{DefineStatement}, Permissions};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -186,4 +186,11 @@ pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
 	}
 
 	Err(String::from("Failed to extract event"))
+}
+
+#[tauri::command]
+pub fn validate_where_clause(clause: &str) -> bool {
+	let query = "SELECT * FROM table WHERE ".to_owned() + clause;
+
+	parse(&query).is_ok()
 }

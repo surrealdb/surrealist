@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useStable } from "./stable";
 
 /**
@@ -10,6 +10,14 @@ import { useStable } from "./stable";
  */
 export function useDebouncedCallback<T>(delay: number, exec: (value: T) => void): (value: T) => void {
 	const task = useRef<any>(null);
+
+	useEffect(() => {
+		return () => {
+			if (task.current) {
+				clearTimeout(task.current);
+			}
+		};
+	}, []);
 
 	return useStable((value) => {
 		if (task.current) {

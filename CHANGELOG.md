@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.7.0 - Explorer filtering
+- Added filtering functionality to the explorer view
+	- Filter input can be toggled by pressing the filter icon on the top right of the explorer panel
+	- Validates the where clause and indicates when it is invalid
+
 ## 1.6.4 - Minor improvements
 - Updated internal version of surrealdb
 - Fixed surrealdb process sometimes staying alive after exit

@@ -143,6 +143,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		}));
 	}
 
+	async validateWhereClause(clause: string) {
+		return invoke<boolean>('validate_where_clause', { clause });
+	}
+
 	initDatabaseEvents() {
 
 		listen('database:start', () => {

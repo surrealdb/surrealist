@@ -73,4 +73,11 @@ export interface SurrealistAdapter {
 	 */
 	fetchSchema(): Promise<TableDefinition[]>
 
+	/**
+	 * Verify whether the given where clause is valid
+	 * 
+	 * @param clause The where clause to validate
+	 */
+	validateWhereClause(clause: string): Promise<boolean>
+
 }
