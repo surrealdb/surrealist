@@ -1,5 +1,5 @@
 import type { editor } from "monaco-editor";
-import { ActionIcon, Center, Divider, Group, Tabs, Text } from "@mantine/core";
+import { ActionIcon, Center, Divider, Group, Pagination, Tabs, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import Editor from "@monaco-editor/react";
@@ -50,12 +50,12 @@ export function ResultPane() {
 	const resultListing = useStoreValue(state => state.config.resultListing);
 	const results = activeTab?.lastResponse || [];
 
-	const [resultTab, setResultTab] = useState<string|null>(null);
-	const result = results[parseInt(resultTab || '0')];
+	const [resultTab, setResultTab] = useState<number>(1);
+	const result = results[resultTab - 1];
 	const showTabs = results.length > 1;
 
 	useLayoutEffect(() => {
-		setResultTab(results.length > 0 ? '0' : null);
+		setResultTab(1);
 	}, [results.length]);
 
 	const toggleResultView = useStable(() => {
@@ -69,7 +69,7 @@ export function ResultPane() {
 
 	return (
 		<Panel
-			title="Result"
+			title={showTabs ? `Result #${resultTab}` : 'Result'}
 			icon={mdiLightningBolt}
 			rightSection={
 				<Group align="center">
@@ -108,29 +108,12 @@ export function ResultPane() {
 				</Group>
 			}
 		>
-			{showTabs && (
-				<Tabs
-					value={resultTab}
-					onTabChange={setResultTab}
-				>
-					<Tabs.List>
-						{results.map((_: any, i: number) => (
-							<Tabs.Tab
-								key={i}
-								value={i.toString()}
-							>
-								Query {i + 1}
-							</Tabs.Tab>
-						))}
-					</Tabs.List>
-				</Tabs>
-			)}
 			<div
 				style={{
 					position: 'absolute',
-					insetBlock: 0,
 					insetInline: 14,
-					top: showTabs ? 48 : 0
+					top: 0,
+					bottom: showTabs ? 58 : 0
 				}}
 			>
 				{result ? (
@@ -155,6 +138,22 @@ export function ResultPane() {
 					</Center>
 				)}
 			</div>
+
+			{showTabs && (
+				<Center
+					style={{
+						position: 'absolute',
+						insetInline: 0,
+						bottom: 12
+					}}
+				>
+					<Pagination
+						total={results.length}
+						page={resultTab}
+						onChange={setResultTab}
+					/>
+				</Center>
+			)}
 		</Panel>
 	)
 }

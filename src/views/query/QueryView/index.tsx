@@ -23,6 +23,7 @@ export function QueryView(props: QueryViewProps) {
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"
+			bufferSize={400}
 			startPane={
 				<Splitter
 					minSize={120}
