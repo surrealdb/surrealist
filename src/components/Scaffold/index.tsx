@@ -307,7 +307,7 @@ export function Scaffold() {
 							position="bottom-start"
 							exitTransitionDuration={75}
 							closeOnEscape
-							shadow="lg"
+							shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.35 : 0.75})`}
 							withArrow
 						>
 							<Popover.Target>
