@@ -75,6 +75,7 @@ export function createNewTab(options?: CreateOptions) {
 
 	const tabId = newId();
 	const envTabs = tabs.filter(tab => tab.environment === envId);
+	const inherited = store.getState().config.environments.find(env => env.id === envId)?.connection;
 
 	function buildName(n: number) {
 		return `${options?.name || 'New tab'} ${n ? n + 1 : ''}`.trim();
@@ -97,12 +98,12 @@ export function createNewTab(options?: CreateOptions) {
 		lastResponse: [],
 		activeView: 'query',
 		connection: {
-			endpoint: 'http://localhost:8000/',
-			namespace: 'test',
-			database: 'test',
-			username: 'root',
-			password: 'root',
-			authMode: 'root',
+			endpoint: inherited?.endpoint ? '' : 'http://localhost:8000/',
+			namespace: inherited?.namespace ? '' : 'test',
+			database: inherited?.database ? '' : 'test',
+			username: inherited?.username ? '' : 'root',
+			password: inherited?.password ? '' : 'root',
+			authMode: inherited?.authMode ? '' : 'root' as any,
 			scope: '',
 			scopeFields: []
 		}
