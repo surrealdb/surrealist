@@ -19,6 +19,7 @@ export interface ConnectionDetailsProps {
 
 export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {
 	const isLight = useIsLight();
+	const authMode = placeholders?.authMode || value.authMode;
 	const modePlaceholder = AUTH_MODES.find(mode => mode.value === placeholders?.authMode)?.label;
 	const passPlaceholder = placeholders?.password && '•'.repeat(placeholders.password.length);
 	const [ editingScope, setEditingScope ] = useState(false);
@@ -81,7 +82,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 							draft.authMode = value as AuthMode;
 						})}
 					/>
-					{value.authMode !== 'scope' && value.authMode !== 'none' && (
+					{authMode !== 'scope' && authMode !== 'none' && (
 						<>
 							<TextInput
 								label="Username"
@@ -102,7 +103,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 						</>
 					)}
 					
-					{value.authMode === 'scope' && (
+					{authMode === 'scope' && (
 						<>
 							<TextInput
 								label="Scope"
