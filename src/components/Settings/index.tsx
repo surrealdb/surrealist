@@ -1,9 +1,9 @@
-import { Button, Checkbox, ColorScheme, Divider, Group, Modal, NumberInput, Paper, Select, SimpleGrid, Stack, Switch, Text, TextInput, Title, useMantineColorScheme } from "@mantine/core";
+import { Box, Button, Checkbox, ColorScheme, Divider, Flex, Group, Modal, NumberInput, Paper, Select, SimpleGrid, Stack, Switch, Text, TextInput, Title, Tooltip, useMantineColorScheme } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
-import { mdiCog } from "@mdi/js";
+import { mdiCog, mdiInformation } from "@mdi/js";
 import { updateConfig } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
@@ -76,6 +76,11 @@ export function Settings() {
 
 	const setQueryTimeout = useStable((value: number) => {
 		store.dispatch(actions.setQueryTimeout(value));
+		updateConfig();
+	});
+
+	const setSurrealPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setSurrealPath(e.target.value));
 		updateConfig();
 	});
 
@@ -163,6 +168,27 @@ export function Settings() {
 							value={config.queryTimeout}
 							min={1}
 							onChange={setQueryTimeout}
+						/>
+
+						<TextInput
+							value={config.surrealPath}
+							onChange={setSurrealPath}
+							label={
+								<Group spacing={6}>
+									Surreal executable path
+									<Tooltip
+										label={
+											<Text maw={305} style={{ whiteSpace: 'normal'}}>
+												When left empty Surrealist will try to find the executable in the PATH environment variable.
+											</Text>
+										}
+									>
+										<div>
+											<Icon path={mdiInformation} size="sm" mt={-2} />
+										</div>
+									</Tooltip>
+								</Group>
+							}
 						/>
 
 						<Select

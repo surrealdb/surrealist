@@ -6,15 +6,28 @@ mod shell;
 pub struct DatabaseState(pub Mutex<Option<Child>>);
 
 #[tauri::command]
-pub fn start_database(window: tauri::Window, state: tauri::State<DatabaseState>, username: &str, password: &str, port: u32, driver: &str, storage: &str) -> Result<(), String> {
+pub fn start_database(
+	window: tauri::Window,
+	state: tauri::State<DatabaseState>,
+	username: &str,
+	password: &str,
+	port: u32,
+	driver: &str,
+	storage: &str,
+	executable: &str,
+) -> Result<(), String> {
 	let mut process = state.0.lock().unwrap();
 	let start_at = Instant::now();
 
 	if process.is_some() {
-		return Err("Database already running".to_owned());
+		let wait = process.as_mut().unwrap().try_wait();
+
+		if let Ok(None) = wait {
+			return Err("Database already running".to_owned());
+		}
 	}
 
-	let child_result = start_surreal_process(username, password, port, driver, storage);
+	let child_result = start_surreal_process(username, password, port, driver, storage, executable);
 	let mut child_proc = match child_result {
 		Ok(child) => child,
 		Err(err) => {
@@ -85,10 +98,11 @@ pub fn kill_surreal_process(id: u32) {
 ///
 /// Start a new SurrealDB process and return the child process
 ///
-pub fn start_surreal_process(username: &str, password: &str, port: u32, driver: &str, storage: &str) -> Result<Child, String> {
+pub fn start_surreal_process(username: &str, password: &str, port: u32, driver: &str, storage: &str, executable: &str) -> Result<Child, String> {
 	let bind_addr = format!("0.0.0.0:{}", port);
+	let path = if executable.is_empty() { "surreal" } else { executable };
 	let mut args = vec![
-		"surreal",
+		path,
 		"start",
 		"--bind", &bind_addr,
 		"--user", username,

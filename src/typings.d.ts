@@ -24,6 +24,7 @@ export interface SurrealistConfig {
 	queryFavorites: FavoritesEntry[];
 	localDriver: DriverType;
 	localStorage: string;
+	surrealPath: string;
 	enableConsole: boolean;
 	enableListing: boolean;
 	queryTimeout: number;

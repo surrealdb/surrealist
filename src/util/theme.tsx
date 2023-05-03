@@ -106,6 +106,17 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 						fontWeight: 500
 					}
 				}
+			},
+			Tooltip: {
+				defaultProps: {
+					withinPortal: true
+				},
+				styles: (theme, params) => ({
+					tooltip: {
+						backgroundColor: 'rgba(255, 255, 255, 0.35)',
+						backdropFilter: 'blur(4px)',
+					}	
+				})
 			}
 		}
 	}), [colorScheme]);	

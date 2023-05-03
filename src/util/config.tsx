@@ -13,6 +13,7 @@ export function createBaseConfig(): SurrealistConfig {
 		queryFavorites: [],
 		localDriver: 'memory',
 		localStorage: '',
+		surrealPath: '',
 		enableConsole: true,
 		enableListing: false,
 		queryTimeout: 10,

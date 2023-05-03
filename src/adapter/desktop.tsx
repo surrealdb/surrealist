@@ -58,13 +58,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	async startDatabase(username: string, password: string, port: number, localDriver: string, localPath: string) {
+	async startDatabase(username: string, password: string, port: number, localDriver: string, localPath: string, surrealPath: string) {
 		return invoke<void>('start_database', {
 			username: username,
 			password: password,
 			port: port,
 			driver: localDriver,
-			storage: localPath
+			storage: localPath,
+			executable: surrealPath
 		});
 	}
 

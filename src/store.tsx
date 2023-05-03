@@ -183,6 +183,10 @@ const mainSlice = createSlice({
 			state.config.localStorage = action.payload;
 		},
 
+		setSurrealPath(state, action: PayloadAction<string>) {
+			state.config.surrealPath = action.payload;
+		},
+
 		setQueryTimeout(state, action: PayloadAction<number>) {
 			state.config.queryTimeout = action.payload;
 		},

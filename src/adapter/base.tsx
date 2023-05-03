@@ -49,7 +49,7 @@ export interface SurrealistAdapter {
 	/**
 	 * Start the database with the given parameters
 	 */
-	startDatabase(username: string, password: string, port: number, localDriver: string, localPath: string): Promise<void>;
+	startDatabase(username: string, password: string, port: number, localDriver: string, localPath: string, surrealPath: string): Promise<void>;
 
 	/**
 	 * Stop the currently running database

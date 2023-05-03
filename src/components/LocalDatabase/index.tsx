@@ -24,6 +24,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 	const isPending = useStoreValue(state => state.servePending);
 	const localDriver = useStoreValue(state => state.config.localDriver);
 	const localPath = useStoreValue(state => state.config.localStorage);
+	const surrealPath = useStoreValue(state => state.config.surrealPath);
 
 	const { endpoint, authMode } = activeTab?.connection || {};
 
@@ -57,7 +58,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 				return;
 			}
 
-			adapter.startDatabase(username, password, port || 80, localDriver, localPath);
+			adapter.startDatabase(username, password, port || 80, localDriver, localPath, surrealPath);
 			store.dispatch(actions.prepareServe(activeTab.id));
 		}
 	});
