@@ -179,7 +179,7 @@ export function Settings() {
 									<Tooltip
 										label={
 											<Text maw={305} style={{ whiteSpace: 'normal'}}>
-												When left empty Surrealist will try to find the executable in the PATH environment variable.
+												Leave empty to search for the Surreal executable in the PATH environment variable.
 											</Text>
 										}
 									>

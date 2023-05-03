@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { Box, Button, Divider, Group, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
-import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose } from "@mdi/js";
+import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose, mdiPencil, mdiCursorText, mdiCheck } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SurrealistTab } from "~/typings";
 import { Text } from "@mantine/core";
@@ -12,6 +12,7 @@ import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useHotkeys, useInputState } from '@mantine/hooks';
 import { createNewTab } from '~/util/environments';
 import { Environments } from './environments';
+import { SyntheticEvent } from 'react';
 
 function getTabIcon(tab: SurrealistTab) {
 	return VIEW_MODES.find(v => v.id == tab.activeView)?.icon;
@@ -27,6 +28,8 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 	const [ opened, setOpened ] = useState(false);
 	const [ manageEnvs, setManageEnvs ] = useState(false);
 	const [ viewingEnv, setViewingEnv ] = useState('');
+	const [ renamingTab, setRenamingTab ] = useState('');
+	const [ tabName, setTabName ] = useInputState('');
 	const [ search, setSearch ] = useInputState('');
 
 	const tabs = useStoreValue(state => state.config.tabs);
@@ -42,6 +45,10 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 	}, [tabs, viewingEnv, search]);
 	
 	const select = useStable((id: string) => {
+		if (renamingTab) {
+			return;
+		}
+
 		store.dispatch(actions.setActiveTab(id));
 
 		updateTitle();
@@ -71,6 +78,38 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 		e.stopPropagation();
 
 		store.dispatch(actions.removeTab(id));
+	});
+	
+	const renameTab = useStable((e: MouseEvent, id: string) => {
+		e.stopPropagation();
+
+		const current = tabs.find(tab => tab.id === id)?.name || '';
+
+		setRenamingTab(id);
+		setTabName(current);
+	});
+
+	const saveRename = useStable((e: SyntheticEvent) => {
+		if ('key' in e && e.key !== 'Enter') {
+			return;
+		}
+
+		const info = tabs.find(tab => tab.id === renamingTab);
+		
+		if (!info) {
+			return;
+		}
+
+		store.dispatch(actions.updateTab({
+			...info,
+			name: tabName
+		}));
+
+		setRenamingTab('');
+		setTabName('');
+		
+		updateConfig();
+		updateTitle();
 	});
 
 	const openEnvManager = useStable(() => {
@@ -206,26 +245,68 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 
 									{filteredTabs.map(item => {
 										const isActive = item.id === tab?.id;
+										const isRenaming = renamingTab == item.id;
 
 										return (
 											<Button
 												key={item.id}
 												w={264}
 												px={12}
-												leftIcon={<Icon path={getTabIcon(item) ?? ''} color="surreal" />}
+												leftIcon={
+													isRenaming
+														? <Icon path={mdiPencil} color="blue" />
+														: <Icon path={getTabIcon(item) ?? ''} color="surreal" />
+												}
 												c={isLight ? 'black' : 'white'}
-												color={isActive ? 'pink' : 'light'}
-												variant={isActive ? 'light' : 'subtle'}
+												color={isRenaming ? 'light' : isActive ? 'pink' : 'light'}
+												variant={isRenaming ? 'outline' : isActive ? 'light' : 'subtle'}
 												className={classes.entryButton}
 												onClick={() => select(item.id)}
-												rightIcon={
-													<Icon
-														path={mdiClose}
-														onClick={e => deleteTab(e, item.id)}
-													/>
-												}
+												rightIcon={!isRenaming && (
+													<>
+														<Icon
+															mr="xs"
+															path={mdiPencil}
+															onClick={e => renameTab(e, item.id)}
+														/>
+														<Icon
+															path={mdiClose}
+															onClick={e => deleteTab(e, item.id)}
+														/>
+													</>
+												)}
 											>
-												{item.name}
+												{isRenaming ? (
+													<TextInput
+														autoFocus
+														variant="unstyled"
+														value={tabName}
+														onChange={setTabName}
+														onBlur={saveRename}
+														onKeyDown={saveRename}
+														styles={{
+															input: {
+																fontWeight: 600,
+																color: 'white',
+																maxWidth: 150,
+																padding: 0,
+																margin: 0,
+																marginTop: -1
+															}
+														}}
+													/>
+												) : (
+													<Text
+														maw={150}
+														style={{
+															overflow: 'hidden',
+															textOverflow: 'ellipsis',
+															whiteSpace: 'nowrap'
+														}}
+													>
+														{item.name}
+													</Text>
+												)}
 											</Button>
 										)
 									})}
