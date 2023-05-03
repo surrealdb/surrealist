@@ -1,5 +1,7 @@
 use std::{process::{Child, Command, Stdio}, thread, sync::Mutex, io::{BufReader, BufRead}, time::Instant};
 
+use tauri::Manager;
+
 mod embedded;
 mod shell;
 
@@ -20,11 +22,7 @@ pub fn start_database(
 	let start_at = Instant::now();
 
 	if process.is_some() {
-		let wait = process.as_mut().unwrap().try_wait();
-
-		if let Ok(None) = wait {
-			return Err("Database already running".to_owned());
-		}
+		return Err("Database already running".to_owned());
 	}
 
 	let child_result = start_surreal_process(username, password, port, driver, storage, executable);
@@ -61,6 +59,12 @@ pub fn start_database(
 		} else {
 			window.emit("database:stop", true).expect("stop result should be delivered");
 		}
+
+		let handle = window.app_handle();
+		let state = handle.state::<DatabaseState>();
+		let mut process = state.0.lock().unwrap();
+
+		*process = None;
 	});
 
 	Ok(())
