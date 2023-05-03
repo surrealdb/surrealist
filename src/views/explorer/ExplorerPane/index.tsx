@@ -81,7 +81,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
 
 		if (startAt > 0) {
-			fetchQuery = `START ${startAt}`;
+			fetchQuery += ` START ${startAt}`;
 		}
 
 		const response = await surreal.query(`${countQuery};${fetchQuery}`);
