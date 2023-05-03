@@ -1,12 +1,19 @@
 # Change Log
 
-## 1.7.0 - Explorer filtering
+## 1.7.0 - Environments
+- Replaced the tab system with a new environment system
+	- Tabs are organized into environments
+	- Environments can define default connection details which all tabs within can fallback to
+	- Provides a significantly better user experience when defining many tabs
+	- Classic tabs are automatically migrated to the environment system
 - Added filtering functionality to the explorer view
 	- Filter input can be toggled by pressing the filter icon on the top right of the explorer panel
 	- Validates the where clause and indicates when it is invalid
 - Improve table retrieval performance for explorer and designer view
+- The surreal executable path can now also be manually specified in settings
 - Changed the way multiple responses are displayed in query view
 	- Tabs have been replaced by pagination
+- Fixed database start button getting stuck in loading state
 
 ## 1.6.4 - Minor improvements
 - Updated internal version of surrealdb
