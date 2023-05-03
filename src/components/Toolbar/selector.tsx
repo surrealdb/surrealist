@@ -1,5 +1,5 @@
 import classes from './style.module.scss';
-import { Button, Divider, Group, Popover, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { Box, Button, Divider, Group, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SurrealistTab } from "~/typings";
@@ -140,28 +140,33 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 				</Popover.Target>
 				<Popover.Dropdown px="xs">
 					<SimpleGrid cols={2}>
-						<Stack spacing="xs">
-							{environments.map(item => {
-								const isActive = item.id === viewingEnv;
+						<Box mih={235} mah={350}>
+							<ScrollArea h="calc(100% - 54px)">
+								<Stack spacing="xs">
+									{environments.map(item => {
+										const isActive = item.id === viewingEnv;
 
-								return (
-									<Button
-										key={item.id}
-										w={264}
-										px={12}
-										c={isLight ? 'black' : 'white'}
-										color={isActive ? 'dark.7' : 'light'}
-										variant={isActive ? 'filled' : 'subtle'}
-										className={classes.entryButton}
-										onClick={() => openEnvironment(item.id)}
-									>
-										{item.name}
-									</Button>
-								)
-							})}
+										return (
+											<Button
+												key={item.id}
+												w={264}
+												px={12}
+												c={isLight ? 'black' : 'white'}
+												color={isActive ? 'dark.7' : 'light'}
+												variant={isActive ? 'filled' : 'subtle'}
+												className={classes.entryButton}
+												onClick={() => openEnvironment(item.id)}
+											>
+												{item.name}
+											</Button>
+										)
+									})}
+								</Stack>
+							</ScrollArea>
 
 							<Divider
 								color="dark.4"
+								my="xs"
 							/>
 
 							<Button
@@ -175,70 +180,75 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 							>
 								Manage environments
 							</Button>
-						</Stack>
-						<Stack spacing="xs" mih={250}>
-							<Group>
-								<TextInput
-									placeholder="Search"
-									variant="filled"
-									icon={<Icon path={mdiMagnify} color="dark.3" />}
-									style={{ flex: 1 }}
-									value={search}
-									onChange={setSearch}
-									autoFocus
-								/>
-							</Group>
+						</Box>
+						<Box mih={235} mah={350}>
+							<TextInput
+								placeholder="Search"
+								variant="filled"
+								icon={<Icon path={mdiMagnify} color="dark.3" />}
+								style={{ flex: 1 }}
+								value={search}
+								onChange={setSearch}
+								autoFocus
+								mb="sm"
+							/>
+							<ScrollArea h="calc(100% - 102px)">
+								<Stack spacing="xs">
+									{filteredTabs.length === 0 && tabs.length > 0 && (
+										<Text
+											align="center"
+											py={7}
+											c="dark.2"
+										>
+											No tabs found
+										</Text>	
+									)}
 
-							{filteredTabs.length === 0 && tabs.length > 0 && (
-								<Text
-									align="center"
-									py={7}
-									c="dark.2"
-								>
-									No tabs found
-								</Text>	
-							)}
+									{filteredTabs.map(item => {
+										const isActive = item.id === tab?.id;
 
-							{filteredTabs.map(item => {
-								const isActive = item.id === tab?.id;
+										return (
+											<Button
+												key={item.id}
+												w={264}
+												px={12}
+												leftIcon={<Icon path={getTabIcon(item) ?? ''} color="surreal" />}
+												c={isLight ? 'black' : 'white'}
+												color={isActive ? 'pink' : 'light'}
+												variant={isActive ? 'light' : 'subtle'}
+												className={classes.entryButton}
+												onClick={() => select(item.id)}
+												rightIcon={
+													<Icon
+														path={mdiClose}
+														onClick={e => deleteTab(e, item.id)}
+													/>
+												}
+											>
+												{item.name}
+											</Button>
+										)
+									})}
+								</Stack>
+							</ScrollArea>
 
-								return (
-									<Button
-										key={item.id}
-										w={264}
-										px={12}
-										leftIcon={<Icon path={getTabIcon(item) ?? ''} color="surreal" />}
-										c={isLight ? 'black' : 'white'}
-										color={isActive ? 'pink' : 'light'}
-										variant={isActive ? 'light' : 'subtle'}
-										className={classes.entryButton}
-										onClick={() => select(item.id)}
-										rightIcon={
-											<Icon
-												path={mdiClose}
-												onClick={e => deleteTab(e, item.id)}
-											/>
-										}
-									>
-										{item.name}
-									</Button>
-								)
-							})}
+							<Divider
+								color="dark.4"
+								my="xs"
+							/>
 
-							{!search && (
-								<Button
-									w={264}
-									px={12}
-									color="light"
-									variant="subtle"
-									className={classes.entryButton}
-									leftIcon={<Icon path={mdiPlus} />}
-									onClick={createTab}
-								>
-									Add tab
-								</Button>
-							)}
-						</Stack>
+							<Button
+								w={264}
+								px={12}
+								color="light"
+								variant="subtle"
+								className={classes.entryButton}
+								leftIcon={<Icon path={mdiPlus} />}
+								onClick={createTab}
+							>
+								Add tab
+							</Button>
+						</Box>
 					</SimpleGrid>
 				</Popover.Dropdown>
 			</Popover>
