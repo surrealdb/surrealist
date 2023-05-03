@@ -1,6 +1,6 @@
 import surrealistLogo from '~/assets/icon.png';
 import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
-import { mdiPlus, mdiPinOff, mdiPin, mdiHistory, mdiStar, mdiExport, mdiFolderDownload, mdiCloudDownload } from "@mdi/js";
+import { mdiPinOff, mdiPin, mdiHistory, mdiStar, mdiCloudDownload } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -11,51 +11,32 @@ import { Icon } from "../Icon";
 import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
-import { ViewTab } from "../ViewTab";
-import { Sortable } from "../Sortable";
-import { SurrealistTab, ViewMode } from "~/typings";
+import { ViewMode } from "~/typings";
 import { useHotkeys } from '@mantine/hooks';
 import { adapter } from '~/adapter';
 import { saveSchemaExport } from '~/util/schema';
 import { useIsConnected } from '~/hooks/connection';
+import { Selector } from './selector';
 
-export interface TabBarProps {
+export interface ToolbarProps {
 	viewMode: ViewMode;
 	openConnection: () => void;
 	closeConnection: () => void;
 	onCreateTab: () => void;
-	onSwitchTab: () => void;
+	onSaveEnvironments: () => void;
 }
 
-export function TabBar(props: TabBarProps) {
+export function Toolbar(props: ToolbarProps) {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
 	const isPinned = useStoreValue(state => state.isPinned);
 	const activeTab = useStoreValue(state => state.config.activeTab);
-	const tabList = useStoreValue(state => state.config.tabs);
+	
 	const enableListing = useStoreValue(state => state.config.enableListing);
 	const queryListing = useStoreValue(state => state.config.queryListing);
 
 	const [ editingTab, setEditingTab ] = useState<string|null>(null);
 	const [ tabName, setTabName ] = useState('');
-	
-	const removeTab = useStable((id: string) => {
-		store.dispatch(actions.removeTab(id));
-
-		updateTitle();
-		updateConfig();
-	})
-	
-	const openTabEditor = useStable((tabId: string) => {
-		const tab = tabList.find(tab => tab.id == tabId);
-		
-		if (!tab) {
-			return;
-		}
-		
-		setTabName(tab.name);
-		setEditingTab(tab.id);
-	});
 	
 	const closeEditingTab = useStable(() => {
 		setEditingTab(null);
@@ -70,22 +51,6 @@ export function TabBar(props: TabBarProps) {
 		updateTitle();
 		updateConfig();
 		closeEditingTab();
-	});
-
-	const selectTab = useStable((id: string) => {
-		store.dispatch(actions.setActiveTab(id));
-
-		props.onSwitchTab();
-		updateTitle();
-		updateConfig();
-	});
-
-	const selectTabByIndex = useStable((index: number) => {
-		const tab = tabList[index];
-
-		if (tab) {
-			selectTab(tab.id);
-		}
 	});
 
 	const togglePinned = useStable(() => {
@@ -117,24 +82,8 @@ export function TabBar(props: TabBarProps) {
 		updateConfig();
 	});
 
-	const saveTabOrder = useStable((items: SurrealistTab[]) => {
-		store.dispatch(actions.setTabs(items));
-		updateConfig();
-	});
-
 	useHotkeys([
-		['ctrl+n', props.onCreateTab],
-
-		['ctrl+1', () => selectTabByIndex(0)],
-		['ctrl+2', () => selectTabByIndex(1)],
-		['ctrl+3', () => selectTabByIndex(2)],
-		['ctrl+4', () => selectTabByIndex(3)],
-		['ctrl+5', () => selectTabByIndex(4)],
-		['ctrl+6', () => selectTabByIndex(5)],
-		['ctrl+7', () => selectTabByIndex(6)],
-		['ctrl+8', () => selectTabByIndex(7)],
-		['ctrl+9', () => selectTabByIndex(8)],
-		['ctrl+0', () => selectTabByIndex(9)],
+		['ctrl+n', props.onCreateTab]
 	], []);
 
 	return (
@@ -151,41 +100,11 @@ export function TabBar(props: TabBarProps) {
 				width={38}
 			/>
 
-			<Group>
-				<Sortable
-					items={tabList}
-					onSorted={saveTabOrder}
-					direction="grid"
-					constraint={{
-						distance: 12
-					}}
-				>
-					{({ item, handleProps }) => (
-						<div {...handleProps}>
-							<ViewTab
-								id={item.id}
-								key={item.id}
-								active={item.id == activeTab}
-								onDismiss={() => removeTab(item.id)}
-								onRename={() => openTabEditor(item.id)}
-								onActivate={() => selectTab(item.id)}
-							>
-								{item.name}
-							</ViewTab>
-						</div>
-					)}
-				</Sortable>
-
-				<Button
-					px="xs"
-					variant="subtle"
-					color="light"
-					leftIcon={<Icon path={mdiPlus} />}
-					onClick={props.onCreateTab}
-				>
-					New tab
-				</Button>
-			</Group>
+			<Selector
+				active={activeTab}
+				isLight={isLight}
+				onSave={props.onSaveEnvironments}
+			/>
 
 			<Spacer />
 

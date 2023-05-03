@@ -1,5 +1,5 @@
 import { ColorScheme } from "@mantine/core";
-import {SurrealConnection} from "./surreal";
+import { SurrealConnection } from "./surreal";
 
 export type AuthMode = 'none' | 'root' | 'namespace' | 'database' | 'scope';
 export type DriverType = "file" | "memory" | "tikv";
@@ -10,10 +10,12 @@ export type SourceMode = 'schema' | 'infer';
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, 'asc' | 'desc'];
+export type Open<T> = T & { [key: string]: any };
 
 export interface SurrealistConfig {
 	theme: ColorScheme | 'automatic';
 	tabs: SurrealistTab[];
+	environments: SurrealistEnvironment[];
 	activeTab: string | null;
 	autoConnect: boolean;
 	tableSuggest: boolean;
@@ -31,9 +33,16 @@ export interface SurrealistConfig {
 	zoomLevel: number;
 }
 
+export interface SurrealistEnvironment {
+	id: string;
+	name: string;
+	connection: Partial<SurrealConnection>;
+}
+
 export interface SurrealistTab {
 	id: string;
 	name: string;
+	environment: string;
 	query: string;
 	variables: string;
 	connection: SurrealConnection;

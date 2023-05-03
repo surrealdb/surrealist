@@ -1,34 +1,37 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Badge, Box, Button, Center, clsx, Group, Image, Modal, NavLink, Paper, Popover, Select, SimpleGrid, Stack, Text, TextInput, Title, useMantineTheme, PasswordInput } from '@mantine/core';
+import { ActionIcon, Alert, Badge, Box, Button, Center, clsx, Group, Image, Modal, NavLink, Paper, Popover, Stack, Text, Title, Transition, useMantineTheme } from '@mantine/core';
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
 import { uid } from 'radash';
 import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
 import { mod, showError, updateConfig, updateTitle } from '~/util/helpers';
-import { TabBar } from '../TabBar';
+import { Toolbar } from '../Toolbar';
 import { Form } from '../Form';
 import { useImmer } from 'use-immer';
 import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
-import { useActiveTab, useTabCreator } from '~/hooks/tab';
+import { useActiveTab } from '~/hooks/tab';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiClose, mdiConsole, mdiDelete, mdiPlus } from '@mdi/js';
+import { mdiClose, mdiConsole, mdiInformation } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/views/query/QueryView';
 import { ExplorerView } from '~/views/explorer/ExplorerView';
-import { AuthMode, ViewMode } from '~/typings';
+import { ViewMode } from '~/typings';
 import { VisualizerView } from '~/views/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
-import { AUTH_MODES, VIEW_MODES } from '~/constants';
+import { VIEW_MODES } from '~/constants';
 import { DesignerView } from '~/views/designer/DesignerView';
 import { AuthenticationView } from '~/views/authentication/AuthenticationView';
 import { adapter } from '~/adapter';
 import { DesktopAdapter } from '~/adapter/desktop';
 import { fetchDatabaseSchema } from '~/util/schema';
+import { ConnectionDetails } from '../ConnectionDetails';
+import { createNewTab, isConnectionValid, mergeConnections } from '~/util/environments';
+import { useLater } from '~/hooks/later';
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -42,25 +45,16 @@ export function Scaffold() {
 	const isLight = useIsLight();
 	const theme = useMantineTheme();
 	const activeTab = useStoreValue(state => state.config.activeTab);
+	const environments = useStoreValue(state => state.config.environments);
 	const autoConnect = useStoreValue(state => state.config.autoConnect);
 	const servePending = useStoreValue(state => state.servePending);
 	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
 	const isConnected = useStoreValue(state => state.isConnected);
-	const createTab = useTabCreator();
 	const tabInfo = useActiveTab();
 
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [isViewListing, setIsViewListing] = useState(false);
-
-	const createNewTab = useStable(() => {
-		const tabId = createTab('New tab');
-
-		store.dispatch(actions.setActiveTab(tabId));
-
-		updateTitle();
-		updateConfig();
-	});
 
 	const [ editingInfo, setEditingInfo ] = useState(false);
 	const [ infoDetails, setInfoDetails ] = useImmer<SurrealConnection>({
@@ -74,7 +68,9 @@ export function Scaffold() {
 		scopeFields: []
 	});
 
-	const [ editingScope, setEditingScope ] = useState(false);
+	const createTab = useStable(() => {
+		createNewTab();
+	});
 
 	const openInfoEditor = useStable(() => {
 		setEditingInfo(true);
@@ -85,43 +81,20 @@ export function Scaffold() {
 		setEditingInfo(false);
 	});
 
-	const openScopeEditor = useStable(() => {
-		setEditingScope(true);
-	});
-
-	const closeEditingScope = useStable(() => {
-		setEditingScope(false);
-	});
-
-	const addScopeField = useStable(() => {
-		setInfoDetails(draft => {
-			draft.scopeFields.push({
-				subject: '',
-				value: ''
-			});
-		});
-	});
-
 	const setIsConnected = useStable((value: boolean) => {
 		store.dispatch(actions.setIsConnected(value));
 	});
 
 	const openConnection = useStable((e?: MouseEvent, silent?: boolean) => {
 		e?.stopPropagation();
-
-		if (isConnecting) {
-			return;
-		}
-
-		const tabInfo = store.getState().config.tabs.find(tab => tab.id === activeTab);
-
-		if (!tabInfo) {
+		
+		if (isConnecting || !activeTab) {
 			return;
 		}
 
 		try {
 			openSurreal({
-				connection: tabInfo.connection,
+				connection: mergedInfoDetails,
 				onConnect() {
 					setIsConnecting(false);
 					setIsConnected(true);
@@ -156,6 +129,8 @@ export function Scaffold() {
 			showError('Failed to open connection', err.message);
 		}
 	});
+
+	const scheduleConnect = useLater(openConnection);
 
 	const sendQuery = useStable(async (override?: string) => {
 		if (tabInfo?.activeView !== 'query') {
@@ -238,20 +213,19 @@ export function Scaffold() {
 		updateTitle();
 	});
 
-	useEffect(() => {
-		if (autoConnect) {
-			openConnection(undefined, true);
-		}
-	}, [autoConnect, activeTab]);
-
 	const revealConsole = useStable((e: MouseEvent) => {
 		e.stopPropagation();
 		store.dispatch(actions.setConsoleEnabled(true));
 	});
 
-	const connectionSaveDisabled = !infoDetails.endpoint || !infoDetails.namespace || !infoDetails.database || !infoDetails.username || !infoDetails.password;
+	const envInfo = environments.find(e => e.id === tabInfo?.environment);
+	const mergedInfoDetails = mergeConnections(tabInfo?.connection || {}, envInfo?.connection || {});
+
+	const incompleteFormDetails = !isConnectionValid(infoDetails);
+	const incompleteMergedDetails = !isConnectionValid(mergedInfoDetails);
+
 	const showConsole = enableConsole && (servePending || isServing);
-	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : 'light');
+	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : incompleteMergedDetails ? 'red' : 'light');
 	const viewMode = tabInfo?.activeView || 'query';
 	const viewInfo = VIEW_MODES.find(v => v.id == viewMode)!;
 	const isDesktop = adapter instanceof DesktopAdapter;
@@ -274,6 +248,16 @@ export function Scaffold() {
 		setViewMode(VIEW_MODES[next].id);
 	});
 
+	useEffect(() => {
+		if (activeTab && autoConnect) {
+			if (incompleteMergedDetails) {
+				closeConnection();
+			} else {
+				openConnection(undefined, true);
+			}
+		}
+	}, [autoConnect, activeTab]);
+
 	useHotkeys([
 		['ctrl+arrowLeft', () => {
 			relativeViewMode(-1);
@@ -290,12 +274,12 @@ export function Scaffold() {
 
 	return (
 		<div className={classes.root}>
-			<TabBar
+			<Toolbar
 				viewMode={viewMode}
-				openConnection={openConnection}
+				openConnection={scheduleConnect}
 				closeConnection={closeConnection}
 				onCreateTab={createNewTab}
-				onSwitchTab={closeConnection}
+				onSaveEnvironments={scheduleConnect}
 			/>
 
 			{activeTab ? (
@@ -382,7 +366,7 @@ export function Scaffold() {
 						</Popover>
 						<Group className={classes.inputWrapper}>
 							<Paper
-								className={clsx(classes.input, (!isConnected || viewMode === 'query') && classes.inputWithButton)}
+								className={clsx(classes.input, !incompleteMergedDetails && (!isConnected || viewMode === 'query') && classes.inputWithButton)}
 								onClick={openInfoEditor}
 								style={{ borderColor: borderColor }}
 							>
@@ -400,7 +384,7 @@ export function Scaffold() {
 											OFFLINE
 										</Text>
 									</Paper>
-								) : tabInfo!.connection.authMode == 'none' ? (
+								) : mergedInfoDetails.authMode == 'none' ? (
 									<Paper
 										bg={isLight ? 'light.0' : 'light.6'}
 										c={isLight ? 'light.4' : 'light.3'}
@@ -409,14 +393,14 @@ export function Scaffold() {
 									>
 										Anon
 									</Paper>
-								) : tabInfo!.connection.authMode == 'scope' ? (
+								) : mergedInfoDetails.authMode == 'scope' ? (
 									<Paper
 										bg={isLight ? 'light.0' : 'light.6'}
 										c={isLight ? 'light.4' : 'light.3'}
 										fs="italic"
 										px="xs"
 									>
-										{tabInfo!.connection.scope}
+										{mergedInfoDetails.scope}
 									</Paper>
 								) :(
 									<Paper
@@ -424,13 +408,18 @@ export function Scaffold() {
 										c={isLight ? 'light.6' : 'white'}
 										px="xs"
 									>
-										{tabInfo!.connection.username}
+										{mergedInfoDetails.username}
 									</Paper>
 								)}
 								<Text color={isLight ? 'light.6' : 'white'}>
-									{tabInfo!.connection.endpoint}
+									{mergedInfoDetails.endpoint}
 								</Text>
 								<Spacer />
+								{incompleteMergedDetails && (
+									<Text color="red" mr="xs">
+										Connection details incomplete
+									</Text>
+								)}
 								{(servePending || isServing) && !showConsole && (
 									<ActionIcon
 										onClick={revealConsole}
@@ -448,23 +437,27 @@ export function Scaffold() {
 									</ActionIcon>
 								)}
 							</Paper>
-							{!isConnected ? (
-								<Button
-									color="light"
-									className={classes.sendButton}
-									onClick={openConnection}
-								>
-									{isConnecting ? 'Connecting...' : 'Connect'}
-								</Button>
-							) : viewMode == 'query' && (
-								<Button
-									color="surreal"
-									onClick={handleSendQuery}
-									className={classes.sendButton}
-									title="Send Query (F9)"
-								>
-									Send Query
-								</Button>
+							{!incompleteMergedDetails && (
+								<>
+									{!isConnected ? (
+										<Button
+											color="light"
+											className={classes.sendButton}
+											onClick={openConnection}
+										>
+											{isConnecting ? 'Connecting...' : 'Connect'}
+										</Button>
+									) : viewMode == 'query' && (
+										<Button
+											color="surreal"
+											onClick={handleSendQuery}
+											className={classes.sendButton}
+											title="Send Query (F9)"
+										>
+											Send Query
+										</Button>
+									)}
+								</>
 							)}
 						</Group>
 					</Group>
@@ -522,7 +515,7 @@ export function Scaffold() {
 							Open or create a new tab to continue
 						</Text>
 						<Center mt="lg">
-							<Button size="xs" onClick={createNewTab}>
+							<Button size="xs" onClick={createTab}>
 								Create tab
 							</Button>
 						</Center>
@@ -541,87 +534,29 @@ export function Scaffold() {
 					</Title>
 				}
 			>
+				<div
+					style={{
+						transition: 'height .2s',
+						height: incompleteFormDetails ? 64 : 0,
+						overflow: 'hidden'
+					}}
+				>
+					<Alert
+						mb="lg"
+						color="blue"
+						icon={<Icon path={mdiInformation} />}
+					>
+						Empty fields are inherited from the environment {envInfo?.name}
+					</Alert>
+				</div>
+
 				<Form onSubmit={saveInfo}>
-					<SimpleGrid cols={2} spacing="xl">
-						<Stack>
-							<TextInput
-								required
-								label="Endpoint URL"
-								value={infoDetails.endpoint}
-								onChange={(e) => setInfoDetails(draft => {
-									draft.endpoint = e.target.value
-								})}
-								autoFocus
-							/>
-							<TextInput
-								required
-								label="Namespace"
-								value={infoDetails.namespace}
-								onChange={(e) => setInfoDetails(draft => {
-									draft.namespace = e.target.value
-								})}
-							/>
-							<TextInput
-								required
-								label="Database"
-								value={infoDetails.database}
-								onChange={(e) => setInfoDetails(draft => {
-									draft.database = e.target.value
-								})}
-							/>
-						</Stack>
-						<Stack>
-							<Select
-								label="Authentication mode"
-								value={infoDetails.authMode}
-								onChange={(value) => setInfoDetails(draft => {
-									draft.authMode = value as AuthMode;
-								})}
-								data={AUTH_MODES}
-							/>
-							{infoDetails.authMode !== 'scope' && infoDetails.authMode !== 'none' && (
-								<>
-									<TextInput
-										required
-										label="Username"
-										value={infoDetails.username}
-										onChange={(e) => setInfoDetails(draft => {
-											draft.username = e.target.value
-										})}
-									/>
-									<PasswordInput
-										required
-										label="Password"
-										value={infoDetails.password}
-										onChange={(e) => setInfoDetails(draft => {
-											draft.password = e.target.value
-										})}
-									/>
-								</>
-							)}
-							
-							{infoDetails.authMode === 'scope' && (
-								<>
-									<TextInput
-										required
-										label="Scope"
-										value={infoDetails.scope}
-										onChange={(e) => setInfoDetails(draft => {
-											draft.scope = e.target.value
-										})}
-									/>
-									<Button
-										mt={21}
-										color="blue"
-										variant="outline"
-										onClick={openScopeEditor}
-									>
-										Edit scope data
-									</Button>
-								</>
-							)}
-						</Stack>
-					</SimpleGrid>
+					<ConnectionDetails
+						value={infoDetails}
+						onChange={setInfoDetails}
+						placeholders={envInfo?.connection}
+					/>
+					
 					<Group mt="lg">
 						<Button
 							color={isLight ? 'light.5' : 'light.3'}
@@ -631,91 +566,11 @@ export function Scaffold() {
 							Close
 						</Button>
 						<Spacer />
-						<Button
-							disabled={connectionSaveDisabled}
-							type="submit"
-						>
+						<Button type="submit">
 							Save details
 						</Button>
 					</Group>
 				</Form>
-			</Modal>
-
-			{/* ANCHOR Scope data modal */}
-			<Modal
-				opened={editingScope}
-				onClose={closeEditingScope}
-				size={560}
-				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						Editing scope data
-					</Title>
-				}
-			>
-				{infoDetails.scopeFields.length === 0 ? (
-					<Text
-						color="gray"
-						italic
-					>
-						No scope data defined
-					</Text>
-				) : (
-					<Stack>
-						{infoDetails.scopeFields.map((field, i) => (
-							<Paper key={i}>
-								<Group>
-									<TextInput
-										placeholder="Key"
-										style={{ flex: 1 }}
-										value={field.subject}
-										onChange={(e) => setInfoDetails(draft => {
-											draft.scopeFields[i].subject = e.target.value
-										})}
-									/>
-									<TextInput
-										placeholder="Value"
-										style={{ flex: 1 }}
-										value={field.value}
-										onChange={(e) => setInfoDetails(draft => {
-											draft.scopeFields[i].value = e.target.value
-										})}
-									/>
-									<ActionIcon
-										color="red"
-										title="Remove field"
-										onClick={() => setInfoDetails(draft => {
-											draft.scopeFields.splice(i, 1)
-										})}
-									>
-										<Icon
-											path={mdiClose}
-											color="red"
-										/>
-									</ActionIcon>
-								</Group>
-							</Paper>
-						))}
-					</Stack>
-				)}
-
-				<Group mt="lg">
-					<Button
-						color={isLight ? 'light.5' : 'light.3'}
-						variant="light"
-						onClick={closeEditingScope}
-					>
-						Back
-					</Button>
-					<Spacer />
-					<Button
-						rightIcon={<Icon path={mdiPlus} />}
-						variant="light"
-						color="blue"
-						onClick={addScopeField}
-					>
-						Add field
-					</Button>
-				</Group>
 			</Modal>
 		</div>
 	)

@@ -7,7 +7,7 @@ import { actions, store, useStoreValue } from "~/store";
 import { useStable } from '~/hooks/stable';
 import { useInputState } from '@mantine/hooks';
 import { FavoritesEntry, SurrealistTab } from '~/typings';
-import { useActiveTab, useTabCreator } from '~/hooks/tab';
+import { useActiveTab } from '~/hooks/tab';
 import { uid } from 'radash';
 import { updateConfig, updateTitle } from '~/util/helpers';
 import { Sortable } from '~/components/Sortable';
@@ -15,6 +15,7 @@ import { Panel } from '~/components/Panel';
 import { Icon } from '~/components/Icon';
 import { Spacer } from '~/components/Spacer';
 import { Form } from '~/components/Form';
+import { createNewTab } from '~/util/environments';
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
@@ -241,7 +242,6 @@ function FavoriteRow(props: HistoryRowProps) {
 	} = props;
 	
 	const theme = useMantineTheme();
-	const createTab = useTabCreator();
 
 	const editQuery = useStable(() => {
 		onEdit(entry.id);
@@ -267,12 +267,10 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const openQuery = useStable(() => {
-		const tabId = createTab(entry.name.slice(0, 25), entry.query);
-
-		store.dispatch(actions.setActiveTab(tabId));
-
-		updateTitle();
-		updateConfig();
+		createNewTab({
+			name: entry.name.slice(0, 25),
+			query: entry.query
+		});
 	});
 
 	return (

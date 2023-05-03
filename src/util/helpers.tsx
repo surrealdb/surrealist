@@ -1,6 +1,7 @@
 import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { uid } from "radash";
 import { CSSProperties } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
@@ -38,6 +39,8 @@ export function updateTitle() {
  * Update the config on disk with the current state of the app
  */
 export async function updateConfig() {
+	console.log('save config');
+	
 	return adapter.saveConfig(JSON.stringify(store.getState().config));
 }
 
@@ -119,4 +122,11 @@ export function extractTypeList(input: string, prefix: string) {
 		.replace(')', '')
 		.split(',')
 		.map(t => t.trim());
+}
+
+/**
+ * Create a new unique id
+ */
+export function newId() {
+	return uid(5);
 }

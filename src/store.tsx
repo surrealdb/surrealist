@@ -1,15 +1,16 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, TableSchema, TableDefinition} from "./typings";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, TableSchema, TableDefinition, Open, SurrealistEnvironment} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
 
 import { ThemeOption } from "./util/theme";
-import { BASE_CONFIG } from "./util/config";
+import { createBaseConfig } from "./util/config";
+import { migrateConfig } from "./util/migration";
 
 const mainSlice = createSlice({
 	name: 'main',
 	initialState: {
-		config: BASE_CONFIG as SurrealistConfig,
+		config: createBaseConfig(),
 		nativeTheme: 'light' as ColorScheme,
 		isPinned: false,
 		isServing: false,
@@ -23,27 +24,12 @@ const mainSlice = createSlice({
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
-			const theConfig: SurrealistConfig = {
-				...BASE_CONFIG,
+			const theConfig: Open<SurrealistConfig> = {
+				...createBaseConfig(),
 				...JSON.parse(action.payload.trim())
 			};
 
-			theConfig.tabs.forEach(tab => {
-				if (!tab.activeView) {
-					tab.activeView = 'query';
-				}
-
-				if (tab.connection.scopeFields === undefined) {
-					if (tab.connection.authMode == 'scope') {
-						tab.connection.scopeFields = [
-							{ subject: 'user', value: tab.connection.username },
-							{ subject: 'pass', value: tab.connection.password }
-						];
-					} else {
-						tab.connection.scopeFields = [];
-					}
-				}
-			});
+			migrateConfig(theConfig);
 
 			state.consoleOutput = [];
 			state.config = theConfig;
@@ -68,13 +54,21 @@ const mainSlice = createSlice({
 		setWordWrap(state, action: PayloadAction<boolean>) {
 			state.config.wordWrap = action.payload;
 		},
+		
+		setEnvironments(state, action: PayloadAction<SurrealistEnvironment[]>) {
+			state.config.environments = action.payload;
+		},
 
 		addTab(state, action: PayloadAction<SurrealistTab>) {
 			state.config.tabs.push(action.payload);
 		},
 
 		removeTab(state, action: PayloadAction<string>) {
-			state.config.tabs = state.config.tabs.filter(tab => tab.id !== action.payload);
+			const index = state.config.tabs.findIndex(tab => tab.id === action.payload);
+
+			if (index >= 0) {
+				state.config.tabs.splice(index, 1);
+			}
 
 			if (state.config.activeTab === action.payload) {
 				state.config.activeTab = null;
