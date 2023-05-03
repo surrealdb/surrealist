@@ -135,7 +135,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 		}
 		
 		if (namespace && database) {
-			message('use', [namespace, database]);
+			await message('use', [namespace, database]);
 		}
 		
 		options.onConnect?.();
