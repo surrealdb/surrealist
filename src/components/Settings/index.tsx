@@ -1,8 +1,7 @@
-import { Box, Button, Card, Checkbox, ColorScheme, Divider, Flex, Group, Modal, NumberInput, Paper, Select, SimpleGrid, Stack, Switch, Text, TextInput, Title, Tooltip, useMantineColorScheme } from "@mantine/core";
+import { Button, Checkbox, ColorScheme, Divider, Group, Modal, NumberInput, Paper, Select, Stack, Text, TextInput, Title, Tooltip } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 
 import { Icon } from "../Icon";
-import { Spacer } from "../Spacer";
 import { mdiCog, mdiInformation } from "@mdi/js";
 import { updateConfig } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
@@ -31,7 +30,7 @@ function SectionTitle({ isLight, children, first }: PropsWithChildren<{ isLight:
 				mb={6}
 				size={14}
 				weight={600}
-				color={isLight ? 'light.6' : 'white'}
+				color={isLight ? 'black' : 'white'}
 			>
 				{children}
 			</Title>
