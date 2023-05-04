@@ -14,7 +14,7 @@ export interface ConnectionDetailsProps {
 	value: Partial<SurrealConnection>;
 	onChange: Updater<SurrealConnection>;
 	optional?: boolean;
-	placeholders?: Partial<SurrealConnection>
+	placeholders?: Partial<SurrealConnection>;
 }
 
 export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {

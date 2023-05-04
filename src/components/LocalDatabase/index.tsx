@@ -4,7 +4,7 @@ import { mdiPlay, mdiStop } from "@mdi/js";
 import { useEffect, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { useActiveTab } from "~/hooks/tab";
+import { useActiveTab } from "~/hooks/environment";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { Icon } from "../Icon";

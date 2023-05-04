@@ -120,3 +120,10 @@ export interface TableDefinition {
 	indexes: TableIndex[];
 	events: TableEvent[];
 }
+
+export interface TabCreation {
+	environment?: string;
+	name?: string;
+	query?: string;
+	connection?: Partial<SurrealConnection>;
+}

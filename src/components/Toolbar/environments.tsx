@@ -208,6 +208,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 									rightIcon={<Icon path={mdiClose} />}
 									color="red.5"
 									onClick={deleteCurrent}
+									disabled={environments.length <= 1}
 								>
 									Remove
 								</Button>

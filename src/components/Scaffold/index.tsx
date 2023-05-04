@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import surrealistLogo from '~/assets/icon.png';
-import { ActionIcon, Alert, Badge, Box, Button, Center, clsx, Group, Image, Modal, NavLink, Paper, Popover, Stack, Text, Title, Transition, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Center, clsx, Group, Image, NavLink, Paper, Popover, Stack, Text, Title, useMantineTheme } from '@mantine/core';
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from '~/store';
 import { useStable } from '~/hooks/stable';
@@ -8,13 +8,11 @@ import { uid } from 'radash';
 import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
 import { mod, showError, updateConfig, updateTitle } from '~/util/helpers';
 import { Toolbar } from '../Toolbar';
-import { Form } from '../Form';
-import { useImmer } from 'use-immer';
-import { getSurreal, openSurreal, SurrealConnection } from '~/surreal';
-import { useActiveTab } from '~/hooks/tab';
+import { getSurreal, openSurreal } from '~/surreal';
+import { useActiveTab } from '~/hooks/environment';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
-import { mdiClose, mdiConsole, mdiInformation } from '@mdi/js';
+import { mdiClose, mdiConsole } from '@mdi/js';
 import { Icon } from '../Icon';
 import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
@@ -29,9 +27,10 @@ import { AuthenticationView } from '~/views/authentication/AuthenticationView';
 import { adapter } from '~/adapter';
 import { DesktopAdapter } from '~/adapter/desktop';
 import { fetchDatabaseSchema } from '~/util/schema';
-import { ConnectionDetails } from '../ConnectionDetails';
-import { createNewTab, isConnectionValid, mergeConnections } from '~/util/environments';
+import { isConnectionValid, mergeConnections } from '~/util/environments';
 import { useLater } from '~/hooks/later';
+import { TabCreator } from './creator';
+import { TabEditor } from './editor';
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return (
@@ -55,31 +54,6 @@ export function Scaffold() {
 
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [isViewListing, setIsViewListing] = useState(false);
-
-	const [ editingInfo, setEditingInfo ] = useState(false);
-	const [ infoDetails, setInfoDetails ] = useImmer<SurrealConnection>({
-		endpoint: '',
-		namespace: '',
-		database: '',
-		username: '',
-		password: '',
-		authMode: 'root',
-		scope: '',
-		scopeFields: []
-	});
-
-	const createTab = useStable(() => {
-		createNewTab();
-	});
-
-	const openInfoEditor = useStable(() => {
-		setEditingInfo(true);
-		setInfoDetails(tabInfo!.connection);
-	});
-
-	const closeEditingInfo = useStable(() => {
-		setEditingInfo(false);
-	});
 
 	const setIsConnected = useStable((value: boolean) => {
 		store.dispatch(actions.setIsConnected(value));
@@ -174,26 +148,6 @@ export function Scaffold() {
 		await updateConfig();
 	});
 
-	const saveInfo = useStable(async () => {
-		store.dispatch(actions.updateTab({
-			id: activeTab!,
-			connection: {
-				...infoDetails
-			}
-		}));
-
-		if (isConnected) {
-			getSurreal()?.close();
-		}
-
-		await updateConfig();
-		closeEditingInfo();
-
-		if (autoConnect) {
-			openConnection();
-		}
-	});
-
 	const closeConnection = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
 		getSurreal()?.close();
@@ -218,14 +172,42 @@ export function Scaffold() {
 		store.dispatch(actions.setConsoleEnabled(true));
 	});
 
+	const openTabCreator = useStable((envId?: string) => {
+		store.dispatch(actions.openTabCreator({
+			environment: envId
+		}));
+	});
+
+	const createNewTab = useStable(() => {
+		openTabCreator();
+	});
+
+	const openTabEditor = useStable(() => {
+		if (!tabInfo) {
+			return;
+		}
+
+		store.dispatch(actions.openTabEditor(tabInfo.id));
+	});
+
+	const handleActiveChange = useStable(async () => {
+		if (isConnected) {
+			getSurreal()?.close();
+		}
+
+		await updateConfig();
+
+		if (autoConnect) {
+			openConnection();
+		}
+	});
+
 	const envInfo = environments.find(e => e.id === tabInfo?.environment);
 	const mergedInfoDetails = mergeConnections(tabInfo?.connection || {}, envInfo?.connection || {});
-
-	const incompleteFormDetails = !isConnectionValid(infoDetails);
-	const incompleteMergedDetails = !isConnectionValid(mergedInfoDetails);
+	const detailsValid = isConnectionValid(mergedInfoDetails);
 
 	const showConsole = enableConsole && (servePending || isServing);
-	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : incompleteMergedDetails ? 'red' : 'light');
+	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : detailsValid ? 'light' : 'red');
 	const viewMode = tabInfo?.activeView || 'query';
 	const viewInfo = VIEW_MODES.find(v => v.id == viewMode)!;
 	const isDesktop = adapter instanceof DesktopAdapter;
@@ -250,10 +232,10 @@ export function Scaffold() {
 
 	useEffect(() => {
 		if (activeTab && autoConnect) {
-			if (incompleteMergedDetails) {
-				closeConnection();
-			} else {
+			if (detailsValid) {
 				openConnection(undefined, true);
+			} else {
+				closeConnection();
 			}
 		}
 	}, [autoConnect, activeTab]);
@@ -278,7 +260,7 @@ export function Scaffold() {
 				viewMode={viewMode}
 				openConnection={scheduleConnect}
 				closeConnection={closeConnection}
-				onCreateTab={createNewTab}
+				onCreateTab={openTabCreator}
 				onSaveEnvironments={scheduleConnect}
 			/>
 
@@ -366,8 +348,8 @@ export function Scaffold() {
 						</Popover>
 						<Group className={classes.inputWrapper}>
 							<Paper
-								className={clsx(classes.input, !incompleteMergedDetails && (!isConnected || viewMode === 'query') && classes.inputWithButton)}
-								onClick={openInfoEditor}
+								className={clsx(classes.input, detailsValid && (!isConnected || viewMode === 'query') && classes.inputWithButton)}
+								onClick={openTabEditor}
 								style={{ borderColor: borderColor }}
 							>
 								{!isConnected ? (
@@ -415,7 +397,7 @@ export function Scaffold() {
 									{mergedInfoDetails.endpoint}
 								</Text>
 								<Spacer />
-								{incompleteMergedDetails && (
+								{!detailsValid && (
 									<Text color="red" mr="xs">
 										Connection details incomplete
 									</Text>
@@ -437,7 +419,7 @@ export function Scaffold() {
 									</ActionIcon>
 								)}
 							</Paper>
-							{!incompleteMergedDetails && (
+							{detailsValid && (
 								<>
 									{!isConnected ? (
 										<Button
@@ -512,10 +494,10 @@ export function Scaffold() {
 							Surrealist
 						</Title>
 						<Text color="light.2" align="center">
-							Open or create a new tab to continue
+							Open or create a new session to continue
 						</Text>
 						<Center mt="lg">
-							<Button size="xs" onClick={createTab}>
+							<Button size="xs" onClick={createNewTab}>
 								Create tab
 							</Button>
 						</Center>
@@ -523,55 +505,11 @@ export function Scaffold() {
 				</Center>
 			)}
 
-			{/* ANCHOR Connection details modal */}
-			<Modal
-				opened={editingInfo}
-				onClose={closeEditingInfo}
-				size="lg"
-				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						Connection details
-					</Title>
-				}
-			>
-				<div
-					style={{
-						transition: 'height .2s',
-						height: incompleteFormDetails ? 64 : 0,
-						overflow: 'hidden'
-					}}
-				>
-					<Alert
-						mb="lg"
-						color="blue"
-						icon={<Icon path={mdiInformation} />}
-					>
-						Empty fields are inherited from the environment {envInfo?.name}
-					</Alert>
-				</div>
-
-				<Form onSubmit={saveInfo}>
-					<ConnectionDetails
-						value={infoDetails}
-						onChange={setInfoDetails}
-						placeholders={envInfo?.connection}
-					/>
-					
-					<Group mt="lg">
-						<Button
-							color={isLight ? 'light.5' : 'light.3'}
-							variant="light"
-							onClick={closeEditingInfo}
-						>
-							Close
-						</Button>
-						<Spacer />
-						<Button type="submit">
-							Save details
-						</Button>
-					</Group>
-				</Form>
-			</Modal>
+			<TabCreator />
+			
+			<TabEditor
+				onActiveChange={handleActiveChange}
+			/>
 		</div>
 	)
 }

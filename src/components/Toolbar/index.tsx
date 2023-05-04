@@ -22,7 +22,7 @@ export interface ToolbarProps {
 	viewMode: ViewMode;
 	openConnection: () => void;
 	closeConnection: () => void;
-	onCreateTab: () => void;
+	onCreateTab: (environment: string) => void;
 	onSaveEnvironments: () => void;
 }
 
@@ -82,10 +82,6 @@ export function Toolbar(props: ToolbarProps) {
 		updateConfig();
 	});
 
-	useHotkeys([
-		['ctrl+n', props.onCreateTab]
-	], []);
-
 	return (
 		<Group
 			p="xs"
@@ -104,6 +100,7 @@ export function Toolbar(props: ToolbarProps) {
 				active={activeTab}
 				isLight={isLight}
 				onSave={props.onSaveEnvironments}
+				onCreateTab={props.onCreateTab}
 			/>
 
 			<Spacer />

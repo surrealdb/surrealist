@@ -1,6 +1,6 @@
 import { useStoreValue } from "~/store";
 import { isEdgeTable } from "~/util/schema";
-import { useActiveTab } from "./tab";
+import { useActiveTab } from "./environment";
 
 type TableMode = 'ALL' | 'TABLE' | 'EDGE';
 

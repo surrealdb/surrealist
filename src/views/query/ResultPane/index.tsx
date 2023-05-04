@@ -4,7 +4,7 @@ import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "
 import { useMemo } from "react";
 import Editor from "@monaco-editor/react";
 import { baseEditorConfig } from "~/util/editor";
-import { useActiveTab } from "~/hooks/tab";
+import { useActiveTab } from "~/hooks/environment";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";

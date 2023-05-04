@@ -28,16 +28,16 @@ adapter.loadConfig().then(config => {
 
 	// Apply initial title
 	updateTitle();
+
+	// Render the app component
+	const root = document.querySelector('#root')!;
+
+	createRoot(root).render(
+		<Provider store={store}>
+			<App />
+		</Provider>
+	);
 });
-
-// Render the app component
-const root = document.querySelector('#root')!;
-
-createRoot(root).render(
-	<Provider store={store}>
-		<App />
-	</Provider>
-);
 
 // Init monaco
 loader.init().then(monaco => {

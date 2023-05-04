@@ -6,11 +6,11 @@
 
 	:global(.mantine-Button-rightIcon) {
 		margin-left: auto;
-		display: none;
+		visibility: hidden;
 	}
 
 	:hover :global(.mantine-Button-rightIcon) {
-		display: block;
+		visibility: visible;
 	}
 
 }

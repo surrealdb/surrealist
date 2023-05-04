@@ -7,7 +7,7 @@ import { actions, store, useStoreValue } from "~/store";
 import { useStable } from '~/hooks/stable';
 import { useInputState } from '@mantine/hooks';
 import { FavoritesEntry, SurrealistTab } from '~/typings';
-import { useActiveTab } from '~/hooks/tab';
+import { useActiveTab } from '~/hooks/environment';
 import { uid } from 'radash';
 import { updateConfig, updateTitle } from '~/util/helpers';
 import { Sortable } from '~/components/Sortable';
@@ -15,7 +15,6 @@ import { Panel } from '~/components/Panel';
 import { Icon } from '~/components/Icon';
 import { Spacer } from '~/components/Spacer';
 import { Form } from '~/components/Form';
-import { createNewTab } from '~/util/environments';
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
@@ -267,10 +266,10 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const openQuery = useStable(() => {
-		createNewTab({
+		store.dispatch(actions.openTabCreator({
 			name: entry.name.slice(0, 25),
 			query: entry.query
-		});
+		}));
 	});
 
 	return (
@@ -341,7 +340,7 @@ function FavoriteRow(props: HistoryRowProps) {
 						variant="light"
 						color="blue"
 						radius="sm"
-						title="Open in new tab"
+						title="Open in new session"
 						onClick={openQuery}
 					>
 						<Icon path={mdiPlus} color="blue" />

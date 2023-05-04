@@ -2,7 +2,7 @@ import { editor } from "monaco-editor";
 import { mdiTune } from "@mdi/js";
 import Editor from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
-import { useActiveTab } from "~/hooks/tab";
+import { useActiveTab } from "~/hooks/environment";
 import { actions, store } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";

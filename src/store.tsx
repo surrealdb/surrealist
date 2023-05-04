@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, TableSchema, TableDefinition, Open, SurrealistEnvironment} from "./typings";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, TableSchema, TableDefinition, Open, SurrealistEnvironment, TabCreation} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
@@ -6,6 +6,7 @@ import { ColorScheme } from "@mantine/core";
 import { ThemeOption } from "./util/theme";
 import { createBaseConfig } from "./util/config";
 import { migrateConfig } from "./util/migration";
+import { newId } from "./util/helpers";
 
 const mainSlice = createSlice({
 	name: 'main',
@@ -20,7 +21,11 @@ const mainSlice = createSlice({
 		consoleOutput: [] as string[],
 		availableUpdate: '',
 		showAvailableUpdate: false,
-		databaseSchema: [] as TableDefinition[]
+		databaseSchema: [] as TableDefinition[],
+		showTabCreator: false,
+		tabCreation: null as TabCreation | null,
+		showTabEditor: false,
+		editingId: ''
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
@@ -28,6 +33,14 @@ const mainSlice = createSlice({
 				...createBaseConfig(),
 				...JSON.parse(action.payload.trim())
 			};
+
+			if (theConfig.environments.length === 0) {
+				theConfig.environments.push({
+					id: newId(),
+					name: 'Default',
+					connection: {}
+				});
+			}
 
 			migrateConfig(theConfig);
 
@@ -230,6 +243,24 @@ const mainSlice = createSlice({
 
 		setIsConnected(state, action: PayloadAction<boolean>) {
 			state.isConnected = action.payload;
+		},
+
+		openTabCreator(state, action: PayloadAction<TabCreation>) {
+			state.showTabCreator = true;
+			state.tabCreation = action.payload;
+		},
+
+		closeTabCreator(state) {
+			state.showTabCreator = false;
+		},
+
+		openTabEditor(state, action: PayloadAction<string>) {
+			state.showTabEditor = true;
+			state.editingId = action.payload;
+		},
+
+		closeTabEditor(state) {
+			state.showTabEditor = false;
 		}
 
 	}

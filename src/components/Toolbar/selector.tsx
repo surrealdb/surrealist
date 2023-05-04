@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
-import { Box, Button, Divider, Group, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
-import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose, mdiPencil, mdiCursorText, mdiCheck } from "@mdi/js";
+import { Box, Button, Divider, Group, Menu, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose, mdiPencil, mdiDotsVertical, mdiCursorText, mdiContentDuplicate } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SurrealistTab } from "~/typings";
 import { Text } from "@mantine/core";
@@ -10,7 +10,6 @@ import { useStable } from '~/hooks/stable';
 import { updateTitle, updateConfig } from '~/util/helpers';
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useHotkeys, useInputState } from '@mantine/hooks';
-import { createNewTab } from '~/util/environments';
 import { Environments } from './environments';
 import { SyntheticEvent } from 'react';
 
@@ -22,9 +21,10 @@ export interface SelectorProps {
 	active: string | null;
 	isLight: boolean;
 	onSave: () => void;
+	onCreateTab: (environment: string) => void;
 }
 
-export function Selector({ active, isLight, onSave }: SelectorProps) {
+export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps) {
 	const [ opened, setOpened ] = useState(false);
 	const [ manageEnvs, setManageEnvs ] = useState(false);
 	const [ viewingEnv, setViewingEnv ] = useState('');
@@ -37,6 +37,10 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 
 	const tab = tabs.find(tab => tab.id === active);
 	const environment = tab && environments.find(env => env.id === tab.environment);
+
+	const stopPropagation = useStable((e: any) => {
+		e.stopPropagation();
+	})
 
 	const filteredTabs = useMemo(() => {
 		const needle = search.toLowerCase();
@@ -69,24 +73,44 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 	});
 
 	const createTab = useStable(() => {
-		createNewTab({
-			environment: viewingEnv
-		});
-	});
-
-	const deleteTab = useStable((e: MouseEvent, id: string) => {
-		e.stopPropagation();
-
-		store.dispatch(actions.removeTab(id));
+		setOpened(false);
+		onCreateTab(viewingEnv);
 	});
 	
-	const renameTab = useStable((e: MouseEvent, id: string) => {
+	const handleRename = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
 
 		const current = tabs.find(tab => tab.id === id)?.name || '';
 
 		setRenamingTab(id);
 		setTabName(current);
+	});
+
+	const handleEdit = useStable((e: MouseEvent, id: string) => {
+		e.stopPropagation();
+
+		setOpened(false);
+
+		store.dispatch(actions.openTabEditor(id));
+	});
+
+	const handleDuplicate = useStable((e: MouseEvent, id: string) => {
+		e.stopPropagation();
+
+		setOpened(false);
+
+		const details = tabs.find(tab => tab.id === id)?.connection || {};
+
+		store.dispatch(actions.openTabCreator({
+			environment: viewingEnv,
+			connection: details
+		}));
+	});
+
+	const handleDelete = useStable((e: MouseEvent, id: string) => {
+		e.stopPropagation();
+
+		store.dispatch(actions.removeTab(id));
 	});
 
 	const saveRename = useStable((e: SyntheticEvent) => {
@@ -142,6 +166,7 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 		['ctrl+8', () => openTab(7)],
 		['ctrl+9', () => openTab(8)],
 		['ctrl+0', () => openTab(9)],
+		['ctrl+n', () => createTab]
 	], []);
 
 	return (
@@ -263,17 +288,45 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 												className={classes.entryButton}
 												onClick={() => select(item.id)}
 												rightIcon={!isRenaming && (
-													<>
-														<Icon
-															mr="xs"
-															path={mdiPencil}
-															onClick={e => renameTab(e, item.id)}
-														/>
-														<Icon
-															path={mdiClose}
-															onClick={e => deleteTab(e, item.id)}
-														/>
-													</>
+													<Menu
+														shadow="md"
+														width={200}
+														position="right-start"
+														withinPortal
+													>
+														<Menu.Target>
+															<div onClick={stopPropagation}>
+																<Icon path={mdiDotsVertical} />
+															</div>
+														</Menu.Target>
+
+														<Menu.Dropdown onMouseDown={stopPropagation}>
+															<Menu.Item
+																icon={<Icon path={mdiCursorText} />}
+																onClick={e => handleRename(e, item.id)}
+															>
+																Rename
+															</Menu.Item>
+															<Menu.Item
+																icon={<Icon path={mdiPencil} />}
+																onClick={e => handleEdit(e, item.id)}
+															>
+																Edit
+															</Menu.Item>
+															<Menu.Item
+																icon={<Icon path={mdiContentDuplicate} />}
+																onClick={e => handleDuplicate(e, item.id)}
+															>
+																Duplicate
+															</Menu.Item>
+															<Menu.Item
+																icon={<Icon path={mdiClose} />}
+																onClick={e => handleDelete(e, item.id)}
+															>
+																Delete
+															</Menu.Item>
+														</Menu.Dropdown>
+													</Menu>
 												)}
 											>
 												{isRenaming ? (
@@ -327,7 +380,7 @@ export function Selector({ active, isLight, onSave }: SelectorProps) {
 								leftIcon={<Icon path={mdiPlus} />}
 								onClick={createTab}
 							>
-								Add tab
+								Add session
 							</Button>
 						</Box>
 					</SimpleGrid>

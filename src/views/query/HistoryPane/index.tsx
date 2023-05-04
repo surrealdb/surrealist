@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import { useStable } from '~/hooks/stable';
 import { useHover, useInputState } from '@mantine/hooks';
 import { HistoryEntry, SurrealistTab } from '~/typings';
-import { useActiveTab } from '~/hooks/tab';
+import { useActiveTab } from '~/hooks/environment';
 import { updateConfig } from '~/util/helpers';
 import { Panel } from '~/components/Panel';
 import { Icon } from '~/components/Icon';

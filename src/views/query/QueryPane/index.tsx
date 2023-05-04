@@ -2,7 +2,7 @@ import Editor from "@monaco-editor/react";
 import {editor, KeyCode, KeyMod} from "monaco-editor";
 import {mdiDatabase} from "@mdi/js";
 import {useStable} from "~/hooks/stable";
-import {useActiveTab} from "~/hooks/tab";
+import {useActiveTab} from "~/hooks/environment";
 import {actions, store} from "~/store";
 import {updateConfig} from "~/util/helpers";
 import {Panel} from "~/components/Panel";
