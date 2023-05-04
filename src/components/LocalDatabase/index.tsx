@@ -35,8 +35,11 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 
 			store.dispatch(actions.cancelServe());
 		} else {
-			adapter.startDatabase(surrealUser, surrealPass, surrealPort, localDriver, localPath, surrealPath);
 			store.dispatch(actions.prepareServe());
+			
+			adapter.startDatabase(surrealUser, surrealPass, surrealPort, localDriver, localPath, surrealPath).catch(() => {
+				store.dispatch(actions.stopServing());
+			});
 		}
 	});
 
