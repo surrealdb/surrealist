@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, ColorScheme, Divider, Flex, Group, Modal, NumberInput, Paper, Select, SimpleGrid, Stack, Switch, Text, TextInput, Title, Tooltip, useMantineColorScheme } from "@mantine/core";
+import { Box, Button, Card, Checkbox, ColorScheme, Divider, Flex, Group, Modal, NumberInput, Paper, Select, SimpleGrid, Stack, Switch, Text, TextInput, Title, Tooltip, useMantineColorScheme } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 
 import { Icon } from "../Icon";
@@ -7,7 +7,7 @@ import { mdiCog, mdiInformation } from "@mdi/js";
 import { updateConfig } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import { DriverType } from "~/typings";
 import { adapter } from "~/adapter";
 
@@ -22,6 +22,27 @@ const DRIVERS = [
 	{ label: 'File storage', value: 'file' },
 	{ label: 'TiKV cluster', value: 'tikv' }
 ]
+
+function SectionTitle({ isLight, children, first }: PropsWithChildren<{ isLight: boolean, first?: boolean }>) {
+	return (
+		<>
+			<Title
+				mt={first ? 0 : 38}
+				mb={6}
+				size={14}
+				weight={600}
+				color={isLight ? 'light.6' : 'white'}
+			>
+				{children}
+			</Title>
+
+			<Divider
+				color={isLight ? 'light.0' : 'dark.5'}
+				mb="sm"
+			/>
+		</>
+	)
+}
 
 export function Settings() {
 	const isLight = useIsLight();
@@ -69,8 +90,18 @@ export function Settings() {
 		updateConfig();
 	});
 
-	const setConsoleEnabled = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setConsoleEnabled(e.target.checked));
+	const setSurrealUser = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setSurrealUser(e.target.value));
+		updateConfig();
+	});
+
+	const setSurrealPass = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setSurrealPass(e.target.value));
+		updateConfig();
+	});
+
+	const setSurrealPort = useStable((value: number) => {
+		store.dispatch(actions.setSurrealPort(value));
 		updateConfig();
 	});
 
@@ -106,121 +137,16 @@ export function Settings() {
 			<Modal
 				opened={showSettings}
 				onClose={closeSettings}
-				size="lg"
+				size={580}
 				title={
 					<Title size={16} color={isLight ? 'light.6' : 'white'}>
 						Settings
 					</Title>
 				}
 			>
-				<SimpleGrid cols={2}>
-					<Stack style={{ height: '100%' }}>
-						<Checkbox
-							label="Auto connect"
-							checked={config.autoConnect}
-							onChange={setAutoConnect}
-						/>
-
-						<Checkbox
-							label="Suggest table names"
-							checked={config.tableSuggest}
-							onChange={setTableSuggest}
-						/>
-
-						<Checkbox
-							label="Wrap query results"
-							checked={config.wordWrap}
-							onChange={setWordWrap}
-						/>
-
-						{adapter.isServeSupported && (
-							<Checkbox
-								label="Enable database console"
-								checked={config.enableConsole}
-								onChange={setConsoleEnabled}
-							/>
-						)}
-
-						{adapter.isUpdateCheckSupported && (
-							<Checkbox
-								label="Check for updates"
-								checked={config.updateChecker}
-								onChange={setUpdateChecker}
-							/>
-						)}
-
-						<Spacer />
-
-						<Text color={isLight ? 'light.4' : 'dark.3'}>
-							Version {version} by {author}
-						</Text>
-					</Stack>
-					<Stack>
-						<Select
-							data={THEMES}
-							label="Theme"
-							value={config.theme}
-							onChange={setColorScheme}
-						/>
-
-						<NumberInput
-							label="Query timeout (seconds)"
-							value={config.queryTimeout}
-							min={1}
-							onChange={setQueryTimeout}
-						/>
-
-						<TextInput
-							value={config.surrealPath}
-							onChange={setSurrealPath}
-							label={
-								<Group spacing={6}>
-									Surreal executable path
-									<Tooltip
-										label={
-											<Text maw={305} style={{ whiteSpace: 'normal'}}>
-												Leave empty to search for the Surreal executable in the PATH environment variable.
-											</Text>
-										}
-									>
-										<div>
-											<Icon path={mdiInformation} size="sm" mt={-2} />
-										</div>
-									</Tooltip>
-								</Group>
-							}
-						/>
-
-						<Select
-							data={DRIVERS}
-							label="Local database storage"
-							value={config.localDriver}
-							onChange={setLocalDriver}
-						/>
-
-						{config.localDriver === 'file' && (
-							<TextInput
-								label="Local database path"
-								placeholder="/path/to/database"
-								value={config.localStorage}
-								onChange={setLocalPath}
-							/>
-						)}
-
-						{config.localDriver === 'tikv' && (
-							<TextInput
-								label="Local database cluster address (WIP)"
-								placeholder="address:port"
-								value={config.localStorage}
-								onChange={setLocalPath}
-							/>
-						)}
-					</Stack>
-				</SimpleGrid>
-
 				{adapter.isPromotionSupported && (
 					<Paper
-						mt="xl"
+						mb="xl"
 						c="white"
 						sx={theme => ({
 							background: `url(/desktop.png), ${theme.fn.gradient()}`,
@@ -253,6 +179,143 @@ export function Settings() {
 						</Stack>
 					</Paper>
 				)}
+
+				<SectionTitle isLight={isLight} first>
+					General
+				</SectionTitle>
+
+				<Stack spacing="xs">
+					{adapter.isUpdateCheckSupported && (
+						<Checkbox
+							label="Check for updates"
+							checked={config.updateChecker}
+							onChange={setUpdateChecker}
+						/>
+					)}
+
+					<Checkbox
+						label="Wrap query results"
+						checked={config.wordWrap}
+						onChange={setWordWrap}
+					/>
+
+					<Checkbox
+						label="Suggest table names"
+						checked={config.tableSuggest}
+						onChange={setTableSuggest}
+					/>
+
+					<Select
+						data={THEMES}
+						label="Theme"
+						value={config.theme}
+						onChange={setColorScheme}
+					/>
+				</Stack>
+
+				<SectionTitle isLight={isLight}>
+					Connection
+				</SectionTitle>
+
+				<Stack spacing="xs">
+					<Checkbox
+						label="Auto connect to database"
+						checked={config.autoConnect}
+						onChange={setAutoConnect}
+					/>
+
+					<NumberInput
+						label="Query timeout (seconds)"
+						value={config.queryTimeout}
+						min={1}
+						onChange={setQueryTimeout}
+					/>
+				</Stack>
+					
+				{adapter.isServeSupported && (
+					<>
+						<SectionTitle isLight={isLight}>
+							Local Database
+						</SectionTitle>
+
+						<Stack spacing="xs">
+							<TextInput
+								label="Root user"
+								placeholder="root"
+								value={config.surrealUser}
+								onChange={setSurrealUser}
+							/>
+
+							<TextInput
+								label="Root password"
+								placeholder="root"
+								value={config.surrealPass}
+								onChange={setSurrealPass}
+							/>
+
+							<NumberInput
+								label="Port"
+								value={config.surrealPort}
+								min={1}
+								max={65535}
+								onChange={setSurrealPort}
+							/>
+
+							<Select
+								data={DRIVERS}
+								label="Storage mode"
+								value={config.localDriver}
+								onChange={setLocalDriver}
+							/>
+
+							{config.localDriver === 'file' && (
+								<TextInput
+									label="Storage path"
+									placeholder="/path/to/database"
+									value={config.localStorage}
+									onChange={setLocalPath}
+								/>
+							)}
+
+							{config.localDriver === 'tikv' && (
+								<TextInput
+									label="Storage cluster address"
+									placeholder="address:port"
+									value={config.localStorage}
+									onChange={setLocalPath}
+								/>
+							)}
+
+							<TextInput
+								value={config.surrealPath}
+								onChange={setSurrealPath}
+								label={
+									<Group spacing={6} mb={4}>
+										Surreal executable path
+										<Tooltip
+											label={
+												<Text maw={305} style={{ whiteSpace: 'normal' }}>
+													Leave empty to search for the Surreal executable in the PATH environment variable.
+												</Text>
+											}
+										>
+											<div>
+												<Icon path={mdiInformation} size="sm" mt={-2} />
+											</div>
+										</Tooltip>
+									</Group>
+								}
+							/>
+						</Stack>
+					</>
+				)}
+
+				<Text
+					mt="xl"
+					color={isLight ? 'light.4' : 'dark.3'}
+				>
+					Version {version} by {author}
+				</Text>
 			</Modal>
 		</>
 	)

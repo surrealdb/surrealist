@@ -25,6 +25,9 @@ export interface SurrealistConfig {
 	localDriver: DriverType;
 	localStorage: string;
 	surrealPath: string;
+	surrealUser: string;
+	surrealPass: string;
+	surrealPort: number;
 	enableConsole: boolean;
 	enableListing: boolean;
 	queryTimeout: number;

@@ -39,8 +39,6 @@ export function updateTitle() {
  * Update the config on disk with the current state of the app
  */
 export async function updateConfig() {
-	console.log('save config');
-	
 	return adapter.saveConfig(JSON.stringify(store.getState().config));
 }
 

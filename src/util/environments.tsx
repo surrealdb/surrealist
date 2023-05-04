@@ -33,9 +33,6 @@ export function mergeConnections(left: Partial<SurrealConnection>, right: Partia
 	const leftFields = left.scopeFields || [];
 	const rightFields = right.scopeFields || [];
 
-	console.log('left =', left);
-	console.log('right =', right);
-
 	return {
 		namespace: left.namespace || right.namespace || '',
 		database: left.database || right.database || '',

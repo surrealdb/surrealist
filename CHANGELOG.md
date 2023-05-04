@@ -3,13 +3,16 @@
 ## 1.7.0 - Environments
 - Replaced the tab system with a new session system
 	- Sessions are organized into environments
-	- Environments can define default connection details which all sessions within can fallback to
+	- Environments can define default connection details which all sessions within fallback to
 	- Provides a significantly better user experience when defining many sessions
 	- Sessions can be pinned directly to the toolbar for quick access
 	- Existing tabs are automatically migrated to sessions
 - Added filtering functionality to the explorer view
 	- Filter input can be toggled by pressing the filter icon on the top right of the explorer panel
 	- Validates the where clause and indicates when it is invalid
+- Local database starting is now decoupled from the active sessions
+	- Root username, root password, and port are now configured in settings
+- Overhauled the settings UI to be more scalable
 - Improve table retrieval performance for explorer and designer view
 - The surreal executable path can now also be manually specified in settings
 - Changed the way multiple responses are displayed in query view

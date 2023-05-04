@@ -17,7 +17,6 @@ const mainSlice = createSlice({
 		isServing: false,
 		servePending: false,
 		isConnected: false,
-		servingTab: null as string|null,
 		consoleOutput: [] as string[],
 		availableUpdate: '',
 		showAvailableUpdate: false,
@@ -151,8 +150,7 @@ const mainSlice = createSlice({
 			state.config.queryFavorites = action.payload;
 		},
 
-		prepareServe(state, action: PayloadAction<string>) {
-			state.servingTab = action.payload;
+		prepareServe(state) {
 			state.servePending = true;
 		},
 
@@ -164,7 +162,6 @@ const mainSlice = createSlice({
 		stopServing(state) {
 			state.isServing = false;
 			state.servePending = false;
-			state.servingTab = null;
 			state.consoleOutput = [];
 		},
 
@@ -174,6 +171,18 @@ const mainSlice = createSlice({
 
 		setConsoleEnabled(state, action: PayloadAction<boolean>) {
 			state.config.enableConsole = action.payload;
+		},
+
+		setSurrealUser(state, action: PayloadAction<string>) {
+			state.config.surrealUser = action.payload;
+		},
+
+		setSurrealPass(state, action: PayloadAction<string>) {
+			state.config.surrealPass = action.payload;
+		},
+
+		setSurrealPort(state, action: PayloadAction<number>) {
+			state.config.surrealPort = action.payload;
 		},
 
 		pushConsoleLine(state, action: PayloadAction<string>) {
