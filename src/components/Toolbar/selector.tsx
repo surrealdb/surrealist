@@ -204,7 +204,9 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								<>
 									<Text>{environment.name}</Text>
 									<Icon path={mdiChevronRight} color="dark.3" />
-									<Text color="white">{tab.name}</Text>
+									<Text color={isLight ? 'black' : 'white'}>
+										{tab.name}
+									</Text>
 								</>
 							) : (
 								<Text color="light.4">Select tab</Text>
@@ -227,7 +229,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 												w={264}
 												px={12}
 												c={isLight ? 'black' : 'white'}
-												color={isActive ? 'dark.7' : 'light'}
+												color={isActive ? (isLight ? 'light.1' : 'dark.7') : 'light'}
 												variant={isActive ? 'filled' : 'subtle'}
 												className={classes.entryButton}
 												onClick={() => openEnvironment(item.id)}
@@ -240,7 +242,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 							</ScrollArea>
 
 							<Divider
-								color="dark.4"
+								color={isLight ? 'light.0' : 'dark.4'}
 								my="xs"
 							/>
 
@@ -385,7 +387,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 							</ScrollArea>
 
 							<Divider
-								color="dark.4"
+								color={isLight ? 'light.0' : 'dark.4'}
 								my="xs"
 							/>
 

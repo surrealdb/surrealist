@@ -140,7 +140,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 					pr="md"
 					span={4}
 					sx={theme => ({
-						borderRight: `2px solid ${theme.fn.themeColor('dark.4')}`,
+						borderRight: `2px solid ${theme.fn.themeColor(isLight? 'light.0': 'dark.4')}`,
 						position: 'relative'
 					})}
 				>
@@ -161,7 +161,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 										key={item.id}
 										px={12}
 										c={isLight ? 'black' : 'white'}
-										color={isActive ? 'dark.8' : 'light'}
+										color={isActive ? (isLight ? 'light.1' : 'dark.7') : 'light'}
 										variant={isActive ? 'filled' : 'subtle'}
 										className={classes.entryButton}
 										onClick={() => openEnvironment(item.id)}
