@@ -1,5 +1,5 @@
 import surrealistLogo from '~/assets/icon.png';
-import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
+import { Group, Button, Modal, TextInput, Image, Divider, Box } from "@mantine/core";
 import { mdiPinOff, mdiPin, mdiHistory, mdiStar, mdiCloudDownload } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -17,6 +17,8 @@ import { adapter } from '~/adapter';
 import { saveSchemaExport } from '~/util/schema';
 import { useIsConnected } from '~/hooks/connection';
 import { Selector } from './selector';
+import { useTabsList } from '~/hooks/environment';
+import { ViewTab } from '../ViewTab';
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -37,6 +39,8 @@ export function Toolbar(props: ToolbarProps) {
 
 	const [ editingTab, setEditingTab ] = useState<string|null>(null);
 	const [ tabName, setTabName ] = useState('');
+
+	const pinnedTabs = useTabsList().filter(tab => tab.pinned);
 	
 	const closeEditingTab = useStable(() => {
 		setEditingTab(null);
@@ -85,11 +89,32 @@ export function Toolbar(props: ToolbarProps) {
 	return (
 		<Group
 			p="xs"
+			pos="relative"
 			spacing="sm"
 			bg={isLight ? 'white' : 'dark.7'}
 			align="center"
 			noWrap
 		>
+			{pinnedTabs.length > 0 && (
+				<Group
+					spacing={8}
+					style={{
+						position: 'absolute',
+						inset: 0,
+						marginInline: 'auto',
+						width: 'max-content'
+					}}
+				>
+
+					{pinnedTabs.map(tab => (
+						<ViewTab
+							key={tab.id}
+							tabInfo={tab}
+						/>
+					))}
+				</Group>
+			)}
+
 			<Image
 				style={{ pointerEvents: 'none', userSelect: 'none' }}
 				src={surrealistLogo}

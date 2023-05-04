@@ -27,6 +27,7 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 	config.tabs.forEach((tab: any) => {
 		if (!tab.environment) {
 			tab.environment = config.environments[0].id;
+			tab.pinned = false;
 		}
 	});
 }

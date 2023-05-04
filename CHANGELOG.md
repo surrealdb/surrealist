@@ -5,6 +5,7 @@
 	- Sessions are organized into environments
 	- Environments can define default connection details which all sessions within can fallback to
 	- Provides a significantly better user experience when defining many sessions
+	- Sessions can be pinned directly to the toolbar for quick access
 	- Existing tabs are automatically migrated to sessions
 - Added filtering functionality to the explorer view
 	- Filter input can be toggled by pressing the filter icon on the top right of the explorer panel

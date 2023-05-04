@@ -49,6 +49,7 @@ export interface SurrealistTab {
 	connection: SurrealConnection;
 	lastResponse: any;
 	activeView: ViewMode;
+	pinned: boolean;
 }
 
 export interface ScopeField {

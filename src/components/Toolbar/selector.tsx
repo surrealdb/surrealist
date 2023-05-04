@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { Box, Button, Divider, Group, Menu, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
-import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose, mdiPencil, mdiDotsVertical, mdiCursorText, mdiContentDuplicate } from "@mdi/js";
+import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose, mdiPencil, mdiDotsVertical, mdiCursorText, mdiContentDuplicate, mdiPinOff, mdiPin } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SurrealistTab } from "~/typings";
 import { Text } from "@mantine/core";
@@ -92,6 +92,17 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 		setOpened(false);
 
 		store.dispatch(actions.openTabEditor(id));
+	});
+
+	const handlePin = useStable((e: MouseEvent, id: string) => {
+		e.stopPropagation();
+
+		const pinned = tabs.find(tab => tab.id === id)?.pinned ?? false;
+
+		store.dispatch(actions.updateTab({
+			id: id,
+			pinned: !pinned
+		}));
 	});
 
 	const handleDuplicate = useStable((e: MouseEvent, id: string) => {
@@ -292,6 +303,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 														shadow="md"
 														width={200}
 														position="right-start"
+														closeOnItemClick={false}
 														withinPortal
 													>
 														<Menu.Target>
@@ -312,6 +324,12 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 																onClick={e => handleEdit(e, item.id)}
 															>
 																Edit
+															</Menu.Item>
+															<Menu.Item
+																icon={<Icon path={item.pinned ? mdiPinOff : mdiPin} />}
+																onClick={e => handlePin(e, item.id)}
+															>
+																{item.pinned ? 'Unpin' : 'Pin'}
 															</Menu.Item>
 															<Menu.Item
 																icon={<Icon path={mdiContentDuplicate} />}

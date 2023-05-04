@@ -51,7 +51,8 @@ export function TabCreator() {
 			variables: '{}',
 			lastResponse: [],
 			activeView: 'query',
-			connection: infoDetails
+			connection: infoDetails,
+			pinned: false
 		}));
 
 		store.dispatch(actions.setActiveTab(tabId));
