@@ -1,4 +1,5 @@
 import { useStoreValue } from "~/store";
+import { mergeConnections } from "~/util/environments";
 
 /**
  * Returns the active tab
@@ -22,4 +23,20 @@ export function useTabsList() {
  */
 export function useEnvironmentList() {
 	return useStoreValue(state => state.config.environments);
+}
+
+/**
+ * Returns the fully merged connection details for the active tab
+ */
+export function useConnectionDetails() {
+	const tabInfo = useActiveTab();
+
+	if (!tabInfo) {
+		return null;
+	}
+
+	const environments = useEnvironmentList();
+	const envInfo = environments.find(env => env.id === tabInfo.environment);
+
+	return mergeConnections(tabInfo.connection, envInfo?.connection || {});
 }
