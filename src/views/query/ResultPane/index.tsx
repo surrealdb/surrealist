@@ -1,5 +1,5 @@
 import type { editor } from "monaco-editor";
-import { ActionIcon, Center, Divider, Group, Pagination, Tabs, Text } from "@mantine/core";
+import { ActionIcon, Box, Center, Divider, Group, Pagination, Stack, Tabs, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import Editor from "@monaco-editor/react";
@@ -113,7 +113,7 @@ export function ResultPane() {
 					position: 'absolute',
 					insetInline: 14,
 					top: 0,
-					bottom: showTabs ? 58 : 0
+					bottom: showTabs ? 72 : 0
 				}}
 			>
 				{result ? (
@@ -140,19 +140,25 @@ export function ResultPane() {
 			</div>
 
 			{showTabs && (
-				<Center
+				<Stack
+					spacing="xs"
+					align="center"
 					style={{
 						position: 'absolute',
-						insetInline: 0,
+						insetInline: 14,
 						bottom: 12
 					}}
 				>
+					<Divider
+						w="100%"
+						color={isLight ? 'light.0' : 'dark.5'}
+					/>
 					<Pagination
 						total={results.length}
 						page={resultTab}
 						onChange={setResultTab}
 					/>
-				</Center>
+				</Stack>
 			)}
 		</Panel>
 	)
