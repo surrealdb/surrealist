@@ -74,6 +74,13 @@ export interface SurrealistAdapter {
 	fetchSchema(): Promise<TableDefinition[]>
 
 	/**
+	 * Validate the given query. Returns null if the query is valid, otherwise returns the error message
+	 * 
+	 * @param query The query to validate
+	 */
+	validateQuery(query: string): Promise<string | null>
+
+	/**
 	 * Verify whether the given where clause is valid
 	 * 
 	 * @param clause The where clause to validate

@@ -189,6 +189,16 @@ pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
 }
 
 #[tauri::command]
+pub fn validate_query(query: &str) -> Option<String> {
+	let parsed = parse(query);
+
+	match parsed {
+		Ok(_) => None,
+		Err(err) => Some(err.to_string())
+	}
+}
+
+#[tauri::command]
 pub fn validate_where_clause(clause: &str) -> bool {
 	let query = "SELECT * FROM table WHERE ".to_owned() + clause;
 

@@ -35,6 +35,7 @@ export interface SurrealistConfig {
 	queryListing: QueryListing;
 	resultListing: ResultListing;
 	zoomLevel: number;
+	errorChecking: boolean;
 }
 
 export interface SurrealistEnvironment {
