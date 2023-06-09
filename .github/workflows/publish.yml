@@ -93,7 +93,6 @@ jobs:
 
       - name: Rename binaries
         run: |
-          tar -czf ./surrealist-v${{ needs.version.outputs.version }}-darwin.tgz ./bundles-macos-latest/macos/Surrealist.app
           mv ./bundles-macos-latest/dmg/Surrealist_${{ needs.version.outputs.version }}_x64.dmg ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
           mv ./bundles-ubuntu-latest/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
           mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64.deb ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
@@ -109,7 +108,6 @@ jobs:
           title: "v${{ needs.version.outputs.version }}"
           files: |
             ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
-            ./surrealist-v${{ needs.version.outputs.version }}-darwin.tgz
             ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
             ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
             ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
