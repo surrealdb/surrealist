@@ -19,7 +19,7 @@ export interface ConnectionDetailsProps {
 
 export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {
 	const isLight = useIsLight();
-	const authMode = placeholders?.authMode || value.authMode;
+	const authMode = value.authMode || placeholders?.authMode;
 	const modePlaceholder = AUTH_MODES.find(mode => mode.value === placeholders?.authMode)?.label;
 	const passPlaceholder = placeholders?.password && '•'.repeat(placeholders.password.length);
 	const [ editingScope, setEditingScope ] = useState(false);

@@ -69,6 +69,10 @@ export class BrowserAdapter implements SurrealistAdapter {
 		}));
 	}
 
+	async validateQuery() {
+		return null;
+	}
+
 	async validateWhereClause() {
 		return true;
 	}

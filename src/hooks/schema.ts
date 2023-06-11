@@ -1,6 +1,6 @@
 import { useStoreValue } from "~/store";
 import { isEdgeTable } from "~/util/schema";
-import { useActiveTab } from "./environment";
+import { useConnectionDetails } from "./environment";
 
 type TableMode = 'ALL' | 'TABLE' | 'EDGE';
 
@@ -33,7 +33,8 @@ export function useTableNames(mode: TableMode = 'ALL') {
  * Returns whether the current connection has schema access
  */
 export function useHasSchemaAccess() {
-	const authMode = useActiveTab()?.connection?.authMode || 'none';
+	const connection  = useConnectionDetails();
+	const authMode = connection?.authMode || 'none';
 
 	return authMode != 'none' && authMode != 'scope';
 }

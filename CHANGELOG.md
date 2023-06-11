@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.7.1 - Live error checking
+- Added live error checking to the query view
+	- Underlines invalid queries with an underline
+	- Displays the error message on hover
+	- Can be disabled in the settings dialog
+- Fixed some connection UI issues
+- Updated internal version of surrealdb
+
 ## 1.7.0 - Environments
 - Replaced the tab system with a new session system
 	- Sessions are organized into environments

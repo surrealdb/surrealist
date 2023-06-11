@@ -74,6 +74,11 @@ export function Settings() {
 		updateConfig();
 	});
 
+	const setErrorChecking = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(actions.setErrorChecking(e.target.checked));
+		updateConfig();
+	});
+
 	const setWordWrap = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setWordWrap(e.target.checked));
 		updateConfig();
@@ -202,6 +207,12 @@ export function Settings() {
 						label="Suggest table names"
 						checked={config.tableSuggest}
 						onChange={setTableSuggest}
+					/>
+
+					<Checkbox
+						label="Query error checking"
+						checked={config.errorChecking}
+						onChange={setErrorChecking}
 					/>
 
 					<Select

@@ -3,40 +3,40 @@
     windows_subsystem = "windows"
 )]
 
-use database::{DatabaseState};
+use database::DatabaseState;
 use tauri::{Manager, RunEvent};
 
 mod config;
-mod schema;
 mod database;
+mod schema;
 
 fn main() {
     tauri::Builder::default()
-		.manage(DatabaseState(Default::default()))
+        .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
-			config::load_config,
-			config::save_config,
-			schema::extract_scope_definition,
-			schema::extract_table_definition,
-			schema::extract_field_definition,
-			schema::extract_index_definition,
-			schema::extract_event_definition,
-			schema::validate_where_clause,
-			database::start_database,
-			database::stop_database
-		])
+            config::load_config,
+            config::save_config,
+            schema::extract_scope_definition,
+            schema::extract_table_definition,
+            schema::extract_field_definition,
+            schema::extract_index_definition,
+            schema::extract_event_definition,
+            schema::validate_query,
+            schema::validate_where_clause,
+            database::start_database,
+            database::stop_database
+        ])
         .build(tauri::generate_context!())
         .expect("tauri should start successfully")
-		.run(move |app, event| match event {
-			RunEvent::Exit => {
-				let state = app.state::<DatabaseState>();
-				let process = state.0.lock().unwrap().take();
+        .run(move |app, event| match event {
+            RunEvent::Exit => {
+                let state = app.state::<DatabaseState>();
+                let process = state.0.lock().unwrap().take();
 
-				if let Some(child) = process {
-					database::kill_surreal_process(child.id())
-				}
-			}
-			_ => {}
-		})
-
+                if let Some(child) = process {
+                    database::kill_surreal_process(child.id())
+                }
+            }
+            _ => {}
+        })
 }

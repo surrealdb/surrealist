@@ -155,6 +155,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
+	async validateQuery(query: string) {
+		return invoke<string | null>('validate_query', { query });
+	}
+
 	async validateWhereClause(clause: string) {
 		return invoke<boolean>('validate_where_clause', { clause });
 	}

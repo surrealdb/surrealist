@@ -63,6 +63,10 @@ const mainSlice = createSlice({
 			state.config.tableSuggest = action.payload;
 		},
 
+		setErrorChecking(state, action: PayloadAction<boolean>) {
+			state.config.errorChecking = action.payload;
+		},
+
 		setWordWrap(state, action: PayloadAction<boolean>) {
 			state.config.wordWrap = action.payload;
 		},

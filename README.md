@@ -45,16 +45,30 @@ While the web app provides a convenient and easy way to use Surrealist, the desk
 ## Download
 You can download the latest version of Surrealist Desktop from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.
 
-### Running on MacOS
-When running Surrealist on MacOS, as the application is not signed, you may be prompted that the file is damaged and can't be opened. If this happens, try the following steps:
+### Running on MacOS with versions v1.6.0 or newer
+Running Surrealist on MacOS is more complicated than on its Windows and Linux counterparts because our application is not signed. To run Surrealist on MacOS, please do the following:
+- Navigate to your desired release (v1.6.0 and newer)
+- Download the `surrealist-<version>-darwin.dmg` release file
+- Open the executable
+- When prompted, drag the Surrealist application into the "Applications" directory
+- Navigate to your Applications directory
+- Right-click on the Surrealist application and cick on open (Note: It is important to use right-click because for some reason left clicking to open does not work the first two times you run Surrealist)
+- You will receive a prompt that says "Surrealist cannot be opened because the developer cannot be verified." Click on cancel
+- Right-click on the Surrealist application and click on open again. This time you should receive a different prompt with an "Open" option. Click on open
+- Surrealist should now launch, and you should now be able to launch Surrealist without issue from the Launchpad.
 
-- Move the downloaded `surrealist-xxx-darwin-arm64.tgz` outside of your Downloads folder (to add Surrealist to your Launchpad, place it in the `/Applications` directory)
+### Running on MacOS with versions prior to v1.6.0
+We recommend that you use the latest Surrealist release. However, if you need to run an older release of Surrealist prior to version v1.6.0, follow these steps:
+- Navigate to your desired release (any release prior to v1.6.0)
+- Download the appropriate release file (select the arm64 for M1 and newer Macs and amd64 for Macs prior to M1)
 - Extract the application from the tgz file
+- Move the Surrealist executable to your Applications directory
 - Delete the tgz file, as it is no-longer needed
-- Open the Terminal app and navigate to the directory you extracted Surrealist into
+- Open the Terminal app and navigate to the Applications directory by typing `cd /Applications`
 - Run the command `sudo xattr -rd com.apple.quarantine Surrealist.app` (You may be prompted to enter your password)
+- You should now be able to run Surrealist as normal from the Launchpad
 
-If these steps don't work, please open an issue ticket.
+If the steps for either of these MacOS processes do not work, please do not hesitate to open an issue.
 
 ## Local database
 You can start a local database directly from the application by pressing the start button in the top right. Doing so will start up a SurrealDB instance using the credentials and port entered for the current tab.
