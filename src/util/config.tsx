@@ -24,6 +24,7 @@ export function createBaseConfig(): SurrealistConfig {
 		queryListing: 'history',
 		resultListing: 'json',
 		zoomLevel: 1,
-		errorChecking: true
+		errorChecking: true,
+		lastPromptedVersion: null,
 	};
 }

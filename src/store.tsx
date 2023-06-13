@@ -224,6 +224,7 @@ const mainSlice = createSlice({
 		setAvailableUpdate(state, action: PayloadAction<string>) {
 			state.showAvailableUpdate = true;
 			state.availableUpdate = action.payload;
+			state.config.lastPromptedVersion = action.payload;
 		},
 
 		hideAvailableUpdate(state) {

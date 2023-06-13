@@ -70,6 +70,9 @@ We recommend that you use the latest Surrealist release. However, if you need to
 
 If the steps for either of these MacOS processes do not work, please do not hesitate to open an issue.
 
+### Disclaimer
+The latest release always attempts to be up-to-date with the latest SurrealDB beta. Nightly builds of SurrealDB are not officially supported and may be incompatible.
+
 ## Local database
 You can start a local database directly from the application by pressing the start button in the top right. Doing so will start up a SurrealDB instance using the credentials and port entered for the current tab.
 

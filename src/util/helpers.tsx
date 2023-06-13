@@ -116,8 +116,8 @@ export function mod(n: number, m: number) {
  */
 export function extractTypeList(input: string, prefix: string) {
 	return input
-		.replace(`${prefix}(`, '')
-		.replace(')', '')
+		.replace(`${prefix}<`, '')
+		.replace('>', '')
 		.split(',')
 		.map(t => t.trim());
 }

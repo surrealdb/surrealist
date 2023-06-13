@@ -23,3 +23,4 @@ A clear and concise description of what you expected to happen.
 **Environment (you can view the current version under Settings):**
  - OS: [e.g. Windows]
  - Version [e.g. 1.2.0]
+ - SurrealDB [execute "surreal version"]

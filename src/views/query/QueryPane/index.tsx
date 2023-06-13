@@ -12,7 +12,8 @@ import { useIsLight } from "~/hooks/theme";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { adapter } from "~/adapter";
 
-const VALIDATE_REGEX = /\b(.|\s)+?(;|$)/gm;
+const ERR_REGEX = /Parse error on line (\d+) at character (\d+) when parsing '(.+)'/s;
+const ERR_CONTEXT = 3;
 
 export interface QueryPaneProps {
 	onExecuteQuery: (override?: string) => void;
@@ -36,29 +37,21 @@ export function QueryPane(props: QueryPaneProps) {
 		const markers: editor.IMarkerData[] = [];
 
 		if (content && doErrorCheck) {
-			const queries = content.match(VALIDATE_REGEX);
+			const message = await adapter.validateQuery(content) || '';
+			const match = message.match(ERR_REGEX);
 
-			if (queries) {
-				for (const query of queries) {
-					const message = await adapter.validateQuery(query);
-
-					if (message) {
-						const startAt = content.indexOf(query);
-						const endAt = startAt + query.length;
-
-						const start = model.getPositionAt(startAt);
-						const end = model.getPositionAt(endAt);
-
-						markers.push({
-							startLineNumber: start.lineNumber,
-							startColumn: start.column,
-							endLineNumber: end.lineNumber,
-							endColumn: end.column,
-							message: message,
-							severity: MarkerSeverity.Error
-						});
-					}
-				}
+			if (match) {
+				const lineNumber = parseInt(match[1]);
+				const column = parseInt(match[2]);
+			
+				markers.push({
+					startLineNumber: lineNumber,
+					startColumn: column,
+					endLineNumber: lineNumber,
+					endColumn: column,
+					message: message,
+					severity: MarkerSeverity.Error
+				});
 			}
 		}
 

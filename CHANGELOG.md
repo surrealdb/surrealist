@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.7.2 - Improved error highlighting
+- Improved the error highlighter
+	- Results in significantly less false positives
+	- Now accurately highlights the position of the syntax error
+	- Correctly handles comments
+- Fixed visualizer no longer displaying edges in newer versions of SurrealDB
+- Dismissed update notifications will be hidden until a new version is available
+- Added manual update check button in settings
+
 ## 1.7.1 - Live error checking
 - Added live error checking to the query view
 	- Underlines invalid queries with an underline

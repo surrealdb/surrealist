@@ -1,11 +1,9 @@
-import { Divider, Group, HoverCard, Stack, Text } from "@mantine/core";
-import { mdiCalendar, mdiCheck, mdiCircle, mdiCircleMedium, mdiClock, mdiClockOutline, mdiClose } from "@mdi/js";
+import { Group, HoverCard, Stack, Text } from "@mantine/core";
+import { mdiCheck, mdiClockOutline, mdiClose } from "@mdi/js";
 import dayjs from "dayjs";
 import { ReactNode } from "react";
-import { useIsLight } from "~/hooks/theme";
 import { OpenFn } from "~/typings";
 import { TRUNCATE_STYLE } from "~/util/helpers";
-import { SectionDivider } from "~/views/designer/StructurePane/divider";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 

@@ -9,6 +9,8 @@ import { useStable } from "~/hooks/stable";
 import { PropsWithChildren, useState } from "react";
 import { DriverType } from "~/typings";
 import { adapter } from "~/adapter";
+import { Spacer } from "../Spacer";
+import { runUpdateChecker } from "~/util/updater";
 
 const THEMES = [
 	{ label: 'Automatic', value: 'automatic' },
@@ -57,6 +59,11 @@ export function Settings() {
 
 	const closeSettings = useStable(() => {
 		setShowSettings(false);
+	});
+
+	const checkForUpdates = useStable(() => {
+		runUpdateChecker(config.lastPromptedVersion, true);
+		closeSettings();
 	});
 
 	const setColorScheme = useStable((scheme: ColorScheme) => {
@@ -320,12 +327,21 @@ export function Settings() {
 					</>
 				)}
 
-				<Text
+				<Group
 					mt="xl"
-					color={isLight ? 'light.4' : 'dark.3'}
+					position="center"
 				>
-					Version {version} by {author}
-				</Text>
+					<Text color={isLight ? 'light.4' : 'dark.3'}>
+						Version {version} by {author}
+					</Text>
+					<Spacer />
+					<Button
+						variant="subtle"
+						onClick={checkForUpdates}
+					>
+						Check for updates
+					</Button>
+				</Group>
 			</Modal>
 		</>
 	)

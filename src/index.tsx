@@ -16,11 +16,11 @@ dayjs.extend(relativeTime);
 adapter.loadConfig().then(config => {
 	store.dispatch(actions.initialize(config));
 
-	const { updateChecker } = store.getState().config;
+	const { lastPromptedVersion, updateChecker } = store.getState().config;
 
 	// Check for updates
 	if (adapter.isUpdateCheckSupported && updateChecker) {
-		runUpdateChecker();
+		runUpdateChecker(lastPromptedVersion, false);
 	}
 
 	// Apply zoom level
