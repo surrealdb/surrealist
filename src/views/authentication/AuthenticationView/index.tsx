@@ -17,6 +17,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 				iconColor='red.6'
 				typeShort='NS'
 				typeLong='NAMESPACE'
+				field='nl'
 			/>
 
 			<AccountsPane
@@ -25,6 +26,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 				iconColor='yellow.6'
 				typeShort='DB'
 				typeLong='DATABASE'
+				field='dl'
 			/>
 			<ScopePane />
 		</SimpleGrid>

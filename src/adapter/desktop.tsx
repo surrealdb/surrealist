@@ -98,7 +98,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return [];
 		}
 
-		const databaseInfo = await map(Object.values(dbResult.tables), (definition) => {
+		const databaseInfo = await map(Object.values(dbResult.tables ?? dbResult.tb), (definition) => {
 			return invoke<TableSchema>('extract_table_definition', { definition });
 		});
 
@@ -111,15 +111,18 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return map(databaseInfo, async (table, index) => {
 			const tableInfo = tableData[index].result;
 
-			const fieldInfo = await map(Object.values(tableInfo.fields), (definition) => {
+			const fieldInfo = await map(Object.values(tableInfo.fields ?? tableInfo.fd), (definition) => {
 				return invoke<TableField>('extract_field_definition', { definition });
 			});
 
-			const indexInfo = await map(Object.values(tableInfo.indexes), (definition) => {
-				return invoke<TableIndex>('extract_index_definition', { definition });
-			});
+			const indexInfo = await map(
+				Object.values(tableInfo.indexes ?? tableInfo.ix),
+				(definition) => {
+					return invoke<TableIndex>('extract_index_definition', { definition });
+				}
+			);
 
-			const eventInfo = await map(Object.values(tableInfo.events), (definition) => {
+			const eventInfo = await map(Object.values(tableInfo.events ?? tableInfo.ev), (definition) => {
 				return invoke<TableEvent>('extract_event_definition', { definition });
 			});
 

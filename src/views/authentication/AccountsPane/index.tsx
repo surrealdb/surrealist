@@ -30,6 +30,7 @@ export interface AccountsPaneProps {
 	iconColor: string;
 	typeShort: string;
 	typeLong: string;
+	field: string;
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
@@ -50,7 +51,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			return [];
 		}
 
-		setLogins(Object.keys(result.logins));
+		setLogins(Object.keys(result.logins ?? result[props.field]));
 	});
 
 	useEffect(() => {

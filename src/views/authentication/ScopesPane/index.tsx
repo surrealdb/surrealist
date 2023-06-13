@@ -1,7 +1,25 @@
 import { Text, Textarea } from '@mantine/core';
-import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput, Title } from '@mantine/core';
+import {
+	ActionIcon,
+	Button,
+	Center,
+	Group,
+	Menu,
+	Modal,
+	Stack,
+	TextInput,
+	Title,
+} from '@mantine/core';
 import { useInputState } from '@mantine/hooks';
-import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from '@mdi/js';
+import {
+	mdiAccountLock,
+	mdiDelete,
+	mdiDotsVertical,
+	mdiKeyVariant,
+	mdiPlus,
+	mdiRefresh,
+	mdiWrench,
+} from '@mdi/js';
 import { invoke } from '@tauri-apps/api/tauri';
 import { map } from 'radash';
 import { useState, useEffect } from 'react';
@@ -45,7 +63,7 @@ export function ScopePane(props: ScopePaneProps) {
 			return;
 		}
 
-		const scopeInfo = await map(Object.values(result.scopes), async (definition) => {
+		const scopeInfo = await map(Object.values(result.scopes ?? result.sc), async (definition) => {
 			const result = await invoke('extract_scope_definition', { definition });
 
 			return result as ScopeInfo;
@@ -159,7 +177,9 @@ export function ScopePane(props: ScopePaneProps) {
 								</Button>
 							</Menu.Target>
 							<Menu.Dropdown>
-								<Menu.Item icon={<Icon path={mdiWrench} size={0.7} color='light.4' />} onClick={() => editScope(scope)}>
+								<Menu.Item
+									icon={<Icon path={mdiWrench} size={0.7} color='light.4' />}
+									onClick={() => editScope(scope)}>
 									Edit
 								</Menu.Item>
 								<Menu.Item
@@ -186,7 +206,13 @@ export function ScopePane(props: ScopePaneProps) {
 				<Form onSubmit={saveScope}>
 					<Stack>
 						{isCreating && (
-							<TextInput label='Enter scope name' value={editingName} onChange={setEditingName} autoFocus required />
+							<TextInput
+								label='Enter scope name'
+								value={editingName}
+								onChange={setEditingName}
+								autoFocus
+								required
+							/>
 						)}
 						<Textarea
 							label='Sign in query'
