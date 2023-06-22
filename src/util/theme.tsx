@@ -1,4 +1,4 @@
-import { ColorScheme, MantineThemeOverride } from "@mantine/core";
+import { ColorScheme, JsonInput, MantineThemeOverride } from "@mantine/core";
 
 import { useMemo } from "react";
 
@@ -104,6 +104,13 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 				styles: {
 					tab: {
 						fontWeight: 500
+					}
+				}
+			},
+			Switch: {
+				styles: {
+					root: {
+						display: 'flex'
 					}
 				}
 			},

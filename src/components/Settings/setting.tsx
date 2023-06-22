@@ -1,4 +1,4 @@
-import { Group } from "@mantine/core";
+import { Box, Group } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { PropsWithChildren, ReactNode } from "react";
 import { Text } from "@mantine/core";
@@ -12,12 +12,14 @@ export function Setting(props: PropsWithChildren<SettingProps>) {
 	const isLight = useIsLight();
 
 	return (
-		<Group>
+		<Group position="center">
 			<Text color={isLight ? 'black' : 'gray.4'}>
 				{props.label}
 			</Text>
 			<Spacer />
-			{props.children}
+			<Box mih={30} style={{ display: 'flex', alignItems: 'center' }}>
+				{props.children}
+			</Box>
 		</Group>
 	)
 }

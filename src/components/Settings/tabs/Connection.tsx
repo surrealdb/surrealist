@@ -1,4 +1,4 @@
-import { Stack, Checkbox, NumberInput } from "@mantine/core";
+import { Stack, NumberInput, Switch } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
 import { store, actions } from "~/store";
 import { SurrealistConfig } from "~/typings";
@@ -24,7 +24,7 @@ export function ConnectionTab({ config }: ConnectionTabProps) {
 	return (
 		<Stack spacing="xs">
 			<Setting label="Auto connect to database">
-				<Checkbox
+				<Switch
 					checked={config.autoConnect}
 					onChange={setAutoConnect}
 				/>
