@@ -35,6 +35,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 
 	const tabs = useStoreValue(state => state.config.tabs);
 	const environments = useStoreValue(state => state.config.environments);
+	const tabSearch = useStoreValue(state => state.config.tabSearch);
 
 	const tab = tabs.find(tab => tab.id === active);
 	const environment = tab && environments.find(env => env.id === tab.environment);
@@ -242,6 +243,13 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 												variant={isActive ? 'filled' : 'subtle'}
 												className={classes.entryButton}
 												onClick={() => openEnvironment(item.id)}
+												rightIcon={
+													<Icon
+														path={mdiChevronRight}
+														color={isActive ? 'dark.3' : 'light.5'}
+														size={1.15}
+													/>
+												}
 											>
 												{item.name}
 											</Button>
@@ -268,17 +276,19 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 							</Button>
 						</Box>
 						<Box mih={235} mah={300}>
-							<TextInput
-								placeholder="Search"
-								variant="filled"
-								icon={<Icon path={mdiMagnify} color="dark.3" />}
-								style={{ flex: 1 }}
-								value={search}
-								onChange={setSearch}
-								autoFocus
-								mb="sm"
-							/>
-							<ScrollArea h="calc(100% - 102px)">
+							{tabSearch && (
+								<TextInput
+									placeholder="Search"
+									variant="filled"
+									icon={<Icon path={mdiMagnify} color="dark.3" />}
+									style={{ flex: 1 }}
+									value={search}
+									onChange={setSearch}
+									autoFocus
+									mb="sm"
+								/>
+							)}
+							<ScrollArea h={tabSearch ? 'calc(100% - 102px)' : 'calc(100% - 54px)'}>
 								<Stack spacing={6}>
 									{filteredTabs.length === 0 && tabs.length > 0 && (
 										<Text

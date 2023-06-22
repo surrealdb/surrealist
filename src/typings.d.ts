@@ -37,6 +37,7 @@ export interface SurrealistConfig {
 	zoomLevel: number;
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
+	tabSearch: boolean;
 }
 
 export interface SurrealistEnvironment {

@@ -70,6 +70,10 @@ const mainSlice = createSlice({
 		setWordWrap(state, action: PayloadAction<boolean>) {
 			state.config.wordWrap = action.payload;
 		},
+
+		setTabSearch(state, action: PayloadAction<boolean>) {
+			state.config.tabSearch = action.payload;
+		},
 		
 		setEnvironments(state, action: PayloadAction<SurrealistEnvironment[]>) {
 			state.config.environments = action.payload;

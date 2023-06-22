@@ -26,5 +26,6 @@ export function createBaseConfig(): SurrealistConfig {
 		zoomLevel: 1,
 		errorChecking: true,
 		lastPromptedVersion: null,
+		tabSearch: false
 	};
 }
