@@ -162,8 +162,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 			applyOrder(tabs, order)
 		));
 
-		// store.dispatch(actions.updateTabOrder(order));
-		// updateConfig();
+		updateConfig();
 	});
 
 	useEffect(() => {
@@ -311,7 +310,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 													leftIcon={
 														isRenaming
 															? <Icon path={mdiPencil} color="blue" />
-															: <Icon path={getTabIcon(item) ?? ''} color="surreal" />
+															: <Icon path={getTabIcon(item) ?? ''} color={isActive ? 'surreal' : 'light.5'} />
 													}
 													c={isLight ? 'black' : 'white'}
 													color={isRenaming ? 'light' : isActive ? 'pink' : 'light'}
