@@ -106,6 +106,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return acc + `INFO FOR TABLE ${table.name};`;
 		}, '');
 
+		if (!tableQuery) {
+			return [];
+		}
+
 		const tableData = await surreal.query(tableQuery);
 
 		return map(databaseInfo, async (table, index) => {
