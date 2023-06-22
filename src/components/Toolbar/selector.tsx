@@ -7,11 +7,12 @@ import { Text } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 import { VIEW_MODES } from '~/constants';
 import { useStable } from '~/hooks/stable';
-import { updateTitle, updateConfig } from '~/util/helpers';
+import { updateTitle, updateConfig, applyOrder } from '~/util/helpers';
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useHotkeys, useInputState } from '@mantine/hooks';
 import { Environments } from './environments';
 import { SyntheticEvent } from 'react';
+import { Sortable } from '../Sortable';
 
 function getTabIcon(tab: SurrealistTab) {
 	return VIEW_MODES.find(v => v.id == tab.activeView)?.icon;
@@ -156,6 +157,15 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 		setManageEnvs(false);
 	});
 
+	const saveTabOrder = useStable((order: SurrealistTab[]) => {
+		store.dispatch(actions.setTabs(
+			applyOrder(tabs, order)
+		));
+
+		// store.dispatch(actions.updateTabOrder(order));
+		// updateConfig();
+	});
+
 	useEffect(() => {
 		if (!viewingEnv) {
 			const startEnv = environment?.id || environments[0]?.id;
@@ -258,7 +268,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								Manage environments
 							</Button>
 						</Box>
-						<Box mih={235} mah={350}>
+						<Box mih={235} mah={300}>
 							<TextInput
 								placeholder="Search"
 								variant="filled"
@@ -270,7 +280,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								mb="sm"
 							/>
 							<ScrollArea h="calc(100% - 102px)">
-								<Stack spacing="xs">
+								<Stack spacing={6}>
 									{filteredTabs.length === 0 && tabs.length > 0 && (
 										<Text
 											align="center"
@@ -281,108 +291,118 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 										</Text>	
 									)}
 
-									{filteredTabs.map(item => {
-										const isActive = item.id === tab?.id;
-										const isRenaming = renamingTab == item.id;
-
-										return (
-											<Button
-												key={item.id}
-												w={264}
-												px={12}
-												leftIcon={
-													isRenaming
-														? <Icon path={mdiPencil} color="blue" />
-														: <Icon path={getTabIcon(item) ?? ''} color="surreal" />
-												}
-												c={isLight ? 'black' : 'white'}
-												color={isRenaming ? 'light' : isActive ? 'pink' : 'light'}
-												variant={isRenaming ? 'outline' : isActive ? 'light' : 'subtle'}
-												className={classes.entryButton}
-												onClick={() => select(item.id)}
-												rightIcon={!isRenaming && (
-													<Menu
-														shadow="md"
-														width={200}
-														position="right-start"
-														closeOnItemClick={false}
-														withinPortal
-													>
-														<Menu.Target>
-															<div onClick={stopPropagation}>
-																<Icon path={mdiDotsVertical} />
-															</div>
-														</Menu.Target>
-
-														<Menu.Dropdown onMouseDown={stopPropagation}>
-															<Menu.Item
-																icon={<Icon path={mdiCursorText} />}
-																onClick={e => handleRename(e, item.id)}
-															>
-																Rename
-															</Menu.Item>
-															<Menu.Item
-																icon={<Icon path={mdiPencil} />}
-																onClick={e => handleEdit(e, item.id)}
-															>
-																Edit
-															</Menu.Item>
-															<Menu.Item
-																icon={<Icon path={item.pinned ? mdiPinOff : mdiPin} />}
-																onClick={e => handlePin(e, item.id)}
-															>
-																{item.pinned ? 'Unpin' : 'Pin'}
-															</Menu.Item>
-															<Menu.Item
-																icon={<Icon path={mdiContentDuplicate} />}
-																onClick={e => handleDuplicate(e, item.id)}
-															>
-																Duplicate
-															</Menu.Item>
-															<Menu.Item
-																icon={<Icon path={mdiClose} />}
-																onClick={e => handleDelete(e, item.id)}
-															>
-																Delete
-															</Menu.Item>
-														</Menu.Dropdown>
-													</Menu>
-												)}
-											>
-												{isRenaming ? (
-													<TextInput
-														autoFocus
-														variant="unstyled"
-														value={tabName}
-														onChange={setTabName}
-														onBlur={saveRename}
-														onKeyDown={saveRename}
-														styles={{
-															input: {
-																fontWeight: 600,
-																color: 'white',
-																maxWidth: 150,
-																padding: 0,
-																margin: 0,
-																marginTop: -1
-															}
-														}}
-													/>
-												) : (
-													<Text
-														maw={150}
-														style={{
-															overflow: 'hidden',
-															textOverflow: 'ellipsis',
-															whiteSpace: 'nowrap'
-														}}
-													>
-														{item.name}
-													</Text>
-												)}
-											</Button>
-										)
-									})}
+									<Sortable
+										items={filteredTabs}
+										disabled={!!search}
+										onSorted={saveTabOrder}
+										constraint={{
+											distance: 10
+										}}
+									>
+										{({ item, handleProps }) => {
+											const isActive = item.id === tab?.id;
+											const isRenaming = renamingTab == item.id;
+	
+											return (
+												<Button
+													key={item.id}
+													w={264}
+													px={12}
+													leftIcon={
+														isRenaming
+															? <Icon path={mdiPencil} color="blue" />
+															: <Icon path={getTabIcon(item) ?? ''} color="surreal" />
+													}
+													c={isLight ? 'black' : 'white'}
+													color={isRenaming ? 'light' : isActive ? 'pink' : 'light'}
+													variant={isRenaming ? 'outline' : isActive ? 'light' : 'subtle'}
+													className={classes.entryButton}
+													onClick={() => select(item.id)}
+													{...handleProps}
+													rightIcon={!isRenaming && (
+														<Menu
+															shadow="md"
+															width={200}
+															position="right-start"
+															closeOnItemClick={false}
+															withinPortal
+														>
+															<Menu.Target>
+																<div onClick={stopPropagation}>
+																	<Icon path={mdiDotsVertical} />
+																</div>
+															</Menu.Target>
+	
+															<Menu.Dropdown onMouseDown={stopPropagation}>
+																<Menu.Item
+																	icon={<Icon path={mdiCursorText} />}
+																	onClick={e => handleRename(e, item.id)}
+																>
+																	Rename
+																</Menu.Item>
+																<Menu.Item
+																	icon={<Icon path={mdiPencil} />}
+																	onClick={e => handleEdit(e, item.id)}
+																>
+																	Edit
+																</Menu.Item>
+																<Menu.Item
+																	icon={<Icon path={item.pinned ? mdiPinOff : mdiPin} />}
+																	onClick={e => handlePin(e, item.id)}
+																>
+																	{item.pinned ? 'Unpin' : 'Pin'}
+																</Menu.Item>
+																<Menu.Item
+																	icon={<Icon path={mdiContentDuplicate} />}
+																	onClick={e => handleDuplicate(e, item.id)}
+																>
+																	Duplicate
+																</Menu.Item>
+																<Menu.Item
+																	icon={<Icon path={mdiClose} />}
+																	onClick={e => handleDelete(e, item.id)}
+																>
+																	Delete
+																</Menu.Item>
+															</Menu.Dropdown>
+														</Menu>
+													)}
+												>
+													{isRenaming ? (
+														<TextInput
+															autoFocus
+															variant="unstyled"
+															value={tabName}
+															onChange={setTabName}
+															onBlur={saveRename}
+															onKeyDown={saveRename}
+															styles={{
+																input: {
+																	fontWeight: 600,
+																	color: 'white',
+																	maxWidth: 150,
+																	padding: 0,
+																	margin: 0,
+																	marginTop: -1
+																}
+															}}
+														/>
+													) : (
+														<Text
+															maw={150}
+															style={{
+																overflow: 'hidden',
+																textOverflow: 'ellipsis',
+																whiteSpace: 'nowrap'
+															}}
+														>
+															{item.name}
+														</Text>
+													)}
+												</Button>
+											)
+										}}
+									</Sortable>
 								</Stack>
 							</ScrollArea>
 

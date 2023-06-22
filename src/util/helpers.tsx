@@ -128,3 +128,22 @@ export function extractTypeList(input: string, prefix: string) {
 export function newId() {
 	return uid(5);
 }
+
+/**
+ * A function which orders each element in items present in order by
+ * the order of the elements in order
+ * 
+ * @param items The items to order
+ * @param order The order to apply
+ */
+export function applyOrder<T>(items: T[], order: T[]) {
+	let index = 0;
+
+	return items.map(item => {
+		if (order.includes(item)) {
+			return order[index++];
+		}
+
+		return item;
+	});
+}

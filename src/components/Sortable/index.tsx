@@ -19,6 +19,7 @@ interface SortableDrag<T> {
 
 interface SortableChildProps<T> {
 	item: T;
+	disabled: boolean;
 	children: (drag: SortableDrag<T>) => React.ReactNode;
 }
 
@@ -28,7 +29,7 @@ const DIRECTIONS = {
 	grid: [rectSortingStrategy, null]
 } as const;
 
-function SortableChild<T extends SortableItem>({ item, children }: SortableChildProps<T>) {
+function SortableChild<T extends SortableItem>({ item, children, disabled }: SortableChildProps<T>) {
 	
 	const {
 		index,
@@ -38,7 +39,7 @@ function SortableChild<T extends SortableItem>({ item, children }: SortableChild
 		setNodeRef,
 		transform,
 		transition,
-	} = useSortable({ id: item.id });
+	} = useSortable({ id: item.id, disabled });
 
 	const style: React.CSSProperties = {
 		cursor: 'grab'
@@ -73,6 +74,7 @@ export interface SortableProps<T> {
 	items: T[];
 	direction?: 'vertical' | 'horizontal' | 'grid';
 	constraint?: PointerActivationConstraint;
+	disabled?: boolean;
 	onSorting?: () => void;
 	onSorted: (value: T[]) => void;
 	children: (drag: SortableDrag<T>) => ReactNode;
@@ -120,7 +122,11 @@ export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
 				strategy={strategy}
 			>
 				{props.items.map(item => (
-					<SortableChild key={item.id} item={item}>
+					<SortableChild
+						key={item.id}
+						item={item}
+						disabled={props.disabled ?? false}
+					>
 						{props.children}
 					</SortableChild>
 				))}
