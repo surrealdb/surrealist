@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.7.3 - UI Improvements
+- Added the ability to drag sessions to customize their order
+- Add support for latest SurrealDB nightly builds (#64)
+- Correctly handle databases with no tables (#66)
+- Fixed panels sometimes breaking when resizing the window
+- Redesigned settings dialog
+	- Session search box is now a setting
+
 ## 1.7.2 - Improved error highlighting
 - Improved the error highlighter
 	- Results in significantly less false positives
