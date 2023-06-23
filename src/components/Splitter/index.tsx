@@ -1,5 +1,5 @@
 import classes from './style.module.scss';
-import { Fragment, useEffect, useLayoutEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { useStable } from '~/hooks/stable';
 import { useWindowEvent } from '@mantine/hooks';
 import { useState } from 'react';
@@ -30,29 +30,38 @@ export function Splitter(props: SplitterProps) {
 	const contents: React.ReactNode[] = [];
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const zoomLevel = useStoreValue(state => state.config.zoomLevel);
+	const leftPane = useRef<any>();
+	const rightPane = useRef<any>();
 	const frameId = useRef(0);
 
 	const [draggerId, setDraggerId] = useState<string | null>(null);
-	const [sizes, setSizes] = useState(props.values || []);
 	const [leftSize, setLeftSize] = useState(0);
 	const [rightSize, setRightSize] = useState(0);
 
-	useEffect(() => {
-		setSizes(props.values || []);
-	}, [props.values]);
-
-	// Update the size of the panes
-	useLayoutEffect(() => {
+	// Recompute sizes when the container size changes
+	const recomputeSizes = useStable((values: SplitValues) => {
 		const buffer = props.bufferSize ?? 300;
-		const leftReserve = props.startPane && sizes[0] || 0;
-		const rightReserve = props.endPane && sizes[1] || 0;
+		const leftReserve = props.startPane && values[0] || 0;
+		const rightReserve = props.endPane && values[1] || 0;
 		const totalSize = (isHorizontal ? containerRef.current?.clientWidth : containerRef.current?.clientHeight) || 0;
 		const clampLeft = (value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || (totalSize - rightReserve - buffer));
 		const clampRight = (value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || (totalSize - leftReserve - buffer));
 
 		// Calculate actual pane sizes
-		setLeftSize(clampLeft(sizes[0] || 160));
-		setRightSize(clampRight(sizes[1] || 160));
+		const finalLeft = clampLeft(values[0] || 160);
+		const finalRight = clampRight(values[1] || 160);
+		const field = isHorizontal ? 'width' : 'height';
+
+		setLeftSize(finalLeft);
+		setRightSize(finalRight);
+
+		if (leftPane.current) {
+			leftPane.current.style[field] = `${finalLeft}px`;
+		}
+
+		if (rightPane.current) {
+			rightPane.current.style[field] = `${finalRight}px`;
+		}
 	});
 
 	// Detect dragged divider
@@ -65,6 +74,10 @@ export function Splitter(props: SplitterProps) {
 		setDraggerId(id);
 	});
 
+	useEffect(() => {
+		recomputeSizes(props.values || [] as any);
+	}, [props.values]);
+
 	// Stop dragging
 	useWindowEvent('mouseup', () => {
 		const { style } = containerRef.current!;
@@ -73,6 +86,11 @@ export function Splitter(props: SplitterProps) {
 		style.cursor = '';
 		
 		setDraggerId(null);
+	});
+
+	// Listen for window resize
+	useWindowEvent('resize', () => {
+		recomputeSizes([leftSize, rightSize]);
 	});
 
 	// Handle mouse dragging
@@ -91,12 +109,12 @@ export function Splitter(props: SplitterProps) {
 				if (draggerId === 'left') {
 					const newLeftSize = value;
 
-					setSizes([newLeftSize, rightSize]);
+					recomputeSizes([newLeftSize, rightSize]);
 					props.onChange?.([newLeftSize, rightSize]);
 				} else {
 					const newRightSize = total - value;
 
-					setSizes([leftSize, newRightSize]);
+					recomputeSizes([leftSize, newRightSize]);
 					props.onChange?.([leftSize, newRightSize]);
 				}
 			});
@@ -115,15 +133,11 @@ export function Splitter(props: SplitterProps) {
 
 	// Display left section
 	if (props.startPane) {
-		const style = {
-			[isHorizontal ? 'width' : 'height']: leftSize
-		};
-
 		contents.push(
 			<Fragment key="left">
 				<Box
 					className={classes.leftPane}
-					style={style}
+					ref={leftPane}
 				>
 					{props.startPane}
 				</Box>
@@ -148,10 +162,6 @@ export function Splitter(props: SplitterProps) {
 
 	// Display right section
 	if (props.endPane) {
-		const style = {
-			[isHorizontal ? 'width' : 'height']: rightSize
-		};
-
 		contents.push(
 			<Fragment key="right">
 				<Divider
@@ -161,7 +171,7 @@ export function Splitter(props: SplitterProps) {
 				/>
 				<Box
 					className={classes.rightPane}
-					style={style}
+					ref={rightPane}
 				>
 					{props.endPane}
 				</Box>
