@@ -324,7 +324,7 @@ export function Scaffold() {
 															{isDisabled && (
 																<div>
 																	<Badge color="blue" variant="filled" radius="sm">
-																		Surreal Desktop
+																		Surrealist Desktop
 																	</Badge>
 																</div>
 															)}
