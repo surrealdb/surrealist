@@ -5,8 +5,10 @@ import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
 import { showNotification } from "@mantine/notifications";
-import { Splitter } from "~/components/Splitter";
+import { SplitValues, Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
+
+const SPLIT_SIZE: SplitValues = [250, 450];
 
 export interface ExplorerViewProps {
 }
@@ -16,6 +18,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	const [activeRecord, setActiveRecord] = useState<any>(null);
 	const [creatingRecord, setCreatingRecord] = useState(false);
 	const [refreshId, setRefreshId] = useState(0);
+	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
 
 	const activeRecordId = activeRecord?.content?.id || null;
 
@@ -95,8 +98,11 @@ export function ExplorerView(props: ExplorerViewProps) {
 	
 	return (
 		<Splitter
-			minSize={[250, 450]}
+			name="ree"
+			minSize={SPLIT_SIZE}
 			bufferSize={500}
+			values={splitValues}
+			onChange={setSplitValues}
 			direction="horizontal"
 			startPane={
 				<TablesPane
