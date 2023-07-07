@@ -1,12 +1,13 @@
 import { ExplorerPane } from "../ExplorerPane";
 import { TablesPane } from "../../../components/TablesPane";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
 import { showNotification } from "@mantine/notifications";
 import { SplitValues, Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
+import { useHistory } from "~/hooks/history";
 
 const SPLIT_SIZE: SplitValues = [250, 450];
 
@@ -19,11 +20,18 @@ export function ExplorerView(props: ExplorerViewProps) {
 	const [creatingRecord, setCreatingRecord] = useState(false);
 	const [refreshId, setRefreshId] = useState(0);
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
-
+	
+	const history = useHistory();
 	const activeRecordId = activeRecord?.content?.id || null;
 
 	const doRefresh = useStable(() => {
 		setRefreshId(num => num + 1);
+	});
+
+	const pushNext = useStable((id: string | null) => {
+		if (id) {
+			history.push(id);
+		}
 	});
 
 	const fetchRecord = useStable(async (id: string | null) => {
@@ -42,19 +50,22 @@ export function ExplorerView(props: ExplorerViewProps) {
 		const inputs = response[1].result[0]?.relations || [];
 		const outputs = response[2].result[0]?.relations || [];
 
-		if (!content?.id) {
-			showNotification({
-				message: 'Record link has no destination',
-			});
-			return;
-		}
-
 		setCreatingRecord(false);
-		setActiveRecord({
-			content,
-			inputs,
-			outputs
-		});
+
+		if (!content?.id) {
+			setActiveRecord({
+				invalid: true,
+				content: { id: id },
+				inputs: [],
+				outputs: []
+			});
+		} else {
+			setActiveRecord({
+				content,
+				inputs,
+				outputs
+			});
+		}
 	});
 
 	const createRecord = useStable(async (table: string, json: string) => {
@@ -84,7 +95,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 
 	const handleCloseRecord = useStable(() => {
 		setCreatingRecord(false);
-		setActiveRecord(null);
+		history.clear();
 	});
 
 	const handleContentChange = useStable((json: string) => {
@@ -93,12 +104,19 @@ export function ExplorerView(props: ExplorerViewProps) {
 
 	const requestCreate = useStable(async () => {
 		setCreatingRecord(true);
-		setActiveRecord(null);
+		history.clear();
 	});
+
+	useEffect(() => {
+		if (history.current) {
+			fetchRecord(history.current);
+		} else {
+			setActiveRecord(null);
+		}
+	}, [history.current]);
 	
 	return (
 		<Splitter
-			name="ree"
 			minSize={SPLIT_SIZE}
 			bufferSize={500}
 			values={splitValues}
@@ -120,10 +138,11 @@ export function ExplorerView(props: ExplorerViewProps) {
 					/>
 				) : activeRecord ? (
 					<InspectorPane
-						record={activeRecord}
+						history={history}
+						activeRecord={activeRecord}
 						onClose={handleCloseRecord}
 						onContentChange={handleContentChange}
-						onSelectRecord={fetchRecord}
+						onSelectRecord={pushNext}
 						onRefresh={doRefresh}
 					/>
 				) : null
@@ -132,7 +151,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 			<ExplorerPane
 				refreshId={refreshId}
 				activeTable={activeTable}
-				onSelectRecord={fetchRecord}
+				onSelectRecord={pushNext}
 				activeRecordId={activeRecordId}
 				onRequestCreate={requestCreate}
 			/>

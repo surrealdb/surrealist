@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, clsx, Group, Notification, Text } from '@mantine/core';
+import { Button, Group } from '@mantine/core';
 import { mdiCheck } from '@mdi/js';
-import { Spacer } from '../Spacer';
 import { useLater } from '~/hooks/later';
-import classes from './style.module.scss';
 import { Icon } from '../Icon';
 import { klona } from 'klona';
 import fastDeepEqual from 'fast-deep-equal';

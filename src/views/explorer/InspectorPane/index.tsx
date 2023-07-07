@@ -1,9 +1,9 @@
-import { mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiSwapVertical, mdiWrench } from "@mdi/js";
+import { mdiArrowLeftBold, mdiArrowRightBold, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { editor } from "monaco-editor";
 import Editor from "@monaco-editor/react";
 import { FocusEvent, Fragment, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
-import { ActionIcon, Button, Divider, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Center, Divider, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/typings";
@@ -14,9 +14,11 @@ import { useInputState } from "@mantine/hooks";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { getSurreal } from "~/surreal";
+import { HistoryHandle } from "~/hooks/history";
 
 export interface InspectorPaneProps {
-	record: any;
+	history: HistoryHandle<any>;
+	activeRecord: any;
 	onClose: () => void;
 	onSelectRecord: OpenFn;
 	onContentChange: (json: string) => void;
@@ -30,15 +32,18 @@ export function InspectorPane(props: InspectorPaneProps) {
 	const [recordId, setRecordId] = useInputState('');
 	const [isDeleting, setIsDeleting] = useState(false);
 
+	const record = props.activeRecord;
+
 	useEffect(() => {
-		setRecordId(props.record.content.id || '');
-	}, [props.record.content.id]);
+		setRecordId(record.content.id || '');
+	}, [record.content.id]);
 
 	const jsonAlert = isInvalid
 		? <Text color="red">Invalid record JSON</Text>
 		: undefined;
 	
-	const isEdge = props.record.content?.in && props.record.content?.out;
+	const isEdge = record.content?.in && record.content?.out;
+	const recordExists = !record.invalid;
 
 	const gotoRecord = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === 'keydown' && (e as KeyboardEvent).key !== 'Enter') {
@@ -92,8 +97,29 @@ export function InspectorPane(props: InspectorPaneProps) {
 					)}
 
 					<ActionIcon
+						onClick={props.history.goBack}
+						title="Go back"
+					>
+						<Icon
+							color={props.history.hasBack ? 'light.4' : isLight ? 'light.0' : 'dark.4' }
+							path={mdiArrowLeftBold}
+						/>
+					</ActionIcon>
+
+					<ActionIcon
+						onClick={props.history.goForward}
+						title="Go forward"
+					>
+						<Icon
+							color={props.history.hasForward ? 'light.4' : isLight ? 'light.0' : 'dark.4' }
+							path={mdiArrowRightBold}
+						/>
+					</ActionIcon>
+
+					<ActionIcon
 						onClick={requestDelete}
-						title={isShifting ? 'Delete record forcefully' : 'Delete record'}
+						title="Delete record (Hold shift to force)"
+						disabled={!recordExists}
 					>
 						<Icon color={isShifting ? 'red' : 'light.4'} path={mdiDelete} />
 					</ActionIcon>
@@ -128,44 +154,52 @@ export function InspectorPane(props: InspectorPaneProps) {
 				styles={theme => ({
 					input: {
 						backgroundColor: isLight ? 'white' : theme.fn.themeColor('dark.9'),
-						color: theme.fn.themeColor('surreal'),
+						color: theme.fn.themeColor(recordExists ? 'surreal' : 'red'),
 						fontFamily: 'JetBrains Mono',
 						fontSize: 14,
 						height: 42
 					}
 				})}
 			/>
-			<Tabs defaultValue="content">
-				<Tabs.List grow>
-					<Tabs.Tab value="content">
-						Content
-						<Icon path={mdiCodeJson} size={0.85} right />
-					</Tabs.Tab>
-					<Tabs.Tab value="relations">
-						Relations
-						<Icon path={mdiSwapVertical} size={0.85} right />
-					</Tabs.Tab>
-				</Tabs.List>
+			{recordExists ? (
+				<Tabs defaultValue="content">
+					<Tabs.List grow>
+						<Tabs.Tab value="content">
+							Content
+							<Icon path={mdiCodeJson} size={0.85} right />
+						</Tabs.Tab>
+						<Tabs.Tab value="relations">
+							Relations
+							<Icon path={mdiSwapVertical} size={0.85} right />
+						</Tabs.Tab>
+					</Tabs.List>
 
-				<Tabs.Panel value="content">
-					<ContentTab
-						isLight={isLight}
-						content={props.record.content}
-						isInvalid={isInvalid}
-						setIsInvalid={setIsInvalid}
-						onContentChange={props.onContentChange}
-					/>
-				</Tabs.Panel>
+					<Tabs.Panel value="content">
+						<ContentTab
+							isLight={isLight}
+							content={record.content}
+							isInvalid={isInvalid}
+							setIsInvalid={setIsInvalid}
+							onContentChange={props.onContentChange}
+						/>
+					</Tabs.Panel>
 
-				<Tabs.Panel value="relations">
-					<RelationsTab
-						isLight={isLight}
-						inputs={props.record.inputs}
-						outputs={props.record.outputs}
-						onSelectRecord={props.onSelectRecord}
-					/>
-				</Tabs.Panel>
-			</Tabs>
+					<Tabs.Panel value="relations">
+						<RelationsTab
+							isLight={isLight}
+							inputs={record.inputs}
+							outputs={record.outputs}
+							onSelectRecord={props.onSelectRecord}
+						/>
+					</Tabs.Panel>
+				</Tabs>	
+			) : (
+				<Center my="xl">
+					<Text color="light.5">
+						Record does not exist
+					</Text>
+				</Center>
+			)}
 
 			<Modal
 				opened={isDeleting}

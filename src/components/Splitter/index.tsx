@@ -11,7 +11,6 @@ export type SplitValues = [number | undefined, number | undefined];
 export type SplitBounds = SplitValues | number;
 
 export interface SplitterProps {
-	name?: string;
 	startPane?: React.ReactNode;
 	endPane?: React.ReactNode;
 	children: React.ReactNode;
@@ -55,10 +54,6 @@ export function Splitter(props: SplitterProps) {
 
 		setLeftSize(finalLeft);
 		setRightSize(finalRight);
-
-		if (props.name == 'ree') {
-			console.log(finalRight);
-		}
 
 		if (leftPane.current) {
 			leftPane.current.style[field] = `${finalLeft}px`;
