@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.7.4 - Inspector history
+- Added back and forward buttons to the inspector panel
+	- More easily navigate when editing multiple records
+- Fixed inspector pane opening too small
+- Inspector pane now remembers its size
+- Various UI improvements
+
 ## 1.7.3 - UI Improvements
 - Added the ability to drag sessions to customize their order
 - Add support for latest SurrealDB nightly builds (#64)
