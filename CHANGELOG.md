@@ -5,6 +5,7 @@
 	- More easily navigate when editing multiple records
 - Fixed inspector pane opening too small
 - Inspector pane now remembers its size
+- Fixed comment shortcut using the wrong keys (#58)
 - Various UI improvements
 
 ## 1.7.3 - UI Improvements
