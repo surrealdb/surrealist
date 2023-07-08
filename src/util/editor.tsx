@@ -1,5 +1,5 @@
 import { Monaco } from "@monaco-editor/react";
-import { editor, KeyCode, KeyMod, languages } from "monaco-editor";
+import { editor, languages } from "monaco-editor";
 import { store } from "~/store";
 import { getSurreal } from "~/surreal";
 
@@ -26,7 +26,10 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	}
 }
 
+let global: Monaco;
+
 export function initializeEditor(monaco: Monaco) {
+	global = monaco;
 
 	// monaco is truly inept at handling font loading hence
 	// this monstrous hack to force it to remeasure fonts
@@ -199,8 +202,8 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor, onExe
 		id: 'run-query',
 		label: 'Run Query',
 		keybindings: [
-			KeyMod.CtrlCmd | KeyCode.Enter,
-			KeyCode.F9
+			global.KeyMod.CtrlCmd | global.KeyCode.Enter,
+			global.KeyCode.F9
 		],
 		run: () => onExecute()
 	});
@@ -209,7 +212,7 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor, onExe
 		id: 'comment-query',
 		label: 'Comment Query',
 		keybindings: [
-			KeyMod.CtrlCmd | KeyCode.Slash
+			global.KeyMod.CtrlCmd | global.KeyCode.Slash
 		],
 		run: (editor) => {
 			const selection = editor.getSelection();

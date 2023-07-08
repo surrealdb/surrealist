@@ -1,6 +1,5 @@
-import { editor } from "monaco-editor";
+import type { editor } from "monaco-editor";
 import { mdiTune } from "@mdi/js";
-import Editor from "@monaco-editor/react";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/environment";
 import { actions, store } from "~/store";
@@ -10,6 +9,7 @@ import { useMemo, useState } from "react";
 import { baseEditorConfig, configureQueryEditor } from "~/util/editor";
 import { Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
+import Editor from "@monaco-editor/react";
 
 export interface VariablesPaneProps {
 	onExecuteQuery: () => void;

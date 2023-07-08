@@ -1,5 +1,5 @@
 import type { editor } from "monaco-editor";
-import { ActionIcon, Box, Center, Divider, Group, Pagination, Stack, Tabs, Text } from "@mantine/core";
+import { ActionIcon, Center, Divider, Group, Pagination, Stack, Tabs, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import Editor from "@monaco-editor/react";

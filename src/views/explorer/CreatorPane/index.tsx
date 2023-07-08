@@ -1,5 +1,4 @@
 import { editor } from "monaco-editor";
-import Editor from "@monaco-editor/react";
 import { baseEditorConfig } from "~/util/editor";
 import { useEffect, useMemo, useState } from "react";
 import { mdiCheck, mdiClose, mdiTablePlus } from "@mdi/js";
@@ -9,6 +8,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
+import Editor from "@monaco-editor/react";
 
 export interface CreatorPaneProps {
 	activeTable: string | null;

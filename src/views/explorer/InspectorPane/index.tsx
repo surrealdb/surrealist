@@ -1,7 +1,6 @@
-import { mdiArrowLeftBold, mdiArrowRightBold, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { editor } from "monaco-editor";
-import Editor from "@monaco-editor/react";
-import { FocusEvent, Fragment, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
+import { mdiArrowLeftBold, mdiArrowRightBold, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiSwapVertical, mdiWrench } from "@mdi/js";
+import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
 import { ActionIcon, Button, Center, Divider, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
@@ -15,6 +14,7 @@ import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { getSurreal } from "~/surreal";
 import { HistoryHandle } from "~/hooks/history";
+import Editor from "@monaco-editor/react";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;

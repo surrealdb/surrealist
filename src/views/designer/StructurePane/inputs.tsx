@@ -1,7 +1,6 @@
 import classes from './style.module.scss';
 import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps, Title } from "@mantine/core";
 import { mdiCancel, mdiCheck, mdiWrench } from "@mdi/js";
-import Editor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import { ChangeEvent, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -9,6 +8,7 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { baseEditorConfig } from "~/util/editor";
+import Editor from "@monaco-editor/react";
 
 export interface QueryInputProps extends TextareaProps {
 	onChangeText?: (value: string) => void;
