@@ -1,8 +1,8 @@
 import { editor } from "monaco-editor";
-import { mdiArrowLeftBold, mdiArrowRightBold, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiSwapVertical, mdiWrench } from "@mdi/js";
+import { mdiArrowLeftBold, mdiArrowRightBold, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiRefresh, mdiSwapVertical, mdiWrench } from "@mdi/js";
 import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { baseEditorConfig } from "~/util/editor";
-import { ActionIcon, Button, Center, Divider, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/typings";
@@ -22,6 +22,7 @@ export interface InspectorPaneProps {
 	onClose: () => void;
 	onSelectRecord: OpenFn;
 	onContentChange: (json: string) => void;
+	onRefreshContent: () => void;
 	onRefresh: () => void;
 }
 
@@ -31,16 +32,13 @@ export function InspectorPane(props: InspectorPaneProps) {
 	const [isInvalid, setIsInvalid] = useState(false);
 	const [recordId, setRecordId] = useInputState('');
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isDirty, setIsDirty] = useState(false);
 
 	const record = props.activeRecord;
 
 	useEffect(() => {
 		setRecordId(record.content.id || '');
 	}, [record.content.id]);
-
-	const jsonAlert = isInvalid
-		? <Text color="red">Invalid record JSON</Text>
-		: undefined;
 	
 	const isEdge = record.content?.in && record.content?.out;
 	const recordExists = !record.invalid;
@@ -80,22 +78,24 @@ export function InspectorPane(props: InspectorPaneProps) {
 		setIsDeleting(false);
 	});
 
+	const handleRefresh = useStable(() => {
+		if (isDirty) {
+			alert('You sure?');
+		}
+		
+		props.onRefreshContent();
+	});
+
+	const handleSetDirty = useStable((dirty: boolean) => {
+		setIsDirty(dirty);
+	});
+
 	return (
 		<Panel
 			title="Inspector"
 			icon={mdiWrench}
 			rightSection={
 				<Group align="center">
-					{jsonAlert && (
-						<>
-							{jsonAlert}
-							<Divider
-								orientation="vertical"
-								color={isLight ? 'light.0' : 'dark.5'}
-							/>
-						</>
-					)}
-
 					<ActionIcon
 						onClick={props.history.goBack}
 						title="Go back"
@@ -113,6 +113,16 @@ export function InspectorPane(props: InspectorPaneProps) {
 						<Icon
 							color={props.history.hasForward ? 'light.4' : isLight ? 'light.0' : 'dark.4' }
 							path={mdiArrowRightBold}
+						/>
+					</ActionIcon>
+
+					<ActionIcon
+						onClick={handleRefresh}
+						title="Refresh"
+					>
+						<Icon
+							color="light.4"
+							path={mdiRefresh}
 						/>
 					</ActionIcon>
 
@@ -181,6 +191,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 							isInvalid={isInvalid}
 							setIsInvalid={setIsInvalid}
 							onContentChange={props.onContentChange}
+							onDirtyChange={handleSetDirty}
 						/>
 					</Tabs.Panel>
 
@@ -241,6 +252,7 @@ interface ContentTabProps {
 	isInvalid: boolean;
 	setIsInvalid: (isInvalid: boolean) => void;
 	onContentChange: (json: string) => void;
+	onDirtyChange: (dirty: boolean) => void;
 }
 
 function ContentTab(props: ContentTabProps) {
@@ -252,6 +264,7 @@ function ContentTab(props: ContentTabProps) {
 			return;
 		}
 		
+		props.onDirtyChange(true);
 		setContentText(content || '');
 		setIsDirty(true);
 
@@ -282,11 +295,14 @@ function ContentTab(props: ContentTabProps) {
 
 	const saveRecord = useStable(() => {
 		props.onContentChange(contentText);
+		props.onDirtyChange(false);
 		setIsDirty(false);
 	});
 
 	useEffect(() => {
+		props.onDirtyChange(false);
 		setContentText(JSON.stringify(props.content, null, 4));
+		setIsDirty(false);
 	}, [props.content]);
 
 	return (

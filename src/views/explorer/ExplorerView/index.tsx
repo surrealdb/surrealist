@@ -107,6 +107,10 @@ export function ExplorerView(props: ExplorerViewProps) {
 		history.clear();
 	});
 
+	const refreshInspector = useStable(() => {
+		fetchRecord(activeRecordId);
+	});
+
 	useEffect(() => {
 		if (history.current) {
 			fetchRecord(history.current);
@@ -143,6 +147,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 						onClose={handleCloseRecord}
 						onContentChange={handleContentChange}
 						onSelectRecord={pushNext}
+						onRefreshContent={refreshInspector}
 						onRefresh={doRefresh}
 					/>
 				) : null
