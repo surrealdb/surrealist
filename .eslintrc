@@ -1,0 +1,40 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"plugins": [
+		"@typescript-eslint",
+		"unused-imports",
+		"unicorn"
+	],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:unicorn/recommended"
+	],
+	"rules": {
+		"semi": 2,
+		"indent": 0,
+		"unused-imports/no-unused-imports": 1,
+		"no-constant-condition": [2, { "checkLoops": false }],
+		"@typescript-eslint/explicit-member-accessibility": 1,
+		"@typescript-eslint/explicit-module-boundary-types": 0,
+		"@typescript-eslint/no-explicit-any": 0,
+		"@typescript-eslint/no-empty-function": 0,
+		"@typescript-eslint/no-unused-vars": 0,
+		"@typescript-eslint/no-var-requires": 0,
+		"@typescript-eslint/no-non-null-assertion": 0,
+		"@typescript-eslint/indent": [2, "tab", { "SwitchCase": 1 }],
+		"@typescript-eslint/ban-types": 0,
+		"@typescript-eslint/ban-ts-comment": 0,
+		"unicorn/prevent-abbreviations": 0,
+        "unicorn/catch-error-name": [ 2, { "name": "err" }],
+        "unicorn/no-null": 0,
+        "unicorn/no-array-reduce": 0,
+        "unicorn/filename-case": 0,
+		"unicorn/prefer-ternary": 0
+	},
+	"parserOptions": {
+		"warnOnUnsupportedTypeScriptVersion": false
+	}
+}
