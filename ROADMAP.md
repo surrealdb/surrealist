@@ -1,8 +1,4 @@
 # Roadmap
 
-## Other
-- Query: further improve IntelliSense
-
-## Development
-
-- Add ESLint
+- Implement live query view
+- Support full text indexes in designer view
