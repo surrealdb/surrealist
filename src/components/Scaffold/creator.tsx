@@ -1,7 +1,5 @@
-import { Modal, Title, Alert, Group, Button, TextInput } from "@mantine/core";
-import { mdiInformation } from "@mdi/js";
+import { Modal, Title, Group, Button, TextInput } from "@mantine/core";
 import { ConnectionDetails } from "../ConnectionDetails";
-import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
@@ -36,7 +34,7 @@ export function TabCreator() {
 
 	const handleCose = useStable(() => {
 		store.dispatch(actions.closeTabCreator());
-	})
+	});
 
 	const saveInfo = useStable(() => {
 		handleCose();
@@ -62,18 +60,18 @@ export function TabCreator() {
 	});
 
 	useEffect(() => {
-		if (opened) {
-			function buildName(n: number) {
-				return `${creation?.name || 'New session'} ${n ? n + 1 : ''}`.trim();
-			}
+		function buildName(n: number) {
+			return `${creation?.name || 'New session'} ${n ? n + 1 : ''}`.trim();
+		}
 
+		if (opened) {
 			let tabName = '';
 			let counter = 0;
 
 			do {
 				tabName = buildName(counter);
 				counter++;
-			} while (envTabs.find(tab => tab.name === tabName));
+			} while (envTabs.some(tab => tab.name === tabName));
 
 			setTabName(tabName);
 			setInfoDetails({

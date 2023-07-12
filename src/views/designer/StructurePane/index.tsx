@@ -1,4 +1,4 @@
-import { Badge, Box, Checkbox, Collapse, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, Textarea, TextInput } from "@mantine/core";
+import { Badge, Box, Checkbox, Collapse, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { mdiDotsGrid } from "@mdi/js";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
@@ -96,7 +96,7 @@ export function StructurePane(props: SchemaPaneProps) {
 					update: 'FULL',
 					delete: 'FULL'
 				}
-			})
+			});
 		});
 	});
 
@@ -112,7 +112,7 @@ export function StructurePane(props: SchemaPaneProps) {
 				name: '',
 				fields: '',
 				unique: false
-			})
+			});
 		});
 	});
 
@@ -128,7 +128,7 @@ export function StructurePane(props: SchemaPaneProps) {
 				name: '',
 				cond: '',
 				then: ''
-			})
+			});
 		});
 	});
 
@@ -480,5 +480,5 @@ export function StructurePane(props: SchemaPaneProps) {
 				</ScrollArea>
 			)}
 		</Panel>
-	)
+	);
 }

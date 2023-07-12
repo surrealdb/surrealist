@@ -125,7 +125,7 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	}
 
 	for (const event of current.events) {
-		let query = `DEFINE EVENT ${event.name} ON TABLE ${name} WHEN ${event.cond} THEN (${event.then})`;
+		const query = `DEFINE EVENT ${event.name} ON TABLE ${name} WHEN ${event.cond} THEN (${event.then})`;
 
 		queries.push(query);
 	}

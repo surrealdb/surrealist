@@ -37,7 +37,7 @@ function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 		<div style={{ display: props.visible ? 'initial' : 'none' }}>
 			{props.children}
 		</div>
-	)
+	);
 }
 
 export function Scaffold() {
@@ -207,7 +207,7 @@ export function Scaffold() {
 	const detailsValid = isConnectionValid(mergedInfoDetails);
 
 	const showConsole = enableConsole && (servePending || isServing);
-	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : detailsValid ? 'light' : 'red');
+	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : (detailsValid ? 'light' : 'red'));
 	const viewMode = tabInfo?.activeView || 'query';
 	const viewInfo = VIEW_MODES.find(v => v.id == viewMode)!;
 	const isDesktop = adapter instanceof DesktopAdapter;
@@ -341,7 +341,7 @@ export function Scaffold() {
 													}}
 												/>
 											</Button>
-										)
+										);
 									})}
 								</Stack>
 							</Popover.Dropdown>
@@ -352,21 +352,7 @@ export function Scaffold() {
 								onClick={openTabEditor}
 								style={{ borderColor: borderColor }}
 							>
-								{!isConnected ? (
-									<Paper
-										bg="light"
-										px="xs"
-									>
-										<Text
-											color="white"
-											size="xs"
-											py={2}
-											weight={600}
-										>
-											OFFLINE
-										</Text>
-									</Paper>
-								) : mergedInfoDetails.authMode == 'none' ? (
+								{isConnected ? (mergedInfoDetails.authMode == 'none' ? (
 									<Paper
 										bg={isLight ? 'light.0' : 'light.6'}
 										c={isLight ? 'light.4' : 'light.3'}
@@ -391,6 +377,20 @@ export function Scaffold() {
 										px="xs"
 									>
 										{mergedInfoDetails.username}
+									</Paper>
+								)) : (
+									<Paper
+										bg="light"
+										px="xs"
+									>
+										<Text
+											color="white"
+											size="xs"
+											py={2}
+											weight={600}
+										>
+											OFFLINE
+										</Text>
 									</Paper>
 								)}
 								<Text color={isLight ? 'light.6' : 'white'}>
@@ -421,15 +421,7 @@ export function Scaffold() {
 							</Paper>
 							{detailsValid && (
 								<>
-									{!isConnected ? (
-										<Button
-											color="light"
-											className={classes.sendButton}
-											onClick={openConnection}
-										>
-											{isConnecting ? 'Connecting...' : 'Connect'}
-										</Button>
-									) : viewMode == 'query' && (
+									{isConnected ? viewMode == 'query' && (
 										<Button
 											color="surreal"
 											onClick={handleSendQuery}
@@ -437,6 +429,14 @@ export function Scaffold() {
 											title="Send Query (F9)"
 										>
 											Send Query
+										</Button>
+									) : (
+										<Button
+											color="light"
+											className={classes.sendButton}
+											onClick={openConnection}
+										>
+											{isConnecting ? 'Connecting...' : 'Connect'}
 										</Button>
 									)}
 								</>
@@ -511,5 +511,5 @@ export function Scaffold() {
 				onActiveChange={handleActiveChange}
 			/>
 		</div>
-	)
+	);
 }

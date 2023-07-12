@@ -57,7 +57,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 		<>
 			<Button
 				px="xs"
-				color={isServing ? 'red' : isLight ? 'light.0' : 'dark.4'}
+				color={isServing ? 'red' : (isLight ? 'light.0' : 'dark.4')}
 				title={isServing ? 'Stop local database' : 'Start local database'}
 				style={{ opacity: isPending ? 0.5 : 1 }}
 				disabled={isPending}
@@ -68,10 +68,10 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 				) : (
 					<Icon
 						path={isServing ? mdiStop : mdiPlay}
-						color={isServing ? 'white' : isLight ? 'light.8' : 'white'}
+						color={isServing ? 'white' : (isLight ? 'light.8' : 'white')}
 					/>
 				)}
 			</Button>
 		</>
-	)
+	);
 }

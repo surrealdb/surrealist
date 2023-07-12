@@ -27,5 +27,5 @@ export function Section(props: PropsWithChildren<SectionProps>) {
 				{props.children}
 			</Box>
 		</Group>
-	)
+	);
 }

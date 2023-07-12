@@ -164,11 +164,11 @@ export function ScopePane(props: ScopePaneProps) {
 						<Text span color={isLight ? 'gray.4' : 'gray.7'} pl={6}>
 							{scope.signin && scope.signup
 								? 'Signup & Signin'
-								: scope.signin
-								? 'Signin only'
-								: scope.signup
-								? 'Signup only'
-								: 'No auth'}
+								: (scope.signin
+									? 'Signin only'
+									: scope.signup
+										? 'Signup only'
+										: 'No auth')}
 						</Text>
 						<Menu position='right-start' shadow='sm' withArrow arrowOffset={18}>
 							<Menu.Target>

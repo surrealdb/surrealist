@@ -16,8 +16,8 @@ export function ViewTab({ tabInfo }: PropsWithChildren<ViewTabProps>) {
 	const isLight = useIsLight();
 	const isActive = useStoreValue(state => state.config.activeTab) === tabInfo.id;
 
-	const bgColor = isActive ? 'surreal' : isLight ? 'light.0' : 'dark.4';
-	const fgColor = isActive ? 'white' : isLight ? 'light.9' : 'light.2';
+	const bgColor = isActive ? 'surreal' : (isLight ? 'light.0' : 'dark.4');
+	const fgColor = isActive ? 'white' : (isLight ? 'light.9' : 'light.2');
 
 	const select = useStable(() => {
 		store.dispatch(actions.setActiveTab(tabInfo.id));
@@ -42,5 +42,5 @@ export function ViewTab({ tabInfo }: PropsWithChildren<ViewTabProps>) {
 			/>
 			{tabInfo?.name}
 		</Button>
-	)
+	);
 }

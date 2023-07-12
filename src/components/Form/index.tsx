@@ -15,5 +15,5 @@ export function Form(props: PropsWithChildren<FormProps>) {
 		<form onSubmit={doSubmit}>
 			{props.children}
 		</form>
-	)
+	);
 }

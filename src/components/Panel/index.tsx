@@ -23,7 +23,7 @@ export function Panel(props: PanelProps) {
 			bg={isLight ? 'white' : 'dark.7'}
 			{...rest}
 		>
-			{props.title !== undefined && props.icon !== undefined && (
+			{title !== undefined && icon !== undefined && (
 				<Group
 					px="sm"
 					py="xs"
@@ -32,9 +32,9 @@ export function Panel(props: PanelProps) {
 					h={48}
 					noWrap
 				>
-					{props.icon && (
+					{icon && (
 						<Icon
-							path={props.icon}
+							path={icon}
 						/>
 					)}
 					<Text weight={600} className={classes.title}>

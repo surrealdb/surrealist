@@ -50,7 +50,7 @@ export function CreatorPane(props: CreatorPaneProps) {
 			const parsed = JSON.parse(json);
 
 			if (typeof parsed !== 'object') {
-				throw new Error();
+				throw new TypeError('Invalid JSON');
 			}
 
 			setIsInvalid(false);
@@ -67,7 +67,7 @@ export function CreatorPane(props: CreatorPaneProps) {
 			suggest: {
 				showProperties: false
 			}
-		}
+		};
 	}, []);
 	
 	return (
@@ -136,5 +136,5 @@ export function CreatorPane(props: CreatorPaneProps) {
 				<Icon path={mdiCheck} right />
 			</Button>
 		</Panel>
-	)
+	);
 }

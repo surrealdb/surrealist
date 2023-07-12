@@ -7,5 +7,5 @@ export interface SectionDividerProps {
 export function SectionDivider(props: SectionDividerProps) {
 	return (
 		<Divider color={props.isLight ? 'gray.2' : 'gray.8'} />
-	)
+	);
 }

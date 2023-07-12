@@ -1,4 +1,4 @@
-import { Stack, Checkbox, Select, ColorScheme, Switch } from "@mantine/core";
+import { Stack, Select, ColorScheme, Switch } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { actions, store } from "~/store";
@@ -95,5 +95,5 @@ export function GeneralTab({ config }: GeneralTabProps) {
 				/>
 			</Setting>
 		</Stack>
-	)
+	);
 }

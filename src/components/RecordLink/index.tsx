@@ -15,7 +15,7 @@ export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
 	const handleOpen = useStable((e: MouseEvent) => {
 		onRecordClick?.(value);
 		e.stopPropagation();
-	})
+	});
 
 	return (
 		<Group
@@ -46,5 +46,5 @@ export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
 				/>
 			)}
 		</Group>
-	)
+	);
 }

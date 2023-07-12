@@ -13,36 +13,36 @@ import { adapter } from './adapter';
 dayjs.extend(relativeTime);
 
 // Load existing config
-adapter.loadConfig().then(config => {
-	store.dispatch(actions.initialize(config));
+const config = await adapter.loadConfig();
 
-	const { lastPromptedVersion, updateChecker } = store.getState().config;
+store.dispatch(actions.initialize(config));
 
-	// Check for updates
-	if (adapter.isUpdateCheckSupported && updateChecker) {
-		runUpdateChecker(lastPromptedVersion, false);
-	}
+const { lastPromptedVersion, updateChecker } = store.getState().config;
 
-	// Apply zoom level
-	updateZoom();
+// Check for updates
+if (adapter.isUpdateCheckSupported && updateChecker) {
+	runUpdateChecker(lastPromptedVersion, false);
+}
 
-	// Apply initial title
-	updateTitle();
+// Apply zoom level
+updateZoom();
 
-	// Render the app component
-	const root = document.querySelector('#root')!;
+// Apply initial title
+updateTitle();
 
-	createRoot(root).render(
-		<Provider store={store}>
-			<App />
-		</Provider>
-	);
-});
+// Render the app component
+const root = document.querySelector('#root')!;
+
+createRoot(root).render(
+	<Provider store={store}>
+		<App />
+	</Provider>
+);
 
 // Init monaco
-loader.init().then(monaco => {
-	initializeEditor(monaco);
-});
+const monaco = await loader.init();
 
+initializeEditor(monaco);
+	
 // Listen for theme changes
 watchNativeTheme();

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react';
 import { readFileSync } from 'node:fs';
 
 const { version, author } = JSON.parse(readFileSync('./package.json', 'utf8'));
@@ -16,7 +16,7 @@ export default defineConfig({
 	},
 	build: {
 		target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
-		minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+		minify: process.env.TAURI_DEBUG ? false : 'esbuild',
 		sourcemap: !!process.env.TAURI_DEBUG,
 	},
 	resolve: {

@@ -1,4 +1,4 @@
-import { Stack, TextInput, NumberInput, Select, Group, Tooltip, Text, Box } from "@mantine/core";
+import { Stack, TextInput, NumberInput, Select, Group, Tooltip, Box } from "@mantine/core";
 import { mdiInformation } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
@@ -74,7 +74,7 @@ export function LocalDatabaseTab({ config }: ConnectionTabProps) {
 				<NumberInput
 					value={config.surrealPort}
 					min={1}
-					max={65535}
+					max={65_535}
 					onChange={setSurrealPort}
 					w={250}
 				/>
@@ -133,5 +133,5 @@ export function LocalDatabaseTab({ config }: ConnectionTabProps) {
 				/>
 			</Setting>
 		</Stack>
-	)
+	);
 }

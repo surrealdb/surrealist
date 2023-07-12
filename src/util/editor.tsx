@@ -9,7 +9,7 @@ const tablePrefixes = [
 	'CREATE ',
 	'DELETE ',
 	'INTO '
-]
+];
 
 export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	scrollBeyondLastLine: false,
@@ -24,7 +24,7 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	minimap: {
 		enabled: false
 	}
-}
+};
 
 let global: Monaco;
 
@@ -34,7 +34,7 @@ export function initializeEditor(monaco: Monaco) {
 	// monaco is truly inept at handling font loading hence
 	// this monstrous hack to force it to remeasure fonts
 	document.fonts.ready.then(() => {
-		let task = setInterval(() => {
+		const task = setInterval(() => {
 			monaco.editor.remeasureFonts();
 		}, 1000);
 
@@ -117,14 +117,14 @@ export function initializeEditor(monaco: Monaco) {
 			const surreal = getSurreal();
 
 			if (!tableSuggest || !surreal) {
-				return undefined;
+				return;
 			}
 
-			const linePrefix = model.getLineContent(position.lineNumber).substring(0, position.column);
+			const linePrefix = model.getLineContent(position.lineNumber).slice(0, Math.max(0, position.column));
 			const isAuto = context.triggerKind === languages.CompletionTriggerKind.TriggerCharacter;
 
 			if (isAuto && !tablePrefixes.some(pre => linePrefix.toUpperCase().endsWith(pre))) {
-				return undefined;
+				return;
 			}
 
 			try {
@@ -134,7 +134,7 @@ export function initializeEditor(monaco: Monaco) {
 				if (!result) {
 					return {
 						suggestions: []
-					}
+					};
 				}
 
 				const tables = Object.keys(result.tb);
@@ -147,11 +147,11 @@ export function initializeEditor(monaco: Monaco) {
 
 				return {
 					suggestions
-				}
-			} catch (e) {
+				};
+			} catch {
 				return {
 					suggestions: []
-				}
+				};
 			}
 		}
 	});
@@ -164,14 +164,14 @@ export function initializeEditor(monaco: Monaco) {
 			const tab = config.tabs.find(tab => tab.id == config.activeTab);
 
 			if(!tab) {
-				return undefined;
+				return;
 			}
 
 			const variables = JSON.parse(tab.variables);
 			const variableNames = Object.keys(variables);
 			
-			if(!variableNames.length) {
-				return undefined;
+			if(variableNames.length === 0) {
+				return;
 			}
 
 			const isAuto = context.triggerKind === languages.CompletionTriggerKind.TriggerCharacter;
@@ -185,7 +185,7 @@ export function initializeEditor(monaco: Monaco) {
 
 			return {
 				suggestions
-			}
+			};
 		}
 	});
 }
@@ -227,8 +227,8 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor, onExe
 				startColumn: 0,
 				endLineNumber: selection.endLineNumber,
 				endColumn: model.getLineMaxColumn(selection.endLineNumber),
-			}
-						   
+			};
+
 			const text = model.getValueInRange(range);
 			const lines = text.split('\n');
 

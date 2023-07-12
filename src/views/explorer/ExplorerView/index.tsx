@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/surreal";
-import { showNotification } from "@mantine/notifications";
 import { SplitValues, Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
 import { useHistory } from "~/hooks/history";
@@ -52,18 +51,18 @@ export function ExplorerView(props: ExplorerViewProps) {
 
 		setCreatingRecord(false);
 
-		if (!content?.id) {
+		if (content?.id) {
+			setActiveRecord({
+				content,
+				inputs,
+				outputs
+			});
+		} else {
 			setActiveRecord({
 				invalid: true,
 				content: { id: id },
 				inputs: [],
 				outputs: []
-			});
-		} else {
-			setActiveRecord({
-				content,
-				inputs,
-				outputs
 			});
 		}
 	});
@@ -140,7 +139,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 						onClose={handleCloseRecord}
 						onSubmit={createRecord}
 					/>
-				) : activeRecord ? (
+				) : (activeRecord ? (
 					<InspectorPane
 						history={history}
 						activeRecord={activeRecord}
@@ -150,7 +149,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 						onRefreshContent={refreshInspector}
 						onRefresh={doRefresh}
 					/>
-				) : null
+				) : null)
 			}
 		>
 			<ExplorerPane

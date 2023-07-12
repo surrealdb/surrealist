@@ -11,7 +11,7 @@ export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: 'nowrap',
 	overflow: 'hidden',
 	textOverflow: 'ellipsis'
-}
+};
 
 export function updateTitle() {
 	const { isPinned, config } = store.getState();

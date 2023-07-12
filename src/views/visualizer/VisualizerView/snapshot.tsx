@@ -28,19 +28,19 @@ export async function createSnapshot(
 	tmpRoot.style.right = "101%";
 	tmpRoot.style.bottom = "101%";
 
-	document.body.appendChild(tmpRoot);
+	document.body.append(tmpRoot);
 
 	// Instantiate sigma
 	const base = renderer.getSettings();
 	const sigma = renderer.getGraph().copy();
 
-	sigma.nodes().forEach((node) => {
+	for (const node of sigma.nodes()) {
 		sigma.setNodeAttribute(node, 'size', sigma.getNodeAttribute(node, 'size') * scale);
-	});
+	}
 
-	sigma.edges().forEach((node) => {
+	for (const node of sigma.edges()) {
 		sigma.setEdgeAttribute(node, 'size', sigma.getEdgeAttribute(node, 'size') * scale);
-	});
+	}
 
 	const tmpRenderer = new Sigma(sigma, tmpRoot, {
 		...base,
@@ -74,7 +74,7 @@ export async function createSnapshot(
 	const canvases = tmpRenderer.getCanvases();
 	const layers = ['edges', 'nodes', 'edgeLabels', 'labels'];
 
-	layers.forEach((id) => {
+	for (const id of layers) {
 		ctx.drawImage(
 			canvases[id],
 			0,
@@ -86,7 +86,7 @@ export async function createSnapshot(
 			width * pixelRatio,
 			height * pixelRatio,
 		);
-	});
+	}
 
 	return new Promise((resolve, reject) => {
 		canvas.toBlob((blob) => {
@@ -94,7 +94,7 @@ export async function createSnapshot(
 			tmpRoot.remove();
 
 			if (blob) {
-				resolve(blob)
+				resolve(blob);
 			} else {
 				reject(new Error('Failed to create image'));
 			}

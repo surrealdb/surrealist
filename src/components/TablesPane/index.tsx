@@ -1,5 +1,5 @@
 import classes from './style.module.scss';
-import { ActionIcon, Button, Group, Modal, MultiSelect, ScrollArea, Select, Stack, Tabs, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, MultiSelect, ScrollArea, Stack, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -142,11 +142,11 @@ export function TablesPane(props: TablesPaneProps) {
 				mb="lg"
 			/>
 
-			{isOnline && !tablesFiltered.length ? (
+			{isOnline && tablesFiltered.length === 0 ? (
 				<Text align="center" pt="sm" c="light.5">
-					{!hasAccess ? 'Unsupported auth mode' : 'No tables found'}
+					{hasAccess ? 'No tables found' : 'Unsupported auth mode'}
 				</Text>
-			) : isOnline ? (
+			) : (isOnline ? (
 				<ScrollArea
 					classNames={{
 						viewport: classes.viewport
@@ -177,7 +177,7 @@ export function TablesPane(props: TablesPaneProps) {
 							>
 								<Icon
 									style={{ flexShrink: 0 }}
-									color={isActive ? 'surreal' : isLight ? 'light.3' : 'light.5'}
+									color={isActive ? 'surreal' : (isLight ? 'light.3' : 'light.5')}
 									path={isEdge ? mdiVectorLine : mdiTable}
 									size="sm"
 								/>
@@ -209,14 +209,14 @@ export function TablesPane(props: TablesPaneProps) {
 									</ActionIcon>
 								)}
 							</Group>
-						)
+						);
 					})}
 				</ScrollArea>
 			) : (
 				<Text align="center" pt="sm" c="light.5">
 					Not connected
 				</Text>
-			)}
+			))}
 
 			<Modal
 				opened={showCreator}
@@ -317,5 +317,5 @@ export function TablesPane(props: TablesPaneProps) {
 				</Group>
 			</Modal>
 		</Panel>
-	)
+	);
 }

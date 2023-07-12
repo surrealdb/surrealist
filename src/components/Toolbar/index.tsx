@@ -1,5 +1,5 @@
 import surrealistLogo from '~/assets/icon.png';
-import { Group, Button, Modal, TextInput, Image, Divider, Box } from "@mantine/core";
+import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
 import { mdiPinOff, mdiPin, mdiHistory, mdiStar, mdiCloudDownload } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -12,7 +12,6 @@ import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { ViewMode } from "~/typings";
-import { useHotkeys } from '@mantine/hooks';
 import { adapter } from '~/adapter';
 import { saveSchemaExport } from '~/util/schema';
 import { useIsConnected } from '~/hooks/connection';
@@ -65,22 +64,22 @@ export function Toolbar(props: ToolbarProps) {
 	});
 
 	const toggleHistory = useStable(() => {
-		if (queryListing !== 'history') {
+		if (queryListing === 'history') {
+			store.dispatch(actions.setShowQueryListing(!enableListing));
+		} else {
 			store.dispatch(actions.setQueryListingMode('history'));
 			store.dispatch(actions.setShowQueryListing(true));
-		} else {
-			store.dispatch(actions.setShowQueryListing(!enableListing));
 		}
 		
 		updateConfig();
 	});
 
 	const toggleFavorites = useStable(() => {
-		if (queryListing !== 'favorites') {
+		if (queryListing === 'favorites') {
+			store.dispatch(actions.setShowQueryListing(!enableListing));
+		} else {
 			store.dispatch(actions.setQueryListingMode('favorites'));
 			store.dispatch(actions.setShowQueryListing(true));
-		} else {
-			store.dispatch(actions.setShowQueryListing(!enableListing));
 		}
 
 		updateConfig();
@@ -175,7 +174,7 @@ export function Toolbar(props: ToolbarProps) {
 				>
 					<Icon
 						path={mdiCloudDownload}
-						color={!isOnline ? undefined : isLight ? 'light.8' : 'white'}
+						color={isOnline ? (isLight ? 'light.8' : 'white') : undefined}
 					/>
 				</Button>
 			)}

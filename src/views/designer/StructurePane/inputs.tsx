@@ -51,7 +51,7 @@ export function QueryInput(props: QueryInputProps) {
 			suggest: {
 				showProperties: false
 			}
-		}
+		};
 	}, []);
 
 	const color = isLight ? 'light' : undefined;
@@ -96,13 +96,13 @@ export function QueryInput(props: QueryInputProps) {
 				}
 			>
 				<Editor
-                    theme={isLight ? 'surrealist' : 'surrealist-dark'}
-                    value={editorText}
+					theme={isLight ? 'surrealist' : 'surrealist-dark'}
+					value={editorText}
 					onChange={setEditorText}
-                    options={options}
-                    language="surrealql"
+					options={options}
+					language="surrealql"
 					height={300}
-                />
+				/>
 				<Group mt="lg">
 					<Button
 						onClick={closeEditor}
@@ -122,7 +122,7 @@ export function QueryInput(props: QueryInputProps) {
 				</Group>
 			</Modal>
 		</>
-	)
+	);
 }
 
 export interface PermissionInputProps {
@@ -161,5 +161,5 @@ export function PermissionInput(props: PermissionInputProps) {
 				</>
 			}
 		/>
-	)
+	);
 }

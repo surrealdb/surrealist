@@ -35,7 +35,7 @@ export function HistoryPane(props: HistoryPaneProps) {
 				<Text align="center" mt="sm">
 					No results found
 				</Text>
-			)
+			);
 		}
 
 		return filtered.map((entry, i) => (
@@ -57,10 +57,10 @@ export function HistoryPane(props: HistoryPaneProps) {
 
 	return (
 		<Panel
-            title="History"
-            icon={mdiHistory}
+			title="History"
+			icon={mdiHistory}
 			rightSection={<HistoryActions />}
-        >
+		>
 			<ScrollArea
 				style={{
 					position: 'absolute',

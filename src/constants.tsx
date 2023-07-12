@@ -87,4 +87,4 @@ export const GEOMETRY_TYPES = [
 	{ label: 'MultiLine', value: 'multiline' },
 	{ label: 'MultiPolygon', value: 'multipolygon' },
 	{ label: 'Collection', value: 'collection' },
-]
+];

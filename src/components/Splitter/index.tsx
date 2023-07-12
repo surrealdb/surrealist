@@ -128,7 +128,7 @@ export function Splitter(props: SplitterProps) {
 
 		return () => {
 			containerRef.current?.removeEventListener('mousemove', onMove);
-		}
+		};
 	}, [isHorizontal, draggerId]);
 
 	// Display left section
@@ -191,7 +191,7 @@ export function Splitter(props: SplitterProps) {
 				{contents}
 			</div>
 		</div>
-	)
+	);
 }
 
 interface DividerProps {
@@ -211,7 +211,7 @@ function Divider(props: DividerProps) {
 			className={className}
 			onMouseDown={activate}
 		/>
-	)
+	);
 }
 
 function clamp(value: number, min: number, max: number) {

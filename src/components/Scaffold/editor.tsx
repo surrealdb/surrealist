@@ -1,7 +1,5 @@
-import { Modal, Title, Alert, Group, Button, TextInput } from "@mantine/core";
-import { mdiInformation } from "@mdi/js";
+import { Modal, Title, Group, Button } from "@mantine/core";
 import { ConnectionDetails } from "../ConnectionDetails";
-import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
@@ -38,7 +36,7 @@ export function TabEditor({ onActiveChange }: TabEditorProps) {
 
 	const handleCose = useStable(() => {
 		store.dispatch(actions.closeTabEditor());
-	})
+	});
 
 	const saveInfo = useStable(async () => {
 		handleCose();

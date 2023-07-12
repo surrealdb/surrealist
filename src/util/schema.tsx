@@ -66,11 +66,7 @@ export async function saveSchemaExport() {
 	];
 
 	function pushSection(title: string) {
-		output.push('');
-		output.push('-- ------------------------------');
-		output.push('-- ' + title);
-		output.push('-- ------------------------------');
-		output.push('');
+		output.push('', '-- ------------------------------', '-- ' + title, '-- ------------------------------', '');
 	}
 
 	pushSection('OPTION');

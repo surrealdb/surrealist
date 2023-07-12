@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, ViewMode, TableSchema, TableDefinition, Open, SurrealistEnvironment, TabCreation} from "./typings";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, TableDefinition, Open, SurrealistEnvironment, TabCreation} from "./typings";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
@@ -293,4 +293,4 @@ export const store = configureStore({
 export type StoreState = ReturnType<typeof store.getState>
 export type StoreActions = typeof store.dispatch
 
-export const useStoreValue: TypedUseSelectorHook<StoreState> = useSelector
+export const useStoreValue: TypedUseSelectorHook<StoreState> = useSelector;

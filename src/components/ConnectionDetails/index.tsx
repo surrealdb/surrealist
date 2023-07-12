@@ -1,14 +1,14 @@
-import { Modal, Title, Stack, Paper, Group, TextInput, ActionIcon, Button, PasswordInput, Select, SimpleGrid, Text } from "@mantine/core"
-import { mdiClose, mdiPlus } from "@mdi/js"
-import { Icon } from "../Icon"
-import { Spacer } from "../Spacer"
-import { AUTH_MODES } from "~/constants"
-import { AuthMode } from "~/typings"
-import { SurrealConnection } from "~/surreal"
-import { Updater } from "use-immer"
-import { useState } from "react"
-import { useStable } from "~/hooks/stable"
-import { useIsLight } from "~/hooks/theme"
+import { Modal, Title, Stack, Paper, Group, TextInput, ActionIcon, Button, PasswordInput, Select, SimpleGrid, Text } from "@mantine/core";
+import { mdiClose, mdiPlus } from "@mdi/js";
+import { Icon } from "../Icon";
+import { Spacer } from "../Spacer";
+import { AUTH_MODES } from "~/constants";
+import { AuthMode } from "~/typings";
+import { SurrealConnection } from "~/surreal";
+import { Updater } from "use-immer";
+import { useState } from "react";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 
 export interface ConnectionDetailsProps {
 	value: Partial<SurrealConnection>;
@@ -51,7 +51,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 						placeholder={placeholders?.endpoint}
 						autoFocus={!optional}
 						onChange={(e) => onChange(draft => {
-							draft.endpoint = e.target.value
+							draft.endpoint = e.target.value;
 						})}
 					/>
 					<TextInput
@@ -59,7 +59,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 						value={value.namespace || ''}
 						placeholder={placeholders?.namespace}
 						onChange={(e) => onChange(draft => {
-							draft.namespace = e.target.value
+							draft.namespace = e.target.value;
 						})}
 					/>
 					<TextInput
@@ -67,7 +67,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 						value={value.database || ''}
 						placeholder={placeholders?.database}
 						onChange={(e) => onChange(draft => {
-							draft.database = e.target.value
+							draft.database = e.target.value;
 						})}
 					/>
 				</Stack>
@@ -89,7 +89,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 								value={value.username || ''}
 								placeholder={placeholders?.username}
 								onChange={(e) => onChange(draft => {
-									draft.username = e.target.value
+									draft.username = e.target.value;
 								})}
 							/>
 							<PasswordInput
@@ -97,7 +97,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 								value={value.password || ''}
 								placeholder={passPlaceholder}
 								onChange={(e) => onChange(draft => {
-									draft.password = e.target.value
+									draft.password = e.target.value;
 								})}
 							/>
 						</>
@@ -110,7 +110,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 								value={value.scope || ''}
 								placeholder={placeholders?.scope}
 								onChange={(e) => onChange(draft => {
-									draft.scope = e.target.value
+									draft.scope = e.target.value;
 								})}
 							/>
 							<Button
@@ -152,7 +152,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 										style={{ flex: 1 }}
 										value={field.subject}
 										onChange={(e) => onChange(draft => {
-											draft.scopeFields[i].subject = e.target.value
+											draft.scopeFields[i].subject = e.target.value;
 										})}
 									/>
 									<TextInput
@@ -160,14 +160,14 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 										style={{ flex: 1 }}
 										value={field.value}
 										onChange={(e) => onChange(draft => {
-											draft.scopeFields[i].value = e.target.value
+											draft.scopeFields[i].value = e.target.value;
 										})}
 									/>
 									<ActionIcon
 										color="red"
 										title="Remove field"
 										onClick={() => onChange(draft => {
-											draft.scopeFields.splice(i, 1)
+											draft.scopeFields.splice(i, 1);
 										})}
 									>
 										<Icon
@@ -201,5 +201,5 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				</Group>
 			</Modal>
 		</>
-	)
+	);
 }

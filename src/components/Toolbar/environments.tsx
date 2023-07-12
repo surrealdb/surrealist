@@ -19,6 +19,10 @@ export interface EnvironmentsProps {
 	onSave: () => void;
 }
 
+function buildName(n: number) {
+	return `Environment ${n ? n + 1 : ''}`.trim();
+}
+
 export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	const liveTabs = useStoreValue(state => state.config.tabs);
 	const liveEnvs = useStoreValue(state => state.config.environments);
@@ -61,17 +65,13 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	});
 
 	const addEnvironment = useStable(() => {
-		function buildName(n: number) {
-			return `Environment ${n ? n + 1 : ''}`.trim();
-		}
-	
 		let tabName = '';
 		let counter = 0;
 	
 		do {
 			tabName = buildName(counter);
 			counter++;
-		} while(environments.find(env => env.name === tabName));
+		} while(environments.some(env => env.name === tabName));
 
 		const envId = newId();
 
@@ -119,7 +119,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 			setEnvironments(liveEnvs);
 			setViewingEnv(liveEnvs[0]?.id ?? '');
 		}
-	}, [opened, liveEnvs])
+	}, [opened, liveEnvs]);
 	
 	return (
 		<Modal
@@ -168,7 +168,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 									>
 										{item.name}
 									</Button>
-								)
+								);
 							})}
 
 							<Button
@@ -255,5 +255,5 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 				</Button>
 			</Group>
 		</Modal>
-	)
+	);
 }

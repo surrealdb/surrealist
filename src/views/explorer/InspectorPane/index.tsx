@@ -92,7 +92,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 						title="Go back"
 					>
 						<Icon
-							color={props.history.hasBack ? 'light.4' : isLight ? 'light.0' : 'dark.4' }
+							color={props.history.hasBack ? 'light.4' : (isLight ? 'light.0' : 'dark.4') }
 							path={mdiArrowLeftBold}
 						/>
 					</ActionIcon>
@@ -102,7 +102,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 						title="Go forward"
 					>
 						<Icon
-							color={props.history.hasForward ? 'light.4' : isLight ? 'light.0' : 'dark.4' }
+							color={props.history.hasForward ? 'light.4' : (isLight ? 'light.0' : 'dark.4') }
 							path={mdiArrowRightBold}
 						/>
 					</ActionIcon>
@@ -233,7 +233,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 			</Modal>
 			
 		</Panel>
-	)
+	);
 }
 
 interface ContentTabProps {
@@ -261,7 +261,7 @@ function ContentTab(props: ContentTabProps) {
 			const parsed = JSON.parse(json);
 
 			if (typeof parsed !== 'object' || !parsed.id) {
-				throw new Error();
+				throw new Error('Invalid JSON');
 			}
 
 			props.setIsInvalid(false);
@@ -278,7 +278,7 @@ function ContentTab(props: ContentTabProps) {
 			suggest: {
 				showProperties: false
 			}
-		}
+		};
 	}, []);
 
 	const saveRecord = useStable(() => {
@@ -389,7 +389,7 @@ function RelationsList({ name, isLight, relations, onSelectRecord }: RelationsLi
 			<Text>
 				No {name} relations found
 			</Text>
-		)
+		);
 	}
 
 	return (

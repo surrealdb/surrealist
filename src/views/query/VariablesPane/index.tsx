@@ -31,7 +31,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 			const parsed = JSON.parse(json);
 
 			if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-				throw new Error();
+				throw new TypeError('Invalid JSON');
 			}
 
 			store.dispatch(actions.updateTab({
@@ -48,7 +48,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 
 	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
-    });
+	});
 
 	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
 		return {
@@ -58,7 +58,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 			suggest: {
 				showProperties: false
 			}
-		}
+		};
 	}, []);
 
 	const jsonAlert = isInvalid
@@ -88,5 +88,5 @@ export function VariablesPane(props: VariablesPaneProps) {
 				/>
 			</div>
 		</Panel>
-	)
+	);
 }

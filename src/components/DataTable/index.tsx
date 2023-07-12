@@ -46,16 +46,16 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 		const values: any[] = [];
 	
 		if (isRenderable(data)) {
-			for (let i = 0; i < data.length; i++) {
+			for (const datum of data) {
 				const row: any = {};
 
-				Object.entries(data[i]).forEach(([key, value]) => {
+				for (const [key, value] of Object.entries(datum)) {
 					if (!keys.includes(key)) {
 						keys.push(key);
 					}
 
 					row[key] = value;
-				});
+				}
 
 				values.push(row);
 			}
@@ -63,10 +63,14 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 
 		const headers = alphabetical(keys, (key) => {
 			switch (key) {
-				case 'id': return '00000000000';
-				case 'in': return '00000000001';
-				case 'out': return '00000000002';
-				default: return key;
+				case 'id': { return '00000000000';
+				}
+				case 'in': { return '00000000001';
+				}
+				case 'out': { return '00000000002';
+				}
+				default: { return key;
+				}
 			}
 		});
 
@@ -76,7 +80,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 	const headers = useMemo(() => {
 		const headers: any = [];
 
-		keys.forEach(key => {
+		for (const key of keys) {
 			headers.push(
 				<Box
 					key={key}
@@ -102,7 +106,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 					</Text>
 				</Box>
 			);
-		});
+		}
 		
 		return headers;
 	}, [isLight, keys, sorting]);
@@ -113,7 +117,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 
 	const rows = useMemo(() => {
 		return values.map((value, i) => {
-			const columns = Array.from(keys).map((key, j) => {
+			const columns = [...keys].map((key, j) => {
 				const cellValue = value[key];
 
 				return (
@@ -141,7 +145,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 				>
 					{columns}
 				</Box>
-			)
+			);
 		});
 	}, [keys, values, isLight]);
 
@@ -171,5 +175,5 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 				</Table>
 			</ScrollArea>
 		</div>
-	)
+	);
 }

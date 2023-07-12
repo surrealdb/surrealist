@@ -62,7 +62,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 				}
 			}, timeout);
 		});
-	}
+	};
 
 	/**
 	 * Clean up any resources
@@ -75,7 +75,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 		clearInterval(pinger);
 		options.onDisconnect?.(code, reason);
 		cleanedUp = true;
-	}
+	};
 
 	/**
 	 * Forcefully close the connection
@@ -99,7 +99,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	};
 
 	socket.addEventListener('open', async () => {
-		const { username, password, namespace, database, authMode, scope } = options.connection;
+		const { username, password, namespace, database, authMode, scope, scopeFields } = options.connection;
 
 		if (authMode !== 'none') {
 			const details: any = {};
@@ -118,9 +118,9 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 				details.DB = database || '';
 				details.SC = scope || '';
 				
-				options.connection.scopeFields.forEach((field) => {
+				for (const field of scopeFields) {
 					details[field.subject] = field.value;
-				});
+				}
 			} else {
 				details.user = username;
 				details.pass = password;
@@ -154,9 +154,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 			return;
 		}
 		
-		if (!requestMap.has(id)) {
-			console.warn('No callback for message', event.data);
-		} else {
+		if (requestMap.has(id)) {
 			const [resolve, reject] = requestMap.get(id)!;
 
 			requestMap.delete(id);
@@ -166,6 +164,8 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 			} else {
 				resolve(result);
 			}
+		} else {
+			console.warn('No callback for message', event.data);
 		}
 	});
 
@@ -176,7 +176,7 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 	return {
 		close,
 		query,
-	}
+	};
 }
 
 let instance: SurrealHandle | null = null;

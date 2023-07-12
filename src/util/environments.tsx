@@ -23,7 +23,7 @@ export function createEmptyConnection(): SurrealConnection {
 		authMode: 'root',
 		scope: '',
 		scopeFields: []
-	}
+	};
 }
 
 /**

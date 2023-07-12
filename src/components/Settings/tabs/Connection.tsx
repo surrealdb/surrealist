@@ -38,5 +38,5 @@ export function ConnectionTab({ config }: ConnectionTabProps) {
 				/>
 			</Setting>
 		</Stack>
-	)
+	);
 }

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Splitter } from "~/components/Splitter";
 import { TablesPane } from "~/components/TablesPane";
-import { useIsConnected } from "~/hooks/connection";
 import { useStoreValue } from "~/store";
 import { StructurePane } from "../StructurePane";
 

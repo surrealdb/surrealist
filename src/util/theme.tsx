@@ -1,4 +1,4 @@
-import { ColorScheme, JsonInput, MantineThemeOverride } from "@mantine/core";
+import { ColorScheme, MantineThemeOverride } from "@mantine/core";
 
 import { useMemo } from "react";
 
@@ -60,8 +60,7 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 			},
 			Button: {
 				styles: {
-					root: {
-					}
+					root: {}
 				}
 			},
 			Divider: {

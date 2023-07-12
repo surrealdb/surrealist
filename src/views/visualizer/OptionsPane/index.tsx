@@ -72,5 +72,5 @@ export function OptionsPane(props: OptionsPaneProps) {
 				</Stack>
 			</ScrollArea>
 		</Panel>
-	)
+	);
 }

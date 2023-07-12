@@ -1,13 +1,11 @@
-import { Button, Checkbox, ColorScheme, Divider, Group, Modal, NumberInput, Paper, Select, Stack, Tabs, Text, TextInput, Title, Tooltip } from "@mantine/core";
-import { actions, store, useStoreValue } from "~/store";
+import { Button, Divider, Group, Modal, Paper, Stack, Tabs, Text, Title } from "@mantine/core";
+import { useStoreValue } from "~/store";
 
 import { Icon } from "../Icon";
-import { mdiCog, mdiInformation } from "@mdi/js";
-import { updateConfig } from "~/util/helpers";
+import { mdiCog } from "@mdi/js";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { PropsWithChildren, useState } from "react";
-import { DriverType } from "~/typings";
 import { adapter } from "~/adapter";
 import { Spacer } from "../Spacer";
 import { runUpdateChecker } from "~/util/updater";
@@ -33,7 +31,7 @@ function SectionTitle({ isLight, children, first }: PropsWithChildren<{ isLight:
 				mb="sm"
 			/>
 		</>
-	)
+	);
 }
 
 export function Settings() {
@@ -157,5 +155,5 @@ export function Settings() {
 				</Group>
 			</Modal>
 		</>
-	)
+	);
 }

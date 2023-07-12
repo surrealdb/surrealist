@@ -15,7 +15,7 @@ export function QueryView(props: QueryViewProps) {
 	const enableListing = useStoreValue(state => state.config.enableListing);
 	const queryListing = useStoreValue(state => state.config.queryListing);
 
-	const [splitValues, setSplitValues] = useState<SplitValues>([450, undefined])
+	const [splitValues, setSplitValues] = useState<SplitValues>([450, undefined]);
 	
 	return (
 		<Splitter
@@ -40,7 +40,7 @@ export function QueryView(props: QueryViewProps) {
 					/>
 				</Splitter>
 			}
-			endPane={!enableListing ? null : queryListing == 'history' ? (
+			endPane={enableListing ? (queryListing == 'history' ? (
 				<HistoryPane
 					onExecuteQuery={props.sendQuery}
 				/>
@@ -48,7 +48,7 @@ export function QueryView(props: QueryViewProps) {
 				<FavoritesPane
 					onExecuteQuery={props.sendQuery}
 				/>
-			)}
+			)) : null}
 		>
 			<ResultPane />
 		</Splitter>

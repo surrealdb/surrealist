@@ -83,25 +83,25 @@ export function GraphPane(props: GraphPaneProps) {
 				}}
 			/>
 
-			{!hasAccess ? (
-				<Center h="100%">
-					<Text color="gray.5">
-						You are using an unsupported authentication mode
-					</Text>
-				</Center>
-			) : !isOnline ? (
-				<Center h="100%">
-					<Text color="gray.5">
-						You must be connected to a database to view the schema graph
-					</Text>
-				</Center>
-			) : !props.graph && (
+			{hasAccess ? (isOnline ? !props.graph && (
 				<Center h="100%">
 					<Text color="gray.5">
 						Press "Visualize" to view the schema graph for the current database
 					</Text>
 				</Center>
+			) : (
+				<Center h="100%">
+					<Text color="gray.5">
+						You must be connected to a database to view the schema graph
+					</Text>
+				</Center>
+			)) : (
+				<Center h="100%">
+					<Text color="gray.5">
+						You are using an unsupported authentication mode
+					</Text>
+				</Center>
 			)}
 		</Panel>
-	)
+	);
 }

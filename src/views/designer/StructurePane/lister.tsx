@@ -115,5 +115,5 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				</Group>
 			</Modal>
 		</>
-	)
+	);
 }

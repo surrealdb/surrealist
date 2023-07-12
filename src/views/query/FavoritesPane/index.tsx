@@ -9,7 +9,7 @@ import { useInputState } from '@mantine/hooks';
 import { FavoritesEntry, SurrealistTab } from '~/typings';
 import { useActiveTab } from '~/hooks/environment';
 import { uid } from 'radash';
-import { updateConfig, updateTitle } from '~/util/helpers';
+import { updateConfig } from '~/util/helpers';
 import { Sortable } from '~/components/Sortable';
 import { Panel } from '~/components/Panel';
 import { Icon } from '~/components/Icon';
@@ -56,7 +56,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 
 	const filtered = useMemo(() => {
 		const needle = search.toLowerCase();
-		return entries.filter(entry => entry.name.toLowerCase().includes(needle) || entry.query.toLowerCase().includes(needle))
+		return entries.filter(entry => entry.name.toLowerCase().includes(needle) || entry.query.toLowerCase().includes(needle));
 	}, [search, entries]);
 
 	const activateEntry = useStable((id: string) => {
@@ -95,7 +95,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 				<Text align="center" mt="sm">
 					No results found
 				</Text>
-			)
+			);
 		}
 
 		return (
@@ -133,15 +133,15 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 
 	return (
 		<Panel
-            title="Saved queries"
-            icon={mdiStar}
+			title="Saved queries"
+			icon={mdiStar}
 			rightSection={
 				<FavoritesActions
 					activeTab={activeTab}
 					onCreate={openSaveBox}
 				/>
 			}
-        >
+		>
 			<ScrollArea
 				style={{
 					position: 'absolute',

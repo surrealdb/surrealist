@@ -46,7 +46,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 
 		layoutRef.current?.kill();
 		layoutRef.current = layout;
-	})
+	});
 
 	const refreshGraph = useStable(() => {
 		const graph = new MultiDirectedGraph();
@@ -94,9 +94,9 @@ export function VisualizerView(props: VisualizerViewProps) {
 									forceLabel: true
 								});
 							}
-						} catch(e) {
+						} catch(err) {
 							console.warn('Skipping edge', tableName, 'from', inTable, 'to', outTable);
-							console.error(e);
+							console.error(err);
 						}
 					}
 				}
@@ -113,7 +113,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 	useEffect(() => {
 		return () => {
 			layoutRef.current?.kill();
-		}
+		};
 	}, []);
 
 	const openExporter = useStable(() => {
@@ -143,7 +143,7 @@ export function VisualizerView(props: VisualizerViewProps) {
 			defaultEdgeColor: isExportDark ? theme.colors.dark[4] : theme.colors.light[1],
 			labelColor: { color: isExportDark ? theme.colors.light[0] : theme.colors.dark[9] },
 			edgeLabelColor: { color: isExportDark ? theme.colors.light[2] : theme.colors.dark[3] }
-		}
+		};
 
 		const zoom = Number.parseInt(exportZoom);
 		const type = filePath.endsWith('.png') ? 'image/png' : 'image/jpeg';

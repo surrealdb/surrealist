@@ -42,7 +42,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 
 	const stopPropagation = useStable((e: any) => {
 		e.stopPropagation();
-	})
+	});
 
 	const filteredTabs = useMemo(() => {
 		const needle = search.toLowerCase();
@@ -253,7 +253,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 											>
 												{item.name}
 											</Button>
-										)
+										);
 									})}
 								</Stack>
 							</ScrollArea>
@@ -323,8 +323,8 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 															: <Icon path={getTabIcon(item) ?? ''} color={isActive ? 'surreal' : 'light.5'} />
 													}
 													c={isLight ? 'black' : 'white'}
-													color={isRenaming ? 'light' : isActive ? 'pink' : 'light'}
-													variant={isRenaming ? 'outline' : isActive ? 'light' : 'subtle'}
+													color={isRenaming ? 'light' : (isActive ? 'pink' : 'light')}
+													variant={isRenaming ? 'outline' : (isActive ? 'light' : 'subtle')}
 													className={classes.entryButton}
 													onClick={() => select(item.id)}
 													{...handleProps}
@@ -409,7 +409,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 														</Text>
 													)}
 												</Button>
-											)
+											);
 										}}
 									</Sortable>
 								</Stack>
@@ -442,5 +442,5 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 				onSave={onSave}
 			/>
 		</>
-	)
+	);
 }

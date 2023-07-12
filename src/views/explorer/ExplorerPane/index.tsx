@@ -39,7 +39,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
 	const [page, setPage] = useState(1);
 
-	const pageCount = Math.ceil(recordCount / parseInt(pageSize));
+	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
 	function setCurrentPage(number: number) {
 		setPageText(number.toString());
@@ -65,8 +65,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			return;
 		}
 
-		const limitBy = parseInt(pageSize);
-		const startAt = (page - 1) * parseInt(pageSize);
+		const limitBy = Number.parseInt(pageSize);
+		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ['id', 'asc'];
 
 		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}`;
@@ -116,9 +116,9 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		}
 
 		const value = (e.target as HTMLInputElement).value;
-		let newPage = new Number(value).valueOf();
+		let newPage = Number.parseInt(value).valueOf();
 
-		if (!value || isNaN(newPage)) {
+		if (!value || Number.isNaN(newPage)) {
 			setPageText(page.toString());
 			return;
 		}
@@ -288,5 +288,5 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 				</Center>
 			)}
 		</Panel>
-	)
+	);
 }

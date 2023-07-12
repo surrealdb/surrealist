@@ -24,5 +24,5 @@ export function InheritAlert({ visible, environment }: InheritAlertProps) {
 				Empty fields are inherited from the environment {environment ? <b>{environment}</b> : ''}
 			</Alert>
 		</div>
-	)
+	);
 }

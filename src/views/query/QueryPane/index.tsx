@@ -41,8 +41,8 @@ export function QueryPane(props: QueryPaneProps) {
 			const match = message.match(ERR_REGEX);
 
 			if (match) {
-				const lineNumber = parseInt(match[1]);
-				const column = parseInt(match[2]);
+				const lineNumber = Number.parseInt(match[1]);
+				const column = Number.parseInt(match[2]);
 			
 				markers.push({
 					startLineNumber: lineNumber,
@@ -83,7 +83,7 @@ export function QueryPane(props: QueryPaneProps) {
 			precondition: 'editorHasSelection',
 			run: () => {
 				const sel = editor.getSelection();
-				const model = editor.getModel()
+				const model = editor.getModel();
 
 				if (!sel || !model) {
 					return;
@@ -101,7 +101,7 @@ export function QueryPane(props: QueryPaneProps) {
 			wordBasedSuggestions: false,
 			wrappingStrategy: 'advanced',
 			wordWrap: 'on',
-		}
+		};
 	}, []);
 
 	return (
@@ -126,5 +126,5 @@ export function QueryPane(props: QueryPaneProps) {
 				/>
 			</div>
 		</Panel>
-	)
+	);
 }

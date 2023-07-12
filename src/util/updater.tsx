@@ -24,7 +24,7 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 		} else if (force) {
 			showNotification({
 				message: 'Surrealist is up-to-date!'
-			})
+			});
 		}
 	} catch(err) {
 		console.warn('Failed to check for updates', err);

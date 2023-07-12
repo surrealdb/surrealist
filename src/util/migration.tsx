@@ -6,7 +6,7 @@ import { Open, SurrealistConfig } from "~/typings";
 export function migrateConfig(config: Open<SurrealistConfig>) {
 
 	// 1.6.0 - Migrate auth and view behavior
-	config.tabs.forEach((tab: any) => {
+	for (const tab of config.tabs) {
 		if (!tab.activeView) {
 			tab.activeView = 'query';
 		}
@@ -21,13 +21,13 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 				tab.connection.scopeFields = [];
 			}
 		}
-	});
+	}
 
 	// 1.7.0 - Migrate tabs to environments
-	config.tabs.forEach((tab: any) => {
+	for (const tab of config.tabs) {
 		if (!tab.environment) {
 			tab.environment = config.environments[0].id;
 			tab.pinned = false;
 		}
-	});
+	}
 }

@@ -21,5 +21,5 @@ export function Setting(props: PropsWithChildren<SettingProps>) {
 				{props.children}
 			</Box>
 		</Group>
-	)
+	);
 }

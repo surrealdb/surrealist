@@ -17,9 +17,17 @@ const WAIT_DURATION = 1000;
  * Surrealist adapter for running as Wails desktop app
  */
 export class DesktopAdapter implements SurrealistAdapter {
-	#startTask: any;
 
-	constructor() {
+	public isServeSupported = true;
+	public isPinningSupported = true;
+	public isOpenURLSupported = true;
+	public isUpdateCheckSupported = true;
+	public isPromotionSupported = false;
+
+	#startTask: any;
+	#isPinned = false;
+
+	public constructor() {
 		this.initDatabaseEvents();
 
 		(window as any).invoke = invoke;
@@ -35,29 +43,21 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	isServeSupported = true;
-	isPinningSupported = true;
-	isOpenURLSupported = true;
-	isUpdateCheckSupported = true;
-	isPromotionSupported = false;
-
-	#isPinned = false;
-
-	async setWindowTitle(title: string) {
+	public async setWindowTitle(title: string) {
 		appWindow.setTitle(title || 'Surrealist');
 	}
 
-	loadConfig() {
+	public loadConfig() {
 		return invoke<string>('load_config');
 	}
 
-	saveConfig(config: string) {
+	public saveConfig(config: string) {
 		return invoke<void>('save_config', {
 			config,
 		});
 	}
 
-	async startDatabase(
+	public async startDatabase(
 		username: string,
 		password: string,
 		port: number,
@@ -75,21 +75,21 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	stopDatabase() {
+	public stopDatabase() {
 		return invoke<void>('stop_database');
 	}
 
-	async togglePinned() {
+	public async togglePinned() {
 		this.#isPinned = !this.#isPinned;
 
 		appWindow.setAlwaysOnTop(this.#isPinned);
 	}
 
-	async openUrl(url: string) {
+	public async openUrl(url: string) {
 		open(url);
 	}
 
-	async fetchSchema() {
+	public async fetchSchema() {
 		const surreal = getActiveSurreal();
 		const dbResponse = await surreal.query('INFO FOR DB');
 		const dbResult = dbResponse[0].result;
@@ -162,15 +162,15 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	async validateQuery(query: string) {
+	public async validateQuery(query: string) {
 		return invoke<string | null>('validate_query', { query });
 	}
 
-	async validateWhereClause(clause: string) {
+	public async validateWhereClause(clause: string) {
 		return invoke<boolean>('validate_where_clause', { clause });
 	}
 
-	initDatabaseEvents() {
+	private initDatabaseEvents() {
 		listen('database:start', () => {
 			printLog('Runner', '#f2415f', 'Received database start signal');
 

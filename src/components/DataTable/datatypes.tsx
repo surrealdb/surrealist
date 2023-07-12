@@ -8,7 +8,7 @@ import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 
 const THING_REGEX = /^\w+:(\w+|[`⟨][^`⟩]+[`⟩])$/;
-const DATETIME_REGEX = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
+const DATETIME_REGEX = /^\d{4}-\d\d-\d\dt\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|z)?$/i;
 
 export interface DataCellType {
 	match: (value: any) => boolean;
@@ -42,7 +42,7 @@ function BooleanCell(props: DataCellProps) {
 
 	return (
 		<div>{icon}</div>
-	)
+	);
 }
 
 function StringCell(props: DataCellProps) {
@@ -73,7 +73,7 @@ function ThingCell(props: DataCellProps) {
 			value={props.value}
 			onRecordClick={props.openRecord}
 		/>
-	)
+	);
 }
 
 function DateTimeCell(props: DataCellProps) {
@@ -202,7 +202,7 @@ const DataCellTypes = [
 
 export function renderDataCell(value: any, openRecord?: OpenFn): ReactNode {
 	for (const type of DataCellTypes) {
-		if (type.match(value)) {
+		if (value.test(type)) {
 			return type.component({
 				value,
 				openRecord

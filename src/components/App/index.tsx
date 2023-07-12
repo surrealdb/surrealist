@@ -28,7 +28,7 @@ export function App() {
 	});
 
 	const openRelease = useStable(() => {
-		open(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`)
+		open(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`);
 		closeUpdate(); 
 	});
 
@@ -219,5 +219,5 @@ export function App() {
 				}}
 			/>
 		</MantineProvider>
-	)
+	);
 }

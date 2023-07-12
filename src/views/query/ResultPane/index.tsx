@@ -1,5 +1,5 @@
 import type { editor } from "monaco-editor";
-import { ActionIcon, Center, Divider, Group, Pagination, Stack, Tabs, Text } from "@mantine/core";
+import { ActionIcon, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import Editor from "@monaco-editor/react";
@@ -31,7 +31,7 @@ function JsonPreview({ result }: PreviewProps) {
 			...baseEditorConfig,
 			readOnly: true,
 			wordWrap: wordWrap ? 'on' : 'off'
-		}
+		};
 	}, [wordWrap]);
 
 	return (
@@ -41,7 +41,7 @@ function JsonPreview({ result }: PreviewProps) {
 			value={contents}
 			options={options}
 		/>
-	)
+	);
 }
 
 export function ResultPane() {
@@ -122,7 +122,7 @@ export function ResultPane() {
 							<Text color="red">
 								{result.detail}
 							</Text>
-						) : result.result?.length === 0 ? (
+						) : (result.result?.length === 0 ? (
 							<Text color="light.4">
 								No results found for query
 							</Text>
@@ -130,7 +130,7 @@ export function ResultPane() {
 							<DataTable data={result.result} />
 						) : (
 							<JsonPreview result={result.result} />
-						)}
+						))}
 					</>
 				) : (
 					<Center h="100%" c="light.5">
@@ -161,5 +161,5 @@ export function ResultPane() {
 				</Stack>
 			)}
 		</Panel>
-	)
+	);
 }
