@@ -32,7 +32,6 @@ export function InspectorPane(props: InspectorPaneProps) {
 	const [isInvalid, setIsInvalid] = useState(false);
 	const [recordId, setRecordId] = useInputState('');
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [isDirty, setIsDirty] = useState(false);
 
 	const record = props.activeRecord;
 
@@ -79,15 +78,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 	});
 
 	const handleRefresh = useStable(() => {
-		if (isDirty) {
-			alert('You sure?');
-		}
-		
 		props.onRefreshContent();
-	});
-
-	const handleSetDirty = useStable((dirty: boolean) => {
-		setIsDirty(dirty);
 	});
 
 	return (
@@ -118,7 +109,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 
 					<ActionIcon
 						onClick={handleRefresh}
-						title="Refresh"
+						title="Refetch record"
 					>
 						<Icon
 							color="light.4"
@@ -191,7 +182,6 @@ export function InspectorPane(props: InspectorPaneProps) {
 							isInvalid={isInvalid}
 							setIsInvalid={setIsInvalid}
 							onContentChange={props.onContentChange}
-							onDirtyChange={handleSetDirty}
 						/>
 					</Tabs.Panel>
 
@@ -252,7 +242,6 @@ interface ContentTabProps {
 	isInvalid: boolean;
 	setIsInvalid: (isInvalid: boolean) => void;
 	onContentChange: (json: string) => void;
-	onDirtyChange: (dirty: boolean) => void;
 }
 
 function ContentTab(props: ContentTabProps) {
@@ -264,7 +253,6 @@ function ContentTab(props: ContentTabProps) {
 			return;
 		}
 		
-		props.onDirtyChange(true);
 		setContentText(content || '');
 		setIsDirty(true);
 
@@ -295,12 +283,10 @@ function ContentTab(props: ContentTabProps) {
 
 	const saveRecord = useStable(() => {
 		props.onContentChange(contentText);
-		props.onDirtyChange(false);
 		setIsDirty(false);
 	});
 
 	useEffect(() => {
-		props.onDirtyChange(false);
 		setContentText(JSON.stringify(props.content, null, 4));
 		setIsDirty(false);
 	}, [props.content]);
