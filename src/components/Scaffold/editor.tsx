@@ -3,7 +3,6 @@ import { ConnectionDetails } from "../ConnectionDetails";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
-import { SurrealConnection } from "~/surreal";
 import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
 import { useStable } from "~/hooks/stable";
 import { actions, store, useStoreValue } from "~/store";
@@ -12,6 +11,7 @@ import { useEffect } from "react";
 import { updateConfig, updateTitle } from "~/util/helpers";
 import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
+import { ConnectionOptions } from "~/typings";
 
 export interface TabEditorProps {
 	onActiveChange: () => Promise<unknown>;
@@ -25,7 +25,7 @@ export function TabEditor({ onActiveChange }: TabEditorProps) {
 	const opened = useStoreValue(state => state.showTabEditor);
 	const editingId = useStoreValue(state => state.editingId);
 
-	const [infoDetails, setInfoDetails] = useImmer<SurrealConnection>(createEmptyConnection());
+	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
 
 	const tabInfo = tabs.find(tab => tab.id === editingId);
 	const envInfo = environments.find(env => env.id === tabInfo?.environment);

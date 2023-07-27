@@ -1,5 +1,5 @@
 import { store } from "~/store";
-import { SurrealConnection } from "~/surreal";
+import { ConnectionOptions } from "~/typings";
 
 /**
  * Returns the currently active tab
@@ -13,7 +13,7 @@ export function getActiveTab() {
 /**
  * Create an empty connection
  */
-export function createEmptyConnection(): SurrealConnection {
+export function createEmptyConnection(): ConnectionOptions {
 	return {
 		endpoint: '',
 		namespace: '',
@@ -29,7 +29,7 @@ export function createEmptyConnection(): SurrealConnection {
 /**
  * Merge two connections together
  */
-export function mergeConnections(left: Partial<SurrealConnection>, right: Partial<SurrealConnection>): SurrealConnection {
+export function mergeConnections(left: Partial<ConnectionOptions>, right: Partial<ConnectionOptions>): ConnectionOptions {
 	const leftFields = left.scopeFields || [];
 	const rightFields = right.scopeFields || [];
 
@@ -48,7 +48,7 @@ export function mergeConnections(left: Partial<SurrealConnection>, right: Partia
 /**
  * Returns whether the given connection is valid
  */
-export function isConnectionValid(details: SurrealConnection | undefined) {
+export function isConnectionValid(details: ConnectionOptions | undefined) {
 	if (!details) {
 		return false;
 	}

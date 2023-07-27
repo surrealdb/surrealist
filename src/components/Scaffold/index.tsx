@@ -8,7 +8,7 @@ import { uid } from 'radash';
 import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
 import { mod, showError, updateConfig, updateTitle } from '~/util/helpers';
 import { Toolbar } from '../Toolbar';
-import { getSurreal, openSurreal } from '~/surreal';
+import { getSurreal, openSurreal } from '~/util/surreal';
 import { useActiveTab } from '~/hooks/environment';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';

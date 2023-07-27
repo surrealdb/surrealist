@@ -3,7 +3,7 @@ import { ConnectionDetails } from "../ConnectionDetails";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
-import { SurrealConnection } from "~/surreal";
+import { SurrealConnection } from "~/util/surreal";
 import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
 import { useStable } from "~/hooks/stable";
 import { actions, store, useStoreValue } from "~/store";

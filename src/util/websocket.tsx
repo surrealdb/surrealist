@@ -1,34 +1,11 @@
-import { AuthMode, ScopeField } from "./typings";
-import { printLog } from "./util/helpers";
-import { store } from "./store";
 import { uid } from "radash";
-
-export interface SurrealConnection {
-	namespace: string;
-	database: string;
-	endpoint: string;
-	username: string;
-	password: string;
-	authMode: AuthMode;
-	scope: string;
-	scopeFields: ScopeField[];
-}
-
-export interface SurrealOptions {
-	connection: SurrealConnection;
-	onConnect?: () => void;
-	onDisconnect?: (code: number, reason: string) => void;
-	onError?: (error: any) => void;
-}
-
-export interface SurrealHandle {
-	close(): void;
-	query(query: string, params?: Record<string, any>): Promise<any>;
-}
+import { store } from "~/store";
+import { SurrealHandle, SurrealOptions } from "~/typings";
+import { printLog } from "./helpers";
 
 type Request = [(data: any) => void, (error: any) => void];
 
-function createSurreal(options: SurrealOptions): SurrealHandle {
+export function createLocalWebSocket(options: SurrealOptions): SurrealHandle {
 	const endpoint = new URL('rpc', options.connection.endpoint.replace('http', 'ws'));
 	const socket = new WebSocket(endpoint.toString());
 	const requestMap = new Map<string, Request>();
@@ -177,32 +154,4 @@ function createSurreal(options: SurrealOptions): SurrealHandle {
 		close,
 		query,
 	};
-}
-
-let instance: SurrealHandle | null = null;
-
-/**
- * Open a connection to the given database
- */
-export function openSurreal(options: SurrealOptions) {
-	instance?.close();
-	instance = createSurreal(options);
-}
-
-/**
- * Retrieve the current database connection
- */
-export function getSurreal(): SurrealHandle | null {
-	return instance;
-}
-
-/**
- * Retrieve the current database connection, throwing an error if it doesn't exist
- */
-export function getActiveSurreal() {
-	if (!instance) {
-		throw new Error('No database connection');
-	}
-
-	return instance;
 }

@@ -9,7 +9,6 @@ import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { getSurreal } from "~/surreal";
 import { ColumnSort, OpenFn } from "~/typings";
 
 const PAGE_SIZES = [
@@ -59,7 +58,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			return;
 		}
 
-		const surreal = getSurreal();
+		const surreal = adapter.getSurreal();
 
 		if (!surreal || !filterValid) {
 			return;

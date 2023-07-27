@@ -3,10 +3,10 @@ import { TablesPane } from "../../../components/TablesPane";
 import { useEffect, useState } from "react";
 import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
-import { getSurreal } from "~/surreal";
 import { SplitValues, Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
 import { useHistory } from "~/hooks/history";
+import { adapter } from "~/adapter";
 
 const SPLIT_SIZE: SplitValues = [250, 450];
 
@@ -34,7 +34,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	});
 
 	const fetchRecord = useStable(async (id: string | null) => {
-		const surreal = getSurreal();
+		const surreal = adapter.getSurreal();
 
 		if (!surreal || !id) {
 			return;
@@ -68,7 +68,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	});
 
 	const createRecord = useStable(async (table: string, json: string) => {
-		const surreal = getSurreal();
+		const surreal = adapter.getSurreal();
 
 		if (!surreal) {
 			return;
@@ -81,7 +81,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	});
 
 	const updateRecord = useStable(async (json: string) => {
-		const surreal = getSurreal();
+		const surreal = adapter.getSurreal();
 
 		if (!surreal) {
 			return;

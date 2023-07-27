@@ -12,9 +12,9 @@ import { RecordLink } from "~/components/RecordLink";
 import { useInputState } from "@mantine/hooks";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
-import { getSurreal } from "~/surreal";
 import { HistoryHandle } from "~/hooks/history";
 import Editor from "@monaco-editor/react";
+import { adapter } from "~/adapter";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
@@ -51,7 +51,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 	});
 
 	const handleDelete = useStable(async () => {
-		const surreal = getSurreal();
+		const surreal = adapter.getSurreal();
 
 		if (!surreal) {
 			return;

@@ -3,7 +3,6 @@ import { ActionIcon, Button, Group, Modal, MultiSelect, ScrollArea, Stack, Tabs,
 import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { getActiveSurreal } from "~/surreal";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { OpenFn, TableDefinition } from '~/typings';
@@ -16,6 +15,7 @@ import { extractEdgeRecords, fetchDatabaseSchema } from '~/util/schema';
 import { useHasSchemaAccess, useTableNames } from '~/hooks/schema';
 import { sort } from 'radash';
 import { useIsConnected } from '~/hooks/connection';
+import { adapter } from '~/adapter';
 
 export interface TablesPaneProps {
 	withModification?: boolean;
@@ -77,7 +77,7 @@ export function TablesPane(props: TablesPaneProps) {
 	});
 
 	const createTable = useStable(async () => {
-		const surreal = getActiveSurreal();
+		const surreal = adapter.getActiveSurreal();
 
 		let query = `DEFINE TABLE ${tableName};`;
 
@@ -102,7 +102,7 @@ export function TablesPane(props: TablesPaneProps) {
 	});
 
 	const handleDelete = useStable(async () => {
-		const surreal = getActiveSurreal();
+		const surreal = adapter.getActiveSurreal();
 
 		await surreal.query('REMOVE TABLE ' + activeTable!.schema.name);
  

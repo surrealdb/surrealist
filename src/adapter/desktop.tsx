@@ -7,9 +7,8 @@ import { showNotification } from '@mantine/notifications';
 import { actions, store } from '~/store';
 import { SurrealistAdapter } from './base';
 import { extractTypeList, printLog } from '~/util/helpers';
-import { getActiveSurreal } from '~/surreal';
 import { map } from 'radash';
-import { TableSchema, TableField, TableIndex, TableEvent } from '~/typings';
+import { TableSchema, TableField, TableIndex, TableEvent, SurrealHandle, SurrealOptions } from '~/typings';
 
 const WAIT_DURATION = 1000;
 
@@ -90,7 +89,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async fetchSchema() {
-		const surreal = getActiveSurreal();
+		const surreal = this.getActiveSurreal();
 		const dbResponse = await surreal.query('INFO FOR DB');
 		const dbResult = dbResponse[0].result;
 
@@ -168,6 +167,18 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public async validateWhereClause(clause: string) {
 		return invoke<boolean>('validate_where_clause', { clause });
+	}
+
+	public openSurreal(options: SurrealOptions): SurrealHandle {
+		throw new Error('E');
+	}
+	
+	public getSurreal(): SurrealHandle | null {
+		throw new Error('E');
+	}
+
+	public getActiveSurreal(): SurrealHandle {
+		throw new Error('E');
 	}
 
 	private initDatabaseEvents() {

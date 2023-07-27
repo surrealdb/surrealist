@@ -1,7 +1,7 @@
 import { Monaco } from "@monaco-editor/react";
 import { editor, languages } from "monaco-editor";
 import { store } from "~/store";
-import { getSurreal } from "~/surreal";
+import { getSurreal } from "~/util/surreal";
 
 const tablePrefixes = [
 	'FROM ',

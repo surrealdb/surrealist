@@ -8,7 +8,7 @@ import { useSaveBox } from "~/hooks/save";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { getActiveSurreal } from "~/surreal";
+import { getActiveSurreal } from "~/util/surreal";
 import { TableDefinition } from "~/typings";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";

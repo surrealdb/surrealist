@@ -30,7 +30,7 @@ import { Spacer } from '~/components/Spacer';
 import { useIsConnected } from '~/hooks/connection';
 import { useStable } from '~/hooks/stable';
 import { useIsLight } from '~/hooks/theme';
-import { getActiveSurreal } from '~/surreal';
+import { getActiveSurreal } from '~/util/surreal';
 import { showError } from '~/util/helpers';
 
 interface ScopeInfo {

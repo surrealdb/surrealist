@@ -1,5 +1,5 @@
-import { getActiveSurreal } from "~/surreal";
-import { TableDefinition } from "~/typings";
+import { SurrealHandle, SurrealOptions, TableDefinition } from "~/typings";
+import { createLocalWebSocket } from "~/util/websocket";
 import { SurrealistAdapter } from "./base";
 
 /**
@@ -13,10 +13,12 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public isUpdateCheckSupported = false;
 	public isPromotionSupported = true;
 
+	private instance: SurrealHandle | null = null;
+
 	public async setWindowTitle(title: string) {
 		document.title = title;
 	}
-
+	
 	public async loadConfig() {
 		return localStorage.getItem('surrealist:config') || '{}';
 	}
@@ -42,14 +44,14 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async fetchSchema(): Promise<TableDefinition[]> {
-		const surreal = getActiveSurreal();
+		const surreal = this.getActiveSurreal();
 		const dbResponse = await surreal.query('INFO FOR DB');
 		const dbResult = dbResponse[0].result;
-
+		
 		if (!dbResult) {
 			return [];
 		}
-
+		
 		return Object.keys(dbResult.tb).map(name => ({
 			schema: {
 				name: name,
@@ -68,13 +70,33 @@ export class BrowserAdapter implements SurrealistAdapter {
 			events: []
 		}));
 	}
-
+	
 	public async validateQuery() {
 		return null;
 	}
-
+	
 	public async validateWhereClause() {
 		return true;
 	}
 
+	public openSurreal(options: SurrealOptions): SurrealHandle {
+		this.instance?.close();
+		this.instance = createLocalWebSocket(options);
+
+		return this.instance;
+	}
+
+	public getSurreal(): SurrealHandle | null {
+		return this.instance;
+	}
+
+	public getActiveSurreal(): SurrealHandle {
+		if (!this.instance) {
+			throw new Error('No active surreal instance');
+		}
+
+		return this.instance;
+	}
+	
+	
 }

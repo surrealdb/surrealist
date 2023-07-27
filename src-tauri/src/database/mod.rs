@@ -1,8 +1,6 @@
 use std::{process::{Child, Command, Stdio}, thread, sync::Mutex, io::{BufReader, BufRead}, time::Instant};
-
 use tauri::Manager;
 
-mod embedded;
 mod shell;
 
 pub struct DatabaseState(pub Mutex<Option<Child>>);

@@ -1,5 +1,5 @@
 import { ColorScheme } from "@mantine/core";
-import { SurrealConnection } from "./surreal";
+import { SurrealConnection } from "./util/surreal";
 
 export type AuthMode = 'none' | 'root' | 'namespace' | 'database' | 'scope';
 export type DriverType = "file" | "memory" | "tikv";
@@ -133,4 +133,27 @@ export interface TabCreation {
 	name?: string;
 	query?: string;
 	connection?: Partial<SurrealConnection>;
+}
+
+export interface ConnectionOptions {
+	namespace: string;
+	database: string;
+	endpoint: string;
+	username: string;
+	password: string;
+	authMode: AuthMode;
+	scope: string;
+	scopeFields: ScopeField[];
+}
+
+export interface SurrealOptions {
+	connection: ConnectionOptions;
+	onConnect?: () => void;
+	onDisconnect?: (code: number, reason: string) => void;
+	onError?: (error: any) => void;
+}
+
+export interface SurrealHandle {
+	close(): void;
+	query(query: string, params?: Record<string, any>): Promise<any>;
 }

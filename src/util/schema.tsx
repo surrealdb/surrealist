@@ -2,7 +2,6 @@ import { save } from "@tauri-apps/api/dialog";
 import { writeTextFile } from "@tauri-apps/api/fs";
 import { adapter } from "~/adapter";
 import { actions, store } from "~/store";
-import { getActiveSurreal } from "~/surreal";
 import { TableDefinition } from "~/typings";
 
 /**
@@ -58,7 +57,7 @@ export function isEdgeTable(table: TableDefinition) {
  * Export the database schema and save it to a file
  */
 export async function saveSchemaExport() {
-	const surreal = getActiveSurreal();
+	const surreal = adapter.getActiveSurreal();
 	const dbResponse = await surreal.query('INFO FOR DB');
 	const dbTables = Object.entries(dbResponse[0].result.tb);
 	const output: string[] = [
