@@ -1,4 +1,4 @@
-import { Open, SurrealistConfig } from "~/typings";
+import { Open, SurrealistConfig } from "~/types";
 
 /**
  * Perform migrations on the given config object.

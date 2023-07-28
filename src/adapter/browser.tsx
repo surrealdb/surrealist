@@ -1,4 +1,4 @@
-import { SurrealHandle, SurrealOptions, TableDefinition } from "~/typings";
+import { SurrealHandle, SurrealOptions, TableDefinition } from "~/types";
 import { createLocalWebSocket } from "~/util/websocket";
 import { SurrealistAdapter } from "./base";
 
@@ -13,7 +13,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public isUpdateCheckSupported = false;
 	public isPromotionSupported = true;
 
-	private instance: SurrealHandle | null = null;
+	#instance: SurrealHandle | null = null;
 
 	public async setWindowTitle(title: string) {
 		document.title = title;
@@ -80,22 +80,22 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public openSurreal(options: SurrealOptions): SurrealHandle {
-		this.instance?.close();
-		this.instance = createLocalWebSocket(options);
+		this.#instance?.close();
+		this.#instance = createLocalWebSocket(options);
 
-		return this.instance;
+		return this.#instance;
 	}
 
 	public getSurreal(): SurrealHandle | null {
-		return this.instance;
+		return this.#instance;
 	}
 
 	public getActiveSurreal(): SurrealHandle {
-		if (!this.instance) {
+		if (!this.#instance) {
 			throw new Error('No active surreal instance');
 		}
 
-		return this.instance;
+		return this.#instance;
 	}
 	
 	

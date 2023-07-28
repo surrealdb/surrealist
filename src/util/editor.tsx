@@ -1,7 +1,7 @@
 import { Monaco } from "@monaco-editor/react";
 import { editor, languages } from "monaco-editor";
+import { adapter } from "~/adapter";
 import { store } from "~/store";
-import { getSurreal } from "~/util/surreal";
 
 const tablePrefixes = [
 	'FROM ',
@@ -114,7 +114,7 @@ export function initializeEditor(monaco: Monaco) {
 		triggerCharacters: [' '],
 		provideCompletionItems: async (model, position, context) => {
 			const { tableSuggest } = store.getState().config;
-			const surreal = getSurreal();
+			const surreal = adapter.getSurreal();
 
 			if (!tableSuggest || !surreal) {
 				return;

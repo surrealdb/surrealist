@@ -2,7 +2,7 @@ import classes from './style.module.scss';
 import { Box, Button, Divider, Group, Menu, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose, mdiPencil, mdiDotsVertical, mdiCursorText, mdiContentDuplicate, mdiPinOff, mdiPin } from "@mdi/js";
 import { Icon } from "../Icon";
-import { SurrealistTab } from "~/typings";
+import { SurrealistTab } from "~/types";
 import { Text } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 import { VIEW_MODES } from '~/constants';

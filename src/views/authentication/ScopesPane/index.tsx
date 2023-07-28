@@ -23,6 +23,7 @@ import {
 import { invoke } from '@tauri-apps/api/tauri';
 import { map } from 'radash';
 import { useState, useEffect } from 'react';
+import { adapter } from '~/adapter';
 import { Form } from '~/components/Form';
 import { Icon } from '~/components/Icon';
 import { Panel } from '~/components/Panel';
@@ -30,7 +31,6 @@ import { Spacer } from '~/components/Spacer';
 import { useIsConnected } from '~/hooks/connection';
 import { useStable } from '~/hooks/stable';
 import { useIsLight } from '~/hooks/theme';
-import { getActiveSurreal } from '~/util/surreal';
 import { showError } from '~/util/helpers';
 
 interface ScopeInfo {
@@ -55,7 +55,7 @@ export function ScopePane(props: ScopePaneProps) {
 	const [editingSession, setEditingSession] = useInputState('');
 
 	const fetchScopes = useStable(async () => {
-		const response = await getActiveSurreal().query(`INFO FOR DB`);
+		const response = await adapter.getActiveSurreal().query(`INFO FOR DB`);
 		const result = response[0].result;
 
 		if (!result) {
@@ -100,7 +100,7 @@ export function ScopePane(props: ScopePaneProps) {
 				query += ` SIGNUP (${editingSignup})`;
 			}
 
-			await getActiveSurreal().query(query);
+			await adapter.getActiveSurreal().query(query);
 			await fetchScopes();
 		} catch (err: any) {
 			showError('Failed to save scope', err.message);
@@ -126,7 +126,7 @@ export function ScopePane(props: ScopePaneProps) {
 	});
 
 	const removeScope = useStable(async (scope: string) => {
-		await getActiveSurreal().query(`REMOVE SCOPE ${scope}`);
+		await adapter.getActiveSurreal().query(`REMOVE SCOPE ${scope}`);
 		await fetchScopes();
 	});
 

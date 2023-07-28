@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { updateConfig, updateTitle } from "~/util/helpers";
 import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
-import { ConnectionOptions } from "~/typings";
+import { ConnectionOptions } from "~/types";
 
 export interface TabEditorProps {
 	onActiveChange: () => Promise<unknown>;

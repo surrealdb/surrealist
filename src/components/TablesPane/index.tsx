@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
-import { OpenFn, TableDefinition } from '~/typings';
+import { OpenFn, TableDefinition } from '~/types';
 import { useIsLight } from '~/hooks/theme';
 import { useInputState } from '@mantine/hooks';
 import { Form } from '../Form';

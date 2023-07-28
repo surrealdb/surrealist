@@ -1,7 +1,7 @@
 import { Stack, NumberInput, Switch } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
 import { store, actions } from "~/store";
-import { SurrealistConfig } from "~/typings";
+import { SurrealistConfig } from "~/types";
 import { updateConfig } from "~/util/helpers";
 import { Setting } from "../setting";
 

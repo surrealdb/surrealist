@@ -3,7 +3,6 @@ import { ConnectionDetails } from "../ConnectionDetails";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
-import { SurrealConnection } from "~/util/surreal";
 import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
 import { useStable } from "~/hooks/stable";
 import { actions, store, useStoreValue } from "~/store";
@@ -13,6 +12,7 @@ import { useEffect } from "react";
 import { newId, updateConfig, updateTitle } from "~/util/helpers";
 import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
+import { ConnectionOptions } from "~/types";
 
 export function TabCreator() {
 	const isLight = useIsLight();
@@ -22,7 +22,7 @@ export function TabCreator() {
 	const creation = useStoreValue(state => state.tabCreation);
 
 	const [tabName, setTabName] = useInputState('');
-	const [infoDetails, setInfoDetails] = useImmer<SurrealConnection>(createEmptyConnection());
+	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
 
 	const finalEnv = creation?.environment || environments[0].id;
 	const envInfo = environments.find(env => env.id === finalEnv);

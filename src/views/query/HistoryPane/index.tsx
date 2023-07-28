@@ -7,7 +7,7 @@ import { actions, store, useStoreValue } from "~/store";
 import dayjs from 'dayjs';
 import { useStable } from '~/hooks/stable';
 import { useHover, useInputState } from '@mantine/hooks';
-import { HistoryEntry, SurrealistTab } from '~/typings';
+import { HistoryEntry, SurrealistTab } from '~/types';
 import { useActiveTab } from '~/hooks/environment';
 import { updateConfig } from '~/util/helpers';
 import { Panel } from '~/components/Panel';

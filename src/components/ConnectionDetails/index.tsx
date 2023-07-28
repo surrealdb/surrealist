@@ -3,7 +3,7 @@ import { mdiClose, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { AUTH_MODES } from "~/constants";
-import { AuthMode } from "~/typings";
+import { AuthMode } from "~/types";
 import { SurrealConnection } from "~/util/websocket";
 import { Updater } from "use-immer";
 import { useState } from "react";

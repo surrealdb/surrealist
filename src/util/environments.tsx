@@ -1,5 +1,5 @@
 import { store } from "~/store";
-import { ConnectionOptions } from "~/typings";
+import { ConnectionOptions } from "~/types";
 
 /**
  * Returns the currently active tab

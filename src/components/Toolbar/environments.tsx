@@ -10,7 +10,7 @@ import { Text } from '@mantine/core';
 import { useStable } from '~/hooks/stable';
 import { useImmer } from 'use-immer';
 import { Spacer } from '../Spacer';
-import { SurrealistEnvironment } from '~/typings';
+import { SurrealistEnvironment } from '~/types';
 import { newId, updateConfig } from '~/util/helpers';
 
 export interface EnvironmentsProps {

@@ -2,7 +2,7 @@ import { Stack, Select, ColorScheme, Switch } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { actions, store } from "~/store";
-import { SurrealistConfig } from "~/typings";
+import { SurrealistConfig } from "~/types";
 import { updateConfig } from "~/util/helpers";
 import { Setting } from "../setting";
 

@@ -1,4 +1,4 @@
-import { SurrealHandle, SurrealOptions, TableDefinition } from "~/typings";
+import { SurrealHandle, SurrealOptions, TableDefinition } from "~/types";
 
 export interface SurrealistAdapter {
 

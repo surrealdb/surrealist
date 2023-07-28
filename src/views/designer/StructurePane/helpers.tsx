@@ -1,4 +1,4 @@
-import { TableDefinition } from "~/typings";
+import { TableDefinition } from "~/types";
 import { default as equals } from 'fast-deep-equal';
 import { objectify } from "radash";
 

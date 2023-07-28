@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, TableDefinition, Open, SurrealistEnvironment, TabCreation} from "./typings";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, TableDefinition, Open, SurrealistEnvironment, TabCreation} from "./types";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";

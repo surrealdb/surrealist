@@ -8,8 +8,7 @@ import { useSaveBox } from "~/hooks/save";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { getActiveSurreal } from "~/util/surreal";
-import { TableDefinition } from "~/typings";
+import { TableDefinition } from "~/types";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { SectionDivider } from "./divider";
@@ -17,6 +16,7 @@ import { buildDefinitionQueries, TABLE_TYPES, isSchemaValid } from "./helpers";
 import { PermissionInput, QueryInput } from "./inputs";
 import { Lister } from "./lister";
 import { Section } from "./section";
+import { adapter } from "~/adapter";
 
 export interface SchemaPaneProps {
 	table: TableDefinition | null;
@@ -40,7 +40,7 @@ export function StructurePane(props: SchemaPaneProps) {
 			}
 
 			const query = buildDefinitionQueries(original, data);
-			const surreal = getActiveSurreal();
+			const surreal = adapter.getActiveSurreal();
 
 			surreal.query(query).then(() => {
 				fetchDatabaseSchema();

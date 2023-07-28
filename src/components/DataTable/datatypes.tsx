@@ -2,7 +2,7 @@ import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import { mdiCheck, mdiClockOutline, mdiClose } from "@mdi/js";
 import dayjs from "dayjs";
 import { ReactNode } from "react";
-import { OpenFn } from "~/typings";
+import { OpenFn } from "~/types";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";

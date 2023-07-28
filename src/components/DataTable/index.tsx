@@ -3,7 +3,7 @@ import { Box, Text, useMantineTheme } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { useMemo } from "react";
 import { renderDataCell } from './datatypes';
-import { OpenFn, ColumnSort } from '~/typings';
+import { OpenFn, ColumnSort } from '~/types';
 import { useIsLight } from '~/hooks/theme';
 import { useStable } from '~/hooks/stable';
 import { Icon } from '../Icon';

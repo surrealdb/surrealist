@@ -14,6 +14,7 @@ import {
 import { useInputState } from '@mantine/hooks';
 import { mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiLock, mdiPlus, mdiRefresh } from '@mdi/js';
 import { useEffect, useState } from 'react';
+import { adapter } from '~/adapter';
 import { Form } from '~/components/Form';
 import { Icon } from '~/components/Icon';
 import { Panel } from '~/components/Panel';
@@ -21,7 +22,6 @@ import { Spacer } from '~/components/Spacer';
 import { useIsConnected } from '~/hooks/connection';
 import { useStable } from '~/hooks/stable';
 import { useIsLight } from '~/hooks/theme';
-import { getActiveSurreal } from '~/util/surreal';
 import { showError } from '~/util/helpers';
 
 export interface AccountsPaneProps {
@@ -44,7 +44,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 	const [editingPassword, setEditingPassword] = useInputState('');
 
 	const fetchLogins = useStable(async () => {
-		const response = await getActiveSurreal().query(`INFO FOR ${props.typeShort}`);
+		const response = await adapter.getActiveSurreal().query(`INFO FOR ${props.typeShort}`);
 		const result = response[0].result;
 
 		if (!result) {
@@ -70,7 +70,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 			const userName = editingLogin || editingUsername;
 
-			await getActiveSurreal().query(`DEFINE LOGIN ${userName} ON ${props.typeLong} PASSWORD "${editingPassword}"`);
+			await adapter.getActiveSurreal().query(`DEFINE LOGIN ${userName} ON ${props.typeLong} PASSWORD "${editingPassword}"`);
 			await fetchLogins();
 		} catch (err: any) {
 			showError('Failed to save account', err.message);
@@ -91,7 +91,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 	});
 
 	const removeAccount = useStable(async (login: string) => {
-		await getActiveSurreal().query(`REMOVE LOGIN ${login} ON ${props.typeLong}`);
+		await adapter.getActiveSurreal().query(`REMOVE LOGIN ${login} ON ${props.typeLong}`);
 		await fetchLogins();
 	});
 

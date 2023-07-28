@@ -1,6 +1,6 @@
 import { uid } from "radash";
 import { store } from "~/store";
-import { SurrealHandle, SurrealOptions } from "~/typings";
+import { SurrealHandle, SurrealOptions } from "~/types";
 import { printLog } from "./helpers";
 
 type Request = [(data: any) => void, (error: any) => void];

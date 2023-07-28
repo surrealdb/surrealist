@@ -3,7 +3,7 @@ import { mdiInformation } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { store, actions } from "~/store";
-import { DriverType, SurrealistConfig } from "~/typings";
+import { DriverType, SurrealistConfig } from "~/types";
 import { updateConfig } from "~/util/helpers";
 import { Setting } from "../setting";
 

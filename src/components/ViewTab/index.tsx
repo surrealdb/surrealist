@@ -4,7 +4,7 @@ import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { updateTitle, updateConfig } from "~/util/helpers";
-import { SurrealistTab } from "~/typings";
+import { SurrealistTab } from "~/types";
 import { VIEW_MODES } from "~/constants";
 import { Icon } from "../Icon";
 

@@ -1,5 +1,4 @@
 import { ColorScheme } from "@mantine/core";
-import { SurrealConnection } from "./util/surreal";
 
 export type AuthMode = 'none' | 'root' | 'namespace' | 'database' | 'scope';
 export type DriverType = "file" | "memory" | "tikv";
@@ -43,7 +42,7 @@ export interface SurrealistConfig {
 export interface SurrealistEnvironment {
 	id: string;
 	name: string;
-	connection: Partial<SurrealConnection>;
+	connection: Partial<ConnectionOptions>;
 }
 
 export interface SurrealistTab {
@@ -52,7 +51,7 @@ export interface SurrealistTab {
 	environment: string;
 	query: string;
 	variables: string;
-	connection: SurrealConnection;
+	connection: ConnectionOptions;
 	lastResponse: any;
 	activeView: ViewMode;
 	pinned: boolean;
@@ -132,7 +131,7 @@ export interface TabCreation {
 	environment?: string;
 	name?: string;
 	query?: string;
-	connection?: Partial<SurrealConnection>;
+	connection?: Partial<ConnectionOptions>;
 }
 
 export interface ConnectionOptions {

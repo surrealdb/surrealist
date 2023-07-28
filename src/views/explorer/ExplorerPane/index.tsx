@@ -9,7 +9,7 @@ import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { ColumnSort, OpenFn } from "~/typings";
+import { ColumnSort, OpenFn } from "~/types";
 
 const PAGE_SIZES = [
 	{ label: '10 Results per page', value: '10' },

@@ -5,7 +5,7 @@ import { baseEditorConfig } from "~/util/editor";
 import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
-import { OpenFn } from "~/typings";
+import { OpenFn } from "~/types";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";

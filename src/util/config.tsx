@@ -1,4 +1,4 @@
-import { SurrealistConfig } from "~/typings";
+import { SurrealistConfig } from "~/types";
 
 export function createBaseConfig(): SurrealistConfig {
 	return {

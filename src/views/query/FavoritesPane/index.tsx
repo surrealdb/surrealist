@@ -6,7 +6,7 @@ import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from '~/hooks/stable';
 import { useInputState } from '@mantine/hooks';
-import { FavoritesEntry, SurrealistTab } from '~/typings';
+import { FavoritesEntry, SurrealistTab } from '~/types';
 import { useActiveTab } from '~/hooks/environment';
 import { uid } from 'radash';
 import { updateConfig } from '~/util/helpers';

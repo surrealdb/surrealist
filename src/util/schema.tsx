@@ -2,7 +2,7 @@ import { save } from "@tauri-apps/api/dialog";
 import { writeTextFile } from "@tauri-apps/api/fs";
 import { adapter } from "~/adapter";
 import { actions, store } from "~/store";
-import { TableDefinition } from "~/typings";
+import { TableDefinition } from "~/types";
 
 /**
  * Fetch information about a table schema

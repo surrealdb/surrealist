@@ -7,8 +7,8 @@ import { showNotification } from '@mantine/notifications';
 import { actions, store } from '~/store';
 import { SurrealistAdapter } from './base';
 import { extractTypeList, printLog } from '~/util/helpers';
-import { map } from 'radash';
-import { TableSchema, TableField, TableIndex, TableEvent, SurrealHandle, SurrealOptions } from '~/typings';
+import { map, mapKeys, snake } from 'radash';
+import { TableSchema, TableField, TableIndex, TableEvent, SurrealHandle, SurrealOptions } from '~/types';
 
 const WAIT_DURATION = 1000;
 
@@ -25,6 +25,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	#startTask: any;
 	#isPinned = false;
+	#connected = false;
+	#instance: SurrealHandle | null = null;
 
 	public constructor() {
 		this.initDatabaseEvents();
@@ -170,15 +172,47 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public openSurreal(options: SurrealOptions): SurrealHandle {
-		throw new Error('E');
+		this.#connected = false;
+
+		const details = mapKeys(options.connection, key => snake(key));
+
+		invoke<any>('open_connection', { info: details }).then(() => {
+			this.#connected = true;
+			options.onConnect?.();
+		}).catch(err => {
+			console.error('Failed to open connection', err);
+			options.onError?.(err);
+			options.onDisconnect?.(1000, 'Failed to open connection');
+		});
+
+		const handle: SurrealHandle = {
+			close: () => {
+				invoke<void>('close_connection');
+				this.#connected = false;
+				options.onDisconnect?.(1000, 'Closed by user');
+			},
+			query(query, params) {
+				return invoke<any>('execute_query', { query, params }).catch(err => {
+					console.error(err);
+				});
+			},
+		};
+
+		this.#instance = handle;
+
+		return handle;
 	}
 	
 	public getSurreal(): SurrealHandle | null {
-		throw new Error('E');
+		return this.#instance;
 	}
 
 	public getActiveSurreal(): SurrealHandle {
-		throw new Error('E');
+		if (!this.#instance) {
+			throw new Error('No active surreal instance');
+		}
+
+		return this.#instance;
 	}
 
 	private initDatabaseEvents() {

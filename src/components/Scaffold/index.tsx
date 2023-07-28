@@ -8,7 +8,6 @@ import { uid } from 'radash';
 import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
 import { mod, showError, updateConfig, updateTitle } from '~/util/helpers';
 import { Toolbar } from '../Toolbar';
-import { getSurreal, openSurreal } from '~/util/surreal';
 import { useActiveTab } from '~/hooks/environment';
 import { showNotification } from '@mantine/notifications';
 import { useIsLight } from '~/hooks/theme';
@@ -18,7 +17,7 @@ import { Splitter } from '../Splitter';
 import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/views/query/QueryView';
 import { ExplorerView } from '~/views/explorer/ExplorerView';
-import { ViewMode } from '~/typings';
+import { ViewMode } from '~/types';
 import { VisualizerView } from '~/views/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
 import { VIEW_MODES } from '~/constants';
@@ -67,7 +66,7 @@ export function Scaffold() {
 		}
 
 		try {
-			openSurreal({
+			adapter.openSurreal({
 				connection: mergedInfoDetails,
 				onConnect() {
 					setIsConnecting(false);
@@ -122,7 +121,7 @@ export function Scaffold() {
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
 
 		try {
-			const response = await getSurreal()?.query(override?.trim() || query, variables);
+			const response = await adapter.getSurreal()?.query(override?.trim() || query, variables);
 
 			store.dispatch(actions.updateTab({
 				id: activeTab!,
@@ -150,7 +149,7 @@ export function Scaffold() {
 
 	const closeConnection = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
-		getSurreal()?.close();
+		adapter.getSurreal()?.close();
 		setIsConnecting(false);
 		setIsConnected(false);
 	});
@@ -192,7 +191,7 @@ export function Scaffold() {
 
 	const handleActiveChange = useStable(async () => {
 		if (isConnected) {
-			getSurreal()?.close();
+			adapter.getSurreal()?.close();
 		}
 
 		await updateConfig();

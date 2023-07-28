@@ -2,7 +2,7 @@ import { Group, Text } from "@mantine/core";
 import { mdiArrowTopRight } from "@mdi/js";
 import { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
-import { OpenFn } from "~/typings";
+import { OpenFn } from "~/types";
 import { Icon } from "../Icon";
 
 export interface RecordLinkProps extends ComponentPropsWithoutRef<'div'>{

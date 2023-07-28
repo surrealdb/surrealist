@@ -11,7 +11,7 @@ import { Icon } from "../Icon";
 import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
-import { ViewMode } from "~/typings";
+import { ViewMode } from "~/types";
 import { adapter } from '~/adapter';
 import { saveSchemaExport } from '~/util/schema';
 import { useIsConnected } from '~/hooks/connection';
