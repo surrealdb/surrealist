@@ -42,10 +42,10 @@ You can use Surrealist by visiting https://surrealist.app/
 
 While the web app provides a convenient and easy way to use Surrealist, the desktop app offers additional features such as an integrated database runner and offline support.
 
-## Download
-You can download the latest version of Surrealist Desktop from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page.
+## Desktop App
+You can download the latest version of Surrealist Desktop from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page. This version provides significantly more functionality over the web app, so it is considered the recommended way to use Surrealist.
 
-### Running on MacOS with versions v1.6.0 or newer
+### Running on MacOS
 Running Surrealist on MacOS is more complicated than on its Windows and Linux counterparts because our application is not signed. To run Surrealist on MacOS, please do the following:
 - Navigate to your desired release (v1.6.0 and newer)
 - Download the `surrealist-<version>-darwin.dmg` release file
@@ -57,37 +57,25 @@ Running Surrealist on MacOS is more complicated than on its Windows and Linux co
 - Right-click on the Surrealist application and click on open again. This time you should receive a different prompt with an "Open" option. Click on open
 - Surrealist should now launch, and you should now be able to launch Surrealist without issue from the Launchpad.
 
-### Running on MacOS with versions prior to v1.6.0
-We recommend that you use the latest Surrealist release. However, if you need to run an older release of Surrealist prior to version v1.6.0, follow these steps:
-- Navigate to your desired release (any release prior to v1.6.0)
-- Download the appropriate release file (select the arm64 for M1 and newer Macs and amd64 for Macs prior to M1)
-- Extract the application from the tgz file
-- Move the Surrealist executable to your Applications directory
-- Delete the tgz file, as it is no-longer needed
-- Open the Terminal app and navigate to the Applications directory by typing `cd /Applications`
-- Run the command `sudo xattr -rd com.apple.quarantine Surrealist.app` (You may be prompted to enter your password)
-- You should now be able to run Surrealist as normal from the Launchpad
-
 If the steps for either of these MacOS processes do not work, please do not hesitate to open an issue.
 
-### Disclaimer
-The latest release always attempts to be up-to-date with the latest SurrealDB beta. Nightly builds of SurrealDB are not officially supported and may be incompatible.
+## Features
 
-## Local database
+### Local database
 You can start a local database directly from the application by pressing the start button in the top right. Doing so will start up a SurrealDB instance using the credentials and port entered for the current tab.
 
 You can choose whether the local database is stored in memory or stored on disk on the Settings screen.
 
 This functionality is currently only available in the desktop app.
 
-## Query view
+### Query view
 Use the Query View to execute queries against your database. You can define variables in the Variables panel and use them in your queries, and browse the results in the Results panel.
 
 Executed queries are saved to the Query History or can be manually saved to the Favorites panel to quickly access previous queries.
 
 ![Query View](.github/branding/query-view.png)
 
-## Explorer view
+### Explorer view
 The Explorer View is used to browse your database and inspect individual records. When you select a table in the left panel, the table contents will be displayed in the Record Explorer. You can click on a record id to open the Record Inspector, in which you can edit the record contents and traverse graph relationships.
 
 ![Explorer View](.github/branding/explorer-view.png)
@@ -96,6 +84,11 @@ The Explorer View is used to browse your database and inspect individual records
 We welcome any issues and PRs submitted to Surrealist. Since we currently work on multiple other projects and our time is limited, we value any community help in supporting a rich future for Surrealist.
 
 Before you open an issue or PR please read our [Contributor Guide](CONTRIBUTING.md).
+
+## Disclaimer
+- The latest release always attempts to be up-to-date with the latest SurrealDB beta. No attempt is made to keep Surrealist compatible with the latest nightly builds.
+- Connections to remote servers may require a HTTPS connection. You can easily configure SSL for your server using tools like Letsencrypt and nginx.
+- This project is maintained entirely free of charge and in my spare time. I will make a best attempt at supporting as many features and workflows as possible, however I do not have the resources to cater to every use case.
 
 ## Development
 This project is built using [Tauri](https://tauri.app) and [React](https://reactjs.org/).
