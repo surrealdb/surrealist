@@ -112,11 +112,11 @@ pub async fn execute_query(
 
 	println!("0");
 
-	let mut a = client.query(query);
+	let a = client.query(query);
 
 	println!("1");
 
-	let mut b = a.await?;
+	let b = a.await?;
 
 	println!("2");
 
