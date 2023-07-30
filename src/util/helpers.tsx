@@ -43,15 +43,6 @@ export async function updateConfig() {
 }
 
 /**
- * Apply the current zoom level to the document
- */
-export function updateZoom() {
-	const zoom = store.getState().config.zoomLevel;
-
-	(document.documentElement.style as any).zoom = `${zoom}`;
-}
-
-/**
  * Watch for changes to the native theme
  */
 export function watchNativeTheme() {

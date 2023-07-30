@@ -23,7 +23,6 @@ export function createBaseConfig(): SurrealistConfig {
 		updateChecker: true,
 		queryListing: 'history',
 		resultListing: 'json',
-		zoomLevel: 1,
 		errorChecking: true,
 		lastPromptedVersion: null,
 		tabSearch: false

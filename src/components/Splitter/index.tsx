@@ -29,7 +29,6 @@ export function Splitter(props: SplitterProps) {
 	const isHorizontal = props.direction !== 'vertical';
 	const contents: React.ReactNode[] = [];
 	const containerRef = useRef<HTMLDivElement | null>(null);
-	const zoomLevel = useStoreValue(state => state.config.zoomLevel);
 	const leftPane = useRef<any>();
 	const rightPane = useRef<any>();
 	const frameId = useRef(0);
@@ -99,9 +98,6 @@ export function Splitter(props: SplitterProps) {
 			cancelAnimationFrame(frameId.current);
 
 			frameId.current = requestAnimationFrame(() => {
-				x /= zoomLevel;
-				y /= zoomLevel;
-
 				const bounds = containerRef.current!.getBoundingClientRect();
 				const value = isHorizontal ? x - bounds.left : y - bounds.top;
 				const total = isHorizontal ? bounds.width : bounds.height;

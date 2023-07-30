@@ -247,14 +247,6 @@ const mainSlice = createSlice({
 			state.config.resultListing = action.payload;
 		},
 
-		increaseZoomLevel(state) {
-			state.config.zoomLevel = Math.min(state.config.zoomLevel + 0.1, 2);
-		},
-
-		decreaseZoomLevel(state) {
-			state.config.zoomLevel = Math.max(state.config.zoomLevel - 0.1, 0.5);
-		},
-
 		setDatabaseSchema(state, action: PayloadAction<TableDefinition[]>) {
 			state.databaseSchema = action.payload;
 		},

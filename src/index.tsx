@@ -7,7 +7,7 @@ import { App } from './components/App';
 import { loader } from '@monaco-editor/react';
 import { initializeEditor } from './util/editor';
 import { runUpdateChecker } from './util/updater';
-import { updateTitle, updateZoom, watchNativeTheme } from './util/helpers';
+import { updateTitle, watchNativeTheme } from './util/helpers';
 import { adapter } from './adapter';
 
 dayjs.extend(relativeTime);
@@ -23,9 +23,6 @@ const { lastPromptedVersion, updateChecker } = store.getState().config;
 if (adapter.isUpdateCheckSupported && updateChecker) {
 	runUpdateChecker(lastPromptedVersion, false);
 }
-
-// Apply zoom level
-updateZoom();
 
 // Apply initial title
 updateTitle();
