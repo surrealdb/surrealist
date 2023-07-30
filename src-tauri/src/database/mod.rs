@@ -41,6 +41,7 @@ pub fn start_database(
 
 	thread::spawn(move || {
 		let reader = BufReader::new(output);
+		let mut has_started = false;
 
 		for line in reader.lines() {
 			let message = line.unwrap();
@@ -48,12 +49,18 @@ pub fn start_database(
 			println!("Surreal: {}", message);
 			
 			window.emit("database:output", message).expect("console output should be delivered");
+
+			has_started = true;
 		}
 
 		let elapsed = start_at.elapsed().as_millis();
 
 		if elapsed <= 500 {
-			window.emit("database:error", "Surreal executable not found. Make sure the SurrealDB CLI is available in the command line.").expect("error result should be delivered");
+			if !has_started {
+				window.emit("database:output", "SurrealDB did not start. Are you sure the Surreal executable is available?").expect("console output should be delivered");
+			}
+
+			window.emit("database:error", "SurrealDB did not start correctly, check the console for more information").expect("error result should be delivered");
 		} else {
 			window.emit("database:stop", true).expect("stop result should be delivered");
 		}

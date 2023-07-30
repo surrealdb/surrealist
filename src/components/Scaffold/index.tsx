@@ -45,8 +45,6 @@ export function Scaffold() {
 	const activeTab = useStoreValue(state => state.config.activeTab);
 	const environments = useStoreValue(state => state.config.environments);
 	const autoConnect = useStoreValue(state => state.config.autoConnect);
-	const servePending = useStoreValue(state => state.servePending);
-	const isServing = useStoreValue(state => state.isServing);
 	const enableConsole = useStoreValue(state => state.config.enableConsole);
 	const isConnected = useStoreValue(state => state.isConnected);
 	const tabInfo = useActiveTab();
@@ -168,7 +166,7 @@ export function Scaffold() {
 
 	const revealConsole = useStable((e: MouseEvent) => {
 		e.stopPropagation();
-		store.dispatch(actions.setConsoleEnabled(true));
+		store.dispatch(actions.setConsoleEnabled(!enableConsole));
 	});
 
 	const openTabCreator = useStable((envId?: string) => {
@@ -205,7 +203,6 @@ export function Scaffold() {
 	const mergedInfoDetails = mergeConnections(tabInfo?.connection || {}, envInfo?.connection || {});
 	const detailsValid = isConnectionValid(mergedInfoDetails);
 
-	const showConsole = enableConsole && (servePending || isServing);
 	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : (detailsValid ? 'light' : 'red'));
 	const viewMode = tabInfo?.activeView || 'query';
 	const viewInfo = VIEW_MODES.find(v => v.id == viewMode)!;
@@ -401,14 +398,14 @@ export function Scaffold() {
 										Connection details incomplete
 									</Text>
 								)}
-								{(servePending || isServing) && !showConsole && (
+								{/* {(servePending || isServing) && !showConsole && ( */}
 									<ActionIcon
 										onClick={revealConsole}
-										title="Reveal console"
+										title="Toggle console"
 									>
 										<Icon color="light.4" path={mdiConsole} />
 									</ActionIcon>
-								)}
+								{/* )} */}
 								{isConnected && (
 									<ActionIcon
 										onClick={closeConnection}
@@ -448,7 +445,7 @@ export function Scaffold() {
 							minSize={100}
 							bufferSize={200}
 							direction="vertical"
-							endPane={showConsole && (
+							endPane={enableConsole && (
 								<ConsolePane />
 							)}
 						>
@@ -497,7 +494,7 @@ export function Scaffold() {
 						</Text>
 						<Center mt="lg">
 							<Button size="xs" onClick={createNewTab}>
-								Create tab
+								Create session
 							</Button>
 						</Center>
 					</div>

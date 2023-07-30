@@ -160,6 +160,7 @@ const mainSlice = createSlice({
 
 		prepareServe(state) {
 			state.servePending = true;
+			state.consoleOutput = [];
 		},
 
 		confirmServing(state) {
@@ -170,7 +171,6 @@ const mainSlice = createSlice({
 		stopServing(state) {
 			state.isServing = false;
 			state.servePending = false;
-			state.consoleOutput = [];
 		},
 
 		cancelServe(state) {

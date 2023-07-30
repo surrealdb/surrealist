@@ -1,7 +1,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import { Panel } from "~/components/Panel";
 import { mdiClose, mdiConsole, mdiDelete } from "@mdi/js";
-import { ActionIcon, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Center, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { actions, store, useStoreValue } from "~/store";
 import AnsiToHtml from "ansi-to-html";
@@ -82,6 +82,13 @@ export function ConsolePane() {
 			icon={mdiConsole}
 			rightSection={<ConsoleActions />}
 		>
+			{messages.length === 0 && (
+				<Center h="100%">
+					<Text c="light.5">
+						No messages to display
+					</Text>
+				</Center>	
+			)}
 			<ScrollArea
 				style={{ position: 'absolute', inset: 12, top: 0 }}
 				viewportRef={scroller}
