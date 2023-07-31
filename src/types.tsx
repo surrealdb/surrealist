@@ -154,4 +154,5 @@ export interface SurrealOptions {
 export interface SurrealHandle {
 	close(): void;
 	query(query: string, params?: Record<string, any>): Promise<any>;
+	querySingle(query: string): Promise<any>;
 }
