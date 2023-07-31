@@ -1,4 +1,4 @@
-import Editor, { Monaco } from "@monaco-editor/react";
+import { Monaco } from "@monaco-editor/react";
 import { editor, MarkerSeverity } from "monaco-editor";
 import { mdiDatabase } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
@@ -6,14 +6,14 @@ import { useActiveTab } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
-import { useMemo, useRef } from "react";
-import { baseEditorConfig, configureQueryEditor } from "~/util/editor";
+import { useRef } from "react";
+import { configureQueryEditor } from "~/util/editor";
 import { useIsLight } from "~/hooks/theme";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { adapter } from "~/adapter";
+import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 const ERR_REGEX = /Parse error on line (\d+) at character (\d+) when parsing '(.+)'/s;
-const ERR_CONTEXT = 3;
 
 export interface QueryPaneProps {
 	onExecuteQuery: (override?: string) => void;
@@ -21,7 +21,6 @@ export interface QueryPaneProps {
 
 export function QueryPane(props: QueryPaneProps) {
 	const activeTab = useActiveTab();
-	const isLight = useIsLight();
 	const controls = useRef<[Monaco, editor.IStandaloneCodeEditor]>();
 	const doErrorCheck = useStoreValue(state => state.config.errorChecking);
 
@@ -71,10 +70,6 @@ export function QueryPane(props: QueryPaneProps) {
 	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
 
-		setTimeout(() => {
-			root.editor.remeasureFonts();
-		}, 1000);
-
 		controls.current = [root, editor];
 
 		updateValidation();
@@ -98,37 +93,28 @@ export function QueryPane(props: QueryPaneProps) {
 		});
 	});
 
-	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
-		return {
-			...baseEditorConfig,
-			quickSuggestions: false,
-			wordBasedSuggestions: false,
-			wrappingStrategy: 'advanced',
-			wordWrap: 'on',
-		};
-	}, []);
-
 	return (
 		<Panel
 			title="Query"
 			icon={mdiDatabase}
 		>
-			<div
+			<SurrealistEditor
+				language="surrealql"
+				onMount={configure}
+				value={activeTab?.query}
+				onChange={setQuery}
 				style={{
 					position: 'absolute',
 					insetBlock: 0,
-					insetInline: 24
+					insetInline: 24,
 				}}
-			>
-				<Editor
-					onMount={configure}
-					theme={isLight ? 'surrealist' : 'surrealist-dark'}
-					value={activeTab?.query}
-					onChange={setQuery}
-					options={options}
-					language="surrealql"
-				/>
-			</div>
+				options={{
+					quickSuggestions: false,
+					wordBasedSuggestions: false,
+					wrappingStrategy: 'advanced',
+					wordWrap: 'on',
+				}}
+			/>
 		</Panel>
 	);
 }

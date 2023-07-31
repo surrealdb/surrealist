@@ -1,9 +1,6 @@
-import type { editor } from "monaco-editor";
 import { ActionIcon, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
-import Editor from "@monaco-editor/react";
-import { baseEditorConfig } from "~/util/editor";
 import { useActiveTab } from "~/hooks/environment";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
@@ -13,33 +10,27 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DataTable } from "~/components/DataTable";
+import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 interface PreviewProps {
 	result: any;
 }
 
 function JsonPreview({ result }: PreviewProps) {
-	const isLight = useIsLight();
 	const wordWrap = useStoreValue(state => state.config.wordWrap);
 
 	const contents = useMemo(() => {
 		return JSON.stringify(result, null, 4);
 	}, [result]);
 
-	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
-		return {
-			...baseEditorConfig,
-			readOnly: true,
-			wordWrap: wordWrap ? 'on' : 'off'
-		};
-	}, [wordWrap]);
-
 	return (
-		<Editor
-			theme={isLight ? 'surrealist' : 'surrealist-dark'}
-			defaultLanguage="json"
+		<SurrealistEditor
+			language="json"
 			value={contents}
-			options={options}
+			options={{
+				readOnly: true,
+				wordWrap: wordWrap ? 'on' : 'off'
+			}}
 		/>
 	);
 }

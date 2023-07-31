@@ -5,11 +5,12 @@ import { useActiveTab } from "~/hooks/environment";
 import { actions, store } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
-import { useMemo, useState } from "react";
-import { baseEditorConfig, configureQueryEditor } from "~/util/editor";
+import { useState } from "react";
+import { configureQueryEditor } from "~/util/editor";
 import { Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
-import Editor, {Monaco} from "@monaco-editor/react";
+import {Monaco} from "@monaco-editor/react";
+import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 export interface VariablesPaneProps {
 	onExecuteQuery: () => void;
@@ -48,22 +49,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 
 	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
-
-		setTimeout(() => {
-			root.editor.remeasureFonts();
-		}, 1000);
 	});
-
-	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
-		return {
-			...baseEditorConfig,
-			wrappingStrategy: 'advanced',
-			wordWrap: 'on',
-			suggest: {
-				showProperties: false
-			}
-		};
-	}, []);
 
 	const jsonAlert = isInvalid
 		? <Text color="red">Invalid variable JSON</Text>
@@ -75,22 +61,24 @@ export function VariablesPane(props: VariablesPaneProps) {
 			icon={mdiTune}
 			rightSection={jsonAlert}
 		>
-			<div
+			<SurrealistEditor
+				language="json"
+				onMount={configure}
+				value={activeTab?.variables?.toString()}
+				onChange={setVariables}
 				style={{
 					position: 'absolute',
 					insetBlock: 0,
 					insetInline: 24
 				}}
-			>
-				<Editor
-					onMount={configure}
-					theme={isLight ? 'surrealist' : 'surrealist-dark'}
-					value={activeTab?.variables?.toString()}
-					onChange={setVariables}
-					options={options}
-					language="json"
-				/>
-			</div>
+				options={{
+					wrappingStrategy: 'advanced',
+					wordWrap: 'on',
+					suggest: {
+						showProperties: false
+					}
+				}}
+			/>
 		</Panel>
 	);
 }

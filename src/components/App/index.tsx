@@ -8,17 +8,20 @@ import { useSurrealistTheme } from "~/util/theme";
 import { mdiClose } from "@mdi/js";
 import { Icon } from "../Icon";
 import { useStable } from "~/hooks/stable";
-import { MouseEvent } from "react";
+import { MouseEvent, useEffect } from "react";
 import { open } from "@tauri-apps/api/shell";
+import { DARK_THEME, LIGHT_THEME, getMonaco } from "~/util/editor";
+import { useIsLight } from "~/hooks/theme";
 
 export function App() {
 	const update = useStoreValue(state => state.availableUpdate);
 	const showUpdate = useStoreValue(state => state.showAvailableUpdate);
 	const colorScheme = useStoreValue(state => state.config.theme);
 	const defaultScheme = useStoreValue(state => state.nativeTheme);
+	const monacoLoaded = useStoreValue(state => state.monacoLoaded);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	const mantineTheme = useSurrealistTheme(actualTheme);
-	const isLight = actualTheme === 'light';
+	const isLight = useIsLight();
 
 	const closeUpdate = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
@@ -29,6 +32,10 @@ export function App() {
 		open(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`);
 		closeUpdate(); 
 	});
+
+	useEffect(() => {
+		getMonaco()?.editor?.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
+	}, [colorScheme, monacoLoaded]);
 
 	return (
 		<MantineProvider

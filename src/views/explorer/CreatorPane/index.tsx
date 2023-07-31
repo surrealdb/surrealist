@@ -1,6 +1,4 @@
-import { editor } from "monaco-editor";
-import { baseEditorConfig } from "~/util/editor";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { mdiCheck, mdiClose, mdiTablePlus } from "@mdi/js";
 import { ActionIcon, Button, Divider, Group, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
@@ -8,7 +6,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
-import Editor from "@monaco-editor/react";
+import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 export interface CreatorPaneProps {
 	activeTable: string | null;
@@ -58,17 +56,6 @@ export function CreatorPane(props: CreatorPaneProps) {
 			setIsInvalid(true);
 		}
 	});
-
-	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
-		return {
-			...baseEditorConfig,
-			wrappingStrategy: 'advanced',
-			wordWrap: 'off',
-			suggest: {
-				showProperties: false
-			}
-		};
-	}, []);
 	
 	return (
 		<Panel
@@ -106,22 +93,24 @@ export function CreatorPane(props: CreatorPaneProps) {
 				Record contents
 			</Text>
 
-			<div
+			<SurrealistEditor
+				language="json"
+				value={contentText}
+				onChange={updateContent}
 				style={{
 					position: 'absolute',
 					insetInline: 12,
 					bottom: 62,
 					top: 94
 				}}
-			>
-				<Editor
-					theme={isLight ? 'surrealist' : 'surrealist-dark'}
-					value={contentText}
-					onChange={updateContent}
-					options={options}
-					language="json"
-				/>
-			</div>
+				options={{
+					wrappingStrategy: 'advanced',
+					wordWrap: 'off',
+					suggest: {
+						showProperties: false
+					}
+				}}
+			/>
 
 			<Button
 				disabled={isInvalid || !tableName}

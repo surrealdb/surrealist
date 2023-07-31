@@ -1,7 +1,5 @@
-import { editor } from "monaco-editor";
 import { mdiArrowLeftBold, mdiArrowRightBold, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiRefresh, mdiSwapVertical, mdiWrench } from "@mdi/js";
-import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
-import { baseEditorConfig } from "~/util/editor";
+import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
@@ -13,8 +11,8 @@ import { useInputState } from "@mantine/hooks";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { HistoryHandle } from "~/hooks/history";
-import Editor from "@monaco-editor/react";
 import { adapter } from "~/adapter";
+import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
@@ -270,17 +268,6 @@ function ContentTab(props: ContentTabProps) {
 		}
 	});
 
-	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
-		return {
-			...baseEditorConfig,
-			wrappingStrategy: 'advanced',
-			wordWrap: 'off',
-			suggest: {
-				showProperties: false
-			}
-		};
-	}, []);
-
 	const saveRecord = useStable(() => {
 		props.onContentChange(contentText);
 		setIsDirty(false);
@@ -293,22 +280,24 @@ function ContentTab(props: ContentTabProps) {
 
 	return (
 		<>
-			<div
+			<SurrealistEditor
+				language="json"
+				value={contentText}
+				onChange={updateContent}
 				style={{
 					position: 'absolute',
 					insetInline: 12,
 					bottom: 62,
 					top: 109
 				}}
-			>
-				<Editor
-					theme={props.isLight ? 'surrealist' : 'surrealist-dark'}
-					value={contentText}
-					onChange={updateContent}
-					options={options}
-					language="json"
-				/>
-			</div>
+				options={{
+					wrappingStrategy: 'advanced',
+					wordWrap: 'off',
+					suggest: {
+						showProperties: false
+					}
+				}}
+			/>
 
 			<Button
 				disabled={props.isInvalid || !isDirty}

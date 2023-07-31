@@ -24,6 +24,7 @@ const mainSlice = createSlice({
 		showTabCreator: false,
 		tabCreation: null as TabCreation | null,
 		showTabEditor: false,
+		monacoLoaded: false,
 		editingId: ''
 	},
 	reducers: {
@@ -271,6 +272,10 @@ const mainSlice = createSlice({
 
 		closeTabEditor(state) {
 			state.showTabEditor = false;
+		},
+
+		setMonacoLoaded(state) {
+			state.monacoLoaded = true;
 		}
 
 	}

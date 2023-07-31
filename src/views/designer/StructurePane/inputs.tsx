@@ -9,6 +9,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { baseEditorConfig } from "~/util/editor";
 import Editor from "@monaco-editor/react";
+import { SurrealistEditor } from '~/components/SurrealistEditor';
 
 export interface QueryInputProps extends TextareaProps {
 	onChangeText?: (value: string) => void;
@@ -42,17 +43,6 @@ export function QueryInput(props: QueryInputProps) {
 			props.onChangeText(e.target.value);
 		}
 	});
-
-	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {
-		return {
-			...baseEditorConfig,
-			wrappingStrategy: 'advanced',
-			wordWrap: 'on',
-			suggest: {
-				showProperties: false
-			}
-		};
-	}, []);
 
 	const color = isLight ? 'light' : undefined;
 
@@ -95,13 +85,18 @@ export function QueryInput(props: QueryInputProps) {
 					</Title>
 				}
 			>
-				<Editor
-					theme={isLight ? 'surrealist' : 'surrealist-dark'}
+				<SurrealistEditor
+					language="surrealql"
 					value={editorText}
 					onChange={setEditorText}
-					options={options}
-					language="surrealql"
 					height={300}
+					options={{
+						wrappingStrategy: 'advanced',
+						wordWrap: 'on',
+						suggest: {
+							showProperties: false
+						}
+					}}
 				/>
 				<Group mt="lg">
 					<Button

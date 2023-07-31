@@ -1,7 +1,10 @@
 import { Monaco } from "@monaco-editor/react";
 import { editor, languages } from "monaco-editor";
 import { adapter } from "~/adapter";
-import { store } from "~/store";
+import { actions, store } from "~/store";
+
+export const LIGHT_THEME = 'surrealist-light';
+export const DARK_THEME = 'surrealist-dark';
 
 const tablePrefixes = [
 	'FROM ',
@@ -19,7 +22,6 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	lineDecorationsWidth: 12,
 	lineNumbersMinChars: 1,
 	glyphMargin: false,
-	theme: 'surrealist',
 	automaticLayout: true,
 	minimap: {
 		enabled: false
@@ -28,10 +30,14 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 
 let global: Monaco;
 
+export function getMonaco() {
+	return global;
+}
+
 export function initializeEditor(monaco: Monaco) {
 	global = monaco;
 
-	monaco.editor.defineTheme('surrealist', {
+	monaco.editor.defineTheme(LIGHT_THEME, {
 		base: 'vs',
 		inherit: true,
 		rules: [
@@ -47,7 +53,7 @@ export function initializeEditor(monaco: Monaco) {
 		}
 	});
 
-	monaco.editor.defineTheme('surrealist-dark', {
+	monaco.editor.defineTheme(DARK_THEME, {
 		base: 'vs-dark',
 		inherit: true,
 		rules: [
@@ -176,6 +182,8 @@ export function initializeEditor(monaco: Monaco) {
 			};
 		}
 	});
+
+	store.dispatch(actions.setMonacoLoaded());
 }
 
 /**

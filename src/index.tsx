@@ -38,6 +38,8 @@ import { adapter } from './adapter';
 	);
 
 	// Init monaco
+	await document.fonts.ready;
+
 	const monaco = await loader.init();
 
 	initializeEditor(monaco);
