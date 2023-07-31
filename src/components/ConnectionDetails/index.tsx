@@ -3,18 +3,17 @@ import { mdiClose, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { AUTH_MODES } from "~/constants";
-import { AuthMode } from "~/types";
-import { SurrealConnection } from "~/util/websocket";
+import { AuthMode, ConnectionOptions } from "~/types";
 import { Updater } from "use-immer";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 
 export interface ConnectionDetailsProps {
-	value: Partial<SurrealConnection>;
-	onChange: Updater<SurrealConnection>;
+	value: Partial<ConnectionOptions>;
+	onChange: Updater<ConnectionOptions>;
 	optional?: boolean;
-	placeholders?: Partial<SurrealConnection>;
+	placeholders?: Partial<ConnectionOptions>;
 }
 
 export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {
