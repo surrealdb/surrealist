@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.7.5 Nightly 1
+- Support for SurrealDB nightly (Commit 860796b)
+- Experimental support for connecting to remote HTTP endpoints
+	- The remote database no longer requires an SSL certificate
+
 ## 1.7.5 - Bug fixes
 - Remove UI zooming due to editor issues (#78)
 	- We intend to re-add this feature in the future once [upstream issues](https://github.com/tauri-apps/tauri/issues/3310) are resolved 
