@@ -10,36 +10,38 @@ import { runUpdateChecker } from './util/updater';
 import { updateTitle, watchNativeTheme } from './util/helpers';
 import { adapter } from './adapter';
 
-dayjs.extend(relativeTime);
+(async () => {
+	dayjs.extend(relativeTime);
 
-// Load existing config
-const config = await adapter.loadConfig();
+	// Load existing config
+	const config = await adapter.loadConfig();
 
-store.dispatch(actions.initialize(config));
+	store.dispatch(actions.initialize(config));
 
-const { lastPromptedVersion, updateChecker } = store.getState().config;
+	const { lastPromptedVersion, updateChecker } = store.getState().config;
 
-// Check for updates
-if (adapter.isUpdateCheckSupported && updateChecker) {
-	runUpdateChecker(lastPromptedVersion, false);
-}
+	// Check for updates
+	if (adapter.isUpdateCheckSupported && updateChecker) {
+		runUpdateChecker(lastPromptedVersion, false);
+	}
 
-// Apply initial title
-updateTitle();
+	// Apply initial title
+	updateTitle();
 
-// Render the app component
-const root = document.querySelector('#root')!;
+	// Render the app component
+	const root = document.querySelector('#root')!;
 
-createRoot(root).render(
-	<Provider store={store}>
-		<App />
-	</Provider>
-);
+	createRoot(root).render(
+		<Provider store={store}>
+			<App />
+		</Provider>
+	);
 
-// Init monaco
-const monaco = await loader.init();
+	// Init monaco
+	const monaco = await loader.init();
 
-initializeEditor(monaco);
-	
-// Listen for theme changes
-watchNativeTheme();
+	initializeEditor(monaco);
+		
+	// Listen for theme changes
+	watchNativeTheme();
+})();
