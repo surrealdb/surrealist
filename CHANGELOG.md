@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.7.5 - Bug fixes
+- Remove UI zooming due to editor issues (#78)
+	- We intend to re-add this feature in the future once [upstream issues](https://github.com/tauri-apps/tauri/issues/3310) are resolved 
+- More accurately report on local database launch failures (#76)
+	- The console panel can now be toggled at any time allowing you to see potential errors
+- Add refresh button to inspector panel
+- Respect XDG_CONFIG_HOME for locating the settings file (#67)
+- Fix some panel sizing issues
+
 ## 1.7.4 - Inspector history
 - Added back and forward buttons to the inspector panel
 	- More easily navigate when editing multiple records

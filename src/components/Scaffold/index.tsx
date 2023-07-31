@@ -398,14 +398,12 @@ export function Scaffold() {
 										Connection details incomplete
 									</Text>
 								)}
-								{/* {(servePending || isServing) && !showConsole && ( */}
-									<ActionIcon
-										onClick={revealConsole}
-										title="Toggle console"
-									>
-										<Icon color="light.4" path={mdiConsole} />
-									</ActionIcon>
-								{/* )} */}
+								<ActionIcon
+									onClick={revealConsole}
+									title="Toggle console"
+								>
+									<Icon color="light.4" path={mdiConsole} />
+								</ActionIcon>
 								{isConnected && (
 									<ActionIcon
 										onClick={closeConnection}
