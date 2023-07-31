@@ -202,7 +202,8 @@ const DataCellTypes = [
 
 export function renderDataCell(value: any, openRecord?: OpenFn): ReactNode {
 	for (const type of DataCellTypes) {
-		if (value.test(type)) {
+		// eslint-disable-next-line unicorn/prefer-regexp-test
+		if (type.match(value)) {
 			return type.component({
 				value,
 				openRecord
