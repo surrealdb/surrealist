@@ -107,10 +107,11 @@ jobs:
           draft: true
           title: "v${{ needs.version.outputs.version }}"
           files: |
-            ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
-            ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
-            ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
-            ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-darwin.dmg
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-linux.AppImage
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-linux.deb
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-windows.msi
       
-      - name: Publish web app (Linux)
-        uses: actions/deploy-pages@v1
+      # - name: Publish web app (Linux)
+      #   uses: actions/deploy-pages@v1
+      #   if: contains(github.ref, 'nightly')
