@@ -125,7 +125,7 @@ export function initializeEditor(monaco: Monaco) {
 					};
 				}
 
-				const tables = Object.keys(result.tb);
+				const tables = Object.keys(result.tables ?? result.tb);
 				const suggestions = tables.map(table => ({
 					label: table,
 					insertText: table,

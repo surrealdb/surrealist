@@ -52,7 +52,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 			return [];
 		}
 		
-		return Object.keys(dbResult.tb).map(name => ({
+		return Object.keys(dbResult.tables ?? dbResult.tb).map(name => ({
 			schema: {
 				name: name,
 				view: null,
