@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 import { baseEditorConfig, configureQueryEditor } from "~/util/editor";
 import { Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
-import Editor from "@monaco-editor/react";
+import Editor, {Monaco} from "@monaco-editor/react";
 
 export interface VariablesPaneProps {
 	onExecuteQuery: () => void;
@@ -46,8 +46,12 @@ export function VariablesPane(props: VariablesPaneProps) {
 		}
 	});
 
-	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
+	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
+
+		setTimeout(() => {
+			root.editor.remeasureFonts();
+		}, 1000);
 	});
 
 	const options = useMemo<editor.IStandaloneEditorConstructionOptions>(() => {

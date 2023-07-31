@@ -31,18 +31,6 @@ let global: Monaco;
 export function initializeEditor(monaco: Monaco) {
 	global = monaco;
 
-	// monaco is truly inept at handling font loading hence
-	// this monstrous hack to force it to remeasure fonts
-	document.fonts.ready.then(() => {
-		const task = setInterval(() => {
-			monaco.editor.remeasureFonts();
-		}, 1000);
-
-		setTimeout(() => {
-			clearInterval(task);
-		}, 1000 * 15);
-	});
-
 	monaco.editor.defineTheme('surrealist', {
 		base: 'vs',
 		inherit: true,

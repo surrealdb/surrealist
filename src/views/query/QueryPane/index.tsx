@@ -71,6 +71,10 @@ export function QueryPane(props: QueryPaneProps) {
 	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
 
+		setTimeout(() => {
+			root.editor.remeasureFonts();
+		}, 1000);
+
 		controls.current = [root, editor];
 
 		updateValidation();
