@@ -388,7 +388,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 															styles={{
 																input: {
 																	fontWeight: 600,
-																	color: 'white',
+																	color: isLight ? 'black' : 'white',
 																	maxWidth: 150,
 																	padding: 0,
 																	margin: 0,
