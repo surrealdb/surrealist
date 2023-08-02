@@ -44,7 +44,7 @@ pub fn load_config() -> String {
         }
     }
 
-    return result;
+    result
 }
 
 #[tauri::command]
