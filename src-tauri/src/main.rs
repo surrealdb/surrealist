@@ -9,8 +9,8 @@ use tauri::{Manager, RunEvent};
 
 mod config;
 mod database;
-mod schema;
 mod query;
+mod schema;
 
 fn main() {
     tauri::Builder::default()
@@ -28,14 +28,14 @@ fn main() {
             schema::validate_where_clause,
             database::start_database,
             database::stop_database,
-			query::open_connection,
-			query::close_connection,
-			query::execute_query,
+            query::open_connection,
+            query::close_connection,
+            query::execute_query,
         ])
         .build(tauri::generate_context!())
         .expect("tauri should start successfully")
-        .run(move |app, event| match event {
-            RunEvent::Exit => {
+        .run(move |app, event| {
+            if let RunEvent::Exit = event {
                 let state = app.state::<DatabaseState>();
                 let process = state.0.lock().unwrap().take();
 
@@ -43,6 +43,5 @@ fn main() {
                     database::kill_surreal_process(child.id())
                 }
             }
-            _ => {}
         })
 }
