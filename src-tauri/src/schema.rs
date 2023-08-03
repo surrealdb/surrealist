@@ -26,7 +26,7 @@ pub struct ScopeInfo {
     pub session: String,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn extract_scope_definition(definition: &str) -> Result<ScopeInfo, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
@@ -73,7 +73,7 @@ pub struct TableInfo {
     pub permissions: PermissionInfo,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn extract_table_definition(definition: &str) -> Result<TableInfo, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
@@ -107,7 +107,7 @@ pub struct FieldInfo {
     pub permissions: PermissionInfo,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn extract_field_definition(definition: &str) -> Result<FieldInfo, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
@@ -132,7 +132,7 @@ pub struct IndexInfo {
     pub unique: bool,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn extract_index_definition(definition: &str) -> Result<IndexInfo, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
@@ -155,7 +155,7 @@ pub struct EventInfo {
     pub then: String,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
@@ -173,7 +173,7 @@ pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
     Err(String::from("Failed to extract event"))
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn validate_query(query: &str) -> Option<String> {
     let parsed = parse(query);
 
@@ -183,7 +183,7 @@ pub fn validate_query(query: &str) -> Option<String> {
     }
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn validate_where_clause(clause: &str) -> bool {
     let query = "SELECT * FROM table WHERE ".to_owned() + clause;
 
