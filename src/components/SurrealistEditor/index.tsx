@@ -19,7 +19,8 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 		<div
 			style={{
 				...props.style,
-				fontFamily: 'JetBrains Mono'
+				fontFamily: 'JetBrains Mono',
+				height: '100%'
 			}}
 		>
 			<Editor
