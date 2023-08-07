@@ -38,21 +38,21 @@ export function App() {
 		getMonaco()?.editor?.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
 	}, [colorScheme, monacoLoaded]);
 
-	const zoomInstructions = {
+	const fontZoomInstructions = {
 		increase: () => store.dispatch(actions.increaseFontZoomLevel()),
 		decrease: () => store.dispatch(actions.decreaseFontZoomLevel()),
 		reset: () => store.dispatch(actions.resetFontZoomLevel()),
 	};
 
 	useHotkeys([
-		['ctrl+alt+equal', zoomInstructions.increase],
-		['cmd+alt+equal', zoomInstructions.increase],
+		['ctrl+alt+equal', fontZoomInstructions.increase],
+		['cmd+alt+equal', fontZoomInstructions.increase],
 
-		['ctrl+alt+minus', zoomInstructions.decrease],
-		['cmd+alt+minus', zoomInstructions.decrease],
+		['ctrl+alt+minus', fontZoomInstructions.decrease],
+		['cmd+alt+minus', fontZoomInstructions.decrease],
 
-		['ctrl+alt+0', zoomInstructions.reset],
-		['cmd+alt+0', zoomInstructions.reset],
+		['ctrl+alt+0', fontZoomInstructions.reset],
+		['cmd+alt+0', fontZoomInstructions.reset],
 	]);
 
 	return (
