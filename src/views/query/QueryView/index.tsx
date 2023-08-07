@@ -16,6 +16,7 @@ export function QueryView(props: QueryViewProps) {
 	const queryListing = useStoreValue(state => state.config.queryListing);
 
 	const [splitValues, setSplitValues] = useState<SplitValues>([450, undefined]);
+	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
 	
 	return (
 		<Splitter
@@ -27,6 +28,8 @@ export function QueryView(props: QueryViewProps) {
 			startPane={
 				<Splitter
 					minSize={120}
+					values={innerSplitValues}
+					onChange={setInnerSplitValues}
 					bufferSize={0}
 					direction="vertical"
 					endPane={
