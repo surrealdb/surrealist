@@ -12,6 +12,7 @@ import { MouseEvent, useEffect } from "react";
 import { open } from "@tauri-apps/api/shell";
 import { DARK_THEME, LIGHT_THEME, getMonaco } from "~/util/editor";
 import { useIsLight } from "~/hooks/theme";
+import { useHotkeys } from "@mantine/hooks";
 
 export function App() {
 	const update = useStoreValue(state => state.availableUpdate);
@@ -36,6 +37,23 @@ export function App() {
 	useEffect(() => {
 		getMonaco()?.editor?.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
 	}, [colorScheme, monacoLoaded]);
+
+	const zoomInstructions = {
+		increase: () => store.dispatch(actions.increaseFontZoomLevel()),
+		decrease: () => store.dispatch(actions.decreaseFontZoomLevel()),
+		reset: () => store.dispatch(actions.resetFontZoomLevel()),
+	};
+
+	useHotkeys([
+		['ctrl+alt+equal', zoomInstructions.increase],
+		['cmd+alt+equal', zoomInstructions.increase],
+
+		['ctrl+alt+minus', zoomInstructions.decrease],
+		['cmd+alt+minus', zoomInstructions.decrease],
+
+		['ctrl+alt+0', zoomInstructions.reset],
+		['cmd+alt+0', zoomInstructions.reset],
+	]);
 
 	return (
 		<MantineProvider

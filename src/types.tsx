@@ -33,6 +33,7 @@ export interface SurrealistConfig {
 	updateChecker: boolean;
 	queryListing: QueryListing;
 	resultListing: ResultListing;
+	fontZoomLevel: number;
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	tabSearch: boolean;

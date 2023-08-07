@@ -248,6 +248,18 @@ const mainSlice = createSlice({
 			state.config.resultListing = action.payload;
 		},
 
+		increaseFontZoomLevel(state) {
+			state.config.fontZoomLevel = Math.min(state.config.fontZoomLevel + 0.1, 2);
+		},
+
+		decreaseFontZoomLevel(state) {
+			state.config.fontZoomLevel = Math.max(state.config.fontZoomLevel - 0.1, 0.5);
+		},
+
+		resetFontZoomLevel(state) {
+			state.config.fontZoomLevel = 1;
+		},
+
 		setDatabaseSchema(state, action: PayloadAction<TableDefinition[]>) {
 			state.databaseSchema = action.payload;
 		},

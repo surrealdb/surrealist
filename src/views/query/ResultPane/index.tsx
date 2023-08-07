@@ -14,9 +14,10 @@ import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 interface PreviewProps {
 	result: any;
+	fontSize: number;
 }
 
-function JsonPreview({ result }: PreviewProps) {
+function JsonPreview({ result, fontSize }: PreviewProps) {
 	const wordWrap = useStoreValue(state => state.config.wordWrap);
 
 	const contents = useMemo(() => {
@@ -29,7 +30,8 @@ function JsonPreview({ result }: PreviewProps) {
 			value={contents}
 			options={{
 				readOnly: true,
-				wordWrap: wordWrap ? 'on' : 'off'
+				wordWrap: wordWrap ? 'on' : 'off',
+				fontSize,
 			}}
 		/>
 	);
@@ -38,6 +40,7 @@ function JsonPreview({ result }: PreviewProps) {
 export function ResultPane() {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
+	const fontZoomLevel = useStoreValue(state => state.config.fontZoomLevel);
 	const resultListing = useStoreValue(state => state.config.resultListing);
 	const results = activeTab?.lastResponse || [];
 
@@ -120,7 +123,7 @@ export function ResultPane() {
 						) : resultListing == 'table' ? (
 							<DataTable data={result.result} />
 						) : (
-							<JsonPreview result={result.result} />
+							<JsonPreview result={result.result} fontSize={14 * fontZoomLevel} />
 						))}
 					</>
 				) : (

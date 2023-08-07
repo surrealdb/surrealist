@@ -8,7 +8,6 @@ import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor } from "~/util/editor";
-import { useIsLight } from "~/hooks/theme";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { adapter } from "~/adapter";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
@@ -23,6 +22,7 @@ export function QueryPane(props: QueryPaneProps) {
 	const activeTab = useActiveTab();
 	const controls = useRef<[Monaco, editor.IStandaloneCodeEditor]>();
 	const doErrorCheck = useStoreValue(state => state.config.errorChecking);
+	const fontZoomLevel = useStoreValue(state => state.config.fontZoomLevel);
 
 	if (!activeTab) {
 		throw new Error('This should not happen');
@@ -113,6 +113,7 @@ export function QueryPane(props: QueryPaneProps) {
 					wordBasedSuggestions: false,
 					wrappingStrategy: 'advanced',
 					wordWrap: 'on',
+					fontSize: 14 * fontZoomLevel,
 				}}
 			/>
 		</Panel>
