@@ -21,7 +21,7 @@ import { ViewMode } from '~/types';
 import { VisualizerView } from '~/views/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
 import { VIEW_MODES } from '~/constants';
-import { DesignerView } from '~/views/designer2/DesignerView';
+import { DesignerView } from '~/views/designer/DesignerView';
 import { AuthenticationView } from '~/views/authentication/AuthenticationView';
 import { adapter } from '~/adapter';
 import { DesktopAdapter } from '~/adapter/desktop';
