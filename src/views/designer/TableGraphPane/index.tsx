@@ -1,8 +1,10 @@
-import { Button, Stack } from "@mantine/core";
-import { mdiAdjust } from "@mdi/js";
+import { ActionIcon, Button, Group, Stack } from "@mantine/core";
+import { mdiAdjust, mdiDownload, mdiPlus, mdiRefresh } from "@mdi/js";
 import { ElementRef, useEffect, useRef } from "react";
+import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { TableDefinition } from "~/types";
+import { fetchDatabaseSchema } from "~/util/schema";
 
 export interface TableGraphPaneProps {
 	tables: TableDefinition[];
@@ -20,6 +22,26 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		<Panel
 			title="Table Graph"
 			icon={mdiAdjust}
+			rightSection={
+				<Group noWrap>
+					<ActionIcon
+						title="Refresh"
+					>
+						<Icon color="light.4" path={mdiDownload} />
+					</ActionIcon>
+					<ActionIcon
+						title="Refresh"
+						onClick={fetchDatabaseSchema}
+					>
+						<Icon color="light.4" path={mdiRefresh} />
+					</ActionIcon>
+					<ActionIcon
+						title="Create"
+					>
+						<Icon color="light.4" path={mdiPlus} />
+					</ActionIcon>
+				</Group>
+			}
 		>
 			<Stack maw={280} mah="calc(100vh - 500px)" style={{ overflowY: 'scroll' }}>
 				{props.tables.map(table => (
