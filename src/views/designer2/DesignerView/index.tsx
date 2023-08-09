@@ -3,6 +3,7 @@ import { SplitValues, Splitter } from "~/components/Splitter";
 import { useStoreValue } from "~/store";
 import { DesignPane } from "../DesignPane";
 import { TableGraphPane } from "../TableGraphPane";
+import { useStable } from "~/hooks/stable";
 
 const SPLIT_SIZE: SplitValues = [undefined, 450];
 
@@ -18,6 +19,10 @@ export function DesignerView(props: DesignerViewProps) {
 		return tables.find(table => table.schema.name === activeTable) || null;
 	}, [tables, activeTable]);
 
+	const closeActiveTable = useStable(() => {
+		setActiveTable(null);
+	});
+
 	return (
 		<Splitter
 			minSize={SPLIT_SIZE}
@@ -29,6 +34,7 @@ export function DesignerView(props: DesignerViewProps) {
 				tableSchema && (
 					<DesignPane
 						table={tableSchema}
+						onClose={closeActiveTable}
 					/>
 				)
 			}

@@ -72,6 +72,7 @@ export const SaveBox = ({ value, valid, onRevert, onPatch, onSave, onChangedStat
 		<Group
 			spacing={10}
 			align="center"
+			position="apart"
 		>
 			<Button
 				rightIcon={<Icon path={mdiCheck} size={1} />}

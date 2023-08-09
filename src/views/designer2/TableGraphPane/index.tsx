@@ -1,3 +1,4 @@
+import { Button, Stack } from "@mantine/core";
 import { mdiAdjust } from "@mdi/js";
 import { ElementRef, useEffect, useRef } from "react";
 import { Panel } from "~/components/Panel";
@@ -20,7 +21,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			title="Table Graph"
 			icon={mdiAdjust}
 		>
-			<div ref={ref} />
+			<Stack maw={280} mah="calc(100vh - 500px)" style={{ overflowY: 'scroll' }}>
+				{props.tables.map(table => (
+					<Button
+						key={table.schema.name}
+						onClick={() => props.setActiveTable(table.schema.name)}
+						py="xs"
+					>
+						{table.schema.name}
+					</Button>
+				))}
+			</Stack>
 		</Panel>
 	);
 }
