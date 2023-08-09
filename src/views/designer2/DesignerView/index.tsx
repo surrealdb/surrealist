@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { SplitValues, Splitter } from "~/components/Splitter";
 import { useStoreValue } from "~/store";
 import { DesignPane } from "../DesignPane";
-import { VisualizerPane } from "../VisualizerPane";
+import { TableGraphPane } from "../TableGraphPane";
 
 const SPLIT_SIZE: SplitValues = [undefined, 450];
 
@@ -33,7 +33,7 @@ export function DesignerView(props: DesignerViewProps) {
 				)
 			}
 		>
-			<VisualizerPane
+			<TableGraphPane
 				tables={tables}
 				setActiveTable={setActiveTable}
 			/>

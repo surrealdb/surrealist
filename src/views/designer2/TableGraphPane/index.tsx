@@ -3,12 +3,12 @@ import { ElementRef, useEffect, useRef } from "react";
 import { Panel } from "~/components/Panel";
 import { TableDefinition } from "~/types";
 
-export interface VisualizerPaneProps {
+export interface TableGraphPaneProps {
 	tables: TableDefinition[];
 	setActiveTable: (table: string) => void;
 }
 
-export function VisualizerPane(props: VisualizerPaneProps) {
+export function TableGraphPane(props: TableGraphPaneProps) {
 	const ref = useRef<ElementRef<'div'>>(null);
 
 	useEffect(() => {
