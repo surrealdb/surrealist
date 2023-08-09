@@ -25,6 +25,7 @@
 		"@mantine/core": "^5.9.3",
 		"@mantine/hooks": "^5.9.3",
 		"@mantine/notifications": "^5.9.4",
+		"@maxgraph/core": "^0.3.0",
 		"@mdi/js": "^7.0.96",
 		"@monaco-editor/react": "^4.5.1",
 		"@reduxjs/toolkit": "^1.9.1",
