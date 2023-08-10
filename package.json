@@ -38,6 +38,7 @@
 		"graphology": "^0.25.1",
 		"graphology-layout": "^0.6.1",
 		"graphology-layout-forceatlas2": "^0.10.1",
+		"html-to-image": "^1.11.11",
 		"immer": "^9.0.16",
 		"klona": "^2.0.6",
 		"monaco-editor": "^0.40.0",

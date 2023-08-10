@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Trigger a new render and invoke the passed function
@@ -8,17 +8,19 @@ import { useCallback, useEffect, useState } from "react";
  * @param doLater The callback to invoke
  * @returns The function to trigger invocation
  */
-export function useLater(doLater: () => unknown): () => void {
+export function useLater<T extends any[]>(doLater: (...args: T) => unknown): (...args: T) => void {
 	const [shouldFire, setShouldFire] = useState(false);
+	const argsRef = useRef<T>();
 
 	useEffect(() => {
 		if (shouldFire) {
-			doLater();
+			doLater(...argsRef.current!);
 			setShouldFire(false);
 		}
 	}, [doLater, shouldFire]);
 
-	return useCallback(() => {
+	return useCallback((...args) => {
 		setShouldFire(true);
+		argsRef.current = args;
 	}, []);
 }
