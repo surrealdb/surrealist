@@ -32,14 +32,27 @@ export function TableCreator() {
 	const createTable = useStable(async () => {
 		const surreal = adapter.getActiveSurreal();
 
-		let query = `DEFINE TABLE ${tableName};`;
+		// TODO Remove legacy support in beta 10
+		
+		try {
+			let query = `DEFINE TABLE ${tableName};`;
 
-		if (createType === 'relation') {
-			query += 'DEFINE FIELD in ON ' + tableName + ' TYPE record(' + tableIn.join(',') + ');';
-			query += 'DEFINE FIELD out ON ' + tableName + ' TYPE record(' + tableOut.join(',') + ');';
+			if (createType === 'relation') {
+				query += 'DEFINE FIELD in ON ' + tableName + ' TYPE record<' + tableIn.join('|') + '>;';
+				query += 'DEFINE FIELD out ON ' + tableName + ' TYPE record<' + tableOut.join('|') + '>;';
+			}
+
+			await surreal.query(query);
+		} catch {
+			let query = `DEFINE TABLE ${tableName};`;
+
+			if (createType === 'relation') {
+				query += 'DEFINE FIELD in ON ' + tableName + ' TYPE record(' + tableIn.join(',') + ');';
+				query += 'DEFINE FIELD out ON ' + tableName + ' TYPE record(' + tableOut.join(',') + ');';
+			}
+
+			await surreal.query(query);
 		}
-
-		await surreal.query(query);
 
 		closeCreator();
 		fetchDatabaseSchema();
