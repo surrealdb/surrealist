@@ -5,6 +5,7 @@ import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { TableDefinition } from "~/types";
 import { LIGHT_TEXT_1 } from "~/util/theme";
+import { useHandleStyle } from "../hooks";
 
 interface EdgeNodeProps {
 	data: {
@@ -18,6 +19,7 @@ export function EdgeNode({ data }: EdgeNodeProps) {
 	const { table, isSelected } = data;
 
 	const isLight = useIsLight();
+	const handleStyle = useHandleStyle();
 	const primaryColor = theme.fn.primaryColor();
 
 	return <>
@@ -25,6 +27,7 @@ export function EdgeNode({ data }: EdgeNodeProps) {
 			type="target"
 			position={Position.Left}
 			isConnectable={false}
+			style={handleStyle}
 		/>
 		
 		<Paper
@@ -34,11 +37,11 @@ export function EdgeNode({ data }: EdgeNodeProps) {
 			radius="md"
 			style={{
 				backgroundColor: isLight ? white : colors.dark[6],
-				border: `2px solid ${isSelected ? primaryColor : 'transparent'}`
+				border: `2px solid ${isSelected ? primaryColor : isLight ? colors.light[2] : colors.dark[6]}`
 			}}
 		>
 			<Group
-				style={{ color: white }}
+				style={{ color: isLight ? undefined : white }}
 				position="center"
 				spacing="xs"
 			>
@@ -60,7 +63,7 @@ export function EdgeNode({ data }: EdgeNodeProps) {
 			>
 				{table.fields.map(field => (
 					<Flex key={field.name} justify="space-between">
-						<Text color={white}>{field.name}</Text>
+						<Text color={isLight ? undefined : white}>{field.name}</Text>
 						<Text color={isLight ? "dimmed" : colors.dark[3]}>{field.kind}</Text>
 					</Flex>
 				))}
@@ -71,6 +74,7 @@ export function EdgeNode({ data }: EdgeNodeProps) {
 			type="source"
 			position={Position.Right}
 			isConnectable={false}
+			style={handleStyle}
 		/>
 	</>;
 }

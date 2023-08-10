@@ -2,6 +2,7 @@ import { Flex, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
 import { Handle, Position } from "reactflow";
 import { useIsLight } from "~/hooks/theme";
 import { TableDefinition } from "~/types";
+import { useHandleStyle } from "../hooks";
 
 interface TableNodeProps {
 	data: {
@@ -13,15 +14,18 @@ interface TableNodeProps {
 export function TableNode({ data }: TableNodeProps) {
 	const { colors, white, ...theme } = useMantineTheme();
 	const { table, isSelected } = data;
-
+	
 	const isLight = useIsLight();
+	const handleStyle = useHandleStyle();
 	const primaryColor = theme.fn.primaryColor();
 
 	return <>
 		<Handle
 			type="target"
 			position={Position.Left}
+			style={handleStyle}
 		/>
+
 		<Paper
 			w={250}
 			p={8}
@@ -29,7 +33,7 @@ export function TableNode({ data }: TableNodeProps) {
 			radius="md"
 			style={{
 				backgroundColor: isLight ? white : colors.dark[6],
-				border: `2px solid ${isSelected ? primaryColor : 'transparent'}`
+				border: `2px solid ${isSelected ? primaryColor : isLight ? colors.light[2] : colors.dark[6]}`
 			}}
 		>
 			<Paper p={2} style={{ color: white, backgroundColor: primaryColor }}>
@@ -51,7 +55,7 @@ export function TableNode({ data }: TableNodeProps) {
 				)}
 				{table.fields.map(field => (
 					<Flex key={field.name} justify="space-between">
-						<Text color={white}>{field.name}</Text>
+						<Text color={isLight ? undefined : white}>{field.name}</Text>
 						<Text color={isLight ? "dimmed" : colors.dark[3]}>{field.kind}</Text>
 					</Flex>
 				))}
@@ -61,6 +65,7 @@ export function TableNode({ data }: TableNodeProps) {
 		<Handle
 			type="source"
 			position={Position.Right}
+			style={handleStyle}
 		/>
 	</>;
 }
