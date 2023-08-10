@@ -13,6 +13,7 @@ export interface QueryInputProps extends TextareaProps {
 }
 
 export function QueryInput(props: QueryInputProps) {
+	const { onChangeText, ...rest } = props;
 	const isLight = useIsLight();
 
 	const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -28,16 +29,16 @@ export function QueryInput(props: QueryInputProps) {
 	});
 
 	const saveEditor = useStable(() => {
-		if (props.onChangeText) {
-			props.onChangeText(editorText || '');
+		if (onChangeText) {
+			onChangeText(editorText || '');
 		}
 
 		closeEditor();
 	});
 
 	const propagateChange = useStable((e: ChangeEvent<HTMLTextAreaElement>) => {
-		if (props.onChangeText) {
-			props.onChangeText(e.target.value);
+		if (onChangeText) {
+			onChangeText(e.target.value);
 		}
 	});
 
@@ -48,7 +49,7 @@ export function QueryInput(props: QueryInputProps) {
 			<Textarea
 				label="Query input"
 				rightSectionWidth={44}
-				{...props}
+				{...rest}
 				minRows={1}
 				maxRows={1}
 				className={classes.input}

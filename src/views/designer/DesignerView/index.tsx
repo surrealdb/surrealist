@@ -41,6 +41,7 @@ export function DesignerView(props: DesignerViewProps) {
 		>
 			<TableGraphPane
 				tables={tables}
+				active={tableSchema}
 				setActiveTable={setActiveTable}
 			/>
 		</Splitter>
