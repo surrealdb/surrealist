@@ -108,6 +108,9 @@ This project is built using [Tauri](https://tauri.app) and [React](https://react
 - [Nodejs LTS](https://nodejs.org/en/)
 - [PNPM](https://pnpm.io/) (npm i -g pnpm)
 
+Additionally, on ubuntu you will need to install the following packages: \
+`apt install libjavascriptcoregtk-4.0-dev libsoup2.4-dev libwebkit2gtk-4.0-dev`
+
 ### Live Development
 
 To run in live development mode, run `npm run tauri:dev` in the project directory. This will run a Vite development
