@@ -397,12 +397,14 @@ export function Scaffold() {
 										Connection details incomplete
 									</Text>
 								)}
-								<ActionIcon
-									onClick={revealConsole}
-									title="Toggle console"
-								>
-									<Icon color="light.4" path={mdiConsole} />
-								</ActionIcon>
+								{isDesktop && (
+									<ActionIcon
+										onClick={revealConsole}
+										title="Toggle console"
+									>
+										<Icon color="light.4" path={mdiConsole} />
+									</ActionIcon>
+								)}
 								{isConnected && (
 									<ActionIcon
 										onClick={closeConnection}
@@ -442,7 +444,7 @@ export function Scaffold() {
 							minSize={100}
 							bufferSize={200}
 							direction="vertical"
-							endPane={enableConsole && (
+							endPane={isDesktop && enableConsole && (
 								<ConsolePane />
 							)}
 						>
