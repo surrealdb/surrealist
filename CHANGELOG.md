@@ -9,6 +9,7 @@
 	- `Ctrl + Alt + +` to zoom in
 	- `Ctrl + Alt + -` to zoom out
 	- `Ctrl + Alt + 0` to reset
+	- To use these shortcuts you must **not** have any editor focused, this is a limitation at the moment
 - Added explorer view table pinning
 	- Pinned tables will appear first in the list
 - Removed visualizer view in favor of the new designer view
