@@ -5,6 +5,7 @@ import { baseEditorConfig } from "~/util/editor";
 
 export interface SurrealistEditorProps extends EditorProps {
 	style?: CSSProperties;
+	noExpand?: boolean;
 }
 
 export function SurrealistEditor(props: SurrealistEditorProps) {
@@ -13,14 +14,14 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 	const options = {
 		...baseEditorConfig,
 		...props.options,
-	}
+	};
 
 	return (
 		<div
 			style={{
 				...props.style,
 				fontFamily: 'JetBrains Mono',
-				height: '100%'
+				height: props.noExpand ? undefined : '100%'
 			}}
 		>
 			<Editor
@@ -29,5 +30,5 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 				options={options}
 			/>
 		</div>
-	)
+	);
 }
