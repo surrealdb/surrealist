@@ -8,12 +8,14 @@ interface TableNodeProps {
 	data: {
 		table: TableDefinition;
 		isSelected: boolean;
+		hasLeftEdge: boolean;
+		hasRightEdge: boolean;
 	}
 }
 
 export function TableNode({ data }: TableNodeProps) {
 	const { colors, white, ...theme } = useMantineTheme();
-	const { table, isSelected } = data;
+	const { table, isSelected, hasLeftEdge, hasRightEdge } = data;
 	
 	const isLight = useIsLight();
 	const handleStyle = useHandleStyle();
@@ -23,7 +25,11 @@ export function TableNode({ data }: TableNodeProps) {
 		<Handle
 			type="target"
 			position={Position.Left}
-			style={handleStyle}
+			isConnectable={false}
+			style={{
+				...handleStyle,
+				visibility: hasLeftEdge ? 'visible' : 'hidden'
+			}}
 		/>
 
 		<Paper
@@ -65,7 +71,11 @@ export function TableNode({ data }: TableNodeProps) {
 		<Handle
 			type="source"
 			position={Position.Right}
-			style={handleStyle}
+			isConnectable={false}
+			style={{
+				...handleStyle,
+				visibility: hasRightEdge ? 'visible' : 'hidden'
+			}}
 		/>
 	</>;
 }

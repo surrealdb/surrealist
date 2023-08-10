@@ -38,8 +38,6 @@ export function buildTableGraph(
 	const graph = new dagere.graphlib.Graph();
 	const edges: Edge[] = [];
 	const nodes: Node[] = [];
-	const nodeWidth = 310;
-	const nodeHeight = 39;
 
 	// Configure layout
 	graph.setDefaultEdgeLabel(() => ({}));
@@ -56,13 +54,15 @@ export function buildTableGraph(
 			draggable: false,
 			data: {
 				table,
-				isSelected: active?.schema.name == table.schema.name
+				isSelected: active?.schema.name == table.schema.name,
+				hasLeftEdge: false,
+				hasRightEdge: false
 			}
 		});
 
 		graph.setNode(table.schema.name, {
-			width: nodeWidth,
-			height: nodeHeight
+			width: 310,
+			height: 50 + (table.fields.length * 34)
 		});
 	}
 
@@ -78,9 +78,13 @@ export function buildTableGraph(
 				focusable: false
 			});
 
-			console.log('from edge', fromTable, table.schema.name);
-
 			graph.setEdge(fromTable, table.schema.name);
+
+			const node = nodes.find(node => node.id == fromTable);
+
+			if (node) {
+				node.data.hasRightEdge = true;
+			}
 		}
 
 		for (const toTable of to) {
@@ -91,9 +95,13 @@ export function buildTableGraph(
 				focusable: false
 			});
 
-			console.log('to edge', table.schema.name, toTable);
-
 			graph.setEdge(table.schema.name, toTable);
+
+			const node = nodes.find(node => node.id == toTable);
+
+			if (node) {
+				node.data.hasLeftEdge = true;
+			}
 		}
 	}
 
@@ -105,8 +113,8 @@ export function buildTableGraph(
 		const nodeWithPosition = graph.node(node.id);
 
 		node.position = {
-			x: nodeWithPosition.x - nodeWidth / 2,
-			y: nodeWithPosition.y - nodeHeight / 2,
+			x: nodeWithPosition.x - nodeWithPosition.width / 2,
+			y: nodeWithPosition.y - nodeWithPosition.height / 2,
 		};
 	}
 
