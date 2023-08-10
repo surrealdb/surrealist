@@ -1,5 +1,26 @@
 # Change Log
 
+## 1.8.0 - Designer Redesign
+- Overhauled the designer view
+	- Displays tables in a visual graph
+	- Select a table to view and modify its schema
+	- Save the graph as a PNG image
+- Added editor font zooming
+	- `Ctrl + Alt + +` to zoom in
+	- `Ctrl + Alt + -` to zoom out
+	- `Ctrl + Alt + 0` to reset
+- Added explorer view table pinning
+	- Pinned tables will appear first in the list
+- Removed visualizer view in favor of the new designer view
+- Fixed instances of cursor misplacement within editors
+- Fixed various schema parsing issues
+- Fixed light theme issues (#82)
+- Fixed UI freezing when writing large queries (#87)
+- Fixed variables pane rarely resetting it's size
+- Fixed console panel rendering in the web app
+- Fixed light theme not always using the right editor color scheme
+- Fixed explorer contents persisting after disconnect
+
 ## 1.7.5 - Bug fixes
 - Remove UI zooming due to editor issues (#78)
 	- We intend to re-add this feature in the future once [upstream issues](https://github.com/tauri-apps/tauri/issues/3310) are resolved 
