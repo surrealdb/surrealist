@@ -27,7 +27,6 @@ export interface ExplorerPaneProps {
 	activeRecordId: string | null;
 	onSelectRecord: OpenFn;
 	onRequestCreate: () => void;
-	onTogglePin: () => void;
 }
 
 export function ExplorerPane(props: ExplorerPaneProps) {
