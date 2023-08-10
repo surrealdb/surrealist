@@ -3,6 +3,7 @@ import { mdiCircle, mdiClose, mdiPlus } from "@mdi/js";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { useLater } from "~/hooks/later";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 
@@ -32,6 +33,17 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 	const handleRemove = useStable((e: React.MouseEvent, index: number) => {
 		e.stopPropagation();
 		props.onRemove(index);
+	});
+
+	const openLatest = useStable(() => {
+		openEditor(props.value.length - 1);
+	});
+
+	const scheduleOpenLatest = useLater(openLatest);
+
+	const handleCreate = useStable(() => {
+		props.onCreate();
+		scheduleOpenLatest();
 	});
 
 	const editingData = props.value[editingIndex];
@@ -87,7 +99,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				fullWidth
 				variant="outline"
 				rightIcon={<Icon path={mdiPlus} />}
-				onClick={props.onCreate}
+				onClick={handleCreate}
 			>
 				Add {props.name}
 			</Button>
@@ -107,10 +119,11 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 					{editingData && props.children(editingData, editingIndex)}
 				</Stack>
 				<Group mt="xl">
+					<Spacer />
 					<Button
 						onClick={closeEditor}
 					>
-						Close
+						Save
 					</Button>
 				</Group>
 			</Modal>
