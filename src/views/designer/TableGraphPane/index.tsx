@@ -1,6 +1,6 @@
 import 'reactflow/dist/style.css';
-import { ActionIcon, Group, LoadingOverlay } from "@mantine/core";
-import { mdiAdjust, mdiDownload, mdiRefresh } from "@mdi/js";
+import { ActionIcon, Group, Kbd, LoadingOverlay, Modal, Text, Title } from "@mantine/core";
+import { mdiAdjust, mdiDownload, mdiHelpCircle, mdiPlus, mdiRefresh } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
@@ -17,6 +17,24 @@ import { useLater } from '~/hooks/later';
 import { useIsLight } from '~/hooks/theme';
 import { showNotification } from '@mantine/notifications';
 
+interface HelpTitleProps {
+	isLight: boolean;
+	children: React.ReactNode;
+}
+
+function HelpTitle({ isLight, children }: HelpTitleProps) {
+	return (
+		<Title
+			order={2}
+			size={14}
+			color={isLight ? 'light.7' : 'light.1'}
+			weight={600}
+		>
+			{children}
+		</Title>
+	);
+}
+
 export interface TableGraphPaneProps {
 	active: TableDefinition | null;
 	tables: TableDefinition[];
@@ -27,6 +45,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [showBackground, setShowBackground] = useState(true);
+	const [showHelp, setShowHelp] = useState(false);
 	const ref = useRef<ElementRef<'div'>>(null);
 	const isLight = useIsLight();
 
@@ -74,12 +93,27 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		scheduleSnapshot(filePath);
 	});
 
+	const openHelp = useStable(() => {
+		setShowHelp(true);
+	});
+
+	const closeHelp = useStable(() => {
+		setShowHelp(false);
+	});
+
 	return (
 		<Panel
 			title="Table Graph"
 			icon={mdiAdjust}
 			rightSection={
 				<Group noWrap>
+					<TableCreator />
+					<ActionIcon
+						title="Refresh"
+						onClick={fetchDatabaseSchema}
+					>
+						<Icon color="light.4" path={mdiRefresh} />
+					</ActionIcon>
 					<ActionIcon
 						title="Save as image"
 						onClick={saveImage}
@@ -87,12 +121,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						<Icon color="light.4" path={mdiDownload} />
 					</ActionIcon>
 					<ActionIcon
-						title="Refresh"
-						onClick={fetchDatabaseSchema}
+						title="Help"
+						onClick={openHelp}
 					>
-						<Icon color="light.4" path={mdiRefresh} />
+						<Icon color="light.4" path={mdiHelpCircle} />
 					</ActionIcon>
-					<TableCreator />
 				</Group>
 			}
 		>
@@ -119,6 +152,48 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					{showBackground && <Background />}
 				</ReactFlow>
 			</div>
+
+			<Modal
+				opened={showHelp}
+				onClose={closeHelp}
+				trapFocus={false}
+				size="lg"
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Using the Table Graph
+					</Title>
+				}
+			>
+				<Text color={isLight ? 'light.7' : 'light.3'}>
+					<HelpTitle isLight={isLight}>
+						How do I use the table graph?
+					</HelpTitle>
+
+					<Text mt={8} mb="xl">
+						The table graph will automatically render based on the tables in your database.
+						You can click on a table to view its details and modify it's schema. Changes made to the
+						schema will be reflected in the graph.
+					</Text>
+
+					<HelpTitle isLight={isLight}>
+						Why are edges missing?
+					</HelpTitle>
+
+					<Text mt={8} mb="xl">
+						Surrealist dermines edges by searching for correctly configured <Kbd>in</Kbd> and <Kbd>out</Kbd> fields.
+						You can automatically create a new edge table by pressing the <Icon path={mdiPlus}/> button on the Table Graph panel.
+					</Text>
+
+					<HelpTitle isLight={isLight}>
+						Can I save the graph as an image?
+					</HelpTitle>
+
+					<Text mt={8}>
+						Press the <Icon path={mdiDownload}/> button on the Table Graph panel to save the current graph as a PNG image. This snapshot
+						will use your current theme, position, and scale.
+					</Text>
+				</Text>
+			</Modal>
 		</Panel>
 	);
 }

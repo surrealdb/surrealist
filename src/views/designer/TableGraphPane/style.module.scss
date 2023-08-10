@@ -1,0 +1,17 @@
+.scroll-area {
+	position: absolute !important;
+	inset: 12px;
+	top: 0;
+
+	> div > div {
+		height: 100%;
+	}
+}
+
+.list {
+	padding-left: 24px;
+	
+	li::marker {
+		color: var(--mantine-color-surreal-5);
+	}
+}

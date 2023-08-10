@@ -61,7 +61,7 @@ export function TableCreator() {
 	return (
 		<>
 			<ActionIcon
-				title="Create"
+				title="Create table..."
 				onClick={openCreator}
 			>
 				<Icon color="light.4" path={mdiPlus} />
