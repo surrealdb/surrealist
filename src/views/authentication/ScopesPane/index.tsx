@@ -39,7 +39,7 @@ export function ScopePane(props: ScopePaneProps) {
 	const [editingSession, setEditingSession] = useInputState("");
 
 	const fetchScopes = useStable(async () => {
-		const response = await adapter.getActiveSurreal().query(`INFO FOR DB`);
+		const response = await adapter.getActiveSurreal().querySingle(`INFO FOR DB`);
 		const result = response[0].result;
 
 		if (!result) {

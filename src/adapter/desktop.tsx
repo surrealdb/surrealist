@@ -25,9 +25,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	#startTask: any;
 	#isPinned = false;
-	#connected = false;
+	#connecting = false;
 	#instance: SurrealHandle | null = null;
-	// #instance: SurrealHandle | null = null;
 
 	public constructor() {
 		this.initDatabaseEvents();
@@ -93,7 +92,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public async fetchSchema() {
 		const surreal = this.getActiveSurreal();
-		const dbResponse = await surreal.query("INFO FOR DB");
+		const dbResponse = await surreal.querySingle("INFO FOR DB");
 		const dbResult = dbResponse[0].result;
 
 		if (!dbResult) {
@@ -112,7 +111,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return [];
 		}
 
-		const tableData = await surreal.query(tableQuery);
+		const tableData = await surreal.querySingle(tableQuery);
 
 		return map(databaseInfo, async (table, index) => {
 			const tableInfo = tableData[index].result;
@@ -169,36 +168,73 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return invoke<boolean>("validate_where_clause", { clause });
 	}
 
+	public openSurreal(options: SurrealOptions): SurrealHandle {
+		if (this.#connecting) {
+			return this.#instance!;
+		}
+		 
+		this.#connecting = true;
+
+		const details = mapKeys(options.connection, key => snake(key));
+
+		invoke<any>('open_connection', { info: details }).then(() => {
+			options.onConnect?.();
+		}).catch(err => {
+			console.error('Failed to open connection', err);
+			options.onError?.(err);
+			options.onDisconnect?.(1000, 'Failed to open connection');
+		}).finally(() => {
+			this.#connecting = false;
+		});
+
+		const execQuery = (query: string, params: any) => {
+			return invoke<any>('execute_query', { query, params }).then(res => {
+				return JSON.parse(res);
+			});
+		}
+
+		const handle: SurrealHandle = {
+			close: () => {
+				invoke<void>('close_connection');
+				options.onDisconnect?.(1000, 'Closed by user');
+			},
+			query: async (query, params) => {
+				return execQuery(query, params);
+			},
+			querySingle: async (query) => {
+				const results = await execQuery(query, {}) as any[];
+
+				return results.map(res => {
+					return {
+						...res,
+						result: Array.isArray(res.result) ? res.result[0] : res.result
+					}
+				});
+			},
+		};
+
+		this.#instance = handle;
+
+		return handle;
+	}
+	
+	public getSurreal(): SurrealHandle | null {
+		return this.#instance;
+	}
+
+	public getActiveSurreal(): SurrealHandle {
+		if (!this.#instance) {
+			throw new Error("No active surreal instance");
+		}
+
+		return this.#instance;
+	}
+
 	// public openSurreal(options: SurrealOptions): SurrealHandle {
-	// 	this.#connected = false;
+	// 	this.#instance?.close();
+	// 	this.#instance = createLocalWebSocket(options);
 
-	// 	const details = mapKeys(options.connection, key => snake(key));
-
-	// 	invoke<any>('open_connection', { info: details }).then(() => {
-	// 		this.#connected = true;
-	// 		options.onConnect?.();
-	// 	}).catch(err => {
-	// 		console.error('Failed to open connection', err);
-	// 		options.onError?.(err);
-	// 		options.onDisconnect?.(1000, 'Failed to open connection');
-	// 	});
-
-	// 	const handle: SurrealHandle = {
-	// 		close: () => {
-	// 			invoke<void>('close_connection');
-	// 			this.#connected = false;
-	// 			options.onDisconnect?.(1000, 'Closed by user');
-	// 		},
-	// 		query(query, params) {
-	// 			return invoke<any>('execute_query', { query, params }).catch(err => {
-	// 				console.error(err);
-	// 			});
-	// 		},
-	// 	};
-
-	// 	this.#instance = handle;
-
-	// 	return handle;
+	// 	return this.#instance;
 	// }
 
 	// public getSurreal(): SurrealHandle | null {
@@ -212,25 +248,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	// 	return this.#instance;
 	// }
-
-	public openSurreal(options: SurrealOptions): SurrealHandle {
-		this.#instance?.close();
-		this.#instance = createLocalWebSocket(options);
-
-		return this.#instance;
-	}
-
-	public getSurreal(): SurrealHandle | null {
-		return this.#instance;
-	}
-
-	public getActiveSurreal(): SurrealHandle {
-		if (!this.#instance) {
-			throw new Error("No active surreal instance");
-		}
-
-		return this.#instance;
-	}
 
 	private initDatabaseEvents() {
 		listen("database:start", () => {

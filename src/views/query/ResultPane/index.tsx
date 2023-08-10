@@ -61,6 +61,8 @@ export function ResultPane() {
 	const listingIcon = resultListing == "table" ? mdiCodeJson : mdiTable;
 	const listingTitle = resultListing == "table" ? "Switch to JSON view" : "Switch to table view";
 
+	const showDivider = result?.result?.length > 0 || result?.time;
+
 	return (
 		<Panel
 			title={showTabs ? `Result #${resultTab}` : "Result"}
@@ -73,7 +75,12 @@ export function ResultPane() {
 								<Icon color="light.4" path={listingIcon} />
 							</ActionIcon>
 
-							<Divider orientation="vertical" color={isLight ? "light.0" : "dark.5"} />
+							{showDivider && (
+								<Divider
+									orientation="vertical"
+									color={isLight ? 'light.0' : 'dark.5'}
+								/>
+							)}
 						</>
 					)}
 
