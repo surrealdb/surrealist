@@ -51,7 +51,6 @@ export function buildTableGraph(
 			position: { x: 0, y: 0 },
 			sourcePosition: Position.Right,
 			targetPosition: Position.Left,
-			draggable: false,
 			data: {
 				table,
 				isSelected: active?.schema.name == table.schema.name,
@@ -74,8 +73,7 @@ export function buildTableGraph(
 			edges.push({
 				id: table.schema.name + fromTable,
 				source: fromTable,
-				target: table.schema.name,
-				focusable: false
+				target: table.schema.name
 			});
 
 			graph.setEdge(fromTable, table.schema.name);
@@ -113,8 +111,8 @@ export function buildTableGraph(
 		const nodeWithPosition = graph.node(node.id);
 
 		node.position = {
-			x: nodeWithPosition.x - nodeWithPosition.width / 2,
-			y: nodeWithPosition.y - nodeWithPosition.height / 2,
+			x: 50 + nodeWithPosition.x - nodeWithPosition.width / 2,
+			y: 50 + nodeWithPosition.y - nodeWithPosition.height / 2,
 		};
 	}
 

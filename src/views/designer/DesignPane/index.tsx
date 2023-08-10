@@ -1,6 +1,6 @@
-import { Accordion, ActionIcon, Box, Button, Checkbox, Collapse, Group, Modal, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Accordion, ActionIcon, Badge, Box, Button, Checkbox, Collapse, Group, Modal, MultiSelect, Paper, ScrollArea, Select, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
 import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
-import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { Panel } from "~/components/Panel";
 import { GEOMETRY_TYPES, SURREAL_KINDS } from "~/constants";
@@ -9,7 +9,7 @@ import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { TableDefinition } from "~/types";
 import { showError } from "~/util/helpers";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { fetchDatabaseSchema, isEdgeTable } from "~/util/schema";
 import { buildDefinitionQueries, TABLE_TYPES, isSchemaValid } from "./helpers";
 import { PermissionInput, QueryInput } from "./inputs";
 import { Lister } from "./lister";
@@ -20,7 +20,7 @@ import { useIsLight } from "~/hooks/theme";
 import { Spacer } from "~/components/Spacer";
 
 export interface SchemaPaneProps {
-	table: TableDefinition | null;
+	table: TableDefinition;
 	onClose: () => void;
 }
 
@@ -41,6 +41,7 @@ export function DesignPane(props: SchemaPaneProps) {
 	const isShifting = useActiveKeys('Shift');
 	const isValid = data ? isSchemaValid(data) : true;
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isChanged, setIsChanged] = useState(false);
 
 	const saveBox = useSaveBox({
 		track: data!,
@@ -62,7 +63,10 @@ export function DesignPane(props: SchemaPaneProps) {
 		},
 		onRevert(original) {
 			setData(original);
-		}
+		},
+		onChangedState(value) {
+			setIsChanged(value);
+		},
 	});
 
 	useEffect(() => {
@@ -174,22 +178,19 @@ export function DesignPane(props: SchemaPaneProps) {
 		fetchDatabaseSchema();
 	});
 
+	const isEdge = useMemo(() => isEdgeTable(props.table), [props.table]);
+
 	return (
 		<Panel
 			icon={mdiWrench}
 			title="Design"
-			// leftSection={
-			// 	<>
-			// 		{data && (<Badge color={isLight ? 'dark.4' : 'light.0'}>{data.schema.name}</Badge>)}
-			// 		{isChanged && (
-			// 			isValid ? (
-			// 				<Badge color={isLight ? 'blue.6' : 'blue.4'}>Changes not yet applied</Badge>
-			// 			) : (
-			// 				<Badge color={isLight ? 'red.6' : 'red.4'}>Not all required fields entered</Badge>
-			// 			)
-			// 		)}
-			// 	</>
-			// }
+			leftSection={isChanged && (
+				isValid ? (
+					<Badge color={isLight ? 'blue.6' : 'blue.4'}>Changes not yet applied</Badge>
+				) : (
+					<Badge color={isLight ? 'red.6' : 'red.4'}>Missing required fields</Badge>
+				))
+			}
 			rightSection={
 				<Group noWrap>
 					<ActionIcon
@@ -210,8 +211,34 @@ export function DesignPane(props: SchemaPaneProps) {
 		>
 			{data && (
 				<>
+					<TextInput
+						mb="xs"
+						readOnly
+						value={props.table.schema.name}
+						onFocus={e => e.target.select()}
+						rightSectionWidth={76}
+						rightSection={isEdge && (
+							<Paper
+								title="This table is an edge"
+								bg={isLight ? 'light.0' : 'light.6'}
+								c={isLight ? 'light.6' : 'white'}
+								px="xs"
+							>
+								Edge
+							</Paper>	
+						)}
+						styles={theme => ({
+							input: {
+								backgroundColor: isLight ? 'white' : theme.fn.themeColor('dark.9'),
+								color: 'surreal',
+								fontFamily: 'JetBrains Mono',
+								fontSize: 14,
+								height: 42
+							}
+						})}
+					/>
 					<ScrollArea
-						style={{ position: 'absolute', inset: 12, top: 0, bottom: 68 }}
+						style={{ position: 'absolute', inset: 12, top: 56, bottom: 68 }}
 					>
 						<Accordion
 							multiple

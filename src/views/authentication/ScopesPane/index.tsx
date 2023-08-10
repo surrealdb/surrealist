@@ -40,7 +40,9 @@ interface ScopeInfo {
 	signup: string | null;
 }
 
-export interface ScopePaneProps {}
+export interface ScopePaneProps {
+	isOnline: boolean;
+}
 
 export function ScopePane(props: ScopePaneProps) {
 	const isLight = useIsLight();
@@ -150,7 +152,7 @@ export function ScopePane(props: ScopePaneProps) {
 			}>
 			{scopes.length === 0 && (
 				<Center h='100%' c='light.5'>
-					No scopes found
+					{isOnline ? 'No scopes found' : 'Not connected'}
 				</Center>
 			)}
 

@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput, Title } from "@mantine/core";
+import { Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput, Title } from "@mantine/core";
 import { mdiPlus, mdiTable, mdiVectorLine } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -11,23 +11,18 @@ import { fetchDatabaseSchema } from '~/util/schema';
 import { useTableNames } from '~/hooks/schema';
 import { adapter } from '~/adapter';
 
-export function TableCreator() {
+export interface TableCreatorProps {
+	opened: boolean;
+	onClose: () => void;
+}
+
+export function TableCreator({ opened, onClose }: TableCreatorProps) {
 	const isLight = useIsLight();
 	const [createType, setCreateType] = useState('table');
-	const [showCreator, setShowCreator] = useState(false);
 	const [tableName, setTableName] = useInputState('');
 	const [tableIn, setTableIn] = useState<string[]>([]);
 	const [tableOut, setTableOut] = useState<string[]>([]);
 	const tableList = useTableNames('TABLE');
-
-	const openCreator = useStable(() => {
-		setShowCreator(true);
-		setTableName('');
-	});
-
-	const closeCreator = useStable(() => {
-		setShowCreator(false);
-	});
 
 	const createTable = useStable(async () => {
 		const surreal = adapter.getActiveSurreal();
@@ -54,22 +49,15 @@ export function TableCreator() {
 			await surreal.query(query);
 		}
 
-		closeCreator();
+		onClose();
 		fetchDatabaseSchema();
 	});
 
 	return (
 		<>
-			<ActionIcon
-				title="Create table..."
-				onClick={openCreator}
-			>
-				<Icon color="light.4" path={mdiPlus} />
-			</ActionIcon>
-
 			<Modal
-				opened={showCreator}
-				onClose={closeCreator}
+				opened={opened}
+				onClose={onClose}
 				trapFocus={false}
 				title={
 					<Title size={16} color={isLight ? 'light.6' : 'white'}>
@@ -115,7 +103,7 @@ export function TableCreator() {
 						)}
 						<Group mt="lg">
 							<Button
-								onClick={closeCreator}
+								onClick={onClose}
 								color={isLight ? 'light.5' : 'light.3'}
 								variant="light"
 							>

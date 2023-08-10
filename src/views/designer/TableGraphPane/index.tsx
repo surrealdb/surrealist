@@ -1,5 +1,5 @@
 import 'reactflow/dist/style.css';
-import { ActionIcon, Group, Kbd, LoadingOverlay, Modal, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Text, Title } from "@mantine/core";
 import { mdiAdjust, mdiDownload, mdiHelpCircle, mdiPlus, mdiRefresh } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -8,7 +8,6 @@ import { TableDefinition } from "~/types";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { toBlob } from 'html-to-image';
 import { Background, ReactFlow, useEdgesState, useNodesState } from "reactflow";
-import { TableCreator } from '~/components/TableCreator';
 import { NODE_TYPES, buildTableGraph } from './helpers';
 import { useStable } from '~/hooks/stable';
 import { save } from '@tauri-apps/api/dialog';
@@ -16,6 +15,8 @@ import { writeBinaryFile } from '@tauri-apps/api/fs';
 import { useLater } from '~/hooks/later';
 import { useIsLight } from '~/hooks/theme';
 import { showNotification } from '@mantine/notifications';
+import { useIsConnected } from '~/hooks/connection';
+import { TableCreator } from '~/components/TableCreator';
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -45,8 +46,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [showBackground, setShowBackground] = useState(true);
+	const [isCreating, setIsCreating] = useState(false);
 	const [showHelp, setShowHelp] = useState(false);
 	const ref = useRef<ElementRef<'div'>>(null);
+	const isOnline = useIsConnected();
 	const isLight = useIsLight();
 
 	useEffect(() => {
@@ -101,13 +104,28 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		setShowHelp(false);
 	});
 
+	const showBox = !isOnline || props.tables.length === 0;
+
+	const openCreator = useStable(() => {
+		setIsCreating(true);
+	});
+
+	const closeCreator = useStable(() => {
+		setIsCreating(false);
+	});
+
 	return (
 		<Panel
 			title="Table Graph"
 			icon={mdiAdjust}
 			rightSection={
 				<Group noWrap>
-					<TableCreator />
+					<ActionIcon
+						title="Create table..."
+						onClick={openCreator}
+					>
+						<Icon color="light.4" path={mdiPlus} />
+					</ActionIcon>
 					<ActionIcon
 						title="Refresh"
 						onClick={fetchDatabaseSchema}
@@ -131,6 +149,38 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		>
 
 			<div style={{ width: '100%', height: '100%' }}>
+				{showBox && (
+					<Center
+						h='100%'
+						pos="absolute"
+						inset={0}
+						style={{ zIndex: 1 }}
+					>
+						<Paper
+							py="md"
+							px="xl"
+							c="light.5"
+							bg={isLight ? 'light.0' : 'dark.8'}
+							ta="center"
+							maw={400}
+						>
+							{isOnline ? (
+								<>
+									No tables found
+									<Box
+										mt={4}
+										c="surreal"
+										style={{ cursor: 'pointer' }}
+										onClick={openCreator}
+									>
+										Click here to create a new table
+									</Box>
+								</>
+							) : 'Not connected to database'}
+						</Paper>
+					</Center>
+				)}
+
 				<LoadingOverlay
 					visible={!showBackground}
 					overlayBlur={4}
@@ -142,6 +192,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					nodeTypes={NODE_TYPES}
 					nodes={nodes}
 					edges={edges}
+					nodesDraggable={false}
+					nodesConnectable={false}
+					edgesFocusable={false}
 					proOptions={{ hideAttribution: true }}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
@@ -194,6 +247,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Text>
 				</Text>
 			</Modal>
+
+			<TableCreator
+				opened={isCreating}
+				onClose={closeCreator}
+			/>
 		</Panel>
 	);
 }

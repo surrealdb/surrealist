@@ -12,6 +12,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 	return (
 		<SimpleGrid cols={3} h='100%' spacing={6}>
 			<AccountsPane
+				isOnline={isOnline}
 				title='Namespace Logins'
 				icon={mdiFolderLock}
 				iconColor='red.6'
@@ -21,6 +22,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 			/>
 
 			<AccountsPane
+				isOnline={isOnline}
 				title='Database Logins'
 				icon={mdiDatabaseLock}
 				iconColor='yellow.6'
@@ -28,7 +30,9 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 				typeLong='DATABASE'
 				field='dl'
 			/>
-			<ScopePane />
+			<ScopePane
+				isOnline={isOnline}
+			/>
 		</SimpleGrid>
 	);
 }

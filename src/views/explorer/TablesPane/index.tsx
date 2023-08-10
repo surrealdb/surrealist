@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { ActionIcon, Button, Group, Modal, ScrollArea, Text, TextInput, Title } from "@mantine/core";
-import { mdiClose, mdiMagnify, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -26,6 +26,7 @@ export function TablesPane(props: TablesPaneProps) {
 	const isLight = useIsLight();
 	const [selectedTable, setSelectedTable] = useState<string | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState('');
 	const schema = useStoreValue(state => state.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
@@ -79,6 +80,14 @@ export function TablesPane(props: TablesPaneProps) {
 		props?.onRefresh?.();
 	});
 
+	const openCreator = useStable(() => {
+		setIsCreating(true);
+	});
+
+	const closeCreator = useStable(() => {
+		setIsCreating(false);
+	});
+
 	return (
 		<Panel
 			title="Tables"
@@ -91,7 +100,12 @@ export function TablesPane(props: TablesPaneProps) {
 					>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
-					<TableCreator />
+					<ActionIcon
+						title="Create table..."
+						onClick={openCreator}
+					>
+						<Icon color="light.4" path={mdiPlus} />
+					</ActionIcon>
 				</Group>
 			}
 		>
@@ -209,6 +223,11 @@ export function TablesPane(props: TablesPaneProps) {
 					</Button>
 				</Group>
 			</Modal>
+
+			<TableCreator
+				opened={isCreating}
+				onClose={closeCreator}
+			/>
 		</Panel>
 	);
 }

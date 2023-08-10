@@ -81,7 +81,7 @@ export const SaveBox = ({ value, valid, onRevert, onPatch, onSave, onChangedStat
 				disabled={!isChanged || valid === false}
 				onClick={doSave}
 			>
-				Apply schema
+				Save changes
 			</Button>
 			{onRevert && (
 				<Button
