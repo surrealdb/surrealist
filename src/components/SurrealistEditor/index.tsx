@@ -28,6 +28,11 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 				{...props}
 				theme={isLight ? LIGHT_THEME : DARK_THEME}
 				options={options}
+				onMount={(_editor, monaco) => {
+					document.fonts.ready.then(() => {
+						monaco.editor.remeasureFonts();
+					});
+				}}
 			/>
 		</div>
 	);
