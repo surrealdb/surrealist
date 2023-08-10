@@ -26,7 +26,7 @@ Surrealist is a simple to use Browser and Desktop based query playground and dat
 ## Features
 - ⚡ SurrealQL syntax highlighting
 - 🔍 Database explorer & record inspector
-- ✏️ Full schema creation and modification
+- ✏️ Full schema creation, modification, and visualization
 - 🔒 Manage database logins & scopes
 - 📌 Define multiple sessions & environments
 - 📋 Automatic table name completion
@@ -79,6 +79,16 @@ Executed queries are saved to the Query History or can be manually saved to the 
 The Explorer View is used to browse your database and inspect individual records. When you select a table in the left panel, the table contents will be displayed in the Record Explorer. You can click on a record id to open the Record Inspector, in which you can edit the record contents and traverse graph relationships.
 
 ![Explorer View](.github/branding/explorer-view.png)
+
+### Designer view
+The Designer View is a powerful tool you can use to define and manage your database schemas. You can create tables & edges, modify the database schema, and visualize the database tables in a graph view.
+
+![Designer View](.github/branding/designer-view.png)
+
+### Authentication view
+Use the Authentication View to manage access to the database by creating namespace logins, database logins, or scopes.
+
+![Authentication View](.github/branding/authentication-view.png)
 
 ## Contributing
 We welcome any issues and PRs submitted to Surrealist. Since we currently work on multiple other projects and our time is limited, we value any community help in supporting a rich future for Surrealist.
