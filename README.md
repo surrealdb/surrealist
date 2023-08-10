@@ -134,4 +134,4 @@ Surrealist is built and maintained by <a href="https://starlane.studio/">Starlan
 
 Surrealist is licensed under [MIT](LICENSE)
 
-Copyright (c) 2022, Starlane Studios
+Copyright (c) 2022-2023, Starlane Studios
