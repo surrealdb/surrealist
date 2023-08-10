@@ -1,14 +1,11 @@
 import classes from './style.module.scss';
 import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps, Title } from "@mantine/core";
 import { mdiCancel, mdiCheck, mdiWrench } from "@mdi/js";
-import { editor } from "monaco-editor";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { baseEditorConfig } from "~/util/editor";
-import Editor from "@monaco-editor/react";
 import { SurrealistEditor } from '~/components/SurrealistEditor';
 
 export interface QueryInputProps extends TextareaProps {
@@ -16,6 +13,7 @@ export interface QueryInputProps extends TextareaProps {
 }
 
 export function QueryInput(props: QueryInputProps) {
+	const { onChangeText, ...rest } = props;
 	const isLight = useIsLight();
 
 	const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -31,16 +29,16 @@ export function QueryInput(props: QueryInputProps) {
 	});
 
 	const saveEditor = useStable(() => {
-		if (props.onChangeText) {
-			props.onChangeText(editorText || '');
+		if (onChangeText) {
+			onChangeText(editorText || '');
 		}
 
 		closeEditor();
 	});
 
 	const propagateChange = useStable((e: ChangeEvent<HTMLTextAreaElement>) => {
-		if (props.onChangeText) {
-			props.onChangeText(e.target.value);
+		if (onChangeText) {
+			onChangeText(e.target.value);
 		}
 	});
 
@@ -51,7 +49,7 @@ export function QueryInput(props: QueryInputProps) {
 			<Textarea
 				label="Query input"
 				rightSectionWidth={44}
-				{...props}
+				{...rest}
 				minRows={1}
 				maxRows={1}
 				className={classes.input}

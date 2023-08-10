@@ -1,5 +1,5 @@
 import { ExplorerPane } from "../ExplorerPane";
-import { TablesPane } from "../../../components/TablesPane";
+import { TablesPane } from "../TablesPane";
 import { useEffect, useState } from "react";
 import { InspectorPane } from "../InspectorPane";
 import { useStable } from "~/hooks/stable";
@@ -128,7 +128,6 @@ export function ExplorerView(props: ExplorerViewProps) {
 			startPane={
 				<TablesPane
 					onSelectTable={setActiveTable}
-					withModification
 					onRefresh={doRefresh}
 				/>
 			}

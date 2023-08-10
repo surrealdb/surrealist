@@ -281,6 +281,7 @@ function ContentTab(props: ContentTabProps) {
 	return (
 		<>
 			<SurrealistEditor
+				noExpand
 				language="json"
 				value={contentText}
 				onChange={updateContent}

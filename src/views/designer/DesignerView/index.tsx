@@ -1,33 +1,48 @@
 import { useMemo, useState } from "react";
-import { Splitter } from "~/components/Splitter";
-import { TablesPane } from "~/components/TablesPane";
+import { SplitValues, Splitter } from "~/components/Splitter";
 import { useStoreValue } from "~/store";
-import { StructurePane } from "../StructurePane";
+import { DesignPane } from "../DesignPane";
+import { TableGraphPane } from "../TableGraphPane";
+import { useStable } from "~/hooks/stable";
+
+const SPLIT_SIZE: SplitValues = [undefined, 450];
 
 export interface DesignerViewProps {
 }
 
 export function DesignerView(props: DesignerViewProps) {
 	const [activeTable, setActiveTable] = useState<string | null>(null);
+	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
 	const tables = useStoreValue(state => state.databaseSchema);
 
-	const schema = useMemo(() => {
+	const tableSchema = useMemo(() => {
 		return tables.find(table => table.schema.name === activeTable) || null;
 	}, [tables, activeTable]);
 
+	const closeActiveTable = useStable(() => {
+		setActiveTable(null);
+	});
+
 	return (
 		<Splitter
-			minSize={[250, 250]}
-			bufferSize={550}
-			startPane={
-				<TablesPane
-					onSelectTable={setActiveTable}
-					withModification
-				/>
+			minSize={SPLIT_SIZE}
+			bufferSize={500}
+			values={splitValues}
+			onChange={setSplitValues}
+			direction="horizontal"
+			endPane={
+				tableSchema && (
+					<DesignPane
+						table={tableSchema}
+						onClose={closeActiveTable}
+					/>
+				)
 			}
 		>
-			<StructurePane
-				table={schema}
+			<TableGraphPane
+				tables={tables}
+				active={tableSchema}
+				setActiveTable={setActiveTable}
 			/>
 		</Splitter>
 	);

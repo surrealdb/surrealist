@@ -109,7 +109,7 @@ export function extractTypeList(input: string, prefix: string) {
 	return input
 		.replace(`${prefix}<`, '')
 		.replace('>', '')
-		.split(',')
+		.split('|')
 		.map(t => t.trim());
 }
 

@@ -25,6 +25,7 @@ import { useIsLight } from '~/hooks/theme';
 import { showError } from '~/util/helpers';
 
 export interface AccountsPaneProps {
+	isOnline: boolean;
 	icon: string;
 	title: string;
 	iconColor: string;
@@ -115,7 +116,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			}>
 			{logins.length === 0 && (
 				<Center h='100%' c='light.5'>
-					No {props.title.toLocaleLowerCase()} found
+					{isOnline ? `No ${props.title.toLocaleLowerCase()} found` : 'Not connected'}
 				</Center>
 			)}
 

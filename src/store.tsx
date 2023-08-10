@@ -266,6 +266,10 @@ const mainSlice = createSlice({
 
 		setIsConnected(state, action: PayloadAction<boolean>) {
 			state.isConnected = action.payload;
+
+			if (!action.payload) {
+				state.databaseSchema = [];
+			}
 		},
 
 		openTabCreator(state, action: PayloadAction<TabCreation>) {

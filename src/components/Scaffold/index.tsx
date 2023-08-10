@@ -18,7 +18,6 @@ import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/views/query/QueryView';
 import { ExplorerView } from '~/views/explorer/ExplorerView';
 import { ViewMode } from '~/types';
-import { VisualizerView } from '~/views/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
 import { VIEW_MODES } from '~/constants';
 import { DesignerView } from '~/views/designer/DesignerView';
@@ -398,12 +397,14 @@ export function Scaffold() {
 										Connection details incomplete
 									</Text>
 								)}
-								<ActionIcon
-									onClick={revealConsole}
-									title="Toggle console"
-								>
-									<Icon color="light.4" path={mdiConsole} />
-								</ActionIcon>
+								{isDesktop && (
+									<ActionIcon
+										onClick={revealConsole}
+										title="Toggle console"
+									>
+										<Icon color="light.4" path={mdiConsole} />
+									</ActionIcon>
+								)}
 								{isConnected && (
 									<ActionIcon
 										onClick={closeConnection}
@@ -443,7 +444,7 @@ export function Scaffold() {
 							minSize={100}
 							bufferSize={200}
 							direction="vertical"
-							endPane={enableConsole && (
+							endPane={isDesktop && enableConsole && (
 								<ConsolePane />
 							)}
 						>
@@ -455,10 +456,6 @@ export function Scaffold() {
 
 							<ViewSlot visible={viewMode == 'explorer'}>
 								<ExplorerView />
-							</ViewSlot>
-
-							<ViewSlot visible={viewMode == 'visualizer'}>
-								<VisualizerView />
 							</ViewSlot>
 
 							{isDesktop && (
