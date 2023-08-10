@@ -1,4 +1,4 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, TableDefinition, Open, SurrealistEnvironment, TabCreation} from "./types";
+import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, TableDefinition, Open, SurrealistEnvironment, TabCreation, TablePinAction} from "./types";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
@@ -292,6 +292,20 @@ const mainSlice = createSlice({
 
 		setMonacoLoaded(state) {
 			state.monacoLoaded = true;
+		},
+
+		toggleTablePin(state, action: PayloadAction<TablePinAction>) {
+			const pinned = state.config.tabs.find(tab => tab.id === action.payload.tab)?.pinnedTables;
+
+			if (!pinned) {
+				return;
+			}
+
+			if (pinned.includes(action.payload.table)) {
+				pinned.splice(pinned.indexOf(action.payload.table), 1);
+			} else {
+				pinned.push(action.payload.table);
+			}
 		}
 
 	}

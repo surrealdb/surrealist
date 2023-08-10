@@ -1,15 +1,18 @@
 import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiFilterVariant, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
+import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiFilterVariant, mdiPin, mdiPinOff, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
 import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
+import { useActiveTab } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { actions, store } from "~/store";
 import { ColumnSort, OpenFn } from "~/types";
+import { updateConfig } from "~/util/helpers";
 
 const PAGE_SIZES = [
 	{ label: '10 Results per page', value: '10' },
@@ -24,6 +27,7 @@ export interface ExplorerPaneProps {
 	activeRecordId: string | null;
 	onSelectRecord: OpenFn;
 	onRequestCreate: () => void;
+	onTogglePin: () => void;
 }
 
 export function ExplorerPane(props: ExplorerPaneProps) {
@@ -37,6 +41,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [pageSize, setPageSize] = useInputState('25');
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
 	const [page, setPage] = useState(1);
+	const tabInfo = useActiveTab();
 
 	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
@@ -149,6 +154,19 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		props.onSelectRecord(record.id);
 	});
 
+	const isPinned = props.activeTable && tabInfo?.pinnedTables?.includes(props.activeTable);
+
+	const togglePin = useStable(() => {
+		if (!props.activeTable || !tabInfo) return;
+
+		store.dispatch(actions.toggleTablePin({
+			tab: tabInfo.id,
+			table: props.activeTable
+		}));
+		
+		updateConfig();
+	});
+
 	return (
 		<Panel
 			title="Record Explorer"
@@ -167,6 +185,13 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 						onClick={fetchRecords}
 					>
 						<Icon color="light.4" path={mdiRefresh} />
+					</ActionIcon>
+
+					<ActionIcon
+						title={isPinned ? 'Unpin table' : 'Pin table'}
+						onClick={togglePin}
+					>
+						<Icon color="light.4" path={isPinned ? mdiPinOff : mdiPin} />
 					</ActionIcon>
 
 					<ActionIcon

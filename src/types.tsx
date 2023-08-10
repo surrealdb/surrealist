@@ -55,6 +55,7 @@ export interface SurrealistTab {
 	lastResponse: any;
 	activeView: ViewMode;
 	pinned: boolean;
+	pinnedTables: string[];
 }
 
 export interface ScopeField {
@@ -155,4 +156,9 @@ export interface SurrealOptions {
 export interface SurrealHandle {
 	close(): void;
 	query(query: string, params?: Record<string, any>): Promise<any>;
+}
+
+export interface TablePinAction {
+	tab: string;
+	table: string;
 }

@@ -30,4 +30,11 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 			tab.pinned = false;
 		}
 	}
+
+	// 1.8.0 - Define pinned tables array
+	for (const tab of config.tabs) {
+		if (!tab.pinnedTables) {
+			tab.pinnedTables = [];
+		}
+	}
 }

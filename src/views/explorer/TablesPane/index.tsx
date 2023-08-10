@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { ActionIcon, Group, ScrollArea, Text, TextInput } from "@mantine/core";
-import { mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { mdiMagnify, mdiPin, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -13,7 +13,9 @@ import { extractEdgeRecords, fetchDatabaseSchema } from '~/util/schema';
 import { useHasSchemaAccess } from '~/hooks/schema';
 import { sort } from 'radash';
 import { useIsConnected } from '~/hooks/connection';
+import { Spacer } from '~/components/Spacer';
 import { TableCreator } from '~/components/TableCreator';
+import { useActiveTab } from '~/hooks/environment';
 
 export interface TablesPaneProps {
 	active: string | null;
@@ -28,6 +30,11 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 	const schema = useStoreValue(state => state.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
 	const isOnline = useIsConnected();
+	const tabInfo = useActiveTab();
+
+	const isPinned = useStable((table: string) => {
+		return tabInfo?.pinnedTables?.includes(table) || false;
+	});
 
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();
@@ -38,10 +45,11 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 
 		return sort(tables, (table) => {
 			const [isEdge] = extractEdgeRecords(table);
+			const pinned = isPinned(table.schema.name);
 
-			return Number(isEdge);
+			return Number(isEdge) - (pinned ? 999 : 0);
 		});
-	}, [schema, search]);
+	}, [schema, search, tabInfo?.pinnedTables]);
 
 	const selectTable = (table: TableDefinition | null) => {
 		onSelectTable(table?.schema?.name || null);
@@ -139,6 +147,18 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 								>
 									{table.schema.name}
 								</Text>
+
+								<Spacer />
+								
+								{tabInfo?.pinnedTables?.includes(table.schema.name) && (
+									<Icon
+										className={classes.pinButton}
+										color={isActive ? 'surreal' : isLight ? 'light.3' : 'light.4'}
+										title="Pinned"
+										path={mdiPin}
+										size="sm"
+									/>
+								)}
 							</Group>
 						);
 					})}
