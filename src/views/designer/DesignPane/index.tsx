@@ -1,6 +1,6 @@
-import { Accordion, ActionIcon, Box, Checkbox, Collapse, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import { mdiClose, mdiWrench } from "@mdi/js";
-import { ChangeEvent, useEffect } from "react";
+import { Accordion, ActionIcon, Box, Button, Checkbox, Collapse, Group, Modal, MultiSelect, ScrollArea, Select, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
+import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Panel } from "~/components/Panel";
 import { GEOMETRY_TYPES, SURREAL_KINDS } from "~/constants";
@@ -15,6 +15,9 @@ import { PermissionInput, QueryInput } from "./inputs";
 import { Lister } from "./lister";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
+import { useActiveKeys } from "~/hooks/keys";
+import { useIsLight } from "~/hooks/theme";
+import { Spacer } from "~/components/Spacer";
 
 export interface SchemaPaneProps {
 	table: TableDefinition | null;
@@ -32,10 +35,12 @@ function SectionTitle({ children }: { children: string }) {
 }
 
 export function DesignPane(props: SchemaPaneProps) {
+	const isLight = useIsLight();
 	const [data, setData] = useImmer(props.table!);
 	const tableList = useTableNames();
-
+	const isShifting = useActiveKeys('Shift');
 	const isValid = data ? isSchemaValid(data) : true;
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	const saveBox = useSaveBox({
 		track: data!,
@@ -142,6 +147,33 @@ export function DesignPane(props: SchemaPaneProps) {
 		});
 	});
 
+	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {
+		if (e.shiftKey) {
+			handleDelete();
+		} else {
+			setIsDeleting(true);
+		}
+	});
+
+	const closeDelete = useStable(() => {
+		setIsDeleting(false);
+	});
+	
+	const handleDelete = useStable(async () => {
+		const surreal = adapter.getSurreal();
+
+		if (!surreal || !props.table) {
+			return;
+		}
+
+		setIsDeleting(false);
+		props.onClose();
+
+		await surreal.query(`REMOVE TABLE ${props.table.schema.name}`);
+
+		fetchDatabaseSchema();
+	});
+
 	return (
 		<Panel
 			icon={mdiWrench}
@@ -159,12 +191,21 @@ export function DesignPane(props: SchemaPaneProps) {
 			// 	</>
 			// }
 			rightSection={
-				<ActionIcon
-					title="Refresh"
-					onClick={props.onClose}
-				>
-					<Icon color="light.4" path={mdiClose} />
-				</ActionIcon>
+				<Group noWrap>
+					<ActionIcon
+						onClick={requestDelete}
+						title="Delete table (Hold shift to force)"
+					>
+						<Icon color={isShifting ? 'red' : 'light.4'} path={mdiDelete} />
+					</ActionIcon>
+
+					<ActionIcon
+						title="Refresh"
+						onClick={props.onClose}
+					>
+						<Icon color="light.4" path={mdiClose} />
+					</ActionIcon>
+				</Group>
 			}
 		>
 			{data && (
@@ -497,6 +538,36 @@ export function DesignPane(props: SchemaPaneProps) {
 					</Box>
 				</>
 			)}
+
+			<Modal
+				opened={isDeleting}
+				onClose={closeDelete}
+				title={
+					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+						Are you sure?
+					</Title>
+				}
+			>
+				<Text color={isLight ? 'light.6' : 'light.1'}>
+					You are about to delete this table and all data contained within it. This action cannot be undone. 
+				</Text>
+				<Group mt="lg">
+					<Button
+						onClick={closeDelete}
+						color={isLight ? 'light.5' : 'light.3'}
+						variant="light"
+					>
+						Close
+					</Button>
+					<Spacer />
+					<Button
+						color="red"
+						onClick={handleDelete}
+					>
+						Delete
+					</Button>
+				</Group>
+			</Modal>
 		</Panel>
 	);
 }

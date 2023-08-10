@@ -1,6 +1,6 @@
 import 'reactflow/dist/style.css';
 import { ActionIcon, Group } from "@mantine/core";
-import { mdiAdjust, mdiDownload, mdiPlus, mdiRefresh } from "@mdi/js";
+import { mdiAdjust, mdiDownload, mdiRefresh } from "@mdi/js";
 import { ElementRef, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
@@ -8,6 +8,7 @@ import { TableDefinition } from "~/types";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { Background, Node, Position, ReactFlow, useEdgesState, useNodesState } from "reactflow";
 import { TableNode } from "~/views/designer/TableGraphPane/TableNode";
+import { TableCreator } from '~/components/TableCreator';
 
 export interface TableGraphPaneProps {
 	tables: TableDefinition[];
@@ -61,11 +62,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
-					<ActionIcon
-						title="Create"
-					>
-						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
+					<TableCreator />
 				</Group>
 			}
 		>
@@ -75,6 +72,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					nodeTypes={nodeTypes}
 					nodes={nodes}
 					edges={edges}
+					proOptions={{ hideAttribution: true }}
 					onNodesChange={onNodesChange}
 					onNodeClick={(ev, node) => {
 						props.setActiveTable(node.id);
