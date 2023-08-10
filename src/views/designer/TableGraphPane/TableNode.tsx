@@ -20,7 +20,6 @@ export function TableNode({ data }: TableNodeProps) {
 		<Handle type="target" position={Position.Left} />
 		<Paper
 			w={250}
-			h={100}
 			p={8}
 			shadow="md"
 			radius="md"
