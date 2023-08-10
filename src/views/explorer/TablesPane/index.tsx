@@ -18,13 +18,13 @@ import { Spacer } from '~/components/Spacer';
 import { TableCreator } from '~/components/TableCreator';
 
 export interface TablesPaneProps {
+	active: string | null;
 	onSelectTable: OpenFn;
 	onRefresh?: () => void;
 }
 
-export function TablesPane(props: TablesPaneProps) {
+export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps) {
 	const isLight = useIsLight();
-	const [selectedTable, setSelectedTable] = useState<string | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState('');
@@ -47,14 +47,11 @@ export function TablesPane(props: TablesPaneProps) {
 	}, [schema, search]);
 
 	const activeTable = useMemo(() => {
-		return schema.find(table => table.schema.name === selectedTable);
-	}, [schema, selectedTable]);
+		return schema.find(table => table.schema.name === active);
+	}, [schema, active]);
 
 	const selectTable = (table: TableDefinition | null) => {
-		const newName = table?.schema?.name || null;
-
-		setSelectedTable(newName);
-		props.onSelectTable(newName);
+		onSelectTable(table?.schema?.name || null);
 	};
 
 	const refreshTables = useStable(async () => {
@@ -77,7 +74,7 @@ export function TablesPane(props: TablesPaneProps) {
  
 		closeDelete();
 		fetchDatabaseSchema();
-		props?.onRefresh?.();
+		onRefresh?.();
 	});
 
 	const openCreator = useStable(() => {
@@ -133,7 +130,7 @@ export function TablesPane(props: TablesPaneProps) {
 					}}
 				>
 					{tablesFiltered.map(table => {
-						const isActive = selectedTable == table.schema.name;
+						const isActive = active == table.schema.name;
 						const [isEdge] = extractEdgeRecords(table);
 
 						return (

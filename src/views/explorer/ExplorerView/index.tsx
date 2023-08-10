@@ -7,6 +7,7 @@ import { SplitValues, Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
 import { useHistory } from "~/hooks/history";
 import { adapter } from "~/adapter";
+import { useIsConnected } from "~/hooks/connection";
 
 const SPLIT_SIZE: SplitValues = [250, 450];
 
@@ -19,6 +20,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	const [creatingRecord, setCreatingRecord] = useState(false);
 	const [refreshId, setRefreshId] = useState(0);
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
+	const isOnline = useIsConnected();
 	
 	const history = useHistory();
 	const activeRecordId = activeRecord?.content?.id || null;
@@ -117,6 +119,13 @@ export function ExplorerView(props: ExplorerViewProps) {
 			setActiveRecord(null);
 		}
 	}, [history.current]);
+
+	useEffect(() => {
+		if (!isOnline) {
+			setActiveRecord(null);
+			setActiveTable(null);
+		}
+	}, [isOnline]);
 	
 	return (
 		<Splitter
@@ -127,6 +136,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 			direction="horizontal"
 			startPane={
 				<TablesPane
+					active={activeTable}
 					onSelectTable={setActiveTable}
 					onRefresh={doRefresh}
 				/>
