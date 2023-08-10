@@ -196,6 +196,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 				opened={opened}
 				onChange={setOpened}
 				position="bottom-start"
+				transitionDuration={0}
 				exitTransitionDuration={0}
 				closeOnEscape
 				shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.35 : 0.75})`}
