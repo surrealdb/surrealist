@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@devbookhq/splitter':
-    specifier: ^1.4.0
-    version: 1.4.0
   '@dnd-kit/core':
     specifier: ^6.0.7
     version: 6.0.7(react-dom@18.2.0)(react@18.2.0)
@@ -32,9 +29,6 @@ dependencies:
   '@mantine/notifications':
     specifier: ^5.9.4
     version: 5.9.4(@mantine/core@5.9.3)(@mantine/hooks@5.9.3)(react-dom@18.2.0)(react@18.2.0)
-  '@maxgraph/core':
-    specifier: ^0.3.0
-    version: 0.3.0
   '@mdi/js':
     specifier: ^7.0.96
     version: 7.0.96
@@ -62,15 +56,6 @@ dependencies:
   fast-deep-equal:
     specifier: ^3.1.3
     version: 3.1.3
-  graphology:
-    specifier: ^0.25.1
-    version: 0.25.1(graphology-types@0.24.7)
-  graphology-layout:
-    specifier: ^0.6.1
-    version: 0.6.1(graphology-types@0.24.7)
-  graphology-layout-forceatlas2:
-    specifier: ^0.10.1
-    version: 0.10.1(graphology-types@0.24.7)
   html-to-image:
     specifier: ^1.11.11
     version: 1.11.11
@@ -107,9 +92,6 @@ dependencies:
   semver:
     specifier: ^7.3.8
     version: 7.3.8
-  sigma:
-    specifier: ^2.4.0
-    version: 2.4.0(graphology-types@0.24.7)
   use-immer:
     specifier: ^0.8.1
     version: 0.8.1(immer@9.0.16)(react@18.2.0)
@@ -118,9 +100,6 @@ devDependencies:
   '@tauri-apps/cli':
     specifier: ^1.2.2
     version: 1.2.3
-  '@types/cytoscape':
-    specifier: ^3.19.9
-    version: 3.19.9
   '@types/node':
     specifier: ^18.11.13
     version: 18.11.13
@@ -148,9 +127,6 @@ devDependencies:
   eslint-plugin-unused-imports:
     specifier: ^3.0.0
     version: 3.0.0(@typescript-eslint/eslint-plugin@6.2.1)(eslint@8.46.0)
-  graphology-types:
-    specifier: ^0.24.7
-    version: 0.24.7
   sass:
     specifier: ^1.56.2
     version: 1.56.2
@@ -617,12 +593,6 @@ packages:
       to-fast-properties: 2.0.0
     dev: false
 
-  /@devbookhq/splitter@1.4.0:
-    resolution: {integrity: sha512-/Wfh8YqbV9o0Dm2tNOshulZKGmN1ObcUYU0qsc8h1OlcvX62YGcINWRH9zZN70zGK7EflDkyiNPR5u7wOyY0Vg==}
-    dependencies:
-      react-is: 17.0.2
-    dev: false
-
   /@dnd-kit/accessibility@3.0.1(react@18.2.0):
     resolution: {integrity: sha512-HXRrwS9YUYQO9lFRc/49uO/VICbM+O+ZRpFDe9Pd1rwVv2PCNkRiTZRdxrDgng/UkvdC3Re9r2vwPpXXrWeFzg==}
     peerDependencies:
@@ -1012,10 +982,6 @@ packages:
       react: '>=16.8.0'
     dependencies:
       react: 18.2.0
-    dev: false
-
-  /@maxgraph/core@0.3.0:
-    resolution: {integrity: sha512-KRoB7eSd1Md9NFWjkUyUODPnE1LBLGLQ0KGO0RCsOD5Bf1vkC01+I873yvDqYWmfYk0vk2wWlp41m0pEsg9HzA==}
     dev: false
 
   /@mdi/js@7.0.96:
@@ -1410,10 +1376,6 @@ packages:
       '@tauri-apps/cli-win32-x64-msvc': 1.2.3
     dev: true
 
-  /@types/cytoscape@3.19.9:
-    resolution: {integrity: sha512-oqCx0ZGiBO0UESbjgq052vjDAy2X53lZpMrWqiweMpvVwKw/2IiYDdzPFK6+f4tMfdv9YKEM9raO5bAZc3UYBg==}
-    dev: true
-
   /@types/d3-array@3.0.5:
     resolution: {integrity: sha512-Qk7fpJ6qFp+26VeQ47WY0mkwXaiq8+76RJcncDEfMc2ocRzXLO67bLFRNI4OX1aGBoPzsM5Y2T+/m1pldOgD+A==}
     dev: false
@@ -1799,10 +1761,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@yomguithereal/helpers@1.1.1:
-    resolution: {integrity: sha512-UYvAq/XCA7xoh1juWDYsq3W0WywOB+pz8cgVnE1b45ZfdMhBvHDrgmSFG3jXeZSr2tMTYLGHFHON+ekG05Jebg==}
-    dev: false
 
   /acorn-jsx@5.3.2(acorn@8.10.0):
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2552,11 +2510,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /events@3.3.0:
-    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
-    engines: {node: '>=0.8.x'}
-    dev: false
-
   /fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
@@ -2706,46 +2659,6 @@ packages:
     resolution: {integrity: sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==}
     dependencies:
       lodash: 4.17.21
-    dev: false
-
-  /graphology-layout-forceatlas2@0.10.1(graphology-types@0.24.7):
-    resolution: {integrity: sha512-ogzBeF1FvWzjkikrIFwxhlZXvD2+wlY54lqhsrWprcdPjopM2J9HoMweUmIgwaTvY4bUYVimpSsOdvDv1gPRFQ==}
-    peerDependencies:
-      graphology-types: '>=0.19.0'
-    dependencies:
-      graphology-types: 0.24.7
-      graphology-utils: 2.5.2(graphology-types@0.24.7)
-    dev: false
-
-  /graphology-layout@0.6.1(graphology-types@0.24.7):
-    resolution: {integrity: sha512-m9aMvbd0uDPffUCFPng5ibRkb2pmfNvdKjQWeZrf71RS1aOoat5874+DcyNfMeCT4aQguKC7Lj9eCbqZj/h8Ag==}
-    peerDependencies:
-      graphology-types: '>=0.19.0'
-    dependencies:
-      graphology-types: 0.24.7
-      graphology-utils: 2.5.2(graphology-types@0.24.7)
-      pandemonium: 2.4.1
-    dev: false
-
-  /graphology-types@0.24.7:
-    resolution: {integrity: sha512-tdcqOOpwArNjEr0gNQKCXwaNCWnQJrog14nJNQPeemcLnXQUUGrsCWpWkVKt46zLjcS6/KGoayeJfHHyPDlvwA==}
-
-  /graphology-utils@2.5.2(graphology-types@0.24.7):
-    resolution: {integrity: sha512-ckHg8MXrXJkOARk56ZaSCM1g1Wihe2d6iTmz1enGOz4W/l831MBCKSayeFQfowgF8wd+PQ4rlch/56Vs/VZLDQ==}
-    peerDependencies:
-      graphology-types: '>=0.23.0'
-    dependencies:
-      graphology-types: 0.24.7
-    dev: false
-
-  /graphology@0.25.1(graphology-types@0.24.7):
-    resolution: {integrity: sha512-yYA7BJCcXN2DrKNQQ9Qf22zBHm/yTbyBR71T1MYBbGtywNHsv0QZtk8zaR6zxNcp2hCCZayUkHp9DyMSZCpoxQ==}
-    peerDependencies:
-      graphology-types: '>=0.24.0'
-    dependencies:
-      events: 3.3.0
-      graphology-types: 0.24.7
-      obliterator: 2.0.4
     dev: false
 
   /has-flag@3.0.0:
@@ -3006,12 +2919,6 @@ packages:
       brace-expansion: 1.1.11
     dev: true
 
-  /mnemonist@0.39.5:
-    resolution: {integrity: sha512-FPUtkhtJ0efmEFGpU14x7jGbTB+s18LrzRL2KgoWz9YvcY3cPomz8tih01GbHwnGk/OmkOKfqd/RAQoc8Lm7DQ==}
-    dependencies:
-      obliterator: 2.0.4
-    dev: false
-
   /monaco-editor@0.40.0:
     resolution: {integrity: sha512-1wymccLEuFSMBvCk/jT1YDW/GuxMLYwnFwF9CDyYCxoTw2Pt379J3FUhwy9c43j51JdcxVPjwk0jm0EVDsBS2g==}
     dev: false
@@ -3057,10 +2964,6 @@ packages:
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
-    dev: false
-
-  /obliterator@2.0.4:
-    resolution: {integrity: sha512-lgHwxlxV1qIg1Eap7LgIeoBWIMFibOjbrYPIPJZcI1mmGAI2m3lNYpK12Y+GBdPQ0U1hRwSord7GIaawz962qQ==}
     dev: false
 
   /once@1.4.0:
@@ -3113,12 +3016,6 @@ packages:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
     dev: true
-
-  /pandemonium@2.4.1:
-    resolution: {integrity: sha512-wRqjisUyiUfXowgm7MFH2rwJzKIr20rca5FsHXCMNm1W5YPP1hCtrZfgmQ62kP7OZ7Xt+cR858aB28lu5NX55g==}
-    dependencies:
-      mnemonist: 0.39.5
-    dev: false
 
   /parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -3218,10 +3115,6 @@ packages:
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
-    dev: false
-
-  /react-is@17.0.2:
-    resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
     dev: false
 
   /react-is@18.2.0:
@@ -3509,16 +3402,6 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
     dev: true
-
-  /sigma@2.4.0(graphology-types@0.24.7):
-    resolution: {integrity: sha512-spi4C+c3cjlhCklT+RvAxJJcarMmjRpF6RPNvBIBYDduALq8iSNm7FwSpijQNGtI+ryeZ2EfvyBNLp36OFaZiw==}
-    dependencies:
-      '@yomguithereal/helpers': 1.1.1
-      events: 3.3.0
-      graphology-utils: 2.5.2(graphology-types@0.24.7)
-    transitivePeerDependencies:
-      - graphology-types
-    dev: false
 
   /slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}

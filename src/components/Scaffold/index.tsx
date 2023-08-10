@@ -18,7 +18,6 @@ import { ConsolePane } from '../ConsolePane';
 import { QueryView } from '~/views/query/QueryView';
 import { ExplorerView } from '~/views/explorer/ExplorerView';
 import { ViewMode } from '~/types';
-import { VisualizerView } from '~/views/visualizer/VisualizerView';
 import { useHotkeys } from '@mantine/hooks';
 import { VIEW_MODES } from '~/constants';
 import { DesignerView } from '~/views/designer/DesignerView';
@@ -455,10 +454,6 @@ export function Scaffold() {
 
 							<ViewSlot visible={viewMode == 'explorer'}>
 								<ExplorerView />
-							</ViewSlot>
-
-							<ViewSlot visible={viewMode == 'visualizer'}>
-								<VisualizerView />
 							</ViewSlot>
 
 							{isDesktop && (

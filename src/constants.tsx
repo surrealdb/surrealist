@@ -1,4 +1,4 @@
-import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench, mdiAdjust } from "@mdi/js";
+import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench } from "@mdi/js";
 
 export type StructureTab = 'graph' | 'builder';
 
@@ -30,13 +30,6 @@ export const VIEW_MODES = [
 		name: 'Designer',
 		icon: mdiWrench,
 		desc: 'Define the database schemas and relations',
-		desktop: true
-	},
-	{
-		id: 'visualizer',
-		name: 'Visualizer',
-		icon: mdiAdjust,
-		desc: 'Visualize the database schema with tables and relationships',
 		desktop: true
 	},
 	{
