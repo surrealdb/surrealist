@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
-import { ActionIcon, Button, Group, Modal, ScrollArea, Text, TextInput, Title } from "@mantine/core";
-import { mdiClose, mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { ActionIcon, Group, ScrollArea, Text, TextInput } from "@mantine/core";
+import { mdiMagnify, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -13,8 +13,6 @@ import { extractEdgeRecords, fetchDatabaseSchema } from '~/util/schema';
 import { useHasSchemaAccess } from '~/hooks/schema';
 import { sort } from 'radash';
 import { useIsConnected } from '~/hooks/connection';
-import { adapter } from '~/adapter';
-import { Spacer } from '~/components/Spacer';
 import { TableCreator } from '~/components/TableCreator';
 
 export interface TablesPaneProps {
@@ -25,7 +23,6 @@ export interface TablesPaneProps {
 
 export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps) {
 	const isLight = useIsLight();
-	const [isDeleting, setIsDeleting] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState('');
 	const schema = useStoreValue(state => state.databaseSchema);
@@ -46,35 +43,12 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 		});
 	}, [schema, search]);
 
-	const activeTable = useMemo(() => {
-		return schema.find(table => table.schema.name === active);
-	}, [schema, active]);
-
 	const selectTable = (table: TableDefinition | null) => {
 		onSelectTable(table?.schema?.name || null);
 	};
 
 	const refreshTables = useStable(async () => {
 		fetchDatabaseSchema();
-	});
-
-	const requestDelete = useStable((e: React.MouseEvent) => {
-		e.stopPropagation();
-		setIsDeleting(true);
-	});
-
-	const closeDelete = useStable(() => {
-		setIsDeleting(false);
-	});
-
-	const handleDelete = useStable(async () => {
-		const surreal = adapter.getActiveSurreal();
-
-		await surreal.query('REMOVE TABLE ' + activeTable!.schema.name);
- 
-		closeDelete();
-		fetchDatabaseSchema();
-		onRefresh?.();
 	});
 
 	const openCreator = useStable(() => {
@@ -165,21 +139,6 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 								>
 									{table.schema.name}
 								</Text>
-
-								<Spacer />
-								
-								{isActive && (
-									<ActionIcon
-										style={{ position: 'absolute', right: 8 }}
-										onClick={requestDelete}
-										title="Delete table"
-										color="surreal"
-									>
-										<Icon
-											path={mdiClose}
-										/>
-									</ActionIcon>
-								)}
 							</Group>
 						);
 					})}
@@ -189,37 +148,6 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 					Not connected
 				</Text>
 			))}
-
-			<Modal
-				opened={isDeleting}
-				onClose={closeDelete}
-				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						Are you sure?
-					</Title>
-				}
-			>
-				<Text color={isLight ? 'light.6' : 'light.1'}>
-					You are about to delete this table. This action cannot be undone,
-					and all data within it will be lost.
-				</Text>
-				<Group mt="lg">
-					<Button
-						onClick={closeDelete}
-						color={isLight ? 'light.5' : 'light.3'}
-						variant="light"
-					>
-						Close
-					</Button>
-					<Spacer />
-					<Button
-						color="red"
-						onClick={handleDelete}
-					>
-						Delete
-					</Button>
-				</Group>
-			</Modal>
 
 			<TableCreator
 				opened={isCreating}
