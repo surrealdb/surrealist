@@ -71,7 +71,9 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 			const userName = editingLogin || editingUsername;
 
-			await adapter.getActiveSurreal().query(`DEFINE LOGIN ${userName} ON ${props.typeLong} PASSWORD "${editingPassword}"`);
+			await adapter
+				.getActiveSurreal()
+				.query(`DEFINE LOGIN ${userName} ON ${props.typeLong} PASSWORD "${editingPassword}"`);
 			await fetchLogins();
 		} catch (err: any) {
 			showError('Failed to save account', err.message);
@@ -152,11 +154,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 				opened={isEditing}
 				onClose={closeSaving}
 				trapFocus={false}
-				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						{editingLogin ? `Change password` : 'Create account'}
-					</Title>
-				}>
+				title={editingLogin ? 'Change password' : 'Create account'}>
 				<Form onSubmit={saveAccount}>
 					<Stack>
 						{!editingLogin && (

@@ -1,11 +1,11 @@
 import classes from './style.module.scss';
-import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps, Title } from "@mantine/core";
-import { mdiCancel, mdiCheck, mdiWrench } from "@mdi/js";
-import { ChangeEvent, useState } from "react";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
+import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps, Title } from '@mantine/core';
+import { mdiCancel, mdiCheck, mdiWrench } from '@mdi/js';
+import { ChangeEvent, useState } from 'react';
+import { Icon } from '~/components/Icon';
+import { Spacer } from '~/components/Spacer';
+import { useStable } from '~/hooks/stable';
+import { useIsLight } from '~/hooks/theme';
 import { SurrealistEditor } from '~/components/SurrealistEditor';
 
 export interface QueryInputProps extends TextareaProps {
@@ -18,10 +18,10 @@ export function QueryInput(props: QueryInputProps) {
 
 	const [isEditorOpen, setIsEditorOpen] = useState(false);
 	const [editorText, setEditorText] = useState<string | undefined>();
-	
+
 	const openEditor = useStable(() => {
 		setIsEditorOpen(true);
-		setEditorText(props.value as string || '');
+		setEditorText((props.value as string) || '');
 	});
 
 	const closeEditor = useStable(() => {
@@ -47,7 +47,7 @@ export function QueryInput(props: QueryInputProps) {
 	return (
 		<>
 			<Textarea
-				label="Query input"
+				label='Query input'
 				rightSectionWidth={44}
 				{...rest}
 				minRows={1}
@@ -57,34 +57,16 @@ export function QueryInput(props: QueryInputProps) {
 				rightSection={
 					<Group spacing={8} noWrap>
 						{props.rightSection}
-						<ActionIcon
-							title="Advanced editor"
-							onClick={openEditor}
-							color={color}
-						>
-							<Icon
-								path={mdiWrench}
-								size="sm"
-								color={color}
-							/>
+						<ActionIcon title='Advanced editor' onClick={openEditor} color={color}>
+							<Icon path={mdiWrench} size='sm' color={color} />
 						</ActionIcon>
 					</Group>
 				}
 			/>
 
-			<Modal
-				opened={isEditorOpen}
-				onClose={closeEditor}
-				trapFocus={false}
-				size="lg"
-				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						Advanced editor
-					</Title>
-				}
-			>
+			<Modal opened={isEditorOpen} onClose={closeEditor} trapFocus={false} size='lg' title='Advanced editor'>
 				<SurrealistEditor
-					language="surrealql"
+					language='surrealql'
 					value={editorText}
 					onChange={setEditorText}
 					height={300}
@@ -92,24 +74,16 @@ export function QueryInput(props: QueryInputProps) {
 						wrappingStrategy: 'advanced',
 						wordWrap: 'on',
 						suggest: {
-							showProperties: false
-						}
+							showProperties: false,
+						},
 					}}
 				/>
-				<Group mt="lg">
-					<Button
-						onClick={closeEditor}
-						color={isLight ? 'light.5' : 'light.3'}
-						variant="light"
-					>
+				<Group mt='lg'>
+					<Button onClick={closeEditor} color={isLight ? 'light.5' : 'light.3'} variant='light'>
 						Discard
 					</Button>
 					<Spacer />
-					<Button
-						color="surreal"
-						onClick={saveEditor}
-						type="submit"
-					>
+					<Button color='surreal' onClick={saveEditor} type='submit'>
 						Save
 					</Button>
 				</Group>
@@ -128,27 +102,25 @@ export function PermissionInput(props: PermissionInputProps) {
 	return (
 		<QueryInput
 			required
-			placeholder="WHERE (user = $auth.id)"
+			placeholder='WHERE (user = $auth.id)'
 			label={props.label}
 			value={props.value}
-			onChangeText={value => props.onChange(value)}
+			onChangeText={(value) => props.onChange(value)}
 			rightSectionWidth={114}
 			rightSection={
 				<>
 					<ActionIcon
-						color="green"
-						title="Grant full access"
+						color='green'
+						title='Grant full access'
 						onClick={() => props.onChange('FULL')}
-						variant={props.value.toUpperCase() === 'FULL' ? 'light' : 'subtle'}
-					>
+						variant={props.value.toUpperCase() === 'FULL' ? 'light' : 'subtle'}>
 						<Icon path={mdiCheck} />
 					</ActionIcon>
 					<ActionIcon
-						color="red.5"
-						title="Reject all access"
+						color='red.5'
+						title='Reject all access'
 						onClick={() => props.onChange('NONE')}
-						variant={props.value.toUpperCase() === 'NONE' ? 'light' : 'subtle'}
-					>
+						variant={props.value.toUpperCase() === 'NONE' ? 'light' : 'subtle'}>
 						<Icon path={mdiCancel} />
 					</ActionIcon>
 				</>

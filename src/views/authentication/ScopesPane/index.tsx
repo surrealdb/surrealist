@@ -1,25 +1,7 @@
 import { Text, Textarea } from '@mantine/core';
-import {
-	ActionIcon,
-	Button,
-	Center,
-	Group,
-	Menu,
-	Modal,
-	Stack,
-	TextInput,
-	Title,
-} from '@mantine/core';
+import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput, Title } from '@mantine/core';
 import { useInputState } from '@mantine/hooks';
-import {
-	mdiAccountLock,
-	mdiDelete,
-	mdiDotsVertical,
-	mdiKeyVariant,
-	mdiPlus,
-	mdiRefresh,
-	mdiWrench,
-} from '@mdi/js';
+import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from '@mdi/js';
 import { invoke } from '@tauri-apps/api/tauri';
 import { map } from 'radash';
 import { useState, useEffect } from 'react';
@@ -166,11 +148,11 @@ export function ScopePane(props: ScopePaneProps) {
 						<Text span color={isLight ? 'gray.4' : 'gray.7'} pl={6}>
 							{scope.signin && scope.signup
 								? 'Signup & Signin'
-								: (scope.signin
-									? 'Signin only'
-									: scope.signup
-										? 'Signup only'
-										: 'No auth')}
+								: scope.signin
+								? 'Signin only'
+								: scope.signup
+								? 'Signup only'
+								: 'No auth'}
 						</Text>
 						<Menu position='right-start' shadow='sm' withArrow arrowOffset={18}>
 							<Menu.Target>
@@ -179,9 +161,7 @@ export function ScopePane(props: ScopePaneProps) {
 								</Button>
 							</Menu.Target>
 							<Menu.Dropdown>
-								<Menu.Item
-									icon={<Icon path={mdiWrench} size={0.7} color='light.4' />}
-									onClick={() => editScope(scope)}>
+								<Menu.Item icon={<Icon path={mdiWrench} size={0.7} color='light.4' />} onClick={() => editScope(scope)}>
 									Edit
 								</Menu.Item>
 								<Menu.Item

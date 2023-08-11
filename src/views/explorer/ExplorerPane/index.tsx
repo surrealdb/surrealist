@@ -1,18 +1,28 @@
-import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
-import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { mdiArrowLeft, mdiArrowRight, mdiDatabase, mdiFilterVariant, mdiPin, mdiPinOff, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
-import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
-import { useImmer } from "use-immer";
-import { adapter } from "~/adapter";
-import { DataTable } from "~/components/DataTable";
-import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
-import { useActiveTab } from "~/hooks/environment";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { actions, store } from "~/store";
-import { ColumnSort, OpenFn } from "~/types";
-import { updateConfig } from "~/util/helpers";
+import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from '@mantine/core';
+import { useDebouncedValue, useInputState } from '@mantine/hooks';
+import {
+	mdiArrowLeft,
+	mdiArrowRight,
+	mdiDatabase,
+	mdiFilterVariant,
+	mdiPin,
+	mdiPinOff,
+	mdiPlus,
+	mdiRefresh,
+	mdiTable,
+} from '@mdi/js';
+import { FocusEvent, KeyboardEvent, useEffect, useState } from 'react';
+import { useImmer } from 'use-immer';
+import { adapter } from '~/adapter';
+import { DataTable } from '~/components/DataTable';
+import { Icon } from '~/components/Icon';
+import { Panel } from '~/components/Panel';
+import { useActiveTab } from '~/hooks/environment';
+import { useStable } from '~/hooks/stable';
+import { useIsLight } from '~/hooks/theme';
+import { actions, store } from '~/store';
+import { ColumnSort, OpenFn } from '~/types';
+import { updateConfig } from '~/util/helpers';
 
 const PAGE_SIZES = [
 	{ label: '10 Results per page', value: '10' },
@@ -74,7 +84,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}`;
 		let fetchQuery = `SELECT * FROM ${props.activeTable}`;
- 
+
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;
 			fetchQuery += ` WHERE ${filterClause}`;
@@ -105,7 +115,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		if (showFilter && filterText) {
-			adapter.validateWhereClause(filterText).then(isValid => {
+			adapter.validateWhereClause(filterText).then((isValid) => {
 				setFilterValid(isValid);
 			});
 		} else {
@@ -158,82 +168,67 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const togglePin = useStable(() => {
 		if (!props.activeTable || !tabInfo) return;
 
-		store.dispatch(actions.toggleTablePin({
-			tab: tabInfo.id,
-			table: props.activeTable
-		}));
-		
+		store.dispatch(
+			actions.toggleTablePin({
+				tab: tabInfo.id,
+				table: props.activeTable,
+			})
+		);
+
 		updateConfig();
 	});
 
 	return (
 		<Panel
-			title="Record Explorer"
+			title='Record Explorer'
 			icon={mdiTable}
 			rightSection={
-				<Group align="center">
-					<ActionIcon
-						title="Create record"
-						onClick={props.onRequestCreate}
-					>
-						<Icon color="light.4" path={mdiPlus} />
+				<Group align='center'>
+					<ActionIcon title='Create record' onClick={props.onRequestCreate}>
+						<Icon color='light.4' path={mdiPlus} />
 					</ActionIcon>
 
-					<ActionIcon
-						title="Refresh"
-						onClick={fetchRecords}
-					>
-						<Icon color="light.4" path={mdiRefresh} />
+					<ActionIcon title='Refresh' onClick={fetchRecords}>
+						<Icon color='light.4' path={mdiRefresh} />
 					</ActionIcon>
 
-					<ActionIcon
-						title={isPinned ? 'Unpin table' : 'Pin table'}
-						onClick={togglePin}
-					>
-						<Icon color="light.4" path={isPinned ? mdiPinOff : mdiPin} />
+					<ActionIcon title={isPinned ? 'Unpin table' : 'Pin table'} onClick={togglePin}>
+						<Icon color='light.4' path={isPinned ? mdiPinOff : mdiPin} />
 					</ActionIcon>
 
-					<ActionIcon
-						title="Toggle filter"
-						onClick={toggleFilter}
-					>
-						<Icon color="light.4" path={mdiFilterVariant} />
+					<ActionIcon title='Toggle filter' onClick={toggleFilter}>
+						<Icon color='light.4' path={mdiFilterVariant} />
 					</ActionIcon>
 
-					<Divider
-						orientation="vertical"
-						color={isLight ? 'light.0' : 'dark.5'}
-					/>
+					<Divider orientation='vertical' color={isLight ? 'light.0' : 'dark.5'} />
 
-					<Icon color="light.4" path={mdiDatabase} mr={-10} />
-					<Text color="light.4" lineClamp={1}>
+					<Icon color='light.4' path={mdiDatabase} mr={-10} />
+					<Text color='light.4' lineClamp={1}>
 						{recordCount || 'no'} rows
 					</Text>
 				</Group>
-			}
-		>
+			}>
 			{props.activeTable ? (
 				<>
 					{filter && (
 						<TextInput
-							placeholder="Enter filter clause..."
+							placeholder='Enter filter clause...'
 							icon={<Icon path={mdiFilterVariant} />}
 							value={filterText}
 							onChange={setFilterText}
 							error={!filterValid}
 							autoFocus
-							styles={theme => ({
+							styles={(theme) => ({
 								input: {
 									fontFamily: 'JetBrains Mono',
-									borderColor: (filterValid ? theme.fn.themeColor('gray') : theme.fn.themeColor('red')) + ' !important'
-								}
+									borderColor: (filterValid ? theme.fn.themeColor('gray') : theme.fn.themeColor('red')) + ' !important',
+								},
 							})}
 						/>
 					)}
 					{records.length > 0 ? (
 						<ScrollArea
-							style={{ position: 'absolute', inset: 12, top: filter ? 40 : 0, bottom: 54, transition: 'top .1s' }}
-						>
+							style={{ position: 'absolute', inset: 12, top: filter ? 40 : 0, bottom: 54, transition: 'top .1s' }}>
 							<DataTable
 								data={records}
 								openRecord={props.onSelectRecord}
@@ -244,28 +239,24 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 							/>
 						</ScrollArea>
 					) : (
-						<Center h="90%" c="light.5">
+						<Center h='90%' c='light.5'>
 							Table has no records
 						</Center>
 					)}
 
-					<Group
-						style={{ position: 'absolute', insetInline: 12, bottom: 12 }}
-						spacing="xl"
-					>
-						<Group spacing="xs">
+					<Group style={{ position: 'absolute', insetInline: 12, bottom: 12 }} spacing='xl'>
+						<Group spacing='xs'>
 							<Button
-								color="dark.5"
-								variant="outline"
-								c="light.4"
-								px="xs"
+								color='dark.5'
+								variant='outline'
+								c='light.4'
+								px='xs'
 								onClick={previousPage}
 								disabled={page <= 1}
-								style={{ opacity: page <= 1 ? 0.4 : 1 }}
-							>
+								style={{ opacity: page <= 1 ? 0.4 : 1 }}>
 								<Icon path={mdiArrowLeft} />
 							</Button>
-							
+
 							<TextInput
 								value={pageText}
 								onChange={setPageText}
@@ -276,37 +267,30 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 								styles={{
 									input: {
 										textAlign: 'center',
-										paddingInline: 0
-									}
+										paddingInline: 0,
+									},
 								}}
 							/>
 
-							<Text color="light.3">
-								of {pageCount} pages
-							</Text>
+							<Text color='light.3'>of {pageCount} pages</Text>
 
 							<Button
-								color="dark.5"
-								variant="outline"
-								c="light.4"
-								px="xs"
+								color='dark.5'
+								variant='outline'
+								c='light.4'
+								px='xs'
 								onClick={nextPage}
 								disabled={page >= pageCount}
-								style={{ opacity: page >= pageCount ? 0.4 : 1 }}
-							>
+								style={{ opacity: page >= pageCount ? 0.4 : 1 }}>
 								<Icon path={mdiArrowRight} />
 							</Button>
 						</Group>
 
-						<Select
-							value={pageSize}
-							onChange={setPageSize}
-							data={PAGE_SIZES}
-						/>
+						<Select value={pageSize} onChange={setPageSize} data={PAGE_SIZES} />
 					</Group>
 				</>
 			) : (
-				<Center h="100%" c="light.5">
+				<Center h='100%' c='light.5'>
 					Select a table to view its records
 				</Center>
 			)}
