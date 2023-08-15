@@ -1,20 +1,37 @@
-import classes from './style.module.scss';
-import { ActionIcon, Box, Button, Collapse, Divider, Group, Modal, Paper, ScrollArea, SimpleGrid, Stack, Text, Textarea, TextInput, Title, useMantineTheme } from "@mantine/core";
+import classes from "./style.module.scss";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Collapse,
+	Divider,
+	Group,
+	Modal,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Stack,
+	Text,
+	Textarea,
+	TextInput,
+	Title,
+	useMantineTheme,
+} from "@mantine/core";
 import { mdiChevronDown, mdiChevronUp, mdiClose, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
-import { useStable } from '~/hooks/stable';
-import { useInputState } from '@mantine/hooks';
-import { FavoritesEntry, SurrealistTab } from '~/types';
-import { useActiveTab } from '~/hooks/environment';
-import { uid } from 'radash';
-import { updateConfig } from '~/util/helpers';
-import { Sortable } from '~/components/Sortable';
-import { Panel } from '~/components/Panel';
-import { Icon } from '~/components/Icon';
-import { Spacer } from '~/components/Spacer';
-import { Form } from '~/components/Form';
+import { useStable } from "~/hooks/stable";
+import { useInputState } from "@mantine/hooks";
+import { FavoritesEntry, SurrealistTab } from "~/types";
+import { useActiveTab } from "~/hooks/environment";
+import { uid } from "radash";
+import { updateConfig } from "~/util/helpers";
+import { Sortable } from "~/components/Sortable";
+import { Panel } from "~/components/Panel";
+import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
+import { Form } from "~/components/Form";
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
@@ -23,21 +40,21 @@ export interface FavoritesPaneProps {
 export function FavoritesPane(props: FavoritesPaneProps) {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
-	const entries = useStoreValue(state => state.config.queryFavorites);
-	const query = activeTab?.query?.trim() || '';
+	const entries = useStoreValue((state) => state.config.queryFavorites);
+	const query = activeTab?.query?.trim() || "";
 
-	const [search, setSearch] = useInputState('');
-	const [activeEntry, setActiveEntry] = useState('');
-	const [queryName, setQueryName] = useInputState('');
-	const [queryText, setQueryText] = useInputState('');
+	const [search, setSearch] = useInputState("");
+	const [activeEntry, setActiveEntry] = useState("");
+	const [queryName, setQueryName] = useInputState("");
+	const [queryText, setQueryText] = useInputState("");
 	const [isEditing, setIsEditing] = useState(false);
-	const [editingId, setEditingId] = useState('');
+	const [editingId, setEditingId] = useState("");
 
 	const openSaveBox = useStable(() => {
 		setIsEditing(true);
-		setQueryName('');
+		setQueryName("");
 		setQueryText(query);
-		setEditingId('');
+		setEditingId("");
 	});
 
 	const closeSaving = useStable(() => {
@@ -47,16 +64,20 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 	const saveQuery = useStable(() => {
 		setIsEditing(false);
 
-		store.dispatch(actions.saveFavoritesEntry({
-			id: editingId || uid(5),
-			name: queryName,
-			query: queryText
-		}));
+		store.dispatch(
+			actions.saveFavoritesEntry({
+				id: editingId || uid(5),
+				name: queryName,
+				query: queryText,
+			})
+		);
 	});
 
 	const filtered = useMemo(() => {
 		const needle = search.toLowerCase();
-		return entries.filter(entry => entry.name.toLowerCase().includes(needle) || entry.query.toLowerCase().includes(needle));
+		return entries.filter(
+			(entry) => entry.name.toLowerCase().includes(needle) || entry.query.toLowerCase().includes(needle)
+		);
 	}, [search, entries]);
 
 	const activateEntry = useStable((id: string) => {
@@ -64,7 +85,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 	});
 
 	const openEditor = useStable((id: string) => {
-		const entry = entries.find(entry => entry.id === id);
+		const entry = entries.find((entry) => entry.id === id);
 
 		if (!entry) {
 			return;
@@ -86,7 +107,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 	});
 
 	const closeActive = useStable(() => {
-		setActiveEntry('');
+		setActiveEntry("");
 	});
 
 	const historyList = useMemo(() => {
@@ -104,9 +125,8 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 				onSorting={closeActive}
 				onSorted={saveOrder}
 				constraint={{
-					distance: 12
-				}}
-			>
+					distance: 12,
+				}}>
 				{({ index, item, handleProps }) => (
 					<Fragment key={index}>
 						<FavoriteRow
@@ -120,11 +140,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 							onActivate={activateEntry}
 							onEdit={openEditor}
 						/>
-						{index !== filtered.length - 1 && (
-							<Divider
-								color={isLight ? 'light.0' : 'dark.5'}
-							/>
-						)}
+						{index !== filtered.length - 1 && <Divider color={isLight ? "light.0" : "dark.5"} />}
 					</Fragment>
 				)}
 			</Sortable>
@@ -135,20 +151,13 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 		<Panel
 			title="Saved queries"
 			icon={mdiStar}
-			rightSection={
-				<FavoritesActions
-					activeTab={activeTab}
-					onCreate={openSaveBox}
-				/>
-			}
-		>
+			rightSection={<FavoritesActions activeTab={activeTab} onCreate={openSaveBox} />}>
 			<ScrollArea
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					inset: 12,
-					top: 0
-				}}
-			>
+					top: 0,
+				}}>
 				<TextInput
 					placeholder="Search queries..."
 					icon={<Icon path={mdiMagnify} />}
@@ -157,9 +166,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 					mb="lg"
 				/>
 
-				<Stack spacing="sm">
-					{historyList}
-				</Stack>
+				<Stack spacing="sm">{historyList}</Stack>
 			</ScrollArea>
 
 			<Modal
@@ -167,46 +174,25 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 				onClose={closeSaving}
 				trapFocus={false}
 				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						{editingId ? 'Edit query' : 'Save query'}
+					<Title size={16} color={isLight ? "light.6" : "white"}>
+						{editingId ? "Edit query" : "Save query"}
 					</Title>
-				}
-			>
+				}>
 				<Form onSubmit={saveQuery}>
 					<Stack>
-						<TextInput
-							placeholder="Enter query name"
-							value={queryName}
-							onChange={setQueryName}
-							autoFocus
-						/>
-						<Textarea
-							placeholder="SELECT * FROM ..."
-							value={queryText}
-							onChange={setQueryText}
-							minRows={8}
-						/>
+						<TextInput placeholder="Enter query name" value={queryName} onChange={setQueryName} autoFocus />
+						<Textarea placeholder="SELECT * FROM ..." value={queryText} onChange={setQueryText} minRows={8} />
 						<Group>
-							<Button
-								color={isLight ? 'light.5' : 'light.3'}
-								variant="light"
-								onClick={closeSaving}
-							>
+							<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={closeSaving}>
 								Close
 							</Button>
 							<Spacer />
 							{editingId && (
-								<Button
-									color="red.6"
-									variant="subtle"
-									onClick={deleteEntry}
-								>
+								<Button color="red.6" variant="subtle" onClick={deleteEntry}>
 									Delete
 								</Button>
 							)}
-							<Button type="submit">
-								Save
-							</Button>
+							<Button type="submit">Save</Button>
 						</Group>
 					</Stack>
 				</Form>
@@ -228,18 +214,8 @@ interface HistoryRowProps {
 }
 
 function FavoriteRow(props: HistoryRowProps) {
-	const {
-		isActive,
-		activeTab,
-		entry,
-		isLight,
-		enableDrag,
-		handleProps,
-		onExecuteQuery,
-		onActivate,
-		onEdit
-	} = props;
-	
+	const { isActive, activeTab, entry, isLight, enableDrag, handleProps, onExecuteQuery, onActivate, onEdit } = props;
+
 	const theme = useMantineTheme();
 
 	const editQuery = useStable(() => {
@@ -247,11 +223,13 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const executeQuery = useStable(() => {
-		store.dispatch(actions.updateTab({
-			id: activeTab?.id,
-			query: entry.query
-		}));
-		
+		store.dispatch(
+			actions.updateTab({
+				id: activeTab?.id,
+				query: entry.query,
+			})
+		);
+
 		setTimeout(onExecuteQuery, 0);
 	});
 
@@ -259,90 +237,60 @@ function FavoriteRow(props: HistoryRowProps) {
 		e.preventDefault();
 
 		if (isActive) {
-			onActivate('');
+			onActivate("");
 		} else {
 			onActivate(entry.id);
 		}
 	});
 
 	const openQuery = useStable(() => {
-		store.dispatch(actions.openTabCreator({
-			name: entry.name.slice(0, 25),
-			query: entry.query
-		}));
+		store.dispatch(
+			actions.openTabCreator({
+				name: entry.name.slice(0, 25),
+				query: entry.query,
+			})
+		);
 	});
 
 	return (
 		<Box
-			color={isLight ? 'light.0' : 'dark.4'}
+			color={isLight ? "light.0" : "dark.4"}
 			className={classes.entry}
-			style={{ borderColor: theme.fn.themeColor(isLight ? 'light.0' : 'dark.3') }}
-		>
+			style={{ borderColor: theme.fn.themeColor(isLight ? "light.0" : "dark.3") }}>
 			<Group
 				mb="sm"
 				noWrap
 				className={classes.entryHeader}
 				onClick={handleClick}
 				title="Drag to reorder"
-				{...(enableDrag ? handleProps : {})}
-			>
+				{...(enableDrag ? handleProps : {})}>
 				<Text c="surreal" weight={500}>
 					{entry.name}
 				</Text>
 				<Spacer />
-				<Icon
-					path={isActive ? mdiChevronDown : mdiChevronUp}
-					style={{ flexShrink: 0 }}
-				/>
+				<Icon path={isActive ? mdiChevronDown : mdiChevronUp} style={{ flexShrink: 0 }} />
 			</Group>
 
-			<Collapse
-				in={isActive}
-			>
-				<Paper
-					withBorder
-					p="xs"
-				>
+			<Collapse in={isActive}>
+				<Paper withBorder p="xs">
 					<Text
 						ff="JetBrains Mono"
-						c={isLight ? 'black' : 'white'}
+						c={isLight ? "black" : "white"}
 						className={classes.queryText}
 						lineClamp={8}
-						weight={600}
-					>
+						weight={600}>
 						{entry.query}
 					</Text>
 				</Paper>
 
 				<SimpleGrid cols={3} mt="xs" pb="xs" spacing="xs">
-					<Button
-						size="xs"
-						variant="light"
-						color="violet"
-						radius="sm"
-						title="Edit query"
-						onClick={editQuery}
-					>
+					<Button size="xs" variant="light" color="violet" radius="sm" title="Edit query" onClick={editQuery}>
 						<Icon path={mdiPencil} color="violet" />
 					</Button>
-					<Button
-						size="xs"
-						variant="light"
-						color="pink"
-						radius="sm"
-						title="Run query"
-						onClick={executeQuery}
-					>
+					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeQuery}>
 						<Icon path={mdiPlay} color="pink" />
 					</Button>
-					<Button
-						size="xs"
-						variant="light"
-						color="blue"
-						radius="sm"
-						title="Open in new session"
-						onClick={openQuery}
-					>
+					<Button size="xs" variant="light" color="blue" radius="sm" title="Open in new session" onClick={openQuery}>
 						<Icon path={mdiPlus} color="blue" />
 					</Button>
 				</SimpleGrid>
@@ -357,7 +305,7 @@ interface FavoritesActionsProps {
 }
 
 function FavoritesActions(props: FavoritesActionsProps) {
-	const query = props.activeTab?.query?.trim() || '';
+	const query = props.activeTab?.query?.trim() || "";
 	const canSave = query.length > 0;
 
 	const hideFavorites = useStable(() => {
@@ -368,17 +316,11 @@ function FavoritesActions(props: FavoritesActionsProps) {
 	return (
 		<Group align="center">
 			{canSave && (
-				<ActionIcon
-					onClick={props.onCreate}
-					title="Save current query"
-				>
+				<ActionIcon onClick={props.onCreate} title="Save current query">
 					<Icon color="light.4" path={mdiPlus} />
 				</ActionIcon>
 			)}
-			<ActionIcon
-				onClick={hideFavorites}
-				title="Hide favorites"
-			>
+			<ActionIcon onClick={hideFavorites} title="Hide favorites">
 				<Icon color="light.4" path={mdiClose} />
 			</ActionIcon>
 		</Group>

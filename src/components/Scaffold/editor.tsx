@@ -1,17 +1,17 @@
-import { Modal, Title, Group, Button } from '@mantine/core';
-import { ConnectionDetails } from '../ConnectionDetails';
-import { Spacer } from '../Spacer';
-import { useIsLight } from '~/hooks/theme';
-import { useImmer } from 'use-immer';
-import { createEmptyConnection, isConnectionValid, mergeConnections } from '~/util/environments';
-import { useStable } from '~/hooks/stable';
-import { actions, store, useStoreValue } from '~/store';
-import { Form } from '../Form';
-import { useEffect } from 'react';
-import { updateConfig, updateTitle } from '~/util/helpers';
-import { useEnvironmentList, useTabsList } from '~/hooks/environment';
-import { InheritAlert } from '../InheritAlert/interface';
-import { ConnectionOptions } from '~/types';
+import { Modal, Title, Group, Button } from "@mantine/core";
+import { ConnectionDetails } from "../ConnectionDetails";
+import { Spacer } from "../Spacer";
+import { useIsLight } from "~/hooks/theme";
+import { useImmer } from "use-immer";
+import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
+import { useStable } from "~/hooks/stable";
+import { actions, store, useStoreValue } from "~/store";
+import { Form } from "../Form";
+import { useEffect } from "react";
+import { updateConfig, updateTitle } from "~/util/helpers";
+import { useEnvironmentList, useTabsList } from "~/hooks/environment";
+import { InheritAlert } from "../InheritAlert/interface";
+import { ConnectionOptions } from "~/types";
 
 export interface TabEditorProps {
 	onActiveChange: () => Promise<unknown>;
@@ -65,18 +65,18 @@ export function TabEditor({ onActiveChange }: TabEditorProps) {
 	}, [opened]);
 
 	return (
-		<Modal opened={opened} onClose={handleCose} trapFocus={false} size='lg' title='Connection details'>
+		<Modal opened={opened} onClose={handleCose} trapFocus={false} size="lg" title="Connection details">
 			<InheritAlert visible={!detailsValid && mergedValid} environment={envInfo?.name} />
 
 			<Form onSubmit={saveInfo}>
 				<ConnectionDetails value={infoDetails} onChange={setInfoDetails} placeholders={envInfo?.connection} optional />
 
-				<Group mt='lg'>
-					<Button color={isLight ? 'light.5' : 'light.3'} variant='light' onClick={handleCose}>
+				<Group mt="lg">
+					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={handleCose}>
 						Close
 					</Button>
 					<Spacer />
-					<Button type='submit' disabled={!mergedValid}>
+					<Button type="submit" disabled={!mergedValid}>
 						Save details
 					</Button>
 				</Group>

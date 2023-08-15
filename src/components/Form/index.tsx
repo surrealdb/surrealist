@@ -11,9 +11,5 @@ export function Form(props: PropsWithChildren<FormProps>) {
 		props.onSubmit();
 	});
 
-	return (
-		<form onSubmit={doSubmit}>
-			{props.children}
-		</form>
-	);
+	return <form onSubmit={doSubmit}>{props.children}</form>;
 }

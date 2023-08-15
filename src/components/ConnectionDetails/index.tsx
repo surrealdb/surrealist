@@ -1,4 +1,17 @@
-import { Modal, Title, Stack, Paper, Group, TextInput, ActionIcon, Button, PasswordInput, Select, SimpleGrid, Text } from "@mantine/core";
+import {
+	Modal,
+	Title,
+	Stack,
+	Paper,
+	Group,
+	TextInput,
+	ActionIcon,
+	Button,
+	PasswordInput,
+	Select,
+	SimpleGrid,
+	Text,
+} from "@mantine/core";
 import { mdiClose, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -19,9 +32,9 @@ export interface ConnectionDetailsProps {
 export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {
 	const isLight = useIsLight();
 	const authMode = value.authMode || placeholders?.authMode;
-	const modePlaceholder = AUTH_MODES.find(mode => mode.value === placeholders?.authMode)?.label;
-	const passPlaceholder = placeholders?.password && '•'.repeat(placeholders.password.length);
-	const [ editingScope, setEditingScope ] = useState(false);
+	const modePlaceholder = AUTH_MODES.find((mode) => mode.value === placeholders?.authMode)?.label;
+	const passPlaceholder = placeholders?.password && "•".repeat(placeholders.password.length);
+	const [editingScope, setEditingScope] = useState(false);
 
 	const openScopeEditor = useStable(() => {
 		setEditingScope(true);
@@ -32,10 +45,10 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 	});
 
 	const addScopeField = useStable(() => {
-		onChange(draft => {
+		onChange((draft) => {
 			draft.scopeFields.push({
-				subject: '',
-				value: ''
+				subject: "",
+				value: "",
 			});
 		});
 	});
@@ -46,78 +59,87 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				<Stack>
 					<TextInput
 						label="Endpoint URL"
-						value={value.endpoint || ''}
+						value={value.endpoint || ""}
 						placeholder={placeholders?.endpoint}
 						autoFocus={!optional}
-						onChange={(e) => onChange(draft => {
-							draft.endpoint = e.target.value;
-						})}
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.endpoint = e.target.value;
+							})
+						}
 					/>
 					<TextInput
 						label="Namespace"
-						value={value.namespace || ''}
+						value={value.namespace || ""}
 						placeholder={placeholders?.namespace}
-						onChange={(e) => onChange(draft => {
-							draft.namespace = e.target.value;
-						})}
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.namespace = e.target.value;
+							})
+						}
 					/>
 					<TextInput
 						label="Database"
-						value={value.database || ''}
+						value={value.database || ""}
 						placeholder={placeholders?.database}
-						onChange={(e) => onChange(draft => {
-							draft.database = e.target.value;
-						})}
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.database = e.target.value;
+							})
+						}
 					/>
 				</Stack>
 				<Stack>
 					<Select
 						label="Authentication mode"
-						value={value.authMode || ''}
+						value={value.authMode || ""}
 						placeholder={modePlaceholder}
 						clearable
 						data={AUTH_MODES}
-						onChange={(value) => onChange(draft => {
-							draft.authMode = value as AuthMode;
-						})}
+						onChange={(value) =>
+							onChange((draft) => {
+								draft.authMode = value as AuthMode;
+							})
+						}
 					/>
-					{authMode !== 'scope' && authMode !== 'none' && (
+					{authMode !== "scope" && authMode !== "none" && (
 						<>
 							<TextInput
 								label="Username"
-								value={value.username || ''}
+								value={value.username || ""}
 								placeholder={placeholders?.username}
-								onChange={(e) => onChange(draft => {
-									draft.username = e.target.value;
-								})}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.username = e.target.value;
+									})
+								}
 							/>
 							<PasswordInput
 								label="Password"
-								value={value.password || ''}
+								value={value.password || ""}
 								placeholder={passPlaceholder}
-								onChange={(e) => onChange(draft => {
-									draft.password = e.target.value;
-								})}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.password = e.target.value;
+									})
+								}
 							/>
 						</>
 					)}
-					
-					{authMode === 'scope' && (
+
+					{authMode === "scope" && (
 						<>
 							<TextInput
 								label="Scope"
-								value={value.scope || ''}
+								value={value.scope || ""}
 								placeholder={placeholders?.scope}
-								onChange={(e) => onChange(draft => {
-									draft.scope = e.target.value;
-								})}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.scope = e.target.value;
+									})
+								}
 							/>
-							<Button
-								mt={21}
-								color="blue"
-								variant="outline"
-								onClick={openScopeEditor}
-							>
+							<Button mt={21} color="blue" variant="outline" onClick={openScopeEditor}>
 								Edit scope data
 							</Button>
 						</>
@@ -129,16 +151,12 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				onClose={closeEditingScope}
 				size={560}
 				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+					<Title size={16} color={isLight ? "light.6" : "white"}>
 						Editing scope data
 					</Title>
-				}
-			>
+				}>
 				{value.scopeFields?.length === 0 ? (
-					<Text
-						color="gray"
-						italic
-					>
+					<Text color="gray" italic>
 						No scope data defined
 					</Text>
 				) : (
@@ -150,29 +168,31 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 										placeholder="Key"
 										style={{ flex: 1 }}
 										value={field.subject}
-										onChange={(e) => onChange(draft => {
-											draft.scopeFields[i].subject = e.target.value;
-										})}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.scopeFields[i].subject = e.target.value;
+											})
+										}
 									/>
 									<TextInput
 										placeholder="Value"
 										style={{ flex: 1 }}
 										value={field.value}
-										onChange={(e) => onChange(draft => {
-											draft.scopeFields[i].value = e.target.value;
-										})}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.scopeFields[i].value = e.target.value;
+											})
+										}
 									/>
 									<ActionIcon
 										color="red"
 										title="Remove field"
-										onClick={() => onChange(draft => {
-											draft.scopeFields.splice(i, 1);
-										})}
-									>
-										<Icon
-											path={mdiClose}
-											color="red"
-										/>
+										onClick={() =>
+											onChange((draft) => {
+												draft.scopeFields.splice(i, 1);
+											})
+										}>
+										<Icon path={mdiClose} color="red" />
 									</ActionIcon>
 								</Group>
 							</Paper>
@@ -181,20 +201,11 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				)}
 
 				<Group mt="lg">
-					<Button
-						color={isLight ? 'light.5' : 'light.3'}
-						variant="light"
-						onClick={closeEditingScope}
-					>
+					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={closeEditingScope}>
 						Back
 					</Button>
 					<Spacer />
-					<Button
-						rightIcon={<Icon path={mdiPlus} />}
-						variant="light"
-						color="blue"
-						onClick={addScopeField}
-					>
+					<Button rightIcon={<Icon path={mdiPlus} />} variant="light" color="blue" onClick={addScopeField}>
 						Add field
 					</Button>
 				</Group>

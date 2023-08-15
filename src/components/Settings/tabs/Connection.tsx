@@ -10,10 +10,9 @@ export interface ConnectionTabProps {
 }
 
 export function ConnectionTab({ config }: ConnectionTabProps) {
-
 	const setAutoConnect = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setAutoConnect(e.target.checked));
-		updateConfig();	
+		updateConfig();
 	});
 
 	const setQueryTimeout = useStable((value: number) => {
@@ -24,18 +23,11 @@ export function ConnectionTab({ config }: ConnectionTabProps) {
 	return (
 		<Stack spacing="xs">
 			<Setting label="Auto connect to database">
-				<Switch
-					checked={config.autoConnect}
-					onChange={setAutoConnect}
-				/>
+				<Switch checked={config.autoConnect} onChange={setAutoConnect} />
 			</Setting>
 
 			<Setting label="Query timeout (seconds)">
-				<NumberInput
-					value={config.queryTimeout}
-					min={1}
-					onChange={setQueryTimeout}
-				/>
+				<NumberInput value={config.queryTimeout} min={1} onChange={setQueryTimeout} />
 			</Setting>
 		</Stack>
 	);

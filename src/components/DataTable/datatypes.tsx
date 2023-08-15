@@ -24,25 +24,16 @@ export interface DataCellProps {
 
 function NullishCell(props: DataCellProps) {
 	return (
-		<Text
-			color="light.5"
-			ff="JetBrains Mono"
-		>
-			{props.value === null ? 'null' : '—'}
+		<Text color="light.5" ff="JetBrains Mono">
+			{props.value === null ? "null" : "—"}
 		</Text>
 	);
 }
 
 function BooleanCell(props: DataCellProps) {
-	const icon = props.value ? (
-		<Icon path={mdiCheck} color="green" />
-	) : (
-		<Icon path={mdiClose} color="red" />
-	);
+	const icon = props.value ? <Icon path={mdiCheck} color="green" /> : <Icon path={mdiClose} color="red" />;
 
-	return (
-		<div>{icon}</div>
-	);
+	return <div>{icon}</div>;
 }
 
 function StringCell(props: DataCellProps) {
@@ -51,35 +42,25 @@ function StringCell(props: DataCellProps) {
 			title={props.value}
 			style={{
 				...TRUNCATE_STYLE,
-				maxWidth: 250
-			}}
-		>
+				maxWidth: 250,
+			}}>
 			{props.value}
 		</Text>
 	);
 }
 
 function NumberCell(props: DataCellProps) {
-	return (
-		<Text>
-			{props.value.toLocaleString()}
-		</Text>
-	);
+	return <Text>{props.value.toLocaleString()}</Text>;
 }
 
 function ThingCell(props: DataCellProps) {
-	return (
-		<RecordLink
-			value={props.value}
-			onRecordClick={props.openRecord}
-		/>
-	);
+	return <RecordLink value={props.value} onRecordClick={props.openRecord} />;
 }
 
 function DateTimeCell(props: DataCellProps) {
 	const date = new Date(props.value);
 	const relative = dayjs(date).fromNow();
-	
+
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon path={mdiClockOutline} left mt={-3} />
@@ -90,35 +71,23 @@ function DateTimeCell(props: DataCellProps) {
 
 function ArrayCell(props: DataCellProps) {
 	const items = props.value as any[];
-	
+
 	return (
 		<div>
-			<HoverCard
-				shadow="xl"
-				withinPortal
-				withArrow
-			>
+			<HoverCard shadow="xl" withinPortal withArrow>
 				<HoverCard.Target>
-					<Text
-						span
-						ff="JetBrains Mono"
-						style={{ cursor: 'help' }}
-					>
+					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Array({props.value.length})
 					</Text>
 				</HoverCard.Target>
 				<HoverCard.Dropdown>
 					{items.length > 15 ? (
-						<Text size="sm">
-							Too large to preview
-						</Text>
+						<Text size="sm">Too large to preview</Text>
 					) : (
 						<Stack spacing="sm">
 							{items.map((item, i) => (
 								<Group noWrap>
-									<span style={{ opacity: 0.5 }}>
-										#{i + 1}
-									</span>
+									<span style={{ opacity: 0.5 }}>#{i + 1}</span>
 									<div key={i} style={TRUNCATE_STYLE}>
 										{renderDataCell(item, props.openRecord)}
 									</div>
@@ -135,28 +104,14 @@ function ArrayCell(props: DataCellProps) {
 function ObjectCell(props: DataCellProps) {
 	return (
 		<div>
-			<HoverCard
-				width={280}
-				shadow="md"
-				withinPortal
-				withArrow
-			>
+			<HoverCard width={280} shadow="md" withinPortal withArrow>
 				<HoverCard.Target>
-					<Text
-						span
-						ff="JetBrains Mono"
-						style={{ cursor: 'help' }}
-					>
+					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Object({Object.keys(props.value).length})
 					</Text>
 				</HoverCard.Target>
 				<HoverCard.Dropdown>
-					<Text
-						size="sm"
-						ff="JetBrains Mono"
-						style={{ whiteSpace: 'pre' }}
-						lineClamp={10}
-					>
+					<Text size="sm" ff="JetBrains Mono" style={{ whiteSpace: "pre" }} lineClamp={10}>
 						{JSON.stringify(props.value, null, 4)}
 					</Text>
 				</HoverCard.Dropdown>
@@ -168,36 +123,36 @@ function ObjectCell(props: DataCellProps) {
 const DataCellTypes = [
 	{
 		match: (value: any) => value === null || value === undefined,
-		component: NullishCell
+		component: NullishCell,
 	},
 	{
-		match: (value: any) => typeof value == 'string' && THING_REGEX.test(value),
-		component: ThingCell
+		match: (value: any) => typeof value == "string" && THING_REGEX.test(value),
+		component: ThingCell,
 	},
 	{
-		match: (value: any) => typeof value == 'string' && DATETIME_REGEX.test(value),
-		component: DateTimeCell
+		match: (value: any) => typeof value == "string" && DATETIME_REGEX.test(value),
+		component: DateTimeCell,
 	},
 	{
-		match: (value: any) => typeof value === 'boolean',
-		component: BooleanCell
+		match: (value: any) => typeof value === "boolean",
+		component: BooleanCell,
 	},
 	{
-		match: (value: any) => typeof value === 'string',
-		component: StringCell
+		match: (value: any) => typeof value === "string",
+		component: StringCell,
 	},
 	{
-		match: (value: any) => typeof value === 'number',
-		component: NumberCell
+		match: (value: any) => typeof value === "number",
+		component: NumberCell,
 	},
 	{
 		match: (value: any) => Array.isArray(value),
-		component: ArrayCell
+		component: ArrayCell,
 	},
 	{
-		match: (value: any) => typeof value === 'object',
-		component: ObjectCell
-	}
+		match: (value: any) => typeof value === "object",
+		component: ObjectCell,
+	},
 ];
 
 export function renderDataCell(value: any, openRecord?: OpenFn): ReactNode {
@@ -206,7 +161,7 @@ export function renderDataCell(value: any, openRecord?: OpenFn): ReactNode {
 		if (type.match(value)) {
 			return type.component({
 				value,
-				openRecord
+				openRecord,
 			});
 		}
 	}

@@ -4,18 +4,17 @@ import { Open, SurrealistConfig } from "~/types";
  * Perform migrations on the given config object.
  */
 export function migrateConfig(config: Open<SurrealistConfig>) {
-
 	// 1.6.0 - Migrate auth and view behavior
 	for (const tab of config.tabs) {
 		if (!tab.activeView) {
-			tab.activeView = 'query';
+			tab.activeView = "query";
 		}
 
 		if (tab.connection.scopeFields === undefined) {
-			if (tab.connection.authMode == 'scope') {
+			if (tab.connection.authMode == "scope") {
 				tab.connection.scopeFields = [
-					{ subject: 'user', value: tab.connection.username },
-					{ subject: 'pass', value: tab.connection.password }
+					{ subject: "user", value: tab.connection.username },
+					{ subject: "pass", value: tab.connection.password },
 				];
 			} else {
 				tab.connection.scopeFields = [];

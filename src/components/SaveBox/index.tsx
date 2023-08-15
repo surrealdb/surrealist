@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Group } from '@mantine/core';
-import { mdiCheck } from '@mdi/js';
-import { useLater } from '~/hooks/later';
-import { Icon } from '../Icon';
-import { klona } from 'klona';
-import fastDeepEqual from 'fast-deep-equal';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Button, Group } from "@mantine/core";
+import { mdiCheck } from "@mdi/js";
+import { useLater } from "~/hooks/later";
+import { Icon } from "../Icon";
+import { klona } from "klona";
+import fastDeepEqual from "fast-deep-equal";
 
 export interface SaveBoxProps {
 	value: any;
@@ -27,13 +27,13 @@ export interface SaveBoxProps {
  * containing all state you want to track. This object
  * will later be passed back by `onRevert` in order to
  * reset each state hook to their original value.
- * 
+ *
  * When `valid` is false, the save button will be disabled.
- * 
+ *
  * Use the `onSave` prop to save the current state to
  * the database. The data at the moment of saving will
  * be seen as the new "original" state.
- * 
+ *
  * Use the `onPatch` prop to make changes to the state
  * before saving.
  */
@@ -69,26 +69,17 @@ export const SaveBox = ({ value, valid, onRevert, onPatch, onSave, onChangedStat
 	}, [isChanged, onChangedState]);
 
 	return (
-		<Group
-			spacing={10}
-			align="center"
-			position="apart"
-		>
+		<Group spacing={10} align="center" position="apart">
 			<Button
 				rightIcon={<Icon path={mdiCheck} size={1} />}
 				loaderPosition="right"
 				loading={isSaving}
 				disabled={!isChanged || valid === false}
-				onClick={doSave}
-			>
+				onClick={doSave}>
 				Save changes
 			</Button>
 			{onRevert && (
-				<Button
-					disabled={!isChanged || valid === false}
-					onClick={doRevert}
-					color="dark.4"
-				>
+				<Button disabled={!isChanged || valid === false} onClick={doRevert} color="dark.4">
 					Revert
 				</Button>
 			)}

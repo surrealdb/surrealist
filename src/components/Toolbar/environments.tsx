@@ -1,17 +1,17 @@
-import classes from './style.module.scss';
-import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput, Title } from '@mantine/core';
-import { useIsLight } from '~/hooks/theme';
-import { ConnectionDetails } from '../ConnectionDetails';
-import { actions, store, useStoreValue } from '~/store';
-import { mdiClose, mdiPlus } from '@mdi/js';
-import { Icon } from '../Icon';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Text } from '@mantine/core';
-import { useStable } from '~/hooks/stable';
-import { useImmer } from 'use-immer';
-import { Spacer } from '../Spacer';
-import { SurrealistEnvironment } from '~/types';
-import { newId, updateConfig } from '~/util/helpers';
+import classes from "./style.module.scss";
+import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput, Title } from "@mantine/core";
+import { useIsLight } from "~/hooks/theme";
+import { ConnectionDetails } from "../ConnectionDetails";
+import { actions, store, useStoreValue } from "~/store";
+import { mdiClose, mdiPlus } from "@mdi/js";
+import { Icon } from "../Icon";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Text } from "@mantine/core";
+import { useStable } from "~/hooks/stable";
+import { useImmer } from "use-immer";
+import { Spacer } from "../Spacer";
+import { SurrealistEnvironment } from "~/types";
+import { newId, updateConfig } from "~/util/helpers";
 
 export interface EnvironmentsProps {
 	opened: boolean;
@@ -20,7 +20,7 @@ export interface EnvironmentsProps {
 }
 
 function buildName(n: number) {
-	return `Environment ${n ? n + 1 : ''}`.trim();
+	return `Environment ${n ? n + 1 : ""}`.trim();
 }
 
 export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
@@ -28,7 +28,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	const liveEnvs = useStoreValue((state) => state.config.environments);
 	const isLight = useIsLight();
 
-	const [viewingEnv, setViewingEnv] = useState('');
+	const [viewingEnv, setViewingEnv] = useState("");
 	const [environments, setEnvironments] = useImmer<SurrealistEnvironment[]>([]);
 	const [removedIds, setRemovedIds] = useImmer<string[]>([]);
 
@@ -63,7 +63,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	});
 
 	const addEnvironment = useStable(() => {
-		let tabName = '';
+		let tabName = "";
 		let counter = 0;
 
 		do {
@@ -95,7 +95,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 			draft.push(viewingEnv);
 		});
 
-		setViewingEnv('');
+		setViewingEnv("");
 	});
 
 	const saveEnvironments = useStable(() => {
@@ -113,30 +113,30 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	});
 
 	useEffect(() => {
-		if (opened && viewingEnv === '') {
+		if (opened && viewingEnv === "") {
 			setEnvironments(liveEnvs);
-			setViewingEnv(liveEnvs[0]?.id ?? '');
+			setViewingEnv(liveEnvs[0]?.id ?? "");
 		}
 	}, [opened, liveEnvs]);
 
 	return (
-		<Modal opened={opened} onClose={onClose} size={850} title='Manage environments'>
+		<Modal opened={opened} onClose={onClose} size={850} title="Manage environments">
 			<Grid h={350} style={{ gap: 12 }}>
 				<Grid.Col
-					pr='md'
+					pr="md"
 					span={4}
 					sx={(theme) => ({
-						borderRight: `2px solid ${theme.fn.themeColor(isLight ? 'light.0' : 'dark.4')}`,
-						position: 'relative',
+						borderRight: `2px solid ${theme.fn.themeColor(isLight ? "light.0" : "dark.4")}`,
+						position: "relative",
 					})}>
 					<ScrollArea
 						style={{
-							position: 'absolute',
+							position: "absolute",
 							inset: 0,
 							bottom: 24,
 							right: 12,
 						}}>
-						<Stack spacing='xs'>
+						<Stack spacing="xs">
 							{environments.map((item) => {
 								const isActive = item.id === viewingEnv;
 
@@ -144,9 +144,9 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 									<Button
 										key={item.id}
 										px={12}
-										c={isLight ? 'black' : 'white'}
-										color={isActive ? (isLight ? 'light.1' : 'dark.7') : 'light'}
-										variant={isActive ? 'filled' : 'subtle'}
+										c={isLight ? "black" : "white"}
+										color={isActive ? (isLight ? "light.1" : "dark.7") : "light"}
+										variant={isActive ? "filled" : "subtle"}
 										className={classes.entryButton}
 										onClick={() => openEnvironment(item.id)}>
 										{item.name}
@@ -156,8 +156,8 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 
 							<Button
 								px={12}
-								color='light'
-								variant='subtle'
+								color="light"
+								variant="subtle"
 								className={classes.manageButton}
 								leftIcon={<Icon path={mdiPlus} />}
 								onClick={addEnvironment}>
@@ -166,13 +166,13 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 						</Stack>
 					</ScrollArea>
 				</Grid.Col>
-				<Grid.Col span='auto'>
+				<Grid.Col span="auto">
 					{selected ? (
 						<>
-							<Group mb='xl'>
+							<Group mb="xl">
 								<TextInput
-									placeholder='Environment name'
-									variant='unstyled'
+									placeholder="Environment name"
+									variant="unstyled"
 									style={{ flex: 1 }}
 									value={selected.name}
 									onChange={updateName}
@@ -180,15 +180,15 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 									styles={(theme) => ({
 										input: {
 											fontSize: 16,
-											color: isLight ? theme.fn.themeColor('dark.9') : theme.fn.themeColor('gray.0'),
+											color: isLight ? theme.fn.themeColor("dark.9") : theme.fn.themeColor("gray.0"),
 											fontWeight: 600,
 										},
 									})}
 								/>
 								<Button
-									variant='outline'
+									variant="outline"
 									rightIcon={<Icon path={mdiClose} />}
-									color='red.5'
+									color="red.5"
 									onClick={deleteCurrent}
 									disabled={environments.length <= 1}>
 									Remove
@@ -207,8 +207,8 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 							<ConnectionDetails value={selected.connection as any} onChange={updateConnection} optional />
 						</>
 					) : (
-						<Center h='100%'>
-							<Text color='dark.2' mt={-50}>
+						<Center h="100%">
+							<Text color="dark.2" mt={-50}>
 								Select an environment
 							</Text>
 						</Center>
@@ -216,11 +216,11 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 				</Grid.Col>
 			</Grid>
 			<Group>
-				<Button color={isLight ? 'light.5' : 'light.3'} variant='light' onClick={onClose}>
+				<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={onClose}>
 					Close
 				</Button>
 				<Spacer />
-				<Button color='surreal' onClick={saveEnvironments}>
+				<Button color="surreal" onClick={saveEnvironments}>
 					Save details
 				</Button>
 			</Group>

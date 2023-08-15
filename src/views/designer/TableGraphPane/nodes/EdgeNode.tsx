@@ -10,35 +10,20 @@ interface EdgeNodeProps {
 	data: {
 		table: TableDefinition;
 		isSelected: boolean;
-	}
+	};
 }
 
 export function EdgeNode({ data }: EdgeNodeProps) {
 	const isLight = useIsLight();
 
 	return (
-		<BaseNode
-			isLight={isLight}
-			table={data.table}
-			isSelected={data.isSelected}
-			hasLeftEdge={true}
-			hasRightEdge={true}
-		>
-			<Group
-				style={{ color: isLight ? undefined : 'white' }}
-				position="center"
-				spacing="xs"
-			>
+		<BaseNode isLight={isLight} table={data.table} isSelected={data.isSelected} hasLeftEdge={true} hasRightEdge={true}>
+			<Group style={{ color: isLight ? undefined : "white" }} position="center" spacing="xs">
 				<Icon path={mdiVectorLine} color={LIGHT_TEXT_1} />
-				<Text align="center">
-					{data.table.schema.name}
-				</Text>
+				<Text align="center">{data.table.schema.name}</Text>
 			</Group>
 
-			<Divider
-				color={isLight ? 'light.0' : 'dark.4'}
-				mt={6}
-			/>
+			<Divider color={isLight ? "light.0" : "dark.4"} mt={6} />
 		</BaseNode>
 	);
 }

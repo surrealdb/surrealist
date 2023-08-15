@@ -1,5 +1,5 @@
-import { HTMLAttributes, useMemo } from 'react';
-import { Box, BoxProps, MantineColor, MantineTheme, getSize, useMantineTheme } from '@mantine/core';
+import { HTMLAttributes, useMemo } from "react";
+import { Box, BoxProps, MantineColor, MantineTheme, getSize, useMantineTheme } from "@mantine/core";
 
 const FONT_SIZES: Record<string, number> = {
 	xs: 0.5,
@@ -9,7 +9,7 @@ const FONT_SIZES: Record<string, number> = {
 	xl: 2,
 };
 
-export interface IconProps extends Omit<BoxProps, 'left' | 'right'>, HTMLAttributes<SVGElement> {
+export interface IconProps extends Omit<BoxProps, "left" | "right">, HTMLAttributes<SVGElement> {
 	size?: string | number;
 	color?: MantineColor;
 	left?: boolean;
@@ -28,16 +28,16 @@ export const Icon = ({ size, color, path, style, left, right, ...rest }: IconPro
 		() => ({
 			width: iconSize,
 			height: iconSize,
-			verticalAlign: 'middle',
-			marginRight: left ? '0.5em' : undefined,
-			marginLeft: right ? '0.5em' : undefined,
+			verticalAlign: "middle",
+			marginRight: left ? "0.5em" : undefined,
+			marginLeft: right ? "0.5em" : undefined,
 			...style,
 		}),
 		[iconSize, left, right, style]
 	);
 
 	return (
-		<Box component='svg' viewBox='0 0 24 24' role='presentation' style={svgStyle} {...rest}>
+		<Box component="svg" viewBox="0 0 24 24" role="presentation" style={svgStyle} {...rest}>
 			<path d={path} style={pathStyle} />
 		</Box>
 	);
@@ -45,20 +45,20 @@ export const Icon = ({ size, color, path, style, left, right, ...rest }: IconPro
 
 function getIconColor(theme: MantineTheme, color: MantineColor | undefined): string {
 	return color === undefined
-		? 'currentColor'
+		? "currentColor"
 		: (theme.fn.variant({
 				color,
-				variant: 'filled',
+				variant: "filled",
 				primaryFallback: false,
 		  }).background as string);
 }
 
 function getIconSize(size: string | number | undefined): string {
 	if (size === undefined) {
-		return '1em';
-	} else if (typeof size === 'number') {
-		return getSize({ size, sizes: FONT_SIZES, units: 'em' });
+		return "1em";
+	} else if (typeof size === "number") {
+		return getSize({ size, sizes: FONT_SIZES, units: "em" });
 	} else {
-		return getSize({ size, sizes: FONT_SIZES, units: 'em' }) + 'em';
+		return getSize({ size, sizes: FONT_SIZES, units: "em" }) + "em";
 	}
 }

@@ -3,7 +3,7 @@ import { useStable } from "./stable";
 
 /**
  * Execute a callback after a delay, if the callback is called again before the delay is over, the delay is reset.
- * 
+ *
  * @param delay The delay in milliseconds
  * @param exec The callback to execute
  * @returns The debounced callback

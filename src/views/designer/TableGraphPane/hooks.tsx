@@ -7,6 +7,6 @@ export function useHandleStyle() {
 
 	return {
 		backgroundColor: isLight ? colors.light[2] : colors.dark[0],
-		borderColor: 'transparent'
+		borderColor: "transparent",
 	};
 }

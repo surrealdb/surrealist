@@ -1,17 +1,17 @@
-import { mdiCog } from '@mdi/js';
-import { useState } from 'react';
-import { Button, Group, Modal, Paper, Stack, Tabs, Text, Title } from '@mantine/core';
+import { mdiCog } from "@mdi/js";
+import { useState } from "react";
+import { Button, Group, Modal, Paper, Stack, Tabs, Text, Title } from "@mantine/core";
 
-import { useStoreValue } from '~/store';
-import { Icon } from '../Icon';
-import { adapter } from '~/adapter';
-import { Spacer } from '../Spacer';
-import { GeneralTab } from './tabs/General';
-import { ConnectionTab } from './tabs/Connection';
-import { LocalDatabaseTab } from './tabs/LocalDatabase';
-import { runUpdateChecker } from '~/util/updater';
-import { useIsLight } from '~/hooks/theme';
-import { useStable } from '~/hooks/stable';
+import { useStoreValue } from "~/store";
+import { Icon } from "../Icon";
+import { adapter } from "~/adapter";
+import { Spacer } from "../Spacer";
+import { GeneralTab } from "./tabs/General";
+import { ConnectionTab } from "./tabs/Connection";
+import { LocalDatabaseTab } from "./tabs/LocalDatabase";
+import { runUpdateChecker } from "~/util/updater";
+import { useIsLight } from "~/hooks/theme";
+import { useStable } from "~/hooks/stable";
 
 export function Settings() {
 	const isLight = useIsLight();
@@ -36,39 +36,39 @@ export function Settings() {
 
 	return (
 		<>
-			<Button color={isLight ? 'light.0' : 'dark.4'} onClick={openSettings} title='Settings' px='xs'>
-				<Icon path={mdiCog} color={isLight ? 'light.8' : 'white'} />
+			<Button color={isLight ? "light.0" : "dark.4"} onClick={openSettings} title="Settings" px="xs">
+				<Icon path={mdiCog} color={isLight ? "light.8" : "white"} />
 			</Button>
 
 			<Modal
 				opened={showSettings}
 				onClose={closeSettings}
-				overlayProps={{ color: isLight ? '#0c0a12' : '#090612', blur: 1 }}
+				overlayProps={{ color: isLight ? "#0c0a12" : "#090612", blur: 1 }}
 				transitionProps={{ exitDuration: 150 }}></Modal>
 
-			<Modal opened={showSettings} onClose={closeSettings} size={580} title='Settings'>
+			<Modal opened={showSettings} onClose={closeSettings} size={580} title="Settings">
 				{adapter.isPromotionSupported && (
 					<Paper
-						mb='xl'
-						c='white'
+						mb="xl"
+						c="white"
 						sx={(theme) => ({
 							background: `url(/desktop.png), ${theme.fn.gradient()}`,
-							overflow: 'hidden',
-							backgroundSize: 'contain',
-							backgroundRepeat: 'no-repeat',
-							backgroundPosition: 'center right',
+							overflow: "hidden",
+							backgroundSize: "contain",
+							backgroundRepeat: "no-repeat",
+							backgroundPosition: "center right",
 						})}>
-						<Stack spacing='xs' p='md'>
-							<Text size='xl' weight={600}>
+						<Stack spacing="xs" p="md">
+							<Text size="xl" weight={600}>
 								Surrealist Desktop
 							</Text>
-							<Text style={{ maxWidth: '80%' }}>
+							<Text style={{ maxWidth: "80%" }}>
 								Download Surrealist for desktop to gain additional features including database running and offline
 								support.
 							</Text>
 							<div>
-								<a href='https://github.com/StarlaneStudios/Surrealist/releases' target='_blank'>
-									<Button color='light.0' variant='outline'>
+								<a href="https://github.com/StarlaneStudios/Surrealist/releases" target="_blank">
+									<Button color="light.0" variant="outline">
 										Download
 									</Button>
 								</a>
@@ -77,33 +77,33 @@ export function Settings() {
 					</Paper>
 				)}
 
-				<Tabs defaultValue='general'>
-					<Tabs.List mb='md'>
-						<Tabs.Tab value='general'>General</Tabs.Tab>
-						<Tabs.Tab value='connection'>Connection</Tabs.Tab>
+				<Tabs defaultValue="general">
+					<Tabs.List mb="md">
+						<Tabs.Tab value="general">General</Tabs.Tab>
+						<Tabs.Tab value="connection">Connection</Tabs.Tab>
 
-						{adapter.isServeSupported && <Tabs.Tab value='database'>Local database</Tabs.Tab>}
+						{adapter.isServeSupported && <Tabs.Tab value="database">Local database</Tabs.Tab>}
 					</Tabs.List>
 
-					<Tabs.Panel value='general' pt='xs'>
+					<Tabs.Panel value="general" pt="xs">
 						<GeneralTab config={config} />
 					</Tabs.Panel>
 
-					<Tabs.Panel value='connection' pt='xs'>
+					<Tabs.Panel value="connection" pt="xs">
 						<ConnectionTab config={config} />
 					</Tabs.Panel>
 
-					<Tabs.Panel value='database' pt='xs'>
+					<Tabs.Panel value="database" pt="xs">
 						<LocalDatabaseTab config={config} />
 					</Tabs.Panel>
 				</Tabs>
 
-				<Group mt='xl' position='center'>
-					<Text color={isLight ? 'light.4' : 'dark.3'}>
+				<Group mt="xl" position="center">
+					<Text color={isLight ? "light.4" : "dark.3"}>
 						Version {version} by {author}
 					</Text>
 					<Spacer />
-					<Button variant='subtle' onClick={checkForUpdates}>
+					<Button variant="subtle" onClick={checkForUpdates}>
 						Check for updates
 					</Button>
 				</Group>

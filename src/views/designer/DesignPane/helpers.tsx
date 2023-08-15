@@ -1,10 +1,10 @@
 import { TableDefinition } from "~/types";
-import { default as equals } from 'fast-deep-equal';
+import { default as equals } from "fast-deep-equal";
 import { objectify } from "radash";
 
 export const TABLE_TYPES = [
-	{ label: 'Schemaless', value: 'schemaless' },
-	{ label: 'Schemafull', value: 'schemafull' }
+	{ label: "Schemaless", value: "schemaless" },
+	{ label: "Schemafull", value: "schemafull" },
 ];
 
 function buildPermission(type: string, value: string) {
@@ -13,7 +13,7 @@ function buildPermission(type: string, value: string) {
 
 /**
  * Build the queries to update the entire table schema
- * 
+ *
  * @param previous Previous state
  * @param current Current state
  * @returns The queries to execute
@@ -22,21 +22,21 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	const queries: string[] = [];
 	const name = current.schema.name;
 
-	const fieldIndex = objectify(current.fields, f => f.name);
-	const indexIndex = objectify(current.indexes, i => i.name);
-	const eventIndex = objectify(current.events, e => e.name);
+	const fieldIndex = objectify(current.fields, (f) => f.name);
+	const indexIndex = objectify(current.indexes, (i) => i.name);
+	const eventIndex = objectify(current.events, (e) => e.name);
 
 	if (!equals(previous.schema, current.schema)) {
 		let query = `DEFINE TABLE ${current.schema.name}`;
 
 		if (current.schema.drop) {
-			query += ' DROP';
+			query += " DROP";
 		}
 
 		if (current.schema.schemafull) {
-			query += ' SCHEMAFULL';
+			query += " SCHEMAFULL";
 		} else {
-			query += ' SCHEMALESS';
+			query += " SCHEMALESS";
 		}
 
 		if (current.schema.view) {
@@ -51,11 +51,11 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 			}
 		}
 
-		query += ' PERMISSIONS';
-		query += buildPermission('create', current.schema.permissions.create);
-		query += buildPermission('select', current.schema.permissions.select);
-		query += buildPermission('update', current.schema.permissions.update);
-		query += buildPermission('delete', current.schema.permissions.delete);
+		query += " PERMISSIONS";
+		query += buildPermission("create", current.schema.permissions.create);
+		query += buildPermission("select", current.schema.permissions.select);
+		query += buildPermission("update", current.schema.permissions.update);
+		query += buildPermission("delete", current.schema.permissions.delete);
 
 		queries.push(query);
 	}
@@ -70,17 +70,17 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 		let query = `DEFINE FIELD ${field.name} ON TABLE ${name}`;
 
 		if (field.flexible) {
-			query += ' FLEXIBLE';
+			query += " FLEXIBLE";
 		}
 
 		if (field.kind) {
 			query += ` TYPE ${field.kind}`;
 
-			if (field.kind == 'record') {
-				query += `(${field.kindTables.join(', ')})`;
+			if (field.kind == "record") {
+				query += `(${field.kindTables.join(", ")})`;
 			}
 
-			if (field.kind == 'geometry') {
+			if (field.kind == "geometry") {
 				query += `(${field.kindGeometry})`;
 			}
 		}
@@ -93,11 +93,11 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 			query += ` ASSERT ${field.assert}`;
 		}
 
-		query += ' PERMISSIONS';
-		query += buildPermission('create', field.permissions.create);
-		query += buildPermission('select', field.permissions.select);
-		query += buildPermission('update', field.permissions.update);
-		query += buildPermission('delete', field.permissions.delete);
+		query += " PERMISSIONS";
+		query += buildPermission("create", field.permissions.create);
+		query += buildPermission("select", field.permissions.select);
+		query += buildPermission("update", field.permissions.update);
+		query += buildPermission("delete", field.permissions.delete);
 
 		queries.push(query);
 	}
@@ -112,7 +112,7 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 		let query = `DEFINE INDEX ${index.name} ON TABLE ${name} FIELDS ${index.fields}`;
 
 		if (index.unique) {
-			query += ' UNIQUE';
+			query += " UNIQUE";
 		}
 
 		queries.push(query);
@@ -130,28 +130,32 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 		queries.push(query);
 	}
 
-	return queries.join(';\n');
+	return queries.join(";\n");
 }
 
 /**
  * Returns whether the schema is valid
- * 
+ *
  * @param schema The schema to check
  * @returns Whether the schema is valid
  */
 export function isSchemaValid(schema: TableDefinition): boolean {
-	const result = schema.schema.name
-		&& schema.schema.permissions.create
-		&& schema.schema.permissions.select
-		&& schema.schema.permissions.update
-		&& schema.schema.permissions.delete
-		&& schema.fields.every(field => field.name
-			&& field.permissions.create
-			&& field.permissions.select
-			&& field.permissions.update
-			&& field.permissions.delete)
-		&& schema.indexes.every(index => index.name)
-		&& schema.events.every(event => event.name);
-	
+	const result =
+		schema.schema.name &&
+		schema.schema.permissions.create &&
+		schema.schema.permissions.select &&
+		schema.schema.permissions.update &&
+		schema.schema.permissions.delete &&
+		schema.fields.every(
+			(field) =>
+				field.name &&
+				field.permissions.create &&
+				field.permissions.select &&
+				field.permissions.update &&
+				field.permissions.delete
+		) &&
+		schema.indexes.every((index) => index.name) &&
+		schema.events.every((event) => event.name);
+
 	return !!result;
 }

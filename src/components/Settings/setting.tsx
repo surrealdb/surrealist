@@ -13,11 +13,9 @@ export function Setting(props: PropsWithChildren<SettingProps>) {
 
 	return (
 		<Group position="center">
-			<Text color={isLight ? 'black' : 'gray.4'}>
-				{props.label}
-			</Text>
+			<Text color={isLight ? "black" : "gray.4"}>{props.label}</Text>
 			<Spacer />
-			<Box mih={30} style={{ display: 'flex', alignItems: 'center' }}>
+			<Box mih={30} style={{ display: "flex", alignItems: "center" }}>
 				{props.children}
 			</Box>
 		</Group>

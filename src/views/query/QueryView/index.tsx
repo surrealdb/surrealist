@@ -12,12 +12,12 @@ export interface QueryViewProps {
 }
 
 export function QueryView(props: QueryViewProps) {
-	const enableListing = useStoreValue(state => state.config.enableListing);
-	const queryListing = useStoreValue(state => state.config.queryListing);
+	const enableListing = useStoreValue((state) => state.config.enableListing);
+	const queryListing = useStoreValue((state) => state.config.queryListing);
 
 	const [splitValues, setSplitValues] = useState<SplitValues>([450, undefined]);
 	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
-	
+
 	return (
 		<Splitter
 			minSize={300}
@@ -32,27 +32,19 @@ export function QueryView(props: QueryViewProps) {
 					onChange={setInnerSplitValues}
 					bufferSize={0}
 					direction="vertical"
-					endPane={
-						<VariablesPane
-							onExecuteQuery={props.sendQuery}
-						/>
-					}
-				>
-					<QueryPane
-						onExecuteQuery={props.sendQuery}
-					/>
+					endPane={<VariablesPane onExecuteQuery={props.sendQuery} />}>
+					<QueryPane onExecuteQuery={props.sendQuery} />
 				</Splitter>
 			}
-			endPane={enableListing ? (queryListing == 'history' ? (
-				<HistoryPane
-					onExecuteQuery={props.sendQuery}
-				/>
-			) : (
-				<FavoritesPane
-					onExecuteQuery={props.sendQuery}
-				/>
-			)) : null}
-		>
+			endPane={
+				enableListing ? (
+					queryListing == "history" ? (
+						<HistoryPane onExecuteQuery={props.sendQuery} />
+					) : (
+						<FavoritesPane onExecuteQuery={props.sendQuery} />
+					)
+				) : null
+			}>
 			<ResultPane />
 		</Splitter>
 	);
