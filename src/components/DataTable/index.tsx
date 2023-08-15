@@ -1,17 +1,17 @@
-import classes from './style.module.scss';
+import classes from "./style.module.scss";
 import { Box, Text, useMantineTheme } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { useMemo } from "react";
-import { renderDataCell } from './datatypes';
-import { OpenFn, ColumnSort } from '~/types';
-import { useIsLight } from '~/hooks/theme';
-import { useStable } from '~/hooks/stable';
-import { Icon } from '../Icon';
-import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
-import { alphabetical, isObject } from 'radash';
+import { renderDataCell } from "./datatypes";
+import { OpenFn, ColumnSort } from "~/types";
+import { useIsLight } from "~/hooks/theme";
+import { useStable } from "~/hooks/stable";
+import { Icon } from "../Icon";
+import { mdiChevronDown, mdiChevronUp } from "@mdi/js";
+import { alphabetical, isObject } from "radash";
 
 function isRenderable(value: any) {
-	return Array.isArray(value) && value.every(v => isObject(v));
+	return Array.isArray(value) && value.every((v) => isObject(v));
 }
 
 interface DataTableProps {
@@ -32,19 +32,19 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 
 		const [column, direction] = sorting || [];
 
-		if (column === col && direction === 'asc') {
-			onSortingChange([col, 'desc']);
-		} else if (column === col && direction === 'desc') {
+		if (column === col && direction === "asc") {
+			onSortingChange([col, "desc"]);
+		} else if (column === col && direction === "desc") {
 			onSortingChange(null);
 		} else {
-			onSortingChange([col, 'asc']);
+			onSortingChange([col, "asc"]);
 		}
 	});
-	
+
 	const [keys, values] = useMemo(() => {
 		const keys: string[] = [];
 		const values: any[] = [];
-	
+
 		if (isRenderable(data)) {
 			for (const datum of data) {
 				const row: any = {};
@@ -63,56 +63,50 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 
 		const headers = alphabetical(keys, (key) => {
 			switch (key) {
-				case 'id': { return '00000000000';
+				case "id": {
+					return "00000000000";
 				}
-				case 'in': { return '00000000001';
+				case "in": {
+					return "00000000001";
 				}
-				case 'out': { return '00000000002';
+				case "out": {
+					return "00000000002";
 				}
-				default: { return key;
+				default: {
+					return key;
 				}
 			}
 		});
 
 		return [headers, values];
 	}, [data, active]);
-	
+
 	const headers = useMemo(() => {
 		const headers: any = [];
 
 		for (const key of keys) {
 			headers.push(
-				<Box
-					key={key}
-					component="th"
-					bg={isLight ? 'white' : 'dark.7'}
-				>
+				<Box key={key} component="th" bg={isLight ? "white" : "dark.7"}>
 					<Text
 						span
 						onClick={() => handleSortClick(key)}
 						style={{
-							cursor: onSortingChange ? 'pointer' : undefined,
-							userSelect: 'none',
-							WebkitUserSelect: 'none'
-						}}
-					>
+							cursor: onSortingChange ? "pointer" : undefined,
+							userSelect: "none",
+							WebkitUserSelect: "none",
+						}}>
 						{key}
-						{sorting?.[0] == key && (
-							<Icon
-								path={sorting[1] == 'asc' ? mdiChevronDown : mdiChevronUp}
-								pos="absolute"
-							/>
-						)}
+						{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? mdiChevronDown : mdiChevronUp} pos="absolute" />}
 					</Text>
 				</Box>
 			);
 		}
-		
+
 		return headers;
 	}, [isLight, keys, sorting]);
 
 	const activeColor = useMemo(() => {
-		return theme.fn.rgba(theme.fn.themeColor('light.6'), isLight ? 0.15 : 0.4);
+		return theme.fn.rgba(theme.fn.themeColor("light.6"), isLight ? 0.15 : 0.4);
 	}, [isLight]);
 
 	const rows = useMemo(() => {
@@ -121,12 +115,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 				const cellValue = value[key];
 
 				return (
-					<Box
-						key={j}
-						component="td"
-						className={classes.tableValue}
-						h={37}
-					>
+					<Box key={j} component="td" className={classes.tableValue} h={37}>
 						{renderDataCell(cellValue, openRecord)}
 					</Box>
 				);
@@ -141,8 +130,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 					onClick={() => onRowClick?.(value)}
 					sx={{
 						backgroundColor: `${isActive ? activeColor : undefined} !important`,
-					}}
-				>
+					}}>
 					{columns}
 				</Box>
 			);
@@ -150,28 +138,17 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 	}, [keys, values, isLight]);
 
 	if (!isRenderable(data)) {
-		return (
-			<Text color="light.4">
-				Result could not be displayed as a table.
-			</Text>
-		);
+		return <Text color="light.4">Result could not be displayed as a table.</Text>;
 	}
 
 	return (
 		<div className={classes.tableContainer}>
 			<ScrollArea className={classes.tableWrapper}>
-				<Table
-					striped
-					className={classes.table}
-				>
+				<Table striped className={classes.table}>
 					<thead>
-						<tr>
-							{headers}
-						</tr>
+						<tr>{headers}</tr>
 					</thead>
-					<tbody>
-						{rows}
-					</tbody>
+					<tbody>{rows}</tbody>
 				</Table>
 			</ScrollArea>
 		</div>

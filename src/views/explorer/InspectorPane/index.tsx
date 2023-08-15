@@ -1,4 +1,15 @@
-import { mdiArrowLeftBold, mdiArrowRightBold, mdiCheck, mdiCircleMedium, mdiClose, mdiCodeJson, mdiDelete, mdiRefresh, mdiSwapVertical, mdiWrench } from "@mdi/js";
+import {
+	mdiArrowLeftBold,
+	mdiArrowRightBold,
+	mdiCheck,
+	mdiCircleMedium,
+	mdiClose,
+	mdiCodeJson,
+	mdiDelete,
+	mdiRefresh,
+	mdiSwapVertical,
+	mdiWrench,
+} from "@mdi/js";
 import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
@@ -26,22 +37,22 @@ export interface InspectorPaneProps {
 
 export function InspectorPane(props: InspectorPaneProps) {
 	const isLight = useIsLight();
-	const isShifting = useActiveKeys('Shift');
+	const isShifting = useActiveKeys("Shift");
 	const [isInvalid, setIsInvalid] = useState(false);
-	const [recordId, setRecordId] = useInputState('');
+	const [recordId, setRecordId] = useInputState("");
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const record = props.activeRecord;
 
 	useEffect(() => {
-		setRecordId(record.content.id || '');
+		setRecordId(record.content.id || "");
 	}, [record.content.id]);
-	
+
 	const isEdge = record.content?.in && record.content?.out;
 	const recordExists = !record.invalid;
 
 	const gotoRecord = useStable((e: FocusEvent | KeyboardEvent) => {
-		if (e.type === 'keydown' && (e as KeyboardEvent).key !== 'Enter') {
+		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
 			return;
 		}
 
@@ -85,79 +96,57 @@ export function InspectorPane(props: InspectorPaneProps) {
 			icon={mdiWrench}
 			rightSection={
 				<Group align="center">
-					<ActionIcon
-						onClick={props.history.goBack}
-						title="Go back"
-					>
-						<Icon
-							color={props.history.hasBack ? 'light.4' : (isLight ? 'light.0' : 'dark.4') }
-							path={mdiArrowLeftBold}
-						/>
+					<ActionIcon onClick={props.history.goBack} title="Go back">
+						<Icon color={props.history.hasBack ? "light.4" : isLight ? "light.0" : "dark.4"} path={mdiArrowLeftBold} />
 					</ActionIcon>
 
-					<ActionIcon
-						onClick={props.history.goForward}
-						title="Go forward"
-					>
+					<ActionIcon onClick={props.history.goForward} title="Go forward">
 						<Icon
-							color={props.history.hasForward ? 'light.4' : (isLight ? 'light.0' : 'dark.4') }
+							color={props.history.hasForward ? "light.4" : isLight ? "light.0" : "dark.4"}
 							path={mdiArrowRightBold}
 						/>
 					</ActionIcon>
 
-					<ActionIcon
-						onClick={handleRefresh}
-						title="Refetch record"
-					>
-						<Icon
-							color="light.4"
-							path={mdiRefresh}
-						/>
+					<ActionIcon onClick={handleRefresh} title="Refetch record">
+						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 
-					<ActionIcon
-						onClick={requestDelete}
-						title="Delete record (Hold shift to force)"
-						disabled={!recordExists}
-					>
-						<Icon color={isShifting ? 'red' : 'light.4'} path={mdiDelete} />
+					<ActionIcon onClick={requestDelete} title="Delete record (Hold shift to force)" disabled={!recordExists}>
+						<Icon color={isShifting ? "red" : "light.4"} path={mdiDelete} />
 					</ActionIcon>
 
-					<ActionIcon
-						onClick={props.onClose}
-						title="Close inspector"
-					>
+					<ActionIcon onClick={props.onClose} title="Close inspector">
 						<Icon color="light.4" path={mdiClose} />
 					</ActionIcon>
 				</Group>
-			}
-		>
+			}>
 			<TextInput
 				mb="xs"
 				value={recordId}
 				onBlur={gotoRecord}
 				onKeyDown={gotoRecord}
 				onChange={setRecordId}
-				onFocus={e => e.target.select()}
+				onFocus={(e) => e.target.select()}
 				rightSectionWidth={76}
-				rightSection={isEdge && (
-					<Paper
-						title="This record is an edge"
-						bg={isLight ? 'light.0' : 'light.6'}
-						c={isLight ? 'light.6' : 'white'}
-						px="xs"
-					>
-						Edge
-					</Paper>	
-				)}
-				styles={theme => ({
+				rightSection={
+					isEdge && (
+						<Paper
+							title="This record is an edge"
+							bg={isLight ? "light.0" : "light.6"}
+							c={isLight ? "light.6" : "white"}
+							px="xs">
+							Edge
+						</Paper>
+					)
+				}
+				styles={(theme) => ({
 					input: {
-						backgroundColor: isLight ? 'white' : theme.fn.themeColor('dark.9'),
-						color: theme.fn.themeColor(recordExists ? 'surreal' : 'red'),
-						fontFamily: 'JetBrains Mono',
+						backgroundColor: isLight ? "white" : theme.fn.themeColor("dark.9"),
+						color: theme.fn.themeColor(recordExists ? "surreal" : "red"),
+						fontFamily: "JetBrains Mono",
 						fontSize: 14,
-						height: 42
-					}
+						height: 42,
+					},
 				})}
 			/>
 			{recordExists ? (
@@ -191,12 +180,10 @@ export function InspectorPane(props: InspectorPaneProps) {
 							onSelectRecord={props.onSelectRecord}
 						/>
 					</Tabs.Panel>
-				</Tabs>	
+				</Tabs>
 			) : (
 				<Center my="xl">
-					<Text color="light.5">
-						Record does not exist
-					</Text>
+					<Text color="light.5">Record does not exist</Text>
 				</Center>
 			)}
 
@@ -204,32 +191,23 @@ export function InspectorPane(props: InspectorPaneProps) {
 				opened={isDeleting}
 				onClose={closeDelete}
 				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
+					<Title size={16} color={isLight ? "light.6" : "white"}>
 						Are you sure?
 					</Title>
-				}
-			>
-				<Text color={isLight ? 'light.6' : 'light.1'}>
+				}>
+				<Text color={isLight ? "light.6" : "light.1"}>
 					You are about to delete this record. This action cannot be undone.
 				</Text>
 				<Group mt="lg">
-					<Button
-						onClick={closeDelete}
-						color={isLight ? 'light.5' : 'light.3'}
-						variant="light"
-					>
+					<Button onClick={closeDelete} color={isLight ? "light.5" : "light.3"} variant="light">
 						Close
 					</Button>
 					<Spacer />
-					<Button
-						color="red"
-						onClick={handleDelete}
-					>
+					<Button color="red" onClick={handleDelete}>
 						Delete
 					</Button>
 				</Group>
 			</Modal>
-			
 		</Panel>
 	);
 }
@@ -243,23 +221,23 @@ interface ContentTabProps {
 }
 
 function ContentTab(props: ContentTabProps) {
-	const [contentText, setContentText] = useState('');
+	const [contentText, setContentText] = useState("");
 	const [isDirty, setIsDirty] = useState(false);
 
 	const updateContent = useStable((content: string | undefined) => {
 		if (contentText === content) {
 			return;
 		}
-		
-		setContentText(content || '');
+
+		setContentText(content || "");
 		setIsDirty(true);
 
 		try {
-			const json = content || '{}';
+			const json = content || "{}";
 			const parsed = JSON.parse(json);
 
-			if (typeof parsed !== 'object' || !parsed.id) {
-				throw new Error('Invalid JSON');
+			if (typeof parsed !== "object" || !parsed.id) {
+				throw new Error("Invalid JSON");
 			}
 
 			props.setIsInvalid(false);
@@ -286,17 +264,17 @@ function ContentTab(props: ContentTabProps) {
 				value={contentText}
 				onChange={updateContent}
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					insetInline: 12,
 					bottom: 62,
-					top: 109
+					top: 109,
 				}}
 				options={{
-					wrappingStrategy: 'advanced',
-					wordWrap: 'off',
+					wrappingStrategy: "advanced",
+					wordWrap: "off",
 					suggest: {
-						showProperties: false
-					}
+						showProperties: false,
+					},
 				}}
 			/>
 
@@ -304,11 +282,10 @@ function ContentTab(props: ContentTabProps) {
 				disabled={props.isInvalid || !isDirty}
 				onClick={saveRecord}
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					insetInline: 12,
-					bottom: 12
-				}}
-			>
+					bottom: 12,
+				}}>
 				Save record
 				<Icon path={mdiCheck} right />
 			</Button>
@@ -327,41 +304,22 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 	return (
 		<div
 			style={{
-				position: 'absolute',
+				position: "absolute",
 				insetInline: 12,
 				bottom: 42,
-				top: 102
-			}}
-		>
-			<Text
-				color={isLight ? 'blue.9' : 'light.0'}
-				size="lg"
-				mt={4}
-			>
+				top: 102,
+			}}>
+			<Text color={isLight ? "blue.9" : "light.0"} size="lg" mt={4}>
 				Incoming relations
 			</Text>
 
-			<RelationsList
-				name="incoming"
-				isLight={isLight}
-				relations={inputs}
-				onSelectRecord={onSelectRecord}
-			/>
+			<RelationsList name="incoming" isLight={isLight} relations={inputs} onSelectRecord={onSelectRecord} />
 
-			<Text
-				color={isLight ? 'blue.9' : 'light.0'}
-				size="lg"
-				mt="xl"
-			>
+			<Text color={isLight ? "blue.9" : "light.0"} size="lg" mt="xl">
 				Outgoing relations
 			</Text>
 
-			<RelationsList
-				name="outgoing"
-				isLight={isLight}
-				relations={outputs}
-				onSelectRecord={onSelectRecord}
-			/>
+			<RelationsList name="outgoing" isLight={isLight} relations={outputs} onSelectRecord={onSelectRecord} />
 		</div>
 	);
 }
@@ -375,24 +333,15 @@ interface RelationsListProps {
 
 function RelationsList({ name, isLight, relations, onSelectRecord }: RelationsListProps) {
 	if (relations.length === 0) {
-		return (
-			<Text>
-				No {name} relations found
-			</Text>
-		);
+		return <Text>No {name} relations found</Text>;
 	}
 
 	return (
 		<>
 			{relations.map((relation, i) => (
 				<Group key={relation} spacing="xs" noWrap>
-					<Icon
-						path={mdiCircleMedium}
-					/>
-					<RecordLink
-						value={relation}
-						onRecordClick={onSelectRecord}
-					/>
+					<Icon path={mdiCircleMedium} />
+					<RecordLink value={relation} onRecordClick={onSelectRecord} />
 				</Group>
 			))}
 		</>

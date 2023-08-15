@@ -1,21 +1,34 @@
-import classes from './style.module.scss';
+import classes from "./style.module.scss";
 import { Box, Button, Divider, Group, Menu, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
-import { mdiMenuDown, mdiDatabase, mdiPlus, mdiChevronRight, mdiMagnify, mdiClose, mdiPencil, mdiDotsVertical, mdiCursorText, mdiContentDuplicate, mdiPinOff, mdiPin } from "@mdi/js";
+import {
+	mdiMenuDown,
+	mdiDatabase,
+	mdiPlus,
+	mdiChevronRight,
+	mdiMagnify,
+	mdiClose,
+	mdiPencil,
+	mdiDotsVertical,
+	mdiCursorText,
+	mdiContentDuplicate,
+	mdiPinOff,
+	mdiPin,
+} from "@mdi/js";
 import { Icon } from "../Icon";
 import { SurrealistTab } from "~/types";
 import { Text } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
-import { VIEW_MODES } from '~/constants';
-import { useStable } from '~/hooks/stable';
-import { updateTitle, updateConfig, applyOrder } from '~/util/helpers';
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
-import { useHotkeys, useInputState } from '@mantine/hooks';
-import { Environments } from './environments';
-import { SyntheticEvent } from 'react';
-import { Sortable } from '../Sortable';
+import { VIEW_MODES } from "~/constants";
+import { useStable } from "~/hooks/stable";
+import { updateTitle, updateConfig, applyOrder } from "~/util/helpers";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
+import { useHotkeys, useInputState } from "@mantine/hooks";
+import { Environments } from "./environments";
+import { SyntheticEvent } from "react";
+import { Sortable } from "../Sortable";
 
 function getTabIcon(tab: SurrealistTab) {
-	return VIEW_MODES.find(v => v.id == tab.activeView)?.icon;
+	return VIEW_MODES.find((v) => v.id == tab.activeView)?.icon;
 }
 
 export interface SelectorProps {
@@ -26,19 +39,19 @@ export interface SelectorProps {
 }
 
 export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps) {
-	const [ opened, setOpened ] = useState(false);
-	const [ manageEnvs, setManageEnvs ] = useState(false);
-	const [ viewingEnv, setViewingEnv ] = useState('');
-	const [ renamingTab, setRenamingTab ] = useState('');
-	const [ tabName, setTabName ] = useInputState('');
-	const [ search, setSearch ] = useInputState('');
+	const [opened, setOpened] = useState(false);
+	const [manageEnvs, setManageEnvs] = useState(false);
+	const [viewingEnv, setViewingEnv] = useState("");
+	const [renamingTab, setRenamingTab] = useState("");
+	const [tabName, setTabName] = useInputState("");
+	const [search, setSearch] = useInputState("");
 
-	const tabs = useStoreValue(state => state.config.tabs);
-	const environments = useStoreValue(state => state.config.environments);
-	const tabSearch = useStoreValue(state => state.config.tabSearch);
+	const tabs = useStoreValue((state) => state.config.tabs);
+	const environments = useStoreValue((state) => state.config.environments);
+	const tabSearch = useStoreValue((state) => state.config.tabSearch);
 
-	const tab = tabs.find(tab => tab.id === active);
-	const environment = tab && environments.find(env => env.id === tab.environment);
+	const tab = tabs.find((tab) => tab.id === active);
+	const environment = tab && environments.find((env) => env.id === tab.environment);
 
 	const stopPropagation = useStable((e: any) => {
 		e.stopPropagation();
@@ -46,10 +59,10 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 
 	const filteredTabs = useMemo(() => {
 		const needle = search.toLowerCase();
-		
-		return tabs.filter(tab => tab.environment === viewingEnv && (!needle || tab.name.toLowerCase().includes(needle)));
+
+		return tabs.filter((tab) => tab.environment === viewingEnv && (!needle || tab.name.toLowerCase().includes(needle)));
 	}, [tabs, viewingEnv, search]);
-	
+
 	const select = useStable((id: string) => {
 		if (renamingTab) {
 			return;
@@ -78,11 +91,11 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 		setOpened(false);
 		onCreateTab(viewingEnv);
 	});
-	
+
 	const handleRename = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
 
-		const current = tabs.find(tab => tab.id === id)?.name || '';
+		const current = tabs.find((tab) => tab.id === id)?.name || "";
 
 		setRenamingTab(id);
 		setTabName(current);
@@ -99,12 +112,14 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 	const handlePin = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
 
-		const pinned = tabs.find(tab => tab.id === id)?.pinned ?? false;
+		const pinned = tabs.find((tab) => tab.id === id)?.pinned ?? false;
 
-		store.dispatch(actions.updateTab({
-			id: id,
-			pinned: !pinned
-		}));
+		store.dispatch(
+			actions.updateTab({
+				id: id,
+				pinned: !pinned,
+			})
+		);
 	});
 
 	const handleDuplicate = useStable((e: MouseEvent, id: string) => {
@@ -112,12 +127,14 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 
 		setOpened(false);
 
-		const details = tabs.find(tab => tab.id === id)?.connection || {};
+		const details = tabs.find((tab) => tab.id === id)?.connection || {};
 
-		store.dispatch(actions.openTabCreator({
-			environment: viewingEnv,
-			connection: details
-		}));
+		store.dispatch(
+			actions.openTabCreator({
+				environment: viewingEnv,
+				connection: details,
+			})
+		);
 	});
 
 	const handleDelete = useStable((e: MouseEvent, id: string) => {
@@ -127,24 +144,26 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 	});
 
 	const saveRename = useStable((e: SyntheticEvent) => {
-		if ('key' in e && e.key !== 'Enter') {
+		if ("key" in e && e.key !== "Enter") {
 			return;
 		}
 
-		const info = tabs.find(tab => tab.id === renamingTab);
-		
+		const info = tabs.find((tab) => tab.id === renamingTab);
+
 		if (!info) {
 			return;
 		}
 
-		store.dispatch(actions.updateTab({
-			...info,
-			name: tabName
-		}));
+		store.dispatch(
+			actions.updateTab({
+				...info,
+				name: tabName,
+			})
+		);
 
-		setRenamingTab('');
-		setTabName('');
-		
+		setRenamingTab("");
+		setTabName("");
+
 		updateConfig();
 		updateTitle();
 	});
@@ -159,9 +178,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 	});
 
 	const saveTabOrder = useStable((order: SurrealistTab[]) => {
-		store.dispatch(actions.setTabs(
-			applyOrder(tabs, order)
-		));
+		store.dispatch(actions.setTabs(applyOrder(tabs, order)));
 
 		updateConfig();
 	});
@@ -175,20 +192,23 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 			}
 		}
 	}, [environments, environment]);
-	
-	useHotkeys([
-		['ctrl+1', () => openTab(0)],
-		['ctrl+2', () => openTab(1)],
-		['ctrl+3', () => openTab(2)],
-		['ctrl+4', () => openTab(3)],
-		['ctrl+5', () => openTab(4)],
-		['ctrl+6', () => openTab(5)],
-		['ctrl+7', () => openTab(6)],
-		['ctrl+8', () => openTab(7)],
-		['ctrl+9', () => openTab(8)],
-		['ctrl+0', () => openTab(9)],
-		['ctrl+n', () => createTab]
-	], []);
+
+	useHotkeys(
+		[
+			["ctrl+1", () => openTab(0)],
+			["ctrl+2", () => openTab(1)],
+			["ctrl+3", () => openTab(2)],
+			["ctrl+4", () => openTab(3)],
+			["ctrl+5", () => openTab(4)],
+			["ctrl+6", () => openTab(5)],
+			["ctrl+7", () => openTab(6)],
+			["ctrl+8", () => openTab(7)],
+			["ctrl+9", () => openTab(8)],
+			["ctrl+0", () => openTab(9)],
+			["ctrl+n", () => createTab],
+		],
+		[]
+	);
 
 	return (
 		<>
@@ -196,28 +216,19 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 				opened={opened}
 				onChange={setOpened}
 				position="bottom-start"
-				transitionDuration={0}
-				exitTransitionDuration={0}
+				transitionProps={{ duration: 0, exitDuration: 0 }}
 				closeOnEscape
 				shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.35 : 0.75})`}
-				withArrow
-			>
+				withArrow>
 				<Popover.Target>
-					<Button
-						px="xs"
-						variant="subtle"
-						color="light"
-						onClick={() => setOpened(!opened)}
-					>
+					<Button px="xs" variant="subtle" color="light" onClick={() => setOpened(!opened)}>
 						<Group spacing={6}>
 							<Icon path={mdiDatabase} />
 							{tab && environment ? (
 								<>
 									<Text>{environment.name}</Text>
 									<Icon path={mdiChevronRight} color="dark.3" />
-									<Text color={isLight ? 'black' : 'white'}>
-										{tab.name}
-									</Text>
+									<Text color={isLight ? "black" : "white"}>{tab.name}</Text>
 								</>
 							) : (
 								<Text color="light.4">Select tab</Text>
@@ -231,7 +242,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 						<Box mih={235} mah={350}>
 							<ScrollArea h="calc(100% - 54px)">
 								<Stack spacing="xs">
-									{environments.map(item => {
+									{environments.map((item) => {
 										const isActive = item.id === viewingEnv;
 
 										return (
@@ -239,19 +250,12 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 												key={item.id}
 												w={264}
 												px={12}
-												c={isLight ? 'black' : 'white'}
-												color={isActive ? (isLight ? 'light.1' : 'dark.7') : 'light'}
-												variant={isActive ? 'filled' : 'subtle'}
+												c={isLight ? "black" : "white"}
+												color={isActive ? (isLight ? "light.1" : "dark.7") : "light"}
+												variant={isActive ? "filled" : "subtle"}
 												className={classes.entryButton}
 												onClick={() => openEnvironment(item.id)}
-												rightIcon={
-													<Icon
-														path={mdiChevronRight}
-														color={isActive ? 'dark.3' : 'light.5'}
-														size={1.15}
-													/>
-												}
-											>
+												rightIcon={<Icon path={mdiChevronRight} color={isActive ? "dark.3" : "light.5"} size={1.15} />}>
 												{item.name}
 											</Button>
 										);
@@ -259,10 +263,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								</Stack>
 							</ScrollArea>
 
-							<Divider
-								color={isLight ? 'light.0' : 'dark.4'}
-								my="xs"
-							/>
+							<Divider color={isLight ? "light.0" : "dark.4"} my="xs" />
 
 							<Button
 								w={264}
@@ -271,8 +272,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								variant="subtle"
 								className={classes.manageButton}
 								onClick={openEnvManager}
-								rightIcon={<Icon path={mdiChevronRight} />}
-							>
+								rightIcon={<Icon path={mdiChevronRight} />}>
 								Manage environments
 							</Button>
 						</Box>
@@ -289,16 +289,12 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 									mb="sm"
 								/>
 							)}
-							<ScrollArea h={tabSearch ? 'calc(100% - 102px)' : 'calc(100% - 54px)'}>
+							<ScrollArea h={tabSearch ? "calc(100% - 102px)" : "calc(100% - 54px)"}>
 								<Stack spacing={6}>
 									{filteredTabs.length === 0 && tabs.length > 0 && (
-										<Text
-											align="center"
-											py={7}
-											c="dark.2"
-										>
+										<Text align="center" py={7} c="dark.2">
 											No tabs found
-										</Text>	
+										</Text>
 									)}
 
 									<Sortable
@@ -306,78 +302,70 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 										disabled={!!search}
 										onSorted={saveTabOrder}
 										constraint={{
-											distance: 10
-										}}
-									>
+											distance: 10,
+										}}>
 										{({ item, handleProps }) => {
 											const isActive = item.id === tab?.id;
 											const isRenaming = renamingTab == item.id;
-	
+
 											return (
 												<Button
 													key={item.id}
 													w={264}
 													px={12}
 													leftIcon={
-														isRenaming
-															? <Icon path={mdiPencil} color="blue" />
-															: <Icon path={getTabIcon(item) ?? ''} color={isActive ? 'surreal' : 'light.5'} />
+														isRenaming ? (
+															<Icon path={mdiPencil} color="blue" />
+														) : (
+															<Icon path={getTabIcon(item) ?? ""} color={isActive ? "surreal" : "light.5"} />
+														)
 													}
-													c={isLight ? 'black' : 'white'}
-													color={isRenaming ? 'light' : (isActive ? 'pink' : 'light')}
-													variant={isRenaming ? 'outline' : (isActive ? 'light' : 'subtle')}
+													c={isLight ? "black" : "white"}
+													color={isRenaming ? "light" : isActive ? "pink" : "light"}
+													variant={isRenaming ? "outline" : isActive ? "light" : "subtle"}
 													className={classes.entryButton}
 													onClick={() => select(item.id)}
 													{...handleProps}
-													rightIcon={!isRenaming && (
-														<Menu
-															shadow="md"
-															width={200}
-															position="right-start"
-															closeOnItemClick={false}
-															withinPortal
-														>
-															<Menu.Target>
-																<div onClick={stopPropagation}>
-																	<Icon path={mdiDotsVertical} />
-																</div>
-															</Menu.Target>
-	
-															<Menu.Dropdown onMouseDown={stopPropagation}>
-																<Menu.Item
-																	icon={<Icon path={mdiCursorText} />}
-																	onClick={e => handleRename(e, item.id)}
-																>
-																	Rename
-																</Menu.Item>
-																<Menu.Item
-																	icon={<Icon path={mdiPencil} />}
-																	onClick={e => handleEdit(e, item.id)}
-																>
-																	Edit
-																</Menu.Item>
-																<Menu.Item
-																	icon={<Icon path={item.pinned ? mdiPinOff : mdiPin} />}
-																	onClick={e => handlePin(e, item.id)}
-																>
-																	{item.pinned ? 'Unpin' : 'Pin'}
-																</Menu.Item>
-																<Menu.Item
-																	icon={<Icon path={mdiContentDuplicate} />}
-																	onClick={e => handleDuplicate(e, item.id)}
-																>
-																	Duplicate
-																</Menu.Item>
-																<Menu.Item
-																	icon={<Icon path={mdiClose} />}
-																	onClick={e => handleDelete(e, item.id)}
-																>
-																	Delete
-																</Menu.Item>
-															</Menu.Dropdown>
-														</Menu>
-													)}
-												>
+													rightIcon={
+														!isRenaming && (
+															<Menu
+																shadow="md"
+																width={200}
+																position="right-start"
+																closeOnItemClick={false}
+																withinPortal>
+																<Menu.Target>
+																	<div onClick={stopPropagation}>
+																		<Icon path={mdiDotsVertical} />
+																	</div>
+																</Menu.Target>
+
+																<Menu.Dropdown onMouseDown={stopPropagation}>
+																	<Menu.Item
+																		icon={<Icon path={mdiCursorText} />}
+																		onClick={(e) => handleRename(e, item.id)}>
+																		Rename
+																	</Menu.Item>
+																	<Menu.Item icon={<Icon path={mdiPencil} />} onClick={(e) => handleEdit(e, item.id)}>
+																		Edit
+																	</Menu.Item>
+																	<Menu.Item
+																		icon={<Icon path={item.pinned ? mdiPinOff : mdiPin} />}
+																		onClick={(e) => handlePin(e, item.id)}>
+																		{item.pinned ? "Unpin" : "Pin"}
+																	</Menu.Item>
+																	<Menu.Item
+																		icon={<Icon path={mdiContentDuplicate} />}
+																		onClick={(e) => handleDuplicate(e, item.id)}>
+																		Duplicate
+																	</Menu.Item>
+																	<Menu.Item icon={<Icon path={mdiClose} />} onClick={(e) => handleDelete(e, item.id)}>
+																		Delete
+																	</Menu.Item>
+																</Menu.Dropdown>
+															</Menu>
+														)
+													}>
 													{isRenaming ? (
 														<TextInput
 															autoFocus
@@ -389,23 +377,22 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 															styles={{
 																input: {
 																	fontWeight: 600,
-																	color: isLight ? 'black' : 'white',
+																	color: isLight ? "black" : "white",
 																	maxWidth: 150,
 																	padding: 0,
 																	margin: 0,
-																	marginTop: -1
-																}
+																	marginTop: -1,
+																},
 															}}
 														/>
 													) : (
 														<Text
 															maw={150}
 															style={{
-																overflow: 'hidden',
-																textOverflow: 'ellipsis',
-																whiteSpace: 'nowrap'
-															}}
-														>
+																overflow: "hidden",
+																textOverflow: "ellipsis",
+																whiteSpace: "nowrap",
+															}}>
 															{item.name}
 														</Text>
 													)}
@@ -416,10 +403,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								</Stack>
 							</ScrollArea>
 
-							<Divider
-								color={isLight ? 'light.0' : 'dark.4'}
-								my="xs"
-							/>
+							<Divider color={isLight ? "light.0" : "dark.4"} my="xs" />
 
 							<Button
 								w={264}
@@ -428,8 +412,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								variant="subtle"
 								className={classes.entryButton}
 								leftIcon={<Icon path={mdiPlus} />}
-								onClick={createTab}
-							>
+								onClick={createTab}>
 								Add session
 							</Button>
 						</Box>
@@ -437,11 +420,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 				</Popover.Dropdown>
 			</Popover>
 
-			<Environments
-				opened={manageEnvs}
-				onClose={closeEnvManager}
-				onSave={onSave}
-			/>
+			<Environments opened={manageEnvs} onClose={closeEnvManager} onSave={onSave} />
 		</>
 	);
 }

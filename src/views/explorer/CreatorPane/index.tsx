@@ -17,15 +17,13 @@ export interface CreatorPaneProps {
 export function CreatorPane(props: CreatorPaneProps) {
 	const isLight = useIsLight();
 	const [isInvalid, setIsInvalid] = useState(false);
-	const [tableName, setTableName] = useInputState('');
-	const [contentText, setContentText] = useState('{\n    \n}');
+	const [tableName, setTableName] = useInputState("");
+	const [contentText, setContentText] = useState("{\n    \n}");
 
-	const jsonAlert = isInvalid
-		? <Text color="red">Invalid record JSON</Text>
-		: undefined;
-	
+	const jsonAlert = isInvalid ? <Text color="red">Invalid record JSON</Text> : undefined;
+
 	useEffect(() => {
-		setTableName(props.activeTable || '');
+		setTableName(props.activeTable || "");
 	}, [props.activeTable]);
 
 	const handleSubmit = useStable(() => {
@@ -40,15 +38,15 @@ export function CreatorPane(props: CreatorPaneProps) {
 		if (contentText === content) {
 			return;
 		}
-		
-		setContentText(content || '');
+
+		setContentText(content || "");
 
 		try {
-			const json = content || '{}';
+			const json = content || "{}";
 			const parsed = JSON.parse(json);
 
-			if (typeof parsed !== 'object') {
-				throw new TypeError('Invalid JSON');
+			if (typeof parsed !== "object") {
+				throw new TypeError("Invalid JSON");
 			}
 
 			setIsInvalid(false);
@@ -56,7 +54,7 @@ export function CreatorPane(props: CreatorPaneProps) {
 			setIsInvalid(true);
 		}
 	});
-	
+
 	return (
 		<Panel
 			title="Create Record"
@@ -66,29 +64,17 @@ export function CreatorPane(props: CreatorPaneProps) {
 					{jsonAlert && (
 						<>
 							{jsonAlert}
-							<Divider
-								orientation="vertical"
-								color={isLight ? 'light.0' : 'dark.5'}
-							/>
+							<Divider orientation="vertical" color={isLight ? "light.0" : "dark.5"} />
 						</>
 					)}
 
-					<ActionIcon
-						onClick={props.onClose}
-						title="Close creator"
-					>
+					<ActionIcon onClick={props.onClose} title="Close creator">
 						<Icon color="light.4" path={mdiClose} />
 					</ActionIcon>
 				</Group>
-			}
-		>
-			<TextInput
-				mb="xs"
-				label="Record name"
-				value={tableName}
-				onChange={setTableName}
-			/>
-			
+			}>
+			<TextInput mb="xs" label="Record name" value={tableName} onChange={setTableName} />
+
 			<Text color="dark.0" size="sm">
 				Record contents
 			</Text>
@@ -98,17 +84,17 @@ export function CreatorPane(props: CreatorPaneProps) {
 				value={contentText}
 				onChange={updateContent}
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					insetInline: 12,
 					bottom: 62,
-					top: 94
+					top: 94,
 				}}
 				options={{
-					wrappingStrategy: 'advanced',
-					wordWrap: 'off',
+					wrappingStrategy: "advanced",
+					wordWrap: "off",
 					suggest: {
-						showProperties: false
-					}
+						showProperties: false,
+					},
 				}}
 			/>
 
@@ -116,11 +102,10 @@ export function CreatorPane(props: CreatorPaneProps) {
 				disabled={isInvalid || !tableName}
 				onClick={handleSubmit}
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					insetInline: 12,
-					bottom: 12
-				}}
-			>
+					bottom: 12,
+				}}>
 				Create record
 				<Icon path={mdiCheck} right />
 			</Button>

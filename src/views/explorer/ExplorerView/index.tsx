@@ -11,8 +11,7 @@ import { useIsConnected } from "~/hooks/connection";
 
 const SPLIT_SIZE: SplitValues = [250, 450];
 
-export interface ExplorerViewProps {
-}
+export interface ExplorerViewProps {}
 
 export function ExplorerView(props: ExplorerViewProps) {
 	const [activeTable, setActiveTable] = useState<string | null>(null);
@@ -21,12 +20,12 @@ export function ExplorerView(props: ExplorerViewProps) {
 	const [refreshId, setRefreshId] = useState(0);
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
 	const isOnline = useIsConnected();
-	
+
 	const history = useHistory();
 	const activeRecordId = activeRecord?.content?.id || null;
 
 	const doRefresh = useStable(() => {
-		setRefreshId(num => num + 1);
+		setRefreshId((num) => num + 1);
 	});
 
 	const pushNext = useStable((id: string | null) => {
@@ -57,14 +56,14 @@ export function ExplorerView(props: ExplorerViewProps) {
 			setActiveRecord({
 				content,
 				inputs,
-				outputs
+				outputs,
 			});
 		} else {
 			setActiveRecord({
 				invalid: true,
 				content: { id: id },
 				inputs: [],
-				outputs: []
+				outputs: [],
 			});
 		}
 	});
@@ -126,7 +125,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 			setActiveTable(null);
 		}
 	}, [isOnline]);
-	
+
 	return (
 		<Splitter
 			minSize={SPLIT_SIZE}
@@ -134,21 +133,11 @@ export function ExplorerView(props: ExplorerViewProps) {
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"
-			startPane={
-				<TablesPane
-					active={activeTable}
-					onSelectTable={setActiveTable}
-					onRefresh={doRefresh}
-				/>
-			}
+			startPane={<TablesPane active={activeTable} onSelectTable={setActiveTable} onRefresh={doRefresh} />}
 			endPane={
 				creatingRecord ? (
-					<CreatorPane
-						activeTable={activeTable}
-						onClose={handleCloseRecord}
-						onSubmit={createRecord}
-					/>
-				) : (activeRecord ? (
+					<CreatorPane activeTable={activeTable} onClose={handleCloseRecord} onSubmit={createRecord} />
+				) : activeRecord ? (
 					<InspectorPane
 						history={history}
 						activeRecord={activeRecord}
@@ -158,9 +147,8 @@ export function ExplorerView(props: ExplorerViewProps) {
 						onRefreshContent={refreshInspector}
 						onRefresh={doRefresh}
 					/>
-				) : null)
-			}
-		>
+				) : null
+			}>
 			<ExplorerPane
 				refreshId={refreshId}
 				activeTable={activeTable}

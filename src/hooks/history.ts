@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useStable } from "./stable";
-import isEqual from 'fast-deep-equal';
+import isEqual from "fast-deep-equal";
 
 export interface HistoryHandle<T> {
 	history: T[];
@@ -23,13 +23,13 @@ export function useHistory<T = string>(): HistoryHandle<T> {
 
 	const goBack = useStable(() => {
 		if (hasBack) {
-			setIndex(current => current - 1);
+			setIndex((current) => current - 1);
 		}
 	});
 
 	const goForward = useStable(() => {
 		if (hasForward) {
-			setIndex(current => current + 1);
+			setIndex((current) => current + 1);
 		}
 	});
 
@@ -39,11 +39,11 @@ export function useHistory<T = string>(): HistoryHandle<T> {
 		}
 
 		if (index < history.length - 1) {
-			setHistory(current => current.slice(0, index + 1));
+			setHistory((current) => current.slice(0, index + 1));
 		}
 
-		setHistory(current => [...current, value]);
-		setIndex(current => Math.min(history.length, current + 1));
+		setHistory((current) => [...current, value]);
+		setIndex((current) => Math.min(history.length, current + 1));
 	});
 
 	const clear = useStable(() => {
@@ -59,6 +59,6 @@ export function useHistory<T = string>(): HistoryHandle<T> {
 		goBack,
 		goForward,
 		push,
-		clear
+		clear,
 	};
 }

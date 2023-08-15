@@ -21,11 +21,11 @@ export interface QueryPaneProps {
 export function QueryPane(props: QueryPaneProps) {
 	const activeTab = useActiveTab();
 	const controls = useRef<[Monaco, editor.IStandaloneCodeEditor]>();
-	const doErrorCheck = useStoreValue(state => state.config.errorChecking);
-	const fontZoomLevel = useStoreValue(state => state.config.fontZoomLevel);
+	const doErrorCheck = useStoreValue((state) => state.config.errorChecking);
+	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
 	if (!activeTab) {
-		throw new Error('This should not happen');
+		throw new Error("This should not happen");
 	}
 
 	const updateValidation = useStable(async () => {
@@ -36,32 +36,34 @@ export function QueryPane(props: QueryPaneProps) {
 		const markers: editor.IMarkerData[] = [];
 
 		if (content && doErrorCheck) {
-			const message = await adapter.validateQuery(content) || '';
+			const message = (await adapter.validateQuery(content)) || "";
 			const match = message.match(ERR_REGEX);
 
 			if (match) {
 				const lineNumber = Number.parseInt(match[1]);
 				const column = Number.parseInt(match[2]);
-			
+
 				markers.push({
 					startLineNumber: lineNumber,
 					startColumn: column,
 					endLineNumber: lineNumber,
 					endColumn: column,
 					message: message,
-					severity: MarkerSeverity.Error
+					severity: MarkerSeverity.Error,
 				});
 			}
 		}
 
-		monaco.editor.setModelMarkers(model, 'owner', markers);
+		monaco.editor.setModelMarkers(model, "owner", markers);
 	});
 
 	const setQuery = useDebouncedCallback(200, (content: string | undefined) => {
-		store.dispatch(actions.updateTab({
-			id: activeTab.id,
-			query: content || ''
-		}));
+		store.dispatch(
+			actions.updateTab({
+				id: activeTab.id,
+				query: content || "",
+			})
+		);
 
 		updateConfig();
 		updateValidation();
@@ -75,11 +77,11 @@ export function QueryPane(props: QueryPaneProps) {
 		updateValidation();
 
 		editor.addAction({
-			id: 'run-query-selection',
-			label: 'Execute Selection',
+			id: "run-query-selection",
+			label: "Execute Selection",
 			contextMenuGroupId: "navigation",
 			contextMenuOrder: 0,
-			precondition: 'editorHasSelection',
+			precondition: "editorHasSelection",
 			run: () => {
 				const sel = editor.getSelection();
 				const model = editor.getModel();
@@ -89,30 +91,27 @@ export function QueryPane(props: QueryPaneProps) {
 				}
 
 				props.onExecuteQuery(model.getValueInRange(sel));
-			}
+			},
 		});
 	});
 
 	return (
-		<Panel
-			title="Query"
-			icon={mdiDatabase}
-		>
+		<Panel title="Query" icon={mdiDatabase}>
 			<SurrealistEditor
 				language="surrealql"
 				onMount={configure}
 				value={activeTab?.query}
 				onChange={setQuery}
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					insetBlock: 0,
 					insetInline: 24,
 				}}
 				options={{
 					quickSuggestions: false,
 					wordBasedSuggestions: false,
-					wrappingStrategy: 'advanced',
-					wordWrap: 'on',
+					wrappingStrategy: "advanced",
+					wordWrap: "on",
 					fontSize: 14 * fontZoomLevel,
 				}}
 			/>

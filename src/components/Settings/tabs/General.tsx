@@ -7,9 +7,9 @@ import { updateConfig } from "~/util/helpers";
 import { Setting } from "../setting";
 
 const THEMES = [
-	{ label: 'Automatic', value: 'automatic' },
-	{ label: 'Light', value: 'light' },
-	{ label: 'Dark', value: 'dark' }
+	{ label: "Automatic", value: "automatic" },
+	{ label: "Light", value: "light" },
+	{ label: "Dark", value: "dark" },
 ];
 
 export interface GeneralTabProps {
@@ -17,7 +17,6 @@ export interface GeneralTabProps {
 }
 
 export function GeneralTab({ config }: GeneralTabProps) {
-
 	const setColorScheme = useStable((scheme: ColorScheme) => {
 		store.dispatch(actions.setColorScheme(scheme));
 		updateConfig();
@@ -37,7 +36,7 @@ export function GeneralTab({ config }: GeneralTabProps) {
 		store.dispatch(actions.setWordWrap(e.target.checked));
 		updateConfig();
 	});
-	
+
 	const setTabSearch = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setTabSearch(e.target.checked));
 		updateConfig();
@@ -52,47 +51,28 @@ export function GeneralTab({ config }: GeneralTabProps) {
 		<Stack spacing="xs">
 			{adapter.isUpdateCheckSupported && (
 				<Setting label="Check for updates">
-					<Switch
-						checked={config.updateChecker}
-						onChange={setUpdateChecker}
-					/>
+					<Switch checked={config.updateChecker} onChange={setUpdateChecker} />
 				</Setting>
 			)}
 
 			<Setting label="Wrap query results">
-				<Switch
-					checked={config.wordWrap}
-					onChange={setWordWrap}
-				/>
+				<Switch checked={config.wordWrap} onChange={setWordWrap} />
 			</Setting>
 
 			<Setting label="Suggest table names">
-				<Switch
-					checked={config.tableSuggest}
-					onChange={setTableSuggest}
-				/>
+				<Switch checked={config.tableSuggest} onChange={setTableSuggest} />
 			</Setting>
 
 			<Setting label="Query error checking">
-				<Switch
-					checked={config.errorChecking}
-					onChange={setErrorChecking}
-				/>
+				<Switch checked={config.errorChecking} onChange={setErrorChecking} />
 			</Setting>
 
 			<Setting label="Session search box">
-				<Switch
-					checked={config.tabSearch}
-					onChange={setTabSearch}
-				/>
+				<Switch checked={config.tabSearch} onChange={setTabSearch} />
 			</Setting>
 
 			<Setting label="Interface theme">
-				<Select
-					data={THEMES}
-					value={config.theme}
-					onChange={setColorScheme}
-				/>
+				<Select data={THEMES} value={config.theme} onChange={setColorScheme} />
 			</Setting>
 		</Stack>
 	);

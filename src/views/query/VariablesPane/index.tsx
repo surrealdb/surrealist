@@ -19,27 +19,29 @@ export interface VariablesPaneProps {
 export function VariablesPane(props: VariablesPaneProps) {
 	const activeTab = useActiveTab();
 	const isLight = useIsLight();
-	const fontZoomLevel = useStoreValue(state => state.config.fontZoomLevel);
+	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
 	if (!activeTab) {
-		throw new Error('This should not happen');
+		throw new Error("This should not happen");
 	}
 
 	const [isInvalid, setIsInvalid] = useState(false);
 
 	const setVariables = useStable((content: string | undefined) => {
 		try {
-			const json = content || '{}';
+			const json = content || "{}";
 			const parsed = JSON.parse(json);
 
-			if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-				throw new TypeError('Invalid JSON');
+			if (typeof parsed !== "object" || Array.isArray(parsed)) {
+				throw new TypeError("Invalid JSON");
 			}
 
-			store.dispatch(actions.updateTab({
-				id: activeTab.id,
-				variables: json
-			}));
+			store.dispatch(
+				actions.updateTab({
+					id: activeTab.id,
+					variables: json,
+				})
+			);
 
 			updateConfig();
 			setIsInvalid(false);
@@ -52,31 +54,25 @@ export function VariablesPane(props: VariablesPaneProps) {
 		configureQueryEditor(editor, props.onExecuteQuery);
 	});
 
-	const jsonAlert = isInvalid
-		? <Text color="red">Invalid variable JSON</Text>
-		: undefined;
+	const jsonAlert = isInvalid ? <Text color="red">Invalid variable JSON</Text> : undefined;
 
 	return (
-		<Panel
-			title="Variables"
-			icon={mdiTune}
-			rightSection={jsonAlert}
-		>
+		<Panel title="Variables" icon={mdiTune} rightSection={jsonAlert}>
 			<SurrealistEditor
 				language="json"
 				onMount={configure}
 				value={activeTab?.variables?.toString()}
 				onChange={setVariables}
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					insetBlock: 0,
-					insetInline: 24
+					insetInline: 24,
 				}}
 				options={{
-					wrappingStrategy: 'advanced',
-					wordWrap: 'on',
+					wrappingStrategy: "advanced",
+					wordWrap: "on",
 					suggest: {
-						showProperties: false
+						showProperties: false,
 					},
 					fontSize: 14 * fontZoomLevel,
 				}}

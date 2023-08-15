@@ -1,18 +1,18 @@
 import { ColorScheme } from "@mantine/core";
 
-export type AuthMode = 'none' | 'root' | 'namespace' | 'database' | 'scope';
+export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
 export type DriverType = "file" | "memory" | "tikv";
 export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json";
-export type ViewMode = 'query' | 'explorer' | 'visualizer' | 'designer' | 'auth';
-export type SourceMode = 'schema' | 'infer';
+export type ViewMode = "query" | "explorer" | "visualizer" | "designer" | "auth";
+export type SourceMode = "schema" | "infer";
 
 export type OpenFn = (id: string | null) => void;
-export type ColumnSort = [string, 'asc' | 'desc'];
+export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 
 export interface SurrealistConfig {
-	theme: ColorScheme | 'automatic';
+	theme: ColorScheme | "automatic";
 	tabs: SurrealistTab[];
 	environments: SurrealistEnvironment[];
 	activeTab: string | null;

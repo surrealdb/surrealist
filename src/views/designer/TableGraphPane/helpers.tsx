@@ -1,5 +1,5 @@
 import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
-import { EdgeNode } from './nodes/EdgeNode';
+import { EdgeNode } from "./nodes/EdgeNode";
 import { TableDefinition } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, Position } from "reactflow";
@@ -7,7 +7,7 @@ import dagere from "dagre";
 
 export const NODE_TYPES = {
 	table: TableNode,
-	edge: EdgeNode
+	edge: EdgeNode,
 };
 
 interface NormalizedTable {
@@ -18,22 +18,19 @@ interface NormalizedTable {
 }
 
 export function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
-	return tables.map(table => {
+	return tables.map((table) => {
 		const [isEdge, from, to] = extractEdgeRecords(table);
 
 		return {
 			isEdge,
 			table,
 			to,
-			from
+			from,
 		};
 	});
 }
 
-export function buildTableGraph(
-	tables: TableDefinition[],
-	active: TableDefinition | null
-): [Node[], Edge[]] {
+export function buildTableGraph(tables: TableDefinition[], active: TableDefinition | null): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
 	const graph = new dagere.graphlib.Graph();
 	const edges: Edge[] = [];
@@ -41,13 +38,13 @@ export function buildTableGraph(
 
 	// Configure layout
 	graph.setDefaultEdgeLabel(() => ({}));
-	graph.setGraph({ rankdir: 'LR' });
+	graph.setGraph({ rankdir: "LR" });
 
 	// Define all tables as nodes
 	for (const { table, isEdge } of items) {
 		nodes.push({
 			id: table.schema.name,
-			type: isEdge ? 'edge' : 'table',
+			type: isEdge ? "edge" : "table",
 			position: { x: 0, y: 0 },
 			sourcePosition: Position.Right,
 			targetPosition: Position.Left,
@@ -55,30 +52,30 @@ export function buildTableGraph(
 				table,
 				isSelected: active?.schema.name == table.schema.name,
 				hasLeftEdge: false,
-				hasRightEdge: false
-			}
+				hasRightEdge: false,
+			},
 		});
 
 		graph.setNode(table.schema.name, {
 			width: 310,
-			height: 50 + (table.fields.length * 34)
+			height: 50 + table.fields.length * 34,
 		});
 	}
 
-	const edgeItems = items.filter(item => item.isEdge);
-	
+	const edgeItems = items.filter((item) => item.isEdge);
+
 	// Define all edges
 	for (const { table, from, to } of edgeItems) {
 		for (const fromTable of from) {
 			edges.push({
 				id: table.schema.name + fromTable,
 				source: fromTable,
-				target: table.schema.name
+				target: table.schema.name,
 			});
 
 			graph.setEdge(fromTable, table.schema.name);
 
-			const node = nodes.find(node => node.id == fromTable);
+			const node = nodes.find((node) => node.id == fromTable);
 
 			if (node) {
 				node.data.hasRightEdge = true;
@@ -90,12 +87,12 @@ export function buildTableGraph(
 				id: table.schema.name + toTable,
 				source: table.schema.name,
 				target: toTable,
-				focusable: false
+				focusable: false,
 			});
 
 			graph.setEdge(table.schema.name, toTable);
 
-			const node = nodes.find(node => node.id == toTable);
+			const node = nodes.find((node) => node.id == toTable);
 
 			if (node) {
 				node.data.hasLeftEdge = true;

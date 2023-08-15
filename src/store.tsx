@@ -1,4 +1,17 @@
-import {HistoryEntry, SurrealistTab, SurrealistConfig, DriverType, QueryListing, FavoritesEntry, ResultListing, TableDefinition, Open, SurrealistEnvironment, TabCreation, TablePinAction} from "./types";
+import {
+	HistoryEntry,
+	SurrealistTab,
+	SurrealistConfig,
+	DriverType,
+	QueryListing,
+	FavoritesEntry,
+	ResultListing,
+	TableDefinition,
+	Open,
+	SurrealistEnvironment,
+	TabCreation,
+	TablePinAction,
+} from "./types";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
@@ -9,36 +22,36 @@ import { migrateConfig } from "./util/migration";
 import { newId } from "./util/helpers";
 
 const mainSlice = createSlice({
-	name: 'main',
+	name: "main",
 	initialState: {
 		config: createBaseConfig(),
-		nativeTheme: 'light' as ColorScheme,
+		nativeTheme: "light" as ColorScheme,
 		isPinned: false,
 		isServing: false,
 		servePending: false,
 		isConnected: false,
 		consoleOutput: [] as string[],
-		availableUpdate: '',
+		availableUpdate: "",
 		showAvailableUpdate: false,
 		databaseSchema: [] as TableDefinition[],
 		showTabCreator: false,
 		tabCreation: null as TabCreation | null,
 		showTabEditor: false,
 		monacoLoaded: false,
-		editingId: ''
+		editingId: "",
 	},
 	reducers: {
 		initialize(state, action: PayloadAction<any>) {
 			const theConfig: Open<SurrealistConfig> = {
 				...createBaseConfig(),
-				...JSON.parse(action.payload.trim())
+				...JSON.parse(action.payload.trim()),
 			};
 
 			if (theConfig.environments.length === 0) {
 				theConfig.environments.push({
 					id: newId(),
-					name: 'Default',
-					connection: {}
+					name: "Default",
+					connection: {},
 				});
 			}
 
@@ -75,7 +88,7 @@ const mainSlice = createSlice({
 		setTabSearch(state, action: PayloadAction<boolean>) {
 			state.config.tabSearch = action.payload;
 		},
-		
+
 		setEnvironments(state, action: PayloadAction<SurrealistEnvironment[]>) {
 			state.config.environments = action.payload;
 		},
@@ -85,7 +98,7 @@ const mainSlice = createSlice({
 		},
 
 		removeTab(state, action: PayloadAction<string>) {
-			const index = state.config.tabs.findIndex(tab => tab.id === action.payload);
+			const index = state.config.tabs.findIndex((tab) => tab.id === action.payload);
 
 			if (index >= 0) {
 				state.config.tabs.splice(index, 1);
@@ -97,7 +110,7 @@ const mainSlice = createSlice({
 		},
 
 		updateTab(state, action: PayloadAction<Partial<SurrealistTab>>) {
-			const tabIndex = state.config.tabs.findIndex(tab => tab.id === action.payload.id);
+			const tabIndex = state.config.tabs.findIndex((tab) => tab.id === action.payload.id);
 
 			if (tabIndex >= 0) {
 				const tab = state.config.tabs[tabIndex];
@@ -122,7 +135,10 @@ const mainSlice = createSlice({
 		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {
 			const query = action.payload.query;
 
-			if (query.length === 0 || state.config.queryHistory.length > 0 && state.config.queryHistory[0].query === query) {
+			if (
+				query.length === 0 ||
+				(state.config.queryHistory.length > 0 && state.config.queryHistory[0].query === query)
+			) {
 				return;
 			}
 
@@ -138,11 +154,11 @@ const mainSlice = createSlice({
 		},
 
 		removeHistoryEntry(state, action: PayloadAction<string>) {
-			state.config.queryHistory = state.config.queryHistory.filter(entry => entry.id !== action.payload);
+			state.config.queryHistory = state.config.queryHistory.filter((entry) => entry.id !== action.payload);
 		},
 
 		saveFavoritesEntry(state, action: PayloadAction<FavoritesEntry>) {
-			const index = state.config.queryFavorites.findIndex(entry => entry.id === action.payload.id);
+			const index = state.config.queryFavorites.findIndex((entry) => entry.id === action.payload.id);
 
 			if (index < 0) {
 				state.config.queryFavorites.push(action.payload);
@@ -152,7 +168,7 @@ const mainSlice = createSlice({
 		},
 
 		removeFavoritesEntry(state, action: PayloadAction<string>) {
-			state.config.queryFavorites = state.config.queryFavorites.filter(entry => entry.id !== action.payload);
+			state.config.queryFavorites = state.config.queryFavorites.filter((entry) => entry.id !== action.payload);
 		},
 
 		setFavorites(state, action: PayloadAction<FavoritesEntry[]>) {
@@ -295,7 +311,7 @@ const mainSlice = createSlice({
 		},
 
 		toggleTablePin(state, action: PayloadAction<TablePinAction>) {
-			const pinned = state.config.tabs.find(tab => tab.id === action.payload.tab)?.pinnedTables;
+			const pinned = state.config.tabs.find((tab) => tab.id === action.payload.tab)?.pinnedTables;
 
 			if (!pinned) {
 				return;
@@ -306,18 +322,16 @@ const mainSlice = createSlice({
 			} else {
 				pinned.push(action.payload.table);
 			}
-		}
-
-	}
+		},
+	},
 });
-
 
 export const actions = mainSlice.actions;
 export const store = configureStore({
-	reducer: mainSlice.reducer
+	reducer: mainSlice.reducer,
 });
 
-export type StoreState = ReturnType<typeof store.getState>
-export type StoreActions = typeof store.dispatch
+export type StoreState = ReturnType<typeof store.getState>;
+export type StoreActions = typeof store.dispatch;
 
 export const useStoreValue: TypedUseSelectorHook<StoreState> = useSelector;

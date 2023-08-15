@@ -1,14 +1,14 @@
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import { createRoot } from 'react-dom/client';
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { actions, store } from './store';
-import { App } from './components/App';
-import { loader } from '@monaco-editor/react';
-import { initializeEditor } from './util/editor';
-import { runUpdateChecker } from './util/updater';
-import { updateTitle, watchNativeTheme } from './util/helpers';
-import { adapter } from './adapter';
+import { actions, store } from "./store";
+import { App } from "./components/App";
+import { loader } from "@monaco-editor/react";
+import { initializeEditor } from "./util/editor";
+import { runUpdateChecker } from "./util/updater";
+import { updateTitle, watchNativeTheme } from "./util/helpers";
+import { adapter } from "./adapter";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -29,7 +29,7 @@ import { adapter } from './adapter';
 	updateTitle();
 
 	// Render the app component
-	const root = document.querySelector('#root')!;
+	const root = document.querySelector("#root")!;
 
 	createRoot(root).render(
 		<Provider store={store}>
@@ -43,7 +43,7 @@ import { adapter } from './adapter';
 	const monaco = await loader.init();
 
 	initializeEditor(monaco);
-		
+
 	// Listen for theme changes
 	watchNativeTheme();
 })();

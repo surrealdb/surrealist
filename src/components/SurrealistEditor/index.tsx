@@ -20,10 +20,9 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 		<div
 			style={{
 				...props.style,
-				fontFamily: 'JetBrains Mono',
-				height: props.noExpand ? undefined : '100%'
-			}}
-		>
+				fontFamily: "JetBrains Mono",
+				height: props.noExpand ? undefined : "100%",
+			}}>
 			<Editor
 				{...props}
 				theme={isLight ? LIGHT_THEME : DARK_THEME}

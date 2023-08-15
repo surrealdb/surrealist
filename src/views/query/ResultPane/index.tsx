@@ -18,7 +18,7 @@ interface PreviewProps {
 }
 
 function JsonPreview({ result, fontSize }: PreviewProps) {
-	const wordWrap = useStoreValue(state => state.config.wordWrap);
+	const wordWrap = useStoreValue((state) => state.config.wordWrap);
 
 	const contents = useMemo(() => {
 		return JSON.stringify(result, null, 4);
@@ -30,7 +30,7 @@ function JsonPreview({ result, fontSize }: PreviewProps) {
 			value={contents}
 			options={{
 				readOnly: true,
-				wordWrap: wordWrap ? 'on' : 'off',
+				wordWrap: wordWrap ? "on" : "off",
 				fontSize,
 			}}
 		/>
@@ -40,8 +40,8 @@ function JsonPreview({ result, fontSize }: PreviewProps) {
 export function ResultPane() {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
-	const fontZoomLevel = useStoreValue(state => state.config.fontZoomLevel);
-	const resultListing = useStoreValue(state => state.config.resultListing);
+	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
+	const resultListing = useStoreValue((state) => state.config.resultListing);
 	const results = activeTab?.lastResponse || [];
 
 	const [resultTab, setResultTab] = useState<number>(1);
@@ -53,33 +53,27 @@ export function ResultPane() {
 	}, [results.length]);
 
 	const toggleResultView = useStable(() => {
-		const newMode = resultListing == 'table' ? 'json' : 'table';
+		const newMode = resultListing == "table" ? "json" : "table";
 
 		store.dispatch(actions.setResultListingMode(newMode));
 	});
 
-	const listingIcon = resultListing == 'table' ? mdiCodeJson : mdiTable;
-	const listingTitle = resultListing == 'table' ? 'Switch to JSON view' : 'Switch to table view';
+	const listingIcon = resultListing == "table" ? mdiCodeJson : mdiTable;
+	const listingTitle = resultListing == "table" ? "Switch to JSON view" : "Switch to table view";
 
 	return (
 		<Panel
-			title={showTabs ? `Result #${resultTab}` : 'Result'}
+			title={showTabs ? `Result #${resultTab}` : "Result"}
 			icon={mdiLightningBolt}
 			rightSection={
 				<Group align="center">
 					{result?.result !== undefined && (
 						<>
-							<ActionIcon
-								onClick={toggleResultView}
-								title={listingTitle}
-							>
+							<ActionIcon onClick={toggleResultView} title={listingTitle}>
 								<Icon color="light.4" path={listingIcon} />
 							</ActionIcon>
 
-							<Divider
-								orientation="vertical"
-								color={isLight ? 'light.0' : 'dark.5'}
-							/>
+							<Divider orientation="vertical" color={isLight ? "light.0" : "dark.5"} />
 						</>
 					)}
 
@@ -93,38 +87,32 @@ export function ResultPane() {
 					)}
 					{result?.time && (
 						<>
-							<Icon color="light.4" path={mdiClock} mr={-10}  />
+							<Icon color="light.4" path={mdiClock} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
 								{result.time}
 							</Text>
 						</>
 					)}
 				</Group>
-			}
-		>
+			}>
 			<div
 				style={{
-					position: 'absolute',
+					position: "absolute",
 					insetInline: 14,
 					top: 0,
-					bottom: showTabs ? 72 : 0
-				}}
-			>
+					bottom: showTabs ? 72 : 0,
+				}}>
 				{result ? (
 					<>
-						{result.status == 'ERR' ? (
-							<Text color="red">
-								{result.detail}
-							</Text>
-						) : (result.result?.length === 0 ? (
-							<Text color="light.4">
-								No results found for query
-							</Text>
-						) : resultListing == 'table' ? (
+						{result.status == "ERR" ? (
+							<Text color="red">{result.detail}</Text>
+						) : result.result?.length === 0 ? (
+							<Text color="light.4">No results found for query</Text>
+						) : resultListing == "table" ? (
 							<DataTable data={result.result} />
 						) : (
 							<JsonPreview result={result.result} fontSize={14 * fontZoomLevel} />
-						))}
+						)}
 					</>
 				) : (
 					<Center h="100%" c="light.5">
@@ -138,20 +126,12 @@ export function ResultPane() {
 					spacing="xs"
 					align="center"
 					style={{
-						position: 'absolute',
+						position: "absolute",
 						insetInline: 14,
-						bottom: 12
-					}}
-				>
-					<Divider
-						w="100%"
-						color={isLight ? 'light.0' : 'dark.5'}
-					/>
-					<Pagination
-						total={results.length}
-						page={resultTab}
-						onChange={setResultTab}
-					/>
+						bottom: 12,
+					}}>
+					<Divider w="100%" color={isLight ? "light.0" : "dark.5"} />
+					<Pagination total={results.length} value={resultTab} onChange={setResultTab} />
 				</Stack>
 			)}
 		</Panel>

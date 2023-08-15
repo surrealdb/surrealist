@@ -58,29 +58,22 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 							py="xs"
 							pr="xs"
 							pl="md"
-							bg={isLight ? 'light.0' : 'dark.9'}
+							bg={isLight ? "light.0" : "dark.9"}
 							pos="relative"
 							radius="md"
-							style={{ border: 0, cursor: 'pointer' }}
-							onClick={() => openEditor(i)}
-						>
+							style={{ border: 0, cursor: "pointer" }}
+							onClick={() => openEditor(i)}>
 							<Group spacing="sm">
-								<Icon
-									path={mdiCircle}
-									color="surreal"
-									size={0.45}
-								/>
-								{item.name
-									? <Text color={isLight ? 'black' : 'white'}>{item.name}</Text>
-									: <Text color="dark.2" italic>Unnamed {props.name}</Text>
-								}
+								<Icon path={mdiCircle} color="surreal" size={0.45} />
+								{item.name ? (
+									<Text color={isLight ? "black" : "white"}>{item.name}</Text>
+								) : (
+									<Text color="dark.2" italic>
+										Unnamed {props.name}
+									</Text>
+								)}
 								<Spacer />
-								<ActionIcon
-									role="button"
-									component="div"
-									onClick={e => handleRemove(e, i)}
-									color="red"
-								>
+								<ActionIcon role="button" component="div" onClick={(e) => handleRemove(e, i)} color="red">
 									<Icon path={mdiClose} color="red" />
 								</ActionIcon>
 							</Group>
@@ -88,43 +81,18 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 					))}
 				</Stack>
 			) : (
-				<Text align="center">
-					{props.missing}
-				</Text>
+				<Text align="center">{props.missing}</Text>
 			)}
 
-			<Button
-				mt="md"
-				size="xs"
-				fullWidth
-				variant="outline"
-				rightIcon={<Icon path={mdiPlus} />}
-				onClick={handleCreate}
-			>
+			<Button mt="md" size="xs" fullWidth variant="outline" rightIcon={<Icon path={mdiPlus} />} onClick={handleCreate}>
 				Add {props.name}
 			</Button>
 
-			<Modal
-				opened={isEditing}
-				onClose={closeEditor}
-				trapFocus={false}
-				size="lg"
-				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						Editing {props.name}
-					</Title>
-				}
-			>
-				<Stack>
-					{editingData && props.children(editingData, editingIndex)}
-				</Stack>
+			<Modal opened={isEditing} onClose={closeEditor} trapFocus={false} size="lg" title={`Editing ${props.name}`}>
+				<Stack>{editingData && props.children(editingData, editingIndex)}</Stack>
 				<Group mt="xl">
 					<Spacer />
-					<Button
-						onClick={closeEditor}
-					>
-						Save
-					</Button>
+					<Button onClick={closeEditor}>Save</Button>
 				</Group>
 			</Modal>
 		</>

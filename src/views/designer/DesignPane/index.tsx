@@ -1,4 +1,23 @@
-import { Accordion, ActionIcon, Badge, Box, Button, Checkbox, Collapse, Group, Modal, MultiSelect, Paper, ScrollArea, Select, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
+import {
+	Accordion,
+	ActionIcon,
+	Badge,
+	Box,
+	Button,
+	Checkbox,
+	Collapse,
+	Group,
+	Modal,
+	MultiSelect,
+	Paper,
+	ScrollArea,
+	Select,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+	Title,
+} from "@mantine/core";
 import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
 import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
@@ -38,7 +57,7 @@ export function DesignPane(props: SchemaPaneProps) {
 	const isLight = useIsLight();
 	const [data, setData] = useImmer(props.table!);
 	const tableList = useTableNames();
-	const isShifting = useActiveKeys('Shift');
+	const isShifting = useActiveKeys("Shift");
 	const isValid = data ? isSchemaValid(data) : true;
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isChanged, setIsChanged] = useState(false);
@@ -48,18 +67,21 @@ export function DesignPane(props: SchemaPaneProps) {
 		valid: !!isValid,
 		onSave(original) {
 			if (!original?.schema) {
-				showError('Save failed', 'Could not determine previous state');
+				showError("Save failed", "Could not determine previous state");
 				return;
 			}
 
 			const query = buildDefinitionQueries(original, data);
 			const surreal = adapter.getActiveSurreal();
 
-			surreal.query(query).then(() => {
-				fetchDatabaseSchema();
-			}).catch(err => {
-				showError('Failed to apply schema', err.message);
-			});
+			surreal
+				.query(query)
+				.then(() => {
+					fetchDatabaseSchema();
+				})
+				.catch((err) => {
+					showError("Failed to apply schema", err.message);
+				});
 		},
 		onRevert(original) {
 			setData(original);
@@ -78,75 +100,75 @@ export function DesignPane(props: SchemaPaneProps) {
 		const newIsView = e.target.checked;
 
 		if (newIsView) {
-			setData(draft => {
+			setData((draft) => {
 				draft.schema.view = {
-					expr: '',
-					what: '',
-					cond: '',
-					group: ''
+					expr: "",
+					what: "",
+					cond: "",
+					group: "",
 				};
 			});
 		} else {
-			setData(draft => {
+			setData((draft) => {
 				draft.schema.view = null;
 			});
 		}
 	});
 
 	const addField = useStable(() => {
-		setData(d => {
+		setData((d) => {
 			d.fields.push({
-				name: '',
-				assert: '',
+				name: "",
+				assert: "",
 				flexible: false,
-				kind: '',
-				value: '',
+				kind: "",
+				value: "",
 				kindTables: [],
 				kindGeometry: [],
 				permissions: {
-					create: 'FULL',
-					select: 'FULL',
-					update: 'FULL',
-					delete: 'FULL'
-				}
+					create: "FULL",
+					select: "FULL",
+					update: "FULL",
+					delete: "FULL",
+				},
 			});
 		});
 	});
 
 	const removeField = useStable((index: number) => {
-		setData(d => {
+		setData((d) => {
 			d.fields.splice(index, 1);
 		});
 	});
 
 	const addIndex = useStable(() => {
-		setData(d => {
+		setData((d) => {
 			d.indexes.push({
-				name: '',
-				fields: '',
-				unique: false
+				name: "",
+				fields: "",
+				unique: false,
 			});
 		});
 	});
 
 	const removeIndex = useStable((index: number) => {
-		setData(d => {
+		setData((d) => {
 			d.indexes.splice(index, 1);
 		});
 	});
 
 	const addEvent = useStable(() => {
-		setData(d => {
+		setData((d) => {
 			d.events.push({
-				name: '',
-				cond: '',
-				then: ''
+				name: "",
+				cond: "",
+				then: "",
 			});
 		});
 	});
 
 	const removeEvent = useStable((index: number) => {
-		setData(d => {
+		setData((d) => {
 			d.events.splice(index, 1);
 		});
 	});
@@ -162,7 +184,7 @@ export function DesignPane(props: SchemaPaneProps) {
 	const closeDelete = useStable(() => {
 		setIsDeleting(false);
 	});
-	
+
 	const handleDelete = useStable(async () => {
 		const surreal = adapter.getSurreal();
 
@@ -184,94 +206,81 @@ export function DesignPane(props: SchemaPaneProps) {
 		<Panel
 			icon={mdiWrench}
 			title="Design"
-			leftSection={isChanged && (
-				isValid ? (
-					<Badge color={isLight ? 'blue.6' : 'blue.4'}>Changes not yet applied</Badge>
+			leftSection={
+				isChanged &&
+				(isValid ? (
+					<Badge color={isLight ? "blue.6" : "blue.4"}>Changes not yet applied</Badge>
 				) : (
-					<Badge color={isLight ? 'red.6' : 'red.4'}>Missing required fields</Badge>
+					<Badge color={isLight ? "red.6" : "red.4"}>Missing required fields</Badge>
 				))
 			}
 			rightSection={
 				<Group noWrap>
-					<ActionIcon
-						onClick={requestDelete}
-						title="Delete table (Hold shift to force)"
-					>
-						<Icon color={isShifting ? 'red' : 'light.4'} path={mdiDelete} />
+					<ActionIcon onClick={requestDelete} title="Delete table (Hold shift to force)">
+						<Icon color={isShifting ? "red" : "light.4"} path={mdiDelete} />
 					</ActionIcon>
 
-					<ActionIcon
-						title="Refresh"
-						onClick={props.onClose}
-					>
+					<ActionIcon title="Refresh" onClick={props.onClose}>
 						<Icon color="light.4" path={mdiClose} />
 					</ActionIcon>
 				</Group>
-			}
-		>
+			}>
 			{data && (
 				<>
 					<TextInput
 						mb="xs"
 						readOnly
 						value={props.table.schema.name}
-						onFocus={e => e.target.select()}
+						onFocus={(e) => e.target.select()}
 						rightSectionWidth={76}
-						rightSection={isEdge && (
-							<Paper
-								title="This table is an edge"
-								bg={isLight ? 'light.0' : 'light.6'}
-								c={isLight ? 'light.6' : 'white'}
-								px="xs"
-							>
-								Edge
-							</Paper>	
-						)}
-						styles={theme => ({
+						rightSection={
+							isEdge && (
+								<Paper
+									title="This table is an edge"
+									bg={isLight ? "light.0" : "light.6"}
+									c={isLight ? "light.6" : "white"}
+									px="xs">
+									Edge
+								</Paper>
+							)
+						}
+						styles={(theme) => ({
 							input: {
-								backgroundColor: isLight ? 'white' : theme.fn.themeColor('dark.9'),
-								color: 'surreal',
-								fontFamily: 'JetBrains Mono',
+								backgroundColor: isLight ? "white" : theme.fn.themeColor("dark.9"),
+								color: "surreal",
+								fontFamily: "JetBrains Mono",
 								fontSize: 14,
-								height: 42
-							}
+								height: 42,
+							},
 						})}
 					/>
-					<ScrollArea
-						style={{ position: 'absolute', inset: 12, top: 56, bottom: 68 }}
-					>
-						<Accordion
-							multiple
-							defaultValue={['general']}
-							chevronPosition="left"
-						>
+					<ScrollArea style={{ position: "absolute", inset: 12, top: 56, bottom: 68 }}>
+						<Accordion multiple defaultValue={["general"]} chevronPosition="left">
 							<Accordion.Item value="general">
-								<SectionTitle>
-									General
-								</SectionTitle>
+								<SectionTitle>General</SectionTitle>
 								<Accordion.Panel>
 									<Stack>
 										<Select
 											data={TABLE_TYPES}
 											label="Table Type"
-											value={data.schema.schemafull ? 'schemafull' : 'schemaless'}
-											onChange={(value) => setData(draft => {
-												draft.schema.schemafull = value === 'schemafull';
-											})}
+											value={data.schema.schemafull ? "schemafull" : "schemaless"}
+											onChange={(value) =>
+												setData((draft) => {
+													draft.schema.schemafull = value === "schemafull";
+												})
+											}
 										/>
 										<Checkbox
 											label="Drop writes to this table"
 											checked={data.schema.drop}
-											onChange={(e) => setData(draft => {
-												draft.schema.drop = e.target.checked;
-											})}
+											onChange={(e) =>
+												setData((draft) => {
+													draft.schema.drop = e.target.checked;
+												})
+											}
 										/>
 										<div>
-											<Checkbox
-												label="Use table as view"
-												checked={!!data.schema.view}
-												onChange={updateHasView}
-											/>
+											<Checkbox label="Use table as view" checked={!!data.schema.view} onChange={updateHasView} />
 											<Collapse in={!!data.schema.view}>
 												<Stack pt="md">
 													<QueryInput
@@ -279,34 +288,42 @@ export function DesignPane(props: SchemaPaneProps) {
 														label="View projections"
 														placeholder="*"
 														value={data.schema.view?.expr}
-														onChangeText={value => setData(draft => {
-															draft.schema.view!.expr = value;
-														})}
+														onChangeText={(value) =>
+															setData((draft) => {
+																draft.schema.view!.expr = value;
+															})
+														}
 													/>
 													<QueryInput
 														required
 														label="View source"
 														placeholder="table_name"
 														value={data.schema.view?.what}
-														onChangeText={value => setData(draft => {
-															draft.schema.view!.what = value;
-														})}
+														onChangeText={(value) =>
+															setData((draft) => {
+																draft.schema.view!.what = value;
+															})
+														}
 													/>
 													<QueryInput
 														label="View condition"
 														placeholder="value > 10"
 														value={data.schema.view?.cond}
-														onChangeText={value => setData(draft => {
-															draft.schema.view!.cond = value;
-														})}
+														onChangeText={(value) =>
+															setData((draft) => {
+																draft.schema.view!.cond = value;
+															})
+														}
 													/>
 													<QueryInput
 														label="View grouping"
 														placeholder="field_name"
 														value={data.schema.view?.group}
-														onChangeText={value => setData(draft => {
-															draft.schema.view!.group = value;
-														})}
+														onChangeText={(value) =>
+															setData((draft) => {
+																draft.schema.view!.group = value;
+															})
+														}
 													/>
 												</Stack>
 											</Collapse>
@@ -315,54 +332,57 @@ export function DesignPane(props: SchemaPaneProps) {
 								</Accordion.Panel>
 							</Accordion.Item>
 							<Accordion.Item value="permissions">
-								<SectionTitle>
-									Permissions
-								</SectionTitle>
+								<SectionTitle>Permissions</SectionTitle>
 								<Accordion.Panel>
 									<Stack>
 										<PermissionInput
 											label="Create access"
 											value={data.schema.permissions.create}
-											onChange={(value) => setData(draft => {
-												draft.schema.permissions.create = value;
-											})}
+											onChange={(value) =>
+												setData((draft) => {
+													draft.schema.permissions.create = value;
+												})
+											}
 										/>
 										<PermissionInput
 											label="Select access"
 											value={data.schema.permissions.select}
-											onChange={(value) => setData(draft => {
-												draft.schema.permissions.select = value;
-											})}
+											onChange={(value) =>
+												setData((draft) => {
+													draft.schema.permissions.select = value;
+												})
+											}
 										/>
 										<PermissionInput
 											label="Update access"
 											value={data.schema.permissions.update}
-											onChange={(value) => setData(draft => {
-												draft.schema.permissions.update = value;
-											})}
+											onChange={(value) =>
+												setData((draft) => {
+													draft.schema.permissions.update = value;
+												})
+											}
 										/>
 										<PermissionInput
 											label="Delete access"
 											value={data.schema.permissions.delete}
-											onChange={(value) => setData(draft => {
-												draft.schema.permissions.delete = value;
-											})}
+											onChange={(value) =>
+												setData((draft) => {
+													draft.schema.permissions.delete = value;
+												})
+											}
 										/>
 									</Stack>
 								</Accordion.Panel>
 							</Accordion.Item>
 							<Accordion.Item value="fields">
-								<SectionTitle>
-									Fields
-								</SectionTitle>
+								<SectionTitle>Fields</SectionTitle>
 								<Accordion.Panel>
 									<Lister
 										value={data.fields}
 										missing="No schema fields defined yet"
 										name="field"
 										onCreate={addField}
-										onRemove={removeField}
-									>
+										onRemove={removeField}>
 										{(field, i) => (
 											<>
 												<TextInput
@@ -371,93 +391,115 @@ export function DesignPane(props: SchemaPaneProps) {
 													label="Field name"
 													placeholder="field_name"
 													value={field.name}
-													onChange={(e) => setData(draft => {
-														draft.fields[i].name = e.target.value;
-													})}
+													onChange={(e) =>
+														setData((draft) => {
+															draft.fields[i].name = e.target.value;
+														})
+													}
 												/>
 												<Checkbox
 													label="Is field flexible"
 													checked={field.flexible}
-													onChange={e => setData(draft => {
-														draft.fields[i].flexible = e.target.checked;
-													})}
+													onChange={(e) =>
+														setData((draft) => {
+															draft.fields[i].flexible = e.target.checked;
+														})
+													}
 												/>
-												<SimpleGrid cols={field.kind == 'record' || field.kind == 'geometry' ? 2 : 1}>
+												<SimpleGrid cols={field.kind == "record" || field.kind == "geometry" ? 2 : 1}>
 													<Select
 														label="Field kind"
 														data={SURREAL_KINDS}
 														value={field.kind}
 														clearable
-														onChange={(value) => setData(draft => {
-															draft.fields[i].kind = value || '';
-														})}
+														onChange={(value) =>
+															setData((draft) => {
+																draft.fields[i].kind = value || "";
+															})
+														}
 													/>
-													{field.kind == 'record' && (
+													{field.kind == "record" && (
 														<MultiSelect
 															required
 															label="Record types"
 															data={tableList}
 															value={field.kindTables}
 															searchable={false}
-															onChange={(value) => setData(draft => {
-																draft.fields[i].kindTables = value;
-															})}
+															onChange={(value) =>
+																setData((draft) => {
+																	draft.fields[i].kindTables = value;
+																})
+															}
 														/>
 													)}
-													{field.kind === 'geometry' && (
+													{field.kind === "geometry" && (
 														<MultiSelect
 															required
 															label="Geometry types"
 															data={GEOMETRY_TYPES}
 															value={field.kindGeometry}
 															searchable={false}
-															onChange={(value) => setData(draft => {
-																draft.fields[i].kindGeometry = value;
-															})}
+															onChange={(value) =>
+																setData((draft) => {
+																	draft.fields[i].kindGeometry = value;
+																})
+															}
 														/>
 													)}
 												</SimpleGrid>
 												<QueryInput
 													label="Field value"
 													value={field.value}
-													onChangeText={value => setData(draft => {
-														draft.fields[i].value = value;
-													})}
+													onChangeText={(value) =>
+														setData((draft) => {
+															draft.fields[i].value = value;
+														})
+													}
 												/>
 												<QueryInput
 													label="Field assertion"
 													value={field.assert}
-													onChangeText={value => setData(draft => {
-														draft.fields[i].assert = value;
-													})}
+													onChangeText={(value) =>
+														setData((draft) => {
+															draft.fields[i].assert = value;
+														})
+													}
 												/>
 												<PermissionInput
 													label="Create access"
 													value={field.permissions.create}
-													onChange={value => setData(draft => {
-														draft.fields[i].permissions.create = value;
-													})}
+													onChange={(value) =>
+														setData((draft) => {
+															draft.fields[i].permissions.create = value;
+														})
+													}
 												/>
 												<PermissionInput
 													label="Select access"
 													value={field.permissions.select}
-													onChange={value => setData(draft => {
-														draft.fields[i].permissions.select = value;
-													})}
+													onChange={(value) =>
+														setData((draft) => {
+															draft.fields[i].permissions.select = value;
+														})
+													}
 												/>
 												<PermissionInput
 													label="Update access"
 													value={field.permissions.update}
-													onChange={value => setData(draft => {
-														draft.fields[i].permissions.update = value;
-													})}
+													onChange={(value) =>
+														setData((draft) => {
+															draft.fields[i].permissions.update = value;
+														})
+													}
 												/>
 												<PermissionInput
 													label="Delete access"
 													value={field.permissions.delete}
-													onChange={value => setData(draft => {
-														draft.fields[i].permissions.delete = value;
-													})}
+													onChange={(value) =>
+														setData((draft) => {
+															draft.fields[i].permissions.delete = value;
+														})
+													}
 												/>
 											</>
 										)}
@@ -465,17 +507,14 @@ export function DesignPane(props: SchemaPaneProps) {
 								</Accordion.Panel>
 							</Accordion.Item>
 							<Accordion.Item value="indexes">
-								<SectionTitle>
-									Indexes
-								</SectionTitle>
+								<SectionTitle>Indexes</SectionTitle>
 								<Accordion.Panel>
 									<Lister
 										value={data.indexes}
 										missing="No schema indexes defined yet"
 										name="index"
 										onCreate={addIndex}
-										onRemove={removeIndex}
-									>
+										onRemove={removeIndex}>
 										{(index, i) => (
 											<>
 												<TextInput
@@ -484,23 +523,29 @@ export function DesignPane(props: SchemaPaneProps) {
 													label="Index name"
 													placeholder="index_name"
 													value={index.name}
-													onChange={(e) => setData(draft => {
-														draft.indexes[i].name = e.target.value;
-													})}
+													onChange={(e) =>
+														setData((draft) => {
+															draft.indexes[i].name = e.target.value;
+														})
+													}
 												/>
 												<QueryInput
 													label="Indexed fields"
 													value={index.fields}
-													onChangeText={value => setData(draft => {
-														draft.indexes[i].fields = value;
-													})}
+													onChangeText={(value) =>
+														setData((draft) => {
+															draft.indexes[i].fields = value;
+														})
+													}
 												/>
 												<Checkbox
 													label="Unique index"
 													checked={index.unique}
-													onChange={e => setData(draft => {
-														draft.indexes[i].unique = e.target.checked;
-													})}
+													onChange={(e) =>
+														setData((draft) => {
+															draft.indexes[i].unique = e.target.checked;
+														})
+													}
 												/>
 											</>
 										)}
@@ -508,17 +553,14 @@ export function DesignPane(props: SchemaPaneProps) {
 								</Accordion.Panel>
 							</Accordion.Item>
 							<Accordion.Item value="events">
-								<SectionTitle>
-									Events
-								</SectionTitle>
+								<SectionTitle>Events</SectionTitle>
 								<Accordion.Panel>
 									<Lister
 										value={data.events}
 										missing="No schema events defined yet"
 										name="event"
 										onCreate={addEvent}
-										onRemove={removeEvent}
-									>
+										onRemove={removeEvent}>
 										{(event, i) => (
 											<>
 												<TextInput
@@ -527,23 +569,29 @@ export function DesignPane(props: SchemaPaneProps) {
 													label="Event name"
 													placeholder="event_name"
 													value={event.name}
-													onChange={(e) => setData(draft => {
-														draft.events[i].name = e.target.value;
-													})}
+													onChange={(e) =>
+														setData((draft) => {
+															draft.events[i].name = e.target.value;
+														})
+													}
 												/>
 												<QueryInput
 													label="Event condition"
 													value={event.cond}
-													onChangeText={value => setData(draft => {
-														draft.events[i].cond = value;
-													})}
+													onChangeText={(value) =>
+														setData((draft) => {
+															draft.events[i].cond = value;
+														})
+													}
 												/>
 												<QueryInput
 													label="Event result"
 													value={event.then}
-													onChangeText={value => setData(draft => {
-														draft.events[i].then = value;
-													})}
+													onChangeText={(value) =>
+														setData((draft) => {
+															draft.events[i].then = value;
+														})
+													}
 												/>
 											</>
 										)}
@@ -553,44 +601,22 @@ export function DesignPane(props: SchemaPaneProps) {
 						</Accordion>
 					</ScrollArea>
 
-					<Box
-						px="sm"
-						pb="sm"
-						pos="absolute"
-						left={4}
-						bottom={4}
-						right={4}
-					>
+					<Box px="sm" pb="sm" pos="absolute" left={4} bottom={4} right={4}>
 						{saveBox.render}
 					</Box>
 				</>
 			)}
 
-			<Modal
-				opened={isDeleting}
-				onClose={closeDelete}
-				title={
-					<Title size={16} color={isLight ? 'light.6' : 'white'}>
-						Are you sure?
-					</Title>
-				}
-			>
-				<Text color={isLight ? 'light.6' : 'light.1'}>
-					You are about to delete this table and all data contained within it. This action cannot be undone. 
+			<Modal opened={isDeleting} onClose={closeDelete} title="Are you sure?">
+				<Text color={isLight ? "light.6" : "light.1"}>
+					You are about to delete this table and all data contained within it. This action cannot be undone.
 				</Text>
 				<Group mt="lg">
-					<Button
-						onClick={closeDelete}
-						color={isLight ? 'light.5' : 'light.3'}
-						variant="light"
-					>
+					<Button onClick={closeDelete} color={isLight ? "light.5" : "light.3"} variant="light">
 						Close
 					</Button>
 					<Spacer />
-					<Button
-						color="red"
-						onClick={handleDelete}
-					>
+					<Button color="red" onClick={handleDelete}>
 						Delete
 					</Button>
 				</Group>
