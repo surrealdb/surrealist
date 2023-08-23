@@ -1,4 +1,4 @@
-import { Box, Text } from "@mantine/core";
+import { Box, Flex, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import {
 	MRT_ProgressBar,
@@ -16,14 +16,23 @@ interface Props<TData extends Record<string, any> = {}> {
 export const TableBottomToolbar = <TData extends Record<string, any> = {}>({ table }: Props<TData>) => {
 	const {
 		getState,
+		getPrePaginationRowModel,
+
 		options: {
 			mantineBottomToolbarProps,
 			positionToolbarAlertBanner,
 			positionToolbarDropZone,
+			localization,
 			renderBottomToolbarCustomActions,
+			rowCount,
 		},
 		refs: { bottomToolbarRef },
 	} = table;
+
+	const {
+		pagination: { pageSize = 10, pageIndex = 0 },
+	} = getState();
+
 	const { isFullScreen } = getState();
 
 	const isMobile = useMediaQuery("(max-width: 720px)");
@@ -33,6 +42,9 @@ export const TableBottomToolbar = <TData extends Record<string, any> = {}>({ tab
 
 	const stackAlertBanner = isMobile || !!renderBottomToolbarCustomActions;
 
+	const totalRowCount = rowCount ?? getPrePaginationRowModel().rows.length;
+	const firstRowIndex = pageIndex * pageSize;
+	const lastRowIndex = Math.min(pageIndex * pageSize + pageSize, totalRowCount);
 	return (
 		<Box
 			{...toolbarProps}
@@ -58,28 +70,31 @@ export const TableBottomToolbar = <TData extends Record<string, any> = {}>({ tab
 				<MRT_ToolbarAlertBanner stackAlertBanner={stackAlertBanner} table={table} />
 			)}
 			{["both", "bottom"].includes(positionToolbarDropZone ?? "") && <MRT_ToolbarDropZone table={table} />}
-			<Box
+			<Flex
 				sx={{
 					alignItems: "center",
 					boxSizing: "border-box",
 					display: "flex",
 					justifyContent: "space-between",
-					padding: "8px",
+					padding: "0.75rem",
+					paddingTop: 0,
 					width: "100%",
 				}}>
-				<Text>100 - 100 records</Text>
+				<Text px="0.75rem">{`${
+					lastRowIndex === 0 ? 0 : (firstRowIndex + 1).toLocaleString()
+				}-${lastRowIndex.toLocaleString()} ${localization.of} ${totalRowCount.toLocaleString()}`}</Text>
 				<span />
 				<Box
 					sx={{
 						display: "flex",
 						justifyContent: "flex-end",
-						position: stackAlertBanner ? "relative" : "absolute",
+						position: stackAlertBanner ? "relative" : "relative",
 						right: 0,
 						top: 0,
 					}}>
 					<TablePagination table={table} />
 				</Box>
-			</Box>
+			</Flex>
 		</Box>
 	);
 };

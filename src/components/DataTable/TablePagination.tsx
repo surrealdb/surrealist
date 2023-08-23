@@ -36,61 +36,55 @@ export const TablePagination = <TData extends Record<string, any> = {}>({ table 
 
 	const totalRowCount = rowCount ?? getPrePaginationRowModel().rows.length;
 	const numberOfPages = Math.ceil(totalRowCount / pageSize);
-	const firstRowIndex = pageIndex * pageSize;
 	const lastRowIndex = Math.min(pageIndex * pageSize + pageSize, totalRowCount);
 
 	return (
-		<Flex align="center" justify="space-between" gap="lg" py="xs" px="sm" p="relative" sx={{ zIndex: 2 }}>
-			<Text>{`${lastRowIndex === 0 ? 0 : (firstRowIndex + 1).toLocaleString()}-${lastRowIndex.toLocaleString()} ${
-				localization.of
-			} ${totalRowCount.toLocaleString()}`}</Text>
-			<Flex gap="md">
-				<Select
-					data={paginationProps?.rowsPerPageOptions ?? ["5", "10", "15", "20", "25", "30", "50", "100"]}
-					label={localization.rowsPerPage}
-					onChange={(value: string) => setPageSize(+value)}
-					value={pageSize.toString()}
-					sx={{
-						"@media (min-width: 720px)": {
-							display: "flex",
-							alignItems: "center",
-							gap: "8px",
-						},
-						"& .mantine-Select-input": {
-							width: "80px",
-						},
-					}}
-					withinPortal
-				/>
-				<ActionIcon
-					aria-label={localization.goToFirstPage}
-					disabled={pageIndex <= 0}
-					onClick={() => setPageIndex(0)}
-					sx={commonActionButtonStyles}>
-					<IconChevronLeftPipe />
-				</ActionIcon>
-				<ActionIcon
-					aria-label={localization.goToPreviousPage}
-					disabled={pageIndex <= 0}
-					onClick={() => setPageIndex(pageIndex - 1)}
-					sx={commonActionButtonStyles}>
-					<IconChevronLeft />
-				</ActionIcon>
-				<ActionIcon
-					aria-label={localization.goToNextPage}
-					disabled={lastRowIndex >= totalRowCount}
-					onClick={() => setPageIndex(pageIndex + 1)}
-					sx={commonActionButtonStyles}>
-					<IconChevronRight />
-				</ActionIcon>
-				<ActionIcon
-					aria-label={localization.goToLastPage}
-					disabled={lastRowIndex >= totalRowCount}
-					onClick={() => setPageIndex(numberOfPages - 1)}
-					sx={commonActionButtonStyles}>
-					<IconChevronRightPipe />
-				</ActionIcon>
-			</Flex>
+		<Flex align="center" justify="space-between" gap="md" py="sm" px="sm" p="relative" sx={{ zIndex: 2 }}>
+			<Select
+				data={paginationProps?.rowsPerPageOptions ?? ["5", "10", "15", "20", "25", "30", "50", "100"]}
+				label={localization.rowsPerPage}
+				onChange={(value: string) => setPageSize(+value)}
+				value={pageSize.toString()}
+				sx={{
+					"@media (min-width: 720px)": {
+						display: "flex",
+						alignItems: "center",
+						gap: "8px",
+					},
+					"& .mantine-Select-input": {
+						width: "80px",
+					},
+				}}
+				withinPortal
+			/>
+			<ActionIcon
+				aria-label={localization.goToFirstPage}
+				disabled={pageIndex <= 0}
+				onClick={() => setPageIndex(0)}
+				sx={commonActionButtonStyles}>
+				<IconChevronLeftPipe />
+			</ActionIcon>
+			<ActionIcon
+				aria-label={localization.goToPreviousPage}
+				disabled={pageIndex <= 0}
+				onClick={() => setPageIndex(pageIndex - 1)}
+				sx={commonActionButtonStyles}>
+				<IconChevronLeft />
+			</ActionIcon>
+			<ActionIcon
+				aria-label={localization.goToNextPage}
+				disabled={lastRowIndex >= totalRowCount}
+				onClick={() => setPageIndex(pageIndex + 1)}
+				sx={commonActionButtonStyles}>
+				<IconChevronRight />
+			</ActionIcon>
+			<ActionIcon
+				aria-label={localization.goToLastPage}
+				disabled={lastRowIndex >= totalRowCount}
+				onClick={() => setPageIndex(numberOfPages - 1)}
+				sx={commonActionButtonStyles}>
+				<IconChevronRightPipe />
+			</ActionIcon>
 		</Flex>
 	);
 };
