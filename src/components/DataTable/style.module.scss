@@ -1,38 +1,29 @@
-.table-container {
-	height: 100%;
+.table-container::-webkit-scrollbar {
+	background-color: transparent;
+	width: 16px;
+	height: 16px;
 }
 
-.table-wrapper {
-	position: absolute !important;
-	inset: 12;
-	top: 0;
-	height: 100%;
-	width: 100%;
+.table-container::-webkit-scrollbar-track {
+	display: none;
 }
 
-.table {
-	user-select: text;
+// .table-container::-webkit-scrollbar-track-piece {}
 
-	th {
-		position: sticky;
-		top: 0;
-	}
-
-	th > *, td > * {
-		padding-inline: 24px;
-	}
-
-	th:first-child > *, td:first-child > * {
-		padding-inline-start: 0;
-	}
-
-	th:last-child > *, td:last-child > * {
-		padding-inline-end: 0;
-	}
+.table-container::-webkit-scrollbar-corner {
+	display: none;
 }
 
-.table-value {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+/* set button(top and bottom of the scrollbar) */
+.table-container::-webkit-scrollbar-button {
+	display: none;
 }
+
+.table-container::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	border: 6px solid #1a1b1e;
+	color: green;
+	background-color: rgba(160, 160, 160, 0.348);
+}
+
+// .table-container::-webkit-scrollbar-thumb:hover {}

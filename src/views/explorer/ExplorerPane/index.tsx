@@ -1,10 +1,12 @@
-import { Center } from "@mantine/core";
-import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { mdiTable } from "@mdi/js";
-import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
+import { useEffect, useState } from "react";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { ActionIcon, Center, Divider, Group, Text } from "@mantine/core";
+import { mdiDatabase, mdiFilterVariant, mdiPin, mdiPinOff, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
+
 import { adapter } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
+import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { useActiveTab } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
@@ -28,23 +30,18 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [filterValid, setFilterValid] = useState(false);
 	const [filter, setFilter] = useState(false);
 	const [filterText, setFilterText] = useInputState("");
-	const [pageText, setPageText] = useInputState("1");
-	const [pageSize, setPageSize] = useInputState("25");
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
-	const [page, setPage] = useState(1);
 	const tabInfo = useActiveTab();
 
-	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
-
-	function setCurrentPage(number: number) {
-		setPageText(number.toString());
-		setPage(number);
-	}
+	const toggleFilter = useStable(() => {
+		setFilter(!filter);
+	});
 
 	const [showFilter] = useDebouncedValue(filter, 250);
 	const [filterClause] = useDebouncedValue(filterText, 500);
 
 	const fetchRecords = useStable(async () => {
+		// No active table, no records
 		if (!props.activeTable) {
 			setRecords([]);
 			return;
@@ -52,12 +49,12 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		const surreal = adapter.getSurreal();
 
+		// Can't get surreal or filter is not valid
 		if (!surreal || !filterValid) {
 			return;
 		}
 
-		const limitBy = Number.parseInt(pageSize);
-		const startAt = (page - 1) * Number.parseInt(pageSize);
+		//const limitBy = Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
 		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}`;
@@ -69,11 +66,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		}
 
 		countQuery += "))";
-		fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
-
-		if (startAt > 0) {
-			fetchQuery += ` START ${startAt}`;
-		}
+		// fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
+		fetchQuery += ` ORDER BY ${sortCol} ${sortDir}`;
 
 		const response = await surreal.query(`${countQuery};${fetchQuery}`);
 		const resultCount = response[0].result?.[0] || 0;
@@ -81,15 +75,12 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		setRecordCount(resultCount);
 		setRecords(resultRecords);
-
-		if (page > pageCount) {
-			setCurrentPage(pageCount || 1);
-		}
 	});
 
+	/// Fetch records
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeTable, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
+	}, [props.activeTable, props.refreshId, sortMode, showFilter, filterClause]);
 
 	useEffect(() => {
 		if (showFilter && filterText) {
@@ -120,28 +111,67 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		updateConfig();
 	});
 
-	return (
-		<Panel title="Record Explorer" icon={mdiTable} padding="0">
-			{props.activeTable ? (
-				<>
-					{records.length > 0 ? (
-						<DataTable
-							data={records}
-							openRecord={props.onSelectRecord}
-							active={props.activeRecordId}
-							onRowClick={handleOpenRow}
-						/>
-					) : (
-						<Center h="90%" c="light.5">
-							Table has no records
-						</Center>
-					)}
-				</>
-			) : (
+	const getTable = () => {
+		if (!props.activeTable) {
+			return (
 				<Center h="100%" c="light.5">
 					Select a table to view its records
 				</Center>
-			)}
+			);
+		}
+
+		if (records.length > 0) {
+			return (
+				<>
+					<DataTable
+						data={records}
+						openRecord={props.onSelectRecord}
+						active={props.activeRecordId}
+						onRowClick={handleOpenRow}
+					/>
+				</>
+			);
+		} else {
+			return (
+				<Center h="90%" c="light.5">
+					Table has no records
+				</Center>
+			);
+		}
+	};
+
+	return (
+		<Panel
+			title="Record Explorer"
+			icon={mdiTable}
+			padding="0"
+			rightSection={
+				<Group align="center">
+					<ActionIcon title="Create record" onClick={props.onRequestCreate}>
+						<Icon color="light.4" path={mdiPlus} />
+					</ActionIcon>
+
+					<ActionIcon title="Refresh" onClick={fetchRecords}>
+						<Icon color="light.4" path={mdiRefresh} />
+					</ActionIcon>
+
+					<ActionIcon title={isPinned ? "Unpin table" : "Pin table"} onClick={togglePin}>
+						<Icon color="light.4" path={isPinned ? mdiPinOff : mdiPin} />
+					</ActionIcon>
+
+					<ActionIcon title="Toggle filter" onClick={toggleFilter}>
+						<Icon color="light.4" path={mdiFilterVariant} />
+					</ActionIcon>
+
+					<Divider orientation="vertical" color={isLight ? "light.0" : "dark.5"} />
+
+					<Icon color="light.4" path={mdiDatabase} mr={-10} />
+					<Text color="light.4" lineClamp={1}>
+						{recordCount || "no"} rows
+					</Text>
+				</Group>
+			}>
+			{getTable()}
 		</Panel>
 	);
 }
