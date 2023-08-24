@@ -12,6 +12,7 @@ import { useIsLight } from '~/hooks/theme';
 import { renderDataCell } from './datatypes';
 import { TableBottomToolbar } from './TableBottomToolbar';
 import { ShowHideColumnsButton } from './ShowHideColumnButton';
+import { ToggleDensePaddingButton } from './ToggleDensePaddingButton';
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
@@ -163,6 +164,8 @@ export function DataTable({
 					</ActionIcon>
 
 					<ShowHideColumnsButton table={table} />
+
+					<ToggleDensePaddingButton table={table} />
 
 					<ActionIcon title={isPinned ? 'Unpin table' : 'Pin table'} onClick={togglePin}>
 						<Icon color="light.4" path={isPinned ? mdiPinOff : mdiPin} />

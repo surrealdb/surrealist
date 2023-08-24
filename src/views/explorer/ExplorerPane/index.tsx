@@ -11,7 +11,6 @@ import { useStable } from '~/hooks/stable';
 import { actions, store } from '~/store';
 import { OpenFn } from '~/types';
 import { updateConfig } from '~/util/helpers';
-import { useInputState } from '@mantine/hooks';
 
 export interface ExplorerPaneProps {
 	refreshId: number;
