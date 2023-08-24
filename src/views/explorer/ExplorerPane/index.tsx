@@ -1,16 +1,16 @@
-import { useImmer } from 'use-immer';
-import { useEffect, useState } from 'react';
-import { Center } from '@mantine/core';
-import { mdiTable } from '@mdi/js';
+import { useImmer } from "use-immer";
+import { useEffect, useState } from "react";
+import { Center } from "@mantine/core";
+import { mdiTable } from "@mdi/js";
 
-import { adapter } from '~/adapter';
-import { DataTable } from '~/components/DataTable';
-import { Panel } from '~/components/Panel';
-import { useActiveTab } from '~/hooks/environment';
-import { useStable } from '~/hooks/stable';
-import { actions, store } from '~/store';
-import { OpenFn } from '~/types';
-import { updateConfig } from '~/util/helpers';
+import { adapter } from "~/adapter";
+import { DataTable } from "~/components/DataTable";
+import { Panel } from "~/components/Panel";
+import { useActiveTab } from "~/hooks/environment";
+import { useStable } from "~/hooks/stable";
+import { actions, store } from "~/store";
+import { OpenFn } from "~/types";
+import { updateConfig } from "~/util/helpers";
 
 export interface ExplorerPaneProps {
 	refreshId: number;
@@ -23,6 +23,7 @@ export interface ExplorerPaneProps {
 export function ExplorerPane(props: ExplorerPaneProps) {
 	const [records, setRecords] = useImmer<any[]>([]);
 	const [recordCount, setRecordCount] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
 		pageSize: 5, //customize the default page size
@@ -30,6 +31,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const tabInfo = useActiveTab();
 
 	const fetchRecords = useStable(async () => {
+		setIsLoading(true);
 		// No active table, no records
 		if (!props.activeTable) {
 			setRecords([]);
@@ -43,7 +45,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}`;
 		let fetchQuery = `SELECT * FROM ${props.activeTable}`;
 
-		countQuery += '))';
+		countQuery += "))";
 		fetchQuery += ` LIMIT ${pagination.pageSize}`;
 
 		const startAt = pagination.pageIndex * pagination.pageSize;
@@ -58,6 +60,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		setRecordCount(resultCount);
 		setRecords(resultRecords);
+		setIsLoading(false);
 	});
 
 	/// Fetch records
@@ -69,8 +72,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		props.onSelectRecord(record.id);
 	});
 
-	const isPinned = (props.activeTable &&
-		tabInfo?.pinnedTables?.includes(props.activeTable)) as boolean;
+	const isPinned = (props.activeTable && tabInfo?.pinnedTables?.includes(props.activeTable)) as boolean;
 
 	const togglePin = useStable(() => {
 		if (!props.activeTable || !tabInfo) return;
@@ -107,6 +109,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 						recordCount={recordCount}
 						togglePin={togglePin}
 						isPinned={isPinned}
+						isLoading={isLoading}
 						createRecord={props.onRequestCreate}
 						pagination={pagination}
 						onPaginationChange={setPagination}

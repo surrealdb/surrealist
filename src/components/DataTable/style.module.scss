@@ -8,13 +8,10 @@
 	display: none;
 }
 
-// .table-container::-webkit-scrollbar-track-piece {}
-
 .table-container::-webkit-scrollbar-corner {
 	display: none;
 }
 
-/* set button(top and bottom of the scrollbar) */
 .table-container::-webkit-scrollbar-button {
 	display: none;
 }
@@ -25,5 +22,3 @@
 	color: green;
 	background-color: rgba(160, 160, 160, 0.348);
 }
-
-// .table-container::-webkit-scrollbar-thumb:hover {}

@@ -1,4 +1,4 @@
-import { ActionIcon, Flex, Select, Text, type Sx } from "@mantine/core";
+import { ActionIcon, Flex, Select, type Sx } from "@mantine/core";
 import { MRT_TableInstance } from "mantine-react-table";
 
 interface Props<TData extends Record<string, any> = {}> {

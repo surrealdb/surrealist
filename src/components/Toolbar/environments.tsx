@@ -1,17 +1,17 @@
-import classes from './style.module.scss';
-import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput } from '@mantine/core';
-import { useIsLight } from '~/hooks/theme';
-import { ConnectionDetails } from '../ConnectionDetails';
-import { actions, store, useStoreValue } from '~/store';
-import { mdiClose, mdiPlus } from '@mdi/js';
-import { Icon } from '../Icon';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Text } from '@mantine/core';
-import { useStable } from '~/hooks/stable';
-import { useImmer } from 'use-immer';
-import { Spacer } from '../Spacer';
-import { SurrealistEnvironment } from '~/types';
-import { newId, updateConfig } from '~/util/helpers';
+import classes from "./style.module.scss";
+import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput } from "@mantine/core";
+import { useIsLight } from "~/hooks/theme";
+import { ConnectionDetails } from "../ConnectionDetails";
+import { actions, store, useStoreValue } from "~/store";
+import { mdiClose, mdiPlus } from "@mdi/js";
+import { Icon } from "../Icon";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Text } from "@mantine/core";
+import { useStable } from "~/hooks/stable";
+import { useImmer } from "use-immer";
+import { Spacer } from "../Spacer";
+import { SurrealistEnvironment } from "~/types";
+import { newId, updateConfig } from "~/util/helpers";
 
 export interface EnvironmentsProps {
 	opened: boolean;
@@ -20,7 +20,7 @@ export interface EnvironmentsProps {
 }
 
 function buildName(n: number) {
-	return `Environment ${n ? n + 1 : ''}`.trim();
+	return `Environment ${n ? n + 1 : ""}`.trim();
 }
 
 export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
@@ -28,7 +28,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	const liveEnvs = useStoreValue((state) => state.config.environments);
 	const isLight = useIsLight();
 
-	const [viewingEnv, setViewingEnv] = useState('');
+	const [viewingEnv, setViewingEnv] = useState("");
 	const [environments, setEnvironments] = useImmer<SurrealistEnvironment[]>([]);
 	const [removedIds, setRemovedIds] = useImmer<string[]>([]);
 
@@ -63,7 +63,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	});
 
 	const addEnvironment = useStable(() => {
-		let tabName = '';
+		let tabName = "";
 		let counter = 0;
 
 		do {
@@ -95,7 +95,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 			draft.push(viewingEnv);
 		});
 
-		setViewingEnv('');
+		setViewingEnv("");
 	});
 
 	const saveEnvironments = useStable(() => {
@@ -113,9 +113,9 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	});
 
 	useEffect(() => {
-		if (opened && viewingEnv === '') {
+		if (opened && viewingEnv === "") {
 			setEnvironments(liveEnvs);
-			setViewingEnv(liveEnvs[0]?.id ?? '');
+			setViewingEnv(liveEnvs[0]?.id ?? "");
 		}
 	}, [opened, liveEnvs]);
 
@@ -126,12 +126,12 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 					pr="md"
 					span={4}
 					sx={(theme) => ({
-						borderRight: `2px solid ${theme.fn.themeColor(isLight ? 'light.0' : 'dark.4')}`,
-						position: 'relative',
+						borderRight: `2px solid ${theme.fn.themeColor(isLight ? "light.0" : "dark.4")}`,
+						position: "relative",
 					})}>
 					<ScrollArea
 						style={{
-							position: 'absolute',
+							position: "absolute",
 							inset: 12,
 							bottom: 24,
 							right: 12,
@@ -144,9 +144,9 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 									<Button
 										key={item.id}
 										px={12}
-										c={isLight ? 'black' : 'white'}
-										color={isActive ? (isLight ? 'light.1' : 'dark.7') : 'light'}
-										variant={isActive ? 'filled' : 'subtle'}
+										c={isLight ? "black" : "white"}
+										color={isActive ? (isLight ? "light.1" : "dark.7") : "light"}
+										variant={isActive ? "filled" : "subtle"}
 										className={classes.entryButton}
 										onClick={() => openEnvironment(item.id)}>
 										{item.name}
@@ -180,9 +180,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 									styles={(theme) => ({
 										input: {
 											fontSize: 16,
-											color: isLight
-												? theme.fn.themeColor('dark.9')
-												: theme.fn.themeColor('gray.0'),
+											color: isLight ? theme.fn.themeColor("dark.9") : theme.fn.themeColor("gray.0"),
 											fontWeight: 600,
 										},
 									})}
@@ -206,11 +204,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 								Default connection details
 							</Title> */}
 
-							<ConnectionDetails
-								value={selected.connection as any}
-								onChange={updateConnection}
-								optional
-							/>
+							<ConnectionDetails value={selected.connection as any} onChange={updateConnection} optional />
 						</>
 					) : (
 						<Center h="100%">
@@ -222,7 +216,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 				</Grid.Col>
 			</Grid>
 			<Group>
-				<Button color={isLight ? 'light.5' : 'light.3'} variant="light" onClick={onClose}>
+				<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={onClose}>
 					Close
 				</Button>
 				<Spacer />
