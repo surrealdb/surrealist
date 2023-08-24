@@ -1,19 +1,17 @@
-import { ScrollArea, Table, Text } from "@mantine/core";
-import { useMemo } from "react";
-import { OpenFn } from "~/types";
-import { alphabetical, isObject } from "radash";
-import {
-	MRT_BottomToolbar,
-	MRT_ColumnDef,
-	MRT_TableFooterCell,
-	MRT_TablePagination,
-	MantineReactTable,
-	useMantineReactTable,
-} from "mantine-react-table";
-import { renderDataCell } from "./datatypes";
-import classes from "./style.module.scss";
-import { TableBottomToolbar } from "./TableBottomToolbar";
-import { TablePagination } from "./TablePagination";
+import { useMemo } from 'react';
+import { alphabetical, isObject } from 'radash';
+import { ActionIcon, Divider, Group, Text } from '@mantine/core';
+import { mdiTable, mdiPlus, mdiRefresh, mdiPinOff, mdiPin, mdiDatabase } from '@mdi/js';
+import { MRT_ColumnDef, MantineReactTable, useMantineReactTable } from 'mantine-react-table';
+
+import { Icon } from '../Icon';
+import { Panel } from '../Panel';
+import { OpenFn } from '~/types';
+import classes from './style.module.scss';
+import { useIsLight } from '~/hooks/theme';
+import { renderDataCell } from './datatypes';
+import { TableBottomToolbar } from './TableBottomToolbar';
+import { ShowHideColumnsButton } from './ShowHideColumnButton';
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
@@ -23,10 +21,31 @@ interface DataTableProps {
 	data: any;
 	active?: string | null;
 	openRecord?: OpenFn;
+	fetchRecords: () => void;
+	createRecord: () => void;
+	recordCount: number;
+	togglePin: () => void;
+	isPinned: boolean;
+	pagination: any;
+	onPaginationChange: any;
 	onRowClick?: (value: any) => void;
 }
 
-export function DataTable({ data, active, openRecord, onRowClick }: DataTableProps) {
+export function DataTable({
+	data,
+	active,
+	openRecord,
+	fetchRecords,
+	createRecord,
+	recordCount,
+	togglePin,
+	isPinned,
+	pagination,
+	onPaginationChange,
+	onRowClick,
+}: DataTableProps) {
+	const isLight = useIsLight();
+
 	const [keys, values] = useMemo(() => {
 		const keys: string[] = [];
 		const values: any[] = [];
@@ -49,14 +68,14 @@ export function DataTable({ data, active, openRecord, onRowClick }: DataTablePro
 
 		const headers = alphabetical(keys, (key) => {
 			switch (key) {
-				case "id": {
-					return "00000000000";
+				case 'id': {
+					return '00000000000';
 				}
-				case "in": {
-					return "00000000001";
+				case 'in': {
+					return '00000000001';
 				}
-				case "out": {
-					return "00000000002";
+				case 'out': {
+					return '00000000002';
 				}
 				default: {
 					return key;
@@ -90,35 +109,74 @@ export function DataTable({ data, active, openRecord, onRowClick }: DataTablePro
 	const table = useMantineReactTable({
 		columns,
 		data: values,
+		enablePinning: true,
 		enableTopToolbar: false,
+		enableStickyHeader: true,
 		enableBottomToolbar: true,
 		enableColumnResizing: true,
-		enableStickyHeader: true,
+		enableColumnDragging: true,
+		enableColumnOrdering: true,
+		enableRowVirtualization: (recordCount ?? 0) > 100 ? true : false,
 		mantineTableContainerProps: {
 			className: classes.tableContainer,
 			sx: {
-				height: "calc(100% - 64px)", // css hack to size correctly 68 is bottom margin
+				height: 'calc(100% - 64px)', // css hack to size correctly 68 is bottom margin
 			},
 		},
 		mantinePaperProps: {
 			sx: {
-				width: "100%",
-				height: "100%",
+				width: '100%',
+				height: '100%',
 				borderRadius: 0,
-				boxShadow: "none",
-				position: "absolute",
-				border: "none !important",
-				borderBottomLeftRadius: "0.5rem",
-				borderBottomRightRadius: "0.5rem",
+				boxShadow: 'none',
+				position: 'absolute',
+				border: 'none !important',
+				borderBottomLeftRadius: '0.5rem',
+				borderBottomRightRadius: '0.5rem',
 			},
 		},
+		manualPagination: true,
+		state: { pagination },
+		onPaginationChange: onPaginationChange,
+		rowCount: recordCount ?? 0,
 		mantinePaginationProps: {
-			rowsPerPageOptions: ["5", "10", "15", "20", "25", "30", "50", "100"],
+			rowsPerPageOptions: ['5', '10', '25', '30', '50', '100', '250', '500'],
 		},
 		renderBottomToolbar: ({ table }) => <TableBottomToolbar table={table} />,
 	});
 
 	console.log(table.getAllColumns());
 
-	return <MantineReactTable table={table} />;
+	return (
+		<Panel
+			title="Record Explorer"
+			icon={mdiTable}
+			padding="0"
+			rightSection={
+				<Group align="center">
+					<ActionIcon title="Create record" onClick={createRecord}>
+						<Icon color="light.4" path={mdiPlus} />
+					</ActionIcon>
+
+					<ActionIcon title="Refresh" onClick={fetchRecords}>
+						<Icon color="light.4" path={mdiRefresh} />
+					</ActionIcon>
+
+					<ShowHideColumnsButton table={table} />
+
+					<ActionIcon title={isPinned ? 'Unpin table' : 'Pin table'} onClick={togglePin}>
+						<Icon color="light.4" path={isPinned ? mdiPinOff : mdiPin} />
+					</ActionIcon>
+
+					<Divider orientation="vertical" color={isLight ? 'light.0' : 'dark.5'} />
+
+					<Icon color="light.4" path={mdiDatabase} mr={-10} />
+					<Text color="light.4" lineClamp={1}>
+						{recordCount || 'no'} rows
+					</Text>
+				</Group>
+			}>
+			<MantineReactTable table={table} />
+		</Panel>
+	);
 }

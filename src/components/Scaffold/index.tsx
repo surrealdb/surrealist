@@ -1,5 +1,5 @@
-import classes from "./style.module.scss";
-import surrealistLogo from "~/assets/icon.png";
+import classes from './style.module.scss';
+import surrealistLogo from '~/assets/icon.png';
 import {
 	ActionIcon,
 	Badge,
@@ -16,38 +16,38 @@ import {
 	Text,
 	Title,
 	useMantineTheme,
-} from "@mantine/core";
-import { Spacer } from "../Spacer";
-import { actions, store, useStoreValue } from "~/store";
-import { useStable } from "~/hooks/stable";
-import { uid } from "radash";
-import { MouseEvent, PropsWithChildren, useEffect, useState } from "react";
-import { mod, showError, updateConfig, updateTitle } from "~/util/helpers";
-import { Toolbar } from "../Toolbar";
-import { useActiveTab } from "~/hooks/environment";
-import { showNotification } from "@mantine/notifications";
-import { useIsLight } from "~/hooks/theme";
-import { mdiClose, mdiConsole } from "@mdi/js";
-import { Icon } from "../Icon";
-import { Splitter } from "../Splitter";
-import { ConsolePane } from "../ConsolePane";
-import { QueryView } from "~/views/query/QueryView";
-import { ExplorerView } from "~/views/explorer/ExplorerView";
-import { ViewMode } from "~/types";
-import { useHotkeys } from "@mantine/hooks";
-import { VIEW_MODES } from "~/constants";
-import { DesignerView } from "~/views/designer/DesignerView";
-import { AuthenticationView } from "~/views/authentication/AuthenticationView";
-import { adapter } from "~/adapter";
-import { DesktopAdapter } from "~/adapter/desktop";
-import { fetchDatabaseSchema } from "~/util/schema";
-import { isConnectionValid, mergeConnections } from "~/util/environments";
-import { useLater } from "~/hooks/later";
-import { TabCreator } from "./creator";
-import { TabEditor } from "./editor";
+} from '@mantine/core';
+import { Spacer } from '../Spacer';
+import { actions, store, useStoreValue } from '~/store';
+import { useStable } from '~/hooks/stable';
+import { uid } from 'radash';
+import { MouseEvent, PropsWithChildren, useEffect, useState } from 'react';
+import { mod, showError, updateConfig, updateTitle } from '~/util/helpers';
+import { Toolbar } from '../Toolbar';
+import { useActiveTab } from '~/hooks/environment';
+import { showNotification } from '@mantine/notifications';
+import { useIsLight } from '~/hooks/theme';
+import { mdiClose, mdiConsole } from '@mdi/js';
+import { Icon } from '../Icon';
+import { Splitter } from '../Splitter';
+import { ConsolePane } from '../ConsolePane';
+import { QueryView } from '~/views/query/QueryView';
+import { ExplorerView } from '~/views/explorer/ExplorerView';
+import { ViewMode } from '~/types';
+import { useHotkeys } from '@mantine/hooks';
+import { VIEW_MODES } from '~/constants';
+import { DesignerView } from '~/views/designer/DesignerView';
+import { AuthenticationView } from '~/views/authentication/AuthenticationView';
+import { adapter } from '~/adapter';
+import { DesktopAdapter } from '~/adapter/desktop';
+import { fetchDatabaseSchema } from '~/util/schema';
+import { isConnectionValid, mergeConnections } from '~/util/environments';
+import { useLater } from '~/hooks/later';
+import { TabCreator } from './creator';
+import { TabEditor } from './editor';
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
-	return <div style={{ display: props.visible ? "initial" : "none" }}>{props.children}</div>;
+	return <div style={{ display: props.visible ? 'initial' : 'none' }}>{props.children}</div>;
 }
 
 export function Scaffold() {
@@ -87,11 +87,12 @@ export function Scaffold() {
 					setIsConnected(false);
 
 					if (code != 1000 && !silent) {
-						const subtitle = code === 1006 ? "Unexpected connection close" : reason || `Unknown reason`;
+						const subtitle =
+							code === 1006 ? 'Unexpected connection close' : reason || `Unknown reason`;
 
 						showNotification({
-							color: "red.4",
-							bg: "red.6",
+							color: 'red.4',
+							bg: 'red.6',
 							message: (
 								<div>
 									<Text color="white" weight={600}>
@@ -109,20 +110,20 @@ export function Scaffold() {
 
 			setIsConnecting(true);
 		} catch (err: any) {
-			showError("Failed to open connection", err.message);
+			showError('Failed to open connection', err.message);
 		}
 	});
 
 	const scheduleConnect = useLater(openConnection);
 
 	const sendQuery = useStable(async (override?: string) => {
-		if (tabInfo?.activeView !== "query") {
+		if (tabInfo?.activeView !== 'query') {
 			return;
 		}
 
 		if (!isConnected) {
 			showNotification({
-				message: "You must be connected to send a query",
+				message: 'You must be connected to send a query',
 			});
 			return;
 		}
@@ -145,7 +146,7 @@ export function Scaffold() {
 					id: activeTab!,
 					lastResponse: [
 						{
-							status: "ERR",
+							status: 'ERR',
 							detail: err.message,
 						},
 					],
@@ -227,8 +228,8 @@ export function Scaffold() {
 	const mergedInfoDetails = mergeConnections(tabInfo?.connection || {}, envInfo?.connection || {});
 	const detailsValid = isConnectionValid(mergedInfoDetails);
 
-	const borderColor = theme.fn.themeColor(isConnected ? "surreal" : detailsValid ? "light" : "red");
-	const viewMode = tabInfo?.activeView || "query";
+	const borderColor = theme.fn.themeColor(isConnected ? 'surreal' : detailsValid ? 'light' : 'red');
+	const viewMode = tabInfo?.activeView || 'query';
 	const viewInfo = VIEW_MODES.find((v) => v.id == viewMode)!;
 	const isDesktop = adapter instanceof DesktopAdapter;
 
@@ -258,15 +259,15 @@ export function Scaffold() {
 
 	useHotkeys(
 		[
-			["ctrl+arrowLeft", () => relativeViewMode(-1)],
-			["ctrl+arrowRight", () => relativeViewMode(1)],
+			['ctrl+arrowLeft', () => relativeViewMode(-1)],
+			['ctrl+arrowRight', () => relativeViewMode(1)],
 		],
 		[]
 	);
 
 	useHotkeys([
-		["F9", () => sendQuery()],
-		["mod+Enter", () => sendQuery()],
+		['F9', () => sendQuery()],
+		['mod+Enter', () => sendQuery()],
 	]);
 
 	return (
@@ -314,17 +315,19 @@ export function Scaffold() {
 												w={264}
 												px={0}
 												h="unset"
-												color={isActive ? "pink" : "blue"}
-												variant={isActive ? "light" : "subtle"}
+												color={isActive ? 'pink' : 'blue'}
+												variant={isActive ? 'light' : 'subtle'}
 												className={classes.viewModeButton}
 												onClick={() => setViewMode(info.id as ViewMode)}
-												bg={isDisabled ? "transparent !important" : undefined}
+												bg={isDisabled ? 'transparent !important' : undefined}
 												disabled={isDisabled}>
 												<NavLink
 													component="div"
 													className={classes.viewModeContent}
 													label={info.name}
-													icon={<Icon color={isDisabled ? "light.5" : "surreal"} path={info.icon} />}
+													icon={
+														<Icon color={isDisabled ? 'light.5' : 'surreal'} path={info.icon} />
+													}
 													description={
 														<Stack spacing={6}>
 															{info.desc}
@@ -339,11 +342,11 @@ export function Scaffold() {
 													}
 													styles={{
 														label: {
-															color: isLight ? "black" : "white",
+															color: isLight ? 'black' : 'white',
 															fontWeight: 600,
 														},
 														description: {
-															whiteSpace: "normal",
+															whiteSpace: 'normal',
 														},
 													}}
 												/>
@@ -357,21 +360,32 @@ export function Scaffold() {
 							<Paper
 								className={clsx(
 									classes.input,
-									detailsValid && (!isConnected || viewMode === "query") && classes.inputWithButton
+									detailsValid && (!isConnected || viewMode === 'query') && classes.inputWithButton
 								)}
 								onClick={openTabEditor}
 								style={{ borderColor: borderColor }}>
 								{isConnected ? (
-									mergedInfoDetails.authMode == "none" ? (
-										<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.4" : "light.3"} fs="italic" px="xs">
+									mergedInfoDetails.authMode == 'none' ? (
+										<Paper
+											bg={isLight ? 'light.0' : 'light.6'}
+											c={isLight ? 'light.4' : 'light.3'}
+											fs="italic"
+											px="xs">
 											Anon
 										</Paper>
-									) : mergedInfoDetails.authMode == "scope" ? (
-										<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.4" : "light.3"} fs="italic" px="xs">
+									) : mergedInfoDetails.authMode == 'scope' ? (
+										<Paper
+											bg={isLight ? 'light.0' : 'light.6'}
+											c={isLight ? 'light.4' : 'light.3'}
+											fs="italic"
+											px="xs">
 											{mergedInfoDetails.scope}
 										</Paper>
 									) : (
-										<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.6" : "white"} px="xs">
+										<Paper
+											bg={isLight ? 'light.0' : 'light.6'}
+											c={isLight ? 'light.6' : 'white'}
+											px="xs">
 											{mergedInfoDetails.username}
 										</Paper>
 									)
@@ -382,7 +396,7 @@ export function Scaffold() {
 										</Text>
 									</Paper>
 								)}
-								<Text color={isLight ? "light.6" : "white"}>{mergedInfoDetails.endpoint}</Text>
+								<Text color={isLight ? 'light.6' : 'white'}>{mergedInfoDetails.endpoint}</Text>
 								<Spacer />
 								{!detailsValid && (
 									<Text color="red" mr="xs">
@@ -403,7 +417,7 @@ export function Scaffold() {
 							{detailsValid && (
 								<>
 									{isConnected ? (
-										viewMode == "query" && (
+										viewMode == 'query' && (
 											<Button
 												color="surreal"
 												onClick={handleSendQuery}
@@ -414,7 +428,7 @@ export function Scaffold() {
 										)
 									) : (
 										<Button color="light" className={classes.sendButton} onClick={openConnection}>
-											{isConnecting ? "Connecting..." : "Connect"}
+											{isConnecting ? 'Connecting...' : 'Connect'}
 										</Button>
 									)}
 								</>
@@ -428,22 +442,22 @@ export function Scaffold() {
 							bufferSize={200}
 							direction="vertical"
 							endPane={isDesktop && enableConsole && <ConsolePane />}>
-							<ViewSlot visible={viewMode == "query"}>
+							<ViewSlot visible={viewMode == 'query'}>
 								<QueryView sendQuery={sendQuery} />
 							</ViewSlot>
 
-							<ViewSlot visible={viewMode == "explorer"}>
+							<ViewSlot visible={viewMode == 'explorer'}>
 								<ExplorerView />
 							</ViewSlot>
 
 							{isDesktop && (
-								<ViewSlot visible={viewMode == "designer"}>
+								<ViewSlot visible={viewMode == 'designer'}>
 									<DesignerView />
 								</ViewSlot>
 							)}
 
 							{isDesktop && (
-								<ViewSlot visible={viewMode == "auth"}>
+								<ViewSlot visible={viewMode == 'auth'}>
 									<AuthenticationView />
 								</ViewSlot>
 							)}
