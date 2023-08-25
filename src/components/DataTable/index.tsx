@@ -171,9 +171,7 @@ export function DataTable({
 		},
 		rowVirtualizerInstanceRef,
 		enableRowVirtualization: true,
-		enableColumnVirtualization: true,
 		rowVirtualizerProps: { overscan: 10 },
-		columnVirtualizerProps: { overscan: 3 },
 		renderBottomToolbar: ({ table }) => <TableBottomToolbar table={table} />,
 	});
 
