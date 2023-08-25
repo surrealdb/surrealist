@@ -1,11 +1,11 @@
-import { Group, Text } from "@mantine/core";
-import { mdiArrowTopRight } from "@mdi/js";
-import { ComponentPropsWithoutRef, MouseEvent } from "react";
-import { useStable } from "~/hooks/stable";
-import { OpenFn } from "~/types";
-import { Icon } from "../Icon";
+import { Group, Text } from '@mantine/core';
+import { mdiArrowTopRight } from '@mdi/js';
+import { ComponentPropsWithoutRef, MouseEvent } from 'react';
+import { useStable } from '~/hooks/stable';
+import { OpenFn } from '~/types';
+import { Icon } from '../Icon';
 
-export interface RecordLinkProps extends ComponentPropsWithoutRef<"div"> {
+export interface RecordLinkProps extends ComponentPropsWithoutRef<'div'> {
 	value: string;
 	onRecordClick?: OpenFn;
 }
@@ -24,15 +24,14 @@ export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
 			spacing={0}
 			onClick={handleOpen}
 			style={{
-				cursor: onRecordClick ? "pointer" : undefined,
+				cursor: onRecordClick ? 'pointer' : undefined,
 			}}>
 			<Text
 				ff="JetBrains Mono"
 				style={{
-					whiteSpace: "nowrap",
-					overflow: "hidden",
-					textOverflow: "ellipsis",
-					maxWidth: 300,
+					whiteSpace: 'nowrap',
+					overflow: 'hidden',
+					textOverflow: 'ellipsis',
 				}}>
 				{value}
 			</Text>
