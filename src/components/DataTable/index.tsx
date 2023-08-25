@@ -135,11 +135,6 @@ export function DataTable({
 		enableStickyHeader: true,
 		enableBottomToolbar: true,
 		enableColumnResizing: true,
-		enableColumnDragging: true,
-		enableColumnOrdering: true,
-		mantineColumnDragHandleProps: {
-			sx: { paddingRight: "0px" },
-		},
 		mantineTableContainerProps: {
 			className: classes.tableContainer,
 			sx: { height: "calc(100% - 64px)" }, // css hack to make the table fill the panel
