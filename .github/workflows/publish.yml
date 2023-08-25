@@ -93,24 +93,25 @@ jobs:
 
       - name: Rename binaries
         run: |
-          mv ./bundles-macos-latest/dmg/Surrealist_${{ needs.version.outputs.version }}_x64.dmg ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
-          mv ./bundles-ubuntu-latest/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
-          mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64.deb ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
-          mv ./bundles-windows-latest/msi/Surrealist_${{ needs.version.outputs.version }}_x64_en-US.msi ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
+          mv ./bundles-macos-latest/dmg/Surrealist_${{ needs.version.outputs.version }}_x64.dmg ./surrealist-v${{ needs.version.outputs.version }}-nightly-darwin.dmg
+          mv ./bundles-ubuntu-latest/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-v${{ needs.version.outputs.version }}-nightly-linux.AppImage
+          mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64.deb ./surrealist-v${{ needs.version.outputs.version }}-nightly-linux.deb
+          mv ./bundles-windows-latest/msi/Surrealist_${{ needs.version.outputs.version }}_x64_en-US.msi ./surrealist-v${{ needs.version.outputs.version }}-nightly-windows.msi
 
       - name: Draft release
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "v${{ needs.version.outputs.version }}"
+          automatic_release_tag: "v${{ github.ref_name }}"
           prerelease: false
           draft: true
-          title: "v${{ needs.version.outputs.version }}"
+          title: "v${{ github.ref_name }}"
           files: |
-            ./surrealist-v${{ needs.version.outputs.version }}-darwin.dmg
-            ./surrealist-v${{ needs.version.outputs.version }}-linux.AppImage
-            ./surrealist-v${{ needs.version.outputs.version }}-linux.deb
-            ./surrealist-v${{ needs.version.outputs.version }}-windows.msi
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-darwin.dmg
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-linux.AppImage
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-linux.deb
+            ./surrealist-v${{ needs.version.outputs.version }}-nightly-windows.msi
       
-      - name: Publish web app (Linux)
-        uses: actions/deploy-pages@v1
+      # - name: Publish web app (Linux)
+      #   uses: actions/deploy-pages@v1
+      #   if: contains(github.ref_name, 'nightly')

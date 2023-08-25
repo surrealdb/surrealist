@@ -57,7 +57,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 	const [editingPassword, setEditingPassword] = useInputState("");
 	const [editingRole, setEditingRole] = useState<string[]>([]);
 	const fetchLogins = useStable(async () => {
-		const response = await adapter.getActiveSurreal().query(`INFO FOR ${props.typeShort}`);
+		const response = await adapter.getActiveSurreal().querySingle(`INFO FOR ${props.typeShort}`);
 		const result = response[0].result;
 
 		if (!result) {

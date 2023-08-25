@@ -74,12 +74,12 @@ export function createLocalWebSocket(options: SurrealOptions): SurrealHandle {
 	 * Send a general query to the database
 	 */
 	const query = async (query: string, params: Record<string, any>) => {
-		printLog("Query", "#ff1abe", query);
+		printLog('Query', '#ff1abe', query);
 
-		return message("query", params ? [query, params] : [query]);
+		return message('query', params ? [query, params] : [query]);
 	};
 
-	socket.addEventListener("open", async () => {
+	socket.addEventListener('open', async () => {
 		const { username, password, namespace, database, authMode, scope, scopeFields } = options.connection;
 
 		if (authMode !== "none") {
@@ -157,5 +157,6 @@ export function createLocalWebSocket(options: SurrealOptions): SurrealHandle {
 	return {
 		close,
 		query,
+		querySingle
 	};
 }

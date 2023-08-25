@@ -58,7 +58,7 @@ export function isEdgeTable(table: TableDefinition) {
  */
 export async function saveSchemaExport() {
 	const surreal = adapter.getActiveSurreal();
-	const dbResponse = await surreal.query("INFO FOR DB");
+	const dbResponse = await surreal.querySingle('INFO FOR DB');
 	const result = dbResponse[0].result;
 
 	const dbTables = Object.entries(result.tables ?? result.tb);
@@ -77,7 +77,7 @@ export async function saveSchemaExport() {
 
 		output.push(`${definition};`);
 
-		const tbResponse = await surreal.query(`INFO FOR TABLE ${tableName}`);
+		const tbResponse = await surreal.querySingle(`INFO FOR TABLE ${tableName}`);
 		const tbInfo = tbResponse[0].result;
 
 		const tbFields = Object.values(tbInfo.fd);

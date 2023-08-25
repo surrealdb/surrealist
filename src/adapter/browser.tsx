@@ -44,7 +44,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	public async fetchSchema(): Promise<TableDefinition[]> {
 		const surreal = this.getActiveSurreal();
-		const dbResponse = await surreal.query("INFO FOR DB");
+		const dbResponse = await surreal.querySingle('INFO FOR DB');
 		const dbResult = dbResponse[0].result;
 
 		if (!dbResult) {

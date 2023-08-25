@@ -120,6 +120,8 @@ export function initializeEditor(monaco: Monaco) {
 			"LET",
 			"LIMIT",
 			"LIVE",
+			"USER",
+			"ROLES",
 			"LOGIN",
 			"MERGE",
 			"NAMESPACE",
@@ -229,7 +231,7 @@ export function initializeEditor(monaco: Monaco) {
 			}
 
 			try {
-				const response = await surreal.query("INFO FOR DB");
+				const response = await surreal.querySingle("INFO FOR DB");
 				const result = response[0].result;
 
 				if (!result) {
