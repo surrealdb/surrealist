@@ -1,20 +1,18 @@
 import { useImmer } from "use-immer";
 import { useEffect, useState } from "react";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { ActionIcon, Center, Group, TextInput, Text } from "@mantine/core";
+import { Center } from "@mantine/core";
 import { MRT_PaginationState, MRT_SortingState } from "mantine-react-table";
-import { mdiDatabase, mdiFilterVariant, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
+import { mdiTable } from "@mdi/js";
 
 import { adapter } from "~/adapter";
-import { DataTable } from "~/components/DataTable";
 import { Panel } from "~/components/Panel";
 import { useActiveTab } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { actions, store } from "~/store";
 import { OpenFn } from "~/types";
 import { updateConfig } from "~/util/helpers";
-
-import { Icon } from "~/components/Icon";
+import { DataTable } from "~/components/DataTable";
 
 export interface ExplorerPaneProps {
 	refreshId: number;
