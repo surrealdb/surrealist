@@ -31,6 +31,8 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 					document.fonts.ready.then(() => {
 						monaco.editor.remeasureFonts();
 					});
+
+					if (props.onMount) props.onMount(_editor, monaco);
 				}}
 			/>
 		</div>
