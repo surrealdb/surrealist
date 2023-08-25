@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { alphabetical, isObject } from "radash";
-import { ActionIcon, Divider, Group, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Center, Divider, Group, Text, TextInput } from "@mantine/core";
 import { mdiTable, mdiPlus, mdiRefresh, mdiPinOff, mdiPin, mdiDatabase, mdiFilterVariant } from "@mdi/js";
 import {
 	MRT_ColumnDef,
@@ -131,7 +131,10 @@ export function DataTable({
 		enableColumnResizing: true,
 		enableColumnDragging: true,
 		enableColumnOrdering: true,
-		enableRowVirtualization: (recordCount ?? 0) > 100 ? true : false, // virtualization has a performance cost for less than 100 records
+		enableRowVirtualization: true,
+		mantineColumnDragHandleProps: {
+			sx: { paddingRight: "0px" },
+		},
 		mantineTableContainerProps: {
 			className: classes.tableContainer,
 			sx: { height: "calc(100% - 64px)" }, // css hack to make the table fill the panel
@@ -143,7 +146,7 @@ export function DataTable({
 		mantinePaperProps: {
 			sx: {
 				width: "100%",
-				height: "100%",
+				height: `calc(100% - ${filterProps.globalFilter ? 36 : 0}px)`, // css hack to adjust for filter text
 				borderRadius: 0,
 				boxShadow: "none",
 				position: "absolute",
@@ -199,24 +202,33 @@ export function DataTable({
 					</Text>
 				</Group>
 			}>
-			{filterProps.filter && (
+			{filterProps.globalFilter && (
 				<TextInput
 					placeholder="Enter filter clause..."
 					icon={<Icon path={mdiFilterVariant} />}
-					value={filterProps.filterText}
-					onChange={filterProps.setFilterText}
-					error={!filterProps.filterValid}
+					value={filterProps.globalFilterText}
+					onChange={filterProps.setGlobalFilterText}
+					error={!filterProps.globalFilterValid}
 					autoFocus
 					styles={(theme) => ({
+						root: { paddingRight: "12px", paddingLeft: "12px" },
 						input: {
 							fontFamily: "JetBrains Mono",
 							borderColor:
-								(filterProps.filterValid ? theme.fn.themeColor("gray") : theme.fn.themeColor("red")) + " !important",
+								(filterProps.globalFilterValid ? theme.fn.themeColor("gray") : theme.fn.themeColor("red")) +
+								" !important",
 						},
 					})}
 				/>
 			)}
-			<MantineReactTable table={table} />
+
+			{values.length === 0 ? (
+				<Center h="90%" c="light.5">
+					Table has no records
+				</Center>
+			) : (
+				<MantineReactTable table={table} />
+			)}
 		</Panel>
 	);
 }

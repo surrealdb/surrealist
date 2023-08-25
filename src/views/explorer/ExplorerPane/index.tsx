@@ -1,7 +1,9 @@
 import { useImmer } from "use-immer";
 import { useEffect, useState } from "react";
-import { Center } from "@mantine/core";
-import { mdiTable } from "@mdi/js";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { ActionIcon, Center, Group, TextInput, Text } from "@mantine/core";
+import { MRT_PaginationState, MRT_SortingState } from "mantine-react-table";
+import { mdiDatabase, mdiFilterVariant, mdiPlus, mdiRefresh, mdiTable } from "@mdi/js";
 
 import { adapter } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
@@ -11,8 +13,8 @@ import { useStable } from "~/hooks/stable";
 import { actions, store } from "~/store";
 import { OpenFn } from "~/types";
 import { updateConfig } from "~/util/helpers";
-import { MRT_PaginationProps, MRT_PaginationState, MRT_SortingState } from "mantine-react-table";
-import { useDebouncedValue, useInputState } from "@mantine/hooks";
+
+import { Icon } from "~/components/Icon";
 
 export interface ExplorerPaneProps {
 	refreshId: number;
@@ -140,49 +142,29 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		updateConfig();
 	});
 
-	const getTable = () => {
-		if (!props.activeTable) {
-			return (
-				<Panel title="Record Explorer" icon={mdiTable} padding="0">
-					<Center h="100%" c="light.5">
-						Select a table to view its records
-					</Center>
-				</Panel>
-			);
-		}
-
-		if (records.length > 0) {
-			return (
-				<>
-					<DataTable
-						data={records}
-						openRecord={props.onSelectRecord}
-						active={props.activeRecordId}
-						fetchRecords={fetchRecords}
-						recordCount={recordCount}
-						togglePin={togglePin}
-						isPinned={isPinned}
-						isLoading={isLoading}
-						createRecord={props.onRequestCreate}
-						sorting={sorting}
-						onSortingChange={setSorting}
-						pagination={pagination}
-						onPaginationChange={setPagination}
-						filterProps={{ globalFilter, globalFilterText, globalFilterValid, toggleFilter, setGlobalFilterText }}
-						onRowClick={handleOpenRow}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<Panel title="Record Explorer" icon={mdiTable} padding="0">
-					<Center h="90%" c="light.5">
-						Table has no records
-					</Center>
-				</Panel>
-			);
-		}
-	};
-
-	return getTable();
+	return !props.activeTable ? (
+		<Panel title="Record Explorer" icon={mdiTable} padding="0">
+			<Center h="100%" c="light.5">
+				Select a table to view its records
+			</Center>
+		</Panel>
+	) : (
+		<DataTable
+			data={records}
+			openRecord={props.onSelectRecord}
+			active={props.activeRecordId}
+			fetchRecords={fetchRecords}
+			recordCount={recordCount}
+			togglePin={togglePin}
+			isPinned={isPinned}
+			isLoading={isLoading}
+			createRecord={props.onRequestCreate}
+			sorting={sorting}
+			onSortingChange={setSorting}
+			pagination={pagination}
+			onPaginationChange={setPagination}
+			filterProps={{ globalFilter, globalFilterText, globalFilterValid, toggleFilter, setGlobalFilterText }}
+			onRowClick={handleOpenRow}
+		/>
+	);
 }
