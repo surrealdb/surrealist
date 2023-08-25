@@ -1,11 +1,11 @@
-import { Group, HoverCard, Stack, Text } from "@mantine/core";
-import { mdiCheck, mdiClockOutline, mdiClose } from "@mdi/js";
-import dayjs from "dayjs";
-import { ReactNode } from "react";
-import { OpenFn } from "~/types";
-import { TRUNCATE_STYLE } from "~/util/helpers";
-import { Icon } from "../Icon";
-import { RecordLink } from "../RecordLink";
+import { Group, HoverCard, Stack, Text } from '@mantine/core';
+import { mdiCheck, mdiClockOutline, mdiClose } from '@mdi/js';
+import dayjs from 'dayjs';
+import { ReactNode } from 'react';
+import { OpenFn } from '~/types';
+import { TRUNCATE_STYLE } from '~/util/helpers';
+import { Icon } from '../Icon';
+import { RecordLink } from '../RecordLink';
 
 const THING_REGEX = /^\w+:(\w+|[`⟨][^`⟩]+[`⟩])$/;
 const DATETIME_REGEX = /^\d{4}-\d\d-\d\dt\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|z)?$/i;
@@ -25,13 +25,17 @@ export interface DataCellProps {
 function NullishCell(props: DataCellProps) {
 	return (
 		<Text color="light.5" ff="JetBrains Mono">
-			{props.value === null ? "null" : "—"}
+			{props.value === null ? 'null' : '—'}
 		</Text>
 	);
 }
 
 function BooleanCell(props: DataCellProps) {
-	const icon = props.value ? <Icon path={mdiCheck} color="green" /> : <Icon path={mdiClose} color="red" />;
+	const icon = props.value ? (
+		<Icon path={mdiCheck} color="green" />
+	) : (
+		<Icon path={mdiClose} color="red" />
+	);
 
 	return <div>{icon}</div>;
 }
@@ -42,7 +46,6 @@ function StringCell(props: DataCellProps) {
 			title={props.value}
 			style={{
 				...TRUNCATE_STYLE,
-				maxWidth: 250,
 			}}>
 			{props.value}
 		</Text>
@@ -76,7 +79,7 @@ function ArrayCell(props: DataCellProps) {
 		<div>
 			<HoverCard shadow="xl" withinPortal withArrow>
 				<HoverCard.Target>
-					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
+					<Text span ff="JetBrains Mono" style={{ cursor: 'help' }}>
 						Array({props.value.length})
 					</Text>
 				</HoverCard.Target>
@@ -106,12 +109,12 @@ function ObjectCell(props: DataCellProps) {
 		<div>
 			<HoverCard width={280} shadow="md" withinPortal withArrow>
 				<HoverCard.Target>
-					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
+					<Text span ff="JetBrains Mono" style={{ cursor: 'help' }}>
 						Object({Object.keys(props.value).length})
 					</Text>
 				</HoverCard.Target>
 				<HoverCard.Dropdown>
-					<Text size="sm" ff="JetBrains Mono" style={{ whiteSpace: "pre" }} lineClamp={10}>
+					<Text size="sm" ff="JetBrains Mono" style={{ whiteSpace: 'pre' }} lineClamp={10}>
 						{JSON.stringify(props.value, null, 4)}
 					</Text>
 				</HoverCard.Dropdown>
@@ -126,23 +129,23 @@ const DataCellTypes = [
 		component: NullishCell,
 	},
 	{
-		match: (value: any) => typeof value == "string" && THING_REGEX.test(value),
+		match: (value: any) => typeof value == 'string' && THING_REGEX.test(value),
 		component: ThingCell,
 	},
 	{
-		match: (value: any) => typeof value == "string" && DATETIME_REGEX.test(value),
+		match: (value: any) => typeof value == 'string' && DATETIME_REGEX.test(value),
 		component: DateTimeCell,
 	},
 	{
-		match: (value: any) => typeof value === "boolean",
+		match: (value: any) => typeof value === 'boolean',
 		component: BooleanCell,
 	},
 	{
-		match: (value: any) => typeof value === "string",
+		match: (value: any) => typeof value === 'string',
 		component: StringCell,
 	},
 	{
-		match: (value: any) => typeof value === "number",
+		match: (value: any) => typeof value === 'number',
 		component: NumberCell,
 	},
 	{
@@ -150,7 +153,7 @@ const DataCellTypes = [
 		component: ArrayCell,
 	},
 	{
-		match: (value: any) => typeof value === "object",
+		match: (value: any) => typeof value === 'object',
 		component: ObjectCell,
 	},
 ];
