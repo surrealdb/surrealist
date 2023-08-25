@@ -5,6 +5,7 @@ import { useWindowEvent } from "@mantine/hooks";
 import { useState } from "react";
 import { Box } from "@mantine/core";
 import { useStoreValue } from "~/store";
+import { set } from "radash";
 
 export type SplitDirection = "horizontal" | "vertical";
 export type SplitValues = [number | undefined, number | undefined];
@@ -29,32 +30,49 @@ export function Splitter(props: SplitterProps) {
 	const isHorizontal = props.direction !== "vertical";
 	const contents: React.ReactNode[] = [];
 	const containerRef = useRef<HTMLDivElement | null>(null);
+
 	const leftPane = useRef<any>();
 	const rightPane = useRef<any>();
+
 	const frameId = useRef(0);
 
 	const [draggerId, setDraggerId] = useState<string | null>(null);
 	const [leftSize, setLeftSize] = useState(0);
 	const [rightSize, setRightSize] = useState(0);
+	const [totalSize, setTotalSize] = useState(0);
 
 	// Recompute sizes when the container size changes
 	const recomputeSizes = useStable((values: SplitValues) => {
 		const buffer = props.bufferSize ?? 300;
+
 		const leftReserve = (props.startPane && values[0]) || 0;
 		const rightReserve = (props.endPane && values[1]) || 0;
-		const totalSize = (isHorizontal ? containerRef.current?.clientWidth : containerRef.current?.clientHeight) || 0;
+
+		const newTotalSize = (isHorizontal ? containerRef.current?.clientWidth : containerRef.current?.clientHeight) || 0;
+
+		let newLeft = values[0];
+		let newRight = values[1];
+
+		if (totalSize > 0) {
+			newLeft = ((values[0] ?? 0) / totalSize) * newTotalSize;
+			newRight = ((values[1] ?? 0) / totalSize) * newTotalSize;
+		}
+
 		const clampLeft = (value: number) =>
-			clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || totalSize - rightReserve - buffer);
+			clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || newTotalSize - rightReserve - buffer);
+
 		const clampRight = (value: number) =>
-			clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || totalSize - leftReserve - buffer);
+			clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || newTotalSize - leftReserve - buffer);
 
 		// Calculate actual pane sizes
-		const finalLeft = clampLeft(values[0] || 160);
-		const finalRight = clampRight(values[1] || 160);
+		const finalLeft = clampLeft(newLeft || 160);
+		const finalRight = clampRight(newRight || 160);
+
 		const field = isHorizontal ? "width" : "height";
 
 		setLeftSize(finalLeft);
 		setRightSize(finalRight);
+		setTotalSize(newTotalSize);
 
 		if (leftPane.current) {
 			leftPane.current.style[field] = `${finalLeft}px`;

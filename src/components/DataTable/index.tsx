@@ -131,7 +131,7 @@ export function DataTable({
 		enableColumnResizing: true,
 		enableColumnDragging: true,
 		enableColumnOrdering: true,
-		enableRowVirtualization: true,
+		enableRowVirtualization: values.length > 100 ? true : false,
 		mantineColumnDragHandleProps: {
 			sx: { paddingRight: "0px" },
 		},

@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
+import { ActionIcon, Center, Divider, Group, Pagination, Paper, Stack, Text } from "@mantine/core";
 import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
 import { useMemo } from "react";
 import { useActiveTab } from "~/hooks/environment";
@@ -11,6 +11,7 @@ import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DataTable } from "~/components/DataTable";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { SimpleDataTable } from "~/components/DataTable/SimpleDataTable";
 
 interface PreviewProps {
 	result: any;
@@ -98,7 +99,7 @@ export function ResultPane() {
 			<div
 				style={{
 					position: "absolute",
-					insetInline: 14,
+					insetInline: 0,
 					top: 0,
 					bottom: showTabs ? 72 : 0,
 				}}>
@@ -109,9 +110,17 @@ export function ResultPane() {
 						) : result.result?.length === 0 ? (
 							<Text color="light.4">No results found for query</Text>
 						) : resultListing == "table" ? (
-							<DataTable data={result.result} />
+							<SimpleDataTable data={result.result} />
 						) : (
-							<JsonPreview result={result.result} fontSize={14 * fontZoomLevel} />
+							<div
+								style={{
+									position: "absolute",
+									insetInline: 12,
+									top: 0,
+									bottom: 0,
+								}}>
+								<JsonPreview result={result.result} fontSize={14 * fontZoomLevel} />
+							</div>
 						)}
 					</>
 				) : (
