@@ -87,7 +87,10 @@ export function SimpleDataTable({ data, active }: SimpleDataTableProps) {
 		enableColumnResizing: true,
 		enableColumnDragging: true,
 		enableColumnOrdering: true,
-		enableRowVirtualization: values.length > 100 ? true : false,
+		enableRowVirtualization: true,
+		enableColumnVirtualization: true,
+		rowVirtualizerProps: { overscan: 10 },
+		columnVirtualizerProps: { overscan: 3 },
 		mantineTableContainerProps: {
 			className: classes.tableContainer,
 			sx: { height: "calc(100% - 64px)" }, // css hack to make the table fill the panel

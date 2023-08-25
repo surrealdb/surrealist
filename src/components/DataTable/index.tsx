@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { alphabetical, isObject } from "radash";
 import { ActionIcon, Center, Divider, Group, Text, TextInput } from "@mantine/core";
 import { mdiTable, mdiPlus, mdiRefresh, mdiPinOff, mdiPin, mdiDatabase, mdiFilterVariant } from "@mdi/js";
@@ -6,6 +6,7 @@ import {
 	MRT_ColumnDef,
 	MRT_PaginationState,
 	MRT_SortingState,
+	MRT_Virtualizer,
 	MantineReactTable,
 	useMantineReactTable,
 } from "mantine-react-table";
@@ -60,7 +61,7 @@ export function DataTable({
 	onRowClick,
 }: DataTableProps) {
 	const isLight = useIsLight();
-
+	const rowVirtualizerInstanceRef = useRef<MRT_Virtualizer<HTMLDivElement, HTMLTableRowElement>>(null);
 	const [keys, values] = useMemo(() => {
 		const keys: string[] = [];
 		const values: any[] = [];
@@ -121,6 +122,11 @@ export function DataTable({
 		return <Text color="light.4">Result could not be displayed as a table.</Text>;
 	}
 
+	useEffect(() => {
+		//scroll to the top of the table when the sorting changes
+		rowVirtualizerInstanceRef.current?.scrollToIndex(0);
+	}, [sorting]);
+
 	const table = useMantineReactTable({
 		columns,
 		data: values,
@@ -131,7 +137,6 @@ export function DataTable({
 		enableColumnResizing: true,
 		enableColumnDragging: true,
 		enableColumnOrdering: true,
-		enableRowVirtualization: values.length > 100 ? true : false,
 		mantineColumnDragHandleProps: {
 			sx: { paddingRight: "0px" },
 		},
@@ -164,6 +169,11 @@ export function DataTable({
 		mantinePaginationProps: {
 			rowsPerPageOptions: ["5", "10", "25", "30", "50", "100", "250", "500"],
 		},
+		rowVirtualizerInstanceRef,
+		enableRowVirtualization: true,
+		enableColumnVirtualization: true,
+		rowVirtualizerProps: { overscan: 10 },
+		columnVirtualizerProps: { overscan: 3 },
 		renderBottomToolbar: ({ table }) => <TableBottomToolbar table={table} />,
 	});
 
