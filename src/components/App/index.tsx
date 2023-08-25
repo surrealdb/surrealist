@@ -54,7 +54,7 @@ export function App() {
 
 		["ctrl+alt+0", fontZoomInstructions.reset],
 		["cmd+alt+0", fontZoomInstructions.reset],
-	]);
+	], []);
 
 	return (
 		<MantineProvider withGlobalStyles withNormalizeCSS withCSSVariables theme={mantineTheme}>
