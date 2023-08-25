@@ -1,8 +1,14 @@
 import { useMemo } from "react";
 import { alphabetical, isObject } from "radash";
-import { ActionIcon, Divider, Group, Text } from "@mantine/core";
-import { mdiTable, mdiPlus, mdiRefresh, mdiPinOff, mdiPin, mdiDatabase } from "@mdi/js";
-import { MRT_ColumnDef, MantineReactTable, useMantineReactTable } from "mantine-react-table";
+import { ActionIcon, Divider, Group, Text, TextInput } from "@mantine/core";
+import { mdiTable, mdiPlus, mdiRefresh, mdiPinOff, mdiPin, mdiDatabase, mdiFilterVariant } from "@mdi/js";
+import {
+	MRT_ColumnDef,
+	MRT_PaginationState,
+	MRT_SortingState,
+	MantineReactTable,
+	useMantineReactTable,
+} from "mantine-react-table";
 
 import { Icon } from "../Icon";
 import { Panel } from "../Panel";
@@ -28,8 +34,11 @@ interface DataTableProps {
 	togglePin: () => void;
 	isPinned: boolean;
 	isLoading: boolean;
-	pagination: any;
+	pagination: MRT_PaginationState;
+	sorting: MRT_SortingState;
+	onSortingChange: any;
 	onPaginationChange: any;
+	filterProps: any;
 	onRowClick: (value: any) => void;
 }
 
@@ -43,8 +52,11 @@ export function DataTable({
 	togglePin,
 	isPinned,
 	pagination,
+	sorting,
 	isLoading,
+	filterProps,
 	onPaginationChange,
+	onSortingChange,
 	onRowClick,
 }: DataTableProps) {
 	const isLight = useIsLight();
@@ -140,8 +152,10 @@ export function DataTable({
 				borderBottomRightRadius: "0.5rem",
 			},
 		},
+		manualSorting: true,
 		manualPagination: true,
-		state: { pagination, isLoading: isLoading },
+		state: { pagination, isLoading, sorting },
+		onSortingChange: onSortingChange,
 		onPaginationChange: onPaginationChange,
 		rowCount: recordCount ?? 0,
 		mantinePaginationProps: {
@@ -165,6 +179,10 @@ export function DataTable({
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 
+					<ActionIcon title="Toggle filter" onClick={filterProps.toggleFilter}>
+						<Icon color="light.4" path={mdiFilterVariant} />
+					</ActionIcon>
+
 					<ShowHideColumnsButton table={table} />
 
 					<ToggleDensePaddingButton table={table} />
@@ -181,6 +199,23 @@ export function DataTable({
 					</Text>
 				</Group>
 			}>
+			{filterProps.filter && (
+				<TextInput
+					placeholder="Enter filter clause..."
+					icon={<Icon path={mdiFilterVariant} />}
+					value={filterProps.filterText}
+					onChange={filterProps.setFilterText}
+					error={!filterProps.filterValid}
+					autoFocus
+					styles={(theme) => ({
+						input: {
+							fontFamily: "JetBrains Mono",
+							borderColor:
+								(filterProps.filterValid ? theme.fn.themeColor("gray") : theme.fn.themeColor("red")) + " !important",
+						},
+					})}
+				/>
+			)}
 			<MantineReactTable table={table} />
 		</Panel>
 	);

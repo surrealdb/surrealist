@@ -180,11 +180,7 @@ export function ScopePane(props: ScopePaneProps) {
 				opened={isEditing}
 				onClose={closeEditing}
 				trapFocus={false}
-				title={
-					<Title size={16} color={isLight ? "light.6" : "white"}>
-						{isCreating ? "Create scope" : "Update scope"}
-					</Title>
-				}>
+				title={isCreating ? "Create scope" : "Update scope"}>
 				<Form onSubmit={saveScope}>
 					<Stack>
 						{isCreating && (

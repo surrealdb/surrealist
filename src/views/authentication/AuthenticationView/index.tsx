@@ -10,10 +10,19 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 	const isOnline = useIsConnected();
 
 	return (
-		<SimpleGrid cols={3} h="100%" spacing={6}>
+		<SimpleGrid cols={4} h="100%" spacing={6}>
 			<AccountsPane
 				isOnline={isOnline}
-				title="Namespace Logins"
+				title="Root Users"
+				icon={mdiFolderLock}
+				iconColor="red.6"
+				typeShort="KV"
+				typeLong="ROOT"
+				field="kv"
+			/>
+			<AccountsPane
+				isOnline={isOnline}
+				title="Namespace Users"
 				icon={mdiFolderLock}
 				iconColor="red.6"
 				typeShort="NS"
@@ -23,7 +32,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 
 			<AccountsPane
 				isOnline={isOnline}
-				title="Database Logins"
+				title="Database Users"
 				icon={mdiDatabaseLock}
 				iconColor="yellow.6"
 				typeShort="DB"

@@ -5,11 +5,12 @@ import {
 	Group,
 	Menu,
 	Modal,
+	MultiSelect,
+	NativeSelect,
 	PasswordInput,
 	Stack,
 	Text,
 	TextInput,
-	Title,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiLock, mdiPlus, mdiRefresh } from "@mdi/js";
@@ -23,6 +24,17 @@ import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { showError } from "~/util/helpers";
+
+const roles = [
+	{ value: "OWNER", label: "Owner" },
+	{ value: "EDITOR", label: "Editor" },
+	{ value: "VIEWER", label: "Viewer" },
+];
+
+interface SystemUser {
+	username: string;
+	roles: string[];
+}
 
 export interface AccountsPaneProps {
 	isOnline: boolean;
@@ -38,12 +50,12 @@ export function AccountsPane(props: AccountsPaneProps) {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
 
-	const [logins, setLogins] = useState<string[]>([]);
+	const [users, setUsers] = useState<SystemUser[]>([]);
 	const [isEditing, setIsEditing] = useState(false);
-	const [editingLogin, setEditingLogin] = useState("");
+	const [editingUser, setEditingUser] = useState<SystemUser | undefined>();
 	const [editingUsername, setEditingUsername] = useInputState("");
 	const [editingPassword, setEditingPassword] = useInputState("");
-
+	const [editingRole, setEditingRole] = useState<string[]>([]);
 	const fetchLogins = useStable(async () => {
 		const response = await adapter.getActiveSurreal().query(`INFO FOR ${props.typeShort}`);
 		const result = response[0].result;
@@ -52,7 +64,16 @@ export function AccountsPane(props: AccountsPaneProps) {
 			return [];
 		}
 
-		setLogins(Object.keys(result.logins ?? result[props.field]));
+		console.log(result);
+
+		let users: SystemUser[] = [];
+
+		for (let key of Object.keys(result.users)) {
+			let roles = result.users[key].split("ROLES ")[1].split(", ");
+			users.push({ username: key, roles: roles });
+		}
+
+		setUsers(users);
 	});
 
 	useEffect(() => {
@@ -69,11 +90,22 @@ export function AccountsPane(props: AccountsPaneProps) {
 		try {
 			setIsEditing(false);
 
-			const userName = editingLogin || editingUsername;
+			const userName = editingUser?.username || editingUsername;
+			const roles = editingUser?.roles || editingRole;
 
-			await adapter
-				.getActiveSurreal()
-				.query(`DEFINE LOGIN ${userName} ON ${props.typeLong} PASSWORD "${editingPassword}"`);
+			let createUserQuery = `DEFINE USER ${userName} ON ${props.typeLong} PASSWORD "${editingPassword}"`;
+
+			if (roles.length > 0) {
+				createUserQuery += ` ROLES `;
+
+				for (const role of editingRole) {
+					createUserQuery += `${role}, `;
+				}
+
+				createUserQuery = createUserQuery.slice(0, -2);
+			}
+
+			await adapter.getActiveSurreal().query(createUserQuery);
 			await fetchLogins();
 		} catch (err: any) {
 			showError("Failed to save account", err.message);
@@ -82,19 +114,21 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 	const createAccount = useStable(() => {
 		setIsEditing(true);
-		setEditingLogin("");
+		setEditingUser(undefined);
 		setEditingUsername("");
 		setEditingPassword("");
+		setEditingRole([]);
 	});
 
-	const changePassword = useStable((login: string) => {
+	const modifyUser = useStable((user: SystemUser) => {
 		setIsEditing(true);
-		setEditingLogin(login);
+		setEditingUser(user);
 		setEditingPassword("");
+		setEditingRole(user.roles);
 	});
 
-	const removeAccount = useStable(async (login: string) => {
-		await adapter.getActiveSurreal().query(`REMOVE LOGIN ${login} ON ${props.typeLong}`);
+	const removeAccount = useStable(async (user: SystemUser) => {
+		await adapter.getActiveSurreal().query(`REMOVE USER ${user.username} ON ${props.typeLong}`);
 		await fetchLogins();
 	});
 
@@ -108,7 +142,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			title={props.title}
 			rightSection={
 				<Group noWrap>
-					<ActionIcon title="Add account" onClick={createAccount}>
+					<ActionIcon title="Add user" onClick={createAccount}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
 					<ActionIcon title="Refresh" onClick={fetchLogins}>
@@ -116,18 +150,18 @@ export function AccountsPane(props: AccountsPaneProps) {
 					</ActionIcon>
 				</Group>
 			}>
-			{logins.length === 0 && (
+			{users.length === 0 && (
 				<Center h="100%" c="light.5">
 					{isOnline ? `No ${props.title.toLocaleLowerCase()} found` : "Not connected"}
 				</Center>
 			)}
 
 			<Stack spacing={0}>
-				{logins.map((login) => (
-					<Group key={login} spacing="xs" w="100%" noWrap>
+				{users.map((user) => (
+					<Group key={user.username} spacing="xs" w="100%" noWrap>
 						<Icon color={props.iconColor} path={mdiKeyVariant} size={0.85} />
 
-						<Text color={isLight ? "gray.9" : "gray.0"}>{login}</Text>
+						<Text color={isLight ? "gray.9" : "gray.0"}>{user.username}</Text>
 						<Spacer />
 						<Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
 							<Menu.Target>
@@ -136,12 +170,10 @@ export function AccountsPane(props: AccountsPaneProps) {
 								</Button>
 							</Menu.Target>
 							<Menu.Dropdown>
-								<Menu.Item
-									icon={<Icon path={mdiLock} size={0.7} color="yellow.6" />}
-									onClick={() => changePassword(login)}>
-									Change password
+								<Menu.Item icon={<Icon path={mdiLock} size={0.7} color="yellow.6" />} onClick={() => modifyUser(user)}>
+									Modify User
 								</Menu.Item>
-								<Menu.Item icon={<Icon path={mdiDelete} size={0.7} color="red" />} onClick={() => removeAccount(login)}>
+								<Menu.Item icon={<Icon path={mdiDelete} size={0.7} color="red" />} onClick={() => removeAccount(user)}>
 									Remove
 								</Menu.Item>
 							</Menu.Dropdown>
@@ -154,17 +186,28 @@ export function AccountsPane(props: AccountsPaneProps) {
 				opened={isEditing}
 				onClose={closeSaving}
 				trapFocus={false}
-				title={editingLogin ? "Change password" : "Create account"}>
+				title={editingUser ? "Modify Account" : "Create account"}>
 				<Form onSubmit={saveAccount}>
 					<Stack>
-						{!editingLogin && (
+						{!editingUser && (
 							<TextInput placeholder="Enter username" value={editingUsername} onChange={setEditingUsername} autoFocus />
 						)}
 						<PasswordInput
-							placeholder={editingLogin ? "Enter new password" : "Enter password"}
+							placeholder={editingUser ? "Enter new password" : "Enter password"}
 							value={editingPassword}
 							onChange={setEditingPassword}
-							autoFocus={!!editingLogin}
+							autoFocus={!!editingUser}
+						/>
+						<MultiSelect
+							data={roles}
+							label="Select a role"
+							description="The role of the user on this database"
+							value={editingRole}
+							onChange={setEditingRole}
+							dropdownPosition="bottom"
+							withinPortal
+							withAsterisk
+							clearable
 						/>
 					</Stack>
 					<Group mt="lg">
@@ -174,7 +217,9 @@ export function AccountsPane(props: AccountsPaneProps) {
 						<Spacer />
 						<Button
 							color="surreal"
-							disabled={editingLogin ? !editingPassword : !editingUsername || !editingPassword}
+							disabled={
+								editingUser ? !editingPassword || !editingRole : !editingUsername || !editingPassword || !editingRole
+							}
 							type="submit">
 							Save
 						</Button>

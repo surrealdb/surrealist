@@ -11,6 +11,8 @@ import { useStable } from "~/hooks/stable";
 import { actions, store } from "~/store";
 import { OpenFn } from "~/types";
 import { updateConfig } from "~/util/helpers";
+import { MRT_PaginationProps, MRT_PaginationState, MRT_SortingState } from "mantine-react-table";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
 
 export interface ExplorerPaneProps {
 	refreshId: number;
@@ -24,14 +26,28 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [records, setRecords] = useImmer<any[]>([]);
 	const [recordCount, setRecordCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
-	const [pagination, setPagination] = useState({
+	const [globalFilterValid, setGlobalFilterValid] = useState(false);
+	const [globalFilter, setGlobalFilter] = useState(false);
+	const [globalFilterText, setGlobalFilterText] = useInputState("");
+	const [sorting, setSorting] = useState<MRT_SortingState>([]);
+	const [pagination, setPagination] = useState<MRT_PaginationState>({
 		pageIndex: 0,
-		pageSize: 5, //customize the default page size
+		pageSize: 5,
 	});
 	const tabInfo = useActiveTab();
 
+	const toggleFilter = useStable(() => {
+		setGlobalFilter(!globalFilter);
+	});
+
+	const [showFilter] = useDebouncedValue(globalFilter, 250);
+	const [filterClause] = useDebouncedValue(globalFilterText, 500);
+
 	const fetchRecords = useStable(async () => {
-		setIsLoading(true);
+		const loadingTimeout = setTimeout(() => {
+			setIsLoading(true); // if data load is slow, show loading indicator
+		}, 300);
+
 		// No active table, no records
 		if (!props.activeTable) {
 			setRecords([]);
@@ -40,12 +56,28 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 		const surreal = adapter.getSurreal();
 
-		if (!surreal) return;
+		if (!surreal || !globalFilterValid) return;
 
 		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}`;
 		let fetchQuery = `SELECT * FROM ${props.activeTable}`;
 
+		if (showFilter && filterClause) {
+			countQuery += ` WHERE ${filterClause}`;
+			fetchQuery += ` WHERE ${filterClause}`;
+		}
+
 		countQuery += "))";
+
+		if (sorting.length > 0) {
+			fetchQuery += " ORDER BY ";
+
+			for (let columnSort of sorting) {
+				fetchQuery += `${columnSort.id} ${columnSort.desc ? `DESC` : `ASC`}, `;
+			}
+
+			fetchQuery = fetchQuery.slice(0, -2);
+		}
+
 		fetchQuery += ` LIMIT ${pagination.pageSize}`;
 
 		const startAt = pagination.pageIndex * pagination.pageSize;
@@ -58,15 +90,36 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		const resultCount = response[0].result?.[0] || 0;
 		const resultRecords = response[1].result || [];
 
+		// if data loaded before timeour fired, cancel loading indicator
+		clearTimeout(loadingTimeout);
+		setIsLoading(false);
+
 		setRecordCount(resultCount);
 		setRecords(resultRecords);
-		setIsLoading(false);
 	});
 
 	/// Fetch records
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeTable, props.refreshId, pagination.pageIndex, pagination.pageSize]);
+	}, [
+		props.activeTable,
+		props.refreshId,
+		pagination.pageIndex,
+		pagination.pageSize,
+		sorting,
+		showFilter,
+		filterClause,
+	]);
+
+	useEffect(() => {
+		if (showFilter && globalFilterText) {
+			adapter.validateWhereClause(globalFilterText).then((isValid) => {
+				setGlobalFilterValid(isValid);
+			});
+		} else {
+			setGlobalFilterValid(true);
+		}
+	}, [showFilter, globalFilterText]);
 
 	const handleOpenRow = useStable((record: any) => {
 		props.onSelectRecord(record.id);
@@ -111,8 +164,11 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 						isPinned={isPinned}
 						isLoading={isLoading}
 						createRecord={props.onRequestCreate}
+						sorting={sorting}
+						onSortingChange={setSorting}
 						pagination={pagination}
 						onPaginationChange={setPagination}
+						filterProps={{ globalFilter, globalFilterText, globalFilterValid, toggleFilter, setGlobalFilterText }}
 						onRowClick={handleOpenRow}
 					/>
 				</>
