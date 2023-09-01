@@ -25,7 +25,7 @@ tauri = { version = "1.4.1", features = [
     "window-set-title",
     "window-show",
 ] }
-surrealdb = { git = "https://github.com/surrealdb/surrealdb.git" }
+surrealdb = "1.0.0-beta.10"
 
 [features]
 # by default Tauri runs in production mode
