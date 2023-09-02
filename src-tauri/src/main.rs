@@ -23,6 +23,7 @@ fn main() {
             schema::extract_table_definition,
             schema::extract_field_definition,
             schema::extract_index_definition,
+            schema::extract_analyzer_definition,
             schema::extract_event_definition,
             schema::extract_user_definition,
             schema::validate_query,

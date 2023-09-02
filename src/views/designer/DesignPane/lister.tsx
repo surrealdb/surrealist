@@ -62,9 +62,15 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 							pos="relative"
 							radius="md"
 							style={{ border: 0, cursor: "pointer" }}
-							onClick={() => openEditor(i)}>
+							onClick={() => openEditor(i)}
+						>
 							<Group spacing="sm">
-								<Icon path={mdiCircle} color="surreal" size={0.45} />
+								<Icon
+									path={mdiCircle}
+									color="surreal"
+									size={8}
+									style={{ flexShrink: 0 }}
+								/>
 								{item.name ? (
 									<Text color={isLight ? "black" : "white"}>{item.name}</Text>
 								) : (

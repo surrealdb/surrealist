@@ -1,4 +1,4 @@
-import { Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput, Title } from "@mantine/core";
+import { Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput } from "@mantine/core";
 import { mdiPlus, mdiTable, mdiVectorLine } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -27,27 +27,14 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 	const createTable = useStable(async () => {
 		const surreal = adapter.getActiveSurreal();
 
-		// TODO Remove legacy support in beta 10
+		let query = `DEFINE TABLE ${tableName};`;
 
-		try {
-			let query = `DEFINE TABLE ${tableName};`;
-
-			if (createType === "relation") {
-				query += "DEFINE FIELD in ON " + tableName + " TYPE record<" + tableIn.join("|") + ">;";
-				query += "DEFINE FIELD out ON " + tableName + " TYPE record<" + tableOut.join("|") + ">;";
-			}
-
-			await surreal.query(query);
-		} catch {
-			let query = `DEFINE TABLE ${tableName};`;
-
-			if (createType === "relation") {
-				query += "DEFINE FIELD in ON " + tableName + " TYPE record(" + tableIn.join(",") + ");";
-				query += "DEFINE FIELD out ON " + tableName + " TYPE record(" + tableOut.join(",") + ");";
-			}
-
-			await surreal.query(query);
+		if (createType === "relation") {
+			query += "DEFINE FIELD in ON " + tableName + " TYPE record<" + tableIn.join("|") + ">;";
+			query += "DEFINE FIELD out ON " + tableName + " TYPE record<" + tableOut.join("|") + ">;";
 		}
+
+		await surreal.query(query);
 
 		onClose();
 		fetchDatabaseSchema();

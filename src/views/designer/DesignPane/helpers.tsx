@@ -1,11 +1,29 @@
 import { TableDefinition } from "~/types";
 import { default as equals } from "fast-deep-equal";
 import { objectify } from "radash";
+import { Accordion } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { Updater } from "use-immer";
+
+export interface ElementProps {
+	data: TableDefinition;
+	setData: Updater<TableDefinition>;
+}
 
 export const TABLE_TYPES = [
 	{ label: "Schemaless", value: "schemaless" },
 	{ label: "Schemafull", value: "schemafull" },
 ];
+
+export function SectionTitle({ children }: { children: string }) {
+	return (
+		<Accordion.Control>
+			<Text weight={700} size="lg">
+				{children}
+			</Text>
+		</Accordion.Control>
+	);
+}
 
 function buildPermission(type: string, value: string) {
 	return ` FOR ${type} ${value}`;

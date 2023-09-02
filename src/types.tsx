@@ -128,6 +128,12 @@ export interface TableDefinition {
 	events: TableEvent[];
 }
 
+export interface Analyzer {
+	name: string;
+	tokenizers: string[];
+	filters: string[];
+}
+
 export interface TabCreation {
 	environment?: string;
 	name?: string;
