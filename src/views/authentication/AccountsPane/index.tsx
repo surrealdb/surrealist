@@ -131,17 +131,19 @@ export function AccountsPane(props: AccountsPaneProps) {
 		setEditingRole(user.roles);
 	});
 
+	const closeModal = useStable(() => {
+		setIsEditing(false);
+	});
+
 	const removeUser = useStable(async () => {
 		if (!currentUser) {
 			return;
 		}
 
+		closeModal();
+
 		await adapter.getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.typeLong}`);
 		await fetchLogins();
-	});
-
-	const closeModal = useStable(() => {
-		setIsEditing(false);
 	});
 
 	const formatRoles = useStable((user: UserInfo) => {
