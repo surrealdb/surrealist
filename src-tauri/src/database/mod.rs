@@ -142,8 +142,13 @@ pub fn start_surreal_process(
         executable
     };
     let mut args = vec![
-        path, "start", "--bind", &bind_addr, "--user", username, "--pass", password, "--log",
-        "debug",
+        path,
+		"start",
+		"--auth",
+		"--bind", &bind_addr,
+		"--user", username,
+		"--pass", password,
+		"--log", "debug",
     ];
 
     let file_uri = format!("file://{}", storage);
@@ -155,6 +160,10 @@ pub fn start_surreal_process(
         "tikv" => args.push(tikv_uri.as_str()),
         _ => Err("Invalid database driver")?,
     }
+
+	args.push("--allow-all");
+
+	println!("Launching with: {:?}", args);
 
     let shell_cmd = shell::build_start_command(args);
     let mut cmd_chain = Command::new(&shell_cmd[0]);
