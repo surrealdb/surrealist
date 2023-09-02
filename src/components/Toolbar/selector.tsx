@@ -272,7 +272,8 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								variant="subtle"
 								className={classes.manageButton}
 								onClick={openEnvManager}
-								rightIcon={<Icon path={mdiChevronRight} />}>
+								rightIcon={<Icon path={mdiChevronRight} />}
+							>
 								Manage environments
 							</Button>
 						</Box>

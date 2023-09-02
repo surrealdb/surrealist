@@ -1,6 +1,5 @@
 import {
 	Modal,
-	Title,
 	Stack,
 	Paper,
 	Group,
@@ -12,6 +11,7 @@ import {
 	SimpleGrid,
 	Text,
 } from "@mantine/core";
+
 import { mdiClose, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -21,6 +21,7 @@ import { Updater } from "use-immer";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { ModalTitle } from "../ModalTitle";
 
 export interface ConnectionDetailsProps {
 	value: Partial<ConnectionOptions>;
@@ -150,11 +151,8 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				opened={editingScope}
 				onClose={closeEditingScope}
 				size={560}
-				title={
-					<Title size={16} color={isLight ? "light.6" : "white"}>
-						Editing scope data
-					</Title>
-				}>
+				title={<ModalTitle>Editing scope data</ModalTitle>}
+			>
 				{value.scopeFields?.length === 0 ? (
 					<Text color="gray" italic>
 						No scope data defined

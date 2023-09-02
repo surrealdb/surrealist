@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput, Title } from "@mantine/core";
+import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { ConnectionDetails } from "../ConnectionDetails";
 import { actions, store, useStoreValue } from "~/store";
@@ -12,6 +12,7 @@ import { useImmer } from "use-immer";
 import { Spacer } from "../Spacer";
 import { SurrealistEnvironment } from "~/types";
 import { newId, updateConfig } from "~/util/helpers";
+import { ModalTitle } from "../ModalTitle";
 
 export interface EnvironmentsProps {
 	opened: boolean;
@@ -120,7 +121,12 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	}, [opened, liveEnvs]);
 
 	return (
-		<Modal opened={opened} onClose={onClose} size={850} title="Manage environments">
+		<Modal
+			opened={opened}
+			onClose={onClose}
+			size={850}
+			title={<ModalTitle>Manage Environments</ModalTitle>}
+		>
 			<Grid h={350} style={{ gap: 12 }}>
 				<Grid.Col
 					pr="md"
@@ -135,6 +141,7 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 							inset: 0,
 							bottom: 24,
 							right: 12,
+							top: 12
 						}}>
 						<Stack spacing="xs">
 							{environments.map((item) => {

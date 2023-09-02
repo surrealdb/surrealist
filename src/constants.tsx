@@ -29,7 +29,7 @@ export const VIEW_MODES = [
 		id: "designer",
 		name: "Designer",
 		icon: mdiWrench,
-		desc: "Define the database schemas and relations",
+		desc: "Define database tables and relations",
 		desktop: true,
 	},
 	{

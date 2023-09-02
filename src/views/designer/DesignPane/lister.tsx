@@ -1,4 +1,4 @@
-import { Group, Stack, Button, Text, ActionIcon, Paper, Modal, Title } from "@mantine/core";
+import { Group, Stack, Button, Text, ActionIcon, Paper, Modal } from "@mantine/core";
 import { mdiCircle, mdiClose, mdiPlus } from "@mdi/js";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";

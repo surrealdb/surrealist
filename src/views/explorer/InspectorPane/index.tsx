@@ -10,8 +10,9 @@ import {
 	mdiSwapVertical,
 	mdiWrench,
 } from "@mdi/js";
+
 import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
-import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/types";
@@ -24,6 +25,7 @@ import { useActiveKeys } from "~/hooks/keys";
 import { HistoryHandle } from "~/hooks/history";
 import { adapter } from "~/adapter";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { ModalTitle } from "~/components/ModalTitle";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
@@ -190,11 +192,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 			<Modal
 				opened={isDeleting}
 				onClose={closeDelete}
-				title={
-					<Title size={16} color={isLight ? "light.6" : "white"}>
-						Are you sure?
-					</Title>
-				}>
+				title={<ModalTitle>Are you sure?</ModalTitle>}>
 				<Text color={isLight ? "light.6" : "light.1"}>
 					You are about to delete this record. This action cannot be undone.
 				</Text>

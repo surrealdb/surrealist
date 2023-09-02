@@ -50,11 +50,11 @@ export function LocalDatabaseTab({ config }: ConnectionTabProps) {
 
 	return (
 		<Stack spacing="xs">
-			<Setting label="Root user">
+			<Setting label="Initial root user">
 				<TextInput placeholder="root" value={config.surrealUser} onChange={setSurrealUser} w={250} />
 			</Setting>
 
-			<Setting label="Root password">
+			<Setting label="Initial root password">
 				<TextInput placeholder="root" value={config.surrealPass} onChange={setSurrealPass} w={250} />
 			</Setting>
 

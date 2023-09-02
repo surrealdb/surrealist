@@ -17,6 +17,7 @@ import { useIsLight } from "~/hooks/theme";
 import { showNotification } from "@mantine/notifications";
 import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
+import { ModalTitle } from "~/components/ModalTitle";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -173,11 +174,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				onClose={closeHelp}
 				trapFocus={false}
 				size="lg"
-				title={
-					<Title size={16} color={isLight ? "light.6" : "white"}>
-						Using the Table Graph
-					</Title>
-				}>
+				title={<ModalTitle>Using the Table Graph</ModalTitle>}
+			>
 				<Text color={isLight ? "light.7" : "light.3"}>
 					<HelpTitle isLight={isLight}>How do I use the table graph?</HelpTitle>
 

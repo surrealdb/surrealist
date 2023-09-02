@@ -11,7 +11,6 @@ import {
 	Text,
 	TextInput,
 	Textarea,
-	Title,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
@@ -22,6 +21,7 @@ import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { ModalTitle } from "~/components/ModalTitle";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
@@ -204,9 +204,9 @@ export function AccountsPane(props: AccountsPaneProps) {
 				onClose={closeSaving}
 				trapFocus={false}
 				title={
-					<Title size={16} color={isLight ? "light.6" : "white"}>
+					<ModalTitle>
 						{currentUser ? "Edit user" : "Create user"}
-					</Title>
+					</ModalTitle>
 				}
 			>
 				<Form onSubmit={saveAccount}>

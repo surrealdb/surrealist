@@ -1,4 +1,5 @@
 import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Box,
@@ -14,9 +15,9 @@ import {
 	Text,
 	Textarea,
 	TextInput,
-	Title,
 	useMantineTheme,
 } from "@mantine/core";
+
 import { mdiChevronDown, mdiChevronUp, mdiClose, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
@@ -32,6 +33,7 @@ import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { Form } from "~/components/Form";
+import { ModalTitle } from "~/components/ModalTitle";
 
 export interface FavoritesPaneProps {
 	onExecuteQuery: () => void;
@@ -174,9 +176,7 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 				onClose={closeSaving}
 				trapFocus={false}
 				title={
-					<Title size={16} color={isLight ? "light.6" : "white"}>
-						{editingId ? "Edit query" : "Save query"}
-					</Title>
+					<ModalTitle>{editingId ? "Edit query" : "Save query"}</ModalTitle>
 				}>
 				<Form onSubmit={saveQuery}>
 					<Stack>

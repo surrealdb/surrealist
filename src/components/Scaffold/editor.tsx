@@ -1,4 +1,4 @@
-import { Modal, Title, Group, Button } from "@mantine/core";
+import { Modal, Group, Button } from "@mantine/core";
 import { ConnectionDetails } from "../ConnectionDetails";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
@@ -12,6 +12,7 @@ import { updateConfig, updateTitle } from "~/util/helpers";
 import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
+import { ModalTitle } from "../ModalTitle";
 
 export interface TabEditorProps {
 	onActiveChange: () => Promise<unknown>;
@@ -65,7 +66,13 @@ export function TabEditor({ onActiveChange }: TabEditorProps) {
 	}, [opened]);
 
 	return (
-		<Modal opened={opened} onClose={handleCose} trapFocus={false} size="lg" title="Connection details">
+		<Modal
+			opened={opened}
+			onClose={handleCose}
+			trapFocus={false}
+			size="lg"
+			title={<ModalTitle>Connection details</ModalTitle>}
+		>
 			<InheritAlert visible={!detailsValid && mergedValid} environment={envInfo?.name} />
 
 			<Form onSubmit={saveInfo}>

@@ -1,6 +1,6 @@
 import { mdiCog } from "@mdi/js";
 import { useState } from "react";
-import { Button, Group, Modal, Paper, Stack, Tabs, Text, Title } from "@mantine/core";
+import { Button, Group, Modal, Paper, Stack, Tabs, Text } from "@mantine/core";
 
 import { useStoreValue } from "~/store";
 import { Icon } from "../Icon";
@@ -12,6 +12,7 @@ import { LocalDatabaseTab } from "./tabs/LocalDatabase";
 import { runUpdateChecker } from "~/util/updater";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
+import { ModalTitle } from "../ModalTitle";
 
 export function Settings() {
 	const isLight = useIsLight();
@@ -46,7 +47,12 @@ export function Settings() {
 				overlayProps={{ color: isLight ? "#0c0a12" : "#090612", blur: 1 }}
 				transitionProps={{ exitDuration: 150 }}></Modal>
 
-			<Modal opened={showSettings} onClose={closeSettings} size={580} title="Settings">
+			<Modal
+				opened={showSettings}
+				onClose={closeSettings}
+				size={580}
+				title={<ModalTitle>Settings</ModalTitle>}
+			>
 				{adapter.isPromotionSupported && (
 					<Paper
 						mb="xl"

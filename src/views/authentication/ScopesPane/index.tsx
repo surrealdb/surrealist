@@ -1,5 +1,5 @@
 import { Badge, Text, Textarea } from "@mantine/core";
-import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput, Title } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { ModalTitle } from "~/components/ModalTitle";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
@@ -190,10 +191,9 @@ export function ScopePane(props: ScopePaneProps) {
 				onClose={closeEditing}
 				trapFocus={false}
 				title={
-					<Title size={16} color={isLight ? "light.6" : "white"}>
-						{isCreating ? "Create scope" : "Update scope"}
-					</Title>
-				}>
+					<ModalTitle>{isCreating ? "Create scope" : "Update scope"}</ModalTitle>
+				}
+			>
 				<Form onSubmit={saveScope}>
 					<Stack>
 						{isCreating && (
