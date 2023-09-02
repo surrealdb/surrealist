@@ -24,6 +24,7 @@ fn main() {
             schema::extract_field_definition,
             schema::extract_index_definition,
             schema::extract_event_definition,
+            schema::extract_user_definition,
             schema::validate_query,
             schema::validate_where_clause,
             database::start_database,

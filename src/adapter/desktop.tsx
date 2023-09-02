@@ -188,6 +188,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 
 		const execQuery = (query: string, params: any) => {
+			console.log('Executing:', query, params);
+
 			return invoke<any>('execute_query', { query, params }).then(res => {
 				return JSON.parse(res);
 			});

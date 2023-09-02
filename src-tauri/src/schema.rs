@@ -173,6 +173,29 @@ pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
     Err(String::from("Failed to extract event"))
 }
 
+#[derive(Serialize)]
+pub struct UserInfo {
+    pub name: String,
+    pub comment: String,
+    pub roles: Vec<String>,
+}
+
+#[tauri::command(async)]
+pub fn extract_user_definition(definition: &str) -> Result<UserInfo, String> {
+    let parsed = parse(definition)?;
+    let query = &parsed[0];
+
+    if let Statement::Define(DefineStatement::User(u)) = query {
+        return Ok(UserInfo {
+            name: u.name.to_string(),
+			roles: u.roles.iter().map(|r| r.to_string()).collect::<Vec<String>>(),
+			comment: u.comment.as_ref().map(|s| s.as_str().to_owned()).unwrap_or_default(),
+        });
+    }
+
+    Err(String::from("Failed to extract user"))
+}
+
 #[tauri::command(async)]
 pub fn validate_query(query: &str) -> Option<String> {
     let parsed = parse(query);

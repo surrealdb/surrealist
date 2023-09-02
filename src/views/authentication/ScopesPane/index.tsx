@@ -1,4 +1,4 @@
-import { Text, Textarea } from "@mantine/core";
+import { Badge, Text, Textarea } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput, Title } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from "@mdi/js";
@@ -142,11 +142,11 @@ export function ScopePane(props: ScopePaneProps) {
 			<Stack spacing={0}>
 				{scopes.map((scope) => (
 					<Group key={scope.name} spacing="xs" w="100%" noWrap>
-						<Icon color="violet.4" path={mdiKeyVariant} size={0.85} />
+						<Icon color="violet.4" path={mdiKeyVariant} size={14} />
 
 						<Text color={isLight ? "gray.9" : "gray.0"}>{scope.name}</Text>
 						<Spacer />
-						<Text span color={isLight ? "gray.4" : "gray.7"} pl={6}>
+						<Badge color="light">
 							{scope.signin && scope.signup
 								? "Signup & Signin"
 								: scope.signin
@@ -154,7 +154,7 @@ export function ScopePane(props: ScopePaneProps) {
 									: scope.signup
 										? "Signup only"
 										: "No auth"}
-						</Text>
+						</Badge>
 						<Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
 							<Menu.Target>
 								<Button size="xs" px={5} color="dark" variant="subtle">
@@ -162,12 +162,20 @@ export function ScopePane(props: ScopePaneProps) {
 								</Button>
 							</Menu.Target>
 							<Menu.Dropdown>
-								<Menu.Item icon={<Icon path={mdiWrench} size={0.7} color="light.4" />} onClick={() => editScope(scope)}>
+								<Menu.Item
+									onClick={() => editScope(scope)}
+									icon={
+										<Icon path={mdiWrench} size={12} color="light.4" />
+									}
+								>
 									Edit
 								</Menu.Item>
 								<Menu.Item
-									icon={<Icon path={mdiDelete} size={0.7} color="red" />}
-									onClick={() => removeScope(scope.name)}>
+									onClick={() => removeScope(scope.name)}
+									icon={
+										<Icon path={mdiDelete} size={12} color="red" />
+									}
+								>
 									Remove
 								</Menu.Item>
 							</Menu.Dropdown>
