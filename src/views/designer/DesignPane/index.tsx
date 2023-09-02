@@ -16,8 +16,8 @@ import {
 	Stack,
 	Text,
 	TextInput,
-	Title,
 } from "@mantine/core";
+
 import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
 import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
@@ -45,7 +45,7 @@ export interface SchemaPaneProps {
 
 function SectionTitle({ children }: { children: string }) {
 	return (
-		<Accordion.Control py="xs">
+		<Accordion.Control>
 			<Text weight={700} size="lg">
 				{children}
 			</Text>
