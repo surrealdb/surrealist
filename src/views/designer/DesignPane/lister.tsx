@@ -2,6 +2,7 @@ import { Group, Stack, Button, Text, ActionIcon, Paper, Modal } from "@mantine/c
 import { mdiCircle, mdiClose, mdiPlus } from "@mdi/js";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useLater } from "~/hooks/later";
 import { useStable } from "~/hooks/stable";
@@ -94,7 +95,15 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				Add {props.name}
 			</Button>
 
-			<Modal opened={isEditing} onClose={closeEditor} trapFocus={false} size="lg" title={`Editing ${props.name}`}>
+			<Modal
+				opened={isEditing}
+				onClose={closeEditor}
+				trapFocus={false}
+				size="lg"
+				title={
+					<ModalTitle>{`Editing ${props.name}`}</ModalTitle>
+				}
+			>
 				<Stack>{editingData && props.children(editingData, editingIndex)}</Stack>
 				<Group mt="xl">
 					<Spacer />

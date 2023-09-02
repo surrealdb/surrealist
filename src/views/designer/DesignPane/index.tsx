@@ -32,6 +32,7 @@ import { PermissionsElement } from "./elements/permissions";
 import { FieldsElement } from "./elements/fields";
 import { IndexesElement } from "./elements/indexes";
 import { EventsElement } from "./elements/events";
+import { ModalTitle } from "~/components/ModalTitle";
 
 export interface SchemaPaneProps {
 	table: TableDefinition;
@@ -196,7 +197,11 @@ export function DesignPane(props: SchemaPaneProps) {
 				</>
 			)}
 
-			<Modal opened={isDeleting} onClose={closeDelete} title="Are you sure?">
+			<Modal
+				opened={isDeleting}
+				onClose={closeDelete}
+				title={<ModalTitle>Are you sure?</ModalTitle>}
+			>
 				<Text color={isLight ? "light.6" : "light.1"}>
 					You are about to delete this table and all data contained within it. This action cannot be undone.
 				</Text>

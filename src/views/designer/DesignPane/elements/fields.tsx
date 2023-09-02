@@ -17,6 +17,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 				flexible: false,
 				kind: "",
 				value: "",
+				default: "",
 				kindTables: [],
 				kindGeometry: [],
 				permissions: {
@@ -127,6 +128,15 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								onChangeText={(value) =>
 									setData((draft) => {
 										draft.fields[i].assert = value;
+									})
+								}
+							/>
+							<QueryInput
+								label="Default value"
+								value={field.default}
+								onChangeText={(value) =>
+									setData((draft) => {
+										draft.fields[i].default = value;
 									})
 								}
 							/>

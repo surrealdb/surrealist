@@ -114,6 +114,7 @@ pub struct FieldInfo {
     pub kind: String,
     pub value: String,
     pub assert: String,
+    pub default: String,
     pub permissions: PermissionInfo,
 	pub comment: String,
 }
@@ -130,6 +131,7 @@ pub fn extract_field_definition(definition: &str) -> Result<FieldInfo, String> {
             kind: f.kind.as_ref().map_or("".to_owned(), |k| k.to_string()),
             value: f.value.as_ref().map_or("".to_owned(), |v| v.to_string()),
             assert: f.assert.as_ref().map_or("".to_owned(), |a| a.to_string()),
+            default: f.default.as_ref().map_or("".to_owned(), |v| v.to_string()),
             permissions: parse_permissions(&f.permissions),
 			comment: parse_comment(&f.comment),
         });

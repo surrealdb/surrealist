@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps, Title } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps } from "@mantine/core";
 import { mdiCancel, mdiCheck, mdiWrench } from "@mdi/js";
 import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -7,6 +7,7 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { ModalTitle } from "~/components/ModalTitle";
 
 export interface QueryInputProps extends TextareaProps {
 	onChangeText?: (value: string) => void;
@@ -64,12 +65,18 @@ export function QueryInput(props: QueryInputProps) {
 				}
 			/>
 
-			<Modal opened={isEditorOpen} onClose={closeEditor} trapFocus={false} size="lg" title="Advanced editor">
+			<Modal
+				opened={isEditorOpen}
+				onClose={closeEditor}
+				trapFocus={false}
+				size="xl"
+				title={<ModalTitle>SurrealQL Editor</ModalTitle>}
+			>
 				<SurrealistEditor
 					language="surrealql"
 					value={editorText}
 					onChange={setEditorText}
-					height={300}
+					height={250}
 					options={{
 						wrappingStrategy: "advanced",
 						wordWrap: "on",

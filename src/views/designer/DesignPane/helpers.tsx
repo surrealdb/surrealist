@@ -111,6 +111,10 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 			query += ` ASSERT ${field.assert}`;
 		}
 
+		if (field.default) {
+			query += ` DEFAULT ${field.default}`;
+		}
+
 		query += " PERMISSIONS";
 		query += buildPermission("create", field.permissions.create);
 		query += buildPermission("select", field.permissions.select);
