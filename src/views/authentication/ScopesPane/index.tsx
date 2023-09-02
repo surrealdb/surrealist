@@ -13,6 +13,7 @@ import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { SurrealInfoDB } from "~/typings/surreal";
 import { showError } from "~/util/helpers";
 
 interface ScopeInfo {
@@ -40,14 +41,14 @@ export function ScopePane(props: ScopePaneProps) {
 
 	const fetchScopes = useStable(async () => {
 		const response = await adapter.getActiveSurreal().querySingle(`INFO FOR DB`);
-		const result = response[0].result;
+		const result = response[0].result as SurrealInfoDB;
 
 		if (!result) {
 			setScopes([]);
 			return;
 		}
 
-		const scopeInfo = await map(Object.values(result.scopes ?? result.sc), async (definition) => {
+		const scopeInfo = await map(Object.values(result.scopes), async (definition) => {
 			const result = await invoke("extract_scope_definition", { definition });
 
 			return result as ScopeInfo;
@@ -149,10 +150,10 @@ export function ScopePane(props: ScopePaneProps) {
 							{scope.signin && scope.signup
 								? "Signup & Signin"
 								: scope.signin
-								? "Signin only"
-								: scope.signup
-								? "Signup only"
-								: "No auth"}
+									? "Signin only"
+									: scope.signup
+										? "Signup only"
+										: "No auth"}
 						</Text>
 						<Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
 							<Menu.Target>

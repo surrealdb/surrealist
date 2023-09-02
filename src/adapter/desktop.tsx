@@ -9,7 +9,7 @@ import { SurrealistAdapter } from "./base";
 import { extractTypeList, printLog } from "~/util/helpers";
 import { map, mapKeys, snake } from "radash";
 import { TableSchema, TableField, TableIndex, TableEvent, SurrealHandle, SurrealOptions } from "~/types";
-import { createLocalWebSocket } from "~/util/websocket";
+import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
 
 const WAIT_DURATION = 1000;
 
@@ -93,13 +93,13 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public async fetchSchema() {
 		const surreal = this.getActiveSurreal();
 		const dbResponse = await surreal.querySingle("INFO FOR DB");
-		const dbResult = dbResponse[0].result;
+		const dbResult = dbResponse[0].result as SurrealInfoDB;
 
 		if (!dbResult) {
 			return [];
 		}
 
-		const databaseInfo = await map(Object.values(dbResult.tables ?? dbResult.tb), (definition) => {
+		const databaseInfo = await map(Object.values(dbResult.tables), (definition) => {
 			return invoke<TableSchema>("extract_table_definition", { definition });
 		});
 
@@ -114,17 +114,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const tableData = await surreal.querySingle(tableQuery);
 
 		return map(databaseInfo, async (table, index) => {
-			const tableInfo = tableData[index].result;
+			const tableInfo = tableData[index].result as SurrealInfoTB;
 
-			const fieldInfo = await map(Object.values(tableInfo.fields ?? tableInfo.fd), (definition) => {
+			const fieldInfo = await map(Object.values(tableInfo.fields), (definition) => {
 				return invoke<TableField>("extract_field_definition", { definition });
 			});
 
-			const indexInfo = await map(Object.values(tableInfo.indexes ?? tableInfo.ix), (definition) => {
+			const indexInfo = await map(Object.values(tableInfo.indexes), (definition) => {
 				return invoke<TableIndex>("extract_index_definition", { definition });
 			});
 
-			const eventInfo = await map(Object.values(tableInfo.events ?? tableInfo.ev), (definition) => {
+			const eventInfo = await map(Object.values(tableInfo.events), (definition) => {
 				return invoke<TableEvent>("extract_event_definition", { definition });
 			});
 
@@ -172,7 +172,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		if (this.#connecting) {
 			return this.#instance!;
 		}
-		 
+
 		this.#connecting = true;
 
 		const details = mapKeys(options.connection, key => snake(key));
@@ -191,7 +191,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return invoke<any>('execute_query', { query, params }).then(res => {
 				return JSON.parse(res);
 			});
-		}
+		};
 
 		const handle: SurrealHandle = {
 			close: () => {
@@ -208,7 +208,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					return {
 						...res,
 						result: Array.isArray(res.result) ? res.result[0] : res.result
-					}
+					};
 				});
 			},
 		};

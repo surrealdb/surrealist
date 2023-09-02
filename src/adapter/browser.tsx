@@ -1,6 +1,7 @@
 import { SurrealHandle, SurrealOptions, TableDefinition } from "~/types";
 import { createLocalWebSocket } from "~/util/websocket";
 import { SurrealistAdapter } from "./base";
+import { SurrealInfoDB } from "~/typings/surreal";
 
 /**
  * Surrealist adapter for running as web app
@@ -45,13 +46,13 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public async fetchSchema(): Promise<TableDefinition[]> {
 		const surreal = this.getActiveSurreal();
 		const dbResponse = await surreal.querySingle("INFO FOR DB");
-		const dbResult = dbResponse[0].result;
+		const dbResult = dbResponse[0].result as SurrealInfoDB;
 
 		if (!dbResult) {
 			return [];
 		}
 
-		return Object.keys(dbResult.tables ?? dbResult.tb).map((name) => ({
+		return Object.keys(dbResult.tables).map((name) => ({
 			schema: {
 				name: name,
 				view: null,

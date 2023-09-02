@@ -9,8 +9,8 @@ import {
 	Stack,
 	Text,
 	TextInput,
-	Title,
 } from "@mantine/core";
+
 import { useInputState } from "@mantine/hooks";
 import { mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiLock, mdiPlus, mdiRefresh } from "@mdi/js";
 import { useEffect, useState } from "react";
@@ -31,7 +31,6 @@ export interface AccountsPaneProps {
 	iconColor: string;
 	typeShort: string;
 	typeLong: string;
-	field: string;
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
@@ -46,13 +45,13 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 	const fetchLogins = useStable(async () => {
 		const response = await adapter.getActiveSurreal().querySingle(`INFO FOR ${props.typeShort}`);
-		const result = response[0].result;
+		const result = response[0].result as { users: Record<string, string> };
 
 		if (!result) {
 			return [];
 		}
 
-		setLogins(Object.keys(result.logins ?? result[props.field]));
+		setLogins(Object.keys(result.users));
 	});
 
 	useEffect(() => {

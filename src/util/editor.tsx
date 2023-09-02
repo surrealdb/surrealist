@@ -3,6 +3,7 @@ import { editor, languages } from "monaco-editor";
 import { adapter } from "~/adapter";
 import { actions, store } from "~/store";
 import { KEYWORDS } from "./keywords";
+import { SurrealInfoDB } from "~/typings/surreal";
 
 export const LIGHT_THEME = "surrealist-light";
 export const DARK_THEME = "surrealist-dark";
@@ -110,7 +111,7 @@ export function initializeEditor(monaco: Monaco) {
 
 			try {
 				const response = await surreal.querySingle("INFO FOR DB");
-				const result = response[0].result;
+				const result = response[0].result as SurrealInfoDB;
 
 				if (!result) {
 					return {
@@ -118,7 +119,7 @@ export function initializeEditor(monaco: Monaco) {
 					};
 				}
 
-				const tables = Object.keys(result.tables ?? result.tb);
+				const tables = Object.keys(result.tables);
 				const suggestions = tables.map((table) => ({
 					label: table,
 					insertText: table,
