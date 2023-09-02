@@ -1,4 +1,4 @@
-import { Modal, Title, Group, Button, TextInput } from "@mantine/core";
+import { Modal, Group, Button, TextInput } from "@mantine/core";
 import { ConnectionDetails } from "../ConnectionDetails";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
@@ -13,6 +13,7 @@ import { newId, updateConfig, updateTitle } from "~/util/helpers";
 import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
+import { ModalTitle } from "../ModalTitle";
 
 export function TabCreator() {
 	const isLight = useIsLight();
@@ -85,7 +86,15 @@ export function TabCreator() {
 	}, [opened]);
 
 	return (
-		<Modal opened={opened} onClose={handleCose} trapFocus={false} size="lg" title="Create session">
+		<Modal
+			opened={opened}
+			onClose={handleCose}
+			trapFocus={false}
+			size="lg"
+			title={
+				<ModalTitle>Create Session</ModalTitle>
+			}
+		>
 			<TextInput label="Tab name" value={tabName} onChange={setTabName} autoFocus mb="lg" />
 
 			<InheritAlert visible={!detailsValid && mergedValid} environment={envInfo?.name} />

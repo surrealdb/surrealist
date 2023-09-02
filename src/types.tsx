@@ -105,6 +105,7 @@ export interface TableField {
 	kindTables: string[];
 	kindGeometry: string[];
 	value: string;
+	default: string;
 	assert: string;
 	permissions: Permissions;
 }

@@ -154,7 +154,11 @@ export function Toolbar(props: ToolbarProps) {
 
 			<Settings />
 
-			<Modal opened={!!editingTab} onClose={closeEditingTab} withCloseButton={false}>
+			<Modal
+				opened={!!editingTab}
+				onClose={closeEditingTab}
+				withCloseButton={false}
+			>
 				<Form onSubmit={saveTabName}>
 					<Group>
 						<TextInput

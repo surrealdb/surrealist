@@ -44,13 +44,13 @@ export function useSaveBox<T extends Record<string, any>>(options: SaveBoxOption
 	const render =
 		showSaveBox && !skipping
 			? React.createElement(SaveBox, {
-					value: options.track,
-					valid: options.valid,
-					onRevert: options.onRevert,
-					onSave: options.onSave,
-					onPatch: options.onPatch,
-					onChangedState: options.onChangedState,
-			  })
+				value: options.track,
+				valid: options.valid,
+				onRevert: options.onRevert,
+				onSave: options.onSave,
+				onPatch: options.onPatch,
+				onChangedState: options.onChangedState,
+			})
 			: null;
 
 	return {

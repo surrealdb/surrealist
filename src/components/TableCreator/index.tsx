@@ -10,6 +10,7 @@ import { Spacer } from "../Spacer";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
 import { adapter } from "~/adapter";
+import { ModalTitle } from "../ModalTitle";
 
 export interface TableCreatorProps {
 	opened: boolean;
@@ -42,7 +43,14 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 
 	return (
 		<>
-			<Modal opened={opened} onClose={onClose} trapFocus={false} title={`Create new ${createType}`}>
+			<Modal
+				opened={opened}
+				onClose={onClose}
+				trapFocus={false}
+				title={
+					<ModalTitle>{`Create new ${createType}`}</ModalTitle>
+				}
+			>
 				<Tabs mb="xl" defaultValue="table" value={createType} onTabChange={setCreateType as any}>
 					<Tabs.List grow>
 						<Tabs.Tab value="table" icon={<Icon path={mdiTable} />}>

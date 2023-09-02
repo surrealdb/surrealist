@@ -44,12 +44,6 @@ export function Settings() {
 			<Modal
 				opened={showSettings}
 				onClose={closeSettings}
-				overlayProps={{ color: isLight ? "#0c0a12" : "#090612", blur: 1 }}
-				transitionProps={{ exitDuration: 150 }}></Modal>
-
-			<Modal
-				opened={showSettings}
-				onClose={closeSettings}
 				size={580}
 				title={<ModalTitle>Settings</ModalTitle>}
 			>
