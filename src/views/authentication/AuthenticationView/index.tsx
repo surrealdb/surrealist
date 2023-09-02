@@ -10,7 +10,14 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 	const isOnline = useIsConnected();
 
 	return (
-		<SimpleGrid cols={4} h="100%" spacing={6}>
+		<SimpleGrid
+			h="100%"
+			spacing={6}
+			cols={4}
+			breakpoints={[
+				{ maxWidth: '92rem', cols: 2 },
+			]}
+		>
 			<AccountsPane
 				isOnline={isOnline}
 				title="Root Users"
