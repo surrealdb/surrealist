@@ -1,6 +1,6 @@
 import { Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput } from "@mantine/core";
 import { mdiPlus, mdiTable, mdiVectorLine } from "@mdi/js";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
@@ -41,6 +41,14 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 		fetchDatabaseSchema();
 	});
 
+	useLayoutEffect(() => {
+		if (opened) {
+			setTableName("");
+			setTableIn([]);
+			setTableOut([]);
+		}
+	}, [opened]);
+
 	return (
 		<>
 			<Modal
@@ -67,8 +75,21 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 						<TextInput placeholder="Enter table name" value={tableName} onChange={setTableName} autoFocus />
 						{createType === "relation" && (
 							<>
-								<MultiSelect data={tableList} placeholder="Enter in" value={tableIn} onChange={setTableIn} />
-								<MultiSelect data={tableList} placeholder="Enter out" value={tableOut} onChange={setTableOut} />
+								<MultiSelect
+									data={tableList}
+									placeholder="Select incoming tables"
+									value={tableIn}
+									onChange={setTableIn}
+									withinPortal
+								/>
+
+								<MultiSelect
+									data={tableList}
+									placeholder="Select outgoing tables"
+									value={tableOut}
+									onChange={setTableOut}
+									withinPortal
+								/>
 							</>
 						)}
 						<Group mt="lg">

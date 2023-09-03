@@ -115,6 +115,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const openCreator = useStable(() => {
 		setIsCreating(true);
+
 	});
 
 	const closeCreator = useStable(() => {
@@ -166,7 +167,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						offset={{ crossAxis: -4, mainAxis: 8 }}
 						withArrow
 						withinPortal
-						shadow="xl"
+						shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
 					>
 						<Popover.Target>
 							<ActionIcon
@@ -300,7 +301,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				</Text>
 			</Modal>
 
-			<TableCreator opened={isCreating} onClose={closeCreator} />
+			<TableCreator
+				opened={isCreating}
+				onClose={closeCreator}
+			/>
 		</Panel>
 	);
 }

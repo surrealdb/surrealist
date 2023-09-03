@@ -288,8 +288,9 @@ export function Scaffold() {
 							position="bottom-start"
 							closeOnEscape
 							transitionProps={{ duration: 0, exitDuration: 0 }}
-							shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.35 : 0.75})`}
-							withArrow>
+							shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
+							withArrow
+						>
 							<Popover.Target>
 								<Button
 									px="lg"

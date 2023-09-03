@@ -48,6 +48,7 @@ export const TableGrid = forwardRef<HTMLDivElement, TableGridProps>((props, ref)
 	return (
 		<SimpleGrid
 			ref={ref}
+			spacing="xl"
 			style={{
 				gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))'
 			}}

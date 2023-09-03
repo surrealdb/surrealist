@@ -1,8 +1,7 @@
-import { Flex, Group, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
+import { Divider, Flex, Group, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
 import { Handle, Position } from "reactflow";
 import { DesignerNodeMode, TableDefinition } from "~/types";
 import { useHandleStyle } from "../hooks";
-import { PropsWithChildren } from "react";
 import { Icon } from "~/components/Icon";
 import { mdiBullhorn, mdiCodeBraces, mdiFlash } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
@@ -16,7 +15,7 @@ interface SummaryProps {
 }
 
 function Summary(props: SummaryProps) {
-	const textColor = props.isLight ? undefined : props.white;
+	const textColor = props.isLight ? "light.9" : props.white;
 
 	return (
 		<Group pr={4}>
@@ -29,6 +28,7 @@ function Summary(props: SummaryProps) {
 }
 
 interface BaseNodeProps {
+	icon: string;
 	isLight: boolean;
 	table: TableDefinition;
 	isSelected: boolean;
@@ -38,9 +38,9 @@ interface BaseNodeProps {
 	withoutGraph?: boolean;
 }
 
-export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
+export function BaseNode(props: BaseNodeProps) {
 	const { colors, white, ...theme } = useMantineTheme();
-	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, children, nodeMode, withoutGraph } = props;
+	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, icon, nodeMode, withoutGraph } = props;
 
 	const handleStyle = useHandleStyle();
 	const primaryColor = theme.fn.primaryColor();
@@ -61,16 +61,32 @@ export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
 			<Paper
 				w={withoutGraph ? undefined : 250}
 				p={8}
-				shadow="md"
 				radius="md"
 				title={`Click to edit ${table.schema.name}`}
 				style={{
-					backgroundColor: isLight ? white : colors.dark[6],
-					border: `2px solid ${isSelected ? primaryColor : isLight ? colors.light[2] : colors.dark[6]}`,
+					backgroundColor: isLight ? 'hsl(210 17% 96% / 1)' : colors.dark[6],
+					border: `2px solid ${isSelected ? primaryColor : 'transparent'}`,
 					cursor: 'pointer'
 				}}
 			>
-				{children}
+				<Group
+					style={{ color: isLight ? undefined : "white" }}
+					position="center"
+					spacing="xs"
+				>
+					<Icon
+						path={icon}
+						color={isLight ? "light.5" : "light.4"}
+					/>
+					<Text align="center">
+						{table.schema.name}
+					</Text>
+				</Group>
+
+				<Divider
+					color={isLight ? "light.1" : "dark.4"}
+					mt={6}
+				/>
 
 				{nodeMode == 'fields' ? (
 					<Stack spacing="xs" mt={10} p={0}>

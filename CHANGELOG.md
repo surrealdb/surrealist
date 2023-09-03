@@ -10,7 +10,7 @@
 		- *Node Appearance* controls how nodes are rendered. Currently supports "Fields" and "Summary"
 		- Configurable per session, however default values can be set in the settings dialog
 	- Added support for default field values
-	- Improve the way table view properties are displayed
+	- Improved handling of table views
 	- Fixed schema export not working
 	- Fixed certain index and event properties not being required
 - Authentication view updates
