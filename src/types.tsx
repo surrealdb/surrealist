@@ -6,7 +6,7 @@ export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json";
 export type ViewMode = "query" | "explorer" | "visualizer" | "designer" | "auth";
 export type SourceMode = "schema" | "infer";
-export type DesignerNodeMode = "fields" | "summary";
+export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type DesignerLayoutMode = "diagram" | "grid";
 
 export type OpenFn = (id: string | null) => void;

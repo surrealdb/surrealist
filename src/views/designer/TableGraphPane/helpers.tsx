@@ -5,9 +5,17 @@ import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, Position } from "reactflow";
 import dagere from "dagre";
 
+type HeightMap = Record<DesignerNodeMode, (t: TableDefinition) => number>;
+
 export const NODE_TYPES = {
 	table: TableNode,
 	edge: EdgeNode,
+};
+
+const HEIGHTS: HeightMap = {
+	fields: (t) => 56 + t.fields.length * 34,
+	summary: () => 125,
+	simple: () => 24,
 };
 
 interface NormalizedTable {
@@ -46,9 +54,7 @@ export function buildTableGraph(
 
 	// Define all tables as nodes
 	for (const { table, isEdge } of items) {
-		const height = nodeMode == 'fields'
-			? 50 + table.fields.length * 34
-			: 145;
+		const height = HEIGHTS[nodeMode](table);
 
 		nodes.push({
 			id: table.schema.name,

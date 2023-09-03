@@ -83,49 +83,53 @@ export function BaseNode(props: BaseNodeProps) {
 					</Text>
 				</Group>
 
-				<Divider
-					color={isLight ? "light.1" : "dark.4"}
-					mt={6}
-				/>
+				{nodeMode != 'simple' && (
+					<>
+						<Divider
+							color={isLight ? "light.1" : "dark.4"}
+							mt={6}
+						/>
 
-				{nodeMode == 'fields' ? (
-					<Stack spacing="xs" mt={10} p={0}>
-						{table.fields.length === 0 && (
-							<Text align="center" color={isLight ? "dimmed" : colors.dark[3]}>
-								No fields defined
-							</Text>
+						{nodeMode == 'fields' ? (
+							<Stack spacing="xs" mt={10} p={0}>
+								{table.fields.length === 0 && (
+									<Text align="center" color={isLight ? "dimmed" : colors.dark[3]}>
+										No fields defined
+									</Text>
+								)}
+								{table.fields.map((field) => (
+									<Flex key={field.name} justify="space-between">
+										<Text color={isLight ? undefined : white}>{field.name}</Text>
+										<Text color="surreal">{field.kind}</Text>
+									</Flex>
+								))}
+							</Stack>
+						) : (
+							<Stack spacing="xs" mt={10} p={0}>
+								<Summary
+									isLight={isLight}
+									white={white}
+									icon={mdiCodeBraces}
+									title="Fields"
+									value={table.fields.length}
+								/>
+								<Summary
+									isLight={isLight}
+									white={white}
+									icon={mdiFlash}
+									title="Indexes"
+									value={table.indexes.length}
+								/>
+								<Summary
+									isLight={isLight}
+									white={white}
+									icon={mdiBullhorn}
+									title="Events"
+									value={table.events.length}
+								/>
+							</Stack>
 						)}
-						{table.fields.map((field) => (
-							<Flex key={field.name} justify="space-between">
-								<Text color={isLight ? undefined : white}>{field.name}</Text>
-								<Text color="surreal">{field.kind}</Text>
-							</Flex>
-						))}
-					</Stack>
-				) : (
-					<Stack spacing="xs" mt={10} p={0}>
-						<Summary
-							isLight={isLight}
-							white={white}
-							icon={mdiCodeBraces}
-							title="Fields"
-							value={table.fields.length}
-						/>
-						<Summary
-							isLight={isLight}
-							white={white}
-							icon={mdiFlash}
-							title="Indexes"
-							value={table.indexes.length}
-						/>
-						<Summary
-							isLight={isLight}
-							white={white}
-							icon={mdiBullhorn}
-							title="Events"
-							value={table.events.length}
-						/>
-					</Stack>
+					</>
 				)}
 			</Paper>
 

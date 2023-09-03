@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Select, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Stack, Text, Title } from "@mantine/core";
 import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiPlus, mdiRefresh } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -23,6 +23,7 @@ import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
 import { updateConfig } from "~/util/helpers";
 import { useDesignerConfig } from "./hooks";
 import { TableGrid } from "./grid";
+import { RadioSelect } from "~/components/RadioSelect";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -182,14 +183,14 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<ModalTitle>
 									Table graph options
 								</ModalTitle>
-								<Select
+								<RadioSelect
 									label="Table layout"
 									data={DESIGNER_LAYOUT_MODES}
 									value={layoutMode}
 									onChange={setLayoutMode}
 								/>
 
-								<Select
+								<RadioSelect
 									label="Table appearance"
 									data={DESIGNER_NODE_MODES}
 									value={nodeMode}

@@ -85,6 +85,7 @@ export const GEOMETRY_TYPES = [
 export const DESIGNER_NODE_MODES = [
 	{ label: "Fields", value: "fields" },
 	{ label: "Summary", value: "summary" },
+	{ label: "Simple", value: "simple" },
 ];
 
 export const DESIGNER_LAYOUT_MODES = [
