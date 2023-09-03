@@ -75,7 +75,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 								{item.name ? (
 									<Text color={isLight ? "black" : "white"}>{item.name}</Text>
 								) : (
-									<Text color="dark.2" italic>
+									<Text color="dark.2">
 										Unnamed {props.name}
 									</Text>
 								)}
