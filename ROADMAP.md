@@ -1,5 +1,6 @@
 # Roadmap
 
-- Implement live query view
-- Support full text indexes in designer view
+- Implement live query view?
+- Implement changefeed view?
+- Implement text analyze view?
 - Multiple query tabs per session
