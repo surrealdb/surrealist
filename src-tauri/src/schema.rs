@@ -81,6 +81,8 @@ pub struct TableInfo {
     pub view: Option<TableViewInfo>,
     pub permissions: PermissionInfo,
     pub comment: String,
+	pub changefeed: bool,
+	pub changetime: String,
 }
 
 #[tauri::command(async)]
@@ -103,6 +105,8 @@ pub fn extract_table_definition(definition: &str) -> Result<TableInfo, String> {
             permissions: parse_permissions(&t.permissions),
             comment: parse_comment(&t.comment),
             view,
+			changefeed: t.changefeed.is_some(),
+			changetime: t.changefeed.as_ref().map_or("".to_owned(), |c| c.to_string()),
         });
     }
     Err(String::from("Failed to extract table"))

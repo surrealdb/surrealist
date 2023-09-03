@@ -34,6 +34,7 @@ import { IndexesElement } from "./elements/indexes";
 import { EventsElement } from "./elements/events";
 import { ModalTitle } from "~/components/ModalTitle";
 import { ViewElement } from "./elements/view";
+import { ChangefeedElement } from "./elements/changefeed";
 
 export interface SchemaPaneProps {
 	table: TableDefinition;
@@ -172,6 +173,13 @@ export function DesignPane(props: SchemaPaneProps) {
 
 							{data.schema.view && (
 								<ViewElement
+									data={data}
+									setData={setData}
+								/>
+							)}
+
+							{data.schema.changefeed && (
+								<ChangefeedElement
 									data={data}
 									setData={setData}
 								/>

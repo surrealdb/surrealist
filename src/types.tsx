@@ -103,6 +103,8 @@ export interface TableSchema {
 	schemafull: boolean;
 	view: TableView | null;
 	permissions: Permissions;
+	changefeed: boolean;
+	changetime: string;
 }
 
 export interface TableField {

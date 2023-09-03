@@ -69,6 +69,10 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 			}
 		}
 
+		if (current.schema.changefeed) {
+			query += ` CHANGEFEED ${current.schema.changetime}`;
+		}
+
 		query += " PERMISSIONS";
 		query += buildPermission("create", current.schema.permissions.create);
 		query += buildPermission("select", current.schema.permissions.select);
@@ -179,6 +183,7 @@ export function isSchemaValid(schema: TableDefinition): boolean {
 		schema.schema.permissions.select &&
 		schema.schema.permissions.update &&
 		schema.schema.permissions.delete &&
+		(!schema.schema.changefeed || schema.schema.changetime) &&
 		schema.fields.every(
 			(field) =>
 				field.name &&

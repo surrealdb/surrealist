@@ -55,6 +55,15 @@ export function GeneralElement({ data, setData }: ElementProps) {
 						checked={!!data.schema.view}
 						onChange={updateHasView}
 					/>
+					<Checkbox
+						label="Record changefeed"
+						checked={!!data.schema.changefeed}
+						onChange={(e) =>
+							setData((draft) => {
+								draft.schema.changefeed = e.target.checked;
+							})
+						}
+					/>
 				</Stack>
 			</Accordion.Panel>
 		</Accordion.Item>

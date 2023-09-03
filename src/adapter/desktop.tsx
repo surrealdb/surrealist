@@ -161,7 +161,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 			});
 
 			return {
-				schema: table,
+				schema: {
+					...table,
+					changetime: table.changetime.replace('CHANGEFEED ', ''),
+				},
 				fields: mappedFields,
 				indexes: mappedIndexes,
 				events: eventInfo,
