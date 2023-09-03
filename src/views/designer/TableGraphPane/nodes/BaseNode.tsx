@@ -35,28 +35,31 @@ interface BaseNodeProps {
 	hasLeftEdge: boolean;
 	hasRightEdge: boolean;
 	nodeMode: DesignerNodeMode;
+	withoutGraph?: boolean;
 }
 
 export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
 	const { colors, white, ...theme } = useMantineTheme();
-	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, children, nodeMode } = props;
+	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, children, nodeMode, withoutGraph } = props;
 
 	const handleStyle = useHandleStyle();
 	const primaryColor = theme.fn.primaryColor();
 
 	return (
 		<>
-			<Handle
-				type="target"
-				position={Position.Left}
-				style={{
-					...handleStyle,
-					visibility: hasLeftEdge ? "visible" : "hidden",
-				}}
-			/>
+			{!withoutGraph && (
+				<Handle
+					type="target"
+					position={Position.Left}
+					style={{
+						...handleStyle,
+						visibility: hasLeftEdge ? "visible" : "hidden",
+					}}
+				/>
+			)}
 
 			<Paper
-				w={250}
+				w={withoutGraph ? undefined : 250}
 				p={8}
 				shadow="md"
 				radius="md"
@@ -110,14 +113,16 @@ export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
 				)}
 			</Paper>
 
-			<Handle
-				type="source"
-				position={Position.Right}
-				style={{
-					...handleStyle,
-					visibility: hasRightEdge ? "visible" : "hidden",
-				}}
-			/>
+			{!withoutGraph && (
+				<Handle
+					type="source"
+					position={Position.Right}
+					style={{
+						...handleStyle,
+						visibility: hasRightEdge ? "visible" : "hidden",
+					}}
+				/>
+			)}
 		</>
 	);
 }

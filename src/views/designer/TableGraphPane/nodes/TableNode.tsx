@@ -4,6 +4,7 @@ import { DesignerNodeMode, TableDefinition } from "~/types";
 import { BaseNode } from "./BaseNode";
 
 interface TableNodeProps {
+	withoutGraph?: boolean;
 	data: {
 		table: TableDefinition;
 		nodeMode: DesignerNodeMode;
@@ -13,7 +14,7 @@ interface TableNodeProps {
 	};
 }
 
-export function TableNode({ data }: TableNodeProps) {
+export function TableNode({ withoutGraph, data }: TableNodeProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -22,8 +23,9 @@ export function TableNode({ data }: TableNodeProps) {
 			table={data.table}
 			isSelected={data.isSelected}
 			nodeMode={data.nodeMode}
-			hasLeftEdge={data.hasLeftEdge}
-			hasRightEdge={data.hasRightEdge}
+			hasLeftEdge={!withoutGraph && data.hasLeftEdge}
+			hasRightEdge={!withoutGraph && data.hasRightEdge}
+			withoutGraph={withoutGraph}
 		>
 			<Paper p={2} c="white" bg="surreal">
 				<Text align="center">{data.table.schema.name}</Text>

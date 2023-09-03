@@ -7,7 +7,7 @@ import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { toBlob } from "html-to-image";
 import { ReactFlow, useEdgesState, useNodesState } from "reactflow";
-import { NODE_TYPES, buildTableGraph } from "./helpers";
+import { NODE_TYPES, buildTableGraph as buildTableDiagram } from "./helpers";
 import { useStable } from "~/hooks/stable";
 import { save } from "@tauri-apps/api/dialog";
 import { writeBinaryFile } from "@tauri-apps/api/fs";
@@ -22,6 +22,7 @@ import { actions, store } from "~/store";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
 import { updateConfig } from "~/util/helpers";
 import { useDesignerConfig } from "./hooks";
+import { TableGrid } from "./grid";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -45,7 +46,7 @@ export interface TableGraphPaneProps {
 export function TableGraphPane(props: TableGraphPaneProps) {
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const [showBackground, setShowBackground] = useState(true);
+	const [isRendering, setIsRendering] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [showConfig, setShowConfig] = useState(false);
 	const [showHelp, setShowHelp] = useState(false);
@@ -57,7 +58,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const { nodeMode, layoutMode } = useDesignerConfig(activeTab);
 
 	useEffect(() => {
-		const [nodes, edges] = buildTableGraph(props.tables, props.active, nodeMode);
+		const [nodes, edges] = buildTableDiagram(props.tables, props.active, nodeMode);
 
 		setNodes(nodes);
 		setEdges(edges);
@@ -72,7 +73,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 		await writeBinaryFile(filePath, await contents.arrayBuffer());
 
-		setShowBackground(true);
+		setIsRendering(false);
 
 		showNotification({
 			message: "Snapshot saved to disk",
@@ -98,7 +99,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return;
 		}
 
-		setShowBackground(false);
+		setIsRendering(true);
 		scheduleSnapshot(filePath);
 	});
 
@@ -165,6 +166,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						offset={{ crossAxis: -4, mainAxis: 8 }}
 						withArrow
 						withinPortal
+						shadow="xl"
 					>
 						<Popover.Target>
 							<ActionIcon
@@ -232,26 +234,38 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				)}
 
 				<LoadingOverlay
-					visible={!showBackground}
+					visible={isRendering}
 					overlayBlur={4}
 					overlayColor={isLight ? "white" : "dark.7"}
 				/>
 				
-				<ReactFlow
-					ref={ref}
-					nodeTypes={NODE_TYPES}
-					nodes={nodes}
-					edges={edges}
-					nodesDraggable={false}
-					nodesConnectable={false}
-					edgesFocusable={false}
-					proOptions={{ hideAttribution: true }}
-					onNodesChange={onNodesChange}
-					onEdgesChange={onEdgesChange}
-					onNodeClick={(_ev, node) => {
-						props.setActiveTable(node.id);
-					}}
-				/>
+				{layoutMode == 'diagram' ? (
+					<ReactFlow
+						ref={ref}
+						nodeTypes={NODE_TYPES}
+						nodes={nodes}
+						edges={edges}
+						nodesDraggable={false}
+						nodesConnectable={false}
+						edgesFocusable={false}
+						proOptions={{ hideAttribution: true }}
+						onNodesChange={onNodesChange}
+						onEdgesChange={onEdgesChange}
+						onNodeClick={(_ev, node) => {
+							props.setActiveTable(node.id);
+						}}
+					/>
+				) : (
+					<TableGrid
+						ref={ref}
+						tables={props.tables}
+						active={props.active}
+						nodeMode={nodeMode}
+						onSelectTable={(table) => {
+							props.setActiveTable(table.schema.name);
+						}}
+					/>
+				)}
 			</div>
 
 			<Modal
@@ -274,13 +288,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					<Text mt={8} mb="xl">
 						Surrealist dermines edges by searching for correctly configured <Kbd>in</Kbd> and <Kbd>out</Kbd> fields. You
 						can automatically create a new edge table by pressing the <Icon path={mdiPlus} /> button on the Table Graph
-						panel.
+						panel. Keep in mind edges are only visible when the layout is set to <Text inline weight={600}>Diagram</Text>.
 					</Text>
 
 					<HelpTitle isLight={isLight}>Can I save the graph as an image?</HelpTitle>
 
 					<Text mt={8}>
-						Press the <Icon path={mdiDownload} /> button on the Table Graph panel to save the current graph as a PNG
+						Press the save snapshot button in the options dropdown to save the current graph as a PNG
 						image. This snapshot will use your current theme, position, and scale.
 					</Text>
 				</Text>

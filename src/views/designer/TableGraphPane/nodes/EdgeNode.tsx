@@ -7,14 +7,17 @@ import { LIGHT_TEXT_1 } from "~/util/theme";
 import { BaseNode } from "./BaseNode";
 
 interface EdgeNodeProps {
+	withoutGraph?: boolean;
 	data: {
 		table: TableDefinition;
 		isSelected: boolean;
 		nodeMode: DesignerNodeMode;
+		hasLeftEdge: boolean;
+		hasRightEdge: boolean;
 	};
 }
 
-export function EdgeNode({ data }: EdgeNodeProps) {
+export function EdgeNode({ data, withoutGraph }: EdgeNodeProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -23,8 +26,9 @@ export function EdgeNode({ data }: EdgeNodeProps) {
 			table={data.table}
 			isSelected={data.isSelected}
 			nodeMode={data.nodeMode}
-			hasLeftEdge={true}
-			hasRightEdge={true}
+			hasLeftEdge={!withoutGraph}
+			hasRightEdge={!withoutGraph}
+			withoutGraph={withoutGraph}
 		>
 			<Group style={{ color: isLight ? undefined : "white" }} position="center" spacing="xs">
 				<Icon path={mdiVectorLine} color={LIGHT_TEXT_1} />
