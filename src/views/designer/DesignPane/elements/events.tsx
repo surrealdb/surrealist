@@ -50,6 +50,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<QueryInput
+								required
 								label="Event condition"
 								value={event.cond}
 								onChangeText={(value) =>
@@ -59,6 +60,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<QueryInput
+								required
 								label="Event result"
 								value={event.then}
 								onChangeText={(value) =>

@@ -54,6 +54,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<QueryInput
+								required
 								label="Indexed fields"
 								value={index.fields}
 								onChangeText={(value) =>
@@ -74,6 +75,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 							/>
 							{index.kind === 'search' && (
 								<QueryInput
+									required
 									label="Search expression"
 									value={index.search}
 									placeholder="ascii BM25 HIGHLIGHTS"
@@ -86,6 +88,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 							)}
 							{index.kind === 'vector' && (
 								<QueryInput
+									required
 									label="Vector expression"
 									value={index.vector}
 									placeholder="..."
