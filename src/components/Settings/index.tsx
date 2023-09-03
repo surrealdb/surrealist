@@ -6,13 +6,14 @@ import { useStoreValue } from "~/store";
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
 import { Spacer } from "../Spacer";
-import { GeneralTab } from "./tabs/General";
+import { GeneralTab } from "./tabs/Behavior";
 import { ConnectionTab } from "./tabs/Connection";
 import { LocalDatabaseTab } from "./tabs/LocalDatabase";
 import { runUpdateChecker } from "~/util/updater";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { ModalTitle } from "../ModalTitle";
+import { AppearanceTab } from "./tabs/Appearance";
 
 export function Settings() {
 	const isLight = useIsLight();
@@ -79,7 +80,8 @@ export function Settings() {
 
 				<Tabs defaultValue="general">
 					<Tabs.List mb="md">
-						<Tabs.Tab value="general">General</Tabs.Tab>
+						<Tabs.Tab value="general">Behavior</Tabs.Tab>
+						<Tabs.Tab value="appearance">Appearance</Tabs.Tab>
 						<Tabs.Tab value="connection">Connection</Tabs.Tab>
 
 						{adapter.isServeSupported && <Tabs.Tab value="database">Local database</Tabs.Tab>}
@@ -87,6 +89,10 @@ export function Settings() {
 
 					<Tabs.Panel value="general" pt="xs">
 						<GeneralTab config={config} />
+					</Tabs.Panel>
+
+					<Tabs.Panel value="appearance" pt="xs">
+						<AppearanceTab config={config} />
 					</Tabs.Panel>
 
 					<Tabs.Panel value="connection" pt="xs">

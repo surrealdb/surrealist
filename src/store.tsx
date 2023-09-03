@@ -11,6 +11,8 @@ import {
 	SurrealistEnvironment,
 	TabCreation,
 	TablePinAction,
+	DesignerLayoutMode,
+	DesignerNodeMode,
 } from "./types";
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
@@ -274,6 +276,14 @@ const mainSlice = createSlice({
 
 		resetFontZoomLevel(state) {
 			state.config.fontZoomLevel = 1;
+		},
+
+		setDesignerLayoutMode(state, action: PayloadAction<DesignerLayoutMode>) {
+			state.config.defaultDesignerLayoutMode = action.payload;
+		},
+
+		setDesignerNodeMode(state, action: PayloadAction<DesignerNodeMode>) {
+			state.config.defaultDesignerNodeMode = action.payload;
 		},
 
 		setDatabaseSchema(state, action: PayloadAction<TableDefinition[]>) {
