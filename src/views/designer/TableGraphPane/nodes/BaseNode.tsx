@@ -1,8 +1,32 @@
-import { Flex, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
+import { Flex, Group, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
 import { Handle, Position } from "reactflow";
-import { TableDefinition } from "~/types";
+import { DesignerNodeMode, TableDefinition } from "~/types";
 import { useHandleStyle } from "../hooks";
 import { PropsWithChildren } from "react";
+import { Icon } from "~/components/Icon";
+import { mdiBullhorn, mdiCodeBraces, mdiFlash } from "@mdi/js";
+import { Spacer } from "~/components/Spacer";
+
+interface SummaryProps {
+	isLight: boolean;
+	white: string;
+	icon: string;
+	title: string;
+	value: number;
+}
+
+function Summary(props: SummaryProps) {
+	const textColor = props.isLight ? undefined : props.white;
+
+	return (
+		<Group pr={4}>
+			<Icon path={props.icon} color="light" />
+			<Text color={textColor}>{props.title}</Text>
+			<Spacer />
+			<Text color={textColor} weight={700}>{props.value}</Text>
+		</Group>
+	);
+}
 
 interface BaseNodeProps {
 	isLight: boolean;
@@ -10,11 +34,12 @@ interface BaseNodeProps {
 	isSelected: boolean;
 	hasLeftEdge: boolean;
 	hasRightEdge: boolean;
+	nodeMode: DesignerNodeMode;
 }
 
 export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
 	const { colors, white, ...theme } = useMantineTheme();
-	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, children } = props;
+	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, children, nodeMode } = props;
 
 	const handleStyle = useHandleStyle();
 	const primaryColor = theme.fn.primaryColor();
@@ -44,19 +69,45 @@ export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
 			>
 				{children}
 
-				<Stack spacing="xs" mt={10} p={0}>
-					{table.fields.length === 0 && (
-						<Text align="center" color={isLight ? "dimmed" : colors.dark[3]}>
-							No fields defined
-						</Text>
-					)}
-					{table.fields.map((field) => (
-						<Flex key={field.name} justify="space-between">
-							<Text color={isLight ? undefined : white}>{field.name}</Text>
-							<Text color={isLight ? "dimmed" : colors.dark[3]}>{field.kind}</Text>
-						</Flex>
-					))}
-				</Stack>
+				{nodeMode == 'fields' ? (
+					<Stack spacing="xs" mt={10} p={0}>
+						{table.fields.length === 0 && (
+							<Text align="center" color={isLight ? "dimmed" : colors.dark[3]}>
+								No fields defined
+							</Text>
+						)}
+						{table.fields.map((field) => (
+							<Flex key={field.name} justify="space-between">
+								<Text color={isLight ? undefined : white}>{field.name}</Text>
+								<Text color={isLight ? "dimmed" : colors.dark[3]}>{field.kind}</Text>
+							</Flex>
+						))}
+					</Stack>
+				) : (
+					<Stack spacing="xs" mt={10} p={0}>
+						<Summary
+							isLight={isLight}
+							white={white}
+							icon={mdiCodeBraces}
+							title="Fields"
+							value={table.fields.length}
+						/>
+						<Summary
+							isLight={isLight}
+							white={white}
+							icon={mdiFlash}
+							title="Indexes"
+							value={table.indexes.length}
+						/>
+						<Summary
+							isLight={isLight}
+							white={white}
+							icon={mdiBullhorn}
+							title="Events"
+							value={table.events.length}
+						/>
+					</Stack>
+				)}
 			</Paper>
 
 			<Handle

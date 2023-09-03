@@ -6,6 +6,8 @@ export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json";
 export type ViewMode = "query" | "explorer" | "visualizer" | "designer" | "auth";
 export type SourceMode = "schema" | "infer";
+export type DesignerNodeMode = "fields" | "summary";
+export type DesignerLayoutMode = "graph" | "grid";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -37,6 +39,8 @@ export interface SurrealistConfig {
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	tabSearch: boolean;
+	defaultDesignerNodeMode: DesignerNodeMode,
+	defaultDesignerLayoutMode: DesignerLayoutMode,
 }
 
 export interface SurrealistEnvironment {
@@ -56,6 +60,8 @@ export interface SurrealistTab {
 	activeView: ViewMode;
 	pinned: boolean;
 	pinnedTables: string[];
+	designerNodeMode?: DesignerNodeMode;
+	designerLayoutMode?: DesignerLayoutMode;
 }
 
 export interface ScopeField {

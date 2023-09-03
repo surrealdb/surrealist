@@ -36,4 +36,13 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 			tab.pinnedTables = [];
 		}
 	}
+
+	// 1.9.0 - Set default designer options
+	if (!config.defaultDesignerLayoutMode) {
+		config.defaultDesignerLayoutMode = 'graph';
+	}
+
+	if (!config.defaultDesignerNodeMode) {
+		config.defaultDesignerNodeMode = 'fields';
+	}
 }

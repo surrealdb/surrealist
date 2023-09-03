@@ -1,6 +1,6 @@
 import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
 import { EdgeNode } from "./nodes/EdgeNode";
-import { TableDefinition } from "~/types";
+import { DesignerNodeMode, TableDefinition } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, Position } from "reactflow";
 import dagere from "dagre";
@@ -30,7 +30,11 @@ export function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
 	});
 }
 
-export function buildTableGraph(tables: TableDefinition[], active: TableDefinition | null): [Node[], Edge[]] {
+export function buildTableGraph(
+	tables: TableDefinition[],
+	active: TableDefinition | null,
+	nodeMode: DesignerNodeMode
+): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
 	const graph = new dagere.graphlib.Graph();
 	const edges: Edge[] = [];
@@ -42,6 +46,10 @@ export function buildTableGraph(tables: TableDefinition[], active: TableDefiniti
 
 	// Define all tables as nodes
 	for (const { table, isEdge } of items) {
+		const height = nodeMode == 'fields'
+			? 50 + table.fields.length * 34
+			: 145;
+
 		nodes.push({
 			id: table.schema.name,
 			type: isEdge ? "edge" : "table",
@@ -53,12 +61,13 @@ export function buildTableGraph(tables: TableDefinition[], active: TableDefiniti
 				isSelected: active?.schema.name == table.schema.name,
 				hasLeftEdge: false,
 				hasRightEdge: false,
+				nodeMode
 			},
 		});
 
 		graph.setNode(table.schema.name, {
 			width: 310,
-			height: 50 + table.fields.length * 34,
+			height,
 		});
 	}
 

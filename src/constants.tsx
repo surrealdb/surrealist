@@ -81,3 +81,13 @@ export const GEOMETRY_TYPES = [
 	{ label: "MultiPolygon", value: "multipolygon" },
 	{ label: "Collection", value: "collection" },
 ];
+
+export const DESIGNER_NODE_MODES = [
+	{ label: "Fields", value: "fields" },
+	{ label: "Summary", value: "summary" },
+];
+
+export const DESIGNER_LAYOUT_MODES = [
+	{ label: "Graph", value: "graph" },
+	{ label: "Grid", value: "grid" },
+];

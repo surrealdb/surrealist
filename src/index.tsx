@@ -10,6 +10,8 @@ import { runUpdateChecker } from "./util/updater";
 import { updateTitle, watchNativeTheme } from "./util/helpers";
 import { adapter } from "./adapter";
 
+import "reactflow/dist/style.css";
+
 (async () => {
 	dayjs.extend(relativeTime);
 

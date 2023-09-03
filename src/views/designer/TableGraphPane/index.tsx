@@ -1,13 +1,12 @@
-import "reactflow/dist/style.css";
-import { ActionIcon, Box, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Text, Title } from "@mantine/core";
-import { mdiAdjust, mdiDownload, mdiHelpCircle, mdiPlus, mdiRefresh } from "@mdi/js";
+import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Select, Stack, Text, Title } from "@mantine/core";
+import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiPlus, mdiRefresh } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
-import { TableDefinition } from "~/types";
+import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { toBlob } from "html-to-image";
-import { Background, ReactFlow, useEdgesState, useNodesState } from "reactflow";
+import { ReactFlow, useEdgesState, useNodesState } from "reactflow";
 import { NODE_TYPES, buildTableGraph } from "./helpers";
 import { useStable } from "~/hooks/stable";
 import { save } from "@tauri-apps/api/dialog";
@@ -18,6 +17,11 @@ import { showNotification } from "@mantine/notifications";
 import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
+import { useActiveTab } from "~/hooks/environment";
+import { actions, store } from "~/store";
+import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
+import { updateConfig } from "~/util/helpers";
+import { useDesignerConfig } from "./hooks";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -43,17 +47,21 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [showBackground, setShowBackground] = useState(true);
 	const [isCreating, setIsCreating] = useState(false);
+	const [showConfig, setShowConfig] = useState(false);
 	const [showHelp, setShowHelp] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
 	const isOnline = useIsConnected();
+	const activeTab = useActiveTab();
 	const isLight = useIsLight();
+	
+	const { nodeMode, layoutMode } = useDesignerConfig(activeTab);
 
 	useEffect(() => {
-		const [nodes, edges] = buildTableGraph(props.tables, props.active);
+		const [nodes, edges] = buildTableGraph(props.tables, props.active, nodeMode);
 
 		setNodes(nodes);
 		setEdges(edges);
-	}, [props.tables, props.active]);
+	}, [props.tables, props.active, nodeMode]);
 
 	const createSnapshot = useStable(async (filePath: string) => {
 		const contents = await toBlob(ref.current!, { cacheBust: true });
@@ -112,6 +120,32 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		setIsCreating(false);
 	});
 
+	const toggleConfig = useStable(() => {
+		setShowConfig(v => !v);
+	});
+
+	const setNodeMode = useStable((mode: string) => {
+		store.dispatch(
+			actions.updateTab({
+				id: activeTab?.id,
+				designerNodeMode: mode as DesignerNodeMode,
+			})
+		);
+
+		updateConfig();
+	});
+
+	const setLayoutMode = useStable((mode: string) => {
+		store.dispatch(
+			actions.updateTab({
+				id: activeTab?.id,
+				designerLayoutMode: mode as DesignerLayoutMode,
+			})
+		);
+
+		updateConfig();
+	});
+
 	return (
 		<Panel
 			title="Table Graph"
@@ -124,9 +158,55 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					<ActionIcon title="Refresh" onClick={fetchDatabaseSchema}>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
-					<ActionIcon title="Save as image" onClick={saveImage}>
-						<Icon color="light.4" path={mdiDownload} />
-					</ActionIcon>
+					<Popover
+						opened={showConfig}
+						onChange={setShowConfig}
+						position="bottom-end"
+						withArrow
+						withinPortal
+					>
+						<Popover.Target>
+							<ActionIcon
+								title="Graph Settings"
+								onClick={toggleConfig}
+							>
+								<Icon color="light.4" path={mdiCog} />
+							</ActionIcon>
+						</Popover.Target>
+						<Popover.Dropdown onMouseLeave={toggleConfig}>
+							<Stack pb="xs">
+								<ModalTitle>
+									Table graph options
+								</ModalTitle>
+								<Select
+									label="Table layout"
+									data={DESIGNER_LAYOUT_MODES}
+									value={layoutMode}
+									onChange={setLayoutMode}
+								/>
+
+								<Select
+									label="Table appearance"
+									data={DESIGNER_NODE_MODES}
+									value={nodeMode}
+									onChange={setNodeMode}
+								/>
+
+								<Button
+									color="surreal"
+									fullWidth
+									size="xs"
+									onClick={saveImage}
+								>
+									Save snapshot
+									<Icon
+										right
+										path={mdiDownload}
+									/>
+								</Button>
+							</Stack>
+						</Popover.Dropdown>
+					</Popover>
 					<ActionIcon title="Help" onClick={openHelp}>
 						<Icon color="light.4" path={mdiHelpCircle} />
 					</ActionIcon>
@@ -150,7 +230,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Center>
 				)}
 
-				<LoadingOverlay visible={!showBackground} overlayBlur={4} overlayColor={isLight ? "white" : "dark.7"} />
+				<LoadingOverlay
+					visible={!showBackground}
+					overlayBlur={4}
+					overlayColor={isLight ? "white" : "dark.7"}
+				/>
+				
 				<ReactFlow
 					ref={ref}
 					nodeTypes={NODE_TYPES}
@@ -164,9 +249,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					onEdgesChange={onEdgesChange}
 					onNodeClick={(_ev, node) => {
 						props.setActiveTable(node.id);
-					}}>
-					{showBackground && <Background />}
-				</ReactFlow>
+					}}
+				/>
 			</div>
 
 			<Modal

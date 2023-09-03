@@ -27,5 +27,7 @@ export function createBaseConfig(): SurrealistConfig {
 		errorChecking: true,
 		lastPromptedVersion: null,
 		tabSearch: false,
+		defaultDesignerNodeMode: 'fields',
+		defaultDesignerLayoutMode: 'graph',
 	};
 }

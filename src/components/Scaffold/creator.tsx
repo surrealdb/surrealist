@@ -54,6 +54,8 @@ export function TabCreator() {
 				connection: infoDetails,
 				pinned: false,
 				pinnedTables: [],
+				designerLayoutMode: 'graph',
+				designerNodeMode: 'fields',
 			})
 		);
 
