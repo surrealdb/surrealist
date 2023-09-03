@@ -75,7 +75,8 @@ export const SaveBox = ({ value, valid, onRevert, onPatch, onSave, onChangedStat
 				loaderPosition="right"
 				loading={isSaving}
 				disabled={!isChanged || valid === false}
-				onClick={doSave}>
+				onClick={doSave}
+			>
 				Save changes
 			</Button>
 			{onRevert && (

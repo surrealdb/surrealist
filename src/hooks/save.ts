@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { SaveBox } from "~/components/SaveBox";
-import { useLater } from "./later";
 import { useStable } from "./stable";
 
 interface SaveBoxOptions<T> {
@@ -30,28 +29,21 @@ interface SaveBoxResult {
  */
 export function useSaveBox<T extends Record<string, any>>(options: SaveBoxOptions<T>): SaveBoxResult {
 	const showSaveBox = options.when ?? true;
-	const [skipping, setSkipping] = useState(false);
-
-	const unskip = useLater(() => {
-		setSkipping(false);
-	});
+	const [skipKey, setSkipKey] = useState(0);
 
 	const skip = useStable(() => {
-		setSkipping(true);
-		unskip();
+		setSkipKey(k => k + 1);
 	});
 
-	const render =
-		showSaveBox && !skipping
-			? React.createElement(SaveBox, {
-				value: options.track,
-				valid: options.valid,
-				onRevert: options.onRevert,
-				onSave: options.onSave,
-				onPatch: options.onPatch,
-				onChangedState: options.onChangedState,
-			})
-			: null;
+	const render = showSaveBox ? React.createElement(SaveBox, {
+		key: skipKey,
+		value: options.track,
+		valid: options.valid,
+		onRevert: options.onRevert,
+		onSave: options.onSave,
+		onPatch: options.onPatch,
+		onChangedState: options.onChangedState,
+	}) : null;
 
 	return {
 		render,
