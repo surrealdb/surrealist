@@ -1,5 +1,21 @@
 # Change Log
 
+## 1.9.0 - Beta 10 support
+- Full support for SurrealDB beta 10
+- Local database now launches with `--allow-all` and `--auth`
+- Updated syntax highlighting with new keywords
+- Designer view updates
+	- Added designer related options
+		- *Table Layout* controls how tables are positioned within the graph. Currently supports "Graph" and "Grid"
+		- *Node Appearance* controls how nodes are rendered. Currently supports "Fields" and "Summary"
+		- Configurable per session, however default values can be set in the settings dialog
+	- Added support for default field values
+	- Fixed schema export not working
+- Authentication view updates
+	- Added support for manging root logins
+	- Added support for user comments
+- Minor UI improvements
+
 ## 1.8.0 - Designer Redesign
 - Overhauled the designer view
 	- Displays tables in a visual graph
