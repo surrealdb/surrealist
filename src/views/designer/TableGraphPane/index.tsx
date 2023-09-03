@@ -285,12 +285,20 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						view its details and modify it's schema. Changes made to the schema will be reflected in the graph.
 					</Text>
 
+					<HelpTitle isLight={isLight}>Can I change how tables are displayed?</HelpTitle>
+
+					<Text mt={8} mb="xl">
+						Press the <Icon path={mdiCog} size="sm" /> button in the top right corner to open the graph options. Inside you
+						can change the table layout and table appearance. These settings are saved per session, however you can configure
+						default values in the Surrealist settings.
+					</Text>
+
 					<HelpTitle isLight={isLight}>Why are edges missing?</HelpTitle>
 
 					<Text mt={8} mb="xl">
 						Surrealist dermines edges by searching for correctly configured <Kbd>in</Kbd> and <Kbd>out</Kbd> fields. You
 						can automatically create a new edge table by pressing the <Icon path={mdiPlus} /> button on the Table Graph
-						panel. Keep in mind edges are only visible when the layout is set to <Text inline weight={600}>Diagram</Text>.
+						panel. Keep in mind edges are only visible when the layout is set to Diagram.
 					</Text>
 
 					<HelpTitle isLight={isLight}>Can I save the graph as an image?</HelpTitle>
