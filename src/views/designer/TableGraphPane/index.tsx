@@ -162,12 +162,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						opened={showConfig}
 						onChange={setShowConfig}
 						position="bottom-end"
+						offset={{ crossAxis: -4, mainAxis: 8 }}
 						withArrow
 						withinPortal
 					>
 						<Popover.Target>
 							<ActionIcon
-								title="Graph Settings"
+								title="Graph Options"
 								onClick={toggleConfig}
 							>
 								<Icon color="light.4" path={mdiCog} />

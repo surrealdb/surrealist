@@ -28,6 +28,6 @@ export function createBaseConfig(): SurrealistConfig {
 		lastPromptedVersion: null,
 		tabSearch: false,
 		defaultDesignerNodeMode: 'fields',
-		defaultDesignerLayoutMode: 'graph',
+		defaultDesignerLayoutMode: 'diagram',
 	};
 }

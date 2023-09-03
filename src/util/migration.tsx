@@ -39,7 +39,7 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 
 	// 1.9.0 - Set default designer options
 	if (!config.defaultDesignerLayoutMode) {
-		config.defaultDesignerLayoutMode = 'graph';
+		config.defaultDesignerLayoutMode = 'diagram';
 	}
 
 	if (!config.defaultDesignerNodeMode) {

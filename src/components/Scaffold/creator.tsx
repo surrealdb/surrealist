@@ -53,9 +53,7 @@ export function TabCreator() {
 				activeView: "query",
 				connection: infoDetails,
 				pinned: false,
-				pinnedTables: [],
-				designerLayoutMode: 'graph',
-				designerNodeMode: 'fields',
+				pinnedTables: []
 			})
 		);
 

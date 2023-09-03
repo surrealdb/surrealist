@@ -6,7 +6,7 @@
 - Updated syntax highlighting with new keywords
 - Designer view updates
 	- Added designer related options
-		- *Table Layout* controls how tables are positioned within the graph. Currently supports "Graph" and "Grid"
+		- *Table Layout* controls how tables are positioned within the graph. Currently supports "Diagram" and "Grid"
 		- *Node Appearance* controls how nodes are rendered. Currently supports "Fields" and "Summary"
 		- Configurable per session, however default values can be set in the settings dialog
 	- Added support for default field values

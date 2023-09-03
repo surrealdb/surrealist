@@ -7,7 +7,7 @@ export type ResultListing = "table" | "json";
 export type ViewMode = "query" | "explorer" | "visualizer" | "designer" | "auth";
 export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary";
-export type DesignerLayoutMode = "graph" | "grid";
+export type DesignerLayoutMode = "diagram" | "grid";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];

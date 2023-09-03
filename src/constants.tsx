@@ -88,6 +88,6 @@ export const DESIGNER_NODE_MODES = [
 ];
 
 export const DESIGNER_LAYOUT_MODES = [
-	{ label: "Graph", value: "graph" },
+	{ label: "Diagram", value: "diagram" },
 	{ label: "Grid", value: "grid" },
 ];
