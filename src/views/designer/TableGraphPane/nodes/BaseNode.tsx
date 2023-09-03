@@ -35,10 +35,13 @@ export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
 				p={8}
 				shadow="md"
 				radius="md"
+				title={`Click to edit ${table.schema.name}`}
 				style={{
 					backgroundColor: isLight ? white : colors.dark[6],
 					border: `2px solid ${isSelected ? primaryColor : isLight ? colors.light[2] : colors.dark[6]}`,
-				}}>
+					cursor: 'pointer'
+				}}
+			>
 				{children}
 
 				<Stack spacing="xs" mt={10} p={0}>
