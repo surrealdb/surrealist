@@ -39,6 +39,13 @@ export const VIEW_MODES = [
 		desc: "Manage account details and database scopes",
 		desktop: true,
 	},
+	// {
+	// 	id: "live",
+	// 	name: "Live Queries",
+	// 	icon: mdiBroadcast,
+	// 	desc: "Subscribe and receive live updates from the database",
+	// 	desktop: true,
+	// },
 ] as const;
 
 export const STRUCTURE_TABS = [
