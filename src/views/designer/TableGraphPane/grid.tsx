@@ -1,4 +1,4 @@
-import { SimpleGrid } from "@mantine/core";
+import { ScrollArea, SimpleGrid } from "@mantine/core";
 import { forwardRef } from "react";
 import { DesignerNodeMode, TableDefinition } from "~/types";
 import { isEdgeTable } from "~/util/schema";
@@ -46,15 +46,25 @@ export const TableGrid = forwardRef<HTMLDivElement, TableGridProps>((props, ref)
 	});
 
 	return (
-		<SimpleGrid
-			ref={ref}
-			spacing="xl"
+		<ScrollArea
 			style={{
-				gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))'
+				position: "absolute",
+				inset: 6,
+				top: 0,
 			}}
 		>
-			{elements}
-		</SimpleGrid>
+			<SimpleGrid
+				p="xs"
+				pt={0}
+				ref={ref}
+				spacing="xl"
+				style={{
+					gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))'
+				}}
+			>
+				{elements}
+			</SimpleGrid>
+		</ScrollArea>
 	);
 });
 
