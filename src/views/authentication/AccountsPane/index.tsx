@@ -11,10 +11,11 @@ import {
 	Text,
 	TextInput,
 	Textarea,
+	Tooltip,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { mdiKeyVariant, mdiPencil, mdiPlus, mdiRefresh } from "@mdi/js";
+import { mdiComment, mdiKeyVariant, mdiPencil, mdiPlus, mdiRefresh } from "@mdi/js";
 import { invoke } from "@tauri-apps/api";
 import { map } from "radash";
 import { useEffect, useState } from "react";
@@ -185,6 +186,27 @@ export function AccountsPane(props: AccountsPaneProps) {
 						/>
 						<Text color={isLight ? "gray.9" : "gray.0"}>{user.name}</Text>
 						<Spacer />
+						{user.comment && (
+							<Tooltip
+								label={
+									<Text maw={250} style={{ whiteSpace: 'pre-wrap' }} lineClamp={5}>
+										<b>Comment:</b> {user.comment}
+									</Text>
+								}
+								position="bottom"
+								withinPortal
+							>
+								<div>
+									<Icon
+										ml={6}
+										color={isLight ? "light" : "light.3"}
+										path={mdiComment}
+										size={10}
+										style={{ flexShrink: 0 }}
+									/>
+								</div>
+							</Tooltip>
+						)}
 						<Badge color="light">
 							{formatRoles(user)}
 						</Badge>
