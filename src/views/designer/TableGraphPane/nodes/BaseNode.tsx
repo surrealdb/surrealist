@@ -20,7 +20,7 @@ function Summary(props: SummaryProps) {
 
 	return (
 		<Group pr={4}>
-			<Icon path={props.icon} color="light" />
+			<Icon path={props.icon} color="surreal" />
 			<Text color={textColor}>{props.title}</Text>
 			<Spacer />
 			<Text color={textColor} weight={700}>{props.value}</Text>
@@ -82,7 +82,7 @@ export function BaseNode(props: PropsWithChildren<BaseNodeProps>) {
 						{table.fields.map((field) => (
 							<Flex key={field.name} justify="space-between">
 								<Text color={isLight ? undefined : white}>{field.name}</Text>
-								<Text color={isLight ? "dimmed" : colors.dark[3]}>{field.kind}</Text>
+								<Text color="surreal">{field.kind}</Text>
 							</Flex>
 						))}
 					</Stack>
