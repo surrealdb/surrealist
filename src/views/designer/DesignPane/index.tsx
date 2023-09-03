@@ -33,6 +33,7 @@ import { FieldsElement } from "./elements/fields";
 import { IndexesElement } from "./elements/indexes";
 import { EventsElement } from "./elements/events";
 import { ModalTitle } from "~/components/ModalTitle";
+import { ViewElement } from "./elements/view";
 
 export interface SchemaPaneProps {
 	table: TableDefinition;
@@ -168,6 +169,13 @@ export function DesignPane(props: SchemaPaneProps) {
 								data={data}
 								setData={setData}
 							/>
+
+							{data.schema.view && (
+								<ViewElement
+									data={data}
+									setData={setData}
+								/>
+							)}
 
 							<PermissionsElement
 								data={data}

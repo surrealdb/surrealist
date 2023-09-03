@@ -176,8 +176,17 @@ export function isSchemaValid(schema: TableDefinition): boolean {
 				field.permissions.update &&
 				field.permissions.delete
 		) &&
-		schema.indexes.every((index) => index.name) &&
-		schema.events.every((event) => event.name);
+		schema.indexes.every(
+			(index) =>
+				index.name &&
+				index.fields
+		) &&
+		schema.events.every(
+			(event) =>
+				event.name &&
+				event.cond &&
+				event.then
+		);
 
 	return !!result;
 }
