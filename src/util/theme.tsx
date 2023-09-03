@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ColorScheme, MantineThemeOverride, rem } from "@mantine/core";
+import { ColorScheme, MantineTheme, MantineThemeOverride, rem } from "@mantine/core";
 
 export const LIGHT_BORDER = "light.0";
 export const LIGHT_TEXT_1 = "light.3";
@@ -7,6 +7,13 @@ export const LIGHT_TEXT_2 = "light.6";
 export const LIGHT_TEXT_3 = "light.9";
 
 export type ThemeOption = ColorScheme | "automatic";
+
+const LABEL_STYLE = (theme: MantineTheme) => ({
+	label: {
+		color: theme.colorScheme == "dark" ? "white" : "light.6",
+		fontWeight: 600
+	}
+});
 
 export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverride {
 	return useMemo(
@@ -82,6 +89,9 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 					defaultProps: {
 						withinPortal: true,
 					},
+					styles: (theme) => ({
+						...LABEL_STYLE(theme),
+					}),
 				},
 				Button: {
 					styles: {
@@ -110,12 +120,32 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 							"&::placeholder": {
 								color: theme.fn.themeColor("light.4"),
 							},
-						},
+						}
 					}),
 					defaultProps: {
 						autoComplete: "off",
 						spellCheck: "false",
 					},
+				},
+				TextInput: {
+					styles: (theme) => ({
+						...LABEL_STYLE(theme),
+					}),
+				},
+				NumberInput: {
+					styles: (theme) => ({
+						...LABEL_STYLE(theme),
+					}),
+				},
+				Textarea: {
+					styles: (theme) => ({
+						...LABEL_STYLE(theme),
+					}),
+				},
+				RadioGroup: {
+					styles: (theme) => ({
+						...LABEL_STYLE(theme),
+					}),
 				},
 				Radio: {
 					styles: {
