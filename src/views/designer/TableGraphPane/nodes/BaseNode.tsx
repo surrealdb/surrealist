@@ -15,14 +15,21 @@ interface SummaryProps {
 }
 
 function Summary(props: SummaryProps) {
-	const textColor = props.isLight ? "light.9" : props.white;
+	const valueColor = props.value > 0
+		? "surreal"
+		: "dimmed";
 
 	return (
 		<Group pr={4}>
-			<Icon path={props.icon} color="surreal" />
-			<Text color={textColor}>{props.title}</Text>
+			<Icon path={props.icon} color="light" />
+			<Text color={props.isLight ? "light.9" : props.white}>{props.title}</Text>
 			<Spacer />
-			<Text color={textColor} weight={700}>{props.value}</Text>
+			<Text
+				color={valueColor}
+				weight={600}
+			>
+				{props.value}
+			</Text>
 		</Group>
 	);
 }
@@ -64,9 +71,10 @@ export function BaseNode(props: BaseNodeProps) {
 				radius="md"
 				title={`Click to edit ${table.schema.name}`}
 				style={{
-					backgroundColor: isLight ? 'hsl(210 17% 96% / 1)' : colors.dark[6],
+					backgroundColor: isLight ? colors.gray[1] : colors.dark[6],
 					border: `2px solid ${isSelected ? primaryColor : 'transparent'}`,
-					cursor: 'pointer'
+					cursor: 'pointer',
+					userSelect: 'none'
 				}}
 			>
 				<Group
@@ -86,7 +94,7 @@ export function BaseNode(props: BaseNodeProps) {
 				{nodeMode != 'simple' && (
 					<>
 						<Divider
-							color={isLight ? "light.1" : "dark.4"}
+							color={isLight ? "gray.3" : "dark.4"}
 							mt={6}
 						/>
 

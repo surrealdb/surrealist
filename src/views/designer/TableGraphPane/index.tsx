@@ -179,7 +179,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							</ActionIcon>
 						</Popover.Target>
 						<Popover.Dropdown onMouseLeave={toggleConfig}>
-							<Stack pb="xs">
+							<Stack pb={4}>
 								<ModalTitle>
 									Table graph options
 								</ModalTitle>
