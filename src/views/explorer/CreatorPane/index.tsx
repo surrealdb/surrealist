@@ -79,24 +79,27 @@ export function CreatorPane(props: CreatorPaneProps) {
 				Record contents
 			</Text>
 
-			<SurrealistEditor
-				language="json"
-				value={contentText}
-				onChange={updateContent}
+			<div
 				style={{
 					position: "absolute",
 					insetInline: 12,
 					bottom: 62,
 					top: 94,
 				}}
-				options={{
-					wrappingStrategy: "advanced",
-					wordWrap: "off",
-					suggest: {
-						showProperties: false,
-					},
-				}}
-			/>
+			>
+				<SurrealistEditor
+					language="json"
+					value={contentText}
+					onChange={updateContent}
+					options={{
+						wrappingStrategy: "advanced",
+						wordWrap: "off",
+						suggest: {
+							showProperties: false,
+						},
+					}}
+				/>
+			</div>
 
 			<Button
 				disabled={isInvalid || !tableName}
