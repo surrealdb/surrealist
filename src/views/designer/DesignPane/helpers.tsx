@@ -133,8 +133,19 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	for (const index of current.indexes) {
 		let query = `DEFINE INDEX ${index.name} ON TABLE ${name} FIELDS ${index.fields}`;
 
-		if (index.unique) {
-			query += " UNIQUE";
+		switch (index.kind) {
+			case "unique": {
+				query += " UNIQUE";
+				break;
+			}
+			case "search": {
+				query += ` SEARCH ANALYZER ${index.search}`;
+				break;
+			}
+			case "vector": {
+				query += ` MTREE DIMENSION ${index.vector}`;
+				break;
+			}
 		}
 
 		queries.push(query);
@@ -179,7 +190,10 @@ export function isSchemaValid(schema: TableDefinition): boolean {
 		schema.indexes.every(
 			(index) =>
 				index.name &&
-				index.fields
+				index.fields &&
+				index.kind &&
+				(index.kind != 'search' || index.search) &&
+				(index.kind != 'vector' || index.vector)
 		) &&
 		schema.events.every(
 			(event) =>

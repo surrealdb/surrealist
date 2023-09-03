@@ -8,6 +8,7 @@ export type ViewMode = "query" | "explorer" | "visualizer" | "designer" | "auth"
 export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type DesignerLayoutMode = "diagram" | "grid";
+export type IndexKind = "normal" | "unique" | "search" | "vector";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -119,7 +120,9 @@ export interface TableField {
 export interface TableIndex {
 	name: string;
 	fields: string;
-	unique: boolean;
+	kind: IndexKind;
+	search: string;
+	vector: string;
 }
 
 export interface TableEvent {

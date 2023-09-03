@@ -8,7 +8,7 @@ import { actions, store } from "~/store";
 import { SurrealistAdapter } from "./base";
 import { extractTypeList, printLog } from "~/util/helpers";
 import { map, mapKeys, snake } from "radash";
-import { TableSchema, TableField, TableIndex, TableEvent, SurrealHandle, SurrealOptions } from "~/types";
+import { TableSchema, TableField, TableIndex, TableEvent, SurrealHandle, SurrealOptions, IndexKind } from "~/types";
 import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
 
 const WAIT_DURATION = 1000;
@@ -151,10 +151,19 @@ export class DesktopAdapter implements SurrealistAdapter {
 				};
 			});
 
+			const mappedIndexes = indexInfo.map((index) => {
+				return {
+					...index,
+					kind: index.kind.toLowerCase() as IndexKind,
+					search: index.search.replace('SEARCH ANALYZER ', ''),
+					vector: index.vector.replace('MTREE DIMENSION ', ''),
+				};
+			});
+
 			return {
 				schema: table,
 				fields: mappedFields,
-				indexes: indexInfo,
+				indexes: mappedIndexes,
 				events: eventInfo,
 			};
 		});

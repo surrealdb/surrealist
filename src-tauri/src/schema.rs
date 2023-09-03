@@ -178,10 +178,20 @@ pub fn extract_analyzer_definition(definition: &str) -> Result<AnalyzerInfo, Str
 }
 
 #[derive(Serialize)]
+pub enum IndexKind {
+	Normal,
+	Unique,
+	Search,
+	Vector,
+}
+
+#[derive(Serialize)]
 pub struct IndexInfo {
     pub name: String,
     pub fields: String,
-    pub unique: bool,
+    pub kind: IndexKind,
+    pub search: String,
+    pub vector: String,
     pub comment: String,
 }
 
@@ -191,10 +201,28 @@ pub fn extract_index_definition(definition: &str) -> Result<IndexInfo, String> {
     let query = &parsed[0];
 
     if let Statement::Define(DefineStatement::Index(i)) = query {
+		let index_kind = match i.index {
+			Index::Idx => IndexKind::Normal,
+			Index::Uniq => IndexKind::Unique,
+			Index::Search(_) => IndexKind::Search,
+			Index::MTree(_) => IndexKind::Vector,
+		};
+
+		let empty_str = "".to_owned();
+		let index_str = i.to_string();
+
+		let (search, vector) = match i.index {
+			Index::Search(_) => (&index_str, &empty_str),
+			Index::MTree(_) => (&empty_str, &index_str),
+			_ => (&empty_str, &empty_str),
+		};
+
         return Ok(IndexInfo {
             name: i.name.to_string(),
             fields: i.cols.to_string(),
-            unique: i.index == Index::Uniq,
+            kind: index_kind,
+			search: search.to_owned(),
+			vector: vector.to_owned(),
             comment: parse_comment(&i.comment),
         });
     }

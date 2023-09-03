@@ -1,8 +1,10 @@
-import { Accordion, TextInput, Checkbox } from "@mantine/core";
+import { Accordion, TextInput, Select } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
 import { QueryInput } from "../inputs";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
+import { INDEX_TYPES } from "~/constants";
+import { IndexKind } from "~/types";
 
 export function IndexesElement({ data, setData }: ElementProps) {
 
@@ -11,7 +13,9 @@ export function IndexesElement({ data, setData }: ElementProps) {
 			d.indexes.push({
 				name: "",
 				fields: "",
-				unique: false,
+				kind: 'normal',
+				search: "",
+				vector: "",
 			});
 		});
 	});
@@ -58,15 +62,40 @@ export function IndexesElement({ data, setData }: ElementProps) {
 									})
 								}
 							/>
-							<Checkbox
-								label="Unique index"
-								checked={index.unique}
-								onChange={(e) =>
+							<Select
+								label="Index type"
+								value={index.kind}
+								data={INDEX_TYPES}
+								onChange={(value: IndexKind) =>
 									setData((draft) => {
-										draft.indexes[i].unique = e.target.checked;
+										draft.indexes[i].kind = value;
 									})
 								}
 							/>
+							{index.kind === 'search' && (
+								<QueryInput
+									label="Search expression"
+									value={index.search}
+									placeholder="ascii BM25 HIGHLIGHTS"
+									onChangeText={(value) =>
+										setData((draft) => {
+											draft.indexes[i].search = value;
+										})
+									}
+								/>
+							)}
+							{index.kind === 'vector' && (
+								<QueryInput
+									label="Vector expression"
+									value={index.vector}
+									placeholder="..."
+									onChangeText={(value) =>
+										setData((draft) => {
+											draft.indexes[i].vector = value;
+										})
+									}
+								/>
+							)}
 						</>
 					)}
 				</Lister>
