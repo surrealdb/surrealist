@@ -1,5 +1,5 @@
 use serde::Serialize;
-use surrealdb::sql::{parse, statements::DefineStatement, Permissions, Statement, Strand};
+use surrealdb::sql::{parse, statements::DefineStatement, Index, Permissions, Statement, Strand};
 
 #[derive(Serialize)]
 pub struct PermissionInfo {
@@ -19,9 +19,10 @@ fn parse_permissions(perms: &Permissions) -> PermissionInfo {
 }
 
 fn parse_comment(comment: &Option<Strand>) -> String {
-	return comment.as_ref()
-		.map(|s| s.as_str().to_owned())
-		.unwrap_or_default();
+    return comment
+        .as_ref()
+        .map(|s| s.as_str().to_owned())
+        .unwrap_or_default();
 }
 
 #[derive(Serialize)]
@@ -30,7 +31,7 @@ pub struct ScopeInfo {
     pub signup: String,
     pub signin: String,
     pub session: String,
-	pub comment: String,
+    pub comment: String,
 }
 
 #[tauri::command(async)]
@@ -57,7 +58,7 @@ pub fn extract_scope_definition(definition: &str) -> Result<ScopeInfo, String> {
             signup: signup[1..signup.len() - 1].to_owned(),
             signin: signin[1..signin.len() - 1].to_owned(),
             session: s.session.clone().unwrap_or_default().to_string(),
-			comment: parse_comment(&s.comment),
+            comment: parse_comment(&s.comment),
         });
     }
 
@@ -79,7 +80,7 @@ pub struct TableInfo {
     pub schemafull: bool,
     pub view: Option<TableViewInfo>,
     pub permissions: PermissionInfo,
-	pub comment: String,
+    pub comment: String,
 }
 
 #[tauri::command(async)]
@@ -100,7 +101,7 @@ pub fn extract_table_definition(definition: &str) -> Result<TableInfo, String> {
             drop: t.drop,
             schemafull: t.full,
             permissions: parse_permissions(&t.permissions),
-			comment: parse_comment(&t.comment),
+            comment: parse_comment(&t.comment),
             view,
         });
     }
@@ -116,7 +117,7 @@ pub struct FieldInfo {
     pub assert: String,
     pub default: String,
     pub permissions: PermissionInfo,
-	pub comment: String,
+    pub comment: String,
 }
 
 #[tauri::command(async)]
@@ -133,7 +134,7 @@ pub fn extract_field_definition(definition: &str) -> Result<FieldInfo, String> {
             assert: f.assert.as_ref().map_or("".to_owned(), |a| a.to_string()),
             default: f.default.as_ref().map_or("".to_owned(), |v| v.to_string()),
             permissions: parse_permissions(&f.permissions),
-			comment: parse_comment(&f.comment),
+            comment: parse_comment(&f.comment),
         });
     }
     Err(String::from("Failed to extract field"))
@@ -142,9 +143,9 @@ pub fn extract_field_definition(definition: &str) -> Result<FieldInfo, String> {
 #[derive(Serialize)]
 pub struct AnalyzerInfo {
     pub name: String,
-	pub tokenizers: Vec<String>,
-	pub filters: Vec<String>,
-	pub comment: String,
+    pub tokenizers: Vec<String>,
+    pub filters: Vec<String>,
+    pub comment: String,
 }
 
 #[tauri::command(async)]
@@ -153,25 +154,23 @@ pub fn extract_analyzer_definition(definition: &str) -> Result<AnalyzerInfo, Str
     let query = &parsed[0];
 
     if let Statement::Define(DefineStatement::Analyzer(a)) = query {
-		let tokenizers = a.tokenizers.as_ref()
-			.map(|t| t.iter()
-				.map(|t| t.to_string())
-				.collect()
-			)
-			.unwrap_or_default();
+        let tokenizers = a
+            .tokenizers
+            .as_ref()
+            .map(|t| t.iter().map(|t| t.to_string()).collect())
+            .unwrap_or_default();
 
-		let filters = a.filters.as_ref()
-			.map(|t| t.iter()
-				.map(|t| t.to_string())
-				.collect()
-			)
-			.unwrap_or_default();
+        let filters = a
+            .filters
+            .as_ref()
+            .map(|t| t.iter().map(|t| t.to_string()).collect())
+            .unwrap_or_default();
 
         return Ok(AnalyzerInfo {
             name: a.name.to_string(),
-			comment: parse_comment(&a.comment),
+            comment: parse_comment(&a.comment),
             tokenizers,
-			filters,
+            filters,
         });
     }
 
@@ -183,7 +182,7 @@ pub struct IndexInfo {
     pub name: String,
     pub fields: String,
     pub unique: bool,
-	pub comment: String,
+    pub comment: String,
 }
 
 #[tauri::command(async)]
@@ -195,8 +194,8 @@ pub fn extract_index_definition(definition: &str) -> Result<IndexInfo, String> {
         return Ok(IndexInfo {
             name: i.name.to_string(),
             fields: i.cols.to_string(),
-            unique: i.index.to_string() == "UNIQUE",
-			comment: parse_comment(&i.comment),
+            unique: i.index == Index::Uniq,
+            comment: parse_comment(&i.comment),
         });
     }
 
@@ -208,7 +207,7 @@ pub struct EventInfo {
     pub name: String,
     pub cond: String,
     pub then: String,
-	pub comment: String,
+    pub comment: String,
 }
 
 #[tauri::command(async)]
@@ -223,7 +222,7 @@ pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
             name: e.name.to_string(),
             cond: e.when.to_string(),
             then: then[1..then.len() - 1].to_owned(),
-			comment: parse_comment(&e.comment),
+            comment: parse_comment(&e.comment),
         });
     }
 
@@ -245,8 +244,12 @@ pub fn extract_user_definition(definition: &str) -> Result<UserInfo, String> {
     if let Statement::Define(DefineStatement::User(u)) = query {
         return Ok(UserInfo {
             name: u.name.to_string(),
-			roles: u.roles.iter().map(|r| r.to_string()).collect::<Vec<String>>(),
-			comment: parse_comment(&u.comment),
+            roles: u
+                .roles
+                .iter()
+                .map(|r| r.to_string())
+                .collect::<Vec<String>>(),
+            comment: parse_comment(&u.comment),
         });
     }
 

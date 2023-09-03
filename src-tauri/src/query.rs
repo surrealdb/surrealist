@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use surrealdb::{
     engine::remote::ws::{Client, Ws, Wss},
     opt::auth::{Database, Namespace, Root, Scope},
-    sql::{Value, Array, Object},
+    sql::{Array, Object, Value},
     Surreal,
 };
 
@@ -122,57 +122,57 @@ pub async fn execute_query(
     let instance = state.0.lock().await;
     let client = instance.as_ref().unwrap();
 
-	let query_result = client.query(query).await;
+    let query_result = client.query(query).await;
 
-	let results: Array = match query_result {
-		Ok(mut response) => {
-			let statement_count = response.num_statements();
+    let results: Array = match query_result {
+        Ok(mut response) => {
+            let statement_count = response.num_statements();
 
-			let mut results = Array::with_capacity(statement_count);
-			let errors = response.take_errors();
+            let mut results = Array::with_capacity(statement_count);
+            let errors = response.take_errors();
 
-			for i in 0..statement_count {
-				let mut entry = Object::default();
-				let error = errors.get(&i);
+            for i in 0..statement_count {
+                let mut entry = Object::default();
+                let error = errors.get(&i);
 
-				entry.insert("time".to_owned(), Value::from(""));
+                entry.insert("time".to_owned(), Value::from(""));
 
-				match error {
-					Some(error) => {
-						let message = Value::from(error.to_string());
+                match error {
+                    Some(error) => {
+                        let message = Value::from(error.to_string());
 
-						entry.insert("detail".to_owned(), Value::from(message));
-						entry.insert("status".to_owned(), Value::from("ERR"));
-					},
-					None => {
-						let data: Value = response.take(i).unwrap();
+                        entry.insert("detail".to_owned(), Value::from(message));
+                        entry.insert("status".to_owned(), Value::from("ERR"));
+                    }
+                    None => {
+                        let data: Value = response.take(i).unwrap();
 
-						entry.insert("result".to_owned(), data);
-						entry.insert("status".to_owned(), Value::from("OK"));
-					}
-				};
+                        entry.insert("result".to_owned(), data);
+                        entry.insert("status".to_owned(), Value::from("OK"));
+                    }
+                };
 
-				results.push(Value::Object(entry));
-			}
+                results.push(Value::Object(entry));
+            }
 
-			results
-		},
-		Err(error) => {
-			let mut results = Array::with_capacity(1);
-			let mut entry = Object::default();
+            results
+        }
+        Err(error) => {
+            let mut results = Array::with_capacity(1);
+            let mut entry = Object::default();
 
-			entry.insert("time".to_owned(), Value::from(""));
-			entry.insert("detail".to_owned(), Value::from(error.to_string()));
-			entry.insert("status".to_owned(), Value::from("ERR"));
+            entry.insert("time".to_owned(), Value::from(""));
+            entry.insert("detail".to_owned(), Value::from(error.to_string()));
+            entry.insert("status".to_owned(), Value::from("ERR"));
 
-			results.push(Value::Object(entry));
+            results.push(Value::Object(entry));
 
-			results
-		}
-	};
+            results
+        }
+    };
 
-	let result_value = Value::Array(results);
-	let result_json = serde_json::to_string(&result_value.into_json()).unwrap();
+    let result_value = Value::Array(results);
+    let result_json = serde_json::to_string(&result_value.into_json()).unwrap();
 
     Ok(result_json)
 }
