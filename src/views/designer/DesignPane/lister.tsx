@@ -104,11 +104,9 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 					<ModalTitle>{`Editing ${props.name}`}</ModalTitle>
 				}
 			>
-				<Stack>{editingData && props.children(editingData, editingIndex)}</Stack>
-				<Group mt="xl">
-					<Spacer />
-					<Button onClick={closeEditor}>Save</Button>
-				</Group>
+				<Stack>
+					{editingData && props.children(editingData, editingIndex)}
+				</Stack>
 			</Modal>
 		</>
 	);
