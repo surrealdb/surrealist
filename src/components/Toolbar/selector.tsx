@@ -144,8 +144,6 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 	});
 
 	const saveRename = useStable((e: SyntheticEvent) => {
-		console.log(e);
-
 		if ("key" in e && e.key !== "Enter") {
 			return;
 		}
@@ -168,8 +166,6 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 
 		updateConfig();
 		updateTitle();
-
-		console.log('reee');
 	});
 
 	const openEnvManager = useStable(() => {

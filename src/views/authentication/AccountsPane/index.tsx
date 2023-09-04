@@ -122,8 +122,6 @@ export function AccountsPane(props: AccountsPaneProps) {
 	});
 
 	const updateUser = useStable((user: UserInfo) => {
-		console.log(user);
-
 		setIsEditing(true);
 		setCurrentUser(user);
 		setEditingName(user.name);
