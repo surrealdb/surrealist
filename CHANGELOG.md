@@ -12,11 +12,14 @@
 	- Added support for default field values
 	- Added support for changefeeds
 	- Improved handling of table views
+	- Field kind can now be set to any value, however a table can still be quickly selected
 	- Fixed schema export not working
 	- Fixed certain index and event properties not being required
 - Authentication view updates
 	- Added support for manging root logins
 	- Added support for user comments
+- Fixed font zoom shortcuts not always working
+- Fixed multiple editor related issues
 - Minor UI improvements
 
 ## 1.8.0 - Designer Redesign
