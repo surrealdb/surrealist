@@ -58,6 +58,8 @@ export class BrowserAdapter implements SurrealistAdapter {
 				view: null,
 				drop: false,
 				schemafull: false,
+				changefeed: false,
+				changetime: '',
 				permissions: {
 					create: "",
 					select: "",
