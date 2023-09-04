@@ -141,7 +141,7 @@ pub async fn execute_query(
                     Some(error) => {
                         let message = Value::from(error.to_string());
 
-                        entry.insert("detail".to_owned(), Value::from(message));
+                        entry.insert("detail".to_owned(), message);
                         entry.insert("status".to_owned(), Value::from("ERR"));
                     }
                     None => {
