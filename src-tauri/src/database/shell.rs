@@ -4,6 +4,19 @@ use std::process::Command;
 
 #[cfg(target_os = "windows")]
 pub fn build_start_command(args: Vec<&str>) -> Vec<String> {
+    if cfg!(dev) {
+		println!("Force killing any existing surreal.exe processes");
+
+		let mut cmd_chain = Command::new("taskkill");
+
+		configure_command(&mut cmd_chain);
+
+		cmd_chain
+			.args(vec!["/IM", "surreal.exe", "/F"])
+			.output()
+			.expect("surreal process should be killed"); 
+	} 
+
     vec!["cmd".to_owned(), "/c".to_owned(), args.join(" ")]
 }
 
