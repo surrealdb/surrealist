@@ -128,29 +128,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 				return invoke<TableEvent>("extract_event_definition", { definition });
 			});
 
-			const mappedFields = fieldInfo.map((field) => {
-				let kind = field.kind;
-				let kindTables: string[] = [];
-				let kindGeometry: string[] = [];
-
-				if (field.kind.startsWith("record")) {
-					kindTables = extractTypeList(field.kind, "record");
-					kind = "record";
-				}
-
-				if (field.kind.startsWith("geometry")) {
-					kindGeometry = extractTypeList(field.kind, "geometry");
-					kind = "geometry";
-				}
-
-				return {
-					...field,
-					kind,
-					kindGeometry,
-					kindTables,
-				};
-			});
-
 			const mappedIndexes = indexInfo.map((index) => {
 				return {
 					...index,
@@ -165,7 +142,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					...table,
 					changetime: table.changetime.replace('CHANGEFEED ', ''),
 				},
-				fields: mappedFields,
+				fields: fieldInfo,
 				indexes: mappedIndexes,
 				events: eventInfo,
 			};

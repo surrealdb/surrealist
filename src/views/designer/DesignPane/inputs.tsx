@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Button, Group, Modal, Textarea, TextareaProps } from "@mantine/core";
-import { mdiCancel, mdiCheck, mdiWrench } from "@mdi/js";
+import { ActionIcon, Button, Group, Modal, Popover, Stack, TextInput, Textarea, TextareaProps } from "@mantine/core";
+import { mdiCancel, mdiCheck, mdiTable, mdiWrench } from "@mdi/js";
 import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -8,6 +8,8 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
+import { TableDefinition } from "~/types";
+import { useStoreValue } from "~/store";
 
 export interface QueryInputProps extends TextareaProps {
 	onChangeText?: (value: string) => void;
@@ -131,6 +133,81 @@ export function PermissionInput(props: PermissionInputProps) {
 						<Icon path={mdiCancel} />
 					</ActionIcon>
 				</>
+			}
+		/>
+	);
+}
+
+export interface FieldKindInputProps {
+	label: string;
+	value: string;
+	onChange: (value: string) => void;
+}
+
+export function FieldKindInput(props: FieldKindInputProps) {
+	const tables = useStoreValue((state) => state.databaseSchema);
+	const [showTables, setShowTables] = useState(false);
+
+	const hideTables = useStable(() => {
+		setShowTables(false);
+	});
+
+	const toggleTables = useStable(() => {
+		setShowTables((prev) => !prev);
+	});
+
+	const insert = useStable((table: TableDefinition) => {
+		props.onChange(`record(${table.schema.name})`);
+		hideTables();
+	});
+	
+	return (
+		<TextInput
+			required
+			placeholder="any"
+			label={props.label}
+			value={props.value}
+			className={classes.input}
+			onChange={(value) => props.onChange(value.currentTarget.value)}
+			rightSectionWidth={42}
+			rightSection={
+				<Popover
+					position="bottom"
+					withinPortal
+					opened={showTables}
+					onClose={hideTables}
+				>
+					<Popover.Target>
+						<ActionIcon
+							color="light"
+							title="Select a table"
+							onClick={toggleTables}
+							variant="subtle"
+						>
+							<Icon path={mdiTable} />
+						</ActionIcon>
+					</Popover.Target>
+					<Popover.Dropdown p={0}>
+						<Stack
+							mah={300}
+							style={{ overflowY: 'auto' }}
+							spacing="xs"
+							p="xs"
+						>
+							{tables.map((table) => (
+								<Button
+									style={{ flexShrink: 0 }}
+									onClick={() => insert(table)}
+									variant="light"
+									color="light"
+									miw={150}
+								>
+									{table.schema.name}
+								</Button>
+							))}
+						</Stack>
+					</Popover.Dropdown>
+				</Popover>
 			}
 		/>
 	);

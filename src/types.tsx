@@ -111,8 +111,6 @@ export interface TableField {
 	name: string;
 	flexible: boolean;
 	kind: string;
-	kindTables: string[];
-	kindGeometry: string[];
 	value: string;
 	default: string;
 	assert: string;

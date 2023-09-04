@@ -1,7 +1,7 @@
 import { Accordion, TextInput, Checkbox, SimpleGrid, Select, MultiSelect } from "@mantine/core";
 import { SURREAL_KINDS, GEOMETRY_TYPES } from "~/constants";
 import { ElementProps, SectionTitle } from "../helpers";
-import { QueryInput, PermissionInput } from "../inputs";
+import { QueryInput, PermissionInput, FieldKindInput } from "../inputs";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
 import { useTableNames } from "~/hooks/schema";
@@ -18,8 +18,6 @@ export function FieldsElement({ data, setData }: ElementProps) {
 				kind: "",
 				value: "",
 				default: "",
-				kindTables: [],
-				kindGeometry: [],
 				permissions: {
 					create: "FULL",
 					select: "FULL",
@@ -72,47 +70,15 @@ export function FieldsElement({ data, setData }: ElementProps) {
 									})
 								}
 							/>
-							<SimpleGrid cols={field.kind == "record" || field.kind == "geometry" ? 2 : 1}>
-								<Select
-									label="Field kind"
-									data={SURREAL_KINDS}
-									value={field.kind}
-									clearable
-									onChange={(value) =>
-										setData((draft) => {
-											draft.fields[i].kind = value || "";
-										})
-									}
-								/>
-								{field.kind == "record" && (
-									<MultiSelect
-										required
-										label="Record types"
-										data={tableList}
-										value={field.kindTables}
-										searchable={false}
-										onChange={(value) =>
-											setData((draft) => {
-												draft.fields[i].kindTables = value;
-											})
-										}
-									/>
-								)}
-								{field.kind === "geometry" && (
-									<MultiSelect
-										required
-										label="Geometry types"
-										data={GEOMETRY_TYPES}
-										value={field.kindGeometry}
-										searchable={false}
-										onChange={(value) =>
-											setData((draft) => {
-												draft.fields[i].kindGeometry = value;
-											})
-										}
-									/>
-								)}
-							</SimpleGrid>
+							<FieldKindInput
+								label="Field kind"
+								value={field.kind}
+								onChange={(value) =>
+									setData((draft) => {
+										draft.fields[i].kind = value || "";
+									})
+								}
+							/>
 							<QueryInput
 								label="Field value"
 								value={field.value}
