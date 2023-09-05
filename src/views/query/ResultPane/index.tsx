@@ -48,6 +48,8 @@ export function ResultPane() {
 	const result = results[resultTab - 1];
 	const showTabs = results.length > 1;
 
+	console.log('res', result);
+
 	useLayoutEffect(() => {
 		setResultTab(1);
 	}, [results.length]);
@@ -112,7 +114,7 @@ export function ResultPane() {
 				{result ? (
 					<>
 						{result.status == "ERR" ? (
-							<Text color="red">{result.detail}</Text>
+							<Text color="red">{result.result}</Text>
 						) : result.result?.length === 0 ? (
 							<Text color="light.4">No results found for query</Text>
 						) : resultListing == "table" ? (

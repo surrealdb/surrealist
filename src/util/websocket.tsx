@@ -89,7 +89,7 @@ export function createLocalWebSocket(options: SurrealOptions): SurrealHandle {
 			return {
 				...res,
 				result: Array.isArray(res.result) ? res.result[0] : res.result
-			}
+			};
 		});
 	};
 

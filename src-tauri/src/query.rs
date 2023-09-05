@@ -137,20 +137,22 @@ pub async fn execute_query(
 
                 entry.insert("time".to_owned(), Value::from(""));
 
+				let result: Value;
+				let status: Value;
+
                 match error {
                     Some(error) => {
-                        let message = Value::from(error.to_string());
-
-                        entry.insert("detail".to_owned(), message);
-                        entry.insert("status".to_owned(), Value::from("ERR"));
+                        result = Value::from(error.to_string());
+                        status = "ERR";
                     }
                     None => {
-                        let data: Value = response.take(i).unwrap();
-
-                        entry.insert("result".to_owned(), data);
-                        entry.insert("status".to_owned(), Value::from("OK"));
+                        result = response.take(i).unwrap();
+                        status = "OK";
                     }
                 };
+
+				entry.insert("result".to_owned(), result);
+				entry.insert("status".to_owned(), status);
 
                 results.push(Value::Object(entry));
             }
@@ -162,7 +164,7 @@ pub async fn execute_query(
             let mut entry = Object::default();
 
             entry.insert("time".to_owned(), Value::from(""));
-            entry.insert("detail".to_owned(), Value::from(error.to_string()));
+            entry.insert("result".to_owned(), Value::from(error.to_string()));
             entry.insert("status".to_owned(), Value::from("ERR"));
 
             results.push(Value::Object(entry));
