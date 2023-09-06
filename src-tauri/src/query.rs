@@ -143,11 +143,11 @@ pub async fn execute_query(
                 match error {
                     Some(error) => {
                         result = Value::from(error.to_string());
-                        status = "ERR";
+                        status = "ERR".into();
                     }
                     None => {
                         result = response.take(i).unwrap();
-                        status = "OK";
+                        status = "OK".into();
                     }
                 };
 
