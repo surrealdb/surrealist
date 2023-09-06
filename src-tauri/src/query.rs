@@ -114,22 +114,22 @@ pub async fn close_connection(
 }
 
 fn make_error(err: &str) -> Array {
-	let mut results = Array::with_capacity(1);
-	let mut entry = Object::default();
+    let mut results = Array::with_capacity(1);
+    let mut entry = Object::default();
 
-	entry.insert("time".to_owned(), Value::from(""));
-	entry.insert("result".to_owned(), Value::from(err));
-	entry.insert("status".to_owned(), Value::from("ERR"));
+    entry.insert("time".to_owned(), Value::from(""));
+    entry.insert("result".to_owned(), Value::from(err));
+    entry.insert("status".to_owned(), Value::from("ERR"));
 
-	results.push(Value::Object(entry));
+    results.push(Value::Object(entry));
 
-	results
+    results
 }
 
 #[tauri::command]
 pub async fn execute_query(
     query: String,
-	max_time: u64,
+    max_time: u64,
     state: tauri::State<'_, ConnectionState>,
 ) -> Result<String, surrealdb::Error> {
     println!("Executing query {}", query);
@@ -137,62 +137,62 @@ pub async fn execute_query(
     let instance = state.0.lock().await;
     let client = instance.as_ref().unwrap();
 
-	let query_task = client.query(query);
-	let timeout_duration = Duration::from_secs(max_time);
+    let query_task = client.query(query);
+    let timeout_duration = Duration::from_secs(max_time);
     let timeout_result = timeout(timeout_duration, async { query_task.await }).await;
 
-	println!("Query task completed");
+    println!("Query task completed");
 
     let results: Array = match timeout_result {
-		Ok(query_result) => match query_result {
-			Ok(mut response) => {
-				let statement_count = response.num_statements();
-	
-				let mut results = Array::with_capacity(statement_count);
-				let errors = response.take_errors();
-	
-				for i in 0..statement_count {
-					let mut entry = Object::default();
-					let error = errors.get(&i);
-	
-					entry.insert("time".to_owned(), Value::from(""));
-	
-					let result: Value;
-					let status: Value;
-	
-					match error {
-						Some(error) => {
-							result = Value::from(error.to_string());
-							status = "ERR".into();
-						}
-						None => {
-							result = response.take(i).unwrap();
-							status = "OK".into();
-						}
-					};
-	
-					entry.insert("result".to_owned(), result);
-					entry.insert("status".to_owned(), status);
-	
-					results.push(Value::Object(entry));
-				}
-	
-				results
-			}
-			Err(error) => {
-				let message = error.to_string();
+        Ok(query_result) => match query_result {
+            Ok(mut response) => {
+                let statement_count = response.num_statements();
 
-				println!("Query resulted in error: {}", message);
-				make_error(&message)
-			}
-		},
-		Err(_) => {
-			let message = format!("Query timed out after {} seconds", max_time);
+                let mut results = Array::with_capacity(statement_count);
+                let errors = response.take_errors();
 
-			println!("Query resulted in timeout");
-			make_error(&message)
-		}
-	};
+                for i in 0..statement_count {
+                    let mut entry = Object::default();
+                    let error = errors.get(&i);
+
+                    entry.insert("time".to_owned(), Value::from(""));
+
+                    let result: Value;
+                    let status: Value;
+
+                    match error {
+                        Some(error) => {
+                            result = Value::from(error.to_string());
+                            status = "ERR".into();
+                        }
+                        None => {
+                            result = response.take(i).unwrap();
+                            status = "OK".into();
+                        }
+                    };
+
+                    entry.insert("result".to_owned(), result);
+                    entry.insert("status".to_owned(), status);
+
+                    results.push(Value::Object(entry));
+                }
+
+                results
+            }
+            Err(error) => {
+                let message = error.to_string();
+
+                println!("Query resulted in error: {}", message);
+                make_error(&message)
+            }
+        },
+        Err(_) => {
+            let message = format!("Query timed out after {} seconds", max_time);
+
+            println!("Query resulted in timeout");
+            make_error(&message)
+        }
+    };
 
     let result_value = Value::Array(results);
     let result_json = serde_json::to_string(&result_value.into_json()).unwrap();
