@@ -139,7 +139,7 @@ pub async fn execute_query(
 
     let query_task = client.query(query);
     let timeout_duration = Duration::from_secs(max_time);
-    let timeout_result = timeout(timeout_duration, async { query_task.await }).await;
+    let timeout_result = timeout(timeout_duration, query_task).await;
 
     println!("Query task completed");
 
