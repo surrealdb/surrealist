@@ -1,4 +1,4 @@
-use std::{collections::HashMap, time::Duration};
+use std::{collections::HashMap, time::Duration, future::IntoFuture};
 
 use surrealdb::{
     engine::remote::ws::{Client, Ws, Wss},
@@ -139,7 +139,7 @@ pub async fn execute_query(
 
     let query_task = client.query(query);
     let timeout_duration = Duration::from_secs(max_time);
-    let timeout_result = timeout(timeout_duration, query_task).await;
+    let timeout_result = timeout(timeout_duration, query_task.into_future()).await;
 
     println!("Query task completed");
 
