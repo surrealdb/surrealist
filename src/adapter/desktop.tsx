@@ -189,12 +189,15 @@ export class DesktopAdapter implements SurrealistAdapter {
 			this.#connecting = false;
 		});
 
-		const execQuery = (query: string, params: any) => {
+		const execQuery = async (query: string, params: any) => {
 			console.log('Executing:', query, params);
 
-			return invoke<any>('execute_query', { query, params }).then(res => {
-				return JSON.parse(res);
-			});
+			const maxTime = store.getState().config.queryTimeout;
+			const res = await invoke<any>('execute_query', { query, params, maxTime });
+
+			console.log('Result:', res);
+
+			return JSON.parse(res);
 		};
 
 		const handle: SurrealHandle = {
