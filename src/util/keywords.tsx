@@ -114,6 +114,7 @@ export const KEYWORDS = [
 	"WHEN",
 	"WHERE",
 	"AND",
+	"ONLY",
 	"OR",
 	"IN",
 	"IS",
