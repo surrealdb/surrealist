@@ -2733,6 +2733,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "path-clean"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17359afc20d7ab31fdb42bb844c8b3bb1dabd7dcf7e68428492da7f16966fcef"
+
+[[package]]
 name = "pathdiff"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4130,9 +4136,9 @@ checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 
 [[package]]
 name = "surrealdb"
-version = "1.0.0-beta.10"
+version = "1.0.0-beta.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59d2972fcbdbfb5de50fee6ef1944cc52ceb586537496a161035bc4a32fc1a81"
+checksum = "bca1b54e258e7e577e2c3a66849bc3b35bcea4b8409278c2ccc426de616bcb4c"
 dependencies = [
  "addr",
  "any_ascii",
@@ -4162,6 +4168,7 @@ dependencies = [
  "nanoid",
  "nom",
  "once_cell",
+ "path-clean",
  "pbkdf2",
  "pharos",
  "pin-project-lite",
