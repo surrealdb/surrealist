@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.9.1 - Beta 11 support
+- Update to SurrealDB beta 11
+- Fixed the web app not displaying query errors
+- Highlight the new `ONLY` keyword
+- Respect the query timeout setting on desktop
+- Endpoints with "ws://" will no longer break
+- Correctly validate connection details
+- Support improved SurrealDB error messages (#103)
+
 ## 1.9.0 - Beta 10 support
 - Full support for SurrealDB beta 10
 - Local database now launches with `--allow-all` and `--auth`
