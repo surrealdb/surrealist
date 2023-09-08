@@ -177,7 +177,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		this.#connecting = true;
 
-		const details = mapKeys(options.connection, key => snake(key));
+		const connection: any = mapKeys(options.connection, key => snake(key));
+		const details = {
+			...connection,
+			endpoint: connection.endpoint.replace("http", "ws")
+		};
 
 		invoke<any>('open_connection', { info: details }).then(() => {
 			options.onConnect?.();
