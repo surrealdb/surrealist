@@ -64,6 +64,11 @@ export function ResultPane() {
 	const listingTitle = resultListing == "table" ? "Switch to JSON view" : "Switch to table view";
 
 	const showDivider = result?.result?.length > 0 || result?.time;
+	
+	// We can count an array, otherwise it's always 1 result (unless there is an error, in which case there is no result :D) 
+	const rowCount = Array.isArray(result.result) 
+		? result.result.length 
+		: result.status == "ERR" ? 0 : 1;
 
 	return (
 		<Panel
@@ -90,7 +95,7 @@ export function ResultPane() {
 						<>
 							<Icon color="light.4" path={mdiDatabase} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
-								{result.status == "OK" ? result.result.length : 0} rows
+								{rowCount} {rowCount == 1 ? 'row' : 'rows'}
 							</Text>
 						</>
 					)}
