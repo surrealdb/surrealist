@@ -114,7 +114,15 @@ export function ResultPane() {
 				{result ? (
 					<>
 						{result.status == "ERR" ? (
-							<Text color="red">{result.result}</Text>
+							<Text 
+								color="red" 
+								style={{
+									whiteSpace: "pre-wrap",
+									fontFamily: "monospace",
+								}}
+							>
+								{result.result}
+							</Text>
 						) : result.result?.length === 0 ? (
 							<Text color="light.4">No results found for query</Text>
 						) : resultListing == "table" ? (
