@@ -56,12 +56,20 @@ export function isConnectionValid(details: ConnectionOptions | undefined) {
 		return false;
 	}
 
-	return !!(
-		details.endpoint &&
-		details.namespace &&
-		details.database &&
-		details.username &&
-		details.password &&
-		details.authMode
-	);
+	// Check for essential fields
+	const hasEssential = details.endpoint && details.namespace && details.database && details.authMode;
+
+	if (!hasEssential) {
+		return false;
+	}
+
+	// Check for username and password
+	const checkUserPass = details.authMode === "root" || details.authMode === "database" || details.authMode === "namespace";
+	const hasUserPass = details.username && details.password;
+
+	if (checkUserPass && !hasUserPass) {
+		return false;
+	}
+
+	return true;
 }
