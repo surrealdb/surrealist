@@ -90,7 +90,7 @@ export function ResultPane() {
 						<>
 							<Icon color="light.4" path={mdiDatabase} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
-								{result.result.length} rows
+								{result.status == "OK" ? result.result.length : 0} rows
 							</Text>
 						</>
 					)}
