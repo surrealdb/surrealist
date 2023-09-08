@@ -1,4 +1,4 @@
-use std::{collections::HashMap, time::Duration, future::IntoFuture};
+use std::{collections::HashMap, future::IntoFuture, time::Duration};
 
 use surrealdb::{
     engine::remote::ws::{Client, Ws, Wss},
