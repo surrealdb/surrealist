@@ -37,22 +37,33 @@ function JsonPreview({ result, fontSize }: PreviewProps) {
 	);
 }
 
+function computeRowCount(response: any) {
+	if (!response) {
+		return 0;
+	}
+
+	// We can count an array, otherwise it's always 1 result (unless there is an error, in which case there is no result :D) 
+	if (Array.isArray(response.result)) {
+		return response.result.length;
+	}
+
+	return response.status == "ERR" ? 0 : 1;
+}
+
 export function ResultPane() {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 	const resultListing = useStoreValue((state) => state.config.resultListing);
-	const results = activeTab?.lastResponse || [];
+	const responses = activeTab?.lastResponse || [];
 
 	const [resultTab, setResultTab] = useState<number>(1);
-	const result = results[resultTab - 1];
-	const showTabs = results.length > 1;
-
-	console.log('res', result);
+	const response = responses[resultTab - 1];
+	const showTabs = responses.length > 1;
 
 	useLayoutEffect(() => {
 		setResultTab(1);
-	}, [results.length]);
+	}, [responses.length]);
 
 	const toggleResultView = useStable(() => {
 		const newMode = resultListing == "table" ? "json" : "table";
@@ -63,12 +74,8 @@ export function ResultPane() {
 	const listingIcon = resultListing == "table" ? mdiCodeJson : mdiTable;
 	const listingTitle = resultListing == "table" ? "Switch to JSON view" : "Switch to table view";
 
-	const showDivider = result?.result?.length > 0 || result?.time;
-	
-	// We can count an array, otherwise it's always 1 result (unless there is an error, in which case there is no result :D) 
-	const rowCount = Array.isArray(result.result) 
-		? result.result.length 
-		: result.status == "ERR" ? 0 : 1;
+	const showDivider = response?.result?.length > 0 || response?.time;
+	const rowCount = computeRowCount(response);
 
 	return (
 		<Panel
@@ -76,7 +83,7 @@ export function ResultPane() {
 			icon={mdiLightningBolt}
 			rightSection={
 				<Group align="center">
-					{result?.result !== undefined && (
+					{response?.result !== undefined && (
 						<>
 							<ActionIcon onClick={toggleResultView} title={listingTitle}>
 								<Icon color="light.4" path={listingIcon} />
@@ -91,7 +98,7 @@ export function ResultPane() {
 						</>
 					)}
 
-					{result?.result?.length > 0 && (
+					{response?.result?.length > 0 && (
 						<>
 							<Icon color="light.4" path={mdiDatabase} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
@@ -99,11 +106,11 @@ export function ResultPane() {
 							</Text>
 						</>
 					)}
-					{result?.time && (
+					{response?.time && (
 						<>
 							<Icon color="light.4" path={mdiClock} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
-								{result.time}
+								{response.time}
 							</Text>
 						</>
 					)}
@@ -116,9 +123,9 @@ export function ResultPane() {
 					top: 0,
 					bottom: showTabs ? 72 : 0,
 				}}>
-				{result ? (
+				{response ? (
 					<>
-						{result.status == "ERR" ? (
+						{response.status == "ERR" ? (
 							<Text 
 								color="red" 
 								style={{
@@ -126,14 +133,14 @@ export function ResultPane() {
 									fontFamily: "monospace",
 								}}
 							>
-								{result.result}
+								{response.result}
 							</Text>
-						) : result.result?.length === 0 ? (
+						) : response.result?.length === 0 ? (
 							<Text color="light.4">No results found for query</Text>
 						) : resultListing == "table" ? (
-							<DataTable data={result.result} />
+							<DataTable data={response.result} />
 						) : (
-							<JsonPreview result={result.result} fontSize={14 * fontZoomLevel} />
+							<JsonPreview result={response.result} fontSize={14 * fontZoomLevel} />
 						)}
 					</>
 				) : (
@@ -153,7 +160,7 @@ export function ResultPane() {
 						bottom: 12,
 					}}>
 					<Divider w="100%" color={isLight ? "light.0" : "dark.5"} />
-					<Pagination total={results.length} value={resultTab} onChange={setResultTab} />
+					<Pagination total={responses.length} value={resultTab} onChange={setResultTab} />
 				</Stack>
 			)}
 		</Panel>
