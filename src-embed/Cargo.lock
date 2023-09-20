@@ -507,6 +507,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "concat-string"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7439becb5fafc780b6f4de382b1a7a3e70234afe783854a4702ee8adbb838609"
+
+[[package]]
 name = "concurrent-queue"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2365,6 +2371,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-wasm-bindgen"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "30c9933e5689bd420dc6c87b7a1835701810cbc10cd86a26e4da45b73e6b1d78"
+dependencies = [
+ "js-sys",
+ "serde",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "serde_derive"
 version = "1.0.188"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2729,9 +2746,16 @@ dependencies = [
 name = "surrealist-embed"
 version = "0.0.0"
 dependencies = [
+ "concat-string",
  "console_error_panic_hook",
+ "regex",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
  "surrealdb",
+ "tokio",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]

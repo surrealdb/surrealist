@@ -1,5 +1,12 @@
-use serde::Serialize;
+use concat_string::concat_string;
+use serde::{Serialize, Deserialize};
+use serde_wasm_bindgen::to_value;
+use wasm_bindgen::prelude::*;
 use surrealdb::sql::{parse, statements::DefineStatement, Index, Permissions, Statement, Strand};
+
+fn to_response<T: serde::ser::Serialize>(value: &T, name: &str) -> Result<JsValue, String> {
+    Ok(to_value(value).expect(&concat_string!(name, " should be serializable")))
+}
 
 #[derive(Serialize)]
 pub struct PermissionInfo {
@@ -34,8 +41,8 @@ pub struct ScopeInfo {
     pub comment: String,
 }
 
-#[tauri::command(async)]
-pub fn extract_scope_definition(definition: &str) -> Result<ScopeInfo, String> {
+#[wasm_bindgen]
+pub fn extract_scope_definition(definition: &str) -> Result<JsValue, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
 
@@ -53,13 +60,15 @@ pub fn extract_scope_definition(definition: &str) -> Result<ScopeInfo, String> {
             None => "()".to_owned(),
         };
 
-        return Ok(ScopeInfo {
+        let info = ScopeInfo {
             name: s.name.to_raw(),
             signup: signup[1..signup.len() - 1].to_owned(),
             signin: signin[1..signin.len() - 1].to_owned(),
             session: s.session.clone().unwrap_or_default().to_string(),
             comment: parse_comment(&s.comment),
-        });
+        };
+
+		return to_response(&info, "scope")
     }
 
     Err(String::from("Failed to extract scope"))
@@ -85,8 +94,8 @@ pub struct TableInfo {
     pub changetime: String,
 }
 
-#[tauri::command(async)]
-pub fn extract_table_definition(definition: &str) -> Result<TableInfo, String> {
+#[wasm_bindgen]
+pub fn extract_table_definition(definition: &str) -> Result<JsValue, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
 
@@ -98,20 +107,23 @@ pub fn extract_table_definition(definition: &str) -> Result<TableInfo, String> {
             group: v.group.as_ref().map_or("".to_owned(), |c| c.to_string()),
         });
 
-        return Ok(TableInfo {
+        let info = TableInfo {
             name: t.name.to_raw(),
             drop: t.drop,
             schemafull: t.full,
-            permissions: parse_permissions(&t.permissions),
             comment: parse_comment(&t.comment),
+            permissions: parse_permissions(&t.permissions),
             view,
             changefeed: t.changefeed.is_some(),
             changetime: t
                 .changefeed
                 .as_ref()
                 .map_or("".to_owned(), |c| c.to_string()),
-        });
+        };
+
+		return to_response(&info, "table")
     }
+
     Err(String::from("Failed to extract table"))
 }
 
@@ -127,13 +139,13 @@ pub struct FieldInfo {
     pub comment: String,
 }
 
-#[tauri::command(async)]
-pub fn extract_field_definition(definition: &str) -> Result<FieldInfo, String> {
+#[wasm_bindgen]
+pub fn extract_field_definition(definition: &str) -> Result<JsValue, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
 
     if let Statement::Define(DefineStatement::Field(f)) = query {
-        return Ok(FieldInfo {
+        let info = FieldInfo {
             name: f.name.to_string(),
             flexible: f.flex,
             kind: f.kind.as_ref().map_or("".to_owned(), |k| k.to_string()),
@@ -142,8 +154,11 @@ pub fn extract_field_definition(definition: &str) -> Result<FieldInfo, String> {
             default: f.default.as_ref().map_or("".to_owned(), |v| v.to_string()),
             permissions: parse_permissions(&f.permissions),
             comment: parse_comment(&f.comment),
-        });
+        };
+
+		return to_response(&info, "field")
     }
+
     Err(String::from("Failed to extract field"))
 }
 
@@ -155,8 +170,8 @@ pub struct AnalyzerInfo {
     pub comment: String,
 }
 
-#[tauri::command(async)]
-pub fn extract_analyzer_definition(definition: &str) -> Result<AnalyzerInfo, String> {
+#[wasm_bindgen]
+pub fn extract_analyzer_definition(definition: &str) -> Result<JsValue, String> {
     let parsed = parse(definition)?;
     let query = &parsed[0];
 
@@ -173,137 +188,139 @@ pub fn extract_analyzer_definition(definition: &str) -> Result<AnalyzerInfo, Str
             .map(|t| t.iter().map(|t| t.to_string()).collect())
             .unwrap_or_default();
 
-        return Ok(AnalyzerInfo {
+        let info = AnalyzerInfo {
             name: a.name.to_string(),
             comment: parse_comment(&a.comment),
             tokenizers,
             filters,
-        });
+        };
+
+		return to_response(&info, "analyzer")
     }
 
     Err(String::from("Failed to extract index"))
 }
 
-#[derive(Serialize)]
-pub enum IndexKind {
-    Normal,
-    Unique,
-    Search,
-    Vector,
-}
+// #[wasm_bindgen]
+// pub enum IndexKind {
+//     Normal,
+//     Unique,
+//     Search,
+//     Vector,
+// }
 
-#[derive(Serialize)]
-pub struct IndexInfo {
-    pub name: String,
-    pub fields: String,
-    pub kind: IndexKind,
-    pub search: String,
-    pub vector: String,
-    pub comment: String,
-}
+// #[wasm_bindgen]
+// pub struct IndexInfo {
+//     pub name: String,
+//     pub fields: String,
+//     pub kind: IndexKind,
+//     pub search: String,
+//     pub vector: String,
+//     pub comment: String,
+// }
 
-#[tauri::command(async)]
-pub fn extract_index_definition(definition: &str) -> Result<IndexInfo, String> {
-    let parsed = parse(definition)?;
-    let query = &parsed[0];
+// #[wasm_bindgen]
+// pub fn extract_index_definition(definition: &str) -> Result<IndexInfo, String> {
+//     let parsed = parse(definition)?;
+//     let query = &parsed[0];
 
-    if let Statement::Define(DefineStatement::Index(i)) = query {
-        let index_kind = match i.index {
-            Index::Idx => IndexKind::Normal,
-            Index::Uniq => IndexKind::Unique,
-            Index::Search(_) => IndexKind::Search,
-            Index::MTree(_) => IndexKind::Vector,
-        };
+//     if let Statement::Define(DefineStatement::Index(i)) = query {
+//         let index_kind = match i.index {
+//             Index::Idx => IndexKind::Normal,
+//             Index::Uniq => IndexKind::Unique,
+//             Index::Search(_) => IndexKind::Search,
+//             Index::MTree(_) => IndexKind::Vector,
+//         };
 
-        let empty_str = "".to_owned();
-        let index_str = i.to_string();
+//         let empty_str = "".to_owned();
+//         let index_str = i.to_string();
 
-        let (search, vector) = match i.index {
-            Index::Search(_) => (&index_str, &empty_str),
-            Index::MTree(_) => (&empty_str, &index_str),
-            _ => (&empty_str, &empty_str),
-        };
+//         let (search, vector) = match i.index {
+//             Index::Search(_) => (&index_str, &empty_str),
+//             Index::MTree(_) => (&empty_str, &index_str),
+//             _ => (&empty_str, &empty_str),
+//         };
 
-        return Ok(IndexInfo {
-            name: i.name.to_string(),
-            fields: i.cols.to_string(),
-            kind: index_kind,
-            search: search.to_owned(),
-            vector: vector.to_owned(),
-            comment: parse_comment(&i.comment),
-        });
-    }
+//         return Ok(IndexInfo {
+//             name: i.name.to_string(),
+//             fields: i.cols.to_string(),
+//             kind: index_kind,
+//             search: search.to_owned(),
+//             vector: vector.to_owned(),
+//             comment: parse_comment(&i.comment),
+//         });
+//     }
 
-    Err(String::from("Failed to extract index"))
-}
+//     Err(String::from("Failed to extract index"))
+// }
 
-#[derive(Serialize)]
-pub struct EventInfo {
-    pub name: String,
-    pub cond: String,
-    pub then: String,
-    pub comment: String,
-}
+// #[wasm_bindgen]
+// pub struct EventInfo {
+//     pub name: String,
+//     pub cond: String,
+//     pub then: String,
+//     pub comment: String,
+// }
 
-#[tauri::command(async)]
-pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
-    let parsed = parse(definition)?;
-    let query = &parsed[0];
+// #[wasm_bindgen]
+// pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
+//     let parsed = parse(definition)?;
+//     let query = &parsed[0];
 
-    if let Statement::Define(DefineStatement::Event(e)) = query {
-        let then = e.then.to_string();
+//     if let Statement::Define(DefineStatement::Event(e)) = query {
+//         let then = e.then.to_string();
 
-        return Ok(EventInfo {
-            name: e.name.to_string(),
-            cond: e.when.to_string(),
-            then: then[1..then.len() - 1].to_owned(),
-            comment: parse_comment(&e.comment),
-        });
-    }
+//         return Ok(EventInfo {
+//             name: e.name.to_string(),
+//             cond: e.when.to_string(),
+//             then: then[1..then.len() - 1].to_owned(),
+//             comment: parse_comment(&e.comment),
+//         });
+//     }
 
-    Err(String::from("Failed to extract event"))
-}
+//     Err(String::from("Failed to extract event"))
+// }
 
-#[derive(Serialize)]
-pub struct UserInfo {
-    pub name: String,
-    pub roles: Vec<String>,
-    pub comment: String,
-}
+// #[wasm_bindgen]
+// pub struct UserInfo {
+//     pub name: String,
+//     pub roles: Vec<String>,
+//     pub comment: String,
+// }
 
-#[tauri::command(async)]
-pub fn extract_user_definition(definition: &str) -> Result<UserInfo, String> {
-    let parsed = parse(definition)?;
-    let query = &parsed[0];
+// #[wasm_bindgen]
+// pub fn extract_user_definition(definition: &str) -> Result<UserInfo, String> {
+//     let parsed = parse(definition)?;
+//     let query = &parsed[0];
 
-    if let Statement::Define(DefineStatement::User(u)) = query {
-        return Ok(UserInfo {
-            name: u.name.to_string(),
-            roles: u
-                .roles
-                .iter()
-                .map(|r| r.to_string())
-                .collect::<Vec<String>>(),
-            comment: parse_comment(&u.comment),
-        });
-    }
+//     if let Statement::Define(DefineStatement::User(u)) = query {
+//         return Ok(UserInfo {
+//             name: u.name.to_string(),
+//             roles: u
+//                 .roles
+//                 .iter()
+//                 .map(|r| r.to_string())
+//                 .collect::<Vec<String>>(),
+//             comment: parse_comment(&u.comment),
+//         });
+//     }
 
-    Err(String::from("Failed to extract user"))
-}
+//     Err(String::from("Failed to extract user"))
+// }
 
-#[tauri::command(async)]
-pub fn validate_query(query: &str) -> Option<String> {
-    let parsed = parse(query);
+// #[wasm_bindgen]
+// pub fn validate_query(query: &str) -> Option<String> {
+//     let parsed = parse(query);
 
-    match parsed {
-        Ok(_) => None,
-        Err(err) => Some(err.to_string()),
-    }
-}
+//     match parsed {
+//         Ok(_) => None,
+//         Err(err) => Some(err.to_string()),
+//     }
+// }
 
-#[tauri::command(async)]
-pub fn validate_where_clause(clause: &str) -> bool {
-    let query = "SELECT * FROM table WHERE ".to_owned() + clause;
+// #[wasm_bindgen]
+// pub fn validate_where_clause(clause: &str) -> bool {
+//     let query = "SELECT * FROM table WHERE ".to_owned() + clause;
 
-    parse(&query).is_ok()
-}
+//     parse(&query).is_ok()
+// }

@@ -1,15 +1,22 @@
-use std::{collections::HashMap, future::IntoFuture, time::Duration};
+use std::{collections::HashMap, time::Duration, future::IntoFuture, sync::OnceLock};
+use regex::Regex;
+use serde::Deserialize;
+use serde_wasm_bindgen::from_value;
+use wasm_bindgen::prelude::*;
+use tokio::time::timeout;
 
 use surrealdb::{
-    engine::remote::ws::{Client, Ws, Wss},
-    opt::auth::{Database, Namespace, Root, Scope},
+    engine::remote::ws::{Client, Wss, Ws},
     sql::{Array, Object, Value},
-    Surreal,
+    Surreal, opt::auth::{Root, Namespace, Database, Scope},
 };
 
-use serde::Deserialize;
-use tauri::{async_runtime::Mutex, regex::Regex};
-use tokio::time::timeout;
+// Utility for wrapping a SDB error into a JS value
+fn wrap_err(err: surrealdb::Error) -> JsValue {
+	JsValue::from_str(&err.to_string())
+}
+
+static CLIENT: OnceLock<Option<Surreal<Client>>> = OnceLock::new();
 
 #[derive(Deserialize)]
 pub struct ScopeField {
@@ -29,13 +36,9 @@ pub struct ConnectionInfo {
     pub scope_fields: Vec<ScopeField>,
 }
 
-pub struct ConnectionState(pub Mutex<Option<Surreal<Client>>>);
-
-#[tauri::command]
-pub async fn open_connection(
-    info: ConnectionInfo,
-    state: tauri::State<'_, ConnectionState>,
-) -> Result<(), surrealdb::Error> {
+#[wasm_bindgen]
+pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
+	let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
     let regex = Regex::new(r"^(https?://)?(.+?)$").unwrap();
     let matches = regex.captures(&info.endpoint).unwrap();
     let endpoint = matches.get(2).unwrap().as_str();
@@ -44,12 +47,16 @@ pub async fn open_connection(
     println!("Connecting to {}", endpoint);
 
     let db = if is_secure {
-        Surreal::new::<Wss>(endpoint).await?
+        Surreal::new::<Wss>(endpoint).await.map_err(wrap_err)?
     } else {
-        Surreal::new::<Ws>(endpoint).await?
+        Surreal::new::<Ws>(endpoint).await.map_err(wrap_err)?
     };
 
-    let mut instance = state.0.lock().await;
+    let instance = CLIENT.get();
+
+	if instance.is_none() {
+		return Err(JsValue::from_str("Connection already open"));
+	}
 
     match info.auth_mode.as_str() {
         "root" => {
@@ -57,7 +64,7 @@ pub async fn open_connection(
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await?;
+            .await.map_err(wrap_err)?;
         }
         "namespace" => {
             db.signin(Namespace {
@@ -65,7 +72,7 @@ pub async fn open_connection(
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await?;
+            .await.map_err(wrap_err)?;
         }
         "database" => {
             db.signin(Database {
@@ -74,11 +81,11 @@ pub async fn open_connection(
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await?;
+            .await.map_err(wrap_err)?;
         }
         "scope" => {
             let field_map = info
-                .scope_fields
+				.scope_fields
                 .iter()
                 .map(|field| (field.subject.as_str(), field.value.as_str()))
                 .collect::<HashMap<&str, &str>>();
@@ -89,28 +96,22 @@ pub async fn open_connection(
                 scope: info.scope.as_str(),
                 params: field_map,
             })
-            .await?;
+            .await.map_err(wrap_err)?;
         }
         _ => {}
     };
 
-    db.use_ns(info.namespace).await?;
-    db.use_db(info.database).await?;
+    db.use_ns(info.namespace).await.map_err(wrap_err)?;
+    db.use_db(info.database).await.map_err(wrap_err)?;
 
-    *instance = Some(db);
+	CLIENT.set(Some(db)).unwrap();
 
     Ok(())
 }
 
-#[tauri::command]
-pub async fn close_connection(
-    state: tauri::State<'_, ConnectionState>,
-) -> Result<(), surrealdb::Error> {
-    let mut instance = state.0.lock().await;
-
-    *instance = None;
-
-    Ok(())
+#[wasm_bindgen]
+pub async fn close_connection() {
+    CLIENT.set(None).unwrap();
 }
 
 fn make_error(err: &str) -> Array {
@@ -126,17 +127,19 @@ fn make_error(err: &str) -> Array {
     results
 }
 
-#[tauri::command]
-pub async fn execute_query(
-    query: String,
-    max_time: u64,
-    state: tauri::State<'_, ConnectionState>,
-) -> Result<String, surrealdb::Error> {
+#[wasm_bindgen]
+pub async fn execute_query(query: String, max_time: u64) -> String {
     println!("Executing query {}", query);
 
-    let instance = state.0.lock().await;
-    let client = instance.as_ref().unwrap();
+    let container = CLIENT.get_or_init(|| None);
 
+	if container.is_none() {
+		let error = Value::Array(make_error("No connection open")).into_json();
+
+		return serde_json::to_string(&error).unwrap();
+	}
+
+    let client = container.as_ref().unwrap();
     let query_task = client.query(query);
     let timeout_duration = Duration::from_secs(max_time);
     let timeout_result = timeout(timeout_duration, query_task.into_future()).await;
@@ -197,5 +200,5 @@ pub async fn execute_query(
     let result_value = Value::Array(results);
     let result_json = serde_json::to_string(&result_value.into_json()).unwrap();
 
-    Ok(result_json)
+    result_json
 }
