@@ -16,28 +16,24 @@ export const VIEW_MODES = [
 		name: "Query",
 		icon: mdiLightningBolt,
 		desc: "Execute queries against the database and inspect the results",
-		desktop: false,
 	},
 	{
 		id: "explorer",
 		name: "Explorer",
 		icon: mdiTable,
 		desc: "Explore the database tables, records, and relations",
-		desktop: false,
 	},
 	{
 		id: "designer",
 		name: "Designer",
 		icon: mdiWrench,
 		desc: "Define database tables and relations",
-		desktop: true,
 	},
 	{
 		id: "auth",
 		name: "Authentication",
 		icon: mdiLockOpen,
 		desc: "Manage account details and database scopes",
-		desktop: true,
 	},
 	// {
 	// 	id: "live",
