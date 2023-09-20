@@ -12,6 +12,10 @@ import { adapter } from "./adapter";
 
 import "reactflow/dist/style.css";
 
+import { hello_world } from './embed/surrealist_embed';
+
+console.log(hello_world());
+
 (async () => {
 	dayjs.extend(relativeTime);
 

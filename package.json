@@ -11,6 +11,9 @@
 		"tauri": "tauri",
 		"tauri:dev": "tauri dev",
 		"tauri:build": "tauri build",
+		"embed": "npm run embed:build && npm run embed:generate",
+		"embed:build": "cd src-embed && cargo build --target wasm32-unknown-unknown --release",
+		"embed:generate": "wasm-bindgen ./src-embed/target/wasm32-unknown-unknown/release/surrealist_embed.wasm --out-dir ./src/embed --target web",
 		"release": "git push origin main:release --force",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix"
