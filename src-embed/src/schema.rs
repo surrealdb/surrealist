@@ -1,5 +1,5 @@
+use serde::Serialize;
 use concat_string::concat_string;
-use serde::{Serialize, Deserialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 use surrealdb::sql::{parse, statements::DefineStatement, Index, Permissions, Statement, Strand};
@@ -201,126 +201,132 @@ pub fn extract_analyzer_definition(definition: &str) -> Result<JsValue, String> 
     Err(String::from("Failed to extract index"))
 }
 
-// #[wasm_bindgen]
-// pub enum IndexKind {
-//     Normal,
-//     Unique,
-//     Search,
-//     Vector,
-// }
+#[derive(Serialize)]
+pub enum IndexKind {
+    Normal,
+    Unique,
+    Search,
+    Vector,
+}
 
-// #[wasm_bindgen]
-// pub struct IndexInfo {
-//     pub name: String,
-//     pub fields: String,
-//     pub kind: IndexKind,
-//     pub search: String,
-//     pub vector: String,
-//     pub comment: String,
-// }
+#[derive(Serialize)]
+pub struct IndexInfo {
+    pub name: String,
+    pub fields: String,
+    pub kind: IndexKind,
+    pub search: String,
+    pub vector: String,
+    pub comment: String,
+}
 
-// #[wasm_bindgen]
-// pub fn extract_index_definition(definition: &str) -> Result<IndexInfo, String> {
-//     let parsed = parse(definition)?;
-//     let query = &parsed[0];
+#[wasm_bindgen]
+pub fn extract_index_definition(definition: &str) -> Result<JsValue, String> {
+    let parsed = parse(definition)?;
+    let query = &parsed[0];
 
-//     if let Statement::Define(DefineStatement::Index(i)) = query {
-//         let index_kind = match i.index {
-//             Index::Idx => IndexKind::Normal,
-//             Index::Uniq => IndexKind::Unique,
-//             Index::Search(_) => IndexKind::Search,
-//             Index::MTree(_) => IndexKind::Vector,
-//         };
+    if let Statement::Define(DefineStatement::Index(i)) = query {
+        let index_kind = match i.index {
+            Index::Idx => IndexKind::Normal,
+            Index::Uniq => IndexKind::Unique,
+            Index::Search(_) => IndexKind::Search,
+            Index::MTree(_) => IndexKind::Vector,
+        };
 
-//         let empty_str = "".to_owned();
-//         let index_str = i.to_string();
+        let empty_str = "".to_owned();
+        let index_str = i.to_string();
 
-//         let (search, vector) = match i.index {
-//             Index::Search(_) => (&index_str, &empty_str),
-//             Index::MTree(_) => (&empty_str, &index_str),
-//             _ => (&empty_str, &empty_str),
-//         };
+        let (search, vector) = match i.index {
+            Index::Search(_) => (&index_str, &empty_str),
+            Index::MTree(_) => (&empty_str, &index_str),
+            _ => (&empty_str, &empty_str),
+        };
 
-//         return Ok(IndexInfo {
-//             name: i.name.to_string(),
-//             fields: i.cols.to_string(),
-//             kind: index_kind,
-//             search: search.to_owned(),
-//             vector: vector.to_owned(),
-//             comment: parse_comment(&i.comment),
-//         });
-//     }
+        let info = IndexInfo {
+            name: i.name.to_string(),
+            fields: i.cols.to_string(),
+            kind: index_kind,
+            search: search.to_owned(),
+            vector: vector.to_owned(),
+            comment: parse_comment(&i.comment),
+        };
 
-//     Err(String::from("Failed to extract index"))
-// }
+		return to_response(&info, "index")
+    }
 
-// #[wasm_bindgen]
-// pub struct EventInfo {
-//     pub name: String,
-//     pub cond: String,
-//     pub then: String,
-//     pub comment: String,
-// }
+    Err(String::from("Failed to extract index"))
+}
 
-// #[wasm_bindgen]
-// pub fn extract_event_definition(definition: &str) -> Result<EventInfo, String> {
-//     let parsed = parse(definition)?;
-//     let query = &parsed[0];
+#[derive(Serialize)]
+pub struct EventInfo {
+    pub name: String,
+    pub cond: String,
+    pub then: String,
+    pub comment: String,
+}
 
-//     if let Statement::Define(DefineStatement::Event(e)) = query {
-//         let then = e.then.to_string();
+#[wasm_bindgen]
+pub fn extract_event_definition(definition: &str) -> Result<JsValue, String> {
+    let parsed = parse(definition)?;
+    let query = &parsed[0];
 
-//         return Ok(EventInfo {
-//             name: e.name.to_string(),
-//             cond: e.when.to_string(),
-//             then: then[1..then.len() - 1].to_owned(),
-//             comment: parse_comment(&e.comment),
-//         });
-//     }
+    if let Statement::Define(DefineStatement::Event(e)) = query {
+        let then = e.then.to_string();
 
-//     Err(String::from("Failed to extract event"))
-// }
+        let info = EventInfo {
+            name: e.name.to_string(),
+            cond: e.when.to_string(),
+            then: then[1..then.len() - 1].to_owned(),
+            comment: parse_comment(&e.comment),
+        };
 
-// #[wasm_bindgen]
-// pub struct UserInfo {
-//     pub name: String,
-//     pub roles: Vec<String>,
-//     pub comment: String,
-// }
+		return to_response(&info, "event")
+    }
 
-// #[wasm_bindgen]
-// pub fn extract_user_definition(definition: &str) -> Result<UserInfo, String> {
-//     let parsed = parse(definition)?;
-//     let query = &parsed[0];
+    Err(String::from("Failed to extract event"))
+}
 
-//     if let Statement::Define(DefineStatement::User(u)) = query {
-//         return Ok(UserInfo {
-//             name: u.name.to_string(),
-//             roles: u
-//                 .roles
-//                 .iter()
-//                 .map(|r| r.to_string())
-//                 .collect::<Vec<String>>(),
-//             comment: parse_comment(&u.comment),
-//         });
-//     }
+#[derive(Serialize)]
+pub struct UserInfo {
+    pub name: String,
+    pub roles: Vec<String>,
+    pub comment: String,
+}
 
-//     Err(String::from("Failed to extract user"))
-// }
+#[wasm_bindgen]
+pub fn extract_user_definition(definition: &str) -> Result<JsValue, String> {
+    let parsed = parse(definition)?;
+    let query = &parsed[0];
 
-// #[wasm_bindgen]
-// pub fn validate_query(query: &str) -> Option<String> {
-//     let parsed = parse(query);
+    if let Statement::Define(DefineStatement::User(u)) = query {
+        let info = UserInfo {
+            name: u.name.to_string(),
+            roles: u
+                .roles
+                .iter()
+                .map(|r| r.to_string())
+                .collect::<Vec<String>>(),
+            comment: parse_comment(&u.comment),
+        };
 
-//     match parsed {
-//         Ok(_) => None,
-//         Err(err) => Some(err.to_string()),
-//     }
-// }
+		return to_response(&info, "user")
+    }
 
-// #[wasm_bindgen]
-// pub fn validate_where_clause(clause: &str) -> bool {
-//     let query = "SELECT * FROM table WHERE ".to_owned() + clause;
+    Err(String::from("Failed to extract user"))
+}
 
-//     parse(&query).is_ok()
-// }
+#[wasm_bindgen]
+pub fn validate_query(query: &str) -> Option<String> {
+    let parsed = parse(query);
+
+    match parsed {
+        Ok(_) => None,
+        Err(err) => Some(err.to_string()),
+    }
+}
+
+#[wasm_bindgen]
+pub fn validate_where_clause(clause: &str) -> bool {
+    let query = "SELECT * FROM table WHERE ".to_owned() + clause;
+
+    parse(&query).is_ok()
+}

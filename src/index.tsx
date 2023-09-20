@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import embedPath from './generated/surrealist-embed_bg.wasm?url';
-import initEmbed, { validate_where_clause } from './generated/surrealist-embed';
+import initEmbed from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { actions, store } from "./store";

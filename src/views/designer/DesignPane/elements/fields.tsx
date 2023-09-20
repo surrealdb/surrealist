@@ -1,5 +1,4 @@
-import { Accordion, TextInput, Checkbox, SimpleGrid, Select, MultiSelect } from "@mantine/core";
-import { SURREAL_KINDS, GEOMETRY_TYPES } from "~/constants";
+import { Accordion, TextInput, Checkbox } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
 import { QueryInput, PermissionInput, FieldKindInput } from "../inputs";
 import { Lister } from "../lister";
