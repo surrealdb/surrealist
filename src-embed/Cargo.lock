@@ -2748,6 +2748,7 @@ version = "0.0.0"
 dependencies = [
  "concat-string",
  "console_error_panic_hook",
+ "once_cell",
  "regex",
  "serde",
  "serde-wasm-bindgen",

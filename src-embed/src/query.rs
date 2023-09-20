@@ -1,9 +1,10 @@
-use std::{collections::HashMap, time::Duration, future::IntoFuture, sync::OnceLock};
+use std::collections::HashMap;
+use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::Deserialize;
 use serde_wasm_bindgen::from_value;
 use wasm_bindgen::prelude::*;
-use tokio::time::timeout;
+use tokio::sync::Mutex;
 
 use surrealdb::{
     engine::remote::ws::{Client, Wss, Ws},
@@ -16,7 +17,7 @@ fn wrap_err(err: surrealdb::Error) -> JsValue {
 	JsValue::from_str(&err.to_string())
 }
 
-static CLIENT: OnceLock<Option<Surreal<Client>>> = OnceLock::new();
+static CLIENT: Lazy<Mutex<Option<Surreal<Client>>>> = Lazy::new(|| Mutex::new(None));
 
 #[derive(Deserialize)]
 pub struct ScopeField {
@@ -38,13 +39,15 @@ pub struct ConnectionInfo {
 
 #[wasm_bindgen]
 pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
+	let mut instance = CLIENT.lock().await;
+
 	let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
     let regex = Regex::new(r"^(https?://)?(.+?)$").unwrap();
     let matches = regex.captures(&info.endpoint).unwrap();
     let endpoint = matches.get(2).unwrap().as_str();
     let is_secure = info.endpoint.starts_with("https");
 
-    println!("Connecting to {}", endpoint);
+    console_log!("Connecting to {}", endpoint);
 
     let db = if is_secure {
         Surreal::new::<Wss>(endpoint).await.map_err(wrap_err)?
@@ -52,10 +55,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
         Surreal::new::<Ws>(endpoint).await.map_err(wrap_err)?
     };
 
-    let instance = CLIENT.get();
-
 	if instance.is_none() {
-		return Err(JsValue::from_str("Connection already open"));
+		*instance = None;
 	}
 
     match info.auth_mode.as_str() {
@@ -104,14 +105,16 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
     db.use_ns(info.namespace).await.map_err(wrap_err)?;
     db.use_db(info.database).await.map_err(wrap_err)?;
 
-	CLIENT.set(Some(db)).unwrap();
+	*instance = Some(db);
 
     Ok(())
 }
 
 #[wasm_bindgen]
 pub async fn close_connection() {
-    CLIENT.set(None).unwrap();
+	let mut instance = CLIENT.lock().await;
+
+	*instance = None;
 }
 
 fn make_error(err: &str) -> Array {
@@ -129,9 +132,9 @@ fn make_error(err: &str) -> Array {
 
 #[wasm_bindgen]
 pub async fn execute_query(query: String, max_time: u64) -> String {
-    println!("Executing query {}", query);
+    console_log!("Executing query {}", query);
 
-    let container = CLIENT.get_or_init(|| None);
+	let container = CLIENT.lock().await;
 
 	if container.is_none() {
 		let error = Value::Array(make_error("No connection open")).into_json();
@@ -140,61 +143,51 @@ pub async fn execute_query(query: String, max_time: u64) -> String {
 	}
 
     let client = container.as_ref().unwrap();
-    let query_task = client.query(query);
-    let timeout_duration = Duration::from_secs(max_time);
-    let timeout_result = timeout(timeout_duration, query_task.into_future()).await;
+    let query_task = client.query(query).await;
 
-    println!("Query task completed");
+    console_log!("Query task completed");
 
-    let results: Array = match timeout_result {
-        Ok(query_result) => match query_result {
-            Ok(mut response) => {
-                let statement_count = response.num_statements();
+    let results: Array = match query_task {
+		Ok(mut response) => {
+			let statement_count = response.num_statements();
 
-                let mut results = Array::with_capacity(statement_count);
-                let errors = response.take_errors();
+			let mut results = Array::with_capacity(statement_count);
+			let errors = response.take_errors();
 
-                for i in 0..statement_count {
-                    let mut entry = Object::default();
-                    let error = errors.get(&i);
+			for i in 0..statement_count {
+				let mut entry = Object::default();
+				let error = errors.get(&i);
 
-                    entry.insert("time".to_owned(), Value::from(""));
+				entry.insert("time".to_owned(), Value::from(""));
 
-                    let result: Value;
-                    let status: Value;
+				let result: Value;
+				let status: Value;
 
-                    match error {
-                        Some(error) => {
-                            result = Value::from(error.to_string());
-                            status = "ERR".into();
-                        }
-                        None => {
-                            result = response.take(i).unwrap();
-                            status = "OK".into();
-                        }
-                    };
+				match error {
+					Some(error) => {
+						result = Value::from(error.to_string());
+						status = "ERR".into();
+					}
+					None => {
+						result = response.take(i).unwrap();
+						status = "OK".into();
+					}
+				};
 
-                    entry.insert("result".to_owned(), result);
-                    entry.insert("status".to_owned(), status);
+				entry.insert("result".to_owned(), result);
+				entry.insert("status".to_owned(), status);
 
-                    results.push(Value::Object(entry));
-                }
+				results.push(Value::Object(entry));
+			}
 
-                results
-            }
-            Err(error) => {
-                let message = error.to_string();
+			results
+		}
+		Err(error) => {
+			let message = error.to_string();
 
-                println!("Query resulted in error: {}", message);
-                make_error(&message)
-            }
-        },
-        Err(_) => {
-            let message = format!("Query timed out after {} seconds", max_time);
-
-            println!("Query resulted in timeout");
-            make_error(&message)
-        }
+			console_log!("Query resulted in error: {}", message);
+			make_error(&message)
+		}
     };
 
     let result_value = Value::Array(results);

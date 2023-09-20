@@ -5,7 +5,6 @@ import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdi
 import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "radash";
 import { useState, useEffect } from "react";
-import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -15,6 +14,7 @@ import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealInfoDB } from "~/typings/surreal";
+import { getActiveSurreal } from "~/util/connection";
 import { showError } from "~/util/helpers";
 
 interface ScopeInfo {
@@ -41,7 +41,7 @@ export function ScopePane(props: ScopePaneProps) {
 	const [editingSession, setEditingSession] = useInputState("");
 
 	const fetchScopes = useStable(async () => {
-		const response = await adapter.getActiveSurreal().querySingle(`INFO FOR DB`);
+		const response = await getActiveSurreal().querySingle(`INFO FOR DB`);
 		const result = response[0].result as SurrealInfoDB;
 
 		if (!result) {
@@ -86,7 +86,7 @@ export function ScopePane(props: ScopePaneProps) {
 				query += ` SIGNUP (${editingSignup})`;
 			}
 
-			await adapter.getActiveSurreal().query(query);
+			await getActiveSurreal().query(query);
 			await fetchScopes();
 		} catch (err: any) {
 			showError("Failed to save scope", err.message);
@@ -112,7 +112,7 @@ export function ScopePane(props: ScopePaneProps) {
 	});
 
 	const removeScope = useStable(async (scope: string) => {
-		await adapter.getActiveSurreal().query(`REMOVE SCOPE ${scope}`);
+		await getActiveSurreal().query(`REMOVE SCOPE ${scope}`);
 		await fetchScopes();
 	});
 

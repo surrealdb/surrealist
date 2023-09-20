@@ -45,6 +45,7 @@ import { isConnectionValid, mergeConnections } from "~/util/environments";
 import { useLater } from "~/hooks/later";
 import { TabCreator } from "./creator";
 import { TabEditor } from "./editor";
+import { getSurreal, openSurrealConnection } from "~/util/connection";
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return <div style={{ display: props.visible ? "initial" : "none" }}>{props.children}</div>;
@@ -75,7 +76,7 @@ export function Scaffold() {
 		}
 
 		try {
-			adapter.openSurreal({
+			openSurrealConnection({
 				connection: mergedInfoDetails,
 				onConnect() {
 					setIsConnecting(false);
@@ -131,7 +132,7 @@ export function Scaffold() {
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
 
 		try {
-			const response = await adapter.getSurreal()?.query(override?.trim() || query, variables);
+			const response = await getSurreal()?.query(override?.trim() || query, variables);
 
 			store.dispatch(
 				actions.updateTab({
@@ -167,7 +168,7 @@ export function Scaffold() {
 
 	const closeConnection = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
-		adapter.getSurreal()?.close();
+		getSurreal()?.close();
 		setIsConnecting(false);
 		setIsConnected(false);
 	});
@@ -213,7 +214,7 @@ export function Scaffold() {
 
 	const handleActiveChange = useStable(async () => {
 		if (isConnected) {
-			adapter.getSurreal()?.close();
+			getSurreal()?.close();
 		}
 
 		await updateConfig();

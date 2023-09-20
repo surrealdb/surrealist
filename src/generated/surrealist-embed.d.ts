@@ -47,7 +47,7 @@ export function validate_query(query: string): string | undefined;
 export function validate_where_clause(clause: string): boolean;
 /**
 */
-export function initialize(): void;
+export function initialize_embed(): void;
 /**
 * @param {any} details
 * @returns {Promise<void>}
@@ -77,7 +77,7 @@ export interface InitOutput {
   readonly extract_user_definition: (a: number, b: number, c: number) => void;
   readonly validate_query: (a: number, b: number, c: number) => void;
   readonly validate_where_clause: (a: number, b: number) => number;
-  readonly initialize: () => void;
+  readonly initialize_embed: () => void;
   readonly open_connection: (a: number) => number;
   readonly close_connection: () => number;
   readonly execute_query: (a: number, b: number, c: number) => number;

@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import embedPath from './generated/surrealist-embed_bg.wasm?url';
-import initEmbed from './generated/surrealist-embed';
+import initEmbed, { initialize_embed } from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { actions, store } from "./store";
@@ -19,6 +19,8 @@ import "reactflow/dist/style.css";
 	
 	// Load the surrealist embed library
 	await initEmbed(embedPath);
+
+	initialize_embed();
 
 	// Load existing config
 	const config = await adapter.loadConfig();

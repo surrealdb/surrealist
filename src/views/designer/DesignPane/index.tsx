@@ -22,7 +22,6 @@ import { TableDefinition } from "~/types";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema, isEdgeTable } from "~/util/schema";
 import { buildDefinitionQueries, isSchemaValid } from "./helpers";
-import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useActiveKeys } from "~/hooks/keys";
 import { useIsLight } from "~/hooks/theme";
@@ -35,6 +34,7 @@ import { EventsElement } from "./elements/events";
 import { ModalTitle } from "~/components/ModalTitle";
 import { ViewElement } from "./elements/view";
 import { ChangefeedElement } from "./elements/changefeed";
+import { getActiveSurreal, getSurreal } from "~/util/connection";
 
 export interface SchemaPaneProps {
 	table: TableDefinition;
@@ -59,7 +59,7 @@ export function DesignPane(props: SchemaPaneProps) {
 			}
 
 			const query = buildDefinitionQueries(original, data);
-			const surreal = adapter.getActiveSurreal();
+			const surreal = getActiveSurreal();
 
 			surreal
 				.query(query)
@@ -96,7 +96,7 @@ export function DesignPane(props: SchemaPaneProps) {
 	});
 
 	const handleDelete = useStable(async () => {
-		const surreal = adapter.getSurreal();
+		const surreal = getSurreal();
 
 		if (!surreal || !props.table) {
 			return;

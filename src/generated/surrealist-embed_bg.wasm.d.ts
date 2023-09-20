@@ -10,7 +10,7 @@ export function extract_event_definition(a: number, b: number, c: number): void;
 export function extract_user_definition(a: number, b: number, c: number): void;
 export function validate_query(a: number, b: number, c: number): void;
 export function validate_where_clause(a: number, b: number): number;
-export function initialize(): void;
+export function initialize_embed(): void;
 export function open_connection(a: number): number;
 export function close_connection(): number;
 export function execute_query(a: number, b: number, c: number): number;

@@ -15,6 +15,7 @@ crate-type = ["cdylib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
+once_cell = "1.18.0"
 wasm-bindgen = "0.2.87"
 wasm-bindgen-futures = "0.4.37"
 serde-wasm-bindgen = "0.6.0"

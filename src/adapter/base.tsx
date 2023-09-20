@@ -1,6 +1,7 @@
 import { SurrealHandle, SurrealOptions, TableDefinition } from "~/types";
 
 export interface SurrealistAdapter {
+
 	/**
 	 * Returns whether local database serving is supported
 	 */
@@ -10,11 +11,6 @@ export interface SurrealistAdapter {
 	 * Returns whether window pinning is supported
 	 */
 	isPinningSupported: boolean;
-
-	/**
-	 * Returns whether update checking is supported
-	 */
-	isOpenURLSupported: boolean;
 
 	/**
 	 * Returns whether update checking is supported
@@ -74,39 +70,4 @@ export interface SurrealistAdapter {
 	 */
 	openUrl(url: string): Promise<void>;
 
-	/**
-	 * Fetch the schema from the database
-	 */
-	fetchSchema(): Promise<TableDefinition[]>;
-
-	/**
-	 * Validate the given query. Returns null if the query is valid, otherwise returns the error message
-	 *
-	 * @param query The query to validate
-	 */
-	validateQuery(query: string): Promise<string | null>;
-
-	/**
-	 * Verify whether the given where clause is valid
-	 *
-	 * @param clause The where clause to validate
-	 */
-	validateWhereClause(clause: string): Promise<boolean>;
-
-	/**
-	 * Open a new connection to the database
-	 *
-	 * @param options The options to use for the connection
-	 */
-	openSurreal(options: SurrealOptions): SurrealHandle;
-
-	/**
-	 * Retrieve the currently active surreal connection
-	 */
-	getSurreal(): SurrealHandle | null;
-
-	/**
-	 * Retrieve the currently active surreal connectionl, throwing an error if none is active
-	 */
-	getActiveSurreal(): SurrealHandle;
 }

@@ -6,8 +6,8 @@ import { useStable } from "~/hooks/stable";
 import { SplitValues, Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
 import { useHistory } from "~/hooks/history";
-import { adapter } from "~/adapter";
 import { useIsConnected } from "~/hooks/connection";
+import { getSurreal } from "~/util/connection";
 
 const SPLIT_SIZE: SplitValues = [250, 450];
 
@@ -35,7 +35,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	});
 
 	const fetchRecord = useStable(async (id: string | null) => {
-		const surreal = adapter.getSurreal();
+		const surreal = getSurreal();
 
 		if (!surreal || !id) {
 			return;
@@ -69,7 +69,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	});
 
 	const createRecord = useStable(async (table: string, json: string) => {
-		const surreal = adapter.getSurreal();
+		const surreal = getSurreal();
 
 		if (!surreal) {
 			return;
@@ -82,7 +82,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 	});
 
 	const updateRecord = useStable(async (json: string) => {
-		const surreal = adapter.getSurreal();
+		const surreal = getSurreal();
 
 		if (!surreal) {
 			return;
