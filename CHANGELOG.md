@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.9.2 - SurrealDB 1.0 support
+- Update to SurrealDB 1.0
+
 ## 1.9.1 - Beta 11 support
 - Update to SurrealDB beta 11
 - Fixed the web app not displaying query errors
