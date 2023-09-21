@@ -106,9 +106,21 @@ export function BaseNode(props: BaseNodeProps) {
 									</Text>
 								)}
 								{table.fields.map((field) => (
-									<Flex key={field.name} justify="space-between">
-										<Text color={isLight ? undefined : white}>{field.name}</Text>
-										<Text color="surreal">{field.kind}</Text>
+									<Flex key={field.name} justify="space-between" gap="lg">
+										<Text
+											truncate
+											color={isLight ? undefined : white}
+											title={field.name}
+										>
+											{field.name}
+										</Text>
+										<Text
+											truncate
+											color="surreal"
+											title={field.kind}
+										>
+											{field.kind}
+										</Text>
 									</Flex>
 								))}
 							</Stack>
