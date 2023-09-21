@@ -1,14 +1,14 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
-import { open } from "@tauri-apps/api/shell";
+import { open as openURL } from "@tauri-apps/api/shell";
+import { save, open } from "@tauri-apps/api/dialog";
 import { listen } from "@tauri-apps/api/event";
 import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { actions, store } from "~/store";
 import { SurrealistAdapter } from "./base";
 import { printLog } from "~/util/helpers";
-import { save } from "@tauri-apps/api/dialog";
-import { writeTextFile } from "@tauri-apps/api/fs";
+import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 
 const WAIT_DURATION = 1000;
 
@@ -81,7 +81,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async openUrl(url: string) {
-		open(url);
+		openURL(url);
 	}
 
 	public async saveFile(
@@ -99,6 +99,24 @@ export class DesktopAdapter implements SurrealistAdapter {
 		await writeTextFile(filePath, content);
 
 		return true;
+	}
+
+	public async openFile(
+		title: string,
+		filters: any,
+		multiple: boolean
+	): Promise<string | null> {
+		const url = await open({
+			title,
+			filters,
+			multiple
+		});
+
+		if (!url) {
+			return null;
+		}
+
+		return readTextFile(url as string);
 	}
 
 	private initDatabaseEvents() {

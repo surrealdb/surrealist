@@ -102,3 +102,10 @@ export const INDEX_TYPES = [
 	{ label: "Search", value: "search" },
 	// { label: "Vector", value: "vector" },
 ];
+
+export const SURQL_FILTERS = [
+	{
+		name: "SurrealDB Schema",
+		extensions: ["surql", "sql", "surrealql"],
+	},
+];

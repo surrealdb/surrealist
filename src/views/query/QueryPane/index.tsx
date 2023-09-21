@@ -1,6 +1,6 @@
 import { Monaco } from "@monaco-editor/react";
 import { editor, MarkerSeverity } from "monaco-editor";
-import { mdiDatabase } from "@mdi/js";
+import { mdiDatabase, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
@@ -11,6 +11,10 @@ import { configureQueryEditor } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { validate_query } from "~/generated/surrealist-embed";
+import { ActionIcon } from "@mantine/core";
+import { Icon } from "~/components/Icon";
+import { adapter } from "~/adapter";
+import { SURQL_FILTERS } from "~/constants";
 
 const ERR_REGEX = /Parse error on line (\d+) at character (\d+) when parsing '(.+)'/s;
 
@@ -57,7 +61,7 @@ export function QueryPane(props: QueryPaneProps) {
 		monaco.editor.setModelMarkers(model, "owner", markers);
 	});
 
-	const setQuery = useDebouncedCallback(200, (content: string | undefined) => {
+	const setQueryForced = useStable((content: string | undefined) => {
 		store.dispatch(
 			actions.updateTab({
 				id: activeTab.id,
@@ -68,6 +72,8 @@ export function QueryPane(props: QueryPaneProps) {
 		updateConfig();
 		updateValidation();
 	});
+
+	const setQuery = useDebouncedCallback(200, setQueryForced);
 
 	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
@@ -95,8 +101,24 @@ export function QueryPane(props: QueryPaneProps) {
 		});
 	});
 
+	const handleUpload = useStable(async () => {
+		const query = await adapter.openFile('Load query from file', SURQL_FILTERS, false);
+
+		if (typeof query == 'string') {
+			setQueryForced(query);
+		}
+	});
+
 	return (
-		<Panel title="Query" icon={mdiDatabase}>
+		<Panel
+			title="Query"
+			icon={mdiDatabase}
+			rightSection={
+				<ActionIcon onClick={handleUpload} title="Load from file">
+					<Icon color="light.4" path={mdiUpload} />
+				</ActionIcon>
+			}
+		>
 			<SurrealistEditor
 				language="surrealql"
 				onMount={configure}

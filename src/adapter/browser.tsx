@@ -61,4 +61,29 @@ export class BrowserAdapter implements SurrealistAdapter {
 		return true;
 	}
 
+	public async openFile(): Promise<string | null> {
+		const el = document.createElement('input');
+
+		el.type = 'file';
+		el.style.display = 'none';
+
+		el.click();
+
+		return new Promise((resolve, reject) => {
+			el.addEventListener('change', async () => {
+				const text = await el.files?.[0]?.text();
+
+				if (typeof text == 'string') {
+					resolve(text);
+				} else {
+					resolve(null);
+				}
+			});
+
+			el.addEventListener('error', async () => {
+				reject(new Error('Failed to read file'));
+			});
+		});
+	}
+
 }

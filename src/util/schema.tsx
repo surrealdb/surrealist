@@ -6,6 +6,7 @@ import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./connection";
 import { extractTypeList } from './helpers';
 import { adapter } from '~/adapter';
+import { SURQL_FILTERS } from '~/constants';
 
 /**
  * Fetch information about a table schema
@@ -185,12 +186,6 @@ export async function saveSchemaExport() {
 	}
 
 	const content = output.join("\n");
-	const filters = [
-		{
-			name: "SurrealDB Schema",
-			extensions: ["surql", "sql", "surrealql"],
-		},
-	];
 
-	adapter.saveFile("Save database schema", "schema.surql", filters, content);
+	adapter.saveFile("Save database schema", "schema.surql", SURQL_FILTERS, content);
 }

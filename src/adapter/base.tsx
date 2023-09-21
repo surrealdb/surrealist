@@ -78,4 +78,13 @@ export interface SurrealistAdapter {
 		content: string
 	): Promise<boolean>;
 
+	/**
+	 * Open a file locally
+	 */
+	openFile(
+		title: string,
+		filters: any,
+		multiple: boolean
+	): Promise<string | null>;
+
 }
