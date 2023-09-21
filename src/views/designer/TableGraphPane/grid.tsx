@@ -4,13 +4,12 @@ import { DesignerNodeMode, TableDefinition } from "~/types";
 import { isEdgeTable } from "~/util/schema";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
-import { ToggleList } from "~/hooks/toggle";
 
 export interface TableGridProps {
 	tables: TableDefinition[];
 	active: TableDefinition | null;
 	nodeMode: DesignerNodeMode;
-	expanded: ToggleList,
+	expanded: string[],
 	onSelectTable: (table: TableDefinition) => void;
 	onExpand: (name: string) => void;
 }

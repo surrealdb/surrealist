@@ -1,3 +1,4 @@
+import { Result } from "~/typings/utilities";
 import { SurrealistAdapter } from "./base";
 
 /**
@@ -42,9 +43,9 @@ export class BrowserAdapter implements SurrealistAdapter {
 		_title: string,
 		defaultPath: string,
 		_filters: any,
-		content: string
+		content: () => Result<string>
 	): Promise<boolean> {
-		const file = new File([content], '', { type: 'text/plain' });
+		const file = new File([await content()], '', { type: 'text/plain' });
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement('a');
 

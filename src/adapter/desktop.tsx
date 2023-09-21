@@ -9,6 +9,7 @@ import { actions, store } from "~/store";
 import { SurrealistAdapter } from "./base";
 import { printLog } from "~/util/helpers";
 import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
+import { Result } from "~/typings/utilities";
 
 const WAIT_DURATION = 1000;
 
@@ -88,7 +89,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		title: string,
 		defaultPath: string,
 		filters: any,
-		content: string
+		content: () => Result<string>
 	): Promise<boolean> {
 		const filePath = await save({ title, defaultPath, filters });
 	
@@ -96,7 +97,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return false;
 		}
 	
-		await writeTextFile(filePath, content);
+		await writeTextFile(filePath, await content());
 
 		return true;
 	}

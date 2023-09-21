@@ -1,6 +1,6 @@
 import surrealistLogo from "~/assets/icon.png";
-import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
-import { mdiHistory, mdiStar, mdiDownload } from "@mdi/js";
+import { Group, Button, Modal, TextInput, Image, Divider } from "@mantine/core";
+import { mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -13,11 +13,10 @@ import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { ViewMode } from "~/types";
 import { adapter } from "~/adapter";
-import { saveSchemaExport } from "~/util/schema";
-import { useIsConnected } from "~/hooks/connection";
 import { Selector } from "./selector";
 import { useTabsList } from "~/hooks/environment";
 import { ViewTab } from "../ViewTab";
+import { Exporter } from "../Exporter";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -29,7 +28,6 @@ export interface ToolbarProps {
 
 export function Toolbar(props: ToolbarProps) {
 	const isLight = useIsLight();
-	const isOnline = useIsConnected();
 	const activeTab = useStoreValue((state) => state.config.activeTab);
 
 	const enableListing = useStoreValue((state) => state.config.enableListing);
@@ -116,6 +114,11 @@ export function Toolbar(props: ToolbarProps) {
 					<Button px="xs" color={isLight ? "light.0" : "dark.4"} title="Toggle favorites" onClick={toggleFavorites}>
 						<Icon path={mdiStar} color={isLight ? "light.8" : "white"} />
 					</Button>
+
+					<Divider
+						orientation="vertical"
+						color={isLight ? 'gray.1' : 'gray.9'}
+					/>
 				</>
 			)}
 
@@ -123,14 +126,7 @@ export function Toolbar(props: ToolbarProps) {
 				<LocalDatabase openConnection={props.openConnection} closeConnection={props.closeConnection} />
 			)}
 
-			<Button
-				px="xs"
-				color={isLight ? "light.0" : "dark.4"}
-				title="Export database to file"
-				onClick={saveSchemaExport}
-				disabled={!isOnline}>
-				<Icon path={mdiDownload} color={isOnline ? (isLight ? "light.8" : "white") : undefined} />
-			</Button>
+			<Exporter />
 
 			<Settings />
 

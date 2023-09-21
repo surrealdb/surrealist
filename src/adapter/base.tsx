@@ -1,3 +1,5 @@
+import { Result } from "~/typings/utilities";
+
 export interface SurrealistAdapter {
 
 	/**
@@ -75,7 +77,7 @@ export interface SurrealistAdapter {
 		title: string,
 		defaultPath: string,
 		filters: any,
-		content: string
+		content: () => Result<string>
 	): Promise<boolean>;
 
 	/**

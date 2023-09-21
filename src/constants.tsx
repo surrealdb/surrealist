@@ -1,6 +1,16 @@
 import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench } from "@mdi/js";
 
 export type StructureTab = "graph" | "builder";
+export type ExportType = typeof EXPORT_TYPES[number];
+
+export const EXPORT_TYPES = [
+	"data",
+	"tables",
+	"analyzers",
+	"functions",
+	"params",
+	"scopes"
+] as const;
 
 export const AUTH_MODES = [
 	{ label: "Root authentication", value: "root" },

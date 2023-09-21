@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useStable } from "./stable";
 
-export type ToggleList = string[];
-export type Toggler = (item: string) => boolean;
+export function useToggleList<T = string>(initial?: T[]): [T[], (item: T) => boolean] {
+	const [list, setList] = useState<T[]>(initial ?? []);
 
-export function useToggleList(): [ToggleList, Toggler] {
-	const [list, setList] = useState<ToggleList>([]);
-
-	const toggle = useStable((item: string) => {
+	const toggle = useStable((item: T) => {
 		const index = list.indexOf(item);
 
 		if (index === -1) {

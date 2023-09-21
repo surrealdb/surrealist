@@ -4,7 +4,6 @@ import { DesignerNodeMode, TableDefinition } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, Position } from "reactflow";
 import dagere from "dagre";
-import { ToggleList } from "~/hooks/toggle";
 
 type HeightMap = Record<DesignerNodeMode, (t: TableDefinition, e: boolean) => number>;
 
@@ -45,7 +44,7 @@ export function buildTableGraph(
 	tables: TableDefinition[],
 	active: TableDefinition | null,
 	nodeMode: DesignerNodeMode,
-	expanded: ToggleList,
+	expanded: string[],
 	onExpand: (name: string) => void
 ): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
