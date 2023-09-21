@@ -57,9 +57,9 @@ export interface SurrealistAdapter {
 	stopDatabase(): Promise<void>;
 
 	/**
-	 * Toggle the pinned state of the window
+	 * Set the pinned state of the window
 	 */
-	togglePinned(): Promise<void>;
+	setWindowPinned(pinned: boolean): Promise<void>;
 
 	/**
 	 * Open the given URL in the default browser

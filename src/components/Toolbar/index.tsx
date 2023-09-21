@@ -1,6 +1,6 @@
 import surrealistLogo from "~/assets/icon.png";
 import { Group, Button, Modal, TextInput, Image } from "@mantine/core";
-import { mdiPinOff, mdiPin, mdiHistory, mdiStar, mdiCloudDownload } from "@mdi/js";
+import { mdiHistory, mdiStar, mdiDownload } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -30,7 +30,6 @@ export interface ToolbarProps {
 export function Toolbar(props: ToolbarProps) {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
-	const isPinned = useStoreValue((state) => state.isPinned);
 	const activeTab = useStoreValue((state) => state.config.activeTab);
 
 	const enableListing = useStoreValue((state) => state.config.enableListing);
@@ -56,13 +55,6 @@ export function Toolbar(props: ToolbarProps) {
 		updateTitle();
 		updateConfig();
 		closeEditingTab();
-	});
-
-	const togglePinned = useStable(() => {
-		store.dispatch(actions.togglePinned());
-
-		adapter.togglePinned();
-		updateTitle();
 	});
 
 	const toggleHistory = useStable(() => {
@@ -115,10 +107,6 @@ export function Toolbar(props: ToolbarProps) {
 
 			<Spacer />
 
-			{adapter.isServeSupported && (
-				<LocalDatabase openConnection={props.openConnection} closeConnection={props.closeConnection} />
-			)}
-
 			{props.viewMode == "query" && (
 				<>
 					<Button px="xs" color={isLight ? "light.0" : "dark.4"} title="Toggle history" onClick={toggleHistory}>
@@ -131,26 +119,18 @@ export function Toolbar(props: ToolbarProps) {
 				</>
 			)}
 
-			{props.viewMode == "designer" && (
-				<Button
-					px="xs"
-					color={isLight ? "light.0" : "dark.4"}
-					title="Export schema to file"
-					onClick={saveSchemaExport}
-					disabled={!isOnline}>
-					<Icon path={mdiCloudDownload} color={isOnline ? (isLight ? "light.8" : "white") : undefined} />
-				</Button>
+			{adapter.isServeSupported && (
+				<LocalDatabase openConnection={props.openConnection} closeConnection={props.closeConnection} />
 			)}
 
-			{adapter.isPinningSupported && (
-				<Button
-					px="xs"
-					color={isLight ? "light.0" : "dark.4"}
-					title={isPinned ? "Unpin window" : "Pin window"}
-					onClick={togglePinned}>
-					<Icon path={isPinned ? mdiPinOff : mdiPin} color={isLight ? "light.8" : "white"} />
-				</Button>
-			)}
+			<Button
+				px="xs"
+				color={isLight ? "light.0" : "dark.4"}
+				title="Export database to file"
+				onClick={saveSchemaExport}
+				disabled={!isOnline}>
+				<Icon path={mdiDownload} color={isOnline ? (isLight ? "light.8" : "white") : undefined} />
+			</Button>
 
 			<Settings />
 

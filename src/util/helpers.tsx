@@ -14,7 +14,7 @@ export const TRUNCATE_STYLE: CSSProperties = {
 };
 
 export function updateTitle() {
-	const { isPinned, config } = store.getState();
+	const { config } = store.getState();
 
 	let title = "";
 
@@ -28,7 +28,7 @@ export function updateTitle() {
 		}
 	}
 
-	if (isPinned) {
+	if (config.isPinned) {
 		title += " (Pinned)";
 	}
 

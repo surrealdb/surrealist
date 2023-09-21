@@ -14,11 +14,13 @@ import { DARK_THEME, LIGHT_THEME, getMonaco } from "~/util/editor";
 import { Icon } from "../Icon";
 import { Scaffold } from "../Scaffold";
 import { adapter } from "~/adapter";
+import { updateTitle } from "~/util/helpers";
 
 export function App() {
 	const update = useStoreValue((state) => state.availableUpdate);
 	const showUpdate = useStoreValue((state) => state.showAvailableUpdate);
 	const colorScheme = useStoreValue((state) => state.config.theme);
+	const isPinned = useStoreValue((state) => state.config.isPinned);
 	const defaultScheme = useStoreValue((state) => state.nativeTheme);
 	const monacoLoaded = useStoreValue((state) => state.monacoLoaded);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
@@ -39,6 +41,15 @@ export function App() {
 		getMonaco()?.editor?.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
 	}, [colorScheme, monacoLoaded]);
 
+	useEffect(() => {
+		adapter.setWindowPinned(isPinned);
+		updateTitle();
+	}, [isPinned]);
+
+	const togglePinned = useStable(() => {
+		store.dispatch(actions.toggleWindowPinned());
+	});
+
 	const fontZoomInstructions = {
 		increase: () => store.dispatch(actions.increaseFontZoomLevel()),
 		decrease: () => store.dispatch(actions.decreaseFontZoomLevel()),
@@ -54,6 +65,8 @@ export function App() {
 
 		["ctrl+alt+0", fontZoomInstructions.reset],
 		["cmd+alt+0", fontZoomInstructions.reset],
+
+		["f11", togglePinned],
 	], []);
 
 	return (

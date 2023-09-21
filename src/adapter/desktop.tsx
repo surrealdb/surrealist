@@ -23,7 +23,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public isPromotionSupported = false;
 
 	#startTask: any;
-	#isPinned = false;
 
 	public constructor() {
 		this.initDatabaseEvents();
@@ -77,10 +76,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return invoke<void>("stop_database");
 	}
 
-	public async togglePinned() {
-		this.#isPinned = !this.#isPinned;
-
-		appWindow.setAlwaysOnTop(this.#isPinned);
+	public async setWindowPinned(value: boolean) {
+		appWindow.setAlwaysOnTop(value);
 	}
 
 	public async openUrl(url: string) {

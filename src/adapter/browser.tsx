@@ -30,7 +30,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		throw new Error("Not supported");
 	}
 
-	public async togglePinned() {
+	public async setWindowPinned() {
 		throw new Error("Not supported");
 	}
 

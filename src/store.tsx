@@ -28,7 +28,6 @@ const mainSlice = createSlice({
 	initialState: {
 		config: createBaseConfig(),
 		nativeTheme: "light" as ColorScheme,
-		isPinned: false,
 		isServing: false,
 		servePending: false,
 		isConnected: false,
@@ -135,8 +134,12 @@ const mainSlice = createSlice({
 			state.databaseSchema = [];
 		},
 
-		togglePinned(state) {
-			state.isPinned = !state.isPinned;
+		setWindowPinned(state, { payload }: PayloadAction<boolean>) {
+			state.config.isPinned = payload;
+		},
+
+		toggleWindowPinned(state) {
+			state.config.isPinned = !state.config.isPinned;
 		},
 
 		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {

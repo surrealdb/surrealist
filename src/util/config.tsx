@@ -5,6 +5,7 @@ export function createBaseConfig(): SurrealistConfig {
 		theme: "automatic",
 		tabs: [],
 		environments: [],
+		isPinned: false,
 		activeTab: null,
 		autoConnect: true,
 		tableSuggest: true,
