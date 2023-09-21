@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.9.3 - Feature parity
+- Improved feature parity between the desktop and web app
+	- Designer view is now available in the web app
+	- Authentication view is now available in the web app
+	- Connections are now handled the same way
+- Fixed web app always starting in light theme for a split second
+
 ## 1.9.2 - SurrealDB 1.0 support
 - Update to SurrealDB 1.0
 

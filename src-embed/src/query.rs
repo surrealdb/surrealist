@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::Deserialize;
+use serde_json::Value as JsonValue;
 use serde_wasm_bindgen::from_value;
 use wasm_bindgen::prelude::*;
 use tokio::sync::Mutex;
@@ -131,7 +132,7 @@ fn make_error(err: &str) -> Array {
 }
 
 #[wasm_bindgen]
-pub async fn execute_query(query: String, max_time: u64) -> String {
+pub async fn execute_query(query: String, params: JsValue) -> String {
     console_log!("Executing query {}", query);
 
 	let container = CLIENT.lock().await;
@@ -142,8 +143,9 @@ pub async fn execute_query(query: String, max_time: u64) -> String {
 		return serde_json::to_string(&error).unwrap();
 	}
 
+	let param_map: JsonValue = from_value(params).unwrap();
     let client = container.as_ref().unwrap();
-    let query_task = client.query(query).await;
+    let query_task = client.query(query).bind(&param_map).await;
 
     console_log!("Query task completed");
 

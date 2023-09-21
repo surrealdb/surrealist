@@ -1,7 +1,7 @@
 import { mapKeys, snake } from 'radash';
 import { open_connection, close_connection, execute_query } from '../generated/surrealist-embed';
 import { SurrealOptions } from '~/types';
-import { store } from '~/store';
+import { actions, store } from '~/store';
 
 export interface SurrealConnection {
 	close(): void;
@@ -11,6 +11,50 @@ export interface SurrealConnection {
 
 let instance: SurrealConnection | undefined;
 let connecting = false;
+
+// Construct a fake error result
+function createError(message: string) {
+	return [{ time: '', status: 'ERR', result: 'Surrealist: ' + message }];
+}
+
+// Execute a query and parse the result
+async function executeQuery(query: string, params: any) {
+	const response = await execute_query(query, params || {});
+
+	return JSON.parse(response);
+}
+
+// Schedule a query timeout error
+async function scheduleTimeout(seconds: number) {
+	return new Promise(res =>
+		setTimeout(() => res(createError(`query timed out after ${seconds} seconds. You can increase this timeout in the Surrealist settings`)), seconds * 1000)
+	);
+}
+
+async function execute(query: string, params: any) {
+	console.log('Executing:', query, params);
+
+	const { queryTimeout } = store.getState().config;
+
+	store.dispatch(actions.setQueryActive(true));
+
+	try {
+		const result = await Promise.race([
+			executeQuery(query, params),
+			scheduleTimeout(queryTimeout)
+		]);
+
+		console.log('Query result:', result);
+
+		return result;
+	} catch(err: any) {
+		console.error('Query failed:', err);
+
+		return createError('an unknown error has occurred, please check the console for more details');
+	} finally {
+		store.dispatch(actions.setQueryActive(false));
+	}
+}
 
 /**
  * Access the active surreal instance
@@ -79,16 +123,4 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 	instance = handle;
 
 	return handle;
-}
-
-// TODO Pass params to WASM
-async function execute(query: string, params: any) {
-	console.log('Executing:', query, params);
-
-	const maxTime = store.getState().config.queryTimeout;
-	const res = await execute_query(query, BigInt(maxTime));
-
-	console.log('Result:', res);
-
-	return JSON.parse(res);
 }

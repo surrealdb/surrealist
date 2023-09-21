@@ -46,9 +46,6 @@ export function validate_query(query: string): string | undefined;
 */
 export function validate_where_clause(clause: string): boolean;
 /**
-*/
-export function initialize_embed(): void;
-/**
 * @param {any} details
 * @returns {Promise<void>}
 */
@@ -59,10 +56,13 @@ export function open_connection(details: any): Promise<void>;
 export function close_connection(): Promise<void>;
 /**
 * @param {string} query
-* @param {bigint} max_time
+* @param {any} params
 * @returns {Promise<string>}
 */
-export function execute_query(query: string, max_time: bigint): Promise<string>;
+export function execute_query(query: string, params: any): Promise<string>;
+/**
+*/
+export function initialize_embed(): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -77,10 +77,10 @@ export interface InitOutput {
   readonly extract_user_definition: (a: number, b: number, c: number) => void;
   readonly validate_query: (a: number, b: number, c: number) => void;
   readonly validate_where_clause: (a: number, b: number) => number;
-  readonly initialize_embed: () => void;
   readonly open_connection: (a: number) => number;
   readonly close_connection: () => number;
   readonly execute_query: (a: number, b: number, c: number) => number;
+  readonly initialize_embed: () => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;

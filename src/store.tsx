@@ -32,6 +32,7 @@ const mainSlice = createSlice({
 		isServing: false,
 		servePending: false,
 		isConnected: false,
+		isQueryActive: false,
 		consoleOutput: [] as string[],
 		availableUpdate: "",
 		showAvailableUpdate: false,
@@ -85,6 +86,10 @@ const mainSlice = createSlice({
 
 		setWordWrap(state, action: PayloadAction<boolean>) {
 			state.config.wordWrap = action.payload;
+		},
+
+		setQueryActive(state, action: PayloadAction<boolean>) {
+			state.isQueryActive = action.payload;
 		},
 
 		setTabSearch(state, action: PayloadAction<boolean>) {

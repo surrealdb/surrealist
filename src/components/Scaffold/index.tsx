@@ -60,6 +60,7 @@ export function Scaffold() {
 	const autoConnect = useStoreValue((state) => state.config.autoConnect);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
 	const isConnected = useStoreValue((state) => state.isConnected);
+	const isQuerying = useStoreValue((state) => state.isQueryActive);
 	const tabInfo = useActiveTab();
 
 	const [isConnecting, setIsConnecting] = useState(false);
@@ -396,7 +397,9 @@ export function Scaffold() {
 												color="surreal"
 												onClick={handleSendQuery}
 												className={classes.sendButton}
-												title="Send Query (F9)">
+												title="Send Query (F9)"
+												loading={isQuerying}
+											>
 												Send Query
 											</Button>
 										)
