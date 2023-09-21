@@ -11,6 +11,8 @@ interface TableNodeProps {
 		isSelected: boolean;
 		hasLeftEdge: boolean;
 		hasRightEdge: boolean;
+		expanded: boolean;
+		onExpand: (name: string) => void
 	};
 }
 
@@ -27,6 +29,8 @@ export function TableNode({ withoutGraph, data }: TableNodeProps) {
 			hasLeftEdge={!withoutGraph && data.hasLeftEdge}
 			hasRightEdge={!withoutGraph && data.hasRightEdge}
 			withoutGraph={withoutGraph}
+			expanded={data.expanded}
+			onExpand={data.onExpand}
 		/>
 	);
 }

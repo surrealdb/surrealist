@@ -4,8 +4,11 @@ import { DesignerNodeMode, TableDefinition } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, Position } from "reactflow";
 import dagere from "dagre";
+import { ToggleList } from "~/hooks/toggle";
 
-type HeightMap = Record<DesignerNodeMode, (t: TableDefinition) => number>;
+type HeightMap = Record<DesignerNodeMode, (t: TableDefinition, e: boolean) => number>;
+
+export const MAX_FIELDS = 7;
 
 export const NODE_TYPES = {
 	table: TableNode,
@@ -13,7 +16,7 @@ export const NODE_TYPES = {
 };
 
 const HEIGHTS: HeightMap = {
-	fields: (t) => 56 + t.fields.length * 34,
+	fields: (t, e) => 56 + (e ? t.fields.length : Math.min(t.fields.length, MAX_FIELDS)) * 34,
 	summary: () => 125,
 	simple: () => 24,
 };
@@ -30,8 +33,8 @@ export function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
 		const [isEdge, from, to] = extractEdgeRecords(table);
 
 		return {
-			isEdge,
 			table,
+			isEdge,
 			to,
 			from,
 		};
@@ -41,7 +44,9 @@ export function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
 export function buildTableGraph(
 	tables: TableDefinition[],
 	active: TableDefinition | null,
-	nodeMode: DesignerNodeMode
+	nodeMode: DesignerNodeMode,
+	expanded: ToggleList,
+	onExpand: (name: string) => void
 ): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
 	const graph = new dagere.graphlib.Graph();
@@ -54,7 +59,8 @@ export function buildTableGraph(
 
 	// Define all tables as nodes
 	for (const { table, isEdge } of items) {
-		const height = HEIGHTS[nodeMode](table);
+		const isExpanded = expanded.includes(table.schema.name);
+		const height = HEIGHTS[nodeMode](table, isExpanded);
 
 		nodes.push({
 			id: table.schema.name,
@@ -67,7 +73,9 @@ export function buildTableGraph(
 				isSelected: active?.schema.name == table.schema.name,
 				hasLeftEdge: false,
 				hasRightEdge: false,
-				nodeMode
+				expanded: isExpanded,
+				nodeMode,
+				onExpand
 			},
 		});
 

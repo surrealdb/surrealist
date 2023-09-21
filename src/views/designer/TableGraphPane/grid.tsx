@@ -4,16 +4,19 @@ import { DesignerNodeMode, TableDefinition } from "~/types";
 import { isEdgeTable } from "~/util/schema";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
+import { ToggleList } from "~/hooks/toggle";
 
 export interface TableGridProps {
 	tables: TableDefinition[];
 	active: TableDefinition | null;
 	nodeMode: DesignerNodeMode;
+	expanded: ToggleList,
 	onSelectTable: (table: TableDefinition) => void;
+	onExpand: (name: string) => void;
 }
 
 export const TableGrid = forwardRef<HTMLDivElement, TableGridProps>((props, ref) => {
-	const { tables, active, nodeMode, onSelectTable } = props;
+	const { tables, active, nodeMode, onSelectTable, expanded, onExpand } = props;
 	
 	const elements = tables.map((table) => {
 		const isSelected = table.schema.name === active?.schema?.name;
@@ -38,7 +41,9 @@ export const TableGrid = forwardRef<HTMLDivElement, TableGridProps>((props, ref)
 						isSelected,
 						nodeMode,
 						hasLeftEdge: false,
-						hasRightEdge: false 
+						hasRightEdge: false,
+						expanded: expanded.includes(table.schema.name),
+						onExpand: onExpand
 					}}
 				/>
 			</div>

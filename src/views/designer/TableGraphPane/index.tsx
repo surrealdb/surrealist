@@ -24,6 +24,7 @@ import { updateConfig } from "~/util/helpers";
 import { useDesignerConfig } from "./hooks";
 import { TableGrid } from "./grid";
 import { RadioSelect } from "~/components/RadioSelect";
+import { useToggleList } from "~/hooks/toggle";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -47,6 +48,7 @@ export interface TableGraphPaneProps {
 export function TableGraphPane(props: TableGraphPaneProps) {
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+	const [expanded, toggleExpanded] = useToggleList();
 	const [isRendering, setIsRendering] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [showConfig, setShowConfig] = useState(false);
@@ -59,11 +61,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const { nodeMode, layoutMode } = useDesignerConfig(activeTab);
 
 	useEffect(() => {
-		const [nodes, edges] = buildTableDiagram(props.tables, props.active, nodeMode);
+		const [nodes, edges] = buildTableDiagram(
+			props.tables,
+			props.active,
+			nodeMode,
+			expanded,
+			(table) => toggleExpanded(table)
+		);
 
 		setNodes(nodes);
 		setEdges(edges);
-	}, [props.tables, props.active, nodeMode]);
+	}, [props.tables, props.active, nodeMode, expanded]);
 
 	const createSnapshot = useStable(async (filePath: string) => {
 		const contents = await toBlob(ref.current!, { cacheBust: true });
@@ -263,6 +271,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						tables={props.tables}
 						active={props.active}
 						nodeMode={nodeMode}
+						expanded={expanded}
+						onExpand={toggleExpanded}
 						onSelectTable={(table) => {
 							props.setActiveTable(table.schema.name);
 						}}

@@ -11,6 +11,8 @@ interface EdgeNodeProps {
 		nodeMode: DesignerNodeMode;
 		hasLeftEdge: boolean;
 		hasRightEdge: boolean;
+		expanded: boolean;
+		onExpand: (name: string) => void;
 	};
 }
 
@@ -27,6 +29,8 @@ export function EdgeNode({ data, withoutGraph }: EdgeNodeProps) {
 			hasLeftEdge={!withoutGraph}
 			hasRightEdge={!withoutGraph}
 			withoutGraph={withoutGraph}
+			expanded={data.expanded}
+			onExpand={data.onExpand}
 		/>
 	);
 }

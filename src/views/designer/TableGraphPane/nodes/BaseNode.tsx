@@ -1,10 +1,12 @@
-import { Divider, Flex, Group, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
-import { Handle, Position } from "reactflow";
+import { Button, Divider, Flex, Group, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
+import { mdiBullhorn, mdiChevronDown,  mdiChevronUp, mdiCodeBraces, mdiFlash } from "@mdi/js";
 import { DesignerNodeMode, TableDefinition } from "~/types";
+import { Handle, Position } from "reactflow";
 import { useHandleStyle } from "../hooks";
 import { Icon } from "~/components/Icon";
-import { mdiBullhorn, mdiCodeBraces, mdiFlash } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
+import { MAX_FIELDS } from "../helpers";
 
 interface SummaryProps {
 	isLight: boolean;
@@ -34,6 +36,77 @@ function Summary(props: SummaryProps) {
 	);
 }
 
+interface ElementsProps {
+	isLight: boolean;
+	table: TableDefinition;
+	expanded: boolean;
+	onExpand: (name: string) => void;
+}
+
+function Elements(props: ElementsProps) {
+	const { colors, white } = useMantineTheme();
+
+	const fields = props.table.fields.slice(0, props.expanded ? undefined : MAX_FIELDS);
+	const overflow = props.table.fields.length - MAX_FIELDS;
+
+	const toggleOverflow = useStable((e: any) => {
+		e.stopPropagation();
+		props.onExpand(props.table.schema.name);
+	});
+
+	return (
+		<Stack spacing="xs" mt={10} p={0}>
+			{fields.length === 0 && (
+				<Text align="center" color={props.isLight ? "dimmed" : colors.dark[3]}>
+					No fields defined
+				</Text>
+			)}
+			{fields.map((field) => (
+				<Flex key={field.name} justify="space-between" gap="lg"> 
+					<Text
+						truncate
+						color={props.isLight ? undefined : white}
+						title={field.name}
+					>
+						{field.name}
+					</Text>
+					{field.kind ? (
+						<Text
+							truncate
+							color="surreal"
+							title={field.kind}
+						>
+							{field.kind}
+						</Text>
+					) : (
+						<Text
+							color="gray.7"
+							title={field.kind}
+						>
+							none
+						</Text>
+					)}
+				</Flex>
+			))}
+			{overflow > 0 && (
+				<Button
+					color="light"
+					variant="subtle"
+					onClick={toggleOverflow}
+					size="xs"
+					h={26}
+				>
+					{props.expanded ? `Show less` : `Show ${overflow} more`}
+					<Icon
+						path={props.expanded ? mdiChevronUp : mdiChevronDown}
+						right
+					/>
+				</Button>
+			)}
+		</Stack>
+	);
+}
+
 interface BaseNodeProps {
 	icon: string;
 	isLight: boolean;
@@ -43,11 +116,13 @@ interface BaseNodeProps {
 	hasRightEdge: boolean;
 	nodeMode: DesignerNodeMode;
 	withoutGraph?: boolean;
+	expanded: boolean;
+	onExpand: (name: string) => void;
 }
 
 export function BaseNode(props: BaseNodeProps) {
 	const { colors, white, ...theme } = useMantineTheme();
-	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, icon, nodeMode, withoutGraph } = props;
+	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, icon, nodeMode, withoutGraph, expanded, onExpand } = props;
 
 	const handleStyle = useHandleStyle();
 	const primaryColor = theme.fn.primaryColor();
@@ -99,31 +174,12 @@ export function BaseNode(props: BaseNodeProps) {
 						/>
 
 						{nodeMode == 'fields' ? (
-							<Stack spacing="xs" mt={10} p={0}>
-								{table.fields.length === 0 && (
-									<Text align="center" color={isLight ? "dimmed" : colors.dark[3]}>
-										No fields defined
-									</Text>
-								)}
-								{table.fields.map((field) => (
-									<Flex key={field.name} justify="space-between" gap="lg">
-										<Text
-											truncate
-											color={isLight ? undefined : white}
-											title={field.name}
-										>
-											{field.name}
-										</Text>
-										<Text
-											truncate
-											color="surreal"
-											title={field.kind}
-										>
-											{field.kind}
-										</Text>
-									</Flex>
-								))}
-							</Stack>
+							<Elements
+								isLight={isLight}
+								table={table}
+								expanded={expanded}
+								onExpand={onExpand}
+							/>
 						) : (
 							<Stack spacing="xs" mt={10} p={0}>
 								<Summary
