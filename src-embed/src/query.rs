@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use serde_wasm_bindgen::from_value;
+use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 use tokio::sync::RwLock;
 
@@ -16,6 +16,20 @@ use surrealdb::{
 // Utility for wrapping a SDB error into a JS value
 fn wrap_err(err: surrealdb::Error) -> JsValue {
 	JsValue::from_str(&err.to_string())
+}
+
+// Fake an error response
+fn make_error(err: &str) -> Array {
+    let mut results = Array::with_capacity(1);
+    let mut entry = Object::default();
+
+    entry.insert("time".to_owned(), Value::from(""));
+    entry.insert("result".to_owned(), Value::from(err));
+    entry.insert("status".to_owned(), Value::from("ERR"));
+
+    results.push(Value::Object(entry));
+
+    results
 }
 
 static CLIENT: Lazy<RwLock<Option<Surreal<Client>>>> = Lazy::new(|| RwLock::new(None));
@@ -36,6 +50,13 @@ pub struct ConnectionInfo {
     pub auth_mode: String,
     pub scope: String,
     pub scope_fields: Vec<ScopeField>,
+}
+
+#[derive(Serialize)]
+pub struct SurrealVersion {
+    pub major: u64,
+	pub minor: u64,
+	pub patch: u64,
 }
 
 #[wasm_bindgen]
@@ -118,17 +139,41 @@ pub async fn close_connection() {
 	*instance = None;
 }
 
-fn make_error(err: &str) -> Array {
-    let mut results = Array::with_capacity(1);
-    let mut entry = Object::default();
+#[wasm_bindgen]
+pub async fn query_version() -> Option<JsValue> {
+	console_log!("Querying database version");
 
-    entry.insert("time".to_owned(), Value::from(""));
-    entry.insert("result".to_owned(), Value::from(err));
-    entry.insert("status".to_owned(), Value::from("ERR"));
+	let container = CLIENT.read().await;
 
-    results.push(Value::Object(entry));
+	if container.is_none() {
+		return None;
+	}
 
-    results
+    let client = container.as_ref().unwrap();
+	let version = client.version().await;
+
+	return match version {
+		Ok(version) => {
+			console_log!("Database version is {}", version.to_string());
+
+			let semver = SurrealVersion {
+				major: version.major,
+				minor: version.minor,
+				patch: version.patch,
+			};
+
+			match to_value(&semver) {
+				Ok(value) => Some(value),
+				Err(_) => None,
+			}
+		}
+		Err(error) => {
+			let message = error.to_string();
+
+			console_log!("Query resulted in error: {}", message);
+			None
+		}
+	}
 }
 
 #[wasm_bindgen]

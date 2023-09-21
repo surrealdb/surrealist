@@ -12,7 +12,8 @@
 	- Now supports exporting table records
 	- Select which elements to export in the new exporter dialog
 	- Add support for analyzers, scopes, params, and functions
-- Add button to load query from a file
+- Surrealist now warns you when you connect to an outdated version of SurrealDB
+- Added a button to load a query from disk
 - Replaced the window pinning toolbar button with a settings entry and hotkey (F11)
 - Fixed web app always starting in light theme for a split second
 

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { readFileSync } from 'node:fs';
 
-const { version, author } = JSON.parse(readFileSync('./package.json', 'utf8'));
+const { version, author, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -31,6 +31,7 @@ export default defineConfig({
 	},
 	define: {
 		'import.meta.env.VERSION': `"${version}"`,
-		'import.meta.env.AUTHOR': `"${author}"`
+		'import.meta.env.AUTHOR': `"${author}"`,
+		'import.meta.env.SDB_VERSION': `"${surreal}"`,
 	}
 });

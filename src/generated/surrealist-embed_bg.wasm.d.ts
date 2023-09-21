@@ -12,6 +12,7 @@ export function validate_query(a: number, b: number, c: number): void;
 export function validate_where_clause(a: number, b: number): number;
 export function open_connection(a: number): number;
 export function close_connection(): number;
+export function query_version(): number;
 export function execute_query(a: number, b: number, c: number): number;
 export function initialize_embed(): void;
 export function __wbindgen_malloc(a: number, b: number): number;

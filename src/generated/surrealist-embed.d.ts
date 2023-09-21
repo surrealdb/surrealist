@@ -55,6 +55,10 @@ export function open_connection(details: any): Promise<void>;
 */
 export function close_connection(): Promise<void>;
 /**
+* @returns {Promise<any | undefined>}
+*/
+export function query_version(): Promise<any | undefined>;
+/**
 * @param {string} query
 * @param {any} params
 * @returns {Promise<string>}
@@ -79,6 +83,7 @@ export interface InitOutput {
   readonly validate_where_clause: (a: number, b: number) => number;
   readonly open_connection: (a: number) => number;
   readonly close_connection: () => number;
+  readonly query_version: () => number;
   readonly execute_query: (a: number, b: number, c: number) => number;
   readonly initialize_embed: () => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;

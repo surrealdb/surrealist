@@ -1,7 +1,14 @@
 import { mapKeys, snake } from 'radash';
-import { open_connection, close_connection, execute_query } from '../generated/surrealist-embed';
+import { open_connection, close_connection, execute_query, query_version } from '../generated/surrealist-embed';
 import { SurrealOptions } from '~/types';
 import { actions, store } from '~/store';
+import compare from 'semver-compare';
+import { showNotification } from '@mantine/notifications';
+import { Stack, Text } from '@mantine/core';
+import { Icon } from '~/components/Icon';
+import { mdiAlert } from '@mdi/js';
+
+const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 
 export interface SurrealConnection {
 	close(): void;
@@ -31,6 +38,7 @@ async function scheduleTimeout(seconds: number) {
 	);
 }
 
+// Execute a query with timeout
 async function execute(query: string, params: any) {
 	console.log('Executing:', query, params);
 
@@ -54,6 +62,49 @@ async function execute(query: string, params: any) {
 	} finally {
 		store.dispatch(actions.setQueryActive(false));
 	}
+}
+
+// Display a notification if the database version is unsupported
+async function checkDatabaseVersion() {
+	const semver = await query_version();
+
+	let title: string;
+	let message: string;
+
+	if (semver == undefined) {
+		title = 'Failed to retrieve database version';
+		message = 'Failed to retrieve the remote database version. This may be caused by a network error or an older version of SurrealDB';
+	} else {
+		const version = `${semver.major}.${semver.minor}.${semver.patch}`;
+
+		if (compare(version, MINIMUM_VERSION) >= 0) {
+			return;
+		}
+
+		title = 'Unsupported database version';
+		message = `The remote database is using an older version of SurrealDB (${version}) while this version of Surrealist recommends at least ${MINIMUM_VERSION}`;
+	}
+
+	showNotification({
+		autoClose: false,
+		color: 'orange',
+		message: (
+			<Stack spacing={0}>
+				<Text weight={600}>
+					<Icon
+						path={mdiAlert}
+						size="sm"
+						left
+						mt={-2}
+					/>
+					{title}
+				</Text>
+				<Text color="light.5">
+					{message}
+				</Text>
+			</Stack>
+		)
+	});
 }
 
 /**
@@ -92,6 +143,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 
 	open_connection(details).then(() => {
 		options.onConnect?.();
+		checkDatabaseVersion();
 	}).catch(err => {
 		console.error('Failed to open connection', err);
 		options.onError?.(err);

@@ -2,6 +2,7 @@
 	"name": "frontend",
 	"private": true,
 	"version": "1.9.2",
+	"surreal": "1.0.0",
 	"type": "module",
 	"author": "Starlane Studios",
 	"scripts": {
@@ -46,6 +47,7 @@
 		"reactflow": "^11.8.1",
 		"remove": "^0.1.5",
 		"semver": "^7.5.4",
+		"semver-compare": "^1.0.0",
 		"use-immer": "^0.9.0"
 	},
 	"devDependencies": {
@@ -53,6 +55,7 @@
 		"@types/node": "^20.4.9",
 		"@types/react": "^18.2.20",
 		"@types/react-dom": "^18.2.7",
+		"@types/semver-compare": "^1.0.1",
 		"@typescript-eslint/eslint-plugin": "^6.3.0",
 		"@typescript-eslint/parser": "^6.3.0",
 		"@vitejs/plugin-react": "^4.0.4",

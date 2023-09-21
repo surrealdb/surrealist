@@ -80,6 +80,7 @@ export function Exporter() {
 				<Stack>
 					{EXPORT_TYPES.map((type) => (
 						<Checkbox
+							key={type}
 							label={`Include ${type}`}
 							checked={exportTypes.includes(type)}
 							onChange={setExportTypes.bind(null, type)}
