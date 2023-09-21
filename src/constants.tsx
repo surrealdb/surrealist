@@ -4,7 +4,7 @@ export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
 
 export const EXPORT_TYPES = [
-	"data",
+	"records",
 	"tables",
 	"analyzers",
 	"functions",

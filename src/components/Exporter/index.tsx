@@ -29,21 +29,23 @@ export function Exporter() {
 	});
 
 	const handleExport = useStable(async () => {
-		setIsExporting(true);
-
 		try {
-			await adapter.saveFile(
+			const success = await adapter.saveFile(
 				'Save database export',
 				'database.surql',
 				SURQL_FILTERS,
 				() => {
+					setIsExporting(true);
+					
 					return createDatabaseExport(exportTypes);
 				}
 			);
 	
-			showNotification({
-				message: "Database export saved to disk",
-			});
+			if (success) {
+				showNotification({
+					message: "Database export saved to disk",
+				});
+			}
 		} finally {
 			setIsExporting(false);
 			closeExporter();

@@ -109,7 +109,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 	}
 
 	// Include table data
-	if (types.includes('data')) {
+	if (types.includes('records')) {
 		pushSection("TRANSACTION");
 
 		output.push("BEGIN TRANSACTION;");

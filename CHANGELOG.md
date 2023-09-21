@@ -8,6 +8,10 @@
 - Designer UI improvements
 	- Field names and types are now truncated when they are too long
 	- Limit tables to displaying 7 fields, with a button to view more
+- Overhaul exporting functionality
+	- Now supports exporting table records
+	- Select which elements to export in the new exporter dialog
+	- Add support for analyzers, scopes, params, and functions
 - Add button to load query from a file
 - Replaced the window pinning toolbar button with a settings entry and hotkey (F11)
 - Fixed web app always starting in light theme for a split second
