@@ -18,7 +18,7 @@ export function createBaseConfig(): SurrealistConfig {
 		surrealUser: "root",
 		surrealPass: "root",
 		surrealPort: 8000,
-		enableConsole: true,
+		enableConsole: false,
 		enableListing: false,
 		queryTimeout: 10,
 		updateChecker: true,
