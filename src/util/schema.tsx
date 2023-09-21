@@ -1,12 +1,11 @@
 import { extract_event_definition, extract_field_definition, extract_index_definition, extract_table_definition } from '../generated/surrealist-embed';
-import { save } from "@tauri-apps/api/dialog";
-import { writeTextFile } from "@tauri-apps/api/fs";
 import { map } from "radash";
 import { actions, store } from "~/store";
 import { IndexKind, TableDefinition, TableEvent, TableField, TableIndex, TableSchema } from "~/types";
 import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./connection";
 import { extractTypeList } from './helpers';
+import { adapter } from '~/adapter';
 
 /**
  * Fetch information about a table schema
@@ -181,20 +180,13 @@ export async function saveSchemaExport() {
 		}
 	}
 
-	const filePath = await save({
-		title: "Save database schema",
-		defaultPath: "schema.surql",
-		filters: [
-			{
-				name: "SurrealDB Schema",
-				extensions: ["surql", "sql", "surrealql"],
-			},
-		],
-	});
+	const content = output.join("\n");
+	const filters = [
+		{
+			name: "SurrealDB Schema",
+			extensions: ["surql", "sql", "surrealql"],
+		},
+	];
 
-	if (!filePath) {
-		return;
-	}
-
-	await writeTextFile(filePath, output.join("\n"));
+	adapter.saveFile("Save database schema", "schema.surql", filters, content);
 }

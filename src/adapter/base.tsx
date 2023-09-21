@@ -1,5 +1,3 @@
-import { SurrealHandle, SurrealOptions, TableDefinition } from "~/types";
-
 export interface SurrealistAdapter {
 
 	/**
@@ -69,5 +67,15 @@ export interface SurrealistAdapter {
 	 * @param url The URL to open
 	 */
 	openUrl(url: string): Promise<void>;
+
+	/**
+	 * Save a file locally
+	 */
+	saveFile(
+		title: string,
+		defaultPath: string,
+		filters: any,
+		content: string
+	): Promise<boolean>;
 
 }

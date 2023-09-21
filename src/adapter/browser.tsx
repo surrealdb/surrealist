@@ -38,4 +38,27 @@ export class BrowserAdapter implements SurrealistAdapter {
 		window.open(url, '_blank');
 	}
 
+	public async saveFile(
+		_title: string,
+		defaultPath: string,
+		_filters: any,
+		content: string
+	): Promise<boolean> {
+		const file = new File([content], '', { type: 'text/plain' });
+		const url = window.URL.createObjectURL(file);
+		const el = document.createElement('a');
+
+		el.style.display = 'none';
+		document.body.append(el);
+
+		el.href = url;
+		el.download = defaultPath;
+		el.click();
+
+		window.URL.revokeObjectURL(url);
+		el.remove();
+
+		return true;
+	}
+
 }

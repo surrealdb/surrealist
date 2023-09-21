@@ -7,6 +7,8 @@ import { showNotification } from "@mantine/notifications";
 import { actions, store } from "~/store";
 import { SurrealistAdapter } from "./base";
 import { printLog } from "~/util/helpers";
+import { save } from "@tauri-apps/api/dialog";
+import { writeTextFile } from "@tauri-apps/api/fs";
 
 const WAIT_DURATION = 1000;
 
@@ -83,6 +85,23 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public async openUrl(url: string) {
 		open(url);
+	}
+
+	public async saveFile(
+		title: string,
+		defaultPath: string,
+		filters: any,
+		content: string
+	): Promise<boolean> {
+		const filePath = await save({ title, defaultPath, filters });
+	
+		if (!filePath) {
+			return false;
+		}
+	
+		await writeTextFile(filePath, content);
+
+		return true;
 	}
 
 	private initDatabaseEvents() {
