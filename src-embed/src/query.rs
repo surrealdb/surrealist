@@ -5,7 +5,7 @@ use serde::Deserialize;
 use serde_json::Value as JsonValue;
 use serde_wasm_bindgen::from_value;
 use wasm_bindgen::prelude::*;
-use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 
 use surrealdb::{
     engine::remote::ws::{Client, Wss, Ws},
@@ -18,7 +18,7 @@ fn wrap_err(err: surrealdb::Error) -> JsValue {
 	JsValue::from_str(&err.to_string())
 }
 
-static CLIENT: Lazy<Mutex<Option<Surreal<Client>>>> = Lazy::new(|| Mutex::new(None));
+static CLIENT: Lazy<RwLock<Option<Surreal<Client>>>> = Lazy::new(|| RwLock::new(None));
 
 #[derive(Deserialize)]
 pub struct ScopeField {
@@ -40,7 +40,7 @@ pub struct ConnectionInfo {
 
 #[wasm_bindgen]
 pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
-	let mut instance = CLIENT.lock().await;
+	let mut instance = CLIENT.write().await;
 
 	let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
     let regex = Regex::new(r"^(https?://)?(.+?)$").unwrap();
@@ -113,7 +113,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
 
 #[wasm_bindgen]
 pub async fn close_connection() {
-	let mut instance = CLIENT.lock().await;
+	let mut instance = CLIENT.write().await;
 
 	*instance = None;
 }
@@ -135,7 +135,7 @@ fn make_error(err: &str) -> Array {
 pub async fn execute_query(query: String, params: JsValue) -> String {
     console_log!("Executing query {}", query);
 
-	let container = CLIENT.lock().await;
+	let container = CLIENT.read().await;
 
 	if container.is_none() {
 		let error = Value::Array(make_error("No connection open")).into_json();
