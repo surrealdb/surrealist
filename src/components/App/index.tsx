@@ -40,10 +40,12 @@ export function App() {
 	useEffect(() => {
 		getMonaco()?.editor?.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
 	}, [colorScheme, monacoLoaded]);
-
+ 
 	useEffect(() => {
-		adapter.setWindowPinned(isPinned);
-		updateTitle();
+		if (adapter.isPinningSupported) {
+			adapter.setWindowPinned(isPinned);
+			updateTitle();
+		}
 	}, [isPinned]);
 
 	const togglePinned = useStable(() => {
