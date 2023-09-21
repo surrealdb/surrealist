@@ -37,6 +37,9 @@ import "reactflow/dist/style.css";
 	// Apply initial title
 	updateTitle();
 
+	// Listen for theme changes
+	watchNativeTheme();
+
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
@@ -52,7 +55,4 @@ import "reactflow/dist/style.css";
 	const monaco = await loader.init();
 
 	initializeEditor(monaco);
-
-	// Listen for theme changes
-	watchNativeTheme();
 })();
