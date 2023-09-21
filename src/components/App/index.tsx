@@ -1,6 +1,5 @@
 import { mdiClose } from "@mdi/js";
 import { useHotkeys } from "@mantine/hooks";
-import { open } from "@tauri-apps/api/shell";
 import { MouseEvent, useEffect } from "react";
 import { Notifications } from "@mantine/notifications";
 import { ActionIcon, Box, Global, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";
@@ -14,6 +13,7 @@ import { DARK_THEME, LIGHT_THEME, getMonaco } from "~/util/editor";
 
 import { Icon } from "../Icon";
 import { Scaffold } from "../Scaffold";
+import { adapter } from "~/adapter";
 
 export function App() {
 	const update = useStoreValue((state) => state.availableUpdate);
@@ -31,7 +31,7 @@ export function App() {
 	});
 
 	const openRelease = useStable(() => {
-		open(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`);
+		adapter.openUrl(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`);
 		closeUpdate();
 	});
 

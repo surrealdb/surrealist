@@ -16,18 +16,18 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { mdiComment, mdiKeyVariant, mdiPencil, mdiPlus, mdiRefresh } from "@mdi/js";
-import { invoke } from "@tauri-apps/api";
 import { map } from "radash";
 import { useEffect, useState } from "react";
-import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
+import { extract_user_definition } from "~/generated/surrealist-embed";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { getActiveSurreal } from "~/util/connection";
 import { showError } from "~/util/helpers";
 
 const ROLES = [
@@ -64,7 +64,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 	const [editingRole, setEditingRole] = useState<string[]>([]);
 
 	const fetchLogins = useStable(async () => {
-		const response = await adapter.getActiveSurreal().querySingle(`INFO FOR ${props.typeShort}`);
+		const response = await getActiveSurreal().querySingle(`INFO FOR ${props.typeShort}`);
 		const result = response[0].result as { users: Record<string, string> };
 
 		if (!result) {
@@ -72,7 +72,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 		}
 
 		const userInfo = await map(Object.values(result.users), async (definition) => {
-			const result = await invoke("extract_user_definition", { definition });
+			const result = extract_user_definition(definition);
 
 			return result as UserInfo;
 		});
@@ -104,9 +104,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 				query += ` COMMENT "${editingComment}"`;
 			}
 
-			await adapter
-				.getActiveSurreal()
-				.query(query);
+			await getActiveSurreal().query(query);
 			await fetchLogins();
 		} catch (err: any) {
 			showError("Failed to save account", err.message);
@@ -141,7 +139,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 		closeModal();
 
-		await adapter.getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.typeLong}`);
+		await getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.typeLong}`);
 		await fetchLogins();
 	});
 

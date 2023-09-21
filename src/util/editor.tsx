@@ -1,9 +1,9 @@
 import { Monaco } from "@monaco-editor/react";
 import { editor, languages } from "monaco-editor";
-import { adapter } from "~/adapter";
 import { actions, store } from "~/store";
 import { KEYWORDS } from "./keywords";
 import { SurrealInfoDB } from "~/typings/surreal";
+import { getSurreal } from "./connection";
 
 export const LIGHT_THEME = "surrealist-light";
 export const DARK_THEME = "surrealist-dark";
@@ -96,7 +96,7 @@ export function initializeEditor(monaco: Monaco) {
 		triggerCharacters: [" "],
 		provideCompletionItems: async (model, position, context) => {
 			const { tableSuggest } = store.getState().config;
-			const surreal = adapter.getSurreal();
+			const surreal = getSurreal();
 
 			if (!tableSuggest || !surreal) {
 				return;

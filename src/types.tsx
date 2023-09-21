@@ -170,12 +170,6 @@ export interface SurrealOptions {
 	onError?: (error: any) => void;
 }
 
-export interface SurrealHandle {
-	close(): void;
-	query(query: string, params?: Record<string, any>): Promise<any>;
-	querySingle(query: string): Promise<any>;
-}
-
 export interface TablePinAction {
 	tab: string;
 	table: string;

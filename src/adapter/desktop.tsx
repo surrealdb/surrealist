@@ -6,10 +6,9 @@ import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { actions, store } from "~/store";
 import { SurrealistAdapter } from "./base";
-import { extractTypeList, printLog } from "~/util/helpers";
-import { map, mapKeys, snake } from "radash";
-import { TableSchema, TableField, TableIndex, TableEvent, SurrealHandle, SurrealOptions, IndexKind } from "~/types";
-import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
+import { printLog } from "~/util/helpers";
+import { save } from "@tauri-apps/api/dialog";
+import { writeTextFile } from "@tauri-apps/api/fs";
 
 const WAIT_DURATION = 1000;
 
@@ -17,16 +16,14 @@ const WAIT_DURATION = 1000;
  * Surrealist adapter for running as Wails desktop app
  */
 export class DesktopAdapter implements SurrealistAdapter {
+
 	public isServeSupported = true;
 	public isPinningSupported = true;
-	public isOpenURLSupported = true;
 	public isUpdateCheckSupported = true;
 	public isPromotionSupported = false;
 
 	#startTask: any;
 	#isPinned = false;
-	#connecting = false;
-	#instance: SurrealHandle | null = null;
 
 	public constructor() {
 		this.initDatabaseEvents();
@@ -90,175 +87,22 @@ export class DesktopAdapter implements SurrealistAdapter {
 		open(url);
 	}
 
-	public async fetchSchema() {
-		const surreal = this.getActiveSurreal();
-		const dbResponse = await surreal.querySingle("INFO FOR DB");
-		const dbResult = dbResponse[0].result as SurrealInfoDB;
-
-		if (!dbResult) {
-			return [];
-		}
-
-		const databaseInfo = await map(Object.values(dbResult.tables), (definition) => {
-			return invoke<TableSchema>("extract_table_definition", { definition });
-		});
-
-		const tableQuery = databaseInfo.reduce((acc, table) => {
-			return acc + `INFO FOR TABLE ${table.name};`;
-		}, "");
-
-		if (!tableQuery) {
-			return [];
-		}
-
-		const tableData = await surreal.querySingle(tableQuery);
-
-		return map(databaseInfo, async (table, index) => {
-			const tableInfo = tableData[index].result as SurrealInfoTB;
-
-			const fieldInfo = await map(Object.values(tableInfo.fields), (definition) => {
-				return invoke<TableField>("extract_field_definition", { definition });
-			});
-
-			const indexInfo = await map(Object.values(tableInfo.indexes), (definition) => {
-				return invoke<TableIndex>("extract_index_definition", { definition });
-			});
-
-			const eventInfo = await map(Object.values(tableInfo.events), (definition) => {
-				return invoke<TableEvent>("extract_event_definition", { definition });
-			});
-
-			const mappedFields = fieldInfo.map((field) => {
-				let kindTables: string[] = [];
-
-				if (field.kind.startsWith("record")) {
-					kindTables = extractTypeList(field.kind, "record");
-				}
-
-				return {
-					...field,
-					kindTables,
-				};
-			});
-
-			const mappedIndexes = indexInfo.map((index) => {
-				return {
-					...index,
-					kind: index.kind.toLowerCase() as IndexKind,
-					search: index.search.replace('SEARCH ANALYZER ', ''),
-					vector: index.vector.replace('MTREE DIMENSION ', ''),
-				};
-			});
-
-			return {
-				schema: {
-					...table,
-					changetime: table.changetime.replace('CHANGEFEED ', ''),
-				},
-				fields: mappedFields,
-				indexes: mappedIndexes,
-				events: eventInfo,
-			};
-		});
-	}
-
-	public async validateQuery(query: string) {
-		return invoke<string | null>("validate_query", { query });
-	}
-
-	public async validateWhereClause(clause: string) {
-		return invoke<boolean>("validate_where_clause", { clause });
-	}
-
-	public openSurreal(options: SurrealOptions): SurrealHandle {
-		if (this.#connecting) {
-			return this.#instance!;
-		}
-
-		this.#connecting = true;
-
-		const connection: any = mapKeys(options.connection, key => snake(key));
-		const details = {
-			...connection,
-			endpoint: connection.endpoint.replace(/^ws/, "http")
-		};
-
-		invoke<any>('open_connection', { info: details }).then(() => {
-			options.onConnect?.();
-		}).catch(err => {
-			console.error('Failed to open connection', err);
-			options.onError?.(err);
-			options.onDisconnect?.(1000, 'Failed to open connection');
-		}).finally(() => {
-			this.#connecting = false;
-		});
-
-		const execQuery = async (query: string, params: any) => {
-			console.log('Executing:', query, params);
-
-			const maxTime = store.getState().config.queryTimeout;
-			const res = await invoke<any>('execute_query', { query, params, maxTime });
-
-			console.log('Result:', res);
-
-			return JSON.parse(res);
-		};
-
-		const handle: SurrealHandle = {
-			close: () => {
-				invoke<void>('close_connection');
-				options.onDisconnect?.(1000, 'Closed by user');
-			},
-			query: async (query, params) => {
-				return execQuery(query, params);
-			},
-			querySingle: async (query) => {
-				const results = await execQuery(query, {}) as any[];
-
-				return results.map(res => {
-					return {
-						...res,
-						result: Array.isArray(res.result) ? res.result[0] : res.result
-					};
-				});
-			},
-		};
-
-		this.#instance = handle;
-
-		return handle;
-	}
+	public async saveFile(
+		title: string,
+		defaultPath: string,
+		filters: any,
+		content: string
+	): Promise<boolean> {
+		const filePath = await save({ title, defaultPath, filters });
 	
-	public getSurreal(): SurrealHandle | null {
-		return this.#instance;
-	}
-
-	public getActiveSurreal(): SurrealHandle {
-		if (!this.#instance) {
-			throw new Error("No active surreal instance");
+		if (!filePath) {
+			return false;
 		}
+	
+		await writeTextFile(filePath, content);
 
-		return this.#instance;
+		return true;
 	}
-
-	// public openSurreal(options: SurrealOptions): SurrealHandle {
-	// 	this.#instance?.close();
-	// 	this.#instance = createLocalWebSocket(options);
-
-	// 	return this.#instance;
-	// }
-
-	// public getSurreal(): SurrealHandle | null {
-	// 	return this.#instance;
-	// }
-
-	// public getActiveSurreal(): SurrealHandle {
-	// 	if (!this.#instance) {
-	// 		throw new Error('No active surreal instance');
-	// 	}
-
-	// 	return this.#instance;
-	// }
 
 	private initDatabaseEvents() {
 		listen("database:start", () => {

@@ -9,8 +9,8 @@ import { Form } from "../Form";
 import { Spacer } from "../Spacer";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
-import { adapter } from "~/adapter";
 import { ModalTitle } from "../ModalTitle";
+import { getActiveSurreal } from "~/util/connection";
 
 export interface TableCreatorProps {
 	opened: boolean;
@@ -26,7 +26,7 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 	const tableList = useTableNames("TABLE");
 
 	const createTable = useStable(async () => {
-		const surreal = adapter.getActiveSurreal();
+		const surreal = getActiveSurreal();
 
 		let query = `DEFINE TABLE ${tableName};`;
 

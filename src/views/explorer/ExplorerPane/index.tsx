@@ -13,15 +13,16 @@ import {
 } from "@mdi/js";
 import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
-import { adapter } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
+import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useActiveTab } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store } from "~/store";
 import { ColumnSort, OpenFn } from "~/types";
+import { getSurreal } from "~/util/connection";
 import { updateConfig } from "~/util/helpers";
 
 const PAGE_SIZES = [
@@ -72,7 +73,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			return;
 		}
 
-		const surreal = adapter.getSurreal();
+		const surreal = getSurreal();
 
 		if (!surreal || !filterValid) {
 			return;
@@ -115,9 +116,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		if (showFilter && filterText) {
-			adapter.validateWhereClause(filterText).then((isValid) => {
-				setFilterValid(isValid);
-			});
+			setFilterValid(validate_where_clause(filterText));
 		} else {
 			setFilterValid(true);
 		}

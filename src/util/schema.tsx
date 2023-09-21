@@ -1,9 +1,11 @@
-import { save } from "@tauri-apps/api/dialog";
-import { writeTextFile } from "@tauri-apps/api/fs";
-import { adapter } from "~/adapter";
+import { extract_event_definition, extract_field_definition, extract_index_definition, extract_table_definition } from '../generated/surrealist-embed';
+import { map } from "radash";
 import { actions, store } from "~/store";
-import { TableDefinition } from "~/types";
+import { IndexKind, TableDefinition, TableEvent, TableField, TableIndex, TableSchema } from "~/types";
 import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
+import { getActiveSurreal } from "./connection";
+import { extractTypeList } from './helpers';
+import { adapter } from '~/adapter';
 
 /**
  * Fetch information about a table schema
@@ -12,7 +14,75 @@ import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
  * @returns Schema information
  */
 export async function fetchDatabaseSchema() {
-	const tables = await adapter.fetchSchema();
+	const surreal = getActiveSurreal();
+	const dbResponse = await surreal.querySingle("INFO FOR DB");
+	const dbResult = dbResponse[0].result as SurrealInfoDB;
+
+	if (!dbResult) {
+		return [];
+	}
+
+	const databaseInfo: TableSchema[] = await map(Object.values(dbResult.tables), (definition) => {
+		return extract_table_definition(definition);
+	});
+
+	const tableQuery = databaseInfo.reduce((acc, table) => {
+		return acc + `INFO FOR TABLE ${table.name};`;
+	}, "");
+
+	if (!tableQuery) {
+		return [];
+	}
+
+	const tableData = await surreal.querySingle(tableQuery);
+
+	const tables = await map(databaseInfo, async (table, index) => {
+		const tableInfo = tableData[index].result as SurrealInfoTB;
+
+		const fieldInfo: TableField[] = await map(Object.values(tableInfo.fields), (definition) => {
+			return extract_field_definition(definition);
+		});
+
+		const indexInfo: TableIndex[] = await map(Object.values(tableInfo.indexes), (definition) => {
+			return extract_index_definition(definition);
+		});
+
+		const eventInfo: TableEvent[] = await map(Object.values(tableInfo.events), (definition) => {
+			return extract_event_definition(definition);
+		});
+
+		const mappedFields = fieldInfo.map((field) => {
+			let kindTables: string[] = [];
+
+			if (field.kind.startsWith("record")) {
+				kindTables = extractTypeList(field.kind, "record");
+			}
+
+			return {
+				...field,
+				kindTables,
+			};
+		});
+
+		const mappedIndexes = indexInfo.map((index) => {
+			return {
+				...index,
+				kind: index.kind.toLowerCase() as IndexKind,
+				search: index.search.replace('SEARCH ANALYZER ', ''),
+				vector: index.vector.replace('MTREE DIMENSION ', ''),
+			};
+		});
+
+		return {
+			schema: {
+				...table,
+				changetime: table.changetime.replace('CHANGEFEED ', ''),
+			},
+			fields: mappedFields,
+			indexes: mappedIndexes,
+			events: eventInfo,
+		};
+	});
 
 	store.dispatch(actions.setDatabaseSchema(tables));
 
@@ -58,7 +128,7 @@ export function isEdgeTable(table: TableDefinition) {
  * Export the database schema and save it to a file
  */
 export async function saveSchemaExport() {
-	const surreal = adapter.getActiveSurreal();
+	const surreal = getActiveSurreal();
 	const dbResponse = await surreal.querySingle("INFO FOR DB");
 	const result = dbResponse[0].result as SurrealInfoDB;
 
@@ -110,20 +180,13 @@ export async function saveSchemaExport() {
 		}
 	}
 
-	const filePath = await save({
-		title: "Save database schema",
-		defaultPath: "schema.surql",
-		filters: [
-			{
-				name: "SurrealDB Schema",
-				extensions: ["surql", "sql", "surrealql"],
-			},
-		],
-	});
+	const content = output.join("\n");
+	const filters = [
+		{
+			name: "SurrealDB Schema",
+			extensions: ["surql", "sql", "surrealql"],
+		},
+	];
 
-	if (!filePath) {
-		return;
-	}
-
-	await writeTextFile(filePath, output.join("\n"));
+	adapter.saveFile("Save database schema", "schema.surql", filters, content);
 }

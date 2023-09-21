@@ -1,19 +1,14 @@
-import { SurrealHandle, SurrealOptions, TableDefinition } from "~/types";
-import { createLocalWebSocket } from "~/util/websocket";
 import { SurrealistAdapter } from "./base";
-import { SurrealInfoDB } from "~/typings/surreal";
 
 /**
  * Surrealist adapter for running as web app
  */
 export class BrowserAdapter implements SurrealistAdapter {
+
 	public isServeSupported = false;
 	public isPinningSupported = false;
-	public isOpenURLSupported = false;
 	public isUpdateCheckSupported = false;
 	public isPromotionSupported = true;
-
-	#instance: SurrealHandle | null = null;
 
 	public async setWindowTitle(title: string) {
 		document.title = title;
@@ -39,64 +34,31 @@ export class BrowserAdapter implements SurrealistAdapter {
 		throw new Error("Not supported");
 	}
 
-	public async openUrl() {
-		throw new Error("Not supported");
+	public async openUrl(url: string) {
+		window.open(url, '_blank');
 	}
 
-	public async fetchSchema(): Promise<TableDefinition[]> {
-		const surreal = this.getActiveSurreal();
-		const dbResponse = await surreal.querySingle("INFO FOR DB");
-		const dbResult = dbResponse[0].result as SurrealInfoDB;
+	public async saveFile(
+		_title: string,
+		defaultPath: string,
+		_filters: any,
+		content: string
+	): Promise<boolean> {
+		const file = new File([content], '', { type: 'text/plain' });
+		const url = window.URL.createObjectURL(file);
+		const el = document.createElement('a');
 
-		if (!dbResult) {
-			return [];
-		}
+		el.style.display = 'none';
+		document.body.append(el);
 
-		return Object.keys(dbResult.tables).map((name) => ({
-			schema: {
-				name: name,
-				view: null,
-				drop: false,
-				schemafull: false,
-				changefeed: false,
-				changetime: '',
-				permissions: {
-					create: "",
-					select: "",
-					update: "",
-					delete: "",
-				},
-			},
-			fields: [],
-			indexes: [],
-			events: [],
-		}));
-	}
+		el.href = url;
+		el.download = defaultPath;
+		el.click();
 
-	public async validateQuery() {
-		return null;
-	}
+		window.URL.revokeObjectURL(url);
+		el.remove();
 
-	public async validateWhereClause() {
 		return true;
 	}
 
-	public openSurreal(options: SurrealOptions): SurrealHandle {
-		this.#instance?.close();
-		this.#instance = createLocalWebSocket(options);
-
-		return this.#instance;
-	}
-
-	public getSurreal(): SurrealHandle | null {
-		return this.#instance;
-	}
-
-	public getActiveSurreal(): SurrealHandle {
-		if (!this.#instance) {
-			throw new Error("No active surreal instance");
-		}
-
-		return this.#instance;
-	}
 }

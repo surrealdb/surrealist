@@ -23,9 +23,9 @@ import { useInputState } from "@mantine/hooks";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { HistoryHandle } from "~/hooks/history";
-import { adapter } from "~/adapter";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
+import { getSurreal } from "~/util/connection";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
@@ -62,7 +62,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 	});
 
 	const handleDelete = useStable(async () => {
-		const surreal = adapter.getSurreal();
+		const surreal = getSurreal();
 
 		if (!surreal) {
 			return;

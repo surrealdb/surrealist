@@ -9,8 +9,8 @@ import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
-import { adapter } from "~/adapter";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { validate_query } from "~/generated/surrealist-embed";
 
 const ERR_REGEX = /Parse error on line (\d+) at character (\d+) when parsing '(.+)'/s;
 
@@ -36,7 +36,7 @@ export function QueryPane(props: QueryPaneProps) {
 		const markers: editor.IMarkerData[] = [];
 
 		if (content && doErrorCheck) {
-			const message = (await adapter.validateQuery(content)) || "";
+			const message = (await validate_query(content)) || "";
 			const match = message.match(ERR_REGEX);
 
 			if (match) {

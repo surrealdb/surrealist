@@ -1,8 +1,8 @@
 import classes from "./style.module.scss";
 import surrealistLogo from "~/assets/icon.png";
+
 import {
 	ActionIcon,
-	Badge,
 	Box,
 	Button,
 	Center,
@@ -17,6 +17,7 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core";
+
 import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
@@ -45,6 +46,7 @@ import { isConnectionValid, mergeConnections } from "~/util/environments";
 import { useLater } from "~/hooks/later";
 import { TabCreator } from "./creator";
 import { TabEditor } from "./editor";
+import { getSurreal, openSurrealConnection } from "~/util/connection";
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return <div style={{ display: props.visible ? "initial" : "none" }}>{props.children}</div>;
@@ -75,7 +77,7 @@ export function Scaffold() {
 		}
 
 		try {
-			adapter.openSurreal({
+			openSurrealConnection({
 				connection: mergedInfoDetails,
 				onConnect() {
 					setIsConnecting(false);
@@ -131,7 +133,7 @@ export function Scaffold() {
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
 
 		try {
-			const response = await adapter.getSurreal()?.query(override?.trim() || query, variables);
+			const response = await getSurreal()?.query(override?.trim() || query, variables);
 
 			store.dispatch(
 				actions.updateTab({
@@ -167,7 +169,7 @@ export function Scaffold() {
 
 	const closeConnection = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
-		adapter.getSurreal()?.close();
+		getSurreal()?.close();
 		setIsConnecting(false);
 		setIsConnected(false);
 	});
@@ -213,7 +215,7 @@ export function Scaffold() {
 
 	const handleActiveChange = useStable(async () => {
 		if (isConnected) {
-			adapter.getSurreal()?.close();
+			getSurreal()?.close();
 		}
 
 		await updateConfig();
@@ -238,14 +240,8 @@ export function Scaffold() {
 	});
 
 	const relativeViewMode = useStable((value: number) => {
-		let available = VIEW_MODES;
-
-		if (!(adapter instanceof DesktopAdapter)) {
-			available = available.filter((v: any) => !v.desktop) as any;
-		}
-
-		const current = available.findIndex((v: any) => v.id == viewMode);
-		const next = mod(current + value, available.length);
+		const current = VIEW_MODES.findIndex((v: any) => v.id == viewMode);
+		const next = mod(current + value, VIEW_MODES.length);
 
 		setViewMode(VIEW_MODES[next].id);
 	});
@@ -307,7 +303,6 @@ export function Scaffold() {
 								<Stack spacing="xs">
 									{VIEW_MODES.map((info) => {
 										const isActive = info.id === viewMode;
-										const isDisabled = !isDesktop && info.desktop;
 
 										return (
 											<Button
@@ -319,23 +314,15 @@ export function Scaffold() {
 												variant={isActive ? "light" : "subtle"}
 												className={classes.viewModeButton}
 												onClick={() => setViewMode(info.id as ViewMode)}
-												bg={isDisabled ? "transparent !important" : undefined}
-												disabled={isDisabled}>
+											>
 												<NavLink
 													component="div"
 													className={classes.viewModeContent}
 													label={info.name}
-													icon={<Icon color={isDisabled ? "light.5" : "surreal"} path={info.icon} />}
+													icon={<Icon color="surreal" path={info.icon} />}
 													description={
 														<Stack spacing={6}>
 															{info.desc}
-															{isDisabled && (
-																<div>
-																	<Badge color="blue" variant="filled" radius="sm">
-																		Surrealist Desktop
-																	</Badge>
-																</div>
-															)}
 														</Stack>
 													}
 													styles={{
@@ -437,17 +424,13 @@ export function Scaffold() {
 								<ExplorerView />
 							</ViewSlot>
 
-							{isDesktop && (
-								<ViewSlot visible={viewMode == "designer"}>
-									<DesignerView />
-								</ViewSlot>
-							)}
+							<ViewSlot visible={viewMode == "designer"}>
+								<DesignerView />
+							</ViewSlot>
 
-							{isDesktop && (
-								<ViewSlot visible={viewMode == "auth"}>
-									<AuthenticationView />
-								</ViewSlot>
-							)}
+							<ViewSlot visible={viewMode == "auth"}>
+								<AuthenticationView />
+							</ViewSlot>
 						</Splitter>
 					</Box>
 				</>

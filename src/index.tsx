@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import embedPath from './generated/surrealist-embed_bg.wasm?url';
+import initEmbed, { initialize_embed } from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { actions, store } from "./store";
@@ -12,8 +14,13 @@ import { adapter } from "./adapter";
 
 import "reactflow/dist/style.css";
 
-(async () => {
+(async () => {	
 	dayjs.extend(relativeTime);
+	
+	// Load the surrealist embed library
+	await initEmbed(embedPath);
+
+	initialize_embed();
 
 	// Load existing config
 	const config = await adapter.loadConfig();
@@ -30,6 +37,9 @@ import "reactflow/dist/style.css";
 	// Apply initial title
 	updateTitle();
 
+	// Listen for theme changes
+	watchNativeTheme();
+
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
@@ -45,7 +55,4 @@ import "reactflow/dist/style.css";
 	const monaco = await loader.init();
 
 	initializeEditor(monaco);
-
-	// Listen for theme changes
-	watchNativeTheme();
 })();

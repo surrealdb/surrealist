@@ -1,0 +1,31 @@
+[package]
+name = "surrealist-embed"
+version = "0.0.0"
+description = "Embedded functionality for Surrealist"
+authors = ["Starlane Studios"]
+license = "MIT"
+repository = "https://github.com/StarlaneStudios/Surrealist"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+once_cell = "1.18.0"
+wasm-bindgen = "0.2.87"
+wasm-bindgen-futures = "0.4.37"
+serde-wasm-bindgen = "0.6.0"
+concat-string = "1.0.1"
+surrealdb = "1.0.0"
+regex = "1.9.5"
+serde_json = "1.0"
+tokio = { version = "1", features = ["time"] }
+serde = { version = "1.0", features = ["derive"] }
+console_error_panic_hook = { version = "0.1.7", optional = true }
+
+[profile.release]
+opt-level = "s"
