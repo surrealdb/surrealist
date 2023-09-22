@@ -6,8 +6,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { actions, store } from "./store";
 import { App } from "./components/App";
-import { loader } from "@monaco-editor/react";
-import { initializeEditor } from "./util/editor";
+import { initializeMonaco } from "./util/editor";
 import { runUpdateChecker } from "./util/updater";
 import { updateTitle, watchNativeTheme } from "./util/helpers";
 import { adapter } from "./adapter";
@@ -40,6 +39,10 @@ import "reactflow/dist/style.css";
 	// Listen for theme changes
 	watchNativeTheme();
 
+	// Init monaco
+	await document.fonts.ready;
+	await initializeMonaco();
+
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
@@ -48,11 +51,4 @@ import "reactflow/dist/style.css";
 			<App />
 		</Provider>
 	);
-
-	// Init monaco
-	await document.fonts.ready;
-
-	const monaco = await loader.init();
-
-	initializeEditor(monaco);
 })();

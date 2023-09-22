@@ -1,4 +1,4 @@
-import { Monaco } from "@monaco-editor/react";
+import * as monaco from 'monaco-editor';
 import { editor, MarkerSeverity } from "monaco-editor";
 import { mdiDatabase, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
@@ -16,7 +16,7 @@ import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 
-const ERR_REGEX = /Parse error on line (\d+) at character (\d+) when parsing '(.+)'/s;
+const ERR_REGEX = /Parse error: Failed to parse query at line (\d+) column (\d+)(.+)/s;
 
 export interface QueryPaneProps {
 	onExecuteQuery: (override?: string) => void;
@@ -24,7 +24,7 @@ export interface QueryPaneProps {
 
 export function QueryPane(props: QueryPaneProps) {
 	const activeTab = useActiveTab();
-	const controls = useRef<[Monaco, editor.IStandaloneCodeEditor]>();
+	const controls = useRef<editor.IStandaloneCodeEditor>();
 	const doErrorCheck = useStoreValue((state) => state.config.errorChecking);
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
@@ -33,26 +33,27 @@ export function QueryPane(props: QueryPaneProps) {
 	}
 
 	const updateValidation = useStable(async () => {
-		const [monaco, theEditor] = controls.current!;
+		const theEditor = controls.current!;
 
 		const model = theEditor.getModel()!;
 		const content = model.getValue();
 		const markers: editor.IMarkerData[] = [];
 
 		if (content && doErrorCheck) {
-			const message = (await validate_query(content)) || "";
+			const message = validate_query(content) || "";
 			const match = message.match(ERR_REGEX);
 
 			if (match) {
 				const lineNumber = Number.parseInt(match[1]);
 				const column = Number.parseInt(match[2]);
+				const reason = match[3].trim();
 
 				markers.push({
 					startLineNumber: lineNumber,
 					startColumn: column,
 					endLineNumber: lineNumber,
 					endColumn: column,
-					message: message,
+					message: reason,
 					severity: MarkerSeverity.Error,
 				});
 			}
@@ -75,10 +76,10 @@ export function QueryPane(props: QueryPaneProps) {
 
 	const setQuery = useDebouncedCallback(200, setQueryForced);
 
-	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
+	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
 
-		controls.current = [root, editor];
+		controls.current = editor;
 
 		updateValidation();
 
