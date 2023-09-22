@@ -14,6 +14,7 @@
 	- Add support for analyzers, scopes, params, and functions
 - Surrealist now warns you when you connect to an outdated version of SurrealDB
 - Added a button to load a query from disk
+- The web app now more reliably connects to localhost endpoints
 - Replaced the window pinning toolbar button with a settings entry and hotkey (F11)
 - Fixed web app always starting in light theme for a split second
 
