@@ -1438,11 +1438,7 @@
         {
             "foreground": "#ABB2BF",
             "token": "meta.class.php"
-        },
-		{
-			"foreground": "#FF0000",
-			"token": "function"
-		}
+        }
     ],
     "encodedTokensColors": []
 }

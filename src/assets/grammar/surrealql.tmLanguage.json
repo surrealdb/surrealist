@@ -19,13 +19,13 @@
 			"include": "#function"
 		},
 		{
+			"include": "#value"
+		},
+		{
 			"include": "#keywords"
 		},
 		{
 			"include": "#operators"
-		},
-		{
-			"include": "#value"
 		}
 	],
 	"repository": {
@@ -694,7 +694,7 @@
 			"end": "(?<=\\))",
 			"beginCaptures": {
 				"1": {
-					"name": "support.function"
+					"name": "constant.language"
 				}
 			},
 			"patterns": [
@@ -843,10 +843,10 @@
 					"match": "([a-zA-Z0-9_]+):⟨([^⟩]+)⟩",
 					"captures": {
 						"1": {
-							"name": "entity.name.class"
+							"name": "constant.language"
 						},
 						"2": {
-							"name": "entity.other.attribute-name"
+							"name": "variable.parameter"
 						}
 					},
 					"name": "entity.name"
@@ -855,10 +855,10 @@
 					"match": "([a-zA-Z0-9_]+):`([^`]+)`",
 					"captures": {
 						"1": {
-							"name": "entity.name.class"
+							"name": "constant.language"
 						},
 						"2": {
-							"name": "entity.other.attribute-name"
+							"name": "variable.parameter"
 						}
 					},
 					"name": "entity.name"
@@ -867,10 +867,10 @@
 					"match": "([a-zA-Z0-9_]+):([a-zA-Z0-9_]+)",
 					"captures": {
 						"1": {
-							"name": "entity.name.class"
+							"name": "constant.language"
 						},
 						"2": {
-							"name": "entity.other.attribute-name"
+							"name": "variable.parameter"
 						}
 					},
 					"name": "entity.name"
