@@ -54,7 +54,7 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 		grammars.set('surrealql', 'source.surql');
 		grammars.set('javascript', 'source.js');
 
-		wireTmGrammars(monaco, registry, grammars, editor);
+		wireTmGrammars(monaco, registry, grammars);
 
 		return () => {
 			editor.dispose();
