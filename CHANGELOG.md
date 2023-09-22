@@ -12,6 +12,10 @@
 	- Now supports exporting table records
 	- Select which elements to export in the new exporter dialog
 	- Add support for analyzers, scopes, params, and functions
+- Overhaul syntax highlighting
+	- Highlighting is now based on the official SurrealQL grammar
+	- JavaScript is now correctly highlighted
+	- Modified color scheme
 - Surrealist now warns you when you connect to an outdated version of SurrealDB
 - Added a button to load a query from disk
 - The web app now more reliably connects to localhost endpoints
