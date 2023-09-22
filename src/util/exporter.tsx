@@ -115,12 +115,12 @@ export async function createDatabaseExport(types: ExportType[]) {
 		output.push("BEGIN TRANSACTION;");
 
 		for (const [tableName] of dbTables) {
-			pushSection(`TABLE DATA: ${tableName}`);
-	
 			const tbData = await surreal.query(`SELECT * FROM ${tableName}`);
 			const tbRows = tbData[0].result as any[];
 
 			if (tbRows.length > 0) {
+				pushSection(`TABLE DATA: ${tableName}`);
+				
 				const [edges, records] = fork(tbRows, (row) => row.in && row.out);
 				
 				for (const entry of records) {
