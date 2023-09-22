@@ -64,7 +64,7 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 	useEffect(() => {
 		const editor = editorRef.current;
 
-		if (props.value && editor && editor.getValue() !== props.value) {
+		if (props.value !== undefined && editor && editor.getValue() !== props.value) {
 			editor.setValue(props.value);
 		}
 	}, [props.value]);
