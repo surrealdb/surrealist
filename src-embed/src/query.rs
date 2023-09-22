@@ -192,7 +192,7 @@ pub async fn execute_query(query: String, params: JsValue) -> String {
     let client = container.as_ref().unwrap();
     let query_task = client.query(query).bind(&param_map).await;
 
-    console_log!("Query task completed");
+    console_log!("Received response from database");
 
     let results: Array = match query_task {
 		Ok(mut response) => {

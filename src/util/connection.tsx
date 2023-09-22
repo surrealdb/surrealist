@@ -40,8 +40,6 @@ async function scheduleTimeout(seconds: number) {
 
 // Execute a query with timeout
 async function execute(query: string, params: any) {
-	console.log('Executing:', query, params);
-
 	const { queryTimeout } = store.getState().config;
 
 	store.dispatch(actions.setQueryActive(true));
@@ -51,8 +49,6 @@ async function execute(query: string, params: any) {
 			executeQuery(query, params),
 			scheduleTimeout(queryTimeout)
 		]);
-
-		console.log('Query result:', result);
 
 		return result;
 	} catch(err: any) {
