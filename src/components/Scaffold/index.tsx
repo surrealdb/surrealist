@@ -118,7 +118,7 @@ export function Scaffold() {
 
 	const scheduleConnect = useLater(openConnection);
 
-	const sendQuery = useStable(async (override?: string) => {
+	const sendQuery = useStable(async (override?: string, loader?: boolean) => {
 		if (tabInfo?.activeView !== "query") {
 			return;
 		}
@@ -134,6 +134,10 @@ export function Scaffold() {
 		const variables = tabInfo!.variables ? JSON.parse(tabInfo!.variables) : undefined;
 
 		try {
+			if (loader) {
+				store.dispatch(actions.setQueryActive(true));
+			}
+
 			const response = await getSurreal()?.query(override?.trim() || query, variables);
 
 			store.dispatch(
@@ -154,6 +158,10 @@ export function Scaffold() {
 					],
 				})
 			);
+		} finally {
+			if (loader) {
+				store.dispatch(actions.setQueryActive(false));
+			}
 		}
 
 		store.dispatch(
@@ -237,7 +245,7 @@ export function Scaffold() {
 
 	const handleSendQuery = useStable((e: MouseEvent) => {
 		e.stopPropagation();
-		sendQuery();
+		sendQuery(undefined, true);
 	});
 
 	const relativeViewMode = useStable((value: number) => {
@@ -262,8 +270,8 @@ export function Scaffold() {
 	);
 
 	useHotkeys([
-		["F9", () => sendQuery()],
-		["mod+Enter", () => sendQuery()],
+		["F9", () => sendQuery(undefined, true)],
+		["mod+Enter", () => sendQuery(undefined, true)],
 	]);
 
 	return (

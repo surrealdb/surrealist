@@ -1,7 +1,7 @@
 import { mapKeys, snake } from 'radash';
 import { open_connection, close_connection, execute_query, query_version } from '../generated/surrealist-embed';
 import { SurrealOptions } from '~/types';
-import { actions, store } from '~/store';
+import { store } from '~/store';
 import compare from 'semver-compare';
 import { showNotification } from '@mantine/notifications';
 import { Stack, Text } from '@mantine/core';
@@ -42,8 +42,6 @@ async function scheduleTimeout(seconds: number) {
 async function execute(query: string, params: any) {
 	const { queryTimeout } = store.getState().config;
 
-	store.dispatch(actions.setQueryActive(true));
-
 	try {
 		const result = await Promise.race([
 			executeQuery(query, params),
@@ -55,8 +53,6 @@ async function execute(query: string, params: any) {
 		console.error('Query failed:', err);
 
 		return createError('an unknown error has occurred, please check the console for more details');
-	} finally {
-		store.dispatch(actions.setQueryActive(false));
 	}
 }
 

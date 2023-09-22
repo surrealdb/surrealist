@@ -29,14 +29,22 @@ function computeRowCount(response: any) {
 export function ResultPane() {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
+	const [resultTab, setResultTab] = useState<number>(1);
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 	const resultListing = useStoreValue((state) => state.config.resultListing);
 	const responses: any[] = activeTab?.lastResponse || [];
-
-	const [resultTab, setResultTab] = useState<number>(1);
 	const response = responses[resultTab - 1];
+
+	const responseCount = responses.length;
+	const rowCount = computeRowCount(response);
+	
 	const showCombined = resultListing == 'combined';
 	const showTabs = !showCombined && responses.length > 1;
+	const showResponses = showCombined && responseCount > 0;
+	const showRows = response?.result?.length > 0;
+	const showTime = response?.time;
+	const showDivider = (showCombined ? showResponses : showRows) || showTime;
+	const combinedResults = responses.map((r) => r.result);
 
 	useLayoutEffect(() => {
 		setResultTab(1);
@@ -45,13 +53,6 @@ export function ResultPane() {
 	const setResultView = useStable((view: ResultListing) => {
 		store.dispatch(actions.setResultListingMode(view));
 	});
-
-	const showRows = response?.result?.length > 0;
-	const showTime = response?.time;
-	const showDivider = showRows || showTime;
-	const responseCount = responses.length;
-	const combinedResults = responses.map((r) => r.result);
-	const rowCount = computeRowCount(response);
 
 	return (
 		<Panel
@@ -66,6 +67,7 @@ export function ResultPane() {
 
 								return (
 									<ActionIcon
+										key={item.id}
 										onClick={() => setResultView(item.id)}
 										color={isActive ? 'surreal' : 'light.4'}
 										title={`Switch to ${item.id} view`}
@@ -87,7 +89,7 @@ export function ResultPane() {
 						</>
 					)}
 
-					{showCombined ? (
+					{showResponses ? (
 						<>
 							<Icon color="light.4" path={mdiDatabase} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
