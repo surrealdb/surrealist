@@ -4,6 +4,8 @@ import { actions, store } from "~/store";
 import { KEYWORDS } from "./keywords";
 import { SurrealInfoDB } from "~/typings/surreal";
 import { getSurreal } from "./connection";
+import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
+import { loadWASM } from 'onigasm';
 
 export const LIGHT_THEME = "surrealist-light";
 export const DARK_THEME = "surrealist-dark";
@@ -24,14 +26,51 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	},
 };
 
+const getWorkerModule = (moduleUrl: any, label: any) => {
+	return new Worker((self.MonacoEnvironment as any).getWorkerUrl(moduleUrl), {
+		name: label,
+		type: 'module'
+	});
+};
+
+self.MonacoEnvironment = {
+	getWorker: function (workerId, label) {
+		switch (label) {
+			case 'json': {
+				return getWorkerModule('/monaco-editor/esm/vs/language/json/json.worker?worker', label);
+			}
+			case 'css':
+			case 'scss':
+			case 'less': {
+				return getWorkerModule('/monaco-editor/esm/vs/language/css/css.worker?worker', label);
+			}
+			case 'html':
+			case 'handlebars':
+			case 'razor': {
+				return getWorkerModule('/monaco-editor/esm/vs/language/html/html.worker?worker', label);
+			}
+			case 'typescript':
+			case 'javascript': {
+				return getWorkerModule('/monaco-editor/esm/vs/language/typescript/ts.worker?worker', label);
+			}
+			default: {
+				return getWorkerModule('/monaco-editor/esm/vs/editor/editor.worker?worker', label);
+			}
+		}
+	}
+};
+
+
 let global: Monaco;
 
 export function getMonaco() {
 	return global;
 }
 
-export function initializeEditor(monaco: Monaco) {
+export async function initializeMonaco(monaco: Monaco) {
 	global = monaco;
+
+	await loadWASM(onigasmPath);
 
 	monaco.editor.defineTheme(LIGHT_THEME, {
 		base: "vs",
