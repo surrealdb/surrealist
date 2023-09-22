@@ -36,6 +36,8 @@ import { ViewElement } from "./elements/view";
 import { ChangefeedElement } from "./elements/changefeed";
 import { getActiveSurreal, getSurreal } from "~/util/connection";
 
+const INITIAL_TABS = ["general", "view", "changefeed", "permissions", "fields", "indexes", "events"];
+
 export interface SchemaPaneProps {
 	table: TableDefinition;
 	onClose: () => void;
@@ -165,7 +167,11 @@ export function DesignPane(props: SchemaPaneProps) {
 						})}
 					/>
 					<ScrollArea style={{ position: "absolute", inset: 12, top: 56, bottom: 68 }}>
-						<Accordion multiple defaultValue={["general"]} chevronPosition="left">
+						<Accordion
+							multiple
+							defaultValue={INITIAL_TABS}
+							chevronPosition="left"
+						>
 							<GeneralElement
 								data={data}
 								setData={setData}

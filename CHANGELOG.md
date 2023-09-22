@@ -23,6 +23,7 @@
 - Surrealist now warns you when you connect to an outdated version of SurrealDB
 - The web app now more reliably connects to localhost endpoints
 - Replaced the window pinning toolbar button with a settings entry and hotkey (F11)
+- Expand all designer view sections by default
 - Fixed web app always starting in light theme for a split second
 - Fixed query error highlighting not working since beta 12
 - Fixed certain errors not displaying in the result panel
