@@ -1,7 +1,19 @@
-import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench } from "@mdi/js";
+import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench, mdiCodeJson, mdiFormatListGroup } from "@mdi/js";
+import { ResultListing } from "./types";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
+
+export interface ListingItem {
+	id: ResultListing;
+	icon: string;
+}
+
+export const RESULT_LISTINGS: ListingItem[] = [
+	{ id: "combined", icon: mdiFormatListGroup },
+	{ id: "json", icon: mdiCodeJson },
+	{ id: "table", icon: mdiTable },
+];
 
 export const EXPORT_TYPES = [
 	"records",

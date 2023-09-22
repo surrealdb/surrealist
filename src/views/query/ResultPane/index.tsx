@@ -1,6 +1,5 @@
 import { ActionIcon, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
-import { mdiClock, mdiCodeJson, mdiDatabase, mdiLightningBolt, mdiTable } from "@mdi/js";
-import { useMemo } from "react";
+import { mdiClock, mdiDatabase, mdiLightningBolt } from "@mdi/js";
 import { useActiveTab } from "~/hooks/environment";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
@@ -10,31 +9,9 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DataTable } from "~/components/DataTable";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
-
-interface PreviewProps {
-	result: any;
-	fontSize: number;
-}
-
-function JsonPreview({ result, fontSize }: PreviewProps) {
-	const wordWrap = useStoreValue((state) => state.config.wordWrap);
-
-	const contents = useMemo(() => {
-		return JSON.stringify(result, null, 4);
-	}, [result]);
-
-	return (
-		<SurrealistEditor
-			language="json"
-			value={contents}
-			options={{
-				wordWrap: wordWrap ? "on" : "off",
-				fontSize,
-			}}
-		/>
-	);
-}
+import { RESULT_LISTINGS } from "~/constants";
+import { ResultListing } from "~/types";
+import { CombinedJsonPreview, SingleJsonPreview } from "./preview";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -54,39 +31,52 @@ export function ResultPane() {
 	const activeTab = useActiveTab();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 	const resultListing = useStoreValue((state) => state.config.resultListing);
-	const responses = activeTab?.lastResponse || [];
+	const responses: any[] = activeTab?.lastResponse || [];
 
 	const [resultTab, setResultTab] = useState<number>(1);
 	const response = responses[resultTab - 1];
-	const showTabs = responses.length > 1;
+	const showCombined = resultListing == 'combined';
+	const showTabs = !showCombined && responses.length > 1;
 
 	useLayoutEffect(() => {
 		setResultTab(1);
 	}, [responses.length]);
 
-	const toggleResultView = useStable(() => {
-		const newMode = resultListing == "table" ? "json" : "table";
-
-		store.dispatch(actions.setResultListingMode(newMode));
+	const setResultView = useStable((view: ResultListing) => {
+		store.dispatch(actions.setResultListingMode(view));
 	});
 
-	const listingIcon = resultListing == "table" ? mdiCodeJson : mdiTable;
-	const listingTitle = resultListing == "table" ? "Switch to JSON view" : "Switch to table view";
-
-	const showDivider = response?.result?.length > 0 || response?.time;
+	const showRows = response?.result?.length > 0;
+	const showTime = response?.time;
+	const showDivider = showRows || showTime;
+	const responseCount = responses.length;
+	const combinedResults = responses.map((r) => r.result);
 	const rowCount = computeRowCount(response);
 
 	return (
 		<Panel
-			title={showTabs ? `Result #${resultTab}` : "Result"}
+			title={showCombined ? 'Results' : showTabs ? `Result #${resultTab}` : "Result"}
 			icon={mdiLightningBolt}
 			rightSection={
 				<Group align="center">
 					{response?.result !== undefined && (
 						<>
-							<ActionIcon onClick={toggleResultView} title={listingTitle}>
-								<Icon color="light.4" path={listingIcon} />
-							</ActionIcon>
+							{RESULT_LISTINGS.map(item => {
+								const isActive = item.id == resultListing;
+
+								return (
+									<ActionIcon
+										onClick={() => setResultView(item.id)}
+										color={isActive ? 'surreal' : 'light.4'}
+										title={`Switch to ${item.id} view`}
+									>
+										<Icon
+											color={isActive ? 'surreal' : 'light.4'}
+											path={item.icon}
+										/>
+									</ActionIcon>
+								);
+							})}
 
 							{showDivider && (
 								<Divider
@@ -97,7 +87,14 @@ export function ResultPane() {
 						</>
 					)}
 
-					{response?.result?.length > 0 && (
+					{showCombined ? (
+						<>
+							<Icon color="light.4" path={mdiDatabase} mr={-10} />
+							<Text color="light.4" lineClamp={1}>
+								{responseCount} {responseCount == 1 ? 'result' : 'results'}
+							</Text>
+						</>
+					) : showRows && (
 						<>
 							<Icon color="light.4" path={mdiDatabase} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
@@ -105,7 +102,8 @@ export function ResultPane() {
 							</Text>
 						</>
 					)}
-					{response?.time && (
+
+					{showTime && (
 						<>
 							<Icon color="light.4" path={mdiClock} mr={-10} />
 							<Text color="light.4" lineClamp={1}>
@@ -138,8 +136,10 @@ export function ResultPane() {
 							<Text color="light.4">No results found for query</Text>
 						) : resultListing == "table" ? (
 							<DataTable data={response.result} />
+						) : resultListing == "combined" ? (
+							<CombinedJsonPreview results={combinedResults} fontSize={14 * fontZoomLevel} />
 						) : (
-							<JsonPreview result={response.result} fontSize={14 * fontZoomLevel} />
+							<SingleJsonPreview result={response.result} fontSize={14 * fontZoomLevel} />
 						)}
 					</>
 				) : (

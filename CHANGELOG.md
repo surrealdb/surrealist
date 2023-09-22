@@ -16,8 +16,11 @@
 	- Highlighting is now based on the official SurrealQL grammar
 	- JavaScript is now correctly highlighted
 	- Modified color scheme
+- Added a new "Combined" query result mode
+	- Combines the results of multiple queries into a single list
+	- Useful for when you want to copy or view all results without switching tabs
+- Added a convenience button to load a query from disk
 - Surrealist now warns you when you connect to an outdated version of SurrealDB
-- Added a button to load a query from disk
 - The web app now more reliably connects to localhost endpoints
 - Replaced the window pinning toolbar button with a settings entry and hotkey (F11)
 - Fixed web app always starting in light theme for a split second

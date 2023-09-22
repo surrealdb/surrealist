@@ -3,7 +3,7 @@ import { ColorScheme } from "@mantine/core";
 export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
 export type DriverType = "file" | "memory" | "tikv";
 export type QueryListing = "history" | "favorites";
-export type ResultListing = "table" | "json";
+export type ResultListing = "table" | "json" | "combined";
 export type ViewMode = "query" | "explorer" | "visualizer" | "designer" | "auth";
 export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary" | "simple";
@@ -42,8 +42,7 @@ export interface SurrealistConfig {
 	lastPromptedVersion: string | null;
 	tabSearch: boolean;
 	defaultDesignerNodeMode: DesignerNodeMode,
-	defaultDesignerLayoutMode: DesignerLayoutMode,
-	combineResults: boolean,
+	defaultDesignerLayoutMode: DesignerLayoutMode
 }
 
 export interface SurrealistEnvironment {

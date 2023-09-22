@@ -24,7 +24,7 @@ export function QueryView(props: QueryViewProps) {
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"
-			bufferSize={400}
+			bufferSize={520}
 			startPane={
 				<Splitter
 					minSize={120}
@@ -32,7 +32,8 @@ export function QueryView(props: QueryViewProps) {
 					onChange={setInnerSplitValues}
 					bufferSize={0}
 					direction="vertical"
-					endPane={<VariablesPane onExecuteQuery={props.sendQuery} />}>
+					endPane={<VariablesPane onExecuteQuery={props.sendQuery} />}
+				>
 					<QueryPane onExecuteQuery={props.sendQuery} />
 				</Splitter>
 			}
