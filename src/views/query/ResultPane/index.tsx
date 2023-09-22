@@ -29,7 +29,6 @@ function JsonPreview({ result, fontSize }: PreviewProps) {
 			language="json"
 			value={contents}
 			options={{
-				readOnly: true,
 				wordWrap: wordWrap ? "on" : "off",
 				fontSize,
 			}}

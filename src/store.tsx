@@ -142,6 +142,10 @@ const mainSlice = createSlice({
 			state.config.isPinned = !state.config.isPinned;
 		},
 
+		setResultsCombined(state, { payload }: PayloadAction<boolean>) {
+			state.config.combineResults = payload;
+		},
+
 		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {
 			const query = action.payload.query;
 

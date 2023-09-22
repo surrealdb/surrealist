@@ -22,6 +22,7 @@
 - Replaced the window pinning toolbar button with a settings entry and hotkey (F11)
 - Fixed web app always starting in light theme for a split second
 - Fixed query error highlighting not working since beta 12
+- Fixed certain errors not displaying in the result panel
 
 ## 1.9.2 - SurrealDB 1.0 support
 - Update to SurrealDB 1.0

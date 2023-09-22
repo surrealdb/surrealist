@@ -12,7 +12,7 @@ export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onCh
 	options?: monaco.editor.IStandaloneEditorConstructionOptions;
 	value?: string;
 	language?: string;
-	height?: number
+	height?: number;
 	onChange?: (value: string) => void;
 	onMount?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
 }

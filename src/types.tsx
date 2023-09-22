@@ -43,6 +43,7 @@ export interface SurrealistConfig {
 	tabSearch: boolean;
 	defaultDesignerNodeMode: DesignerNodeMode,
 	defaultDesignerLayoutMode: DesignerLayoutMode,
+	combineResults: boolean,
 }
 
 export interface SurrealistEnvironment {

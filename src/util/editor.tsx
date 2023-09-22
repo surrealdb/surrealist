@@ -81,6 +81,10 @@ export async function initializeMonaco() {
 		extensions: [".surql", ".surrealql"],
 	});
 
+	monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+		validate: false
+	});
+
 	// table intellisense
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: [" "],
