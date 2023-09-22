@@ -1,4 +1,4 @@
-import { Monaco } from "@monaco-editor/react";
+import * as monaco from 'monaco-editor';
 import { editor, MarkerSeverity } from "monaco-editor";
 import { mdiDatabase, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
@@ -6,19 +6,15 @@ import { useActiveTab } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
-import { ElementRef, useEffect, useRef } from "react";
-import { configureQueryEditor, getMonaco } from "~/util/editor";
+import { useRef } from "react";
+import { configureQueryEditor } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import * as monaco from 'monaco-editor';
-import { Registry } from 'monaco-textmate';
 import { validate_query } from "~/generated/surrealist-embed";
 import { ActionIcon } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
-import { wireTmGrammars } from 'monaco-editor-textmate';
-import surrealqlTm from '~/assets/grammar/surrealql.tmLanguage.json';
 
 const ERR_REGEX = /Parse error on line (\d+) at character (\d+) when parsing '(.+)'/s;
 
@@ -28,7 +24,7 @@ export interface QueryPaneProps {
 
 export function QueryPane(props: QueryPaneProps) {
 	const activeTab = useActiveTab();
-	const controls = useRef<[Monaco, editor.IStandaloneCodeEditor]>();
+	const controls = useRef<editor.IStandaloneCodeEditor>();
 	const doErrorCheck = useStoreValue((state) => state.config.errorChecking);
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
@@ -37,7 +33,7 @@ export function QueryPane(props: QueryPaneProps) {
 	}
 
 	const updateValidation = useStable(async () => {
-		const [monaco, theEditor] = controls.current!;
+		const theEditor = controls.current!;
 
 		const model = theEditor.getModel()!;
 		const content = model.getValue();
@@ -79,10 +75,10 @@ export function QueryPane(props: QueryPaneProps) {
 
 	const setQuery = useDebouncedCallback(200, setQueryForced);
 
-	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
+	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
 
-		controls.current = [root, editor];
+		controls.current = editor;
 
 		updateValidation();
 
@@ -113,41 +109,6 @@ export function QueryPane(props: QueryPaneProps) {
 		}
 	});
 
-	// TODO
-
-	const editorRef = useRef<ElementRef<"div">>(null);
-
-	useEffect(() => {
-
-		const registry = new Registry({
-			getGrammarDefinition: async (scopeName) => {
-				return {
-					format: 'json',
-					content: surrealqlTm
-				};
-			}
-		});
-
-		// map of monaco "language id's" to TextMate scopeNames
-		const grammars = new Map();
-
-		grammars.set('css', 'source.css'); 
-		grammars.set('html', 'text.html.basic');
-		grammars.set('typescript', 'source.ts');
-
-		const editor = monaco.editor.create(editorRef.current!, {
-			value: [
-				'html, body {',
-				'    margin: 0;',
-				'}'
-			].join('\n'),
-			language: 'surrealql', // this won't work out of the box, see below for more info,
-		});
-		
-		wireTmGrammars(monaco, registry, grammars, editor);
-
-	}, []);
-
 	return (
 		<Panel
 			title="Query"
@@ -158,8 +119,7 @@ export function QueryPane(props: QueryPaneProps) {
 				</ActionIcon>
 			}
 		>
-			<div ref={editorRef} style={{ height: 400 }} />
-			{/* <SurrealistEditor
+			<SurrealistEditor
 				language="surrealql"
 				onMount={configure}
 				value={activeTab?.query}
@@ -176,7 +136,7 @@ export function QueryPane(props: QueryPaneProps) {
 					wordWrap: "on",
 					fontSize: 14 * fontZoomLevel,
 				}}
-			/> */}
+			/>
 		</Panel>
 	);
 }

@@ -6,7 +6,6 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { actions, store } from "./store";
 import { App } from "./components/App";
-import { loader } from "@monaco-editor/react";
 import { initializeMonaco } from "./util/editor";
 import { runUpdateChecker } from "./util/updater";
 import { updateTitle, watchNativeTheme } from "./util/helpers";
@@ -42,10 +41,7 @@ import "reactflow/dist/style.css";
 
 	// Init monaco
 	await document.fonts.ready;
-
-	const monaco = await loader.init();
-
-	await initializeMonaco(monaco);
+	await initializeMonaco();
 
 	// Render the app component
 	const root = document.querySelector("#root")!;

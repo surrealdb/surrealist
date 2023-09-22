@@ -9,7 +9,8 @@ import { useStable } from "~/hooks/stable";
 import surrealistIcon from "~/assets/icon.png";
 import { useSurrealistTheme } from "~/util/theme";
 import { actions, store, useStoreValue } from "~/store";
-import { DARK_THEME, LIGHT_THEME, getMonaco } from "~/util/editor";
+import { DARK_THEME, LIGHT_THEME } from "~/util/editor";
+import { editor } from 'monaco-editor';
 
 import { Icon } from "../Icon";
 import { Scaffold } from "../Scaffold";
@@ -22,7 +23,6 @@ export function App() {
 	const colorScheme = useStoreValue((state) => state.config.theme);
 	const isPinned = useStoreValue((state) => state.config.isPinned);
 	const defaultScheme = useStoreValue((state) => state.nativeTheme);
-	const monacoLoaded = useStoreValue((state) => state.monacoLoaded);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	const mantineTheme = useSurrealistTheme(actualTheme);
 	const isLight = useIsLight();
@@ -38,8 +38,8 @@ export function App() {
 	});
 
 	useEffect(() => {
-		getMonaco()?.editor?.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
-	}, [colorScheme, monacoLoaded]);
+		editor.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
+	}, [colorScheme]);
  
 	useEffect(() => {
 		if (adapter.isPinningSupported) {

@@ -8,8 +8,6 @@ import { Panel } from "~/components/Panel";
 import { useState } from "react";
 import { configureQueryEditor } from "~/util/editor";
 import { Text } from "@mantine/core";
-import { useIsLight } from "~/hooks/theme";
-import { Monaco } from "@monaco-editor/react";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 export interface VariablesPaneProps {
@@ -18,7 +16,6 @@ export interface VariablesPaneProps {
 
 export function VariablesPane(props: VariablesPaneProps) {
 	const activeTab = useActiveTab();
-	const isLight = useIsLight();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
 	if (!activeTab) {
@@ -50,7 +47,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 		}
 	});
 
-	const configure = useStable((editor: editor.IStandaloneCodeEditor, root: Monaco) => {
+	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor, props.onExecuteQuery);
 	});
 

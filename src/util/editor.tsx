@@ -1,11 +1,13 @@
-import { Monaco } from "@monaco-editor/react";
-import { editor, languages } from "monaco-editor";
+import * as monaco from "monaco-editor";
+import { KeyCode, KeyMod, editor, languages } from "monaco-editor";
 import { actions, store } from "~/store";
-import { KEYWORDS } from "./keywords";
 import { SurrealInfoDB } from "~/typings/surreal";
 import { getSurreal } from "./connection";
 import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
 import { loadWASM } from 'onigasm';
+
+import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 
 export const LIGHT_THEME = "surrealist-light";
 export const DARK_THEME = "surrealist-dark";
@@ -26,50 +28,20 @@ export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
 	},
 };
 
-const getWorkerModule = (moduleUrl: any, label: any) => {
-	return new Worker((self.MonacoEnvironment as any).getWorkerUrl(moduleUrl), {
-		name: label,
-		type: 'module'
-	});
-};
-
 self.MonacoEnvironment = {
-	getWorker: function (workerId, label) {
+	getWorker: function (_workerId, label) {
 		switch (label) {
 			case 'json': {
-				return getWorkerModule('/monaco-editor/esm/vs/language/json/json.worker?worker', label);
-			}
-			case 'css':
-			case 'scss':
-			case 'less': {
-				return getWorkerModule('/monaco-editor/esm/vs/language/css/css.worker?worker', label);
-			}
-			case 'html':
-			case 'handlebars':
-			case 'razor': {
-				return getWorkerModule('/monaco-editor/esm/vs/language/html/html.worker?worker', label);
-			}
-			case 'typescript':
-			case 'javascript': {
-				return getWorkerModule('/monaco-editor/esm/vs/language/typescript/ts.worker?worker', label);
+				return new JsonWorker();
 			}
 			default: {
-				return getWorkerModule('/monaco-editor/esm/vs/editor/editor.worker?worker', label);
+				return new EditorWorker();
 			}
 		}
 	}
 };
 
-
-let global: Monaco;
-
-export function getMonaco() {
-	return global;
-}
-
-export async function initializeMonaco(monaco: Monaco) {
-	global = monaco;
-
+export async function initializeMonaco() {
 	await loadWASM(onigasmPath);
 
 	monaco.editor.defineTheme(LIGHT_THEME, {
@@ -105,30 +77,35 @@ export async function initializeMonaco(monaco: Monaco) {
 		},
 	});
 
-	monaco.languages.register({ id: "surrealql" });
+	console.log('register');
 
-	monaco.languages.setMonarchTokensProvider("surrealql", {
-		ignoreCase: true,
-		keywords: KEYWORDS,
-		tokenizer: {
-			root: [
-				[/(count|(\w+::)+\w+)(?=\()/, "function"],
-				[/["'].*?["']/, "string"],
-				[/\/.*?[^\\]\/|<future>/, "fancy"],
-				[/(\/\/|#|--).+/, "comment"],
-				[/\$\w+/, "param"],
-				[
-					/\b\w+\b/,
-					{
-						cases: {
-							"@keywords": "keyword",
-							"@default": "variable",
-						},
-					},
-				],
-			],
-		},
+	monaco.languages.register({
+		id: "surrealql",
+		extensions: [".surql", ".surrealql"],
 	});
+
+	// monaco.languages.setMonarchTokensProvider("surrealql", {
+	// 	ignoreCase: true,
+	// 	keywords: KEYWORDS,
+	// 	tokenizer: {
+	// 		root: [
+	// 			[/(count|(\w+::)+\w+)(?=\()/, "function"],
+	// 			[/["'].*?["']/, "string"],
+	// 			[/\/.*?[^\\]\/|<future>/, "fancy"],
+	// 			[/(\/\/|#|--).+/, "comment"],
+	// 			[/\$\w+/, "param"],
+	// 			[
+	// 				/\b\w+\b/,
+	// 				{
+	// 					cases: {
+	// 						"@keywords": "keyword",
+	// 						"@default": "variable",
+	// 					},
+	// 				},
+	// 			],
+	// 		],
+	// 	},
+	// });
 
 	// table intellisense
 	monaco.languages.registerCompletionItemProvider("surrealql", {
@@ -224,14 +201,14 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor, onExe
 	editor.addAction({
 		id: "run-query",
 		label: "Run Query",
-		keybindings: [global.KeyMod.CtrlCmd | global.KeyCode.Enter, global.KeyCode.F9],
+		keybindings: [KeyMod.CtrlCmd | KeyCode.Enter, KeyCode.F9],
 		run: () => onExecute(),
 	});
 
 	editor.addAction({
 		id: "comment-query",
 		label: "Comment Query",
-		keybindings: [global.KeyMod.CtrlCmd | global.KeyCode.Slash],
+		keybindings: [KeyMod.CtrlCmd | KeyCode.Slash],
 		run: (editor) => {
 			const selection = editor.getSelection();
 			const model = editor.getModel();
