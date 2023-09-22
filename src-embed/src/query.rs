@@ -178,21 +178,21 @@ pub async fn query_version() -> Option<JsValue> {
 
 #[wasm_bindgen]
 pub async fn execute_query(query: String, params: JsValue) -> String {
-    console_log!("Executing query {}", query);
-
 	let container = CLIENT.read().await;
-
+	
 	if container.is_none() {
 		let error = Value::Array(make_error("No connection open")).into_json();
-
+		
 		return serde_json::to_string(&error).unwrap();
 	}
+
+	console_log!("Executing query {}", query);
 
 	let param_map: JsonValue = from_value(params).unwrap();
     let client = container.as_ref().unwrap();
     let query_task = client.query(query).bind(&param_map).await;
 
-    console_log!("Received response from database");
+    console_log!("Received response from database, success: {}", query_task.is_ok());
 
     let results: Array = match query_task {
 		Ok(mut response) => {
