@@ -16,7 +16,7 @@ import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 
-const ERR_REGEX = /Parse error on line (\d+) at character (\d+) when parsing '(.+)'/s;
+const ERR_REGEX = /Parse error: Failed to parse query at line (\d+) column (\d+)(.+)/s;
 
 export interface QueryPaneProps {
 	onExecuteQuery: (override?: string) => void;
@@ -40,19 +40,20 @@ export function QueryPane(props: QueryPaneProps) {
 		const markers: editor.IMarkerData[] = [];
 
 		if (content && doErrorCheck) {
-			const message = (await validate_query(content)) || "";
+			const message = validate_query(content) || "";
 			const match = message.match(ERR_REGEX);
 
 			if (match) {
 				const lineNumber = Number.parseInt(match[1]);
 				const column = Number.parseInt(match[2]);
+				const reason = match[3].trim();
 
 				markers.push({
 					startLineNumber: lineNumber,
 					startColumn: column,
 					endLineNumber: lineNumber,
 					endColumn: column,
-					message: message,
+					message: reason,
 					severity: MarkerSeverity.Error,
 				});
 			}

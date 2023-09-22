@@ -1,8 +1,7 @@
-import surrealqlTm from '~/assets/grammar/surrealql.tmLanguage.json';
 import * as monaco from 'monaco-editor';
 import { CSSProperties, ElementRef, HTMLAttributes, useEffect, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { DARK_THEME, LIGHT_THEME, baseEditorConfig } from "~/util/editor";
+import { DARK_THEME, LIGHT_THEME, BASE_EDITOR_CONFIG, getGrammar } from "~/util/editor";
 import { Registry } from "monaco-textmate";
 import { wireTmGrammars } from "monaco-editor-textmate";
 import { Box } from "@mantine/core";
@@ -25,7 +24,7 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 
 	useEffect(() => {
 		const editor = monaco.editor.create(elementRef.current!, {
-			...baseEditorConfig,
+			...BASE_EDITOR_CONFIG,
 			...props.options,
 			value: props.value || '',
 			theme: isLight ? LIGHT_THEME : DARK_THEME,
@@ -46,18 +45,14 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 
 		const registry = new Registry({
 			getGrammarDefinition: async (scopeName) => {
-				console.log('scope', scopeName);
-				
-				return {
-					format: 'json',
-					content: surrealqlTm
-				};
+				return getGrammar(scopeName);
 			}
 		});
 
 		const grammars = new Map();
 
-		grammars.set('surrealql', 'surrealql.ts');
+		grammars.set('surrealql', 'source.surql');
+		grammars.set('javascript', 'source.js');
 
 		wireTmGrammars(monaco, registry, grammars, editor);
 

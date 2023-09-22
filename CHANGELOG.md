@@ -17,6 +17,7 @@
 - The web app now more reliably connects to localhost endpoints
 - Replaced the window pinning toolbar button with a settings entry and hotkey (F11)
 - Fixed web app always starting in light theme for a split second
+- Fixed query error highlighting not working since beta 12
 
 ## 1.9.2 - SurrealDB 1.0 support
 - Update to SurrealDB 1.0

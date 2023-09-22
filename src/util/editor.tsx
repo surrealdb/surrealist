@@ -6,33 +6,24 @@ import { getSurreal } from "./connection";
 import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
 import { loadWASM } from 'onigasm';
 
+import TypeScriptWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 
-export const LIGHT_THEME = "surrealist-light";
-export const DARK_THEME = "surrealist-dark";
+import surrealqlTm from '~/assets/grammar/surrealql.tmLanguage.json';
+import javascriptTm from '~/assets/grammar/javascript.tmLanguage.json';
 
-const tablePrefixes = ["FROM ", "UPDATE ", "CREATE ", "DELETE ", "INTO "];
-
-export const baseEditorConfig: editor.IStandaloneEditorConstructionOptions = {
-	scrollBeyondLastLine: false,
-	overviewRulerLanes: 0,
-	fontFamily: "JetBrains Mono",
-	renderLineHighlight: "none",
-	lineDecorationsWidth: 12,
-	lineNumbersMinChars: 1,
-	glyphMargin: false,
-	automaticLayout: true,
-	minimap: {
-		enabled: false,
-	},
-};
+import surrealistLightTheme from '~/assets/themes/surrealist-light.json';
+import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
 		switch (label) {
 			case 'json': {
 				return new JsonWorker();
+			}
+			case 'javascript': {
+				return new TypeScriptWorker();
 			}
 			default: {
 				return new EditorWorker();
@@ -41,71 +32,54 @@ self.MonacoEnvironment = {
 	}
 };
 
+export const LIGHT_THEME = "surrealist-light";
+export const DARK_THEME = "surrealist-dark";
+
+export const BASE_EDITOR_CONFIG: editor.IStandaloneEditorConstructionOptions = {
+	scrollBeyondLastLine: false,
+	overviewRulerLanes: 0,
+	fontFamily: "JetBrains Mono",
+	renderLineHighlight: "none",
+	lineDecorationsWidth: 12,
+	lineNumbersMinChars: 1,
+	glyphMargin: false,
+	automaticLayout: true,
+	bracketPairColorizationOptions: {
+		enabled: false
+	},
+	minimap: {
+		enabled: false,
+	},
+	"bracketPairColorization.enabled": false, // NOTE Horrible hack (https://github.com/microsoft/monaco-editor/issues/3829)
+} as any;
+
+const TABLE_PREFIXES = ["FROM ", "UPDATE ", "CREATE ", "DELETE ", "INTO "];
+
+const SCOPE_GRAMMARS: any = {
+	'source.surql': {
+		format: 'json',
+		content: surrealqlTm,
+	},
+	'source.js': {
+		format: 'json',
+		content: javascriptTm
+	}
+};
+
+export function getGrammar(scopeName: string) {
+	return SCOPE_GRAMMARS[scopeName] || SCOPE_GRAMMARS['source.surql'];
+}
+
 export async function initializeMonaco() {
 	await loadWASM(onigasmPath);
 
-	monaco.editor.defineTheme(LIGHT_THEME, {
-		base: "vs",
-		inherit: true,
-		rules: [
-			{ token: "keyword", foreground: "#e600a4" },
-			{ token: "param", foreground: "#e67a15" },
-			{ token: "comment", foreground: "#606475" },
-			{ token: "fancy", foreground: "#09b8ac" },
-			{ token: "function", foreground: "#9565cf" },
-		],
-		colors: {
-			"editorLineNumber.foreground": "#9BA9C6",
-			"editorLineNumber.activeForeground": "#465671",
-		},
-	});
-
-	monaco.editor.defineTheme(DARK_THEME, {
-		base: "vs-dark",
-		inherit: true,
-		rules: [
-			{ token: "keyword", foreground: "#e600a4" },
-			{ token: "param", foreground: "#e67a15" },
-			{ token: "comment", foreground: "#606475" },
-			{ token: "fancy", foreground: "#09b8ac" },
-			{ token: "function", foreground: "#cb96ff" },
-		],
-		colors: {
-			"editor.background": "#1a1b1e",
-			"editorLineNumber.foreground": "#465671",
-			"editorLineNumber.activeForeground": "#9BA9C6",
-		},
-	});
-
-	console.log('register');
+	monaco.editor.defineTheme(LIGHT_THEME, surrealistLightTheme as any);
+	monaco.editor.defineTheme(DARK_THEME, surrealistDarkTheme as any);
 
 	monaco.languages.register({
 		id: "surrealql",
 		extensions: [".surql", ".surrealql"],
 	});
-
-	// monaco.languages.setMonarchTokensProvider("surrealql", {
-	// 	ignoreCase: true,
-	// 	keywords: KEYWORDS,
-	// 	tokenizer: {
-	// 		root: [
-	// 			[/(count|(\w+::)+\w+)(?=\()/, "function"],
-	// 			[/["'].*?["']/, "string"],
-	// 			[/\/.*?[^\\]\/|<future>/, "fancy"],
-	// 			[/(\/\/|#|--).+/, "comment"],
-	// 			[/\$\w+/, "param"],
-	// 			[
-	// 				/\b\w+\b/,
-	// 				{
-	// 					cases: {
-	// 						"@keywords": "keyword",
-	// 						"@default": "variable",
-	// 					},
-	// 				},
-	// 			],
-	// 		],
-	// 	},
-	// });
 
 	// table intellisense
 	monaco.languages.registerCompletionItemProvider("surrealql", {
@@ -121,7 +95,7 @@ export async function initializeMonaco() {
 			const linePrefix = model.getLineContent(position.lineNumber).slice(0, Math.max(0, position.column));
 			const isAuto = context.triggerKind === languages.CompletionTriggerKind.TriggerCharacter;
 
-			if (isAuto && !tablePrefixes.some((pre) => linePrefix.toUpperCase().endsWith(pre))) {
+			if (isAuto && !TABLE_PREFIXES.some((pre) => linePrefix.toUpperCase().endsWith(pre))) {
 				return;
 			}
 

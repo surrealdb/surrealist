@@ -2,7 +2,6 @@ import { Badge, Text, Textarea } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from "@mdi/js";
-import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "radash";
 import { useState, useEffect } from "react";
 import { Form } from "~/components/Form";
@@ -10,6 +9,7 @@ import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
+import { extract_scope_definition } from "~/generated/surrealist-embed";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -50,7 +50,7 @@ export function ScopePane(props: ScopePaneProps) {
 		}
 
 		const scopeInfo = await map(Object.values(result.scopes), async (definition) => {
-			const result = await invoke("extract_scope_definition", { definition });
+			const result = await extract_scope_definition(definition);
 
 			return result as ScopeInfo;
 		});
