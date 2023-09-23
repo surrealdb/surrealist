@@ -11,6 +11,16 @@ export function getActiveTab() {
 }
 
 /**
+ * Returns the currently active environment
+ */
+export function getActiveEnvironment() {
+	const { environments } = store.getState().config;
+	const activeTab = getActiveTab();
+
+	return environments.find((e) => e.id === activeTab?.environment);
+}
+
+/**
  * Create an empty connection
  */
 export function createEmptyConnection(): ConnectionOptions {

@@ -26,12 +26,9 @@ import { useActiveTab } from "~/hooks/environment";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
+import { executeQuery } from "~/database";
 
-export interface HistoryPaneProps {
-	onExecuteQuery: () => void;
-}
-
-export function HistoryPane(props: HistoryPaneProps) {
+export function HistoryPane() {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
 	const entries = useStoreValue((state) => state.config.queryHistory);
@@ -54,7 +51,11 @@ export function HistoryPane(props: HistoryPaneProps) {
 
 		return filtered.map((entry, i) => (
 			<Fragment key={i}>
-				<HistoryRow entry={entry} isLight={isLight} activeTab={activeTab} onExecuteQuery={props.onExecuteQuery} />
+				<HistoryRow
+					entry={entry}
+					isLight={isLight}
+					activeTab={activeTab}
+				/>
 				{i !== entries.length - 1 && <Divider color={isLight ? "light.0" : "dark.5"} />}
 			</Fragment>
 		));
@@ -86,10 +87,9 @@ interface HistoryRowProps {
 	entry: HistoryEntry;
 	isLight: boolean;
 	activeTab: SurrealistTab | undefined;
-	onExecuteQuery: () => void;
 }
 
-function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowProps) {
+function HistoryRow({ activeTab, entry, isLight }: HistoryRowProps) {
 	const theme = useMantineTheme();
 	const { ref, hovered } = useHover();
 
@@ -106,10 +106,10 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 		);
 	});
 
-	const executeQuery = useStable(() => {
+	const executeHistory = useStable(() => {
 		editQuery();
 
-		setTimeout(onExecuteQuery, 0);
+		setTimeout(executeQuery, 0);
 	});
 
 	return (
@@ -141,7 +141,7 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 					<Button size="xs" variant="light" color="violet" radius="sm" title="Edit query" onClick={editQuery}>
 						<Icon path={mdiPencil} color="violet" />
 					</Button>
-					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeQuery}>
+					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeHistory}>
 						<Icon path={mdiPlay} color="pink" />
 					</Button>
 				</SimpleGrid>

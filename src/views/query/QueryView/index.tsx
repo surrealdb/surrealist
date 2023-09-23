@@ -8,7 +8,6 @@ import { VariablesPane } from "../../query/VariablesPane";
 import { Splitter, SplitValues } from "~/components/Splitter";
 
 export interface QueryViewProps {
-	sendQuery: (override?: string) => any;
 }
 
 export function QueryView(props: QueryViewProps) {
@@ -32,17 +31,19 @@ export function QueryView(props: QueryViewProps) {
 					onChange={setInnerSplitValues}
 					bufferSize={0}
 					direction="vertical"
-					endPane={<VariablesPane onExecuteQuery={props.sendQuery} />}
+					endPane={
+						<VariablesPane />
+					}
 				>
-					<QueryPane onExecuteQuery={props.sendQuery} />
+					<QueryPane />
 				</Splitter>
 			}
 			endPane={
 				enableListing ? (
 					queryListing == "history" ? (
-						<HistoryPane onExecuteQuery={props.sendQuery} />
+						<HistoryPane />
 					) : (
-						<FavoritesPane onExecuteQuery={props.sendQuery} />
+						<FavoritesPane />
 					)
 				) : null
 			}>

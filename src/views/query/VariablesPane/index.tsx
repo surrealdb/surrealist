@@ -1,4 +1,3 @@
-import type { editor } from "monaco-editor";
 import { mdiTune } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveTab } from "~/hooks/environment";
@@ -6,15 +5,10 @@ import { actions, store, useStoreValue } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { useState } from "react";
-import { configureQueryEditor } from "~/util/editor";
 import { Text } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 
-export interface VariablesPaneProps {
-	onExecuteQuery: () => void;
-}
-
-export function VariablesPane(props: VariablesPaneProps) {
+export function VariablesPane() {
 	const activeTab = useActiveTab();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
@@ -47,17 +41,12 @@ export function VariablesPane(props: VariablesPaneProps) {
 		}
 	});
 
-	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
-		configureQueryEditor(editor, props.onExecuteQuery);
-	});
-
 	const jsonAlert = isInvalid ? <Text color="red">Invalid variable JSON</Text> : undefined;
 
 	return (
 		<Panel title="Variables" icon={mdiTune} rightSection={jsonAlert}>
 			<SurrealistEditor
 				language="json"
-				onMount={configure}
 				value={activeTab?.variables?.toString()}
 				onChange={setVariables}
 				style={{

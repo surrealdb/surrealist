@@ -14,12 +14,12 @@ import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 
-export function QueryPane() {
+export function LiveQueryPane() {
 	const activeTab = useActiveTab();
-	const controls = useRef<editor.IStandaloneCodeEditor>();
+	const editorRef = useRef<editor.IStandaloneCodeEditor>();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
-	const setQueryForced = useStable((content: string | undefined) => {
+	const setQuery = useStable((content: string | undefined) => {
 		if (!activeTab) {
 			return;
 		}
@@ -32,29 +32,29 @@ export function QueryPane() {
 		);
 
 		updateConfig();
-		updateQueryValidation(controls.current!);
+		updateQueryValidation(editorRef.current!);
 	});
 
-	const scheduleSetQuery = useDebouncedCallback(200, setQueryForced);
+	const scheduleSetQuery = useDebouncedCallback(200, setQuery);
 
 	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor);
 		updateQueryValidation(editor);
 
-		controls.current = editor;
+		editorRef.current = editor;
 	});
 
 	const handleUpload = useStable(async () => {
 		const query = await adapter.openFile('Load query from file', SURQL_FILTERS, false);
 
 		if (typeof query == 'string') {
-			setQueryForced(query);
+			setQuery(query);
 		}
 	});
 
 	return (
 		<Panel
-			title="Query"
+			title="Live Query"
 			icon={mdiDatabase}
 			rightSection={
 				<ActionIcon onClick={handleUpload} title="Load from file">

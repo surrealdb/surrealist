@@ -1,4 +1,4 @@
-import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench, mdiCodeJson, mdiFormatListGroup } from "@mdi/js";
+import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench, mdiCodeJson, mdiFormatListGroup, mdiBroadcast } from "@mdi/js";
 import { ResultListing } from "./types";
 
 export type StructureTab = "graph" | "builder";
@@ -57,13 +57,13 @@ export const VIEW_MODES = [
 		icon: mdiLockOpen,
 		desc: "Manage account details and database scopes",
 	},
-	// {
-	// 	id: "live",
-	// 	name: "Live Queries",
-	// 	icon: mdiBroadcast,
-	// 	desc: "Subscribe and receive live updates from the database",
-	// 	desktop: true,
-	// },
+	{
+		id: "live",
+		name: "Live Query",
+		icon: mdiBroadcast,
+		desc: "Subscribe and receive live updates from the database",
+		desktop: true,
+	},
 ] as const;
 
 export const STRUCTURE_TABS = [

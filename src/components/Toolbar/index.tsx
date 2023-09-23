@@ -20,10 +20,7 @@ import { Exporter } from "../Exporter";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
-	openConnection: () => void;
-	closeConnection: () => void;
 	onCreateTab: (environment: string) => void;
-	onSaveEnvironments: () => void;
 }
 
 export function Toolbar(props: ToolbarProps) {
@@ -99,7 +96,6 @@ export function Toolbar(props: ToolbarProps) {
 			<Selector
 				active={activeTab}
 				isLight={isLight}
-				onSave={props.onSaveEnvironments}
 				onCreateTab={props.onCreateTab}
 			/>
 
@@ -123,7 +119,7 @@ export function Toolbar(props: ToolbarProps) {
 			)}
 
 			{adapter.isServeSupported && (
-				<LocalDatabase openConnection={props.openConnection} closeConnection={props.closeConnection} />
+				<LocalDatabase />
 			)}
 
 			<Exporter />

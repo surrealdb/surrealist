@@ -13,12 +13,9 @@ import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
+import { closeConnection, openConnection } from "~/database";
 
-export interface TabEditorProps {
-	onActiveChange: () => Promise<unknown>;
-}
-
-export function TabEditor({ onActiveChange }: TabEditorProps) {
+export function TabEditor() {
 	const isLight = useIsLight();
 	const tabs = useTabsList();
 	const environments = useEnvironmentList();
@@ -50,7 +47,15 @@ export function TabEditor({ onActiveChange }: TabEditorProps) {
 		);
 
 		if (activeTabId == editingId) {
-			await onActiveChange();
+			const { autoConnect } = store.getState().config;
+
+			closeConnection();
+	
+			await updateConfig();
+	
+			if (autoConnect && mergedValid) {
+				openConnection();
+			}
 		}
 
 		updateTitle();

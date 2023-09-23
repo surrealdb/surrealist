@@ -30,6 +30,7 @@ const mainSlice = createSlice({
 		nativeTheme: "light" as ColorScheme,
 		isServing: false,
 		servePending: false,
+		isConnecting: false,
 		isConnected: false,
 		isQueryActive: false,
 		consoleOutput: [] as string[],
@@ -296,6 +297,10 @@ const mainSlice = createSlice({
 
 		setDatabaseSchema(state, action: PayloadAction<TableDefinition[]>) {
 			state.databaseSchema = action.payload;
+		},
+
+		setIsConnecting(state, action: PayloadAction<boolean>) {
+			state.isConnecting = action.payload;
 		},
 
 		setIsConnected(state, action: PayloadAction<boolean>) {

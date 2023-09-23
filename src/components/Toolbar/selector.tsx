@@ -34,11 +34,10 @@ function getTabIcon(tab: SurrealistTab) {
 export interface SelectorProps {
 	active: string | null;
 	isLight: boolean;
-	onSave: () => void;
 	onCreateTab: (environment: string) => void;
 }
 
-export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps) {
+export function Selector({ active, isLight, onCreateTab }: SelectorProps) {
 	const [opened, setOpened] = useState(false);
 	const [manageEnvs, setManageEnvs] = useState(false);
 	const [viewingEnv, setViewingEnv] = useState("");
@@ -416,7 +415,10 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 				</Popover.Dropdown>
 			</Popover>
 
-			<Environments opened={manageEnvs} onClose={closeEnvManager} onSave={onSave} />
+			<Environments
+				opened={manageEnvs}
+				onClose={closeEnvManager}
+			/>
 		</>
 	);
 }

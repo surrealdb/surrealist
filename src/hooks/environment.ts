@@ -12,6 +12,16 @@ export function useActiveTab() {
 }
 
 /**
+ * Returns the active environment
+ */
+export function useActiveEnvironment() {
+	const environments = useStoreValue((state) => state.config.environments);
+	const activeTab = useActiveTab();
+
+	return environments.find((e) => e.id === activeTab?.environment);
+}
+
+/**
  * Return a list of all tabs
  */
 export function useTabsList() {

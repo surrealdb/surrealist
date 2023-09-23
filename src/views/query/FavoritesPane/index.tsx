@@ -34,12 +34,9 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { Form } from "~/components/Form";
 import { ModalTitle } from "~/components/ModalTitle";
+import { executeQuery } from "~/database";
 
-export interface FavoritesPaneProps {
-	onExecuteQuery: () => void;
-}
-
-export function FavoritesPane(props: FavoritesPaneProps) {
+export function FavoritesPane() {
 	const isLight = useIsLight();
 	const activeTab = useActiveTab();
 	const entries = useStoreValue((state) => state.config.queryFavorites);
@@ -138,7 +135,6 @@ export function FavoritesPane(props: FavoritesPaneProps) {
 							activeTab={activeTab}
 							enableDrag={!search}
 							handleProps={handleProps}
-							onExecuteQuery={props.onExecuteQuery}
 							onActivate={activateEntry}
 							onEdit={openEditor}
 						/>
@@ -208,13 +204,12 @@ interface HistoryRowProps {
 	activeTab: SurrealistTab | undefined;
 	enableDrag: boolean;
 	handleProps: Record<string, any>;
-	onExecuteQuery: () => void;
 	onActivate: (id: string) => void;
 	onEdit: (id: string) => void;
 }
 
 function FavoriteRow(props: HistoryRowProps) {
-	const { isActive, activeTab, entry, isLight, enableDrag, handleProps, onExecuteQuery, onActivate, onEdit } = props;
+	const { isActive, activeTab, entry, isLight, enableDrag, handleProps, onActivate, onEdit } = props;
 
 	const theme = useMantineTheme();
 
@@ -222,7 +217,7 @@ function FavoriteRow(props: HistoryRowProps) {
 		onEdit(entry.id);
 	});
 
-	const executeQuery = useStable(() => {
+	const executeFavorite = useStable(() => {
 		store.dispatch(
 			actions.updateTab({
 				id: activeTab?.id,
@@ -230,7 +225,7 @@ function FavoriteRow(props: HistoryRowProps) {
 			})
 		);
 
-		setTimeout(onExecuteQuery, 0);
+		setTimeout(executeQuery, 0);
 	});
 
 	const handleClick = useStable((e: any) => {
@@ -287,7 +282,7 @@ function FavoriteRow(props: HistoryRowProps) {
 					<Button size="xs" variant="light" color="violet" radius="sm" title="Edit query" onClick={editQuery}>
 						<Icon path={mdiPencil} color="violet" />
 					</Button>
-					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeQuery}>
+					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeFavorite}>
 						<Icon path={mdiPlay} color="pink" />
 					</Button>
 					<Button size="xs" variant="light" color="blue" radius="sm" title="Open in new session" onClick={openQuery}>
