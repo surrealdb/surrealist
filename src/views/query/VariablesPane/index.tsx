@@ -1,6 +1,6 @@
 import { mdiTune } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
-import { useActiveTab } from "~/hooks/environment";
+import { useActiveSession } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
@@ -9,10 +9,10 @@ import { Text } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 export function VariablesPane() {
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
-	if (!activeTab) {
+	if (!activeSession) {
 		throw new Error("This should not happen");
 	}
 
@@ -28,8 +28,8 @@ export function VariablesPane() {
 			}
 
 			store.dispatch(
-				actions.updateTab({
-					id: activeTab.id,
+				actions.updateSession({
+					id: activeSession.id,
 					variables: json,
 				})
 			);
@@ -47,7 +47,7 @@ export function VariablesPane() {
 		<Panel title="Variables" icon={mdiTune} rightSection={jsonAlert}>
 			<SurrealistEditor
 				language="json"
-				value={activeTab?.variables?.toString()}
+				value={activeSession?.variables?.toString()}
 				onChange={setVariables}
 				style={{
 					position: "absolute",

@@ -8,7 +8,7 @@ import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { MouseEvent, useEffect } from "react";
-import { useActiveTab, useActiveEnvironment } from "~/hooks/environment";
+import { useActiveSession, useActiveEnvironment } from "~/hooks/environment";
 import { mergeConnections, isConnectionValid } from "~/util/environments";
 import { useIsLight } from "~/hooks/theme";
 import { ViewMode } from "~/types";
@@ -27,10 +27,10 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const autoConnect = useStoreValue((state) => state.config.autoConnect);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
 
-	const tabInfo = useActiveTab();
+	const sessionInfo = useActiveSession();
 	const envInfo = useActiveEnvironment();
 
-	const connection = mergeConnections(tabInfo?.connection || {}, envInfo?.connection || {});
+	const connection = mergeConnections(sessionInfo?.connection || {}, envInfo?.connection || {});
 	const connectionValid = isConnectionValid(connection);
 
 	const borderColor = theme.fn.themeColor(isConnected ? "surreal" : connectionValid ? "light" : "red");
@@ -47,18 +47,18 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	});
 
 	const openTabEditor = useStable(() => {
-		if (!tabInfo) {
+		if (!sessionInfo) {
 			return;
 		}
 
-		store.dispatch(actions.openTabEditor(tabInfo.id));
+		store.dispatch(actions.openTabEditor(sessionInfo.id));
 	});
 
 	useEffect(() => {
-		if (tabInfo && autoConnect && connectionValid) {
+		if (sessionInfo && autoConnect && connectionValid) {
 			openConnection();
 		}
-	}, [tabInfo?.id]);
+	}, [sessionInfo?.id]);
 
 	return (
 		<Group className={classes.inputWrapper}>

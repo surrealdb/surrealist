@@ -17,7 +17,7 @@ import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { validate_where_clause } from "~/generated/surrealist-embed";
-import { useActiveTab } from "~/hooks/environment";
+import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store } from "~/store";
@@ -34,7 +34,7 @@ const PAGE_SIZES = [
 
 export interface ExplorerPaneProps {
 	refreshId: number;
-	activeTable: string | null;
+	activeSessionle: string | null;
 	activeRecordId: string | null;
 	onSelectRecord: OpenFn;
 	onRequestCreate: () => void;
@@ -51,7 +51,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [pageSize, setPageSize] = useInputState("25");
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
 	const [page, setPage] = useState(1);
-	const tabInfo = useActiveTab();
+	const sessionInfo = useActiveSession();
 
 	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
@@ -68,7 +68,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [filterClause] = useDebouncedValue(filterText, 500);
 
 	const fetchRecords = useStable(async () => {
-		if (!props.activeTable) {
+		if (!props.activeSessionle) {
 			setRecords([]);
 			return;
 		}
@@ -83,8 +83,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeTable}`;
-		let fetchQuery = `SELECT * FROM ${props.activeTable}`;
+		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeSessionle}`;
+		let fetchQuery = `SELECT * FROM ${props.activeSessionle}`;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;
@@ -112,7 +112,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeTable, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
+	}, [props.activeSessionle, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
 
 	useEffect(() => {
 		if (showFilter && filterText) {
@@ -162,15 +162,15 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		props.onSelectRecord(record.id);
 	});
 
-	const isPinned = props.activeTable && tabInfo?.pinnedTables?.includes(props.activeTable);
+	const isPinned = props.activeSessionle && sessionInfo?.pinnedTables?.includes(props.activeSessionle);
 
 	const togglePin = useStable(() => {
-		if (!props.activeTable || !tabInfo) return;
+		if (!props.activeSessionle || !sessionInfo) return;
 
 		store.dispatch(
 			actions.toggleTablePin({
-				tab: tabInfo.id,
-				table: props.activeTable,
+				session: sessionInfo.id,
+				table: props.activeSessionle,
 			})
 		);
 
@@ -207,7 +207,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 					</Text>
 				</Group>
 			}>
-			{props.activeTable ? (
+			{props.activeSessionle ? (
 				<>
 					{filter && (
 						<TextInput

@@ -21,8 +21,8 @@ import { actions, store, useStoreValue } from "~/store";
 import dayjs from "dayjs";
 import { useStable } from "~/hooks/stable";
 import { useHover, useInputState } from "@mantine/hooks";
-import { HistoryEntry, SurrealistTab } from "~/types";
-import { useActiveTab } from "~/hooks/environment";
+import { HistoryEntry, Session } from "~/types";
+import { useActiveSession } from "~/hooks/environment";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
@@ -30,7 +30,7 @@ import { executeQuery } from "~/database";
 
 export function HistoryPane() {
 	const isLight = useIsLight();
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 	const entries = useStoreValue((state) => state.config.queryHistory);
 	const [search, setSearch] = useInputState("");
 
@@ -54,12 +54,12 @@ export function HistoryPane() {
 				<HistoryRow
 					entry={entry}
 					isLight={isLight}
-					activeTab={activeTab}
+					activeSession={activeSession}
 				/>
 				{i !== entries.length - 1 && <Divider color={isLight ? "light.0" : "dark.5"} />}
 			</Fragment>
 		));
-	}, [activeTab, filtered, isLight]);
+	}, [activeSession, filtered, isLight]);
 
 	return (
 		<Panel title="History" icon={mdiHistory} rightSection={<HistoryActions />}>
@@ -86,10 +86,10 @@ export function HistoryPane() {
 interface HistoryRowProps {
 	entry: HistoryEntry;
 	isLight: boolean;
-	activeTab: SurrealistTab | undefined;
+	activeSession: Session | undefined;
 }
 
-function HistoryRow({ activeTab, entry, isLight }: HistoryRowProps) {
+function HistoryRow({ activeSession, entry, isLight }: HistoryRowProps) {
 	const theme = useMantineTheme();
 	const { ref, hovered } = useHover();
 
@@ -99,8 +99,8 @@ function HistoryRow({ activeTab, entry, isLight }: HistoryRowProps) {
 
 	const editQuery = useStable(() => {
 		store.dispatch(
-			actions.updateTab({
-				id: activeTab?.id,
+			actions.updateSession({
+				id: activeSession?.id,
 				query: entry.query,
 			})
 		);

@@ -19,14 +19,14 @@ export function TabEditor() {
 	const isLight = useIsLight();
 	const tabs = useTabsList();
 	const environments = useEnvironmentList();
-	const activeTabId = useStoreValue((state) => state.config.activeTab);
+	const activeSessionId = useStoreValue((state) => state.config.activeTab);
 	const opened = useStoreValue((state) => state.showTabEditor);
 	const editingId = useStoreValue((state) => state.editingId);
 
 	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
 
-	const tabInfo = tabs.find((tab) => tab.id === editingId);
-	const envInfo = environments.find((env) => env.id === tabInfo?.environment);
+	const sessionInfo = tabs.find((tab) => tab.id === editingId);
+	const envInfo = environments.find((env) => env.id === sessionInfo?.environment);
 	const mergedDetails = mergeConnections(infoDetails, envInfo?.connection || {});
 
 	const detailsValid = isConnectionValid(infoDetails);
@@ -40,13 +40,13 @@ export function TabEditor() {
 		handleCose();
 
 		store.dispatch(
-			actions.updateTab({
+			actions.updateSession({
 				id: editingId,
 				connection: infoDetails,
 			})
 		);
 
-		if (activeTabId == editingId) {
+		if (activeSessionId == editingId) {
 			const { autoConnect } = store.getState().config;
 
 			closeConnection();

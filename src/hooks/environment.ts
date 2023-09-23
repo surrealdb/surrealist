@@ -4,11 +4,11 @@ import { mergeConnections } from "~/util/environments";
 /**
  * Returns the active tab
  */
-export function useActiveTab() {
-	const activeTab = useStoreValue((state) => state.config.activeTab);
+export function useActiveSession() {
+	const activeSession = useStoreValue((state) => state.config.activeTab);
 	const knownTabs = useStoreValue((state) => state.config.tabs);
 
-	return knownTabs.find((tab) => tab.id === activeTab);
+	return knownTabs.find((tab) => tab.id === activeSession);
 }
 
 /**
@@ -16,9 +16,9 @@ export function useActiveTab() {
  */
 export function useActiveEnvironment() {
 	const environments = useStoreValue((state) => state.config.environments);
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 
-	return environments.find((e) => e.id === activeTab?.environment);
+	return environments.find((e) => e.id === activeSession?.environment);
 }
 
 /**
@@ -39,14 +39,14 @@ export function useEnvironmentList() {
  * Returns the fully merged connection details for the active tab
  */
 export function useConnectionDetails() {
-	const tabInfo = useActiveTab();
+	const sessionInfo = useActiveSession();
 
-	if (!tabInfo) {
+	if (!sessionInfo) {
 		return null;
 	}
 
 	const environments = useEnvironmentList();
-	const envInfo = environments.find((env) => env.id === tabInfo.environment);
+	const envInfo = environments.find((env) => env.id === sessionInfo.environment);
 
-	return mergeConnections(tabInfo.connection, envInfo?.connection || {});
+	return mergeConnections(sessionInfo.connection, envInfo?.connection || {});
 }

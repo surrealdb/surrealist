@@ -17,6 +17,7 @@ import javascriptTm from '~/assets/grammar/javascript.tmLanguage.json';
 
 import surrealistLightTheme from '~/assets/themes/surrealist-light.json';
 import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
+import { getActiveSession } from "./environments";
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
@@ -138,14 +139,13 @@ export async function initializeMonaco() {
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: ["$"],
 		provideCompletionItems(_, position, context) {
-			const { config } = store.getState();
-			const tab = config.tabs.find((tab) => tab.id == config.activeTab);
+			const session = getActiveSession();
 
-			if (!tab) {
+			if (!session) {
 				return;
 			}
 
-			const variables = JSON.parse(tab.variables);
+			const variables = JSON.parse(session.variables);
 			const variableNames = Object.keys(variables);
 
 			if (variableNames.length === 0) {

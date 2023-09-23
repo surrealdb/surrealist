@@ -1,6 +1,6 @@
 import { ActionIcon, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
 import { mdiClock, mdiDatabase, mdiLightningBolt } from "@mdi/js";
-import { useActiveTab } from "~/hooks/environment";
+import { useActiveSession } from "~/hooks/environment";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
@@ -28,11 +28,11 @@ function computeRowCount(response: any) {
 
 export function ResultPane() {
 	const isLight = useIsLight();
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 	const [resultTab, setResultTab] = useState<number>(1);
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 	const resultListing = useStoreValue((state) => state.config.resultListing);
-	const responses: any[] = activeTab?.lastResponse || [];
+	const responses: any[] = activeSession?.lastResponse || [];
 	const response = responses[resultTab - 1];
 
 	const responseCount = responses.length;

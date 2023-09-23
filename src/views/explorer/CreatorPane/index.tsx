@@ -9,7 +9,7 @@ import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 
 export interface CreatorPaneProps {
-	activeTable: string | null;
+	activeSessionle: string | null;
 	onClose: () => void;
 	onSubmit: (table: string, json: string) => void;
 }
@@ -23,11 +23,11 @@ export function CreatorPane(props: CreatorPaneProps) {
 	const jsonAlert = isInvalid ? <Text color="red">Invalid record JSON</Text> : undefined;
 
 	useEffect(() => {
-		setTableName(props.activeTable || "");
-	}, [props.activeTable]);
+		setTableName(props.activeSessionle || "");
+	}, [props.activeSessionle]);
 
 	const handleSubmit = useStable(() => {
-		if (!props.activeTable || !contentText) {
+		if (!props.activeSessionle || !contentText) {
 			return;
 		}
 

@@ -4,20 +4,20 @@ import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { updateTitle, updateConfig } from "~/util/helpers";
-import { SurrealistTab } from "~/types";
+import { Session } from "~/types";
 export interface ViewTabProps {
-	tabInfo: SurrealistTab;
+	sessionInfo: Session;
 }
 
-export function ViewTab({ tabInfo }: PropsWithChildren<ViewTabProps>) {
+export function ViewTab({ sessionInfo }: PropsWithChildren<ViewTabProps>) {
 	const isLight = useIsLight();
-	const isActive = useStoreValue((state) => state.config.activeTab) === tabInfo.id;
+	const isActive = useStoreValue((state) => state.config.activeTab) === sessionInfo.id;
 
 	const bgColor = isActive ? "surreal" : isLight ? "light.0" : "dark.4";
 	const fgColor = isActive ? "white" : isLight ? "light.9" : "light.2";
 
 	const select = useStable(() => {
-		store.dispatch(actions.setActiveTab(tabInfo.id));
+		store.dispatch(actions.setActiveSession(sessionInfo.id));
 
 		updateTitle();
 		updateConfig();
@@ -25,7 +25,7 @@ export function ViewTab({ tabInfo }: PropsWithChildren<ViewTabProps>) {
 
 	return (
 		<Button px="md" pt={1} c={fgColor} color={bgColor} variant={isActive ? "filled" : "subtle"} onClick={select}>
-			{tabInfo?.name}
+			{sessionInfo?.name}
 		</Button>
 	);
 }

@@ -4,7 +4,7 @@ import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./uti
 import { showError, updateConfig } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
 import { Text } from "@mantine/core";
-import { getActiveEnvironment, getActiveTab, isConnectionValid, mergeConnections } from "./util/environments";
+import { getActiveEnvironment, getActiveSession, isConnectionValid, mergeConnections } from "./util/environments";
 import { uid } from "radash";
 
 /**
@@ -14,12 +14,10 @@ import { uid } from "radash";
  * @param isSilent Whether to hide error notifications
  */
 export function openConnection(isSilent?: boolean) {
-	const { isConnecting, isConnected } = store.getState();
-
-	const tabInfo = getActiveTab();
+	const sessionInfo = getActiveSession();
 	const envInfo = getActiveEnvironment();
 
-	const connection = mergeConnections(tabInfo?.connection || {}, envInfo?.connection || {});
+	const connection = mergeConnections(sessionInfo?.connection || {}, envInfo?.connection || {});
 	const connectionValid = isConnectionValid(connection);
 
 	if (!connectionValid) {
@@ -95,18 +93,18 @@ export interface QueryOptions {
  * @param options Query options
  */
 export async function executeQuery(options?: QueryOptions) {
-	const tabInfo = getActiveTab();
+	const sessionInfo = getActiveSession();
 
 	const { isConnected } = store.getState();
 	
-	if (!isConnected || !tabInfo) {
+	if (!isConnected || !sessionInfo) {
 		showNotification({
 			message: "You must be connected to send a query",
 		});
 		return;
 	}
 
-	const { id: tabId, query, name, variables } = tabInfo;
+	const { id: tabId, query, name, variables } = sessionInfo;
 
 	const queryStr = options?.override?.trim() || query;
 	const variableJson = variables
@@ -121,14 +119,14 @@ export async function executeQuery(options?: QueryOptions) {
 		const response = await getSurreal()?.query(queryStr, variableJson);
 
 		store.dispatch(
-			actions.updateTab({
+			actions.updateSession({
 				id: tabId,
 				lastResponse: response,
 			})
 		);
 	} catch (err: any) {
 		store.dispatch(
-			actions.updateTab({
+			actions.updateSession({
 				id: tabId,
 				lastResponse: [
 					{

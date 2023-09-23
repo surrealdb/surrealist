@@ -102,7 +102,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 	const saveEnvironments = useStable(() => {
 		for (const tab of liveTabs) {
 			if (removedIds.includes(tab.environment)) {
-				store.dispatch(actions.removeTab(tab.id));
+				store.dispatch(actions.removeSession(tab.id));
 			}
 		}
 

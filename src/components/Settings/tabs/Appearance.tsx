@@ -29,7 +29,7 @@ export function AppearanceTab({ config }: AppearanceTabProps) {
 	});
 
 	const setTabSearch = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setTabSearch(e.target.checked));
+		store.dispatch(actions.setSessionSearch(e.target.checked));
 		updateConfig();
 	});
 

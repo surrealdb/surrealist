@@ -25,7 +25,7 @@ export interface ToolbarProps {
 
 export function Toolbar(props: ToolbarProps) {
 	const isLight = useIsLight();
-	const activeTab = useStoreValue((state) => state.config.activeTab);
+	const activeSession = useStoreValue((state) => state.config.activeTab);
 
 	const enableListing = useStoreValue((state) => state.config.enableListing);
 	const queryListing = useStoreValue((state) => state.config.queryListing);
@@ -41,7 +41,7 @@ export function Toolbar(props: ToolbarProps) {
 
 	const saveTabName = useStable(() => {
 		store.dispatch(
-			actions.updateTab({
+			actions.updateSession({
 				id: editingTab!,
 				name: tabName,
 			})
@@ -86,7 +86,7 @@ export function Toolbar(props: ToolbarProps) {
 						width: "max-content",
 					}}>
 					{pinnedTabs.map((tab) => (
-						<ViewTab key={tab.id} tabInfo={tab} />
+						<ViewTab key={tab.id} sessionInfo={tab} />
 					))}
 				</Group>
 			)}
@@ -94,9 +94,9 @@ export function Toolbar(props: ToolbarProps) {
 			<Image style={{ pointerEvents: "none", userSelect: "none" }} src={surrealistLogo} width={38} />
 
 			<Selector
-				active={activeTab}
+				active={activeSession}
 				isLight={isLight}
-				onCreateTab={props.onCreateTab}
+				onCreateSession={props.onCreateTab}
 			/>
 
 			<Spacer />

@@ -11,13 +11,13 @@ export interface DesignerViewProps {
 }
 
 export function DesignerView(props: DesignerViewProps) {
-	const [activeTable, setActiveTable] = useState<string | null>(null);
+	const [activeSessionle, setActiveTable] = useState<string | null>(null);
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
 	const tables = useStoreValue(state => state.databaseSchema);
 
 	const tableSchema = useMemo(() => {
-		return tables.find(table => table.schema.name === activeTable) || null;
-	}, [tables, activeTable]);
+		return tables.find(table => table.schema.name === activeSessionle) || null;
+	}, [tables, activeSessionle]);
 
 	const closeActiveTable = useStable(() => {
 		setActiveTable(null);

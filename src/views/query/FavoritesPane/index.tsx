@@ -24,8 +24,8 @@ import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { useInputState } from "@mantine/hooks";
-import { FavoritesEntry, SurrealistTab } from "~/types";
-import { useActiveTab } from "~/hooks/environment";
+import { FavoritesEntry, Session } from "~/types";
+import { useActiveSession } from "~/hooks/environment";
 import { uid } from "radash";
 import { updateConfig } from "~/util/helpers";
 import { Sortable } from "~/components/Sortable";
@@ -38,9 +38,9 @@ import { executeQuery } from "~/database";
 
 export function FavoritesPane() {
 	const isLight = useIsLight();
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 	const entries = useStoreValue((state) => state.config.queryFavorites);
-	const query = activeTab?.query?.trim() || "";
+	const query = activeSession?.query?.trim() || "";
 
 	const [search, setSearch] = useInputState("");
 	const [activeEntry, setActiveEntry] = useState("");
@@ -132,7 +132,7 @@ export function FavoritesPane() {
 							entry={item}
 							isActive={activeEntry === item.id}
 							isLight={isLight}
-							activeTab={activeTab}
+							activeSession={activeSession}
 							enableDrag={!search}
 							handleProps={handleProps}
 							onActivate={activateEntry}
@@ -143,13 +143,13 @@ export function FavoritesPane() {
 				)}
 			</Sortable>
 		);
-	}, [activeEntry, activeTab, filtered, isLight]);
+	}, [activeEntry, activeSession, filtered, isLight]);
 
 	return (
 		<Panel
 			title="Saved queries"
 			icon={mdiStar}
-			rightSection={<FavoritesActions activeTab={activeTab} onCreate={openSaveBox} />}>
+			rightSection={<FavoritesActions activeSession={activeSession} onCreate={openSaveBox} />}>
 			<ScrollArea
 				style={{
 					position: "absolute",
@@ -201,7 +201,7 @@ interface HistoryRowProps {
 	isActive: boolean;
 	entry: FavoritesEntry;
 	isLight: boolean;
-	activeTab: SurrealistTab | undefined;
+	activeSession: Session | undefined;
 	enableDrag: boolean;
 	handleProps: Record<string, any>;
 	onActivate: (id: string) => void;
@@ -209,7 +209,7 @@ interface HistoryRowProps {
 }
 
 function FavoriteRow(props: HistoryRowProps) {
-	const { isActive, activeTab, entry, isLight, enableDrag, handleProps, onActivate, onEdit } = props;
+	const { isActive, activeSession, entry, isLight, enableDrag, handleProps, onActivate, onEdit } = props;
 
 	const theme = useMantineTheme();
 
@@ -219,8 +219,8 @@ function FavoriteRow(props: HistoryRowProps) {
 
 	const executeFavorite = useStable(() => {
 		store.dispatch(
-			actions.updateTab({
-				id: activeTab?.id,
+			actions.updateSession({
+				id: activeSession?.id,
 				query: entry.query,
 			})
 		);
@@ -295,12 +295,12 @@ function FavoriteRow(props: HistoryRowProps) {
 }
 
 interface FavoritesActionsProps {
-	activeTab: SurrealistTab | undefined;
+	activeSession: Session | undefined;
 	onCreate: () => void;
 }
 
 function FavoritesActions(props: FavoritesActionsProps) {
-	const query = props.activeTab?.query?.trim() || "";
+	const query = props.activeSession?.query?.trim() || "";
 	const canSave = query.length > 0;
 
 	const hideFavorites = useStable(() => {

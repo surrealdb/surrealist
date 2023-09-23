@@ -15,7 +15,7 @@ import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { PropsWithChildren } from "react";
 import { Toolbar } from "../Toolbar";
-import { useActiveTab } from "~/hooks/environment";
+import { useActiveSession } from "~/hooks/environment";
 import { Splitter } from "../Splitter";
 import { ConsolePane } from "../ConsolePane";
 import { QueryView } from "~/views/query/QueryView";
@@ -36,11 +36,11 @@ function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 }
 
 export function Scaffold() {
-	const tabInfo = useActiveTab();
-	const activeTab = useStoreValue((state) => state.config.activeTab);
+	const sessionInfo = useActiveSession();
+	const activeSession = useStoreValue((state) => state.config.activeTab);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
 
-	const viewMode = tabInfo?.activeView || "query";
+	const viewMode = sessionInfo?.activeView || "query";
 
 	const openTabCreator = useStable((envId?: string) => {
 		store.dispatch(
@@ -72,7 +72,7 @@ export function Scaffold() {
 				onCreateTab={openTabCreator}
 			/>
 
-			{activeTab ? (
+			{activeSession ? (
 				<>
 					<Group p="xs">
 						<ViewListing

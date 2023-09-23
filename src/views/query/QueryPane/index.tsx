@@ -1,7 +1,7 @@
 import { editor } from "monaco-editor";
 import { mdiDatabase, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
-import { useActiveTab } from "~/hooks/environment";
+import { useActiveSession } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
@@ -15,18 +15,18 @@ import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 
 export function QueryPane() {
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 	const controls = useRef<editor.IStandaloneCodeEditor>();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
 	const setQueryForced = useStable((content: string | undefined) => {
-		if (!activeTab) {
+		if (!activeSession) {
 			return;
 		}
 
 		store.dispatch(
-			actions.updateTab({
-				id: activeTab.id,
+			actions.updateSession({
+				id: activeSession.id,
 				query: content || "",
 			})
 		);
@@ -65,7 +65,7 @@ export function QueryPane() {
 			<SurrealistEditor
 				language="surrealql"
 				onMount={configure}
-				value={activeTab?.query}
+				value={activeSession?.query}
 				onChange={scheduleSetQuery}
 				style={{
 					position: "absolute",
