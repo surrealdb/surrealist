@@ -15,7 +15,7 @@ import {
 	mdiPin,
 } from "@mdi/js";
 import { Icon } from "../Icon";
-import { Session } from "~/types";
+import { SurrealistSession } from "~/types";
 import { Text } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 import { VIEW_MODES } from "~/constants";
@@ -27,7 +27,7 @@ import { Environments } from "./environments";
 import { SyntheticEvent } from "react";
 import { Sortable } from "../Sortable";
 
-function getSessionIcon(session: Session) {
+function getSessionIcon(session: SurrealistSession) {
 	return VIEW_MODES.find((v) => v.id == session.activeView)?.icon;
 }
 
@@ -174,7 +174,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 		setManageEnvs(false);
 	});
 
-	const saveTabOrder = useStable((order: Session[]) => {
+	const saveTabOrder = useStable((order: SurrealistSession[]) => {
 		store.dispatch(actions.setSessions(applyOrder(sessions, order)));
 	});
 

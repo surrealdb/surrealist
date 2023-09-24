@@ -24,7 +24,7 @@ import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { useInputState } from "@mantine/hooks";
-import { FavoritesEntry, Session } from "~/types";
+import { FavoritesEntry, SurrealistSession } from "~/types";
 import { useActiveQuery, useActiveSession } from "~/hooks/environment";
 import { uid } from "radash";
 import { Sortable } from "~/components/Sortable";
@@ -200,7 +200,7 @@ interface HistoryRowProps {
 	isActive: boolean;
 	entry: FavoritesEntry;
 	isLight: boolean;
-	activeSession: Session | undefined;
+	activeSession: SurrealistSession | undefined;
 	enableDrag: boolean;
 	handleProps: Record<string, any>;
 	onActivate: (id: string) => void;

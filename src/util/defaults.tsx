@@ -1,4 +1,4 @@
-import { ConnectionOptions, Session, SurrealistConfig } from "~/types";
+import { ConnectionOptions, SurrealistSession, SurrealistConfig } from "~/types";
 
 export function createBaseConfig(): SurrealistConfig {
 	return {
@@ -46,7 +46,7 @@ export function createBaseConnection(): ConnectionOptions {
 	};
 }
 
-export function createBaseSession(query?: string): Session {
+export function createBaseSession(query?: string): SurrealistSession {
 	return {
 		id: "",
 		name: "",

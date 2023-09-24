@@ -4,9 +4,9 @@ import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { updateTitle } from "~/util/helpers";
-import { Session } from "~/types";
+import { SurrealistSession } from "~/types";
 export interface ViewTabProps {
-	sessionInfo: Session;
+	sessionInfo: SurrealistSession;
 }
 
 export function ViewTab({ sessionInfo }: PropsWithChildren<ViewTabProps>) {

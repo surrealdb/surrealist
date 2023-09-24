@@ -54,5 +54,9 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 			tab.activeQueryId = 1;
 			tab.lastQueryId = 1;
 		}
+
+		if (!tab.liveQueries) {
+			tab.liveQueries = [];
+		}
 	}
 }

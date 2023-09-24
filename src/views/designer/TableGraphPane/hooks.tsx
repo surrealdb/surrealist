@@ -1,7 +1,7 @@
 import { useMantineTheme } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStoreValue } from "~/store";
-import { DesignerLayoutMode, DesignerNodeMode, Session } from "~/types";
+import { DesignerLayoutMode, DesignerNodeMode, SurrealistSession } from "~/types";
 
 interface DesignerConfig {
 	nodeMode: DesignerNodeMode;
@@ -19,7 +19,7 @@ export function useHandleStyle() {
 }
 
 export function useDesignerConfig(
-	activeSession: Session | undefined
+	activeSession: SurrealistSession | undefined
 ): DesignerConfig {
 	const defaultNodeMode = useStoreValue(s => s.config.defaultDesignerNodeMode);
 	const defaultLayoutMode = useStoreValue(s => s.config.defaultDesignerLayoutMode);

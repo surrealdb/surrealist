@@ -34,7 +34,7 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const connectionValid = isConnectionValid(connection);
 
 	const borderColor = theme.fn.themeColor(isConnected ? "surreal" : connectionValid ? "light" : "red");
-	const showQuery = viewMode == "query" || viewMode == "live";
+	const showQuery = viewMode == "query";
 
 	const handleCloseConnection = useStable((e: MouseEvent) => {
 		e.stopPropagation();

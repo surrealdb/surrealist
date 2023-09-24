@@ -16,7 +16,7 @@ export type Open<T> = T & { [key: string]: any };
 
 export interface SurrealistConfig {
 	theme: ColorScheme | "automatic";
-	tabs: Session[];
+	tabs: SurrealistSession[];
 	environments: SurrealistEnvironment[];
 	isPinned: boolean,
 	activeTab: string | null;
@@ -51,7 +51,7 @@ export interface SurrealistEnvironment {
 	connection: Partial<ConnectionOptions>;
 }
 
-export interface Session {
+export interface SurrealistSession {
 	id: string;
 	name: string;
 	environment: string;
@@ -66,10 +66,17 @@ export interface Session {
 	pinnedTables: string[];
 	designerNodeMode?: DesignerNodeMode;
 	designerLayoutMode?: DesignerLayoutMode;
+	liveQueries: LiveQuery[];
 }
 
 export interface SessionQuery {
 	id: number;
+	text: string;
+}
+
+export interface LiveQuery {
+	id: string;
+	name: string;
 	text: string;
 }
 

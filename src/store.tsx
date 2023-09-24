@@ -1,6 +1,6 @@
 import {
 	HistoryEntry,
-	Session,
+	SurrealistSession,
 	SurrealistConfig,
 	DriverType,
 	QueryListing,
@@ -111,7 +111,7 @@ const mainSlice = createSlice({
 			state.config.environments = action.payload;
 		},
 
-		addSession(state, { payload }: PayloadAction<Session>) {
+		addSession(state, { payload }: PayloadAction<SurrealistSession>) {
 			state.config.tabs.push(payload);
 		},
 
@@ -127,7 +127,7 @@ const mainSlice = createSlice({
 			}
 		},
 
-		updateSession(state, { payload }: PayloadAction<Partial<Session>>) {
+		updateSession(state, { payload }: PayloadAction<Partial<SurrealistSession>>) {
 			const sessionIndex = state.config.tabs.findIndex((tab) => tab.id === payload.id);
 
 			if (sessionIndex >= 0) {
@@ -137,7 +137,7 @@ const mainSlice = createSlice({
 			}
 		},
 
-		setSessions(state, action: PayloadAction<Session[]>) {
+		setSessions(state, action: PayloadAction<SurrealistSession[]>) {
 			state.config.tabs = action.payload;
 		},
 
