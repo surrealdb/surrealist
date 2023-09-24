@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.9.3 - Feature parity
+## 1.1.0 - Major feature update
 - Improved feature parity between the desktop and web app
 	- Designer view is now available in the web app
 	- Authentication view is now available in the web app
@@ -22,6 +22,10 @@
 - Added a new "Combined" query result mode
 	- Combines the results of multiple queries into a single list
 	- Useful for when you want to copy or view all results without switching tabs
+- The config file is now stored in a new location
+	- Linux: `$XDG_CONFIG_HOME` or `$HOME/.config/surrealist.json`
+	- macOS: `$HOME/Library/Application Support/surrealist.json`
+	- Windows: `%AppData%\surrealist.json`
 - Added a convenience button to load a query from disk
 - Surrealist now warns you when you connect to an outdated version of SurrealDB
 - The web app now more reliably connects to localhost endpoints
