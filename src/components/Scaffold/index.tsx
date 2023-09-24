@@ -15,7 +15,7 @@ import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { PropsWithChildren } from "react";
 import { Toolbar } from "../Toolbar";
-import { useActiveSession } from "~/hooks/environment";
+import { useSession } from "~/hooks/environment";
 import { Splitter } from "../Splitter";
 import { ConsolePane } from "../ConsolePane";
 import { QueryView } from "~/views/query/QueryView";
@@ -36,7 +36,7 @@ function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 }
 
 export function Scaffold() {
-	const sessionInfo = useActiveSession();
+	const sessionInfo = useSession();
 	const activeSession = useStoreValue((state) => state.config.activeTab);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
 

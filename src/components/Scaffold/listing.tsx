@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { store, actions } from "~/store";
 import { mod, updateTitle } from "~/util/helpers";
-import { useActiveSession } from "~/hooks/environment";
+import { useSession } from "~/hooks/environment";
 import { useHotkeys } from "@mantine/hooks";
 
 export interface ViewListingProps {
@@ -17,7 +17,7 @@ export interface ViewListingProps {
 
 export function ViewListing({ viewMode }: ViewListingProps) {
 	const isLight = useIsLight();
-	const sessionInfo = useActiveSession();
+	const sessionInfo = useSession();
 	const [isViewListing, setIsViewListing] = useState(false);
 	
 	const viewInfo = VIEW_MODES.find((v) => v.id == viewMode)!;

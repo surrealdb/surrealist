@@ -8,7 +8,7 @@ import { Spacer } from "../Spacer";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { MouseEvent, useEffect } from "react";
-import { useActiveSession, useActiveEnvironment } from "~/hooks/environment";
+import { useSession, useEnvironment } from "~/hooks/environment";
 import { mergeConnections, isConnectionValid } from "~/util/environments";
 import { useIsLight } from "~/hooks/theme";
 import { ViewMode } from "~/types";
@@ -27,8 +27,8 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const autoConnect = useStoreValue((state) => state.config.autoConnect);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
 
-	const sessionInfo = useActiveSession();
-	const envInfo = useActiveEnvironment();
+	const sessionInfo = useSession();
+	const envInfo = useEnvironment();
 
 	const connection = mergeConnections(sessionInfo?.connection || {}, envInfo?.connection || {});
 	const connectionValid = isConnectionValid(connection);
