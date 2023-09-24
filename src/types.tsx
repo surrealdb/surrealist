@@ -189,3 +189,9 @@ export interface TablePinAction {
 	session: string;
 	table: string;
 }
+
+export interface LiveMessage {
+	query: LiveQuery;
+	action: string;
+	result: any;
+}

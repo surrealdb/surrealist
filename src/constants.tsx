@@ -9,6 +9,8 @@ export interface ListingItem {
 	icon: string;
 }
 
+export const MAX_LIVE_MESSAGES = 100;
+
 export const RESULT_LISTINGS: ListingItem[] = [
 	{ id: "combined", icon: mdiFormatListGroup },
 	{ id: "json", icon: mdiCodeJson },

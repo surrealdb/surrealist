@@ -7,17 +7,66 @@ import { useStable } from "~/hooks/stable";
 import { actions, store } from "~/store";
 import { useActiveSession } from "~/hooks/environment";
 import { newId } from "~/util/helpers";
+import { useLater } from "~/hooks/later";
+import { useLegacyLiveSocket } from "./legacy";
+import { useImmer } from "use-immer";
+import { LiveMessage } from "~/types";
+import { MAX_LIVE_MESSAGES } from "~/constants";
 
 export interface QueryViewProps {
 }
 
-export function LiveView() {
+export function LiveView(props: QueryViewProps) {
 	const session = useActiveSession();
 	const [splitValues, setSplitValues] = useState<SplitValues>([500, undefined]);
 	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
 	const [editingId, setEditingId] = useState("");
 	const [isEditing, setIsEditing] = useState(false);
 	const [editingData, setEditingData] = useState<any>(null);
+	const [activeQueries, setActiveQueries] = useState<string[]>([]);
+	const [messages, setMessages] = useImmer<LiveMessage[]>([]);
+
+	const handleLiveMessage = useStable((msg: any) => {
+		setMessages((draft) => {
+			draft.unshift(msg);
+
+			if (draft.length > MAX_LIVE_MESSAGES) {
+				draft.pop();
+			}
+		});
+	});
+
+	const clearMessages = useStable(() => {
+		setMessages([]);
+	});
+
+	const socket = useLegacyLiveSocket({
+		onLiveMessage: handleLiveMessage,
+		onDisconnect() {
+			setActiveQueries([]);
+			setMessages([]);
+		},
+	});
+
+	const startQueryLater = useLater(socket.startQuery);
+
+	const toggleQuery = useStable(async (id: string) => {
+		if (activeQueries.includes(id)) {
+			setActiveQueries(activeQueries.filter((x) => x !== id));
+
+			socket.killQuery(id);
+
+			if (activeQueries.length === 1) {
+				socket.closeConnection();
+			}
+		} else {
+			setActiveQueries([...activeQueries, id]);
+
+			await socket.openConnection();
+			
+			startQueryLater(id);
+		}
+	});
 
 	const handleNewQuery = useStable(() => {
 		setEditingId("");
@@ -90,13 +139,18 @@ export function LiveView() {
 				>
 					
 					<QueriesPane
+						activeQueries={activeQueries}
+						toggleQuery={toggleQuery}
 						onAddQuery={handleNewQuery}
 						onEditQuery={handleEditQuery}
 					/>
 				</Splitter>
 			}
 		>
-			<InboxPane />
+			<InboxPane
+				messages={messages}
+				onClearAll={clearMessages}
+			/>
 		</Splitter>
 	);
 }

@@ -1,6 +1,5 @@
 import { ActionIcon, Badge, Box, Group, Paper, ScrollArea, Stack, Text, useMantineTheme } from "@mantine/core";
 import { mdiBullhornVariant, mdiCircleDouble, mdiPencil, mdiPlay, mdiPlus, mdiStop } from "@mdi/js";
-import { useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
@@ -9,6 +8,8 @@ import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 
 export interface QueriesPaneProps {
+	activeQueries: string[];
+	toggleQuery: (id: string) => void;
 	onAddQuery: () => void;
 	onEditQuery: (id: string) => void;
 }
@@ -16,16 +17,6 @@ export interface QueriesPaneProps {
 export function QueriesPane(props: QueriesPaneProps) {
 	const session = useActiveSession();
 	const theme = useMantineTheme();
-	
-	const [activeQueries, setActiveQueries] = useState<string[]>([]);
-
-	const toggleQuery = useStable((id: string) => {
-		if (activeQueries.includes(id)) {
-			setActiveQueries(activeQueries.filter((x) => x !== id));
-		} else {
-			setActiveQueries([...activeQueries, id]);
-		}
-	});
 
 	const getQueryStyle = useStable((active: boolean) => {
 		return {
@@ -57,7 +48,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 			>
 				<Stack spacing="xs">
 					{session.liveQueries.map((query, i) => {
-						const isActive = activeQueries.includes(query.id);
+						const isActive = props.activeQueries.includes(query.id);
 
 						return (
 							<Paper
@@ -104,7 +95,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 									</ActionIcon>
 									<ActionIcon
 										title={isActive ? 'Stop query' : 'Start query'}
-										onClick={() => toggleQuery(query.id)}
+										onClick={() => props.toggleQuery(query.id)}
 									>
 										<Icon path={isActive ? mdiStop : mdiPlay} />
 									</ActionIcon>
