@@ -1,8 +1,8 @@
-use serde::Serialize;
 use concat_string::concat_string;
+use serde::Serialize;
 use serde_wasm_bindgen::to_value;
-use wasm_bindgen::prelude::*;
 use surrealdb::sql::{parse, statements::DefineStatement, Index, Permissions, Statement, Strand};
+use wasm_bindgen::prelude::*;
 
 fn to_response<T: serde::ser::Serialize>(value: &T, name: &str) -> Result<JsValue, String> {
     Ok(to_value(value).expect(&concat_string!(name, " should be serializable")))
@@ -68,7 +68,7 @@ pub fn extract_scope_definition(definition: &str) -> Result<JsValue, String> {
             comment: parse_comment(&s.comment),
         };
 
-		return to_response(&info, "scope")
+        return to_response(&info, "scope");
     }
 
     Err(String::from("Failed to extract scope"))
@@ -121,7 +121,7 @@ pub fn extract_table_definition(definition: &str) -> Result<JsValue, String> {
                 .map_or("".to_owned(), |c| c.to_string()),
         };
 
-		return to_response(&info, "table")
+        return to_response(&info, "table");
     }
 
     Err(String::from("Failed to extract table"))
@@ -156,7 +156,7 @@ pub fn extract_field_definition(definition: &str) -> Result<JsValue, String> {
             comment: parse_comment(&f.comment),
         };
 
-		return to_response(&info, "field")
+        return to_response(&info, "field");
     }
 
     Err(String::from("Failed to extract field"))
@@ -195,7 +195,7 @@ pub fn extract_analyzer_definition(definition: &str) -> Result<JsValue, String> 
             filters,
         };
 
-		return to_response(&info, "analyzer")
+        return to_response(&info, "analyzer");
     }
 
     Err(String::from("Failed to extract index"))
@@ -250,7 +250,7 @@ pub fn extract_index_definition(definition: &str) -> Result<JsValue, String> {
             comment: parse_comment(&i.comment),
         };
 
-		return to_response(&info, "index")
+        return to_response(&info, "index");
     }
 
     Err(String::from("Failed to extract index"))
@@ -279,7 +279,7 @@ pub fn extract_event_definition(definition: &str) -> Result<JsValue, String> {
             comment: parse_comment(&e.comment),
         };
 
-		return to_response(&info, "event")
+        return to_response(&info, "event");
     }
 
     Err(String::from("Failed to extract event"))
@@ -308,7 +308,7 @@ pub fn extract_user_definition(definition: &str) -> Result<JsValue, String> {
             comment: parse_comment(&u.comment),
         };
 
-		return to_response(&info, "user")
+        return to_response(&info, "user");
     }
 
     Err(String::from("Failed to extract user"))
@@ -333,19 +333,19 @@ pub fn validate_where_clause(clause: &str) -> bool {
 
 #[wasm_bindgen]
 pub fn validate_live_query(query: &str) -> Option<String> {
-	let parsed = parse(query);
+    let parsed = parse(query);
 
     match parsed {
         Err(_) => return Some("Expected valid query".into()),
         Ok(queries) => {
-			if queries.len() != 1 {
-				return Some("Expected single query".into())
-			}
+            if queries.len() != 1 {
+                return Some("Expected single query".into());
+            }
 
-			match queries[0] {
-				Statement::Live(_) => None,
-				_ => Some("Expected live select".into()),
-			}
-		},
+            match queries[0] {
+                Statement::Live(_) => None,
+                _ => Some("Expected live select".into()),
+            }
+        }
     }
 }

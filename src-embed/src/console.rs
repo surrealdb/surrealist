@@ -6,7 +6,6 @@ extern "C" {
     #[wasm_bindgen(js_namespace = console)]
     pub fn log(s: &str);
 
-
     #[wasm_bindgen(js_namespace = console, js_name = log)]
     pub fn log_many(a: &str, b: &str);
 

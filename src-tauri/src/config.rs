@@ -19,7 +19,7 @@ fn get_legacy_config_path() -> PathBuf {
 
     let config_dir_result = env::var("XDG_CONFIG_HOME");
 
-    return match config_dir_result {
+    match config_dir_result {
         Ok(value) => {
             let mut config = PathBuf::from(value);
             config.push("surrealist");
@@ -27,7 +27,7 @@ fn get_legacy_config_path() -> PathBuf {
             config
         }
         Err(_) => base_dir,
-    };
+    }
 }
 
 fn get_config_path() -> PathBuf {
@@ -68,12 +68,11 @@ pub fn load_config() -> String {
 #[tauri::command]
 pub fn save_config(config: &str) {
     let config_path = get_config_path();
-    let path = PathBuf::from(config_path);
-    let parent = path.parent().unwrap();
+    let parent = config_path.parent().unwrap();
 
     fs::create_dir_all(parent).expect("config directory should be writable");
 
-    let mut write_op = File::create(get_config_path()).unwrap();
+    let mut write_op = File::create(config_path).unwrap();
 
     write_op
         .write_all(config.as_bytes())
