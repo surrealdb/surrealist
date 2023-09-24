@@ -3,16 +3,17 @@ import { mdiCheck, mdiClose, mdiPencil } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useStoreValue } from "~/store";
 import { Panel } from "~/components/Panel";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon, Group, TextInput } from "@mantine/core";
+import { ActionIcon, Badge, Button, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { useInputState } from "@mantine/hooks";
+import { validate_live_query } from "~/generated/surrealist-embed";
 
 export interface EditorPaneProps {
-	query: { name: string, text: string } | undefined;
+	query: { index: number, name: string, text: string } | undefined;
 	onSave: (name: string, query: string) => void;
 	onClose: () => void;
 }
@@ -47,27 +48,31 @@ export function EditorPane(props: EditorPaneProps) {
 		setQuery(props.query?.text || '');
 	}, [props.query]);
 
+	const queryError = useMemo(() => {
+		return queryText
+			? validate_live_query(queryText)
+			: undefined;
+	}, [queryText]);
+
+	const canSave = !queryError && queryName.length > 0 && queryText.length > 0;
+
 	return (
 		<Panel
-			title="Live Query Editor"
+			title={props.query ? `Editing Query ${props.query.index + 1}` : "New Query"}
 			icon={mdiPencil}
+			leftSection={queryError && (
+				<Badge color="red">
+					{queryError}
+				</Badge>
+			)}
 			rightSection={
-				<Group>
-					<ActionIcon
-						onClick={handleSave}
-						disabled={queryName.length === 0 || queryText.length === 0}
-						title="Save query"
-					>
-						<Icon color="surreal" path={mdiCheck} />
-					</ActionIcon>
-
-					<ActionIcon
-						onClick={props.onClose}
-						title="Discard changes"
-					>
-						<Icon color="red" path={mdiClose} />
-					</ActionIcon>
-				</Group>
+				<ActionIcon
+					onClick={props.onClose}
+					title="Discard changes"
+					color="light.4"
+				>
+					<Icon path={mdiClose} />
+				</ActionIcon>
 			}
 		>
 			<TextInput
@@ -75,6 +80,7 @@ export function EditorPane(props: EditorPaneProps) {
 				label="Query name"
 				value={queryName}
 				onChange={setQueryName}
+				autoFocus
 			/>
 			<SurrealistEditor
 				noExpand
@@ -85,7 +91,7 @@ export function EditorPane(props: EditorPaneProps) {
 				style={{
 					position: "absolute",
 					insetInline: 24,
-					bottom: 0,
+					bottom: 58,
 					top: 72
 				}}
 				options={{
@@ -96,6 +102,19 @@ export function EditorPane(props: EditorPaneProps) {
 					fontSize: 14 * fontZoomLevel,
 				}}
 			/>
+			<Button
+				size="xs"
+				onClick={handleSave}
+				pos="absolute"
+				disabled={!canSave}
+				style={{
+					insetInline: 12,
+					bottom: 12
+				}}
+			>
+				Save query
+				<Icon path={mdiCheck} />
+			</Button>
 		</Panel>
 	);
 }

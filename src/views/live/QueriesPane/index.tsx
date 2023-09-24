@@ -41,7 +41,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 
 	return (
 		<Panel
-			title="Sessions"
+			title="Queries"
 			icon={mdiBullhornVariant}
 			rightSection={
 				<ActionIcon
@@ -76,6 +76,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 								bg="dark.9"
 								p="sm"
 								c="white"
+								py="xs"
 								style={getQueryStyle(isActive)}
 								onClick={() => props.toggleQuery(query.id)}
 								title={isActive ? 'Stop query' : 'Start query'}

@@ -330,3 +330,22 @@ pub fn validate_where_clause(clause: &str) -> bool {
 
     parse(&query).is_ok()
 }
+
+#[wasm_bindgen]
+pub fn validate_live_query(query: &str) -> Option<String> {
+	let parsed = parse(query);
+
+    match parsed {
+        Err(_) => return Some("Expected valid query".into()),
+        Ok(queries) => {
+			if queries.len() != 1 {
+				return Some("Expected single query".into())
+			}
+
+			match queries[0] {
+				Statement::Live(_) => None,
+				_ => Some("Expected live select".into()),
+			}
+		},
+    }
+}

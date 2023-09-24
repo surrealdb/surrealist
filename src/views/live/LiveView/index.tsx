@@ -86,11 +86,13 @@ export function LiveView(props: QueryViewProps) {
 	});
 
 	const handleEditQuery = useStable((id: string) => {
-		const query = session.liveQueries.find((q) => q.id === id);
+		const index = session.liveQueries.findIndex((q) => q.id === id);
+		const query = session.liveQueries[index];
 
 		setEditingId(id);
 		setIsEditing(true);
 		setEditingData({
+			index,
 			name: query?.name || '',
 			text: query?.text || ''
 		});
@@ -135,7 +137,7 @@ export function LiveView(props: QueryViewProps) {
 
 	return (
 		<Splitter
-			minSize={300}
+			minSize={400}
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"
