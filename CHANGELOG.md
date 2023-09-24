@@ -8,6 +8,9 @@
 - Designer UI improvements
 	- Field names and types are now truncated when they are too long
 	- Limit tables to displaying 7 fields, with a button to view more
+- Added support for query tabs (#70)
+	- Query tabs are stored per session
+	- Tabs are saved and persisted
 - Overhaul exporting functionality
 	- Now supports exporting table records
 	- Select which elements to export in the new exporter dialog
