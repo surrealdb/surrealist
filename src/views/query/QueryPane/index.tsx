@@ -3,7 +3,6 @@ import { mdiClose, mdiDatabase, mdiPlus, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
-import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -30,7 +29,6 @@ export function QueryPane() {
 		}));
 
 		updateQueryValidation(controls.current!);
-		updateConfig();
 	});
 
 	const scheduleSetQuery = useDebouncedCallback(200, setQueryForced);
@@ -52,12 +50,10 @@ export function QueryPane() {
 
 	const removeTab = useStable((tab: number) => {
 		store.dispatch(actions.removeQueryTab(tab));
-		updateConfig();
 	});
 
 	const appendTab = useStable(() => {
 		store.dispatch(actions.addQueryTab());
-		updateConfig();
 	});
 
 	const handleTabChange = useStable((value: string | null) => {

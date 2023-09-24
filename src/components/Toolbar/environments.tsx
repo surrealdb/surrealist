@@ -11,7 +11,7 @@ import { useStable } from "~/hooks/stable";
 import { useImmer } from "use-immer";
 import { Spacer } from "../Spacer";
 import { SurrealistEnvironment } from "~/types";
-import { newId, updateConfig } from "~/util/helpers";
+import { newId } from "~/util/helpers";
 import { ModalTitle } from "../ModalTitle";
 import { openConnection } from "~/database";
 
@@ -109,7 +109,6 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 		store.dispatch(actions.setEnvironments(environments));
 
 		onClose();
-		updateConfig();
 		openConnection();
 	});
 

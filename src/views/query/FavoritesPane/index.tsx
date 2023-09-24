@@ -25,9 +25,8 @@ import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { useInputState } from "@mantine/hooks";
 import { FavoritesEntry, Session } from "~/types";
-import { useActiveSession } from "~/hooks/environment";
+import { useActiveQuery, useActiveSession } from "~/hooks/environment";
 import { uid } from "radash";
-import { updateConfig } from "~/util/helpers";
 import { Sortable } from "~/components/Sortable";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
@@ -40,7 +39,7 @@ export function FavoritesPane() {
 	const isLight = useIsLight();
 	const activeSession = useActiveSession();
 	const entries = useStoreValue((state) => state.config.queryFavorites);
-	const query = activeSession?.query?.trim() || "";
+	const queryTab = useActiveQuery();
 
 	const [search, setSearch] = useInputState("");
 	const [activeEntry, setActiveEntry] = useState("");
@@ -52,7 +51,7 @@ export function FavoritesPane() {
 	const openSaveBox = useStable(() => {
 		setIsEditing(true);
 		setQueryName("");
-		setQueryText(query);
+		setQueryText(queryTab.text);
 		setEditingId("");
 	});
 
@@ -149,7 +148,7 @@ export function FavoritesPane() {
 		<Panel
 			title="Saved queries"
 			icon={mdiStar}
-			rightSection={<FavoritesActions activeSession={activeSession} onCreate={openSaveBox} />}>
+			rightSection={<FavoritesActions onCreate={openSaveBox} />}>
 			<ScrollArea
 				style={{
 					position: "absolute",
@@ -209,7 +208,7 @@ interface HistoryRowProps {
 }
 
 function FavoriteRow(props: HistoryRowProps) {
-	const { isActive, activeSession, entry, isLight, enableDrag, handleProps, onActivate, onEdit } = props;
+	const { isActive, entry, isLight, enableDrag, handleProps, onActivate, onEdit } = props;
 
 	const theme = useMantineTheme();
 
@@ -218,12 +217,7 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const executeFavorite = useStable(() => {
-		store.dispatch(
-			actions.updateSession({
-				id: activeSession?.id,
-				query: entry.query,
-			})
-		);
+		store.dispatch(actions.addQueryTab(entry.query));
 
 		setTimeout(executeQuery, 0);
 	});
@@ -295,17 +289,15 @@ function FavoriteRow(props: HistoryRowProps) {
 }
 
 interface FavoritesActionsProps {
-	activeSession: Session | undefined;
 	onCreate: () => void;
 }
 
 function FavoritesActions(props: FavoritesActionsProps) {
-	const query = props.activeSession?.query?.trim() || "";
-	const canSave = query.length > 0;
+	const queryTab = useActiveQuery();
+	const canSave = queryTab.text.length > 0;
 
 	const hideFavorites = useStable(() => {
 		store.dispatch(actions.setShowQueryListing(false));
-		updateConfig();
 	});
 
 	return (

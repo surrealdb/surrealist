@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
-import { updateTitle, updateConfig } from "~/util/helpers";
+import { updateTitle } from "~/util/helpers";
 import { Session } from "~/types";
 export interface ViewTabProps {
 	sessionInfo: Session;
@@ -20,7 +20,6 @@ export function ViewTab({ sessionInfo }: PropsWithChildren<ViewTabProps>) {
 		store.dispatch(actions.setActiveSession(sessionInfo.id));
 
 		updateTitle();
-		updateConfig();
 	});
 
 	return (

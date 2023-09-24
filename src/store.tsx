@@ -146,11 +146,11 @@ const mainSlice = createSlice({
 			state.databaseSchema = [];
 		},
 
-		addQueryTab(state) {
+		addQueryTab(state, { payload }: PayloadAction<string | undefined>) {
 			const session = getSession(state);
 			const newId = session.lastQueryId + 1;
 
-			session.queries.push({ id: newId, text: "" });
+			session.queries.push({ id: newId, text: payload || "" });
 			session.activeQueryId = newId;
 			session.lastQueryId = newId;
 		},

@@ -21,9 +21,8 @@ import { actions, store, useStoreValue } from "~/store";
 import dayjs from "dayjs";
 import { useStable } from "~/hooks/stable";
 import { useHover, useInputState } from "@mantine/hooks";
-import { HistoryEntry, Session } from "~/types";
+import { HistoryEntry } from "~/types";
 import { useActiveSession } from "~/hooks/environment";
-import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { executeQuery } from "~/database";
@@ -54,7 +53,6 @@ export function HistoryPane() {
 				<HistoryRow
 					entry={entry}
 					isLight={isLight}
-					activeSession={activeSession}
 				/>
 				{i !== entries.length - 1 && <Divider color={isLight ? "light.0" : "dark.5"} />}
 			</Fragment>
@@ -86,10 +84,9 @@ export function HistoryPane() {
 interface HistoryRowProps {
 	entry: HistoryEntry;
 	isLight: boolean;
-	activeSession: Session | undefined;
 }
 
-function HistoryRow({ activeSession, entry, isLight }: HistoryRowProps) {
+function HistoryRow({ entry, isLight }: HistoryRowProps) {
 	const theme = useMantineTheme();
 	const { ref, hovered } = useHover();
 
@@ -98,12 +95,7 @@ function HistoryRow({ activeSession, entry, isLight }: HistoryRowProps) {
 	});
 
 	const editQuery = useStable(() => {
-		store.dispatch(
-			actions.updateSession({
-				id: activeSession?.id,
-				query: entry.query,
-			})
-		);
+		store.dispatch(actions.addQueryTab(entry.query));
 	});
 
 	const executeHistory = useStable(() => {
@@ -153,12 +145,10 @@ function HistoryRow({ activeSession, entry, isLight }: HistoryRowProps) {
 function HistoryActions() {
 	const clearHistory = useStable(() => {
 		store.dispatch(actions.clearHistory());
-		updateConfig();
 	});
 
 	const hideHistory = useStable(() => {
 		store.dispatch(actions.setShowQueryListing(false));
-		updateConfig();
 	});
 
 	return (

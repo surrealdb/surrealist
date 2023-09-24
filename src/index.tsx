@@ -12,6 +12,7 @@ import { updateTitle, watchNativeTheme } from "./util/helpers";
 import { adapter } from "./adapter";
 
 import "reactflow/dist/style.css";
+import { registerConfigSaver } from "./util/saver";
 
 (async () => {	
 	dayjs.extend(relativeTime);
@@ -32,6 +33,9 @@ import "reactflow/dist/style.css";
 	if (adapter.isUpdateCheckSupported && updateChecker) {
 		runUpdateChecker(lastPromptedVersion, false);
 	}
+
+	// Save the configuration to disk
+	registerConfigSaver();
 
 	// Apply initial title
 	updateTitle();

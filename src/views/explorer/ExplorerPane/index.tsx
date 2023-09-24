@@ -23,7 +23,6 @@ import { useIsLight } from "~/hooks/theme";
 import { actions, store } from "~/store";
 import { ColumnSort, OpenFn } from "~/types";
 import { getSurreal } from "~/util/connection";
-import { updateConfig } from "~/util/helpers";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -173,8 +172,6 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 				table: props.activeSessionle,
 			})
 		);
-
-		updateConfig();
 	});
 
 	return (

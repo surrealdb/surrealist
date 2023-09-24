@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, actions, useStoreValue } from "~/store";
-import { updateConfig, updateTitle } from "~/util/helpers";
+import { updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { LocalDatabase } from "../LocalDatabase";
@@ -48,7 +48,6 @@ export function Toolbar(props: ToolbarProps) {
 		);
 
 		updateTitle();
-		updateConfig();
 		closeEditingTab();
 	});
 
@@ -59,8 +58,6 @@ export function Toolbar(props: ToolbarProps) {
 			store.dispatch(actions.setQueryListingMode("history"));
 			store.dispatch(actions.setShowQueryListing(true));
 		}
-
-		updateConfig();
 	});
 
 	const toggleFavorites = useStable(() => {
@@ -70,8 +67,6 @@ export function Toolbar(props: ToolbarProps) {
 			store.dispatch(actions.setQueryListingMode("favorites"));
 			store.dispatch(actions.setShowQueryListing(true));
 		}
-
-		updateConfig();
 	});
 
 	return (

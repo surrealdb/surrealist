@@ -7,7 +7,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { store, actions } from "~/store";
-import { mod, updateConfig, updateTitle } from "~/util/helpers";
+import { mod, updateTitle } from "~/util/helpers";
 import { useActiveSession } from "~/hooks/environment";
 import { useHotkeys } from "@mantine/hooks";
 
@@ -31,8 +31,7 @@ export function ViewListing({ viewMode }: ViewListingProps) {
 				activeView: id,
 			})
 		);
-
-		updateConfig();
+		
 		updateTitle();
 	});
 

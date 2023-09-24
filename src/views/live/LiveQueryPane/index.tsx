@@ -2,8 +2,7 @@ import { editor } from "monaco-editor";
 import { mdiDatabase, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
-import { actions, store, useStoreValue } from "~/store";
-import { updateConfig } from "~/util/helpers";
+import { useStoreValue } from "~/store";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -24,14 +23,13 @@ export function LiveQueryPane() {
 			return;
 		}
 
-		store.dispatch(
-			actions.updateSession({
-				id: activeSession.id,
-				query: content || "",
-			})
-		);
+		// store.dispatch(
+		// 	actions.updateSession({
+		// 		id: activeSession.id,
+		// 		query: content || "",
+		// 	})
+		// );
 
-		updateConfig();
 		updateQueryValidation(editorRef.current!);
 	});
 
@@ -65,7 +63,7 @@ export function LiveQueryPane() {
 			<SurrealistEditor
 				language="surrealql"
 				onMount={configure}
-				value={activeSession?.query}
+				// value={activeSession?.query}
 				onChange={scheduleSetQuery}
 				style={{
 					position: "absolute",

@@ -2,7 +2,6 @@ import { Stack, NumberInput, Switch } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
 import { store, actions } from "~/store";
 import { SurrealistConfig } from "~/types";
-import { updateConfig } from "~/util/helpers";
 import { Setting } from "../setting";
 
 export interface ConnectionTabProps {
@@ -12,12 +11,10 @@ export interface ConnectionTabProps {
 export function ConnectionTab({ config }: ConnectionTabProps) {
 	const setAutoConnect = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setAutoConnect(e.target.checked));
-		updateConfig();
 	});
 
 	const setQueryTimeout = useStable((value: number) => {
 		store.dispatch(actions.setQueryTimeout(value));
-		updateConfig();
 	});
 
 	return (

@@ -1,7 +1,7 @@
 import { showNotification } from "@mantine/notifications";
 import { actions, store } from "./store";
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/connection";
-import { showError, updateConfig } from "./util/helpers";
+import { showError } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
 import { Text } from "@mantine/core";
 import { getActiveEnvironment, getActiveSession, isConnectionValid, mergeConnections } from "./util/environments";
@@ -106,8 +106,6 @@ export async function executeQuery(options?: QueryOptions) {
 
 	const { id: tabId, queries, activeQueryId, name, variables } = sessionInfo;
 
-	console.log(queries, activeQueryId);
-
 	const activeQuery = queries.find((q) => q.id === activeQueryId);
 	const queryStr = options?.override?.trim() || activeQuery?.text || '';
 	const variableJson = variables
@@ -153,8 +151,6 @@ export async function executeQuery(options?: QueryOptions) {
 			timestamp: Date.now(),
 		})
 	);
-
-	await updateConfig();
 }
 
 /**

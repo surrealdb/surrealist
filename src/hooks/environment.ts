@@ -48,6 +48,17 @@ export function useActiveEnvironment() {
 }
 
 /**
+ * Returns the active query tab
+ * 
+ * @returns The active query tab
+ */
+export function useActiveQuery() {
+	const activeSession = useActiveSession();
+	
+	return activeSession.queries.find((q) => q.id === activeSession.activeQueryId)!;
+}
+
+/**
  * Return a list of all tabs
  */
 export function useTabsList() {

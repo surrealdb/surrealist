@@ -34,13 +34,6 @@ export function updateTitle() {
 }
 
 /**
- * Update the config on disk with the current state of the app
- */
-export async function updateConfig() {
-	return adapter.saveConfig(JSON.stringify(store.getState().config));
-}
-
-/**
  * Watch for changes to the native theme
  */
 export function watchNativeTheme() {

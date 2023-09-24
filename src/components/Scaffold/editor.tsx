@@ -8,7 +8,7 @@ import { useStable } from "~/hooks/stable";
 import { actions, store, useStoreValue } from "~/store";
 import { Form } from "../Form";
 import { useEffect } from "react";
-import { updateConfig, updateTitle } from "~/util/helpers";
+import { updateTitle } from "~/util/helpers";
 import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
@@ -51,15 +51,12 @@ export function TabEditor() {
 
 			closeConnection();
 	
-			await updateConfig();
-	
 			if (autoConnect && mergedValid) {
 				openConnection();
 			}
 		}
 
 		updateTitle();
-		updateConfig();
 	});
 
 	useEffect(() => {

@@ -1,6 +1,5 @@
 import { gt } from "semver";
 import { actions, store } from "~/store";
-import { updateConfig } from "./helpers";
 import { showNotification } from "@mantine/notifications";
 
 export async function runUpdateChecker(lastPromptedVersion: string | null, force: boolean) {
@@ -20,7 +19,6 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 
 		if (gt(version, current)) {
 			store.dispatch(actions.setAvailableUpdate(version));
-			updateConfig();
 		} else if (force) {
 			showNotification({
 				message: "Surrealist is up-to-date!",

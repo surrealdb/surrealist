@@ -3,7 +3,6 @@ import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { actions, store } from "~/store";
 import { SurrealistConfig } from "~/types";
-import { updateConfig } from "~/util/helpers";
 import { Setting } from "../setting";
 
 export interface GeneralTabProps {
@@ -14,22 +13,18 @@ export function GeneralTab({ config }: GeneralTabProps) {
 
 	const setTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setTableSuggest(e.target.checked));
-		updateConfig();
 	});
 
 	const setErrorChecking = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setErrorChecking(e.target.checked));
-		updateConfig();
 	});
 
 	const setUpdateChecker = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setUpdateChecker(e.target.checked));
-		updateConfig();
 	});
 
 	const togglePinned = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setWindowPinned(e.target.checked));
-		updateConfig();
 	});
 
 	return (

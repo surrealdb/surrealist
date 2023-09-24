@@ -4,7 +4,6 @@ import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { store, actions } from "~/store";
 import { DriverType, SurrealistConfig } from "~/types";
-import { updateConfig } from "~/util/helpers";
 import { Setting } from "../setting";
 
 const DRIVERS = [
@@ -20,32 +19,26 @@ export interface ConnectionTabProps {
 export function LocalDatabaseTab({ config }: ConnectionTabProps) {
 	const setLocalDriver = useStable((driver: string) => {
 		store.dispatch(actions.setLocalDatabaseDriver(driver as DriverType));
-		updateConfig();
 	});
 
 	const setLocalPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setLocalDatabaseStorage(e.target.value));
-		updateConfig();
 	});
 
 	const setSurrealUser = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setSurrealUser(e.target.value));
-		updateConfig();
 	});
 
 	const setSurrealPass = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setSurrealPass(e.target.value));
-		updateConfig();
 	});
 
 	const setSurrealPort = useStable((value: number) => {
 		store.dispatch(actions.setSurrealPort(value));
-		updateConfig();
 	});
 
 	const setSurrealPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(actions.setSurrealPath(e.target.value));
-		updateConfig();
 	});
 
 	return (

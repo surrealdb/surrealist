@@ -9,7 +9,7 @@ import { actions, store, useStoreValue } from "~/store";
 import { Form } from "../Form";
 import { useInputState } from "@mantine/hooks";
 import { useEffect } from "react";
-import { newId, updateConfig, updateTitle } from "~/util/helpers";
+import { newId, updateTitle } from "~/util/helpers";
 import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
@@ -56,7 +56,6 @@ export function TabCreator() {
 		store.dispatch(actions.setActiveSession(tabId));
 
 		updateTitle();
-		updateConfig();
 	});
 
 	useEffect(() => {

@@ -20,7 +20,6 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveSession } from "~/hooks/environment";
 import { actions, store } from "~/store";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
-import { updateConfig } from "~/util/helpers";
 import { useDesignerConfig } from "./hooks";
 import { TableGrid } from "./grid";
 import { RadioSelect } from "~/components/RadioSelect";
@@ -142,8 +141,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				designerNodeMode: mode as DesignerNodeMode,
 			})
 		);
-
-		updateConfig();
 	});
 
 	const setLayoutMode = useStable((mode: string) => {
@@ -153,8 +150,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				designerLayoutMode: mode as DesignerLayoutMode,
 			})
 		);
-
-		updateConfig();
 	});
 
 	return (

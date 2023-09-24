@@ -2,7 +2,6 @@ import { mdiTune } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
-import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { useState } from "react";
 import { Text } from "@mantine/core";
@@ -34,7 +33,6 @@ export function VariablesPane() {
 				})
 			);
 
-			updateConfig();
 			setIsInvalid(false);
 		} catch {
 			setIsInvalid(true);

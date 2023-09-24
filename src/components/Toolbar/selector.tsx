@@ -20,7 +20,7 @@ import { Text } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 import { VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
-import { updateTitle, updateConfig, applyOrder } from "~/util/helpers";
+import { updateTitle, applyOrder } from "~/util/helpers";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useHotkeys, useInputState } from "@mantine/hooks";
 import { Environments } from "./environments";
@@ -70,7 +70,6 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 		store.dispatch(actions.setActiveSession(id));
 
 		updateTitle();
-		updateConfig();
 		setOpened(false);
 	});
 
@@ -163,7 +162,6 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 		setRenamingSession("");
 		setTabName("");
 
-		updateConfig();
 		updateTitle();
 	});
 
@@ -178,8 +176,6 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 	const saveTabOrder = useStable((order: Session[]) => {
 		store.dispatch(actions.setSessions(applyOrder(sessions, order)));
-
-		updateConfig();
 	});
 
 	useEffect(() => {
