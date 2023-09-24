@@ -20,6 +20,7 @@ export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onCh
 
 export function SurrealistEditor(props: SurrealistEditorProps) {
 	const isLight = useIsLight();
+	const containerRef = useRef<ElementRef<"div">>(null);
 	const elementRef = useRef<ElementRef<"div">>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
 
@@ -62,8 +63,10 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 
 			const updateHeight = () => {
 				const contentHeight = Math.min(1000, editor.getContentHeight());
+				const height = `${contentHeight}px`;
 
-				elementRef.current!.style.height = `${contentHeight}px`;
+				elementRef.current!.style.height = height;
+				containerRef.current!.style.height = height;
 
 				try {
 					ignoreEvent = true;
@@ -96,13 +99,20 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 
 	return (
 		<div
+			ref={containerRef}
 			style={{
-				...props.style,
+				position: props.autoSize ? 'relative' : undefined,
 				fontFamily: "JetBrains Mono",
 				height: props.noExpand ? props.height : "100%",
+				...props.style,
 			}}
 		>
-			<Box ref={elementRef} h="100%" />
+			<Box
+				ref={elementRef}
+				h="100%"
+				pos={props.autoSize ? 'absolute' : undefined}
+				inset={0}
+			/>
 		</div>
 	);
 }

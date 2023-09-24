@@ -144,9 +144,7 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 			delete draft[tokenId];
 		});
 
-		await handle.query(`KILL ${tokenId}`);
-		
-		
+		await handle.query(`KILL "${tokenId}"`);
 	});
 
 	const startQuery = useStable(async (id: string) => {

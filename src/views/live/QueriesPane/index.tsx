@@ -92,7 +92,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 												Query {i + 1}
 											</Text>
 											{isActive && (
-												<Box mt={-4}>
+												<Box mt={-5}>
 													<Badge
 														variant="filled"
 														size="xs"
