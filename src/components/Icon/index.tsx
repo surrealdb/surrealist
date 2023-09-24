@@ -31,6 +31,7 @@ export const Icon = ({ size, color, path, style, left, right, ...rest }: IconPro
 			verticalAlign: "middle",
 			marginRight: left ? "0.5em" : undefined,
 			marginLeft: right ? "0.5em" : undefined,
+			flexShrink: 0,
 			...style,
 		}),
 		[iconSize, left, right, style]

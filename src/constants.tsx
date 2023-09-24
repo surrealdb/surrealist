@@ -131,3 +131,12 @@ export const SURQL_FILTERS = [
 		extensions: ["surql", "sql", "surrealql"],
 	},
 ];
+
+export const LIVE_QUERY_COLORS = [
+	"blue",
+	"green",
+	"orange",
+	"surreal",
+	"red",
+	"purple",
+];

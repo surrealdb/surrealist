@@ -13,7 +13,7 @@ export interface QueryViewProps {
 
 export function LiveView() {
 	const session = useActiveSession();
-	const [splitValues, setSplitValues] = useState<SplitValues>([450, undefined]);
+	const [splitValues, setSplitValues] = useState<SplitValues>([500, undefined]);
 	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
 	const [editingId, setEditingId] = useState("");
 	const [isEditing, setIsEditing] = useState(false);
@@ -75,10 +75,10 @@ export function LiveView() {
 			bufferSize={520}
 			startPane={
 				<Splitter
-					minSize={220}
+					minSize={280}
 					values={innerSplitValues}
 					onChange={setInnerSplitValues}
-					bufferSize={150}
+					bufferSize={100}
 					direction="vertical"
 					endPane={isEditing && (
 						<EditorPane
