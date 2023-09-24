@@ -106,6 +106,8 @@ export async function executeQuery(options?: QueryOptions) {
 
 	const { id: tabId, queries, activeQueryId, name, variables } = sessionInfo;
 
+	console.log(queries, activeQueryId);
+
 	const activeQuery = queries.find((q) => q.id === activeQueryId);
 	const queryStr = options?.override?.trim() || activeQuery?.text || '';
 	const variableJson = variables

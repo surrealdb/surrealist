@@ -177,7 +177,7 @@ const mainSlice = createSlice({
 
 		updateQueryTab(state, action: PayloadAction<Partial<SessionQuery>>) {
 			const session = getSession(state);
-			const index = session.queries.findIndex((query) => query.id === action.payload.id);
+			const index = session.queries.findIndex((query) => query.id === session.activeQueryId);
 
 			if (index < 0) {
 				return;
