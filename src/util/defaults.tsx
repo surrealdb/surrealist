@@ -59,6 +59,7 @@ export function createBaseSession(query?: string): SurrealistSession {
 		activeView: "query",
 		connection: createBaseConnection(),
 		pinned: false,
-		pinnedTables: []
+		pinnedTables: [],
+		liveQueries: [],
 	};
 }

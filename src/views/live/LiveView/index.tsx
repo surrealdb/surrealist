@@ -22,6 +22,7 @@ export function LiveView(props: QueryViewProps) {
 	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
 	const [editingId, setEditingId] = useState("");
 	const [isEditing, setIsEditing] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const [editingData, setEditingData] = useState<any>(null);
 	const [activeQueries, setActiveQueries] = useState<string[]>([]);
 	const [messages, setMessages] = useImmer<LiveMessage[]>([]);
@@ -42,15 +43,25 @@ export function LiveView(props: QueryViewProps) {
 
 	const socket = useLegacyLiveSocket({
 		onLiveMessage: handleLiveMessage,
+		onOpen() {
+			setIsLoading(true);
+		},
+		onConnect() {
+			setIsLoading(false);
+		},
 		onDisconnect() {
+			setIsLoading(false);
 			setActiveQueries([]);
-			setMessages([]);
 		},
 	});
 
 	const startQueryLater = useLater(socket.startQuery);
 
 	const toggleQuery = useStable(async (id: string) => {
+		if (isLoading) {
+			return;
+		}
+
 		if (activeQueries.includes(id)) {
 			setActiveQueries(activeQueries.filter((x) => x !== id));
 
@@ -75,14 +86,23 @@ export function LiveView(props: QueryViewProps) {
 	});
 
 	const handleEditQuery = useStable((id: string) => {
-		const query = session.liveQueries.find((q) => q.id === id);
+		const index = session.liveQueries.findIndex((q) => q.id === id);
+		const query = session.liveQueries[index];
 
 		setEditingId(id);
 		setIsEditing(true);
 		setEditingData({
+			index,
 			name: query?.name || '',
 			text: query?.text || ''
 		});
+	});
+
+	const handleRemoveQuery = useStable((id: string) => {
+		store.dispatch(actions.updateSession({
+			id: session.id,
+			liveQueries: session.liveQueries.filter((q) => q.id !== id),
+		}));
 	});
 
 	const handleQuerySave = useStable((name: string, text: string) => {
@@ -117,7 +137,7 @@ export function LiveView(props: QueryViewProps) {
 
 	return (
 		<Splitter
-			minSize={300}
+			minSize={400}
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"
@@ -143,6 +163,7 @@ export function LiveView(props: QueryViewProps) {
 						toggleQuery={toggleQuery}
 						onAddQuery={handleNewQuery}
 						onEditQuery={handleEditQuery}
+						onRemoveQuery={handleRemoveQuery}
 					/>
 				</Splitter>
 			}

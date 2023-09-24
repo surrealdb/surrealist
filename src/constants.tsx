@@ -9,7 +9,7 @@ export interface ListingItem {
 	icon: string;
 }
 
-export const MAX_LIVE_MESSAGES = 100;
+export const MAX_LIVE_MESSAGES = 50;
 
 export const RESULT_LISTINGS: ListingItem[] = [
 	{ id: "combined", icon: mdiFormatListGroup },
@@ -140,5 +140,5 @@ export const LIVE_QUERY_COLORS = [
 	"orange",
 	"surreal",
 	"red",
-	"purple",
+	"yellow",
 ];

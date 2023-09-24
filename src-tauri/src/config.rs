@@ -4,7 +4,7 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
 };
-use tauri::api::path::{home_dir, config_dir};
+use tauri::api::path::{config_dir, home_dir};
 
 const DEFAULT_CONFIG: &str = "{}";
 
@@ -26,7 +26,7 @@ fn get_legacy_config_path() -> PathBuf {
             config.push("config.json");
             config
         }
-        Err(_) => base_dir
+        Err(_) => base_dir,
     };
 }
 
@@ -39,16 +39,16 @@ fn get_config_path() -> PathBuf {
 
 #[tauri::command]
 pub fn load_config() -> String {
-	let legacy_path = get_legacy_config_path();
-	let config_path = get_config_path();
+    let legacy_path = get_legacy_config_path();
+    let config_path = get_config_path();
 
-	// Migrate the legacy config
-	if legacy_path.exists() {
-		fs::rename(&legacy_path, &config_path).expect("config to be migrated");
-	}
+    // Migrate the legacy config
+    if legacy_path.exists() {
+        fs::rename(&legacy_path, &config_path).expect("config to be migrated");
+    }
 
-	// Attempt to read the config file
-	let read_op = File::open(&config_path);
+    // Attempt to read the config file
+    let read_op = File::open(&config_path);
     let mut buffer = String::new();
 
     match read_op {
