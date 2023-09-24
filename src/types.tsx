@@ -55,7 +55,9 @@ export interface Session {
 	id: string;
 	name: string;
 	environment: string;
-	query: string;
+	queries: SessionQuery[];
+	activeQueryId: number;
+	lastQueryId: number;
 	variables: string;
 	connection: ConnectionOptions;
 	lastResponse: any;
@@ -64,6 +66,11 @@ export interface Session {
 	pinnedTables: string[];
 	designerNodeMode?: DesignerNodeMode;
 	designerLayoutMode?: DesignerLayoutMode;
+}
+
+export interface SessionQuery {
+	id: number;
+	text: string;
 }
 
 export interface ScopeField {

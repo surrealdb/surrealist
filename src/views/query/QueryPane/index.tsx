@@ -1,5 +1,5 @@
 import { editor } from "monaco-editor";
-import { mdiDatabase, mdiUpload } from "@mdi/js";
+import { mdiClose, mdiDatabase, mdiPlus, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
@@ -9,30 +9,28 @@ import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon } from "@mantine/core";
+import { ActionIcon, Group, ScrollArea, Tabs } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 
 export function QueryPane() {
-	const activeSession = useActiveSession();
+	const { queries, activeQueryId } = useActiveSession();
 	const controls = useRef<editor.IStandaloneCodeEditor>();
 	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
+	const showTabs = queries.length > 1;
+	const queryIndex = queries.findIndex(({ id }) => id === activeQueryId);
+	const queryInfo = queries[queryIndex];
+	const queryText = queryInfo?.text || "";
+
 	const setQueryForced = useStable((content: string | undefined) => {
-		if (!activeSession) {
-			return;
-		}
+		store.dispatch(actions.updateQueryTab({
+			text: content || ""
+		}));
 
-		store.dispatch(
-			actions.updateSession({
-				id: activeSession.id,
-				query: content || "",
-			})
-		);
-
-		updateConfig();
 		updateQueryValidation(controls.current!);
+		updateConfig();
 	});
 
 	const scheduleSetQuery = useDebouncedCallback(200, setQueryForced);
@@ -52,25 +50,92 @@ export function QueryPane() {
 		}
 	});
 
+	const removeTab = useStable((tab: number) => {
+		store.dispatch(actions.removeQueryTab(tab));
+		updateConfig();
+	});
+
+	const appendTab = useStable(() => {
+		store.dispatch(actions.addQueryTab());
+		updateConfig();
+	});
+
+	const handleTabChange = useStable((value: string | null) => {
+		if (value) {
+			const tabId = Number.parseInt(value);
+
+			store.dispatch(actions.setActiveQueryTab(tabId));
+		}
+	});
+
 	return (
 		<Panel
 			title="Query"
 			icon={mdiDatabase}
 			rightSection={
-				<ActionIcon onClick={handleUpload} title="Load from file">
-					<Icon color="light.4" path={mdiUpload} />
-				</ActionIcon>
+				<Group>
+					<ActionIcon onClick={appendTab} title="New query tab">
+						<Icon color="light.4" path={mdiPlus} />
+					</ActionIcon>
+
+					<ActionIcon onClick={handleUpload} title="Load from file">
+						<Icon color="light.4" path={mdiUpload} />
+					</ActionIcon>
+				</Group>
 			}
 		>
+			{showTabs && (
+				<Tabs
+					mt={-4}
+					value={activeQueryId.toString()}
+					onTabChange={handleTabChange}
+				>
+					<ScrollArea
+						pb="xs"
+					>
+						<Tabs.List
+							style={{ flexWrap: "nowrap" }}
+						>
+							{queries.map(({ id }) => (
+								<Tabs.Tab
+									py={8}
+									px={10}
+									key={id}
+									value={id.toString()}
+								>
+									<Group spacing="xs" noWrap>
+										Query #{id}
+										{id > 1 && (
+											<ActionIcon
+												size="xs"
+												component="div"
+												onClick={(e) => {
+													e.stopPropagation();
+													removeTab(id);
+												}}
+											>
+												<Icon path={mdiClose} color="gray.6" />
+											</ActionIcon>
+										)}
+									</Group>
+								</Tabs.Tab>
+							))}
+						</Tabs.List>
+					</ScrollArea>
+				</Tabs>
+			)}
+
 			<SurrealistEditor
+				noExpand
 				language="surrealql"
 				onMount={configure}
-				value={activeSession?.query}
+				value={queryText}
 				onChange={scheduleSetQuery}
 				style={{
 					position: "absolute",
-					insetBlock: 0,
 					insetInline: 24,
+					top: showTabs ? 50 : 0,
+					bottom: 0
 				}}
 				options={{
 					quickSuggestions: false,

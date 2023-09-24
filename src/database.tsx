@@ -104,9 +104,10 @@ export async function executeQuery(options?: QueryOptions) {
 		return;
 	}
 
-	const { id: tabId, query, name, variables } = sessionInfo;
+	const { id: tabId, queries, activeQueryId, name, variables } = sessionInfo;
 
-	const queryStr = options?.override?.trim() || query;
+	const activeQuery = queries.find((q) => q.id === activeQueryId);
+	const queryStr = options?.override?.trim() || activeQuery?.text || '';
 	const variableJson = variables
 		? JSON.parse(variables)
 		: undefined;
@@ -145,7 +146,7 @@ export async function executeQuery(options?: QueryOptions) {
 	store.dispatch(
 		actions.addHistoryEntry({
 			id: uid(5),
-			query: query,
+			query: queryStr,
 			tabName: name,
 			timestamp: Date.now(),
 		})
