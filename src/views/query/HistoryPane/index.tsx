@@ -21,19 +21,16 @@ import { actions, store, useStoreValue } from "~/store";
 import dayjs from "dayjs";
 import { useStable } from "~/hooks/stable";
 import { useHover, useInputState } from "@mantine/hooks";
-import { HistoryEntry, SurrealistTab } from "~/types";
-import { useActiveTab } from "~/hooks/environment";
+import { HistoryEntry, Session } from "~/types";
+import { useActiveSession } from "~/hooks/environment";
 import { updateConfig } from "~/util/helpers";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
+import { executeQuery } from "~/database";
 
-export interface HistoryPaneProps {
-	onExecuteQuery: () => void;
-}
-
-export function HistoryPane(props: HistoryPaneProps) {
+export function HistoryPane() {
 	const isLight = useIsLight();
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 	const entries = useStoreValue((state) => state.config.queryHistory);
 	const [search, setSearch] = useInputState("");
 
@@ -54,11 +51,15 @@ export function HistoryPane(props: HistoryPaneProps) {
 
 		return filtered.map((entry, i) => (
 			<Fragment key={i}>
-				<HistoryRow entry={entry} isLight={isLight} activeTab={activeTab} onExecuteQuery={props.onExecuteQuery} />
+				<HistoryRow
+					entry={entry}
+					isLight={isLight}
+					activeSession={activeSession}
+				/>
 				{i !== entries.length - 1 && <Divider color={isLight ? "light.0" : "dark.5"} />}
 			</Fragment>
 		));
-	}, [activeTab, filtered, isLight]);
+	}, [activeSession, filtered, isLight]);
 
 	return (
 		<Panel title="History" icon={mdiHistory} rightSection={<HistoryActions />}>
@@ -85,11 +86,10 @@ export function HistoryPane(props: HistoryPaneProps) {
 interface HistoryRowProps {
 	entry: HistoryEntry;
 	isLight: boolean;
-	activeTab: SurrealistTab | undefined;
-	onExecuteQuery: () => void;
+	activeSession: Session | undefined;
 }
 
-function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowProps) {
+function HistoryRow({ activeSession, entry, isLight }: HistoryRowProps) {
 	const theme = useMantineTheme();
 	const { ref, hovered } = useHover();
 
@@ -99,17 +99,17 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 
 	const editQuery = useStable(() => {
 		store.dispatch(
-			actions.updateTab({
-				id: activeTab?.id,
+			actions.updateSession({
+				id: activeSession?.id,
 				query: entry.query,
 			})
 		);
 	});
 
-	const executeQuery = useStable(() => {
+	const executeHistory = useStable(() => {
 		editQuery();
 
-		setTimeout(onExecuteQuery, 0);
+		setTimeout(executeQuery, 0);
 	});
 
 	return (
@@ -141,7 +141,7 @@ function HistoryRow({ activeTab, entry, isLight, onExecuteQuery }: HistoryRowPro
 					<Button size="xs" variant="light" color="violet" radius="sm" title="Edit query" onClick={editQuery}>
 						<Icon path={mdiPencil} color="violet" />
 					</Button>
-					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeQuery}>
+					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeHistory}>
 						<Icon path={mdiPlay} color="pink" />
 					</Button>
 				</SimpleGrid>

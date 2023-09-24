@@ -15,7 +15,7 @@ import {
 	mdiPin,
 } from "@mdi/js";
 import { Icon } from "../Icon";
-import { SurrealistTab } from "~/types";
+import { Session } from "~/types";
 import { Text } from "@mantine/core";
 import { actions, store, useStoreValue } from "~/store";
 import { VIEW_MODES } from "~/constants";
@@ -27,31 +27,30 @@ import { Environments } from "./environments";
 import { SyntheticEvent } from "react";
 import { Sortable } from "../Sortable";
 
-function getTabIcon(tab: SurrealistTab) {
-	return VIEW_MODES.find((v) => v.id == tab.activeView)?.icon;
+function getSessionIcon(session: Session) {
+	return VIEW_MODES.find((v) => v.id == session.activeView)?.icon;
 }
 
 export interface SelectorProps {
 	active: string | null;
 	isLight: boolean;
-	onSave: () => void;
-	onCreateTab: (environment: string) => void;
+	onCreateSession: (environment: string) => void;
 }
 
-export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps) {
+export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 	const [opened, setOpened] = useState(false);
 	const [manageEnvs, setManageEnvs] = useState(false);
 	const [viewingEnv, setViewingEnv] = useState("");
-	const [renamingTab, setRenamingTab] = useState("");
+	const [renamingSession, setRenamingSession] = useState("");
 	const [tabName, setTabName] = useInputState("");
 	const [search, setSearch] = useInputState("");
 
-	const tabs = useStoreValue((state) => state.config.tabs);
+	const sessions = useStoreValue((state) => state.config.tabs);
 	const environments = useStoreValue((state) => state.config.environments);
 	const tabSearch = useStoreValue((state) => state.config.tabSearch);
 
-	const tab = tabs.find((tab) => tab.id === active);
-	const environment = tab && environments.find((env) => env.id === tab.environment);
+	const session = sessions.find((session) => session.id === active);
+	const environment = session && environments.find((env) => env.id === session.environment);
 
 	const stopPropagation = useStable((e: any) => {
 		e.stopPropagation();
@@ -60,26 +59,26 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 	const filteredTabs = useMemo(() => {
 		const needle = search.toLowerCase();
 
-		return tabs.filter((tab) => tab.environment === viewingEnv && (!needle || tab.name.toLowerCase().includes(needle)));
-	}, [tabs, viewingEnv, search]);
+		return sessions.filter((session) => session.environment === viewingEnv && (!needle || session.name.toLowerCase().includes(needle)));
+	}, [sessions, viewingEnv, search]);
 
 	const select = useStable((id: string) => {
-		if (renamingTab) {
+		if (renamingSession) {
 			return;
 		}
 
-		store.dispatch(actions.setActiveTab(id));
+		store.dispatch(actions.setActiveSession(id));
 
 		updateTitle();
 		updateConfig();
 		setOpened(false);
 	});
 
-	const openTab = useStable((index: number) => {
-		const tab = filteredTabs[index];
+	const openSession = useStable((index: number) => {
+		const session = filteredTabs[index];
 
-		if (tab) {
-			select(tab.id);
+		if (session) {
+			select(session.id);
 		}
 	});
 
@@ -87,17 +86,17 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 		setViewingEnv(id);
 	});
 
-	const createTab = useStable(() => {
+	const createSession = useStable(() => {
 		setOpened(false);
-		onCreateTab(viewingEnv);
+		onCreateSession(viewingEnv);
 	});
 
 	const handleRename = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
 
-		const current = tabs.find((tab) => tab.id === id)?.name || "";
+		const current = sessions.find((session) => session.id === id)?.name || "";
 
-		setRenamingTab(id);
+		setRenamingSession(id);
 		setTabName(current);
 	});
 
@@ -112,10 +111,10 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 	const handlePin = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
 
-		const pinned = tabs.find((tab) => tab.id === id)?.pinned ?? false;
+		const pinned = sessions.find((session) => session.id === id)?.pinned ?? false;
 
 		store.dispatch(
-			actions.updateTab({
+			actions.updateSession({
 				id: id,
 				pinned: !pinned,
 			})
@@ -127,7 +126,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 
 		setOpened(false);
 
-		const details = tabs.find((tab) => tab.id === id)?.connection || {};
+		const details = sessions.find((session) => session.id === id)?.connection || {};
 
 		store.dispatch(
 			actions.openTabCreator({
@@ -140,7 +139,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 	const handleDelete = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
 
-		store.dispatch(actions.removeTab(id));
+		store.dispatch(actions.removeSession(id));
 	});
 
 	const saveRename = useStable((e: SyntheticEvent) => {
@@ -148,20 +147,20 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 			return;
 		}
 
-		const info = tabs.find((tab) => tab.id === renamingTab);
+		const info = sessions.find((session) => session.id === renamingSession);
 
 		if (!info) {
 			return;
 		}
 
 		store.dispatch(
-			actions.updateTab({
+			actions.updateSession({
 				...info,
 				name: tabName,
 			})
 		);
 
-		setRenamingTab("");
+		setRenamingSession("");
 		setTabName("");
 
 		updateConfig();
@@ -177,8 +176,8 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 		setManageEnvs(false);
 	});
 
-	const saveTabOrder = useStable((order: SurrealistTab[]) => {
-		store.dispatch(actions.setTabs(applyOrder(tabs, order)));
+	const saveTabOrder = useStable((order: Session[]) => {
+		store.dispatch(actions.setSessions(applyOrder(sessions, order)));
 
 		updateConfig();
 	});
@@ -195,17 +194,17 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 
 	useHotkeys(
 		[
-			["ctrl+1", () => openTab(0)],
-			["ctrl+2", () => openTab(1)],
-			["ctrl+3", () => openTab(2)],
-			["ctrl+4", () => openTab(3)],
-			["ctrl+5", () => openTab(4)],
-			["ctrl+6", () => openTab(5)],
-			["ctrl+7", () => openTab(6)],
-			["ctrl+8", () => openTab(7)],
-			["ctrl+9", () => openTab(8)],
-			["ctrl+0", () => openTab(9)],
-			["ctrl+n", () => createTab],
+			["ctrl+1", () => openSession(0)],
+			["ctrl+2", () => openSession(1)],
+			["ctrl+3", () => openSession(2)],
+			["ctrl+4", () => openSession(3)],
+			["ctrl+5", () => openSession(4)],
+			["ctrl+6", () => openSession(5)],
+			["ctrl+7", () => openSession(6)],
+			["ctrl+8", () => openSession(7)],
+			["ctrl+9", () => openSession(8)],
+			["ctrl+0", () => openSession(9)],
+			["ctrl+n", () => createSession],
 		],
 		[]
 	);
@@ -224,11 +223,11 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 					<Button px="xs" variant="subtle" color="light" onClick={() => setOpened(!opened)}>
 						<Group spacing={6}>
 							<Icon path={mdiDatabase} />
-							{tab && environment ? (
+							{session && environment ? (
 								<>
 									<Text>{environment.name}</Text>
 									<Icon path={mdiChevronRight} color="dark.3" />
-									<Text color={isLight ? "black" : "white"}>{tab.name}</Text>
+									<Text color={isLight ? "black" : "white"}>{session.name}</Text>
 								</>
 							) : (
 								<Text color="light.4">Select tab</Text>
@@ -292,7 +291,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 							)}
 							<ScrollArea h={tabSearch ? "calc(100% - 102px)" : "calc(100% - 54px)"}>
 								<Stack spacing={6}>
-									{filteredTabs.length === 0 && tabs.length > 0 && (
+									{filteredTabs.length === 0 && sessions.length > 0 && (
 										<Text align="center" py={7} c="dark.2">
 											No tabs found
 										</Text>
@@ -307,8 +306,8 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 										}}
 									>
 										{({ item, handleProps }) => {
-											const isActive = item.id === tab?.id;
-											const isRenaming = renamingTab == item.id;
+											const isActive = item.id === session?.id;
+											const isRenaming = renamingSession == item.id;
 
 											return isRenaming ? (
 												<TextInput
@@ -335,7 +334,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 													w={264}
 													px={12}
 													leftIcon={
-														<Icon path={getTabIcon(item) ?? ""} color={isActive ? "surreal" : "light.5"} />
+														<Icon path={getSessionIcon(item) ?? ""} color={isActive ? "surreal" : "light.5"} />
 													}
 													c={isLight ? "black" : "white"}
 													color={isRenaming ? "light" : isActive ? "pink" : "light"}
@@ -408,7 +407,7 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 								variant="subtle"
 								className={classes.entryButton}
 								leftIcon={<Icon path={mdiPlus} />}
-								onClick={createTab}>
+								onClick={createSession}>
 								Add session
 							</Button>
 						</Box>
@@ -416,7 +415,10 @@ export function Selector({ active, isLight, onSave, onCreateTab }: SelectorProps
 				</Popover.Dropdown>
 			</Popover>
 
-			<Environments opened={manageEnvs} onClose={closeEnvManager} onSave={onSave} />
+			<Environments
+				opened={manageEnvs}
+				onClose={closeEnvManager}
+			/>
 		</>
 	);
 }

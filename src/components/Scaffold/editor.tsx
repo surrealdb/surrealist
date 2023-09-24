@@ -13,23 +13,20 @@ import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
+import { closeConnection, openConnection } from "~/database";
 
-export interface TabEditorProps {
-	onActiveChange: () => Promise<unknown>;
-}
-
-export function TabEditor({ onActiveChange }: TabEditorProps) {
+export function TabEditor() {
 	const isLight = useIsLight();
 	const tabs = useTabsList();
 	const environments = useEnvironmentList();
-	const activeTabId = useStoreValue((state) => state.config.activeTab);
+	const activeSessionId = useStoreValue((state) => state.config.activeTab);
 	const opened = useStoreValue((state) => state.showTabEditor);
 	const editingId = useStoreValue((state) => state.editingId);
 
 	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
 
-	const tabInfo = tabs.find((tab) => tab.id === editingId);
-	const envInfo = environments.find((env) => env.id === tabInfo?.environment);
+	const sessionInfo = tabs.find((tab) => tab.id === editingId);
+	const envInfo = environments.find((env) => env.id === sessionInfo?.environment);
 	const mergedDetails = mergeConnections(infoDetails, envInfo?.connection || {});
 
 	const detailsValid = isConnectionValid(infoDetails);
@@ -43,14 +40,22 @@ export function TabEditor({ onActiveChange }: TabEditorProps) {
 		handleCose();
 
 		store.dispatch(
-			actions.updateTab({
+			actions.updateSession({
 				id: editingId,
 				connection: infoDetails,
 			})
 		);
 
-		if (activeTabId == editingId) {
-			await onActiveChange();
+		if (activeSessionId == editingId) {
+			const { autoConnect } = store.getState().config;
+
+			closeConnection();
+	
+			await updateConfig();
+	
+			if (autoConnect && mergedValid) {
+				openConnection();
+			}
 		}
 
 		updateTitle();

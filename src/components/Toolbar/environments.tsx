@@ -13,18 +13,18 @@ import { Spacer } from "../Spacer";
 import { SurrealistEnvironment } from "~/types";
 import { newId, updateConfig } from "~/util/helpers";
 import { ModalTitle } from "../ModalTitle";
+import { openConnection } from "~/database";
 
 export interface EnvironmentsProps {
 	opened: boolean;
 	onClose: () => void;
-	onSave: () => void;
 }
 
 function buildName(n: number) {
 	return `Environment ${n ? n + 1 : ""}`.trim();
 }
 
-export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
+export function Environments({ opened, onClose }: EnvironmentsProps) {
 	const liveTabs = useStoreValue((state) => state.config.tabs);
 	const liveEnvs = useStoreValue((state) => state.config.environments);
 	const isLight = useIsLight();
@@ -102,15 +102,15 @@ export function Environments({ opened, onClose, onSave }: EnvironmentsProps) {
 	const saveEnvironments = useStable(() => {
 		for (const tab of liveTabs) {
 			if (removedIds.includes(tab.environment)) {
-				store.dispatch(actions.removeTab(tab.id));
+				store.dispatch(actions.removeSession(tab.id));
 			}
 		}
 
 		store.dispatch(actions.setEnvironments(environments));
 
 		onClose();
-		onSave();
 		updateConfig();
+		openConnection();
 	});
 
 	useEffect(() => {

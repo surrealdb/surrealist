@@ -4,10 +4,20 @@ import { ConnectionOptions } from "~/types";
 /**
  * Returns the currently active tab
  */
-export function getActiveTab() {
+export function getActiveSession() {
 	const { activeTab, tabs } = store.getState().config;
 
 	return tabs.find((tab) => tab.id === activeTab);
+}
+
+/**
+ * Returns the currently active environment
+ */
+export function getActiveEnvironment() {
+	const { environments } = store.getState().config;
+	const activeSession = getActiveSession();
+
+	return environments.find((e) => e.id === activeSession?.environment);
 }
 
 /**

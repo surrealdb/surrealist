@@ -1,6 +1,6 @@
 import {
 	HistoryEntry,
-	SurrealistTab,
+	Session,
 	SurrealistConfig,
 	DriverType,
 	QueryListing,
@@ -30,6 +30,7 @@ const mainSlice = createSlice({
 		nativeTheme: "light" as ColorScheme,
 		isServing: false,
 		servePending: false,
+		isConnecting: false,
 		isConnected: false,
 		isQueryActive: false,
 		consoleOutput: [] as string[],
@@ -91,7 +92,7 @@ const mainSlice = createSlice({
 			state.isQueryActive = action.payload;
 		},
 
-		setTabSearch(state, action: PayloadAction<boolean>) {
+		setSessionSearch(state, action: PayloadAction<boolean>) {
 			state.config.tabSearch = action.payload;
 		},
 
@@ -99,11 +100,11 @@ const mainSlice = createSlice({
 			state.config.environments = action.payload;
 		},
 
-		addTab(state, action: PayloadAction<SurrealistTab>) {
+		addSession(state, action: PayloadAction<Session>) {
 			state.config.tabs.push(action.payload);
 		},
 
-		removeTab(state, action: PayloadAction<string>) {
+		removeSession(state, action: PayloadAction<string>) {
 			const index = state.config.tabs.findIndex((tab) => tab.id === action.payload);
 
 			if (index >= 0) {
@@ -115,7 +116,7 @@ const mainSlice = createSlice({
 			}
 		},
 
-		updateTab(state, action: PayloadAction<Partial<SurrealistTab>>) {
+		updateSession(state, action: PayloadAction<Partial<Session>>) {
 			const tabIndex = state.config.tabs.findIndex((tab) => tab.id === action.payload.id);
 
 			if (tabIndex >= 0) {
@@ -125,11 +126,11 @@ const mainSlice = createSlice({
 			}
 		},
 
-		setTabs(state, action: PayloadAction<SurrealistTab[]>) {
+		setSessions(state, action: PayloadAction<Session[]>) {
 			state.config.tabs = action.payload;
 		},
 
-		setActiveTab(state, action: PayloadAction<string>) {
+		setActiveSession(state, action: PayloadAction<string>) {
 			state.config.activeTab = action.payload;
 			state.databaseSchema = [];
 		},
@@ -298,6 +299,10 @@ const mainSlice = createSlice({
 			state.databaseSchema = action.payload;
 		},
 
+		setIsConnecting(state, action: PayloadAction<boolean>) {
+			state.isConnecting = action.payload;
+		},
+
 		setIsConnected(state, action: PayloadAction<boolean>) {
 			state.isConnected = action.payload;
 
@@ -329,7 +334,7 @@ const mainSlice = createSlice({
 		},
 
 		toggleTablePin(state, action: PayloadAction<TablePinAction>) {
-			const pinned = state.config.tabs.find((tab) => tab.id === action.payload.tab)?.pinnedTables;
+			const pinned = state.config.tabs.find((tab) => tab.id === action.payload.session)?.pinnedTables;
 
 			if (!pinned) {
 				return;

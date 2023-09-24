@@ -47,10 +47,10 @@ function getIconColor(theme: MantineTheme, color: MantineColor | undefined): str
 	return color === undefined
 		? "currentColor"
 		: (theme.fn.variant({
-				color,
-				variant: "filled",
-				primaryFallback: false,
-		  }).background as string);
+			color,
+			variant: "filled",
+			primaryFallback: false,
+		}).background as string);
 }
 
 function getIconSize(size: string | number | undefined): string {

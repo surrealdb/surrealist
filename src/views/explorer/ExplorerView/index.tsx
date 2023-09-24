@@ -14,7 +14,7 @@ const SPLIT_SIZE: SplitValues = [250, 450];
 export interface ExplorerViewProps {}
 
 export function ExplorerView(props: ExplorerViewProps) {
-	const [activeTable, setActiveTable] = useState<string | null>(null);
+	const [activeSessionle, setActiveTable] = useState<string | null>(null);
 	const [activeRecord, setActiveRecord] = useState<any>(null);
 	const [creatingRecord, setCreatingRecord] = useState(false);
 	const [refreshId, setRefreshId] = useState(0);
@@ -133,10 +133,10 @@ export function ExplorerView(props: ExplorerViewProps) {
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"
-			startPane={<TablesPane active={activeTable} onSelectTable={setActiveTable} onRefresh={doRefresh} />}
+			startPane={<TablesPane active={activeSessionle} onSelectTable={setActiveTable} onRefresh={doRefresh} />}
 			endPane={
 				creatingRecord ? (
-					<CreatorPane activeTable={activeTable} onClose={handleCloseRecord} onSubmit={createRecord} />
+					<CreatorPane activeSessionle={activeSessionle} onClose={handleCloseRecord} onSubmit={createRecord} />
 				) : activeRecord ? (
 					<InspectorPane
 						history={history}
@@ -151,7 +151,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 			}>
 			<ExplorerPane
 				refreshId={refreshId}
-				activeTable={activeTable}
+				activeSessionle={activeSessionle}
 				onSelectRecord={pushNext}
 				activeRecordId={activeRecordId}
 				onRequestCreate={requestCreate}

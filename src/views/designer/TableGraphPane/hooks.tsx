@@ -1,7 +1,7 @@
 import { useMantineTheme } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStoreValue } from "~/store";
-import { DesignerLayoutMode, DesignerNodeMode, SurrealistTab } from "~/types";
+import { DesignerLayoutMode, DesignerNodeMode, Session } from "~/types";
 
 interface DesignerConfig {
 	nodeMode: DesignerNodeMode;
@@ -19,13 +19,13 @@ export function useHandleStyle() {
 }
 
 export function useDesignerConfig(
-	activeTab: SurrealistTab | undefined
+	activeSession: Session | undefined
 ): DesignerConfig {
 	const defaultNodeMode = useStoreValue(s => s.config.defaultDesignerNodeMode);
 	const defaultLayoutMode = useStoreValue(s => s.config.defaultDesignerLayoutMode);
 
-	const nodeMode = activeTab?.designerNodeMode ?? defaultNodeMode;
-	const layoutMode = activeTab?.designerLayoutMode ?? defaultLayoutMode;
+	const nodeMode = activeSession?.designerNodeMode ?? defaultNodeMode;
+	const layoutMode = activeSession?.designerLayoutMode ?? defaultLayoutMode;
 
 	return {
 		nodeMode,

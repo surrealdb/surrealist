@@ -7,13 +7,11 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { actions, store, useStoreValue } from "~/store";
 import { Icon } from "../Icon";
+import { closeConnection, openConnection } from "~/database";
 
-export interface LocalDatabaseProps {
-	openConnection: () => void;
-	closeConnection: () => void;
-}
+// TODO Check if localhost
 
-export function LocalDatabase(props: LocalDatabaseProps) {
+export function LocalDatabase() {
 	const isLight = useIsLight();
 	const isServing = useStoreValue((state) => state.isServing);
 	const isPending = useStoreValue((state) => state.servePending);
@@ -30,7 +28,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 		}
 
 		if (isServing) {
-			props.closeConnection();
+			closeConnection();
 			adapter.stopDatabase();
 
 			store.dispatch(actions.cancelServe());
@@ -45,7 +43,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 
 	useEffect(() => {
 		if (isServing) {
-			props.openConnection();
+			openConnection();
 		}
 	}, [isServing]);
 

@@ -17,7 +17,7 @@ import { showNotification } from "@mantine/notifications";
 import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
-import { useActiveTab } from "~/hooks/environment";
+import { useActiveSession } from "~/hooks/environment";
 import { actions, store } from "~/store";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
 import { updateConfig } from "~/util/helpers";
@@ -55,10 +55,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [showHelp, setShowHelp] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
 	const isOnline = useIsConnected();
-	const activeTab = useActiveTab();
+	const activeSession = useActiveSession();
 	const isLight = useIsLight();
 	
-	const { nodeMode, layoutMode } = useDesignerConfig(activeTab);
+	const { nodeMode, layoutMode } = useDesignerConfig(activeSession);
 
 	useEffect(() => {
 		const [nodes, edges] = buildTableDiagram(
@@ -137,8 +137,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const setNodeMode = useStable((mode: string) => {
 		store.dispatch(
-			actions.updateTab({
-				id: activeTab?.id,
+			actions.updateSession({
+				id: activeSession?.id,
 				designerNodeMode: mode as DesignerNodeMode,
 			})
 		);
@@ -148,8 +148,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const setLayoutMode = useStable((mode: string) => {
 		store.dispatch(
-			actions.updateTab({
-				id: activeTab?.id,
+			actions.updateSession({
+				id: activeSession?.id,
 				designerLayoutMode: mode as DesignerLayoutMode,
 			})
 		);

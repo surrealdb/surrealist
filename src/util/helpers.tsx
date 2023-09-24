@@ -6,6 +6,7 @@ import { CSSProperties } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { actions, store } from "~/store";
+import { getActiveSession } from "./environments";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -15,17 +16,14 @@ export const TRUNCATE_STYLE: CSSProperties = {
 
 export function updateTitle() {
 	const { config } = store.getState();
+	const session = getActiveSession();
 
 	let title = "";
 
-	if (config.activeTab) {
-		const tab = config.tabs.find((t) => t.id === config.activeTab);
+	if (session) {
+		const viewInfo = VIEW_MODES.find((v) => v.id === session.activeView);
 
-		if (tab) {
-			const viewInfo = VIEW_MODES.find((v) => v.id === tab.activeView);
-
-			title += `${tab.name} - Surrealist ${viewInfo?.name}`;
-		}
+		title += `${session.name} - Surrealist ${viewInfo?.name}`;
 	}
 
 	if (config.isPinned) {

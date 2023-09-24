@@ -15,7 +15,7 @@ import { sort } from "radash";
 import { useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
-import { useActiveTab } from "~/hooks/environment";
+import { useActiveSession } from "~/hooks/environment";
 
 export interface TablesPaneProps {
 	active: string | null;
@@ -30,10 +30,10 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 	const schema = useStoreValue((state) => state.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
 	const isOnline = useIsConnected();
-	const tabInfo = useActiveTab();
+	const sessionInfo = useActiveSession();
 
 	const isPinned = useStable((table: string) => {
-		return tabInfo?.pinnedTables?.includes(table) || false;
+		return sessionInfo?.pinnedTables?.includes(table) || false;
 	});
 
 	const tablesFiltered = useMemo(() => {
@@ -47,7 +47,7 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
-	}, [schema, search, tabInfo?.pinnedTables]);
+	}, [schema, search, sessionInfo?.pinnedTables]);
 
 	const selectTable = (table: TableDefinition | null) => {
 		onSelectTable(table?.schema?.name || null);
@@ -138,7 +138,7 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 
 								<Spacer />
 
-								{tabInfo?.pinnedTables?.includes(table.schema.name) && (
+								{sessionInfo?.pinnedTables?.includes(table.schema.name) && (
 									<Icon
 										className={classes.pinButton}
 										color={isActive ? "surreal" : isLight ? "light.3" : "light.4"}

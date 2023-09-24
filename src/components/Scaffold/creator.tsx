@@ -43,7 +43,7 @@ export function TabCreator() {
 		const tabId = newId();
 
 		store.dispatch(
-			actions.addTab({
+			actions.addSession({
 				id: tabId,
 				name: tabName,
 				environment: finalEnv,
@@ -57,7 +57,7 @@ export function TabCreator() {
 			})
 		);
 
-		store.dispatch(actions.setActiveTab(tabId));
+		store.dispatch(actions.setActiveSession(tabId));
 
 		updateTitle();
 		updateConfig();

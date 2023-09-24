@@ -121,7 +121,7 @@ export function getActiveSurreal(): SurrealConnection {
  * Instantiate a connection to SurrealDB through the WASM module
  */
 export function openSurrealConnection(options: SurrealOptions): SurrealConnection {
-	if (connecting) {
+	if (instance) {
 		return instance!;
 	}
 
@@ -167,4 +167,16 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 	instance = handle;
 
 	return handle;
+}
+
+/**
+ * Close the active surreal connection
+ */
+export function closeSurrealConnection() {
+	if (!instance) {
+		return;
+	}
+
+	instance.close();
+	instance = undefined;
 }

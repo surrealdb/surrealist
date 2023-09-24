@@ -1,10 +1,12 @@
 import * as monaco from "monaco-editor";
+import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
 import { KeyCode, KeyMod, editor, languages } from "monaco-editor";
 import { actions, store } from "~/store";
 import { SurrealInfoDB } from "~/typings/surreal";
 import { getSurreal } from "./connection";
-import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
 import { loadWASM } from 'onigasm';
+import { executeQuery } from "~/database";
+import { validate_query } from "~/generated/surrealist-embed";
 
 import TypeScriptWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
@@ -15,6 +17,7 @@ import javascriptTm from '~/assets/grammar/javascript.tmLanguage.json';
 
 import surrealistLightTheme from '~/assets/themes/surrealist-light.json';
 import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
+import { getActiveSession } from "./environments";
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
@@ -53,8 +56,8 @@ export const BASE_EDITOR_CONFIG: editor.IStandaloneEditorConstructionOptions = {
 	"bracketPairColorization.enabled": false, // NOTE Horrible hack (https://github.com/microsoft/monaco-editor/issues/3829)
 } as any;
 
+const ERR_REGEX = /Parse error: Failed to parse query at line (\d+) column (\d+)(.+)/s;
 const TABLE_PREFIXES = ["FROM ", "UPDATE ", "CREATE ", "DELETE ", "INTO "];
-
 const SCOPE_GRAMMARS: any = {
 	'source.surql': {
 		format: 'json',
@@ -136,14 +139,13 @@ export async function initializeMonaco() {
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: ["$"],
 		provideCompletionItems(_, position, context) {
-			const { config } = store.getState();
-			const tab = config.tabs.find((tab) => tab.id == config.activeTab);
+			const session = getActiveSession();
 
-			if (!tab) {
+			if (!session) {
 				return;
 			}
 
-			const variables = JSON.parse(tab.variables);
+			const variables = JSON.parse(session.variables);
 			const variableNames = Object.keys(variables);
 
 			if (variableNames.length === 0) {
@@ -173,14 +175,34 @@ export async function initializeMonaco() {
  * and support commenting with Ctrl+/
  *
  * @param editor The editor instance
- * @param onExecute The execute callback
  */
-export function configureQueryEditor(editor: editor.IStandaloneCodeEditor, onExecute: () => void) {
+export function configureQueryEditor(editor: editor.IStandaloneCodeEditor) {
 	editor.addAction({
 		id: "run-query",
 		label: "Run Query",
 		keybindings: [KeyMod.CtrlCmd | KeyCode.Enter, KeyCode.F9],
-		run: () => onExecute(),
+		run: () => executeQuery(),
+	});
+
+	editor.addAction({
+		id: "run-query-selection",
+		label: "Execute Selection",
+		contextMenuGroupId: "navigation",
+		contextMenuOrder: 0,
+		precondition: "editorHasSelection",
+		run: () => {
+			const sel = editor.getSelection();
+			const model = editor.getModel();
+
+			if (!sel || !model) {
+				return;
+			}
+
+			executeQuery({
+				override: model.getValueInRange(sel),
+				loader: true
+			});
+		},
 	});
 
 	editor.addAction({
@@ -225,4 +247,39 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor, onExe
 			]);
 		},
 	});
+}
+
+/**
+ * Perform validation on the given query editor
+ * 
+ * @param editor The editor instance
+ */
+export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
+	const { errorChecking } = store.getState().config;
+
+	const model = editor.getModel()!;
+	const content = model.getValue();
+	const markers: editor.IMarkerData[] = [];
+
+	if (content && errorChecking) {
+		const message = validate_query(content) || "";
+		const match = message.match(ERR_REGEX);
+
+		if (match) {
+			const lineNumber = Number.parseInt(match[1]);
+			const column = Number.parseInt(match[2]);
+			const reason = match[3].trim();
+
+			markers.push({
+				startLineNumber: lineNumber,
+				startColumn: column,
+				endLineNumber: lineNumber,
+				endColumn: column,
+				message: reason,
+				severity: monaco.MarkerSeverity.Error,
+			});
+		}
+	}
+
+	monaco.editor.setModelMarkers(model, "owner", markers);
 }
