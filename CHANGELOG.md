@@ -5,12 +5,16 @@
 	- Designer view is now available in the web app
 	- Authentication view is now available in the web app
 	- Connections are now handled the same way
-- Designer UI improvements
-	- Field names and types are now truncated when they are too long
-	- Limit tables to displaying 7 fields, with a button to view more
-- Added support for query tabs (#70)
+- Added new Live Query view
+	- Can be used to listen to one or more live queries
+	- Combines all incoming live query messages into a single feed
+	- Live query messages can be expanded to view their contents
+- Added support for Query View tabs (#70)
 	- Query tabs are stored per session
 	- Tabs are saved and persisted
+- Designer View improvements
+	- Field names and types are now truncated when they are too long
+	- Limit tables to displaying 7 fields, with a button to view more
 - Overhaul exporting functionality
 	- Now supports exporting table records
 	- Select which elements to export in the new exporter dialog
