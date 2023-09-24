@@ -1,17 +1,21 @@
 import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { mdiAlert } from "@mdi/js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Icon } from "~/components/Icon";
 import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { LiveMessage } from "~/types";
 import { getActiveSession, getActiveEnvironment, mergeConnections, isConnectionValid } from "~/util/environments";
+import { newId } from "~/util/helpers";
 import { SurrealHandle, CLOSED_HANDLE, createLocalWebSocket } from "~/util/websocket";
+
+let hasShownWarning = false;
 
 export interface SocketOptions {
 	onLiveMessage?: (msg: LiveMessage) => void;
+	onOpen?: () => void;
 	onConnect?: () => void;
 	onDisconnect?: () => void;
 }
@@ -38,8 +42,10 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 
 		options.onLiveMessage?.({
 			query,
+			id: newId(),
 			action: data.action,
-			result: data.result
+			result: data.result,
+			timestamp: Date.now(),
 		});
 	});
 
@@ -73,28 +79,35 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 			return;
 		}
 
-		showNotification({
-			autoClose: 10_000,
-			color: 'orange',
-			message: (
-				<Stack spacing={0}>
-					<Text weight={600}>
-						<Icon
-							path={mdiAlert}
-							size="sm"
-							left
-							mt={-2}
-						/>
-						Live queries are experimental
-					</Text>
-					<Text color="gray.6">
-						Due to existing limitations of live queries a local WebSocket connection is used. This may not be available in all environments.
-					</Text>
-				</Stack>
-			)
-		});
+		// NOTE - WebSocket disclaimer
+		if (!hasShownWarning) {
+			hasShownWarning = true;
+
+			showNotification({
+				autoClose: 10_000,
+				color: 'orange',
+				message: (
+					<Stack spacing={0}>
+						<Text weight={600}>
+							<Icon
+								path={mdiAlert}
+								size="sm"
+								left
+								mt={-2}
+							/>
+							Live queries are experimental
+						</Text>
+						<Text color="gray.6">
+							Due to existing limitations of live queries a local WebSocket connection is used. This may not be available in all environments.
+						</Text>
+					</Stack>
+				)
+			});
+		}
 
 		return new Promise<void>((resolve, reject) => {
+			options.onOpen?.();
+			
 			const newHandle = createLocalWebSocket({
 				connection,
 				onConnect() {
@@ -121,20 +134,19 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 	});
 
 	const killQuery = useStable(async (id: string) => {
-		if (!tokenMap[id]) {
+		const tokenId = Object.keys(tokenMap).find((key) => tokenMap[key] === id);
+
+		if (!tokenId) {
 			throw new Error('Query not active');
 		}
 
 		setTokenMap((draft) => {
-			for (const key in draft) {
-				if (draft[key] === id) {
-					delete draft[key];
-					break;
-				}
-			}
+			delete draft[tokenId];
 		});
 
-		await handle.query(`KILL ${tokenMap[id]}`);
+		await handle.query(`KILL ${tokenId}`);
+		
+		
 	});
 
 	const startQuery = useStable(async (id: string) => {
@@ -154,6 +166,10 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 			draft[result] = id;
 		});
 	});
+
+	useEffect(() => {
+		closeConnection();
+	}, [session.id]);
 
 	return {
 		openConnection,

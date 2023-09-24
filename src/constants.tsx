@@ -140,5 +140,5 @@ export const LIVE_QUERY_COLORS = [
 	"orange",
 	"surreal",
 	"red",
-	"purple",
+	"yellow",
 ];

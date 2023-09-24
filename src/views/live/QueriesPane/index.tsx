@@ -1,5 +1,6 @@
-import { ActionIcon, Badge, Box, Group, Paper, ScrollArea, Stack, Text, useMantineTheme } from "@mantine/core";
-import { mdiBullhornVariant, mdiCircleDouble, mdiPencil, mdiPlay, mdiPlus, mdiStop } from "@mdi/js";
+import { ActionIcon, Badge, Box, Center, Group, Paper, ScrollArea, Stack, Text, useMantineTheme } from "@mantine/core";
+import { mdiBullhornVariant, mdiCircleDouble, mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
+import { MouseEvent } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
@@ -12,6 +13,7 @@ export interface QueriesPaneProps {
 	toggleQuery: (id: string) => void;
 	onAddQuery: () => void;
 	onEditQuery: (id: string) => void;
+	onRemoveQuery: (id: string) => void;
 }
 
 export function QueriesPane(props: QueriesPaneProps) {
@@ -23,7 +25,18 @@ export function QueriesPane(props: QueriesPaneProps) {
 			borderWidth: 2,
 			borderStyle: 'solid',
 			borderColor: active ? theme.fn.primaryColor() : 'transparent',
+			cursor: 'pointer'
 		};
+	});
+
+	const handleEdit = useStable((e: MouseEvent, id: string) => {
+		e.stopPropagation();
+		props.onEditQuery(id);
+	});
+
+	const handleRemove = useStable((e: MouseEvent, id: string) => {
+		e.stopPropagation();
+		props.onRemoveQuery(id);
 	});
 
 	return (
@@ -45,6 +58,13 @@ export function QueriesPane(props: QueriesPaneProps) {
 					inset: 12,
 					top: 4,
 				}}
+				styles={{
+					viewport: {
+						'> div': {
+							display: 'unset !important'
+						}
+					}
+				}}
 			>
 				<Stack spacing="xs">
 					{session.liveQueries.map((query, i) => {
@@ -57,16 +77,15 @@ export function QueriesPane(props: QueriesPaneProps) {
 								p="sm"
 								c="white"
 								style={getQueryStyle(isActive)}
+								onClick={() => props.toggleQuery(query.id)}
+								title={isActive ? 'Stop query' : 'Start query'}
 							>
 								<Group spacing="sm" noWrap>
 									<Icon
 										path={mdiCircleDouble}
 										color={LIVE_QUERY_COLORS[i % LIVE_QUERY_COLORS.length]}
 									/>
-									<Stack
-										spacing={0}
-										miw={0}
-									>
+									<Stack spacing={0} miw={0}>
 										<Group spacing={8}>
 											<Text color="gray" size="xs">
 												Query {i + 1}
@@ -89,15 +108,14 @@ export function QueriesPane(props: QueriesPaneProps) {
 									<Spacer />
 									<ActionIcon
 										title="Edit query"
-										onClick={() => props.onEditQuery(query.id)}
+										onClick={(e) => handleEdit(e, query.id)}
 									>
 										<Icon path={mdiPencil} />
 									</ActionIcon>
 									<ActionIcon
-										title={isActive ? 'Stop query' : 'Start query'}
-										onClick={() => props.toggleQuery(query.id)}
+										onClick={(e) => handleRemove(e, query.id)}
 									>
-										<Icon path={isActive ? mdiStop : mdiPlay} />
+										<Icon path={mdiDelete} />
 									</ActionIcon>
 								</Group>
 							</Paper>	
@@ -105,6 +123,12 @@ export function QueriesPane(props: QueriesPaneProps) {
 					})}
 				</Stack>
 			</ScrollArea>
+
+			{session.liveQueries.length === 0 && (
+				<Center h="100%" c="light.5">
+					No live queries defined yet
+				</Center>	
+			)}
 		</Panel>
 	);
 }

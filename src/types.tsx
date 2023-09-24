@@ -191,6 +191,8 @@ export interface TablePinAction {
 }
 
 export interface LiveMessage {
+	id: string;
+	timestamp: number;
 	query: LiveQuery;
 	action: string;
 	result: any;

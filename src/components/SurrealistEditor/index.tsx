@@ -13,6 +13,7 @@ export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onCh
 	value?: string;
 	language?: string;
 	height?: number;
+	autoSize?: boolean;
 	onChange?: (value: string) => void;
 	onMount?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
 }
@@ -55,6 +56,30 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 		grammars.set('javascript', 'source.js');
 
 		wireTmGrammars(monaco, registry, grammars);
+
+		if (props.autoSize) {
+			let ignoreEvent = false;
+
+			const updateHeight = () => {
+				const contentHeight = Math.min(1000, editor.getContentHeight());
+
+				elementRef.current!.style.height = `${contentHeight}px`;
+
+				try {
+					ignoreEvent = true;
+
+					editor.layout({
+						width: elementRef.current!.clientWidth,
+						height: contentHeight
+					});
+				} finally {
+					ignoreEvent = false;
+				}
+			};
+			
+			editor.onDidContentSizeChange(updateHeight);
+			updateHeight();
+		}
 
 		return () => {
 			editor.dispose();
