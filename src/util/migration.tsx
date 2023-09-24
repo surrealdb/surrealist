@@ -4,6 +4,7 @@ import { Open, SurrealistConfig } from "~/types";
  * Perform migrations on the given config object.
  */
 export function migrateConfig(config: Open<SurrealistConfig>) {
+
 	// 1.6.0 - Migrate auth and view behavior
 	for (const tab of config.tabs) {
 		if (!tab.activeView) {
@@ -44,5 +45,14 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 
 	if (!config.defaultDesignerNodeMode) {
 		config.defaultDesignerNodeMode = 'fields';
+	}
+
+	// 1.10.0 - Adopt query tabs
+	for (const tab of config.tabs as any[]) {
+		if (!tab.queries?.length) {
+			tab.queries = [{ id: 1, text: tab.query }];
+			tab.activeQueryId = 1;
+			tab.lastQueryId = 1;
+		}
 	}
 }

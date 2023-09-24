@@ -13,15 +13,26 @@ import {
 	TablePinAction,
 	DesignerLayoutMode,
 	DesignerNodeMode,
+	SessionQuery,
 } from "./types";
+
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { ColorScheme } from "@mantine/core";
-
 import { ThemeOption } from "./util/theme";
-import { createBaseConfig } from "./util/config";
+import { createBaseConfig } from "./util/defaults";
 import { migrateConfig } from "./util/migration";
 import { newId } from "./util/helpers";
+
+function getSession(state: StoreState) {
+	const session = state.config.tabs.find((tab) => tab.id === state.config.activeTab);
+
+	if (!session) {
+		throw new Error("Session unavailable");
+	}
+
+	return session;
+}
 
 const mainSlice = createSlice({
 	name: "main",
@@ -100,8 +111,8 @@ const mainSlice = createSlice({
 			state.config.environments = action.payload;
 		},
 
-		addSession(state, action: PayloadAction<Session>) {
-			state.config.tabs.push(action.payload);
+		addSession(state, { payload }: PayloadAction<Session>) {
+			state.config.tabs.push(payload);
 		},
 
 		removeSession(state, action: PayloadAction<string>) {
@@ -116,13 +127,13 @@ const mainSlice = createSlice({
 			}
 		},
 
-		updateSession(state, action: PayloadAction<Partial<Session>>) {
-			const tabIndex = state.config.tabs.findIndex((tab) => tab.id === action.payload.id);
+		updateSession(state, { payload }: PayloadAction<Partial<Session>>) {
+			const sessionIndex = state.config.tabs.findIndex((tab) => tab.id === payload.id);
 
-			if (tabIndex >= 0) {
-				const tab = state.config.tabs[tabIndex];
+			if (sessionIndex >= 0) {
+				const session = state.config.tabs[sessionIndex];
 
-				state.config.tabs[tabIndex] = { ...tab, ...action.payload };
+				state.config.tabs[sessionIndex] = { ...session, ...payload };
 			}
 		},
 
@@ -133,6 +144,55 @@ const mainSlice = createSlice({
 		setActiveSession(state, action: PayloadAction<string>) {
 			state.config.activeTab = action.payload;
 			state.databaseSchema = [];
+		},
+
+		addQueryTab(state) {
+			const session = getSession(state);
+			const newId = session.lastQueryId + 1;
+
+			session.queries.push({ id: newId, text: "" });
+			session.activeQueryId = newId;
+			session.lastQueryId = newId;
+		},
+
+		removeQueryTab(state, action: PayloadAction<number>) {
+			const session = getSession(state);
+			const index = session.queries.findIndex((query) => query.id === action.payload);
+
+			if (index < 1) {
+				return;
+			}
+
+			if (session.activeQueryId === action.payload) {
+				session.activeQueryId = 0;
+			}
+
+			session.queries.splice(index, 1);
+
+			if (session.queries.length <= 1) {
+				session.activeQueryId = 1;
+				session.lastQueryId = 1;
+			}
+		},
+
+		updateQueryTab(state, action: PayloadAction<Partial<SessionQuery>>) {
+			const session = getSession(state);
+			const index = session.queries.findIndex((query) => query.id === action.payload.id);
+
+			if (index < 0) {
+				return;
+			}
+
+			session.queries[index] = {
+				...session.queries[index],
+				...action.payload
+			};
+		},
+
+		setActiveQueryTab(state, action: PayloadAction<number>) {
+			const session = getSession(state);
+
+			session.activeQueryId = action.payload;
 		},
 
 		setWindowPinned(state, { payload }: PayloadAction<boolean>) {

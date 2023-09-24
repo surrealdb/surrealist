@@ -1,4 +1,4 @@
-import { SurrealistConfig } from "~/types";
+import { ConnectionOptions, Session, SurrealistConfig } from "~/types";
 
 export function createBaseConfig(): SurrealistConfig {
 	return {
@@ -30,5 +30,35 @@ export function createBaseConfig(): SurrealistConfig {
 		tabSearch: false,
 		defaultDesignerNodeMode: 'fields',
 		defaultDesignerLayoutMode: 'diagram'
+	};
+}
+
+export function createBaseConnection(): ConnectionOptions {
+	return {
+		endpoint: "",
+		namespace: "",
+		database: "",
+		username: "",
+		password: "",
+		authMode: "root",
+		scope: "",
+		scopeFields: []
+	};
+}
+
+export function createBaseSession(query?: string): Session {
+	return {
+		id: "",
+		name: "",
+		environment: "",
+		queries: [{ id: 1, text: query || '' }],
+		activeQueryId: 1,
+		lastQueryId: 1,
+		variables: "{}",
+		lastResponse: [],
+		activeView: "query",
+		connection: createBaseConnection(),
+		pinned: false,
+		pinnedTables: []
 	};
 }

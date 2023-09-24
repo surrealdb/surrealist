@@ -14,6 +14,7 @@ import { useEnvironmentList, useTabsList } from "~/hooks/environment";
 import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
+import { createBaseSession } from "~/util/defaults";
 
 export function TabCreator() {
 	const isLight = useIsLight();
@@ -44,16 +45,11 @@ export function TabCreator() {
 
 		store.dispatch(
 			actions.addSession({
+				...createBaseSession(creation?.query),
 				id: tabId,
 				name: tabName,
 				environment: finalEnv,
-				query: creation?.query || "",
-				variables: "{}",
-				lastResponse: [],
-				activeView: "query",
-				connection: infoDetails,
-				pinned: false,
-				pinnedTables: []
+				connection: mergedDetails
 			})
 		);
 
