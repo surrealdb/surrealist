@@ -2,6 +2,7 @@
 
 ## 1.10.1
 - Added auto closing bracket support in SurrealQL editors
+- Fixed desktop app not being able to connect to http endpoints
 
 ## 1.10.0 - Major feature update
 - Improved feature parity between the desktop and web app
