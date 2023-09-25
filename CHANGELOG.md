@@ -1,6 +1,9 @@
 # Change Log
 
-## 1.1.0 - Major feature update
+## 1.10.1
+- Added auto closing bracket support in SurrealQL editors
+
+## 1.10.0 - Major feature update
 - Improved feature parity between the desktop and web app
 	- Designer view is now available in the web app
 	- Authentication view is now available in the web app

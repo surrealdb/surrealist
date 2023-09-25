@@ -88,6 +88,38 @@ export async function initializeMonaco() {
 		validate: false
 	});
 
+	monaco.languages.setLanguageConfiguration("surrealql", {
+		comments: {
+			lineComment: "--",
+			blockComment: ["/*", "*/"]
+		},
+		brackets: [
+			["{", "}"],
+			["[", "]"],
+			["(", ")"],
+			["⟨", "⟩"],
+			["`", "`"]
+		],
+		autoClosingPairs: [
+			{ open: "{", close: "}", notIn: ["string", "comment"] },
+			{ open: "[", close: "]", notIn: ["string", "comment"] },
+			{ open: "(", close: ")", notIn: ["string", "comment"] },
+			{ open: "\"", close: "\"", notIn: ["string"] },
+			{ open: "'", close: "'", notIn: ["string"] },
+			{ open: "`", close: "`", notIn: ["string"] },
+			{ open: "⟨", close: "⟩", notIn: ["string", "comment"] }
+		],
+		surroundingPairs: [
+			{ open: "{", close: "}" },
+			{ open: "[", close: "]" },
+			{ open: "(", close: ")" },
+			{ open: "\"", close: "\"" },
+			{ open: "'", close: "'" },
+			{ open: "`", close: "`" },
+			{ open: "⟨", close: "⟩" }
+		]
+	});
+
 	// table intellisense
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: [" "],
