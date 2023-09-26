@@ -1,10 +1,11 @@
 import * as monaco from 'monaco-editor';
+import classes from './style.module.scss';
 import { CSSProperties, ElementRef, HTMLAttributes, useEffect, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { DARK_THEME, LIGHT_THEME, BASE_EDITOR_CONFIG, getGrammar } from "~/util/editor";
 import { Registry } from "monaco-textmate";
 import { wireTmGrammars } from "monaco-editor-textmate";
-import { Box } from "@mantine/core";
+import { Box, Paper, clsx } from "@mantine/core";
 
 export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onChange'> {
 	style?: CSSProperties;
@@ -14,6 +15,7 @@ export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onCh
 	language?: string;
 	height?: number;
 	autoSize?: boolean;
+	asInput?: boolean;
 	onChange?: (value: string) => void;
 	onMount?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
 }
@@ -59,8 +61,6 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 		wireTmGrammars(monaco, registry, grammars);
 
 		if (props.autoSize) {
-			let ignoreEvent = false;
-
 			const updateHeight = () => {
 				const contentHeight = Math.min(1000, editor.getContentHeight());
 				const height = `${contentHeight}px`;
@@ -68,16 +68,10 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 				elementRef.current!.style.height = height;
 				containerRef.current!.style.height = height;
 
-				try {
-					ignoreEvent = true;
-
-					editor.layout({
-						width: elementRef.current!.clientWidth,
-						height: contentHeight
-					});
-				} finally {
-					ignoreEvent = false;
-				}
+				editor.layout({
+					width: elementRef.current!.clientWidth,
+					height: contentHeight
+				});
 			};
 			
 			editor.onDidContentSizeChange(updateHeight);
@@ -98,12 +92,18 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 	}, [props.value]);
 
 	return (
-		<div
+		<Paper
 			ref={containerRef}
+			withBorder={props.asInput}
+			bg={props.asInput ? (isLight ? 'white' : 'dark.6') : undefined}
+			className={clsx(
+				props.asInput && classes.inputEditor,
+			)}
 			style={{
 				position: props.autoSize ? 'relative' : undefined,
 				fontFamily: "JetBrains Mono",
 				height: props.noExpand ? props.height : "100%",
+				padding: props.asInput ? 8 : 0,
 				...props.style,
 			}}
 		>
@@ -113,6 +113,6 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 				pos={props.autoSize ? 'absolute' : undefined}
 				inset={0}
 			/>
-		</div>
+		</Paper>
 	);
 }

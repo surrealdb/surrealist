@@ -1,0 +1,13 @@
+.input-editor {
+	transition: border-color .15s;
+
+	:global(.monaco-editor),
+	:global(.margin),
+	:global(.monaco-editor-background) {
+		background-color: unset !important;
+	}
+
+	&:focus-within {
+		border-color: var(--mantine-color-surreal-5);
+	}
+}

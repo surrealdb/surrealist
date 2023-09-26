@@ -11,6 +11,7 @@ import { ActionIcon, Badge, Button, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { useInputState } from "@mantine/hooks";
 import { validate_live_query } from "~/generated/surrealist-embed";
+import { PlaceholderContentWidget } from "~/components/SurrealistEditor/widgets/placeholder";
 
 export interface EditorPaneProps {
 	query: { index: number, name: string, text: string } | undefined;
@@ -41,6 +42,8 @@ export function EditorPane(props: EditorPaneProps) {
 		updateQueryValidation(editor);
 
 		editorRef.current = editor;
+
+		new PlaceholderContentWidget("LIVE SELECT * FROM ...", editor);
 	});
 
 	useEffect(() => {
@@ -83,6 +86,7 @@ export function EditorPane(props: EditorPaneProps) {
 				autoFocus
 			/>
 			<SurrealistEditor
+				asInput
 				noExpand
 				language="surrealql"
 				onMount={configure}
@@ -90,7 +94,7 @@ export function EditorPane(props: EditorPaneProps) {
 				onChange={scheduleSetQuery}
 				style={{
 					position: "absolute",
-					insetInline: 24,
+					insetInline: 14,
 					bottom: 58,
 					top: 72
 				}}
