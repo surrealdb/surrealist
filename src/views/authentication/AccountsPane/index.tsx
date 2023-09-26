@@ -30,6 +30,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getActiveSurreal } from "~/util/connection";
 import { showError } from "~/util/helpers";
+import { isPermissionError } from "~/util/surreal";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -59,6 +60,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 	const [users, setUsers] = useState<UserInfo[]>([]);
 	const [isEditing, setIsEditing] = useState(false);
+	const [isDenied, setIsDenied] = useState(false);
 	const [currentUser, setCurrentUser] = useState<UserInfo | null>(null);
 	const [editingName, setEditingName] = useInputState("");
 	const [editingPassword, setEditingPassword] = useInputState("");
@@ -70,16 +72,24 @@ export function AccountsPane(props: AccountsPaneProps) {
 		const result = response[0].result as { users: Record<string, string> };
 
 		if (!result) {
-			return [];
+			setUsers([]);
+			return;
 		}
 
-		const userInfo = await map(Object.values(result.users), async (definition) => {
+		if (isPermissionError(result)) {
+			setIsDenied(true);
+			setUsers([]);
+			return;
+		}
+
+		const userInfo: any = await map(Object.values(result.users), async (definition) => {
 			const result = extract_user_definition(definition);
 
 			return result as UserInfo;
 		});
 
 		setUsers(userInfo);
+		setIsDenied(false);
 	});
 
 	useEffect(() => {
@@ -171,7 +181,12 @@ export function AccountsPane(props: AccountsPaneProps) {
 			}>
 			{users.length === 0 && (
 				<Center h="100%" c="light.5">
-					{isOnline ? `No ${props.title.toLocaleLowerCase()} found` : "Not connected"}
+					{isOnline
+						? isDenied
+							? "No access to this information"
+							: `No ${props.title.toLocaleLowerCase()} found`
+						: "Not connected"
+					}
 				</Center>
 			)}
 
