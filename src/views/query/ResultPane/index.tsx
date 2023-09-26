@@ -124,7 +124,9 @@ export function ResultPane() {
 				}}>
 				{response ? (
 					<>
-						{response.status == "ERR" ? (
+						{resultListing == "combined" ? (
+							<CombinedJsonPreview results={combinedResults} fontSize={14 * fontZoomLevel} />
+						) : response.status == "ERR" ? (
 							<Text 
 								color="red" 
 								style={{
@@ -138,8 +140,6 @@ export function ResultPane() {
 							<Text color="light.4">No results found for query</Text>
 						) : resultListing == "table" ? (
 							<DataTable data={response.result} />
-						) : resultListing == "combined" ? (
-							<CombinedJsonPreview results={combinedResults} fontSize={14 * fontZoomLevel} />
 						) : (
 							<SingleJsonPreview result={response.result} fontSize={14 * fontZoomLevel} />
 						)}
