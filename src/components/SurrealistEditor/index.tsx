@@ -95,7 +95,6 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 		<Paper
 			ref={containerRef}
 			withBorder={props.asInput}
-			bg={props.asInput ? (isLight ? 'white' : 'dark.6') : undefined}
 			className={clsx(
 				props.asInput && classes.inputEditor,
 			)}
