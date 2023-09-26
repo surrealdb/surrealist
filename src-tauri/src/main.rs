@@ -4,7 +4,7 @@
 )]
 
 use database::DatabaseState;
-use tauri::{Manager, RunEvent, WindowUrl, utils::config::AppUrl};
+use tauri::{utils::config::AppUrl, Manager, RunEvent, WindowUrl};
 
 mod config;
 mod database;
@@ -12,7 +12,7 @@ mod database;
 fn main() {
     let mut context = tauri::generate_context!();
     let port = portpicker::pick_unused_port().expect("failed to find unused port");
-    
+
     let url = format!("http://localhost:{}", port).parse().unwrap();
     let window_url = WindowUrl::External(url);
 
