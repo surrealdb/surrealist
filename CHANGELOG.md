@@ -5,6 +5,7 @@
 - Improved live query editor UI
 - Fixed desktop app not being able to connect to http endpoints
 - Fixed combined query result mode incorrectly handling empty and error results
+- Fixed authentication view not updating on session change
 
 ## 1.10.0 - Major feature update
 - Improved feature parity between the desktop and web app

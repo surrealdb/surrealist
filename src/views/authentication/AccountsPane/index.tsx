@@ -25,6 +25,7 @@ import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
 import { extract_user_definition } from "~/generated/surrealist-embed";
 import { useIsConnected } from "~/hooks/connection";
+import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getActiveSurreal } from "~/util/connection";
@@ -54,6 +55,7 @@ export interface AccountsPaneProps {
 export function AccountsPane(props: AccountsPaneProps) {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
+	const session = useActiveSession();
 
 	const [users, setUsers] = useState<UserInfo[]>([]);
 	const [isEditing, setIsEditing] = useState(false);
@@ -83,8 +85,10 @@ export function AccountsPane(props: AccountsPaneProps) {
 	useEffect(() => {
 		if (isOnline) {
 			fetchLogins();
+		} else {
+			setUsers([]);
 		}
-	}, [isOnline]);
+	}, [isOnline, session.id]);
 
 	const closeSaving = useStable(() => {
 		setIsEditing(false);
