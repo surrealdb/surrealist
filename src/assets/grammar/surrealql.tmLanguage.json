@@ -19,13 +19,13 @@
 			"include": "#function"
 		},
 		{
+			"include": "#keywords"
+		},
+		{
 			"include": "#operators"
 		},
 		{
 			"include": "#value"
-		},
-		{
-			"include": "#keywords"
 		}
 	],
 	"repository": {
@@ -129,8 +129,20 @@
 					"match": "\\b(CANCEL|cancel)(?: +(TRANSACTION|transaction))?\\b"
 				},
 				{
+					"name": "keyword.control.changefeed.surrealql",
+					"match": "\\b(CHANGEFEED|changefeed)\\b"
+				},
+				{
+					"name": "keyword.control.changes.surrealql",
+					"match": "\\b(CHANGES|changes)\\b"
+				},
+				{
 					"name": "keyword.control.columns.surrealql",
 					"match": "\\b(COLUMNS|columns)\\b"
+				},
+				{
+					"name": "keyword.control.comment.surrealql",
+					"match": "\\b(COMMENT|comment)\\b"
 				},
 				{
 					"name": "keyword.control.commit.surrealql",
@@ -269,6 +281,10 @@
 					"match": "\\b(IF|if)\\b"
 				},
 				{
+					"name": "keyword.control.in.surrealql",
+					"match": "\\b(IN|in)\\b"
+				},
+				{
 					"name": "keyword.control.index.surrealql",
 					"match": "\\b(INDEX|index)\\b"
 				},
@@ -321,6 +337,10 @@
 					"match": "\\b(NS|ns)\\b"
 				},
 				{
+					"name": "keyword.control.omit.surrealql",
+					"match": "\\b(OMIT|omit)\\b"
+				},
+				{
 					"name": "keyword.control.on-duplicate-key-update.surrealql",
 					"match": "\\b(ON +DUPLICATE +KEY +UPDATE|on +duplicate +key +update)\\b"
 				},
@@ -329,8 +349,16 @@
 					"match": "\\b(ON|on)\\b"
 				},
 				{
+					"name": "keyword.control.only.surrealql",
+					"match": "\\b(ONLY|only)\\b"
+				},
+				{
 					"name": "keyword.control.order.surrealql",
 					"match": "\\b(ORDER|order)(?: +(BY|by))?\\b"
+				},
+				{
+					"name": "keyword.control.param.surrealql",
+					"match": "\\b(PARAM|param)\\b"
 				},
 				{
 					"name": "keyword.control.passhash.surrealql",
@@ -421,12 +449,20 @@
 					"match": "\\b(SET|set)\\b"
 				},
 				{
+					"name": "keyword.control.show.surrealql",
+					"match": "\\b(SHOW|show)\\b"
+				},
+				{
 					"name": "keyword.control.signin.surrealql",
 					"match": "\\b(SIGNIN|signin)\\b"
 				},
 				{
 					"name": "keyword.control.signup.surrealql",
 					"match": "\\b(SIGNUP|signup)\\b"
+				},
+				{
+					"name": "keyword.control.since.surrealql",
+					"match": "\\b(SINCE|since)\\b"
 				},
 				{
 					"name": "keyword.control.sleep.surrealql",
@@ -471,6 +507,10 @@
 				{
 					"name": "keyword.control.unique.surrealql",
 					"match": "\\b(UNIQUE|unique)\\b"
+				},
+				{
+					"name": "keyword.control.unset.surrealql",
+					"match": "\\b(UNSET|unset)\\b"
 				},
 				{
 					"name": "keyword.control.update.surrealql",
@@ -793,7 +833,7 @@
 		"array-content": {
 			"patterns": [
 				{
-					"include": "#value"
+					"include": "$self"
 				},
 				{
 					"match": ",",
@@ -814,70 +854,114 @@
 		"block-content": {
 			"patterns": [
 				{
-					"include": "$self"
+					"include": "#string"
 				},
 				{
 					"include": "#object-key"
+				},
+				{
+					"include": "$self"
 				}
 			]
 		},
 		"object-key": {
 			"patterns": [
 				{
-					"match": "\"[^(?:\\\")]+\":(?!:)",
-					"name": "meta.object-literal.key"
+					"match": "(?:^|{|,)[ \t]*(\"[^(?:\\\")]+\")(?=:(?!:))",
+					"captures": {
+						"1": {
+							"name": "string.quoted.double"
+						}
+					}
 				},
 				{
-					"match": "'[^(?:\\')]+':(?!:)",
-					"name": "meta.object-literal.key"
+					"match": "(?:^|{|,)[ \t]*('[^(?:\\')]+')(?=:(?!:))",
+					"captures": {
+						"1": {
+							"name": "string.quoted.single"
+						}
+					}
 				},
 				{
-					"match": "[a-zA-Z_0-9]+:(?!:)",
-					"name": "meta.object-literal.key"
+					"match": "(^|\\{|\\,)[ \t]*([a-zA-Z_0-9]+)(?=:(?!:))",
+					"captures": {
+						"2": {
+							"name": "meta.object-literal.key"
+						}
+					}
 				}
 			]
 		},
 		"record": {
 			"patterns": [
 				{
-					"match": "([a-zA-Z0-9_]+):⟨([^⟩]+)⟩",
+					"match": "(\\b\\w+\\b):⟨([^⟩]+)⟩",
 					"captures": {
 						"1": {
 							"name": "entity.name.class"
 						},
 						"2": {
-							"name": "entity.other.attribute-name"
+							"name": "entity.name.class"
 						}
-					},
-					"name": "entity.name"
+					}
 				},
 				{
-					"match": "([a-zA-Z0-9_]+):`([^`]+)`",
+					"match": "(\\b\\w+\\b):`([^`]+)`",
 					"captures": {
 						"1": {
 							"name": "entity.name.class"
 						},
 						"2": {
-							"name": "entity.other.attribute-name"
+							"name": "entity.name.class"
 						}
-					},
-					"name": "entity.name"
+					}
 				},
 				{
-					"match": "([a-zA-Z0-9_]+):([a-zA-Z0-9_]+)",
+					"begin": "(\\b\\w+\\b):(?=(\\b[\\w:]+\\b)\\s*\\()",
+					"end": "(?<=\\))",
+					"beginCaptures": {
+						"1": {
+							"name": "entity.name.class"
+						},
+						"2": {
+							"name": "support.function"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#comment"
+						},
+						{
+							"begin": "\\(",
+							"end": "\\)",
+							"name": "meta.function.arguments",
+							"patterns": [
+								{
+									"include": "#value"
+								}
+							]
+						}
+					]
+				},
+				{
+					"match": "(\\b\\w+\\b):(\\b\\w+\\b)",
 					"captures": {
 						"1": {
 							"name": "entity.name.class"
 						},
 						"2": {
-							"name": "entity.other.attribute-name"
+							"name": "entity.name.class"
 						}
-					},
-					"name": "entity.name"
+					}
 				},
 				{
-					"begin": "([a-zA-Z0-9_]+):\\[",
+					"begin": "(\\b\\w+\\b):\\[",
 					"end": "\\]",
+					"captures": {
+						"1": {
+							"name": "entity.name.class"
+						}
+					},
 					"patterns": [
 						{
 							"include": "#array-content"
@@ -885,8 +969,13 @@
 					]
 				},
 				{
-					"begin": "([a-zA-Z0-9_]+):\\{",
+					"begin": "(\\b\\w+\\b):(?=\\{)",
 					"end": "\\}",
+					"captures": {
+						"1": {
+							"name": "entity.name.class"
+						}
+					},
 					"patterns": [
 						{
 							"include": "#block-content"
