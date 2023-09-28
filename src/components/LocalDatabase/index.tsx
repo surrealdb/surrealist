@@ -60,26 +60,31 @@ export function LocalDatabase() {
 		<Box
 			pos="relative"
 			h={36}
-			w={54}
+			w={56}
 			mx={-6}
 			mt={-14}
 		>
 			<Paper
 				p={6}
 				pos="absolute"
+				radius={12}
 				left={0}
 				right={0}
 				top={0}
 				withBorder
 				onMouseEnter={() => setIsOpen(true)}
 				onMouseLeave={() => setIsOpen(false)}
-				style={{ borderColor: 'transparent' }}
+				style={{
+					transition: 'border-color .2s',
+					borderColor: isOpen ? undefined : 'transparent',
+					zIndex: 1
+				}}
 			>
 				<Button
 					px="xs"
 					color={isServing ? "red" : isLight ? "light.0" : "dark.4"}
 					title={isServing ? "Stop local database" : "Start local database"}
-					style={{ opacity: isPending ? 0.5 : 1, zIndex: 4 }}
+					style={{ opacity: isPending ? 0.5 : 1 }}
 					disabled={isPending}
 					onClick={handleToggle}
 				>
