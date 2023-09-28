@@ -1,7 +1,7 @@
-import { Button, Loader } from "@mantine/core";
+import { Box, Button, Collapse, Loader, Paper } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
-import { mdiPlay, mdiStop } from "@mdi/js";
-import { useEffect } from "react";
+import { mdiConsole, mdiPlay, mdiStop } from "@mdi/js";
+import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -13,6 +13,9 @@ import { closeConnection, openConnection } from "~/database";
 
 export function LocalDatabase() {
 	const isLight = useIsLight();
+	const enableConsole = useStoreValue((state) => state.config.enableConsole);
+	const [isOpen, setIsOpen] = useState(false);
+
 	const isServing = useStoreValue((state) => state.isServing);
 	const isPending = useStoreValue((state) => state.servePending);
 	const localDriver = useStoreValue((state) => state.config.localDriver);
@@ -41,6 +44,10 @@ export function LocalDatabase() {
 		}
 	});
 
+	const toggleConsole = useStable(() => {
+		store.dispatch(actions.setConsoleEnabled(!enableConsole));
+	});
+
 	useEffect(() => {
 		if (isServing) {
 			openConnection();
@@ -50,20 +57,51 @@ export function LocalDatabase() {
 	useHotkeys([["ctrl+s", handleToggle]], []);
 
 	return (
-		<>
-			<Button
-				px="xs"
-				color={isServing ? "red" : isLight ? "light.0" : "dark.4"}
-				title={isServing ? "Stop local database" : "Start local database"}
-				style={{ opacity: isPending ? 0.5 : 1 }}
-				disabled={isPending}
-				onClick={handleToggle}>
-				{isPending ? (
-					<Loader size="xs" color="blue" mx={1} />
-				) : (
-					<Icon path={isServing ? mdiStop : mdiPlay} color={isServing ? "white" : isLight ? "light.8" : "white"} />
-				)}
-			</Button>
-		</>
+		<Box
+			pos="relative"
+			h={36}
+			w={54}
+			mx={-6}
+			mt={-14}
+		>
+			<Paper
+				p={6}
+				pos="absolute"
+				left={0}
+				right={0}
+				top={0}
+				withBorder
+				onMouseEnter={() => setIsOpen(true)}
+				onMouseLeave={() => setIsOpen(false)}
+				style={{ borderColor: 'transparent' }}
+			>
+				<Button
+					px="xs"
+					color={isServing ? "red" : isLight ? "light.0" : "dark.4"}
+					title={isServing ? "Stop local database" : "Start local database"}
+					style={{ opacity: isPending ? 0.5 : 1, zIndex: 4 }}
+					disabled={isPending}
+					onClick={handleToggle}
+				>
+					{isPending ? (
+						<Loader size="xs" color="blue" mx={1} />
+					) : (
+						<Icon path={isServing ? mdiStop : mdiPlay} color={isServing ? "white" : isLight ? "light.8" : "white"} />
+					)}
+				</Button>
+
+				<Collapse in={isOpen}>
+					<Button
+						mt="xs"
+						px="xs"
+						color={isLight ? "light.0" : "dark.4"}
+						title="Toggle console"
+						onClick={toggleConsole}
+					>
+						<Icon path={mdiConsole} color={isLight ? "light.8" : "white"} />
+					</Button>
+				</Collapse>
+			</Paper>
+		</Box>
 	);
 }

@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 import { Group, Paper, clsx, ActionIcon, Button, useMantineTheme, Text } from "@mantine/core";
-import { mdiConsole, mdiClose } from "@mdi/js";
-import { adapter } from "~/adapter";
+import { mdiClose } from "@mdi/js";
 import { closeConnection, openConnection } from "~/database";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -25,7 +24,6 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const isConnecting = useStoreValue((state) => state.isConnecting);
 	const isQuerying = useStoreValue((state) => state.isQueryActive);
 	const autoConnect = useStoreValue((state) => state.config.autoConnect);
-	const enableConsole = useStoreValue((state) => state.config.enableConsole);
 
 	const sessionInfo = useSession();
 	const envInfo = useEnvironment();
@@ -39,11 +37,6 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const handleCloseConnection = useStable((e: MouseEvent) => {
 		e.stopPropagation();
 		closeConnection();
-	});
-
-	const revealConsole = useStable((e: MouseEvent) => {
-		e.stopPropagation();
-		store.dispatch(actions.setConsoleEnabled(!enableConsole));
 	});
 
 	const openTabEditor = useStable(() => {
@@ -97,11 +90,6 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 					<Text color="red" mr="xs">
 						Connection details incomplete
 					</Text>
-				)}
-				{adapter.isServeSupported && (
-					<ActionIcon onClick={revealConsole} title="Toggle console">
-						<Icon color="light.4" path={mdiConsole} />
-					</ActionIcon>
 				)}
 				{isConnected && (
 					<ActionIcon onClick={handleCloseConnection} title="Disconnect">
