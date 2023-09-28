@@ -78,6 +78,7 @@ export function QueryInput(props: QueryInputProps) {
 					language="surrealql"
 					value={editorText}
 					onChange={setEditorText}
+					noExpand
 					height={250}
 					options={{
 						wrappingStrategy: "advanced",
