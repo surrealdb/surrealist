@@ -1,3 +1,5 @@
 # Roadmap
 
-- Fix editor height ([See](https://media.discordapp.net/attachments/970336701153177620/1155867669896122388/image.png))
+- Add hotkey customization
+- Refactor views and split store
+- Embedded server mode

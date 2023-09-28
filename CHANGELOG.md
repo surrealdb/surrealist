@@ -4,6 +4,7 @@
 - Added auto closing bracket support in SurrealQL editors
 - Updated surrealql grammar to the latest version
 - Improved live query editor UI
+- Improve console toggle button layout
 - Fixed desktop app not being able to connect to http endpoints
 - Fixed combined query result mode incorrectly handling empty and error results
 - Fixed authentication view not updating on session change
