@@ -40,6 +40,8 @@ export function QueryPane() {
 		updateQueryValidation(editor);
 
 		controls.current = editor;
+
+		editor.focus();
 	});
 
 	const handleUpload = useStable(async () => {
@@ -63,6 +65,8 @@ export function QueryPane() {
 			const tabId = Number.parseInt(value);
 
 			store.dispatch(actions.setActiveQueryTab(tabId));
+
+			controls.current?.focus?.();
 		}
 	});
 

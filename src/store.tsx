@@ -164,7 +164,7 @@ const mainSlice = createSlice({
 			}
 
 			if (session.activeQueryId === action.payload) {
-				session.activeQueryId = 1;
+				session.activeQueryId = session.queries[index - 1]?.id || 1;
 			}
 
 			session.queries.splice(index, 1);
