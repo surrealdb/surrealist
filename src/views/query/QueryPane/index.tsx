@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { editor } from "monaco-editor";
-import { mdiClose, mdiDatabase, mdiPlus, mdiUpload } from "@mdi/js";
+import { mdiClose, mdiDatabase, mdiPlusBoxMultiple, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
 import { actions, store, useStoreValue } from "~/store";
@@ -83,7 +83,7 @@ export function QueryPane() {
 			rightSection={
 				<Group>
 					<ActionIcon onClick={appendTab} title="New query tab">
-						<Icon color="light.4" path={mdiPlus} />
+						<Icon color="light.4" path={mdiPlusBoxMultiple} />
 					</ActionIcon>
 
 					<ActionIcon onClick={handleUpload} title="Load from file">
@@ -101,9 +101,7 @@ export function QueryPane() {
 					<ScrollArea
 						pb="xs"
 					>
-						<Tabs.List
-							style={{ flexWrap: "nowrap" }}
-						>
+						<Tabs.List style={{ flexWrap: "nowrap" }}>
 							{queries.map(({ id, name }) => {
 								return (
 									<Tabs.Tab
