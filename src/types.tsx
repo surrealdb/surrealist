@@ -72,6 +72,7 @@ export interface SurrealistSession {
 export interface SessionQuery {
 	id: number;
 	text: string;
+	name?: string;
 }
 
 export interface LiveQuery {

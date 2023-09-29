@@ -2,6 +2,7 @@
 
 ## 1.10.1
 - Added auto closing bracket support in SurrealQL editors
+- Added the ability to rename query tabs on double click
 - Updated surrealql grammar to the latest version
 - Improved live query editor UI
 - Improve console toggle button layout

@@ -1,3 +1,4 @@
+import classes from './style.module.scss';
 import { editor } from "monaco-editor";
 import { mdiClose, mdiDatabase, mdiPlus, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
@@ -12,6 +13,7 @@ import { ActionIcon, Group, ScrollArea, Tabs } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
+import { EditableText } from "~/components/EditableText";
 
 export function QueryPane() {
 	const { queries, activeQueryId } = useActiveSession();
@@ -64,6 +66,12 @@ export function QueryPane() {
 		}
 	});
 
+	const setTabName = useStable((name: string) => {
+		store.dispatch(actions.updateQueryTab({
+			name: name
+		}));
+	});
+
 	return (
 		<Panel
 			title="Query"
@@ -92,30 +100,39 @@ export function QueryPane() {
 						<Tabs.List
 							style={{ flexWrap: "nowrap" }}
 						>
-							{queries.map(({ id }) => (
-								<Tabs.Tab
-									py={8}
-									px={10}
-									key={id}
-									value={id.toString()}
-								>
-									<Group spacing="xs" noWrap>
-										Query #{id}
-										{id > 1 && (
-											<ActionIcon
-												size="xs"
-												component="div"
-												onClick={(e) => {
-													e.stopPropagation();
-													removeTab(id);
-												}}
-											>
-												<Icon path={mdiClose} color="gray.6" />
-											</ActionIcon>
-										)}
-									</Group>
-								</Tabs.Tab>
-							))}
+							{queries.map(({ id, name }) => {
+								return (
+									<Tabs.Tab
+										py={6}
+										px={10}
+										key={id}
+										value={id.toString()}
+									>
+										<Group spacing="xs" noWrap>
+											<EditableText
+												value={name || ""}
+												onChange={setTabName}
+												placeholder={`Query ${id}`}
+												activation="doubleClick"
+												minWidth={5}
+												className={classes.tabName}
+											/>
+											{id > 1 && (
+												<ActionIcon
+													size="xs"
+													component="div"
+													onClick={(e) => {
+														e.stopPropagation();
+														removeTab(id);
+													}}
+												>
+													<Icon path={mdiClose} color="gray.6" />
+												</ActionIcon>
+											)}
+										</Group>
+									</Tabs.Tab>
+								);
+							})}
 						</Tabs.List>
 					</ScrollArea>
 				</Tabs>
