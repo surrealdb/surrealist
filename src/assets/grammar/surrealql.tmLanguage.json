@@ -240,6 +240,10 @@
 					"match": "\\b(FIELD|field)\\b"
 				},
 				{
+					"name": "keyword.control.fields.surrealql",
+					"match": "\\b(FIELDS|fields)\\b"
+				},
+				{
 					"name": "keyword.control.filters.surrealql",
 					"match": "\\b(FILTERS|filters)\\b"
 				},
