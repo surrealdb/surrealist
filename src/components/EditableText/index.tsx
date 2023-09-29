@@ -25,6 +25,7 @@ export const EditableText = (props: EditableTextProps) => {
 		placeholder,
 		inputProps,
 		activation,
+		minWidth,
 		...rest
 	} = props;
 
@@ -33,7 +34,7 @@ export const EditableText = (props: EditableTextProps) => {
 	const recomputeSize = useStable(() => {
 		const input = inputRef.current!;
 		const sizer = sizerRef.current!;
-		const minSize = props.minWidth || 50;
+		const minSize = minWidth || 50;
 
 		input.style.width = `${Math.max(minSize, sizer.offsetWidth + 5)}px`;
 	});

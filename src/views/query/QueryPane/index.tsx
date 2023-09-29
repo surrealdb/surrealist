@@ -64,9 +64,11 @@ export function QueryPane() {
 		if (value) {
 			const tabId = Number.parseInt(value);
 
-			store.dispatch(actions.setActiveQueryTab(tabId));
+			if (activeQueryId !== Number.parseInt(value)) {
+				store.dispatch(actions.setActiveQueryTab(tabId));
 
-			controls.current?.focus?.();
+				controls.current?.focus?.();
+			}
 		}
 	});
 
