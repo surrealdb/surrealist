@@ -1,16 +1,16 @@
 # Change Log
 
-## 1.10.1
+## 1.10.1 - Minor improvements
 - Added auto closing bracket support in SurrealQL editors
 - Added the ability to rename query tabs on double click
 - Updated surrealql grammar to the latest version
-- Improved live query editor UI
-- Improve console toggle button layout
-- Improve editor focus and tab removal handling
-- Fixed desktop app not being able to connect to http endpoints
-- Fixed combined query result mode incorrectly handling empty and error results
+- Updated live query editor UI
+- Updated console toggle button layout
+- Updated editor focus and tab removal handling
+- Fixed desktop app not being able to connect to http endpoints (#117)
+- Fixed combined query result mode incorrectly handling empty and error results (#118)
 - Fixed authentication view not updating on session change
-- Fixed some surrealql editors not taking up any height
+- Fixed some surrealql editors not taking up any height (#119)
 
 ## 1.10.0 - Major feature update
 - Improved feature parity between the desktop and web app
