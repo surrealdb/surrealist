@@ -1,5 +1,5 @@
 import { showNotification } from "@mantine/notifications";
-import { actions, store } from "./store";
+import { store } from "./store";
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/connection";
 import { showError } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";

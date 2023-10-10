@@ -4,15 +4,16 @@ import embedPath from './generated/surrealist-embed_bg.wasm?url';
 import initEmbed, { initialize_embed } from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { actions, store } from "./store";
+import { store } from "./store";
 import { App } from "./components/App";
 import { initializeMonaco } from "./util/editor";
 import { runUpdateChecker } from "./util/updater";
 import { updateTitle, watchNativeTheme } from "./util/helpers";
 import { adapter } from "./adapter";
+import { registerConfigSaver } from "./util/saver";
+import { configActions } from "./stores/config";
 
 import "reactflow/dist/style.css";
-import { registerConfigSaver } from "./util/saver";
 
 (async () => {	
 	dayjs.extend(relativeTime);
@@ -25,7 +26,7 @@ import { registerConfigSaver } from "./util/saver";
 	// Load existing config
 	const config = await adapter.loadConfig();
 
-	store.dispatch(actions.initialize(config));
+	store.dispatch(configActions.initialize(config));
 
 	const { lastPromptedVersion, updateChecker } = store.getState().config;
 

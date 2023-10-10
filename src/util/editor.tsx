@@ -199,8 +199,6 @@ export async function initializeMonaco() {
 			};
 		},
 	});
-
-	store.dispatch(actions.setMonacoLoaded());
 }
 
 /**

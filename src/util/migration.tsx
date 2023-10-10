@@ -1,4 +1,5 @@
 import { Open, SurrealistConfig } from "~/types";
+import { createBaseEnvironment } from "./defaults";
 
 /**
  * Perform migrations on the given config object.
@@ -24,6 +25,10 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 	}
 
 	// 1.7.0 - Migrate tabs to environments
+	if (config.environments.length === 0) {
+		config.environments.push(createBaseEnvironment());
+	}
+	
 	for (const tab of config.tabs) {
 		if (!tab.environment) {
 			tab.environment = config.environments[0].id;

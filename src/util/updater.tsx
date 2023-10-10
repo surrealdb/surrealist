@@ -19,6 +19,7 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 
 		if (gt(version, current)) {
 			store.dispatch(actions.setAvailableUpdate(version));
+			store.dispatch(actions.setLastPromptedVersion(version));
 		} else if (force) {
 			showNotification({
 				message: "Surrealist is up-to-date!",
