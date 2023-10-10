@@ -1,5 +1,6 @@
 import * as monaco from "monaco-editor";
 import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
+import { getActiveSession } from "./environments";
 import { KeyCode, KeyMod, editor, languages } from "monaco-editor";
 import { actions, store } from "~/store";
 import { SurrealInfoDB } from "~/typings/surreal";
@@ -14,10 +15,10 @@ import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 
 import surrealqlTm from '~/assets/grammar/surrealql.tmLanguage.json';
 import javascriptTm from '~/assets/grammar/javascript.tmLanguage.json';
+import jsonTm from '~/assets/grammar/JSON.tmLanguage.json';
 
 import surrealistLightTheme from '~/assets/themes/surrealist-light.json';
 import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
-import { getActiveSession } from "./environments";
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
@@ -66,6 +67,10 @@ const SCOPE_GRAMMARS: any = {
 	'source.js': {
 		format: 'json',
 		content: javascriptTm
+	},
+	'source.json': {
+		format: 'json',
+		content: jsonTm
 	}
 };
 

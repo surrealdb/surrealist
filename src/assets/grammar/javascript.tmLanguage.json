@@ -1,11 +1,10 @@
 {
-	"name": "JavaScript (with React support)",
+	"name": "JavaScript",
 	"scopeName": "source.js",
 	"fileTypes": [
 		".js",
 		".jsx"
 	],
-	"uuid": "805375ec-d614-41f5-8993-5843fe63ea82",
 	"patterns": [
 		{
 			"include": "#directives"
