@@ -26,7 +26,7 @@ function createError(message: string) {
 
 // Execute a query and parse the result
 async function executeQuery(query: string, params: any) {
-	const response = await execute_query(query, params || {});
+	const response = await execute_query(query, JSON.stringify(params || {}));
 
 	return JSON.parse(response);
 }

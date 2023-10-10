@@ -1,7 +1,6 @@
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JsonValue;
 use serde_wasm_bindgen::{from_value, to_value};
 use std::collections::HashMap;
 use tokio::sync::RwLock;
@@ -10,7 +9,7 @@ use wasm_bindgen::prelude::*;
 use surrealdb::{
     engine::remote::ws::{Client, Ws, Wss},
     opt::auth::{Database, Namespace, Root, Scope},
-    sql::{Array, Object, Value},
+    sql::{Array, Object, Value, json},
     Surreal,
 };
 
@@ -182,7 +181,7 @@ pub async fn query_version() -> Option<JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn execute_query(query: String, params: JsValue) -> String {
+pub async fn execute_query(query: String, params: String) -> String {
     let container = CLIENT.read().await;
 
     if container.is_none() {
@@ -193,9 +192,16 @@ pub async fn execute_query(query: String, params: JsValue) -> String {
 
     console_log!("Executing query {}", query);
 
-    let param_map: JsonValue = from_value(params).unwrap();
     let client = container.as_ref().unwrap();
-    let query_task = client.query(query).bind(&param_map).await;
+    let mut builder = client.query(query);
+
+	if let Ok(vars) = json(&params) {
+		builder = builder.bind(vars);
+	} else {
+		console_log!("Failed to parse query variables");
+	}
+
+	let query_task = builder.await;
 
     console_log!(
         "Received response from database, success: {}",
