@@ -8,9 +8,8 @@ import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { store } from "~/store";
 import { mod, updateTitle } from "~/util/helpers";
-import { useSession } from "~/hooks/environment";
 import { useHotkeys } from "@mantine/hooks";
-import { updateSession } from "~/stores/config";
+import { setActiveView } from "~/stores/config";
 
 export interface ViewListingProps {
 	viewMode: ViewMode;
@@ -18,19 +17,13 @@ export interface ViewListingProps {
 
 export function ViewListing({ viewMode }: ViewListingProps) {
 	const isLight = useIsLight();
-	const sessionInfo = useSession();
 	const [isViewListing, setIsViewListing] = useState(false);
 	
 	const viewInfo = VIEW_MODES.find((v) => v.id == viewMode)!;
 
 	const setViewMode = useStable((id: ViewMode) => {
 		setIsViewListing(false);
-
-		store.dispatch(updateSession({
-			id: sessionInfo!.id,
-			activeView: id,
-		}));
-		
+		store.dispatch(setActiveView(id));
 		updateTitle();
 	});
 

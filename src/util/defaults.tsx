@@ -29,6 +29,7 @@ export function createBaseConfig(): SurrealistConfig {
 		errorChecking: true,
 		lastPromptedVersion: null,
 		tabSearch: false,
+		activeView: 'query',
 		defaultDesignerNodeMode: 'fields',
 		defaultDesignerLayoutMode: 'diagram'
 	};
@@ -57,7 +58,6 @@ export function createBaseSession(query?: string): SurrealistSession {
 		lastQueryId: 1,
 		variables: "{}",
 		lastResponse: [],
-		activeView: "query",
 		connection: createBaseConnection(),
 		pinned: false,
 		pinnedTables: [],

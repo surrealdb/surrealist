@@ -18,7 +18,6 @@ import { Icon } from "../Icon";
 import { SurrealistSession } from "~/types";
 import { Text } from "@mantine/core";
 import { store, useStoreValue } from "~/store";
-import { VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { updateTitle, applyOrder } from "~/util/helpers";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
@@ -28,10 +27,6 @@ import { SyntheticEvent } from "react";
 import { Sortable } from "../Sortable";
 import { setActiveSession, updateSession, removeSession, setSessions } from "~/stores/config";
 import { openTabEditor, openTabCreator } from "~/stores/interface";
-
-function getSessionIcon(session: SurrealistSession) {
-	return VIEW_MODES.find((v) => v.id == session.activeView)?.icon;
-}
 
 export interface SelectorProps {
 	active: string | null;
@@ -325,9 +320,6 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 													key={item.id}
 													w={264}
 													px={12}
-													leftIcon={
-														<Icon path={getSessionIcon(item) ?? ""} color={isActive ? "surreal" : "light.5"} />
-													}
 													c={isLight ? "black" : "white"}
 													color={isRenaming ? "light" : isActive ? "pink" : "light"}
 													variant={isRenaming ? "outline" : isActive ? "light" : "subtle"}

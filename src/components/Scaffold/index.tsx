@@ -38,10 +38,9 @@ function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 
 export function Scaffold() {
 	const sessionInfo = useSession();
+	const activeView = useStoreValue((state) => state.config.activeView);
 	const activeSession = useStoreValue((state) => state.config.activeTab);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
-
-	const viewMode = sessionInfo?.activeView || "query";
 
 	const showTabCreator = useStable((envId?: string) => {
 		store.dispatch(openTabCreator({
@@ -67,7 +66,7 @@ export function Scaffold() {
 	return (
 		<div className={classes.root}>
 			<Toolbar
-				viewMode={viewMode}
+				viewMode={activeView}
 				onCreateTab={showTabCreator}
 			/>
 
@@ -75,11 +74,11 @@ export function Scaffold() {
 				<>
 					<Group p="xs">
 						<ViewListing
-							viewMode={viewMode}
+							viewMode={activeView}
 						/>
 						
 						<AddressBar
-							viewMode={viewMode}
+							viewMode={activeView}
 							onQuery={userExecuteQuery}
 						/>
 					</Group>
@@ -91,23 +90,23 @@ export function Scaffold() {
 							direction="vertical"
 							endPane={adapter.isServeSupported && enableConsole && <ConsolePane />}
 						>
-							<ViewSlot visible={viewMode == "query"}>
+							<ViewSlot visible={activeView == "query"}>
 								<QueryView />
 							</ViewSlot>
 
-							<ViewSlot visible={viewMode == "explorer"}>
+							<ViewSlot visible={activeView == "explorer"}>
 								<ExplorerView />
 							</ViewSlot>
 
-							<ViewSlot visible={viewMode == "designer"}>
+							<ViewSlot visible={activeView == "designer"}>
 								<DesignerView />
 							</ViewSlot>
 
-							<ViewSlot visible={viewMode == "auth"}>
+							<ViewSlot visible={activeView == "auth"}>
 								<AuthenticationView />
 							</ViewSlot>
 
-							<ViewSlot visible={viewMode == "live"}>
+							<ViewSlot visible={activeView == "live"}>
 								<LiveView />
 							</ViewSlot>
 						</Splitter>

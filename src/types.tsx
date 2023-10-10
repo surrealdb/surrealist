@@ -41,6 +41,7 @@ export interface SurrealistConfig {
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	tabSearch: boolean;
+	activeView: ViewMode;
 	defaultDesignerNodeMode: DesignerNodeMode,
 	defaultDesignerLayoutMode: DesignerLayoutMode
 }
@@ -61,7 +62,6 @@ export interface SurrealistSession {
 	variables: string;
 	connection: ConnectionOptions;
 	lastResponse: any;
-	activeView: ViewMode;
 	pinned: boolean;
 	pinnedTables: string[];
 	designerNodeMode?: DesignerNodeMode;

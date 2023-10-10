@@ -18,20 +18,20 @@ export const TRUNCATE_STYLE: CSSProperties = {
 export function updateTitle() {
 	const { config } = store.getState();
 	const session = getActiveSession();
-
-	let title = "";
+	const viewInfo = VIEW_MODES.find((v) => v.id === config.activeView);
+	const segments: string[] = [];
 
 	if (session) {
-		const viewInfo = VIEW_MODES.find((v) => v.id === session.activeView);
-
-		title += `${session.name} - Surrealist ${viewInfo?.name}`;
+		segments.push(`${session.name} -`);
 	}
+
+	segments.push(`Surrealist ${viewInfo?.name}`);
 
 	if (config.isPinned) {
-		title += " (Pinned)";
+		segments.push('(Pinned)');
 	}
 
-	adapter.setWindowTitle(title);
+	adapter.setWindowTitle(segments.join(' '));
 }
 
 /**

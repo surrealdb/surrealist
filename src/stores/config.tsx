@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { DesignerLayoutMode, DesignerNodeMode, DriverType, FavoritesEntry, HistoryEntry, Open, QueryListing, ResultListing, SessionQuery, SurrealistConfig, SurrealistEnvironment, SurrealistSession, TablePinAction } from "~/types";
+import { DesignerLayoutMode, DesignerNodeMode, DriverType, FavoritesEntry, HistoryEntry, Open, QueryListing, ResultListing, SessionQuery, SurrealistConfig, SurrealistEnvironment, SurrealistSession, TablePinAction, ViewMode } from "~/types";
 import { createBaseConfig } from "~/util/defaults";
 import { migrateConfig } from "~/util/migration";
 import { ThemeOption } from "~/util/theme";
@@ -92,6 +92,10 @@ const configSlice = createSlice({
 
 		setActiveSession(state, action: PayloadAction<string>) {
 			state.activeTab = action.payload;
+		},
+
+		setActiveView(state, action: PayloadAction<ViewMode>) {
+			state.activeView = action.payload;
 		},
 
 		addQueryTab(state, { payload }: PayloadAction<string | undefined>) {
@@ -299,6 +303,7 @@ export const {
 	updateSession,
 	setSessions,
 	setActiveSession,
+	setActiveView,
 	addQueryTab,
 	removeQueryTab,
 	updateQueryTab,
