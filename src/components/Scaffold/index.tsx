@@ -13,9 +13,8 @@ import {
 
 import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
-import { PropsWithChildren } from "react";
+import { useMemo } from "react";
 import { Toolbar } from "../Toolbar";
-import { useSession } from "~/hooks/environment";
 import { Splitter } from "../Splitter";
 import { ConsolePane } from "../ConsolePane";
 import { QueryView } from "~/views/query/QueryView";
@@ -32,12 +31,15 @@ import { AddressBar } from "./address";
 import { ViewListing } from "./listing";
 import { openTabCreator } from "~/stores/interface";
 
-function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
-	return <div style={{ display: props.visible ? "initial" : "none" }}>{props.children}</div>;
-}
+const VIEW_ELEMENTS = {
+	query: <QueryView />,
+	explorer: <ExplorerView />,
+	designer: <DesignerView />,
+	auth: <AuthenticationView />,
+	live: <LiveView />,
+};
 
 export function Scaffold() {
-	const sessionInfo = useSession();
 	const activeView = useStoreValue((state) => state.config.activeView);
 	const activeSession = useStoreValue((state) => state.config.activeTab);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
@@ -57,6 +59,10 @@ export function Scaffold() {
 			loader: true
 		});
 	});
+
+	const activeViewElement = useMemo(() => {
+		return VIEW_ELEMENTS[activeView];
+	}, [activeView]);
 
 	useHotkeys([
 		["F9", () => userExecuteQuery()],
@@ -90,25 +96,7 @@ export function Scaffold() {
 							direction="vertical"
 							endPane={adapter.isServeSupported && enableConsole && <ConsolePane />}
 						>
-							<ViewSlot visible={activeView == "query"}>
-								<QueryView />
-							</ViewSlot>
-
-							<ViewSlot visible={activeView == "explorer"}>
-								<ExplorerView />
-							</ViewSlot>
-
-							<ViewSlot visible={activeView == "designer"}>
-								<DesignerView />
-							</ViewSlot>
-
-							<ViewSlot visible={activeView == "auth"}>
-								<AuthenticationView />
-							</ViewSlot>
-
-							<ViewSlot visible={activeView == "live"}>
-								<LiveView />
-							</ViewSlot>
+							{activeViewElement}
 						</Splitter>
 					</Box>
 				</>
