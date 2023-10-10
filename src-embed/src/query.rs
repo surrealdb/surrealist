@@ -9,7 +9,7 @@ use wasm_bindgen::prelude::*;
 use surrealdb::{
     engine::remote::ws::{Client, Ws, Wss},
     opt::auth::{Database, Namespace, Root, Scope},
-    sql::{Array, Object, Value, json},
+    sql::{json, Array, Object, Value},
     Surreal,
 };
 
@@ -195,13 +195,13 @@ pub async fn execute_query(query: String, params: String) -> String {
     let client = container.as_ref().unwrap();
     let mut builder = client.query(query);
 
-	if let Ok(vars) = json(&params) {
-		builder = builder.bind(vars);
-	} else {
-		console_log!("Failed to parse query variables");
-	}
+    if let Ok(vars) = json(&params) {
+        builder = builder.bind(vars);
+    } else {
+        console_log!("Failed to parse query variables");
+    }
 
-	let query_task = builder.await;
+    let query_task = builder.await;
 
     console_log!(
         "Received response from database, success: {}",
