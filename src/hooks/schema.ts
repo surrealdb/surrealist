@@ -11,7 +11,7 @@ type TableMode = "ALL" | "TABLE" | "EDGE";
  * @returns The filtered tables
  */
 export function useTables(mode: TableMode = "ALL") {
-	return useStoreValue((state) => state.databaseSchema).filter((t) => {
+	return useStoreValue((state) => state.database.databaseSchema).filter((t) => {
 		if (mode == "ALL") return true;
 		if (mode == "TABLE") return !isEdgeTable(t);
 		if (mode == "EDGE") return isEdgeTable(t);

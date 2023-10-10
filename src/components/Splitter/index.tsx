@@ -4,7 +4,6 @@ import { useStable } from "~/hooks/stable";
 import { useWindowEvent } from "@mantine/hooks";
 import { useState } from "react";
 import { Box } from "@mantine/core";
-import { useStoreValue } from "~/store";
 
 export type SplitDirection = "horizontal" | "vertical";
 export type SplitValues = [number | undefined, number | undefined];
@@ -43,10 +42,9 @@ export function Splitter(props: SplitterProps) {
 		const leftReserve = (props.startPane && values[0]) || 0;
 		const rightReserve = (props.endPane && values[1]) || 0;
 		const totalSize = (isHorizontal ? containerRef.current?.clientWidth : containerRef.current?.clientHeight) || 0;
-		const clampLeft = (value: number) =>
-			clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || totalSize - rightReserve - buffer);
-		const clampRight = (value: number) =>
-			clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || totalSize - leftReserve - buffer);
+		
+		const clampLeft = (value: number) => clamp(value, getLeft(props.minSize) || 0, getLeft(props.maxSize) || totalSize - rightReserve - buffer);
+		const clampRight = (value: number) => clamp(value, getRight(props.minSize) || 0, getRight(props.maxSize) || totalSize - leftReserve - buffer);
 
 		// Calculate actual pane sizes
 		const finalLeft = clampLeft(values[0] || 160);

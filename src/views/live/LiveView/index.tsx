@@ -4,7 +4,7 @@ import { QueriesPane } from "../QueriesPane";
 import { EditorPane } from "../EditorPane";
 import { InboxPane } from "../InboxPane";
 import { useStable } from "~/hooks/stable";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 import { useActiveSession } from "~/hooks/environment";
 import { newId } from "~/util/helpers";
 import { useLater } from "~/hooks/later";
@@ -12,6 +12,7 @@ import { useLegacyLiveSocket } from "./legacy";
 import { useImmer } from "use-immer";
 import { LiveMessage } from "~/types";
 import { MAX_LIVE_MESSAGES } from "~/constants";
+import { updateSession } from "~/stores/config";
 
 export interface QueryViewProps {
 }
@@ -99,7 +100,7 @@ export function LiveView(props: QueryViewProps) {
 	});
 
 	const handleRemoveQuery = useStable((id: string) => {
-		store.dispatch(actions.updateSession({
+		store.dispatch(updateSession({
 			id: session.id,
 			liveQueries: session.liveQueries.filter((q) => q.id !== id),
 		}));
@@ -109,14 +110,14 @@ export function LiveView(props: QueryViewProps) {
 		if (editingId.length === 0) {
 			const id = newId();
 
-			store.dispatch(actions.updateSession({
+			store.dispatch(updateSession({
 				id: session.id,
 				liveQueries: [...session.liveQueries, { id, name, text }],
 			}));
 		} else {
 			const queryIndex = session.liveQueries.findIndex((q) => q.id === editingId);
 
-			store.dispatch(actions.updateSession({
+			store.dispatch(updateSession({
 				id: session.id,
 				liveQueries: session.liveQueries.with(queryIndex, {
 					...session.liveQueries[queryIndex],

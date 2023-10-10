@@ -1,10 +1,12 @@
 import { Button } from "@mantine/core";
 import { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { updateTitle } from "~/util/helpers";
 import { SurrealistSession } from "~/types";
+import { setActiveSession } from "~/stores/config";
+
 export interface ViewTabProps {
 	sessionInfo: SurrealistSession;
 }
@@ -17,7 +19,7 @@ export function ViewTab({ sessionInfo }: PropsWithChildren<ViewTabProps>) {
 	const fgColor = isActive ? "white" : isLight ? "light.9" : "light.2";
 
 	const select = useStable(() => {
-		store.dispatch(actions.setActiveSession(sessionInfo.id));
+		store.dispatch(setActiveSession(sessionInfo.id));
 
 		updateTitle();
 	});

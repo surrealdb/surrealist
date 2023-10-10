@@ -4,7 +4,7 @@ import { mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { store, actions, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
@@ -17,6 +17,7 @@ import { Selector } from "./selector";
 import { useTabsList } from "~/hooks/environment";
 import { ViewTab } from "../ViewTab";
 import { Exporter } from "../Exporter";
+import { updateSession, setShowQueryListing, setQueryListingMode } from "~/stores/config";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -40,12 +41,10 @@ export function Toolbar(props: ToolbarProps) {
 	});
 
 	const saveTabName = useStable(() => {
-		store.dispatch(
-			actions.updateSession({
-				id: editingTab!,
-				name: tabName,
-			})
-		);
+		store.dispatch(updateSession({
+			id: editingTab!,
+			name: tabName,
+		}));
 
 		updateTitle();
 		closeEditingTab();
@@ -53,19 +52,19 @@ export function Toolbar(props: ToolbarProps) {
 
 	const toggleHistory = useStable(() => {
 		if (queryListing === "history") {
-			store.dispatch(actions.setShowQueryListing(!enableListing));
+			store.dispatch(setShowQueryListing(!enableListing));
 		} else {
-			store.dispatch(actions.setQueryListingMode("history"));
-			store.dispatch(actions.setShowQueryListing(true));
+			store.dispatch(setQueryListingMode("history"));
+			store.dispatch(setShowQueryListing(true));
 		}
 	});
 
 	const toggleFavorites = useStable(() => {
 		if (queryListing === "favorites") {
-			store.dispatch(actions.setShowQueryListing(!enableListing));
+			store.dispatch(setShowQueryListing(!enableListing));
 		} else {
-			store.dispatch(actions.setQueryListingMode("favorites"));
-			store.dispatch(actions.setShowQueryListing(true));
+			store.dispatch(setQueryListingMode("favorites"));
+			store.dispatch(setShowQueryListing(true));
 		}
 	});
 

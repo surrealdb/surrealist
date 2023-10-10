@@ -2,9 +2,10 @@ import { Stack, TextInput, NumberInput, Select, Group, Tooltip, Box } from "@man
 import { mdiInformation } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { store, actions } from "~/store";
+import { store } from "~/store";
 import { DriverType, SurrealistConfig } from "~/types";
 import { Setting } from "../setting";
+import { setLocalDatabaseDriver, setLocalDatabaseStorage, setSurrealUser, setSurrealPass, setSurrealPort, setSurrealPath } from "~/stores/config";
 
 const DRIVERS = [
 	{ label: "Memory", value: "memory" },
@@ -17,57 +18,57 @@ export interface ConnectionTabProps {
 }
 
 export function LocalDatabaseTab({ config }: ConnectionTabProps) {
-	const setLocalDriver = useStable((driver: string) => {
-		store.dispatch(actions.setLocalDatabaseDriver(driver as DriverType));
+	const updateLocalDriver = useStable((driver: string) => {
+		store.dispatch(setLocalDatabaseDriver(driver as DriverType));
 	});
 
-	const setLocalPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setLocalDatabaseStorage(e.target.value));
+	const updateLocalPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setLocalDatabaseStorage(e.target.value));
 	});
 
-	const setSurrealUser = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setSurrealUser(e.target.value));
+	const updateSurrealUser = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setSurrealUser(e.target.value));
 	});
 
-	const setSurrealPass = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setSurrealPass(e.target.value));
+	const updateSurrealPass = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setSurrealPass(e.target.value));
 	});
 
-	const setSurrealPort = useStable((value: number) => {
-		store.dispatch(actions.setSurrealPort(value));
+	const updateSurrealPort = useStable((value: number) => {
+		store.dispatch(setSurrealPort(value));
 	});
 
-	const setSurrealPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setSurrealPath(e.target.value));
+	const updateSurrealPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setSurrealPath(e.target.value));
 	});
 
 	return (
 		<Stack spacing="xs">
 			<Setting label="Initial root user">
-				<TextInput placeholder="root" value={config.surrealUser} onChange={setSurrealUser} w={250} />
+				<TextInput placeholder="root" value={config.surrealUser} onChange={updateSurrealUser} w={250} />
 			</Setting>
 
 			<Setting label="Initial root password">
-				<TextInput placeholder="root" value={config.surrealPass} onChange={setSurrealPass} w={250} />
+				<TextInput placeholder="root" value={config.surrealPass} onChange={updateSurrealPass} w={250} />
 			</Setting>
 
 			<Setting label="Port">
-				<NumberInput value={config.surrealPort} min={1} max={65_535} onChange={setSurrealPort} w={250} />
+				<NumberInput value={config.surrealPort} min={1} max={65_535} onChange={updateSurrealPort} w={250} />
 			</Setting>
 
 			<Setting label="Storage mode">
-				<Select data={DRIVERS} value={config.localDriver} onChange={setLocalDriver} w={250} />
+				<Select data={DRIVERS} value={config.localDriver} onChange={updateLocalDriver} w={250} />
 			</Setting>
 
 			{config.localDriver === "file" && (
 				<Setting label="Storage path">
-					<TextInput placeholder="/path/to/database" value={config.localStorage} onChange={setLocalPath} w={250} />
+					<TextInput placeholder="/path/to/database" value={config.localStorage} onChange={updateLocalPath} w={250} />
 				</Setting>
 			)}
 
 			{config.localDriver === "tikv" && (
 				<Setting label="Storage cluster address">
-					<TextInput placeholder="address:port" value={config.localStorage} onChange={setLocalPath} w={250} />
+					<TextInput placeholder="address:port" value={config.localStorage} onChange={updateLocalPath} w={250} />
 				</Setting>
 			)}
 
@@ -86,7 +87,7 @@ export function LocalDatabaseTab({ config }: ConnectionTabProps) {
 						</Group>
 					</Tooltip>
 				}>
-				<TextInput value={config.surrealPath} onChange={setSurrealPath} w={250} />
+				<TextInput value={config.surrealPath} onChange={updateSurrealPath} w={250} />
 			</Setting>
 		</Stack>
 	);

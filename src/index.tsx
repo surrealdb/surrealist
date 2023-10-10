@@ -11,7 +11,7 @@ import { runUpdateChecker } from "./util/updater";
 import { updateTitle, watchNativeTheme } from "./util/helpers";
 import { adapter } from "./adapter";
 import { registerConfigSaver } from "./util/saver";
-import { configActions } from "./stores/config";
+import { initialize } from "./stores/config";
 
 import "reactflow/dist/style.css";
 
@@ -26,7 +26,7 @@ import "reactflow/dist/style.css";
 	// Load existing config
 	const config = await adapter.loadConfig();
 
-	store.dispatch(configActions.initialize(config));
+	store.dispatch(initialize(config));
 
 	const { lastPromptedVersion, updateChecker } = store.getState().config;
 

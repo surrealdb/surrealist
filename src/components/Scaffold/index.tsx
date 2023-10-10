@@ -11,7 +11,7 @@ import {
 	Title,
 } from "@mantine/core";
 
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { PropsWithChildren } from "react";
 import { Toolbar } from "../Toolbar";
@@ -30,6 +30,7 @@ import { LiveView } from "~/views/live/LiveView";
 import { executeQuery } from "~/database";
 import { AddressBar } from "./address";
 import { ViewListing } from "./listing";
+import { openTabCreator } from "~/stores/interface";
 
 function ViewSlot(props: PropsWithChildren<{ visible: boolean }>) {
 	return <div style={{ display: props.visible ? "initial" : "none" }}>{props.children}</div>;
@@ -42,16 +43,14 @@ export function Scaffold() {
 
 	const viewMode = sessionInfo?.activeView || "query";
 
-	const openTabCreator = useStable((envId?: string) => {
-		store.dispatch(
-			actions.openTabCreator({
-				environment: envId,
-			})
-		);
+	const showTabCreator = useStable((envId?: string) => {
+		store.dispatch(openTabCreator({
+			environment: envId,
+		}));
 	});
 
 	const createNewTab = useStable(() => {
-		openTabCreator();
+		showTabCreator();
 	});
 
 	const userExecuteQuery = useStable(() => {
@@ -69,7 +68,7 @@ export function Scaffold() {
 		<div className={classes.root}>
 			<Toolbar
 				viewMode={viewMode}
-				onCreateTab={openTabCreator}
+				onCreateTab={showTabCreator}
 			/>
 
 			{activeSession ? (

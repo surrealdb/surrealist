@@ -27,7 +27,7 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 	const isLight = useIsLight();
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState("");
-	const schema = useStoreValue((state) => state.databaseSchema);
+	const schema = useStoreValue((state) => state.database.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
 	const isOnline = useIsConnected();
 	const sessionInfo = useActiveSession();

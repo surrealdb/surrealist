@@ -1,9 +1,10 @@
 import { Kbd, Stack, Switch } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 import { SurrealistConfig } from "~/types";
 import { Setting } from "../setting";
+import { setTableSuggest, setErrorChecking, setUpdateChecker, setWindowPinned } from "~/stores/config";
 
 export interface GeneralTabProps {
 	config: SurrealistConfig;
@@ -11,36 +12,36 @@ export interface GeneralTabProps {
 
 export function GeneralTab({ config }: GeneralTabProps) {
 
-	const setTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setTableSuggest(e.target.checked));
+	const updateTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setTableSuggest(e.target.checked));
 	});
 
-	const setErrorChecking = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setErrorChecking(e.target.checked));
+	const updateErrorChecking = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setErrorChecking(e.target.checked));
 	});
 
-	const setUpdateChecker = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setUpdateChecker(e.target.checked));
+	const updateUpdateChecker = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setUpdateChecker(e.target.checked));
 	});
 
 	const togglePinned = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(actions.setWindowPinned(e.target.checked));
+		store.dispatch(setWindowPinned(e.target.checked));
 	});
 
 	return (
 		<Stack spacing="xs">
 			{adapter.isUpdateCheckSupported && (
 				<Setting label="Check for updates">
-					<Switch checked={config.updateChecker} onChange={setUpdateChecker} />
+					<Switch checked={config.updateChecker} onChange={updateUpdateChecker} />
 				</Setting>
 			)}
 
 			<Setting label="Suggest table names">
-				<Switch checked={config.tableSuggest} onChange={setTableSuggest} />
+				<Switch checked={config.tableSuggest} onChange={updateTableSuggest} />
 			</Setting>
 
 			<Setting label="Query error checking">
-				<Switch checked={config.errorChecking} onChange={setErrorChecking} />
+				<Switch checked={config.errorChecking} onChange={updateErrorChecking} />
 			</Setting>
 			
 

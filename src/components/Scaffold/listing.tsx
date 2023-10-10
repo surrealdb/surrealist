@@ -6,10 +6,11 @@ import { Icon } from "../Icon";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { store, actions } from "~/store";
+import { store } from "~/store";
 import { mod, updateTitle } from "~/util/helpers";
 import { useSession } from "~/hooks/environment";
 import { useHotkeys } from "@mantine/hooks";
+import { updateSession } from "~/stores/config";
 
 export interface ViewListingProps {
 	viewMode: ViewMode;
@@ -25,12 +26,10 @@ export function ViewListing({ viewMode }: ViewListingProps) {
 	const setViewMode = useStable((id: ViewMode) => {
 		setIsViewListing(false);
 
-		store.dispatch(
-			actions.updateSession({
-				id: sessionInfo!.id,
-				activeView: id,
-			})
-		);
+		store.dispatch(updateSession({
+			id: sessionInfo!.id,
+			activeView: id,
+		}));
 		
 		updateTitle();
 	});

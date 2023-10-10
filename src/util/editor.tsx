@@ -2,7 +2,7 @@ import * as monaco from "monaco-editor";
 import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
 import { getActiveSession } from "./environments";
 import { KeyCode, KeyMod, editor, languages } from "monaco-editor";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 import { SurrealInfoDB } from "~/typings/surreal";
 import { getSurreal } from "./connection";
 import { loadWASM } from 'onigasm';

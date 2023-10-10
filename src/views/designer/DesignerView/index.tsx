@@ -13,7 +13,7 @@ export interface DesignerViewProps {
 export function DesignerView(props: DesignerViewProps) {
 	const [activeSessionle, setActiveTable] = useState<string | null>(null);
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
-	const tables = useStoreValue(state => state.databaseSchema);
+	const tables = useStoreValue(state => state.database.databaseSchema);
 
 	const tableSchema = useMemo(() => {
 		return tables.find(table => table.schema.name === activeSessionle) || null;

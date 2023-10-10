@@ -20,7 +20,8 @@ import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { actions, store } from "~/store";
+import { store } from "~/store";
+import { toggleTablePin } from "~/stores/config";
 import { ColumnSort, OpenFn } from "~/types";
 import { getSurreal } from "~/util/connection";
 
@@ -166,12 +167,10 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const togglePin = useStable(() => {
 		if (!props.activeSessionle || !sessionInfo) return;
 
-		store.dispatch(
-			actions.toggleTablePin({
-				session: sessionInfo.id,
-				table: props.activeSessionle,
-			})
-		);
+		store.dispatch(toggleTablePin({
+			session: sessionInfo.id,
+			table: props.activeSessionle,
+		}));
 	});
 
 	return (
