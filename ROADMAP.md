@@ -1,6 +1,12 @@
 # Roadmap
 
 - Add hotkey customization
-- Refactor views and split store
-- Make current view global (keep setting)
 - Embedded server mode
+
+- Raise explorer active table to store
+- Raise explorer active record to store
+- Raise explorer active record name to store
+- Raise explorer active record content to store
+- Raise designer active table to store
+- Raise designer active table details to store
+- Raise live queroies active query to store?

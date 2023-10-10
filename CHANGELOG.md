@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.10.2 - Further improvements
+- Improved overal performance
+- Improved JSON syntax highlighting
+- Re-enable JSON syntax validation
+- Store active view globally instead of per session
+
 ## 1.10.1 - Minor improvements
 - Added auto closing bracket support in SurrealQL editors
 - Added the ability to rename query tabs on double click
