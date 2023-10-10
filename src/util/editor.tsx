@@ -84,10 +84,6 @@ export async function initializeMonaco() {
 		extensions: [".surql", ".surrealql"],
 	});
 
-	monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-		validate: false
-	});
-
 	monaco.languages.setLanguageConfiguration("surrealql", {
 		comments: {
 			lineComment: "--",
