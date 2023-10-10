@@ -8,7 +8,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import surrealistIcon from "~/assets/icon.png";
 import { useSurrealistTheme } from "~/util/theme";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { DARK_THEME, LIGHT_THEME } from "~/util/editor";
 import { editor } from 'monaco-editor';
 
@@ -16,20 +16,22 @@ import { Icon } from "../Icon";
 import { Scaffold } from "../Scaffold";
 import { adapter } from "~/adapter";
 import { updateTitle } from "~/util/helpers";
+import { hideAvailableUpdate } from "~/stores/interface";
+import { decreaseFontZoomLevel, increaseFontZoomLevel, resetFontZoomLevel, toggleWindowPinned } from "~/stores/config";
 
 export function App() {
-	const update = useStoreValue((state) => state.availableUpdate);
-	const showUpdate = useStoreValue((state) => state.showAvailableUpdate);
+	const update = useStoreValue((state) => state.interface.availableUpdate);
+	const showUpdate = useStoreValue((state) => state.interface.showAvailableUpdate);
 	const colorScheme = useStoreValue((state) => state.config.theme);
 	const isPinned = useStoreValue((state) => state.config.isPinned);
-	const defaultScheme = useStoreValue((state) => state.nativeTheme);
+	const defaultScheme = useStoreValue((state) => state.interface.nativeTheme);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	const mantineTheme = useSurrealistTheme(actualTheme);
 	const isLight = useIsLight();
 
 	const closeUpdate = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
-		store.dispatch(actions.hideAvailableUpdate());
+		store.dispatch(hideAvailableUpdate());
 	});
 
 	const openRelease = useStable(() => {
@@ -49,13 +51,13 @@ export function App() {
 	}, [isPinned]);
 
 	const togglePinned = useStable(() => {
-		store.dispatch(actions.toggleWindowPinned());
+		store.dispatch(toggleWindowPinned());
 	});
 
 	const fontZoomInstructions = {
-		increase: () => store.dispatch(actions.increaseFontZoomLevel()),
-		decrease: () => store.dispatch(actions.decreaseFontZoomLevel()),
-		reset: () => store.dispatch(actions.resetFontZoomLevel()),
+		increase: () => store.dispatch(increaseFontZoomLevel()),
+		decrease: () => store.dispatch(decreaseFontZoomLevel()),
+		reset: () => store.dispatch(resetFontZoomLevel()),
 	};
 
 	useHotkeys([

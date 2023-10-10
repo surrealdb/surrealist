@@ -1,10 +1,11 @@
 import { extract_event_definition, extract_field_definition, extract_index_definition, extract_table_definition } from '../generated/surrealist-embed';
 import { map } from "radash";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 import { IndexKind, TableDefinition, TableEvent, TableField, TableIndex, TableSchema } from "~/types";
 import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./connection";
 import { extractTypeList } from './helpers';
+import { setDatabaseSchema } from '~/stores/database';
 
 /**
  * Fetch information about a table schema
@@ -83,7 +84,7 @@ export async function fetchDatabaseSchema() {
 		};
 	});
 
-	store.dispatch(actions.setDatabaseSchema(tables));
+	store.dispatch(setDatabaseSchema(tables));
 
 	return tables;
 }

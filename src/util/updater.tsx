@@ -1,6 +1,8 @@
 import { gt } from "semver";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 import { showNotification } from "@mantine/notifications";
+import { setLastPromptedVersion } from "~/stores/config";
+import { setAvailableUpdate } from "~/stores/interface";
 
 export async function runUpdateChecker(lastPromptedVersion: string | null, force: boolean) {
 	if (import.meta.env.MODE === "development") {
@@ -18,7 +20,8 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 		}
 
 		if (gt(version, current)) {
-			store.dispatch(actions.setAvailableUpdate(version));
+			store.dispatch(setAvailableUpdate(version));
+			store.dispatch(setLastPromptedVersion(version));
 		} else if (force) {
 			showNotification({
 				message: "Surrealist is up-to-date!",

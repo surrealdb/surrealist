@@ -5,8 +5,9 @@ import { uid } from "radash";
 import { CSSProperties } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 import { getActiveSession } from "./environments";
+import { setNativeTheme } from "~/stores/interface";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -39,10 +40,10 @@ export function updateTitle() {
 export function watchNativeTheme() {
 	const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
 
-	store.dispatch(actions.setNativeTheme(mediaMatch.matches ? "dark" : "light"));
+	store.dispatch(setNativeTheme(mediaMatch.matches ? "dark" : "light"));
 
 	mediaMatch.addEventListener("change", (event) => {
-		store.dispatch(actions.setNativeTheme(event.matches ? "dark" : "light"));
+		store.dispatch(setNativeTheme(event.matches ? "dark" : "light"));
 	});
 }
 

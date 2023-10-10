@@ -21,7 +21,7 @@ import {
 import { mdiChevronDown, mdiChevronUp, mdiClose, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { useInputState } from "@mantine/hooks";
 import { FavoritesEntry, SurrealistSession } from "~/types";
@@ -34,6 +34,8 @@ import { Spacer } from "~/components/Spacer";
 import { Form } from "~/components/Form";
 import { ModalTitle } from "~/components/ModalTitle";
 import { executeQuery } from "~/database";
+import { removeFavoritesEntry, setFavorites, addQueryTab, setShowQueryListing, saveFavoritesEntry } from "~/stores/config";
+import { openTabCreator } from "~/stores/interface";
 
 export function FavoritesPane() {
 	const isLight = useIsLight();
@@ -62,13 +64,11 @@ export function FavoritesPane() {
 	const saveQuery = useStable(() => {
 		setIsEditing(false);
 
-		store.dispatch(
-			actions.saveFavoritesEntry({
-				id: editingId || uid(5),
-				name: queryName,
-				query: queryText,
-			})
-		);
+		store.dispatch(saveFavoritesEntry({
+			id: editingId || uid(5),
+			name: queryName,
+			query: queryText,
+		}));
 	});
 
 	const filtered = useMemo(() => {
@@ -97,11 +97,11 @@ export function FavoritesPane() {
 
 	const deleteEntry = useStable(() => {
 		setIsEditing(false);
-		store.dispatch(actions.removeFavoritesEntry(editingId));
+		store.dispatch(removeFavoritesEntry(editingId));
 	});
 
 	const saveOrder = useStable((favorites: FavoritesEntry[]) => {
-		store.dispatch(actions.setFavorites(favorites));
+		store.dispatch(setFavorites(favorites));
 	});
 
 	const closeActive = useStable(() => {
@@ -217,7 +217,7 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const executeFavorite = useStable(() => {
-		store.dispatch(actions.addQueryTab(entry.query));
+		store.dispatch(addQueryTab(entry.query));
 
 		setTimeout(executeQuery, 0);
 	});
@@ -233,12 +233,10 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const openQuery = useStable(() => {
-		store.dispatch(
-			actions.openTabCreator({
-				name: entry.name.slice(0, 25),
-				query: entry.query,
-			})
-		);
+		store.dispatch(openTabCreator({
+			name: entry.name.slice(0, 25),
+			query: entry.query,
+		}));
 	});
 
 	return (
@@ -297,7 +295,7 @@ function FavoritesActions(props: FavoritesActionsProps) {
 	const canSave = queryTab.text.length > 0;
 
 	const hideFavorites = useStable(() => {
-		store.dispatch(actions.setShowQueryListing(false));
+		store.dispatch(setShowQueryListing(false));
 	});
 
 	return (

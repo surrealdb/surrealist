@@ -4,7 +4,7 @@ import { useActiveSession } from "~/hooks/environment";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
@@ -12,6 +12,7 @@ import { DataTable } from "~/components/DataTable";
 import { RESULT_LISTINGS } from "~/constants";
 import { ResultListing } from "~/types";
 import { CombinedJsonPreview, SingleJsonPreview } from "./preview";
+import { setResultListingMode } from "~/stores/config";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -51,7 +52,7 @@ export function ResultPane() {
 	}, [responses.length]);
 
 	const setResultView = useStable((view: ResultListing) => {
-		store.dispatch(actions.setResultListingMode(view));
+		store.dispatch(setResultListingMode(view));
 	});
 
 	return (

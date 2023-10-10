@@ -3,7 +3,7 @@ import { editor } from "monaco-editor";
 import { mdiClose, mdiDatabase, mdiPlusBoxMultiple, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -14,6 +14,7 @@ import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 import { EditableText } from "~/components/EditableText";
+import { updateQueryTab, removeQueryTab, addQueryTab, setActiveQueryTab } from '~/stores/config';
 
 export function QueryPane() {
 	const { queries, activeQueryId } = useActiveSession();
@@ -26,7 +27,7 @@ export function QueryPane() {
 	const queryText = queryInfo?.text || "";
 
 	const setQueryForced = useStable((content: string | undefined) => {
-		store.dispatch(actions.updateQueryTab({
+		store.dispatch(updateQueryTab({
 			text: content || ""
 		}));
 
@@ -53,11 +54,11 @@ export function QueryPane() {
 	});
 
 	const removeTab = useStable((tab: number) => {
-		store.dispatch(actions.removeQueryTab(tab));
+		store.dispatch(removeQueryTab(tab));
 	});
 
 	const appendTab = useStable(() => {
-		store.dispatch(actions.addQueryTab());
+		store.dispatch(addQueryTab());
 	});
 
 	const handleTabChange = useStable((value: string | null) => {
@@ -65,7 +66,7 @@ export function QueryPane() {
 			const tabId = Number.parseInt(value);
 
 			if (activeQueryId !== Number.parseInt(value)) {
-				store.dispatch(actions.setActiveQueryTab(tabId));
+				store.dispatch(setActiveQueryTab(tabId));
 
 				controls.current?.focus?.();
 			}
@@ -73,7 +74,7 @@ export function QueryPane() {
 	});
 
 	const setTabName = useStable((name: string) => {
-		store.dispatch(actions.updateQueryTab({
+		store.dispatch(updateQueryTab({
 			name: name
 		}));
 	});

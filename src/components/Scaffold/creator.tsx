@@ -5,7 +5,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
 import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
 import { useStable } from "~/hooks/stable";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { Form } from "../Form";
 import { useInputState } from "@mantine/hooks";
 import { useEffect } from "react";
@@ -15,13 +15,15 @@ import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
 import { createBaseSession } from "~/util/defaults";
+import { closeTabCreator } from "~/stores/interface";
+import { addSession, setActiveSession } from "~/stores/config";
 
 export function TabCreator() {
 	const isLight = useIsLight();
 	const tabs = useTabsList();
 	const environments = useEnvironmentList();
-	const opened = useStoreValue((state) => state.showTabCreator);
-	const creation = useStoreValue((state) => state.tabCreation);
+	const opened = useStoreValue((state) => state.interface.showTabCreator);
+	const creation = useStoreValue((state) => state.interface.tabCreation);
 
 	const [tabName, setTabName] = useInputState("");
 	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
@@ -35,7 +37,7 @@ export function TabCreator() {
 	const mergedValid = isConnectionValid(mergedDetails);
 
 	const handleCose = useStable(() => {
-		store.dispatch(actions.closeTabCreator());
+		store.dispatch(closeTabCreator());
 	});
 
 	const saveInfo = useStable(() => {
@@ -43,17 +45,15 @@ export function TabCreator() {
 
 		const tabId = newId();
 
-		store.dispatch(
-			actions.addSession({
-				...createBaseSession(creation?.query),
-				id: tabId,
-				name: tabName,
-				environment: finalEnv,
-				connection: mergedDetails
-			})
-		);
+		store.dispatch(addSession({
+			...createBaseSession(creation?.query),
+			id: tabId,
+			name: tabName,
+			environment: finalEnv,
+			connection: mergedDetails
+		}));
 
-		store.dispatch(actions.setActiveSession(tabId));
+		store.dispatch(setActiveSession(tabId));
 
 		updateTitle();
 	});

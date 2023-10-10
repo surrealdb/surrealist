@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { Icon } from "../Icon";
 import { closeConnection, openConnection } from "~/database";
+import { setConsoleEnabled } from "~/stores/config";
+import { cancelServe, prepareServe, stopServing } from "~/stores/database";
 
 // TODO Check if localhost
 
@@ -16,8 +18,8 @@ export function LocalDatabase() {
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
 	const [isOpen, setIsOpen] = useState(false);
 
-	const isServing = useStoreValue((state) => state.isServing);
-	const isPending = useStoreValue((state) => state.servePending);
+	const isServing = useStoreValue((state) => state.database.isServing);
+	const isPending = useStoreValue((state) => state.database.servePending);
 	const localDriver = useStoreValue((state) => state.config.localDriver);
 	const localPath = useStoreValue((state) => state.config.localStorage);
 	const surrealPath = useStoreValue((state) => state.config.surrealPath);
@@ -34,18 +36,18 @@ export function LocalDatabase() {
 			closeConnection();
 			adapter.stopDatabase();
 
-			store.dispatch(actions.cancelServe());
+			store.dispatch(cancelServe());
 		} else {
-			store.dispatch(actions.prepareServe());
+			store.dispatch(prepareServe());
 
 			adapter.startDatabase(surrealUser, surrealPass, surrealPort, localDriver, localPath, surrealPath).catch(() => {
-				store.dispatch(actions.stopServing());
+				store.dispatch(stopServing());
 			});
 		}
 	});
 
 	const toggleConsole = useStable(() => {
-		store.dispatch(actions.setConsoleEnabled(!enableConsole));
+		store.dispatch(setConsoleEnabled(!enableConsole));
 	});
 
 	useEffect(() => {

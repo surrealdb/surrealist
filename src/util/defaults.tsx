@@ -1,10 +1,11 @@
 import { ConnectionOptions, SurrealistSession, SurrealistConfig } from "~/types";
+import { newId } from "./helpers";
 
 export function createBaseConfig(): SurrealistConfig {
 	return {
 		theme: "automatic",
 		tabs: [],
-		environments: [],
+		environments: [createBaseEnvironment()],
 		isPinned: false,
 		activeTab: null,
 		autoConnect: true,
@@ -61,5 +62,13 @@ export function createBaseSession(query?: string): SurrealistSession {
 		pinned: false,
 		pinnedTables: [],
 		liveQueries: [],
+	};
+}
+
+export function createBaseEnvironment() {
+	return {
+		id: newId(),
+		name: "Default",
+		connection: {},
 	};
 }

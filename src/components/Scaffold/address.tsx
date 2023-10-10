@@ -4,13 +4,14 @@ import { mdiClose } from "@mdi/js";
 import { closeConnection, openConnection } from "~/database";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { MouseEvent, useEffect } from "react";
 import { useSession, useEnvironment } from "~/hooks/environment";
 import { mergeConnections, isConnectionValid } from "~/util/environments";
 import { useIsLight } from "~/hooks/theme";
 import { ViewMode } from "~/types";
+import { openTabEditor } from "~/stores/interface";
 
 export interface AddressBarProps {
 	viewMode: ViewMode;
@@ -20,9 +21,9 @@ export interface AddressBarProps {
 export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const isLight = useIsLight();
 	const theme = useMantineTheme();
-	const isConnected = useStoreValue((state) => state.isConnected);
-	const isConnecting = useStoreValue((state) => state.isConnecting);
-	const isQuerying = useStoreValue((state) => state.isQueryActive);
+	const isConnected = useStoreValue((state) => state.database.isConnected);
+	const isConnecting = useStoreValue((state) => state.database.isConnecting);
+	const isQuerying = useStoreValue((state) => state.database.isQueryActive);
 	const autoConnect = useStoreValue((state) => state.config.autoConnect);
 
 	const sessionInfo = useSession();
@@ -39,12 +40,12 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 		closeConnection();
 	});
 
-	const openTabEditor = useStable(() => {
+	const showTabEditor = useStable(() => {
 		if (!sessionInfo) {
 			return;
 		}
 
-		store.dispatch(actions.openTabEditor(sessionInfo.id));
+		store.dispatch(openTabEditor(sessionInfo.id));
 	});
 
 	useEffect(() => {
@@ -60,7 +61,7 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 					classes.input,
 					connectionValid && (!isConnected || showQuery) && classes.inputWithButton
 				)}
-				onClick={openTabEditor}
+				onClick={showTabEditor}
 				style={{ borderColor: borderColor }}
 			>
 				{isConnected ? (

@@ -18,12 +18,13 @@ import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveSession } from "~/hooks/environment";
-import { actions, store } from "~/store";
+import { store } from "~/store";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
 import { useDesignerConfig } from "./hooks";
 import { TableGrid } from "./grid";
 import { RadioSelect } from "~/components/RadioSelect";
 import { useToggleList } from "~/hooks/toggle";
+import { updateSession } from "~/stores/config";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -135,21 +136,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const setNodeMode = useStable((mode: string) => {
-		store.dispatch(
-			actions.updateSession({
-				id: activeSession?.id,
-				designerNodeMode: mode as DesignerNodeMode,
-			})
-		);
+		store.dispatch(updateSession({
+			id: activeSession?.id,
+			designerNodeMode: mode as DesignerNodeMode,
+		}));
 	});
 
 	const setLayoutMode = useStable((mode: string) => {
-		store.dispatch(
-			actions.updateSession({
-				id: activeSession?.id,
-				designerLayoutMode: mode as DesignerLayoutMode,
-			})
-		);
+		store.dispatch(updateSession({
+			id: activeSession?.id,
+			designerLayoutMode: mode as DesignerLayoutMode,
+		}));
 	});
 
 	return (

@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { ConnectionDetails } from "../ConnectionDetails";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { mdiClose, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -14,6 +14,7 @@ import { SurrealistEnvironment } from "~/types";
 import { newId } from "~/util/helpers";
 import { ModalTitle } from "../ModalTitle";
 import { openConnection } from "~/database";
+import { removeSession, setEnvironments } from "~/stores/config";
 
 export interface EnvironmentsProps {
 	opened: boolean;
@@ -30,13 +31,13 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 	const isLight = useIsLight();
 
 	const [viewingEnv, setViewingEnv] = useState("");
-	const [environments, setEnvironments] = useImmer<SurrealistEnvironment[]>([]);
+	const [envList, setEnvList] = useImmer<SurrealistEnvironment[]>([]);
 	const [removedIds, setRemovedIds] = useImmer<string[]>([]);
 
-	const selected = environments.find((item) => item.id === viewingEnv);
+	const selected = envList.find((item) => item.id === viewingEnv);
 
 	const openEnvironment = useStable((id: string) => {
-		const env = environments.find((item) => item.id === id);
+		const env = envList.find((item) => item.id === id);
 
 		if (!env) return;
 
@@ -44,7 +45,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 	});
 
 	const updateConnection = useStable((updater: any) => {
-		setEnvironments((draft) => {
+		setEnvList((draft) => {
 			const env = draft.find((item) => item.id === viewingEnv);
 
 			if (env) {
@@ -54,7 +55,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 	});
 
 	const updateName = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setEnvironments((draft) => {
+		setEnvList((draft) => {
 			const env = draft.find((item) => item.id === viewingEnv);
 
 			if (env) {
@@ -70,11 +71,11 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 		do {
 			tabName = buildName(counter);
 			counter++;
-		} while (environments.some((env) => env.name === tabName));
+		} while (envList.some((env) => env.name === tabName));
 
 		const envId = newId();
 
-		setEnvironments((draft) => {
+		setEnvList((draft) => {
 			draft.push({
 				id: envId,
 				name: tabName,
@@ -84,7 +85,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 	});
 
 	const deleteCurrent = useStable(() => {
-		setEnvironments((draft) => {
+		setEnvList((draft) => {
 			const index = draft.findIndex((item) => item.id === viewingEnv);
 
 			if (index !== -1) {
@@ -102,11 +103,11 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 	const saveEnvironments = useStable(() => {
 		for (const tab of liveTabs) {
 			if (removedIds.includes(tab.environment)) {
-				store.dispatch(actions.removeSession(tab.id));
+				store.dispatch(removeSession(tab.id));
 			}
 		}
 
-		store.dispatch(actions.setEnvironments(environments));
+		store.dispatch(setEnvironments(envList));
 
 		onClose();
 		openConnection();
@@ -114,7 +115,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 
 	useEffect(() => {
 		if (opened && viewingEnv === "") {
-			setEnvironments(liveEnvs);
+			setEnvList(liveEnvs);
 			setViewingEnv(liveEnvs[0]?.id ?? "");
 		}
 	}, [opened, liveEnvs]);
@@ -143,7 +144,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 							top: 12
 						}}>
 						<Stack spacing="xs">
-							{environments.map((item) => {
+							{envList.map((item) => {
 								const isActive = item.id === viewingEnv;
 
 								return (
@@ -196,7 +197,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 									rightIcon={<Icon path={mdiClose} />}
 									color="red.5"
 									onClick={deleteCurrent}
-									disabled={environments.length <= 1}>
+									disabled={envList.length <= 1}>
 									Remove
 								</Button>
 							</Group>

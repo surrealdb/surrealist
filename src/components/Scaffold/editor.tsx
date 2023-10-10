@@ -5,7 +5,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
 import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
 import { useStable } from "~/hooks/stable";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { Form } from "../Form";
 import { useEffect } from "react";
 import { updateTitle } from "~/util/helpers";
@@ -14,14 +14,16 @@ import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
 import { closeConnection, openConnection } from "~/database";
+import { updateSession } from "~/stores/config";
+import { closeTabEditor } from "~/stores/interface";
 
 export function TabEditor() {
 	const isLight = useIsLight();
 	const tabs = useTabsList();
 	const environments = useEnvironmentList();
 	const activeSessionId = useStoreValue((state) => state.config.activeTab);
-	const opened = useStoreValue((state) => state.showTabEditor);
-	const editingId = useStoreValue((state) => state.editingId);
+	const opened = useStoreValue((state) => state.interface.showTabEditor);
+	const editingId = useStoreValue((state) => state.interface.editingId);
 
 	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
 
@@ -33,18 +35,16 @@ export function TabEditor() {
 	const mergedValid = isConnectionValid(mergedDetails);
 
 	const handleCose = useStable(() => {
-		store.dispatch(actions.closeTabEditor());
+		store.dispatch(closeTabEditor());
 	});
 
 	const saveInfo = useStable(async () => {
 		handleCose();
 
-		store.dispatch(
-			actions.updateSession({
-				id: editingId,
-				connection: infoDetails,
-			})
-		);
+		store.dispatch(updateSession({
+			id: editingId,
+			connection: infoDetails,
+		}));
 
 		if (activeSessionId == editingId) {
 			const { autoConnect } = store.getState().config;

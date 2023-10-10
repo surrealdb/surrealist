@@ -17,7 +17,7 @@ import {
 import { Icon } from "../Icon";
 import { SurrealistSession } from "~/types";
 import { Text } from "@mantine/core";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { updateTitle, applyOrder } from "~/util/helpers";
@@ -26,6 +26,8 @@ import { useHotkeys, useInputState } from "@mantine/hooks";
 import { Environments } from "./environments";
 import { SyntheticEvent } from "react";
 import { Sortable } from "../Sortable";
+import { setActiveSession, updateSession, removeSession, setSessions } from "~/stores/config";
+import { openTabEditor, openTabCreator } from "~/stores/interface";
 
 function getSessionIcon(session: SurrealistSession) {
 	return VIEW_MODES.find((v) => v.id == session.activeView)?.icon;
@@ -67,7 +69,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 			return;
 		}
 
-		store.dispatch(actions.setActiveSession(id));
+		store.dispatch(setActiveSession(id));
 
 		updateTitle();
 		setOpened(false);
@@ -104,7 +106,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 		setOpened(false);
 
-		store.dispatch(actions.openTabEditor(id));
+		store.dispatch(openTabEditor(id));
 	});
 
 	const handlePin = useStable((e: MouseEvent, id: string) => {
@@ -112,12 +114,10 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 		const pinned = sessions.find((session) => session.id === id)?.pinned ?? false;
 
-		store.dispatch(
-			actions.updateSession({
-				id: id,
-				pinned: !pinned,
-			})
-		);
+		store.dispatch(updateSession({
+			id: id,
+			pinned: !pinned,
+		}));
 	});
 
 	const handleDuplicate = useStable((e: MouseEvent, id: string) => {
@@ -127,18 +127,16 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 		const details = sessions.find((session) => session.id === id)?.connection || {};
 
-		store.dispatch(
-			actions.openTabCreator({
-				environment: viewingEnv,
-				connection: details,
-			})
-		);
+		store.dispatch(openTabCreator({
+			environment: viewingEnv,
+			connection: details,
+		}));
 	});
 
 	const handleDelete = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
 
-		store.dispatch(actions.removeSession(id));
+		store.dispatch(removeSession(id));
 	});
 
 	const saveRename = useStable((e: SyntheticEvent) => {
@@ -152,12 +150,10 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 			return;
 		}
 
-		store.dispatch(
-			actions.updateSession({
-				...info,
-				name: tabName,
-			})
-		);
+		store.dispatch(updateSession({
+			...info,
+			name: tabName,
+		}));
 
 		setRenamingSession("");
 		setTabName("");
@@ -175,7 +171,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 	});
 
 	const saveTabOrder = useStable((order: SurrealistSession[]) => {
-		store.dispatch(actions.setSessions(applyOrder(sessions, order)));
+		store.dispatch(setSessions(applyOrder(sessions, order)));
 	});
 
 	useEffect(() => {

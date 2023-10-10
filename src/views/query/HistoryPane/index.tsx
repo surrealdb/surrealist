@@ -1,4 +1,5 @@
 import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Box,
@@ -14,10 +15,11 @@ import {
 	TextInput,
 	useMantineTheme,
 } from "@mantine/core";
+
 import { mdiClose, mdiDelete, mdiHistory, mdiMagnify, mdiPencil, mdiPlay } from "@mdi/js";
 import { Fragment, useMemo } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { actions, store, useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import dayjs from "dayjs";
 import { useStable } from "~/hooks/stable";
 import { useHover, useInputState } from "@mantine/hooks";
@@ -26,6 +28,7 @@ import { useActiveSession } from "~/hooks/environment";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { executeQuery } from "~/database";
+import { removeHistoryEntry, addQueryTab, setShowQueryListing, clearHistory } from "~/stores/config";
 
 export function HistoryPane() {
 	const isLight = useIsLight();
@@ -91,11 +94,11 @@ function HistoryRow({ entry, isLight }: HistoryRowProps) {
 	const { ref, hovered } = useHover();
 
 	const removeEntry = useStable(() => {
-		store.dispatch(actions.removeHistoryEntry(entry.id));
+		store.dispatch(removeHistoryEntry(entry.id));
 	});
 
 	const editQuery = useStable(() => {
-		store.dispatch(actions.addQueryTab(entry.query));
+		store.dispatch(addQueryTab(entry.query));
 	});
 
 	const executeHistory = useStable(() => {
@@ -143,17 +146,17 @@ function HistoryRow({ entry, isLight }: HistoryRowProps) {
 }
 
 function HistoryActions() {
-	const clearHistory = useStable(() => {
-		store.dispatch(actions.clearHistory());
+	const emptyHistory = useStable(() => {
+		store.dispatch(clearHistory());
 	});
 
 	const hideHistory = useStable(() => {
-		store.dispatch(actions.setShowQueryListing(false));
+		store.dispatch(setShowQueryListing(false));
 	});
 
 	return (
 		<Group align="center">
-			<ActionIcon onClick={clearHistory} title="Clear history">
+			<ActionIcon onClick={emptyHistory} title="Clear history">
 				<Icon color="light.4" path={mdiDelete} />
 			</ActionIcon>
 
