@@ -19,6 +19,8 @@ import jsonTm from '~/assets/grammar/JSON.tmLanguage.json';
 
 import surrealistLightTheme from '~/assets/themes/surrealist-light.json';
 import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
+import { Registry } from "monaco-textmate";
+import { wireTmGrammars } from "monaco-editor-textmate";
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
@@ -74,6 +76,18 @@ const SCOPE_GRAMMARS: any = {
 	}
 };
 
+const GRAMMAR_REGISTRY = new Registry({
+	getGrammarDefinition: async (scopeName) => {
+		return getGrammar(scopeName);
+	}
+});
+
+const GRAMMARS_MAPPING = new Map([
+	['surrealql', 'source.surql'],
+	['javascript', 'source.js'],
+	['json', 'source.json']
+]);
+
 export function getGrammar(scopeName: string) {
 	return SCOPE_GRAMMARS[scopeName] || SCOPE_GRAMMARS['source.surql'];
 }
@@ -119,6 +133,14 @@ export async function initializeMonaco() {
 			{ open: "`", close: "`" },
 			{ open: "⟨", close: "⟩" }
 		]
+	});
+
+	// Inject textmate grammar support
+	wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
+
+	// Remeasure fonts after loading
+	document.fonts.ready.then(() => {
+		monaco.editor.remeasureFonts();
 	});
 
 	// table intellisense
@@ -313,4 +335,20 @@ export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
 	}
 
 	monaco.editor.setModelMarkers(model, "owner", markers);
+}
+
+let jsonPatched = false;
+
+/**
+ * Handle global post-load configuration for the editor
+ * 
+ * @param editor The editor instance
+ */
+export function onEditorReady(editor: editor.IStandaloneCodeEditor) {
+	const language = editor.getModel()!.getLanguageId();
+
+	if (language === 'json' && !jsonPatched) {
+		wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
+		jsonPatched = true;
+	}
 }

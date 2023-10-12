@@ -2,9 +2,7 @@ import * as monaco from 'monaco-editor';
 import classes from './style.module.scss';
 import { CSSProperties, ElementRef, HTMLAttributes, useEffect, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { DARK_THEME, LIGHT_THEME, BASE_EDITOR_CONFIG, getGrammar } from "~/util/editor";
-import { Registry } from "monaco-textmate";
-import { wireTmGrammars } from "monaco-editor-textmate";
+import { DARK_THEME, LIGHT_THEME, BASE_EDITOR_CONFIG, onEditorReady } from "~/util/editor";
 import { Box, Paper, clsx } from "@mantine/core";
 
 export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onChange'> {
@@ -37,29 +35,15 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 
 		editorRef.current = editor;
 
-		document.fonts.ready.then(() => {
-			monaco.editor.remeasureFonts();
-		});
-
 		props.onMount?.(editor);
+		
+		editor.onDidChangeModelLanguageConfiguration(() => {
+			onEditorReady(editor);
+		});
 
 		editor.getModel()?.onDidChangeContent(() => {
 			props.onChange?.(editor.getValue());
 		});
-
-		const registry = new Registry({
-			getGrammarDefinition: async (scopeName) => {
-				return getGrammar(scopeName);
-			}
-		});
-
-		const grammars = new Map();
-
-		grammars.set('surrealql', 'source.surql');
-		grammars.set('javascript', 'source.js');
-		grammars.set('json', 'source.json');
-
-		wireTmGrammars(monaco, registry, grammars);
 
 		if (props.autoSize) {
 			const updateHeight = () => {
