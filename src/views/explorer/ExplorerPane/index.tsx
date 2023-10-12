@@ -48,11 +48,11 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const filter = useStoreValue((state) => state.explorer.filter);
 	
 	const isLight = useIsLight();
+	const sessionInfo = useActiveSession();
 	const [pageText, setPageText] = useInputState("1");
 	const [pageSize, setPageSize] = useInputState("25");
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
 	const [page, setPage] = useState(1);
-	const sessionInfo = useActiveSession();
 
 	const pageCount = Math.ceil(records.length / Number.parseInt(pageSize));
 

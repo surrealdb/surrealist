@@ -14,7 +14,7 @@ import { setExplorerTable } from "~/stores/explorer";
 const SPLIT_SIZE: SplitValues = [250, 450];
 
 export function ExplorerView() {
-	const explorerTable = useStoreValue(state => state.explorer.explorerTable);
+	const explorerTable = useStoreValue(state => state.explorer.activeTable);
 	
 	const [activeRecord, setActiveRecord] = useState<any>(null);
 	const [creatingRecord, setCreatingRecord] = useState(false);

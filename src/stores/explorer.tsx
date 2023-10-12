@@ -3,7 +3,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 const explorerSlice = createSlice({
 	name: "explorer",
 	initialState: {
-		explorerTable: null as string | null,
+		activeTable: null as string | null,
 		records: [] as any[],
 		recordCount: 0,
 		filtering: false,
@@ -12,7 +12,7 @@ const explorerSlice = createSlice({
 	reducers: {
 		
 		setExplorerTable(state, action: PayloadAction<string | null>) {
-			state.explorerTable = action.payload;
+			state.activeTable = action.payload;
 		},
 
 		setExplorerData(state, action: PayloadAction<{ records: any[], count: number }>) {

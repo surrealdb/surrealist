@@ -4,6 +4,7 @@ import { configReducer } from "./stores/config";
 import { databaseReducer } from "./stores/database";
 import { interfaceReducer } from "./stores/interface";
 import { explorerReducer } from "./stores/explorer";
+import { designerReducer } from "./stores/designer";
 
 export const store = configureStore({
 	reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
 		database: databaseReducer,
 		interface: interfaceReducer,
 		explorer: explorerReducer,
+		designer: designerReducer,
 	}
 });
 
