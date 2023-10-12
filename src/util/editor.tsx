@@ -135,14 +135,6 @@ export async function initializeMonaco() {
 		]
 	});
 
-	// Inject textmate grammar support
-	wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
-
-	// Remeasure fonts after loading
-	document.fonts.ready.then(() => {
-		monaco.editor.remeasureFonts();
-	});
-
 	// table intellisense
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: [" "],
@@ -347,8 +339,14 @@ let jsonPatched = false;
 export function onEditorReady(editor: editor.IStandaloneCodeEditor) {
 	const language = editor.getModel()!.getLanguageId();
 
+	// Patch JSON highlighting
 	if (language === 'json' && !jsonPatched) {
 		wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
 		jsonPatched = true;
 	}
+
+	// Ensure correct font measurements
+	document.fonts.ready.then(() => {
+		monaco.editor.remeasureFonts();
+	});
 }
