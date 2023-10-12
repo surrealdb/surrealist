@@ -1,5 +1,3 @@
-import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
-import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import {
 	mdiArrowLeft,
 	mdiArrowRight,
@@ -11,8 +9,10 @@ import {
 	mdiRefresh,
 	mdiTable,
 } from "@mdi/js";
-import { FocusEvent, KeyboardEvent, useEffect, useState } from "react";
-import { useImmer } from "use-immer";
+
+import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
@@ -20,8 +20,9 @@ import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { store } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { toggleTablePin } from "~/stores/config";
+import { clearExplorerData, setExplorerData, setExplorerFilter, setExplorerFiltering } from "~/stores/explorer";
 import { ColumnSort, OpenFn } from "~/types";
 import { getSurreal } from "~/util/connection";
 
@@ -41,19 +42,19 @@ export interface ExplorerPaneProps {
 }
 
 export function ExplorerPane(props: ExplorerPaneProps) {
+	const records = useStoreValue((state) => state.explorer.records);
+	const recordCount = useStoreValue((state) => state.explorer.recordCount);
+	const filtering = useStoreValue((state) => state.explorer.filtering);
+	const filter = useStoreValue((state) => state.explorer.filter);
+	
 	const isLight = useIsLight();
-	const [records, setRecords] = useImmer<any[]>([]);
-	const [recordCount, setRecordCount] = useState(0);
-	const [filterValid, setFilterValid] = useState(false);
-	const [filter, setFilter] = useState(false);
-	const [filterText, setFilterText] = useInputState("");
 	const [pageText, setPageText] = useInputState("1");
 	const [pageSize, setPageSize] = useInputState("25");
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
 	const [page, setPage] = useState(1);
 	const sessionInfo = useActiveSession();
 
-	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
+	const pageCount = Math.ceil(records.length / Number.parseInt(pageSize));
 
 	function setCurrentPage(number: number) {
 		setPageText(number.toString());
@@ -61,21 +62,29 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	}
 
 	const toggleFilter = useStable(() => {
-		setFilter(!filter);
+		store.dispatch(setExplorerFiltering(!filter));
 	});
 
-	const [showFilter] = useDebouncedValue(filter, 250);
-	const [filterClause] = useDebouncedValue(filterText, 500);
+	const setFilter = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setExplorerFilter(e.target.value));
+	});
+
+	const [showFilter] = useDebouncedValue(filtering, 250);
+	const [filterClause] = useDebouncedValue(filter, 500);
+
+	const isFilterValid = useMemo(() => {
+		return (!showFilter || !filter) || validate_where_clause(filter);
+	}, [showFilter, filter]);
 
 	const fetchRecords = useStable(async () => {
 		if (!props.activeSessionle) {
-			setRecords([]);
+			store.dispatch(clearExplorerData());
 			return;
 		}
 
 		const surreal = getSurreal();
 
-		if (!surreal || !filterValid) {
+		if (!surreal || !isFilterValid) {
 			return;
 		}
 
@@ -99,11 +108,10 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		}
 
 		const response = await surreal.query(`${countQuery};${fetchQuery}`);
-		const resultCount = response[0].result?.[0] || 0;
-		const resultRecords = response[1].result || [];
+		const count = response[0].result?.[0] || 0;
+		const records = response[1].result || [];
 
-		setRecordCount(resultCount);
-		setRecords(resultRecords);
+		store.dispatch(setExplorerData({ records, count }));
 
 		if (page > pageCount) {
 			setCurrentPage(pageCount || 1);
@@ -113,14 +121,6 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	useEffect(() => {
 		fetchRecords();
 	}, [props.activeSessionle, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
-
-	useEffect(() => {
-		if (showFilter && filterText) {
-			setFilterValid(validate_where_clause(filterText));
-		} else {
-			setFilterValid(true);
-		}
-	}, [showFilter, filterText]);
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
@@ -209,14 +209,14 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 						<TextInput
 							placeholder="Enter filter clause..."
 							icon={<Icon path={mdiFilterVariant} />}
-							value={filterText}
-							onChange={setFilterText}
-							error={!filterValid}
+							value={filter}
+							onChange={setFilter}
+							error={!isFilterValid}
 							autoFocus
 							styles={(theme) => ({
 								input: {
 									fontFamily: "JetBrains Mono",
-									borderColor: (filterValid ? theme.fn.themeColor("gray") : theme.fn.themeColor("red")) + " !important",
+									borderColor: (isFilterValid ? theme.fn.themeColor("gray") : theme.fn.themeColor("red")) + " !important",
 								},
 							})}
 						/>

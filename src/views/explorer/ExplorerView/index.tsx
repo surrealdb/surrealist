@@ -8,13 +8,14 @@ import { CreatorPane } from "../CreatorPane";
 import { useHistory } from "~/hooks/history";
 import { useIsConnected } from "~/hooks/connection";
 import { getSurreal } from "~/util/connection";
+import { store, useStoreValue } from "~/store";
+import { setExplorerTable } from "~/stores/explorer";
 
 const SPLIT_SIZE: SplitValues = [250, 450];
 
-export interface ExplorerViewProps {}
-
-export function ExplorerView(props: ExplorerViewProps) {
-	const [activeSessionle, setActiveTable] = useState<string | null>(null);
+export function ExplorerView() {
+	const explorerTable = useStoreValue(state => state.explorer.explorerTable);
+	
 	const [activeRecord, setActiveRecord] = useState<any>(null);
 	const [creatingRecord, setCreatingRecord] = useState(false);
 	const [refreshId, setRefreshId] = useState(0);
@@ -32,6 +33,10 @@ export function ExplorerView(props: ExplorerViewProps) {
 		if (id) {
 			history.push(id);
 		}
+	});
+
+	const setActiveTable = useStable((table: string | null) => {
+		store.dispatch(setExplorerTable(table));
 	});
 
 	const fetchRecord = useStable(async (id: string | null) => {
@@ -133,10 +138,19 @@ export function ExplorerView(props: ExplorerViewProps) {
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"
-			startPane={<TablesPane active={activeSessionle} onSelectTable={setActiveTable} onRefresh={doRefresh} />}
+			startPane={
+				<TablesPane
+					active={explorerTable}
+					onSelectTable={setActiveTable}
+					onRefresh={doRefresh}
+				/>}
 			endPane={
 				creatingRecord ? (
-					<CreatorPane activeSessionle={activeSessionle} onClose={handleCloseRecord} onSubmit={createRecord} />
+					<CreatorPane
+						activeSessionle={explorerTable} 
+						onClose={handleCloseRecord}
+						onSubmit={createRecord}
+					/>
 				) : activeRecord ? (
 					<InspectorPane
 						history={history}
@@ -151,7 +165,7 @@ export function ExplorerView(props: ExplorerViewProps) {
 			}>
 			<ExplorerPane
 				refreshId={refreshId}
-				activeSessionle={activeSessionle}
+				activeSessionle={explorerTable}
 				onSelectRecord={pushNext}
 				activeRecordId={activeRecordId}
 				onRequestCreate={requestCreate}
