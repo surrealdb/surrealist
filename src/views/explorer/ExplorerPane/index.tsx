@@ -35,7 +35,7 @@ const PAGE_SIZES = [
 
 export interface ExplorerPaneProps {
 	refreshId: number;
-	activeSessionle: string | null;
+	activeSession: string | null;
 	activeRecordId: string | null;
 	onSelectRecord: OpenFn;
 	onRequestCreate: () => void;
@@ -77,7 +77,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	}, [showFilter, filter]);
 
 	const fetchRecords = useStable(async () => {
-		if (!props.activeSessionle) {
+		if (!props.activeSession) {
 			store.dispatch(clearExplorerData());
 			return;
 		}
@@ -92,8 +92,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeSessionle}`;
-		let fetchQuery = `SELECT * FROM ${props.activeSessionle}`;
+		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeSession}`;
+		let fetchQuery = `SELECT * FROM ${props.activeSession}`;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;
@@ -120,7 +120,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeSessionle, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
+	}, [props.activeSession, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
@@ -162,14 +162,14 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		props.onSelectRecord(record.id);
 	});
 
-	const isPinned = props.activeSessionle && sessionInfo?.pinnedTables?.includes(props.activeSessionle);
+	const isPinned = props.activeSession && sessionInfo?.pinnedTables?.includes(props.activeSession);
 
 	const togglePin = useStable(() => {
-		if (!props.activeSessionle || !sessionInfo) return;
+		if (!props.activeSession || !sessionInfo) return;
 
 		store.dispatch(toggleTablePin({
 			session: sessionInfo.id,
-			table: props.activeSessionle,
+			table: props.activeSession,
 		}));
 	});
 
@@ -203,7 +203,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 					</Text>
 				</Group>
 			}>
-			{props.activeSessionle ? (
+			{props.activeSession ? (
 				<>
 					{filter && (
 						<TextInput

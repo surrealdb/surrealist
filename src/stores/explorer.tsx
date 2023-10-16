@@ -1,5 +1,12 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+export interface ActiveRecord {
+	invalid?: true;
+	content: any;
+	inputs: [];
+	outputs: [];
+}
+
 const explorerSlice = createSlice({
 	name: "explorer",
 	initialState: {
@@ -8,6 +15,11 @@ const explorerSlice = createSlice({
 		recordCount: 0,
 		filtering: false,
 		filter: '',
+		editingRecord: null as any,
+		isCreating: false,
+		isEditing: false,
+		recordHistory: [] as any[],
+		historyIndex: 0,
 	},
 	reducers: {
 		
@@ -33,6 +45,30 @@ const explorerSlice = createSlice({
 			state.filter = action.payload;
 		},
 
+		openCreator(state) {
+			state.isEditing = false;
+			state.isCreating = true;
+		},
+
+		openEditor(state, action: PayloadAction<any>) {
+			state.editingRecord = action.payload;
+			state.isEditing = true;
+			state.isCreating = false;
+		},
+
+		closeRecord(state) {
+			state.isCreating = false;
+			state.isEditing = false;
+		},
+
+		setHistory(state, action: PayloadAction<any[]>) {
+			state.recordHistory = action.payload;
+		},
+
+		setHistoryIndex(state, action: PayloadAction<number>) {
+			state.historyIndex = action.payload;
+		},
+
 	}
 });
 
@@ -44,4 +80,9 @@ export const {
 	clearExplorerData,
 	setExplorerFiltering,
 	setExplorerFilter,
+	openCreator,
+	openEditor,
+	closeRecord,
+	setHistory,
+	setHistoryIndex,
 } = explorerSlice.actions;

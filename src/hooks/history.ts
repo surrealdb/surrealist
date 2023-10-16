@@ -1,9 +1,14 @@
-import { useState } from "react";
 import { useStable } from "./stable";
 import isEqual from "fast-deep-equal";
 
-export interface HistoryHandle<T> {
+export interface HistoryOptions<T> {
 	history: T[];
+	index: number;
+	setHistory: (items: T[]) => void;
+	setIndex: (index: number) => void;
+}
+
+export interface HistoryHandle<T> {
 	current: T | undefined;
 	hasBack: boolean;
 	hasForward: boolean;
@@ -13,9 +18,8 @@ export interface HistoryHandle<T> {
 	clear: () => void;
 }
 
-export function useHistory<T = string>(): HistoryHandle<T> {
-	const [history, setHistory] = useState<T[]>([]);
-	const [index, setIndex] = useState(0);
+export function useHistory<T = string>(options: HistoryOptions<T>): HistoryHandle<T> {
+	const { history, index, setIndex, setHistory } = options;
 
 	const current = history[index];
 	const hasBack = index > 0;
@@ -23,13 +27,13 @@ export function useHistory<T = string>(): HistoryHandle<T> {
 
 	const goBack = useStable(() => {
 		if (hasBack) {
-			setIndex((current) => current - 1);
+			setIndex(index - 1);
 		}
 	});
 
 	const goForward = useStable(() => {
 		if (hasForward) {
-			setIndex((current) => current + 1);
+			setIndex(index + 1);
 		}
 	});
 
@@ -39,11 +43,11 @@ export function useHistory<T = string>(): HistoryHandle<T> {
 		}
 
 		if (index < history.length - 1) {
-			setHistory((current) => current.slice(0, index + 1));
+			setHistory(history.slice(0, index + 1));
 		}
 
-		setHistory((current) => [...current, value]);
-		setIndex((current) => Math.min(history.length, current + 1));
+		setHistory([...history, value]);
+		setIndex(Math.min(history.length, index + 1));
 	});
 
 	const clear = useStable(() => {
@@ -52,7 +56,6 @@ export function useHistory<T = string>(): HistoryHandle<T> {
 	});
 
 	return {
-		history,
 		current,
 		hasBack,
 		hasForward,

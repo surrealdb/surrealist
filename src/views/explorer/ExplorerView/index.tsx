@@ -9,21 +9,35 @@ import { useHistory } from "~/hooks/history";
 import { useIsConnected } from "~/hooks/connection";
 import { getSurreal } from "~/util/connection";
 import { store, useStoreValue } from "~/store";
-import { setExplorerTable } from "~/stores/explorer";
+import { closeRecord, openCreator, openEditor, setExplorerTable, setHistory, setHistoryIndex } from "~/stores/explorer";
 
 const SPLIT_SIZE: SplitValues = [250, 450];
 
 export function ExplorerView() {
-	const explorerTable = useStoreValue(state => state.explorer.activeTable);
-	
-	const [activeRecord, setActiveRecord] = useState<any>(null);
-	const [creatingRecord, setCreatingRecord] = useState(false);
+	const {
+		activeTable,
+		editingRecord,
+		isEditing,
+		isCreating,
+		recordHistory,
+		historyIndex,
+	} = useStoreValue(state => state.explorer);
+
+	const isOnline = useIsConnected();
 	const [refreshId, setRefreshId] = useState(0);
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
-	const isOnline = useIsConnected();
-
-	const history = useHistory();
-	const activeRecordId = activeRecord?.content?.id || null;
+	
+	const activeRecordId = editingRecord?.content?.id || null;
+	const history = useHistory({
+		history: recordHistory,
+		index: historyIndex,
+		setHistory(items) {
+			store.dispatch(setHistory(items));
+		},
+		setIndex(index) {
+			store.dispatch(setHistoryIndex(index));
+		}
+	});
 
 	const doRefresh = useStable(() => {
 		setRefreshId((num) => num + 1);
@@ -55,22 +69,11 @@ export function ExplorerView() {
 		const inputs = response[1].result[0]?.relations || [];
 		const outputs = response[2].result[0]?.relations || [];
 
-		setCreatingRecord(false);
+		const data = content?.id
+			? { content, inputs, outputs }
+			: { invalid: true, content: { id: id }, inputs: [], outputs: [] };
 
-		if (content?.id) {
-			setActiveRecord({
-				content,
-				inputs,
-				outputs,
-			});
-		} else {
-			setActiveRecord({
-				invalid: true,
-				content: { id: id },
-				inputs: [],
-				outputs: [],
-			});
-		}
+		store.dispatch(openEditor(data));
 	});
 
 	const createRecord = useStable(async (table: string, json: string) => {
@@ -82,7 +85,7 @@ export function ExplorerView() {
 
 		await surreal.query(`CREATE ${table} CONTENT ${json}`);
 
-		setCreatingRecord(false);
+		store.dispatch(closeRecord());
 		doRefresh();
 	});
 
@@ -99,7 +102,7 @@ export function ExplorerView() {
 	});
 
 	const handleCloseRecord = useStable(() => {
-		setCreatingRecord(false);
+		store.dispatch(closeRecord());
 		history.clear();
 	});
 
@@ -108,7 +111,7 @@ export function ExplorerView() {
 	});
 
 	const requestCreate = useStable(async () => {
-		setCreatingRecord(true);
+		store.dispatch(openCreator());
 		history.clear();
 	});
 
@@ -120,14 +123,15 @@ export function ExplorerView() {
 		if (history.current) {
 			fetchRecord(history.current);
 		} else {
-			setActiveRecord(null);
+			console.log('closing');
+			store.dispatch(closeRecord());
 		}
 	}, [history.current]);
 
 	useEffect(() => {
 		if (!isOnline) {
-			setActiveRecord(null);
-			setActiveTable(null);
+			store.dispatch(closeRecord());
+			store.dispatch(setExplorerTable(null));
 		}
 	}, [isOnline]);
 
@@ -140,21 +144,21 @@ export function ExplorerView() {
 			direction="horizontal"
 			startPane={
 				<TablesPane
-					active={explorerTable}
+					active={activeTable}
 					onSelectTable={setActiveTable}
 					onRefresh={doRefresh}
 				/>}
 			endPane={
-				creatingRecord ? (
+				isCreating ? (
 					<CreatorPane
-						activeSessionle={explorerTable} 
+						activeSession={activeTable} 
 						onClose={handleCloseRecord}
 						onSubmit={createRecord}
 					/>
-				) : activeRecord ? (
+				) : isEditing ? (
 					<InspectorPane
 						history={history}
-						activeRecord={activeRecord}
+						activeRecord={editingRecord}
 						onClose={handleCloseRecord}
 						onContentChange={handleContentChange}
 						onSelectRecord={pushNext}
@@ -165,7 +169,7 @@ export function ExplorerView() {
 			}>
 			<ExplorerPane
 				refreshId={refreshId}
-				activeSessionle={explorerTable}
+				activeSession={activeTable}
 				onSelectRecord={pushNext}
 				activeRecordId={activeRecordId}
 				onRequestCreate={requestCreate}
