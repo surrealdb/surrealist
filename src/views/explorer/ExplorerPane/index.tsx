@@ -22,9 +22,10 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, useStoreValue } from "~/store";
 import { toggleTablePin } from "~/stores/config";
-import { clearExplorerData, setExplorerData, setExplorerFilter, setExplorerFiltering } from "~/stores/explorer";
-import { ColumnSort, OpenFn } from "~/types";
+import { clearExplorerData, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering } from "~/stores/explorer";
+import { ColumnSort } from "~/types";
 import { getSurreal } from "~/util/connection";
+import { HistoryHandle } from "~/hooks/history";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -34,14 +35,11 @@ const PAGE_SIZES = [
 ];
 
 export interface ExplorerPaneProps {
-	refreshId: number;
-	activeSession: string | null;
-	activeRecordId: string | null;
-	onSelectRecord: OpenFn;
-	onRequestCreate: () => void;
+	history: HistoryHandle<any>;
 }
 
-export function ExplorerPane(props: ExplorerPaneProps) {
+export function ExplorerPane({ history }: ExplorerPaneProps) {
+	const table = useStoreValue((state) => state.explorer.activeTable);
 	const records = useStoreValue((state) => state.explorer.records);
 	const recordCount = useStoreValue((state) => state.explorer.recordCount);
 	const filtering = useStoreValue((state) => state.explorer.filtering);
@@ -55,6 +53,11 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	const [page, setPage] = useState(1);
 
 	const pageCount = Math.ceil(records.length / Number.parseInt(pageSize));
+
+	const requestCreate = useStable(async () => {
+		store.dispatch(openCreator(table || ''));
+		history.clear();
+	});
 
 	function setCurrentPage(number: number) {
 		setPageText(number.toString());
@@ -77,7 +80,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 	}, [showFilter, filter]);
 
 	const fetchRecords = useStable(async () => {
-		if (!props.activeSession) {
+		if (!table) {
 			store.dispatch(clearExplorerData());
 			return;
 		}
@@ -92,8 +95,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM ${props.activeSession}`;
-		let fetchQuery = `SELECT * FROM ${props.activeSession}`;
+		let countQuery = `SELECT * FROM count((SELECT * FROM ${table}`;
+		let fetchQuery = `SELECT * FROM ${table}`;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;
@@ -120,7 +123,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [props.activeSession, props.refreshId, pageSize, page, sortMode, showFilter, filterClause]);
+	}, [table, pageSize, page, sortMode, showFilter, filterClause]);
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
@@ -158,18 +161,19 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 		setCurrentPage(page + 1);
 	});
 
-	const handleOpenRow = useStable((record: any) => {
-		props.onSelectRecord(record.id);
+	const openRecord = useStable((record: any) => {
+		history.push(record);
+		store.dispatch(openEditor());
 	});
 
-	const isPinned = props.activeSession && sessionInfo?.pinnedTables?.includes(props.activeSession);
+	const isPinned = table && sessionInfo?.pinnedTables?.includes(table);
 
 	const togglePin = useStable(() => {
-		if (!props.activeSession || !sessionInfo) return;
+		if (!table || !sessionInfo) return;
 
 		store.dispatch(toggleTablePin({
 			session: sessionInfo.id,
-			table: props.activeSession,
+			table,
 		}));
 	});
 
@@ -179,7 +183,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 			icon={mdiTable}
 			rightSection={
 				<Group align="center">
-					<ActionIcon title="Create record" onClick={props.onRequestCreate}>
+					<ActionIcon title="Create record" onClick={requestCreate}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
 
@@ -203,7 +207,7 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 					</Text>
 				</Group>
 			}>
-			{props.activeSession ? (
+			{table ? (
 				<>
 					{filter && (
 						<TextInput
@@ -226,11 +230,11 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 							style={{ position: "absolute", inset: 12, top: filter ? 40 : 0, bottom: 54, transition: "top .1s" }}>
 							<DataTable
 								data={records}
-								openRecord={props.onSelectRecord}
-								active={props.activeRecordId}
+								openRecord={openRecord}
+								active={history.current}
 								sorting={sortMode}
 								onSortingChange={setSortMode}
-								onRowClick={handleOpenRow}
+								onRowClick={openRecord}
 							/>
 						</ScrollArea>
 					) : (
@@ -248,7 +252,8 @@ export function ExplorerPane(props: ExplorerPaneProps) {
 								px="xs"
 								onClick={previousPage}
 								disabled={page <= 1}
-								style={{ opacity: page <= 1 ? 0.4 : 1 }}>
+								style={{ opacity: page <= 1 ? 0.4 : 1 }}
+							>
 								<Icon path={mdiArrowLeft} />
 							</Button>
 

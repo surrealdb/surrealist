@@ -1,7 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface ActiveRecord {
-	invalid?: true;
 	content: any;
 	inputs: [];
 	outputs: [];
@@ -15,10 +14,12 @@ const explorerSlice = createSlice({
 		recordCount: 0,
 		filtering: false,
 		filter: '',
-		editingRecord: null as any,
 		isCreating: false,
+		creatorId: '',
+		creatorBody: '',
 		isEditing: false,
-		recordHistory: [] as any[],
+		inspectorRecord: null as ActiveRecord | null,
+		recordHistory: [] as string[],
 		historyIndex: 0,
 	},
 	reducers: {
@@ -45,23 +46,37 @@ const explorerSlice = createSlice({
 			state.filter = action.payload;
 		},
 
-		openCreator(state) {
+		openCreator(state, action: PayloadAction<string>) {
 			state.isEditing = false;
 			state.isCreating = true;
+			state.creatorId = action.payload;
+			state.creatorBody = '{\n    \n}';
 		},
 
-		openEditor(state, action: PayloadAction<any>) {
-			state.editingRecord = action.payload;
+		setCreatorId(state, action: PayloadAction<string>) {
+			state.creatorId = action.payload;
+		},
+
+		setCreatorBody(state, action: PayloadAction<string>) {
+			state.creatorBody = action.payload;
+		},
+
+		openEditor(state) {
 			state.isEditing = true;
 			state.isCreating = false;
 		},
 
-		closeRecord(state) {
+		closeEditor(state) {
 			state.isCreating = false;
 			state.isEditing = false;
+			state.inspectorRecord = null;
 		},
 
-		setHistory(state, action: PayloadAction<any[]>) {
+		setInspectorRecord(state, action: PayloadAction<ActiveRecord | null>) {
+			state.inspectorRecord = action.payload;
+		},
+
+		setHistory(state, action: PayloadAction<string[]>) {
 			state.recordHistory = action.payload;
 		},
 
@@ -81,8 +96,11 @@ export const {
 	setExplorerFiltering,
 	setExplorerFilter,
 	openCreator,
+	setCreatorId,
+	setCreatorBody,
 	openEditor,
-	closeRecord,
+	closeEditor,
+	setInspectorRecord,
 	setHistory,
 	setHistoryIndex,
 } = explorerSlice.actions;

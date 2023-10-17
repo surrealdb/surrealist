@@ -1,59 +1,64 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useMemo } from "react";
 import { mdiCheck, mdiClose, mdiTablePlus } from "@mdi/js";
 import { ActionIcon, Button, Divider, Group, Text, TextInput } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { store, useStoreValue } from "~/store";
+import { closeEditor, setCreatorBody, setCreatorId } from "~/stores/explorer";
+import { getSurreal } from "~/util/connection";
 
-export interface CreatorPaneProps {
-	activeSession: string | null;
-	onClose: () => void;
-	onSubmit: (table: string, json: string) => void;
-}
-
-export function CreatorPane(props: CreatorPaneProps) {
+export function CreatorPane() {
 	const isLight = useIsLight();
-	const [isInvalid, setIsInvalid] = useState(false);
-	const [tableName, setTableName] = useInputState("");
-	const [contentText, setContentText] = useState("{\n    \n}");
+	const creatorId = useStoreValue(state => state.explorer.creatorId);
+	const creatorBody = useStoreValue(state => state.explorer.creatorBody);
 
-	const jsonAlert = isInvalid ? <Text color="red">Invalid record JSON</Text> : undefined;
+	const handleSubmit = useStable(async () => {
+		const surreal = getSurreal();
 
-	useEffect(() => {
-		setTableName(props.activeSession || "");
-	}, [props.activeSession]);
-
-	const handleSubmit = useStable(() => {
-		if (!props.activeSession || !contentText) {
+		if (!creatorId || !creatorBody || !surreal) {
 			return;
 		}
 
-		props.onSubmit(tableName, contentText);
+		await surreal.query(`CREATE ${creatorId} CONTENT ${creatorBody}`);
+
+		store.dispatch(closeEditor());
 	});
 
-	const updateContent = useStable((content: string | undefined) => {
-		if (contentText === content) {
+	const handleCreatorId = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		store.dispatch(setCreatorId(e.target.value));
+	});
+	
+	const handleCreatorBody = useStable((content: string | undefined) => {
+		if (creatorBody === content) {
 			return;
 		}
 
-		setContentText(content || "");
+		store.dispatch(setCreatorBody(content || ""));
+	});
 
+	const handleClose = useStable(() => {
+		store.dispatch(closeEditor());
+	});
+
+	const isBodyValid = useMemo(() => {
 		try {
-			const json = content || "{}";
+			const json = creatorBody || "{}";
 			const parsed = JSON.parse(json);
 
 			if (typeof parsed !== "object") {
 				throw new TypeError("Invalid JSON");
 			}
 
-			setIsInvalid(false);
+			return true;
 		} catch {
-			setIsInvalid(true);
+			return false;
 		}
-	});
+	}, [creatorBody]);
+
+	const jsonAlert = !isBodyValid && <Text color="red">Invalid record JSON</Text>;
 
 	return (
 		<Panel
@@ -68,12 +73,18 @@ export function CreatorPane(props: CreatorPaneProps) {
 						</>
 					)}
 
-					<ActionIcon onClick={props.onClose} title="Close creator">
+					<ActionIcon onClick={handleClose} title="Close creator">
 						<Icon color="light.4" path={mdiClose} />
 					</ActionIcon>
 				</Group>
 			}>
-			<TextInput mb="xs" label="Record name" value={tableName} onChange={setTableName} />
+
+			<TextInput
+				mb="xs"
+				label="Record name"
+				value={creatorId}
+				onChange={handleCreatorId}
+			/>
 
 			<Text color="dark.0" size="sm">
 				Record contents
@@ -89,8 +100,8 @@ export function CreatorPane(props: CreatorPaneProps) {
 			>
 				<SurrealistEditor
 					language="json"
-					value={contentText}
-					onChange={updateContent}
+					value={creatorBody}
+					onChange={handleCreatorBody}
 					options={{
 						wrappingStrategy: "advanced",
 						wordWrap: "off",
@@ -102,7 +113,7 @@ export function CreatorPane(props: CreatorPaneProps) {
 			</div>
 
 			<Button
-				disabled={isInvalid || !tableName}
+				disabled={!isBodyValid || !creatorId}
 				onClick={handleSubmit}
 				style={{
 					position: "absolute",

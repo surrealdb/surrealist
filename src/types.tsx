@@ -18,6 +18,7 @@ export interface SurrealistConfig {
 	theme: ColorScheme | "automatic";
 	tabs: SurrealistSession[];
 	environments: SurrealistEnvironment[];
+	activeUrl: string;
 	isPinned: boolean,
 	activeTab: string | null;
 	autoConnect: boolean;
@@ -41,7 +42,6 @@ export interface SurrealistConfig {
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	tabSearch: boolean;
-	activeView: ViewMode;
 	defaultDesignerNodeMode: DesignerNodeMode,
 	defaultDesignerLayoutMode: DesignerLayoutMode
 }

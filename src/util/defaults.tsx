@@ -6,6 +6,7 @@ export function createBaseConfig(): SurrealistConfig {
 		theme: "automatic",
 		tabs: [],
 		environments: [createBaseEnvironment()],
+		activeUrl: '/',
 		isPinned: false,
 		activeTab: null,
 		autoConnect: true,
@@ -29,7 +30,6 @@ export function createBaseConfig(): SurrealistConfig {
 		errorChecking: true,
 		lastPromptedVersion: null,
 		tabSearch: false,
-		activeView: 'query',
 		defaultDesignerNodeMode: 'fields',
 		defaultDesignerLayoutMode: 'diagram'
 	};

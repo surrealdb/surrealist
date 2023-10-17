@@ -11,7 +11,7 @@ import {
 	mdiWrench,
 } from "@mdi/js";
 
-import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
+import { KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
@@ -19,46 +19,71 @@ import { OpenFn } from "~/types";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
-import { useInputState } from "@mantine/hooks";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { HistoryHandle } from "~/hooks/history";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { getSurreal } from "~/util/connection";
+import { store, useStoreValue } from "~/store";
+import { closeEditor, setInspectorRecord } from "~/stores/explorer";
+import { useInputState } from "@mantine/hooks";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
-	activeRecord: any;
-	onClose: () => void;
-	onSelectRecord: OpenFn;
-	onContentChange: (json: string) => void;
-	onRefreshContent: () => void;
-	onRefresh: () => void;
 }
 
-export function InspectorPane(props: InspectorPaneProps) {
+export function InspectorPane({ history }: InspectorPaneProps) {
 	const isLight = useIsLight();
 	const isShifting = useActiveKeys("Shift");
-	const [isInvalid, setIsInvalid] = useState(false);
-	const [recordId, setRecordId] = useInputState("");
+	const record = useStoreValue((state) => state.explorer.inspectorRecord);
+	
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [recordId, setRecordId] = useInputState(history.current);
 
-	const record = props.activeRecord;
+	const fetchRecord = useStable(async (id: string | null) => {
+		const surreal = getSurreal();
 
-	useEffect(() => {
-		setRecordId(record.content.id || "");
-	}, [record.content.id]);
+		if (!surreal || !id) {
+			return;
+		}
 
-	const isEdge = record.content?.in && record.content?.out;
-	const recordExists = !record.invalid;
+		const contentQuery = `SELECT * FROM ${id}`;
+		const inputQuery = `SELECT <-? AS relations FROM ${id}`;
+		const outputsQuery = `SELECT ->? AS relations FROM ${id}`;
 
-	const gotoRecord = useStable((e: FocusEvent | KeyboardEvent) => {
+		const response = await surreal.query(`${contentQuery};${inputQuery};${outputsQuery}`);
+		const content = response[0].result[0];
+		const inputs = response[1].result[0]?.relations || [];
+		const outputs = response[2].result[0]?.relations || [];
+
+		store.dispatch(setInspectorRecord({
+			content,
+			inputs,
+			outputs
+		}));
+	});
+
+	const saveRecord = useStable(async () => {
+		const surreal = getSurreal();
+
+		if (!surreal || !record) {
+			return;
+		}
+
+		const json = JSON.stringify(record.content);
+
+		await surreal.query(`UPDATE ${history.current} CONTENT ${json}`);
+	});
+
+	const isEdge = record?.content?.in && record?.content?.out;
+
+	const gotoRecord = useStable((e: any) => {
 		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
 			return;
 		}
 
-		props.onSelectRecord((e.target as HTMLInputElement).value);
+		history.push(recordId);
 	});
 
 	const handleDelete = useStable(async () => {
@@ -69,11 +94,11 @@ export function InspectorPane(props: InspectorPaneProps) {
 		}
 
 		setIsDeleting(false);
-		props.onClose();
+		handleClose();
 
-		await surreal.query(`DELETE ${recordId}`);
+		await surreal.query(`DELETE ${history.current}`);
 
-		props.onRefresh();
+		history.clear();
 	});
 
 	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {
@@ -89,8 +114,23 @@ export function InspectorPane(props: InspectorPaneProps) {
 	});
 
 	const handleRefresh = useStable(() => {
-		props.onRefreshContent();
+		fetchRecord(history.current);
 	});
+
+	const handleClose = useStable(() => {
+		store.dispatch(closeEditor());
+	});
+
+	const onBodyChange = useStable((value: string) => {
+		store.dispatch(setInspectorRecord({
+			...record!,
+			content: JSON.parse(value)
+		}));
+	});
+
+	useEffect(() => {
+		fetchRecord(history.current);
+	}, [history.current]);
 
 	return (
 		<Panel
@@ -98,13 +138,13 @@ export function InspectorPane(props: InspectorPaneProps) {
 			icon={mdiWrench}
 			rightSection={
 				<Group align="center">
-					<ActionIcon onClick={props.history.goBack} title="Go back">
-						<Icon color={props.history.hasBack ? "light.4" : isLight ? "light.0" : "dark.4"} path={mdiArrowLeftBold} />
+					<ActionIcon onClick={history.goBack} title="Go back">
+						<Icon color={history.hasBack ? "light.4" : isLight ? "light.0" : "dark.4"} path={mdiArrowLeftBold} />
 					</ActionIcon>
 
-					<ActionIcon onClick={props.history.goForward} title="Go forward">
+					<ActionIcon onClick={history.goForward} title="Go forward">
 						<Icon
-							color={props.history.hasForward ? "light.4" : isLight ? "light.0" : "dark.4"}
+							color={history.hasForward ? "light.4" : isLight ? "light.0" : "dark.4"}
 							path={mdiArrowRightBold}
 						/>
 					</ActionIcon>
@@ -113,15 +153,16 @@ export function InspectorPane(props: InspectorPaneProps) {
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 
-					<ActionIcon onClick={requestDelete} title="Delete record (Hold shift to force)" disabled={!recordExists}>
+					<ActionIcon onClick={requestDelete} title="Delete record (Hold shift to force)" disabled={!record}>
 						<Icon color={isShifting ? "red" : "light.4"} path={mdiDelete} />
 					</ActionIcon>
 
-					<ActionIcon onClick={props.onClose} title="Close inspector">
+					<ActionIcon onClick={handleClose} title="Close inspector">
 						<Icon color="light.4" path={mdiClose} />
 					</ActionIcon>
 				</Group>
-			}>
+			}
+		>
 			<TextInput
 				mb="xs"
 				value={recordId}
@@ -144,14 +185,14 @@ export function InspectorPane(props: InspectorPaneProps) {
 				styles={(theme) => ({
 					input: {
 						backgroundColor: isLight ? "white" : theme.fn.themeColor("dark.9"),
-						color: theme.fn.themeColor(recordExists ? "surreal" : "red"),
+						color: theme.fn.themeColor(record ? "surreal" : "red"),
 						fontFamily: "JetBrains Mono",
 						fontSize: 14,
 						height: 42,
 					},
 				})}
 			/>
-			{recordExists ? (
+			{record ? (
 				<Tabs defaultValue="content">
 					<Tabs.List grow>
 						<Tabs.Tab value="content">
@@ -167,10 +208,8 @@ export function InspectorPane(props: InspectorPaneProps) {
 					<Tabs.Panel value="content">
 						<ContentTab
 							isLight={isLight}
-							content={record.content}
-							isInvalid={isInvalid}
-							setIsInvalid={setIsInvalid}
-							onContentChange={props.onContentChange}
+							value={JSON.stringify(record.content)}
+							onChange={onBodyChange}
 						/>
 					</Tabs.Panel>
 
@@ -179,7 +218,7 @@ export function InspectorPane(props: InspectorPaneProps) {
 							isLight={isLight}
 							inputs={record.inputs}
 							outputs={record.outputs}
-							onSelectRecord={props.onSelectRecord}
+							onOpen={history.push}
 						/>
 					</Tabs.Panel>
 				</Tabs>
@@ -212,13 +251,11 @@ export function InspectorPane(props: InspectorPaneProps) {
 
 interface ContentTabProps {
 	isLight: boolean;
-	content: any;
-	isInvalid: boolean;
-	setIsInvalid: (isInvalid: boolean) => void;
-	onContentChange: (json: string) => void;
+	value: string;
+	onChange: (value: string) => void;
 }
 
-function ContentTab(props: ContentTabProps) {
+function ContentTab({ isLight, value, onChange }: ContentTabProps) {
 	const [contentText, setContentText] = useState("");
 	const [isDirty, setIsDirty] = useState(false);
 
@@ -229,30 +266,32 @@ function ContentTab(props: ContentTabProps) {
 
 		setContentText(content || "");
 		setIsDirty(true);
-
-		try {
-			const json = content || "{}";
-			const parsed = JSON.parse(json);
-
-			if (typeof parsed !== "object" || !parsed.id) {
-				throw new Error("Invalid JSON");
-			}
-
-			props.setIsInvalid(false);
-		} catch {
-			props.setIsInvalid(true);
-		}
 	});
 
 	const saveRecord = useStable(() => {
-		props.onContentChange(contentText);
+		// props.onContentChange(contentText);
 		setIsDirty(false);
 	});
 
-	useEffect(() => {
-		setContentText(JSON.stringify(props.content, null, 4));
-		setIsDirty(false);
-	}, [props.content]);
+	const isBodyValid = useMemo(() => {
+		try {
+			const json = value || "{}";
+			const parsed = JSON.parse(json);
+
+			if (typeof parsed !== "object") {
+				throw new TypeError("Invalid JSON");
+			}
+
+			return true;
+		} catch {
+			return false;
+		}
+	}, [value]);
+
+	// useEffect(() => {
+	// 	setContentText(JSON.stringify(props.content, null, 4));
+	// 	setIsDirty(false);
+	// }, [props.content]);
 
 	return (
 		<>
@@ -277,7 +316,7 @@ function ContentTab(props: ContentTabProps) {
 			/>
 
 			<Button
-				disabled={props.isInvalid || !isDirty}
+				disabled={!isBodyValid || !isDirty}
 				onClick={saveRecord}
 				style={{
 					position: "absolute",
@@ -295,10 +334,10 @@ interface RelationsTabProps {
 	isLight: boolean;
 	inputs: any[];
 	outputs: any[];
-	onSelectRecord: OpenFn;
+	onOpen: OpenFn;
 }
 
-function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTabProps) {
+function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabProps) {
 	return (
 		<div
 			style={{
@@ -311,25 +350,24 @@ function RelationsTab({ isLight, inputs, outputs, onSelectRecord }: RelationsTab
 				Incoming relations
 			</Text>
 
-			<RelationsList name="incoming" isLight={isLight} relations={inputs} onSelectRecord={onSelectRecord} />
+			<RelationsList name="incoming" relations={inputs} onOpen={onOpen} />
 
 			<Text color={isLight ? "blue.9" : "light.0"} size="lg" mt="xl">
 				Outgoing relations
 			</Text>
 
-			<RelationsList name="outgoing" isLight={isLight} relations={outputs} onSelectRecord={onSelectRecord} />
+			<RelationsList name="outgoing" relations={outputs} onOpen={onOpen} />
 		</div>
 	);
 }
 
 interface RelationsListProps {
 	name: string;
-	isLight: boolean;
 	relations: any[];
-	onSelectRecord: OpenFn;
+	onOpen: OpenFn;
 }
 
-function RelationsList({ name, isLight, relations, onSelectRecord }: RelationsListProps) {
+function RelationsList({ name, relations, onOpen }: RelationsListProps) {
 	if (relations.length === 0) {
 		return <Text>No {name} relations found</Text>;
 	}
@@ -339,7 +377,7 @@ function RelationsList({ name, isLight, relations, onSelectRecord }: RelationsLi
 			{relations.map((relation, i) => (
 				<Group key={relation} spacing="xs" noWrap>
 					<Icon path={mdiCircleMedium} />
-					<RecordLink value={relation} onRecordClick={onSelectRecord} />
+					<RecordLink value={relation} onRecordClick={onOpen} />
 				</Group>
 			))}
 		</>

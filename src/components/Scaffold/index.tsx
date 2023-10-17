@@ -13,36 +13,26 @@ import {
 
 import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
-import { useMemo } from "react";
 import { Toolbar } from "../Toolbar";
 import { Splitter } from "../Splitter";
 import { ConsolePane } from "../ConsolePane";
-import { QueryView } from "~/views/query/QueryView";
-import { ExplorerView } from "~/views/explorer/ExplorerView";
 import { useHotkeys } from "@mantine/hooks";
-import { DesignerView } from "~/views/designer/DesignerView";
-import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { adapter } from "~/adapter";
 import { TabCreator } from "./creator";
 import { TabEditor } from "./editor";
-import { LiveView } from "~/views/live/LiveView";
 import { executeQuery } from "~/database";
 import { AddressBar } from "./address";
 import { ViewListing } from "./listing";
 import { openTabCreator } from "~/stores/interface";
-
-const VIEW_ELEMENTS = {
-	query: <QueryView />,
-	explorer: <ExplorerView />,
-	designer: <DesignerView />,
-	auth: <AuthenticationView />,
-	live: <LiveView />,
-};
+import { Outlet, useLocation } from "react-router-dom";
+import { ViewMode } from "~/types";
 
 export function Scaffold() {
-	const activeView = useStoreValue((state) => state.config.activeView);
 	const activeSession = useStoreValue((state) => state.config.activeTab);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
+
+	const { pathname } = useLocation();
+	const activeView = pathname.split("/")[1] as ViewMode;
 
 	const showTabCreator = useStable((envId?: string) => {
 		store.dispatch(openTabCreator({
@@ -59,11 +49,7 @@ export function Scaffold() {
 			loader: true
 		});
 	});
-
-	const activeViewElement = useMemo(() => {
-		return VIEW_ELEMENTS[activeView];
-	}, [activeView]);
-
+	
 	useHotkeys([
 		["F9", () => userExecuteQuery()],
 		["mod+Enter", () => userExecuteQuery()],
@@ -96,7 +82,7 @@ export function Scaffold() {
 							direction="vertical"
 							endPane={adapter.isServeSupported && enableConsole && <ConsolePane />}
 						>
-							{activeViewElement}
+							<Outlet />
 						</Splitter>
 					</Box>
 				</>

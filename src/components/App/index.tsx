@@ -13,11 +13,12 @@ import { DARK_THEME, LIGHT_THEME } from "~/util/editor";
 import { editor } from 'monaco-editor';
 
 import { Icon } from "../Icon";
-import { Scaffold } from "../Scaffold";
 import { adapter } from "~/adapter";
 import { updateTitle } from "~/util/helpers";
 import { hideAvailableUpdate } from "~/stores/interface";
 import { decreaseFontZoomLevel, increaseFontZoomLevel, resetFontZoomLevel, toggleWindowPinned } from "~/stores/config";
+import { RouterProvider } from "react-router-dom";
+import { viewRouter } from "~/routing";
 
 export function App() {
 	const update = useStoreValue((state) => state.interface.availableUpdate);
@@ -76,7 +77,8 @@ export function App() {
 	return (
 		<MantineProvider withGlobalStyles withNormalizeCSS withCSSVariables theme={mantineTheme}>
 			<Notifications />
-			<Scaffold />
+			
+			<RouterProvider router={viewRouter} />
 
 			<Transition mounted={showUpdate} duration={250} transition="slide-up" timingFunction="ease">
 				{(styles) => (

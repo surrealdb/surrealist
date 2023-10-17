@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
-import { OpenFn, TableDefinition } from "~/types";
 import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
 import { useStoreValue } from "~/store";
@@ -16,14 +15,10 @@ import { useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
 import { useActiveSession } from "~/hooks/environment";
+import { useStoreState } from "~/hooks/store";
+import { setExplorerTable } from "~/stores/explorer";
 
-export interface TablesPaneProps {
-	active: string | null;
-	onSelectTable: OpenFn;
-	onRefresh?: () => void;
-}
-
-export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps) {
+export function TablesPane() {
 	const isLight = useIsLight();
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState("");
@@ -31,6 +26,11 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 	const hasAccess = useHasSchemaAccess();
 	const isOnline = useIsConnected();
 	const sessionInfo = useActiveSession();
+
+	const [active, setActive] = useStoreState(
+		(state) => state.explorer.activeTable,
+		(value) => setExplorerTable(value)
+	);
 
 	const isPinned = useStable((table: string) => {
 		return sessionInfo?.pinnedTables?.includes(table) || false;
@@ -48,10 +48,6 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
 	}, [schema, search, sessionInfo?.pinnedTables]);
-
-	const selectTable = (table: TableDefinition | null) => {
-		onSelectTable(table?.schema?.name || null);
-	};
 
 	const refreshTables = useStable(async () => {
 		fetchDatabaseSchema();
@@ -113,7 +109,7 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 								spacing="xs"
 								key={table.schema.name}
 								className={classes.tableEntry}
-								onClick={() => selectTable(table)}
+								onClick={() => setActive(table.schema.name)}
 								sx={(theme) => ({
 									backgroundColor: isActive ? theme.fn.rgba(theme.fn.themeColor("surreal"), 0.125) : undefined,
 									borderRadius: 8,
@@ -157,7 +153,10 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 				</Text>
 			)}
 
-			<TableCreator opened={isCreating} onClose={closeCreator} />
+			<TableCreator
+				opened={isCreating}
+				onClose={closeCreator} 
+			/>
 		</Panel>
 	);
 }
