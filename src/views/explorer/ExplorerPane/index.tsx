@@ -3,11 +3,10 @@ import {
 	mdiArrowRight,
 	mdiDatabase,
 	mdiFilterVariant,
-	mdiPin,
-	mdiPinOff,
 	mdiPlus,
 	mdiRefresh,
 	mdiTable,
+	mdiWrench,
 } from "@mdi/js";
 
 import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
@@ -22,7 +21,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, useStoreValue } from "~/store";
 import { toggleTablePin } from "~/stores/config";
-import { clearExplorerData, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering } from "~/stores/explorer";
+import { clearExplorerData, closeEditor, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering } from "~/stores/explorer";
 import { ColumnSort } from "~/types";
 import { getSurreal } from "~/util/connection";
 import { HistoryHandle } from "~/hooks/history";
@@ -57,6 +56,16 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 	const requestCreate = useStable(async () => {
 		store.dispatch(openCreator(table || ''));
 		history.clear();
+	});
+
+	const toggleInspector = useStable(() => {
+		const { isEditing } = store.getState().explorer;
+
+		if (isEditing) {
+			store.dispatch(closeEditor());
+		} else {
+			store.dispatch(openEditor());
+		}
 	});
 
 	function setCurrentPage(number: number) {
@@ -162,7 +171,9 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 	});
 
 	const openRecord = useStable((record: any) => {
-		history.push(record);
+		const id = typeof record === "string" ? record : record.id;
+
+		history.push(id);
 		store.dispatch(openEditor());
 	});
 
@@ -187,13 +198,17 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
 
+					<ActionIcon title="Toggle inspector" onClick={toggleInspector}>
+						<Icon color="light.4" path={mdiWrench} />
+					</ActionIcon>
+
 					<ActionIcon title="Refresh" onClick={fetchRecords}>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 
-					<ActionIcon title={isPinned ? "Unpin table" : "Pin table"} onClick={togglePin}>
+					{/* <ActionIcon title={isPinned ? "Unpin table" : "Pin table"} onClick={togglePin}>
 						<Icon color="light.4" path={isPinned ? mdiPinOff : mdiPin} />
-					</ActionIcon>
+					</ActionIcon> */}
 
 					<ActionIcon title="Toggle filter" onClick={toggleFilter}>
 						<Icon color="light.4" path={mdiFilterVariant} />
@@ -227,7 +242,14 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 					)}
 					{records.length > 0 ? (
 						<ScrollArea
-							style={{ position: "absolute", inset: 12, top: filter ? 40 : 0, bottom: 54, transition: "top .1s" }}>
+							style={{
+								position: "absolute",
+								inset: 12,
+								top: filter ? 40 : 0,
+								bottom: 54,
+								transition: "top .1s"
+							}}
+						>
 							<DataTable
 								data={records}
 								openRecord={openRecord}

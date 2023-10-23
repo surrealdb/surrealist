@@ -1,6 +1,5 @@
 import {
 	mdiArrowLeftBold,
-	mdiArrowRightBold,
 	mdiCheck,
 	mdiCircleMedium,
 	mdiClose,
@@ -11,8 +10,8 @@ import {
 	mdiWrench,
 } from "@mdi/js";
 
-import { KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
-import { ActionIcon, Button, Center, Group, Modal, Paper, Tabs, Text, TextInput } from "@mantine/core";
+import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
+import { ActionIcon, Button, Center, Group, Modal, Paper, Stack, Tabs, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/types";
@@ -26,8 +25,8 @@ import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { getSurreal } from "~/util/connection";
 import { store, useStoreValue } from "~/store";
-import { closeEditor, setInspectorRecord } from "~/stores/explorer";
-import { useInputState } from "@mantine/hooks";
+import { closeEditor, openCreator, setActiveRecord, setInspectorId, setInspectorQuery } from "~/stores/explorer";
+import { useStoreState } from "~/hooks/store";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
@@ -36,10 +35,21 @@ export interface InspectorPaneProps {
 export function InspectorPane({ history }: InspectorPaneProps) {
 	const isLight = useIsLight();
 	const isShifting = useActiveKeys("Shift");
-	const record = useStoreValue((state) => state.explorer.inspectorRecord);
-	
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [recordId, setRecordId] = useInputState(history.current);
+	const record = useStoreValue((state) => state.explorer.activeRecord);
+
+	const isEmpty = record === null;
+	const isPresent = record?.exists === true;
+
+	const [editingId, setEditingId] = useStoreState(
+		(state) => state.explorer.inspectorId,
+		(value) => setInspectorId(value)
+	);
+
+	const [editingQuery, setEditingQuery] = useStoreState(
+		(state) => state.explorer.inspectorQuery,
+		(value) => setInspectorQuery(value)
+	);
 
 	const fetchRecord = useStable(async (id: string | null) => {
 		const surreal = getSurreal();
@@ -57,7 +67,14 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 		const inputs = response[1].result[0]?.relations || [];
 		const outputs = response[2].result[0]?.relations || [];
 
-		store.dispatch(setInspectorRecord({
+		const json = JSON.stringify(content, null, 4);
+
+		setEditingId(id);
+		setEditingQuery(json);
+
+		store.dispatch(setActiveRecord({
+			exists: !!content,
+			initial: json,
 			content,
 			inputs,
 			outputs
@@ -67,13 +84,13 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 	const saveRecord = useStable(async () => {
 		const surreal = getSurreal();
 
-		if (!surreal || !record) {
+		if (!surreal || !isPresent) {
 			return;
 		}
 
-		const json = JSON.stringify(record.content);
+		await surreal.query(`UPDATE ${history.current} CONTENT ${editingQuery}`);
 
-		await surreal.query(`UPDATE ${history.current} CONTENT ${json}`);
+		fetchRecord(history.current);
 	});
 
 	const isEdge = record?.content?.in && record?.content?.out;
@@ -83,7 +100,7 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 			return;
 		}
 
-		history.push(recordId);
+		history.push(editingId);
 	});
 
 	const handleDelete = useStable(async () => {
@@ -121,11 +138,12 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 		store.dispatch(closeEditor());
 	});
 
-	const onBodyChange = useStable((value: string) => {
-		store.dispatch(setInspectorRecord({
-			...record!,
-			content: JSON.parse(value)
-		}));
+	const onIdChange = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		setEditingId(e.target.value);
+	});
+
+	const createNew = useStable(() => {
+		store.dispatch(openCreator(editingId));
 	});
 
 	useEffect(() => {
@@ -138,24 +156,21 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 			icon={mdiWrench}
 			rightSection={
 				<Group align="center">
-					<ActionIcon onClick={history.goBack} title="Go back">
-						<Icon color={history.hasBack ? "light.4" : isLight ? "light.0" : "dark.4"} path={mdiArrowLeftBold} />
-					</ActionIcon>
+					{!isEmpty && (
+						<>
+							<ActionIcon onClick={history.pop} title="Previous record">
+								<Icon color={history.canPop ? "light.4" : isLight ? "light.0" : "dark.4"} path={mdiArrowLeftBold} />
+							</ActionIcon>
 
-					<ActionIcon onClick={history.goForward} title="Go forward">
-						<Icon
-							color={history.hasForward ? "light.4" : isLight ? "light.0" : "dark.4"}
-							path={mdiArrowRightBold}
-						/>
-					</ActionIcon>
+							<ActionIcon onClick={handleRefresh} title="Refetch record">
+								<Icon color="light.4" path={mdiRefresh} />
+							</ActionIcon>
 
-					<ActionIcon onClick={handleRefresh} title="Refetch record">
-						<Icon color="light.4" path={mdiRefresh} />
-					</ActionIcon>
-
-					<ActionIcon onClick={requestDelete} title="Delete record (Hold shift to force)" disabled={!record}>
-						<Icon color={isShifting ? "red" : "light.4"} path={mdiDelete} />
-					</ActionIcon>
+							<ActionIcon onClick={requestDelete} title="Delete record (Hold shift to force)">
+								<Icon color={isShifting ? "red" : "light.4"} path={mdiDelete} />
+							</ActionIcon>
+						</>
+					)}
 
 					<ActionIcon onClick={handleClose} title="Close inspector">
 						<Icon color="light.4" path={mdiClose} />
@@ -165,11 +180,12 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 		>
 			<TextInput
 				mb="xs"
-				value={recordId}
+				value={editingId}
 				onBlur={gotoRecord}
 				onKeyDown={gotoRecord}
-				onChange={setRecordId}
+				onChange={onIdChange}
 				onFocus={(e) => e.target.select()}
+				placeholder="table:id"
 				rightSectionWidth={76}
 				rightSection={
 					isEdge && (
@@ -177,7 +193,9 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 							title="This record is an edge"
 							bg={isLight ? "light.0" : "light.6"}
 							c={isLight ? "light.6" : "white"}
-							px="xs">
+							radius="xl"
+							px="xs"
+						>
 							Edge
 						</Paper>
 					)
@@ -185,14 +203,20 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 				styles={(theme) => ({
 					input: {
 						backgroundColor: isLight ? "white" : theme.fn.themeColor("dark.9"),
-						color: theme.fn.themeColor(record ? "surreal" : "red"),
+						color: theme.fn.themeColor(record?.exists === false ? "red" : "surreal"),
 						fontFamily: "JetBrains Mono",
 						fontSize: 14,
 						height: 42,
 					},
 				})}
 			/>
-			{record ? (
+			{isEmpty ? (
+				<Center my="xl">
+					<Text color={isLight ? "light.7" : "light.3"}>
+						Enter a valid record id to inspect
+					</Text>
+				</Center>
+			) : isPresent ? (
 				<Tabs defaultValue="content">
 					<Tabs.List grow>
 						<Tabs.Tab value="content">
@@ -207,9 +231,10 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 
 					<Tabs.Panel value="content">
 						<ContentTab
-							isLight={isLight}
-							value={JSON.stringify(record.content)}
-							onChange={onBodyChange}
+							isDirty={editingQuery !== record.initial}
+							value={editingQuery}
+							onChange={setEditingQuery}
+							onSave={saveRecord}
 						/>
 					</Tabs.Panel>
 
@@ -224,7 +249,19 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 				</Tabs>
 			) : (
 				<Center my="xl">
-					<Text color="light.5">Record does not exist</Text>
+					<Stack>
+						<Text color={isLight ? "light.7" : "light.3"}>
+							Record not found in database
+						</Text>
+						<Center>
+							<Button
+								size="xs"
+								onClick={createNew}
+							>
+								Create record...
+							</Button>
+						</Center>
+					</Stack>
 				</Center>
 			)}
 
@@ -250,33 +287,17 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 }
 
 interface ContentTabProps {
-	isLight: boolean;
 	value: string;
+	isDirty: boolean;
 	onChange: (value: string) => void;
+	onSave: () => void;
 }
 
-function ContentTab({ isLight, value, onChange }: ContentTabProps) {
-	const [contentText, setContentText] = useState("");
-	const [isDirty, setIsDirty] = useState(false);
-
-	const updateContent = useStable((content: string | undefined) => {
-		if (contentText === content) {
-			return;
-		}
-
-		setContentText(content || "");
-		setIsDirty(true);
-	});
-
-	const saveRecord = useStable(() => {
-		// props.onContentChange(contentText);
-		setIsDirty(false);
-	});
+function ContentTab({ value, isDirty, onChange, onSave }: ContentTabProps) {
 
 	const isBodyValid = useMemo(() => {
 		try {
-			const json = value || "{}";
-			const parsed = JSON.parse(json);
+			const parsed = JSON.parse(value);
 
 			if (typeof parsed !== "object") {
 				throw new TypeError("Invalid JSON");
@@ -288,18 +309,13 @@ function ContentTab({ isLight, value, onChange }: ContentTabProps) {
 		}
 	}, [value]);
 
-	// useEffect(() => {
-	// 	setContentText(JSON.stringify(props.content, null, 4));
-	// 	setIsDirty(false);
-	// }, [props.content]);
-
 	return (
 		<>
 			<SurrealistEditor
 				noExpand
 				language="json"
-				value={contentText}
-				onChange={updateContent}
+				value={value}
+				onChange={onChange}
 				style={{
 					position: "absolute",
 					insetInline: 12,
@@ -317,7 +333,7 @@ function ContentTab({ isLight, value, onChange }: ContentTabProps) {
 
 			<Button
 				disabled={!isBodyValid || !isDirty}
-				onClick={saveRecord}
+				onClick={onSave}
 				style={{
 					position: "absolute",
 					insetInline: 12,
