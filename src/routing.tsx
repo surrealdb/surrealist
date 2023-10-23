@@ -37,9 +37,7 @@ export const createViewRouter = () => createBrowserRouter([
 			{
 				path: '/',
 				loader: () => {
-					console.log('root');
 					const { activeUrl } = store.getState().config;
-					console.log(activeUrl);
 					const target = (!activeUrl || activeUrl == '/') ? '/query' : activeUrl;
 
 					return redirect(target);

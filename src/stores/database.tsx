@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DatabaseSchema } from "~/types";
+import { printLog } from "~/util/helpers";
 
 const databaseSlice = createSlice({
 	name: "database",
@@ -54,9 +55,9 @@ const databaseSlice = createSlice({
 		},
 
 		setDatabaseSchema(state, action: PayloadAction<DatabaseSchema>) {
+			printLog("Received database schema:", "#e600a4", action.payload);
+			
 			state.databaseSchema = action.payload;
-
-			console.log("Database schema updated", action.payload);
 		},
 
 		setIsConnecting(state, action: PayloadAction<boolean>) {

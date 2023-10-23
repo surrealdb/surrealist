@@ -1,31 +1,27 @@
 import { Badge, Text, Textarea } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiRefresh, mdiWrench } from "@mdi/js";
-import { map } from "radash";
-import { useState, useEffect } from "react";
+import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiWrench } from "@mdi/js";
+import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
-import { extract_scope_definition } from "~/generated/surrealist-embed";
 import { useIsConnected } from "~/hooks/connection";
+import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { SurrealInfoDB } from "~/typings/surreal";
+import { ScopeDefinition } from "~/types";
 import { getActiveSurreal } from "~/util/connection";
 import { showError } from "~/util/helpers";
+import { fetchDatabaseSchema } from "~/util/schema";
 
-export interface ScopePaneProps {
-	isOnline: boolean;
-}
-
-export function ScopePane(props: ScopePaneProps) {
+export function ScopePane() {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
+	const schema = useSchema();
 
-	const [scopes, setScopes] = useState<ScopeInfo[]>([]);
 	const [isEditing, setIsEditing] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [editingName, setEditingName] = useInputState("");
@@ -33,29 +29,7 @@ export function ScopePane(props: ScopePaneProps) {
 	const [editingSignup, setEditingSignup] = useInputState("");
 	const [editingSession, setEditingSession] = useInputState("");
 
-	const fetchScopes = useStable(async () => {
-		const response = await getActiveSurreal().queryFirst(`INFO FOR DB`);
-		const result = response[0].result as SurrealInfoDB;
-
-		if (!result) {
-			setScopes([]);
-			return;
-		}
-
-		const scopeInfo = await map(Object.values(result.scopes), async (definition) => {
-			const result = await extract_scope_definition(definition);
-
-			return result as ScopeInfo;
-		});
-
-		setScopes(scopeInfo);
-	});
-
-	useEffect(() => {
-		if (isOnline) {
-			fetchScopes();
-		}
-	}, [isOnline]);
+	const scopes = (schema?.scopes || []) as ScopeDefinition[];
 
 	const closeEditing = useStable(() => {
 		setIsEditing(false);
@@ -80,7 +54,7 @@ export function ScopePane(props: ScopePaneProps) {
 			}
 
 			await getActiveSurreal().query(query);
-			await fetchScopes();
+			await fetchDatabaseSchema();
 		} catch (err: any) {
 			showError("Failed to save scope", err.message);
 		}
@@ -95,7 +69,7 @@ export function ScopePane(props: ScopePaneProps) {
 		setEditingSignup("");
 	});
 
-	const editScope = useStable((scope: ScopeInfo) => {
+	const editScope = useStable((scope: ScopeDefinition) => {
 		setIsEditing(true);
 		setIsCreating(false);
 		setEditingName(scope.name);
@@ -106,7 +80,7 @@ export function ScopePane(props: ScopePaneProps) {
 
 	const removeScope = useStable(async (scope: string) => {
 		await getActiveSurreal().query(`REMOVE SCOPE ${scope}`);
-		await fetchScopes();
+		await fetchDatabaseSchema();
 	});
 
 	const closeModal = useStable(() => {
@@ -121,9 +95,6 @@ export function ScopePane(props: ScopePaneProps) {
 				<Group noWrap>
 					<ActionIcon title="Add account" onClick={createAccount}>
 						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
-					<ActionIcon title="Refresh" onClick={fetchScopes}>
-						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 				</Group>
 			}>

@@ -17,8 +17,6 @@ export function useEventBus<T = undefined>(): EventBus<T> {
 	const listeners = useRef(new Set<(value: T) => void>()).current;
 
 	const dispatch = useStable((value: T) => {
-		console.log('broadcast', listeners);
-		
 		for (const listener of listeners) {
 			listener(value);
 		}

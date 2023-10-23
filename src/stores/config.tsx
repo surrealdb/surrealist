@@ -30,8 +30,6 @@ const configSlice = createSlice({
 			migrateConfig(config);
 
 			Object.assign(state, config);
-
-			console.log('store config', state.activeUrl);
 		},
 
 		setColorScheme(state, action: PayloadAction<ThemeOption>) {

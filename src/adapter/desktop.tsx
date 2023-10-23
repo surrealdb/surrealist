@@ -29,8 +29,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public constructor() {
 		this.initDatabaseEvents();
 
-		(window as any).invoke = invoke;
-
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
 				appWindow.show();

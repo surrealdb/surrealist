@@ -1,3 +1,5 @@
+import "./adapter";
+
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import embedPath from './generated/surrealist-embed_bg.wasm?url';
