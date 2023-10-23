@@ -11,7 +11,7 @@ import {
 } from "@mdi/js";
 
 import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
-import { ActionIcon, Button, Center, Group, Modal, Paper, Stack, Tabs, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Modal, Paper, ScrollArea, Stack, Tabs, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/types";
@@ -359,13 +359,14 @@ interface RelationsTabProps {
 
 function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabProps) {
 	return (
-		<div
+		<ScrollArea
 			style={{
 				position: "absolute",
 				insetInline: 12,
-				bottom: 42,
-				top: 102,
+				bottom: 0,
+				top: 100,
 			}}>
+
 			<Text color={isLight ? "blue.9" : "light.0"} size="lg" mt={4}>
 				Incoming relations
 			</Text>
@@ -377,7 +378,7 @@ function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabProps) {
 			</Text>
 
 			<RelationsList name="outgoing" relations={outputs} onOpen={onOpen} />
-		</div>
+		</ScrollArea>
 	);
 }
 
