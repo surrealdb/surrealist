@@ -3,7 +3,7 @@
 ## 1.10.2 - Technical update
 - Implement internal view routing
 	- The current view is now displayed in the URL
-	- This means you can bookmark and share specific views
+	- This means you can bookmark and share specific views on the web app
 - Improved explorer inspector
 	- Can now be opened manually by pressing the wrench button
 - Changed explorer table pinning
@@ -16,6 +16,7 @@
 - Fixed record ids passed as variable not working as expected
 - Fixed strange query editor behavior when holding shift
 - Fixed incorrect panel sizes in the authentication view
+- Fixed incorrect wrapping behavior in explorer view (#129)
 - Refactored the code base to be more future proof
 - Minor UI improvements
 
