@@ -1,10 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface ActiveRecord {
-	invalid?: true;
+	exists: boolean;
 	content: any;
 	inputs: [];
 	outputs: [];
+	initial: string;
 }
 
 const explorerSlice = createSlice({
@@ -15,11 +16,14 @@ const explorerSlice = createSlice({
 		recordCount: 0,
 		filtering: false,
 		filter: '',
-		editingRecord: null as any,
 		isCreating: false,
+		creatorId: '',
+		creatorBody: '',
 		isEditing: false,
-		recordHistory: [] as any[],
-		historyIndex: 0,
+		recordHistory: [] as string[],
+		activeRecord: null as ActiveRecord | null,
+		inspectorId: '',
+		inspectorQuery: '',
 	},
 	reducers: {
 		
@@ -45,28 +49,49 @@ const explorerSlice = createSlice({
 			state.filter = action.payload;
 		},
 
-		openCreator(state) {
+		openCreator(state, action: PayloadAction<string>) {
 			state.isEditing = false;
 			state.isCreating = true;
+			state.creatorId = action.payload;
+			state.creatorBody = '{\n    \n}';
 		},
 
-		openEditor(state, action: PayloadAction<any>) {
-			state.editingRecord = action.payload;
+		setCreatorId(state, action: PayloadAction<string>) {
+			state.creatorId = action.payload;
+		},
+
+		setCreatorBody(state, action: PayloadAction<string>) {
+			state.creatorBody = action.payload;
+		},
+
+		openEditor(state) {
 			state.isEditing = true;
 			state.isCreating = false;
 		},
 
-		closeRecord(state) {
+		closeEditor(state) {
 			state.isCreating = false;
 			state.isEditing = false;
+			state.activeRecord = null;
+			state.recordHistory = [];
+			state.inspectorId = '';
+			state.inspectorQuery = '';
 		},
 
-		setHistory(state, action: PayloadAction<any[]>) {
+		setHistory(state, action: PayloadAction<string[]>) {
 			state.recordHistory = action.payload;
 		},
 
-		setHistoryIndex(state, action: PayloadAction<number>) {
-			state.historyIndex = action.payload;
+		setActiveRecord(state, action: PayloadAction<ActiveRecord | null>) {
+			state.activeRecord = action.payload;
+		},
+
+		setInspectorId(state, action: PayloadAction<string>) {
+			state.inspectorId = action.payload;
+		},
+
+		setInspectorQuery(state, action: PayloadAction<string>) {
+			state.inspectorQuery = action.payload;
 		},
 
 	}
@@ -81,8 +106,12 @@ export const {
 	setExplorerFiltering,
 	setExplorerFilter,
 	openCreator,
+	setCreatorId,
+	setCreatorBody,
 	openEditor,
-	closeRecord,
+	closeEditor,
 	setHistory,
-	setHistoryIndex,
+	setActiveRecord,
+	setInspectorId,
+	setInspectorQuery,
 } = explorerSlice.actions;

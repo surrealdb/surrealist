@@ -54,7 +54,7 @@ export const VIEW_MODES = [
 		desc: "Define database tables and relations",
 	},
 	{
-		id: "auth",
+		id: "authentication",
 		name: "Authentication",
 		icon: mdiLockOpen,
 		desc: "Manage account details and database scopes",

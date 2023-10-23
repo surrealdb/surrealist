@@ -1,5 +1,5 @@
+import { DesignerLayoutMode, DesignerNodeMode, DriverType, FavoritesEntry, HistoryEntry, Open, QueryListing, ResultListing, SessionQuery, SurrealistConfig, SurrealistEnvironment, SurrealistSession, TablePinAction } from "~/types";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { DesignerLayoutMode, DesignerNodeMode, DriverType, FavoritesEntry, HistoryEntry, Open, QueryListing, ResultListing, SessionQuery, SurrealistConfig, SurrealistEnvironment, SurrealistSession, TablePinAction, ViewMode } from "~/types";
 import { createBaseConfig } from "~/util/defaults";
 import { migrateConfig } from "~/util/migration";
 import { ThemeOption } from "~/util/theme";
@@ -8,7 +8,7 @@ type ConfigState = ReturnType<typeof configSlice.getInitialState>;
 
 function getSession(state: ConfigState) {
 	const session = state.tabs.find((tab) => tab.id === state.activeTab);
-
+ 
 	if (!session) {
 		throw new Error("Session unavailable");
 	}
@@ -30,6 +30,8 @@ const configSlice = createSlice({
 			migrateConfig(config);
 
 			Object.assign(state, config);
+
+			console.log('store config', state.activeUrl);
 		},
 
 		setColorScheme(state, action: PayloadAction<ThemeOption>) {
@@ -94,8 +96,8 @@ const configSlice = createSlice({
 			state.activeTab = action.payload;
 		},
 
-		setActiveView(state, action: PayloadAction<ViewMode>) {
-			state.activeView = action.payload;
+		setActiveURL(state, action: PayloadAction<string>) {
+			state.activeUrl = action.payload;
 		},
 
 		addQueryTab(state, { payload }: PayloadAction<string | undefined>) {
@@ -303,7 +305,7 @@ export const {
 	updateSession,
 	setSessions,
 	setActiveSession,
-	setActiveView,
+	setActiveURL,
 	addQueryTab,
 	removeQueryTab,
 	updateQueryTab,

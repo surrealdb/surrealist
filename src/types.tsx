@@ -4,7 +4,7 @@ export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
 export type DriverType = "file" | "memory" | "tikv";
 export type QueryListing = "history" | "favorites";
 export type ResultListing = "table" | "json" | "combined";
-export type ViewMode = "query" | "explorer" | "designer" | "auth" | "live";
+export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "live";
 export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type DesignerLayoutMode = "diagram" | "grid";
@@ -18,6 +18,7 @@ export interface SurrealistConfig {
 	theme: ColorScheme | "automatic";
 	tabs: SurrealistSession[];
 	environments: SurrealistEnvironment[];
+	activeUrl: string;
 	isPinned: boolean,
 	activeTab: string | null;
 	autoConnect: boolean;
@@ -41,7 +42,6 @@ export interface SurrealistConfig {
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	tabSearch: boolean;
-	activeView: ViewMode;
 	defaultDesignerNodeMode: DesignerNodeMode,
 	defaultDesignerLayoutMode: DesignerLayoutMode
 }

@@ -5,10 +5,9 @@ import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
-import { OpenFn, TableDefinition } from "~/types";
 import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
-import { useStoreValue } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { extractEdgeRecords, fetchDatabaseSchema } from "~/util/schema";
 import { useHasSchemaAccess } from "~/hooks/schema";
 import { sort } from "radash";
@@ -16,14 +15,11 @@ import { useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
 import { useActiveSession } from "~/hooks/environment";
+import { useStoreState } from "~/hooks/store";
+import { setExplorerTable } from "~/stores/explorer";
+import { toggleTablePin } from "~/stores/config";
 
-export interface TablesPaneProps {
-	active: string | null;
-	onSelectTable: OpenFn;
-	onRefresh?: () => void;
-}
-
-export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps) {
+export function TablesPane() {
 	const isLight = useIsLight();
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState("");
@@ -31,6 +27,11 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 	const hasAccess = useHasSchemaAccess();
 	const isOnline = useIsConnected();
 	const sessionInfo = useActiveSession();
+
+	const [active, setActive] = useStoreState(
+		(state) => state.explorer.activeTable,
+		(value) => setExplorerTable(value)
+	);
 
 	const isPinned = useStable((table: string) => {
 		return sessionInfo?.pinnedTables?.includes(table) || false;
@@ -49,10 +50,6 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 		});
 	}, [schema, search, sessionInfo?.pinnedTables]);
 
-	const selectTable = (table: TableDefinition | null) => {
-		onSelectTable(table?.schema?.name || null);
-	};
-
 	const refreshTables = useStable(async () => {
 		fetchDatabaseSchema();
 	});
@@ -63,6 +60,17 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 
 	const closeCreator = useStable(() => {
 		setIsCreating(false);
+	});
+
+	const togglePinned = useStable((e: any, table: string) => {
+		e.stopPropagation();
+
+		if (!table || !sessionInfo) return;
+
+		store.dispatch(toggleTablePin({
+			session: sessionInfo.id,
+			table,
+		}));
 	});
 
 	return (
@@ -103,6 +111,7 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 					}}>
 					{tablesFiltered.map((table) => {
 						const isActive = active == table.schema.name;
+						const isPinned = sessionInfo?.pinnedTables?.includes(table.schema.name);
 						const [isEdge] = extractEdgeRecords(table);
 
 						return (
@@ -110,14 +119,17 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 								py="xs"
 								px="xs"
 								noWrap
-								spacing="xs"
+								spacing={6}
+								title={`Double-click to ${isPinned ? 'unpin' : 'pin'} table`}
 								key={table.schema.name}
 								className={classes.tableEntry}
-								onClick={() => selectTable(table)}
+								onClick={() => setActive(table.schema.name)}
+								onDoubleClick={(e) => togglePinned(e, table.schema.name)}
 								sx={(theme) => ({
 									backgroundColor: isActive ? theme.fn.rgba(theme.fn.themeColor("surreal"), 0.125) : undefined,
 									borderRadius: 8,
-								})}>
+								})}
+							>
 								<Icon
 									style={{ flexShrink: 0 }}
 									color={isActive ? "surreal" : isLight ? "light.3" : "light.5"}
@@ -127,22 +139,19 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 
 								<Text
 									color={isActive ? (isLight ? "black" : "white") : isLight ? "light.7" : "light.1"}
-									style={{
-										overflow: "hidden",
-										textOverflow: "ellipsis",
-										whiteSpace: "nowrap",
-										marginRight: 18,
-									}}>
+									className={classes.tableName}
+								>
 									{table.schema.name}
 								</Text>
 
 								<Spacer />
 
-								{sessionInfo?.pinnedTables?.includes(table.schema.name) && (
+								{isPinned && (
 									<Icon
+										onClick={(e) => togglePinned(e, table.schema.name)}
 										className={classes.pinButton}
 										color={isActive ? "surreal" : isLight ? "light.3" : "light.4"}
-										title="Pinned"
+										title="Unpin table"
 										path={mdiPin}
 										size="sm"
 									/>
@@ -157,7 +166,10 @@ export function TablesPane({ active, onSelectTable, onRefresh }: TablesPaneProps
 				</Text>
 			)}
 
-			<TableCreator opened={isCreating} onClose={closeCreator} />
+			<TableCreator
+				opened={isCreating}
+				onClose={closeCreator} 
+			/>
 		</Panel>
 	);
 }

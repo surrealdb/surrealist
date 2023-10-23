@@ -13,13 +13,18 @@ import { DARK_THEME, LIGHT_THEME } from "~/util/editor";
 import { editor } from 'monaco-editor';
 
 import { Icon } from "../Icon";
-import { Scaffold } from "../Scaffold";
 import { adapter } from "~/adapter";
 import { updateTitle } from "~/util/helpers";
 import { hideAvailableUpdate } from "~/stores/interface";
 import { decreaseFontZoomLevel, increaseFontZoomLevel, resetFontZoomLevel, toggleWindowPinned } from "~/stores/config";
+import { RouterProvider } from "react-router-dom";
 
-export function App() {
+export interface AppProps {
+	router: any;
+}
+
+export function App({ router }: AppProps) {
+	const isLight = useIsLight();
 	const update = useStoreValue((state) => state.interface.availableUpdate);
 	const showUpdate = useStoreValue((state) => state.interface.showAvailableUpdate);
 	const colorScheme = useStoreValue((state) => state.config.theme);
@@ -27,7 +32,6 @@ export function App() {
 	const defaultScheme = useStoreValue((state) => state.interface.nativeTheme);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	const mantineTheme = useSurrealistTheme(actualTheme);
-	const isLight = useIsLight();
 
 	const closeUpdate = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
@@ -76,7 +80,8 @@ export function App() {
 	return (
 		<MantineProvider withGlobalStyles withNormalizeCSS withCSSVariables theme={mantineTheme}>
 			<Notifications />
-			<Scaffold />
+			
+			<RouterProvider router={router} />
 
 			<Transition mounted={showUpdate} duration={250} transition="slide-up" timingFunction="ease">
 				{(styles) => (
@@ -87,7 +92,8 @@ export function App() {
 						bg="#2f2f40"
 						bottom={20}
 						left={20}
-						p="xs">
+						p="xs"
+					>
 						<Group spacing="sm">
 							<Image src={surrealistIcon} style={{ pointerEvents: "none" }} height={32} width={32} mx={4} />
 							<Box miw={200}>
