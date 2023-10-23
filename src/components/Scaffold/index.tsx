@@ -26,6 +26,8 @@ import { ViewListing } from "./listing";
 import { openTabCreator } from "~/stores/interface";
 import { Outlet, useLocation } from "react-router-dom";
 import { ViewMode } from "~/types";
+import { useEffect } from "react";
+import { setActiveURL } from "~/stores/config";
 
 export function Scaffold() {
 	const activeSession = useStoreValue((state) => state.config.activeTab);
@@ -49,6 +51,10 @@ export function Scaffold() {
 			loader: true
 		});
 	});
+
+	useEffect(() => {
+		store.dispatch(setActiveURL(pathname));
+	}, [pathname]);
 	
 	useHotkeys([
 		["F9", () => userExecuteQuery()],
