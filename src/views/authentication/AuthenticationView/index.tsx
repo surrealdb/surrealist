@@ -47,7 +47,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 				field="dbUsers"
 				type="DATABASE"
 			/>
-			<ScopePane isOnline={isOnline} />
+			<ScopePane />
 		</SimpleGrid>
 	);
 }
