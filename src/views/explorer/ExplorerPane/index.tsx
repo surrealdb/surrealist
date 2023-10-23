@@ -16,7 +16,6 @@ import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { validate_where_clause } from "~/generated/surrealist-embed";
-import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, useStoreValue } from "~/store";
@@ -44,7 +43,6 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 	const filter = useStoreValue((state) => state.explorer.filter);
 	
 	const isLight = useIsLight();
-	const sessionInfo = useActiveSession();
 	const [pageText, setPageText] = useInputState("1");
 	const [pageSize, setPageSize] = useInputState("25");
 	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
@@ -73,7 +71,7 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 	}
 
 	const toggleFilter = useStable(() => {
-		store.dispatch(setExplorerFiltering(!filter));
+		store.dispatch(setExplorerFiltering(!filtering));
 	});
 
 	const setFilter = useStable((e: ChangeEvent<HTMLInputElement>) => {
@@ -208,7 +206,7 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 			}>
 			{table ? (
 				<>
-					{filter && (
+					{filtering && (
 						<TextInput
 							placeholder="Enter filter clause..."
 							icon={<Icon path={mdiFilterVariant} />}
@@ -229,7 +227,7 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 							style={{
 								position: "absolute",
 								inset: 12,
-								top: filter ? 40 : 0,
+								top: filtering ? 40 : 0,
 								bottom: 54,
 								transition: "top .1s"
 							}}
