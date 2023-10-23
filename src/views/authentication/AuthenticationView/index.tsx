@@ -14,6 +14,9 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 			h="100%"
 			spacing={6}
 			cols={4}
+			style={{
+				gridAutoRows: '1fr'
+			}}
 			breakpoints={[
 				{ maxWidth: '92rem', cols: 2 },
 			]}
@@ -23,8 +26,8 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 				title="Root Users"
 				icon={mdiLock}
 				iconColor="red.6"
-				typeShort="KV"
-				typeLong="ROOT"
+				field="kvUsers"
+				type="ROOT"
 			/>
 
 			<AccountsPane
@@ -32,8 +35,8 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 				title="Namespace Users"
 				icon={mdiFolderLock}
 				iconColor="blue.6"
-				typeShort="NS"
-				typeLong="NAMESPACE"
+				field="nsUsers"
+				type="NAMESPACE"
 			/>
 
 			<AccountsPane
@@ -41,8 +44,8 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 				title="Database Users"
 				icon={mdiDatabaseLock}
 				iconColor="yellow.6"
-				typeShort="DB"
-				typeLong="DATABASE"
+				field="dbUsers"
+				type="DATABASE"
 			/>
 			<ScopePane isOnline={isOnline} />
 		</SimpleGrid>

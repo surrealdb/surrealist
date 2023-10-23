@@ -35,10 +35,10 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 			query += "DEFINE FIELD out ON " + tableName + " TYPE record<" + tableOut.join("|") + ">;";
 		}
 
-		await surreal.query(query);
-
 		onClose();
-		fetchDatabaseSchema();
+
+		await surreal.query(query);
+		await fetchDatabaseSchema();
 	});
 
 	useLayoutEffect(() => {

@@ -154,7 +154,7 @@ export async function initializeMonaco() {
 			}
 
 			try {
-				const response = await surreal.querySingle("INFO FOR DB");
+				const response = await surreal.queryFirst("INFO FOR DB");
 				const result = response[0].result as SurrealInfoDB;
 
 				if (!result) {

@@ -11,9 +11,11 @@
 - Improved overal performance
 - Improved JSON syntax highlighting
 - Re-enable JSON syntax validation
+- Replaced most "refresh" buttons with a single universal refresh in the address bar
 - Store active view globally instead of per session
 - Fixed record ids passed as variable not working as expected
 - Fixed strange query editor behavior when holding shift
+- Fixed incorrect panel sizes in the authentication view
 - Refactored the code base to be more future proof
 
 ## 1.10.1 - Minor improvements

@@ -5,13 +5,26 @@ import { useConnectionDetails } from "./environment";
 type TableMode = "ALL" | "TABLE" | "EDGE";
 
 /**
+ * Access the current database schema
+ */
+export function useSchema() {
+	return useStoreValue((state) => state.database.databaseSchema);
+}
+
+/**
  * Fetch the schema tables based on the given filter
  *
  * @param mode The filter mode
  * @returns The filtered tables
  */
 export function useTables(mode: TableMode = "ALL") {
-	return useStoreValue((state) => state.database.databaseSchema).filter((t) => {
+	const schema = useSchema();
+
+	if (!schema) {
+		return [];
+	}
+
+	return schema.tables.filter((t) => {
 		if (mode == "ALL") return true;
 		if (mode == "TABLE") return !isEdgeTable(t);
 		if (mode == "EDGE") return isEdgeTable(t);

@@ -27,12 +27,14 @@ import { getSurreal } from "~/util/connection";
 import { store, useStoreValue } from "~/store";
 import { closeEditor, openCreator, setActiveRecord, setInspectorId, setInspectorQuery } from "~/stores/explorer";
 import { useStoreState } from "~/hooks/store";
+import { EventBus } from "~/hooks/event";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
+	refreshEvent: EventBus;
 }
 
-export function InspectorPane({ history }: InspectorPaneProps) {
+export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 	const isLight = useIsLight();
 	const isShifting = useActiveKeys("Shift");
 	const [isDeleting, setIsDeleting] = useState(false);
@@ -91,6 +93,7 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 		await surreal.query(`UPDATE ${history.current} CONTENT ${editingQuery}`);
 
 		fetchRecord(history.current);
+		refreshEvent.dispatch();
 	});
 
 	const isEdge = record?.content?.in && record?.content?.out;
@@ -116,6 +119,7 @@ export function InspectorPane({ history }: InspectorPaneProps) {
 		await surreal.query(`DELETE ${history.current}`);
 
 		history.clear();
+		refreshEvent.dispatch();
 	});
 
 	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {

@@ -13,7 +13,8 @@ const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 export interface SurrealConnection {
 	close(): void;
 	query(query: string, params?: Record<string, any>): Promise<any>;
-	querySingle(query: string): Promise<any>;
+	queryFirst(query: string): Promise<any>;
+	querySingle<T = any>(query: string): Promise<T>;
 }
 
 let instance: SurrealConnection | undefined;
@@ -152,7 +153,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 		query: async (query, params) => {
 			return execute(query, params);
 		},
-		querySingle: async (query) => {
+		queryFirst: async (query) => {
 			const results = await execute(query, {}) as any[];
 
 			return results.map(res => {
@@ -162,6 +163,12 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 				};
 			});
 		},
+		querySingle: async (query) => {
+			const results = await execute(query, {}) as any[];
+			const { result } = results[0];
+
+			return Array.isArray(result) ? result[0] : result;
+		}
 	};
 
 	instance = handle;

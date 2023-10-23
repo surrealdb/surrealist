@@ -1,10 +1,9 @@
 import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Stack, Text, Title } from "@mantine/core";
-import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiPlus, mdiRefresh } from "@mdi/js";
+import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiPlus } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
-import { fetchDatabaseSchema } from "~/util/schema";
 import { toBlob } from "html-to-image";
 import { ReactFlow, useEdgesState, useNodesState } from "reactflow";
 import { NODE_TYPES, buildTableGraph as buildTableDiagram } from "./helpers";
@@ -157,9 +156,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				<Group noWrap>
 					<ActionIcon title="Create table..." onClick={openCreator}>
 						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
-					<ActionIcon title="Refresh" onClick={fetchDatabaseSchema}>
-						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 					<Popover
 						opened={showConfig}

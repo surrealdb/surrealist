@@ -8,12 +8,14 @@ import { useHistory } from "~/hooks/history";
 import { store, useStoreValue } from "~/store";
 import { closeEditor, setHistory } from "~/stores/explorer";
 import { useIsConnected } from "~/hooks/connection";
+import { useEventBus } from "~/hooks/event";
 
 const SPLIT_SIZE: SplitValues = [200, 300];
 
 export function ExplorerView() {
 	const [splitValues, setSplitValues] = useState<SplitValues>([250, 450]);
 	const isOnline = useIsConnected();
+	const refreshEvent = useEventBus();
 
 	const {
 		isEditing,
@@ -42,14 +44,20 @@ export function ExplorerView() {
 			startPane={<TablesPane />}
 			endPane={
 				isCreating ? (
-					<CreatorPane />
+					<CreatorPane
+						refreshEvent={refreshEvent}
+					/>
 				) : isEditing ? (
-					<InspectorPane history={history} />
+					<InspectorPane
+						history={history}
+						refreshEvent={refreshEvent}
+					/>
 				) : null
 			}
 		>
 			<ExplorerPane
 				history={history}
+				refreshEvent={refreshEvent}
 			/>
 		</Splitter>
 	);

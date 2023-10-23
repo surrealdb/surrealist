@@ -1,8 +1,8 @@
-import { extract_event_definition, extract_field_definition, extract_index_definition, extract_table_definition } from '../generated/surrealist-embed';
+import { extract_event_definition, extract_field_definition, extract_index_definition, extract_scope_definition, extract_table_definition, extract_user_definition } from '../generated/surrealist-embed';
 import { map } from "radash";
 import { store } from "~/store";
-import { IndexKind, TableDefinition, TableEvent, TableField, TableIndex, TableSchema } from "~/types";
-import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
+import { IndexKind, ScopeDefinition, TableDefinition, TableEvent, TableField, TableIndex, TableSchema, UserDefinition } from "~/types";
+import { SurrealInfoDB, SurrealInfoKV, SurrealInfoNS, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./connection";
 import { extractTypeList } from './helpers';
 import { setDatabaseSchema } from '~/stores/database';
@@ -15,78 +15,101 @@ import { setDatabaseSchema } from '~/stores/database';
  */
 export async function fetchDatabaseSchema() {
 	const surreal = getActiveSurreal();
-	const dbResponse = await surreal.querySingle("INFO FOR DB");
-	const dbResult = dbResponse[0].result as SurrealInfoDB;
 
-	if (!dbResult) {
-		return [];
-	}
+	const [kvInfo, nsInfo, dbInfo] = await Promise.all([
+		surreal.querySingle<SurrealInfoKV>("INFO FOR KV"),
+		surreal.querySingle<SurrealInfoNS>("INFO FOR NS"),
+		surreal.querySingle<SurrealInfoDB>("INFO FOR DB")
+	]);
 
-	const databaseInfo: TableSchema[] = await map(Object.values(dbResult.tables), (definition) => {
+	// Fetch top level information
+
+	const kvUsers: UserDefinition[] = await map(Object.values(kvInfo.users), async (definition) => {
+		return extract_user_definition(definition);
+	});
+
+	const nsUsers: UserDefinition[] = await map(Object.values(nsInfo.users), async (definition) => {
+		return extract_user_definition(definition);
+	});
+
+	const dbUsers: UserDefinition[] = await map(Object.values(dbInfo.users), async (definition) => {
+		return extract_user_definition(definition);
+	});
+
+	const scopes: ScopeDefinition[] = await map(Object.values(dbInfo.scopes), async (definition) => {
+		return extract_scope_definition(definition);
+	});
+
+	const tableInfo: TableSchema[] = await map(Object.values(dbInfo.tables), (definition) => {
 		return extract_table_definition(definition);
 	});
 
-	const tableQuery = databaseInfo.reduce((acc, table) => {
-		return acc + `INFO FOR TABLE ${table.name};`;
-	}, "");
+	// Fetch table information
+	let tables: TableDefinition[] = [];
 
-	if (!tableQuery) {
-		return [];
+	if (tableInfo.length > 0) {
+		const tableQuery = tableInfo.reduce((acc, table) => {
+			return acc + `INFO FOR TABLE ${table.name};`;
+		}, "");
+	
+		const tableData = await surreal.queryFirst(tableQuery);
+	
+		tables = await map(tableInfo, async (table, index) => {
+			const tableInfo = tableData[index].result as SurrealInfoTB;
+	
+			const fieldInfo: TableField[] = await map(Object.values(tableInfo.fields), (definition) => {
+				return extract_field_definition(definition);
+			});
+	
+			const indexInfo: TableIndex[] = await map(Object.values(tableInfo.indexes), (definition) => {
+				return extract_index_definition(definition);
+			});
+	
+			const eventInfo: TableEvent[] = await map(Object.values(tableInfo.events), (definition) => {
+				return extract_event_definition(definition);
+			});
+	
+			const mappedFields = fieldInfo.map((field) => {
+				let kindTables: string[] = [];
+	
+				if (field.kind.startsWith("record")) {
+					kindTables = extractTypeList(field.kind, "record");
+				}
+	
+				return {
+					...field,
+					kindTables,
+				};
+			});
+	
+			const mappedIndexes = indexInfo.map((index) => {
+				return {
+					...index,
+					kind: index.kind.toLowerCase() as IndexKind,
+					search: index.search.replace('SEARCH ANALYZER ', ''),
+					vector: index.vector.replace('MTREE DIMENSION ', ''),
+				};
+			});
+	
+			return {
+				schema: {
+					...table,
+					changetime: table.changetime.replace('CHANGEFEED ', ''),
+				},
+				fields: mappedFields,
+				indexes: mappedIndexes,
+				events: eventInfo,
+			};
+		});
 	}
 
-	const tableData = await surreal.querySingle(tableQuery);
-
-	const tables = await map(databaseInfo, async (table, index) => {
-		const tableInfo = tableData[index].result as SurrealInfoTB;
-
-		const fieldInfo: TableField[] = await map(Object.values(tableInfo.fields), (definition) => {
-			return extract_field_definition(definition);
-		});
-
-		const indexInfo: TableIndex[] = await map(Object.values(tableInfo.indexes), (definition) => {
-			return extract_index_definition(definition);
-		});
-
-		const eventInfo: TableEvent[] = await map(Object.values(tableInfo.events), (definition) => {
-			return extract_event_definition(definition);
-		});
-
-		const mappedFields = fieldInfo.map((field) => {
-			let kindTables: string[] = [];
-
-			if (field.kind.startsWith("record")) {
-				kindTables = extractTypeList(field.kind, "record");
-			}
-
-			return {
-				...field,
-				kindTables,
-			};
-		});
-
-		const mappedIndexes = indexInfo.map((index) => {
-			return {
-				...index,
-				kind: index.kind.toLowerCase() as IndexKind,
-				search: index.search.replace('SEARCH ANALYZER ', ''),
-				vector: index.vector.replace('MTREE DIMENSION ', ''),
-			};
-		});
-
-		return {
-			schema: {
-				...table,
-				changetime: table.changetime.replace('CHANGEFEED ', ''),
-			},
-			fields: mappedFields,
-			indexes: mappedIndexes,
-			events: eventInfo,
-		};
-	});
-
-	store.dispatch(setDatabaseSchema(tables));
-
-	return tables;
+	store.dispatch(setDatabaseSchema({
+		tables,
+		scopes,
+		kvUsers,
+		nsUsers,
+		dbUsers,
+	}));
 }
 
 /**

@@ -15,22 +15,21 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { mdiComment, mdiKeyVariant, mdiPencil, mdiPlus, mdiRefresh } from "@mdi/js";
-import { map } from "radash";
-import { useEffect, useState } from "react";
+import { mdiComment, mdiKeyVariant, mdiPencil, mdiPlus } from "@mdi/js";
+import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
-import { extract_user_definition } from "~/generated/surrealist-embed";
 import { useIsConnected } from "~/hooks/connection";
-import { useActiveSession } from "~/hooks/environment";
+import { useHasSchemaAccess, useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { DatabaseSchema, UserDefinition } from "~/types";
 import { getActiveSurreal } from "~/util/connection";
 import { showError } from "~/util/helpers";
-import { isPermissionError } from "~/util/surreal";
+import { fetchDatabaseSchema } from "~/util/schema";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -38,67 +37,29 @@ const ROLES = [
 	{ value: "VIEWER", label: "Viewer" },
 ];
 
-interface UserInfo {
-	name: string;
-	comment: string;
-	roles: string[];
-}
-
 export interface AccountsPaneProps {
 	isOnline: boolean;
 	icon: string;
 	title: string;
 	iconColor: string;
-	typeShort: string;
-	typeLong: string;
+	field: keyof DatabaseSchema;
+	type: string;
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
-	const session = useActiveSession();
+	const isDenied = useHasSchemaAccess();
+	const schema = useSchema();
 
-	const [users, setUsers] = useState<UserInfo[]>([]);
 	const [isEditing, setIsEditing] = useState(false);
-	const [isDenied, setIsDenied] = useState(false);
-	const [currentUser, setCurrentUser] = useState<UserInfo | null>(null);
+	const [currentUser, setCurrentUser] = useState<UserDefinition | null>(null);
 	const [editingName, setEditingName] = useInputState("");
 	const [editingPassword, setEditingPassword] = useInputState("");
 	const [editingComment, setEditingComment] = useInputState("");
 	const [editingRole, setEditingRole] = useState<string[]>([]);
 
-	const fetchLogins = useStable(async () => {
-		const response = await getActiveSurreal().querySingle(`INFO FOR ${props.typeShort}`);
-		const result = response[0].result as { users: Record<string, string> };
-
-		if (!result) {
-			setUsers([]);
-			return;
-		}
-
-		if (isPermissionError(result)) {
-			setIsDenied(true);
-			setUsers([]);
-			return;
-		}
-
-		const userInfo: any = await map(Object.values(result.users), async (definition) => {
-			const result = extract_user_definition(definition);
-
-			return result as UserInfo;
-		});
-
-		setUsers(userInfo);
-		setIsDenied(false);
-	});
-
-	useEffect(() => {
-		if (isOnline) {
-			fetchLogins();
-		} else {
-			setUsers([]);
-		}
-	}, [isOnline, session.id]);
+	const users = (schema?.[props.field] || []) as UserDefinition[];
 
 	const closeSaving = useStable(() => {
 		setIsEditing(false);
@@ -108,7 +69,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 		try {
 			setIsEditing(false);
 
-			let query = `DEFINE USER ${editingName} ON ${props.typeLong} PASSWORD "${editingPassword}"`;
+			let query = `DEFINE USER ${editingName} ON ${props.type} PASSWORD "${editingPassword}"`;
 
 			if (editingRole.length > 0) {
 				query += ` ROLES ${editingRole.join(', ')}`;
@@ -119,7 +80,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			}
 
 			await getActiveSurreal().query(query);
-			await fetchLogins();
+			await fetchDatabaseSchema();
 		} catch (err: any) {
 			showError("Failed to save account", err.message);
 		}
@@ -133,7 +94,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 		setEditingRole([]);
 	});
 
-	const updateUser = useStable((user: UserInfo) => {
+	const updateUser = useStable((user: UserDefinition) => {
 		setIsEditing(true);
 		setCurrentUser(user);
 		setEditingName(user.name);
@@ -153,11 +114,11 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 		closeModal();
 
-		await getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.typeLong}`);
-		await fetchLogins();
+		await getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.type}`);
+		await fetchDatabaseSchema();
 	});
 
-	const formatRoles = useStable((user: UserInfo) => {
+	const formatRoles = useStable((user: UserDefinition) => {
 		return user.roles.map((role) => {
 			const roleInfo = ROLES.find((r) => r.value === role);
 
@@ -170,14 +131,9 @@ export function AccountsPane(props: AccountsPaneProps) {
 			icon={props.icon}
 			title={props.title}
 			rightSection={
-				<Group noWrap>
-					<ActionIcon title="Add account" onClick={createUser}>
-						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
-					<ActionIcon title="Refresh" onClick={fetchLogins}>
-						<Icon color="light.4" path={mdiRefresh} />
-					</ActionIcon>
-				</Group>
+				<ActionIcon title="Add account" onClick={createUser}>
+					<Icon color="light.4" path={mdiPlus} />
+				</ActionIcon>
 			}>
 			{users.length === 0 && (
 				<Center h="100%" c="light.5">

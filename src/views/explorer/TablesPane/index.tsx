@@ -1,15 +1,15 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Group, ScrollArea, Text, TextInput } from "@mantine/core";
-import { mdiMagnify, mdiPin, mdiPlus, mdiRefresh, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { mdiMagnify, mdiPin, mdiPlus, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
-import { store, useStoreValue } from "~/store";
-import { extractEdgeRecords, fetchDatabaseSchema } from "~/util/schema";
-import { useHasSchemaAccess } from "~/hooks/schema";
+import { store } from "~/store";
+import { extractEdgeRecords } from "~/util/schema";
+import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
 import { useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
@@ -23,10 +23,10 @@ export function TablesPane() {
 	const isLight = useIsLight();
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState("");
-	const schema = useStoreValue((state) => state.database.databaseSchema);
 	const hasAccess = useHasSchemaAccess();
 	const isOnline = useIsConnected();
 	const sessionInfo = useActiveSession();
+	const schema = useTables();
 
 	const [active, setActive] = useStoreState(
 		(state) => state.explorer.activeTable,
@@ -49,10 +49,6 @@ export function TablesPane() {
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
 	}, [schema, search, sessionInfo?.pinnedTables]);
-
-	const refreshTables = useStable(async () => {
-		fetchDatabaseSchema();
-	});
 
 	const openCreator = useStable(() => {
 		setIsCreating(true);
@@ -79,9 +75,6 @@ export function TablesPane() {
 			icon={mdiViewSequential}
 			rightSection={
 				<Group noWrap>
-					<ActionIcon title="Refresh" onClick={refreshTables}>
-						<Icon color="light.4" path={mdiRefresh} />
-					</ActionIcon>
 					<ActionIcon title="Create table..." onClick={openCreator}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>

@@ -10,7 +10,7 @@ import { fork } from "radash";
  */
 export async function createDatabaseExport(types: ExportType[]) {
 	const surreal = getActiveSurreal();
-	const dbResponse = await surreal.querySingle("INFO FOR DB");
+	const dbResponse = await surreal.queryFirst("INFO FOR DB");
 	const result = dbResponse[0].result as SurrealInfoDB;
 
 	const dbTables = Object.entries(result.tables);
@@ -75,7 +75,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 	
 			output.push(`${definition};`);
 	
-			const tbResponse = await surreal.querySingle(`INFO FOR TABLE ${tableName}`);
+			const tbResponse = await surreal.queryFirst(`INFO FOR TABLE ${tableName}`);
 			const tbInfo = tbResponse[0].result as SurrealInfoTB;
 	
 			const tbFields = Object.values(tbInfo.fields);

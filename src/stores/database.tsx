@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { TableDefinition } from "~/types";
+import { DatabaseSchema } from "~/types";
 
 const databaseSlice = createSlice({
 	name: "database",
@@ -10,7 +10,7 @@ const databaseSlice = createSlice({
 		isConnected: false,
 		isQueryActive: false,
 		consoleOutput: [] as string[],
-		databaseSchema: [] as TableDefinition[],
+		databaseSchema: null as DatabaseSchema | null
 	},
 	reducers: {
 
@@ -19,7 +19,7 @@ const databaseSlice = createSlice({
 		},
 
 		clearSchema(state) {
-			state.databaseSchema = [];
+			state.databaseSchema = null;
 		},
 
 		prepareServe(state) {
@@ -53,8 +53,10 @@ const databaseSlice = createSlice({
 			state.consoleOutput = [];
 		},
 
-		setDatabaseSchema(state, action: PayloadAction<TableDefinition[]>) {
+		setDatabaseSchema(state, action: PayloadAction<DatabaseSchema>) {
 			state.databaseSchema = action.payload;
+
+			console.log("Database schema updated", action.payload);
 		},
 
 		setIsConnecting(state, action: PayloadAction<boolean>) {
@@ -65,7 +67,7 @@ const databaseSlice = createSlice({
 			state.isConnected = action.payload;
 
 			if (!action.payload) {
-				state.databaseSchema = [];
+				state.databaseSchema = null;
 			}
 		},
 

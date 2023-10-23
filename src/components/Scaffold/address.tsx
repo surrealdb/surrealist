@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { Group, Paper, clsx, ActionIcon, Button, useMantineTheme, Text } from "@mantine/core";
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiRefresh } from "@mdi/js";
 import { closeConnection, openConnection } from "~/database";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -12,6 +12,7 @@ import { mergeConnections, isConnectionValid } from "~/util/environments";
 import { useIsLight } from "~/hooks/theme";
 import { ViewMode } from "~/types";
 import { openTabEditor } from "~/stores/interface";
+import { fetchDatabaseSchema } from "~/util/schema";
 
 export interface AddressBarProps {
 	viewMode: ViewMode;
@@ -38,6 +39,11 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const handleCloseConnection = useStable((e: MouseEvent) => {
 		e.stopPropagation();
 		closeConnection();
+	});
+
+	const handleFetchSchema = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+		fetchDatabaseSchema();
 	});
 
 	const showTabEditor = useStable(() => {
@@ -93,9 +99,14 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 					</Text>
 				)}
 				{isConnected && (
-					<ActionIcon onClick={handleCloseConnection} title="Disconnect">
-						<Icon color="light.4" path={mdiClose} />
-					</ActionIcon>
+					<>
+						<ActionIcon onClick={handleFetchSchema} title="Refetch schema">
+							<Icon color="light.4" path={mdiRefresh} />
+						</ActionIcon>
+						<ActionIcon onClick={handleCloseConnection} title="Disconnect">
+							<Icon color="light.4" path={mdiClose} />
+						</ActionIcon>
+					</>
 				)}
 			</Paper>
 

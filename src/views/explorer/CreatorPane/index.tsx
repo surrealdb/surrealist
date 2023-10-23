@@ -9,8 +9,13 @@ import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { store, useStoreValue } from "~/store";
 import { closeEditor, setCreatorBody, setCreatorId } from "~/stores/explorer";
 import { getSurreal } from "~/util/connection";
+import { EventBus } from "~/hooks/event";
 
-export function CreatorPane() {
+export interface CreatorPaneProps {
+	refreshEvent: EventBus;
+}
+
+export function CreatorPane({ refreshEvent }: CreatorPaneProps) {
 	const isLight = useIsLight();
 	const creatorId = useStoreValue(state => state.explorer.creatorId);
 	const creatorBody = useStoreValue(state => state.explorer.creatorBody);
@@ -25,6 +30,7 @@ export function CreatorPane() {
 		await surreal.query(`CREATE ${creatorId} CONTENT ${creatorBody}`);
 
 		store.dispatch(closeEditor());
+		refreshEvent.dispatch();
 	});
 
 	const handleCreatorId = useStable((e: ChangeEvent<HTMLInputElement>) => {

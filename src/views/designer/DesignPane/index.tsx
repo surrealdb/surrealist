@@ -63,11 +63,8 @@ export function DesignPane(props: SchemaPaneProps) {
 			const query = buildDefinitionQueries(original, data);
 			const surreal = getActiveSurreal();
 
-			surreal
-				.query(query)
-				.then(() => {
-					fetchDatabaseSchema();
-				})
+			surreal.query(query)
+				.then(() => fetchDatabaseSchema())
 				.catch((err) => {
 					showError("Failed to apply schema", err.message);
 				});

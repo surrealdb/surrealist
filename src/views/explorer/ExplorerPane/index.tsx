@@ -23,6 +23,7 @@ import { clearExplorerData, closeEditor, openCreator, openEditor, setExplorerDat
 import { ColumnSort } from "~/types";
 import { getSurreal } from "~/util/connection";
 import { HistoryHandle } from "~/hooks/history";
+import { EventBus, useEventSubscription } from "~/hooks/event";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -33,9 +34,10 @@ const PAGE_SIZES = [
 
 export interface ExplorerPaneProps {
 	history: HistoryHandle<any>;
+	refreshEvent: EventBus;
 }
 
-export function ExplorerPane({ history }: ExplorerPaneProps) {
+export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	const table = useStoreValue((state) => state.explorer.activeTable);
 	const records = useStoreValue((state) => state.explorer.records);
 	const recordCount = useStoreValue((state) => state.explorer.recordCount);
@@ -131,6 +133,10 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 		fetchRecords();
 	}, [table, pageSize, page, sortMode, showFilter, filterClause]);
 
+	useEventSubscription(refreshEvent, () => {
+		fetchRecords();
+	});
+
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
 		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
 			return;
@@ -188,7 +194,7 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 						<Icon color="light.4" path={mdiWrench} />
 					</ActionIcon>
 
-					<ActionIcon title="Refresh" onClick={fetchRecords}>
+					<ActionIcon title="Refresh table" onClick={fetchRecords}>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
 

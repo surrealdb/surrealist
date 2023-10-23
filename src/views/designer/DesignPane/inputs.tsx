@@ -9,7 +9,7 @@ import { useIsLight } from "~/hooks/theme";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { TableDefinition } from "~/types";
-import { useStoreValue } from "~/store";
+import { useTables } from "~/hooks/schema";
 
 export interface QueryInputProps extends TextareaProps {
 	onChangeText?: (value: string) => void;
@@ -146,8 +146,8 @@ export interface FieldKindInputProps {
 }
 
 export function FieldKindInput(props: FieldKindInputProps) {
-	const tables = useStoreValue((state) => state.databaseSchema);
 	const [showTables, setShowTables] = useState(false);
+	const tables = useTables();
 
 	const hideTables = useStable(() => {
 		setShowTables(false);

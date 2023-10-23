@@ -148,6 +148,27 @@ export interface TableEvent {
 	then: string;
 }
 
+export interface DatabaseSchema {
+	kvUsers: UserDefinition[];
+	nsUsers: UserDefinition[];
+	dbUsers: UserDefinition[];
+	scopes: ScopeDefinition[];
+	tables: TableDefinition[];
+}
+
+export interface UserDefinition {
+	name: string;
+	comment: string;
+	roles: string[];
+}
+
+export interface ScopeDefinition {
+	name: string;
+	session: string | null;
+	signin: string | null;
+	signup: string | null;
+}
+
 export interface TableDefinition {
 	schema: TableSchema;
 	fields: TableField[];

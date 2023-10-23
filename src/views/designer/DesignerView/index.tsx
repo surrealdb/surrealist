@@ -5,6 +5,7 @@ import { DesignPane } from "../DesignPane";
 import { TableGraphPane } from "../TableGraphPane";
 import { useStable } from "~/hooks/stable";
 import { setDesignerTable } from "~/stores/designer";
+import { useTables } from "~/hooks/schema";
 
 const SPLIT_SIZE: SplitValues = [undefined, 450];
 
@@ -13,7 +14,7 @@ export interface DesignerViewProps {
 
 export function DesignerView(props: DesignerViewProps) {
 	const activeTable = useStoreValue(state => state.designer.activeTable);
-	const tables = useStoreValue(state => state.database.databaseSchema);
+	const tables = useTables();
 
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
 

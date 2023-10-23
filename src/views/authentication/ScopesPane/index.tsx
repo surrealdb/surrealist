@@ -17,13 +17,6 @@ import { SurrealInfoDB } from "~/typings/surreal";
 import { getActiveSurreal } from "~/util/connection";
 import { showError } from "~/util/helpers";
 
-interface ScopeInfo {
-	name: string;
-	session: string | null;
-	signin: string | null;
-	signup: string | null;
-}
-
 export interface ScopePaneProps {
 	isOnline: boolean;
 }
@@ -41,7 +34,7 @@ export function ScopePane(props: ScopePaneProps) {
 	const [editingSession, setEditingSession] = useInputState("");
 
 	const fetchScopes = useStable(async () => {
-		const response = await getActiveSurreal().querySingle(`INFO FOR DB`);
+		const response = await getActiveSurreal().queryFirst(`INFO FOR DB`);
 		const result = response[0].result as SurrealInfoDB;
 
 		if (!result) {
