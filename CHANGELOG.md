@@ -17,6 +17,7 @@
 - Fixed strange query editor behavior when holding shift
 - Fixed incorrect panel sizes in the authentication view
 - Refactored the code base to be more future proof
+- Minor UI improvements
 
 ## 1.10.1 - Minor improvements
 - Added auto closing bracket support in SurrealQL editors

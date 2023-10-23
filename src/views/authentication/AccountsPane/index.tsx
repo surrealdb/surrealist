@@ -3,9 +3,9 @@ import {
 	Badge,
 	Button,
 	Center,
+	Checkbox,
 	Group,
 	Modal,
-	MultiSelect,
 	PasswordInput,
 	Stack,
 	Text,
@@ -224,17 +224,19 @@ export function AccountsPane(props: AccountsPaneProps) {
 							required={!currentUser}
 						/>
 
-						<MultiSelect
-							data={ROLES}
+						<Checkbox.Group
 							label="Select a role"
 							description="The role of the user on this database"
 							value={editingRole}
 							onChange={setEditingRole}
-							dropdownPosition="bottom"
-							withinPortal
 							withAsterisk
-							clearable
-						/>
+						>
+							<Stack mt="xs">
+								{ROLES.map((role) => (
+									<Checkbox {...role} key={role.value} />	
+								))}
+							</Stack>
+						</Checkbox.Group>
 
 						<Textarea
 							label="Comment"
