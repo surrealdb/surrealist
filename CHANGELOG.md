@@ -1,10 +1,20 @@
 # Change Log
 
-## 1.10.2 - Further improvements
+## 1.10.2 - Technical update
+- Implement internal view routing
+	- The current view is now displayed in the URL
+	- This means you can bookmark and share specific views
+- Improved explorer inspector
+	- Can now be opened manually by pressing the wrench button
+- Changed explorer table pinning
+	- You can now toggle a table pin by double clicking a table
 - Improved overal performance
 - Improved JSON syntax highlighting
 - Re-enable JSON syntax validation
 - Store active view globally instead of per session
+- Fixed record ids passed as variable not working as expected
+- Fixed strange query editor behavior when holding shift
+- Refactored the code base to be more future proof
 
 ## 1.10.1 - Minor improvements
 - Added auto closing bracket support in SurrealQL editors
