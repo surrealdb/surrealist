@@ -44,6 +44,10 @@ export function App({ router }: AppProps) {
 	});
 
 	useEffect(() => {
+		updateTitle();
+	}, []);
+
+	useEffect(() => {
 		editor.setTheme(isLight ? LIGHT_THEME : DARK_THEME);
 	}, [colorScheme]);
  
