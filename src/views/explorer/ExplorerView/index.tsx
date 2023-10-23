@@ -9,10 +9,10 @@ import { store, useStoreValue } from "~/store";
 import { closeEditor, setHistory } from "~/stores/explorer";
 import { useIsConnected } from "~/hooks/connection";
 
-const SPLIT_SIZE: SplitValues = [250, 450];
+const SPLIT_SIZE: SplitValues = [200, 300];
 
 export function ExplorerView() {
-	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
+	const [splitValues, setSplitValues] = useState<SplitValues>([250, 450]);
 	const isOnline = useIsConnected();
 
 	const {
@@ -35,7 +35,7 @@ export function ExplorerView() {
 	return (
 		<Splitter
 			minSize={SPLIT_SIZE}
-			bufferSize={500}
+			bufferSize={495}
 			values={splitValues}
 			onChange={setSplitValues}
 			direction="horizontal"

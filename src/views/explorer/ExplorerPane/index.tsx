@@ -20,7 +20,6 @@ import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, useStoreValue } from "~/store";
-import { toggleTablePin } from "~/stores/config";
 import { clearExplorerData, closeEditor, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering } from "~/stores/explorer";
 import { ColumnSort } from "~/types";
 import { getSurreal } from "~/util/connection";
@@ -177,17 +176,6 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 		store.dispatch(openEditor());
 	});
 
-	const isPinned = table && sessionInfo?.pinnedTables?.includes(table);
-
-	const togglePin = useStable(() => {
-		if (!table || !sessionInfo) return;
-
-		store.dispatch(toggleTablePin({
-			session: sessionInfo.id,
-			table,
-		}));
-	});
-
 	return (
 		<Panel
 			title="Record Explorer"
@@ -205,10 +193,6 @@ export function ExplorerPane({ history }: ExplorerPaneProps) {
 					<ActionIcon title="Refresh" onClick={fetchRecords}>
 						<Icon color="light.4" path={mdiRefresh} />
 					</ActionIcon>
-
-					{/* <ActionIcon title={isPinned ? "Unpin table" : "Pin table"} onClick={togglePin}>
-						<Icon color="light.4" path={isPinned ? mdiPinOff : mdiPin} />
-					</ActionIcon> */}
 
 					<ActionIcon title="Toggle filter" onClick={toggleFilter}>
 						<Icon color="light.4" path={mdiFilterVariant} />

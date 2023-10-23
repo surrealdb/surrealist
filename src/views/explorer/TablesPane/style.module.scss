@@ -1,6 +1,14 @@
 .table-entry {
-	cursor: pointer;
 	position: relative;
+	cursor: pointer;
+}
+
+.table-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-left: 0.25rem;
+	user-select: none;
 }
 
 .viewport > div {
@@ -8,5 +16,7 @@
 }
 
 .pin-button {
-	transform: rotate(45deg);
+	cursor: pointer;
+	margin-right: 0.75rem;
+	flex-shrink: 0;
 }
