@@ -8,6 +8,7 @@ import { VIEW_MODES } from "~/constants";
 import { store } from "~/store";
 import { getActiveSession } from "./environments";
 import { setNativeTheme } from "~/stores/interface";
+import { ViewMode } from "~/types";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -17,8 +18,11 @@ export const TRUNCATE_STYLE: CSSProperties = {
 
 export function updateTitle() {
 	const { config } = store.getState();
+	const { pathname } = window.location;
+
+	const activeView = pathname.split("/")[1] as ViewMode;
 	const session = getActiveSession();
-	const viewInfo = VIEW_MODES.find((v) => v.id === config.activeView);
+	const viewInfo = VIEW_MODES.find((v) => v.id === activeView);
 	const segments: string[] = [];
 
 	if (session) {
