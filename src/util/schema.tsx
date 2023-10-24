@@ -17,30 +17,35 @@ export async function fetchDatabaseSchema() {
 	const surreal = getActiveSurreal();
 
 	const [kvInfo, nsInfo, dbInfo] = await Promise.all([
-		surreal.querySingle<SurrealInfoKV>("INFO FOR KV"),
-		surreal.querySingle<SurrealInfoNS>("INFO FOR NS"),
-		surreal.querySingle<SurrealInfoDB>("INFO FOR DB")
+		surreal.querySingle<SurrealInfoKV | null>("INFO FOR KV"),
+		surreal.querySingle<SurrealInfoNS | null>("INFO FOR NS"),
+		surreal.querySingle<SurrealInfoDB | null>("INFO FOR DB")
 	]);
 
 	// Fetch top level information
+	const kvUsersMap = Object.values(kvInfo?.users ?? {});
+	const nsUsersMap = Object.values(nsInfo?.users ?? {});
+	const dbUsersMap = Object.values(dbInfo?.users ?? {});
+	const dbScopesMap = Object.values(dbInfo?.scopes ?? {});
+	const dbTablesMap = Object.values(dbInfo?.tables ?? {});
 
-	const kvUsers: UserDefinition[] = await map(Object.values(kvInfo.users), async (definition) => {
+	const kvUsers: UserDefinition[] = await map(kvUsersMap, async (definition) => {
 		return extract_user_definition(definition);
 	});
 
-	const nsUsers: UserDefinition[] = await map(Object.values(nsInfo.users), async (definition) => {
+	const nsUsers: UserDefinition[] = await map(nsUsersMap, async (definition) => {
 		return extract_user_definition(definition);
 	});
 
-	const dbUsers: UserDefinition[] = await map(Object.values(dbInfo.users), async (definition) => {
+	const dbUsers: UserDefinition[] = await map(dbUsersMap, async (definition) => {
 		return extract_user_definition(definition);
 	});
 
-	const scopes: ScopeDefinition[] = await map(Object.values(dbInfo.scopes), async (definition) => {
+	const scopes: ScopeDefinition[] = await map(dbScopesMap, async (definition) => {
 		return extract_scope_definition(definition);
 	});
 
-	const tableInfo: TableSchema[] = await map(Object.values(dbInfo.tables), (definition) => {
+	const tableInfo: TableSchema[] = await map(dbTablesMap, (definition) => {
 		return extract_table_definition(definition);
 	});
 

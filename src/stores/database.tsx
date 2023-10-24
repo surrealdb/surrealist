@@ -55,7 +55,7 @@ const databaseSlice = createSlice({
 		},
 
 		setDatabaseSchema(state, action: PayloadAction<DatabaseSchema>) {
-			printLog("Received database schema:", "#e600a4", action.payload);
+			printLog("Received database schema", "#e600a4", action.payload);
 			
 			state.databaseSchema = action.payload;
 		},

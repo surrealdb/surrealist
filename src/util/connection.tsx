@@ -165,9 +165,13 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 		},
 		querySingle: async (query) => {
 			const results = await execute(query, {}) as any[];
-			const { result } = results[0];
+			const { result, status } = results[0];
 
-			return Array.isArray(result) ? result[0] : result;
+			if (status === 'OK') {
+				return Array.isArray(result) ? result[0] : result;
+			} else {
+				return null;
+			}
 		}
 	};
 
