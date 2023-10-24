@@ -1,7 +1,7 @@
 {
 	"name": "frontend",
 	"private": true,
-	"version": "1.10.2-web.1",
+	"version": "1.10.2",
 	"surreal": "1.0.0",
 	"type": "module",
 	"author": "Starlane Studios",
