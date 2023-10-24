@@ -1,7 +1,8 @@
 # Change Log
 
-## 1.10.3 - Web app fixes (Web app only)
-- Fixed the web app breaking when loading any non-root path
+## 1.10.3 - Critical fixes
+- Fixed the web app breaking when accessing non-/ paths
+- Fixed schema fetching failing when authenticated as a root user
 
 ## 1.10.2 - Technical update
 - Implement internal view routing
