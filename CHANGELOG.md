@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.10.3 - Web app fixes (Web app only)
+- Fixed the web app breaking when loading any non-root path
+
 ## 1.10.2 - Technical update
 - Implement internal view routing
 	- The current view is now displayed in the URL
