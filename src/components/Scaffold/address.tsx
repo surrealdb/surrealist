@@ -104,9 +104,14 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 				) : (
 					<>
 						<Icon path={surrealIcon} color="surreal" />
-						<Text color={isLight ? "light.6" : "white"}>
-							Sandbox connection
-						</Text>
+						<Group spacing={6}>
+							<Text color={isLight ? "light.6" : "white"}>
+								Sandbox
+							</Text>
+							<Text color={isLight ? "light.4" : "light.4"}>
+								({connection.namespace} / {connection.database})
+							</Text>
+						</Group>
 					</>
 				)}
 				<Spacer />

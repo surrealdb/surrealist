@@ -26,7 +26,7 @@ import { useIsLight } from "~/hooks/theme";
 import { ModalTitle } from "../ModalTitle";
 
 const METHODS = [
-	{ label: 'Remote', value: 'remote' },
+	{ label: 'Database', value: 'remote' },
 	{ label: 'Sandbox', value: 'local' }
 ];
 
@@ -184,8 +184,8 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 						color="blue"
 						icon={<Icon path={mdiInformation} />}
 					>
-						Sandbox sessions are stored in memory and can be used without installing SurrealDB,
-						ideal for testing queries and experimentation.
+						Sandbox sessions provide a convenient way to test queries locally without having to install SurrealDB, however data is kept in memory and
+						does not persist between restarts.
 					</Alert>
 					<SimpleGrid cols={2} spacing="xl">
 						{namespaceInput}
