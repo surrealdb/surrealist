@@ -10,24 +10,32 @@ import {
 	Select,
 	SimpleGrid,
 	Text,
+	SegmentedControl,
+	Alert
 } from "@mantine/core";
 
-import { mdiClose, mdiPlus } from "@mdi/js";
+import { mdiClose, mdiInformation, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { AUTH_MODES } from "~/constants";
-import { AuthMode, ConnectionOptions } from "~/types";
+import { AuthMode, ConnectMethod, ConnectionOptions } from "~/types";
 import { Updater } from "use-immer";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { ModalTitle } from "../ModalTitle";
 
+const METHODS = [
+	{ label: 'Remote', value: 'remote' },
+	{ label: 'Sandbox', value: 'local' }
+];
+
 export interface ConnectionDetailsProps {
 	value: Partial<ConnectionOptions>;
 	onChange: Updater<ConnectionOptions>;
 	optional?: boolean;
 	placeholders?: Partial<ConnectionOptions>;
+	withLocal?: boolean;
 }
 
 export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {
@@ -54,99 +62,138 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 		});
 	});
 
+	const namespaceInput = (
+		<TextInput
+			label="Namespace"
+			value={value.namespace || ""}
+			placeholder={placeholders?.namespace}
+			onChange={(e) =>
+				onChange((draft) => {
+					draft.namespace = e.target.value;
+				})
+			}
+		/>
+	);
+
+	const databaseInput = (
+		<TextInput
+			label="Database"
+			value={value.database || ""}
+			placeholder={placeholders?.database}
+			onChange={(e) =>
+				onChange((draft) => {
+					draft.database = e.target.value;
+				})
+			}
+		/>
+	);
+
 	return (
 		<>
-			<SimpleGrid cols={2} spacing="xl">
-				<Stack>
-					<TextInput
-						label="Endpoint URL"
-						value={value.endpoint || ""}
-						placeholder={placeholders?.endpoint}
-						autoFocus={!optional}
-						onChange={(e) =>
-							onChange((draft) => {
-								draft.endpoint = e.target.value;
-							})
-						}
-					/>
-					<TextInput
-						label="Namespace"
-						value={value.namespace || ""}
-						placeholder={placeholders?.namespace}
-						onChange={(e) =>
-							onChange((draft) => {
-								draft.namespace = e.target.value;
-							})
-						}
-					/>
-					<TextInput
-						label="Database"
-						value={value.database || ""}
-						placeholder={placeholders?.database}
-						onChange={(e) =>
-							onChange((draft) => {
-								draft.database = e.target.value;
-							})
-						}
-					/>
-				</Stack>
-				<Stack>
-					<Select
-						label="Authentication mode"
-						value={value.authMode || ""}
-						placeholder={modePlaceholder}
-						clearable
-						data={AUTH_MODES}
-						onChange={(value) =>
-							onChange((draft) => {
-								draft.authMode = value as AuthMode;
-							})
-						}
-					/>
-					{authMode !== "scope" && authMode !== "none" && (
-						<>
-							<TextInput
-								label="Username"
-								value={value.username || ""}
-								placeholder={placeholders?.username}
-								onChange={(e) =>
-									onChange((draft) => {
-										draft.username = e.target.value;
-									})
-								}
-							/>
-							<PasswordInput
-								label="Password"
-								value={value.password || ""}
-								placeholder={passPlaceholder}
-								onChange={(e) =>
-									onChange((draft) => {
-										draft.password = e.target.value;
-									})
-								}
-							/>
-						</>
-					)}
+			<SegmentedControl
+				data={METHODS}
+				fullWidth
+				mb="sm"
+				color="surreal"
+				value={value.method || ''}
+				onChange={(val) =>
+					onChange((draft) => {
+						draft.method = val as ConnectMethod;
+					})
+				}
+			/>
 
-					{authMode === "scope" && (
-						<>
-							<TextInput
-								label="Scope"
-								value={value.scope || ""}
-								placeholder={placeholders?.scope}
-								onChange={(e) =>
-									onChange((draft) => {
-										draft.scope = e.target.value;
-									})
-								}
-							/>
-							<Button mt={21} color="blue" variant="outline" onClick={openScopeEditor}>
-								Edit scope data
-							</Button>
-						</>
-					)}
-				</Stack>
-			</SimpleGrid>
+			{value.method == 'remote' ? (
+				<SimpleGrid cols={2} spacing="xl">
+					<Stack>
+						<TextInput
+							label="Endpoint URL"
+							value={value.endpoint || ""}
+							placeholder={placeholders?.endpoint}
+							autoFocus={!optional}
+							onChange={(e) =>
+								onChange((draft) => {
+									draft.endpoint = e.target.value;
+								})
+							}
+						/>
+						{namespaceInput}
+						{databaseInput}
+					</Stack>
+					<Stack>
+						<Select
+							label="Authentication mode"
+							value={value.authMode || ""}
+							placeholder={modePlaceholder}
+							clearable
+							data={AUTH_MODES}
+							onChange={(value) =>
+								onChange((draft) => {
+									draft.authMode = value as AuthMode;
+								})
+							}
+						/>
+						{authMode !== "scope" && authMode !== "none" && (
+							<>
+								<TextInput
+									label="Username"
+									value={value.username || ""}
+									placeholder={placeholders?.username}
+									onChange={(e) =>
+										onChange((draft) => {
+											draft.username = e.target.value;
+										})
+									}
+								/>
+								<PasswordInput
+									label="Password"
+									value={value.password || ""}
+									placeholder={passPlaceholder}
+									onChange={(e) =>
+										onChange((draft) => {
+											draft.password = e.target.value;
+										})
+									}
+								/>
+							</>
+						)}
+
+						{authMode === "scope" && (
+							<>
+								<TextInput
+									label="Scope"
+									value={value.scope || ""}
+									placeholder={placeholders?.scope}
+									onChange={(e) =>
+										onChange((draft) => {
+											draft.scope = e.target.value;
+										})
+									}
+								/>
+								<Button mt={21} color="blue" variant="outline" onClick={openScopeEditor}>
+									Edit scope data
+								</Button>
+							</>
+						)}
+					</Stack>
+				</SimpleGrid>
+			) : (
+				<>
+					<Alert
+						mb="lg"
+						color="blue"
+						icon={<Icon path={mdiInformation} />}
+					>
+						Sandbox sessions are stored in memory and can be used without installing SurrealDB,
+						ideal for testing queries and experimentation.
+					</Alert>
+					<SimpleGrid cols={2} spacing="xl">
+						{namespaceInput}
+						{databaseInput}
+					</SimpleGrid>
+				</>
+			)}
+			
 			<Modal
 				opened={editingScope}
 				onClose={closeEditingScope}

@@ -96,14 +96,17 @@ export interface QueryOptions {
  */
 export async function executeQuery(options?: QueryOptions) {
 	const sessionInfo = getActiveSession();
+	const isRemote = sessionInfo?.connection?.method === "remote";
 
-	const { isConnected } = store.getState().database;
-	
-	if (!isConnected || !sessionInfo) {
-		showNotification({
-			message: "You must be connected to send a query",
-		});
-		return;
+	if (!sessionInfo || isRemote) {
+		const { isConnected } = store.getState().database;
+		
+		if (!isConnected || !sessionInfo) {
+			showNotification({
+				message: "You must be connected to send a query",
+			});
+			return;
+		}
 	}
 
 	const { id: tabId, queries, activeQueryId, name, variables } = sessionInfo;

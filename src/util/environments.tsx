@@ -25,6 +25,7 @@ export function getActiveEnvironment() {
  */
 export function createEmptyConnection(): ConnectionOptions {
 	return {
+		method: "remote",
 		endpoint: "",
 		namespace: "",
 		database: "",
@@ -47,6 +48,7 @@ export function mergeConnections(
 	const rightFields = right.scopeFields || [];
 
 	return {
+		method: left.method || right.method || "remote",
 		namespace: left.namespace || right.namespace || "",
 		database: left.database || right.database || "",
 		endpoint: left.endpoint || right.endpoint || "",
@@ -64,6 +66,11 @@ export function mergeConnections(
 export function isConnectionValid(details: ConnectionOptions | undefined) {
 	if (!details) {
 		return false;
+	}
+
+	// Check local connection
+	if (details.method == 'local' && details.namespace && details.database) {
+		return true;
 	}
 
 	// Check for essential fields

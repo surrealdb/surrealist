@@ -60,4 +60,11 @@ export function migrateConfig(config: Open<SurrealistConfig>) {
 			tab.liveQueries = [];
 		}
 	}
+
+	// 1.11.0 - Define connection method
+	for (const tab of config.tabs as any[]) {
+		if (!tab.connection.method) {
+			tab.connection.method = 'remote';
+		}
+	}
 }

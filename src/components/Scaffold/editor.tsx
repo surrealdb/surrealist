@@ -75,10 +75,19 @@ export function TabEditor() {
 			size="lg"
 			title={<ModalTitle>Connection details</ModalTitle>}
 		>
-			<InheritAlert visible={!detailsValid && mergedValid} environment={envInfo?.name} />
+			<InheritAlert
+				visible={!detailsValid && mergedValid}
+				environment={envInfo?.name}
+			/>
 
 			<Form onSubmit={saveInfo}>
-				<ConnectionDetails value={infoDetails} onChange={setInfoDetails} placeholders={envInfo?.connection} optional />
+				<ConnectionDetails
+					value={infoDetails}
+					onChange={setInfoDetails}
+					placeholders={envInfo?.connection}
+					withLocal
+					optional
+				/>
 
 				<Group mt="lg">
 					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={handleCose}>

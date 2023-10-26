@@ -1,6 +1,6 @@
 import { mapKeys, snake } from 'radash';
-import { open_connection, close_connection, execute_query, query_version } from '../generated/surrealist-embed';
-import { SurrealOptions } from '~/types';
+import { open_connection, close_connection, query_version, execute_remote_query, execute_local_query } from '../generated/surrealist-embed';
+import { ConnectionOptions, SurrealOptions } from '~/types';
 import { store } from '~/store';
 import compare from 'semver-compare';
 import { showNotification } from '@mantine/notifications';
@@ -26,8 +26,11 @@ function createError(message: string) {
 }
 
 // Execute a query and parse the result
-async function executeQuery(query: string, params: any) {
-	const response = await execute_query(query, JSON.stringify(params || {}));
+async function executeQuery(query: string, params: any, connection: ConnectionOptions) {
+	const paramJson = JSON.stringify(params || {});
+	const response = connection.method === 'remote'
+		? await execute_remote_query(query, paramJson)
+		: await execute_local_query(connection, query, paramJson);
 
 	return JSON.parse(response);
 }
@@ -40,12 +43,12 @@ async function scheduleTimeout(seconds: number) {
 }
 
 // Execute a query with timeout
-async function execute(query: string, params: any) {
+async function execute(query: string, params: any, connection: ConnectionOptions) {
 	const { queryTimeout } = store.getState().config;
 
 	try {
 		const result = await Promise.race([
-			executeQuery(query, params),
+			executeQuery(query, params, connection),
 			scheduleTimeout(queryTimeout)
 		]);
 
@@ -134,16 +137,23 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 		endpoint: connection.endpoint.replace(/^ws/, "http")
 	};
 
-	open_connection(details).then(() => {
-		options.onConnect?.();
-		checkDatabaseVersion();
-	}).catch(err => {
-		console.error('Failed to open connection', err);
-		options.onError?.(err);
-		options.onDisconnect?.(1000, 'Failed to open connection');
-	}).finally(() => {
-		connecting = false;
-	});
+	if (options.connection.method === 'remote') {
+		open_connection(details).then(() => {
+			options.onConnect?.();
+			checkDatabaseVersion();
+		}).catch(err => {
+			console.error('Failed to open connection', err);
+			options.onError?.(err);
+			options.onDisconnect?.(1000, 'Failed to open connection');
+		}).finally(() => {
+			connecting = false;
+		});
+	} else {
+		setTimeout(() => {
+			options.onConnect?.();
+			connecting = false;
+		}, 0);
+	}
 
 	const handle: SurrealConnection = {
 		close: () => {
@@ -151,10 +161,10 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			options.onDisconnect?.(1000, 'Closed by user');
 		},
 		query: async (query, params) => {
-			return execute(query, params);
+			return execute(query, params, details);
 		},
 		queryFirst: async (query) => {
-			const results = await execute(query, {}) as any[];
+			const results = await execute(query, {}, details) as any[];
 
 			return results.map(res => {
 				return {
@@ -164,7 +174,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			});
 		},
 		querySingle: async (query) => {
-			const results = await execute(query, {}) as any[];
+			const results = await execute(query, {}, details) as any[];
 			const { result, status } = results[0];
 
 			if (status === 'OK') {
