@@ -7,14 +7,11 @@ import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../../query/VariablesPane";
 import { Splitter, SplitValues } from "~/components/Splitter";
 
-export interface QueryViewProps {
-}
-
-export function QueryView(props: QueryViewProps) {
+export function QueryView() {
 	const enableListing = useStoreValue((state) => state.config.enableListing);
 	const queryListing = useStoreValue((state) => state.config.queryListing);
 
-	const [splitValues, setSplitValues] = useState<SplitValues>([450, undefined]);
+	const [splitValues, setSplitValues] = useState<SplitValues>([750, undefined]);
 	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
 
 	return (
