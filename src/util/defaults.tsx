@@ -37,6 +37,7 @@ export function createBaseConfig(): SurrealistConfig {
 
 export function createBaseConnection(): ConnectionOptions {
 	return {
+		method: "remote",
 		endpoint: "",
 		namespace: "",
 		database: "",
