@@ -1,10 +1,15 @@
 # Change Log
 
-## 1.10.4 - Improved query results
-- Query results are now more accurate
+## 1.11.0 - Improved query results
+- Added sandbox connections
+	- Connect to an internally embedded SurrealDB instance
+	- Useful for rapid testing without requiring a local or remote SurrealDB instance
+	- Currently only in-memory and non-persistent
+- Query results are now more accurate (#115)
 	- No longer always displayed as an array
-- Query time value is displayed again
+- Query time value is displayed again (#113)
 - Fixed incorrect explorer pagination (#133)
+- Fixed situations in which connections incorrectly appeared closed
 - Slightly adjust minimum window size and splitter sizes
 
 ## 1.10.3 - Critical fixes
