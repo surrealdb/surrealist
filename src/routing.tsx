@@ -6,11 +6,16 @@ import { AuthenticationView } from "./views/authentication/AuthenticationView";
 import { LiveView } from "./views/live/LiveView";
 import { Scaffold } from "./components/Scaffold";
 import { store } from "./store";
+import { Embed } from "./components/Embed";
 
 /**
  * The view router instance
  */
 export const createViewRouter = () => createBrowserRouter([
+	{
+		path: '/embed',
+		element: <Embed />
+	},
 	{
 		element: <Scaffold />,
 		children: [

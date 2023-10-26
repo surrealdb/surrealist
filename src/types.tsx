@@ -9,6 +9,7 @@ export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type DesignerLayoutMode = "diagram" | "grid";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
+export type ConnectMethod = "remote" | "local";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -190,6 +191,7 @@ export interface TabCreation {
 }
 
 export interface ConnectionOptions {
+	method: ConnectMethod;
 	namespace: string;
 	database: string;
 	endpoint: string;

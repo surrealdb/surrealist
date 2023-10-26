@@ -29,7 +29,7 @@ export function updateTitle() {
 		segments.push(`${session.name} -`);
 	}
 
-	segments.push(`Surrealist ${viewInfo?.name}`);
+	segments.push(`Surrealist ${viewInfo?.name || ''}`);
 
 	if (config.isPinned) {
 		segments.push('(Pinned)');

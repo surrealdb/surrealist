@@ -13,6 +13,7 @@ import { useIsLight } from "~/hooks/theme";
 import { ViewMode } from "~/types";
 import { openTabEditor } from "~/stores/interface";
 import { fetchDatabaseSchema } from "~/util/schema";
+import { surrealIcon } from "~/util/icons";
 
 export interface AddressBarProps {
 	viewMode: ViewMode;
@@ -32,9 +33,12 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 
 	const connection = mergeConnections(sessionInfo?.connection || {}, envInfo?.connection || {});
 	const connectionValid = isConnectionValid(connection);
+	const isRemote = connection.method === "remote";
 
 	const borderColor = theme.fn.themeColor(isConnected ? "surreal" : connectionValid ? "light" : "red");
 	const showQuery = viewMode == "query";
+
+	console.log(viewMode);
 
 	const handleCloseConnection = useStable((e: MouseEvent) => {
 		e.stopPropagation();
@@ -70,28 +74,46 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 				onClick={showTabEditor}
 				style={{ borderColor: borderColor }}
 			>
-				{isConnected ? (
-					connection.authMode == "none" ? (
-						<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.4" : "light.3"} fs="italic" px="xs">
-							Anon
-						</Paper>
-					) : connection.authMode == "scope" ? (
-						<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.4" : "light.3"} fs="italic" px="xs">
-							{connection.scope}
-						</Paper>
-					) : (
-						<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.6" : "white"} px="xs">
-							{connection.username}
-						</Paper>
-					)
-				) : (
-					<Paper bg="light" px="xs">
-						<Text color="white" size="xs" py={2} weight={600}>
-							OFFLINE
+				{isRemote ? (
+					<>
+						{isConnected ? (
+							connection.authMode == "none" ? (
+								<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.4" : "light.3"} fs="italic" px="xs">
+									Anon
+								</Paper>
+							) : connection.authMode == "scope" ? (
+								<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.4" : "light.3"} fs="italic" px="xs">
+									{connection.scope}
+								</Paper>
+							) : (
+								<Paper bg={isLight ? "light.0" : "light.6"} c={isLight ? "light.6" : "white"} px="xs">
+									{connection.username}
+								</Paper>
+							)
+						) : (
+							<Paper bg="light" px="xs">
+								<Text color="white" size="xs" py={2} weight={600}>
+									OFFLINE
+								</Text>
+							</Paper>
+						)}
+						<Text color={isLight ? "light.6" : "white"}>
+							{connection.endpoint}
 						</Text>
-					</Paper>
+					</>
+				) : (
+					<>
+						<Icon path={surrealIcon} color="surreal" />
+						<Group spacing={6}>
+							<Text color={isLight ? "light.6" : "white"}>
+								Sandbox
+							</Text>
+							<Text color={isLight ? "light.4" : "light.4"}>
+								({connection.namespace} / {connection.database})
+							</Text>
+						</Group>
+					</>
 				)}
-				<Text color={isLight ? "light.6" : "white"}>{connection.endpoint}</Text>
 				<Spacer />
 				{!connectionValid && (
 					<Text color="red" mr="xs">
@@ -103,9 +125,11 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 						<ActionIcon onClick={handleFetchSchema} title="Refetch schema">
 							<Icon color="light.4" path={mdiRefresh} />
 						</ActionIcon>
-						<ActionIcon onClick={handleCloseConnection} title="Disconnect">
-							<Icon color="light.4" path={mdiClose} />
-						</ActionIcon>
+						{isRemote && (
+							<ActionIcon onClick={handleCloseConnection} title="Disconnect">
+								<Icon color="light.4" path={mdiClose} />
+							</ActionIcon>
+						)}
 					</>
 				)}
 			</Paper>
