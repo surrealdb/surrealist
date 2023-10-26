@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.11.0 - Improved query results
+## 1.11.0 - Sandbox connections
 - Added sandbox connections
 	- Connect to an internally embedded SurrealDB instance
 	- Useful for rapid testing without requiring a local or remote SurrealDB instance
