@@ -4,6 +4,8 @@
 - Query results are now more accurate
 	- No longer always displayed as an array
 - Query time value is displayed again
+- Fixed incorrect explorer pagination (#133)
+- Slightly adjust minimum window size and splitter sizes
 
 ## 1.10.3 - Critical fixes
 - Fixed the web app breaking when accessing non-/ paths

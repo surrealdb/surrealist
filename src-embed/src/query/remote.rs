@@ -1,10 +1,11 @@
+use wasm_bindgen::prelude::*;
+use crate::query::{make_error, wrap_err};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use std::collections::HashMap;
 use tokio::sync::RwLock;
-use wasm_bindgen::prelude::*;
 
 use surrealdb::{
     engine::remote::ws::{Client, Ws, Wss},
@@ -12,25 +13,6 @@ use surrealdb::{
     sql::{json, Array, Object, Value},
     Surreal,
 };
-
-// Utility for wrapping a SDB error into a JS value
-fn wrap_err(err: surrealdb::Error) -> JsValue {
-    JsValue::from_str(&err.to_string())
-}
-
-// Fake an error response
-fn make_error(err: &str) -> Array {
-    let mut results = Array::with_capacity(1);
-    let mut entry = Object::default();
-
-    entry.insert("time".to_owned(), Value::from(""));
-    entry.insert("result".to_owned(), Value::from(err));
-    entry.insert("status".to_owned(), Value::from("ERR"));
-
-    results.push(Value::Object(entry));
-
-    results
-}
 
 static CLIENT: Lazy<RwLock<Option<Surreal<Client>>>> = Lazy::new(|| RwLock::new(None));
 
@@ -87,8 +69,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await
-            .map_err(wrap_err)?;
+                .await
+                .map_err(wrap_err)?;
         }
         "namespace" => {
             db.signin(Namespace {
@@ -96,8 +78,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await
-            .map_err(wrap_err)?;
+                .await
+                .map_err(wrap_err)?;
         }
         "database" => {
             db.signin(Database {
@@ -106,8 +88,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await
-            .map_err(wrap_err)?;
+                .await
+                .map_err(wrap_err)?;
         }
         "scope" => {
             let field_map = info
@@ -122,8 +104,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 scope: info.scope.as_str(),
                 params: field_map,
             })
-            .await
-            .map_err(wrap_err)?;
+                .await
+                .map_err(wrap_err)?;
         }
         _ => {}
     };
@@ -181,7 +163,7 @@ pub async fn query_version() -> Option<JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn execute_query(query: String, params: String) -> String {
+pub async fn execute_remote_query(query: String, params: String) -> String {
     let container = CLIENT.read().await;
 
     if container.is_none() {
@@ -220,8 +202,8 @@ pub async fn execute_query(query: String, params: String) -> String {
                 let error = errors.get(&i);
 
                 entry.insert("time".to_owned(), Value::from(
-					response.take_time(i).unwrap()
-				));
+                    response.take_time(i).unwrap()
+                ));
 
                 let result: Value;
                 let status: Value;
