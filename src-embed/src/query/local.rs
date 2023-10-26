@@ -1,19 +1,25 @@
-use wasm_bindgen::prelude::*;
+use crate::query::{process_result, wrap_err, ConnectionInfo};
 use once_cell::sync::Lazy;
-use surrealdb::engine::local::{Db, Mem};
 use serde_wasm_bindgen::from_value;
-use surrealdb::{Surreal, sql::json};
+use surrealdb::engine::local::{Db, Mem};
+use surrealdb::{sql::json, Surreal};
 use tokio::sync::RwLock;
-use crate::query::{ConnectionInfo, process_result, wrap_err};
+use wasm_bindgen::prelude::*;
 
 static DATABASE: Lazy<RwLock<Option<Surreal<Db>>>> = Lazy::new(|| RwLock::new(None));
 
 #[wasm_bindgen]
-pub async fn execute_local_query(details: JsValue, query: String, params: String) -> Result<String, JsValue> {
+pub async fn execute_local_query(
+    details: JsValue,
+    query: String,
+    params: String,
+) -> Result<String, JsValue> {
     let mut instance = DATABASE.write().await;
 
     if instance.is_none() {
-        let surreal = Surreal::new::<Mem>(()).await.expect("local database to initialize");
+        let surreal = Surreal::new::<Mem>(())
+            .await
+            .expect("local database to initialize");
 
         *instance = Some(surreal);
 
@@ -25,7 +31,11 @@ pub async fn execute_local_query(details: JsValue, query: String, params: String
     let database = instance.as_ref().unwrap();
     let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
 
-    database.use_ns(info.namespace).use_db(info.database).await.map_err(wrap_err)?;
+    database
+        .use_ns(info.namespace)
+        .use_db(info.database)
+        .await
+        .map_err(wrap_err)?;
 
     let mut builder = database.query(query);
 

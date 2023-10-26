@@ -1,12 +1,12 @@
-pub mod remote;
 pub mod local;
+pub mod remote;
 
 use serde::Deserialize;
-use surrealdb::Response;
-use wasm_bindgen::prelude::*;
 use surrealdb::sql::Array;
 use surrealdb::sql::Object;
 use surrealdb::sql::Value;
+use surrealdb::Response;
+use wasm_bindgen::prelude::*;
 
 #[derive(Deserialize)]
 pub struct ScopeField {
@@ -57,9 +57,10 @@ fn process_result(response: Result<Response, surrealdb::Error>) -> String {
                 let mut entry = Object::default();
                 let error = errors.get(&i);
 
-                entry.insert("time".to_owned(), Value::from(
-                    response.take_time(i).unwrap()
-                ));
+                entry.insert(
+                    "time".to_owned(),
+                    Value::from(response.take_time(i).unwrap()),
+                );
 
                 let result: Value;
                 let status: Value;

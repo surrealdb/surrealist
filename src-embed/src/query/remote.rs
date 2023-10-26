@@ -1,13 +1,18 @@
-use wasm_bindgen::prelude::*;
-use crate::query::{ConnectionInfo, make_error, process_result, wrap_err};
+use crate::query::{make_error, process_result, wrap_err, ConnectionInfo};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::Serialize;
 use serde_wasm_bindgen::{from_value, to_value};
 use std::collections::HashMap;
 use tokio::sync::RwLock;
+use wasm_bindgen::prelude::*;
 
-use surrealdb::{engine::remote::ws::{Client, Ws, Wss}, opt::auth::{Database, Namespace, Root, Scope}, sql::{json, Value}, Surreal};
+use surrealdb::{
+    engine::remote::ws::{Client, Ws, Wss},
+    opt::auth::{Database, Namespace, Root, Scope},
+    sql::{json, Value},
+    Surreal,
+};
 
 static CLIENT: Lazy<RwLock<Option<Surreal<Client>>>> = Lazy::new(|| RwLock::new(None));
 
@@ -46,8 +51,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-                .await
-                .map_err(wrap_err)?;
+            .await
+            .map_err(wrap_err)?;
         }
         "namespace" => {
             db.signin(Namespace {
@@ -55,8 +60,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-                .await
-                .map_err(wrap_err)?;
+            .await
+            .map_err(wrap_err)?;
         }
         "database" => {
             db.signin(Database {
@@ -65,8 +70,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-                .await
-                .map_err(wrap_err)?;
+            .await
+            .map_err(wrap_err)?;
         }
         "scope" => {
             let field_map = info
@@ -81,8 +86,8 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 scope: info.scope.as_str(),
                 params: field_map,
             })
-                .await
-                .map_err(wrap_err)?;
+            .await
+            .map_err(wrap_err)?;
         }
         _ => {}
     };

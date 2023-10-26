@@ -4,8 +4,8 @@ use wasm_bindgen::prelude::*;
 #[macro_use]
 mod console;
 
-mod schema;
 mod query;
+mod schema;
 
 #[wasm_bindgen]
 pub fn initialize_embed() {
