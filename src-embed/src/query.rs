@@ -219,7 +219,9 @@ pub async fn execute_query(query: String, params: String) -> String {
                 let mut entry = Object::default();
                 let error = errors.get(&i);
 
-                entry.insert("time".to_owned(), Value::from(""));
+                entry.insert("time".to_owned(), Value::from(
+					response.take_time(i).unwrap()
+				));
 
                 let result: Value;
                 let status: Value;

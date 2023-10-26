@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.10.4 - Improved query results
+- Query results are now more accurate
+	- No longer always displayed as an array
+- Query time value is displayed again
+
 ## 1.10.3 - Critical fixes
 - Fixed the web app breaking when accessing non-/ paths
 - Fixed schema fetching failing when authenticated as a root user
