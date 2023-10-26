@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { ColumnSort } from "~/types";
 
 export interface ActiveRecord {
 	exists: boolean;
@@ -24,6 +25,10 @@ const explorerSlice = createSlice({
 		activeRecord: null as ActiveRecord | null,
 		inspectorId: '',
 		inspectorQuery: '',
+		pageText: '1',
+		pageSize: '25',
+		sortMode: null as ColumnSort | null,
+		page: 1,
 	},
 	reducers: {
 		
@@ -94,6 +99,22 @@ const explorerSlice = createSlice({
 			state.inspectorQuery = action.payload;
 		},
 
+		updatePageText(state, action: PayloadAction<string>) {
+			state.pageText = action.payload;
+		},
+
+		updatePageSize(state, action: PayloadAction<string>) {
+			state.pageSize = action.payload;
+		},
+
+		updateSortMode(state, action: PayloadAction<ColumnSort | null>) {
+			state.sortMode = action.payload;
+		},
+
+		updatePage(state, action: PayloadAction<number>) {
+			state.page = action.payload;
+		},
+
 	}
 });
 
@@ -114,4 +135,8 @@ export const {
 	setActiveRecord,
 	setInspectorId,
 	setInspectorQuery,
+	updatePageText,
+	updatePageSize,
+	updateSortMode,
+	updatePage,
 } = explorerSlice.actions;

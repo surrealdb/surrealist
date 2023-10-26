@@ -10,8 +10,8 @@ import {
 } from "@mdi/js";
 
 import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
-import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
+import { useDebouncedValue } from "@mantine/hooks";
+import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
@@ -19,11 +19,11 @@ import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { store, useStoreValue } from "~/store";
-import { clearExplorerData, closeEditor, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering } from "~/stores/explorer";
-import { ColumnSort } from "~/types";
+import { clearExplorerData, closeEditor, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering, updatePage, updatePageSize, updatePageText, updateSortMode } from "~/stores/explorer";
 import { getSurreal } from "~/util/connection";
 import { HistoryHandle } from "~/hooks/history";
 import { EventBus, useEventSubscription } from "~/hooks/event";
+import { useStoreState } from "~/hooks/store";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -38,19 +38,35 @@ export interface ExplorerPaneProps {
 }
 
 export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
+	const isLight = useIsLight();
+	
 	const table = useStoreValue((state) => state.explorer.activeTable);
 	const records = useStoreValue((state) => state.explorer.records);
 	const recordCount = useStoreValue((state) => state.explorer.recordCount);
 	const filtering = useStoreValue((state) => state.explorer.filtering);
 	const filter = useStoreValue((state) => state.explorer.filter);
-	
-	const isLight = useIsLight();
-	const [pageText, setPageText] = useInputState("1");
-	const [pageSize, setPageSize] = useInputState("25");
-	const [sortMode, setSortMode] = useState<ColumnSort | null>(null);
-	const [page, setPage] = useState(1);
 
-	const pageCount = Math.ceil(records.length / Number.parseInt(pageSize));
+	const [pageText, setPageText] = useStoreState(
+		(state) => state.explorer.pageText,
+		(value) => updatePageText(value),
+	);
+
+	const [pageSize, setPageSize] = useStoreState(
+		(state) => state.explorer.pageSize,
+		(value) => updatePageSize(value),
+	);
+
+	const [sortMode, setSortMode] = useStoreState(
+		(state) => state.explorer.sortMode,
+		(value) => updateSortMode(value),
+	);
+
+	const [page, setPage] = useStoreState(
+		(state) => state.explorer.page,
+		(value) => updatePage(value),
+	);
+
+	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
 	const requestCreate = useStable(async () => {
 		store.dispatch(openCreator(table || ''));
@@ -296,7 +312,11 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 							</Button>
 						</Group>
 
-						<Select value={pageSize} onChange={setPageSize} data={PAGE_SIZES} />
+						<Select
+							value={pageSize}
+							onChange={setPageSize as any}
+							data={PAGE_SIZES}
+						/>
 					</Group>
 				</>
 			) : (

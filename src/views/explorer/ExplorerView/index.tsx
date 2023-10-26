@@ -10,7 +10,7 @@ import { closeEditor, setHistory } from "~/stores/explorer";
 import { useIsConnected } from "~/hooks/connection";
 import { useEventBus } from "~/hooks/event";
 
-const SPLIT_SIZE: SplitValues = [200, 300];
+const SPLIT_SIZE: SplitValues = [200, 308];
 
 export function ExplorerView() {
 	const [splitValues, setSplitValues] = useState<SplitValues>([250, 450]);
