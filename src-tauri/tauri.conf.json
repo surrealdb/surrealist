@@ -77,10 +77,10 @@
 				"title": "Surrealist",
 				"fullscreen": false,
 				"resizable": true,
-				"height": 816,
-				"width": 1464,
-				"minHeight": 634,
-				"minWidth": 1017,
+				"height": 675,
+				"width": 1235,
+				"minHeight": 675,
+				"minWidth": 1235,
 				"visible": false
 			}
 		]
