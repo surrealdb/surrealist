@@ -18,7 +18,6 @@ export interface SurrealConnection {
 }
 
 let instance: SurrealConnection | undefined;
-let connecting = false;
 
 // Construct a fake error result
 function createError(message: string) {
@@ -129,7 +128,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 		return instance!;
 	}
 
-	connecting = true;
+	let killed = false;
 
 	const connection: any = mapKeys(options.connection, key => snake(key));
 	const details = {
@@ -143,15 +142,16 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			checkDatabaseVersion();
 		}).catch(err => {
 			console.error('Failed to open connection', err);
-			options.onError?.(err);
-			options.onDisconnect?.(1000, 'Failed to open connection');
-		}).finally(() => {
-			connecting = false;
+
+			if (!killed) {
+				options.onError?.(err);
+				options.onDisconnect?.(1000, 'Failed to open connection');
+				killed = true;
+			}
 		});
 	} else {
 		setTimeout(() => {
 			options.onConnect?.();
-			connecting = false;
 		}, 0);
 	}
 
@@ -159,6 +159,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 		close: () => {
 			close_connection();
 			options.onDisconnect?.(1000, 'Closed by user');
+			killed = true;
 		},
 		query: async (query, params) => {
 			return execute(query, params, details);
