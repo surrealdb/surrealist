@@ -43,9 +43,8 @@ export function ResultPane() {
 	const showTabs = !showCombined && responses.length > 1;
 	const showResponses = showCombined && responseCount > 0;
 	const showRows = response?.result?.length > 0;
-	const showTime = response?.time;
+	const showTime = response?.time && !showCombined;
 	const showDivider = (showCombined ? showResponses : showRows) || showTime;
-	const combinedResults = responses.map((r) => r.result);
 
 	useLayoutEffect(() => {
 		setResultTab(1);
@@ -126,7 +125,7 @@ export function ResultPane() {
 				{response ? (
 					<>
 						{resultListing == "combined" ? (
-							<CombinedJsonPreview results={combinedResults} fontSize={14 * fontZoomLevel} />
+							<CombinedJsonPreview results={responses} fontSize={14 * fontZoomLevel} />
 						) : response.status == "ERR" ? (
 							<Text 
 								color="red" 

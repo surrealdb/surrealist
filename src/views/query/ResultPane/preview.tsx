@@ -2,6 +2,13 @@ import { useMemo } from "react";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { useStoreValue } from "~/store";
 
+function buildResult(index: number, {result, time}: any) {
+	const header = `\n\n// -------- Query ${index + 1 + (time ? ` (${time})` : '')} --------\n\n`;
+	const content = JSON.stringify(result, null, 4);
+
+	return header + content;
+}
+
 export interface CombinedJsonPreviewProps {
 	results: any[];
 	fontSize: number;
@@ -11,10 +18,7 @@ export function CombinedJsonPreview({ results, fontSize }: CombinedJsonPreviewPr
 	const wordWrap = useStoreValue((state) => state.config.wordWrap);
 
 	const contents = useMemo(() => {
-		return results
-			.map(res => JSON.stringify(res, null, 4))
-			.reduce((acc, cur, i) => acc + `\n\n// -------- Query ${i + 1} --------\n\n` + cur, '')
-			.trim();
+		return results.reduce((acc, cur, i) => acc + buildResult(i, cur), '').trim();
 	}, [results]);
 
 	return (
