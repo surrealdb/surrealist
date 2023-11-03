@@ -3,7 +3,7 @@ import { editor } from "monaco-editor";
 import { mdiClose, mdiDatabase, mdiPlusBoxMultiple, mdiUpload } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
-import { store, useStoreValue } from "~/store";
+import { store } from "~/store";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -19,7 +19,6 @@ import { updateQueryTab, removeQueryTab, addQueryTab, setActiveQueryTab } from '
 export function QueryPane() {
 	const { queries, activeQueryId } = useActiveSession();
 	const controls = useRef<editor.IStandaloneCodeEditor>();
-	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
 	const showTabs = queries.length > 1;
 	const queryIndex = queries.findIndex(({ id }) => id === activeQueryId);
@@ -159,8 +158,7 @@ export function QueryPane() {
 					quickSuggestions: false,
 					wordBasedSuggestions: false,
 					wrappingStrategy: "advanced",
-					wordWrap: "on",
-					fontSize: 14 * fontZoomLevel,
+					wordWrap: "on"
 				}}
 			/>
 		</Panel>

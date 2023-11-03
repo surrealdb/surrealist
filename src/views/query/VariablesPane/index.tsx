@@ -1,7 +1,7 @@
 import { mdiTune } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
-import { store, useStoreValue } from "~/store";
+import { store } from "~/store";
 import { Panel } from "~/components/Panel";
 import { useState } from "react";
 import { Text } from "@mantine/core";
@@ -10,7 +10,6 @@ import { updateSession } from "~/stores/config";
 
 export function VariablesPane() {
 	const activeSession = useActiveSession();
-	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
 	if (!activeSession) {
 		throw new Error("This should not happen");
@@ -56,8 +55,7 @@ export function VariablesPane() {
 					wordWrap: "on",
 					suggest: {
 						showProperties: false,
-					},
-					fontSize: 14 * fontZoomLevel,
+					}
 				}}
 			/>
 		</Panel>

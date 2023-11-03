@@ -31,7 +31,6 @@ export function ResultPane() {
 	const isLight = useIsLight();
 	const activeSession = useActiveSession();
 	const [resultTab, setResultTab] = useState<number>(1);
-	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 	const resultListing = useStoreValue((state) => state.config.resultListing);
 	const responses: any[] = activeSession?.lastResponse || [];
 	const response = responses[resultTab - 1];
@@ -125,7 +124,7 @@ export function ResultPane() {
 				{response ? (
 					<>
 						{resultListing == "combined" ? (
-							<CombinedJsonPreview results={responses} fontSize={14 * fontZoomLevel} />
+							<CombinedJsonPreview results={responses} />
 						) : response.status == "ERR" ? (
 							<Text 
 								color="red" 
@@ -141,7 +140,7 @@ export function ResultPane() {
 						) : resultListing == "table" ? (
 							<DataTable data={response.result} />
 						) : (
-							<SingleJsonPreview result={response.result} fontSize={14 * fontZoomLevel} />
+							<SingleJsonPreview result={response.result} />
 						)}
 					</>
 				) : (

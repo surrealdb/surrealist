@@ -1,7 +1,6 @@
 import { editor } from "monaco-editor";
 import { mdiCheck, mdiClose, mdiPencil } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
-import { useStoreValue } from "~/store";
 import { Panel } from "~/components/Panel";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -21,7 +20,6 @@ export interface EditorPaneProps {
 
 export function EditorPane(props: EditorPaneProps) {
 	const editorRef = useRef<editor.IStandaloneCodeEditor>();
-	const fontZoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
 
 	const [queryName, setQueryName] = useInputState("");
 	const [queryText, setQueryText] = useState("");
@@ -102,8 +100,7 @@ export function EditorPane(props: EditorPaneProps) {
 					quickSuggestions: false,
 					wordBasedSuggestions: false,
 					wrappingStrategy: "advanced",
-					wordWrap: "on",
-					fontSize: 14 * fontZoomLevel,
+					wordWrap: "on"
 				}}
 			/>
 			<Button

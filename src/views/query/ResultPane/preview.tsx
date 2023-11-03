@@ -11,10 +11,9 @@ function buildResult(index: number, {result, time}: any) {
 
 export interface CombinedJsonPreviewProps {
 	results: any[];
-	fontSize: number;
 }
 
-export function CombinedJsonPreview({ results, fontSize }: CombinedJsonPreviewProps) {
+export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 	const wordWrap = useStoreValue((state) => state.config.wordWrap);
 
 	const contents = useMemo(() => {
@@ -27,8 +26,7 @@ export function CombinedJsonPreview({ results, fontSize }: CombinedJsonPreviewPr
 			value={contents}
 			options={{
 				readOnly: true,
-				wordWrap: wordWrap ? "on" : "off",
-				fontSize,
+				wordWrap: wordWrap ? "on" : "off"
 			}}
 		/>
 	);
@@ -36,10 +34,9 @@ export function CombinedJsonPreview({ results, fontSize }: CombinedJsonPreviewPr
 
 export interface SingleJsonPreviewProps {
 	result: any;
-	fontSize: number;
 }
 
-export function SingleJsonPreview({ result, fontSize }: SingleJsonPreviewProps) {
+export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 	const wordWrap = useStoreValue((state) => state.config.wordWrap);
 
 	const contents = useMemo(() => {
@@ -52,8 +49,7 @@ export function SingleJsonPreview({ result, fontSize }: SingleJsonPreviewProps) 
 			value={contents}
 			options={{
 				readOnly: true,
-				wordWrap: wordWrap ? "on" : "off",
-				fontSize,
+				wordWrap: wordWrap ? "on" : "off"
 			}}
 		/>
 	);

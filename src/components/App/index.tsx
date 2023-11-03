@@ -69,22 +69,16 @@ export function App({ router }: AppProps) {
 	};
 
 	useHotkeys([
-		["ctrl+alt+equal", fontZoomInstructions.increase],
-		["cmd+alt+equal", fontZoomInstructions.increase],
-
-		["ctrl+alt+minus", fontZoomInstructions.decrease],
-		["cmd+alt+minus", fontZoomInstructions.decrease],
-
-		["ctrl+alt+0", fontZoomInstructions.reset],
-		["cmd+alt+0", fontZoomInstructions.reset],
-
+		["mod+alt+equal", fontZoomInstructions.increase],
+		["mod+alt+minus", fontZoomInstructions.decrease],
+		["mod+alt+0", fontZoomInstructions.reset],
 		["f11", togglePinned],
 	], []);
 
 	return (
 		<MantineProvider withGlobalStyles withNormalizeCSS withCSSVariables theme={mantineTheme}>
 			<Notifications />
-			
+
 			<RouterProvider router={router} />
 
 			<Transition mounted={showUpdate} duration={250} transition="slide-up" timingFunction="ease">
