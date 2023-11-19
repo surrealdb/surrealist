@@ -17,6 +17,7 @@
 	flex: 1;
 	gap: 8px;
 	padding-inline: 8px;
+	-webkit-user-select: none;
 	user-select: none;
 	cursor: pointer;
 }
