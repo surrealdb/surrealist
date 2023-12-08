@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import fastDeepEqual from "fast-deep-equal";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Group } from "@mantine/core";
 import { mdiCheck } from "@mdi/js";
 import { useLater } from "~/hooks/later";
 import { Icon } from "../Icon";
 import { klona } from "klona";
-import fastDeepEqual from "fast-deep-equal";
+import { useStable } from "~/hooks/stable";
 
 export interface SaveBoxProps {
 	value: any;
@@ -43,24 +44,25 @@ export const SaveBox = ({ value, valid, onRevert, onPatch, onSave, onChangedStat
 
 	const isChanged = useMemo(() => !fastDeepEqual(original, value), [original, value]);
 
-	const doCompleteSave = useCallback(() => {
+	const doCompleteSave = useStable(() => {
 		setOriginal(klona(value));
 		setIsSaving(false);
 		onSave?.(original);
-	}, [onSave, original, value]);
+	});
 
-	const doRevert = useCallback(() => {
+	const doRevert = useStable(() => {
 		onRevert?.(klona(original));
-	}, [onRevert, original]);
+	});
 
 	const triggerSave = useLater(doCompleteSave);
-	const doSave = useCallback(async () => {
+
+	const doSave = useStable(async () => {
 		setIsSaving(true);
 
 		await Promise.resolve(onPatch?.());
 
 		triggerSave();
-	}, [onPatch, triggerSave]);
+	});
 
 	useEffect(() => {
 		if (onChangedState) {
