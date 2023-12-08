@@ -14,5 +14,6 @@
 	position: absolute;
 	visibility: hidden;
 	pointer-events: none;
+	-webkit-user-select: none;
 	user-select: none;
 } 
