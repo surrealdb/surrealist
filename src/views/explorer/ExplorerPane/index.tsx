@@ -119,8 +119,8 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM ${table}`;
-		let fetchQuery = `SELECT * FROM ${table}`;
+		let countQuery = `SELECT * FROM count((SELECT * FROM \`${table}\``;
+		let fetchQuery = `SELECT * FROM \`${table}\``;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;

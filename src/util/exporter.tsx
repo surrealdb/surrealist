@@ -74,7 +74,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 	
 			output.push(`${definition};`);
 	
-			const tbInfo = await surreal.querySingle<SurrealInfoTB>(`INFO FOR TABLE ${tableName}`);
+			const tbInfo = await surreal.querySingle<SurrealInfoTB>(`INFO FOR TABLE \`${tableName}\``);
 	
 			const tbFields = Object.values(tbInfo.fields);
 			const tbIndexes = Object.values(tbInfo.indexes);
@@ -113,7 +113,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 		output.push("BEGIN TRANSACTION;");
 
 		for (const [tableName] of dbTables) {
-			const tbData = await surreal.query(`SELECT * FROM ${tableName}`);
+			const tbData = await surreal.query(`SELECT * FROM \`${tableName}\``);
 			const tbRows = tbData[0].result as any[];
 
 			if (tbRows.length > 0) {

@@ -7,7 +7,7 @@ import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 
-const THING_REGEX = /^\w+:(\w+|[`⟨][^`⟩]+[`⟩])$/;
+const THING_REGEX = /^(\w+|[`⟨][^`⟩]+[`⟩]):(\w+|[`⟨][^`⟩]+[`⟩])$/;
 const DATETIME_REGEX = /^\d{4}-\d\d-\d\dt\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|z)?$/i;
 
 export interface DataCellType {

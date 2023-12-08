@@ -54,7 +54,7 @@ export async function fetchDatabaseSchema() {
 
 	if (tableInfo.length > 0) {
 		const tableQuery = tableInfo.reduce((acc, table) => {
-			return acc + `INFO FOR TABLE ${table.name};`;
+			return acc + `INFO FOR TABLE \`${table.name}\`;`;
 		}, "");
 	
 		const tableData = await surreal.queryFirst(tableQuery);
