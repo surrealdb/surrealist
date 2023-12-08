@@ -84,12 +84,12 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 	for (const field of previous.fields) {
 		if (!fieldIndex[field.name]) {
-			queries.push(`REMOVE FIELD ${field.name} ON TABLE ${name}`);
+			queries.push(`REMOVE FIELD ${field.name} ON TABLE \`${name}\``);
 		}
 	}
 
 	for (const field of current.fields) {
-		let query = `DEFINE FIELD ${field.name} ON TABLE ${name}`;
+		let query = `DEFINE FIELD ${field.name} ON TABLE \`${name}\``;
 
 		if (field.flexible) {
 			query += " FLEXIBLE";
@@ -122,12 +122,12 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 	for (const index of previous.indexes) {
 		if (!indexIndex[index.name]) {
-			queries.push(`REMOVE INDEX ${index.name} ON TABLE ${name}`);
+			queries.push(`REMOVE INDEX ${index.name} ON TABLE \`${name}\``);
 		}
 	}
 
 	for (const index of current.indexes) {
-		let query = `DEFINE INDEX ${index.name} ON TABLE ${name} FIELDS ${index.fields}`;
+		let query = `DEFINE INDEX ${index.name} ON TABLE \`${name}\` FIELDS ${index.fields}`;
 
 		switch (index.kind) {
 			case "unique": {
@@ -149,12 +149,12 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 	for (const event of previous.events) {
 		if (!eventIndex[event.name]) {
-			queries.push(`REMOVE EVENT ${event.name} ON TABLE ${name}`);
+			queries.push(`REMOVE EVENT ${event.name} ON TABLE \`${name}\``);
 		}
 	}
 
 	for (const event of current.events) {
-		const query = `DEFINE EVENT ${event.name} ON TABLE ${name} WHEN ${event.cond} THEN (${event.then})`;
+		const query = `DEFINE EVENT ${event.name} ON TABLE \`${name}\` WHEN ${event.cond} THEN (${event.then})`;
 
 		queries.push(query);
 	}

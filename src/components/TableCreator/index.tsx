@@ -31,8 +31,8 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 		let query = `DEFINE TABLE ${tableName};`;
 
 		if (createType === "relation") {
-			query += "DEFINE FIELD in ON " + tableName + " TYPE record<" + tableIn.join("|") + ">;";
-			query += "DEFINE FIELD out ON " + tableName + " TYPE record<" + tableOut.join("|") + ">;";
+			query += `DEFINE FIELD in ON \`${tableName}\` TYPE record<${tableIn.join("|")}>;`;
+			query += `DEFINE FIELD out ON \`${tableName}\` TYPE record<${tableOut.join("|")}>;`;
 		}
 
 		onClose();

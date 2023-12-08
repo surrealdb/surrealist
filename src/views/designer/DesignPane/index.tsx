@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 
 import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
-import { MouseEvent, useEffect, useMemo, useState } from "react";
+import { MouseEvent, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { Panel } from "~/components/Panel";
 import { useSaveBox } from "~/hooks/save";
@@ -76,11 +76,6 @@ export function DesignPane(props: SchemaPaneProps) {
 			setIsChanged(value);
 		},
 	});
-
-	useEffect(() => {
-		setData(props.table!);
-		saveBox.skip();
-	}, [props.table]);
 
 	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {
 		if (e.shiftKey) {
