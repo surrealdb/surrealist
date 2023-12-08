@@ -43,9 +43,18 @@ export class BrowserAdapter implements SurrealistAdapter {
 		_title: string,
 		defaultPath: string,
 		_filters: any,
-		content: () => Result<string>
+		content: () => Result<string | Blob | null>
 	): Promise<boolean> {
-		const file = new File([await content()], '', { type: 'text/plain' });
+		const result = await content();
+
+		if (!result) {
+			return false;
+		}
+
+		const file = (typeof result === 'string')
+			? new File([result], '', { type: 'text/plain' })
+			: result;
+		
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement('a');
 

@@ -77,7 +77,7 @@ export interface SurrealistAdapter {
 		title: string,
 		defaultPath: string,
 		filters: any,
-		content: () => Result<string>
+		content: () => Result<string | Blob | null>
 	): Promise<boolean>;
 
 	/**

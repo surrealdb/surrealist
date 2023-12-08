@@ -1,9 +1,10 @@
+import dagere from "dagre";
 import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { DesignerNodeMode, TableDefinition } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, Position } from "reactflow";
-import dagere from "dagre";
+import { toBlob, toSvg } from "html-to-image";
 
 type HeightMap = Record<DesignerNodeMode, (t: TableDefinition, e: boolean) => number>;
 
@@ -136,4 +137,15 @@ export function buildTableGraph(
 	}
 
 	return [nodes, edges];
+}
+
+export async function createSnapshot(el: HTMLElement, type: 'png' | 'svg') {
+	if (type == 'png') {
+		return toBlob(el, { cacheBust: true });
+	} else {
+		const dataUrl = await toSvg(el, { cacheBust: true });
+		const res = await fetch(dataUrl);
+
+		return await res.blob();
+	}
 }

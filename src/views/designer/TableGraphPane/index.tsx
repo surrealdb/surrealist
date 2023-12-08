@@ -1,18 +1,13 @@
 import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Stack, Text, Title } from "@mantine/core";
-import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiPlus } from "@mdi/js";
+import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiImageOutline, mdiPlus, mdiXml } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
-import { toBlob } from "html-to-image";
 import { ReactFlow, useEdgesState, useNodesState } from "reactflow";
-import { NODE_TYPES, buildTableGraph as buildTableDiagram } from "./helpers";
+import { NODE_TYPES, buildTableGraph as buildTableDiagram, createSnapshot } from "./helpers";
 import { useStable } from "~/hooks/stable";
-import { save } from "@tauri-apps/api/dialog";
-import { writeBinaryFile } from "@tauri-apps/api/fs";
-import { useLater } from "~/hooks/later";
 import { useIsLight } from "~/hooks/theme";
-import { showNotification } from "@mantine/notifications";
 import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -24,6 +19,8 @@ import { TableGrid } from "./grid";
 import { RadioSelect } from "~/components/RadioSelect";
 import { useToggleList } from "~/hooks/toggle";
 import { updateSession } from "~/stores/config";
+import { adapter } from "~/adapter";
+import { showNotification } from "@mantine/notifications";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -51,6 +48,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [isRendering, setIsRendering] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [showConfig, setShowConfig] = useState(false);
+	const [showExporter, setShowExporter] = useState(false);
 	const [showHelp, setShowHelp] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
 	const isOnline = useIsConnected();
@@ -72,43 +70,27 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		setEdges(edges);
 	}, [props.tables, props.active, nodeMode, expanded]);
 
-	const createSnapshot = useStable(async (filePath: string) => {
-		const contents = await toBlob(ref.current!, { cacheBust: true });
-
-		if (!contents) {
-			return;
-		}
-
-		await writeBinaryFile(filePath, await contents.arrayBuffer());
-
-		setIsRendering(false);
-
-		showNotification({
-			message: "Snapshot saved to disk",
+	const saveImage = useStable(async (type: 'png' | 'svg') => {
+		const isSuccess = await adapter.saveFile("Save snapshot", `snapshot.${type}`, [
+			{
+				name: "Image",
+				extensions: [type],
+			},
+		], async () => {
+			setIsRendering(true);
+			
+			try {
+				return await createSnapshot(ref.current!, type);
+			} finally {
+				setIsRendering(false);
+			}
 		});
-	});
-
-	const scheduleSnapshot = useLater(createSnapshot);
-
-	// TODO Move download logic to adapter
-	const saveImage = useStable(async () => {
-		const filePath = await save({
-			title: "Save snapshot",
-			defaultPath: "snapshot.png",
-			filters: [
-				{
-					name: "Image",
-					extensions: ["png", "jpg", "jpeg"],
-				},
-			],
-		});
-
-		if (!filePath) {
-			return;
+		
+		if (isSuccess) {
+			showNotification({
+				message: "Snapshot saved to disk"
+			});
 		}
-
-		setIsRendering(true);
-		scheduleSnapshot(filePath);
 	});
 
 	const openHelp = useStable(() => {
@@ -134,6 +116,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		setShowConfig(v => !v);
 	});
 
+	const toggleExporter = useStable(() => {
+		setShowExporter(v => !v);
+	});
+
 	const setNodeMode = useStable((mode: string) => {
 		store.dispatch(updateSession({
 			id: activeSession?.id,
@@ -157,6 +143,54 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					<ActionIcon title="Create table..." onClick={openCreator}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
+					<Popover
+						opened={showExporter}
+						onChange={setShowExporter}
+						position="bottom-end"
+						offset={{ crossAxis: -4, mainAxis: 8 }}
+						withArrow
+						withinPortal
+						shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
+					>
+						<Popover.Target>
+							<ActionIcon
+								title="Export Graph"
+								onClick={toggleExporter}
+							>
+								<Icon color="light.4" path={mdiDownload} />
+							</ActionIcon>
+						</Popover.Target>
+						<Popover.Dropdown onMouseLeave={toggleExporter} p="xs">
+							<Stack pb={4}>
+								<Button
+									color="surreal"
+									variant="subtle"
+									fullWidth
+									size="xs"
+									onClick={() => saveImage('png')}
+								>
+									Save as PNG
+									<Icon
+										right
+										path={mdiImageOutline}
+									/>
+								</Button>
+								<Button
+									color="surreal"
+									variant="subtle"
+									fullWidth
+									size="xs"
+									onClick={() => saveImage('svg')}
+								>
+									Save as SVG
+									<Icon
+										right
+										path={mdiXml}
+									/>
+								</Button>
+							</Stack>
+						</Popover.Dropdown>
+					</Popover>
 					<Popover
 						opened={showConfig}
 						onChange={setShowConfig}
@@ -192,19 +226,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 									value={nodeMode}
 									onChange={setNodeMode}
 								/>
-
-								<Button
-									color="surreal"
-									fullWidth
-									size="xs"
-									onClick={saveImage}
-								>
-									Save snapshot
-									<Icon
-										right
-										path={mdiDownload}
-									/>
-								</Button>
 							</Stack>
 						</Popover.Dropdown>
 					</Popover>

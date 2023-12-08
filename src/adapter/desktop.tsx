@@ -8,7 +8,7 @@ import { showNotification } from "@mantine/notifications";
 import { store } from "~/store";
 import { SurrealistAdapter } from "./base";
 import { printLog } from "~/util/helpers";
-import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
+import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { Result } from "~/typings/utilities";
 import { confirmServing, pushConsoleLine, stopServing } from "~/stores/database";
 
@@ -88,7 +88,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		title: string,
 		defaultPath: string,
 		filters: any,
-		content: () => Result<string>
+		content: () => Result<string | Blob | null>
 	): Promise<boolean> {
 		const filePath = await save({ title, defaultPath, filters });
 	
@@ -96,7 +96,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return false;
 		}
 	
-		await writeTextFile(filePath, await content());
+		const result = await content();
+
+		if (!result) {
+			return false;
+		}
+
+		if (typeof result === "string") {
+			await writeTextFile(filePath, result);
+		} else {
+			await writeBinaryFile(filePath, await result.arrayBuffer());
+		}
 
 		return true;
 	}
