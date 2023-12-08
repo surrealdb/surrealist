@@ -34,6 +34,8 @@ const explorerSlice = createSlice({
 		
 		setExplorerTable(state, action: PayloadAction<string | null>) {
 			state.activeTable = action.payload;
+			state.page = 1;
+			state.pageText = '1';
 		},
 
 		setExplorerData(state, action: PayloadAction<{ records: any[], count: number }>) {
