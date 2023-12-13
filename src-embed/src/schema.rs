@@ -1,7 +1,7 @@
 use concat_string::concat_string;
 use serde::Serialize;
 use serde_wasm_bindgen::to_value;
-use surrealdb::sql::{parse, statements::DefineStatement, Index, Permissions, Statement, Strand};
+use surrealdb::sql::{parse, statements::DefineStatement, Index, Permissions, Statement, Strand, thing};
 use wasm_bindgen::prelude::*;
 
 fn to_response<T: serde::ser::Serialize>(value: &T, name: &str) -> Result<JsValue, String> {
@@ -348,4 +348,9 @@ pub fn validate_live_query(query: &str) -> Option<String> {
             }
         }
     }
+}
+
+#[wasm_bindgen]
+pub fn validate_thing(value: &str) -> bool {
+    thing(&value).is_ok()
 }

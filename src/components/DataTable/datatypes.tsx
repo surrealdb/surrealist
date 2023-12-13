@@ -6,8 +6,8 @@ import { OpenFn } from "~/types";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
+import { validate_thing } from "~/generated/surrealist-embed";
 
-const THING_REGEX = /^(\w+|[`⟨][^`⟩]+[`⟩]):(\w+|[`⟨][^`⟩]+[`⟩])$/;
 const DATETIME_REGEX = /^\d{4}-\d\d-\d\dt\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|z)?$/i;
 
 export interface DataCellType {
@@ -126,7 +126,7 @@ const DataCellTypes = [
 		component: NullishCell,
 	},
 	{
-		match: (value: any) => typeof value == "string" && THING_REGEX.test(value),
+		match: (value: any) => typeof value == "string" && validate_thing(value),
 		component: ThingCell,
 	},
 	{
