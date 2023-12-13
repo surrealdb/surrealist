@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.12.0 - General improvements
+- Added designer view SVG snapshots (#150)
+- Improved record link detection to support complex ids
+- Improved support for escaped table names (#155)
+- Display query time correctly in combined mode (#157)
+- Fixed error caused by failing to find an available port (#137)
+- Fixed explorer view pagination issues (#133)
+- Fixed user selection on Linux (#148)
+- Fixed overflow issues in the authentication view
+- Fixed editor zooming not working
+
 ## 1.11.0 - Sandbox connections
 - Added sandbox connections
 	- Connect to an internally embedded SurrealDB instance
