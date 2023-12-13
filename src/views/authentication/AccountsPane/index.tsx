@@ -7,6 +7,7 @@ import {
 	Group,
 	Modal,
 	PasswordInput,
+	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
@@ -146,51 +147,55 @@ export function AccountsPane(props: AccountsPaneProps) {
 				</Center>
 			)}
 
-			<Stack spacing={0}>
-				{users.map((user) => (
-					<Group key={user.name} spacing="xs" w="100%" noWrap>
-						<Icon
-							color={props.iconColor}
-							path={mdiKeyVariant}
-							size={12}
-							style={{ flexShrink: 0 }}
-						/>
-						<Text color={isLight ? "gray.9" : "gray.0"}>{user.name}</Text>
-						<Spacer />
-						{user.comment && (
-							<Tooltip
-								label={
-									<Text maw={250} style={{ whiteSpace: 'pre-wrap' }} lineClamp={5}>
-										<b>Comment:</b> {user.comment}
-									</Text>
-								}
-								position="bottom"
-								withinPortal
+			<ScrollArea
+				style={{ position: "absolute", inset: 12, paddingRight: 8, top: 0 }}
+			>
+				<Stack spacing={0}>
+					{users.map((user) => (
+						<Group key={user.name} spacing="xs" w="100%" noWrap>
+							<Icon
+								color={props.iconColor}
+								path={mdiKeyVariant}
+								size={12}
+								style={{ flexShrink: 0 }}
+							/>
+							<Text color={isLight ? "gray.9" : "gray.0"}>{user.name}</Text>
+							<Spacer />
+							{user.comment && (
+								<Tooltip
+									label={
+										<Text maw={250} style={{ whiteSpace: 'pre-wrap' }} lineClamp={5}>
+											<b>Comment:</b> {user.comment}
+										</Text>
+									}
+									position="bottom"
+									withinPortal
+								>
+									<div>
+										<Icon
+											ml={6}
+											color={isLight ? "light" : "light.3"}
+											path={mdiComment}
+											size={10}
+											style={{ flexShrink: 0 }}
+										/>
+									</div>
+								</Tooltip>
+							)}
+							<Badge color="light">
+								{formatRoles(user)}
+							</Badge>
+							<ActionIcon
+								color="light"
+								title="Edit user"
+								onClick={() => updateUser(user)}
 							>
-								<div>
-									<Icon
-										ml={6}
-										color={isLight ? "light" : "light.3"}
-										path={mdiComment}
-										size={10}
-										style={{ flexShrink: 0 }}
-									/>
-								</div>
-							</Tooltip>
-						)}
-						<Badge color="light">
-							{formatRoles(user)}
-						</Badge>
-						<ActionIcon
-							color="light"
-							title="Edit user"
-							onClick={() => updateUser(user)}
-						>
-							<Icon path={mdiPencil} size={14} />
-						</ActionIcon>
-					</Group>
-				))}
-			</Stack>
+								<Icon path={mdiPencil} size={14} />
+							</ActionIcon>
+						</Group>
+					))}
+				</Stack>
+			</ScrollArea>
 
 			<Modal
 				opened={isEditing}

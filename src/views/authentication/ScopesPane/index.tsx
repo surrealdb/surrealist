@@ -1,4 +1,4 @@
-import { Badge, Text, Textarea } from "@mantine/core";
+import { Badge, ScrollArea, Text, Textarea } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiWrench } from "@mdi/js";
@@ -104,50 +104,54 @@ export function ScopePane() {
 				</Center>
 			)}
 
-			<Stack spacing={0}>
-				{scopes.map((scope) => (
-					<Group key={scope.name} spacing="xs" w="100%" noWrap>
-						<Icon color="violet.4" path={mdiKeyVariant} size={14} />
+			<ScrollArea
+				style={{ position: "absolute", inset: 12, paddingRight: 8, top: 0 }}
+			>
+				<Stack spacing={0}>
+					{scopes.map((scope) => (
+						<Group key={scope.name} spacing="xs" w="100%" noWrap>
+							<Icon color="violet.4" path={mdiKeyVariant} size={14} />
 
-						<Text color={isLight ? "gray.9" : "gray.0"}>{scope.name}</Text>
-						<Spacer />
-						<Badge color="light">
-							{scope.signin && scope.signup
-								? "Signup & Signin"
-								: scope.signin
-									? "Signin only"
-									: scope.signup
-										? "Signup only"
-										: "No auth"}
-						</Badge>
-						<Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
-							<Menu.Target>
-								<Button size="xs" px={5} color="dark" variant="subtle">
-									<Icon path={mdiDotsVertical} />
-								</Button>
-							</Menu.Target>
-							<Menu.Dropdown>
-								<Menu.Item
-									onClick={() => editScope(scope)}
-									icon={
-										<Icon path={mdiWrench} size={12} color="light.4" />
-									}
-								>
-									Edit
-								</Menu.Item>
-								<Menu.Item
-									onClick={() => removeScope(scope.name)}
-									icon={
-										<Icon path={mdiDelete} size={12} color="red" />
-									}
-								>
-									Remove
-								</Menu.Item>
-							</Menu.Dropdown>
-						</Menu>
-					</Group>
-				))}
-			</Stack>
+							<Text color={isLight ? "gray.9" : "gray.0"}>{scope.name}</Text>
+							<Spacer />
+							<Badge color="light">
+								{scope.signin && scope.signup
+									? "Signup & Signin"
+									: scope.signin
+										? "Signin only"
+										: scope.signup
+											? "Signup only"
+											: "No auth"}
+							</Badge>
+							<Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
+								<Menu.Target>
+									<Button size="xs" px={5} color="dark" variant="subtle">
+										<Icon path={mdiDotsVertical} />
+									</Button>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Item
+										onClick={() => editScope(scope)}
+										icon={
+											<Icon path={mdiWrench} size={12} color="light.4" />
+										}
+									>
+										Edit
+									</Menu.Item>
+									<Menu.Item
+										onClick={() => removeScope(scope.name)}
+										icon={
+											<Icon path={mdiDelete} size={12} color="red" />
+										}
+									>
+										Remove
+									</Menu.Item>
+								</Menu.Dropdown>
+							</Menu>
+						</Group>
+					))}
+				</Stack>
+			</ScrollArea>
 
 			<Modal
 				size="md"
