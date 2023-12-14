@@ -9,6 +9,19 @@ on:
 permissions: write-all
 
 jobs:
+  version:
+    name: Extract version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Extract version
+        id: extract_version
+        uses: Saionaro/extract-package-version@v1.2.1
+
   package:
     name: Package
     strategy:
@@ -17,9 +30,10 @@ jobs:
         node-version: [ 18 ] 
         platform: [ macos-latest, ubuntu-20.04, windows-latest ]
     runs-on: ${{ matrix.platform }}
+    needs: version
     steps:
       - name: Information
-        run: echo "Building Surrealist version ${{ github.ref_name }} for ${{ matrix.platform }}"
+        run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for ${{ matrix.platform }}"
         
       - name: Code checkout
         uses: actions/checkout@v3
@@ -65,7 +79,9 @@ jobs:
   release:
     name: Release binaries
     runs-on: ubuntu-latest
-    needs: package
+    needs:
+      - version
+      - package
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -77,24 +93,25 @@ jobs:
 
       - name: Rename binaries
         run: |
-          mv ./bundles-macos-latest/dmg/Surrealist_${{ github.ref_name }}_x64.dmg ./surrealist-v${{ github.ref_name }}-darwin.dmg
-          mv ./bundles-ubuntu-20.04/appimage/surrealist_${{ github.ref_name }}_amd64.AppImage ./surrealist-v${{ github.ref_name }}-linux.AppImage
-          mv ./bundles-ubuntu-20.04/deb/surrealist_${{ github.ref_name }}_amd64.deb ./surrealist-v${{ github.ref_name }}-linux.deb
-          mv ./bundles-windows-latest/msi/Surrealist_${{ github.ref_name }}_x64_en-US.msi ./surrealist-v${{ github.ref_name }}-windows.msi
+          mv ./bundles-macos-latest/dmg/Surrealist_${{ needs.version.outputs.version }}_x64.dmg ./surrealist-${{ github.ref_name }}-darwin.dmg
+          mv ./bundles-ubuntu-latest/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-${{ github.ref_name }}-linux.AppImage
+          mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64.deb ./surrealist-${{ github.ref_name }}-linux.deb
+          mv ./bundles-windows-latest/msi/Surrealist_${{ needs.version.outputs.version }}_x64_en-US.msi ./surrealist-${{ github.ref_name }}-windows.msi
 
       - name: Draft release
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "v${{ github.ref_name }}"
+          automatic_release_tag: "${{ github.ref_name }}"
           prerelease: false
           draft: true
-          title: "v${{ github.ref_name }}"
+          title: "${{ github.ref_name }}"
           files: |
-            ./surrealist-v${{ github.ref_name }}-darwin.dmg
-            ./surrealist-v${{ github.ref_name }}-linux.AppImage
-            ./surrealist-v${{ github.ref_name }}-linux.deb
-            ./surrealist-v${{ github.ref_name }}-windows.msi
-      
-      - name: Publish web app (Linux)
+            ./surrealist-${{ github.ref_name }}-darwin.dmg
+            ./surrealist-${{ github.ref_name }}-linux.AppImage
+            ./surrealist-${{ github.ref_name }}-linux.deb
+            ./surrealist-${{ github.ref_name }}-windows.msi
+
+      - name: Publish web app
         uses: actions/deploy-pages@v1
+        if: "!contains(github.ref, '-')"
