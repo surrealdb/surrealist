@@ -1,6 +1,8 @@
 pub mod local;
 pub mod remote;
 
+use std::time::Duration;
+
 use serde::Deserialize;
 use surrealdb::method::WithStats;
 use surrealdb::sql::Array;
@@ -58,32 +60,26 @@ fn process_result(response: Result<WithStats<Response>, surrealdb::Error>) -> St
                 let mut entry = Object::default();
                 let error = errors.get(&i);
 
+				let time: Duration;
                 let result: Value;
                 let status: Value;
 
                 match error {
                     Some((stats, error)) => {
-						entry.insert(
-							"time".to_owned(),
-							Value::from(format!("{:?}", stats.execution_time)),
-						);
-
+						time = stats.execution_time;
                         result = Value::from(error.to_string());
                         status = "ERR".into();
                     }
                     None => {
 						let (stats, res) = response.take(i).unwrap();
 
-						entry.insert(
-							"time".to_owned(),
-							Value::from(format!("{:?}", stats.execution_time)),
-						);
-
+						time = stats.execution_time;
                         result = res.unwrap();
                         status = "OK".into();
                     }
                 };
 
+				entry.insert("time".to_owned(), Value::from(format!("{:?}", time)));
                 entry.insert("result".to_owned(), result);
                 entry.insert("status".to_owned(), status);
 
