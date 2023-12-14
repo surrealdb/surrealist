@@ -20,7 +20,7 @@ wasm-bindgen = "0.2.87"
 wasm-bindgen-futures = "0.4.37"
 serde-wasm-bindgen = "0.6.0"
 concat-string = "1.0.1"
-surrealdb = { git = "https://github.com/macjuul/surrealdb.git", rev = "33461a33", features = ["kv-mem"] }
+surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", rev = "8c40a0b", features = ["kv-mem"] }
 regex = "1.9.5"
 serde_json = "1.0"
 tokio = { version = "1", features = ["time"] }
