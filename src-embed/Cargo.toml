@@ -16,8 +16,8 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 once_cell = "1.18.0"
-wasm-bindgen = "0.2.87"
-wasm-bindgen-futures = "0.4.37"
+wasm-bindgen = "0.2.89"
+wasm-bindgen-futures = "0.4.39"
 serde-wasm-bindgen = "0.6.0"
 concat-string = "1.0.1"
 surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", rev = "8c40a0b", features = ["kv-mem"] }

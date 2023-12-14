@@ -9,10 +9,10 @@ edition = "2021"
 publish = false
 
 [build-dependencies]
-tauri-build = { version = "1.4.0", features = [] }
+tauri-build = { version = "1.5.0", features = [] }
 
 [dependencies]
-tauri = { version = "1.4.1", features = [ "dialog-open", "fs-read-file", "devtools", "dialog-save", "fs-write-file", "shell-open", "window-set-always-on-top", "window-set-title", "window-show"] }
+tauri = { version = "1.5.3", features = [ "dialog-open", "fs-read-file", "devtools", "dialog-save", "fs-write-file", "shell-open", "window-set-always-on-top", "window-set-title", "window-show"] }
 tauri-plugin-localhost = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 portpicker = "0.1"
 
