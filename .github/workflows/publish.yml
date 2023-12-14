@@ -78,7 +78,7 @@ jobs:
           path: ./src-tauri/target/release/bundle
   release:
     name: Release binaries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs:
       - version
       - package
@@ -94,8 +94,8 @@ jobs:
       - name: Rename binaries
         run: |
           mv ./bundles-macos-latest/dmg/Surrealist_${{ needs.version.outputs.version }}_x64.dmg ./surrealist-${{ github.ref_name }}-darwin.dmg
-          mv ./bundles-ubuntu-latest/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-${{ github.ref_name }}-linux.AppImage
-          mv ./bundles-ubuntu-latest/deb/surrealist_${{ needs.version.outputs.version }}_amd64.deb ./surrealist-${{ github.ref_name }}-linux.deb
+          mv ./bundles-ubuntu-20.04/appimage/surrealist_${{ needs.version.outputs.version }}_amd64.AppImage ./surrealist-${{ github.ref_name }}-linux.AppImage
+          mv ./bundles-ubuntu-20.04/deb/surrealist_${{ needs.version.outputs.version }}_amd64.deb ./surrealist-${{ github.ref_name }}-linux.deb
           mv ./bundles-windows-latest/msi/Surrealist_${{ needs.version.outputs.version }}_x64_en-US.msi ./surrealist-${{ github.ref_name }}-windows.msi
 
       - name: Draft release
