@@ -45,7 +45,7 @@ pub async fn execute_local_query(
         console_log!("Failed to parse query variables");
     }
 
-    let query_task = builder.await;
+    let query_task = builder.with_stats().await;
 
     console_log!(
         "Received response from database, success: {}",
