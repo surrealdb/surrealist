@@ -57,35 +57,24 @@ fn process_result(response: Result<WithStats<Response>, surrealdb::Error>) -> St
             for i in 0..statement_count {
                 let mut entry = Object::default();
                 let error = errors.get(&i);
-                let result: Value;
-                let status: Value;
-
-                match error {
+                let (result, status, stats) = match error {
                     Some((stats, error)) => {
-                        result = Value::from(error.to_string());
-                        status = "ERR".into();
-                        if let Some(time) = stats.execution_time {
-                            entry.insert(
-                                "time".to_owned(),
-                                Value::Duration(time.into()),
-                            );
-                        };
+                        (Value::from(error.to_string()), Value::from("ERR"), *stats)
                     }
                     None => {
-                        let (stats, res) = response.take(i).unwrap();
-                        result = res.unwrap();
-                        status = "OK".into();
-                        if let Some(time) = stats.execution_time {
-                            entry.insert(
-                                "time".to_owned(),
-                                Value::Duration(time.into()),
-                            );
-                        };
+                        let (stats, res) = response.take::<Value>(i).unwrap();
+                        (res.unwrap(), Value::from("OK"), stats)
                     }
                 };
 
                 entry.insert("result".to_owned(), result);
                 entry.insert("status".to_owned(), status);
+                if let Some(time) = stats.execution_time {
+                    entry.insert(
+                        "time".to_owned(),
+                        Value::Duration(time.into()),
+                    );
+                };
 
                 results.push(Value::Object(entry));
             }
