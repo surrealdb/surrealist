@@ -1,7 +1,7 @@
-import { defineConfig, PluginOption } from 'vite';
-import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
-import { readFileSync, cpSync } from 'node:fs';
+import { defineConfig, PluginOption } from 'vite';
+import { readFileSync, cpSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const { version, author, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
 
@@ -16,6 +16,12 @@ function pages(): PluginOption {
 			cpSync(from, to);
 		}
 	};
+}
+
+const generatedDir = fileURLToPath(new URL('src/generated', import.meta.url));
+
+if (!existsSync(generatedDir)) {
+	throw new Error('Surrealist embed generated files not found. Run `pnpm embed:build` to generate them.');
 }
 
 // https://vitejs.dev/config/

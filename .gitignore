@@ -5,3 +5,5 @@ dist/
 .hintrc
 
 .DS_Store
+
+/src/generated
