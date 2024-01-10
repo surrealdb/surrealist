@@ -1,11 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export function open_connection(a: number): number;
-export function close_connection(): number;
-export function query_version(): number;
-export function execute_remote_query(a: number, b: number, c: number, d: number): number;
-export function initialize_embed(): void;
 export function execute_local_query(a: number, b: number, c: number, d: number, e: number): number;
 export function extract_scope_definition(a: number, b: number, c: number): void;
 export function extract_table_definition(a: number, b: number, c: number): void;
@@ -18,15 +13,20 @@ export function validate_query(a: number, b: number, c: number): void;
 export function validate_where_clause(a: number, b: number): number;
 export function validate_live_query(a: number, b: number, c: number): void;
 export function validate_thing(a: number, b: number): number;
+export function initialize_embed(): void;
+export function open_connection(a: number): number;
+export function close_connection(): number;
+export function query_version(): number;
+export function execute_remote_query(a: number, b: number, c: number, d: number): number;
 export function ring_core_0_17_5_bn_mul_mont(a: number, b: number, c: number, d: number, e: number, f: number): void;
 export function __wbindgen_malloc(a: number, b: number): number;
 export function __wbindgen_realloc(a: number, b: number, c: number, d: number): number;
 export const __wbindgen_export_2: WebAssembly.Table;
-export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h5018271a13d74dd4(a: number, b: number, c: number): void;
-export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hd1581cd8a6cae8b0(a: number, b: number, c: number): void;
-export function _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__ha89374e8247c74d8(a: number, b: number): void;
-export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__he8512b5dc5406f70(a: number, b: number, c: number): void;
+export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4d65fdb4540671a1(a: number, b: number, c: number): void;
+export function wasm_bindgen__convert__closures__invoke1_mut__h5675ac8148d26ec2(a: number, b: number, c: number): void;
+export function _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h2c5ef005db108818(a: number, b: number): void;
+export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hc68a069589ef856e(a: number, b: number, c: number): void;
 export function __wbindgen_add_to_stack_pointer(a: number): number;
 export function __wbindgen_free(a: number, b: number, c: number): void;
 export function __wbindgen_exn_store(a: number): void;
-export function wasm_bindgen__convert__closures__invoke2_mut__haf794559bddae9e5(a: number, b: number, c: number, d: number): void;
+export function wasm_bindgen__convert__closures__invoke2_mut__h2f29e8deb0942ecc(a: number, b: number, c: number, d: number): void;

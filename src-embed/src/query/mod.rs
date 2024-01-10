@@ -2,6 +2,7 @@ pub mod local;
 pub mod remote;
 
 use serde::Deserialize;
+use surrealdb::method::WithStats;
 use surrealdb::sql::Array;
 use surrealdb::sql::Object;
 use surrealdb::sql::Value;
@@ -45,7 +46,7 @@ fn make_error(err: &str) -> Array {
     results
 }
 
-fn process_result(response: Result<Response, surrealdb::Error>) -> String {
+fn process_result(response: Result<WithStats<Response>, surrealdb::Error>) -> String {
     let results: Array = match response {
         Ok(mut response) => {
             let statement_count = response.num_statements();
@@ -56,28 +57,24 @@ fn process_result(response: Result<Response, surrealdb::Error>) -> String {
             for i in 0..statement_count {
                 let mut entry = Object::default();
                 let error = errors.get(&i);
-
-                entry.insert(
-                    "time".to_owned(),
-                    Value::from(response.take_time(i).unwrap()),
-                );
-
-                let result: Value;
-                let status: Value;
-
-                match error {
-                    Some(error) => {
-                        result = Value::from(error.to_string());
-                        status = "ERR".into();
+                let (result, status, stats) = match error {
+                    Some((stats, error)) => {
+                        (Value::from(error.to_string()), Value::from("ERR"), *stats)
                     }
                     None => {
-                        result = response.take(i).unwrap();
-                        status = "OK".into();
+                        let (stats, res) = response.take::<Value>(i).unwrap();
+                        (res.unwrap(), Value::from("OK"), stats)
                     }
                 };
 
                 entry.insert("result".to_owned(), result);
                 entry.insert("status".to_owned(), status);
+                if let Some(time) = stats.execution_time {
+                    entry.insert(
+                        "time".to_owned(),
+                        Value::Duration(time.into()),
+                    );
+                };
 
                 results.push(Value::Object(entry));
             }
