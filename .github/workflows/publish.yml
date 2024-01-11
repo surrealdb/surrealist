@@ -102,7 +102,7 @@ jobs:
       - name: Download embed
         uses: actions/download-artifact@master
         with:
-          name: my-artifact
+          name: generated-embed
           path: src/generated
 
       - name: Build application
