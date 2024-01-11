@@ -1,5 +1,5 @@
 import { Result } from "~/typings/utilities";
-import { SurrealistAdapter } from "./base";
+import { OpenedFile, SurrealistAdapter } from "./base";
 
 /**
  * Surrealist adapter for running as web app
@@ -71,7 +71,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openFile(): Promise<string | null> {
+	public async openFile(): Promise<OpenedFile[]> {
 		const el = document.createElement('input');
 
 		el.type = 'file';
@@ -81,13 +81,15 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 		return new Promise((resolve, reject) => {
 			el.addEventListener('change', async () => {
-				const text = await el.files?.[0]?.text();
+				const files = [...(el.files ?? [])];
+				const tasks = files.map(async (file) => ({
+					name: file.name,
+					content: await file.text(),
+				}));
 
-				if (typeof text == 'string') {
-					resolve(text);
-				} else {
-					resolve(null);
-				}
+				const results = await Promise.all(tasks);
+
+				resolve(results);
 			});
 
 			el.addEventListener('error', async () => {

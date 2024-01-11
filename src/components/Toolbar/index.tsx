@@ -18,6 +18,7 @@ import { useTabsList } from "~/hooks/environment";
 import { ViewTab } from "../ViewTab";
 import { Exporter } from "../Exporter";
 import { updateSession, setShowQueryListing, setQueryListingMode } from "~/stores/config";
+import { Importer } from "../Importer";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -115,6 +116,8 @@ export function Toolbar(props: ToolbarProps) {
 			{adapter.isServeSupported && (
 				<LocalDatabase />
 			)}
+
+			<Importer />
 
 			<Exporter />
 

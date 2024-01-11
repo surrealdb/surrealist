@@ -1,6 +1,6 @@
 import classes from './style.module.scss';
 import { editor } from "monaco-editor";
-import { mdiClose, mdiDatabase, mdiPlusBoxMultiple, mdiUpload } from "@mdi/js";
+import { mdiClose, mdiDatabase, mdiFileDocument, mdiPlusBoxMultiple } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
 import { store } from "~/store";
@@ -45,10 +45,10 @@ export function QueryPane() {
 	});
 
 	const handleUpload = useStable(async () => {
-		const query = await adapter.openFile('Load query from file', SURQL_FILTERS, false);
+		const [file] = await adapter.openFile('Load query from file', SURQL_FILTERS, false);
 
-		if (typeof query == 'string') {
-			setQueryForced(query);
+		if (file) {
+			setQueryForced(file.content);
 		}
 	});
 
@@ -89,7 +89,7 @@ export function QueryPane() {
 					</ActionIcon>
 
 					<ActionIcon onClick={handleUpload} title="Load from file">
-						<Icon color="light.4" path={mdiUpload} />
+						<Icon color="light.4" path={mdiFileDocument} />
 					</ActionIcon>
 				</Group>
 			}

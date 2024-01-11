@@ -1,5 +1,10 @@
 import { Result } from "~/typings/utilities";
 
+export interface OpenedFile {
+	name: string;
+	content: string;
+}
+
 export interface SurrealistAdapter {
 
 	/**
@@ -87,6 +92,6 @@ export interface SurrealistAdapter {
 		title: string,
 		filters: any,
 		multiple: boolean
-	): Promise<string | null>;
+	): Promise<OpenedFile[]>;
 
 }

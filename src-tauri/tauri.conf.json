@@ -27,6 +27,9 @@
 			"dialog": {
 				"open": true,
 				"save": true
+			},
+			"path": {
+				"all": true
 			}
 		},
 		"bundle": {

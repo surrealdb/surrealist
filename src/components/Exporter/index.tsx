@@ -59,6 +59,7 @@ export function Exporter() {
 				color={isLight ? "light.0" : "dark.4"}
 				title="Export database to file"
 				onClick={openExporter}
+				loading={isExporting}
 				disabled={!isOnline}
 			>
 				<Icon path={mdiDownload} color={isOnline ? (isLight ? "light.8" : "white") : undefined} />

@@ -2,11 +2,12 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 import { open as openURL } from "@tauri-apps/api/shell";
 import { save, open } from "@tauri-apps/api/dialog";
+import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
 import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { store } from "~/store";
-import { SurrealistAdapter } from "./base";
+import { OpenedFile, SurrealistAdapter } from "./base";
 import { printLog } from "~/util/helpers";
 import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { Result } from "~/typings/utilities";
@@ -115,18 +116,25 @@ export class DesktopAdapter implements SurrealistAdapter {
 		title: string,
 		filters: any,
 		multiple: boolean
-	): Promise<string | null> {
-		const url = await open({
+	): Promise<OpenedFile[]> {
+		const result = await open({
 			title,
 			filters,
 			multiple
 		});
 
-		if (!url) {
-			return null;
-		}
+		const urls = typeof result === "string"
+			? [result]
+			: result === null
+				? []
+				: result;
+		
+		const tasks = urls.map(async (url) => ({
+			name: await basename(url),
+			content: await readTextFile(url)
+		}));
 
-		return readTextFile(url as string);
+		return Promise.all(tasks);
 	}
 
 	private initDatabaseEvents() {
