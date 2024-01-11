@@ -233,7 +233,7 @@ pub fn extract_index_definition(definition: &str) -> Result<JsValue, String> {
         };
 
         let empty_str = "".to_owned();
-        let index_str = i.to_string();
+        let index_str = i.index.to_string();
 
         let (search, vector) = match i.index {
             Index::Search(_) => (&index_str, &empty_str),
