@@ -1,7 +1,9 @@
 use concat_string::concat_string;
 use serde::Serialize;
 use serde_wasm_bindgen::to_value;
-use surrealdb::sql::{parse, statements::DefineStatement, Index, Permissions, Statement, Strand, thing};
+use surrealdb::sql::{
+    parse, statements::DefineStatement, thing, Index, Permissions, Statement, Strand,
+};
 use wasm_bindgen::prelude::*;
 
 fn to_response<T: serde::ser::Serialize>(value: &T, name: &str) -> Result<JsValue, String> {

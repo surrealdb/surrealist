@@ -70,10 +70,7 @@ fn process_result(response: Result<WithStats<Response>, surrealdb::Error>) -> St
                 entry.insert("result".to_owned(), result);
                 entry.insert("status".to_owned(), status);
                 if let Some(time) = stats.execution_time {
-                    entry.insert(
-                        "time".to_owned(),
-                        Value::Duration(time.into()),
-                    );
+                    entry.insert("time".to_owned(), Value::Duration(time.into()));
                 };
 
                 results.push(Value::Object(entry));
