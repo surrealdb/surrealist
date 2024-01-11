@@ -43,6 +43,7 @@ jobs:
       - name: Generate embed
         run: |
           rustup target add wasm32-unknown-unknown
+          cargo install wasm-bindgen-cli
           pnpm embed:build
 
       # This step is required to run following steps, as they require the `dist` directory
