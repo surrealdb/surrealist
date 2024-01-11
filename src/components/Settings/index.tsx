@@ -1,15 +1,12 @@
 import { mdiCog } from "@mdi/js";
 import { useState } from "react";
-import { Button, Group, Modal, Paper, Stack, Tabs, Text } from "@mantine/core";
-
+import { Button, Modal, Paper, Stack, Tabs, Text } from "@mantine/core";
 import { useStoreValue } from "~/store";
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
-import { Spacer } from "../Spacer";
 import { GeneralTab } from "./tabs/Behavior";
 import { ConnectionTab } from "./tabs/Connection";
 import { LocalDatabaseTab } from "./tabs/LocalDatabase";
-import { runUpdateChecker } from "~/util/updater";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { ModalTitle } from "../ModalTitle";
@@ -20,20 +17,12 @@ export function Settings() {
 	const config = useStoreValue((state) => state.config);
 	const [showSettings, setShowSettings] = useState(false);
 
-	const version = import.meta.env.VERSION;
-	const author = import.meta.env.AUTHOR;
-
 	const openSettings = useStable(() => {
 		setShowSettings(true);
 	});
 
 	const closeSettings = useStable(() => {
 		setShowSettings(false);
-	});
-
-	const checkForUpdates = useStable(() => {
-		runUpdateChecker(config.lastPromptedVersion, true);
-		closeSettings();
 	});
 
 	return (
@@ -79,7 +68,7 @@ export function Settings() {
 				)}
 
 				<Tabs defaultValue="general">
-					<Tabs.List mb="md">
+					<Tabs.List mb="md" grow>
 						<Tabs.Tab value="general">Behavior</Tabs.Tab>
 						<Tabs.Tab value="appearance">Appearance</Tabs.Tab>
 						<Tabs.Tab value="connection">Connection</Tabs.Tab>
@@ -88,7 +77,7 @@ export function Settings() {
 					</Tabs.List>
 
 					<Tabs.Panel value="general" pt="xs">
-						<GeneralTab config={config} />
+						<GeneralTab config={config} onClose={closeSettings} />
 					</Tabs.Panel>
 
 					<Tabs.Panel value="appearance" pt="xs">
@@ -103,16 +92,6 @@ export function Settings() {
 						<LocalDatabaseTab config={config} />
 					</Tabs.Panel>
 				</Tabs>
-
-				<Group mt="xl" position="center">
-					<Text color={isLight ? "light.4" : "dark.3"}>
-						Version {version} by {author}
-					</Text>
-					<Spacer />
-					<Button variant="subtle" onClick={checkForUpdates}>
-						Check for updates
-					</Button>
-				</Group>
 			</Modal>
 		</>
 	);

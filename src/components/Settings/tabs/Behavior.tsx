@@ -1,16 +1,29 @@
-import { Kbd, Stack, Switch } from "@mantine/core";
+import { Button, Group, Kbd, Stack, Switch, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { store } from "~/store";
 import { SurrealistConfig } from "~/types";
 import { Setting } from "../setting";
 import { setTableSuggest, setErrorChecking, setUpdateChecker, setWindowPinned } from "~/stores/config";
+import { Spacer } from "~/components/Spacer";
+import { useIsLight } from "~/hooks/theme";
+import { runUpdateChecker } from "~/util/updater";
+
+const VERSION = import.meta.env.VERSION;
+const AUTHOR = import.meta.env.AUTHOR;
 
 export interface GeneralTabProps {
 	config: SurrealistConfig;
+	onClose: () => void;
 }
 
-export function GeneralTab({ config }: GeneralTabProps) {
+export function GeneralTab({ config, onClose }: GeneralTabProps) {
+	const isLight = useIsLight();
+	
+	const checkForUpdates = useStable(() => {
+		runUpdateChecker(config.lastPromptedVersion, true);
+		onClose();
+	});
 
 	const updateTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		store.dispatch(setTableSuggest(e.target.checked));
@@ -50,6 +63,16 @@ export function GeneralTab({ config }: GeneralTabProps) {
 					<Switch checked={config.isPinned} onChange={togglePinned} />
 				</Setting>
 			)}
+
+			<Group mt="xl" position="center">
+				<Text color={isLight ? "light.4" : "dark.3"}>
+					Version {VERSION} by {AUTHOR}
+				</Text>
+				<Spacer />
+				<Button variant="subtle" onClick={checkForUpdates}>
+					Check for updates
+				</Button>
+			</Group>
 		</Stack>
 	);
 }
