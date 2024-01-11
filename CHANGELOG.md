@@ -1,6 +1,13 @@
 # Change Log
 
-## 1.12.0 - General improvements
+## 1.11.2 - SurrealDB 1.1
+- Support for SurrealDB 1.1.0
+- Added a new import database button to the toolbar
+	- Allows for executing any `.surql` file without having to use the query view
+	- Useful for loading in backups, pre-defined query files, etc.
+- Fixed search index issues (#154)
+
+## 1.11.1 - General improvements
 - Added designer view SVG snapshots (#150)
 - Improved record link detection to support complex ids
 - Improved support for escaped table names (#155)
