@@ -41,7 +41,9 @@ jobs:
         run: npm install -g pnpm
 
       - name: Generate embed
-        run: pnpm embed:build
+        run: |
+          rustup target add wasm32-unknown-unknown
+          pnpm embed:build
 
       # This step is required to run following steps, as they require the `dist` directory
       - name: Build frontend

@@ -49,6 +49,7 @@ jobs:
       - name: Generate embed
         run: |
           npm i -g pnpm
+          rustup target add wasm32-unknown-unknown
           pnpm embed:build
 
       - name: Save artifacts
