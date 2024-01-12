@@ -1,7 +1,13 @@
 # Roadmap
 
-- Add hotkey customization
-
-- Raise designer active table to store
-- Raise designer active table details to store
-- Raise live queries active query to store?
+## Technical notes
+- Add customizable keymap
+- Rust SDK live queries
+- Simplify sandbox connections
+- UI redesign
+- Context menus
+- Improve performance
+- Use cbor from WASM -> JS messaging (Good for data table type detection)
+- New migration view?
+- Make variables per-tab - poll
+- Improved error handling
