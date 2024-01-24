@@ -6,6 +6,13 @@ import { TableGraphPane } from "../TableGraphPane";
 import { useStable } from "~/hooks/stable";
 import { setDesignerTable } from "~/stores/designer";
 import { useTables } from "~/hooks/schema";
+import { useImmer } from "use-immer";
+import { useSaveable } from "~/hooks/save";
+import { buildDefinitionQueries, isSchemaValid } from "../DesignPane/helpers";
+import { TableDefinition } from "~/types";
+import { showError } from "~/util/helpers";
+import { getActiveSurreal } from "~/util/connection";
+import { fetchDatabaseSchema } from "~/util/schema";
 
 const SPLIT_SIZE: SplitValues = [undefined, 450];
 
@@ -30,6 +37,32 @@ export function DesignerView(props: DesignerViewProps) {
 		store.dispatch(setDesignerTable(null));
 	});
 
+	const [data, setData] = useImmer(tableSchema);
+	const isValid = data ? isSchemaValid(data) : true;
+	
+	const handle = useSaveable({
+		valid: !!isValid,
+		track: data || {} as TableDefinition,
+		onSave(original) {
+			if (!original?.schema) {
+				showError("Save failed", "Could not determine previous state");
+				return;
+			}
+
+			const query = buildDefinitionQueries(original, data!);
+			const surreal = getActiveSurreal();
+
+			surreal.query(query)
+				.then(() => fetchDatabaseSchema())
+				.catch((err) => {
+					showError("Failed to apply schema", err.message);
+				});
+		},
+		onRevert(original) {
+			setData(original);
+		}
+	});
+
 	return (
 		<Splitter
 			minSize={SPLIT_SIZE}
@@ -38,10 +71,12 @@ export function DesignerView(props: DesignerViewProps) {
 			onChange={setSplitValues}
 			direction="horizontal"
 			endPane={
-				tableSchema && (
+				tableSchema && data && (
 					<DesignPane
-						table={tableSchema}
+						value={data}
+						onChange={setData as any}
 						onClose={closeActiveTable}
+						handle={handle}
 					/>
 				)
 			}
