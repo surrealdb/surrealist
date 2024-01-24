@@ -1,91 +1,90 @@
-import fastDeepEqual from "fast-deep-equal";
-import { useEffect, useMemo, useState } from "react";
-import { Button, Group } from "@mantine/core";
-import { mdiCheck } from "@mdi/js";
-import { useLater } from "~/hooks/later";
+import classes from "./style.module.scss";
+import { Button, Group, Notification, Portal, clsx } from "@mantine/core";
+import { mdiCheck, mdiInformationOutline } from "@mdi/js";
 import { Icon } from "../Icon";
-import { klona } from "klona";
-import { useStable } from "~/hooks/stable";
+import { SaveableHandle } from "~/hooks/save";
+import { ReactNode } from "react";
+import { capitalize } from "radash";
+import { Spacer } from "../Spacer";
 
 export interface SaveBoxProps {
-	value: any;
-	valid?: boolean;
-	onPatch?: () => any;
-	onRevert?: (original: any) => void;
-	onSave: (original: any) => any;
-	onChangedState?: (isChanged: boolean) => void;
+	handle: SaveableHandle<any>;
+	inline?: boolean;
+	position?: "left" | "center" | "right";
+	saveText?: ReactNode;
+	revertText?: ReactNode;
 }
 
 /**
- * To use this component effectively you should delay
- * the mounting of the save box until after your remote
- * data has been fetched and loaded. The data at the
- * time of mounting will be seen as the "original" state.
- * It is recommended to use the `useSaveBox` hook to
- * streamline the integration of this component.
- *
- * The `value` prop should usually be assigned an object
- * containing all state you want to track. This object
- * will later be passed back by `onRevert` in order to
- * reset each state hook to their original value.
- *
- * When `valid` is false, the save button will be disabled.
- *
- * Use the `onSave` prop to save the current state to
- * the database. The data at the moment of saving will
- * be seen as the new "original" state.
- *
- * Use the `onPatch` prop to make changes to the state
- * before saving.
+ * Used to present the managed state of a `useSaveable` hook
+ * in the form of a save box.
  */
-export const SaveBox = ({ value, valid, onRevert, onPatch, onSave, onChangedState }: SaveBoxProps) => {
-	const [isSaving, setIsSaving] = useState(false);
-	const [original, setOriginal] = useState(klona(value));
+export function SaveBox({ handle, inline, position, saveText, revertText }: SaveBoxProps) {
 
-	const isChanged = useMemo(() => !fastDeepEqual(original, value), [original, value]);
-
-	const doCompleteSave = useStable(() => {
-		setOriginal(klona(value));
-		setIsSaving(false);
-		onSave?.(original);
-	});
-
-	const doRevert = useStable(() => {
-		onRevert?.(klona(original));
-	});
-
-	const triggerSave = useLater(doCompleteSave);
-
-	const doSave = useStable(async () => {
-		setIsSaving(true);
-
-		await Promise.resolve(onPatch?.());
-
-		triggerSave();
-	});
-
-	useEffect(() => {
-		if (onChangedState) {
-			onChangedState(isChanged);
-		}
-	}, [isChanged, onChangedState]);
-
-	return (
-		<Group spacing={10} align="center" position="apart">
-			<Button
-				rightIcon={<Icon path={mdiCheck} size={1} />}
-				loaderPosition="right"
-				loading={isSaving}
-				disabled={!isChanged || valid === false}
-				onClick={doSave}
-			>
-				Save changes
-			</Button>
-			{onRevert && (
-				<Button disabled={!isChanged || valid === false} onClick={doRevert} color="dark.4">
-					Revert
-				</Button>
-			)}
-		</Group>
+	const saveButton = (
+		<Button
+			rightIcon={<Icon path={mdiCheck} size="md" />}
+			loading={handle.isSaving}
+			disabled={handle.isSaveable}
+			onClick={handle.save}
+		>
+			{saveText ?? 'Save changes'}
+		</Button>
 	);
-};
+
+	const revertButton = (
+		<Button
+			disabled={handle.isSaveable}
+			onClick={handle.revert}
+			color="dark.4"
+		>
+			{revertText ?? 'Revert'}
+		</Button>
+	);
+
+
+	if (inline) {
+		return (
+			<Group spacing={10} align="center" position="apart">
+				{revertButton}
+				{saveButton}
+			</Group>
+		);
+	} else {
+		return (
+			<Portal>
+				<Notification
+					withCloseButton={false}
+					className={clsx(
+						classes.savebox,
+						classes[`savebox${capitalize(position ?? 'center')}`],
+						!handle.isChanged && classes.saveboxHidden
+					)}
+					icon={
+						<Icon
+							path={mdiInformationOutline}
+							size="lg"
+							mr={-8}
+						/>
+					}
+					styles={{
+						icon: {
+							backgroundColor: 'transparent !important',
+							color: 'var(--mantine-color-surreal-5) !important',
+						},
+						body: {
+							margin: 0
+						}
+					}}
+				>
+					<Group spacing={10} align="center">
+						There are unsaved changes
+						<Spacer />
+						{revertButton}
+						{saveButton}
+					</Group>
+				</Notification>
+			</Portal>
+		);
+	}
+}

@@ -13,10 +13,9 @@ import {
 } from "@mantine/core";
 
 import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
-import { MouseEvent, useMemo, useState } from "react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { Panel } from "~/components/Panel";
-import { useSaveBox } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { TableDefinition } from "~/types";
 import { showError } from "~/util/helpers";
@@ -35,8 +34,10 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { ViewElement } from "./elements/view";
 import { ChangefeedElement } from "./elements/changefeed";
 import { getActiveSurreal, getSurreal } from "~/util/connection";
+import { useSaveable } from "~/hooks/save";
+import { SaveBox } from "~/components/SaveBox";
 
-const INITIAL_TABS = ["general", "view", "changefeed", "permissions", "fields", "indexes", "events"];
+const INITIAL_TABS = ["general"];
 
 export interface SchemaPaneProps {
 	table: TableDefinition;
@@ -49,11 +50,10 @@ export function DesignPane(props: SchemaPaneProps) {
 	const isShifting = useActiveKeys("Shift");
 	const isValid = data ? isSchemaValid(data) : true;
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [isChanged, setIsChanged] = useState(false);
 
-	const saveBox = useSaveBox({
-		track: data!,
+	const handle = useSaveable({
 		valid: !!isValid,
+		track: data,
 		onSave(original) {
 			if (!original?.schema) {
 				showError("Save failed", "Could not determine previous state");
@@ -71,10 +71,7 @@ export function DesignPane(props: SchemaPaneProps) {
 		},
 		onRevert(original) {
 			setData(original);
-		},
-		onChangedState(value) {
-			setIsChanged(value);
-		},
+		}
 	});
 
 	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {
@@ -106,14 +103,18 @@ export function DesignPane(props: SchemaPaneProps) {
 
 	const isEdge = useMemo(() => isEdgeTable(props.table), [props.table]);
 
+	useEffect(() => {
+		setData(props.table);
+		handle.refresh(props.table);
+	}, [props.table]);
+
 	return (
 		<Panel
 			icon={mdiWrench}
 			title="Design"
 			leftSection={
-				isChanged &&
-				(isValid ? (
-					<Badge color={isLight ? "blue.6" : "blue.4"}>Changes not yet applied</Badge>
+				handle.isChanged && (isValid ? (
+					<Badge color={isLight ? "blue.6" : "blue.4"}>Unsaved changes</Badge>
 				) : (
 					<Badge color={isLight ? "red.6" : "red.4"}>Missing required fields</Badge>
 				))
@@ -158,7 +159,7 @@ export function DesignPane(props: SchemaPaneProps) {
 							},
 						})}
 					/>
-					<ScrollArea style={{ position: "absolute", inset: 12, top: 56, bottom: 68 }}>
+					<ScrollArea style={{ position: "absolute", inset: 12, top: 56, bottom: 12 }}>
 						<Accordion
 							multiple
 							defaultValue={INITIAL_TABS}
@@ -203,11 +204,11 @@ export function DesignPane(props: SchemaPaneProps) {
 								setData={setData}
 							/>
 						</Accordion>
-					</ScrollArea>
 
-					<Box px="sm" pb="sm" pos="absolute" left={4} bottom={4} right={4}>
-						{saveBox.render}
-					</Box>
+						<Box mt="lg">
+							<SaveBox handle={handle} inline />
+						</Box>
+					</ScrollArea>
 				</>
 			)}
 

@@ -1,52 +1,115 @@
-import React, { useState } from "react";
-import { SaveBox } from "~/components/SaveBox";
+import fastDeepEqual from "fast-deep-equal";
+import { klona } from "klona";
+import { useMemo, useState } from "react";
+import { useLater } from "./later";
 import { useStable } from "./stable";
 
-interface SaveBoxOptions<T> {
-	when?: boolean;
+type Task = unknown | Promise<unknown>;
+
+export interface SaveableOptions<T> {
+
+	/**
+	 * The state object to track changes on
+	 */
 	track: T;
+
+	/**
+	 * Whether the state is valid for saving
+	 */
 	valid?: boolean;
-	onPatch?: () => void;
-	onSave: (original?: T) => void;
-	onRevert?: (original: T) => void;
-	onChangedState?: (value: boolean) => void;
+
+	/**
+	 * Called when the current state should be saved
+	 * 
+	 * @param original The original state
+	 */
+	onSave: (original?: T) => Task;
+
+	/**
+	 * Called when the current state should be reverted
+	 * 
+	 * @param original The original state
+	 */
+	onRevert: (original: T) => void;
+
 }
 
-interface SaveBoxResult {
-	render: JSX.Element | null;
-	skip: () => void;
+export interface SaveableHandle<T> {
+
+	/**
+	 * Whether the state is currently considered changed
+	 */
+	isChanged: boolean;
+
+	/**
+	 * Whether the state is currently valid for saving
+	 */
+	isSaveable: boolean;
+
+	/**
+	 * Whether the state is currently being saved
+	 */
+	isSaving: boolean;
+	
+	/**
+	 * Forcefully refresh the internal state to
+	 * to the current tracked state.
+	 * 
+	 * @param value Optional manual value to refresh to
+	 */
+	refresh: (value?: T) => void;
+
+	/**
+	 * Save the current state
+	 */
+	save: () => Promise<void>;
+
+	/**
+	 * Revert the current state
+	 */
+	revert: () => void;
+
 }
 
 /**
- * Helper hook to facilitate the rendering of a save box. The save box
- * will only start tracking changes after the `when` condition is met.
+ * The saveable hook provides facilities for tracking and reverting changes,
+ * saving state, and performing validation.
  *
- * The skip function can be called directly after a mutation to tracked
- * state in order to prevent the save box from revealing.
- *
- * @param options The save box options
- * @returns The save box element
+ * @param options The saveable options
+ * @returns The saveable handle
  */
-export function useSaveBox<T extends Record<string, any>>(options: SaveBoxOptions<T>): SaveBoxResult {
-	const showSaveBox = options.when ?? true;
-	const [skipKey, setSkipKey] = useState(0);
+export function useSaveable<T extends Record<string, any>>(options: SaveableOptions<T>): SaveableHandle<T> {
+	const [isSaving, setIsSaving] = useState(false);
+	const [original, setOriginal] = useState(klona(options.track));
 
-	const skip = useStable(() => {
-		setSkipKey(k => k + 1);
+	const isChanged = useMemo(() => !fastDeepEqual(original, options.track), [original, options.track]);
+	const canSave = !isChanged || options.valid === false;
+
+	const refresh = useStable((value?: T) => {
+		setOriginal(klona(value ?? options.track));
 	});
 
-	const render = showSaveBox ? React.createElement(SaveBox, {
-		key: skipKey,
-		value: options.track,
-		valid: options.valid,
-		onRevert: options.onRevert,
-		onSave: options.onSave,
-		onPatch: options.onPatch,
-		onChangedState: options.onChangedState,
-	}) : null;
+	const refreshLater = useLater(refresh);
+
+	const save = useStable(async () => {
+		setIsSaving(true);
+
+		await options.onSave(original);
+
+		setIsSaving(false);
+		refreshLater();
+	});
+
+	const revert = useStable(() => {
+		options.onRevert(klona(original));
+	});
 
 	return {
-		render,
-		skip,
+		isSaveable: canSave,
+		isChanged,
+		isSaving,
+		refresh,
+		save,
+		revert
 	};
 }
