@@ -23,7 +23,7 @@ export interface SaveableOptions<T> {
 	 * 
 	 * @param original The original state
 	 */
-	onSave: (original?: T) => Task;
+	onSave: (original: T) => Task;
 
 	/**
 	 * Called when the current state should be reverted
@@ -52,20 +52,22 @@ export interface SaveableHandle<T> {
 	isSaving: boolean;
 	
 	/**
-	 * Forcefully refresh the internal state to
-	 * to the current tracked state.
+	 * Forcefully schedule the tracked state to be refreshed
+	 * after the current render cycle.
 	 * 
 	 * @param value Optional manual value to refresh to
 	 */
-	refresh: (value?: T) => void;
+	track: () => void;
 
 	/**
-	 * Save the current state
+	 * Save the current state and invoke the onSave callback.
+	 * After onSave is complete, the tracked state will be scheduled
+	 * to be refreshed after the current render cycle.
 	 */
 	save: () => Promise<void>;
 
 	/**
-	 * Revert the current state
+	 * Revert the current state and invoke the onRevert callback.
 	 */
 	revert: () => void;
 
@@ -80,16 +82,19 @@ export interface SaveableHandle<T> {
  */
 export function useSaveable<T extends Record<string, any>>(options: SaveableOptions<T>): SaveableHandle<T> {
 	const [isSaving, setIsSaving] = useState(false);
+	const [skipTrack, setSkipTrack] = useState(false);
 	const [original, setOriginal] = useState(klona(options.track));
 
-	const isChanged = useMemo(() => !fastDeepEqual(original, options.track), [original, options.track]);
-	const canSave = !isChanged || options.valid === false;
+	const isEqual = useMemo(() => fastDeepEqual(original, options.track), [original, options.track]);
+	const isChanged = !isEqual && !skipTrack;
+	const canSave = isChanged && options.valid !== false;
 
-	const refresh = useStable((value?: T) => {
+	const trackOriginal = useStable((value?: T) => {
 		setOriginal(klona(value ?? options.track));
+		setSkipTrack(false);
 	});
 
-	const refreshLater = useLater(refresh);
+	const scheduleTrack = useLater(trackOriginal);
 
 	const save = useStable(async () => {
 		setIsSaving(true);
@@ -97,18 +102,23 @@ export function useSaveable<T extends Record<string, any>>(options: SaveableOpti
 		await options.onSave(original);
 
 		setIsSaving(false);
-		refreshLater();
+		scheduleTrack();
 	});
 
 	const revert = useStable(() => {
 		options.onRevert(klona(original));
 	});
 
+	const track = useStable(() => {
+		setSkipTrack(true);
+		scheduleTrack();
+	});
+
 	return {
 		isSaveable: canSave,
 		isChanged,
 		isSaving,
-		refresh,
+		track,
 		save,
 		revert
 	};

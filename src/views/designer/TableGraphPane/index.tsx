@@ -1,10 +1,10 @@
-import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Stack, Text, Title, useMantineTheme } from "@mantine/core";
 import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiImageOutline, mdiPlus, mdiXml } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
-import { ReactFlow, useEdgesState, useNodesState } from "reactflow";
+import { ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import { NODE_TYPES, buildTableGraph as buildTableDiagram, createSnapshot } from "./helpers";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -21,6 +21,7 @@ import { useToggleList } from "~/hooks/toggle";
 import { updateSession } from "~/stores/config";
 import { adapter } from "~/adapter";
 import { showNotification } from "@mantine/notifications";
+import { sleep } from "radash";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -42,6 +43,7 @@ export interface TableGraphPaneProps {
 }
 
 export function TableGraphPane(props: TableGraphPaneProps) {
+	const theme = useMantineTheme();
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [expanded, toggleExpanded] = useToggleList();
@@ -56,6 +58,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const isLight = useIsLight();
 	
 	const { nodeMode, layoutMode } = useDesignerConfig(activeSession);
+	const { fitView, getViewport, setViewport } = useReactFlow();
 
 	useEffect(() => {
 		const [nodes, edges] = buildTableDiagram(
@@ -71,6 +74,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [props.tables, props.active, nodeMode, expanded]);
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
+		const viewport = getViewport();
+
 		const isSuccess = await adapter.saveFile("Save snapshot", `snapshot.${type}`, [
 			{
 				name: "Image",
@@ -78,13 +83,16 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			},
 		], async () => {
 			setIsRendering(true);
+
+			await sleep(50);
+
+			fitView();
 			
-			try {
-				return await createSnapshot(ref.current!, type);
-			} finally {
-				setIsRendering(false);
-			}
+			return await createSnapshot(ref.current!, type);
 		});
+
+		setIsRendering(false);
+		setViewport(viewport);
 		
 		if (isSuccess) {
 			showNotification({
@@ -105,7 +113,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const openCreator = useStable(() => {
 		setIsCreating(true);
-
 	});
 
 	const closeCreator = useStable(() => {
@@ -138,59 +145,62 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		<Panel
 			title="Table Graph"
 			icon={mdiAdjust}
+			style={{ overflow: 'hidden' }}
 			rightSection={
 				<Group noWrap>
 					<ActionIcon title="Create table..." onClick={openCreator}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
-					<Popover
-						opened={showExporter}
-						onChange={setShowExporter}
-						position="bottom-end"
-						offset={{ crossAxis: -4, mainAxis: 8 }}
-						withArrow
-						withinPortal
-						shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
-					>
-						<Popover.Target>
-							<ActionIcon
-								title="Export Graph"
-								onClick={toggleExporter}
-							>
-								<Icon color="light.4" path={mdiDownload} />
-							</ActionIcon>
-						</Popover.Target>
-						<Popover.Dropdown onMouseLeave={toggleExporter} p="xs">
-							<Stack pb={4}>
-								<Button
-									color="surreal"
-									variant="subtle"
-									fullWidth
-									size="xs"
-									onClick={() => saveImage('png')}
+					{layoutMode == "diagram" && (
+						<Popover
+							opened={showExporter}
+							onChange={setShowExporter}
+							position="bottom-end"
+							offset={{ crossAxis: -4, mainAxis: 8 }}
+							withArrow
+							withinPortal
+							shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
+						>
+							<Popover.Target>
+								<ActionIcon
+									title="Export Graph"
+									onClick={toggleExporter}
 								>
-									Save as PNG
-									<Icon
-										right
-										path={mdiImageOutline}
-									/>
-								</Button>
-								<Button
-									color="surreal"
-									variant="subtle"
-									fullWidth
-									size="xs"
-									onClick={() => saveImage('svg')}
-								>
-									Save as SVG
-									<Icon
-										right
-										path={mdiXml}
-									/>
-								</Button>
-							</Stack>
-						</Popover.Dropdown>
-					</Popover>
+									<Icon color="light.4" path={mdiDownload} />
+								</ActionIcon>
+							</Popover.Target>
+							<Popover.Dropdown onMouseLeave={toggleExporter} p="xs">
+								<Stack pb={4}>
+									<Button
+										color="surreal"
+										variant="subtle"
+										fullWidth
+										size="xs"
+										onClick={() => saveImage('svg')}
+									>
+										Save as SVG
+										<Icon
+											right
+											path={mdiXml}
+										/>
+									</Button>
+									<Button
+										color="surreal"
+										variant="subtle"
+										fullWidth
+										size="xs"
+										onClick={() => saveImage('png')}
+									>
+										Save as PNG
+										<Icon
+											right
+											path={mdiImageOutline}
+										/>
+									</Button>
+								</Stack>
+							</Popover.Dropdown>
+						</Popover>
+					)}
 					<Popover
 						opened={showConfig}
 						onChange={setShowConfig}
@@ -254,8 +264,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 				<LoadingOverlay
 					visible={isRendering}
-					overlayBlur={4}
-					overlayColor={isLight ? "white" : "dark.7"}
+					overlayOpacity={1}
+					overlayColor={isLight ? theme.white : theme.colors.dark[7]}
+					loaderProps={{ size: 50 }}
 				/>
 				
 				{layoutMode == 'diagram' ? (
