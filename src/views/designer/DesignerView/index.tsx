@@ -1,55 +1,43 @@
 import { useMemo, useState } from "react";
 import { SplitValues, Splitter } from "~/components/Splitter";
-import { store, useStoreValue } from "~/store";
 import { DesignPane } from "../DesignPane";
 import { TableGraphPane } from "../TableGraphPane";
 import { useStable } from "~/hooks/stable";
-import { setDesignerTable } from "~/stores/designer";
 import { useTables } from "~/hooks/schema";
 import { useImmer } from "use-immer";
 import { useSaveable } from "~/hooks/save";
 import { buildDefinitionQueries, isSchemaValid } from "../DesignPane/helpers";
-import { TableDefinition } from "~/types";
 import { showError } from "~/util/helpers";
 import { getActiveSurreal } from "~/util/connection";
 import { fetchDatabaseSchema } from "~/util/schema";
+import { TableDefinition } from "~/types";
 
 const SPLIT_SIZE: SplitValues = [undefined, 450];
 
 export interface DesignerViewProps {
 }
 
-export function DesignerView(props: DesignerViewProps) {
-	const activeTable = useStoreValue(state => state.designer.activeTable);
+export function DesignerView(_props: DesignerViewProps) {
 	const tables = useTables();
 
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
+	const [data, setData] = useImmer<TableDefinition | null>(null);
 
-	const tableSchema = useMemo(() => {
-		return tables.find(table => table.schema.name === activeTable) || null;
-	}, [tables, activeTable]);
-
-	const setActiveTable = useStable((table: string) => {
-		store.dispatch(setDesignerTable(table));
-	});
-
-	const closeActiveTable = useStable(() => {
-		store.dispatch(setDesignerTable(null));
-	});
-
-	const [data, setData] = useImmer(tableSchema);
-	const isValid = data ? isSchemaValid(data) : true;
+	const isValid = useMemo(() => {
+		return data ? isSchemaValid(data) : true;
+	}, [data]);
 	
-	const handle = useSaveable({
-		valid: !!isValid,
-		track: data || {} as TableDefinition,
-		onSave(original) {
-			if (!original?.schema) {
-				showError("Save failed", "Could not determine previous state");
-				return;
+	const saveHandle = useSaveable({
+		valid: isValid,
+		track: {
+			data
+		},
+		onSave({ data: previous }) {
+			if (!previous) {
+				throw new Error("Could not determine previous state");
 			}
 
-			const query = buildDefinitionQueries(original, data!);
+			const query = buildDefinitionQueries(previous, data!);
 			const surreal = getActiveSurreal();
 
 			surreal.query(query)
@@ -58,9 +46,30 @@ export function DesignerView(props: DesignerViewProps) {
 					showError("Failed to apply schema", err.message);
 				});
 		},
-		onRevert(original) {
-			setData(original);
+		onRevert({ data }) {
+			setData(data);
 		}
+	});
+
+	const setActiveTable = useStable((table: string) => {
+		if (saveHandle.isChanged) {
+			showError("Unsaved changes", "You have unsaved changes. Please save or revert them before switching tables.");
+			return;
+		}
+
+		const schema = tables.find((t) => t.schema.name === table);
+		
+		if (!schema) {
+			throw new Error(`Could not find table ${table}`);
+		}
+
+		setData(schema);
+		saveHandle.track();
+	});
+
+	const closeTable = useStable(() => {
+		setData(null);
+		saveHandle.track();
 	});
 
 	return (
@@ -71,19 +80,19 @@ export function DesignerView(props: DesignerViewProps) {
 			onChange={setSplitValues}
 			direction="horizontal"
 			endPane={
-				tableSchema && data && (
+				data && (
 					<DesignPane
 						value={data}
 						onChange={setData as any}
-						onClose={closeActiveTable}
-						handle={handle}
+						onClose={closeTable}
+						handle={saveHandle}
 					/>
 				)
 			}
 		>
 			<TableGraphPane
 				tables={tables}
-				active={tableSchema}
+				active={data}
 				setActiveTable={setActiveTable}
 			/>
 		</Splitter>

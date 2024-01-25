@@ -25,7 +25,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 		<Button
 			rightIcon={<Icon path={mdiCheck} size="md" />}
 			loading={handle.isSaving}
-			disabled={handle.isSaveable}
+			disabled={!handle.isSaveable}
 			onClick={handle.save}
 		>
 			{saveText ?? 'Save changes'}
@@ -34,7 +34,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 
 	const revertButton = (
 		<Button
-			disabled={handle.isSaveable}
+			disabled={!handle.isSaveable}
 			onClick={handle.revert}
 			color="dark.4"
 		>
