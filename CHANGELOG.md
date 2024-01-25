@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.11.3 - Designer improvements
+- Support for SurrealDB 1.1.1
+- Designer view improvements
+	- Design panel is now collapsed by default
+	- You will be prompted when switching tables if you have unsaved changes
+	- Snapshots now include the entire graph (#167)
+	- Fixed incorrect editing behavior (#166)
+
 ## 1.11.2 - SurrealDB 1.1
 - Support for SurrealDB 1.1.0
 - Added a new import database button to the toolbar
