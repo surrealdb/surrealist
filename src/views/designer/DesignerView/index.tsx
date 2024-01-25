@@ -11,6 +11,7 @@ import { showError } from "~/util/helpers";
 import { getActiveSurreal } from "~/util/connection";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { TableDefinition } from "~/types";
+import { ReactFlowProvider } from "reactflow";
 
 const SPLIT_SIZE: SplitValues = [undefined, 450];
 
@@ -90,11 +91,13 @@ export function DesignerView(_props: DesignerViewProps) {
 				)
 			}
 		>
-			<TableGraphPane
-				tables={tables}
-				active={data}
-				setActiveTable={setActiveTable}
-			/>
+			<ReactFlowProvider>
+				<TableGraphPane
+					tables={tables}
+					active={data}
+					setActiveTable={setActiveTable}
+				/>
+			</ReactFlowProvider>
 		</Splitter>
 	);
 }
