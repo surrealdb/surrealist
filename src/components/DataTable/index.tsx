@@ -19,11 +19,12 @@ interface DataTableProps {
 	active?: string | null;
 	sorting?: ColumnSort | null;
 	openRecord?: OpenFn;
+	headers?: string[];
 	onSortingChange?: (order: ColumnSort | null) => void;
 	onRowClick?: (value: any) => void;
 }
 
-export function DataTable({ data, active, sorting, openRecord, onSortingChange, onRowClick }: DataTableProps) {
+export function DataTable({ data, active, sorting, openRecord, headers, onSortingChange, onRowClick }: DataTableProps) {
 	const theme = useMantineTheme();
 	const isLight = useIsLight();
 
@@ -42,7 +43,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 	});
 
 	const [keys, values] = useMemo(() => {
-		const keys: string[] = [];
+		const keys: string[] = headers || [];
 		const values: any[] = [];
 
 		if (isRenderable(data)) {
@@ -61,7 +62,7 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 			}
 		}
 
-		const headers = alphabetical(keys, (key) => {
+		const headerNames = alphabetical(keys, (key) => {
 			switch (key) {
 				case "id": {
 					return "00000000000";
@@ -78,38 +79,32 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 			}
 		});
 
-		return [headers, values];
-	}, [data, active]);
+		return [headerNames, values];
+	}, [data, headers, active]);
 
-	const headers = useMemo(() => {
-		const headers: any = [];
-
-		for (const key of keys) {
-			headers.push(
-				<Box key={key} component="th" bg={isLight ? "white" : "dark.7"}>
-					<Text
-						span
-						onClick={() => handleSortClick(key)}
-						style={{
-							cursor: onSortingChange ? "pointer" : undefined,
-							userSelect: "none",
-							WebkitUserSelect: "none",
-						}}>
-						{key}
-						{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? mdiChevronDown : mdiChevronUp} pos="absolute" />}
-					</Text>
-				</Box>
-			);
-		}
-
-		return headers;
+	const columnHeaders = useMemo(() => {
+		return keys.map(key => (
+			<Box key={key} component="th" bg={isLight ? "white" : "dark.7"}>
+				<Text
+					span
+					onClick={() => handleSortClick(key)}
+					style={{
+						cursor: onSortingChange ? "pointer" : undefined,
+						userSelect: "none",
+						WebkitUserSelect: "none",
+					}}>
+					{key}
+					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? mdiChevronDown : mdiChevronUp} pos="absolute" />}
+				</Text>
+			</Box>
+		));
 	}, [isLight, keys, sorting]);
 
 	const activeColor = useMemo(() => {
 		return theme.fn.rgba(theme.fn.themeColor("light.6"), isLight ? 0.15 : 0.4);
 	}, [isLight]);
 
-	const rows = useMemo(() => {
+	const recordRows = useMemo(() => {
 		return values.map((value, i) => {
 			const columns = [...keys].map((key, j) => {
 				const cellValue = value[key];
@@ -146,9 +141,9 @@ export function DataTable({ data, active, sorting, openRecord, onSortingChange, 
 			<ScrollArea className={classes.tableWrapper}>
 				<Table striped className={classes.table}>
 					<thead>
-						<tr>{headers}</tr>
+						<tr>{columnHeaders}</tr>
 					</thead>
-					<tbody>{rows}</tbody>
+					<tbody>{recordRows}</tbody>
 				</Table>
 			</ScrollArea>
 		</div>

@@ -24,6 +24,7 @@ import { getSurreal } from "~/util/connection";
 import { HistoryHandle } from "~/hooks/history";
 import { EventBus, useEventSubscription } from "~/hooks/event";
 import { useStoreState } from "~/hooks/store";
+import { useSchema } from "~/hooks/schema";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -39,7 +40,8 @@ export interface ExplorerPaneProps {
 
 export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	const isLight = useIsLight();
-	
+	const schema = useSchema();
+
 	const table = useStoreValue((state) => state.explorer.activeTable);
 	const records = useStoreValue((state) => state.explorer.records);
 	const recordCount = useStoreValue((state) => state.explorer.recordCount);
@@ -196,6 +198,14 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		store.dispatch(openEditor());
 	});
 
+	const headers = useMemo(() => {
+		if (!table) {
+			return [];
+		}
+
+		return schema?.tables?.find((t) => t.schema.name === table)?.fields?.map((f) => f.name) || [];
+	}, []);
+
 	return (
 		<Panel
 			title="Record Explorer"
@@ -261,6 +271,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 								sorting={sortMode}
 								onSortingChange={setSortMode}
 								onRowClick={openRecord}
+								headers={headers}
 							/>
 						</ScrollArea>
 					) : (
