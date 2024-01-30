@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SplitValues, Splitter } from "~/components/Splitter";
 import { DesignPane } from "../DesignPane";
 import { TableGraphPane } from "../TableGraphPane";
@@ -12,6 +12,7 @@ import { getActiveSurreal } from "~/util/connection";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { TableDefinition } from "~/types";
 import { ReactFlowProvider } from "reactflow";
+import { useIsConnected } from "~/hooks/connection";
 
 const SPLIT_SIZE: SplitValues = [undefined, 450];
 
@@ -19,6 +20,7 @@ export interface DesignerViewProps {
 }
 
 export function DesignerView(_props: DesignerViewProps) {
+	const isOnline = useIsConnected();
 	const tables = useTables();
 
 	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
@@ -72,6 +74,12 @@ export function DesignerView(_props: DesignerViewProps) {
 		setData(null);
 		saveHandle.track();
 	});
+
+	useEffect(() => {
+		if (!isOnline) {
+			closeTable();
+		}
+	}, [isOnline]);
 
 	return (
 		<Splitter
