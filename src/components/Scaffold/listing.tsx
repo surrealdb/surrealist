@@ -6,8 +6,7 @@ import { Icon } from "../Icon";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { mod, updateTitle } from "~/util/helpers";
-import { useHotkeys } from "@mantine/hooks";
+import { updateTitle } from "~/util/helpers";
 import { useNavigate } from "react-router-dom";
 
 export interface ViewListingProps {
@@ -26,18 +25,6 @@ export function ViewListing({ viewMode }: ViewListingProps) {
 		navigate(`/${id}`);
 		updateTitle();
 	});
-
-	const relativeViewMode = useStable((value: number) => {
-		const current = VIEW_MODES.findIndex((v: any) => v.id == viewMode);
-		const next = mod(current + value, VIEW_MODES.length);
-
-		setViewMode(VIEW_MODES[next].id);
-	});
-
-	useHotkeys([
-		["ctrl+arrowLeft", () => relativeViewMode(-1)],
-		["ctrl+arrowRight", () => relativeViewMode(1)],
-	], []);
 
 	return (
 		<Popover
