@@ -68,6 +68,7 @@ export function Splitter(props: SplitterProps) {
 		const { style } = containerRef.current!;
 
 		style.userSelect = "none";
+		style.webkitUserSelect = "none";
 		style.cursor = isHorizontal ? "col-resize" : "row-resize";
 
 		setDraggerId(id);
@@ -82,6 +83,7 @@ export function Splitter(props: SplitterProps) {
 		const { style } = containerRef.current!;
 
 		style.userSelect = "";
+		style.webkitUserSelect = "";
 		style.cursor = "";
 
 		setDraggerId(null);
@@ -116,7 +118,10 @@ export function Splitter(props: SplitterProps) {
 			});
 		};
 
-		const onMove = (e: MouseEvent) => onDrag(e.clientX, e.clientY);
+		const onMove = (e: MouseEvent) => {
+			onDrag(e.clientX, e.clientY);
+			blur();
+		};
 
 		if (draggerId) {
 			containerRef.current?.addEventListener("mousemove", onMove);
