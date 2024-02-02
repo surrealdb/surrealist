@@ -307,22 +307,26 @@ export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
 	const markers: editor.IMarkerData[] = [];
 
 	if (content && errorChecking) {
-		const message = validate_query(content) || "";
-		const match = message.match(ERR_REGEX);
+		try {
+			const message = validate_query(content) || "";
+			const match = message.match(ERR_REGEX);
 
-		if (match) {
-			const lineNumber = Number.parseInt(match[1]);
-			const column = Number.parseInt(match[2]);
-			const reason = match[3].trim();
+			if (match) {
+				const lineNumber = Number.parseInt(match[1]);
+				const column = Number.parseInt(match[2]);
+				const reason = match[3].trim();
 
-			markers.push({
-				startLineNumber: lineNumber,
-				startColumn: column,
-				endLineNumber: lineNumber,
-				endColumn: column,
-				message: reason,
-				severity: monaco.MarkerSeverity.Error,
-			});
+				markers.push({
+					startLineNumber: lineNumber,
+					startColumn: column,
+					endLineNumber: lineNumber,
+					endColumn: column,
+					message: reason,
+					severity: monaco.MarkerSeverity.Error,
+				});
+			}
+		} catch(err) {
+			console.error("Failed to validate query", err);
 		}
 	}
 
