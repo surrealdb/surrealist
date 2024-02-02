@@ -24,17 +24,34 @@ import { executeQuery } from "~/database";
 import { AddressBar } from "./address";
 import { ViewListing } from "./listing";
 import { openTabCreator } from "~/stores/interface";
-import { Outlet, useLocation } from "react-router-dom";
+import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
+import { QueryView } from "~/views/query/QueryView";
 import { ViewMode } from "~/types";
-import { useEffect } from "react";
-import { setActiveURL } from "~/stores/config";
+import { ExplorerView } from "~/views/explorer/ExplorerView";
+import { DesignerView } from "~/views/designer/DesignerView";
+import { AuthenticationView } from "~/views/authentication/AuthenticationView";
+import { LiveView } from "~/views/live/LiveView";
+
+const PORTAL_ATTRS = {
+	attributes: {
+		style: "height: 100%"
+	}
+};
+
+const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
+	query: createHtmlPortalNode(PORTAL_ATTRS),
+	explorer: createHtmlPortalNode(PORTAL_ATTRS),
+	designer: createHtmlPortalNode(PORTAL_ATTRS),
+	authentication: createHtmlPortalNode(PORTAL_ATTRS),
+	live: createHtmlPortalNode(PORTAL_ATTRS),
+};
 
 export function Scaffold() {
 	const activeSession = useStoreValue((state) => state.config.activeTab);
 	const enableConsole = useStoreValue((state) => state.config.enableConsole);
+	const activeView = useStoreValue((state) => state.config.activeView);
 
-	const { pathname } = useLocation();
-	const activeView = pathname.split("/")[1] as ViewMode;
+	const viewNode = VIEW_PORTALS[activeView];
 
 	const showTabCreator = useStable((envId?: string) => {
 		store.dispatch(openTabCreator({
@@ -51,10 +68,6 @@ export function Scaffold() {
 			loader: true
 		});
 	});
-
-	useEffect(() => {
-		store.dispatch(setActiveURL(pathname));
-	}, [pathname]);
 	
 	useHotkeys([
 		["F9", () => userExecuteQuery()],
@@ -63,6 +76,7 @@ export function Scaffold() {
 
 	return (
 		<div className={classes.root}>
+
 			<Toolbar
 				viewMode={activeView}
 				onCreateTab={showTabCreator}
@@ -88,9 +102,29 @@ export function Scaffold() {
 							direction="vertical"
 							endPane={adapter.isServeSupported && enableConsole && <ConsolePane />}
 						>
-							<Outlet />
+							{viewNode && <OutPortal node={viewNode} />}
 						</Splitter>
 					</Box>
+
+					<InPortal node={VIEW_PORTALS.query}>
+						<QueryView />
+					</InPortal>
+
+					<InPortal node={VIEW_PORTALS.explorer}>
+						<ExplorerView />
+					</InPortal>
+
+					<InPortal node={VIEW_PORTALS.designer}>
+						<DesignerView />
+					</InPortal>
+
+					<InPortal node={VIEW_PORTALS.authentication}>
+						<AuthenticationView />
+					</InPortal>
+
+					<InPortal node={VIEW_PORTALS.live}>
+						<LiveView />
+					</InPortal>
 				</>
 			) : (
 				<Center h="100%">

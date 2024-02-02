@@ -16,7 +16,6 @@ import { registerConfigSaver } from "./util/saver";
 import { initialize } from "./stores/config";
 
 import "reactflow/dist/style.css";
-import { createViewRouter } from "./routing";
 
 (async () => {	
 	dayjs.extend(relativeTime);
@@ -53,11 +52,10 @@ import { createViewRouter } from "./routing";
 
 	// Render the app component
 	const root = document.querySelector("#root")!;
-	const router = createViewRouter();
 
 	createRoot(root).render(
 		<Provider store={store}>
-			<App router={router} />
+			<App />
 		</Provider>
 	);
 })();

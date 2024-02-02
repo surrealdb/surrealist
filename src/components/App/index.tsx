@@ -17,13 +17,9 @@ import { adapter } from "~/adapter";
 import { updateTitle } from "~/util/helpers";
 import { hideAvailableUpdate } from "~/stores/interface";
 import { decreaseFontZoomLevel, increaseFontZoomLevel, resetFontZoomLevel, toggleWindowPinned } from "~/stores/config";
-import { RouterProvider } from "react-router-dom";
+import { Scaffold } from "../Scaffold";
 
-export interface AppProps {
-	router: any;
-}
-
-export function App({ router }: AppProps) {
+export function App() {
 	const isLight = useIsLight();
 	const update = useStoreValue((state) => state.interface.availableUpdate);
 	const showUpdate = useStoreValue((state) => state.interface.showAvailableUpdate);
@@ -79,7 +75,7 @@ export function App({ router }: AppProps) {
 		<MantineProvider withGlobalStyles withNormalizeCSS withCSSVariables theme={mantineTheme}>
 			<Notifications />
 
-			<RouterProvider router={router} />
+			<Scaffold />
 
 			<Transition mounted={showUpdate} duration={250} transition="slide-up" timingFunction="ease">
 				{(styles) => (

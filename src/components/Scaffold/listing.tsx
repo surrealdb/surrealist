@@ -7,7 +7,8 @@ import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { updateTitle } from "~/util/helpers";
-import { useNavigate } from "react-router-dom";
+import { store } from "~/store";
+import { setActiveView } from "~/stores/config";
 
 export interface ViewListingProps {
 	viewMode: ViewMode;
@@ -15,15 +16,15 @@ export interface ViewListingProps {
 
 export function ViewListing({ viewMode }: ViewListingProps) {
 	const isLight = useIsLight();
-	const navigate = useNavigate();
 	const [isViewListing, setIsViewListing] = useState(false);
 	
 	const viewInfo = VIEW_MODES.find((v) => v.id == viewMode)!;
 
 	const setViewMode = useStable((id: ViewMode) => {
 		setIsViewListing(false);
-		navigate(`/${id}`);
 		updateTitle();
+
+		store.dispatch(setActiveView(id));
 	});
 
 	return (

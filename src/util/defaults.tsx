@@ -6,7 +6,7 @@ export function createBaseConfig(): SurrealistConfig {
 		theme: "automatic",
 		tabs: [],
 		environments: [createBaseEnvironment()],
-		activeUrl: '/',
+		activeView: 'query',
 		isPinned: false,
 		activeTab: null,
 		autoConnect: true,
