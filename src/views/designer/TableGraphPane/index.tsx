@@ -12,7 +12,7 @@ import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveSession } from "~/hooks/environment";
-import { store } from "~/store";
+import { store, useStoreValue } from "~/store";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
 import { useDesignerConfig } from "./hooks";
 import { TableGrid } from "./grid";
@@ -44,6 +44,7 @@ export interface TableGraphPaneProps {
 
 export function TableGraphPane(props: TableGraphPaneProps) {
 	const theme = useMantineTheme();
+	const activeView = useStoreValue((state) => state.config.activeView);
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [expanded, toggleExpanded] = useToggleList();
@@ -268,35 +269,37 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					overlayColor={isLight ? theme.white : theme.colors.dark[7]}
 					loaderProps={{ size: 50 }}
 				/>
-				
-				{layoutMode == 'diagram' ? (
-					<ReactFlow
-						ref={ref}
-						nodeTypes={NODE_TYPES}
-						nodes={nodes}
-						edges={edges}
-						nodesDraggable={false}
-						nodesConnectable={false}
-						edgesFocusable={false}
-						proOptions={{ hideAttribution: true }}
-						onNodesChange={onNodesChange}
-						onEdgesChange={onEdgesChange}
-						onNodeClick={(_ev, node) => {
-							props.setActiveTable(node.id);
-						}}
-					/>
-				) : (
-					<TableGrid
-						ref={ref}
-						tables={props.tables}
-						active={props.active}
-						nodeMode={nodeMode}
-						expanded={expanded}
-						onExpand={toggleExpanded}
-						onSelectTable={(table) => {
-							props.setActiveTable(table.schema.name);
-						}}
-					/>
+
+				{activeView === "designer" && (
+					layoutMode === 'diagram' ? (
+						<ReactFlow
+							ref={ref}
+							nodeTypes={NODE_TYPES}
+							nodes={nodes}
+							edges={edges}
+							nodesDraggable={false}
+							nodesConnectable={false}
+							edgesFocusable={false}
+							proOptions={{ hideAttribution: true }}
+							onNodesChange={onNodesChange}
+							onEdgesChange={onEdgesChange}
+							onNodeClick={(_ev, node) => {
+								props.setActiveTable(node.id);
+							}}
+						/>
+					) : (
+						<TableGrid
+							ref={ref}
+							tables={props.tables}
+							active={props.active}
+							nodeMode={nodeMode}
+							expanded={expanded}
+							onExpand={toggleExpanded}
+							onSelectTable={(table) => {
+								props.setActiveTable(table.schema.name);
+							}}
+						/>
+					)
 				)}
 			</div>
 
