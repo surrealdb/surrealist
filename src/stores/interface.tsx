@@ -18,9 +18,11 @@ export type InterfaceStore = {
 	closeTabCreator: () => void;
 	openTabEditor: (editingId: string) => void;
 	closeTabEditor: () => void;
+
+	softReset: () => void;
 };
 
-export const useInterfaceStore = create<InterfaceStore>((set) => ({
+const defaults = {
 	nativeTheme: "light",
 	availableUpdate: "",
 	showAvailableUpdate: false,
@@ -28,6 +30,10 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	tabCreation: null,
 	showTabEditor: false,
 	editingId: "",
+} satisfies Partial<InterfaceStore>;
+
+export const useInterfaceStore = create<InterfaceStore>((set) => ({
+	...defaults,
 
 	setNativeTheme: (nativeTheme) => set(() => ({ nativeTheme })),
 	setAvailableUpdate: (availableUpdate) => set(() => ({
@@ -56,4 +62,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	closeTabEditor: () => set(() => ({
 		showTabEditor: false,
 	})),
+
+
+	softReset: () => set(() => defaults),
 }));

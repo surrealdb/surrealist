@@ -46,9 +46,10 @@ export type ExplorerStore = {
 	updatePageSize: (pageSize: string) => void;
 	updateSortMode: (sortMode: ColumnSort | null) => void;
 	updatePage: (page: number) => void;
+	softReset: () => void;
 };
 
-export const useExplorerStore = create<ExplorerStore>((set) => ({
+const defaults = {
 	activeTable: null,
 	records: [],
 	recordCount: 0,
@@ -66,6 +67,10 @@ export const useExplorerStore = create<ExplorerStore>((set) => ({
 	pageSize: '25',
 	sortMode: null,
 	page: 1,
+} satisfies Partial<ExplorerStore>;
+
+export const useExplorerStore = create<ExplorerStore>((set) => ({
+	...defaults,
 
 	setExplorerTable: (activeTable) => set(() => ({
 		activeTable,
@@ -113,4 +118,6 @@ export const useExplorerStore = create<ExplorerStore>((set) => ({
 	updatePageSize: (pageSize) => set(() => ({ pageSize })),
 	updateSortMode: (sortMode) => set(() => ({ sortMode })),
 	updatePage: (page) => set(() => ({ page })),
+
+	softReset: () => set(() => defaults)
 }));

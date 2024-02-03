@@ -43,6 +43,7 @@
 		"radash": "^11.0.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"react-error-boundary": "^4.0.12",
 		"react-reverse-portal": "^2.1.1",
 		"reactflow": "^11.8.1",
 		"remove": "^0.1.5",

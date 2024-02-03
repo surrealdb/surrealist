@@ -114,6 +114,7 @@ export type ConfigStore = {
 	setDesignerLayoutMode: (defaultDesignerLayoutMode: DesignerLayoutMode) => void;
 	setDesignerNodeMode: (defaultDesignerNodeMode: DesignerNodeMode) => void;
 	toggleTablePin: (pin: TablePinAction) => void;
+	softReset: () => void;
 }
 
 export const useConfigStore = create<ConfigStore>()(persist(
@@ -286,10 +287,13 @@ export const useConfigStore = create<ConfigStore>()(persist(
 					: tab
 			)
 		})),
+
+		softReset: () => set(() => ({
+			activeView: "query",
+		}))
 	}), 
 	{
 		name: 'surrealist-config',
 		storage: createJSONStorage(() => adapterStorage),
-		// partialize: (state) => ({ fontZoomLevel: state.fontZoomLevel }),
 	}
 ));

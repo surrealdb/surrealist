@@ -22,9 +22,10 @@ export type DatabaseStore = {
 	setDatabaseSchema: (databaseSchema: DatabaseSchema) => void
 	setIsConnecting: (isConnecting: boolean) => void
 	setIsConnected: (isConnected: boolean) => void
+	softReset: () => void;
 };
 
-export const useDatabaseStore = create<DatabaseStore>((set) => ({
+const defaults = {
 	isServing: false,
 	servePending: false,
 	isConnecting: false,
@@ -32,6 +33,10 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	isQueryActive: false,
 	consoleOutput: [],
 	databaseSchema: null,
+} satisfies Partial<DatabaseStore>;
+
+export const useDatabaseStore = create<DatabaseStore>((set) => ({
+	...defaults,
 
 	setQueryActive: (isQueryActive) => set(() => ({
 		isQueryActive
@@ -84,4 +89,6 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 		isConnected,
 		databaseSchema: isConnected ? state.databaseSchema : null,
 	})),
+
+	softReset: () => set(() => defaults)
 }));
