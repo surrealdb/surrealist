@@ -6,10 +6,9 @@ import { useStable } from "~/hooks/stable";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { store, useStoreValue } from "~/store";
-import { closeEditor, setCreatorBody, setCreatorId } from "~/stores/explorer";
 import { getSurreal } from "~/util/connection";
 import { EventBus } from "~/hooks/event";
+import { useExplorerStore } from "~/stores/explorer";
 
 export interface CreatorPaneProps {
 	refreshEvent: EventBus;
@@ -17,8 +16,11 @@ export interface CreatorPaneProps {
 
 export function CreatorPane({ refreshEvent }: CreatorPaneProps) {
 	const isLight = useIsLight();
-	const creatorId = useStoreValue(state => state.explorer.creatorId);
-	const creatorBody = useStoreValue(state => state.explorer.creatorBody);
+	const creatorId = useExplorerStore((s) => s.creatorId);
+	const creatorBody = useExplorerStore((s) => s.creatorBody);
+	const closeEditor = useExplorerStore((s) => s.closeEditor);
+	const setCreatorId = useExplorerStore((s) => s.setCreatorId);
+	const setCreatorBody = useExplorerStore((s) => s.setCreatorBody);
 
 	const handleSubmit = useStable(async () => {
 		const surreal = getSurreal();
@@ -29,25 +31,21 @@ export function CreatorPane({ refreshEvent }: CreatorPaneProps) {
 
 		await surreal.query(`CREATE ${creatorId} CONTENT ${creatorBody}`);
 
-		store.dispatch(closeEditor());
+		closeEditor();
 		refreshEvent.dispatch();
 	});
 
-	const handleCreatorId = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setCreatorId(e.target.value));
-	});
+	const handleCreatorId = useStable((e: ChangeEvent<HTMLInputElement>) => setCreatorId(e.target.value));
 	
 	const handleCreatorBody = useStable((content: string | undefined) => {
 		if (creatorBody === content) {
 			return;
 		}
 
-		store.dispatch(setCreatorBody(content || ""));
+		setCreatorBody(content || "");
 	});
 
-	const handleClose = useStable(() => {
-		store.dispatch(closeEditor());
-	});
+	const handleClose = useStable(closeEditor);
 
 	const isBodyValid = useMemo(() => {
 		try {

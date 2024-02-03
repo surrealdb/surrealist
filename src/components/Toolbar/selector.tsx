@@ -17,7 +17,6 @@ import {
 import { Icon } from "../Icon";
 import { SurrealistSession } from "~/types";
 import { Text } from "@mantine/core";
-import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { updateTitle, applyOrder } from "~/util/helpers";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
@@ -25,8 +24,8 @@ import { useHotkeys, useInputState } from "@mantine/hooks";
 import { Environments } from "./environments";
 import { SyntheticEvent } from "react";
 import { Sortable } from "../Sortable";
-import { setActiveSession, updateSession, removeSession, setSessions } from "~/stores/config";
-import { openTabEditor, openTabCreator } from "~/stores/interface";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 
 export interface SelectorProps {
 	active: string | null;
@@ -35,6 +34,14 @@ export interface SelectorProps {
 }
 
 export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
+	const setActiveSession = useConfigStore((s) => s.setActiveSession);
+	const updateSession = useConfigStore((s) => s.updateSession);
+	const removeSession = useConfigStore((s) => s.removeSession);
+	const setSessions = useConfigStore((s) => s.setSessions);
+
+	const openTabEditor = useInterfaceStore((s) => s.openTabEditor);
+	const openTabCreator = useInterfaceStore((s) => s.openTabCreator);
+
 	const [opened, setOpened] = useState(false);
 	const [manageEnvs, setManageEnvs] = useState(false);
 	const [viewingEnv, setViewingEnv] = useState("");
@@ -42,9 +49,9 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 	const [tabName, setTabName] = useInputState("");
 	const [search, setSearch] = useInputState("");
 
-	const sessions = useStoreValue((state) => state.config.tabs);
-	const environments = useStoreValue((state) => state.config.environments);
-	const tabSearch = useStoreValue((state) => state.config.tabSearch);
+	const sessions = useConfigStore((s) => s.tabs);
+	const environments = useConfigStore((s) => s.environments);
+	const tabSearch = useConfigStore((s) => s.tabSearch);
 
 	const session = sessions.find((session) => session.id === active);
 	const environment = session && environments.find((env) => env.id === session.environment);
@@ -64,7 +71,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 			return;
 		}
 
-		store.dispatch(setActiveSession(id));
+		setActiveSession(id);
 
 		updateTitle();
 		setOpened(false);
@@ -101,7 +108,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 		setOpened(false);
 
-		store.dispatch(openTabEditor(id));
+		openTabEditor(id);
 	});
 
 	const handlePin = useStable((e: MouseEvent, id: string) => {
@@ -109,10 +116,10 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 		const pinned = sessions.find((session) => session.id === id)?.pinned ?? false;
 
-		store.dispatch(updateSession({
+		updateSession({
 			id: id,
 			pinned: !pinned,
-		}));
+		});
 	});
 
 	const handleDuplicate = useStable((e: MouseEvent, id: string) => {
@@ -122,16 +129,15 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 		const details = sessions.find((session) => session.id === id)?.connection || {};
 
-		store.dispatch(openTabCreator({
+		openTabCreator({
 			environment: viewingEnv,
 			connection: details,
-		}));
+		});
 	});
 
 	const handleDelete = useStable((e: MouseEvent, id: string) => {
 		e.stopPropagation();
-
-		store.dispatch(removeSession(id));
+		removeSession(id);
 	});
 
 	const saveRename = useStable((e: SyntheticEvent) => {
@@ -145,10 +151,10 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 			return;
 		}
 
-		store.dispatch(updateSession({
+		updateSession({
 			...info,
 			name: tabName,
-		}));
+		});
 
 		setRenamingSession("");
 		setTabName("");
@@ -166,7 +172,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 	});
 
 	const saveTabOrder = useStable((order: SurrealistSession[]) => {
-		store.dispatch(setSessions(applyOrder(sessions, order)));
+		setSessions(applyOrder(sessions, order));
 	});
 
 	useEffect(() => {

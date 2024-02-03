@@ -1,8 +1,8 @@
-import { useStoreValue } from "~/store";
+import { useDatabaseStore } from "~/stores/database";
 
 /**
  * Returns whether Surrealist is connected to a database
  */
 export function useIsConnected() {
-	return useStoreValue((state) => state.database.isConnected);
+	return useDatabaseStore((s) => s.isConnected);
 }

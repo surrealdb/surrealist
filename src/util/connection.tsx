@@ -1,12 +1,12 @@
 import { mapKeys, snake } from 'radash';
 import { open_connection, close_connection, query_version, execute_remote_query, execute_local_query } from '../generated/surrealist-embed';
 import { ConnectionOptions, SurrealOptions } from '~/types';
-import { store } from '~/store';
 import compare from 'semver-compare';
 import { showNotification } from '@mantine/notifications';
 import { Stack, Text } from '@mantine/core';
 import { Icon } from '~/components/Icon';
 import { mdiAlert } from '@mdi/js';
+import { useConfigStore } from '~/stores/config';
 
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 
@@ -43,7 +43,7 @@ async function scheduleTimeout(seconds: number) {
 
 // Execute a query with timeout
 async function execute(query: string, params: any, connection: ConnectionOptions) {
-	const { queryTimeout } = store.getState().config;
+	const { queryTimeout } = useConfigStore.getState();
 
 	try {
 		const result = await Promise.race([

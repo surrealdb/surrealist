@@ -1,10 +1,9 @@
 import { Stack, Switch, Select, ColorScheme } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
-import { store } from "~/store";
-import { DesignerLayoutMode, DesignerNodeMode, SurrealistConfig } from "~/types";
+import { DesignerLayoutMode, DesignerNodeMode } from "~/types";
 import { Setting } from "../setting";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
-import { setColorScheme, setWordWrap, setSessionSearch, setDesignerLayoutMode, setDesignerNodeMode } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 
 const THEMES = [
 	{ label: "Automatic", value: "automatic" },
@@ -12,52 +11,59 @@ const THEMES = [
 	{ label: "Dark", value: "dark" },
 ];
 
-export interface AppearanceTabProps {
-	config: SurrealistConfig;
-}
+export function AppearanceTab() {
+	const setColorScheme = useConfigStore((s) => s.setColorScheme);
+	const setWordWrap = useConfigStore((s) => s.setWordWrap);
+	const setSessionSearch = useConfigStore((s) => s.setSessionSearch);
+	const setDesignerLayoutMode = useConfigStore((s) => s.setDesignerLayoutMode);
+	const setDesignerNodeMode = useConfigStore((s) => s.setDesignerNodeMode);
 
-export function AppearanceTab({ config }: AppearanceTabProps) {
+	const theme = useConfigStore((s) => s.theme);
+	const wordWrap = useConfigStore((s) => s.wordWrap);
+	const tabSearch = useConfigStore((s) => s.tabSearch);
+	const defaultDesignerLayoutMode = useConfigStore((s) => s.defaultDesignerLayoutMode);
+	const defaultDesignerNodeMode = useConfigStore((s) => s.defaultDesignerNodeMode);
 
 	const updateColorScheme = useStable((scheme: ColorScheme) => {
-		store.dispatch(setColorScheme(scheme));
+		setColorScheme(scheme);
 	});
 	
 	const updateWordWrap = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setWordWrap(e.target.checked));
+		setWordWrap(e.target.checked);
 	});
 
 	const updateTabSearch = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setSessionSearch(e.target.checked));
+		setSessionSearch(e.target.checked);
 	});
 
 	const updateLayoutMode = useStable((mode: DesignerLayoutMode) => {
-		store.dispatch(setDesignerLayoutMode(mode));
+		setDesignerLayoutMode(mode);
 	});
 
 	const updateNodeMode = useStable((mode: DesignerNodeMode) => {
-		store.dispatch(setDesignerNodeMode(mode));
+		setDesignerNodeMode(mode);
 	});
 
 	return (
 		<Stack spacing="xs">
 			<Setting label="Wrap query results">
-				<Switch checked={config.wordWrap} onChange={updateWordWrap} />
+				<Switch checked={wordWrap} onChange={updateWordWrap} />
 			</Setting>
 
 			<Setting label="Display session list search">
-				<Switch checked={config.tabSearch} onChange={updateTabSearch} />
+				<Switch checked={tabSearch} onChange={updateTabSearch} />
 			</Setting>
 
 			<Setting label="Interface theme">
-				<Select data={THEMES} value={config.theme} onChange={updateColorScheme} />
+				<Select data={THEMES} value={theme} onChange={updateColorScheme} />
 			</Setting>
 
 			<Setting label="Default designer layout">
-				<Select data={DESIGNER_LAYOUT_MODES} value={config.defaultDesignerLayoutMode} onChange={updateLayoutMode} />
+				<Select data={DESIGNER_LAYOUT_MODES} value={defaultDesignerLayoutMode} onChange={updateLayoutMode} />
 			</Setting>
 
 			<Setting label="Default designer node appearance">
-				<Select data={DESIGNER_NODE_MODES} value={config.defaultDesignerNodeMode} onChange={updateNodeMode} />
+				<Select data={DESIGNER_NODE_MODES} value={defaultDesignerNodeMode} onChange={updateNodeMode} />
 			</Setting>
 		</Stack>
 	);

@@ -1,13 +1,12 @@
 import { showNotification } from "@mantine/notifications";
-import { store } from "./store";
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/connection";
 import { showError } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
 import { Text } from "@mantine/core";
 import { getActiveEnvironment, getActiveSession, isConnectionValid, mergeConnections } from "./util/environments";
 import { uid } from "radash";
-import { setIsConnected, setIsConnecting, setQueryActive } from "./stores/database";
-import { addHistoryEntry, updateSession } from "./stores/config";
+import { useDatabaseStore } from "./stores/database";
+import { useConfigStore } from "./stores/config";
 
 /**
  * Open a new connection to the database
@@ -16,6 +15,8 @@ import { addHistoryEntry, updateSession } from "./stores/config";
  * @param isSilent Whether to hide error notifications
  */
 export function openConnection(isSilent?: boolean) {
+	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
+
 	const sessionInfo = getActiveSession();
 	const envInfo = getActiveEnvironment();
 
@@ -44,20 +45,20 @@ export function openConnection(isSilent?: boolean) {
 	closeConnection();
 
 	try {
-		store.dispatch(setIsConnecting(true));
-		store.dispatch(setIsConnected(false));
+		setIsConnecting(true);
+		setIsConnected(false);
 
 		openSurrealConnection({
 			connection,
 			onConnect() {
-				store.dispatch(setIsConnecting(false));
-				store.dispatch(setIsConnected(true));
+				setIsConnecting(false);
+				setIsConnected(true);
 
 				fetchDatabaseSchema();
 			},
 			onDisconnect(code, reason) {
-				store.dispatch(setIsConnecting(false));
-				store.dispatch(setIsConnected(false));
+				setIsConnecting(false);
+				setIsConnected(false);
 
 				if (code != 1000 && !isSilent) {
 					const subtitle = code === 1006 ? "Unexpected connection close" : reason || `Unknown reason`;
@@ -95,11 +96,13 @@ export interface QueryOptions {
  * @param options Query options
  */
 export async function executeQuery(options?: QueryOptions) {
+	const { setQueryActive } = useDatabaseStore.getState();
+	const { addHistoryEntry, updateSession } = useConfigStore.getState();
 	const sessionInfo = getActiveSession();
 	const isRemote = sessionInfo?.connection?.method === "remote";
 
 	if (!sessionInfo || isRemote) {
-		const { isConnected } = store.getState().database;
+		const { isConnected } = useDatabaseStore.getState();
 		
 		if (!isConnected || !sessionInfo) {
 			showNotification({
@@ -119,17 +122,17 @@ export async function executeQuery(options?: QueryOptions) {
 
 	try {
 		if (options?.loader) {
-			store.dispatch(setQueryActive(true));
+			setQueryActive(true);
 		}
 
 		const response = await getSurreal()?.query(queryStr, variableJson);
 
-		store.dispatch(updateSession({
+		updateSession({
 			id: tabId,
 			lastResponse: response,
-		}));
+		});
 	} catch (err: any) {
-		store.dispatch(updateSession({
+		updateSession({
 			id: tabId,
 			lastResponse: [
 				{
@@ -137,27 +140,28 @@ export async function executeQuery(options?: QueryOptions) {
 					detail: err.message,
 				},
 			],
-		}));
+		});
 	} finally {
 		if (options?.loader) {
-			store.dispatch(setQueryActive(false));
+			setQueryActive(false);
 		}
 	}
 
-	store.dispatch(addHistoryEntry({
+	addHistoryEntry({
 		id: uid(5),
 		query: queryStr,
 		tabName: name,
 		timestamp: Date.now(),
-	}));
+	});
 }
 
 /**
  * Terminate the active connection
  */
 export function closeConnection() {
+	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
+
 	closeSurrealConnection();
-	
-	store.dispatch(setIsConnecting(false));
-	store.dispatch(setIsConnected(false));
+	setIsConnecting(false);
+	setIsConnected(false);
 }

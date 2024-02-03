@@ -3,20 +3,17 @@ import { Panel } from "~/components/Panel";
 import { mdiClose, mdiConsole, mdiDelete } from "@mdi/js";
 import { ActionIcon, Center, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { store, useStoreValue } from "~/store";
 import AnsiToHtml from "ansi-to-html";
 import { useStable } from "~/hooks/stable";
-import { clearConsole } from "~/stores/database";
-import { setConsoleEnabled } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { useConfigStore } from "~/stores/config";
 
 function ConsoleActions() {
-	const emptyConsole = useStable(() => {
-		store.dispatch(clearConsole());
-	});
+	const clearConsole = useDatabaseStore((s) => s.clearConsole);
+	const setConsoleEnabled = useConfigStore((s) => s.setConsoleEnabled);
+	const emptyConsole = useStable(clearConsole);
 
-	const hideConsole = useStable(() => {
-		store.dispatch(setConsoleEnabled(false));
-	});
+	const hideConsole = useStable(() => setConsoleEnabled(false));
 
 	return (
 		<Group align="center">
@@ -42,7 +39,7 @@ function ConsoleOutputEntry({ index, message, formatter }: { index: number; mess
 }
 
 export function ConsolePane() {
-	const messages = useStoreValue((state) => state.database.consoleOutput);
+	const messages = useDatabaseStore((s) => s.consoleOutput);
 	const scroller = useRef<HTMLDivElement>(null);
 	const theme = useMantineTheme();
 

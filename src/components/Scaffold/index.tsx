@@ -11,7 +11,6 @@ import {
 	Title,
 } from "@mantine/core";
 
-import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
 import { Splitter } from "../Splitter";
@@ -23,7 +22,6 @@ import { TabEditor } from "./editor";
 import { executeQuery } from "~/database";
 import { AddressBar } from "./address";
 import { ViewListing } from "./listing";
-import { openTabCreator } from "~/stores/interface";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
 import { QueryView } from "~/views/query/QueryView";
 import { ViewMode } from "~/types";
@@ -31,6 +29,8 @@ import { ExplorerView } from "~/views/explorer/ExplorerView";
 import { DesignerView } from "~/views/designer/DesignerView";
 import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { LiveView } from "~/views/live/LiveView";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -47,17 +47,16 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 };
 
 export function Scaffold() {
-	const activeSession = useStoreValue((state) => state.config.activeTab);
-	const enableConsole = useStoreValue((state) => state.config.enableConsole);
-	const activeView = useStoreValue((state) => state.config.activeView);
+	const activeSession = useConfigStore((s) => s.activeTab);
+	const enableConsole = useConfigStore((s) => s.enableConsole);
+	const activeView = useConfigStore((s) => s.activeView);
+	const openTabCreator = useInterfaceStore((s) => s.openTabCreator);
 
 	const viewNode = VIEW_PORTALS[activeView];
 
-	const showTabCreator = useStable((envId?: string) => {
-		store.dispatch(openTabCreator({
-			environment: envId,
-		}));
-	});
+	const showTabCreator = useStable((envId?: string) => openTabCreator({
+		environment: envId,
+	}));
 
 	const createNewTab = useStable(() => {
 		showTabCreator();

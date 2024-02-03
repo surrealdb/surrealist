@@ -1,12 +1,12 @@
-import { useStoreValue } from "~/store";
+import { useConfigStore } from "~/stores/config";
 import { mergeConnections } from "~/util/environments";
 
 /**
  * Returns the active tab, or undefined
  */
 export function useSession() {
-	const activeSession = useStoreValue((state) => state.config.activeTab);
-	const knownTabs = useStoreValue((state) => state.config.tabs);
+	const activeSession = useConfigStore((s) => s.activeTab);
+	const knownTabs = useConfigStore((s) => s.tabs);
 
 	return knownTabs.find((tab) => tab.id === activeSession);
 }
@@ -28,7 +28,7 @@ export function useActiveSession() {
  * Returns the active environment, or undefined
  */
 export function useEnvironment() {
-	const environments = useStoreValue((state) => state.config.environments);
+	const environments = useConfigStore((s) => s.environments);
 	const activeSession = useActiveSession();
 
 	return environments.find((e) => e.id === activeSession?.environment);
@@ -62,14 +62,14 @@ export function useActiveQuery() {
  * Return a list of all tabs
  */
 export function useTabsList() {
-	return useStoreValue((state) => state.config.tabs);
+	return useConfigStore((s) => s.tabs);
 }
 
 /**
  * Return a list of all environments
  */
 export function useEnvironmentList() {
-	return useStoreValue((state) => state.config.environments);
+	return useConfigStore((s) => s.environments);
 }
 
 /**

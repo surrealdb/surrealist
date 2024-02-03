@@ -6,12 +6,11 @@ import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
 import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { store } from "~/store";
 import { OpenedFile, SurrealistAdapter } from "./base";
 import { printLog } from "~/util/helpers";
 import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { Result } from "~/typings/utilities";
-import { confirmServing, pushConsoleLine, stopServing } from "~/stores/database";
+import { useDatabaseStore } from "~/stores/database";
 
 const WAIT_DURATION = 1000;
 
@@ -142,7 +141,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			printLog("Runner", "#f2415f", "Received database start signal");
 
 			this.#startTask = setTimeout(() => {
-				store.dispatch(confirmServing());
+				useDatabaseStore.getState().confirmServing();
 
 				showNotification({
 					autoClose: 1500,
@@ -164,7 +163,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				clearTimeout(this.#startTask);
 			}
 
-			store.dispatch(stopServing());
+			useDatabaseStore.getState().stopServing();
 
 			showNotification({
 				autoClose: 1500,
@@ -179,7 +178,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 
 		listen("database:output", (event) => {
-			store.dispatch(pushConsoleLine(event.payload as string));
+			useDatabaseStore.getState().pushConsoleLine(event.payload as string);
 		});
 
 		listen("database:error", (event) => {
@@ -191,7 +190,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				clearTimeout(this.#startTask);
 			}
 
-			store.dispatch(stopServing());
+			useDatabaseStore.getState().stopServing();
 
 			showNotification({
 				color: "red.6",

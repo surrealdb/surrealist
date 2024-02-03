@@ -1,11 +1,10 @@
 import { extract_event_definition, extract_field_definition, extract_index_definition, extract_scope_definition, extract_table_definition, extract_user_definition } from '../generated/surrealist-embed';
 import { map } from "radash";
-import { store } from "~/store";
 import { IndexKind, ScopeDefinition, TableDefinition, TableEvent, TableField, TableIndex, TableSchema, UserDefinition } from "~/types";
 import { SurrealInfoDB, SurrealInfoKV, SurrealInfoNS, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./connection";
 import { extractTypeList } from './helpers';
-import { setDatabaseSchema } from '~/stores/database';
+import { useDatabaseStore } from '~/stores/database';
 
 /**
  * Fetch information about a table schema
@@ -15,7 +14,7 @@ import { setDatabaseSchema } from '~/stores/database';
  */
 export async function fetchDatabaseSchema() {
 	const surreal = getActiveSurreal();
-
+	const { setDatabaseSchema } = useDatabaseStore.getState();
 	const [kvInfo, nsInfo, dbInfo] = await Promise.all([
 		surreal.querySingle<SurrealInfoKV | null>("INFO FOR KV"),
 		surreal.querySingle<SurrealInfoNS | null>("INFO FOR NS"),
@@ -108,13 +107,13 @@ export async function fetchDatabaseSchema() {
 		});
 	}
 
-	store.dispatch(setDatabaseSchema({
+	setDatabaseSchema({
 		tables,
 		scopes,
 		kvUsers,
 		nsUsers,
 		dbUsers,
-	}));
+	});
 }
 
 /**

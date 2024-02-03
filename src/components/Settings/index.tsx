@@ -1,7 +1,6 @@
 import { mdiCog } from "@mdi/js";
 import { useState } from "react";
 import { Button, Modal, Paper, Stack, Tabs, Text } from "@mantine/core";
-import { useStoreValue } from "~/store";
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
 import { GeneralTab } from "./tabs/Behavior";
@@ -11,10 +10,11 @@ import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { ModalTitle } from "../ModalTitle";
 import { AppearanceTab } from "./tabs/Appearance";
+import { useConfigStore } from "~/stores/config";
 
 export function Settings() {
 	const isLight = useIsLight();
-	const config = useStoreValue((state) => state.config);
+	const config = useConfigStore();
 	const [showSettings, setShowSettings] = useState(false);
 
 	const openSettings = useStable(() => {
@@ -77,19 +77,19 @@ export function Settings() {
 					</Tabs.List>
 
 					<Tabs.Panel value="general" pt="xs">
-						<GeneralTab config={config} onClose={closeSettings} />
+						<GeneralTab onClose={closeSettings} />
 					</Tabs.Panel>
 
 					<Tabs.Panel value="appearance" pt="xs">
-						<AppearanceTab config={config} />
+						<AppearanceTab />
 					</Tabs.Panel>
 
 					<Tabs.Panel value="connection" pt="xs">
-						<ConnectionTab config={config} />
+						<ConnectionTab />
 					</Tabs.Panel>
 
 					<Tabs.Panel value="database" pt="xs">
-						<LocalDatabaseTab config={config} />
+						<LocalDatabaseTab />
 					</Tabs.Panel>
 				</Tabs>
 			</Modal>

@@ -4,16 +4,17 @@ import { mdiClose, mdiRefresh } from "@mdi/js";
 import { closeConnection, openConnection } from "~/database";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
-import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { MouseEvent, useEffect } from "react";
 import { useSession, useEnvironment } from "~/hooks/environment";
 import { mergeConnections, isConnectionValid } from "~/util/environments";
 import { useIsLight } from "~/hooks/theme";
 import { ViewMode } from "~/types";
-import { openTabEditor } from "~/stores/interface";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { surrealIcon } from "~/util/icons";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { useInterfaceStore } from "~/stores/interface";
 
 export interface AddressBarProps {
 	viewMode: ViewMode;
@@ -23,10 +24,11 @@ export interface AddressBarProps {
 export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const isLight = useIsLight();
 	const theme = useMantineTheme();
-	const isConnected = useStoreValue((state) => state.database.isConnected);
-	const isConnecting = useStoreValue((state) => state.database.isConnecting);
-	const isQuerying = useStoreValue((state) => state.database.isQueryActive);
-	const autoConnect = useStoreValue((state) => state.config.autoConnect);
+	const isConnected = useDatabaseStore((s) => s.isConnected);
+	const isConnecting = useDatabaseStore((s) => s.isConnecting);
+	const isQuerying = useDatabaseStore((s) => s.isQueryActive);
+	const autoConnect = useConfigStore((s) => s.autoConnect);
+	const openTabEditor = useInterfaceStore((s) => s.openTabEditor);
 
 	const sessionInfo = useSession();
 	const envInfo = useEnvironment();
@@ -55,7 +57,7 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 			return;
 		}
 
-		store.dispatch(openTabEditor(sessionInfo.id));
+		openTabEditor(sessionInfo.id);
 	});
 
 	useEffect(() => {

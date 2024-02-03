@@ -12,16 +12,15 @@ import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveSession } from "~/hooks/environment";
-import { store, useStoreValue } from "~/store";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
 import { useDesignerConfig } from "./hooks";
 import { TableGrid } from "./grid";
 import { RadioSelect } from "~/components/RadioSelect";
 import { useToggleList } from "~/hooks/toggle";
-import { updateSession } from "~/stores/config";
 import { adapter } from "~/adapter";
 import { showNotification } from "@mantine/notifications";
 import { sleep } from "radash";
+import { useConfigStore } from "~/stores/config";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -43,8 +42,9 @@ export interface TableGraphPaneProps {
 }
 
 export function TableGraphPane(props: TableGraphPaneProps) {
+	const updateSession = useConfigStore((s) => s.updateSession);
 	const theme = useMantineTheme();
-	const activeView = useStoreValue((state) => state.config.activeView);
+	const activeView = useConfigStore((s) => s.activeView);
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [expanded, toggleExpanded] = useToggleList();
@@ -129,17 +129,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const setNodeMode = useStable((mode: string) => {
-		store.dispatch(updateSession({
+		updateSession({
 			id: activeSession?.id,
 			designerNodeMode: mode as DesignerNodeMode,
-		}));
+		});
 	});
 
 	const setLayoutMode = useStable((mode: string) => {
-		store.dispatch(updateSession({
+		updateSession({
 			id: activeSession?.id,
 			designerLayoutMode: mode as DesignerLayoutMode,
-		}));
+		});
 	});
 
 	return (

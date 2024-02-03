@@ -5,8 +5,7 @@ import { InspectorPane } from "../InspectorPane";
 import { SplitValues, Splitter } from "~/components/Splitter";
 import { CreatorPane } from "../CreatorPane";
 import { useHistory } from "~/hooks/history";
-import { store, useStoreValue } from "~/store";
-import { closeEditor, setHistory } from "~/stores/explorer";
+import { useExplorerStore } from "~/stores/explorer";
 import { useIsConnected } from "~/hooks/connection";
 import { useEventBus } from "~/hooks/event";
 
@@ -17,20 +16,20 @@ export function ExplorerView() {
 	const isOnline = useIsConnected();
 	const refreshEvent = useEventBus();
 
-	const {
-		isEditing,
-		isCreating,
-		recordHistory,
-	} = useStoreValue(state => state.explorer);
+	const closeEditor = useExplorerStore((s) => s.closeEditor);
+	const setHistory = useExplorerStore((s) => s.setHistory);
+	const isEditing = useExplorerStore((s) => s.isEditing);
+	const isCreating = useExplorerStore((s) => s.isCreating);
+	const recordHistory = useExplorerStore((s) => s.recordHistory);
 	
 	const history = useHistory({
 		history: recordHistory,
-		setHistory: (items) => store.dispatch(setHistory(items))
+		setHistory: (items) => setHistory(items)
 	});
 
 	useEffect(() => {
 		if (!isOnline) {
-			store.dispatch(closeEditor());
+			closeEditor();
 		}
 	}, [isOnline]);
 

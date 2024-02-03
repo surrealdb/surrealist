@@ -1,12 +1,11 @@
-import { store } from "~/store";
+import { useConfigStore } from "~/stores/config";
 import { ConnectionOptions } from "~/types";
 
 /**
  * Returns the currently active tab
  */
 export function getActiveSession() {
-	const { activeTab, tabs } = store.getState().config;
-
+	const { tabs, activeTab } = useConfigStore.getState();
 	return tabs.find((tab) => tab.id === activeTab);
 }
 
@@ -14,7 +13,7 @@ export function getActiveSession() {
  * Returns the currently active environment
  */
 export function getActiveEnvironment() {
-	const { environments } = store.getState().config;
+	const { environments } = useConfigStore.getState();
 	const activeSession = getActiveSession();
 
 	return environments.find((e) => e.id === activeSession?.environment);

@@ -21,7 +21,6 @@ import {
 import { mdiChevronDown, mdiChevronUp, mdiClose, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { useInputState } from "@mantine/hooks";
 import { FavoritesEntry, SurrealistSession } from "~/types";
@@ -34,13 +33,17 @@ import { Spacer } from "~/components/Spacer";
 import { Form } from "~/components/Form";
 import { ModalTitle } from "~/components/ModalTitle";
 import { executeQuery } from "~/database";
-import { removeFavoritesEntry, setFavorites, addQueryTab, setShowQueryListing, saveFavoritesEntry } from "~/stores/config";
-import { openTabCreator } from "~/stores/interface";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 
 export function FavoritesPane() {
+	const removeFavoritesEntry = useConfigStore((s) => s.removeFavoritesEntry);
+	const setFavorites = useConfigStore((s) => s.setFavorites);
+	const saveFavoritesEntry = useConfigStore((s) => s.saveFavoritesEntry);
+
 	const isLight = useIsLight();
 	const activeSession = useActiveSession();
-	const entries = useStoreValue((state) => state.config.queryFavorites);
+	const entries = useConfigStore((s) => s.queryFavorites);
 	const queryTab = useActiveQuery();
 
 	const [search, setSearch] = useInputState("");
@@ -63,12 +66,11 @@ export function FavoritesPane() {
 
 	const saveQuery = useStable(() => {
 		setIsEditing(false);
-
-		store.dispatch(saveFavoritesEntry({
+		saveFavoritesEntry({
 			id: editingId || uid(5),
 			name: queryName,
 			query: queryText,
-		}));
+		});
 	});
 
 	const filtered = useMemo(() => {
@@ -97,16 +99,11 @@ export function FavoritesPane() {
 
 	const deleteEntry = useStable(() => {
 		setIsEditing(false);
-		store.dispatch(removeFavoritesEntry(editingId));
+		removeFavoritesEntry(editingId);
 	});
 
-	const saveOrder = useStable((favorites: FavoritesEntry[]) => {
-		store.dispatch(setFavorites(favorites));
-	});
-
-	const closeActive = useStable(() => {
-		setActiveEntry("");
-	});
+	const saveOrder = useStable((favorites: FavoritesEntry[]) => setFavorites(favorites));
+	const closeActive = useStable(() => setActiveEntry(""));
 
 	const historyList = useMemo(() => {
 		if (filtered.length === 0) {
@@ -208,6 +205,9 @@ interface HistoryRowProps {
 }
 
 function FavoriteRow(props: HistoryRowProps) {
+	const addQueryTab = useConfigStore((s) => s.addQueryTab);
+	const openTabCreator = useInterfaceStore((s) => s.openTabCreator);
+
 	const { isActive, entry, isLight, enableDrag, handleProps, onActivate, onEdit } = props;
 
 	const theme = useMantineTheme();
@@ -217,8 +217,7 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const executeFavorite = useStable(() => {
-		store.dispatch(addQueryTab(entry.query));
-
+		addQueryTab(entry.query);
 		setTimeout(executeQuery, 0);
 	});
 
@@ -233,10 +232,10 @@ function FavoriteRow(props: HistoryRowProps) {
 	});
 
 	const openQuery = useStable(() => {
-		store.dispatch(openTabCreator({
+		openTabCreator({
 			name: entry.name.slice(0, 25),
 			query: entry.query,
-		}));
+		});
 	});
 
 	return (
@@ -291,12 +290,10 @@ interface FavoritesActionsProps {
 }
 
 function FavoritesActions(props: FavoritesActionsProps) {
+	const setShowQueryListing = useConfigStore((s) => s.setShowQueryListing);
 	const queryTab = useActiveQuery();
 	const canSave = queryTab.text.length > 0;
-
-	const hideFavorites = useStable(() => {
-		store.dispatch(setShowQueryListing(false));
-	});
+	const hideFavorites = useStable(() => setShowQueryListing(false));
 
 	return (
 		<Group align="center">

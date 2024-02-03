@@ -1,10 +1,8 @@
 import { Button, Group, Kbd, Stack, Switch, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { store } from "~/store";
-import { SurrealistConfig } from "~/types";
 import { Setting } from "../setting";
-import { setTableSuggest, setErrorChecking, setUpdateChecker, setWindowPinned } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { runUpdateChecker } from "~/util/updater";
@@ -13,54 +11,64 @@ const VERSION = import.meta.env.VERSION;
 const AUTHOR = import.meta.env.AUTHOR;
 
 export interface GeneralTabProps {
-	config: SurrealistConfig;
 	onClose: () => void;
 }
 
-export function GeneralTab({ config, onClose }: GeneralTabProps) {
+export function GeneralTab({ onClose }: GeneralTabProps) {
+	const setTableSuggest = useConfigStore((s) => s.setTableSuggest);
+	const setErrorChecking = useConfigStore((s) => s.setErrorChecking);
+	const setUpdateChecker = useConfigStore((s) => s.setUpdateChecker);
+	const setWindowPinned = useConfigStore((s) => s.setTableSuggest);
+
+	const lastPromptedVersion = useConfigStore((s) => s.lastPromptedVersion);
+	const updateChecker = useConfigStore((s) => s.updateChecker);
+	const tableSuggest = useConfigStore((s) => s.tableSuggest);
+	const errorChecking = useConfigStore((s) => s.errorChecking);
+	const isPinned = useConfigStore((s) => s.isPinned);
+
 	const isLight = useIsLight();
 	
 	const checkForUpdates = useStable(() => {
-		runUpdateChecker(config.lastPromptedVersion, true);
+		runUpdateChecker(lastPromptedVersion, true);
 		onClose();
 	});
 
 	const updateTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setTableSuggest(e.target.checked));
+		setTableSuggest(e.target.checked);
 	});
 
 	const updateErrorChecking = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setErrorChecking(e.target.checked));
+		setErrorChecking(e.target.checked);
 	});
 
 	const updateUpdateChecker = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setUpdateChecker(e.target.checked));
+		setUpdateChecker(e.target.checked);
 	});
 
 	const togglePinned = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setWindowPinned(e.target.checked));
+		setWindowPinned(e.target.checked);
 	});
 
 	return (
 		<Stack spacing="xs">
 			{adapter.isUpdateCheckSupported && (
 				<Setting label="Check for updates">
-					<Switch checked={config.updateChecker} onChange={updateUpdateChecker} />
+					<Switch checked={updateChecker} onChange={updateUpdateChecker} />
 				</Setting>
 			)}
 
 			<Setting label="Suggest table names">
-				<Switch checked={config.tableSuggest} onChange={updateTableSuggest} />
+				<Switch checked={tableSuggest} onChange={updateTableSuggest} />
 			</Setting>
 
 			<Setting label="Query error checking">
-				<Switch checked={config.errorChecking} onChange={updateErrorChecking} />
+				<Switch checked={errorChecking} onChange={updateErrorChecking} />
 			</Setting>
 			
 
 			{adapter.isPinningSupported && (
 				<Setting label={<>Window always on top <Kbd size="xs">F11</Kbd></>}>
-					<Switch checked={config.isPinned} onChange={togglePinned} />
+					<Switch checked={isPinned} onChange={togglePinned} />
 				</Setting>
 			)}
 

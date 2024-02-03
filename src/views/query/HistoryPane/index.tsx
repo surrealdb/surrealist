@@ -19,7 +19,6 @@ import {
 import { mdiClose, mdiDelete, mdiHistory, mdiMagnify, mdiPencil, mdiPlay } from "@mdi/js";
 import { Fragment, useMemo } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { store, useStoreValue } from "~/store";
 import dayjs from "dayjs";
 import { useStable } from "~/hooks/stable";
 import { useHover, useInputState } from "@mantine/hooks";
@@ -28,12 +27,12 @@ import { useActiveSession } from "~/hooks/environment";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { executeQuery } from "~/database";
-import { removeHistoryEntry, addQueryTab, setShowQueryListing, clearHistory } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 
 export function HistoryPane() {
 	const isLight = useIsLight();
 	const activeSession = useActiveSession();
-	const entries = useStoreValue((state) => state.config.queryHistory);
+	const entries = useConfigStore((s) => s.queryHistory);
 	const [search, setSearch] = useInputState("");
 
 	const filtered = useMemo(() => {
@@ -90,16 +89,14 @@ interface HistoryRowProps {
 }
 
 function HistoryRow({ entry, isLight }: HistoryRowProps) {
+	const removeHistoryEntry = useConfigStore((s) => s.removeHistoryEntry);
+	const addQueryTab = useConfigStore((s) => s.addQueryTab);
+
 	const theme = useMantineTheme();
 	const { ref, hovered } = useHover();
 
-	const removeEntry = useStable(() => {
-		store.dispatch(removeHistoryEntry(entry.id));
-	});
-
-	const editQuery = useStable(() => {
-		store.dispatch(addQueryTab(entry.query));
-	});
+	const removeEntry = useStable(() => removeHistoryEntry(entry.id));
+	const editQuery = useStable(() => addQueryTab(entry.query));
 
 	const executeHistory = useStable(() => {
 		editQuery();
@@ -146,13 +143,11 @@ function HistoryRow({ entry, isLight }: HistoryRowProps) {
 }
 
 function HistoryActions() {
-	const emptyHistory = useStable(() => {
-		store.dispatch(clearHistory());
-	});
+	const setShowQueryListing = useConfigStore((s) => s.setShowQueryListing);
+	const clearHistory = useConfigStore((s) => s.clearHistory);
 
-	const hideHistory = useStable(() => {
-		store.dispatch(setShowQueryListing(false));
-	});
+	const emptyHistory = useStable(() => clearHistory());
+	const hideHistory = useStable(() => setShowQueryListing(false));
 
 	return (
 		<Group align="center">

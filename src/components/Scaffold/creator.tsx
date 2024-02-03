@@ -5,7 +5,6 @@ import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
 import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
 import { useStable } from "~/hooks/stable";
-import { store, useStoreValue } from "~/store";
 import { Form } from "../Form";
 import { useInputState } from "@mantine/hooks";
 import { useEffect } from "react";
@@ -15,15 +14,18 @@ import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
 import { createBaseSession } from "~/util/defaults";
-import { closeTabCreator } from "~/stores/interface";
-import { addSession, setActiveSession } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { useConfigStore } from "~/stores/config";
 
 export function TabCreator() {
 	const isLight = useIsLight();
 	const tabs = useTabsList();
 	const environments = useEnvironmentList();
-	const opened = useStoreValue((state) => state.interface.showTabCreator);
-	const creation = useStoreValue((state) => state.interface.tabCreation);
+	const opened = useInterfaceStore((s) => s.showTabCreator);
+	const creation = useInterfaceStore((s) => s.tabCreation);
+	const closeTabCreator = useInterfaceStore((s) => s.closeTabCreator);
+	const addSession = useConfigStore((s) => s.addSession);
+	const setActiveSession = useConfigStore((s) => s.setActiveSession);
 
 	const [tabName, setTabName] = useInputState("");
 	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
@@ -36,24 +38,22 @@ export function TabCreator() {
 	const detailsValid = isConnectionValid(infoDetails);
 	const mergedValid = isConnectionValid(mergedDetails);
 
-	const handleCose = useStable(() => {
-		store.dispatch(closeTabCreator());
-	});
+	const handleCose = useStable(closeTabCreator);
 
 	const saveInfo = useStable(() => {
 		handleCose();
 
 		const tabId = newId();
 
-		store.dispatch(addSession({
+		addSession({
 			...createBaseSession(creation?.query),
 			id: tabId,
 			name: tabName,
 			environment: finalEnv,
 			connection: mergedDetails
-		}));
+		});
 
-		store.dispatch(setActiveSession(tabId));
+		setActiveSession(tabId);
 
 		updateTitle();
 	});

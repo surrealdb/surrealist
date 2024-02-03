@@ -18,12 +18,10 @@ import { Panel } from "~/components/Panel";
 import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { store, useStoreValue } from "~/store";
-import { clearExplorerData, closeEditor, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering, updatePage, updatePageSize, updatePageText, updateSortMode } from "~/stores/explorer";
+import { useExplorerStore } from "~/stores/explorer";
 import { getSurreal } from "~/util/connection";
 import { HistoryHandle } from "~/hooks/history";
 import { EventBus, useEventSubscription } from "~/hooks/event";
-import { useStoreState } from "~/hooks/store";
 import { useSchema } from "~/hooks/schema";
 
 const PAGE_SIZES = [
@@ -42,60 +40,53 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	const isLight = useIsLight();
 	const schema = useSchema();
 
-	const table = useStoreValue((state) => state.explorer.activeTable);
-	const records = useStoreValue((state) => state.explorer.records);
-	const recordCount = useStoreValue((state) => state.explorer.recordCount);
-	const filtering = useStoreValue((state) => state.explorer.filtering);
-	const filter = useStoreValue((state) => state.explorer.filter);
+	const activeTable = useExplorerStore((s) => s.activeTable);
+	const records = useExplorerStore((s) => s.records);
+	const recordCount = useExplorerStore((s) => s.recordCount);
+	const filtering = useExplorerStore((s) => s.filtering);
+	const filter = useExplorerStore((s) => s.filter);
+	const isEditing = useExplorerStore((s) => s.isEditing);
 
-	const [pageText, setPageText] = useStoreState(
-		(state) => state.explorer.pageText,
-		(value) => updatePageText(value),
-	);
+	const pageText = useExplorerStore((s) => s.pageText);
+	const updatePageText = useExplorerStore((s) => s.updatePageText);
 
-	const [pageSize, setPageSize] = useStoreState(
-		(state) => state.explorer.pageSize,
-		(value) => updatePageSize(value),
-	);
+	const pageSize = useExplorerStore((s) => s.pageSize);
+	const updatePageSize = useExplorerStore((s) => s.updatePageSize);
 
-	const [sortMode, setSortMode] = useStoreState(
-		(state) => state.explorer.sortMode,
-		(value) => updateSortMode(value),
-	);
+	const sortMode = useExplorerStore((s) => s.sortMode);
+	const updateSortMode = useExplorerStore((s) => s.updateSortMode);
 
-	const [page, setPage] = useStoreState(
-		(state) => state.explorer.page,
-		(value) => updatePage(value),
-	);
+	const page = useExplorerStore((s) => s.page);
+	const updatePage = useExplorerStore((s) => s.updatePage);
+
+	const openEditor = useExplorerStore((s) => s.openEditor);
+	const closeEditor = useExplorerStore((s) => s.closeEditor);
+	const openCreator = useExplorerStore((s) => s.openCreator);
+	const setExplorerFiltering = useExplorerStore((s) => s.setExplorerFiltering);
+	const setExplorerFilter = useExplorerStore((s) => s.setExplorerFilter);
+	const clearExplorerData = useExplorerStore((s) => s.clearExplorerData);
+	const setExplorerData = useExplorerStore((s) => s.setExplorerData);
 
 	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
 	const requestCreate = useStable(async () => {
-		store.dispatch(openCreator(table || ''));
+		openCreator(activeTable || '');
 		history.clear();
 	});
 
-	const toggleInspector = useStable(() => {
-		const { isEditing } = store.getState().explorer;
-
-		if (isEditing) {
-			store.dispatch(closeEditor());
-		} else {
-			store.dispatch(openEditor());
-		}
-	});
+	const toggleInspector = useStable(() => isEditing ? openEditor() : closeEditor());
 
 	function setCurrentPage(number: number) {
-		setPageText(number.toString());
-		setPage(number);
+		updatePageText(number.toString());
+		updatePage(number);
 	}
 
 	const toggleFilter = useStable(() => {
-		store.dispatch(setExplorerFiltering(!filtering));
+		setExplorerFiltering(!filtering);
 	});
 
 	const setFilter = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setExplorerFilter(e.target.value));
+		setExplorerFilter(e.target.value);
 	});
 
 	const [showFilter] = useDebouncedValue(filtering, 250);
@@ -106,8 +97,8 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	}, [showFilter, filter]);
 
 	const fetchRecords = useStable(async () => {
-		if (!table) {
-			store.dispatch(clearExplorerData());
+		if (!activeTable) {
+			clearExplorerData();
 			return;
 		}
 
@@ -121,8 +112,8 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM \`${table}\``;
-		let fetchQuery = `SELECT * FROM \`${table}\``;
+		let countQuery = `SELECT * FROM count((SELECT * FROM \`${activeTable}\``;
+		let fetchQuery = `SELECT * FROM \`${activeTable}\``;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;
@@ -140,7 +131,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		const count = response[0].result?.[0] || 0;
 		const records = response[1].result || [];
 
-		store.dispatch(setExplorerData({ records, count }));
+		setExplorerData(records, count);
 
 		if (page > pageCount) {
 			setCurrentPage(pageCount || 1);
@@ -149,7 +140,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [table, pageSize, page, sortMode, showFilter, filterClause]);
+	}, [activeTable, pageSize, page, sortMode, showFilter, filterClause]);
 
 	useEventSubscription(refreshEvent, () => {
 		fetchRecords();
@@ -164,7 +155,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		let newPage = Number.parseInt(value).valueOf();
 
 		if (!value || Number.isNaN(newPage)) {
-			setPageText(page.toString());
+			updatePageText(page.toString());
 			return;
 		}
 
@@ -195,15 +186,15 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		const id = typeof record === "string" ? record : record.id;
 
 		history.push(id);
-		store.dispatch(openEditor());
+		openEditor();
 	});
 
 	const headers = useMemo(() => {
-		if (!table) {
+		if (!activeTable) {
 			return [];
 		}
 
-		return schema?.tables?.find((t) => t.schema.name === table)?.fields?.map((f) => f.name) || [];
+		return schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
 	}, []);
 
 	return (
@@ -236,7 +227,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 					</Text>
 				</Group>
 			}>
-			{table ? (
+			{activeTable ? (
 				<>
 					{filtering && (
 						<TextInput
@@ -269,7 +260,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 								openRecord={openRecord}
 								active={history.current}
 								sorting={sortMode}
-								onSortingChange={setSortMode}
+								onSortingChange={updateSortMode}
 								onRowClick={openRecord}
 								headers={headers}
 							/>
@@ -296,7 +287,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 
 							<TextInput
 								value={pageText}
-								onChange={setPageText}
+								onChange={(e) => updatePageText(e.currentTarget.value)}
 								maw={46}
 								withAsterisk
 								onBlur={gotoPage}
@@ -325,7 +316,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 
 						<Select
 							value={pageSize}
-							onChange={setPageSize as any}
+							onChange={updatePageSize as any}
 							data={PAGE_SIZES}
 						/>
 					</Group>

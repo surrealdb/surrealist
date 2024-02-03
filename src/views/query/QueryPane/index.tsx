@@ -3,7 +3,6 @@ import { editor } from "monaco-editor";
 import { mdiClose, mdiDatabase, mdiFileDocument, mdiPlusBoxMultiple } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
-import { store } from "~/store";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -14,9 +13,14 @@ import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 import { EditableText } from "~/components/EditableText";
-import { updateQueryTab, removeQueryTab, addQueryTab, setActiveQueryTab } from '~/stores/config';
+import { useConfigStore } from '~/stores/config';
 
 export function QueryPane() {
+	const updateQueryTab = useConfigStore((s) => s.updateQueryTab);
+	const removeQueryTab = useConfigStore((s) => s.removeQueryTab);
+	const addQueryTab = useConfigStore((s) => s.addQueryTab);
+	const setActiveQueryTab = useConfigStore((s) => s.setActiveQueryTab);
+
 	const { queries, activeQueryId } = useActiveSession();
 	const controls = useRef<editor.IStandaloneCodeEditor>();
 
@@ -26,10 +30,7 @@ export function QueryPane() {
 	const queryText = queryInfo?.text || "";
 
 	const setQueryForced = useStable((content: string | undefined) => {
-		store.dispatch(updateQueryTab({
-			text: content || ""
-		}));
-
+		updateQueryTab({ text: content || "" });
 		updateQueryValidation(controls.current!);
 	});
 
@@ -52,31 +53,23 @@ export function QueryPane() {
 		}
 	});
 
-	const removeTab = useStable((tab: number) => {
-		store.dispatch(removeQueryTab(tab));
-	});
-
-	const appendTab = useStable(() => {
-		store.dispatch(addQueryTab());
-	});
+	const removeTab = useStable(removeQueryTab);
+	const appendTab = useStable(addQueryTab);
 
 	const handleTabChange = useStable((value: string | null) => {
 		if (value) {
 			const tabId = Number.parseInt(value);
 
 			if (activeQueryId !== Number.parseInt(value)) {
-				store.dispatch(setActiveQueryTab(tabId));
-
+				setActiveQueryTab(tabId);
 				controls.current?.focus?.();
 			}
 		}
 	});
 
-	const setTabName = useStable((name: string) => {
-		store.dispatch(updateQueryTab({
-			name: name
-		}));
-	});
+	const setTabName = useStable((name: string) => updateQueryTab({
+		name
+	}));
 
 	return (
 		<Panel
@@ -84,7 +77,7 @@ export function QueryPane() {
 			icon={mdiDatabase}
 			rightSection={
 				<Group>
-					<ActionIcon onClick={appendTab} title="New query tab">
+					<ActionIcon onClick={() => appendTab()} title="New query tab">
 						<Icon color="light.4" path={mdiPlusBoxMultiple} />
 					</ActionIcon>
 

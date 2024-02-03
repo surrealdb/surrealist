@@ -1,6 +1,6 @@
-import { useStoreValue } from "~/store";
 import { isEdgeTable } from "~/util/schema";
 import { useConnectionDetails } from "./environment";
+import { useDatabaseStore } from "~/stores/database";
 
 type TableMode = "ALL" | "TABLE" | "EDGE";
 
@@ -8,7 +8,7 @@ type TableMode = "ALL" | "TABLE" | "EDGE";
  * Access the current database schema
  */
 export function useSchema() {
-	return useStoreValue((state) => state.database.databaseSchema);
+	return useDatabaseStore((s) => s.databaseSchema);
 }
 
 /**

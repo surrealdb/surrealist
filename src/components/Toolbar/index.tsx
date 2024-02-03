@@ -4,7 +4,6 @@ import { mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { store, useStoreValue } from "~/store";
 import { updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
@@ -17,7 +16,7 @@ import { Selector } from "./selector";
 import { useTabsList } from "~/hooks/environment";
 import { ViewTab } from "../ViewTab";
 import { Exporter } from "../Exporter";
-import { updateSession, setShowQueryListing, setQueryListingMode } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 import { Importer } from "../Importer";
 
 export interface ToolbarProps {
@@ -26,11 +25,15 @@ export interface ToolbarProps {
 }
 
 export function Toolbar(props: ToolbarProps) {
-	const isLight = useIsLight();
-	const activeSession = useStoreValue((state) => state.config.activeTab);
+	const updateSession = useConfigStore((s) => s.updateSession);
+	const setShowQueryListing = useConfigStore((s) => s.setShowQueryListing);
+	const setQueryListingMode = useConfigStore((s) => s.setQueryListingMode);
 
-	const enableListing = useStoreValue((state) => state.config.enableListing);
-	const queryListing = useStoreValue((state) => state.config.queryListing);
+	const isLight = useIsLight();
+	const activeSession = useConfigStore((s) => s.activeTab);
+
+	const enableListing = useConfigStore((s) => s.enableListing);
+	const queryListing = useConfigStore((s) => s.queryListing);
 
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
@@ -42,10 +45,10 @@ export function Toolbar(props: ToolbarProps) {
 	});
 
 	const saveTabName = useStable(() => {
-		store.dispatch(updateSession({
+		updateSession({
 			id: editingTab!,
 			name: tabName,
-		}));
+		});
 
 		updateTitle();
 		closeEditingTab();
@@ -53,19 +56,19 @@ export function Toolbar(props: ToolbarProps) {
 
 	const toggleHistory = useStable(() => {
 		if (queryListing === "history") {
-			store.dispatch(setShowQueryListing(!enableListing));
+			setShowQueryListing(!enableListing);
 		} else {
-			store.dispatch(setQueryListingMode("history"));
-			store.dispatch(setShowQueryListing(true));
+			setQueryListingMode("history");
+			setShowQueryListing(true);
 		}
 	});
 
 	const toggleFavorites = useStable(() => {
 		if (queryListing === "favorites") {
-			store.dispatch(setShowQueryListing(!enableListing));
+			setShowQueryListing(!enableListing);
 		} else {
-			store.dispatch(setQueryListingMode("favorites"));
-			store.dispatch(setShowQueryListing(true));
+			setQueryListingMode("favorites");
+			setShowQueryListing(true);
 		}
 	});
 

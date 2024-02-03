@@ -7,14 +7,14 @@ import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { updateTitle } from "~/util/helpers";
-import { store } from "~/store";
-import { setActiveView } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 
 export interface ViewListingProps {
 	viewMode: ViewMode;
 }
 
 export function ViewListing({ viewMode }: ViewListingProps) {
+	const setActiveView = useConfigStore((s) => s.setActiveView);
 	const isLight = useIsLight();
 	const [isViewListing, setIsViewListing] = useState(false);
 	
@@ -24,7 +24,7 @@ export function ViewListing({ viewMode }: ViewListingProps) {
 		setIsViewListing(false);
 		updateTitle();
 
-		store.dispatch(setActiveView(id));
+		setActiveView(id);
 	});
 
 	return (

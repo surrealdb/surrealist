@@ -1,7 +1,7 @@
 import { uid } from "radash";
-import { store } from "~/store";
 import { SurrealOptions } from "~/types";
 import { printLog } from "./helpers";
+import { useConfigStore } from "~/stores/config";
 
 type Request = [(data: any) => void, (error: any) => void];
 
@@ -43,7 +43,7 @@ export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle
 			return Promise.reject(new Error("Connection is not open"));
 		}
 
-		const timeout = store.getState().config.queryTimeout * 1000;
+		const timeout = useConfigStore.getState().queryTimeout * 1000;
 		const id = uid(7);
 
 		return new Promise((success, reject) => {

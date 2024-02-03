@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { useStoreValue } from "~/store";
+import { useConfigStore } from "~/stores/config";
 
 function buildResult(index: number, {result, time}: any) {
 	const header = `\n\n// -------- Query ${index + 1 + (time ? ` (${time})` : '')} --------\n\n`;
@@ -14,7 +14,7 @@ export interface CombinedJsonPreviewProps {
 }
 
 export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
-	const wordWrap = useStoreValue((state) => state.config.wordWrap);
+	const wordWrap = useConfigStore((s) => s.wordWrap);
 
 	const contents = useMemo(() => {
 		return results.reduce((acc, cur, i) => acc + buildResult(i, cur), '').trim();
@@ -37,7 +37,7 @@ export interface SingleJsonPreviewProps {
 }
 
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
-	const wordWrap = useStoreValue((state) => state.config.wordWrap);
+	const wordWrap = useConfigStore((s) => s.wordWrap);
 
 	const contents = useMemo(() => {
 		return JSON.stringify(result, null, 4);

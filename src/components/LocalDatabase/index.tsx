@@ -5,27 +5,31 @@ import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { store, useStoreValue } from "~/store";
 import { Icon } from "../Icon";
 import { closeConnection, openConnection } from "~/database";
-import { setConsoleEnabled } from "~/stores/config";
-import { cancelServe, prepareServe, stopServing } from "~/stores/database";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
 
 // TODO Check if localhost
 
 export function LocalDatabase() {
 	const isLight = useIsLight();
-	const enableConsole = useStoreValue((state) => state.config.enableConsole);
+	const enableConsole = useConfigStore((s) => s.enableConsole);
 	const [isOpen, setIsOpen] = useState(false);
 
-	const isServing = useStoreValue((state) => state.database.isServing);
-	const isPending = useStoreValue((state) => state.database.servePending);
-	const localDriver = useStoreValue((state) => state.config.localDriver);
-	const localPath = useStoreValue((state) => state.config.localStorage);
-	const surrealPath = useStoreValue((state) => state.config.surrealPath);
-	const surrealUser = useStoreValue((state) => state.config.surrealUser);
-	const surrealPass = useStoreValue((state) => state.config.surrealPass);
-	const surrealPort = useStoreValue((state) => state.config.surrealPort);
+	const cancelServe = useDatabaseStore((s) => s.cancelServe);
+	const prepareServe = useDatabaseStore((s) => s.prepareServe);
+	const stopServing = useDatabaseStore((s) => s.stopServing);
+	const isServing = useDatabaseStore((s) => s.isServing);
+	const isPending = useDatabaseStore((s) => s.servePending);
+
+	const setConsoleEnabled = useConfigStore((s) => s.setConsoleEnabled);
+	const localDriver = useConfigStore((s) => s.localDriver);
+	const localPath = useConfigStore((s) => s.localStorage);
+	const surrealPath = useConfigStore((s) => s.surrealPath);
+	const surrealUser = useConfigStore((s) => s.surrealUser);
+	const surrealPass = useConfigStore((s) => s.surrealPass);
+	const surrealPort = useConfigStore((s) => s.surrealPort);
 
 	const handleToggle = useStable(() => {
 		if (isPending) {
@@ -36,19 +40,17 @@ export function LocalDatabase() {
 			closeConnection();
 			adapter.stopDatabase();
 
-			store.dispatch(cancelServe());
+			cancelServe();
 		} else {
-			store.dispatch(prepareServe());
+			prepareServe();
 
 			adapter.startDatabase(surrealUser, surrealPass, surrealPort, localDriver, localPath, surrealPath).catch(() => {
-				store.dispatch(stopServing());
+				stopServing();
 			});
 		}
 	});
 
-	const toggleConsole = useStable(() => {
-		store.dispatch(setConsoleEnabled(!enableConsole));
-	});
+	const toggleConsole = useStable(() => setConsoleEnabled(!enableConsole));
 
 	useEffect(() => {
 		if (isServing) {

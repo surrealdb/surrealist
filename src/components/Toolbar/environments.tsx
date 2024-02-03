@@ -2,7 +2,6 @@ import classes from "./style.module.scss";
 import { Button, Center, Grid, Group, Modal, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { ConnectionDetails } from "../ConnectionDetails";
-import { store, useStoreValue } from "~/store";
 import { mdiClose, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -14,7 +13,7 @@ import { SurrealistEnvironment } from "~/types";
 import { newId } from "~/util/helpers";
 import { ModalTitle } from "../ModalTitle";
 import { openConnection } from "~/database";
-import { removeSession, setEnvironments } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 
 export interface EnvironmentsProps {
 	opened: boolean;
@@ -26,8 +25,10 @@ function buildName(n: number) {
 }
 
 export function Environments({ opened, onClose }: EnvironmentsProps) {
-	const liveTabs = useStoreValue((state) => state.config.tabs);
-	const liveEnvs = useStoreValue((state) => state.config.environments);
+	const removeSession = useConfigStore((s) => s.removeSession);
+	const setEnvironments = useConfigStore((s) => s.setEnvironments);
+	const liveTabs = useConfigStore((s) => s.tabs);
+	const liveEnvs = useConfigStore((s) => s.environments);
 	const isLight = useIsLight();
 
 	const [viewingEnv, setViewingEnv] = useState("");
@@ -103,11 +104,11 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 	const saveEnvironments = useStable(() => {
 		for (const tab of liveTabs) {
 			if (removedIds.includes(tab.environment)) {
-				store.dispatch(removeSession(tab.id));
+				removeSession(tab.id);
 			}
 		}
 
-		store.dispatch(setEnvironments(envList));
+		setEnvironments(envList);
 
 		onClose();
 		openConnection();

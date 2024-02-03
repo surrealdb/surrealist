@@ -4,7 +4,7 @@ import { CSSProperties, ElementRef, HTMLAttributes, useEffect, useRef } from "re
 import { useIsLight } from "~/hooks/theme";
 import { DARK_THEME, LIGHT_THEME, BASE_EDITOR_CONFIG, onEditorReady } from "~/util/editor";
 import { Box, Paper, clsx } from "@mantine/core";
-import { useStoreValue } from '~/store';
+import { useConfigStore } from '~/stores/config';
 
 export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onChange'> {
 	style?: CSSProperties;
@@ -24,7 +24,7 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 	const containerRef = useRef<ElementRef<"div">>(null);
 	const elementRef = useRef<ElementRef<"div">>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-	const zoomLevel = useStoreValue((state) => state.config.fontZoomLevel);
+	const zoomLevel = useConfigStore((s) => s.fontZoomLevel);
 
 	const textSize = 14 * zoomLevel;
 

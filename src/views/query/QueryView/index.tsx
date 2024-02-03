@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { useStoreValue } from "~/store";
 import { FavoritesPane } from "../FavoritesPane";
 import { HistoryPane } from "../HistoryPane";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../../query/VariablesPane";
 import { Splitter, SplitValues } from "~/components/Splitter";
+import { useConfigStore } from "~/stores/config";
 
 export function QueryView() {
-	const enableListing = useStoreValue((state) => state.config.enableListing);
-	const queryListing = useStoreValue((state) => state.config.queryListing);
+	const enableListing = useConfigStore((s) => s.enableListing);
+	const queryListing = useConfigStore((s) => s.queryListing);
 
 	const [splitValues, setSplitValues] = useState<SplitValues>([750, undefined]);
 	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);

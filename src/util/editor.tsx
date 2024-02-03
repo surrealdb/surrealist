@@ -2,7 +2,6 @@ import * as monaco from "monaco-editor";
 import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
 import { getActiveSession } from "./environments";
 import { KeyCode, KeyMod, editor, languages } from "monaco-editor";
-import { store } from "~/store";
 import { SurrealInfoDB } from "~/typings/surreal";
 import { getSurreal } from "./connection";
 import { loadWASM } from 'onigasm';
@@ -21,6 +20,7 @@ import surrealistLightTheme from '~/assets/themes/surrealist-light.json';
 import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
 import { Registry } from "monaco-textmate";
 import { wireTmGrammars } from "monaco-editor-textmate";
+import { useConfigStore } from "~/stores/config";
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
@@ -139,7 +139,7 @@ export async function initializeMonaco() {
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: [" "],
 		provideCompletionItems: async (model, position, context) => {
-			const { tableSuggest } = store.getState().config;
+			const { tableSuggest } = useConfigStore.getState();
 			const surreal = getSurreal();
 
 			if (!tableSuggest || !surreal) {
@@ -300,7 +300,7 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor) {
  * @param editor The editor instance
  */
 export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
-	const { errorChecking } = store.getState().config;
+	const { errorChecking } = useConfigStore.getState();
 
 	const model = editor.getModel()!;
 	const content = model.getValue();

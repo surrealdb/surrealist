@@ -5,7 +5,6 @@ import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
 import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
 import { useStable } from "~/hooks/stable";
-import { store, useStoreValue } from "~/store";
 import { Form } from "../Form";
 import { useEffect } from "react";
 import { updateTitle } from "~/util/helpers";
@@ -14,16 +13,19 @@ import { InheritAlert } from "../InheritAlert/interface";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
 import { closeConnection, openConnection } from "~/database";
-import { updateSession } from "~/stores/config";
-import { closeTabEditor } from "~/stores/interface";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 
 export function TabEditor() {
 	const isLight = useIsLight();
 	const tabs = useTabsList();
 	const environments = useEnvironmentList();
-	const activeSessionId = useStoreValue((state) => state.config.activeTab);
-	const opened = useStoreValue((state) => state.interface.showTabEditor);
-	const editingId = useStoreValue((state) => state.interface.editingId);
+	const activeSessionId = useConfigStore((s) => s.activeTab);
+	const autoConnect = useConfigStore((s) => s.autoConnect);
+	const updateSession = useConfigStore((s) => s.updateSession);
+	const opened = useInterfaceStore((s) => s.showTabEditor);
+	const editingId = useInterfaceStore((s) => s.editingId);
+	const closeTabEditor = useInterfaceStore((s) => s.closeTabEditor);
 
 	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
 
@@ -34,21 +36,17 @@ export function TabEditor() {
 	const detailsValid = isConnectionValid(infoDetails);
 	const mergedValid = isConnectionValid(mergedDetails);
 
-	const handleCose = useStable(() => {
-		store.dispatch(closeTabEditor());
-	});
+	const handleCose = useStable(closeTabEditor);
 
 	const saveInfo = useStable(async () => {
 		handleCose();
 
-		store.dispatch(updateSession({
+		updateSession({
 			id: editingId,
 			connection: infoDetails,
-		}));
+		});
 
 		if (activeSessionId == editingId) {
-			const { autoConnect } = store.getState().config;
-
 			closeConnection();
 	
 			if (autoConnect && mergedValid) {

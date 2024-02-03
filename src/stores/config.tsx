@@ -1,338 +1,295 @@
-import { DesignerLayoutMode, DesignerNodeMode, DriverType, FavoritesEntry, HistoryEntry, Open, QueryListing, ResultListing, SessionQuery, SurrealistConfig, SurrealistEnvironment, SurrealistSession, TablePinAction, ViewMode } from "~/types";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { DesignerLayoutMode, DesignerNodeMode, DriverType, FavoritesEntry, HistoryEntry, QueryListing, ResultListing, SessionQuery, SurrealistEnvironment, SurrealistSession, TablePinAction, ViewMode } from "~/types";
 import { createBaseConfig } from "~/util/defaults";
-import { migrateConfig } from "~/util/migration";
 import { ThemeOption } from "~/util/theme";
+import { create } from "zustand";
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
+import { adapter } from "../adapter/index";
+import { timeoutPromise } from "~/util/promise-timeout";
 
-type ConfigState = ReturnType<typeof configSlice.getInitialState>;
+const adapterStorage: StateStorage = {
+	async setItem(name, value) {
+		if (name == 'surrealist-config') {
+			return timeoutPromise(() => adapter.saveConfig(value));
+		}
+	},
+	async getItem(name) {
+		if (name == 'surrealist-config') {
+			return timeoutPromise(() => adapter.loadConfig());
+		}
 
-function getSession(state: ConfigState) {
-	const session = state.tabs.find((tab) => tab.id === state.activeTab);
- 
-	if (!session) {
-		throw new Error("Session unavailable");
-	}
+		return null;
+	},
+	async removeItem(name) {
+		if (name == 'surrealist-config') {
+			return timeoutPromise(() => adapter.saveConfig("{}"));
+		}
+	},
+};
 
-	return session;
+function updateCurrentSession(state: ConfigStore, modifier: (tab: SurrealistSession) => Partial<SurrealistSession>) {
+	let found = false;
+	const tabs = state.tabs.map((tab) => {
+		if (tab.id !== state.activeTab) return tab;
+		found = true;
+		return { ...tab, ...modifier(tab) };
+	});
+
+	if (!found) throw new Error("Session unavailable");
+	return { tabs };
 }
 
-const configSlice = createSlice({
-	name: "config",
-	initialState: createBaseConfig(),
-	reducers: {
+export type ConfigStore = {
+	theme: ThemeOption,
+	tabs: SurrealistSession[],
+	environments: SurrealistEnvironment[],
+	activeView: ViewMode,
+	isPinned: boolean,
+	activeTab: string | null,
+	autoConnect: boolean,
+	tableSuggest: boolean,
+	wordWrap: boolean,
+	queryHistory: HistoryEntry[],
+	queryFavorites: FavoritesEntry[],
+	localDriver: string,
+	localStorage: string,
+	surrealPath: string,
+	surrealUser: string,
+	surrealPass: string,
+	surrealPort: number,
+	enableConsole: boolean,
+	enableListing: boolean,
+	queryTimeout: number,
+	updateChecker: boolean,
+	queryListing: string,
+	resultListing: string,
+	fontZoomLevel: number,
+	errorChecking: boolean,
+	lastPromptedVersion: string | null,
+	tabSearch: boolean,
+	defaultDesignerLayoutMode: DesignerLayoutMode,
+	defaultDesignerNodeMode: DesignerNodeMode,
 
-		initialize(state, action: PayloadAction<any>) {
-			const config: Open<SurrealistConfig> = {
-				...createBaseConfig(),
-				...JSON.parse(action.payload.trim()),
+	setColorScheme: (theme: ThemeOption) => void;
+	setAutoConnect: (autoConnect: boolean) => void;
+	setTableSuggest: (tableSuggest: boolean) => void;
+	setErrorChecking: (errorChecking: boolean) => void;
+	setWordWrap: (wordWrap: boolean) => void;
+	setSessionSearch: (tabSearch: boolean) => void;
+	setEnvironments: (environments: SurrealistEnvironment[]) => void;
+	addSession: (tab: SurrealistSession) => void;
+	removeSession: (tabId: string) => void;
+	updateSession: (payload: Pick<SurrealistSession, 'id'> & Partial<SurrealistSession>) => void;
+	updateCurrentSession: (modifier: (tab: SurrealistSession) => Partial<SurrealistSession>) => void;
+	setSessions: (tabs: SurrealistSession[]) => void;
+	setActiveSession: (activeTab: string) => void;
+	setActiveView: (activeView: ViewMode) => void;
+	addQueryTab: (query?: string) => void;
+	removeQueryTab: (queryId: number) => void;
+	updateQueryTab: (payload: Partial<SessionQuery>) => void;
+	setActiveQueryTab: (activeQueryId: number) => void;
+	setWindowPinned: (isPinned: boolean) => void;
+	toggleWindowPinned: () => void;
+	addHistoryEntry: (entry: HistoryEntry) => void;
+	clearHistory: () => void;
+	removeHistoryEntry: (entryId: string) => void;
+	saveFavoritesEntry: (favorite: FavoritesEntry) => void;
+	removeFavoritesEntry: (favoriteId: string) => void;
+	setFavorites: (queryFavorites: FavoritesEntry[]) => void;
+	setConsoleEnabled: (enableConsole: boolean) => void;
+	setSurrealUser: (surrealUser: string) => void;
+	setSurrealPass: (surrealPass: string) => void;
+	setSurrealPort: (surrealPort: number) => void;
+	setLocalDatabaseDriver: (localDriver: DriverType) => void;
+	setLocalDatabaseStorage: (localStorage: string) => void;
+	setSurrealPath: (surrealPath: string) => void;
+	setQueryTimeout: (queryTimeout: number) => void;
+	setUpdateChecker: (updateChecker: boolean) => void;
+	setLastPromptedVersion: (lastPromptedVersion: string) => void;
+	setShowQueryListing: (enableListing: boolean) => void;
+	setQueryListingMode: (queryListing: QueryListing) => void;
+	setResultListingMode: (resultListing: ResultListing) => void;
+	increaseFontZoomLevel: () => void;
+	decreaseFontZoomLevel: () => void;
+	resetFontZoomLevel: () => void;
+	setDesignerLayoutMode: (defaultDesignerLayoutMode: DesignerLayoutMode) => void;
+	setDesignerNodeMode: (defaultDesignerNodeMode: DesignerNodeMode) => void;
+	toggleTablePin: (pin: TablePinAction) => void;
+}
+
+export const useConfigStore = create<ConfigStore>()(persist(
+	(set) => ({
+		...createBaseConfig(),
+
+		setColorScheme: (theme) => set(() => ({ theme })),
+		setAutoConnect: (autoConnect) => set(() => ({ autoConnect })),
+		setTableSuggest: (tableSuggest) => set(() => ({ tableSuggest })),
+		setErrorChecking: (errorChecking) => set(() => ({ errorChecking })),
+		setWordWrap: (wordWrap) => set(() => ({ wordWrap })),
+		setSessionSearch: (tabSearch) => set(() => ({ tabSearch })),
+		setEnvironments: (environments) => set(() => ({ environments })),
+		addSession: (tab) => set((state) => ({
+			tabs: [
+				...state.tabs,
+				tab
+			]
+		})),
+
+		removeSession: (tabId) => set((state) => {
+			const index = state.tabs.findIndex((tab) => tab.id === tabId);
+			return {
+				tabs: index >= 0 ? state.tabs.splice(index, 1) : state.tabs,
+				activeTab: state.activeTab == tabId ? null : state.activeTab,
+			};
+		}),
+
+		updateSession: (payload) => set((state) => ({
+			tabs: state.tabs.map((tab) =>
+				tab.id === payload.id
+					? { ...tab, ...payload, }
+					: tab
+			)
+		})),
+
+		updateCurrentSession: (modifier) => set((state) => updateCurrentSession(state, modifier)),
+		setSessions: (tabs) => set(() => ({ tabs })),
+		setActiveSession: (activeTab) => set(() => ({ activeTab })),
+		setActiveView: (activeView) => set(() => ({ activeView })),
+		addQueryTab: (query) => set((state) => updateCurrentSession(state, (tab) => {
+			const newId = tab.lastQueryId + 1;
+			tab.queries.push({ id: newId, text: query ?? "" });
+			tab.activeQueryId = newId;
+			tab.lastQueryId = newId;
+			return tab;
+		})),
+
+		removeQueryTab: (queryId) => set((state) => updateCurrentSession(state, (tab) => {
+			const index = tab.queries.findIndex((query) => query.id === queryId);
+			if (index < 1) return tab;
+
+			if (tab.activeQueryId === queryId) {
+				tab.activeQueryId = tab.queries[index - 1]?.id || 1;
+			}
+
+			tab.queries.splice(index, 1);
+
+			if (tab.queries.length <= 1) {
+				tab.activeQueryId = 1;
+				tab.lastQueryId = 1;
+			}
+
+			return tab;
+		})),
+
+		updateQueryTab: (payload) => set((state) => updateCurrentSession(state, (tab) => {
+			const index = tab.queries.findIndex((query) => query.id === tab.activeQueryId);
+			if (index < 0) return tab;
+
+			tab.queries[index] = {
+				...tab.queries[index],
+				...payload
 			};
 
-			migrateConfig(config);
+			return tab;
+		})),
 
-			Object.assign(state, config);
-		},
+		setActiveQueryTab: (tabId) => set((state) => updateCurrentSession(state, (tab) => ({
+			...tab,
+			activeQueryId: tabId,
+		}))),
 
-		setColorScheme(state, action: PayloadAction<ThemeOption>) {
-			state.theme = action.payload;
-		},
+		setWindowPinned: (isPinned) => set(() => ({ isPinned })),
 
-		setAutoConnect(state, action: PayloadAction<boolean>) {
-			state.autoConnect = action.payload;
-		},
+		toggleWindowPinned: () => set((state) => ({
+			isPinned: !state.isPinned,
+		})),
 
-		setTableSuggest(state, action: PayloadAction<boolean>) {
-			state.tableSuggest = action.payload;
-		},
+		addHistoryEntry: (entry: HistoryEntry) => set((state) => {
+			const query = entry.query;
 
-		setErrorChecking(state, action: PayloadAction<boolean>) {
-			state.errorChecking = action.payload;
-		},
+			if (query.length === 0) return {};
+			if (state.queryHistory[0]?.query === query) return {};
 
-		setWordWrap(state, action: PayloadAction<boolean>) {
-			state.wordWrap = action.payload;
-		},
+			return [
+				entry,
+				...state.queryHistory.slice(0, 49),
+			];
+		}),
 
-		setSessionSearch(state, action: PayloadAction<boolean>) {
-			state.tabSearch = action.payload;
-		},
+		clearHistory: () => set(() => ({
+			queryHistory: [],
+		})),
 
-		setEnvironments(state, action: PayloadAction<SurrealistEnvironment[]>) {
-			state.environments = action.payload;
-		},
+		removeHistoryEntry: (entryId) => set((state) => ({
+			queryHistory: state.queryHistory.filter((entry) => entry.id !== entryId),
+		})),
 
-		addSession(state, { payload }: PayloadAction<SurrealistSession>) {
-			state.tabs.push(payload);
-		},
-
-		removeSession(state, action: PayloadAction<string>) {
-			const index = state.tabs.findIndex((tab) => tab.id === action.payload);
-
-			if (index >= 0) {
-				state.tabs.splice(index, 1);
-			}
-
-			if (state.activeTab === action.payload) {
-				state.activeTab = null;
-			}
-		},
-
-		updateSession(state, { payload }: PayloadAction<Partial<SurrealistSession>>) {
-			const sessionIndex = state.tabs.findIndex((tab) => tab.id === payload.id);
-
-			if (sessionIndex >= 0) {
-				const session = state.tabs[sessionIndex];
-
-				state.tabs[sessionIndex] = { ...session, ...payload };
-			}
-		},
-
-		setSessions(state, action: PayloadAction<SurrealistSession[]>) {
-			state.tabs = action.payload;
-		},
-
-		setActiveSession(state, action: PayloadAction<string>) {
-			state.activeTab = action.payload;
-		},
-
-		setActiveView(state, action: PayloadAction<ViewMode>) {
-			state.activeView = action.payload;
-		},
-
-		addQueryTab(state, { payload }: PayloadAction<string | undefined>) {
-			const session = getSession(state);
-			const newId = session.lastQueryId + 1;
-
-			session.queries.push({ id: newId, text: payload || "" });
-			session.activeQueryId = newId;
-			session.lastQueryId = newId;
-		},
-
-		removeQueryTab(state, action: PayloadAction<number>) {
-			const session = getSession(state);
-			const index = session.queries.findIndex((query) => query.id === action.payload);
-
-			if (index < 1) {
-				return;
-			}
-
-			if (session.activeQueryId === action.payload) {
-				session.activeQueryId = session.queries[index - 1]?.id || 1;
-			}
-
-			session.queries.splice(index, 1);
-
-			if (session.queries.length <= 1) {
-				session.activeQueryId = 1;
-				session.lastQueryId = 1;
-			}
-		},
-
-		updateQueryTab(state, action: PayloadAction<Partial<SessionQuery>>) {
-			const session = getSession(state);
-			const index = session.queries.findIndex((query) => query.id === session.activeQueryId);
+		saveFavoritesEntry: (favorite) => set((state) => {
+			const queryFavorites = state.queryFavorites;
+			const index = state.queryFavorites.findIndex((entry) => entry.id === favorite.id);
 
 			if (index < 0) {
-				return;
-			}
-
-			session.queries[index] = {
-				...session.queries[index],
-				...action.payload
-			};
-		},
-
-		setActiveQueryTab(state, action: PayloadAction<number>) {
-			const session = getSession(state);
-
-			session.activeQueryId = action.payload;
-		},
-
-		setWindowPinned(state, { payload }: PayloadAction<boolean>) {
-			state.isPinned = payload;
-		},
-
-		toggleWindowPinned(state) {
-			state.isPinned = !state.isPinned;
-		},
-
-		addHistoryEntry(state, action: PayloadAction<HistoryEntry>) {
-			const query = action.payload.query;
-
-			if (
-				query.length === 0 ||
-				(state.queryHistory.length > 0 && state.queryHistory[0].query === query)
-			) {
-				return;
-			}
-
-			state.queryHistory.unshift(action.payload);
-
-			if (state.queryHistory.length > 50) {
-				state.queryHistory.pop();
-			}
-		},
-
-		clearHistory(state) {
-			state.queryHistory = [];
-		},
-
-		removeHistoryEntry(state, action: PayloadAction<string>) {
-			state.queryHistory = state.queryHistory.filter((entry) => entry.id !== action.payload);
-		},
-
-		saveFavoritesEntry(state, action: PayloadAction<FavoritesEntry>) {
-			const index = state.queryFavorites.findIndex((entry) => entry.id === action.payload.id);
-
-			if (index < 0) {
-				state.queryFavorites.push(action.payload);
+				state.queryFavorites.push(favorite);
 			} else {
-				state.queryFavorites[index] = action.payload;
-			}
-		},
-
-		removeFavoritesEntry(state, action: PayloadAction<string>) {
-			state.queryFavorites = state.queryFavorites.filter((entry) => entry.id !== action.payload);
-		},
-
-		setFavorites(state, action: PayloadAction<FavoritesEntry[]>) {
-			state.queryFavorites = action.payload;
-		},
-
-		setConsoleEnabled(state, action: PayloadAction<boolean>) {
-			state.enableConsole = action.payload;
-		},
-
-		setSurrealUser(state, action: PayloadAction<string>) {
-			state.surrealUser = action.payload;
-		},
-
-		setSurrealPass(state, action: PayloadAction<string>) {
-			state.surrealPass = action.payload;
-		},
-
-		setSurrealPort(state, action: PayloadAction<number>) {
-			state.surrealPort = action.payload;
-		},
-
-		setLocalDatabaseDriver(state, action: PayloadAction<DriverType>) {
-			state.localDriver = action.payload;
-		},
-
-		setLocalDatabaseStorage(state, action: PayloadAction<string>) {
-			state.localStorage = action.payload;
-		},
-
-		setSurrealPath(state, action: PayloadAction<string>) {
-			state.surrealPath = action.payload;
-		},
-
-		setQueryTimeout(state, action: PayloadAction<number>) {
-			state.queryTimeout = action.payload;
-		},
-
-		setUpdateChecker(state, action: PayloadAction<boolean>) {
-			state.updateChecker = action.payload;
-		},
-
-		setLastPromptedVersion(state, action: PayloadAction<string>) {
-			state.lastPromptedVersion = action.payload;
-		},
-
-		setShowQueryListing(state, action: PayloadAction<boolean>) {
-			state.enableListing = action.payload;
-		},
-
-		setQueryListingMode(state, action: PayloadAction<QueryListing>) {
-			state.queryListing = action.payload;
-		},
-
-		setResultListingMode(state, action: PayloadAction<ResultListing>) {
-			state.resultListing = action.payload;
-		},
-
-		increaseFontZoomLevel(state) {
-			state.fontZoomLevel = Math.min(state.fontZoomLevel + 0.1, 2);
-		},
-
-		decreaseFontZoomLevel(state) {
-			state.fontZoomLevel = Math.max(state.fontZoomLevel - 0.1, 0.5);
-		},
-
-		resetFontZoomLevel(state) {
-			state.fontZoomLevel = 1;
-		},
-
-		setDesignerLayoutMode(state, action: PayloadAction<DesignerLayoutMode>) {
-			state.defaultDesignerLayoutMode = action.payload;
-		},
-
-		setDesignerNodeMode(state, action: PayloadAction<DesignerNodeMode>) {
-			state.defaultDesignerNodeMode = action.payload;
-		},
-
-		toggleTablePin(state, action: PayloadAction<TablePinAction>) {
-			const pinned = state.tabs.find((tab) => tab.id === action.payload.session)?.pinnedTables;
-
-			if (!pinned) {
-				return;
+				state.queryFavorites[index] = favorite;
 			}
 
-			if (pinned.includes(action.payload.table)) {
-				pinned.splice(pinned.indexOf(action.payload.table), 1);
-			} else {
-				pinned.push(action.payload.table);
-			}
-		},
+			return { queryFavorites };
+		}),
 
+		removeFavoritesEntry: (favoriteId) => set((state) => ({
+			queryFavorites: state.queryFavorites.filter((entry) => entry.id !== favoriteId),
+		})),
+
+		setFavorites: (queryFavorites) => set(() => ({
+			queryFavorites,
+		})),
+
+		setConsoleEnabled: (enableConsole) => set(() => ({ enableConsole })),
+		setSurrealUser: (surrealUser) => set(() => ({ surrealUser })),
+		setSurrealPass: (surrealPass) => set(() => ({ surrealPass })),
+		setSurrealPort: (surrealPort) => set(() => ({ surrealPort })),
+		setLocalDatabaseDriver: (localDriver) => set(() => ({ localDriver })),
+		setLocalDatabaseStorage: (localStorage) => set(() => ({ localStorage })),
+		setSurrealPath: (surrealPath) => set(() => ({ surrealPath })),
+		setQueryTimeout: (queryTimeout) => set(() => ({ queryTimeout })),
+		setUpdateChecker: (updateChecker) => set(() => ({ updateChecker })),
+		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
+		setShowQueryListing: (enableListing) => set(() => ({ enableListing })),
+		setQueryListingMode: (queryListing) => set(() => ({ queryListing })),
+		setResultListingMode: (resultListing) => set(() => ({ resultListing })),
+
+		increaseFontZoomLevel: () => set((state) => ({
+			fontZoomLevel: Math.min(state.fontZoomLevel + 0.1, 2),
+		})),
+
+		decreaseFontZoomLevel: () => set((state) => ({
+			fontZoomLevel: Math.max(state.fontZoomLevel - 0.1, 0.5),
+		})),
+
+		resetFontZoomLevel: () => set(() => ({
+			fontZoomLevel: 1,
+		})),
+
+		setDesignerLayoutMode: (defaultDesignerLayoutMode) => set(() => ({ defaultDesignerLayoutMode })),
+		setDesignerNodeMode: (defaultDesignerNodeMode) => set(() => ({ defaultDesignerNodeMode })),
+
+		toggleTablePin: (pin) => set((state) => ({
+			tabs: state.tabs.map((tab) =>
+				tab.id == pin.session
+					? ({
+						...tab,
+						pinnedTables:
+							tab.pinnedTables.includes(pin.table)
+								? tab.pinnedTables.splice(tab.pinnedTables.indexOf(pin.table), 1)
+								: [...tab.pinnedTables, pin.table]
+					})
+					: tab
+			)
+		})),
+	}), 
+	{
+		name: 'surrealist-config',
+		storage: createJSONStorage(() => adapterStorage),
+		// partialize: (state) => ({ fontZoomLevel: state.fontZoomLevel }),
 	}
-});
-
-export const configReducer = configSlice.reducer;
-
-export const {
-	initialize,
-	setColorScheme,
-	setAutoConnect,
-	setTableSuggest,
-	setErrorChecking,
-	setWordWrap,
-	setSessionSearch,
-	setEnvironments,
-	addSession,
-	removeSession,
-	updateSession,
-	setSessions,
-	setActiveSession,
-	setActiveView,
-	addQueryTab,
-	removeQueryTab,
-	updateQueryTab,
-	setActiveQueryTab,
-	setWindowPinned,
-	toggleWindowPinned,
-	addHistoryEntry,
-	clearHistory,
-	removeHistoryEntry,
-	saveFavoritesEntry,
-	removeFavoritesEntry,
-	setFavorites,
-	setConsoleEnabled,
-	setSurrealUser,
-	setSurrealPass,
-	setSurrealPort,
-	setLocalDatabaseDriver,
-	setLocalDatabaseStorage,
-	setSurrealPath,
-	setQueryTimeout,
-	setUpdateChecker,
-	setLastPromptedVersion,
-	setShowQueryListing,
-	setQueryListingMode,
-	setResultListingMode,
-	increaseFontZoomLevel,
-	decreaseFontZoomLevel,
-	resetFontZoomLevel,
-	setDesignerLayoutMode,
-	setDesignerNodeMode,
-	toggleTablePin,
-} = configSlice.actions;
+));

@@ -4,15 +4,13 @@ import { useActiveSession } from "~/hooks/environment";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
-import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DataTable } from "~/components/DataTable";
 import { RESULT_LISTINGS } from "~/constants";
-import { ResultListing } from "~/types";
 import { CombinedJsonPreview, SingleJsonPreview } from "./preview";
-import { setResultListingMode } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -31,7 +29,8 @@ export function ResultPane() {
 	const isLight = useIsLight();
 	const activeSession = useActiveSession();
 	const [resultTab, setResultTab] = useState<number>(1);
-	const resultListing = useStoreValue((state) => state.config.resultListing);
+	const resultListing = useConfigStore((s) => s.resultListing);
+	const setResultListingMode = useConfigStore((s) => s.setResultListingMode);
 	const responses: any[] = activeSession?.lastResponse || [];
 	const response = responses[resultTab - 1];
 
@@ -49,9 +48,7 @@ export function ResultPane() {
 		setResultTab(1);
 	}, [responses.length]);
 
-	const setResultView = useStable((view: ResultListing) => {
-		store.dispatch(setResultListingMode(view));
-	});
+	const setResultView = useStable(setResultListingMode);
 
 	return (
 		<Panel

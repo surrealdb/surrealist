@@ -8,30 +8,35 @@ import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import surrealistIcon from "~/assets/icon.png";
 import { useSurrealistTheme } from "~/util/theme";
-import { store, useStoreValue } from "~/store";
 import { DARK_THEME, LIGHT_THEME } from "~/util/editor";
 import { editor } from 'monaco-editor';
 
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
 import { updateTitle } from "~/util/helpers";
-import { hideAvailableUpdate } from "~/stores/interface";
-import { decreaseFontZoomLevel, increaseFontZoomLevel, resetFontZoomLevel, toggleWindowPinned } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { useConfigStore } from "~/stores/config";
 import { Scaffold } from "../Scaffold";
 
 export function App() {
+	const decreaseFontZoomLevel = useConfigStore((s) => s.decreaseFontZoomLevel);
+	const increaseFontZoomLevel = useConfigStore((s) => s.increaseFontZoomLevel);
+	const resetFontZoomLevel = useConfigStore((s) => s.resetFontZoomLevel);
+	const toggleWindowPinned = useConfigStore((s) => s.toggleWindowPinned);
+
 	const isLight = useIsLight();
-	const update = useStoreValue((state) => state.interface.availableUpdate);
-	const showUpdate = useStoreValue((state) => state.interface.showAvailableUpdate);
-	const colorScheme = useStoreValue((state) => state.config.theme);
-	const isPinned = useStoreValue((state) => state.config.isPinned);
-	const defaultScheme = useStoreValue((state) => state.interface.nativeTheme);
+	const update = useInterfaceStore((s) => s.availableUpdate);
+	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
+	const colorScheme = useConfigStore((s) => s.theme);
+	const isPinned = useConfigStore((s) => s.isPinned);
+	const defaultScheme = useInterfaceStore((s) => s.nativeTheme);
 	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
 	const mantineTheme = useSurrealistTheme(actualTheme);
+	const hideAvailableUpdate = useInterfaceStore((s) => s.hideAvailableUpdate);
 
 	const closeUpdate = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
-		store.dispatch(hideAvailableUpdate());
+		hideAvailableUpdate();
 	});
 
 	const openRelease = useStable(() => {
@@ -54,20 +59,12 @@ export function App() {
 		}
 	}, [isPinned]);
 
-	const togglePinned = useStable(() => {
-		store.dispatch(toggleWindowPinned());
-	});
-
-	const fontZoomInstructions = {
-		increase: () => store.dispatch(increaseFontZoomLevel()),
-		decrease: () => store.dispatch(decreaseFontZoomLevel()),
-		reset: () => store.dispatch(resetFontZoomLevel()),
-	};
+	const togglePinned = useStable(toggleWindowPinned);
 
 	useHotkeys([
-		["mod+alt+equal", fontZoomInstructions.increase],
-		["mod+alt+minus", fontZoomInstructions.decrease],
-		["mod+alt+0", fontZoomInstructions.reset],
+		["mod+alt+equal", increaseFontZoomLevel],
+		["mod+alt+minus", decreaseFontZoomLevel],
+		["mod+alt+0", resetFontZoomLevel],
 		["f11", togglePinned],
 	], []);
 

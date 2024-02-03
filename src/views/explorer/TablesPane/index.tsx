@@ -7,7 +7,6 @@ import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
-import { store } from "~/store";
 import { extractEdgeRecords } from "~/util/schema";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
@@ -15,11 +14,11 @@ import { useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
 import { useActiveSession } from "~/hooks/environment";
-import { useStoreState } from "~/hooks/store";
-import { setExplorerTable } from "~/stores/explorer";
-import { toggleTablePin } from "~/stores/config";
+import { useExplorerStore } from "~/stores/explorer";
+import { useConfigStore } from "~/stores/config";
 
 export function TablesPane() {
+	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
 	const isLight = useIsLight();
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState("");
@@ -28,10 +27,8 @@ export function TablesPane() {
 	const sessionInfo = useActiveSession();
 	const schema = useTables();
 
-	const [active, setActive] = useStoreState(
-		(state) => state.explorer.activeTable,
-		(value) => setExplorerTable(value)
-	);
+	const activeTable = useExplorerStore((s) => s.activeTable);
+	const setExplorerTable = useExplorerStore((s) => s.setExplorerTable);
 
 	const isPinned = useStable((table: string) => {
 		return sessionInfo?.pinnedTables?.includes(table) || false;
@@ -63,10 +60,10 @@ export function TablesPane() {
 
 		if (!table || !sessionInfo) return;
 
-		store.dispatch(toggleTablePin({
+		toggleTablePin({
 			session: sessionInfo.id,
 			table,
-		}));
+		});
 	});
 
 	return (
@@ -103,7 +100,7 @@ export function TablesPane() {
 						top: 42,
 					}}>
 					{tablesFiltered.map((table) => {
-						const isActive = active == table.schema.name;
+						const isActive = activeTable == table.schema.name;
 						const isPinned = sessionInfo?.pinnedTables?.includes(table.schema.name);
 						const [isEdge] = extractEdgeRecords(table);
 
@@ -116,7 +113,7 @@ export function TablesPane() {
 								title={`Double-click to ${isPinned ? 'unpin' : 'pin'} table`}
 								key={table.schema.name}
 								className={classes.tableEntry}
-								onClick={() => setActive(table.schema.name)}
+								onClick={() => setExplorerTable(table.schema.name)}
 								onDoubleClick={(e) => togglePinned(e, table.schema.name)}
 								sx={(theme) => ({
 									backgroundColor: isActive ? theme.fn.rgba(theme.fn.themeColor("surreal"), 0.125) : undefined,

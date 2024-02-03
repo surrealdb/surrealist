@@ -24,9 +24,7 @@ import { HistoryHandle } from "~/hooks/history";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { getSurreal } from "~/util/connection";
-import { store, useStoreValue } from "~/store";
-import { closeEditor, openCreator, setActiveRecord, setInspectorId, setInspectorQuery } from "~/stores/explorer";
-import { useStoreState } from "~/hooks/store";
+import { useExplorerStore } from "~/stores/explorer";
 import { EventBus } from "~/hooks/event";
 
 export interface InspectorPaneProps {
@@ -38,20 +36,19 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 	const isLight = useIsLight();
 	const isShifting = useActiveKeys("Shift");
 	const [isDeleting, setIsDeleting] = useState(false);
-	const record = useStoreValue((state) => state.explorer.activeRecord);
+	const activeRecord = useExplorerStore((s) => s.activeRecord);
 
-	const isEmpty = record === null;
-	const isPresent = record?.exists === true;
+	const isEmpty = activeRecord === null;
+	const isPresent = activeRecord?.exists === true;
 
-	const [editingId, setEditingId] = useStoreState(
-		(state) => state.explorer.inspectorId,
-		(value) => setInspectorId(value)
-	);
+	const inspectorId = useExplorerStore((s) => s.inspectorId);
+	const setInspectorId = useExplorerStore((s) => s.setInspectorId);
+	const inspectorQuery = useExplorerStore((s) => s.inspectorQuery);
+	const setInspectorQuery = useExplorerStore((s) => s.setInspectorQuery);
 
-	const [editingQuery, setEditingQuery] = useStoreState(
-		(state) => state.explorer.inspectorQuery,
-		(value) => setInspectorQuery(value)
-	);
+	const closeEditor = useExplorerStore((s) => s.closeEditor);
+	const openCreator = useExplorerStore((s) => s.openCreator);
+	const setActiveRecord = useExplorerStore((s) => s.setActiveRecord);
 
 	const fetchRecord = useStable(async (id: string | null) => {
 		const surreal = getSurreal();
@@ -71,16 +68,16 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 
 		const json = JSON.stringify(content, null, 4);
 
-		setEditingId(id);
-		setEditingQuery(json);
+		setInspectorId(id);
+		setInspectorQuery(json);
 
-		store.dispatch(setActiveRecord({
+		setActiveRecord({
 			exists: !!content,
 			initial: json,
 			content,
 			inputs,
 			outputs
-		}));
+		});
 	});
 
 	const saveRecord = useStable(async () => {
@@ -90,20 +87,20 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 			return;
 		}
 
-		await surreal.query(`UPDATE ${history.current} CONTENT ${editingQuery}`);
+		await surreal.query(`UPDATE ${history.current} CONTENT ${inspectorQuery}`);
 
 		fetchRecord(history.current);
 		refreshEvent.dispatch();
 	});
 
-	const isEdge = record?.content?.in && record?.content?.out;
+	const isEdge = activeRecord?.content?.in && activeRecord?.content?.out;
 
 	const gotoRecord = useStable((e: any) => {
 		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
 			return;
 		}
 
-		history.push(editingId);
+		history.push(inspectorId);
 	});
 
 	const handleDelete = useStable(async () => {
@@ -139,15 +136,15 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 	});
 
 	const handleClose = useStable(() => {
-		store.dispatch(closeEditor());
+		closeEditor();
 	});
 
 	const onIdChange = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setEditingId(e.target.value);
+		setInspectorId(e.target.value);
 	});
 
 	const createNew = useStable(() => {
-		store.dispatch(openCreator(editingId));
+		openCreator(inspectorId);
 	});
 
 	useEffect(() => {
@@ -184,7 +181,7 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 		>
 			<TextInput
 				mb="xs"
-				value={editingId}
+				value={inspectorId}
 				onBlur={gotoRecord}
 				onKeyDown={gotoRecord}
 				onChange={onIdChange}
@@ -207,7 +204,7 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 				styles={(theme) => ({
 					input: {
 						backgroundColor: isLight ? "white" : theme.fn.themeColor("dark.9"),
-						color: theme.fn.themeColor(record?.exists === false ? "red" : "surreal"),
+						color: theme.fn.themeColor(activeRecord?.exists === false ? "red" : "surreal"),
 						fontFamily: "JetBrains Mono",
 						fontSize: 14,
 						height: 42,
@@ -235,9 +232,9 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 
 					<Tabs.Panel value="content">
 						<ContentTab
-							isDirty={editingQuery !== record.initial}
-							value={editingQuery}
-							onChange={setEditingQuery}
+							isDirty={inspectorQuery !== activeRecord.initial}
+							value={inspectorQuery}
+							onChange={setInspectorQuery}
 							onSave={saveRecord}
 						/>
 					</Tabs.Panel>
@@ -245,8 +242,8 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 					<Tabs.Panel value="relations">
 						<RelationsTab
 							isLight={isLight}
-							inputs={record.inputs}
-							outputs={record.outputs}
+							inputs={activeRecord.inputs}
+							outputs={activeRecord.outputs}
 							onOpen={history.push}
 						/>
 					</Tabs.Panel>

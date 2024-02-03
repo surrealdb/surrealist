@@ -1,14 +1,14 @@
 import { mdiTune } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveSession } from "~/hooks/environment";
-import { store } from "~/store";
 import { Panel } from "~/components/Panel";
 import { useState } from "react";
 import { Text } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { updateSession } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 
 export function VariablesPane() {
+	const updateSession = useConfigStore((s) => s.updateSession);
 	const activeSession = useActiveSession();
 
 	if (!activeSession) {
@@ -26,10 +26,10 @@ export function VariablesPane() {
 				throw new TypeError("Invalid JSON");
 			}
 
-			store.dispatch(updateSession({
+			updateSession({
 				id: activeSession.id,
 				variables: json,
-			}));
+			});
 
 			setIsInvalid(false);
 		} catch {

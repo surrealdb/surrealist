@@ -1,92 +1,87 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { DatabaseSchema } from "~/types";
 import { printLog } from "~/util/helpers";
+import { create } from 'zustand';
 
-const databaseSlice = createSlice({
-	name: "database",
-	initialState: {
+export type DatabaseStore = {
+	isServing: boolean,
+	servePending: boolean,
+	isConnecting: boolean,
+	isConnected: boolean,
+	isQueryActive: boolean,
+	consoleOutput: string[],
+	databaseSchema: DatabaseSchema | null
+
+	setQueryActive: (isQueryActive: boolean) => void
+	clearSchema: () => void
+	prepareServe: () => void
+	confirmServing: () => void
+	stopServing: () => void
+	cancelServe: () => void
+	pushConsoleLine: (line: string) => void
+	clearConsole: () => void
+	setDatabaseSchema: (databaseSchema: DatabaseSchema) => void
+	setIsConnecting: (isConnecting: boolean) => void
+	setIsConnected: (isConnected: boolean) => void
+};
+
+export const useDatabaseStore = create<DatabaseStore>((set) => ({
+	isServing: false,
+	servePending: false,
+	isConnecting: false,
+	isConnected: false,
+	isQueryActive: false,
+	consoleOutput: [],
+	databaseSchema: null,
+
+	setQueryActive: (isQueryActive) => set(() => ({
+		isQueryActive
+	})),
+
+	clearSchema: () => set(() => ({
+		databaseSchema: null,
+	})),
+
+	prepareServe: () => set(() => ({
+		servePending: true,
+		consoleOutput: [],
+	})),
+
+	confirmServing: () => set(() => ({
+		isServing: true,
+		servePending: false,
+	})),
+
+	stopServing: () => set(() => ({
 		isServing: false,
 		servePending: false,
-		isConnecting: false,
-		isConnected: false,
-		isQueryActive: false,
-		consoleOutput: [] as string[],
-		databaseSchema: null as DatabaseSchema | null
-	},
-	reducers: {
+	})),
 
-		setQueryActive(state, action: PayloadAction<boolean>) {
-			state.isQueryActive = action.payload;
-		},
+	cancelServe: () => set(() => ({
+		servePending: true,
+	})),
 
-		clearSchema(state) {
-			state.databaseSchema = null;
-		},
+	pushConsoleLine: (line) => set((state) => ({
+		consoleOutput: [
+			...state.consoleOutput.slice(0, 249),
+			line,
+		]
+	})),
 
-		prepareServe(state) {
-			state.servePending = true;
-			state.consoleOutput = [];
-		},
+	clearConsole: () => set(() => ({
+		consoleOutput: [],
+	})),
 
-		confirmServing(state) {
-			state.isServing = true;
-			state.servePending = false;
-		},
+	setDatabaseSchema: (databaseSchema) => set(() => {
+		printLog("Received database schema", "#e600a4", databaseSchema);
+		return { databaseSchema };
+	}),
 
-		stopServing(state) {
-			state.isServing = false;
-			state.servePending = false;
-		},
+	setIsConnecting: (isConnecting) => set(() => ({
+		isConnecting,
+	})),
 
-		cancelServe(state) {
-			state.servePending = true;
-		},
-
-		pushConsoleLine(state, action: PayloadAction<string>) {
-			state.consoleOutput.push(action.payload);
-
-			if (state.consoleOutput.length > 250) {
-				state.consoleOutput.shift();
-			}
-		},
-
-		clearConsole(state) {
-			state.consoleOutput = [];
-		},
-
-		setDatabaseSchema(state, action: PayloadAction<DatabaseSchema>) {
-			printLog("Received database schema", "#e600a4", action.payload);
-			
-			state.databaseSchema = action.payload;
-		},
-
-		setIsConnecting(state, action: PayloadAction<boolean>) {
-			state.isConnecting = action.payload;
-		},
-
-		setIsConnected(state, action: PayloadAction<boolean>) {
-			state.isConnected = action.payload;
-
-			if (!action.payload) {
-				state.databaseSchema = null;
-			}
-		},
-
-	}
-});
-
-export const databaseReducer = databaseSlice.reducer;
-
-export const {
-	setQueryActive,
-	clearSchema,
-	prepareServe,
-	confirmServing,
-	stopServing,
-	cancelServe,
-	pushConsoleLine,
-	clearConsole,
-	setDatabaseSchema,
-	setIsConnecting,
-	setIsConnected,
-} = databaseSlice.actions;
+	setIsConnected: (isConnected) => set((state) => ({
+		isConnected,
+		databaseSchema: isConnected ? state.databaseSchema : null,
+	})),
+}));
