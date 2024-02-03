@@ -9,12 +9,14 @@ import { timeoutPromise } from "~/util/promise-timeout";
 const adapterStorage: StateStorage = {
 	async setItem(name, value) {
 		if (name == 'surrealist-config') {
-			return timeoutPromise(() => adapter.saveConfig(value));
+			const state = JSON.stringify(JSON.parse(value).state);
+			return timeoutPromise(() => adapter.saveConfig(state));
 		}
 	},
 	async getItem(name) {
 		if (name == 'surrealist-config') {
-			return timeoutPromise(() => adapter.loadConfig());
+			const state = JSON.parse(await timeoutPromise(() => adapter.loadConfig()));
+			return JSON.stringify({ state, version: 0 });
 		}
 
 		return null;
