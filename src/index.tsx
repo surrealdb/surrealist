@@ -45,7 +45,7 @@ import { useInterfaceStore } from "./stores/interface";
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
-	createRoot(root).render(<App />);
+	createRoot(root).render(
 		<ErrorBoundary 
 			FallbackComponent={ErrorBoundaryFallback} 
 			onReset={() => {
