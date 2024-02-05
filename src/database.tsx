@@ -7,6 +7,19 @@ import { getActiveEnvironment, getActiveSession, isConnectionValid, mergeConnect
 import { uid } from "radash";
 import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
+import { ConnectionOptions } from "./types";
+
+const SANDBOX_CONNECTION: ConnectionOptions = {
+	method: "local",
+	authMode: "none",
+	namespace: "sandbox",
+	database: "sandbox",
+	endpoint: "mem://",
+	username: "",
+	password: "",
+	scope: "",
+	scopeFields: []
+};
 
 /**
  * Open a new connection to the database
@@ -48,8 +61,12 @@ export function openConnection(isSilent?: boolean) {
 		setIsConnecting(true);
 		setIsConnected(false);
 
+		const connectionInfo = connection.method === "local"
+			? SANDBOX_CONNECTION
+			: connection;
+
 		openSurrealConnection({
-			connection,
+			connection: connectionInfo,
 			onConnect() {
 				setIsConnecting(false);
 				setIsConnected(true);

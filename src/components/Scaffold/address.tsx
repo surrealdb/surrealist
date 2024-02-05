@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { Group, Paper, clsx, ActionIcon, Button, useMantineTheme, Text } from "@mantine/core";
-import { mdiClose, mdiRefresh } from "@mdi/js";
+import { mdiClose, mdiDelete, mdiRefresh } from "@mdi/js";
 import { closeConnection, openConnection } from "~/database";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -15,6 +15,7 @@ import { surrealIcon } from "~/util/icons";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
+import { showNotification } from "@mantine/notifications";
 
 export interface AddressBarProps {
 	viewMode: ViewMode;
@@ -45,6 +46,16 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 	const handleCloseConnection = useStable((e: MouseEvent) => {
 		e.stopPropagation();
 		closeConnection();
+	});
+
+	const handleClearMemory = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+		closeConnection();
+		openConnection();
+
+		showNotification({
+			message: "Sandbox environment has been cleaned",
+		});
 	});
 
 	const handleFetchSchema = useStable((e: MouseEvent) => {
@@ -108,10 +119,7 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 						<Icon path={surrealIcon} color="surreal" />
 						<Group spacing={6}>
 							<Text color={isLight ? "light.6" : "white"}>
-								Sandbox
-							</Text>
-							<Text color={isLight ? "light.4" : "light.4"}>
-								({connection.namespace} / {connection.database})
+								Surrealist Sandbox
 							</Text>
 						</Group>
 					</>
@@ -127,9 +135,13 @@ export function AddressBar({ viewMode, onQuery }: AddressBarProps) {
 						<ActionIcon onClick={handleFetchSchema} title="Refetch schema">
 							<Icon color="light.4" path={mdiRefresh} />
 						</ActionIcon>
-						{isRemote && (
+						{isRemote ? (
 							<ActionIcon onClick={handleCloseConnection} title="Disconnect">
 								<Icon color="light.4" path={mdiClose} />
+							</ActionIcon>
+						) : (
+							<ActionIcon onClick={handleClearMemory} title="Clean sandbox">
+								<Icon color="light.4" path={mdiDelete} />
 							</ActionIcon>
 						)}
 					</>

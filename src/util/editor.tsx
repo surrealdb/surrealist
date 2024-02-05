@@ -8,7 +8,6 @@ import { loadWASM } from 'onigasm';
 import { executeQuery } from "~/database";
 import { validate_query } from "~/generated/surrealist-embed";
 
-import TypeScriptWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 
@@ -27,9 +26,6 @@ self.MonacoEnvironment = {
 		switch (label) {
 			case 'json': {
 				return new JsonWorker();
-			}
-			case 'javascript': {
-				return new TypeScriptWorker();
 			}
 			default: {
 				return new EditorWorker();
@@ -343,6 +339,11 @@ let jsonPatched = false;
 export function onEditorReady(editor: editor.IStandaloneCodeEditor) {
 	const language = editor.getModel()!.getLanguageId();
 
+	monaco.languages.register({
+		id: 'javascript',
+		aliases: ['typescript', 'js']
+	});
+
 	// Patch JSON highlighting
 	if (language === 'json' && !jsonPatched) {
 		wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
@@ -352,5 +353,5 @@ export function onEditorReady(editor: editor.IStandaloneCodeEditor) {
 	// Ensure correct font measurements
 	document.fonts.ready.then(() => {
 		monaco.editor.remeasureFonts();
-	});
+	}); 
 }

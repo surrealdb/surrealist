@@ -62,32 +62,6 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 		});
 	});
 
-	const namespaceInput = (
-		<TextInput
-			label="Namespace"
-			value={value.namespace || ""}
-			placeholder={placeholders?.namespace}
-			onChange={(e) =>
-				onChange((draft) => {
-					draft.namespace = e.target.value;
-				})
-			}
-		/>
-	);
-
-	const databaseInput = (
-		<TextInput
-			label="Database"
-			value={value.database || ""}
-			placeholder={placeholders?.database}
-			onChange={(e) =>
-				onChange((draft) => {
-					draft.database = e.target.value;
-				})
-			}
-		/>
-	);
-
 	return (
 		<>
 			<SegmentedControl
@@ -117,8 +91,26 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 								})
 							}
 						/>
-						{namespaceInput}
-						{databaseInput}
+						<TextInput
+							label="Namespace"
+							value={value.namespace || ""}
+							placeholder={placeholders?.namespace}
+							onChange={(e) =>
+								onChange((draft) => {
+									draft.namespace = e.target.value;
+								})
+							}
+						/>
+						<TextInput
+							label="Database"
+							value={value.database || ""}
+							placeholder={placeholders?.database}
+							onChange={(e) =>
+								onChange((draft) => {
+									draft.database = e.target.value;
+								})
+							}
+						/>
 					</Stack>
 					<Stack>
 						<Select
@@ -185,12 +177,8 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 						icon={<Icon path={mdiInformation} />}
 					>
 						Sandbox sessions provide a convenient way to test queries locally without having to install SurrealDB, however data is kept in memory and
-						does not persist between restarts.
+						does not persist between restarts. The sandbox will automatically use namespace <b>sandbox</b> and database <b>sandbox</b>.
 					</Alert>
-					<SimpleGrid cols={2} spacing="xl">
-						{namespaceInput}
-						{databaseInput}
-					</SimpleGrid>
 				</>
 			)}
 			

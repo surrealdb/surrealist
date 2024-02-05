@@ -1,49 +1,39 @@
-use crate::query::{make_error, process_result, wrap_err, ConnectionInfo};
+use wasm_bindgen::prelude::*;
+use surrealdb::sql::Array;
+use surrealdb::sql::Object;
+use surrealdb::sql::Value;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use serde::Serialize;
 use serde_wasm_bindgen::{from_value, to_value};
 use std::collections::HashMap;
 use tokio::sync::RwLock;
-use wasm_bindgen::prelude::*;
 
 use surrealdb::{
-    engine::remote::ws::{Client, Ws, Wss},
+    engine::any::{connect, Any},
     opt::auth::{Database, Namespace, Root, Scope},
-    sql::{json, Value},
+    sql::json,
     Surreal,
 };
 
-static CLIENT: Lazy<RwLock<Option<Surreal<Client>>>> = Lazy::new(|| RwLock::new(None));
+use crate::types::ConnectionInfo;
+use crate::types::SurrealVersion;
+use crate::utils::make_error;
+use crate::utils::to_js_err;
 
-#[derive(Serialize)]
-pub struct SurrealVersion {
-    pub major: u64,
-    pub minor: u64,
-    pub patch: u64,
-}
+static SURREAL: Lazy<RwLock<Option<Surreal<Any>>>> = Lazy::new(|| RwLock::new(None));
 
 #[wasm_bindgen]
 pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
-    let mut instance = CLIENT.write().await;
+    let mut instance = SURREAL.write().await;
 
     let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
     let regex = Regex::new(r"^(https?://)?(.+?)$").unwrap();
     let matches = regex.captures(&info.endpoint).unwrap();
     let endpoint = matches.get(2).unwrap().as_str();
-    let is_secure = info.endpoint.starts_with("https");
 
     console_log!("Connecting to {}", endpoint);
 
-    let db = if is_secure {
-        Surreal::new::<Wss>(endpoint).await.map_err(wrap_err)?
-    } else {
-        Surreal::new::<Ws>(endpoint).await.map_err(wrap_err)?
-    };
-
-    if instance.is_none() {
-        *instance = None;
-    }
+    let db = connect(endpoint).await.map_err(to_js_err)?;
 
     match info.auth_mode.as_str() {
         "root" => {
@@ -52,7 +42,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 password: info.password.as_str(),
             })
             .await
-            .map_err(wrap_err)?;
+            .map_err(to_js_err)?;
         }
         "namespace" => {
             db.signin(Namespace {
@@ -61,7 +51,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 password: info.password.as_str(),
             })
             .await
-            .map_err(wrap_err)?;
+            .map_err(to_js_err)?;
         }
         "database" => {
             db.signin(Database {
@@ -71,7 +61,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 password: info.password.as_str(),
             })
             .await
-            .map_err(wrap_err)?;
+            .map_err(to_js_err)?;
         }
         "scope" => {
             let field_map = info
@@ -87,13 +77,13 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 params: field_map,
             })
             .await
-            .map_err(wrap_err)?;
+            .map_err(to_js_err)?;
         }
         _ => {}
     };
 
-    db.use_ns(info.namespace).await.map_err(wrap_err)?;
-    db.use_db(info.database).await.map_err(wrap_err)?;
+    db.use_ns(info.namespace).await.map_err(to_js_err)?;
+    db.use_db(info.database).await.map_err(to_js_err)?;
 
     *instance = Some(db);
 
@@ -102,7 +92,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
 
 #[wasm_bindgen]
 pub async fn close_connection() {
-    let mut instance = CLIENT.write().await;
+    let mut instance = SURREAL.write().await;
 
     *instance = None;
 }
@@ -111,7 +101,7 @@ pub async fn close_connection() {
 pub async fn query_version() -> Option<JsValue> {
     console_log!("Querying database version");
 
-    let container = CLIENT.read().await;
+    let container = SURREAL.read().await;
 
     if container.is_none() {
         return None;
@@ -145,8 +135,8 @@ pub async fn query_version() -> Option<JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn execute_remote_query(query: String, params: String) -> String {
-    let container = CLIENT.read().await;
+pub async fn execute_query(query: String, params: String) -> String {
+    let container = SURREAL.read().await;
 
     if container.is_none() {
         let error = Value::Array(make_error("No connection open")).into_json();
@@ -165,12 +155,54 @@ pub async fn execute_remote_query(query: String, params: String) -> String {
         console_log!("Failed to parse query variables");
     }
 
-    let query_task = builder.with_stats().await;
+    let response = builder.with_stats().await;
 
     console_log!(
         "Received response from database, success: {}",
-        query_task.is_ok()
+        response.is_ok()
     );
 
-    process_result(query_task)
+    let results: Array = match response {
+        Ok(mut response) => {
+            let statement_count = response.num_statements();
+
+            let mut results = Array::with_capacity(statement_count);
+            let errors = response.take_errors();
+
+            for i in 0..statement_count {
+                let mut entry = Object::default();
+                let error = errors.get(&i);
+                let (result, status, stats) = match error {
+                    Some((stats, error)) => {
+                        (Value::from(error.to_string()), Value::from("ERR"), *stats)
+                    }
+                    None => {
+                        let (stats, res) = response.take::<Value>(i).unwrap();
+                        (res.unwrap(), Value::from("OK"), stats)
+                    }
+                };
+
+                entry.insert("result".to_owned(), result);
+                entry.insert("status".to_owned(), status);
+                if let Some(time) = stats.execution_time {
+                    entry.insert("time".to_owned(), Value::Duration(time.into()));
+                };
+
+                results.push(Value::Object(entry));
+            }
+
+            results
+        }
+        Err(error) => {
+            let message = error.to_string();
+
+            console_log!("Query resulted in error: {}", message);
+            make_error(&message)
+        }
+    };
+
+    let result_value = Value::Array(results);
+    let result_json = serde_json::to_string(&result_value.into_json()).unwrap();
+
+    result_json
 }

@@ -1,6 +1,6 @@
 import { mapKeys, snake } from 'radash';
-import { open_connection, close_connection, query_version, execute_remote_query, execute_local_query } from '../generated/surrealist-embed';
-import { ConnectionOptions, SurrealOptions } from '~/types';
+import { open_connection, close_connection, query_version, execute_query } from '../generated/surrealist-embed';
+import { SurrealOptions } from '~/types';
 import compare from 'semver-compare';
 import { showNotification } from '@mantine/notifications';
 import { Stack, Text } from '@mantine/core';
@@ -15,6 +15,7 @@ export interface SurrealConnection {
 	query(query: string, params?: Record<string, any>): Promise<any>;
 	queryFirst(query: string): Promise<any>;
 	querySingle<T = any>(query: string): Promise<T>;
+	queryLive(query: string, params?: Record<string, any>): Promise<any>;
 }
 
 let instance: SurrealConnection | undefined;
@@ -25,11 +26,9 @@ function createError(message: string) {
 }
 
 // Execute a query and parse the result
-async function executeQuery(query: string, params: any, connection: ConnectionOptions) {
+async function executeQuery(query: string, params: any) {
 	const paramJson = JSON.stringify(params || {});
-	const response = connection.method === 'remote'
-		? await execute_remote_query(query, paramJson)
-		: await execute_local_query(connection, query, paramJson);
+	const response = await execute_query(query, paramJson);
 
 	return JSON.parse(response);
 }
@@ -42,12 +41,12 @@ async function scheduleTimeout(seconds: number) {
 }
 
 // Execute a query with timeout
-async function execute(query: string, params: any, connection: ConnectionOptions) {
+async function execute(query: string, params: any) {
 	const { queryTimeout } = useConfigStore.getState();
 
 	try {
 		const result = await Promise.race([
-			executeQuery(query, params, connection),
+			executeQuery(query, params),
 			scheduleTimeout(queryTimeout)
 		]);
 
@@ -136,24 +135,18 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 		endpoint: connection.endpoint.replace(/^ws/, "http")
 	};
 
-	if (options.connection.method === 'remote') {
-		open_connection(details).then(() => {
-			options.onConnect?.();
-			checkDatabaseVersion();
-		}).catch(err => {
-			console.error('Failed to open connection', err);
+	open_connection(details).then(() => {
+		options.onConnect?.();
+		checkDatabaseVersion();
+	}).catch(err => {
+		console.error('Failed to open connection', err);
 
-			if (!killed) {
-				options.onError?.(err);
-				options.onDisconnect?.(1000, 'Failed to open connection');
-				killed = true;
-			}
-		});
-	} else {
-		setTimeout(() => {
-			options.onConnect?.();
-		}, 0);
-	}
+		if (!killed) {
+			options.onError?.(err);
+			options.onDisconnect?.(1000, 'Failed to open connection');
+			killed = true;
+		}
+	});
 
 	const handle: SurrealConnection = {
 		close: () => {
@@ -162,10 +155,10 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			killed = true;
 		},
 		query: async (query, params) => {
-			return execute(query, params, details);
+			return execute(query, params);
 		},
 		queryFirst: async (query) => {
-			const results = await execute(query, {}, details) as any[];
+			const results = await execute(query, {}) as any[];
 
 			return results.map(res => {
 				return {
@@ -175,7 +168,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			});
 		},
 		querySingle: async (query) => {
-			const results = await execute(query, {}, details) as any[];
+			const results = await execute(query, {}) as any[];
 			const { result, status } = results[0];
 
 			if (status === 'OK') {
@@ -183,6 +176,9 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			} else {
 				return null;
 			}
+		},
+		queryLive: async (query, params) => {
+			// 
 		}
 	};
 

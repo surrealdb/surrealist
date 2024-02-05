@@ -17,6 +17,9 @@ import { updateTitle } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { Scaffold } from "../Scaffold";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import { useDatabaseStore } from "~/stores/database";
+import { useExplorerStore } from "~/stores/explorer";
 
 export function App() {
 	const decreaseFontZoomLevel = useConfigStore((s) => s.decreaseFontZoomLevel);
@@ -72,7 +75,17 @@ export function App() {
 		<MantineProvider withGlobalStyles withNormalizeCSS withCSSVariables theme={mantineTheme}>
 			<Notifications />
 
-			<Scaffold />
+			<ErrorBoundary
+				FallbackComponent={AppErrorHandler} 
+				onReset={() => {
+					useConfigStore.getState().softReset();
+					useDatabaseStore.getState().softReset();
+					useExplorerStore.getState().softReset();
+					useInterfaceStore.getState().softReset();
+				}}
+			>
+				<Scaffold />
+			</ErrorBoundary>
 
 			<Transition mounted={showUpdate} duration={250} transition="slide-up" timingFunction="ease">
 				{(styles) => (
@@ -218,5 +231,89 @@ export function App() {
 				}}
 			/>
 		</MantineProvider>
+	);
+}
+
+function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
+	const message = error instanceof Error ? error.message : error;
+	return (
+		<div style={{
+			width: '100%',
+			display: 'flex',
+			justifyContent: 'center',
+			paddingTop: '50px',
+		}}>
+			<div style={{
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'center',
+			}}>
+				<h1>Something went wrong!</h1>
+				{error.name && <h2>{error.name}</h2>}
+				<div style={{
+					padding: '0px 10px',
+					border: '1px solid black'
+				}}>
+					<h3>Message</h3>
+					<p style={{
+						whiteSpace: 'pre',
+						overflowX: 'auto',
+						maxWidth: '90vw'
+					}}>
+						{message}
+					</p>
+				</div>
+				{error.cause && (
+					<div style={{
+						padding: '0px 10px',
+						border: '1px solid black',
+						marginTop: '20px',
+					}}>
+						<h3>Cause</h3>
+						<p style={{
+							whiteSpace: 'pre',
+							overflowX: 'auto',
+							maxWidth: '90vw'
+						}}>
+							{error.cause}
+						</p>
+					</div>
+				)}
+				{error.stack && (
+					<div style={{
+						padding: '0px 10px',
+						border: '1px solid black',
+						marginTop: '20px',
+					}}>
+						<h3>Stack trace</h3>
+						<p style={{
+							whiteSpace: 'pre',
+							overflowX: 'auto',
+							maxWidth: '90vw',
+							lineHeight: '30px',
+						}}>
+							{error.stack}
+						</p>
+					</div>
+				)}
+				<div style={{
+					display: 'flex',
+					justifyContent: 'center',
+					marginTop: '40px',
+				}}>
+					<button onClick={resetErrorBoundary} style={{
+						padding: '10px',
+						background: 'black',
+						color: 'white',
+						border: 'none',
+						cursor: 'pointer',
+						fontSize: '16px',
+						fontWeight: '600',
+					}}>
+						Reload Surrealist
+					</button>
+				</div>
+			</div>
+		</div>
 	);
 }

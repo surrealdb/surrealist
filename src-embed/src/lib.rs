@@ -3,9 +3,10 @@ use wasm_bindgen::prelude::*;
 
 #[macro_use]
 mod console;
-
 mod query;
 mod schema;
+mod utils;
+mod types;
 
 #[wasm_bindgen]
 pub fn initialize_embed() {
