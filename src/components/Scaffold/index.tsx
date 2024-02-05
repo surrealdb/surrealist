@@ -2,26 +2,23 @@ import classes from "./style.module.scss";
 import surrealistLogo from "~/assets/icon.png";
 
 import {
+	ActionIcon,
 	Box,
 	Button,
 	Center,
-	Group,
+	Divider,
 	Image,
+	Stack,
 	Text,
 	Title,
 } from "@mantine/core";
 
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
-import { Splitter } from "../Splitter";
-import { ConsolePane } from "../ConsolePane";
-import { useHotkeys } from "@mantine/hooks";
-import { adapter } from "~/adapter";
+import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { TabCreator } from "./creator";
 import { TabEditor } from "./editor";
 import { executeQuery } from "~/database";
-import { AddressBar } from "./address";
-import { ViewListing } from "./listing";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
 import { QueryView } from "~/views/query/QueryView";
 import { ViewMode } from "~/types";
@@ -31,6 +28,13 @@ import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { LiveView } from "~/views/live/LiveView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { VIEW_MODES } from "~/constants";
+import { updateTitle } from "~/util/helpers";
+import { Icon } from "../Icon";
+import { Spacer } from "../Spacer";
+import { mdiCog } from "@mdi/js";
+import { Settings } from "../Settings";
+import { useIsLight } from "~/hooks/theme";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -47,10 +51,15 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 };
 
 export function Scaffold() {
+	const isLight = useIsLight();
+
 	const activeSession = useConfigStore((s) => s.activeTab);
 	const enableConsole = useConfigStore((s) => s.enableConsole);
 	const activeView = useConfigStore((s) => s.activeView);
 	const openTabCreator = useInterfaceStore((s) => s.openTabCreator);
+	const setActiveView = useConfigStore((s) => s.setActiveView);
+
+	const [showSettings, settingsHandle] = useDisclosure();
 
 	const viewNode = VIEW_PORTALS[activeView];
 
@@ -73,6 +82,13 @@ export function Scaffold() {
 		["mod+Enter", () => userExecuteQuery()],
 	]);
 
+	const viewInfo = VIEW_MODES.find((v) => v.id == activeView)!;
+
+	const setViewMode = useStable((id: ViewMode) => {
+		updateTitle();
+		setActiveView(id);
+	});
+
 	return (
 		<div className={classes.root}>
 
@@ -83,26 +99,58 @@ export function Scaffold() {
 
 			{activeSession ? (
 				<>
-					<Group p="xs">
-						<ViewListing
-							viewMode={activeView}
-						/>
-						
+					{/* <Box px="xs" pt="xs">
 						<AddressBar
 							viewMode={activeView}
 							onQuery={userExecuteQuery}
 						/>
-					</Group>
+					</Box> */}
 
-					<Box p="xs" className={classes.content}>
-						<Splitter
-							minSize={100}
-							bufferSize={200}
-							direction="vertical"
-							endPane={adapter.isServeSupported && enableConsole && <ConsolePane />}
-						>
+					{/* <Group p="xs" w="100%" noWrap style={{ flex: 1 }}>
+						<Box w={5}>
+					
+						</Box>
+						<Box style={{ flex: 1 }}>
 							{viewNode && <OutPortal node={viewNode} />}
-						</Splitter>
+						</Box>
+					</Group> */}
+
+					<Box p="sm" className={classes.wrapper}>
+						<Stack spacing="xs">
+							{VIEW_MODES.map((info) => {
+								const isActive = info.id === activeView;
+
+								return (
+									<ActionIcon
+										key={info.id}
+										color={isActive ? "surreal" : isLight ? "dark" : "light.0"}
+										variant={isActive ? "gradient" : "subtle"}
+										className={classes.viewButton}
+										onClick={() => setViewMode(info.id as ViewMode)}
+									>
+										<Icon path={info.icon} />
+									</ActionIcon>
+								);
+							})}
+
+							<Spacer />
+
+							<Divider
+								color={isLight ? "light.1" : "dark.6"}
+							/>
+
+							<ActionIcon
+								color="blue"
+								variant="subtle"
+								className={classes.viewButton}
+								onClick={settingsHandle.toggle}
+							>
+								<Icon path={mdiCog} />
+							</ActionIcon>
+						</Stack>
+						<Box className={classes.content}>
+							{viewNode && <OutPortal node={viewNode} />}
+						</Box>
 					</Box>
 
 					<InPortal node={VIEW_PORTALS.query}>
@@ -147,6 +195,11 @@ export function Scaffold() {
 			<TabCreator />
 
 			<TabEditor />
+
+			<Settings
+				opened={showSettings}
+				onClose={settingsHandle.close}
+			/>
 		</div>
 	);
 }

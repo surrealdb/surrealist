@@ -4,9 +4,12 @@
 	flex-direction: column;
 }
 
-.input-wrapper {
+.wrapper {
+	gap: 14px;
 	flex: 1;
-	gap: 0;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
 }
 
 .input {
@@ -28,7 +31,6 @@
 }
 
 .content {
-	flex-direction: row;
 	flex: 1;
 }
 
@@ -48,10 +50,7 @@
 	transform: none !important;
 }
 
-.view-mode-button {
-	align-content: start;
-}
-
-.view-mode-content {
-	background-color: unset !important;
+.view-button {
+	width: 48px;
+	height: 48px;
 }
