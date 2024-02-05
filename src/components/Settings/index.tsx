@@ -1,39 +1,25 @@
-import { mdiCog } from "@mdi/js";
-import { useState } from "react";
 import { Button, Modal, Paper, Stack, Tabs, Text } from "@mantine/core";
-import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
 import { GeneralTab } from "./tabs/Behavior";
 import { ConnectionTab } from "./tabs/Connection";
 import { LocalDatabaseTab } from "./tabs/LocalDatabase";
 import { useIsLight } from "~/hooks/theme";
-import { useStable } from "~/hooks/stable";
 import { ModalTitle } from "../ModalTitle";
 import { AppearanceTab } from "./tabs/Appearance";
-import { useConfigStore } from "~/stores/config";
 
-export function Settings() {
+export interface SettingsProps {
+	opened: boolean;
+	onClose: () => void;
+}
+
+export function Settings(props: SettingsProps) {
 	const isLight = useIsLight();
-	const config = useConfigStore();
-	const [showSettings, setShowSettings] = useState(false);
-
-	const openSettings = useStable(() => {
-		setShowSettings(true);
-	});
-
-	const closeSettings = useStable(() => {
-		setShowSettings(false);
-	});
 
 	return (
 		<>
-			<Button color={isLight ? "light.0" : "dark.4"} onClick={openSettings} title="Settings" px="xs">
-				<Icon path={mdiCog} color={isLight ? "light.8" : "white"} />
-			</Button>
-
 			<Modal
-				opened={showSettings}
-				onClose={closeSettings}
+				opened={props.opened}
+				onClose={props.onClose}
 				size={580}
 				title={<ModalTitle>Settings</ModalTitle>}
 			>
@@ -77,7 +63,7 @@ export function Settings() {
 					</Tabs.List>
 
 					<Tabs.Panel value="general" pt="xs">
-						<GeneralTab onClose={closeSettings} />
+						<GeneralTab onClose={props.onClose} />
 					</Tabs.Panel>
 
 					<Tabs.Panel value="appearance" pt="xs">

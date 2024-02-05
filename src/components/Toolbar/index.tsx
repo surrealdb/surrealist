@@ -124,8 +124,6 @@ export function Toolbar(props: ToolbarProps) {
 
 			<Exporter />
 
-			<Settings />
-
 			<Modal
 				opened={!!editingTab}
 				onClose={closeEditingTab}
