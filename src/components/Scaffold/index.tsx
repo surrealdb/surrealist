@@ -8,7 +8,6 @@ import {
 	Center,
 	Divider,
 	Image,
-	ScrollArea,
 	Stack,
 	Text,
 	Title,
@@ -125,7 +124,7 @@ export function Scaffold() {
 									<ActionIcon
 										key={info.id}
 										color={isActive ? "surreal" : isLight ? "dark" : "light.0"}
-										variant={isActive ? "filled" : "subtle"}
+										variant={isActive ? "gradient" : "subtle"}
 										className={classes.viewButton}
 										onClick={() => setViewMode(info.id as ViewMode)}
 									>

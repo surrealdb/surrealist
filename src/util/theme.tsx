@@ -65,7 +65,7 @@ export function useSurrealistTheme(colorScheme: ColorScheme): MantineThemeOverri
 				],
 			},
 			defaultGradient: {
-				from: "#de3ec9",
+				from: "#ff1abe",
 				to: "#6861ff",
 			},
 			components: {

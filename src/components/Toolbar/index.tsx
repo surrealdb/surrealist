@@ -1,5 +1,5 @@
 import surrealistLogo from "~/assets/icon.png";
-import { Group, Button, Modal, TextInput, Image, Divider } from "@mantine/core";
+import { Group, Button, Modal, TextInput, Image, Divider, Center } from "@mantine/core";
 import { mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -9,7 +9,6 @@ import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Spacer";
-import { Settings } from "../Settings";
 import { ViewMode } from "~/types";
 import { adapter } from "~/adapter";
 import { Selector } from "./selector";
@@ -89,7 +88,13 @@ export function Toolbar(props: ToolbarProps) {
 				</Group>
 			)}
 
-			<Image style={{ pointerEvents: "none", userSelect: "none" }} src={surrealistLogo} width={38} />
+			<Center w={52}>
+				<Image
+					style={{ pointerEvents: "none", userSelect: "none" }}
+					src={surrealistLogo}
+					width={38}
+				/>
+			</Center>
 
 			<Selector
 				active={activeSession}
