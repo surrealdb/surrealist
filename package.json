@@ -68,5 +68,10 @@
 		"sass": "^1.65.1",
 		"typescript": "^5.1.6",
 		"vite": "^4.4.9"
+	},
+	"pnpm": {
+		"patchedDependencies": {
+			"monaco-editor@0.41.0": "patches/monaco-editor@0.41.0.patch"
+		}
 	}
 }
