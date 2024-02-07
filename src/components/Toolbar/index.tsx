@@ -11,68 +11,43 @@ import { LocalDatabase } from "../LocalDatabase";
 import { Spacer } from "../Spacer";
 import { ViewMode } from "~/types";
 import { adapter } from "~/adapter";
-import { Selector } from "./selector";
-import { useTabsList } from "~/hooks/environment";
-import { ViewTab } from "../ViewTab";
+import { useConnection } from "~/hooks/connection";
 import { Exporter } from "../Exporter";
 import { useConfigStore } from "~/stores/config";
 import { Importer } from "../Importer";
 import { openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
+import { Connections } from "./connections";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
-	onCreateTab: (environment: string) => void;
+	onCreateTab: () => void;
 }
 
 export function Toolbar(props: ToolbarProps) {
-	const updateSession = useConfigStore((s) => s.updateSession);
-	const setShowQueryListing = useConfigStore((s) => s.setShowQueryListing);
-	const setQueryListingMode = useConfigStore((s) => s.setQueryListingMode);
+	const { updateConnection } = useConfigStore.getState();
+
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
 	
+	const connection = useConnection();
 	const isLight = useIsLight();
-	const activeSession = useConfigStore((s) => s.activeTab);
-
-	const enableListing = useConfigStore((s) => s.enableListing);
-	const queryListing = useConfigStore((s) => s.queryListing);
 
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
-
-	const pinnedTabs = useTabsList().filter((tab) => tab.pinned);
 
 	const closeEditingTab = useStable(() => {
 		setEditingTab(null);
 	});
 
 	const saveTabName = useStable(() => {
-		updateSession({
+		updateConnection({
 			id: editingTab!,
 			name: tabName,
 		});
 
 		updateTitle();
 		closeEditingTab();
-	});
-
-	const toggleHistory = useStable(() => {
-		if (queryListing === "history") {
-			setShowQueryListing(!enableListing);
-		} else {
-			setQueryListingMode("history");
-			setShowQueryListing(true);
-		}
-	});
-
-	const toggleFavorites = useStable(() => {
-		if (queryListing === "favorites") {
-			setShowQueryListing(!enableListing);
-		} else {
-			setQueryListingMode("favorites");
-			setShowQueryListing(true);
-		}
 	});
 
 	const connect = useStable(() => {
@@ -88,21 +63,6 @@ export function Toolbar(props: ToolbarProps) {
 			wrap="nowrap"
 			h={64}
 		>
-			{pinnedTabs.length > 0 && (
-				<Group
-					gap={8}
-					style={{
-						position: "absolute",
-						inset: 0,
-						marginInline: "auto",
-						width: "max-content",
-					}}>
-					{pinnedTabs.map((tab) => (
-						<ViewTab key={tab.id} sessionInfo={tab} />
-					))}
-				</Group>
-			)}
-
 			<Center w={52}>
 				<Image
 					style={{ pointerEvents: "none", userSelect: "none" }}
@@ -110,14 +70,12 @@ export function Toolbar(props: ToolbarProps) {
 					width={38}
 				/>
 			</Center>
-
-			<Selector
-				active={activeSession}
-				isLight={isLight}
-				onCreateSession={props.onCreateTab}
+			
+			<Connections
+			
 			/>
 
-			{!isConnected && (
+			{connection && !isConnected && (
 				<Button
 					color="slate"
 					variant="light"
@@ -132,11 +90,11 @@ export function Toolbar(props: ToolbarProps) {
 
 			{props.viewMode == "query" && (
 				<>
-					<ActionIcon size="xl" title="Toggle history" onClick={toggleHistory}>
+					<ActionIcon size="xl" title="Toggle history" onClick={() => {}}>
 						<Icon path={mdiHistory} />
 					</ActionIcon>
 
-					<ActionIcon size="xl" title="Toggle favorites" onClick={toggleFavorites}>
+					<ActionIcon size="xl" title="Toggle favorites" onClick={() => {}}>
 						<Icon path={mdiStar} />
 					</ActionIcon>
 

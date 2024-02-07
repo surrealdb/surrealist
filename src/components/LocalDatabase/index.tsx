@@ -14,7 +14,6 @@ import { useDatabaseStore } from "~/stores/database";
 
 export function LocalDatabase() {
 	const isLight = useIsLight();
-	const enableConsole = useConfigStore((s) => s.enableConsole);
 	const [isOpen, setIsOpen] = useState(false);
 
 	const cancelServe = useDatabaseStore((s) => s.cancelServe);
@@ -23,13 +22,12 @@ export function LocalDatabase() {
 	const isServing = useDatabaseStore((s) => s.isServing);
 	const isPending = useDatabaseStore((s) => s.servePending);
 
-	const setConsoleEnabled = useConfigStore((s) => s.setConsoleEnabled);
-	const localDriver = useConfigStore((s) => s.localDriver);
-	const localPath = useConfigStore((s) => s.localStorage);
-	const surrealPath = useConfigStore((s) => s.surrealPath);
-	const surrealUser = useConfigStore((s) => s.surrealUser);
-	const surrealPass = useConfigStore((s) => s.surrealPass);
-	const surrealPort = useConfigStore((s) => s.surrealPort);
+	const localDriver = useConfigStore((s) => s.localSurrealDriver);
+	const localPath = useConfigStore((s) => s.localSurrealPath);
+	const surrealPath = useConfigStore((s) => s.localSurrealPath);
+	const surrealUser = useConfigStore((s) => s.localSurrealUser);
+	const surrealPass = useConfigStore((s) => s.localSurrealPass);
+	const surrealPort = useConfigStore((s) => s.localSurrealPort);
 
 	const handleToggle = useStable(() => {
 		if (isPending) {
@@ -49,9 +47,7 @@ export function LocalDatabase() {
 			});
 		}
 	});
-
-	const toggleConsole = useStable(() => setConsoleEnabled(!enableConsole));
-
+	
 	useEffect(() => {
 		if (isServing) {
 			openConnection();
@@ -105,7 +101,7 @@ export function LocalDatabase() {
 						px="xs"
 						color={isLight ? "light.0" : "dark.4"}
 						title="Toggle console"
-						onClick={toggleConsole}
+						onClick={() => {}}
 					>
 						<Icon path={mdiConsole} color={isLight ? "light.8" : "white"} />
 					</Button>

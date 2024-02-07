@@ -17,8 +17,7 @@ import clsx from "clsx";
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
-import { TabCreator } from "./creator";
-import { TabEditor } from "./editor";
+import { ConnectionEditor } from "./editor";
 import { executeQuery } from "~/database";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
 import { QueryView } from "~/views/query/QueryView";
@@ -87,23 +86,16 @@ export function Scaffold() {
 
 	// TODO Implement bottom console drawer
 
-	const activeSession = useConfigStore((s) => s.activeTab);
-	const enableConsole = useConfigStore((s) => s.enableConsole);
+	const { setActiveView } = useConfigStore.getState();
+	const { openConnectionCreator } = useInterfaceStore.getState();
+
+	const activeConnection = useConfigStore((s) => s.activeConnection);
 	const activeView = useConfigStore((s) => s.activeView);
-	const openTabCreator = useInterfaceStore((s) => s.openTabCreator);
-	const setActiveView = useConfigStore((s) => s.setActiveView);
 
 	const [showSettings, settingsHandle] = useDisclosure();
+	const [showConsole, showConsoleHandle] = useDisclosure();
 
 	const viewNode = VIEW_PORTALS[activeView];
-
-	const showTabCreator = useStable((envId?: string) => openTabCreator({
-		environment: envId,
-	}));
-
-	const createNewTab = useStable(() => {
-		showTabCreator();
-	});
 
 	const userExecuteQuery = useStable(() => {
 		executeQuery({
@@ -130,10 +122,10 @@ export function Scaffold() {
 		>
 			<Toolbar
 				viewMode={activeView}
-				onCreateTab={showTabCreator}
+				onCreateTab={openConnectionCreator}
 			/>
 
-			{activeSession ? (
+			{activeConnection ? (
 				<>
 					<Box p="sm" className={classes.wrapper}>
 						<Stack gap="xs">
@@ -194,25 +186,24 @@ export function Scaffold() {
 							src={surrealistLogo}
 							maw={120}
 							mx="auto"
+							mb="xl"
 						/>
 						<Title c="light" ta="center" mt="md">
 							Surrealist
 						</Title>
 						<Text c="light.2" ta="center">
-							Open or create a new session to continue
+							Open or create a new connection to continue
 						</Text>
 						<Center mt="lg">
-							<Button size="xs" onClick={createNewTab}>
-								Create session
+							<Button size="xs" onClick={openConnectionCreator}>
+								Create connection
 							</Button>
 						</Center>
 					</div>
 				</Center>
 			)}
 
-			<TabCreator />
-
-			<TabEditor />
+			<ConnectionEditor />
 
 			<Settings
 				opened={showSettings}

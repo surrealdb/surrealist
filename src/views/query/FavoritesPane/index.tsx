@@ -23,8 +23,8 @@ import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { useInputState } from "@mantine/hooks";
-import { FavoritesEntry, SurrealistSession } from "~/types";
-import { useActiveQuery, useActiveSession } from "~/hooks/environment";
+import { useActiveQuery } from "~/hooks/connection";
+import { useActiveConnection } from "~/hooks/connection";
 import { uid } from "radash";
 import { Sortable } from "~/components/Sortable";
 import { Panel } from "~/components/Panel";
@@ -34,17 +34,15 @@ import { Form } from "~/components/Form";
 import { ModalTitle } from "~/components/ModalTitle";
 import { executeQuery } from "~/database";
 import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
 import { themeColor } from "~/util/mantine";
+import { Connection, SavedQuery } from "~/types";
 
-export function FavoritesPane() {
-	const removeFavoritesEntry = useConfigStore((s) => s.removeFavoritesEntry);
-	const setFavorites = useConfigStore((s) => s.setFavorites);
-	const saveFavoritesEntry = useConfigStore((s) => s.saveFavoritesEntry);
+export function SavedQueriesPane() {
+	const { removeSavedQuery, setSavedQueries, saveQuery } = useConfigStore.getState();
 
 	const isLight = useIsLight();
-	const activeSession = useActiveSession();
-	const entries = useConfigStore((s) => s.queryFavorites);
+	const activeSession = useActiveConnection();
+	const entries = useConfigStore((s) => s.savedQueries);
 	const queryTab = useActiveQuery();
 
 	const [search, setSearch] = useInputState("");
@@ -65,9 +63,9 @@ export function FavoritesPane() {
 		setIsEditing(false);
 	});
 
-	const saveQuery = useStable(() => {
+	const doSaveQuery = useStable(() => {
 		setIsEditing(false);
-		saveFavoritesEntry({
+		saveQuery({
 			id: editingId || uid(5),
 			name: queryName,
 			query: queryText,
@@ -100,10 +98,9 @@ export function FavoritesPane() {
 
 	const deleteEntry = useStable(() => {
 		setIsEditing(false);
-		removeFavoritesEntry(editingId);
+		removeSavedQuery(editingId);
 	});
 
-	const saveOrder = useStable((favorites: FavoritesEntry[]) => setFavorites(favorites));
 	const closeActive = useStable(() => setActiveEntry(""));
 
 	const historyList = useMemo(() => {
@@ -119,13 +116,13 @@ export function FavoritesPane() {
 			<Sortable
 				items={filtered}
 				onSorting={closeActive}
-				onSorted={saveOrder}
+				onSorted={setSavedQueries}
 				constraint={{
 					distance: 12,
 				}}>
 				{({ index, item, handleProps }) => (
 					<Fragment key={index}>
-						<FavoriteRow
+						<SavedQueryRow
 							entry={item}
 							isActive={activeEntry === item.id}
 							isLight={isLight}
@@ -173,7 +170,7 @@ export function FavoritesPane() {
 				title={
 					<ModalTitle>{editingId ? "Edit query" : "Save query"}</ModalTitle>
 				}>
-				<Form onSubmit={saveQuery}>
+				<Form onSubmit={doSaveQuery}>
 					<Stack>
 						<TextInput placeholder="Enter query name" value={queryName} onChange={setQueryName} autoFocus />
 						<Textarea placeholder="SELECT * FROM ..." value={queryText} onChange={setQueryText} minRows={8} />
@@ -196,21 +193,19 @@ export function FavoritesPane() {
 	);
 }
 
-interface HistoryRowProps {
+interface SavedRowProps {
 	isActive: boolean;
-	entry: FavoritesEntry;
+	entry: SavedQuery;
 	isLight: boolean;
-	activeSession: SurrealistSession | undefined;
+	activeSession: Connection | undefined;
 	enableDrag: boolean;
 	handleProps: Record<string, any>;
 	onActivate: (id: string) => void;
 	onEdit: (id: string) => void;
 }
 
-function FavoriteRow(props: HistoryRowProps) {
-	const addQueryTab = useConfigStore((s) => s.addQueryTab);
-	const openTabCreator = useInterfaceStore((s) => s.openTabCreator);
-
+function SavedQueryRow(props: SavedRowProps) {
+	const { addQueryTab } = useConfigStore.getState();
 	const { isActive, entry, isLight, enableDrag, handleProps, onActivate, onEdit } = props;
 
 	const theme = useMantineTheme();
@@ -232,13 +227,6 @@ function FavoriteRow(props: HistoryRowProps) {
 		} else {
 			onActivate(entry.id);
 		}
-	});
-
-	const openQuery = useStable(() => {
-		openTabCreator({
-			name: entry.name.slice(0, 25),
-			query: entry.query,
-		});
 	});
 
 	return (
@@ -280,9 +268,6 @@ function FavoriteRow(props: HistoryRowProps) {
 					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeFavorite}>
 						<Icon path={mdiPlay} color="pink" />
 					</Button>
-					<Button size="xs" variant="light" color="blue" radius="sm" title="Open in new session" onClick={openQuery}>
-						<Icon path={mdiPlus} color="blue" />
-					</Button>
 				</SimpleGrid>
 			</Collapse>
 		</Box>
@@ -294,10 +279,8 @@ interface FavoritesActionsProps {
 }
 
 function FavoritesActions(props: FavoritesActionsProps) {
-	const setShowQueryListing = useConfigStore((s) => s.setShowQueryListing);
 	const queryTab = useActiveQuery();
 	const canSave = queryTab.text.length > 0;
-	const hideFavorites = useStable(() => setShowQueryListing(false));
 
 	return (
 		<Group align="center">
@@ -306,7 +289,7 @@ function FavoritesActions(props: FavoritesActionsProps) {
 					<Icon color="light.4" path={mdiPlus} />
 				</ActionIcon>
 			)}
-			<ActionIcon onClick={hideFavorites} title="Hide favorites">
+			<ActionIcon onClick={() => {}} title="Hide favorites">
 				<Icon color="light.4" path={mdiClose} />
 			</ActionIcon>
 		</Group>

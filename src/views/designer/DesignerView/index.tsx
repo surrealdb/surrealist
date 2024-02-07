@@ -8,7 +8,7 @@ import { useImmer } from "use-immer";
 import { useSaveable } from "~/hooks/save";
 import { buildDefinitionQueries, isSchemaValid } from "../DesignPane/helpers";
 import { showError } from "~/util/helpers";
-import { getActiveSurreal } from "~/util/connection";
+import { getActiveSurreal } from "~/util/surreal";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { TableDefinition } from "~/types";
 import { ReactFlowProvider } from "reactflow";

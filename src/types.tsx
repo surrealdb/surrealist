@@ -2,14 +2,12 @@ import { MantineColorScheme } from "@mantine/core";
 
 export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
 export type DriverType = "file" | "memory" | "tikv";
-export type QueryListing = "history" | "favorites";
-export type ResultListing = "table" | "json" | "combined";
+export type ResultMode = "table" | "json" | "combined";
 export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "live";
 export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type DesignerLayoutMode = "diagram" | "grid";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
-export type ConnectMethod = "remote" | "local";
 export type ColorScheme = "light" | "dark";
 
 export type OpenFn = (id: string | null) => void;
@@ -18,63 +16,62 @@ export type Open<T> = T & { [key: string]: any };
 
 export interface SurrealistConfig {
 	colorScheme: MantineColorScheme;
-	tabs: SurrealistSession[];
-	environments: SurrealistEnvironment[];
+	connections: Connection[];
+	sandbox: Connection;
 	activeView: ViewMode;
-	isPinned: boolean,
-	activeTab: string | null;
+	isPinned: boolean;
+	activeConnection: string | null;
 	autoConnect: boolean;
 	tableSuggest: boolean;
 	wordWrap: boolean;
-	queryHistory: HistoryEntry[];
-	queryFavorites: FavoritesEntry[];
-	localDriver: DriverType;
-	localStorage: string;
-	surrealPath: string;
-	surrealUser: string;
-	surrealPass: string;
-	surrealPort: number;
-	enableConsole: boolean;
-	enableListing: boolean;
-	queryTimeout: number;
+	savedQueries: SavedQuery[];
+	localSurrealDriver: DriverType;
+	localSurrealStorage: string;
+	localSurrealPath: string;
+	localSurrealUser: string;
+	localSurrealPass: string;
+	localSurrealPort: number;
 	updateChecker: boolean;
-	queryListing: QueryListing;
-	resultListing: ResultListing;
+	resultMode: ResultMode;
 	fontZoomLevel: number;
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
-	tabSearch: boolean;
 	defaultDesignerNodeMode: DesignerNodeMode,
 	defaultDesignerLayoutMode: DesignerLayoutMode
 }
 
-export interface SurrealistEnvironment {
+export interface Connection {
 	id: string;
 	name: string;
-	connection: Partial<ConnectionOptions>;
-}
-
-export interface SurrealistSession {
-	id: string;
-	name: string;
-	environment: string;
-	queries: SessionQuery[];
+	queries: TabQuery[];
 	activeQueryId: number;
 	lastQueryId: number;
 	variables: string;
 	connection: ConnectionOptions;
 	lastResponse: any;
-	pinned: boolean;
 	pinnedTables: string[];
 	designerNodeMode?: DesignerNodeMode;
 	designerLayoutMode?: DesignerLayoutMode;
 	liveQueries: LiveQuery[];
+	queryHistory: HistoryQuery[];
 }
 
-export interface SessionQuery {
+export interface TabQuery {
 	id: number;
 	text: string;
 	name?: string;
+}
+
+export interface HistoryQuery {
+	id: string;
+	query: string;
+	timestamp: number;
+}
+
+export interface SavedQuery {
+	id: string;
+	query: string;
+	name: string;
 }
 
 export interface LiveQuery {
@@ -86,19 +83,6 @@ export interface LiveQuery {
 export interface ScopeField {
 	subject: string;
 	value: string;
-}
-
-export interface HistoryEntry {
-	id: string;
-	query: string;
-	timestamp: number;
-	tabName: string;
-}
-
-export interface FavoritesEntry {
-	id: string;
-	query: string;
-	name: string;
 }
 
 export interface TableView {
@@ -184,15 +168,7 @@ export interface Analyzer {
 	filters: string[];
 }
 
-export interface TabCreation {
-	environment?: string;
-	name?: string;
-	query?: string;
-	connection?: Partial<ConnectionOptions>;
-}
-
 export interface ConnectionOptions {
-	method: ConnectMethod;
 	namespace: string;
 	database: string;
 	endpoint: string;
@@ -204,15 +180,10 @@ export interface ConnectionOptions {
 }
 
 export interface SurrealOptions {
-	connection: ConnectionOptions;
+	connection: Connection;
 	onConnect?: () => void;
 	onDisconnect?: (code: number, reason: string) => void;
 	onError?: (error: any) => void;
-}
-
-export interface TablePinAction {
-	session: string;
-	table: string;
 }
 
 export interface LiveMessage {

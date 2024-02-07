@@ -5,9 +5,12 @@ import { uid } from "radash";
 import { CSSProperties } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
-import { getActiveSession } from "./environments";
+import { getConnection } from "./connection";
 import { ViewMode } from "~/types";
 import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { useExplorerStore } from "~/stores/explorer";
+import { useInterfaceStore } from "~/stores/interface";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -20,7 +23,7 @@ export function updateTitle() {
 	const { pathname } = window.location;
 
 	const activeView = pathname.split("/")[1] as ViewMode;
-	const session = getActiveSession();
+	const session = getConnection();
 	const viewInfo = VIEW_MODES.find((v) => v.id === activeView);
 	const segments: string[] = [];
 
@@ -35,6 +38,13 @@ export function updateTitle() {
 	}
 
 	adapter.setWindowTitle(segments.join(' '));
+}
+
+export function resetApplicationState() {
+	useInterfaceStore.setState(useInterfaceStore.getInitialState());
+	useConfigStore.setState(useConfigStore.getInitialState());
+	useDatabaseStore.setState(useDatabaseStore.getInitialState());
+	useExplorerStore.setState(useExplorerStore.getInitialState());
 }
 
 /**
@@ -128,5 +138,14 @@ export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
 	return new Promise<T>((res, rej) =>
 		setTimeout(() => cb().then(res).catch(rej), timeout)
 	);
+}
+/**
+ * Returns whether the result is a permission error
+ *
+ * @param result The result to check
+ * @returns True if the result is a permission error
+ */
+export function isPermissionError(result: any) {
+	return typeof result === 'string' && result.includes('Not enough permissions to perform this action');
 }
   

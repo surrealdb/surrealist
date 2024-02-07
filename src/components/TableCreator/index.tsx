@@ -10,7 +10,7 @@ import { Spacer } from "../Spacer";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
 import { ModalTitle } from "../ModalTitle";
-import { getActiveSurreal } from "~/util/connection";
+import { getActiveSurreal } from "~/util/surreal";
 
 export interface TableCreatorProps {
 	opened: boolean;

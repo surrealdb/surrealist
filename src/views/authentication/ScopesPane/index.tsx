@@ -13,7 +13,7 @@ import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { ScopeDefinition } from "~/types";
-import { getActiveSurreal } from "~/util/connection";
+import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
 

@@ -1,7 +1,6 @@
 import { Modal, Tabs } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { GeneralTab } from "./tabs/Behavior";
-import { ConnectionTab } from "./tabs/Connection";
 import { LocalDatabaseTab } from "./tabs/LocalDatabase";
 import { ModalTitle } from "../ModalTitle";
 import { AppearanceTab } from "./tabs/Appearance";
@@ -24,7 +23,6 @@ export function Settings(props: SettingsProps) {
 					<Tabs.List mb="md" grow>
 						<Tabs.Tab value="general">Behavior</Tabs.Tab>
 						<Tabs.Tab value="appearance">Appearance</Tabs.Tab>
-						<Tabs.Tab value="connection">Connection</Tabs.Tab>
 
 						{adapter.isServeSupported && <Tabs.Tab value="database">Local database</Tabs.Tab>}
 					</Tabs.List>
@@ -35,10 +33,6 @@ export function Settings(props: SettingsProps) {
 
 					<Tabs.Panel value="appearance" pt="xs">
 						<AppearanceTab />
-					</Tabs.Panel>
-
-					<Tabs.Panel value="connection" pt="xs">
-						<ConnectionTab />
 					</Tabs.Panel>
 
 					<Tabs.Panel value="database" pt="xs">

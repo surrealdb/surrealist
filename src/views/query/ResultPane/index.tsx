@@ -1,10 +1,9 @@
 import { ActionIcon, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
 import { mdiClock, mdiDatabase, mdiLightningBolt } from "@mdi/js";
-import { useActiveSession } from "~/hooks/environment";
+import { useActiveConnection } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
-import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { DataTable } from "~/components/DataTable";
@@ -26,18 +25,19 @@ function computeRowCount(response: any) {
 }
 
 export function ResultPane() {
+	const { setResultMode } = useConfigStore.getState();
+
 	const isLight = useIsLight();
-	const activeSession = useActiveSession();
+	const activeSession = useActiveConnection();
 	const [resultTab, setResultTab] = useState<number>(1);
-	const resultListing = useConfigStore((s) => s.resultListing);
-	const setResultListingMode = useConfigStore((s) => s.setResultListingMode);
+	const resultMode = useConfigStore((s) => s.resultMode);
 	const responses: any[] = activeSession?.lastResponse || [];
 	const response = responses[resultTab - 1];
 
 	const responseCount = responses.length;
 	const rowCount = computeRowCount(response);
 	
-	const showCombined = resultListing == 'combined';
+	const showCombined = resultMode == 'combined';
 	const showTabs = !showCombined && responses.length > 1;
 	const showResponses = showCombined && responseCount > 0;
 	const showRows = response?.result?.length > 0;
@@ -48,8 +48,6 @@ export function ResultPane() {
 		setResultTab(1);
 	}, [responses.length]);
 
-	const setResultView = useStable(setResultListingMode);
-
 	return (
 		<Panel
 			title={showCombined ? 'Results' : showTabs ? `Result #${resultTab}` : "Result"}
@@ -59,12 +57,12 @@ export function ResultPane() {
 					{response?.result !== undefined && (
 						<>
 							{RESULT_LISTINGS.map(item => {
-								const isActive = item.id == resultListing;
+								const isActive = item.id == resultMode;
 
 								return (
 									<ActionIcon
 										key={item.id}
-										onClick={() => setResultView(item.id)}
+										onClick={() => setResultMode(item.id)}
 										color={isActive ? 'surreal' : 'light.4'}
 										title={`Switch to ${item.id} view`}
 									>
@@ -120,7 +118,7 @@ export function ResultPane() {
 				}}>
 				{response ? (
 					<>
-						{resultListing == "combined" ? (
+						{resultMode == "combined" ? (
 							<CombinedJsonPreview results={responses} />
 						) : response.status == "ERR" ? (
 							<Text 
@@ -134,7 +132,7 @@ export function ResultPane() {
 							</Text>
 						) : response.result?.length === 0 ? (
 							<Text c="light.4">No results found for query</Text>
-						) : resultListing == "table" ? (
+						) : resultMode == "table" ? (
 							<DataTable data={response.result} />
 						) : (
 							<SingleJsonPreview result={response.result} />

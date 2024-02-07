@@ -1,25 +1,13 @@
 import { showNotification } from "@mantine/notifications";
-import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/connection";
-import { showError } from "./util/helpers";
+import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/surreal";
+import { newId, showError } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
 import { Text } from "@mantine/core";
-import { getActiveEnvironment, getActiveSession, isConnectionValid, mergeConnections } from "./util/environments";
-import { uid } from "radash";
+import { isConnectionValid } from "./util/connection";
+import { getActiveConnection } from "./util/connection";
+import { getConnection } from "./util/connection";
 import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
-import { ConnectionOptions } from "./types";
-
-const SANDBOX_CONNECTION: ConnectionOptions = {
-	method: "local",
-	authMode: "none",
-	namespace: "sandbox",
-	database: "sandbox",
-	endpoint: "mem://",
-	username: "",
-	password: "",
-	scope: "",
-	scopeFields: []
-};
 
 /**
  * Open a new connection to the database
@@ -30,13 +18,10 @@ const SANDBOX_CONNECTION: ConnectionOptions = {
 export function openConnection(isSilent?: boolean) {
 	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
 
-	const sessionInfo = getActiveSession();
-	const envInfo = getActiveEnvironment();
+	const connection = getActiveConnection();
+	const isValid = isConnectionValid(connection.connection);
 
-	const connection = mergeConnections(sessionInfo?.connection || {}, envInfo?.connection || {});
-	const connectionValid = isConnectionValid(connection);
-
-	if (!connectionValid) {
+	if (!isValid) {
 		showNotification({
 			color: "red.4",
 			bg: "red.6",
@@ -61,12 +46,8 @@ export function openConnection(isSilent?: boolean) {
 		setIsConnecting(true);
 		setIsConnected(false);
 
-		const connectionInfo = connection.method === "local"
-			? SANDBOX_CONNECTION
-			: connection;
-
 		openSurrealConnection({
-			connection: connectionInfo,
+			connection,
 			onConnect() {
 				setIsConnecting(false);
 				setIsConnected(true);
@@ -113,23 +94,19 @@ export interface QueryOptions {
  * @param options Query options
  */
 export async function executeQuery(options?: QueryOptions) {
-	const { setQueryActive } = useDatabaseStore.getState();
-	const { addHistoryEntry, updateSession } = useConfigStore.getState();
-	const sessionInfo = getActiveSession();
-	const isRemote = sessionInfo?.connection?.method === "remote";
+	const { setQueryActive, isConnected } = useDatabaseStore.getState();
+	const { updateConnection, addHistoryEntry } = useConfigStore.getState();
 
-	if (!sessionInfo || isRemote) {
-		const { isConnected } = useDatabaseStore.getState();
-		
-		if (!isConnected || !sessionInfo) {
-			showNotification({
-				message: "You must be connected to send a query",
-			});
-			return;
-		}
+	const connection = getConnection();
+
+	if (!connection || !isConnected) {
+		showNotification({
+			message: "You must be connected to send a query",
+		});
+		return;
 	}
 
-	const { id: tabId, queries, activeQueryId, name, variables } = sessionInfo;
+	const { id: tabId, queries, activeQueryId, name, variables } = connection;
 
 	const activeQuery = queries.find((q) => q.id === activeQueryId);
 	const queryStr = options?.override?.trim() || activeQuery?.text || '';
@@ -144,12 +121,12 @@ export async function executeQuery(options?: QueryOptions) {
 
 		const response = await getSurreal()?.query(queryStr, variableJson);
 
-		updateSession({
+		updateConnection({
 			id: tabId,
 			lastResponse: response,
 		});
 	} catch (err: any) {
-		updateSession({
+		updateConnection({
 			id: tabId,
 			lastResponse: [
 				{
@@ -165,9 +142,8 @@ export async function executeQuery(options?: QueryOptions) {
 	}
 
 	addHistoryEntry({
-		id: uid(5),
+		id: newId(),
 		query: queryStr,
-		tabName: name,
 		timestamp: Date.now(),
 	});
 }

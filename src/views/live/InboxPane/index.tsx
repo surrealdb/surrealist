@@ -4,7 +4,7 @@ import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { LIVE_QUERY_COLORS } from "~/constants";
-import { useActiveSession } from "~/hooks/environment";
+import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useRelativeTime } from "~/hooks/time";
 import { LiveMessage } from "~/types";
@@ -15,7 +15,7 @@ export interface InboxPaneProps {
 }
 
 export function InboxPane(props: InboxPaneProps) {
-	const session = useActiveSession();
+	const session = useActiveConnection();
 	const format = useRelativeTime();
 
 	const getMessageInfo = useStable((msg: LiveMessage) => {

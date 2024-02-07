@@ -1,6 +1,6 @@
 import { ExportType } from "~/constants";
 import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
-import { getActiveSurreal } from "./connection";
+import { getActiveSurreal } from "./surreal";
 import { fork } from "radash";
 
 /**

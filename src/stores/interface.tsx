@@ -1,41 +1,34 @@
-import { ColorScheme, TabCreation } from "~/types";
+import { ColorScheme } from "~/types";
 import { create } from "zustand";
 
 export type InterfaceStore = {
-	colorPreference: ColorScheme,
-	colorScheme: ColorScheme,
-	availableUpdate: string,
-	showAvailableUpdate: boolean,
-	showTabCreator: boolean,
-	tabCreation: TabCreation | null,
-	showTabEditor: boolean,
-	editingId: string,
+	colorPreference: ColorScheme;
+	colorScheme: ColorScheme;
+	availableUpdate: string;
+	showAvailableUpdate: boolean;
+	showConnectionEditor: boolean;
+	isCreatingConnection: boolean;
+	editingConnectionId: string;
 
 	setColorPreference: (preference: ColorScheme) => void;
 	setColorScheme: (scheme: ColorScheme) => void;
 	setAvailableUpdate: (availableUpdate: string) => void;
 	hideAvailableUpdate: () => void;
-	openTabCreator: (tabCreation: TabCreation) => void;
-	closeTabCreator: () => void;
-	openTabEditor: (editingId: string) => void;
-	closeTabEditor: () => void;
-
-	softReset: () => void;
+	openConnectionCreator: () => void;
+	openConnectionEditor: (editingId: string) => void;
+	closeConnectionEditor: () => void;
 };
 
-const defaults = {
+export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	colorPreference: "dark",
 	colorScheme: "dark",
 	availableUpdate: "",
 	showAvailableUpdate: false,
 	showTabCreator: false,
 	tabCreation: null,
-	showTabEditor: false,
-	editingId: "",
-} satisfies Partial<InterfaceStore>;
-
-export const useInterfaceStore = create<InterfaceStore>((set) => ({
-	...defaults,
+	showConnectionEditor: false,
+	isCreatingConnection: false,
+	editingConnectionId: "",
 
 	setColorPreference: (themePreference) => set(() => ({
 		colorPreference: themePreference
@@ -54,24 +47,20 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 		showAvailableUpdate: false,
 	})),
 
-	openTabCreator: (tabCreation) => set(() => ({
-		tabCreation,
-		showTabCreator: true,
+	openConnectionCreator: () => set(() => ({
+		editingConnectionId: "",
+		showConnectionEditor: true,
+		isCreatingConnection: true,
 	})),
 
-	closeTabCreator: () => set(() => ({
-		showTabCreator: false,
+	openConnectionEditor: (editingId) => set(() => ({
+		editingConnectionId: editingId,
+		showConnectionEditor: true,
+		isCreatingConnection: false,
 	})),
 
-	openTabEditor: (editingId) => set(() => ({
-		editingId,
-		showTabEditor: true,
+	closeConnectionEditor: () => set(() => ({
+		showConnectionEditor: false,
 	})),
 
-	closeTabEditor: () => set(() => ({
-		showTabEditor: false,
-	})),
-
-
-	softReset: () => set(() => defaults),
 }));

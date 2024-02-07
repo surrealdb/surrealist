@@ -2,7 +2,7 @@ import classes from './style.module.scss';
 import { editor } from "monaco-editor";
 import { mdiClose, mdiDatabase, mdiFileDocument, mdiPlusBoxMultiple } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
-import { useActiveSession } from "~/hooks/environment";
+import { useActiveConnection } from "~/hooks/connection";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -21,7 +21,7 @@ export function QueryPane() {
 	const addQueryTab = useConfigStore((s) => s.addQueryTab);
 	const setActiveQueryTab = useConfigStore((s) => s.setActiveQueryTab);
 
-	const { queries, activeQueryId } = useActiveSession();
+	const { queries, activeQueryId } = useActiveConnection();
 	const controls = useRef<editor.IStandaloneCodeEditor>();
 
 	const showTabs = queries.length > 1;

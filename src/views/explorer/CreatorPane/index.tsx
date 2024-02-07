@@ -6,7 +6,7 @@ import { useStable } from "~/hooks/stable";
 import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { getSurreal } from "~/util/connection";
+import { getSurreal } from "~/util/surreal";
 import { EventBus } from "~/hooks/event";
 import { useExplorerStore } from "~/stores/explorer";
 

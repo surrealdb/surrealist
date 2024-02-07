@@ -11,7 +11,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
-import { useActiveSession } from "~/hooks/environment";
+import { useActiveConnection } from "~/hooks/connection";
 import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
 import { useDesignerConfig } from "./hooks";
 import { TableGrid } from "./grid";
@@ -42,7 +42,8 @@ export interface TableGraphPaneProps {
 }
 
 export function TableGraphPane(props: TableGraphPaneProps) {
-	const updateSession = useConfigStore((s) => s.updateSession);
+	const { updateConnection } = useConfigStore.getState();
+
 	const theme = useMantineTheme();
 	const activeView = useConfigStore((s) => s.activeView);
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -55,7 +56,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [showHelp, setShowHelp] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
 	const isOnline = useIsConnected();
-	const activeSession = useActiveSession();
+	const activeSession = useActiveConnection();
 	const isLight = useIsLight();
 	
 	const { nodeMode, layoutMode } = useDesignerConfig(activeSession);
@@ -129,14 +130,14 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const setNodeMode = useStable((mode: string) => {
-		updateSession({
+		updateConnection({
 			id: activeSession?.id,
 			designerNodeMode: mode as DesignerNodeMode,
 		});
 	});
 
 	const setLayoutMode = useStable((mode: string) => {
-		updateSession({
+		updateConnection({
 			id: activeSession?.id,
 			designerLayoutMode: mode as DesignerLayoutMode,
 		});

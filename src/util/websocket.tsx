@@ -1,7 +1,6 @@
 import { uid } from "radash";
 import { SurrealOptions } from "~/types";
 import { printLog } from "./helpers";
-import { useConfigStore } from "~/stores/config";
 
 type Request = [(data: any) => void, (error: any) => void];
 
@@ -26,7 +25,7 @@ export const CLOSED_HANDLE: SurrealHandle = {
 };
 
 export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle {
-	const endpoint = new URL("rpc", options.connection.endpoint.replace("http", "ws"));
+	const endpoint = new URL("rpc", options.connection.connection.endpoint.replace("http", "ws"));
 	const socket = new WebSocket(endpoint.toString());
 	const requestMap = new Map<string, Request>();
 	const pinger = setInterval(() => {
@@ -43,7 +42,6 @@ export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle
 			return Promise.reject(new Error("Connection is not open"));
 		}
 
-		const timeout = useConfigStore.getState().queryTimeout * 1000;
 		const id = uid(7);
 
 		return new Promise((success, reject) => {
@@ -61,7 +59,7 @@ export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle
 				if (requestMap.delete(id)) {
 					reject(new Error("Request timed out"));
 				}
-			}, timeout);
+			}, 60_000);
 		});
 	};
 
@@ -114,7 +112,7 @@ export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle
 	};
 
 	socket.addEventListener("open", async () => {
-		const { username, password, namespace, database, authMode, scope, scopeFields } = options.connection;
+		const { username, password, namespace, database, authMode, scope, scopeFields } = options.connection.connection;
 
 		if (authMode !== "none") {
 			const details: any = {};

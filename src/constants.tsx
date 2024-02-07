@@ -1,14 +1,16 @@
 import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench, mdiCodeJson, mdiFormatListGroup, mdiBroadcast } from "@mdi/js";
-import { ResultListing } from "./types";
+import { ResultMode } from "./types";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
 
 export interface ListingItem {
-	id: ResultListing;
+	id: ResultMode;
 	icon: string;
 }
 
+export const SANDBOX = "sandbox";
+export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
 
 export const RESULT_LISTINGS: ListingItem[] = [

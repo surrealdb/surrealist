@@ -14,7 +14,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { Spacer } from "../Spacer";
 import { Text } from "@mantine/core";
 import { fetchDatabaseSchema } from "~/util/schema";
-import { getActiveSurreal } from "~/util/connection";
+import { getActiveSurreal } from "~/util/surreal";
 import { OpenedFile } from "~/adapter/base";
 
 export function Importer() {

@@ -3,53 +3,47 @@ import { ConnectionDetails } from "../ConnectionDetails";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
-import { createEmptyConnection, isConnectionValid, mergeConnections } from "~/util/environments";
+import { isConnectionValid } from "~/util/connection";
 import { useStable } from "~/hooks/stable";
 import { Form } from "../Form";
 import { useEffect } from "react";
 import { updateTitle } from "~/util/helpers";
-import { useEnvironmentList, useTabsList } from "~/hooks/environment";
-import { InheritAlert } from "../InheritAlert/interface";
+import { useConnection, useConnections } from "~/hooks/connection";
 import { ConnectionOptions } from "~/types";
 import { ModalTitle } from "../ModalTitle";
 import { closeConnection, openConnection } from "~/database";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { createBaseConnectionOptions } from "~/util/defaults";
 
-export function TabEditor() {
+export function ConnectionEditor() {
 	const isLight = useIsLight();
-	const tabs = useTabsList();
-	const environments = useEnvironmentList();
-	const activeSessionId = useConfigStore((s) => s.activeTab);
+	const connections = useConnections();
+	const activeConnection = useConnection();
+
+	const { updateConnection } = useConfigStore.getState();
+	const { closeConnectionEditor } = useInterfaceStore.getState();
+
 	const autoConnect = useConfigStore((s) => s.autoConnect);
-	const updateSession = useConfigStore((s) => s.updateSession);
-	const opened = useInterfaceStore((s) => s.showTabEditor);
-	const editingId = useInterfaceStore((s) => s.editingId);
-	const closeTabEditor = useInterfaceStore((s) => s.closeTabEditor);
+	const opened = useInterfaceStore((s) => s.showConnectionEditor);
+	const editingId = useInterfaceStore((s) => s.editingConnectionId);
+	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
 
-	const [infoDetails, setInfoDetails] = useImmer<ConnectionOptions>(createEmptyConnection());
-
-	const sessionInfo = tabs.find((tab) => tab.id === editingId);
-	const envInfo = environments.find((env) => env.id === sessionInfo?.environment);
-	const mergedDetails = mergeConnections(infoDetails, envInfo?.connection || {});
-
-	const detailsValid = isConnectionValid(infoDetails);
-	const mergedValid = isConnectionValid(mergedDetails);
-
-	const handleCose = useStable(closeTabEditor);
+	const [details, setDetails] = useImmer<ConnectionOptions>(createBaseConnectionOptions());
+	const isValid = isConnectionValid(details);
 
 	const saveInfo = useStable(async () => {
-		handleCose();
+		closeConnectionEditor();
 
-		updateSession({
+		updateConnection({
 			id: editingId,
-			connection: infoDetails,
+			connection: details,
 		});
 
-		if (activeSessionId == editingId) {
+		if (activeConnection?.id == editingId) {
 			closeConnection();
 	
-			if (autoConnect && mergedValid) {
+			if (autoConnect && isValid) {
 				openConnection();
 			}
 		}
@@ -59,40 +53,54 @@ export function TabEditor() {
 
 	useEffect(() => {
 		if (opened) {
-			const tab = tabs.find((tab) => tab.id === editingId);
+			const base = createBaseConnectionOptions();
 
-			setInfoDetails(tab?.connection || createEmptyConnection());
+			if (isCreating) {
+				setDetails(base);
+			} else {
+				const info = connections.find((tab) => tab.id === editingId);
+
+				setDetails(info?.connection || base);
+			}
 		}
 	}, [opened]);
 
 	return (
 		<Modal
 			opened={opened}
-			onClose={handleCose}
+			onClose={closeConnectionEditor}
 			trapFocus={false}
 			size="lg"
-			title={<ModalTitle>Connection details</ModalTitle>}
+			title={
+				<ModalTitle>
+					{isCreating ? "New connection" : "Edit connection"}
+				</ModalTitle>
+			}
 		>
-			<InheritAlert
-				visible={!detailsValid && mergedValid}
-				environment={envInfo?.name}
-			/>
-
 			<Form onSubmit={saveInfo}>
+				{/* <TextInput
+					label="Connection name"
+					value={details.name}
+					autoFocus
+					mb="md"
+					onChange={(e) => {
+						setDetails((d) => {
+							d.name = e.target.value;
+						});
+					}}
+				/> */}
+
 				<ConnectionDetails
-					value={infoDetails}
-					onChange={setInfoDetails}
-					placeholders={envInfo?.connection}
-					withLocal
-					optional
+					value={details}
+					onChange={setDetails}
 				/>
 
 				<Group mt="lg">
-					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={handleCose}>
+					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={closeConnectionEditor}>
 						Close
 					</Button>
 					<Spacer />
-					<Button type="submit" disabled={!mergedValid}>
+					<Button type="submit" disabled={!isValid}>
 						Save details
 					</Button>
 				</Group>

@@ -19,7 +19,7 @@ import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useExplorerStore } from "~/stores/explorer";
-import { getSurreal } from "~/util/connection";
+import { getSurreal } from "~/util/surreal";
 import { HistoryHandle } from "~/hooks/history";
 import { EventBus, useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";

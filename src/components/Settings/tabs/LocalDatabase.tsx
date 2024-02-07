@@ -13,42 +13,44 @@ const DRIVERS = [
 ];
 
 export function LocalDatabaseTab() {
-	const setLocalDatabaseDriver = useConfigStore((s) => s.setLocalDatabaseDriver);
-	const setLocalDatabaseStorage = useConfigStore((s) => s.setLocalDatabaseStorage);
-	const setSurrealUser = useConfigStore((s) => s.setSurrealUser);
-	const setSurrealPass = useConfigStore((s) => s.setSurrealPass);
-	const setSurrealPort = useConfigStore((s) => s.setSurrealPort);
-	const setSurrealPath = useConfigStore((s) => s.setSurrealPath);
-
-	const localDriver = useConfigStore((s) => s.localDriver);
-	const localStorage = useConfigStore((s) => s.localStorage);
-	const surrealUser = useConfigStore((s) => s.surrealUser);
-	const surrealPass = useConfigStore((s) => s.surrealPass);
-	const surrealPort = useConfigStore((s) => s.surrealPort);
-	const surrealPath = useConfigStore((s) => s.surrealPath);
+	const {
+		setLocalSurrealDriver,
+		setLocalSurrealStorage,
+		setLocalSurrealUser,
+		setLocalSurrealPass,
+		setLocalSurrealPort,
+		setLocalSurrealPath
+	} = useConfigStore.getState();
+	
+	const localDriver = useConfigStore((s) => s.localSurrealDriver);
+	const localStorage = useConfigStore((s) => s.localSurrealStorage);
+	const surrealUser = useConfigStore((s) => s.localSurrealUser);
+	const surrealPass = useConfigStore((s) => s.localSurrealPass);
+	const surrealPort = useConfigStore((s) => s.localSurrealPort);
+	const surrealPath = useConfigStore((s) => s.localSurrealPath);
 
 	const updateLocalDriver = useStable((driver: string | null) => {
-		setLocalDatabaseDriver(driver as DriverType || 'file');
+		setLocalSurrealDriver(driver as DriverType || 'file');
 	});
 
 	const updateLocalPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setLocalDatabaseStorage(e.target.value);
+		setLocalSurrealStorage(e.target.value);
 	});
 
 	const updateSurrealUser = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setSurrealUser(e.target.value);
+		setLocalSurrealUser(e.target.value);
 	});
 
 	const updateSurrealPass = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setSurrealPass(e.target.value);
-	});
-
-	const updateSurrealPort = useStable((value: any) => {
-		setSurrealPort(value);
+		setLocalSurrealPass(e.target.value);
 	});
 
 	const updateSurrealPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setSurrealPath(e.target.value);
+		setLocalSurrealPath(e.target.value);
+	});
+
+	const updateSurrealPort = useStable((port: string | number) => {
+		setLocalSurrealPort(port as number);
 	});
 
 	return (

@@ -2,7 +2,7 @@ import { extract_event_definition, extract_field_definition, extract_index_defin
 import { map } from "radash";
 import { IndexKind, ScopeDefinition, TableDefinition, TableEvent, TableField, TableIndex, TableSchema, UserDefinition } from "~/types";
 import { SurrealInfoDB, SurrealInfoKV, SurrealInfoNS, SurrealInfoTB } from "~/typings/surreal";
-import { getActiveSurreal } from "./connection";
+import { getActiveSurreal } from "./surreal";
 import { extractTypeList } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
 

@@ -5,7 +5,7 @@ import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
 import { LIVE_QUERY_COLORS } from "~/constants";
-import { useActiveSession } from "~/hooks/environment";
+import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { themeColor } from "~/util/mantine";
 
@@ -18,7 +18,7 @@ export interface QueriesPaneProps {
 }
 
 export function QueriesPane(props: QueriesPaneProps) {
-	const session = useActiveSession();
+	const session = useActiveConnection();
 	const theme = useMantineTheme();
 
 	const getQueryStyle = useStable((active: boolean) => {

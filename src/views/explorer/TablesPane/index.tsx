@@ -10,10 +10,9 @@ import { useInputState } from "@mantine/hooks";
 import { extractEdgeRecords } from "~/util/schema";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
-import { useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
-import { useActiveSession } from "~/hooks/environment";
 import { useExplorerStore } from "~/stores/explorer";
 import { useConfigStore } from "~/stores/config";
 import { themeColor } from "~/util/mantine";
@@ -25,7 +24,7 @@ export function TablesPane() {
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const isOnline = useIsConnected();
-	const sessionInfo = useActiveSession();
+	const sessionInfo = useConnection();
 	const schema = useTables();
 
 	const activeTable = useExplorerStore((s) => s.activeTable);
@@ -59,12 +58,9 @@ export function TablesPane() {
 	const togglePinned = useStable((e: any, table: string) => {
 		e.stopPropagation();
 
-		if (!table || !sessionInfo) return;
-
-		toggleTablePin({
-			session: sessionInfo.id,
-			table,
-		});
+		if (table && sessionInfo) {
+			toggleTablePin(table);
+		}
 	});
 
 	return (
@@ -129,7 +125,7 @@ export function TablesPane() {
 								/>
 
 								<Text
-									color={isActive ? (isLight ? "black" : "white") : isLight ? "light.7" : "light.1"}
+									c={isActive ? (isLight ? "black" : "white") : isLight ? "light.7" : "light.1"}
 									className={classes.tableName}
 								>
 									{table.schema.name}

@@ -1,16 +1,10 @@
 import { useState } from "react";
-import { FavoritesPane } from "../FavoritesPane";
-import { HistoryPane } from "../HistoryPane";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../../query/VariablesPane";
 import { Splitter, SplitValues } from "~/components/Splitter";
-import { useConfigStore } from "~/stores/config";
 
 export function QueryView() {
-	const enableListing = useConfigStore((s) => s.enableListing);
-	const queryListing = useConfigStore((s) => s.queryListing);
-
 	const [splitValues, setSplitValues] = useState<SplitValues>([750, undefined]);
 	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
 
@@ -35,15 +29,16 @@ export function QueryView() {
 					<QueryPane />
 				</Splitter>
 			}
-			endPane={
-				enableListing ? (
-					queryListing == "history" ? (
-						<HistoryPane />
-					) : (
-						<FavoritesPane />
-					)
-				) : null
-			}>
+			// endPane={
+			// enableListing ? (
+			// 	queryListing == "history" ? (
+			// 		<HistoryPane />
+			// 	) : (
+			// 		<FavoritesPane />
+			// 	)
+			// ) : null
+			// }
+		>
 			<ResultPane />
 		</Splitter>
 	);

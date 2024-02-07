@@ -23,7 +23,7 @@ import { useActiveKeys } from "~/hooks/keys";
 import { HistoryHandle } from "~/hooks/history";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
-import { getSurreal } from "~/util/connection";
+import { getSurreal } from "~/util/surreal";
 import { useExplorerStore } from "~/stores/explorer";
 import { EventBus } from "~/hooks/event";
 import { themeColor } from "~/util/mantine";

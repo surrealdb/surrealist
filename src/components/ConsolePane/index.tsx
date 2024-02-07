@@ -1,19 +1,19 @@
 import { useEffect, useRef, useMemo } from "react";
 import { Panel } from "~/components/Panel";
 import { mdiClose, mdiConsole, mdiDelete } from "@mdi/js";
-import { ActionIcon, Center, Group, ScrollArea, Text, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Center, Group, ScrollArea, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import AnsiToHtml from "ansi-to-html";
 import { useStable } from "~/hooks/stable";
 import { useDatabaseStore } from "~/stores/database";
-import { useConfigStore } from "~/stores/config";
 
-function ConsoleActions() {
+interface ConsoleActionsProps {
+	onClose: () => void;
+}
+
+function ConsoleActions(props: ConsoleActionsProps) {
 	const clearConsole = useDatabaseStore((s) => s.clearConsole);
-	const setConsoleEnabled = useConfigStore((s) => s.setConsoleEnabled);
 	const emptyConsole = useStable(clearConsole);
-
-	const hideConsole = useStable(() => setConsoleEnabled(false));
 
 	return (
 		<Group align="center">
@@ -21,7 +21,7 @@ function ConsoleActions() {
 				<Icon color="light.4" path={mdiDelete} />
 			</ActionIcon>
 
-			<ActionIcon onClick={hideConsole} title="Hide console">
+			<ActionIcon onClick={props.onClose} title="Hide console">
 				<Icon color="light.4" path={mdiClose} />
 			</ActionIcon>
 		</Group>
@@ -39,10 +39,13 @@ function ConsoleOutputEntry({ index, message, formatter }: { index: number; mess
 	);
 }
 
-export function ConsolePane() {
+export interface ConsolePaneProps {
+	onClose: () => void;
+}
+
+export function ConsolePane(props: ConsolePaneProps) {
 	const messages = useDatabaseStore((s) => s.consoleOutput);
 	const scroller = useRef<HTMLDivElement>(null);
-	const theme = useMantineTheme();
 
 	const convert = useMemo(
 		() =>
@@ -68,7 +71,13 @@ export function ConsolePane() {
 	}, [messages]);
 
 	return (
-		<Panel title="Console" icon={mdiConsole} rightSection={<ConsoleActions />}>
+		<Panel
+			title="Console"
+			icon={mdiConsole}
+			rightSection={
+				<ConsoleActions onClose={props.onClose} />
+			}
+		>
 			{messages.length === 0 && (
 				<Center h="100%">
 					<Text c="light.5">No messages to display</Text>

@@ -6,6 +6,7 @@ import { useConfigStore } from "~/stores/config";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { runUpdateChecker } from "~/util/updater";
+import { useCheckbox } from "~/hooks/events";
 
 const VERSION = import.meta.env.VERSION;
 const AUTHOR = import.meta.env.AUTHOR;
@@ -15,15 +16,13 @@ export interface GeneralTabProps {
 }
 
 export function GeneralTab({ onClose }: GeneralTabProps) {
-	const setTableSuggest = useConfigStore((s) => s.setTableSuggest);
-	const setErrorChecking = useConfigStore((s) => s.setErrorChecking);
-	const setUpdateChecker = useConfigStore((s) => s.setUpdateChecker);
-	const setWindowPinned = useConfigStore((s) => s.setTableSuggest);
+	const { setTableSuggest, setErrorChecking, setUpdateChecker, setWindowPinned, setAutoConnect } = useConfigStore.getState();
 
 	const lastPromptedVersion = useConfigStore((s) => s.lastPromptedVersion);
 	const updateChecker = useConfigStore((s) => s.updateChecker);
 	const tableSuggest = useConfigStore((s) => s.tableSuggest);
 	const errorChecking = useConfigStore((s) => s.errorChecking);
+	const autoConnect = useConfigStore((s) => s.autoConnect);
 	const isPinned = useConfigStore((s) => s.isPinned);
 
 	const isLight = useIsLight();
@@ -33,21 +32,11 @@ export function GeneralTab({ onClose }: GeneralTabProps) {
 		onClose();
 	});
 
-	const updateTableSuggest = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setTableSuggest(e.target.checked);
-	});
-
-	const updateErrorChecking = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setErrorChecking(e.target.checked);
-	});
-
-	const updateUpdateChecker = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setUpdateChecker(e.target.checked);
-	});
-
-	const togglePinned = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
-		setWindowPinned(e.target.checked);
-	});
+	const updateTableSuggest = useCheckbox(setTableSuggest);
+	const updateErrorChecking = useCheckbox(setErrorChecking);
+	const updateUpdateChecker = useCheckbox(setUpdateChecker);
+	const updateAutoConnect = useCheckbox(setAutoConnect);
+	const togglePinned = useCheckbox(setWindowPinned);
 
 	return (
 		<Stack gap="xs">
@@ -64,7 +53,10 @@ export function GeneralTab({ onClose }: GeneralTabProps) {
 			<Setting label="Query error checking">
 				<Switch checked={errorChecking} onChange={updateErrorChecking} />
 			</Setting>
-			
+
+			<Setting label="Auto connect to database">
+				<Switch checked={autoConnect} onChange={updateAutoConnect} />
+			</Setting>
 
 			{adapter.isPinningSupported && (
 				<Setting label={<>Window always on top <Kbd size="xs">F11</Kbd></>}>

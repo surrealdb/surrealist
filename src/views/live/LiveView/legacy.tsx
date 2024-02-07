@@ -4,10 +4,10 @@ import { mdiAlert } from "@mdi/js";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Icon } from "~/components/Icon";
-import { useActiveSession } from "~/hooks/environment";
+import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { LiveMessage } from "~/types";
-import { getActiveSession, getActiveEnvironment, mergeConnections, isConnectionValid } from "~/util/environments";
+import { getActiveConnection, isConnectionValid } from "~/util/connection";
 import { newId } from "~/util/helpers";
 import { SurrealHandle, CLOSED_HANDLE, createLocalWebSocket } from "~/util/websocket";
 
@@ -21,7 +21,7 @@ export interface SocketOptions {
 }
 
 export function useLegacyLiveSocket(options: SocketOptions) {
-	const session = useActiveSession();
+	const session = useActiveConnection();
 	const [handle, setHandle] = useState<SurrealHandle>(CLOSED_HANDLE);
 	const [tokenMap, setTokenMap] = useImmer<Record<string, string>>({});
 
@@ -54,13 +54,10 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 			return;
 		}
 
-		const sessionInfo = getActiveSession();
-		const envInfo = getActiveEnvironment();
+		const connection = getActiveConnection();
+		const isValid = isConnectionValid(connection.connection);
 
-		const connection = mergeConnections(sessionInfo?.connection || {}, envInfo?.connection || {});
-		const connectionValid = isConnectionValid(connection);
-
-		if (!connectionValid) {
+		if (!isValid) {
 			showNotification({
 				color: "red.4",
 				bg: "red.6",

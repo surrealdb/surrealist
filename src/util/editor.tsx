@@ -1,9 +1,9 @@
 import * as monaco from "monaco-editor";
 import onigasmPath from 'onigasm/lib/onigasm.wasm?url';
-import { getActiveSession } from "./environments";
+import { getConnection } from "./connection";
 import { KeyCode, KeyMod, editor, languages } from "monaco-editor";
 import { SurrealInfoDB } from "~/typings/surreal";
-import { getSurreal } from "./connection";
+import { getSurreal } from "./surreal";
 import { loadWASM } from 'onigasm';
 import { executeQuery } from "~/database";
 import { validate_query } from "~/generated/surrealist-embed";
@@ -186,7 +186,7 @@ export async function initializeMonaco() {
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: ["$"],
 		provideCompletionItems(_, position, context) {
-			const session = getActiveSession();
+			const session = getConnection();
 
 			if (!session) {
 				return;

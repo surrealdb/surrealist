@@ -5,17 +5,15 @@ import { Notifications } from "@mantine/notifications";
 import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";
 
 import { useStable } from "~/hooks/stable";
-import surrealistIcon from "~/assets/icon.png";
+import surrealistIcon from "~/assets/surrealist.png";
 
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
-import { updateTitle } from "~/util/helpers";
+import { resetApplicationState, updateTitle } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { Scaffold } from "../Scaffold";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import { useDatabaseStore } from "~/stores/database";
-import { useExplorerStore } from "~/stores/explorer";
 import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme } from "~/hooks/theme";
 
@@ -72,12 +70,7 @@ export function App() {
 
 			<ErrorBoundary
 				FallbackComponent={AppErrorHandler} 
-				onReset={() => {
-					useConfigStore.getState().softReset();
-					useDatabaseStore.getState().softReset();
-					useExplorerStore.getState().softReset();
-					useInterfaceStore.getState().softReset();
-				}}
+				onReset={resetApplicationState}
 			>
 				<Scaffold />
 			</ErrorBoundary>

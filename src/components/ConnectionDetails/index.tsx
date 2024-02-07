@@ -9,49 +9,29 @@ import {
 	PasswordInput,
 	Select,
 	SimpleGrid,
-	Text,
-	SegmentedControl,
-	Alert
+	Text
 } from "@mantine/core";
 
-import { mdiClose, mdiInformation, mdiPlus } from "@mdi/js";
+import { mdiClose, mdiPlus } from "@mdi/js";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { AUTH_MODES } from "~/constants";
-import { AuthMode, ConnectMethod, ConnectionOptions } from "~/types";
+import { AuthMode, ConnectionOptions } from "~/types";
 import { Updater } from "use-immer";
-import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { ModalTitle } from "../ModalTitle";
-
-const METHODS = [
-	{ label: 'Database', value: 'remote' },
-	{ label: 'Sandbox', value: 'local' }
-];
+import { useDisclosure } from "@mantine/hooks";
 
 export interface ConnectionDetailsProps {
-	value: Partial<ConnectionOptions>;
+	value: ConnectionOptions;
 	onChange: Updater<ConnectionOptions>;
-	optional?: boolean;
-	placeholders?: Partial<ConnectionOptions>;
-	withLocal?: boolean;
 }
 
-export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {
+export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const isLight = useIsLight();
-	const authMode = value.authMode || placeholders?.authMode;
-	const modePlaceholder = AUTH_MODES.find((mode) => mode.value === placeholders?.authMode)?.label;
-	const passPlaceholder = placeholders?.password && "•".repeat(placeholders.password.length);
-	const [editingScope, setEditingScope] = useState(false);
 
-	const openScopeEditor = useStable(() => {
-		setEditingScope(true);
-	});
-
-	const closeEditingScope = useStable(() => {
-		setEditingScope(false);
-	});
+	const [editingScope, editingScopeHandle] = useDisclosure();
 
 	const addScopeField = useStable(() => {
 		onChange((draft) => {
@@ -64,127 +44,98 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 
 	return (
 		<>
-			<SegmentedControl
-				data={METHODS}
-				fullWidth
-				mb="sm"
-				color="surreal"
-				value={value.method || ''}
-				onChange={(val) =>
-					onChange((draft) => {
-						draft.method = val as ConnectMethod;
-					})
-				}
-			/>
+			<SimpleGrid cols={2} spacing="xl">
+				<Stack>
+					<TextInput
+						label="Endpoint URL"
+						value={value.endpoint}
+						placeholder="ws://localhost:8000"
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.endpoint = e.target.value;
+							})
+						}
+					/>
+					<TextInput
+						label="Namespace"
+						value={value.namespace}
+						placeholder="example"
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.namespace = e.target.value;
+							})
+						}
+					/>
+					<TextInput
+						label="Database"
+						value={value.database}
+						placeholder="example"
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.database = e.target.value;
+							})
+						}
+					/>
+				</Stack>
+				<Stack>
+					<Select
+						label="Authentication mode"
+						value={value.authMode}
+						data={AUTH_MODES}
+						onChange={(value) =>
+							onChange((draft) => {
+								draft.authMode = value as AuthMode;
+							})
+						}
+					/>
+					{value.authMode !== "scope" && value.authMode !== "none" && (
+						<>
+							<TextInput
+								label="Username"
+								value={value.username}
+								placeholder="root"
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.username = e.target.value;
+									})
+								}
+							/>
+							<PasswordInput
+								label="Password"
+								value={value.password}
+								placeholder="root"
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.password = e.target.value;
+									})
+								}
+							/>
+						</>
+					)}
 
-			{value.method == 'remote' ? (
-				<SimpleGrid cols={2} spacing="xl">
-					<Stack>
-						<TextInput
-							label="Endpoint URL"
-							value={value.endpoint || ""}
-							placeholder={placeholders?.endpoint}
-							autoFocus={!optional}
-							onChange={(e) =>
-								onChange((draft) => {
-									draft.endpoint = e.target.value;
-								})
-							}
-						/>
-						<TextInput
-							label="Namespace"
-							value={value.namespace || ""}
-							placeholder={placeholders?.namespace}
-							onChange={(e) =>
-								onChange((draft) => {
-									draft.namespace = e.target.value;
-								})
-							}
-						/>
-						<TextInput
-							label="Database"
-							value={value.database || ""}
-							placeholder={placeholders?.database}
-							onChange={(e) =>
-								onChange((draft) => {
-									draft.database = e.target.value;
-								})
-							}
-						/>
-					</Stack>
-					<Stack>
-						<Select
-							label="Authentication mode"
-							value={value.authMode || ""}
-							placeholder={modePlaceholder}
-							clearable
-							data={AUTH_MODES}
-							onChange={(value) =>
-								onChange((draft) => {
-									draft.authMode = value as AuthMode;
-								})
-							}
-						/>
-						{authMode !== "scope" && authMode !== "none" && (
-							<>
-								<TextInput
-									label="Username"
-									value={value.username || ""}
-									placeholder={placeholders?.username}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.username = e.target.value;
-										})
-									}
-								/>
-								<PasswordInput
-									label="Password"
-									value={value.password || ""}
-									placeholder={passPlaceholder}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.password = e.target.value;
-										})
-									}
-								/>
-							</>
-						)}
-
-						{authMode === "scope" && (
-							<>
-								<TextInput
-									label="Scope"
-									value={value.scope || ""}
-									placeholder={placeholders?.scope}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.scope = e.target.value;
-										})
-									}
-								/>
-								<Button mt={21} color="blue" variant="outline" onClick={openScopeEditor}>
-									Edit scope data
-								</Button>
-							</>
-						)}
-					</Stack>
-				</SimpleGrid>
-			) : (
-				<>
-					<Alert
-						mb="lg"
-						color="blue"
-						icon={<Icon path={mdiInformation} />}
-					>
-						Sandbox sessions provide a convenient way to test queries locally without having to install SurrealDB, however data is kept in memory and
-						does not persist between restarts. The sandbox will automatically use namespace <b>sandbox</b> and database <b>sandbox</b>.
-					</Alert>
-				</>
-			)}
+					{value.authMode === "scope" && (
+						<>
+							<TextInput
+								label="Scope"
+								value={value.scope}
+								placeholder="users"
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.scope = e.target.value;
+									})
+								}
+							/>
+							<Button mt={21} color="blue" variant="outline" onClick={editingScopeHandle.open}>
+								Edit scope data
+							</Button>
+						</>
+					)}
+				</Stack>
+			</SimpleGrid>
 			
 			<Modal
 				opened={editingScope}
-				onClose={closeEditingScope}
+				onClose={editingScopeHandle.close}
 				size={560}
 				title={<ModalTitle>Editing scope data</ModalTitle>}
 			>
@@ -234,7 +185,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				)}
 
 				<Group mt="lg">
-					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={closeEditingScope}>
+					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={editingScopeHandle.close}>
 						Back
 					</Button>
 					<Spacer />

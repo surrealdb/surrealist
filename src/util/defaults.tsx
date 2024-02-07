@@ -1,43 +1,36 @@
-import { ConnectionOptions, SurrealistSession, SurrealistConfig } from "~/types";
+import { Connection, ConnectionOptions, SurrealistConfig } from "~/types";
 import { newId } from "./helpers";
 
 export function createBaseConfig(): SurrealistConfig {
 	return {
 		colorScheme: "auto",
-		tabs: [],
-		environments: [createBaseEnvironment()],
+		connections: [],
+		sandbox: createSandboxConnection(),
 		activeView: 'query',
 		isPinned: false,
-		activeTab: null,
+		activeConnection: null,
 		autoConnect: true,
 		tableSuggest: true,
 		wordWrap: true,
-		queryHistory: [],
-		queryFavorites: [],
-		localDriver: "memory",
-		localStorage: "",
-		surrealPath: "",
-		surrealUser: "root",
-		surrealPass: "root",
-		surrealPort: 8000,
-		enableConsole: false,
-		enableListing: false,
-		queryTimeout: 10,
+		savedQueries: [],
+		localSurrealDriver: "memory",
+		localSurrealStorage: "",
+		localSurrealPath: "",
+		localSurrealUser: "root",
+		localSurrealPass: "root",
+		localSurrealPort: 8000,
 		updateChecker: true,
-		queryListing: "history",
-		resultListing: "json",
+		resultMode: "json",
 		fontZoomLevel: 1,
 		errorChecking: true,
 		lastPromptedVersion: null,
-		tabSearch: false,
 		defaultDesignerNodeMode: 'fields',
 		defaultDesignerLayoutMode: 'diagram'
 	};
 }
 
-export function createBaseConnection(): ConnectionOptions {
+export function createBaseConnectionOptions(): ConnectionOptions {
 	return {
-		method: "remote",
 		endpoint: "",
 		namespace: "",
 		database: "",
@@ -49,27 +42,36 @@ export function createBaseConnection(): ConnectionOptions {
 	};
 }
 
-export function createBaseSession(query?: string): SurrealistSession {
+export function createBaseConnection(query?: string): Connection {
 	return {
-		id: "",
+		id: newId(),
 		name: "",
-		environment: "",
 		queries: [{ id: 1, text: query || '' }],
 		activeQueryId: 1,
 		lastQueryId: 1,
 		variables: "{}",
 		lastResponse: [],
-		connection: createBaseConnection(),
-		pinned: false,
+		connection: createBaseConnectionOptions(),
 		pinnedTables: [],
 		liveQueries: [],
+		queryHistory: []
 	};
 }
 
-export function createBaseEnvironment() {
+export function createSandboxConnection(): Connection {
 	return {
-		id: newId(),
-		name: "Default",
-		connection: {},
+		...createBaseConnection(),
+		id: "sandbox",
+		name: "Sandbox",
+		connection: {
+			endpoint: "mem://",
+			namespace: "sandbox",
+			database: "sandbox",
+			authMode: "none",
+			scope: "",
+			scopeFields: [],
+			password: "",
+			username: ""
+		}
 	};
 }

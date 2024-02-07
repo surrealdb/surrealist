@@ -31,7 +31,7 @@ import { EventsElement } from "./elements/events";
 import { ModalTitle } from "~/components/ModalTitle";
 import { ViewElement } from "./elements/view";
 import { ChangefeedElement } from "./elements/changefeed";
-import { getSurreal } from "~/util/connection";
+import { getSurreal } from "~/util/surreal";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { themeColor } from "~/util/mantine";
