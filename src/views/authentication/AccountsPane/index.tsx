@@ -150,16 +150,18 @@ export function AccountsPane(props: AccountsPaneProps) {
 			<ScrollArea
 				style={{ position: "absolute", inset: 12, paddingRight: 8, top: 0 }}
 			>
-				<Stack spacing={0}>
+				<Stack gap={0}>
 					{users.map((user) => (
-						<Group key={user.name} spacing="xs" w="100%" noWrap>
+						<Group key={user.name} gap="xs" w="100%" wrap="nowrap">
 							<Icon
 								color={props.iconColor}
 								path={mdiKeyVariant}
 								size={12}
 								style={{ flexShrink: 0 }}
 							/>
-							<Text color={isLight ? "gray.9" : "gray.0"}>{user.name}</Text>
+							<Text c={isLight ? "gray.9" : "gray.0"}>
+								{user.name}
+							</Text>
 							<Spacer />
 							{user.comment && (
 								<Tooltip

@@ -7,6 +7,7 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { MAX_FIELDS } from "../helpers";
+import { themeColor } from "~/util/mantine";
 
 interface SummaryProps {
 	isLight: boolean;
@@ -24,11 +25,13 @@ function Summary(props: SummaryProps) {
 	return (
 		<Group pr={4}>
 			<Icon path={props.icon} color="light" />
-			<Text color={props.isLight ? "light.9" : props.white}>{props.title}</Text>
+			<Text c={props.isLight ? "light.9" : props.white}>
+				{props.title}
+			</Text>
 			<Spacer />
 			<Text
-				color={valueColor}
-				weight={600}
+				c={valueColor}
+				fw={600}
 			>
 				{props.value}
 			</Text>
@@ -55,9 +58,9 @@ function Elements(props: ElementsProps) {
 	});
 
 	return (
-		<Stack spacing="xs" mt={10} p={0}>
+		<Stack gap="xs" mt={10} p={0}>
 			{fields.length === 0 && (
-				<Text align="center" color={props.isLight ? "dimmed" : colors.dark[3]}>
+				<Text ta="center" c={props.isLight ? "dimmed" : colors.dark[3]}>
 					No fields defined
 				</Text>
 			)}
@@ -125,7 +128,6 @@ export function BaseNode(props: BaseNodeProps) {
 	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, icon, nodeMode, withoutGraph, expanded, onExpand } = props;
 
 	const handleStyle = useHandleStyle();
-	const primaryColor = theme.fn.primaryColor();
 
 	return (
 		<>
@@ -147,21 +149,21 @@ export function BaseNode(props: BaseNodeProps) {
 				title={`Click to edit ${table.schema.name}`}
 				style={{
 					backgroundColor: isLight ? colors.gray[1] : colors.dark[6],
-					border: `2px solid ${isSelected ? primaryColor : 'transparent'}`,
+					border: `2px solid ${isSelected ? themeColor('surreal') : 'transparent'}`,
 					cursor: 'pointer',
 					userSelect: 'none'
 				}}
 			>
 				<Group
 					style={{ color: isLight ? undefined : "white" }}
-					position="center"
-					spacing="xs"
+					justify="center"
+					gap="xs"
 				>
 					<Icon
 						path={icon}
 						color={isLight ? "light.5" : "light.4"}
 					/>
-					<Text align="center">
+					<Text ta="center">
 						{table.schema.name}
 					</Text>
 				</Group>
@@ -181,7 +183,7 @@ export function BaseNode(props: BaseNodeProps) {
 								onExpand={onExpand}
 							/>
 						) : (
-							<Stack spacing="xs" mt={10} p={0}>
+							<Stack gap="xs" mt={10} p={0}>
 								<Summary
 									isLight={isLight}
 									white={white}

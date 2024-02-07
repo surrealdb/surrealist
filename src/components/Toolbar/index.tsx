@@ -1,5 +1,5 @@
-import surrealistLogo from "~/assets/icon.png";
-import { Group, Button, Modal, TextInput, Image, Divider, Center } from "@mantine/core";
+import surrealistLogo from "~/assets/surrealist.png";
+import { Group, Button, Modal, TextInput, Image, Divider, Center, ActionIcon } from "@mantine/core";
 import { mdiHistory, mdiStar } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -17,6 +17,8 @@ import { ViewTab } from "../ViewTab";
 import { Exporter } from "../Exporter";
 import { useConfigStore } from "~/stores/config";
 import { Importer } from "../Importer";
+import { openConnection } from "~/database";
+import { useDatabaseStore } from "~/stores/database";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -27,7 +29,9 @@ export function Toolbar(props: ToolbarProps) {
 	const updateSession = useConfigStore((s) => s.updateSession);
 	const setShowQueryListing = useConfigStore((s) => s.setShowQueryListing);
 	const setQueryListingMode = useConfigStore((s) => s.setQueryListingMode);
-
+	const isConnected = useDatabaseStore((s) => s.isConnected);
+	const isConnecting = useDatabaseStore((s) => s.isConnecting);
+	
 	const isLight = useIsLight();
 	const activeSession = useConfigStore((s) => s.activeTab);
 
@@ -71,11 +75,22 @@ export function Toolbar(props: ToolbarProps) {
 		}
 	});
 
+	const connect = useStable(() => {
+		openConnection();
+	});
+
 	return (
-		<Group p="xs" pos="relative" spacing="sm" bg={isLight ? "white" : "dark.7"} align="center" noWrap>
+		<Group
+			p="xs"
+			gap="sm"
+			pos="relative"
+			align="center"
+			wrap="nowrap"
+			h={64}
+		>
 			{pinnedTabs.length > 0 && (
 				<Group
-					spacing={8}
+					gap={8}
 					style={{
 						position: "absolute",
 						inset: 0,
@@ -102,17 +117,28 @@ export function Toolbar(props: ToolbarProps) {
 				onCreateSession={props.onCreateTab}
 			/>
 
+			{!isConnected && (
+				<Button
+					color="slate"
+					variant="light"
+					loading={isConnecting}
+					onClick={connect}
+				>
+					Connect
+				</Button>
+			)}
+
 			<Spacer />
 
 			{props.viewMode == "query" && (
 				<>
-					<Button px="xs" color={isLight ? "light.0" : "dark.4"} title="Toggle history" onClick={toggleHistory}>
-						<Icon path={mdiHistory} color={isLight ? "light.8" : "white"} />
-					</Button>
+					<ActionIcon size="xl" title="Toggle history" onClick={toggleHistory}>
+						<Icon path={mdiHistory} />
+					</ActionIcon>
 
-					<Button px="xs" color={isLight ? "light.0" : "dark.4"} title="Toggle favorites" onClick={toggleFavorites}>
-						<Icon path={mdiStar} color={isLight ? "light.8" : "white"} />
-					</Button>
+					<ActionIcon size="xl" title="Toggle favorites" onClick={toggleFavorites}>
+						<Icon path={mdiStar} />
+					</ActionIcon>
 
 					<Divider
 						orientation="vertical"

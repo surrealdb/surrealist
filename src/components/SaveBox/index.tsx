@@ -1,11 +1,12 @@
 import classes from "./style.module.scss";
-import { Button, Group, Notification, Portal, clsx } from "@mantine/core";
+import { Button, Group, Notification, Portal } from "@mantine/core";
 import { mdiCheck, mdiInformationOutline } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SaveableHandle } from "~/hooks/save";
 import { ReactNode } from "react";
 import { capitalize } from "radash";
 import { Spacer } from "../Spacer";
+import { clsx } from "clsx";
 
 export interface SaveBoxProps {
 	handle: SaveableHandle<any>;
@@ -23,7 +24,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 
 	const saveButton = (
 		<Button
-			rightIcon={<Icon path={mdiCheck} size="md" />}
+			rightSection={<Icon path={mdiCheck} size="md" />}
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={handle.save}
@@ -45,7 +46,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 
 	if (inline) {
 		return (
-			<Group spacing={10} align="center" position="apart">
+			<Group gap={10} align="center" justify="apart">
 				{revertButton}
 				{saveButton}
 			</Group>
@@ -77,7 +78,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 						}
 					}}
 				>
-					<Group spacing={10} align="center">
+					<Group gap={10} align="center">
 						There are unsaved changes
 						<Spacer />
 						{revertButton}

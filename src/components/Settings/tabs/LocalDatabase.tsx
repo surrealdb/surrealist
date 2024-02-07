@@ -27,8 +27,8 @@ export function LocalDatabaseTab() {
 	const surrealPort = useConfigStore((s) => s.surrealPort);
 	const surrealPath = useConfigStore((s) => s.surrealPath);
 
-	const updateLocalDriver = useStable((driver: string) => {
-		setLocalDatabaseDriver(driver as DriverType);
+	const updateLocalDriver = useStable((driver: string | null) => {
+		setLocalDatabaseDriver(driver as DriverType || 'file');
 	});
 
 	const updateLocalPath = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +43,7 @@ export function LocalDatabaseTab() {
 		setSurrealPass(e.target.value);
 	});
 
-	const updateSurrealPort = useStable((value: number) => {
+	const updateSurrealPort = useStable((value: any) => {
 		setSurrealPort(value);
 	});
 
@@ -52,7 +52,7 @@ export function LocalDatabaseTab() {
 	});
 
 	return (
-		<Stack spacing="xs">
+		<Stack gap="xs">
 			<Setting label="Initial root user">
 				<TextInput placeholder="root" value={surrealUser} onChange={updateSurrealUser} w={250} />
 			</Setting>
@@ -90,7 +90,7 @@ export function LocalDatabaseTab() {
 								Leave empty to search for the Surreal executable in the PATH environment variable.
 							</Box>
 						}>
-						<Group spacing={6}>
+						<Group gap={6}>
 							Surreal executable path
 							<Icon path={mdiInformation} size="sm" mt={-2} />
 						</Group>

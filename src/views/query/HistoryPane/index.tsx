@@ -28,6 +28,7 @@ import { Panel } from "~/components/Panel";
 import { Icon } from "~/components/Icon";
 import { executeQuery } from "~/database";
 import { useConfigStore } from "~/stores/config";
+import { themeColor } from "~/util/mantine";
 
 export function HistoryPane() {
 	const isLight = useIsLight();
@@ -44,7 +45,7 @@ export function HistoryPane() {
 	const historyList = useMemo(() => {
 		if (filtered.length === 0) {
 			return (
-				<Text align="center" mt="sm">
+				<Text ta="center" mt="sm">
 					No results found
 				</Text>
 			);
@@ -71,13 +72,15 @@ export function HistoryPane() {
 				}}>
 				<TextInput
 					placeholder="Search history..."
-					icon={<Icon path={mdiMagnify} />}
+					leftSection={<Icon path={mdiMagnify} />}
 					value={search}
 					onChange={setSearch}
 					mb="lg"
 				/>
 
-				<Stack spacing="sm">{historyList}</Stack>
+				<Stack gap="sm">
+					{historyList}
+				</Stack>
 			</ScrollArea>
 		</Panel>
 	);
@@ -109,7 +112,7 @@ function HistoryRow({ entry, isLight }: HistoryRowProps) {
 			ref={ref}
 			color={isLight ? "light.0" : "dark.4"}
 			className={classes.entry}
-			style={{ borderColor: theme.fn.themeColor(isLight ? "light.0" : "dark.3") }}>
+			style={{ borderColor: themeColor(isLight ? "light.0" : "dark.3") }}>
 			<Text c={isLight ? "light.3" : "light.4"} mb={4}>
 				{dayjs(entry.timestamp).fromNow()}
 			</Text>
@@ -120,7 +123,8 @@ function HistoryRow({ entry, isLight }: HistoryRowProps) {
 					c={isLight ? "black" : "white"}
 					className={classes.queryText}
 					lineClamp={8}
-					weight={600}>
+					fw={600}
+				>
 					{entry.query}
 				</Text>
 			</Paper>

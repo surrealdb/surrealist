@@ -1,4 +1,10 @@
+import '@mantine/core/styles.css';
+import "@mantine/notifications/styles.css";
+
 import "./adapter";
+
+import "./assets/styles/fonts.scss";
+import "./assets/styles/global.scss";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -8,11 +14,13 @@ import { createRoot } from "react-dom/client";
 import { App } from "./components/App";
 import { initializeMonaco } from "./util/editor";
 import { runUpdateChecker } from "./util/updater";
-import { updateTitle, watchNativeTheme } from "./util/helpers";
+import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
 import { useConfigStore } from "./stores/config";
+import { watchColorPreference, watchColorScheme, watchConfigStore } from './util/background';
 
 import "reactflow/dist/style.css";
+import { openConnection } from './database';
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -22,19 +30,14 @@ import "reactflow/dist/style.css";
 
 	initialize_embed();
 
-	// Check for updates
-	const { lastPromptedVersion, updateChecker } = useConfigStore.getState();
-	if (adapter.isUpdateCheckSupported && updateChecker) {
-		runUpdateChecker(lastPromptedVersion, false);
-	}
-
-	// // Apply initial title
 	updateTitle();
+	watchColorScheme();
+	watchColorPreference();
 
-	// Listen for theme changes
-	watchNativeTheme();
+	// Synchronize the config to the store
+	await watchConfigStore();
 
-	// Init monaco
+	// Initialize monaco
 	await document.fonts.ready;
 	await initializeMonaco();
 
@@ -42,4 +45,17 @@ import "reactflow/dist/style.css";
 	const root = document.querySelector("#root")!;
 
 	createRoot(root).render(<App />);
+
+	// Check for updates
+	// TODO Auto updater
+	const { lastPromptedVersion, updateChecker, autoConnect } = useConfigStore.getState();
+
+	if (adapter.isUpdateCheckSupported && updateChecker) {
+		runUpdateChecker(lastPromptedVersion, false);
+	}
+
+	// Open connection
+	if (autoConnect) {
+		openConnection();
+	}
 })();

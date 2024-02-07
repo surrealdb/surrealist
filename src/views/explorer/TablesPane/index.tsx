@@ -16,6 +16,7 @@ import { TableCreator } from "~/components/TableCreator";
 import { useActiveSession } from "~/hooks/environment";
 import { useExplorerStore } from "~/stores/explorer";
 import { useConfigStore } from "~/stores/config";
+import { themeColor } from "~/util/mantine";
 
 export function TablesPane() {
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
@@ -71,7 +72,7 @@ export function TablesPane() {
 			title="Tables"
 			icon={mdiViewSequential}
 			rightSection={
-				<Group noWrap>
+				<Group wrap="nowrap">
 					<ActionIcon title="Create table..." onClick={openCreator}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
@@ -79,14 +80,14 @@ export function TablesPane() {
 			}>
 			<TextInput
 				placeholder="Search table..."
-				icon={<Icon path={mdiMagnify} />}
+				leftSection={<Icon path={mdiMagnify} />}
 				value={search}
 				onChange={setSearch}
 				mb="lg"
 			/>
 
 			{isOnline && tablesFiltered.length === 0 ? (
-				<Text align="center" pt="sm" c="light.5">
+				<Text ta="center" pt="sm" c="light.5">
 					{hasAccess ? "No tables found" : "Unsupported auth mode"}
 				</Text>
 			) : isOnline ? (
@@ -108,17 +109,17 @@ export function TablesPane() {
 							<Group
 								py="xs"
 								px="xs"
-								noWrap
-								spacing={6}
+								gap={6}
+								wrap="nowrap"
 								title={`Double-click to ${isPinned ? 'unpin' : 'pin'} table`}
 								key={table.schema.name}
 								className={classes.tableEntry}
 								onClick={() => setExplorerTable(table.schema.name)}
 								onDoubleClick={(e) => togglePinned(e, table.schema.name)}
-								sx={(theme) => ({
-									backgroundColor: isActive ? theme.fn.rgba(theme.fn.themeColor("surreal"), 0.125) : undefined,
+								style={{
+									backgroundColor: isActive ? themeColor("surreal") : undefined,
 									borderRadius: 8,
-								})}
+								}}
 							>
 								<Icon
 									style={{ flexShrink: 0 }}
@@ -151,7 +152,7 @@ export function TablesPane() {
 					})}
 				</ScrollArea>
 			) : (
-				<Text align="center" pt="sm" c="light.5">
+				<Text ta="center" pt="sm" c="light.5">
 					Not connected
 				</Text>
 			)}

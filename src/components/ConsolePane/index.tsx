@@ -32,9 +32,10 @@ function ConsoleOutputEntry({ index, message, formatter }: { index: number; mess
 	return (
 		<Text
 			key={index}
-			color="light.4"
+			c="light.4"
 			ff="JetBrains Mono"
-			dangerouslySetInnerHTML={{ __html: formatter.toHtml(message) }}></Text>
+			dangerouslySetInnerHTML={{ __html: formatter.toHtml(message) }}
+		/>
 	);
 }
 
@@ -46,8 +47,8 @@ export function ConsolePane() {
 	const convert = useMemo(
 		() =>
 			new AnsiToHtml({
-				fg: theme.fn.themeColor("light.4"),
-				bg: theme.fn.themeColor("dark.0"),
+				fg: "#fff",
+				bg: "#000",
 				newline: true,
 				colors: {
 					4: "#3993d4",

@@ -1,4 +1,4 @@
-import { Button, Checkbox, Modal, Stack } from "@mantine/core";
+import { ActionIcon, Button, Checkbox, Modal, Stack } from "@mantine/core";
 import { EXPORT_TYPES, ExportType, SURQL_FILTERS } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -54,16 +54,15 @@ export function Exporter() {
 
 	return (
 		<>
-			<Button
-				px="xs"
-				color={isLight ? "light.0" : "dark.4"}
+			<ActionIcon
+				size="xl"
 				title="Export database to file"
 				onClick={openExporter}
 				loading={isExporting}
 				disabled={!isOnline}
 			>
-				<Icon path={mdiDownload} color={isOnline ? (isLight ? "light.8" : "white") : undefined} />
-			</Button>
+				<Icon path={mdiDownload} />
+			</ActionIcon>
 
 			<Modal
 				opened={showExporter}
@@ -73,7 +72,7 @@ export function Exporter() {
 			>
 				<Text
 					mb="xl"
-					color={isLight ? "light.7" : "light.3"}
+					c={isLight ? "light.7" : "light.3"}
 				>
 					Select which elements you want to include in your export.
 				</Text>

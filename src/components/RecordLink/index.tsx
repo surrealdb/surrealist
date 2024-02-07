@@ -19,9 +19,9 @@ export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
 	return (
 		<Group
 			{...rest}
-			noWrap
+			wrap="nowrap"
 			c="surreal"
-			spacing={0}
+			gap={0}
 			onClick={handleOpen}
 			style={{
 				cursor: onRecordClick ? "pointer" : undefined,

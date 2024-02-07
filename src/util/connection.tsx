@@ -83,8 +83,8 @@ async function checkDatabaseVersion() {
 		autoClose: false,
 		color: 'orange',
 		message: (
-			<Stack spacing={0}>
-				<Text weight={600}>
+			<Stack gap={0}>
+				<Text fw={600}>
 					<Icon
 						path={mdiAlert}
 						size="sm"
@@ -93,7 +93,7 @@ async function checkDatabaseVersion() {
 					/>
 					{title}
 				</Text>
-				<Text color="light.5">
+				<Text c="light.5">
 					{message}
 				</Text>
 			</Stack>

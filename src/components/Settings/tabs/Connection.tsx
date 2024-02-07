@@ -14,12 +14,12 @@ export function ConnectionTab() {
 		setAutoConnect(e.target.checked);
 	});
 
-	const updateQueryTimeout = useStable((value: number) => {
-		setQueryTimeout(value);
+	const updateQueryTimeout = useStable((value: string | number) => {
+		setQueryTimeout(+value);
 	});
 
 	return (
-		<Stack spacing="xs">
+		<Stack gap="xs">
 			<Setting label="Auto connect to database">
 				<Switch checked={autoConnect} onChange={updateAutoConnect} />
 			</Setting>

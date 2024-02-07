@@ -18,7 +18,7 @@ export const TABLE_TYPES = [
 export function SectionTitle({ children }: { children: string }) {
 	return (
 		<Accordion.Control>
-			<Text weight={700} size="lg">
+			<Text fw={700} size="lg">
 				{children}
 			</Text>
 		</Accordion.Control>

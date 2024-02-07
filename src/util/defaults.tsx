@@ -3,7 +3,7 @@ import { newId } from "./helpers";
 
 export function createBaseConfig(): SurrealistConfig {
 	return {
-		theme: "automatic",
+		colorScheme: "auto",
 		tabs: [],
 		environments: [createBaseEnvironment()],
 		activeView: 'query',

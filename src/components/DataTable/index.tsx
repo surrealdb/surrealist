@@ -100,10 +100,6 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 		));
 	}, [isLight, keys, sorting]);
 
-	const activeColor = useMemo(() => {
-		return theme.fn.rgba(theme.fn.themeColor("light.6"), isLight ? 0.15 : 0.4);
-	}, [isLight]);
-
 	const recordRows = useMemo(() => {
 		return values.map((value, i) => {
 			const columns = [...keys].map((key, j) => {
@@ -123,9 +119,10 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 					key={i}
 					component="tr"
 					onClick={() => onRowClick?.(value)}
-					sx={{
-						backgroundColor: `${isActive ? activeColor : undefined} !important`,
-					}}>
+					style={{
+						backgroundColor: `${isActive ? "var(--mantine-color-light-6)" : undefined} !important`,
+					}}
+				>
 					{columns}
 				</Box>
 			);
@@ -133,7 +130,7 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 	}, [keys, values, isLight]);
 
 	if (!isRenderable(data)) {
-		return <Text color="light.4">Result could not be displayed as a table.</Text>;
+		return <Text c="light.4">Result could not be displayed as a table.</Text>;
 	}
 
 	return (

@@ -92,7 +92,7 @@ export function ScopePane() {
 			icon={mdiAccountLock}
 			title="Database Scopes"
 			rightSection={
-				<Group noWrap>
+				<Group wrap="nowrap">
 					<ActionIcon title="Add account" onClick={createAccount}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
@@ -107,12 +107,12 @@ export function ScopePane() {
 			<ScrollArea
 				style={{ position: "absolute", inset: 12, paddingRight: 8, top: 0 }}
 			>
-				<Stack spacing={0}>
+				<Stack gap={0}>
 					{scopes.map((scope) => (
-						<Group key={scope.name} spacing="xs" w="100%" noWrap>
+						<Group key={scope.name} gap="xs" w="100%" wrap="nowrap">
 							<Icon color="violet.4" path={mdiKeyVariant} size={14} />
 
-							<Text color={isLight ? "gray.9" : "gray.0"}>{scope.name}</Text>
+							<Text c={isLight ? "gray.9" : "gray.0"}>{scope.name}</Text>
 							<Spacer />
 							<Badge color="light">
 								{scope.signin && scope.signup
@@ -132,7 +132,7 @@ export function ScopePane() {
 								<Menu.Dropdown>
 									<Menu.Item
 										onClick={() => editScope(scope)}
-										icon={
+										leftSection={
 											<Icon path={mdiWrench} size={12} color="light.4" />
 										}
 									>
@@ -140,7 +140,7 @@ export function ScopePane() {
 									</Menu.Item>
 									<Menu.Item
 										onClick={() => removeScope(scope.name)}
-										icon={
+										leftSection={
 											<Icon path={mdiDelete} size={12} color="red" />
 										}
 									>

@@ -2,6 +2,7 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	padding: 12px;
 }
 
 .wrapper {
@@ -40,7 +41,7 @@
 }
 
 .empty-image {
-	filter: grayscale(100%) opacity(0.15);
+	opacity: 0.5;
 }
 
 .send-button {
@@ -53,4 +54,16 @@
 .view-button {
 	width: 48px;
 	height: 48px;
+	background-origin: border-box;
+	transition: none;
+
+	&-active {
+		box-shadow: 0 3px 15px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.3);
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		transition: box-shadow 0.3s cubic-bezier(.33, 1.8, .6, 1);
+
+		:root[data-mantine-color-scheme="light"] & {
+			box-shadow: 0 3px 15px rgba(186, 0, 171, 0.5);
+		}
+	}
 }

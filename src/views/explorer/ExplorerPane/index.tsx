@@ -23,6 +23,7 @@ import { getSurreal } from "~/util/connection";
 import { HistoryHandle } from "~/hooks/history";
 import { EventBus, useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
+import { themeColor } from "~/util/mantine";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -222,7 +223,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 					<Divider orientation="vertical" color={isLight ? "light.0" : "dark.5"} />
 
 					<Icon color="light.4" path={mdiDatabase} mr={-10} />
-					<Text color="light.4" lineClamp={1}>
+					<Text c="light.4" lineClamp={1}>
 						{recordCount || "no"} rows
 					</Text>
 				</Group>
@@ -232,7 +233,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 					{filtering && (
 						<TextInput
 							placeholder="Enter filter clause..."
-							icon={<Icon path={mdiFilterVariant} />}
+							leftSection={<Icon path={mdiFilterVariant} />}
 							value={filter}
 							onChange={setFilter}
 							error={!isFilterValid}
@@ -240,7 +241,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 							styles={(theme) => ({
 								input: {
 									fontFamily: "JetBrains Mono",
-									borderColor: (isFilterValid ? theme.fn.themeColor("gray") : theme.fn.themeColor("red")) + " !important",
+									borderColor: (isFilterValid ? themeColor("gray") : themeColor("red")) + " !important",
 								},
 							})}
 						/>
@@ -271,8 +272,8 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 						</Center>
 					)}
 
-					<Group style={{ position: "absolute", insetInline: 12, bottom: 12 }} spacing="xl">
-						<Group spacing="xs">
+					<Group style={{ position: "absolute", insetInline: 12, bottom: 12 }} gap="xl">
+						<Group gap="xs">
 							<Button
 								color="dark.5"
 								variant="outline"
@@ -300,7 +301,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 								}}
 							/>
 
-							<Text color="light.3">of {pageCount} pages</Text>
+							<Text c="light.3">of {pageCount} pages</Text>
 
 							<Button
 								color="dark.5"

@@ -50,7 +50,7 @@ export function GeneralTab({ onClose }: GeneralTabProps) {
 	});
 
 	return (
-		<Stack spacing="xs">
+		<Stack gap="xs">
 			{adapter.isUpdateCheckSupported && (
 				<Setting label="Check for updates">
 					<Switch checked={updateChecker} onChange={updateUpdateChecker} />
@@ -72,8 +72,8 @@ export function GeneralTab({ onClose }: GeneralTabProps) {
 				</Setting>
 			)}
 
-			<Group mt="xl" position="center">
-				<Text color={isLight ? "light.4" : "dark.3"}>
+			<Group mt="xl" justify="center">
+				<Text c={isLight ? "light.4" : "dark.3"}>
 					Version {VERSION} by {AUTHOR}
 				</Text>
 				<Spacer />

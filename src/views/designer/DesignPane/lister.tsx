@@ -52,7 +52,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 	return (
 		<>
 			{props.value.length > 0 ? (
-				<Stack spacing={6}>
+				<Stack gap={6}>
 					{props.value.map((item, i) => (
 						<Paper
 							key={i}
@@ -65,7 +65,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 							style={{ border: 0, cursor: "pointer" }}
 							onClick={() => openEditor(i)}
 						>
-							<Group spacing="sm">
+							<Group gap="sm">
 								<Icon
 									path={mdiCircle}
 									color="surreal"
@@ -73,9 +73,11 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 									style={{ flexShrink: 0 }}
 								/>
 								{item.name ? (
-									<Text color={isLight ? "black" : "white"}>{item.name}</Text>
+									<Text c={isLight ? "black" : "white"}>
+										{item.name}
+									</Text>
 								) : (
-									<Text color="dark.2">
+									<Text c="dark.2">
 										Unnamed {props.name}
 									</Text>
 								)}
@@ -88,10 +90,12 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 					))}
 				</Stack>
 			) : (
-				<Text align="center">{props.missing}</Text>
+				<Text ta="center">
+					{props.missing}
+				</Text>
 			)}
 
-			<Button mt="md" size="xs" fullWidth variant="outline" rightIcon={<Icon path={mdiPlus} />} onClick={handleCreate}>
+			<Button mt="md" size="xs" fullWidth variant="outline" rightSection={<Icon path={mdiPlus} />} onClick={handleCreate}>
 				Add {props.name}
 			</Button>
 

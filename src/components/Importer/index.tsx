@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Paper } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, Paper } from "@mantine/core";
 import { SURQL_FILTERS } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -68,16 +68,15 @@ export function Importer() {
 
 	return (
 		<>
-			<Button
-				px="xs"
-				color={isLight ? "light.0" : "dark.4"}
+			<ActionIcon
+				size="xl"
 				title="Import database from file"
 				onClick={startImport}
 				loading={isImporting}
 				disabled={!isOnline}
 			>
-				<Icon path={mdiUpload} color={isOnline ? (isLight ? "light.8" : "white") : undefined} />
-			</Button>
+				<Icon path={mdiUpload} />
+			</ActionIcon>
 			
 			<Modal
 				opened={showConfirm}
@@ -92,9 +91,9 @@ export function Importer() {
 					bg={isLight ? "light.1" : "dark.5"}
 				>
 					<Group
-						spacing={6}
-						position="center"
-						noWrap
+						gap={6}
+						justify="center"
+						wrap="nowrap"
 					>
 						<Icon
 							mt={-1}
@@ -104,7 +103,7 @@ export function Importer() {
 						<Text
 							truncate
 							c={isLight ? "light.9" : "light.0"}
-							weight={600}
+							fw={600}
 						>
 							{importFile.current?.name}
 						</Text>

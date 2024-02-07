@@ -4,7 +4,6 @@ import { QueryInput } from "../inputs";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
 import { INDEX_TYPES } from "~/constants";
-import { IndexKind } from "~/types";
 
 export function IndexesElement({ data, setData }: ElementProps) {
 
@@ -67,7 +66,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								label="Index type"
 								value={index.kind}
 								data={INDEX_TYPES}
-								onChange={(value: IndexKind) =>
+								onChange={(value: any) =>
 									setData((draft) => {
 										draft.indexes[i].kind = value;
 									})

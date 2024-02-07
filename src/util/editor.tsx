@@ -20,6 +20,8 @@ import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
 import { Registry } from "monaco-textmate";
 import { wireTmGrammars } from "monaco-editor-textmate";
 import { useConfigStore } from "~/stores/config";
+import { ColorScheme } from "~/types";
+import { useInterfaceStore } from "~/stores/interface";
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
@@ -93,6 +95,8 @@ export async function initializeMonaco() {
 
 	monaco.editor.defineTheme(LIGHT_THEME, surrealistLightTheme as any);
 	monaco.editor.defineTheme(DARK_THEME, surrealistDarkTheme as any);
+
+	setEditorTheme(useInterfaceStore.getState().colorScheme);
 
 	monaco.languages.register({
 		id: "surrealql",
@@ -354,4 +358,13 @@ export function onEditorReady(editor: editor.IStandaloneCodeEditor) {
 	document.fonts.ready.then(() => {
 		monaco.editor.remeasureFonts();
 	}); 
+}
+
+/**
+ * Set the theme of the editor
+ * 
+ * @param scheme The color scheme
+ */
+export function setEditorTheme(scheme: ColorScheme) {
+	editor.setTheme(scheme === "light" ? LIGHT_THEME : DARK_THEME);
 }

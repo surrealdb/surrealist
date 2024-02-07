@@ -69,7 +69,7 @@ export function ResultPane() {
 										title={`Switch to ${item.id} view`}
 									>
 										<Icon
-											color={isActive ? 'surreal' : 'light.4'}
+											color={isActive ? 'surreal' : undefined}
 											path={item.icon}
 										/>
 									</ActionIcon>
@@ -88,14 +88,14 @@ export function ResultPane() {
 					{showResponses ? (
 						<>
 							<Icon color="light.4" path={mdiDatabase} mr={-10} />
-							<Text color="light.4" lineClamp={1}>
+							<Text c="light.4" lineClamp={1}>
 								{responseCount} {responseCount == 1 ? 'result' : 'results'}
 							</Text>
 						</>
 					) : showRows && (
 						<>
 							<Icon color="light.4" path={mdiDatabase} mr={-10} />
-							<Text color="light.4" lineClamp={1}>
+							<Text c="light.4" lineClamp={1}>
 								{rowCount} {rowCount == 1 ? 'row' : 'rows'}
 							</Text>
 						</>
@@ -104,7 +104,7 @@ export function ResultPane() {
 					{showTime && (
 						<>
 							<Icon color="light.4" path={mdiClock} mr={-10} />
-							<Text color="light.4" lineClamp={1}>
+							<Text c="light.4" lineClamp={1}>
 								{response.time}
 							</Text>
 						</>
@@ -133,7 +133,7 @@ export function ResultPane() {
 								{response.result}
 							</Text>
 						) : response.result?.length === 0 ? (
-							<Text color="light.4">No results found for query</Text>
+							<Text c="light.4">No results found for query</Text>
 						) : resultListing == "table" ? (
 							<DataTable data={response.result} />
 						) : (
@@ -142,14 +142,21 @@ export function ResultPane() {
 					</>
 				) : (
 					<Center h="100%" c="light.5">
-						Execute a query to view the results
+						<Stack>
+							<Icon
+								path={mdiLightningBolt}
+								mx="auto"
+								size="lg"
+							/>
+							Execute a query to view the results here
+						</Stack>
 					</Center>
 				)}
 			</div>
 
 			{showTabs && (
 				<Stack
-					spacing="xs"
+					gap="xs"
 					align="center"
 					style={{
 						position: "absolute",

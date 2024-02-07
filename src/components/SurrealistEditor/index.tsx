@@ -1,10 +1,10 @@
 import * as monaco from 'monaco-editor';
 import classes from './style.module.scss';
 import { CSSProperties, ElementRef, HTMLAttributes, useEffect, useRef } from "react";
-import { useIsLight } from "~/hooks/theme";
-import { DARK_THEME, LIGHT_THEME, BASE_EDITOR_CONFIG, onEditorReady } from "~/util/editor";
-import { Box, Paper, clsx } from "@mantine/core";
+import { BASE_EDITOR_CONFIG, onEditorReady } from "~/util/editor";
+import { Box, Paper } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
+import { clsx } from "clsx";
 
 export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onChange'> {
 	style?: CSSProperties;
@@ -20,20 +20,18 @@ export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onCh
 }
 
 export function SurrealistEditor(props: SurrealistEditorProps) {
-	const isLight = useIsLight();
 	const containerRef = useRef<ElementRef<"div">>(null);
 	const elementRef = useRef<ElementRef<"div">>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
 	const zoomLevel = useConfigStore((s) => s.fontZoomLevel);
 
-	const textSize = 14 * zoomLevel;
+	const textSize = 15 * zoomLevel;
 
 	useEffect(() => {
 		const editor = monaco.editor.create(elementRef.current!, {
 			...BASE_EDITOR_CONFIG,
 			...props.options,
 			value: props.value || '',
-			theme: isLight ? LIGHT_THEME : DARK_THEME,
 			language: props.language || 'surrealql',
 			fontSize: textSize
 		});

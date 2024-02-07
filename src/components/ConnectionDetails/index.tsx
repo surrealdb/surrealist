@@ -189,7 +189,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				title={<ModalTitle>Editing scope data</ModalTitle>}
 			>
 				{value.scopeFields?.length === 0 ? (
-					<Text color="gray" italic>
+					<Text c="gray" fs="italic">
 						No scope data defined
 					</Text>
 				) : (
@@ -238,7 +238,7 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 						Back
 					</Button>
 					<Spacer />
-					<Button rightIcon={<Icon path={mdiPlus} />} variant="light" color="blue" onClick={addScopeField}>
+					<Button rightSection={<Icon path={mdiPlus} />} variant="light" color="blue" onClick={addScopeField}>
 						Add field
 					</Button>
 				</Group>

@@ -3,7 +3,7 @@
     "base": "vs-dark",
     "colors": {
         "editor.foreground": "#ABB2BF",
-		"editor.background": "#1A1B1E"
+		"editor.background": "#222226"
     },
     "rules": [
         {

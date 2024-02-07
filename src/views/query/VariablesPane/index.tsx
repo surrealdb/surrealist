@@ -37,7 +37,7 @@ export function VariablesPane() {
 		}
 	});
 
-	const jsonAlert = isInvalid ? <Text color="red">Invalid variable JSON</Text> : undefined;
+	const jsonAlert = isInvalid ? <Text c="red">Invalid variable JSON</Text> : undefined;
 
 	return (
 		<Panel title="Variables" icon={mdiTune} rightSection={jsonAlert}>

@@ -35,6 +35,7 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { executeQuery } from "~/database";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { themeColor } from "~/util/mantine";
 
 export function FavoritesPane() {
 	const removeFavoritesEntry = useConfigStore((s) => s.removeFavoritesEntry);
@@ -108,7 +109,7 @@ export function FavoritesPane() {
 	const historyList = useMemo(() => {
 		if (filtered.length === 0) {
 			return (
-				<Text align="center" mt="sm">
+				<Text ta="center" mt="sm">
 					No results found
 				</Text>
 			);
@@ -154,13 +155,15 @@ export function FavoritesPane() {
 				}}>
 				<TextInput
 					placeholder="Search queries..."
-					icon={<Icon path={mdiMagnify} />}
+					leftSection={<Icon path={mdiMagnify} />}
 					value={search}
 					onChange={setSearch}
 					mb="lg"
 				/>
 
-				<Stack spacing="sm">{historyList}</Stack>
+				<Stack gap="sm">
+					{historyList}
+				</Stack>
 			</ScrollArea>
 
 			<Modal
@@ -242,15 +245,15 @@ function FavoriteRow(props: HistoryRowProps) {
 		<Box
 			color={isLight ? "light.0" : "dark.4"}
 			className={classes.entry}
-			style={{ borderColor: theme.fn.themeColor(isLight ? "light.0" : "dark.3") }}>
+			style={{ borderColor: themeColor(isLight ? "light.0" : "dark.3") }}>
 			<Group
 				mb="sm"
-				noWrap
+				wrap="nowrap"
 				className={classes.entryHeader}
 				onClick={handleClick}
 				title="Drag to reorder"
 				{...(enableDrag ? handleProps : {})}>
-				<Text c="surreal" weight={500}>
+				<Text c="surreal" fw={500}>
 					{entry.name}
 				</Text>
 				<Spacer />
@@ -264,7 +267,8 @@ function FavoriteRow(props: HistoryRowProps) {
 						c={isLight ? "black" : "white"}
 						className={classes.queryText}
 						lineClamp={8}
-						weight={600}>
+						fw={600}
+					>
 						{entry.query}
 					</Text>
 				</Paper>

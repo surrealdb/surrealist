@@ -1,0 +1,25 @@
+html, body, #root {
+    height: 100%;
+}
+
+body {
+    font-weight: 500;
+}
+
+.__dbk__container {
+    overflow: visible;
+}
+
+:root[data-mantine-color-scheme="light"] {
+    --surrealist-divider-color: var(--mantine-color-slate-0);
+    --surrealist-tooltip-bg: rgba(0, 0, 0, 0.4);
+
+    --mantine-color-body: var(--mantine-color-white);   
+}
+
+:root[data-mantine-color-scheme="dark"] {
+    --surrealist-divider-color: var(--mantine-color-slate-9);
+    --surrealist-tooltip-bg: rgba(255, 255, 255, 0.4);
+    
+    --mantine-color-body: var(--mantine-color-slate-8);
+}

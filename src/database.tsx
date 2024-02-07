@@ -42,10 +42,10 @@ export function openConnection(isSilent?: boolean) {
 			bg: "red.6",
 			message: (
 				<div>
-					<Text color="white" weight={600}>
+					<Text c="white" w={600}>
 						Invalid Connection
 					</Text>
-					<Text color="white" opacity={0.8} size="sm">
+					<Text c="white" opacity={0.8} size="sm">
 						Please check your connection details
 					</Text>
 				</div>
@@ -85,10 +85,10 @@ export function openConnection(isSilent?: boolean) {
 						bg: "red.6",
 						message: (
 							<div>
-								<Text color="white" weight={600}>
+								<Text c="white" w={600}>
 									Connection Closed
 								</Text>
-								<Text color="white" opacity={0.8} size="sm">
+								<Text c="white" opacity={0.8} size="sm">
 									{subtitle} ({code})
 								</Text>
 							</div>

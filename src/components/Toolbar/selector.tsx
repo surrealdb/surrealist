@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 import { Box, Button, Divider, Group, Menu, Popover, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import {
-	mdiMenuDown,
 	mdiDatabase,
 	mdiPlus,
 	mdiChevronRight,
@@ -13,6 +12,7 @@ import {
 	mdiContentDuplicate,
 	mdiPinOff,
 	mdiPin,
+	mdiCircle,
 } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SurrealistSession } from "~/types";
@@ -26,6 +26,7 @@ import { SyntheticEvent } from "react";
 import { Sortable } from "../Sortable";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { useDatabaseStore } from "~/stores/database";
 
 export interface SelectorProps {
 	active: string | null;
@@ -34,6 +35,8 @@ export interface SelectorProps {
 }
 
 export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
+	const isConnected = useDatabaseStore((s) => s.isConnected);
+	const isConnecting = useDatabaseStore((s) => s.isConnecting);
 	const setActiveSession = useConfigStore((s) => s.setActiveSession);
 	const updateSession = useConfigStore((s) => s.updateSession);
 	const removeSession = useConfigStore((s) => s.removeSession);
@@ -209,23 +212,30 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 				onChange={setOpened}
 				position="bottom-start"
 				transitionProps={{ duration: 0, exitDuration: 0 }}
+				shadow="0 8px 25px rgba(0, 0, 0, 0.35)"
 				closeOnEscape
-				shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.35 : 0.75})`}
-				withArrow>
+				withArrow
+			>
 				<Popover.Target>
 					<Button px="xs" variant="subtle" color="light" onClick={() => setOpened(!opened)}>
-						<Group spacing={6}>
+						<Group gap={6}>
 							<Icon path={mdiDatabase} />
 							{session && environment ? (
 								<>
 									<Text>{environment.name}</Text>
 									<Icon path={mdiChevronRight} color="dark.3" />
-									<Text color={isLight ? "black" : "white"}>{session.name}</Text>
+									<Text c={isLight ? "black" : "white"}>{session.name}</Text>
 								</>
 							) : (
-								<Text color="light.4">Select tab</Text>
+								<Text c="light.4">Select tab</Text>
 							)}
-							<Icon path={mdiMenuDown} />
+
+							<Icon
+								path={mdiCircle}
+								size={0.65}
+								ml={4}
+								color={isConnected ? "green" : isConnecting ? "orange" : "red"}
+							/>
 						</Group>
 					</Button>
 				</Popover.Target>
@@ -233,7 +243,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 					<SimpleGrid cols={2}>
 						<Box mih={235} mah={350}>
 							<ScrollArea h="calc(100% - 54px)">
-								<Stack spacing="xs">
+								<Stack gap="xs">
 									{environments.map((item) => {
 										const isActive = item.id === viewingEnv;
 
@@ -247,7 +257,8 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 												variant={isActive ? "filled" : "subtle"}
 												className={classes.entryButton}
 												onClick={() => openEnvironment(item.id)}
-												rightIcon={<Icon path={mdiChevronRight} color={isActive ? "dark.3" : "light.5"} size={1.15} />}>
+												rightSection={<Icon path={mdiChevronRight} color={isActive ? "dark.3" : "light.5"} size={1.15} />}
+											>
 												{item.name}
 											</Button>
 										);
@@ -264,7 +275,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 								variant="subtle"
 								className={classes.manageButton}
 								onClick={openEnvManager}
-								rightIcon={<Icon path={mdiChevronRight} />}
+								rightSection={<Icon path={mdiChevronRight} />}
 							>
 								Manage environments
 							</Button>
@@ -274,7 +285,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 								<TextInput
 									placeholder="Search"
 									variant="filled"
-									icon={<Icon path={mdiMagnify} color="dark.3" />}
+									leftSection={<Icon path={mdiMagnify} color="dark.3" />}
 									style={{ flex: 1 }}
 									value={search}
 									onChange={setSearch}
@@ -283,9 +294,9 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 								/>
 							)}
 							<ScrollArea h={tabSearch ? "calc(100% - 102px)" : "calc(100% - 54px)"}>
-								<Stack spacing={6}>
+								<Stack gap={6}>
 									{filteredTabs.length === 0 && sessions.length > 0 && (
-										<Text align="center" py={7} c="dark.2">
+										<Text ta="center" py={7} c="dark.2">
 											No tabs found
 										</Text>
 									)}
@@ -310,10 +321,10 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 													onChange={setTabName}
 													onBlur={saveRename}
 													onKeyDown={saveRename}
-													icon={
+													leftSection={
 														<Icon path={mdiPencil} color="blue" />
 													}
-													iconWidth={42}
+													leftSectionWidth={42}
 													styles={{
 														input: {
 															fontWeight: 600,
@@ -332,7 +343,7 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 													className={classes.entryButton}
 													onClick={() => select(item.id)}
 													{...handleProps}
-													rightIcon={
+													rightSection={
 														<Menu
 															shadow="md"
 															width={200}
@@ -348,24 +359,33 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 
 															<Menu.Dropdown onMouseDown={stopPropagation}>
 																<Menu.Item
-																	icon={<Icon path={mdiCursorText} />}
-																	onClick={(e) => handleRename(e, item.id)}>
+																	leftSection={<Icon path={mdiCursorText} />}
+																	onClick={(e) => handleRename(e, item.id)}
+																>
 																	Rename
 																</Menu.Item>
-																<Menu.Item icon={<Icon path={mdiPencil} />} onClick={(e) => handleEdit(e, item.id)}>
+																<Menu.Item
+																	leftSection={<Icon path={mdiPencil} />}
+																	onClick={(e) => handleEdit(e, item.id)}
+																>
 																	Edit
 																</Menu.Item>
 																<Menu.Item
-																	icon={<Icon path={item.pinned ? mdiPinOff : mdiPin} />}
-																	onClick={(e) => handlePin(e, item.id)}>
+																	leftSection={<Icon path={item.pinned ? mdiPinOff : mdiPin} />}
+																	onClick={(e) => handlePin(e, item.id)}
+																>
 																	{item.pinned ? "Unpin" : "Pin"}
 																</Menu.Item>
 																<Menu.Item
-																	icon={<Icon path={mdiContentDuplicate} />}
-																	onClick={(e) => handleDuplicate(e, item.id)}>
+																	leftSection={<Icon path={mdiContentDuplicate} />}
+																	onClick={(e) => handleDuplicate(e, item.id)}
+																>
 																	Duplicate
 																</Menu.Item>
-																<Menu.Item icon={<Icon path={mdiClose} />} onClick={(e) => handleDelete(e, item.id)}>
+																<Menu.Item
+																	leftSection={<Icon path={mdiClose} />}
+																	onClick={(e) => handleDelete(e, item.id)}
+																>
 																	Delete
 																</Menu.Item>
 															</Menu.Dropdown>
@@ -396,8 +416,9 @@ export function Selector({ active, isLight, onCreateSession }: SelectorProps) {
 								color="light"
 								variant="subtle"
 								className={classes.entryButton}
-								leftIcon={<Icon path={mdiPlus} />}
-								onClick={createSession}>
+								leftSection={<Icon path={mdiPlus} />}
+								onClick={createSession}
+							>
 								Add session
 							</Button>
 						</Box>

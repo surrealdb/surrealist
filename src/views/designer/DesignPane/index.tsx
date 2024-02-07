@@ -34,6 +34,7 @@ import { ChangefeedElement } from "./elements/changefeed";
 import { getSurreal } from "~/util/connection";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
+import { themeColor } from "~/util/mantine";
 
 const INITIAL_TABS = ["general"];
 
@@ -91,7 +92,7 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 				))
 			}
 			rightSection={
-				<Group noWrap>
+				<Group wrap="nowrap">
 					<ActionIcon onClick={requestDelete} title="Delete table (Hold shift to force)">
 						<Icon color={isShifting ? "red" : "light.4"} path={mdiDelete} />
 					</ActionIcon>
@@ -119,15 +120,15 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 						</Paper>
 					)
 				}
-				styles={(theme) => ({
+				styles={{
 					input: {
-						backgroundColor: isLight ? "white" : theme.fn.themeColor("dark.9"),
+						backgroundColor: isLight ? "white" : themeColor("dark.9"),
 						color: "surreal",
 						fontFamily: "JetBrains Mono",
 						fontSize: 14,
 						height: 42,
-					},
-				})}
+					}
+				}}
 			/>
 			<ScrollArea style={{ position: "absolute", inset: 12, top: 56, bottom: 12 }}>
 				<Accordion
@@ -185,7 +186,7 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 				onClose={closeDelete}
 				title={<ModalTitle>Are you sure?</ModalTitle>}
 			>
-				<Text color={isLight ? "light.6" : "light.1"}>
+				<Text c={isLight ? "light.6" : "light.1"}>
 					You are about to delete this table and all data contained within it. This action cannot be undone.
 				</Text>
 				<Group mt="lg">

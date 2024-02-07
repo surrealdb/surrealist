@@ -1,18 +1,19 @@
 import classes from "./style.module.scss";
-import surrealistLogo from "~/assets/icon.png";
+import surrealistLogo from "~/assets/surrealist.png";
 
 import {
 	ActionIcon,
 	Box,
 	Button,
 	Center,
-	Divider,
 	Image,
 	Stack,
 	Text,
 	Title,
+	Tooltip,
 } from "@mantine/core";
 
+import clsx from "clsx";
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
@@ -35,6 +36,7 @@ import { Spacer } from "../Spacer";
 import { mdiCog } from "@mdi/js";
 import { Settings } from "../Settings";
 import { useIsLight } from "~/hooks/theme";
+import { themeColor } from "~/util/mantine";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -50,8 +52,40 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	live: createHtmlPortalNode(PORTAL_ATTRS),
 };
 
+interface NavigationIconProps {
+	name: string;
+	isActive?: boolean;
+	isLight: boolean;
+	icon: string;
+	onClick: () => void;
+}
+
+function NavigationIcon({ name, isActive, isLight, icon, onClick }: NavigationIconProps) {
+	return (
+		<Tooltip
+			position="right"
+			label={name}
+			ml="xs"
+			transitionProps={{
+				transition: "scale-x"
+			}}
+		>
+			<ActionIcon
+				color={isActive ? "surreal" : isLight ? "dark.8" : "dark.1"}
+				variant={isActive ? "gradient" : "subtle"}
+				className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
+				onClick={onClick}
+			>
+				<Icon path={icon} />
+			</ActionIcon>
+		</Tooltip>	
+	);
+}
+
 export function Scaffold() {
 	const isLight = useIsLight();
+
+	// TODO Implement bottom console drawer
 
 	const activeSession = useConfigStore((s) => s.activeTab);
 	const enableConsole = useConfigStore((s) => s.enableConsole);
@@ -82,16 +116,18 @@ export function Scaffold() {
 		["mod+Enter", () => userExecuteQuery()],
 	]);
 
-	const viewInfo = VIEW_MODES.find((v) => v.id == activeView)!;
-
 	const setViewMode = useStable((id: ViewMode) => {
 		updateTitle();
 		setActiveView(id);
 	});
 
 	return (
-		<div className={classes.root}>
-
+		<div
+			className={classes.root}
+			style={{
+				backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
+			}}
+		>
 			<Toolbar
 				viewMode={activeView}
 				onCreateTab={showTabCreator}
@@ -99,54 +135,31 @@ export function Scaffold() {
 
 			{activeSession ? (
 				<>
-					{/* <Box px="xs" pt="xs">
-						<AddressBar
-							viewMode={activeView}
-							onQuery={userExecuteQuery}
-						/>
-					</Box> */}
-
-					{/* <Group p="xs" w="100%" noWrap style={{ flex: 1 }}>
-						<Box w={5}>
-					
-						</Box>
-						<Box style={{ flex: 1 }}>
-							{viewNode && <OutPortal node={viewNode} />}
-						</Box>
-					</Group> */}
-
 					<Box p="sm" className={classes.wrapper}>
-						<Stack spacing="xs">
+						<Stack gap="xs">
 							{VIEW_MODES.map((info) => {
 								const isActive = info.id === activeView;
 
 								return (
-									<ActionIcon
+									<NavigationIcon
 										key={info.id}
-										color={isActive ? "surreal" : isLight ? "dark" : "light.0"}
-										variant={isActive ? "gradient" : "subtle"}
-										className={classes.viewButton}
+										name={info.name}
+										isActive={isActive}
+										isLight={isLight}
+										icon={info.icon}
 										onClick={() => setViewMode(info.id as ViewMode)}
-									>
-										<Icon path={info.icon} />
-									</ActionIcon>
+									/>
 								);
 							})}
 
 							<Spacer />
 
-							<Divider
-								color={isLight ? "light.1" : "dark.6"}
-							/>
-
-							<ActionIcon
-								color="blue"
-								variant="subtle"
-								className={classes.viewButton}
+							<NavigationIcon
+								name="Settings"
+								isLight={isLight}
+								icon={mdiCog}
 								onClick={settingsHandle.toggle}
-							>
-								<Icon path={mdiCog} />
-							</ActionIcon>
+							/>
 						</Stack>
 						<Box className={classes.content}>
 							{viewNode && <OutPortal node={viewNode} />}
@@ -176,11 +189,16 @@ export function Scaffold() {
 			) : (
 				<Center h="100%">
 					<div>
-						<Image className={classes.emptyImage} src={surrealistLogo} width={120} mx="auto" />
-						<Title color="light" align="center" mt="md">
+						<Image
+							className={classes.emptyImage}
+							src={surrealistLogo}
+							maw={120}
+							mx="auto"
+						/>
+						<Title c="light" ta="center" mt="md">
 							Surrealist
 						</Title>
-						<Text color="light.2" align="center">
+						<Text c="light.2" ta="center">
 							Open or create a new session to continue
 						</Text>
 						<Center mt="lg">

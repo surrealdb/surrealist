@@ -14,6 +14,7 @@ import { newId } from "~/util/helpers";
 import { ModalTitle } from "../ModalTitle";
 import { openConnection } from "~/database";
 import { useConfigStore } from "~/stores/config";
+import { themeColor } from "~/util/mantine";
 
 export interface EnvironmentsProps {
 	opened: boolean;
@@ -132,10 +133,11 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 				<Grid.Col
 					pr="md"
 					span={4}
-					sx={(theme) => ({
-						borderRight: `2px solid ${theme.fn.themeColor(isLight ? "light.0" : "dark.4")}`,
+					style={{
+						borderRight: `2px solid ${themeColor(isLight ? "light.0" : "dark.4")}`,
 						position: "relative",
-					})}>
+					}}
+				>
 					<ScrollArea
 						style={{
 							position: "absolute",
@@ -144,7 +146,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 							right: 12,
 							top: 12
 						}}>
-						<Stack spacing="xs">
+						<Stack gap="xs">
 							{envList.map((item) => {
 								const isActive = item.id === viewingEnv;
 
@@ -167,7 +169,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 								color="light"
 								variant="subtle"
 								className={classes.manageButton}
-								leftIcon={<Icon path={mdiPlus} />}
+								leftSection={<Icon path={mdiPlus} />}
 								onClick={addEnvironment}>
 								Add environment
 							</Button>
@@ -185,17 +187,17 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 									value={selected.name}
 									onChange={updateName}
 									autoFocus
-									styles={(theme) => ({
+									styles={{
 										input: {
 											fontSize: 16,
-											color: isLight ? theme.fn.themeColor("dark.9") : theme.fn.themeColor("gray.0"),
+											color: isLight ? themeColor("dark.9") : themeColor("gray.0"),
 											fontWeight: 600,
-										},
-									})}
+										}
+									}}
 								/>
 								<Button
 									variant="outline"
-									rightIcon={<Icon path={mdiClose} />}
+									rightSection={<Icon path={mdiClose} />}
 									color="red.5"
 									onClick={deleteCurrent}
 									disabled={envList.length <= 1}>
@@ -216,7 +218,7 @@ export function Environments({ opened, onClose }: EnvironmentsProps) {
 						</>
 					) : (
 						<Center h="100%">
-							<Text color="dark.2" mt={-50}>
+							<Text c="dark.2" mt={-50}>
 								Select an environment
 							</Text>
 						</Center>

@@ -66,10 +66,10 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 				bg: "red.6",
 				message: (
 					<div>
-						<Text color="white" weight={600}>
+						<Text c="white" fw={600}>
 							Invalid Connection
 						</Text>
-						<Text color="white" opacity={0.8} size="sm">
+						<Text c="white" opacity={0.8} size="sm">
 							Please check your connection details
 						</Text>
 					</div>
@@ -87,8 +87,8 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 				autoClose: 10_000,
 				color: 'orange',
 				message: (
-					<Stack spacing={0}>
-						<Text weight={600}>
+					<Stack gap={0}>
+						<Text fw={600}>
 							<Icon
 								path={mdiAlert}
 								size="sm"
@@ -97,7 +97,7 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 							/>
 							Live queries are experimental
 						</Text>
-						<Text color="gray.6">
+						<Text c="gray.6">
 							Due to existing limitations of live queries a local WebSocket connection is used. This may not be available in all environments.
 						</Text>
 					</Stack>

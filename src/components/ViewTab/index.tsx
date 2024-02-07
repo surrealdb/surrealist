@@ -24,7 +24,14 @@ export function ViewTab({ sessionInfo }: PropsWithChildren<ViewTabProps>) {
 	});
 
 	return (
-		<Button px="md" pt={1} c={fgColor} color={bgColor} variant={isActive ? "filled" : "subtle"} onClick={select}>
+		<Button
+			px="md"
+			pt={1}
+			c={fgColor}
+			color={bgColor}
+			variant={isActive ? "filled" : "subtle"}
+			onClick={select}
+		>
 			{sessionInfo?.name}
 		</Button>
 	);

@@ -24,6 +24,8 @@ export interface SurrealistAdapter {
 
 	/**
 	 * Returns whether promotion is supported
+	 * 
+	 * TODO Remove
 	 */
 	isPromotionSupported: boolean;
 

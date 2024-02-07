@@ -13,13 +13,13 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 		<SimpleGrid
 			h="100%"
 			spacing={6}
-			cols={4}
+			cols={{
+				base: 4,
+				lg: 2
+			}}
 			style={{
 				gridAutoRows: '1fr'
 			}}
-			breakpoints={[
-				{ maxWidth: '92rem', cols: 2 },
-			]}
 		>
 			<AccountsPane
 				isOnline={isOnline}

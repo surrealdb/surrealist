@@ -26,6 +26,7 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { getSurreal } from "~/util/connection";
 import { useExplorerStore } from "~/stores/explorer";
 import { EventBus } from "~/hooks/event";
+import { themeColor } from "~/util/mantine";
 
 export interface InspectorPaneProps {
 	history: HistoryHandle<any>;
@@ -203,8 +204,8 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 				}
 				styles={(theme) => ({
 					input: {
-						backgroundColor: isLight ? "white" : theme.fn.themeColor("dark.9"),
-						color: theme.fn.themeColor(activeRecord?.exists === false ? "red" : "surreal"),
+						backgroundColor: isLight ? "white" : themeColor("dark.9"),
+						color: themeColor(activeRecord?.exists === false ? "red" : "surreal"),
 						fontFamily: "JetBrains Mono",
 						fontSize: 14,
 						height: 42,
@@ -213,7 +214,7 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 			/>
 			{isEmpty ? (
 				<Center my="xl">
-					<Text color={isLight ? "light.7" : "light.3"}>
+					<Text c={isLight ? "light.7" : "light.3"}>
 						Enter a valid record id to inspect
 					</Text>
 				</Center>
@@ -251,7 +252,7 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 			) : (
 				<Center my="xl">
 					<Stack>
-						<Text color={isLight ? "light.7" : "light.3"}>
+						<Text c={isLight ? "light.7" : "light.3"}>
 							Record not found in database
 						</Text>
 						<Center>
@@ -270,7 +271,7 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 				opened={isDeleting}
 				onClose={closeDelete}
 				title={<ModalTitle>Are you sure?</ModalTitle>}>
-				<Text color={isLight ? "light.6" : "light.1"}>
+				<Text c={isLight ? "light.6" : "light.1"}>
 					You are about to delete this record. This action cannot be undone.
 				</Text>
 				<Group mt="lg">
@@ -364,13 +365,13 @@ function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabProps) {
 				top: 100,
 			}}>
 
-			<Text color={isLight ? "blue.9" : "light.0"} size="lg" mt={4}>
+			<Text c={isLight ? "blue.9" : "light.0"} size="lg" mt={4}>
 				Incoming relations
 			</Text>
 
 			<RelationsList name="incoming" relations={inputs} onOpen={onOpen} />
 
-			<Text color={isLight ? "blue.9" : "light.0"} size="lg" mt="xl">
+			<Text c={isLight ? "blue.9" : "light.0"} size="lg" mt="xl">
 				Outgoing relations
 			</Text>
 
@@ -392,8 +393,8 @@ function RelationsList({ name, relations, onOpen }: RelationsListProps) {
 
 	return (
 		<>
-			{relations.map((relation, i) => (
-				<Group key={relation} spacing="xs" noWrap>
+			{relations.map((relation) => (
+				<Group key={relation} gap="xs" wrap="nowrap">
 					<Icon path={mdiCircleMedium} />
 					<RecordLink value={relation} onRecordClick={onOpen} />
 				</Group>

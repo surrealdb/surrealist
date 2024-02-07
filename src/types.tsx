@@ -1,4 +1,4 @@
-import { ColorScheme } from "@mantine/core";
+import { MantineColorScheme } from "@mantine/core";
 
 export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
 export type DriverType = "file" | "memory" | "tikv";
@@ -10,13 +10,14 @@ export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type DesignerLayoutMode = "diagram" | "grid";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
 export type ConnectMethod = "remote" | "local";
+export type ColorScheme = "light" | "dark";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 
 export interface SurrealistConfig {
-	theme: ColorScheme | "automatic";
+	colorScheme: MantineColorScheme;
 	tabs: SurrealistSession[];
 	environments: SurrealistEnvironment[];
 	activeView: ViewMode;

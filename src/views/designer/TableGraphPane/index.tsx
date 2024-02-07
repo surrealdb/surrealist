@@ -29,7 +29,7 @@ interface HelpTitleProps {
 
 function HelpTitle({ isLight, children }: HelpTitleProps) {
 	return (
-		<Title order={2} size={14} color={isLight ? "light.7" : "light.1"} weight={600}>
+		<Title order={2} size={14} c={isLight ? "light.7" : "light.1"} fw={600}>
 			{children}
 		</Title>
 	);
@@ -148,7 +148,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			icon={mdiAdjust}
 			style={{ overflow: 'hidden' }}
 			rightSection={
-				<Group noWrap>
+				<Group wrap="nowrap">
 					<ActionIcon title="Create table..." onClick={openCreator}>
 						<Icon color="light.4" path={mdiPlus} />
 					</ActionIcon>
@@ -265,9 +265,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 				<LoadingOverlay
 					visible={isRendering}
-					overlayOpacity={1}
-					overlayColor={isLight ? theme.white : theme.colors.dark[7]}
-					loaderProps={{ size: 50 }}
+					loaderProps={{
+						size: 50
+					}}
+					overlayProps={{
+						backgroundOpacity: 1,
+						color: isLight ? theme.white : theme.colors.dark[7]
+					}}
 				/>
 
 				{activeView === "designer" && (
@@ -310,7 +314,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				size="lg"
 				title={<ModalTitle>Using the Table Graph</ModalTitle>}
 			>
-				<Text color={isLight ? "light.7" : "light.3"}>
+				<Text c={isLight ? "light.7" : "light.3"}>
 					<HelpTitle isLight={isLight}>How do I use the table graph?</HelpTitle>
 
 					<Text mt={8} mb="xl">

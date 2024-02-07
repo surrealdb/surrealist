@@ -58,7 +58,7 @@ export function QueryInput(props: QueryInputProps) {
 				className={classes.input}
 				onChange={propagateChange}
 				rightSection={
-					<Group spacing={8} noWrap>
+					<Group gap={8} wrap="nowrap">
 						{props.rightSection}
 						<ActionIcon title="Advanced editor" onClick={openEditor} color={color}>
 							<Icon path={mdiWrench} size="sm" color={color} />
@@ -192,7 +192,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 						<Stack
 							mah={300}
 							style={{ overflowY: 'auto' }}
-							spacing="xs"
+							gap="xs"
 							p="xs"
 						>
 							{tables.map((table) => (

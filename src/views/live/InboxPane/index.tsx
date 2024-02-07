@@ -72,12 +72,12 @@ export function InboxPane(props: InboxPaneProps) {
 								>
 									<Group>
 										<Badge color={color}>
-											<Text color={color} weight={700}>
+											<Text c={color} fw={700}>
 												{msg.action}
 											</Text>
 										</Badge>
-										<Stack spacing={0}>
-											<Text color="gray" size="xs">
+										<Stack gap={0}>
+											<Text c="gray" size="xs">
 												Query {index + 1}
 											</Text>
 											<Text>

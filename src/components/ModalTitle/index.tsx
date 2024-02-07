@@ -6,7 +6,7 @@ export function ModalTitle(props: PropsWithChildren) {
 	const isLight = useIsLight();
 
 	return (
-		<Text weight={700} size={16} color={isLight ? "light.6" : "white"}>
+		<Text fw={700} fz={16} c={isLight ? "light.6" : "white"}>
 			{props.children}
 		</Text>
 	);

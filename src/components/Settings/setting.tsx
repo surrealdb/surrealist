@@ -12,8 +12,8 @@ export function Setting(props: PropsWithChildren<SettingProps>) {
 	const isLight = useIsLight();
 
 	return (
-		<Group position="center">
-			<Text color={isLight ? "black" : "gray.4"}>{props.label}</Text>
+		<Group justify="center">
+			<Text c={isLight ? "black" : "gray.4"}>{props.label}</Text>
 			<Spacer />
 			<Box mih={30} style={{ display: "flex", alignItems: "center" }}>
 				{props.children}

@@ -1,9 +1,9 @@
-import { ColorScheme } from "@mantine/core";
-import { TabCreation } from "~/types";
+import { ColorScheme, TabCreation } from "~/types";
 import { create } from "zustand";
 
 export type InterfaceStore = {
-	nativeTheme: ColorScheme,
+	colorPreference: ColorScheme,
+	colorScheme: ColorScheme,
 	availableUpdate: string,
 	showAvailableUpdate: boolean,
 	showTabCreator: boolean,
@@ -11,7 +11,8 @@ export type InterfaceStore = {
 	showTabEditor: boolean,
 	editingId: string,
 
-	setNativeTheme: (nativeTheme: ColorScheme) => void;
+	setColorPreference: (preference: ColorScheme) => void;
+	setColorScheme: (scheme: ColorScheme) => void;
 	setAvailableUpdate: (availableUpdate: string) => void;
 	hideAvailableUpdate: () => void;
 	openTabCreator: (tabCreation: TabCreation) => void;
@@ -23,7 +24,8 @@ export type InterfaceStore = {
 };
 
 const defaults = {
-	nativeTheme: "light",
+	colorPreference: "dark",
+	colorScheme: "dark",
 	availableUpdate: "",
 	showAvailableUpdate: false,
 	showTabCreator: false,
@@ -35,7 +37,14 @@ const defaults = {
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	...defaults,
 
-	setNativeTheme: (nativeTheme) => set(() => ({ nativeTheme })),
+	setColorPreference: (themePreference) => set(() => ({
+		colorPreference: themePreference
+	})),
+
+	setColorScheme: (colorScheme) => set(() => ({
+		colorScheme,
+	})),
+	
 	setAvailableUpdate: (availableUpdate) => set(() => ({
 		availableUpdate,
 		showAvailableUpdate: true,

@@ -91,7 +91,7 @@ export function QueryPane() {
 				<Tabs
 					mt={-4}
 					value={activeQueryId.toString()}
-					onTabChange={handleTabChange}
+					onChange={handleTabChange}
 				>
 					<ScrollArea
 						pb="xs"
@@ -105,7 +105,7 @@ export function QueryPane() {
 										key={id}
 										value={id.toString()}
 									>
-										<Group spacing="xs" noWrap>
+										<Group gap="xs" wrap="nowrap">
 											<EditableText
 												value={name || ""}
 												onChange={setTabName}

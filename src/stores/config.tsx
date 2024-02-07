@@ -1,32 +1,7 @@
 import { DesignerLayoutMode, DesignerNodeMode, DriverType, FavoritesEntry, HistoryEntry, QueryListing, ResultListing, SessionQuery, SurrealistEnvironment, SurrealistSession, TablePinAction, ViewMode } from "~/types";
 import { createBaseConfig } from "~/util/defaults";
-import { ThemeOption } from "~/util/theme";
 import { create } from "zustand";
-import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
-import { adapter } from "../adapter/index";
-import { timeoutPromise } from "~/util/promise-timeout";
-
-const adapterStorage: StateStorage = {
-	async setItem(name, value) {
-		if (name == 'surrealist-config') {
-			const state = JSON.stringify(JSON.parse(value).state);
-			return timeoutPromise(() => adapter.saveConfig(state));
-		}
-	},
-	async getItem(name) {
-		if (name == 'surrealist-config') {
-			const state = JSON.parse(await timeoutPromise(() => adapter.loadConfig()));
-			return JSON.stringify({ state, version: 0 });
-		}
-
-		return null;
-	},
-	async removeItem(name) {
-		if (name == 'surrealist-config') {
-			return timeoutPromise(() => adapter.saveConfig("{}"));
-		}
-	},
-};
+import { MantineColorScheme } from "@mantine/core";
 
 function updateCurrentSession(state: ConfigStore, modifier: (tab: SurrealistSession) => Partial<SurrealistSession>) {
 	let found = false;
@@ -41,7 +16,7 @@ function updateCurrentSession(state: ConfigStore, modifier: (tab: SurrealistSess
 }
 
 export type ConfigStore = {
-	theme: ThemeOption,
+	colorScheme: MantineColorScheme,
 	tabs: SurrealistSession[],
 	environments: SurrealistEnvironment[],
 	activeView: ViewMode,
@@ -71,7 +46,7 @@ export type ConfigStore = {
 	defaultDesignerLayoutMode: DesignerLayoutMode,
 	defaultDesignerNodeMode: DesignerNodeMode,
 
-	setColorScheme: (theme: ThemeOption) => void;
+	setColorScheme: (theme: MantineColorScheme) => void;
 	setAutoConnect: (autoConnect: boolean) => void;
 	setTableSuggest: (tableSuggest: boolean) => void;
 	setErrorChecking: (errorChecking: boolean) => void;
@@ -119,11 +94,11 @@ export type ConfigStore = {
 	softReset: () => void;
 }
 
-export const useConfigStore = create<ConfigStore>()(persist(
+export const useConfigStore = create<ConfigStore>()(
 	(set) => ({
 		...createBaseConfig(),
 
-		setColorScheme: (theme) => set(() => ({ theme })),
+		setColorScheme: (colorScheme) => set(() => ({ colorScheme })),
 		setAutoConnect: (autoConnect) => set(() => ({ autoConnect })),
 		setTableSuggest: (tableSuggest) => set(() => ({ tableSuggest })),
 		setErrorChecking: (errorChecking) => set(() => ({ errorChecking })),
@@ -293,9 +268,5 @@ export const useConfigStore = create<ConfigStore>()(persist(
 		softReset: () => set(() => ({
 			activeView: "query",
 		}))
-	}), 
-	{
-		name: 'surrealist-config',
-		storage: createJSONStorage(() => adapterStorage),
-	}
-));
+	})
+);

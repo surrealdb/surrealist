@@ -1,9 +1,8 @@
-import { Button, Modal, Paper, Stack, Tabs, Text } from "@mantine/core";
+import { Modal, Tabs } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { GeneralTab } from "./tabs/Behavior";
 import { ConnectionTab } from "./tabs/Connection";
 import { LocalDatabaseTab } from "./tabs/LocalDatabase";
-import { useIsLight } from "~/hooks/theme";
 import { ModalTitle } from "../ModalTitle";
 import { AppearanceTab } from "./tabs/Appearance";
 
@@ -13,8 +12,6 @@ export interface SettingsProps {
 }
 
 export function Settings(props: SettingsProps) {
-	const isLight = useIsLight();
-
 	return (
 		<>
 			<Modal
@@ -23,36 +20,6 @@ export function Settings(props: SettingsProps) {
 				size={580}
 				title={<ModalTitle>Settings</ModalTitle>}
 			>
-				{adapter.isPromotionSupported && (
-					<Paper
-						mb="xl"
-						c="white"
-						sx={(theme) => ({
-							background: `url(/desktop.png), ${theme.fn.gradient()}`,
-							overflow: "hidden",
-							backgroundSize: "contain",
-							backgroundRepeat: "no-repeat",
-							backgroundPosition: "center right",
-						})}>
-						<Stack spacing="xs" p="md">
-							<Text size="xl" weight={600}>
-								Surrealist Desktop
-							</Text>
-							<Text style={{ maxWidth: "80%" }}>
-								Download Surrealist for desktop to gain additional features including database running and offline
-								support.
-							</Text>
-							<div>
-								<a href="https://github.com/StarlaneStudios/Surrealist/releases" target="_blank">
-									<Button color="light.0" variant="outline">
-										Download
-									</Button>
-								</a>
-							</div>
-						</Stack>
-					</Paper>
-				)}
-
 				<Tabs defaultValue="general">
 					<Tabs.List mb="md" grow>
 						<Tabs.Tab value="general">Behavior</Tabs.Tab>

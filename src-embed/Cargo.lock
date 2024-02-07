@@ -44,6 +44,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "91429305e9f0a25f6205c5b8e0d2db09e0708a7a6df0f42212bb56c32c8ac97a"
 dependencies = [
  "cfg-if",
+ "getrandom",
  "once_cell",
  "version_check",
  "zerocopy",
@@ -93,6 +94,12 @@ checksum = "cab112f0a86d568ea0e627cc1d6be74a1e9cd55214684db5561995f6dad897c6"
 dependencies = [
  "num-traits",
 ]
+
+[[package]]
+name = "arbitrary"
+version = "1.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d5a26814d8dcb93b0e5a0ff3c6d80a8843bafb21b39e8e18a6f05471870e110"
 
 [[package]]
 name = "arc-swap"
@@ -1055,6 +1062,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "567495020b114f1ce9bed679b29975aa0bfae06ac22beacd5cfde5dabe7b05d6"
 dependencies = [
  "approx",
+ "arbitrary",
  "num-traits",
  "rstar",
  "serde",
@@ -1491,15 +1499,6 @@ name = "log"
 version = "0.4.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
-
-[[package]]
-name = "lru"
-version = "0.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2994eeba8ed550fd9b47a0b38f0242bc3344e496483c6180b69139cc2fa5d1d7"
-dependencies = [
- "hashbrown 0.14.2",
-]
 
 [[package]]
 name = "md-5"
@@ -1998,6 +1997,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "quick_cache"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "58c20af3800cee5134b79a3bd4a3d4b583c16ccfa5f53338f46400851a5b3819"
+dependencies = [
+ "ahash 0.8.6",
+ "equivalent",
+ "hashbrown 0.14.2",
+ "parking_lot",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2267,9 +2278,9 @@ dependencies = [
 
 [[package]]
 name = "ring"
-version = "0.17.5"
+version = "0.17.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb0205304757e5d899b9c2e448b867ffd03ae7f988002e47cd24954391394d0b"
+checksum = "688c63d65483050968b2a8937f7995f443e27041a0f7700aa59b0822aedebb74"
 dependencies = [
  "cc",
  "getrandom",
@@ -2423,12 +2434,12 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.21.7"
+version = "0.21.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd8d6c9f025a446bc4d18ad9632e69aec8f287aa84499ee335599fabd20c3fd8"
+checksum = "f9d5a6813c0759e4609cd494e8e725babae6a2ca7b62a5536a13daaec6fcb7ba"
 dependencies = [
  "log",
- "ring 0.16.20",
+ "ring 0.17.7",
  "rustls-webpki",
  "sct",
 ]
@@ -2448,7 +2459,7 @@ version = "0.101.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b6275d1ee7a1cd780b64aca7726599a1dbc893b1e64144529e55c3c2f745765"
 dependencies = [
- "ring 0.17.5",
+ "ring 0.17.7",
  "untrusted 0.9.0",
 ]
 
@@ -2506,7 +2517,7 @@ version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da046153aa2352493d6cb7da4b6e5c0c057d8a1d0a9aa8560baffdd945acd414"
 dependencies = [
- "ring 0.17.5",
+ "ring 0.17.7",
  "untrusted 0.9.0",
 ]
 
@@ -2837,10 +2848,48 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 
 [[package]]
-name = "surrealdb"
-version = "1.1.1"
+name = "surrealdb-beta"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f295e08202d723ffd628b057fee207938804bccae60c49316197fed898d85536"
+checksum = "523ff8e8a59013c00e5951f280718aa6449a8004d5fa8016d82fbb25463b8ec0"
+dependencies = [
+ "async-channel",
+ "bincode",
+ "chrono",
+ "dmp",
+ "flume",
+ "futures",
+ "futures-concurrency",
+ "geo 0.27.0",
+ "indexmap 2.1.0",
+ "once_cell",
+ "path-clean",
+ "pharos",
+ "reqwest",
+ "ring 0.17.7",
+ "rust_decimal",
+ "rustls",
+ "semver",
+ "serde",
+ "serde_json",
+ "surrealdb-core-beta",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+ "trice",
+ "url",
+ "uuid",
+ "wasm-bindgen-futures",
+ "wasmtimer",
+ "ws_stream_wasm",
+]
+
+[[package]]
+name = "surrealdb-core-beta"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d5c94b4b670c078870bc87388736b976aff7659ae2299af7ec88c8fa0cd7cf63"
 dependencies = [
  "addr",
  "any_ascii",
@@ -2857,37 +2906,33 @@ dependencies = [
  "deunicode",
  "dmp",
  "echodb",
- "flume",
  "fst",
  "futures",
- "futures-concurrency",
  "fuzzy-matcher",
  "geo 0.27.0",
+ "geo-types",
  "hex",
- "indexmap 2.1.0",
  "indxdb",
  "ipnet",
  "lexicmp",
- "lru",
  "md-5",
  "nanoid",
  "nom",
  "num_cpus",
  "object_store",
  "once_cell",
- "path-clean",
  "pbkdf2",
  "pharos",
  "pin-project-lite",
+ "quick_cache",
  "radix_trie",
  "rand",
  "regex",
- "reqwest",
  "revision",
+ "ring 0.17.7",
  "roaring",
  "rust-stemmers",
  "rust_decimal",
- "rustls",
  "scrypt",
  "semver",
  "serde",
@@ -2900,7 +2945,6 @@ dependencies = [
  "surrealdb-jsonwebtoken",
  "thiserror",
  "tokio",
- "tokio-tungstenite",
  "tracing",
  "trice",
  "ulid",
@@ -2951,7 +2995,7 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
- "surrealdb",
+ "surrealdb-beta",
  "tokio",
  "wasm-bindgen",
  "wasm-bindgen-futures",

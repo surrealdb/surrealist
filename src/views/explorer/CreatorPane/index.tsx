@@ -62,7 +62,7 @@ export function CreatorPane({ refreshEvent }: CreatorPaneProps) {
 		}
 	}, [creatorBody]);
 
-	const jsonAlert = !isBodyValid && <Text color="red">Invalid record JSON</Text>;
+	const jsonAlert = !isBodyValid && <Text c="red">Invalid record JSON</Text>;
 
 	return (
 		<Panel
@@ -90,7 +90,7 @@ export function CreatorPane({ refreshEvent }: CreatorPaneProps) {
 				onChange={handleCreatorId}
 			/>
 
-			<Text color="dark.0" size="sm">
+			<Text c="dark.0" size="sm">
 				Record contents
 			</Text>
 

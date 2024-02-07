@@ -8,7 +8,6 @@ import { VIEW_MODES } from "~/constants";
 import { getActiveSession } from "./environments";
 import { ViewMode } from "~/types";
 import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -39,18 +38,6 @@ export function updateTitle() {
 }
 
 /**
- * Watch for changes to the native theme
- */
-export function watchNativeTheme() {
-	const { setNativeTheme } = useInterfaceStore.getState();
-	const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
-
-	setNativeTheme(mediaMatch.matches ? "dark" : "light");
-
-	mediaMatch.addEventListener("change", (event) => setNativeTheme(event.matches ? "dark" : "light"));
-}
-
-/**
  * Display an error notification
  *
  * @param title The title message
@@ -60,9 +47,9 @@ export function showError(title: string, subtitle: string) {
 	showNotification({
 		color: "red.6",
 		message: (
-			<Stack spacing={0}>
-				<Text weight={600}>{title}</Text>
-				<Text color="light.5">{subtitle}</Text>
+			<Stack gap={0}>
+				<Text fw={600}>{title}</Text>
+				<Text c="light.5">{subtitle}</Text>
 			</Stack>
 		),
 	});
@@ -129,3 +116,17 @@ export function applyOrder<T>(items: T[], order: T[]) {
 		return item;
 	});
 }
+
+/**
+ * Wrap a promise in a timeout
+ * 
+ * @param cb The callback providing the promise
+ * @param timeout The timeout in milliseconds
+ * @returns The promise
+ */
+export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
+	return new Promise<T>((res, rej) =>
+		setTimeout(() => cb().then(res).catch(rej), timeout)
+	);
+}
+  

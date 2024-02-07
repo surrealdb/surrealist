@@ -7,6 +7,7 @@ import { Spacer } from "~/components/Spacer";
 import { LIVE_QUERY_COLORS } from "~/constants";
 import { useActiveSession } from "~/hooks/environment";
 import { useStable } from "~/hooks/stable";
+import { themeColor } from "~/util/mantine";
 
 export interface QueriesPaneProps {
 	activeQueries: string[];
@@ -24,7 +25,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 		return {
 			borderWidth: 2,
 			borderStyle: 'solid',
-			borderColor: active ? theme.fn.primaryColor() : 'transparent',
+			borderColor: active ? themeColor('surreal') : 'transparent',
 			cursor: 'pointer'
 		};
 	});
@@ -66,7 +67,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 					}
 				}}
 			>
-				<Stack spacing="xs">
+				<Stack gap="xs">
 					{session.liveQueries.map((query, i) => {
 						const isActive = props.activeQueries.includes(query.id);
 
@@ -81,14 +82,14 @@ export function QueriesPane(props: QueriesPaneProps) {
 								onClick={() => props.toggleQuery(query.id)}
 								title={isActive ? 'Stop query' : 'Start query'}
 							>
-								<Group spacing="sm" noWrap>
+								<Group gap="sm" wrap="nowrap">
 									<Icon
 										path={mdiCircleDouble}
 										color={LIVE_QUERY_COLORS[i % LIVE_QUERY_COLORS.length]}
 									/>
-									<Stack spacing={0} miw={0}>
-										<Group spacing={8}>
-											<Text color="gray" size="xs">
+									<Stack gap={0} miw={0}>
+										<Group gap={8}>
+											<Text c="gray" size="xs">
 												Query {i + 1}
 											</Text>
 											{isActive && (

@@ -24,7 +24,7 @@ export interface DataCellProps {
 
 function NullishCell(props: DataCellProps) {
 	return (
-		<Text color="light.5" ff="JetBrains Mono">
+		<Text c="light.5" ff="JetBrains Mono">
 			{props.value === null ? "null" : "—"}
 		</Text>
 	);
@@ -84,9 +84,9 @@ function ArrayCell(props: DataCellProps) {
 					{items.length > 15 ? (
 						<Text size="sm">Too large to preview</Text>
 					) : (
-						<Stack spacing="sm">
+						<Stack gap="sm">
 							{items.map((item, i) => (
-								<Group noWrap>
+								<Group wrap="nowrap">
 									<span style={{ opacity: 0.5 }}>#{i + 1}</span>
 									<div key={i} style={TRUNCATE_STYLE}>
 										{renderDataCell(item, props.openRecord)}
@@ -166,5 +166,5 @@ export function renderDataCell(value: any, openRecord?: OpenFn): ReactNode {
 		}
 	}
 
-	return <Text color="red">Unknown</Text>;
+	return <Text c="red">Unknown</Text>;
 }

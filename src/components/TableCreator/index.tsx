@@ -59,12 +59,12 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 					<ModalTitle>{`Create new ${createType}`}</ModalTitle>
 				}
 			>
-				<Tabs mb="xl" defaultValue="table" value={createType} onTabChange={setCreateType as any}>
+				<Tabs mb="xl" defaultValue="table" value={createType} onChange={setCreateType as any}>
 					<Tabs.List grow>
-						<Tabs.Tab value="table" icon={<Icon path={mdiTable} />}>
+						<Tabs.Tab value="table" rightSection={<Icon path={mdiTable} />}>
 							Table
 						</Tabs.Tab>
-						<Tabs.Tab value="relation" icon={<Icon path={mdiVectorLine} />}>
+						<Tabs.Tab value="relation" rightSection={<Icon path={mdiVectorLine} />}>
 							Relation
 						</Tabs.Tab>
 					</Tabs.List>
@@ -80,7 +80,6 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 									placeholder="Select incoming tables"
 									value={tableIn}
 									onChange={setTableIn}
-									withinPortal
 								/>
 
 								<MultiSelect
@@ -88,7 +87,6 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 									placeholder="Select outgoing tables"
 									value={tableOut}
 									onChange={setTableOut}
-									withinPortal
 								/>
 							</>
 						)}
@@ -101,7 +99,8 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 								color="surreal"
 								type="submit"
 								disabled={!tableName || (createType === "relation" && (!tableIn || !tableOut))}
-								rightIcon={<Icon path={mdiPlus} />}>
+								rightSection={<Icon path={mdiPlus} />}
+							>
 								Create
 							</Button>
 						</Group>
