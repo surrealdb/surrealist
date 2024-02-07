@@ -21,6 +21,7 @@ import { watchColorPreference, watchColorScheme, watchConfigStore } from './util
 
 import "reactflow/dist/style.css";
 import { openConnection } from './database';
+import { getConnection } from './util/connection';
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -55,7 +56,7 @@ import { openConnection } from './database';
 	}
 
 	// Open connection
-	if (autoConnect) {
+	if (autoConnect && getConnection()) {
 		openConnection();
 	}
 })();

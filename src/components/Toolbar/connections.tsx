@@ -1,28 +1,30 @@
 import { ActionIcon, Box, Button, Group, Popover, Stack, Text, TextInput } from "@mantine/core";
-import { mdiChevronDown, mdiCircle, mdiMagnify, mdiPlus } from "@mdi/js";
-import { useState } from "react";
+import { mdiChevronDown, mdiCircle, mdiDotsVertical, mdiMagnify, mdiPlus } from "@mdi/js";
+import { useMemo, useState } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
 import { surrealIcon } from "~/util/icons";
-import { useIsLight } from "~/hooks/theme";
 import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
+import { closeConnection, openConnection } from "~/database";
+import { useInputState } from "@mantine/hooks";
 
 export function Connections() {
 	const { openConnectionCreator } = useInterfaceStore.getState();
 	const { setActiveConnection } = useConfigStore.getState();
 
+	const [search, setSearch] = useInputState("");
 	const [isOpen, setIsOpen] = useState(false);
 	const connections = useConnections();
 	const connection = useConnection();
-	const isLight = useIsLight();
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
+	const autoConnect = useConfigStore((s) => s.autoConnect);
 
 	const toggleDropdown = useStable(() => {
 		setIsOpen((prev) => !prev);
@@ -33,10 +35,26 @@ export function Connections() {
 		openConnectionCreator();
 	});
 
-	const openSandbox = useStable(() => {
+	const activate = useStable((id: string) => {
 		setIsOpen(false);
-		setActiveConnection(SANDBOX);
+		setActiveConnection(id);
+		closeConnection();
+
+		if (autoConnect) {
+			openConnection();
+		}
 	});
+
+	const filtered = useMemo(() => {
+		const needle = search.trim().toLocaleLowerCase();
+
+		return connections.filter((con) =>
+			con.name.toLowerCase().includes(needle)
+			|| con.connection.endpoint.toLowerCase().includes(needle)
+		);
+	}, [connection, search]);
+
+	const isSandbox = connection?.id === SANDBOX;
 
 	return (
 		<Popover
@@ -81,64 +99,80 @@ export function Connections() {
 					<TextInput
 						radius="md"
 						placeholder="Search..."
+						value={search}
+						onChange={setSearch}
 						autoFocus
 						leftSection={
 							<Icon path={mdiMagnify} />
 						}
 					/>
 
-					<Button
-						variant="light"
-						radius="md"
-						leftSection={
-							<Group gap="xs">
-								<Icon path={surrealIcon} color="surreal" />
-								Sandbox
-							</Group>
-						}
-						styles={{
-							label: {
-								flex: 1
+					{!search && (
+						<Button
+							variant="light"
+							radius="md"
+							color={isSandbox ? "surreal" : "slate"}
+							leftSection={
+								<Group gap="xs">
+									<Icon path={surrealIcon} color="surreal" />
+									Sandbox
+								</Group>
 							}
-						}}
-						onClick={openSandbox}
-					/>
+							styles={{
+								label: {
+									flex: 1
+								}
+							}}
+							onClick={() => activate(SANDBOX)}
+						/>
+					)}
 
 					<Box>
-						<Group>
+						<Group mb={4}>
 							<Text c="slate.2">
 								Connections
 							</Text>
 							<Spacer />
-							<ActionIcon>
-								<Icon path={mdiPlus} onClick={createNew} />
+							<ActionIcon
+								mr={8}
+								onClick={createNew}
+							>
+								<Icon path={mdiPlus} />
 							</ActionIcon>
 						</Group>
 						<Stack gap="sm">
-							{connections.length === 0 && (
+							{search && filtered.length === 0 ? (
+								<Text c="dimmed">
+									No results found
+								</Text>
+							) : filtered.length === 0 && (
 								<Text c="dimmed">
 									No connections configured yet
 								</Text>
 							)}
 
-							{connections.map((con) => {
+							{filtered.map((con) => {
 								const isActive = connection?.id === con.id;
 
 								return (
 									<Button
 										variant="light"
 										radius="md"
+										color={isActive ? "surreal" : "slate"}
 										leftSection={
 											<Group gap="xs">
-												<Icon path={surrealIcon} color="surreal" />
-												Sandbox
+												{con.name}
 											</Group>
+										}
+										rightSection={
+											<Icon path={mdiDotsVertical} />
 										}
 										styles={{
 											label: {
 												flex: 1
 											}
 										}}
+										onClick={() => activate(con.id)}
 									/>
 								);
 							})}
