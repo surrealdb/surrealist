@@ -1,5 +1,6 @@
-import { Button, ScrollArea, Stack, Text } from "@mantine/core";
-import { mdiHistory, mdiListBox, mdiPlus, mdiStar } from "@mdi/js";
+import classes from "./style.module.scss";
+import { ActionIcon, Button, ScrollArea, Stack, Text } from "@mantine/core";
+import { mdiClose, mdiHistory, mdiListBox, mdiPlus, mdiStar } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
@@ -8,11 +9,16 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 
 export function TabsPane() {
-	const { addQueryTab, setActiveQueryTab } = useConfigStore.getState();
-	const connection = useActiveConnection();
+	const { addQueryTab, removeQueryTab, setActiveQueryTab } = useConfigStore.getState();
+	const { queries, activeQuery } = useActiveConnection();
 
 	const newTab = useStable(() => {
 		addQueryTab();
+	});
+
+	const removeTab = useStable((id: string, e: React.MouseEvent) => {
+		e.stopPropagation();
+		removeQueryTab(id);
 	});
 
 	return (
@@ -29,8 +35,8 @@ export function TabsPane() {
 			>
 				<ScrollArea>
 					<Stack gap="sm">
-						{connection.queries.map((query) => {
-							const isActive = query.id === connection.activeQuery;
+						{queries.map((query) => {
+							const isActive = query.id === activeQuery;
 
 							return (
 								<Button
@@ -38,12 +44,24 @@ export function TabsPane() {
 									fullWidth
 									color={isActive ? "surreal": "slate"}
 									onClick={() => setActiveQueryTab(query.id)}
+									className={classes.query}
 									variant="light"
 									styles={{
 										label: {
 											flex: 1
 										}
 									}}
+									rightSection={
+										queries.length > 1 && (
+											<ActionIcon
+												mr={-8}
+												className={classes.queryClose}
+												onClick={(e) => removeTab(query.id, e)}
+											>
+												<Icon path={mdiClose} />
+											</ActionIcon>
+										)
+									}
 								>
 									{query.name}
 								</Button>

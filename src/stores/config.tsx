@@ -115,9 +115,18 @@ export const useConfigStore = create<ConfigStore>()(
 		addQueryTab: (query) => set((state) => updateConnection(state, (connection) => {
 			const tabId = newId();
 
+			let queryName = "";
+			let counter = 0;
+	
+			do {
+				queryName = `New query ${counter ? counter + 1 : ""}`.trim();
+				counter++;
+			} while (connection.queries.some((query) => query.name === queryName));
+
 			return {
 				queries: [...connection.queries, {
 					...createBaseTab(query),
+					name: queryName,
 					id: tabId,
 				}],
 				activeQuery: tabId,
@@ -127,20 +136,21 @@ export const useConfigStore = create<ConfigStore>()(
 		removeQueryTab: (queryId) => set((state) => updateConnection(state, (connection) => {
 			const index = connection.queries.findIndex((query) => query.id === queryId);
 			
-			if (index < 1) {
+			if (index < 0) {
 				return {};
 			}
 
+			let activeQuery = connection.activeQuery;
+
 			if (connection.activeQuery === queryId) {
-				const nextId = index === connection.queries.length - 1
+				activeQuery = index === connection.queries.length - 1
 					? connection.queries[index - 1]?.id
 					: connection.queries[index + 1]?.id;
-
-				connection.activeQuery = nextId;
 			}
 
 			return {
-				queries: connection.queries.toSpliced(index, 1)
+				queries: connection.queries.toSpliced(index, 1),
+				activeQuery
 			};
 		})),
 
