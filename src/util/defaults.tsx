@@ -1,4 +1,4 @@
-import { Connection, ConnectionOptions, SurrealistConfig } from "~/types";
+import { Connection, ConnectionOptions, SurrealistConfig, TabQuery } from "~/types";
 import { newId } from "./helpers";
 
 export function createBaseConfig(): SurrealistConfig {
@@ -44,19 +44,32 @@ export function createBaseConnectionOptions(): ConnectionOptions {
 }
 
 export function createBaseConnection(query?: string): Connection {
+	const baseTab = createBaseTab();
+
 	return {
 		id: newId(),
 		name: "",
-		queries: [{ id: 1, text: query || '' }],
-		activeQueryId: 1,
-		lastQueryId: 1,
-		variables: "{}",
-		lastResponse: [],
+		queries: [{
+			...baseTab,
+			name: "Query 1"
+		}],
+		activeQuery: baseTab.id,
 		connection: createBaseConnectionOptions(),
 		pinnedTables: [],
 		liveQueries: [],
 		queryHistory: []
 	};
+}
+
+export function createBaseTab(query?: string): TabQuery {
+	return {
+		id: newId(),
+		query: query || "",
+		name: "",
+		variables: "{}",
+		response: null
+	};
+
 }
 
 export function createSandboxConnection(): Connection {

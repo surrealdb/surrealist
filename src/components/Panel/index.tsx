@@ -18,7 +18,11 @@ export function Panel(props: PanelProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Paper className={classes.root} {...rest}>
+		<Paper
+			className={classes.root}
+			radius="lg"
+			{...rest}
+		>
 			{title !== undefined && icon !== undefined && (
 				<>
 					<Group

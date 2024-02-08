@@ -1,8 +1,9 @@
-import { Connection, DesignerLayoutMode, DesignerNodeMode, DriverType, HistoryQuery, ResultMode, SavedQuery, SurrealistConfig, TabQuery, ViewMode } from "~/types";
-import { createBaseConfig } from "~/util/defaults";
+import { Connection, DesignerLayoutMode, DesignerNodeMode, DriverType, HistoryQuery, PartialId, ResultMode, SavedQuery, SurrealistConfig, TabQuery, ViewMode } from "~/types";
+import { createBaseConfig, createBaseTab } from "~/util/defaults";
 import { MantineColorScheme } from "@mantine/core";
 import { create } from "zustand";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
+import { newId } from "~/util/helpers";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -12,13 +13,14 @@ function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
 			sandbox: {
 				...state.sandbox,
 				...modifier(state.sandbox),
+				id: SANDBOX,
 			}
 		};
 	}
 
 	const connections = state.connections.map((con) => {
 		return con.id === state.activeConnection
-			? { ...con, ...modifier(con) }
+			? { ...con, ...modifier(con), id: con.id }
 			: con;
 	});
 
@@ -33,15 +35,15 @@ export type ConfigStore = SurrealistConfig & {
 	setWordWrap: (wordWrap: boolean) => void;
 	addConnection: (connection: Connection) => void;
 	removeConnection: (connectionId: string) => void;
-	updateConnection: (payload: Pick<Connection, 'id'> & Partial<Connection>) => void;
+	updateConnection: (payload: PartialId<Connection>) => void;
 	updateCurrentConnection: (payload: Partial<Connection>) => void;
 	setConnections: (connections: Connection[]) => void;
 	setActiveConnection: (connectionId: string) => void;
 	setActiveView: (activeView: ViewMode) => void;
 	addQueryTab: (query?: string) => void;
-	removeQueryTab: (queryId: number) => void;
-	updateQueryTab: (payload: Partial<TabQuery>) => void;
-	setActiveQueryTab: (tabId: number) => void;
+	removeQueryTab: (tabId: string) => void;
+	updateQueryTab: (payload: PartialId<TabQuery>) => void;
+	setActiveQueryTab: (tabId: string) => void;
 	setWindowPinned: (isPinned: boolean) => void;
 	toggleWindowPinned: () => void;
 	saveQuery: (query: SavedQuery) => void;
@@ -111,49 +113,54 @@ export const useConfigStore = create<ConfigStore>()(
 		setActiveView: (activeView) => set(() => ({ activeView })),
 
 		addQueryTab: (query) => set((state) => updateConnection(state, (connection) => {
-			const newId = connection.lastQueryId + 1;
-			
+			const tabId = newId();
+
 			return {
-				queries: [...connection.queries, { id: newId, text: query ?? "" }],
-				activeQueryId: newId,
-				lastQueryId: newId,
+				queries: [...connection.queries, {
+					...createBaseTab(query),
+					id: tabId,
+				}],
+				activeQuery: tabId,
 			};
 		})),
 
 		removeQueryTab: (queryId) => set((state) => updateConnection(state, (connection) => {
 			const index = connection.queries.findIndex((query) => query.id === queryId);
 			
-			if (index < 1) return connection;
-
-			if (connection.activeQueryId === queryId) {
-				connection.activeQueryId = connection.queries[index - 1]?.id || 1;
+			if (index < 1) {
+				return {};
 			}
 
-			connection.queries.splice(index, 1);
+			if (connection.activeQuery === queryId) {
+				const nextId = index === connection.queries.length - 1
+					? connection.queries[index - 1]?.id
+					: connection.queries[index + 1]?.id;
 
-			if (connection.queries.length <= 1) {
-				connection.activeQueryId = 1;
-				connection.lastQueryId = 1;
+				connection.activeQuery = nextId;
 			}
 
-			return connection;
+			return {
+				queries: connection.queries.toSpliced(index, 1)
+			};
 		})),
 
 		updateQueryTab: (payload) => set((state) => updateConnection(state, (connection) => {
-			const index = connection.queries.findIndex((query) => query.id === connection.activeQueryId);
-			if (index < 0) return connection;
+			const index = connection.queries.findIndex((query) => query.id === connection.activeQuery);
 
-			connection.queries[index] = {
-				...connection.queries[index],
-				...payload
+			if (index < 0) {
+				return {};
+			}
+
+			return {
+				queries: connection.queries.with(index, {
+					...connection.queries[index],
+					...payload,
+				})
 			};
-
-			return connection;
 		})),
 
-		setActiveQueryTab: (connectionId) => set((state) => updateConnection(state, (connection) => ({
-			...connection,
-			activeQueryId: connectionId,
+		setActiveQueryTab: (connectionId) => set((state) => updateConnection(state, () => ({
+			activeQuery: connectionId,
 		}))),
 
 		setWindowPinned: (isPinned) => set(() => ({ isPinned })),

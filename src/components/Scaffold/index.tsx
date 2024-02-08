@@ -74,6 +74,7 @@ function NavigationIcon({ name, isActive, isLight, icon, onClick }: NavigationIc
 				variant={isActive ? "gradient" : "subtle"}
 				className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
 				onClick={onClick}
+				radius="lg"
 			>
 				<Icon path={icon} />
 			</ActionIcon>

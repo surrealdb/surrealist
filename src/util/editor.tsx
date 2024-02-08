@@ -103,6 +103,11 @@ export async function initializeMonaco() {
 		extensions: [".surql", ".surrealql"],
 	});
 
+	monaco.languages.register({
+		id: 'javascript',
+		aliases: ['typescript', 'js']
+	});
+
 	monaco.languages.setLanguageConfiguration("surrealql", {
 		comments: {
 			lineComment: "--",
@@ -186,13 +191,14 @@ export async function initializeMonaco() {
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: ["$"],
 		provideCompletionItems(_, position, context) {
-			const session = getConnection();
+			const connection = getConnection();
+			const query = connection?.queries?.find((q) => q.id === connection?.activeQuery);
 
-			if (!session) {
+			if (!connection || !query) {
 				return;
 			}
 
-			const variables = JSON.parse(session.variables);
+			const variables = JSON.parse(query.variables || '{}');
 			const variableNames = Object.keys(variables);
 
 			if (variableNames.length === 0) {
@@ -213,6 +219,12 @@ export async function initializeMonaco() {
 			};
 		},
 	});
+
+	wireHighlighting();
+}
+
+export function wireHighlighting() {
+	wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
 }
 
 /**
@@ -331,33 +343,6 @@ export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
 	}
 
 	monaco.editor.setModelMarkers(model, "owner", markers);
-}
-
-let jsonPatched = false;
-
-/**
- * Handle global post-load configuration for the editor
- * 
- * @param editor The editor instance
- */
-export function onEditorReady(editor: editor.IStandaloneCodeEditor) {
-	const language = editor.getModel()!.getLanguageId();
-
-	monaco.languages.register({
-		id: 'javascript',
-		aliases: ['typescript', 'js']
-	});
-
-	// Patch JSON highlighting
-	if (language === 'json' && !jsonPatched) {
-		wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
-		jsonPatched = true;
-	}
-
-	// Ensure correct font measurements
-	document.fonts.ready.then(() => {
-		monaco.editor.remeasureFonts();
-	}); 
 }
 
 /**

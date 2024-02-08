@@ -54,6 +54,6 @@ export function useActiveConnection() {
 export function useActiveQuery() {
 	const connection = useActiveConnection();
 
-	return connection.queries.find((q) => q.id === connection.activeQueryId)!;
+	return connection.queries.find((q) => q.id === connection.activeQuery);
 }
 

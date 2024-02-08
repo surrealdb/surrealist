@@ -62,6 +62,7 @@ export function Connections() {
 					<Button
 						variant="light"
 						color="slate"
+						radius="lg"
 						onClick={toggleDropdown}
 						leftSection={isSandbox && (
 							<Icon path={surrealIcon} color="surreal" />

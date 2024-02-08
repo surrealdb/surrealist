@@ -5,7 +5,6 @@ import { ConnectionOptions } from "~/types";
 /**
  * Returns the currently active connection
  */
-
 export function getConnection() {
 	const { connections, activeConnection, sandbox } = useConfigStore.getState();
 
@@ -14,10 +13,11 @@ export function getConnection() {
 	}
 
 	return connections.find((con) => con.id === activeConnection);
-}/**
+}
+
+/**
  * Returns the currently active connection
  */
-
 export function getActiveConnection() {
 	const connection = getConnection();
 

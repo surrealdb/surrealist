@@ -29,7 +29,7 @@ export const MANTINE_THEME = createTheme({
 	fontFamily: `-apple-system, ui-sans-serif, system-ui, Inter, "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"`,
 	primaryColor: "surreal",
 	primaryShade: 6,
-	defaultRadius: "lg",
+	defaultRadius: "md",
 	fontSizes: {
 		xs: rem(9),
 		sm: rem(11),

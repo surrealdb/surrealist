@@ -1,45 +1,42 @@
-import { useState } from "react";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../../query/VariablesPane";
-import { Splitter, SplitValues } from "~/components/Splitter";
+import { Splitter } from "~/components/Splitter";
+import { TabsPane } from "../TabsPane";
+import { useDisclosure } from "@mantine/hooks";
 
 export function QueryView() {
-	const [splitValues, setSplitValues] = useState<SplitValues>([750, undefined]);
-	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
+	const [showVariables, showVariablesHandle] = useDisclosure();
 
 	return (
 		<Splitter
-			minSize={300}
-			values={splitValues}
-			onChange={setSplitValues}
-			direction="horizontal"
-			bufferSize={520}
+			minSize={250}
+			maxSize={500}
 			startPane={
+				<TabsPane />
+			}
+		>
+			<Splitter
+				direction="vertical"
+				minSize={250}
+				initialSize={400}
+				endPane={
+					<ResultPane />
+				}
+			>
 				<Splitter
-					minSize={120}
-					values={innerSplitValues}
-					onChange={setInnerSplitValues}
-					bufferSize={0}
-					direction="vertical"
+					minSize={250}
+					initialSize={500}
 					endPane={
-						<VariablesPane />
+						showVariables && <VariablesPane />
 					}
 				>
-					<QueryPane />
+					<QueryPane
+						showVariables={showVariables}
+						toggleVariables={showVariablesHandle.toggle}
+					/>
 				</Splitter>
-			}
-			// endPane={
-			// enableListing ? (
-			// 	queryListing == "history" ? (
-			// 		<HistoryPane />
-			// 	) : (
-			// 		<FavoritesPane />
-			// 	)
-			// ) : null
-			// }
-		>
-			<ResultPane />
+			</Splitter>
 		</Splitter>
 	);
 }

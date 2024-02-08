@@ -14,6 +14,7 @@ export type Protocol = "http" | "https" | "ws" | "wss" | "mem";
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
+export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 
 export type Selectable<T extends string> = { label: string, value: T };
 
@@ -47,11 +48,8 @@ export interface Connection {
 	id: string;
 	name: string;
 	queries: TabQuery[];
-	activeQueryId: number;
-	lastQueryId: number;
-	variables: string;
+	activeQuery: string;
 	connection: ConnectionOptions;
-	lastResponse: any;
 	pinnedTables: string[];
 	designerNodeMode?: DesignerNodeMode;
 	designerLayoutMode?: DesignerLayoutMode;
@@ -60,9 +58,11 @@ export interface Connection {
 }
 
 export interface TabQuery {
-	id: number;
-	text: string;
+	id: string;
+	query: string;
 	name?: string;
+	variables: string;
+	response: any;
 }
 
 export interface HistoryQuery {

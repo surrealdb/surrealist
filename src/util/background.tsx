@@ -52,6 +52,7 @@ export async function watchConfigStore() {
 
 	useConfigStore.setState(JSON.parse(config));
 
+	// TODO include a ~300ms debounce
 	useConfigStore.subscribe((state) => {
 		adapter.saveConfig(JSON.stringify(state));
 	});

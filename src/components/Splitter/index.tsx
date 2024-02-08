@@ -17,6 +17,7 @@ export interface SplitterProps {
 	values?: SplitValues;
 	minSize?: SplitBounds;
 	maxSize?: SplitBounds;
+	initialSize?: SplitBounds;
 	bufferSize?: number;
 	onChange?: (values: SplitValues) => void;
 }
@@ -75,7 +76,10 @@ export function Splitter(props: SplitterProps) {
 	});
 
 	useEffect(() => {
-		recomputeSizes(props.values || ([] as any));
+		recomputeSizes(props.values || ([
+			getLeft(props.initialSize),
+			getRight(props.initialSize),
+		] as any));
 	}, [props.values, props.startPane, props.endPane]);
 
 	// Stop dragging

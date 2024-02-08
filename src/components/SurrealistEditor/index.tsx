@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor';
 import classes from './style.module.scss';
 import { CSSProperties, ElementRef, HTMLAttributes, useEffect, useRef } from "react";
-import { BASE_EDITOR_CONFIG, onEditorReady } from "~/util/editor";
+import { BASE_EDITOR_CONFIG, wireHighlighting } from "~/util/editor";
 import { Box, Paper } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { clsx } from "clsx";
@@ -40,9 +40,11 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 
 		props.onMount?.(editor);
 		
-		editor.onDidChangeModelLanguageConfiguration(() => {
-			onEditorReady(editor);
-		});
+		if (props.language === "json") {
+			editor.onDidChangeModelLanguageConfiguration(() => {
+				wireHighlighting();
+			});
+		}
 
 		editor.getModel()?.onDidChangeContent(() => {
 			props.onChange?.(editor.getValue());

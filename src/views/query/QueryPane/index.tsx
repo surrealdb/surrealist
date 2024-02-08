@@ -1,37 +1,34 @@
-import classes from './style.module.scss';
 import { editor } from "monaco-editor";
-import { mdiClose, mdiDatabase, mdiFileDocument, mdiPlusBoxMultiple } from "@mdi/js";
+import { mdiDatabase, mdiFileDocument, mdiSendVariant, mdiStar, mdiText, mdiTuneVariant } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
-import { useActiveConnection } from "~/hooks/connection";
+import { useActiveQuery } from "~/hooks/connection";
 import { Panel } from "~/components/Panel";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon, Group, ScrollArea, Tabs } from "@mantine/core";
+import { ActionIcon, Box, Button, Divider, Group } from "@mantine/core";
+import { useConfigStore } from '~/stores/config';
 import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
-import { EditableText } from "~/components/EditableText";
-import { useConfigStore } from '~/stores/config';
+import { Spacer } from "~/components/Spacer";
 
-export function QueryPane() {
+export interface QueryPaneProps {
+	showVariables: boolean;
+	toggleVariables: () => void;
+}
+
+export function QueryPane(props: QueryPaneProps) {
 	const updateQueryTab = useConfigStore((s) => s.updateQueryTab);
-	const removeQueryTab = useConfigStore((s) => s.removeQueryTab);
-	const addQueryTab = useConfigStore((s) => s.addQueryTab);
-	const setActiveQueryTab = useConfigStore((s) => s.setActiveQueryTab);
-
-	const { queries, activeQueryId } = useActiveConnection();
 	const controls = useRef<editor.IStandaloneCodeEditor>();
+	const activeTab = useActiveQuery();
 
-	const showTabs = queries.length > 1;
-	const queryIndex = queries.findIndex(({ id }) => id === activeQueryId);
-	const queryInfo = queries[queryIndex];
-	const queryText = queryInfo?.text || "";
-
-	const setQueryForced = useStable((content: string | undefined) => {
-		updateQueryTab({ text: content || "" });
-		updateQueryValidation(controls.current!);
+	const setQueryForced = useStable((query: string) => {
+		updateQueryTab({
+			id: activeTab!.id,
+			query
+		});
 	});
 
 	const scheduleSetQuery = useDebouncedCallback(200, setQueryForced);
@@ -46,113 +43,99 @@ export function QueryPane() {
 	});
 
 	const handleUpload = useStable(async () => {
-		const [file] = await adapter.openFile('Load query from file', SURQL_FILTERS, false);
+		const [file] = await adapter.openFile('Open query from file', SURQL_FILTERS, false);
 
 		if (file) {
 			setQueryForced(file.content);
 		}
 	});
 
-	const removeTab = useStable(removeQueryTab);
-	const appendTab = useStable(addQueryTab);
-
-	const handleTabChange = useStable((value: string | null) => {
-		if (value) {
-			const tabId = Number.parseInt(value);
-
-			if (activeQueryId !== Number.parseInt(value)) {
-				setActiveQueryTab(tabId);
-				controls.current?.focus?.();
-			}
-		}
-	});
-
-	const setTabName = useStable((name: string) => updateQueryTab({
-		name
-	}));
-
 	return (
 		<Panel
 			title="Query"
 			icon={mdiDatabase}
 			rightSection={
-				<Group>
-					<ActionIcon onClick={() => appendTab()} title="New query tab">
-						<Icon color="light.4" path={mdiPlusBoxMultiple} />
-					</ActionIcon>
-
-					<ActionIcon onClick={handleUpload} title="Load from file">
-						<Icon color="light.4" path={mdiFileDocument} />
-					</ActionIcon>
-				</Group>
+				<Button
+					size="xs"
+					onClick={props.toggleVariables}
+					variant="light"
+					color={props.showVariables ? "slate" : "surreal"}
+					leftSection={
+						<Icon path={mdiTuneVariant} />
+					}
+				>
+					{props.showVariables ? 'Hide' : 'Show'} variables
+				</Button>
 			}
 		>
-			{showTabs && (
-				<Tabs
-					mt={-4}
-					value={activeQueryId.toString()}
-					onChange={handleTabChange}
-				>
-					<ScrollArea
-						pb="xs"
+			{activeTab && (
+				<>
+					<SurrealistEditor
+						noExpand
+						language="surrealql"
+						onMount={configure}
+						value={activeTab.query}
+						onChange={scheduleSetQuery}
+						style={{
+							position: "absolute",
+							insetInline: 14,
+							top: 0,
+							bottom: 54
+						}}
+						options={{
+							quickSuggestions: false,
+							wordBasedSuggestions: false,
+							wrappingStrategy: "advanced",
+							wordWrap: "on"
+						}}
+					/>
+					<Box
+						style={{
+							position: "absolute",
+							insetInline: 12,
+							bottom: 12
+						}}
 					>
-						<Tabs.List style={{ flexWrap: "nowrap" }}>
-							{queries.map(({ id, name }) => {
-								return (
-									<Tabs.Tab
-										py={6}
-										px={10}
-										key={id}
-										value={id.toString()}
-									>
-										<Group gap="xs" wrap="nowrap">
-											<EditableText
-												value={name || ""}
-												onChange={setTabName}
-												placeholder={`Query ${id}`}
-												className={classes.tabName}
-												miw={5}
-											/>
-											{id > 1 && (
-												<ActionIcon
-													size="xs"
-													component="div"
-													onClick={(e) => {
-														e.stopPropagation();
-														removeTab(id);
-													}}
-												>
-													<Icon path={mdiClose} color="gray.6" />
-												</ActionIcon>
-											)}
-										</Group>
-									</Tabs.Tab>
-								);
-							})}
-						</Tabs.List>
-					</ScrollArea>
-				</Tabs>
-			)}
+						<Divider mb="sm" />
+						<Group gap="sm">
+							<ActionIcon
+								onClick={() => {}}
+								title="Save query"
+								variant="light"
+							>
+								<Icon color="light.4" path={mdiStar} />
+							</ActionIcon>
 
-			<SurrealistEditor
-				noExpand
-				language="surrealql"
-				onMount={configure}
-				value={queryText}
-				onChange={scheduleSetQuery}
-				style={{
-					position: "absolute",
-					insetInline: 24,
-					top: showTabs ? 50 : 0,
-					bottom: 0
-				}}
-				options={{
-					quickSuggestions: false,
-					wordBasedSuggestions: false,
-					wrappingStrategy: "advanced",
-					wordWrap: "on"
-				}}
-			/>
+							<ActionIcon
+								onClick={() => {}}
+								title="Format query"
+								variant="light"
+							>
+								<Icon color="light.4" path={mdiText} />
+							</ActionIcon>
+
+							<ActionIcon
+								onClick={handleUpload}
+								title="Load from file"
+								variant="light"
+							>
+								<Icon color="light.4" path={mdiFileDocument} />
+							</ActionIcon>
+
+							<Spacer />
+
+							<Button
+								size="xs"
+								rightSection={
+									<Icon path={mdiSendVariant} />
+								}
+							>
+								Run query
+							</Button>
+						</Group>
+					</Box>
+				</>
+			)}
 		</Panel>
 	);
 }
