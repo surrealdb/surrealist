@@ -7,7 +7,7 @@ import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon, Box, Button, Divider, Group } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Divider, Group } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
@@ -17,7 +17,10 @@ import { executeQuery } from "~/database";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
+	canQuery: boolean;
+	isValid: boolean;
 	openVariables: () => void;
+	setIsValid: (isValid: boolean) => void;
 }
 
 export function QueryPane(props: QueryPaneProps) {
@@ -25,7 +28,14 @@ export function QueryPane(props: QueryPaneProps) {
 	const controls = useRef<editor.IStandaloneCodeEditor>();
 	const activeTab = useActiveQuery();
 
+	const validateQuery = useStable(() => {
+		const isInvalid = updateQueryValidation(controls.current!);
+
+		props.setIsValid(!isInvalid);
+	});
+
 	const setQueryForced = useStable((query: string) => {
+		validateQuery();
 		updateQueryTab({
 			id: activeTab!.id,
 			query
@@ -36,11 +46,11 @@ export function QueryPane(props: QueryPaneProps) {
 
 	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor);
-		updateQueryValidation(editor);
-
+		
 		controls.current = editor;
 
 		editor.focus();
+		validateQuery();
 	});
 
 	const handleUpload = useStable(async () => {
@@ -59,6 +69,16 @@ export function QueryPane(props: QueryPaneProps) {
 		<Panel
 			title="Query"
 			icon={mdiDatabase}
+			rightSection={
+				!props.isValid && (
+					<Badge
+						color="red"
+						variant="light"
+					>
+						Invalid query
+					</Badge>
+				)
+			}
 		>
 			{activeTab && (
 				<>
@@ -133,7 +153,7 @@ export function QueryPane(props: QueryPaneProps) {
 							<Button
 								size="xs"
 								onClick={runQuery}
-								disabled={false}
+								color={props.canQuery ? "surreal" : "red"}
 								rightSection={
 									<Icon path={mdiSendVariant} />
 								}

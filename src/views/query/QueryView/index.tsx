@@ -4,9 +4,12 @@ import { VariablesPane } from "../../query/VariablesPane";
 import { Splitter } from "~/components/Splitter";
 import { TabsPane } from "../TabsPane";
 import { useDisclosure } from "@mantine/hooks";
+import { useState } from "react";
 
 export function QueryView() {
 	const [showVariables, showVariablesHandle] = useDisclosure();
+	const [variablesValid, setVariablesValid] = useState(true);
+	const [queryValid, setQueryValid] = useState(true);
 
 	return (
 		<Splitter
@@ -26,11 +29,13 @@ export function QueryView() {
 				}
 			>
 				<Splitter
-					minSize={250}
+					minSize={300}
 					initialSize={500}
 					endPane={
 						showVariables && (
 							<VariablesPane
+								isValid={variablesValid}
+								setIsValid={setVariablesValid}
 								closeVariables={showVariablesHandle.close}
 							/>
 						)
@@ -38,6 +43,9 @@ export function QueryView() {
 				>
 					<QueryPane
 						showVariables={showVariables}
+						canQuery={queryValid && variablesValid}
+						isValid={queryValid}
+						setIsValid={setQueryValid}
 						openVariables={showVariablesHandle.open}
 					/>
 				</Splitter>

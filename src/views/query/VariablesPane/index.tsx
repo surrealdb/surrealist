@@ -1,30 +1,29 @@
 import { mdiClose, mdiTuneVariant } from "@mdi/js";
+import { Panel } from "~/components/Panel";
+import { ActionIcon, Badge, Group } from "@mantine/core";
+import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
-import { Panel } from "~/components/Panel";
-import { useState } from "react";
-import { ActionIcon, Group, Text } from "@mantine/core";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { useConfigStore } from "~/stores/config";
-import { Icon } from "~/components/Icon";
 
 export interface VariablesPaneProps {
+	isValid: boolean;
+	setIsValid: (isValid: boolean) => void;
 	closeVariables: () => void;
 }
 
 export function VariablesPane(props: VariablesPaneProps) {
-	const updateQueryTab = useConfigStore((s) => s.updateQueryTab);
+	const { updateQueryTab } = useConfigStore.getState();
 	const activeTab = useActiveQuery();
-
-	const [isInvalid, setIsInvalid] = useState(false);
 
 	const setVariables = useStable((content: string | undefined) => {
 		try {
-			const json = content || "{}";
+			const json = content || "";
 			const parsed = JSON.parse(json);
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
-				throw new TypeError("Invalid JSON");
+				throw new TypeError("Must be object");
 			}
 
 			updateQueryTab({
@@ -32,21 +31,26 @@ export function VariablesPane(props: VariablesPaneProps) {
 				variables: json,
 			});
 
-			setIsInvalid(false);
+			props.setIsValid(true);
 		} catch {
-			setIsInvalid(true);
+			props.setIsValid(false);
 		}
 	});
-
-	const jsonAlert = isInvalid ? <Text c="red">Invalid variable JSON</Text> : undefined;
 
 	return (
 		<Panel
 			title="Variables"
 			icon={mdiTuneVariant}
 			rightSection={
-				<Group>
-					{jsonAlert}
+				<Group gap="xs">
+					{!props.isValid && (
+						<Badge
+							color="red"
+							variant="light"
+						>
+							Invalid JSON
+						</Badge>
+					)}
 					<ActionIcon
 						color="slate"
 						onClick={props.closeVariables}
@@ -59,7 +63,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 		>
 			<SurrealistEditor
 				language="json"
-				value={activeTab?.variables}
+				value={activeTab?.variables || ''}
 				onChange={setVariables}
 				style={{
 					position: "absolute",
