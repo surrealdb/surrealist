@@ -30,15 +30,16 @@ export function getActiveConnection() {
 
 /**
  * Returns whether the given connection is valid
+ * 
+ * TODO Replace with validation
  */
-
 export function isConnectionValid(details: ConnectionOptions | undefined) {
 	if (!details) {
 		return false;
 	}
 
 	// Check for essential fields
-	const hasEssential = details.endpoint && details.namespace && details.database && details.authMode;
+	const hasEssential = details.protocol && details.hostname && details.namespace && details.database && details.authMode;
 
 	if (!hasEssential) {
 		return false;

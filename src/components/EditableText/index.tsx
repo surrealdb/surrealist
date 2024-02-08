@@ -16,17 +16,21 @@ export const EditableText = (props: EditableTextProps) => {
 		...rest
 	} = props;
 
-	const handleEnter = useStable((e: React.KeyboardEvent) => {
+	const onKeyDown = useStable((e: React.KeyboardEvent<HTMLDivElement>) => {
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			ref.current?.blur();
 		}
+
+		rest?.onKeyDown?.(e);
 	});
 
-	const submit = useStable(() => {
+	const onBlur = useStable((e: React.FocusEvent<HTMLDivElement>) => {
 		const textValue = ref.current?.textContent?.replaceAll('\n', '');
 
 		onChange(textValue || '');
+
+		rest?.onBlur?.(e);
 	});
 
 	useEffect(() => {
@@ -38,8 +42,8 @@ export const EditableText = (props: EditableTextProps) => {
 	return (
 		<Text
 			ref={ref}
-			onBlur={submit}
-			onKeyDown={handleEnter}
+			onBlur={onBlur}
+			onKeyDown={onKeyDown}
 			contentEditable={"plaintext-only" as any}
 			role="textbox"
 			{...rest}

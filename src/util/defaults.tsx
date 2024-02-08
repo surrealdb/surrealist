@@ -31,7 +31,8 @@ export function createBaseConfig(): SurrealistConfig {
 
 export function createBaseConnectionOptions(): ConnectionOptions {
 	return {
-		endpoint: "",
+		protocol: "wss",
+		hostname: "",
 		namespace: "",
 		database: "",
 		username: "",
@@ -64,7 +65,8 @@ export function createSandboxConnection(): Connection {
 		id: "sandbox",
 		name: "Sandbox",
 		connection: {
-			endpoint: "mem://",
+			protocol: "mem",
+			hostname: "",
 			namespace: "sandbox",
 			database: "sandbox",
 			authMode: "none",

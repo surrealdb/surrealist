@@ -6,6 +6,7 @@ import { showNotification } from '@mantine/notifications';
 import { Stack, Text } from '@mantine/core';
 import { Icon } from '~/components/Icon';
 import { mdiAlert } from '@mdi/js';
+import { connectionUri } from './helpers';
 
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 
@@ -101,7 +102,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 	const connection: any = mapKeys(options.connection.connection, key => snake(key));
 	const details = {
 		...connection,
-		endpoint: connection.endpoint.replace(/^ws/, "http")
+		endpoint: connectionUri(connection).replace(/^ws/, "http")
 	};
 
 	open_connection(details).then(() => {

@@ -27,9 +27,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
     let mut instance = SURREAL.write().await;
 
     let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
-    let regex = Regex::new(r"^(https?://)?(.+?)$").unwrap();
-    let matches = regex.captures(&info.endpoint).unwrap();
-    let endpoint = matches.get(2).unwrap().as_str();
+    let endpoint = format!("{}://{}", info.protocol, info.hostname);
 
     console_log!("Connecting to {}", endpoint);
 

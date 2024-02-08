@@ -9,10 +9,13 @@ export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type DesignerLayoutMode = "diagram" | "grid";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
 export type ColorScheme = "light" | "dark";
+export type Protocol = "http" | "https" | "ws" | "wss" | "mem";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
+
+export type Selectable<T extends string> = { label: string, value: T };
 
 export interface SurrealistConfig {
 	colorScheme: MantineColorScheme;
@@ -171,7 +174,8 @@ export interface Analyzer {
 export interface ConnectionOptions {
 	namespace: string;
 	database: string;
-	endpoint: string;
+	protocol: Protocol;
+	hostname: string;
 	username: string;
 	password: string;
 	authMode: AuthMode;

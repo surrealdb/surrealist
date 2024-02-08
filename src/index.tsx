@@ -17,11 +17,9 @@ import { runUpdateChecker } from "./util/updater";
 import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
 import { useConfigStore } from "./stores/config";
-import { watchColorPreference, watchColorScheme, watchConfigStore } from './util/background';
+import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from './util/background';
 
 import "reactflow/dist/style.css";
-import { openConnection } from './database';
-import { getConnection } from './util/connection';
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -30,13 +28,14 @@ import { getConnection } from './util/connection';
 	await initEmbed(embedPath);
 
 	initialize_embed();
+	
+	// Synchronize the config to the store
+	await watchConfigStore();
 
 	updateTitle();
 	watchColorScheme();
 	watchColorPreference();
-
-	// Synchronize the config to the store
-	await watchConfigStore();
+	watchConnectionSwitch();
 
 	// Initialize monaco
 	await document.fonts.ready;
@@ -49,14 +48,9 @@ import { getConnection } from './util/connection';
 
 	// Check for updates
 	// TODO Auto updater
-	const { lastPromptedVersion, updateChecker, autoConnect } = useConfigStore.getState();
+	const { lastPromptedVersion, updateChecker } = useConfigStore.getState();
 
 	if (adapter.isUpdateCheckSupported && updateChecker) {
 		runUpdateChecker(lastPromptedVersion, false);
-	}
-
-	// Open connection
-	if (autoConnect && getConnection()) {
-		openConnection();
 	}
 })();

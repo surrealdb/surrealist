@@ -50,7 +50,7 @@ export function Connections() {
 
 		return connections.filter((con) =>
 			con.name.toLowerCase().includes(needle)
-			|| con.connection.endpoint.toLowerCase().includes(needle)
+			|| con.connection.hostname.toLowerCase().includes(needle)
 		);
 	}, [connection, search]);
 
@@ -70,6 +70,9 @@ export function Connections() {
 						variant="light"
 						color="slate"
 						onClick={toggleDropdown}
+						leftSection={isSandbox && (
+							<Icon path={surrealIcon} color="surreal" />
+						)}
 						rightSection={
 							<Icon
 								path={mdiCircle}
@@ -134,7 +137,7 @@ export function Connections() {
 							</Text>
 							<Spacer />
 							<ActionIcon
-								mr={8}
+								mr={7}
 								onClick={createNew}
 							>
 								<Icon path={mdiPlus} />

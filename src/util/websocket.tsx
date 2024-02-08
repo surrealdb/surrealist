@@ -1,6 +1,6 @@
 import { uid } from "radash";
 import { SurrealOptions } from "~/types";
-import { printLog } from "./helpers";
+import { connectionUri, printLog } from "./helpers";
 
 type Request = [(data: any) => void, (error: any) => void];
 
@@ -25,7 +25,8 @@ export const CLOSED_HANDLE: SurrealHandle = {
 };
 
 export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle {
-	const endpoint = new URL("rpc", options.connection.connection.endpoint.replace("http", "ws"));
+	const targetUri = connectionUri(options.connection.connection);
+	const endpoint = new URL("rpc", targetUri.replace("http", "ws"));
 	const socket = new WebSocket(endpoint.toString());
 	const requestMap = new Map<string, Request>();
 	const pinger = setInterval(() => {

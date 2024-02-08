@@ -2,6 +2,8 @@ import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { setEditorTheme } from "./editor";
+import { getConnection } from "./connection";
+import { openConnection } from "~/database";
 
 function savePreference({ matches }: { matches: boolean }) {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -52,5 +54,22 @@ export async function watchConfigStore() {
 
 	useConfigStore.subscribe((state) => {
 		adapter.saveConfig(JSON.stringify(state));
+	});
+}
+
+/**
+ * Watch for connection changes and open the connection if auto connect is enabled
+ */
+export function watchConnectionSwitch() {
+	const { autoConnect } = useConfigStore.getState();
+
+	if (autoConnect && getConnection()) {
+		openConnection();
+	}
+
+	useConfigStore.subscribe((state, prev) => {
+		if (state.activeConnection !== prev.activeConnection && state.activeConnection && state.autoConnect) {
+			openConnection();
+		}
 	});
 }

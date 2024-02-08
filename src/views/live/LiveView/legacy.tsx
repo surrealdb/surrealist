@@ -7,7 +7,7 @@ import { Icon } from "~/components/Icon";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { LiveMessage } from "~/types";
-import { getActiveConnection, isConnectionValid } from "~/util/connection";
+import { getActiveConnection } from "~/util/connection";
 import { newId } from "~/util/helpers";
 import { SurrealHandle, CLOSED_HANDLE, createLocalWebSocket } from "~/util/websocket";
 
@@ -55,26 +55,6 @@ export function useLegacyLiveSocket(options: SocketOptions) {
 		}
 
 		const connection = getActiveConnection();
-		const isValid = isConnectionValid(connection.connection);
-
-		if (!isValid) {
-			showNotification({
-				color: "red.4",
-				bg: "red.6",
-				message: (
-					<div>
-						<Text c="white" fw={600}>
-							Invalid Connection
-						</Text>
-						<Text c="white" opacity={0.8} size="sm">
-							Please check your connection details
-						</Text>
-					</div>
-				),
-			});
-			
-			return;
-		}
 
 		// NOTE - WebSocket disclaimer
 		if (!hasShownWarning) {

@@ -1,4 +1,4 @@
-import { Modal, Group, Button, ActionIcon, Paper, PasswordInput, Select, SimpleGrid, Stack, TextInput, Text } from "@mantine/core";
+import { Modal, Group, Button, ActionIcon, Paper, PasswordInput, Select, Stack, TextInput, Text, Divider } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { useImmer } from "use-immer";
@@ -8,9 +8,8 @@ import { Form } from "../Form";
 import { useLayoutEffect } from "react";
 import { updateTitle } from "~/util/helpers";
 import { useConnection, useConnections } from "~/hooks/connection";
-import { AuthMode, Connection } from "~/types";
+import { AuthMode, Connection, Protocol, Selectable } from "~/types";
 import { ModalTitle } from "../ModalTitle";
-import { closeConnection, openConnection } from "~/database";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
@@ -19,6 +18,16 @@ import { AUTH_MODES } from "~/constants";
 import { Icon } from "../Icon";
 import { EditableText } from "../EditableText";
 import { useDisclosure } from "@mantine/hooks";
+
+const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
+
+const PROTOCOLS: Selectable<Protocol>[] = [
+	{ label: "HTTP", value: "http" },
+	{ label: "HTTPS", value: "https" },
+	{ label: "WS", value: "ws" },
+	{ label: "WSS", value: "wss" },
+	// { label: "IndexDB", value: "idxdb" },
+];
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -40,6 +49,18 @@ export function ConnectionEditor() {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 	const [details, setDetails] = useImmer<Connection>(createBaseConnection());
 	const isValid = details.name && isConnectionValid(details.connection);
+	
+	const generateName = useStable(() => {
+		let tabName = "";
+		let counter = 0;
+
+		do {
+			tabName = buildName(counter);
+			counter++;
+		} while (connections.some((con) => con.name === tabName));
+
+		return tabName;
+	});
 
 	const saveInfo = useStable(async () => {
 		closeConnectionEditor();
@@ -47,24 +68,22 @@ export function ConnectionEditor() {
 		if (isCreating) {
 			addConnection(details);
 			setActiveConnection(details.id);
-
-			if (autoConnect) {
-				openConnection();
-			}
+			// if (autoConnect) {
+			// 	openConnection();
+			// }
 		} else {
 			updateConnection({
 				id: editingId,
 				name: details.name,
 				connection: details.connection,
 			});
-	
-			if (activeConnection?.id == editingId) {
-				closeConnection();
+			// if (activeConnection?.id == editingId) {
+			// 	closeConnection();
 		
-				if (autoConnect) {
-					openConnection();
-				}
-			}
+			// 	if (autoConnect) {
+			// 		openConnection();
+			// 	}
+			// }
 		}
 
 		updateTitle();
@@ -79,24 +98,45 @@ export function ConnectionEditor() {
 		});
 	});
 
+	const handleHostnamePaste = useStable((e: React.ClipboardEvent<HTMLInputElement>) => {
+		const content = e.clipboardData.getData('Text');
+		const result = content.match(ENDPOINT_PATTERN);
+
+		if (result === null) {
+			return;
+		}
+
+		const [, protocol, hostname] = result;
+		const isValid = PROTOCOLS.some((p) => p.value === protocol);
+
+		if (!isValid) {
+			return;
+		}
+
+		setDetails((draft) => {
+			draft.connection.protocol = protocol as Protocol;
+			draft.connection.hostname = hostname;
+		});
+
+		e.preventDefault();
+	});
+
+	useLayoutEffect(() => {
+		if (!details.name.trim()) {
+			setDetails((draft) => {
+				draft.name = generateName();
+			});
+		}
+	}, [details.name]);
+
 	useLayoutEffect(() => {
 		if (opened) {
 			const base = createBaseConnection();
 
 			if (isCreating) {
-				let tabName = "";
-				let counter = 0;
-
-				do {
-					tabName = buildName(counter);
-					counter++;
-				} while (connections.some((con) => con.name === tabName));
-
-				console.log(tabName);
-
 				setDetails({
 					...base,
-					name: tabName,
+					name: generateName(),
 				});
 			} else {
 				const info = connections.find((con) => con.id === editingId);
@@ -126,22 +166,37 @@ export function ConnectionEditor() {
 						})
 					}
 				/>
-				<SimpleGrid cols={2} spacing="xl">
-					<Stack>
-						<TextInput
-							label="Endpoint URL"
-							value={details.connection.endpoint}
-							placeholder="ws://localhost:8000"
-							onChange={(e) =>
-								setDetails((draft) => {
-									draft.connection.endpoint = e.target.value;
-								})
-							}
-						/>
+				<Group mb="lg">
+					<Select
+						data={PROTOCOLS}
+						maw={100}
+						value={details.connection.protocol}
+						onChange={(value) =>
+							setDetails((draft) => {
+								draft.connection.protocol = value as Protocol;
+							})
+						}
+					/>
+					<TextInput
+						flex={1}
+						placeholder="localhost:8000"
+						value={details.connection.hostname}
+						onPaste={handleHostnamePaste}
+						onChange={(e) =>
+							setDetails((draft) => {
+								draft.connection.hostname = e.target.value;
+							})
+						}
+					/>
+				</Group>
+				<Group gap="lg" align="start">
+					<Stack gap="xs" flex={1}>
+						<Text fz="xl" c="slate">
+							Database
+						</Text>
 						<TextInput
 							label="Namespace"
 							value={details.connection.namespace}
-							placeholder="example"
 							onChange={(e) =>
 								setDetails((draft) => {
 									draft.connection.namespace = e.target.value;
@@ -151,7 +206,6 @@ export function ConnectionEditor() {
 						<TextInput
 							label="Database"
 							value={details.connection.database}
-							placeholder="example"
 							onChange={(e) =>
 								setDetails((draft) => {
 									draft.connection.database = e.target.value;
@@ -159,9 +213,13 @@ export function ConnectionEditor() {
 							}
 						/>
 					</Stack>
-					<Stack>
+					<Divider orientation="vertical" />
+					<Stack gap="xs" flex={1}>
+						<Text fz="xl" c="slate">
+							Authentication
+						</Text>
 						<Select
-							label="Authentication mode"
+							label="Method"
 							value={details.connection.authMode}
 							data={AUTH_MODES}
 							onChange={(value) =>
@@ -175,7 +233,6 @@ export function ConnectionEditor() {
 								<TextInput
 									label="Username"
 									value={details.connection.username}
-									placeholder="root"
 									onChange={(e) =>
 										setDetails((draft) => {
 											draft.connection.username = e.target.value;
@@ -185,7 +242,6 @@ export function ConnectionEditor() {
 								<PasswordInput
 									label="Password"
 									value={details.connection.password}
-									placeholder="root"
 									onChange={(e) =>
 										setDetails((draft) => {
 											draft.connection.password = e.target.value;
@@ -200,7 +256,6 @@ export function ConnectionEditor() {
 								<TextInput
 									label="Scope"
 									value={details.connection.scope}
-									placeholder="users"
 									onChange={(e) =>
 										setDetails((draft) => {
 											draft.connection.scope = e.target.value;
@@ -213,7 +268,7 @@ export function ConnectionEditor() {
 							</>
 						)}
 					</Stack>
-				</SimpleGrid>
+				</Group>
 				
 				<Modal
 					opened={editingScope}
@@ -285,7 +340,7 @@ export function ConnectionEditor() {
 					</Button>
 					<Spacer />
 					<Button type="submit" disabled={!isValid}>
-						Save details
+						{isCreating ? "Create connection" : "Save connection"}
 					</Button>
 				</Group>
 			</Form>

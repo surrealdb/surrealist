@@ -6,7 +6,7 @@ import { CSSProperties } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
-import { ViewMode } from "~/types";
+import { ConnectionOptions, ViewMode } from "~/types";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useExplorerStore } from "~/stores/explorer";
@@ -148,4 +148,13 @@ export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
 export function isPermissionError(result: any) {
 	return typeof result === 'string' && result.includes('Not enough permissions to perform this action');
 }
-  
+
+/**
+ * Convert the given connection options to a connection uri
+ * 
+ * @param options The connection options
+ * @returns The URI string
+ */
+export function connectionUri(options: ConnectionOptions) {
+	return `${options.protocol}://${options.hostname}`;
+}

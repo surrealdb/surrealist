@@ -10,7 +10,8 @@ pub struct ScopeField {
 pub struct ConnectionInfo {
     pub namespace: String,
     pub database: String,
-    pub endpoint: String,
+    pub protocol: String,
+    pub hostname: String,
     pub username: String,
     pub password: String,
     pub auth_mode: String,

@@ -3,7 +3,6 @@ import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./uti
 import { newId, showError } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
 import { Text } from "@mantine/core";
-import { isConnectionValid } from "./util/connection";
 import { getActiveConnection } from "./util/connection";
 import { getConnection } from "./util/connection";
 import { useDatabaseStore } from "./stores/database";
@@ -17,28 +16,7 @@ import { useConfigStore } from "./stores/config";
  */
 export function openConnection(isSilent?: boolean) {
 	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
-
 	const connection = getActiveConnection();
-	const isValid = isConnectionValid(connection.connection);
-
-	if (!isValid) {
-		showNotification({
-			color: "red.4",
-			bg: "red.6",
-			message: (
-				<div>
-					<Text c="white" w={600}>
-						Invalid Connection
-					</Text>
-					<Text c="white" opacity={0.8} size="sm">
-						Please check your connection details
-					</Text>
-				</div>
-			),
-		});
-
-		return;
-	}
 
 	closeConnection();
 
