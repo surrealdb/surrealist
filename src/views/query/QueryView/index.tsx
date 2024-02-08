@@ -20,7 +20,7 @@ export function QueryView() {
 				direction="vertical"
 				minSize={250}
 				bufferSize={200}
-				initialSize={400}
+				initialSize={450}
 				endPane={
 					<ResultPane />
 				}

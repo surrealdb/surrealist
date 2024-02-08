@@ -10,7 +10,7 @@ import { useInputState } from "@mantine/hooks";
 import { extractEdgeRecords } from "~/util/schema";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
 import { useExplorerStore } from "~/stores/explorer";
@@ -23,15 +23,15 @@ export function TablesPane() {
 	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
+	const connection = useActiveConnection();
 	const isOnline = useIsConnected();
-	const sessionInfo = useConnection();
 	const schema = useTables();
 
 	const activeTable = useExplorerStore((s) => s.activeTable);
 	const setExplorerTable = useExplorerStore((s) => s.setExplorerTable);
 
 	const isPinned = useStable((table: string) => {
-		return sessionInfo?.pinnedTables?.includes(table) || false;
+		return connection.pinnedTables.includes(table);
 	});
 
 	const tablesFiltered = useMemo(() => {
@@ -45,7 +45,7 @@ export function TablesPane() {
 
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
-	}, [schema, search, sessionInfo?.pinnedTables]);
+	}, [schema, search, connection.pinnedTables]);
 
 	const openCreator = useStable(() => {
 		setIsCreating(true);
@@ -58,7 +58,7 @@ export function TablesPane() {
 	const togglePinned = useStable((e: any, table: string) => {
 		e.stopPropagation();
 
-		if (table && sessionInfo) {
+		if (table && connection) {
 			toggleTablePin(table);
 		}
 	});
@@ -98,7 +98,7 @@ export function TablesPane() {
 					}}>
 					{tablesFiltered.map((table) => {
 						const isActive = activeTable == table.schema.name;
-						const isPinned = sessionInfo?.pinnedTables?.includes(table.schema.name);
+						const isPinned = connection.pinnedTables.includes(table.schema.name);
 						const [isEdge] = extractEdgeRecords(table);
 
 						return (
