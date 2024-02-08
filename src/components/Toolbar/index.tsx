@@ -1,6 +1,6 @@
 import surrealistLogo from "~/assets/surrealist.png";
 import { Group, Button, Modal, TextInput, Image, Divider, Center, ActionIcon } from "@mantine/core";
-import { mdiHistory, mdiStar } from "@mdi/js";
+import { mdiClose, mdiHistory, mdiStar, mdiSync } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -15,9 +15,10 @@ import { useConnection } from "~/hooks/connection";
 import { Exporter } from "../Exporter";
 import { useConfigStore } from "~/stores/config";
 import { Importer } from "../Importer";
-import { openConnection } from "~/database";
+import { closeConnection, openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
+import { showNotification } from "@mantine/notifications";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -54,6 +55,17 @@ export function Toolbar(props: ToolbarProps) {
 		openConnection();
 	});
 
+	const resetSandbox = useStable(() => {
+		closeConnection();
+		openConnection();
+
+		showNotification({
+			message: "Sandbox environment reset",
+		});
+	});
+
+	const isSandbox = connection?.id === "sandbox";
+
 	return (
 		<Group
 			p="xs"
@@ -75,7 +87,25 @@ export function Toolbar(props: ToolbarProps) {
 			
 			/>
 
-			{connection && !isConnected && (
+			{connection && (isConnected ? (isSandbox ? (
+				<ActionIcon
+					color="slate"
+					variant="transparent"
+					title="Reset sandbox environment"
+					onClick={resetSandbox}
+				>
+					<Icon path={mdiSync} />
+				</ActionIcon>
+			) : (
+				<ActionIcon
+					color="slate"
+					variant="transparent"
+					title="Disconnect"
+					onClick={closeConnection}
+				>
+					<Icon path={mdiClose} />
+				</ActionIcon>
+			)) : (
 				<Button
 					color="slate"
 					variant="light"
@@ -84,7 +114,7 @@ export function Toolbar(props: ToolbarProps) {
 				>
 					Connect
 				</Button>
-			)}
+			))}
 
 			<Spacer />
 
