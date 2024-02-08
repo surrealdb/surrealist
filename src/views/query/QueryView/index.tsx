@@ -19,6 +19,7 @@ export function QueryView() {
 			<Splitter
 				direction="vertical"
 				minSize={250}
+				bufferSize={200}
 				initialSize={400}
 				endPane={
 					<ResultPane />

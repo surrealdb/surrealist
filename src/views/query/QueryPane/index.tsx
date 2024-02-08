@@ -13,6 +13,7 @@ import { Icon } from "~/components/Icon";
 import { adapter } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 import { Spacer } from "~/components/Spacer";
+import { executeQuery } from "~/database";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
@@ -48,6 +49,10 @@ export function QueryPane(props: QueryPaneProps) {
 		if (file) {
 			setQueryForced(file.content);
 		}
+	});
+
+	const runQuery = useStable(() => {
+		executeQuery();
 	});
 
 	return (
@@ -126,6 +131,7 @@ export function QueryPane(props: QueryPaneProps) {
 
 							<Button
 								size="xs"
+								onClick={runQuery}
 								rightSection={
 									<Icon path={mdiSendVariant} />
 								}

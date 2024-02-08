@@ -73,8 +73,7 @@ export interface QueryOptions {
  */
 export async function executeQuery(options?: QueryOptions) {
 	const { setQueryActive, isConnected } = useDatabaseStore.getState();
-	const { updateCurrentConnection, addHistoryEntry } = useConfigStore.getState();
-
+	const { addHistoryEntry, updateQueryTab } = useConfigStore.getState();
 	const connection = getConnection();
 
 	if (!connection || !isConnected) {
@@ -84,15 +83,17 @@ export async function executeQuery(options?: QueryOptions) {
 		return;
 	}
 
-	const { id, queries, activeQueryId, variables } = connection;
+	const tabQuery = connection.queries.find((q) => q.id === connection.activeQuery);
 
-	const activeQuery = queries.find((q) => q.id === activeQueryId);
-	const queryStr = options?.override?.trim() || activeQuery?.text || '';
+	if (!tabQuery) {
+		return;
+	}
+
+	const { id, query, variables } = tabQuery;
+	const queryStr = (options?.override || query).trim();
 	const variableJson = variables
 		? JSON.parse(variables)
 		: undefined;
-
-	console.log(connection);
 
 	try {
 		if (options?.loader) {
@@ -101,12 +102,14 @@ export async function executeQuery(options?: QueryOptions) {
 
 		const response = await getSurreal()?.query(queryStr, variableJson);
 
-		updateCurrentConnection({
-			lastResponse: response,
+		updateQueryTab({
+			id,
+			response
 		});
 	} catch (err: any) {
-		updateCurrentConnection({
-			lastResponse: [
+		updateQueryTab({
+			id,
+			response: [
 				{
 					status: "ERR",
 					detail: err.message,

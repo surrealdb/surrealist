@@ -1,6 +1,6 @@
 import { ActionIcon, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
 import { mdiClock, mdiDatabase, mdiLightningBolt } from "@mdi/js";
-import { useActiveConnection } from "~/hooks/connection";
+import { useActiveQuery } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
@@ -28,10 +28,10 @@ export function ResultPane() {
 	const { setResultMode } = useConfigStore.getState();
 
 	const isLight = useIsLight();
-	const activeSession = useActiveConnection();
+	const activeTab = useActiveQuery();
 	const [resultTab, setResultTab] = useState<number>(1);
 	const resultMode = useConfigStore((s) => s.resultMode);
-	const responses: any[] = activeSession?.lastResponse || [];
+	const responses: any[] = activeTab?.response || [];
 	const response = responses[resultTab - 1];
 
 	const responseCount = responses.length;
@@ -47,6 +47,8 @@ export function ResultPane() {
 	useLayoutEffect(() => {
 		setResultTab(1);
 	}, [responses.length]);
+
+	console.log('res', responses);
 
 	return (
 		<Panel

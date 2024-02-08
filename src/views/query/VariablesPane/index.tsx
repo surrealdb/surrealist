@@ -1,6 +1,6 @@
 import { mdiTune } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
-import { useActiveConnection } from "~/hooks/connection";
+import { useActiveQuery } from "~/hooks/connection";
 import { Panel } from "~/components/Panel";
 import { useState } from "react";
 import { Text } from "@mantine/core";
@@ -8,12 +8,8 @@ import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { useConfigStore } from "~/stores/config";
 
 export function VariablesPane() {
-	const { updateConnection } = useConfigStore.getState();
-	const activeSession = useActiveConnection();
-
-	if (!activeSession) {
-		throw new Error("This should not happen");
-	}
+	const updateQueryTab = useConfigStore((s) => s.updateQueryTab);
+	const activeTab = useActiveQuery();
 
 	const [isInvalid, setIsInvalid] = useState(false);
 
@@ -26,8 +22,8 @@ export function VariablesPane() {
 				throw new TypeError("Invalid JSON");
 			}
 
-			updateConnection({
-				id: activeSession.id,
+			updateQueryTab({
+				id: activeTab!.id,
 				variables: json,
 			});
 
@@ -43,7 +39,7 @@ export function VariablesPane() {
 		<Panel title="Variables" icon={mdiTune} rightSection={jsonAlert}>
 			<SurrealistEditor
 				language="json"
-				value={activeSession?.variables?.toString()}
+				value={activeTab?.variables}
 				onChange={setVariables}
 				style={{
 					position: "absolute",
