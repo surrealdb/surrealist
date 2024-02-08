@@ -1,13 +1,18 @@
-import { mdiTune } from "@mdi/js";
+import { mdiClose, mdiTuneVariant } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { Panel } from "~/components/Panel";
 import { useState } from "react";
-import { Text } from "@mantine/core";
+import { ActionIcon, Group, Text } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { useConfigStore } from "~/stores/config";
+import { Icon } from "~/components/Icon";
 
-export function VariablesPane() {
+export interface VariablesPaneProps {
+	closeVariables: () => void;
+}
+
+export function VariablesPane(props: VariablesPaneProps) {
 	const updateQueryTab = useConfigStore((s) => s.updateQueryTab);
 	const activeTab = useActiveQuery();
 
@@ -36,7 +41,22 @@ export function VariablesPane() {
 	const jsonAlert = isInvalid ? <Text c="red">Invalid variable JSON</Text> : undefined;
 
 	return (
-		<Panel title="Variables" icon={mdiTune} rightSection={jsonAlert}>
+		<Panel
+			title="Variables"
+			icon={mdiTuneVariant}
+			rightSection={
+				<Group>
+					{jsonAlert}
+					<ActionIcon
+						color="slate"
+						onClick={props.closeVariables}
+						title="Close variables"
+					>
+						<Icon path={mdiClose} />
+					</ActionIcon>
+				</Group>
+			}
+		>
 			<SurrealistEditor
 				language="json"
 				value={activeTab?.variables}

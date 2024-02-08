@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Button, ScrollArea, Stack, Text } from "@mantine/core";
-import { mdiClose, mdiHistory, mdiListBox, mdiPlus, mdiStar } from "@mdi/js";
+import { mdiClose, mdiFormatListBulleted, mdiHistory, mdiPlus, mdiStar } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
@@ -23,7 +23,7 @@ export function TabsPane() {
 
 	return (
 		<Panel
-			icon={mdiListBox}
+			icon={mdiFormatListBulleted}
 			title="Queries"
 		>
 			<Stack

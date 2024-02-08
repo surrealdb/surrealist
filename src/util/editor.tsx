@@ -310,6 +310,7 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor) {
  * Perform validation on the given query editor
  * 
  * @param editor The editor instance
+ * @returns Whether the query is valid
  */
 export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
 	const { errorChecking } = useConfigStore.getState();
@@ -343,6 +344,8 @@ export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
 	}
 
 	monaco.editor.setModelMarkers(model, "owner", markers);
+
+	return markers.length > 0;
 }
 
 /**

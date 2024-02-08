@@ -17,7 +17,7 @@ import { executeQuery } from "~/database";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
-	toggleVariables: () => void;
+	openVariables: () => void;
 }
 
 export function QueryPane(props: QueryPaneProps) {
@@ -59,19 +59,6 @@ export function QueryPane(props: QueryPaneProps) {
 		<Panel
 			title="Query"
 			icon={mdiDatabase}
-			rightSection={
-				<Button
-					size="xs"
-					onClick={props.toggleVariables}
-					variant="light"
-					color={props.showVariables ? "slate" : "surreal"}
-					leftSection={
-						<Icon path={mdiTuneVariant} />
-					}
-				>
-					{props.showVariables ? 'Hide' : 'Show'} variables
-				</Button>
-			}
 		>
 			{activeTab && (
 				<>
@@ -129,9 +116,24 @@ export function QueryPane(props: QueryPaneProps) {
 
 							<Spacer />
 
+							{!props.showVariables && (
+								<Button
+									size="xs"
+									onClick={props.openVariables}
+									variant="light"
+									color="surreal"
+									leftSection={
+										<Icon path={mdiTuneVariant} />
+									}
+								>
+									Show variables
+								</Button>
+							)}
+
 							<Button
 								size="xs"
 								onClick={runQuery}
+								disabled={false}
 								rightSection={
 									<Icon path={mdiSendVariant} />
 								}

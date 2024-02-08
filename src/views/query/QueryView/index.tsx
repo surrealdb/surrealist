@@ -29,12 +29,16 @@ export function QueryView() {
 					minSize={250}
 					initialSize={500}
 					endPane={
-						showVariables && <VariablesPane />
+						showVariables && (
+							<VariablesPane
+								closeVariables={showVariablesHandle.close}
+							/>
+						)
 					}
 				>
 					<QueryPane
 						showVariables={showVariables}
-						toggleVariables={showVariablesHandle.toggle}
+						openVariables={showVariablesHandle.open}
 					/>
 				</Splitter>
 			</Splitter>
