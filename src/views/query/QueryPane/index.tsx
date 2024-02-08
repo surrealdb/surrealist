@@ -110,9 +110,8 @@ export function QueryPane() {
 												value={name || ""}
 												onChange={setTabName}
 												placeholder={`Query ${id}`}
-												activation="doubleClick"
-												minWidth={5}
 												className={classes.tabName}
+												miw={5}
 											/>
 											{id > 1 && (
 												<ActionIcon

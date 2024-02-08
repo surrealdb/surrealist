@@ -73,7 +73,7 @@ export interface QueryOptions {
  */
 export async function executeQuery(options?: QueryOptions) {
 	const { setQueryActive, isConnected } = useDatabaseStore.getState();
-	const { updateConnection, addHistoryEntry } = useConfigStore.getState();
+	const { updateCurrentConnection, addHistoryEntry } = useConfigStore.getState();
 
 	const connection = getConnection();
 
@@ -84,13 +84,15 @@ export async function executeQuery(options?: QueryOptions) {
 		return;
 	}
 
-	const { id: tabId, queries, activeQueryId, name, variables } = connection;
+	const { id, queries, activeQueryId, variables } = connection;
 
 	const activeQuery = queries.find((q) => q.id === activeQueryId);
 	const queryStr = options?.override?.trim() || activeQuery?.text || '';
 	const variableJson = variables
 		? JSON.parse(variables)
 		: undefined;
+
+	console.log(connection);
 
 	try {
 		if (options?.loader) {
@@ -99,13 +101,11 @@ export async function executeQuery(options?: QueryOptions) {
 
 		const response = await getSurreal()?.query(queryStr, variableJson);
 
-		updateConnection({
-			id: tabId,
+		updateCurrentConnection({
 			lastResponse: response,
 		});
 	} catch (err: any) {
-		updateConnection({
-			id: tabId,
+		updateCurrentConnection({
 			lastResponse: [
 				{
 					status: "ERR",

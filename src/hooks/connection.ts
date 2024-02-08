@@ -8,16 +8,17 @@ import { useDatabaseStore } from "~/stores/database";
 export function useIsConnected() {
 	return useDatabaseStore((s) => s.isConnected);
 }
+
 /**
  * Return a list of all connections
  */
-
 export function useConnections() {
 	return useConfigStore((s) => s.connections);
-}/**
+}
+
+/**
  * Returns the active connection, or undefined
  */
-
 export function useConnection() {
 	const activeId = useConfigStore((s) => s.activeConnection);
 	const list = useConfigStore((s) => s.connections);
@@ -29,12 +30,12 @@ export function useConnection() {
 
 	return list.find((con) => con.id === activeId);
 }
+
 /**
  * Similar to useConnection except throws an error if the connection is not available
  *
  * This should only be used from views which are only available when a connection is active
  */
-
 export function useActiveConnection() {
 	const connection = useConnection();
 
@@ -44,12 +45,12 @@ export function useActiveConnection() {
 
 	return connection;
 }
+
 /**
  * Returns the active query tab
  *
  * @returns The active query tab
  */
-
 export function useActiveQuery() {
 	const connection = useActiveConnection();
 

@@ -2,11 +2,20 @@ import { Connection, DesignerLayoutMode, DesignerNodeMode, DriverType, HistoryQu
 import { createBaseConfig } from "~/util/defaults";
 import { MantineColorScheme } from "@mantine/core";
 import { create } from "zustand";
-import { MAX_HISTORY_SIZE } from "~/constants";
+import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
 function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
+	if (state.activeConnection == SANDBOX) {
+		return {
+			sandbox: {
+				...state.sandbox,
+				...modifier(state.sandbox),
+			}
+		};
+	}
+
 	const connections = state.connections.map((con) => {
 		return con.id === state.activeConnection
 			? { ...con, ...modifier(con) }
@@ -25,7 +34,7 @@ export type ConfigStore = SurrealistConfig & {
 	addConnection: (connection: Connection) => void;
 	removeConnection: (connectionId: string) => void;
 	updateConnection: (payload: Pick<Connection, 'id'> & Partial<Connection>) => void;
-	updateCurrentConnection: (modifier: ConnectionUpdater) => void;
+	updateCurrentConnection: (payload: Partial<Connection>) => void;
 	setConnections: (connections: Connection[]) => void;
 	setActiveConnection: (connectionId: string) => void;
 	setActiveView: (activeView: ViewMode) => void;
@@ -93,7 +102,7 @@ export const useConfigStore = create<ConfigStore>()(
 			)
 		})),
 
-		updateCurrentConnection: (modifier) => set((state) => updateConnection(state, modifier)),
+		updateCurrentConnection: (payload) => set((state) => updateConnection(state, () => payload)),
 
 		setConnections: (connections) => set(() => ({ connections })),
 
@@ -103,14 +112,17 @@ export const useConfigStore = create<ConfigStore>()(
 
 		addQueryTab: (query) => set((state) => updateConnection(state, (connection) => {
 			const newId = connection.lastQueryId + 1;
-			connection.queries.push({ id: newId, text: query ?? "" });
-			connection.activeQueryId = newId;
-			connection.lastQueryId = newId;
-			return connection;
+			
+			return {
+				queries: [...connection.queries, { id: newId, text: query ?? "" }],
+				activeQueryId: newId,
+				lastQueryId: newId,
+			};
 		})),
 
 		removeQueryTab: (queryId) => set((state) => updateConnection(state, (connection) => {
 			const index = connection.queries.findIndex((query) => query.id === queryId);
+			
 			if (index < 1) return connection;
 
 			if (connection.activeQueryId === queryId) {

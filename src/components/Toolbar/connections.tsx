@@ -152,6 +152,7 @@ export function Connections() {
 
 								return (
 									<Button
+										key={con.id}
 										variant="light"
 										radius="md"
 										color={isActive ? "surreal" : "slate"}
