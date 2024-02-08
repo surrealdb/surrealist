@@ -51,7 +51,7 @@ export function createBaseConnection(query?: string): Connection {
 		name: "",
 		queries: [{
 			...baseTab,
-			name: "Query 1"
+			name: "New query"
 		}],
 		activeQuery: baseTab.id,
 		connection: createBaseConnectionOptions(),
