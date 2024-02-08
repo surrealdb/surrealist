@@ -10,7 +10,6 @@ import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
-import { closeConnection, openConnection } from "~/database";
 import { useInputState } from "@mantine/hooks";
 
 export function Connections() {
@@ -24,7 +23,6 @@ export function Connections() {
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
-	const autoConnect = useConfigStore((s) => s.autoConnect);
 
 	const toggleDropdown = useStable(() => {
 		setIsOpen((prev) => !prev);
@@ -38,11 +36,6 @@ export function Connections() {
 	const activate = useStable((id: string) => {
 		setIsOpen(false);
 		setActiveConnection(id);
-		closeConnection();
-
-		if (autoConnect) {
-			openConnection();
-		}
 	});
 
 	const filtered = useMemo(() => {

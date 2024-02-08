@@ -7,7 +7,7 @@ import { useStable } from "~/hooks/stable";
 import { Form } from "../Form";
 import { useLayoutEffect } from "react";
 import { updateTitle } from "~/util/helpers";
-import { useConnection, useConnections } from "~/hooks/connection";
+import { useConnections } from "~/hooks/connection";
 import { AuthMode, Connection, Protocol, Selectable } from "~/types";
 import { ModalTitle } from "../ModalTitle";
 import { useConfigStore } from "~/stores/config";
@@ -36,12 +36,10 @@ function buildName(n: number) {
 export function ConnectionEditor() {
 	const isLight = useIsLight();
 	const connections = useConnections();
-	const activeConnection = useConnection();
 
 	const { addConnection, updateConnection, setActiveConnection } = useConfigStore.getState();
 	const { closeConnectionEditor } = useInterfaceStore.getState();
 
-	const autoConnect = useConfigStore((s) => s.autoConnect);
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
 	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
@@ -68,22 +66,12 @@ export function ConnectionEditor() {
 		if (isCreating) {
 			addConnection(details);
 			setActiveConnection(details.id);
-			// if (autoConnect) {
-			// 	openConnection();
-			// }
 		} else {
 			updateConnection({
 				id: editingId,
 				name: details.name,
 				connection: details.connection,
 			});
-			// if (activeConnection?.id == editingId) {
-			// 	closeConnection();
-		
-			// 	if (autoConnect) {
-			// 		openConnection();
-			// 	}
-			// }
 		}
 
 		updateTitle();
