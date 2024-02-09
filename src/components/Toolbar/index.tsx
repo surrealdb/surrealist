@@ -1,6 +1,6 @@
 import surrealistLogo from "~/assets/surrealist.png";
-import { Group, Button, Modal, TextInput, Image, Divider, Center, ActionIcon } from "@mantine/core";
-import { mdiClose, mdiHistory, mdiStar, mdiSync } from "@mdi/js";
+import { Group, Button, Modal, TextInput, Image, Center, ActionIcon } from "@mantine/core";
+import { mdiClose, mdiSync } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -117,23 +117,6 @@ export function Toolbar(props: ToolbarProps) {
 			))}
 
 			<Spacer />
-
-			{props.viewMode == "query" && (
-				<>
-					<ActionIcon size="xl" title="Toggle history" onClick={() => {}}>
-						<Icon path={mdiHistory} />
-					</ActionIcon>
-
-					<ActionIcon size="xl" title="Toggle favorites" onClick={() => {}}>
-						<Icon path={mdiStar} />
-					</ActionIcon>
-
-					<Divider
-						orientation="vertical"
-						color={isLight ? 'gray.1' : 'gray.9'}
-					/>
-				</>
-			)}
 
 			{adapter.isServeSupported && (
 				<LocalDatabase />
