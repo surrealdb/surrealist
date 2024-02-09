@@ -1,14 +1,20 @@
-import { HTMLAttributes, useEffect, useRef } from 'react';
+import classes from "./style.module.scss";
+import { HTMLAttributes, useEffect, useRef, useState } from 'react';
 import { useStable } from '~/hooks/stable';
 import { Text, TextProps } from '@mantine/core';
+import { useLater } from '~/hooks/later';
+import clsx from "clsx";
 
 export interface EditableTextProps extends TextProps, Omit<HTMLAttributes<HTMLDivElement>, 'onChange' | 'style' | 'color'> {
 	value: string;
+	withDoubleClick?: boolean;
+	withDecoration?: boolean;
 	onChange: (value: string) => void;
 }
 
 export const EditableText = (props: EditableTextProps) => {
-	const ref = useRef<HTMLInputElement>(null);
+	const ref = useRef<HTMLDivElement>(null);
+	const [isEditing, setIsEditing] = useState(false);
 
 	const {
 		value,
@@ -16,7 +22,20 @@ export const EditableText = (props: EditableTextProps) => {
 		...rest
 	} = props;
 
+	const doFocus = useLater(() => {
+		ref.current!.focus();
+
+		const text = ref.current!.childNodes[0] as Text;
+		const range = document.createRange();
+
+		range.selectNode(text);
+		window.getSelection()?.removeAllRanges();
+		window.getSelection()?.addRange(range);
+	});
+
 	const onKeyDown = useStable((e: React.KeyboardEvent<HTMLDivElement>) => {
+		e.stopPropagation();
+		
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			ref.current?.blur();
@@ -29,8 +48,18 @@ export const EditableText = (props: EditableTextProps) => {
 		const textValue = ref.current?.textContent?.replaceAll('\n', '');
 
 		onChange(textValue || '');
+		setIsEditing(false);
 
 		rest?.onBlur?.(e);
+	});
+
+	const onDoubleClick = useStable((e: React.MouseEvent<HTMLDivElement>) => {
+		if (props.withDoubleClick) {
+			setIsEditing(true);
+			doFocus();
+		}
+
+		rest?.onDoubleClick?.(e);
 	});
 
 	useEffect(() => {
@@ -44,7 +73,9 @@ export const EditableText = (props: EditableTextProps) => {
 			ref={ref}
 			onBlur={onBlur}
 			onKeyDown={onKeyDown}
-			contentEditable={"plaintext-only" as any}
+			onDoubleClick={onDoubleClick}
+			contentEditable={!props.withDoubleClick || isEditing ? "plaintext-only" as any : "false"}
+			className={clsx(classes.root, props.withDecoration && classes.decorate)}
 			role="textbox"
 			{...rest}
 		/>

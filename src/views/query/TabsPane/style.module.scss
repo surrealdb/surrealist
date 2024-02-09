@@ -1,3 +1,16 @@
+.query {
+	transition: all .1s;
+}
+
+.query-active {
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 9px 15px -10px black;
+
+	:root[data-mantine-color-scheme="light"] & {
+		box-shadow: unset;
+	}
+}
+
 .query-close {
 	display: none;
 }

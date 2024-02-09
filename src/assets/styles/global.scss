@@ -10,6 +10,10 @@ body {
     overflow: visible;
 }
 
+.mantine-ScrollArea-viewport > div {
+    display: unset !important;
+}
+
 :root[data-mantine-color-scheme="light"] {
     --surrealist-divider-color: var(--mantine-color-slate-0);
     --surrealist-tooltip-bg: rgba(0, 0, 0, 0.4);

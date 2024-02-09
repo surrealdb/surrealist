@@ -1,16 +1,20 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Button, ScrollArea, Stack, Text } from "@mantine/core";
-import { mdiClose, mdiFormatListBulleted, mdiHistory, mdiPlus, mdiStar } from "@mdi/js";
+import clsx from "clsx";
+import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text } from "@mantine/core";
+import { mdiClose, mdiFormatListBulleted, mdiHistory, mdiLightningBolt, mdiPlus, mdiStar } from "@mdi/js";
+import { EditableText } from "~/components/EditableText";
 import { Icon } from "~/components/Icon";
 import { Panel } from "~/components/Panel";
 import { Spacer } from "~/components/Spacer";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 
 export function TabsPane() {
-	const { addQueryTab, removeQueryTab, setActiveQueryTab } = useConfigStore.getState();
+	const { addQueryTab, removeQueryTab, updateQueryTab, setActiveQueryTab } = useConfigStore.getState();
 	const { queries, activeQuery } = useActiveConnection();
+	const isLight = useIsLight();
 
 	const newTab = useStable(() => {
 		addQueryTab();
@@ -21,10 +25,26 @@ export function TabsPane() {
 		removeQueryTab(id);
 	});
 
+	const renameQuery = useStable((id: string, name: string) => {
+		updateQueryTab({
+			id,
+			name
+		});
+	});
+
 	return (
 		<Panel
 			icon={mdiFormatListBulleted}
 			title="Queries"
+			leftSection={
+				<Badge
+					color={isLight ? "slate.0" : "slate.9"}
+					radius="sm"
+					c="inherit"
+				>
+					{queries.length > 0 && queries.length.toString()}
+				</Badge>
+			}
 		>
 			<Stack
 				pos="absolute"
@@ -32,6 +52,7 @@ export function TabsPane() {
 				left={12}
 				right={12}
 				bottom={12}
+				gap={0}
 			>
 				<ScrollArea>
 					<Stack gap="sm">
@@ -42,19 +63,26 @@ export function TabsPane() {
 								<Button
 									key={query.id}
 									fullWidth
+									miw={0}
+									px={8}
 									color={isActive ? "surreal": "slate"}
+									variant={isActive ? "light" : "subtle"}
 									onClick={() => setActiveQueryTab(query.id)}
-									className={classes.query}
-									variant="light"
+									className={clsx(classes.query, isActive && classes.queryActive)}
 									styles={{
 										label: {
 											flex: 1
 										}
 									}}
+									leftSection={
+										<Icon
+											path={mdiLightningBolt}
+											color={isActive ? "surreal" : isLight ? "slate.2" : "slate.4"}
+										/>
+									}
 									rightSection={
 										queries.length > 1 && (
 											<ActionIcon
-												mr={-8}
 												className={classes.queryClose}
 												onClick={(e) => removeTab(query.id, e)}
 											>
@@ -63,14 +91,22 @@ export function TabsPane() {
 										)
 									}
 								>
-									{query.name}
+									<EditableText
+										value={query.name || ''}
+										onChange={(value) => renameQuery(query.id, value)}
+										withDoubleClick
+										withDecoration
+										style={{
+											outline: 'none',
+										}}
+									/>
 								</Button>
 							);
 						})}
 						<Button
 							fullWidth
 							color="slate"
-							variant="subtle"
+							variant="light"
 							leftSection={<Icon path={mdiPlus} />}
 							onClick={newTab}
 						>
@@ -79,31 +115,34 @@ export function TabsPane() {
 					</Stack>
 				</ScrollArea>
 				<Spacer />
-				<Text
-					c="slate"
-					fz="lg"
-					fw={500}
-				>
-					Actions
-				</Text>
-				<Button
-					fullWidth
-					color="slate"
-					variant="light"
-					leftSection={<Icon path={mdiStar} />}
-					style={{ flexShrink: 0 }}
-				>
-					Saved queries
-				</Button>
-				<Button
-					fullWidth
-					color="slate"
-					variant="light"
-					leftSection={<Icon path={mdiHistory} />}
-					style={{ flexShrink: 0 }}
-				>
-					Query history
-				</Button>
+				<Divider mb="xs" />
+				<Stack>
+					<Text
+						c="slate"
+						fz="lg"
+						fw={500}
+					>
+						Actions
+					</Text>
+					<Button
+						fullWidth
+						color="slate"
+						variant="light"
+						leftSection={<Icon path={mdiStar} />}
+						style={{ flexShrink: 0 }}
+					>
+						Saved queries
+					</Button>
+					<Button
+						fullWidth
+						color="slate"
+						variant="light"
+						leftSection={<Icon path={mdiHistory} />}
+						style={{ flexShrink: 0 }}
+					>
+						Query history
+					</Button>
+				</Stack>
 			</Stack>
 		</Panel>
 	);
