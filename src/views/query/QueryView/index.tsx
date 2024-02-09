@@ -8,7 +8,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { isEmbed } from "~/adapter";
-import { Group, Text } from "@mantine/core";
+import { Box, Group, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
 import { Image } from "@mantine/core";
@@ -22,15 +22,17 @@ export function QueryView() {
 	const [showSaved, showSavedHandle] = useDisclosure();
 
 	return (
-		<>
+		<Stack
+			gap="md"
+			h="100%"
+		>
 			{isEmbed && (
-				<Group p="sm">
+				<Group>
 					<Image
 						src={surrealistIcon}
 						style={{ pointerEvents: "none" }}
 						height={26}
 						width={26}
-						mx={4}
 					/>
 					<Text fz="xl" fw={600}>
 						Surrealist
@@ -43,55 +45,57 @@ export function QueryView() {
 					/>
 				</Group>
 			)}	
-			<Splitter
-				minSize={250}
-				maxSize={500}
-				startPane={
-					!isEmbed && (
-						<TabsPane
-							openHistory={showHistoryHandle.open}
-							openSaved={showSavedHandle.open}
-						/>
-					)
-				}
-			>
+			<Box flex={1}>
 				<Splitter
-					direction="vertical"
 					minSize={250}
-					bufferSize={200}
-					initialSize={450}
-					endPane={
-						<ResultPane />
+					maxSize={500}
+					startPane={
+						!isEmbed && (
+							<TabsPane
+								openHistory={showHistoryHandle.open}
+								openSaved={showSavedHandle.open}
+							/>
+						)
 					}
 				>
 					<Splitter
-						minSize={300}
-						initialSize={500}
+						direction="vertical"
+						minSize={150}
+						bufferSize={150}
+						initialSize={450}
 						endPane={
-							showVariables && (
-								<VariablesPane
-									isValid={variablesValid}
-									setIsValid={setVariablesValid}
-									closeVariables={showVariablesHandle.close}
-								/>
-							)
+							<ResultPane />
 						}
 					>
-						<QueryPane
-							showVariables={showVariables}
-							canQuery={queryValid && variablesValid}
-							isValid={queryValid}
-							setIsValid={setQueryValid}
-							openVariables={showVariablesHandle.open}
-						/>
+						<Splitter
+							minSize={300}
+							initialSize={500}
+							endPane={
+								showVariables && (
+									<VariablesPane
+										isValid={variablesValid}
+										setIsValid={setVariablesValid}
+										closeVariables={showVariablesHandle.close}
+									/>
+								)
+							}
+						>
+							<QueryPane
+								showVariables={showVariables}
+								canQuery={queryValid && variablesValid}
+								isValid={queryValid}
+								setIsValid={setQueryValid}
+								openVariables={showVariablesHandle.open}
+							/>
+						</Splitter>
 					</Splitter>
 				</Splitter>
-			</Splitter>
+			</Box>
 
 			<HistoryDrawer
 				opened={showHistory}
 				onClose={showHistoryHandle.close}
 			/>
-		</>
+		</Stack>
 	);
 }

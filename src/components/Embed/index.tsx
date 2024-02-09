@@ -1,5 +1,5 @@
 import { Notifications } from "@mantine/notifications";
-import { MantineProvider } from "@mantine/core";
+import { Box, MantineProvider } from "@mantine/core";
 import { resetApplicationState } from "~/util/helpers";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { MANTINE_THEME, themeColor } from "~/util/mantine";
@@ -29,14 +29,15 @@ export function Embed() {
 				FallbackComponent={AppErrorHandler} 
 				onReset={resetApplicationState}
 			>
-				<div
+				<Box
+					h="100vh"
+					p="md"
 					style={{
-						backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9"),
-						height: '100vh'
+						backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
 					}}
 				>
 					<QueryView />
-				</div>
+				</Box>
 			</ErrorBoundary>
 		</MantineProvider>
 	);

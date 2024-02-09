@@ -11,4 +11,4 @@ export const adapter: SurrealistAdapter = "__TAURI__" in window
 
 export const isDesktop = adapter instanceof DesktopAdapter;
 export const isBrowser = adapter instanceof BrowserAdapter;
-export const isEmbed = adapter instanceof EmbedAdapter;
+export const isEmbed = adapter instanceof EmbedAdapter; 
