@@ -6,6 +6,7 @@ import { TabsPane } from "../TabsPane";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
+import { isEmbed } from "~/adapter";
 
 export function QueryView() {
 	const [showVariables, showVariablesHandle] = useDisclosure();
@@ -21,10 +22,12 @@ export function QueryView() {
 				minSize={250}
 				maxSize={500}
 				startPane={
-					<TabsPane
-						openHistory={showHistoryHandle.open}
-						openSaved={showSavedHandle.open}
-					/>
+					!isEmbed && (
+						<TabsPane
+							openHistory={showHistoryHandle.open}
+							openSaved={showSavedHandle.open}
+						/>
+					)
 				}
 			>
 				<Splitter

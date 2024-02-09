@@ -12,9 +12,8 @@ import { createRoot } from "react-dom/client";
 import { initializeMonaco } from "./util/editor";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from './util/background';
 import { Embed } from './components/Embed';
-import { useConfigStore } from './stores/config';
-import { SANDBOX } from './constants';
 import { openConnection } from './database';
+import { useConfigStore } from './stores/config';
 
 (async () => {
 
@@ -33,10 +32,9 @@ import { openConnection } from './database';
 	await document.fonts.ready;
 	await initializeMonaco();
 
-	// Activate the sandbox
-	const { setActiveConnection } = useConfigStore.getState();
+	console.log('store =', useConfigStore.getState());
 
-	setActiveConnection(SANDBOX);
+	// Immedietely connect
 	openConnection();
 
 	// Render the app component

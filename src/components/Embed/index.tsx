@@ -2,12 +2,13 @@ import { Notifications } from "@mantine/notifications";
 import { MantineProvider } from "@mantine/core";
 import { resetApplicationState } from "~/util/helpers";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import { MANTINE_THEME } from "~/util/mantine";
-import { useColorScheme } from "~/hooks/theme";
+import { MANTINE_THEME, themeColor } from "~/util/mantine";
+import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { QueryView } from "~/views/query/QueryView";
 
 export function Embed() {
 	const colorScheme = useColorScheme();
+	const isLight = useIsLight();
 
 	// useHotkeys([
 	// 	["mod+alt+equal", increaseFontZoomLevel],
@@ -28,7 +29,14 @@ export function Embed() {
 				FallbackComponent={AppErrorHandler} 
 				onReset={resetApplicationState}
 			>
-				<QueryView />
+				<div
+					style={{
+						backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9"),
+						height: '100vh'
+					}}
+				>
+					<QueryView />
+				</div>
 			</ErrorBoundary>
 		</MantineProvider>
 	);

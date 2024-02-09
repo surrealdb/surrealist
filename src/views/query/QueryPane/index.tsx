@@ -10,7 +10,7 @@ import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ActionIcon, Badge, Box, Button, Divider, Group } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { Icon } from "~/components/Icon";
-import { adapter } from "~/adapter";
+import { adapter, isEmbed } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 import { Spacer } from "~/components/Spacer";
 import { executeQuery } from "~/database";
@@ -110,29 +110,33 @@ export function QueryPane(props: QueryPaneProps) {
 					>
 						<Divider mb="sm" />
 						<Group gap="sm">
-							<ActionIcon
-								onClick={() => {}}
-								title="Save query"
-								variant="light"
-							>
-								<Icon color="light.4" path={mdiStar} />
-							</ActionIcon>
+							{!isEmbed && (
+								<>
+									<ActionIcon
+										onClick={() => {}}
+										title="Save query"
+										variant="light"
+									>
+										<Icon color="light.4" path={mdiStar} />
+									</ActionIcon>
 
-							<ActionIcon
-								onClick={() => {}}
-								title="Format query"
-								variant="light"
-							>
-								<Icon color="light.4" path={mdiText} />
-							</ActionIcon>
+									<ActionIcon
+										onClick={() => {}}
+										title="Format query"
+										variant="light"
+									>
+										<Icon color="light.4" path={mdiText} />
+									</ActionIcon>
 
-							<ActionIcon
-								onClick={handleUpload}
-								title="Load from file"
-								variant="light"
-							>
-								<Icon color="light.4" path={mdiFileDocument} />
-							</ActionIcon>
+									<ActionIcon
+										onClick={handleUpload}
+										title="Load from file"
+										variant="light"
+									>
+										<Icon color="light.4" path={mdiFileDocument} />
+									</ActionIcon>
+								</>
+							)}
 
 							<Spacer />
 

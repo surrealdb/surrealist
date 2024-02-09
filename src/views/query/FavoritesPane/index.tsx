@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 
 import {
-	ActionIcon,
 	Box,
 	Button,
 	Collapse,
@@ -18,7 +17,7 @@ import {
 	useMantineTheme,
 } from "@mantine/core";
 
-import { mdiChevronDown, mdiChevronUp, mdiClose, mdiMagnify, mdiPencil, mdiPlay, mdiPlus, mdiStar } from "@mdi/js";
+import { mdiChevronDown, mdiChevronUp, mdiMagnify, mdiPencil, mdiPlay, mdiStar } from "@mdi/js";
 import { Fragment, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
@@ -55,7 +54,7 @@ export function SavedQueriesPane() {
 	const openSaveBox = useStable(() => {
 		setIsEditing(true);
 		setQueryName("");
-		setQueryText(queryTab.text);
+		// setQueryText(queryTab.text);
 		setEditingId("");
 	});
 
@@ -143,7 +142,8 @@ export function SavedQueriesPane() {
 		<Panel
 			title="Saved queries"
 			icon={mdiStar}
-			rightSection={<FavoritesActions onCreate={openSaveBox} />}>
+			// rightSection={<FavoritesActions onCreate={openSaveBox} />}
+		>
 			<ScrollArea
 				style={{
 					position: "absolute",
@@ -274,24 +274,24 @@ function SavedQueryRow(props: SavedRowProps) {
 	);
 }
 
-interface FavoritesActionsProps {
-	onCreate: () => void;
-}
+// interface FavoritesActionsProps {
+// 	onCreate: () => void;
+// }
 
-function FavoritesActions(props: FavoritesActionsProps) {
-	const queryTab = useActiveQuery();
-	const canSave = queryTab.text.length > 0;
+// function FavoritesActions(props: FavoritesActionsProps) {
+// 	const queryTab = useActiveQuery();
+// 	const canSave = queryTab.text.length > 0;
 
-	return (
-		<Group align="center">
-			{canSave && (
-				<ActionIcon onClick={props.onCreate} title="Save current query">
-					<Icon color="light.4" path={mdiPlus} />
-				</ActionIcon>
-			)}
-			<ActionIcon onClick={() => {}} title="Hide favorites">
-				<Icon color="light.4" path={mdiClose} />
-			</ActionIcon>
-		</Group>
-	);
-}
+// 	return (
+// 		<Group align="center">
+// 			{canSave && (
+// 				<ActionIcon onClick={props.onCreate} title="Save current query">
+// 					<Icon color="light.4" path={mdiPlus} />
+// 				</ActionIcon>
+// 			)}
+// 			<ActionIcon onClick={() => {}} title="Hide favorites">
+// 				<Icon color="light.4" path={mdiClose} />
+// 			</ActionIcon>
+// 		</Group>
+// 	);
+// }
