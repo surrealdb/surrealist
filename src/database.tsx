@@ -95,6 +95,10 @@ export async function executeQuery(options?: QueryOptions) {
 		? JSON.parse(variables)
 		: undefined;
 
+	if (query.length === 0) {
+		return;
+	}
+
 	try {
 		if (options?.loader) {
 			setQueryActive(true);

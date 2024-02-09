@@ -11,7 +11,12 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 
-export function TabsPane() {
+export interface TabsPaneProps {
+	openHistory: () => void;
+	openSaved: () => void;
+}
+
+export function TabsPane(props: TabsPaneProps) {
 	const { addQueryTab, removeQueryTab, updateQueryTab, setActiveQueryTab } = useConfigStore.getState();
 	const { queries, activeQuery } = useActiveConnection();
 	const isLight = useIsLight();
@@ -129,6 +134,7 @@ export function TabsPane() {
 						color="slate"
 						variant="light"
 						leftSection={<Icon path={mdiStar} />}
+						onClick={props.openSaved}
 						style={{ flexShrink: 0 }}
 					>
 						Saved queries
@@ -138,6 +144,7 @@ export function TabsPane() {
 						color="slate"
 						variant="light"
 						leftSection={<Icon path={mdiHistory} />}
+						onClick={props.openHistory}
 						style={{ flexShrink: 0 }}
 					>
 						Query history
