@@ -1,5 +1,5 @@
 import { editor } from "monaco-editor";
-import { mdiDatabase, mdiFileDocument, mdiSendVariant, mdiStar, mdiText, mdiTuneVariant } from "@mdi/js";
+import { mdiDatabase, mdiFileDocument, mdiStar, mdiText } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { Panel } from "~/components/Panel";
@@ -7,13 +7,15 @@ import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon, Badge, Box, Button, Divider, Group } from "@mantine/core";
+import { ActionIcon, Badge, Box, Divider, Group } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { Icon } from "~/components/Icon";
 import { adapter, isEmbed } from "~/adapter";
 import { SURQL_FILTERS } from "~/constants";
 import { Spacer } from "~/components/Spacer";
-import { executeQuery } from "~/database";
+import { Actions } from "../Actions";
+import { format_query } from "~/generated/surrealist-embed";
+import { showError } from "~/util/helpers";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
@@ -61,8 +63,18 @@ export function QueryPane(props: QueryPaneProps) {
 		}
 	});
 
-	const runQuery = useStable(() => {
-		executeQuery();
+	const formatQuery = useStable(() => {
+		if (!activeTab) {
+			return;
+		}
+
+		const formatted = format_query(activeTab.query);
+
+		if (formatted) {
+			setQueryForced(formatted);
+		} else {
+			showError('Formatting failed', 'Could not format query');
+		}
 	});
 
 	return (
@@ -92,7 +104,7 @@ export function QueryPane(props: QueryPaneProps) {
 							position: "absolute",
 							insetInline: 14,
 							top: 0,
-							bottom: 54
+							bottom: isEmbed ? 0 : 54
 						}}
 						options={{
 							quickSuggestions: false,
@@ -101,71 +113,52 @@ export function QueryPane(props: QueryPaneProps) {
 							wordWrap: "on"
 						}}
 					/>
-					<Box
-						style={{
-							position: "absolute",
-							insetInline: 12,
-							bottom: 12
-						}}
-					>
-						<Divider mb="sm" />
-						<Group gap="sm">
-							{!isEmbed && (
-								<>
-									<ActionIcon
-										onClick={() => {}}
-										title="Save query"
-										variant="light"
-									>
-										<Icon color="light.4" path={mdiStar} />
-									</ActionIcon>
-
-									<ActionIcon
-										onClick={() => {}}
-										title="Format query"
-										variant="light"
-									>
-										<Icon color="light.4" path={mdiText} />
-									</ActionIcon>
-
-									<ActionIcon
-										onClick={handleUpload}
-										title="Load from file"
-										variant="light"
-									>
-										<Icon color="light.4" path={mdiFileDocument} />
-									</ActionIcon>
-								</>
-							)}
-
-							<Spacer />
-
-							{!props.showVariables && (
-								<Button
-									size="xs"
-									onClick={props.openVariables}
+					{!isEmbed && (
+						<Box
+							style={{
+								position: "absolute",
+								insetInline: 12,
+								bottom: 12
+							}}
+						>
+							<Divider mb="sm" />
+							<Group gap="sm">
+								<ActionIcon
+									onClick={() => {}}
+									title="Save query"
 									variant="light"
-									color="surreal"
-									leftSection={
-										<Icon path={mdiTuneVariant} />
-									}
 								>
-									Show variables
-								</Button>
-							)}
+									<Icon color="light.4" path={mdiStar} />
+								</ActionIcon>
 
-							<Button
-								size="xs"
-								onClick={runQuery}
-								color={props.canQuery ? "surreal" : "red"}
-								rightSection={
-									<Icon path={mdiSendVariant} />
-								}
-							>
-								Run query
-							</Button>
-						</Group>
-					</Box>
+								<ActionIcon
+									onClick={formatQuery}
+									title="Format query"
+									variant="light"
+								>
+									<Icon color="light.4" path={mdiText} />
+								</ActionIcon>
+
+								<ActionIcon
+									onClick={handleUpload}
+									title="Load from file"
+									variant="light"
+								>
+									<Icon color="light.4" path={mdiFileDocument} />
+								</ActionIcon>
+
+								<Spacer />
+
+								{!isEmbed && (
+									<Actions
+										canQuery={props.canQuery}
+										showVariables={props.showVariables}
+										openVariables={props.openVariables}
+									/>
+								)}
+							</Group>
+						</Box>
+					)}
 				</>
 			)}
 		</Panel>

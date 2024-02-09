@@ -1,12 +1,11 @@
+import surrealistIcon from "~/assets/surrealist.png";
+
 import { mdiClose } from "@mdi/js";
 import { useHotkeys } from "@mantine/hooks";
 import { MouseEvent, useEffect } from "react";
 import { Notifications } from "@mantine/notifications";
 import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";
-
 import { useStable } from "~/hooks/stable";
-import surrealistIcon from "~/assets/surrealist.png";
-
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
 import { resetApplicationState, updateTitle } from "~/util/helpers";
@@ -92,7 +91,13 @@ export function App() {
 						p="xs"
 					>
 						<Group gap="sm">
-							<Image src={surrealistIcon} style={{ pointerEvents: "none" }} height={32} width={32} mx={4} />
+							<Image
+								src={surrealistIcon}
+								style={{ pointerEvents: "none" }}
+								height={32}
+								width={32}
+								mx={4}
+							/>
 							<Box miw={200}>
 								<Text c="white">New release available</Text>
 								<Text c="gray.5">Version {update} is available</Text>

@@ -1,3 +1,4 @@
+import surrealistIcon from "~/assets/surrealist.png";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../../query/VariablesPane";
@@ -7,6 +8,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { isEmbed } from "~/adapter";
+import { Group, Text } from "@mantine/core";
+import { Spacer } from "~/components/Spacer";
+import { Actions } from "../Actions";
+import { Image } from "@mantine/core";
 
 export function QueryView() {
 	const [showVariables, showVariablesHandle] = useDisclosure();
@@ -18,6 +23,26 @@ export function QueryView() {
 
 	return (
 		<>
+			{isEmbed && (
+				<Group p="sm">
+					<Image
+						src={surrealistIcon}
+						style={{ pointerEvents: "none" }}
+						height={26}
+						width={26}
+						mx={4}
+					/>
+					<Text fz="xl" fw={600}>
+						Surrealist
+					</Text>
+					<Spacer />
+					<Actions
+						showVariables={showVariables}
+						canQuery={queryValid && variablesValid}
+						openVariables={showVariablesHandle.open}
+					/>
+				</Group>
+			)}	
 			<Splitter
 				minSize={250}
 				maxSize={500}
