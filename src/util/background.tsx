@@ -31,6 +31,8 @@ function computeColorScheme() {
 }
 
 export function watchColorScheme() {
+	computeColorScheme();
+
 	useConfigStore.subscribe((state, prev) => {
 		if (state.colorScheme !== prev.colorScheme) {
 			computeColorScheme();

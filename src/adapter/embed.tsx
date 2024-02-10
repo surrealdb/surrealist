@@ -4,6 +4,9 @@ import { SurrealistConfig } from "~/types";
 import { createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
 import { getSurreal } from "~/util/surreal";
+import { MantineColorScheme } from "@mantine/core";
+
+const THEMES = new Set(['light', 'dark', 'auto']);
 
 const DATASETS: Record<string, string> = {
 	'surreal-deal': "https://surreal-demo-testing.s3.eu-west-2.amazonaws.com/surreal_deal_v1.surql"
@@ -12,6 +15,7 @@ const DATASETS: Record<string, string> = {
 export class EmbedAdapter extends BrowserAdapter {
 
 	#datasetQuery: string | undefined;
+	#setupQuery: string | undefined;
 
 	public async loadConfig() {
 		const mainTab = createBaseTab();
@@ -43,6 +47,7 @@ export class EmbedAdapter extends BrowserAdapter {
 			}
 		}
 
+		// Premade dataset loading
 		if (dataset) {
 			const datasetUrl = DATASETS[dataset];
 
@@ -53,10 +58,19 @@ export class EmbedAdapter extends BrowserAdapter {
 			}
 		}
 
-		console.log('mainTab', mainTab);
+		// Execute a startup query
+		if (setup) {
+			this.#setupQuery = decodeURIComponent(setup);
+		}
+
+		// Interface theme
+		if (theme && !THEMES.has(theme)) {
+			showError('Embed error', 'Theme not recognised');
+		}
 
 		const config = {
 			activeConnection: SANDBOX,
+			colorScheme: theme as MantineColorScheme || 'auto',
 			sandbox: {
 				...createSandboxConnection(),
 				activeQuery: mainTab.id,
@@ -67,13 +81,17 @@ export class EmbedAdapter extends BrowserAdapter {
 		return JSON.stringify(config);
 	}
 
-	public async saveConfig(config: string) {
+	public async saveConfig() {
 		// noop
 	}
 
 	public initializeDataset() {
 		if (this.#datasetQuery) {
 			getSurreal()?.query(this.#datasetQuery);
+		}
+
+		if (this.#setupQuery) {
+			getSurreal()?.query(this.#setupQuery);
 		}
 	}
 

@@ -48,8 +48,6 @@ export function ResultPane() {
 		setResultTab(1);
 	}, [responses.length]);
 
-	console.log('res', responses);
-
 	return (
 		<Panel
 			title={showCombined ? 'Results' : showTabs ? `Result #${resultTab}` : "Result"}
