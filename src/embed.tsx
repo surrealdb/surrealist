@@ -13,7 +13,8 @@ import { initializeMonaco } from "./util/editor";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from './util/background';
 import { Embed } from './components/Embed';
 import { openConnection } from './database';
-import { useConfigStore } from './stores/config';
+import { adapter } from './adapter';
+import { EmbedAdapter } from './adapter/embed';
 
 (async () => {
 
@@ -32,10 +33,12 @@ import { useConfigStore } from './stores/config';
 	await document.fonts.ready;
 	await initializeMonaco();
 
-	console.log('store =', useConfigStore.getState());
-
-	// Immedietely connect
-	openConnection();
+	// Immedietely connect and initialize the dataset
+	openConnection(true, (success) => {
+		if (success) {
+			(adapter as EmbedAdapter).initializeDataset();
+		}
+	});
 
 	// Render the app component
 	const root = document.querySelector("#root")!;

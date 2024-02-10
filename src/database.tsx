@@ -9,12 +9,11 @@ import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
 
 /**
- * Open a new connection to the database
- * 
- * @param details Connection details
+ * Open a new connection to the data
  * @param isSilent Whether to hide error notifications
+ * @param callback Callback to run after the connection is opened
  */
-export function openConnection(isSilent?: boolean) {
+export function openConnection(isSilent?: boolean, callback?: (success: boolean) => void) {
 	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
 	const connection = getActiveConnection();
 
@@ -29,12 +28,13 @@ export function openConnection(isSilent?: boolean) {
 			onConnect() {
 				setIsConnecting(false);
 				setIsConnected(true);
-
 				fetchDatabaseSchema();
+				callback?.(true);
 			},
 			onDisconnect(code, reason) {
 				setIsConnecting(false);
 				setIsConnected(false);
+				callback?.(false);
 
 				if (code != 1000 && !isSilent) {
 					const subtitle = code === 1006 ? "Unexpected connection close" : reason || `Unknown reason`;
