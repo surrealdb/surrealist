@@ -7,21 +7,18 @@
 <br>
 
 <h1 align="center">
-	Surrealist for SurrealDB
+	SurrealDB Surrealist
 </h1>
 
 <p align="center">
-  <a href="https://github.com/StarlaneStudios/surrealist/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/StarlaneStudios/surrealist"> 
+  <a href="https://github.com/surrealdb/surrealist/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/surrealdb/surrealist"> 
   </a>
-  <a href="https://discord.gg/exaQDX2">
-  	<img src="https://img.shields.io/discord/414532188722298881">
-  </a>
-  <img src="https://img.shields.io/github/repo-size/StarlaneStudios/surrealist">
-  <img src="https://img.shields.io/github/contributors/StarlaneStudios/surrealist">
+  <img src="https://img.shields.io/github/repo-size/surrealdb/surrealist">
+  <img src="https://img.shields.io/github/contributors/surrealdb/surrealist">
 </p>
 
-Surrealist is a simple to use Browser and Desktop based query playground and database explorer for [SurrealDB](https://surrealdb.com/). You can connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more. Switch to the explorer view to browse database tables, edit record contents, and traverse graph relationships. Use the designer view to create or modify your database schema, and manage logins and scopes with the authentication view.
+Surrealist is a simple to use browser and desktop based query playground and database explorer for [SurrealDB](https://surrealdb.com/). Connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more. Switch to the explorer view to browse database tables, edit record contents, and traverse graph relationships. Use the designer view to create or modify your database schema, and manage logins and scopes with the authentication view.
 
 ## Features
 - ⚡ SurrealQL syntax highlighting
@@ -35,7 +32,7 @@ Surrealist is a simple to use Browser and Desktop based query playground and dat
 - 📜 Query history & Query favoriting
 
 ## How to use
-You can [read our documentation](https://surrealist.starlane.studio/) for information on how to use Surrealist.
+You can [read our documentation](https://docs.surrealdb.com/surrealist) for information on how to use Surrealist.
 
 ## Web App
 You can use Surrealist by visiting https://surrealist.app/
@@ -43,21 +40,7 @@ You can use Surrealist by visiting https://surrealist.app/
 While the web app provides a convenient and easy way to use Surrealist, the desktop app offers additional features such as an integrated database runner and offline support.
 
 ## Desktop App
-You can download the latest version of Surrealist Desktop from our [Releases](https://github.com/StarlaneStudios/Surrealist/releases) page. This version provides significantly more functionality over the web app, so it is considered the recommended way to use Surrealist.
-
-### Running on MacOS
-Running Surrealist on MacOS is more complicated than on its Windows and Linux counterparts because our application is not signed. To run Surrealist on MacOS, please do the following:
-- Navigate to your desired release (v1.6.0 and newer)
-- Download the `surrealist-<version>-darwin.dmg` release file
-- Open the executable
-- When prompted, drag the Surrealist application into the "Applications" directory
-- Navigate to your Applications directory
-- Right-click on the Surrealist application and cick on open (Note: It is important to use right-click because for some reason left clicking to open does not work the first two times you run Surrealist)
-- You will receive a prompt that says "Surrealist cannot be opened because the developer cannot be verified." Click on cancel
-- Right-click on the Surrealist application and click on open again. This time you should receive a different prompt with an "Open" option. Click on open
-- Surrealist should now launch, and you should now be able to launch Surrealist without issue from the Launchpad.
-
-If the steps for either of these MacOS processes do not work, please do not hesitate to open an issue.
+You can download the latest version of Surrealist Desktop from our [Releases](https://github.com/surrealdb/surrealist/releases) page. This version provides significantly more functionality over the web app, so it is considered the recommended way to use Surrealist.
 
 ## Features
 
@@ -98,7 +81,6 @@ Before you open an issue or PR please read our [Contributor Guide](CONTRIBUTING.
 ## Disclaimer
 - The latest release always attempts to be up-to-date with the latest SurrealDB beta. No attempt is made to keep Surrealist compatible with the latest nightly builds.
 - Connections to remote servers may require a HTTPS connection. You can easily configure SSL for your server using tools like Letsencrypt and nginx.
-- This project is maintained entirely free of charge and in my spare time. I will make a best attempt at supporting as many features and workflows as possible, however I do not have the resources to cater to every use case.
 
 ## Development
 This project is built using [Tauri](https://tauri.app) and [React](https://reactjs.org/).
@@ -120,18 +102,8 @@ server that will provide very fast hot reload of your frontend changes.
 
 To build a redistributable, production mode package, use `npm run tauri:build`.
 
-## Maintainers
-<a href="https://starlane.studio#gh-light-mode-only">
-  <img src=".github/branding/starlane-dark.png" height="64">
-</a>
-<a href="https://starlane.studio#gh-dark-mode-only">
-  <img src=".github/branding/starlane-light.png" height="64">
-</a>
-
-Surrealist is built and maintained by <a href="https://starlane.studio/">Starlane Studios</a> at no cost. If you would like to support our work feel free to [donate to us](https://paypal.me/ExodiusStudios) ⚡
-
 ## License
 
 Surrealist is licensed under [MIT](LICENSE)
 
-Copyright (c) 2022-2023, Starlane Studios
+Copyright © 2024 SurrealDB Ltd
