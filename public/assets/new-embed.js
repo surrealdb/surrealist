@@ -29,14 +29,16 @@ form.addEventListener('submit', async (e) => {
     const search = new URLSearchParams();
 
     if (dataset != 'none') search.append('dataset', dataset);
-    if (setup.length > 0) search.append('setup', setup);
-    if (query.length > 0) search.append('query', query);
+    if (setup && setup.length > 0) search.append('setup', setup);
+    if (query && query.length > 0) search.append('query', query);
     if (Object.keys(variables).length > 0) search.append('variables', JSON.stringify(variables));
     if (theme !== 'auto') search.append('theme', theme);
 
     const url = new URL(location);
     url.pathname = url.hostname == 'localhost' ? 'embed/run.html' : 'embed';
     url.search = search;
+
+    history.replaceState({}, null, `${location.pathname}${search.toString().length > 0 ? '?' + search : ''}`);
 
     output.value = url;
     embed.innerHTML = `<iframe src="${url}" width="100%" height="550" frameborder="0"></iframe>`;
@@ -55,8 +57,8 @@ function updateFromUrl(input) {
     const validThemes = [...themeField.options].map(o => o.value);
     
     datasetField.value = validDataSets.includes(dataset) ? dataset : 'none';
-    setupField.value = setup && setup.toString();
-    queryField.value = query && query.toString();
+    setupField.value = setup ? setup.toString() : '';
+    queryField.value = query ? query.toString() : '';
     variablesField.value = Object.keys(parsedVariables).length > 0 ? JSON.stringify(parsedVariables, null, 4) : '';
     themeField.value = validThemes.includes(theme) ? theme : 'auto';
 
