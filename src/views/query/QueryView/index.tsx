@@ -7,12 +7,13 @@ import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { isEmbed } from "~/adapter";
-import { Box, Group, Stack, Text } from "@mantine/core";
+import { Box, Group, Stack } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
 import { Image } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
+import { TextLogo } from "~/components/TextLogo";
 
 export function QueryView() {
 	const [showVariables, showVariablesHandle] = useDisclosure();
@@ -32,12 +33,10 @@ export function QueryView() {
 					<Image
 						src={surrealistIcon}
 						style={{ pointerEvents: "none" }}
-						height={26}
-						width={26}
+						height={20}
+						width={20}
 					/>
-					<Text fz="xl" fw={600}>
-						Surrealist
-					</Text>
+					<TextLogo h={16} />
 					<Spacer />
 					<Actions
 						showVariables={showVariables}
