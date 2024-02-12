@@ -3,14 +3,14 @@ function handler(event) {
 	let request = event.request;
 	let host = request.headers.host.value;
 
-	if (host !== 'dev.surrealist.app') {
+	if (host !== 'surrealist.app') {
 
 		return {
 			statusCode: 301,
 			statusDescription: 'Moved Permanently',
 			headers: {
 				location: {
-					value: `https://dev.surrealist.app${path}`
+					value: `https://surrealist.app${path}`
 				}
 			},
 		};
