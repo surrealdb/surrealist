@@ -1,136 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Surrealist Embed Generator</title>
+    <meta charset="utf-8"/>
+	<meta name="theme-color" content="#e600a4" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<meta name="author" content="Starlane Studios">
+	
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 
-	<style>
-        html, body {
-            padding: 0px;
-            margin: 0px;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #f4f4f4;
-        }
+    <title>Surrealist Embed Generator</title>
 
-		main {
-			padding: 2.5%;
-		}
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            padding-bottom: 2vh;
-        }
-
-        .columns {
-            display: flex;
-            width: 95%;
-            gap: 5%;
-        }
-
-        .columns > * {
-            flex: 1;
-			display: flex;
-			flex-direction: column;
-			gap: 20px;
-		}
-		
-		.section {
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-		}
-
-		#output {
-			background-color: #fff;
-            border: 1px solid black;
-			padding: 11px;
-			border-radius: 5px;
-			font-family: monospace;
-            margin: 0px;
-            overflow-x: auto;
-		}
-
-        input, textarea, select {
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        input[type=submit] {
-            background-color: black;
-            color: white;
-            border: none;
-            margin-top: 20px;
-            padding: 15px;
-            font-size: 17px;
-        }
-
-        iframe {
-            border-radius: 5px;
-        }
-	</style>
-    <script src="/assets/new-embed.js" defer></script>
+	<!-- Twitter Cards & Open Graph -->
+	<meta name="description" content="Powerful graphical SurrealDB query playground and database explorer, available for web and desktop ⚡">
+	<meta name="twitter:card" content="content">
+	<meta name="twitter:title" content="Surrealist">
+	<meta name="twitter:image" content="https://raw.githubusercontent.com/StarlaneStudios/Surrealist/main/.github/branding/banner.png">
+	<meta name="og:title" content="Surrealist">
+	<meta name="og:type" content="website">
+	<meta name="og:description" content="Powerful graphical SurrealDB query playground and database explorer, available for web and desktop ⚡">
+	<meta name="og:image" content="https://raw.githubusercontent.com/StarlaneStudios/Surrealist/main/.github/branding/banner.png">
 </head>
 <body>
-	<main>
-        <div class="logo">
-            <img src="/favicon.ico" alt="Surrealist logo" width="80" />
-            <h1>Surrealist Embed Generator</h1>
-        </div>
-		<div class="columns">
-            <form id="form">
-                <h2>Configuration</h2>
-                <div class="section">
-                    <label for="dataset">Dataset</label>
-                    <select name="dataset" id="dataset">
-                        <option value="none">None</option>
-                        <option value="surreal-deal">Surreal Deal</option>
-                        <option value="surreal-deal-mini">Surreal Deal (Mini)</option>
-                    </select>
-                </div>
-        
-                <div class="section">
-                    <label for="setup">Setup</label>
-                    <textarea name="setup" id="setup" placeholder="SELECT * FROM ..." rows="6"></textarea>
-                </div>
-        
-                <div class="section">
-                    <label for="query">Query</label>
-                    <textarea name="query" id="query" placeholder="SELECT * FROM ..." rows="6"></textarea>
-                </div>
-        
-                <div class="section">
-                    <label for="variables">Variables</label>
-                    <textarea name="variables" id="variables" placeholder="{}" rows="6"></textarea>
-                </div>
-        
-                <div class="section">
-                    <label for="theme">Theme</label>
-                    <select name="theme" id="theme">
-                        <option value="auto">Automatic</option>
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                    </select>
-                </div>
-    
-                <div>
-                    <input type="submit" value="Generate embed">
-                </div>
-            </form>
-            <div class="preview">
-                <h2>Preview</h2>
-                <div class="section">
-                    <label>URL</label>
-                    <input id="output" />
-                </div>
-                <div class="section">
-                    <label>Embed</label>
-                    <div id="embed"></div>
-                </div>
-            </div>
-        </div>
-	</main>
+	<div id="root"></div>
+	<script src="../src/embed-new.tsx" type="module"></script>
 </body>
 </html>
