@@ -170,7 +170,7 @@
 			if (theme !== 'auto') search.append('theme', theme);
 
             const url = new URL(location);
-            url.pathname = url.hostname == 'localhost' ? 'embed.html' : 'embed';
+            url.pathname = url.hostname == 'localhost' ? 'embed/run.html' : 'embed';
             url.search = search;
 
 			output.value = url;
