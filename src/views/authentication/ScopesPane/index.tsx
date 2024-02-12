@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
@@ -88,7 +88,7 @@ export function ScopePane() {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			icon={mdiAccountLock}
 			title="Database Scopes"
 			rightSection={
@@ -209,6 +209,6 @@ export function ScopePane() {
 					</Group>
 				</Form>
 			</Modal>
-		</Panel>
+		</ContentPane>
 	);
 }

@@ -19,6 +19,8 @@ export const EditableText = (props: EditableTextProps) => {
 	const {
 		value,
 		onChange,
+		withDoubleClick,
+		withDecoration,
 		...rest
 	} = props;
 
@@ -54,7 +56,7 @@ export const EditableText = (props: EditableTextProps) => {
 	});
 
 	const onDoubleClick = useStable((e: React.MouseEvent<HTMLDivElement>) => {
-		if (props.withDoubleClick) {
+		if (withDoubleClick) {
 			setIsEditing(true);
 			doFocus();
 		}
@@ -74,8 +76,8 @@ export const EditableText = (props: EditableTextProps) => {
 			onBlur={onBlur}
 			onKeyDown={onKeyDown}
 			onDoubleClick={onDoubleClick}
-			contentEditable={!props.withDoubleClick || isEditing ? "plaintext-only" as any : "false"}
-			className={clsx(classes.root, props.withDecoration && classes.decorate)}
+			contentEditable={!withDoubleClick || isEditing ? "plaintext-only" as any : "false"}
+			className={clsx(classes.root, withDecoration && classes.decorate)}
 			role="textbox"
 			{...rest}
 		/>

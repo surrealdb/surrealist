@@ -15,7 +15,7 @@ import {
 import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
 import { MouseEvent, useMemo, useState } from "react";
 import { Updater } from "use-immer";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { useStable } from "~/hooks/stable";
 import { TableDefinition } from "~/types";
 import { fetchDatabaseSchema, isEdgeTable } from "~/util/schema";
@@ -81,7 +81,7 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 	const isEdge = useMemo(() => isEdgeTable(value), [value]);
 
 	return (
-		<Panel
+		<ContentPane
 			icon={mdiWrench}
 			title="Design"
 			leftSection={
@@ -199,6 +199,6 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 					</Button>
 				</Group>
 			</Modal>
-		</Panel>
+		</ContentPane>
 	);
 }

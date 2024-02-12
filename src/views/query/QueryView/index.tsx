@@ -1,8 +1,7 @@
 import surrealistIcon from "~/assets/surrealist.png";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
-import { VariablesPane } from "../../query/VariablesPane";
-import { Splitter } from "~/components/Splitter";
+import { VariablesPane } from "../VariablesPane";
 import { TabsPane } from "../TabsPane";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
@@ -12,6 +11,8 @@ import { Box, Group, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
 import { Image } from "@mantine/core";
+import { PanelGroup, Panel } from "react-resizable-panels";
+import { PanelDragger } from "~/components/Pane/dragger";
 
 export function QueryView() {
 	const [showVariables, showVariablesHandle] = useDisclosure();
@@ -46,50 +47,52 @@ export function QueryView() {
 				</Group>
 			)}	
 			<Box flex={1}>
-				<Splitter
-					minSize={250}
-					maxSize={500}
-					startPane={
-						!isEmbed && (
-							<TabsPane
-								openHistory={showHistoryHandle.open}
-								openSaved={showSavedHandle.open}
-							/>
-						)
-					}
-				>
-					<Splitter
-						direction="vertical"
-						minSize={150}
-						bufferSize={150}
-						initialSize={450}
-						endPane={
-							<ResultPane />
-						}
-					>
-						<Splitter
-							minSize={300}
-							initialSize={500}
-							endPane={
-								showVariables && (
-									<VariablesPane
-										isValid={variablesValid}
-										setIsValid={setVariablesValid}
-										closeVariables={showVariablesHandle.close}
-									/>
-								)
-							}
-						>
-							<QueryPane
-								showVariables={showVariables}
-								canQuery={queryValid && variablesValid}
-								isValid={queryValid}
-								setIsValid={setQueryValid}
-								openVariables={showVariablesHandle.open}
-							/>
-						</Splitter>
-					</Splitter>
-				</Splitter>
+				<PanelGroup direction="horizontal">
+					{!isEmbed && (
+						<>
+							<Panel defaultSize={15} minSize={15} maxSize={25}>
+								<TabsPane
+									openHistory={showHistoryHandle.open}
+									openSaved={showSavedHandle.open}
+								/>
+							</Panel>
+							<PanelDragger />
+						</>
+					)}
+					<Panel minSize={10}>
+						<PanelGroup direction="vertical">
+							<Panel minSize={25}>
+								<PanelGroup direction="horizontal">
+									<Panel minSize={25}>
+										<QueryPane
+											showVariables={showVariables}
+											canQuery={queryValid && variablesValid}
+											isValid={queryValid}
+											setIsValid={setQueryValid}
+											openVariables={showVariablesHandle.open}
+										/>
+									</Panel>
+									{showVariables && (
+										<>
+											<PanelDragger />
+											<Panel defaultSize={25} minSize={25} maxSize={40}>
+												<VariablesPane
+													isValid={variablesValid}
+													setIsValid={setVariablesValid}
+													closeVariables={showVariablesHandle.close}
+												/>
+											</Panel>
+										</>
+									)}
+								</PanelGroup>
+							</Panel>
+							<PanelDragger />
+							<Panel minSize={25}>
+								<ResultPane />
+							</Panel>
+						</PanelGroup>
+					</Panel>
+				</PanelGroup>
 			</Box>
 
 			<HistoryDrawer

@@ -3,7 +3,7 @@ import { mdiCheck, mdiClose, mdiTablePlus } from "@mdi/js";
 import { ActionIcon, Button, Divider, Group, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { getSurreal } from "~/util/surreal";
@@ -65,7 +65,7 @@ export function CreatorPane({ refreshEvent }: CreatorPaneProps) {
 	const jsonAlert = !isBodyValid && <Text c="red">Invalid record JSON</Text>;
 
 	return (
-		<Panel
+		<ContentPane
 			title="Create Record"
 			icon={mdiTablePlus}
 			rightSection={
@@ -127,6 +127,6 @@ export function CreatorPane({ refreshEvent }: CreatorPaneProps) {
 				Create record
 				<Icon path={mdiCheck} right />
 			</Button>
-		</Panel>
+		</ContentPane>
 	);
 }

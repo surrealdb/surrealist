@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Splitter, SplitValues } from "~/components/Splitter";
 import { QueriesPane } from "../QueriesPane";
-import { EditorPane } from "../EditorPane";
 import { InboxPane } from "../InboxPane";
 import { useStable } from "~/hooks/stable";
 import { useActiveConnection } from "~/hooks/connection";
@@ -12,6 +10,8 @@ import { useImmer } from "use-immer";
 import { LiveMessage } from "~/types";
 import { MAX_LIVE_MESSAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { PanelDragger } from "~/components/Pane/dragger";
 
 export interface QueryViewProps {
 }
@@ -20,8 +20,6 @@ export function LiveView(props: QueryViewProps) {
 	const { updateConnection } = useConfigStore.getState();
 
 	const session = useActiveConnection();
-	const [splitValues, setSplitValues] = useState<SplitValues>([500, undefined]);
-	const [innerSplitValues, setInnerSplitValues] = useState<SplitValues>([undefined, undefined]);
 	const [editingId, setEditingId] = useState("");
 	const [isEditing, setIsEditing] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -138,42 +136,52 @@ export function LiveView(props: QueryViewProps) {
 	});
 
 	return (
-		<Splitter
-			minSize={400}
-			values={splitValues}
-			onChange={setSplitValues}
-			direction="horizontal"
-			bufferSize={520}
-			startPane={
-				<Splitter
-					minSize={280}
-					values={innerSplitValues}
-					onChange={setInnerSplitValues}
-					bufferSize={100}
-					direction="vertical"
-					endPane={isEditing && (
-						<EditorPane
-							query={editingData}
-							onSave={handleQuerySave}
-							onClose={handleQueryClose}
-						/>
-					)}
-				>
-					
-					<QueriesPane
-						activeQueries={activeQueries}
-						toggleQuery={toggleQuery}
-						onAddQuery={handleNewQuery}
-						onEditQuery={handleEditQuery}
-						onRemoveQuery={handleRemoveQuery}
-					/>
-				</Splitter>
-			}
-		>
-			<InboxPane
-				messages={messages}
-				onClearAll={clearMessages}
-			/>
-		</Splitter>
+		<PanelGroup direction="horizontal">
+			<Panel minSize={15} defaultSize={15} maxSize={25}>
+				<QueriesPane
+					activeQueries={activeQueries}
+					toggleQuery={toggleQuery}
+					onAddQuery={handleNewQuery}
+					onEditQuery={handleEditQuery}
+					onRemoveQuery={handleRemoveQuery}
+				/>
+			</Panel>
+			<PanelDragger />
+			<Panel minSize={25}>
+				<InboxPane
+					messages={messages}
+					onClearAll={clearMessages}
+				/>
+			</Panel>
+		</PanelGroup>
+
+	// <Splitter
+	// 	minSize={400}
+	// 	values={splitValues}
+	// 	onChange={setSplitValues}
+	// 	direction="horizontal"
+	// 	bufferSize={520}
+	// 	startPane={
+	// 		<Splitter
+	// 			minSize={280}
+	// 			values={innerSplitValues}
+	// 			onChange={setInnerSplitValues}
+	// 			bufferSize={100}
+	// 			direction="vertical"
+	// 			endPane={isEditing && (
+	// 				<EditorPane
+	// 					query={editingData}
+	// 					onSave={handleQuerySave}
+	// 					onClose={handleQueryClose}
+	// 				/>
+	// 			)}
+	// 		>
+				
+				
+	// 		</Splitter>
+	// 	}
+	// >
+		
+	// </Splitter>
 	);
 }

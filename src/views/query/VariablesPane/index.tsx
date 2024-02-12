@@ -1,5 +1,5 @@
 import { mdiClose, mdiTuneVariant } from "@mdi/js";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Badge, Group } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { Icon } from "~/components/Icon";
@@ -38,7 +38,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			title="Variables"
 			icon={mdiTuneVariant}
 			rightSection={
@@ -78,6 +78,6 @@ export function VariablesPane(props: VariablesPaneProps) {
 					}
 				}}
 			/>
-		</Panel>
+		</ContentPane>
 	);
 }

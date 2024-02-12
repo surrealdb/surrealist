@@ -5,14 +5,14 @@ import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
 
-export interface PanelProps extends PaperProps, Omit<HTMLAttributes<HTMLDivElement>, "style"> {
+export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
 	icon?: string;
 	leftSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
 }
 
-export function Panel(props: PanelProps) {
+export function ContentPane(props: ContentPaneProps) {
 	const { children, title, icon, leftSection, rightSection, ...rest } = props;
 
 	const isLight = useIsLight();

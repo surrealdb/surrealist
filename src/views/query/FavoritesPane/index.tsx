@@ -26,7 +26,7 @@ import { useActiveQuery } from "~/hooks/connection";
 import { useActiveConnection } from "~/hooks/connection";
 import { uid } from "radash";
 import { Sortable } from "~/components/Sortable";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { Form } from "~/components/Form";
@@ -139,7 +139,7 @@ export function SavedQueriesPane() {
 	}, [activeEntry, activeSession, filtered, isLight]);
 
 	return (
-		<Panel
+		<ContentPane
 			title="Saved queries"
 			icon={mdiStar}
 			// rightSection={<FavoritesActions onCreate={openSaveBox} />}
@@ -189,7 +189,7 @@ export function SavedQueriesPane() {
 					</Stack>
 				</Form>
 			</Modal>
-		</Panel>
+		</ContentPane>
 	);
 }
 

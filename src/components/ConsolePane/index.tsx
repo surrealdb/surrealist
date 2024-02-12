@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo } from "react";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { mdiClose, mdiConsole, mdiDelete } from "@mdi/js";
 import { ActionIcon, Center, Group, ScrollArea, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
@@ -71,7 +71,7 @@ export function ConsolePane(props: ConsolePaneProps) {
 	}, [messages]);
 
 	return (
-		<Panel
+		<ContentPane
 			title="Console"
 			icon={mdiConsole}
 			rightSection={
@@ -88,6 +88,6 @@ export function ConsolePane(props: ConsolePaneProps) {
 					<ConsoleOutputEntry key={index} index={index} message={message} formatter={convert} />
 				))}
 			</ScrollArea>
-		</Panel>
+		</ContentPane>
 	);
 }

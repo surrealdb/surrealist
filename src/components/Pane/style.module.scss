@@ -13,3 +13,13 @@
 	-webkit-user-select: none;
 	user-select: none;
 }
+
+.dragger {
+	flex: 0 0 0.25rem;
+}
+
+@media (pointer: coarse) {
+	.dragger {
+		flex: 0 0 1rem;
+	}
+}

@@ -21,7 +21,7 @@ import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useHasSchemaAccess, useSchema } from "~/hooks/schema";
@@ -128,7 +128,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			icon={props.icon}
 			title={props.title}
 			rightSection={
@@ -277,6 +277,6 @@ export function AccountsPane(props: AccountsPaneProps) {
 					</Group>
 				</Form>
 			</Modal>
-		</Panel>
+		</ContentPane>
 	);
 }

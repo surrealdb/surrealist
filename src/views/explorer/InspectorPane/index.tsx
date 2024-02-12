@@ -15,7 +15,7 @@ import { ActionIcon, Button, Center, Group, Modal, Paper, ScrollArea, Stack, Tab
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { OpenFn } from "~/types";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
 import { Spacer } from "~/components/Spacer";
@@ -153,7 +153,7 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 	}, [history.current]);
 
 	return (
-		<Panel
+		<ContentPane
 			title="Inspector"
 			icon={mdiWrench}
 			rightSection={
@@ -284,7 +284,7 @@ export function InspectorPane({ history, refreshEvent }: InspectorPaneProps) {
 					</Button>
 				</Group>
 			</Modal>
-		</Panel>
+		</ContentPane>
 	);
 }
 

@@ -1,7 +1,7 @@
 import { editor } from "monaco-editor";
 import { mdiCheck, mdiClose, mdiPencil } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
@@ -58,7 +58,7 @@ export function EditorPane(props: EditorPaneProps) {
 	const canSave = !queryError && queryName.length > 0 && queryText.length > 0;
 
 	return (
-		<Panel
+		<ContentPane
 			title={props.query ? `Editing Query ${props.query.index + 1}` : "New Query"}
 			icon={mdiPencil}
 			leftSection={queryError && (
@@ -116,6 +116,6 @@ export function EditorPane(props: EditorPaneProps) {
 				Save query
 				<Icon path={mdiCheck} />
 			</Button>
-		</Panel>
+		</ContentPane>
 	);
 }

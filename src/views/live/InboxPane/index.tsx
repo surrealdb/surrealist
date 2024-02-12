@@ -1,7 +1,7 @@
 import { Accordion, ActionIcon, Badge, Center, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { mdiArrowDownThin, mdiBroadcast, mdiDelete } from "@mdi/js";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { LIVE_QUERY_COLORS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
@@ -26,7 +26,7 @@ export function InboxPane(props: InboxPaneProps) {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			title="Inbox"
 			icon={mdiBroadcast}
 			rightSection={
@@ -107,6 +107,6 @@ export function InboxPane(props: InboxPaneProps) {
 					No messages have been received yet
 				</Center>
 			)}
-		</Panel>
+		</ContentPane>
 	);
 }

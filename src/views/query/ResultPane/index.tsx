@@ -5,7 +5,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { DataTable } from "~/components/DataTable";
 import { RESULT_LISTINGS } from "~/constants";
 import { CombinedJsonPreview, SingleJsonPreview } from "./preview";
@@ -49,7 +49,7 @@ export function ResultPane() {
 	}, [responses.length]);
 
 	return (
-		<Panel
+		<ContentPane
 			title={showCombined ? 'Results' : showTabs ? `Result #${resultTab}` : "Result"}
 			icon={mdiLightningBolt}
 			rightSection={
@@ -165,6 +165,6 @@ export function ResultPane() {
 					<Pagination total={responses.length} value={resultTab} onChange={setResultTab} />
 				</Stack>
 			)}
-		</Panel>
+		</ContentPane>
 	);
 }

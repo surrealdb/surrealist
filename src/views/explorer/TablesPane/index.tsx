@@ -4,7 +4,7 @@ import { mdiMagnify, mdiPin, mdiPlus, mdiTable, mdiVectorLine, mdiViewSequential
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
 import { extractEdgeRecords } from "~/util/schema";
@@ -64,7 +64,7 @@ export function TablesPane() {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			title="Tables"
 			icon={mdiViewSequential}
 			rightSection={
@@ -157,6 +157,6 @@ export function TablesPane() {
 				opened={isCreating}
 				onClose={closeCreator} 
 			/>
-		</Panel>
+		</ContentPane>
 	);
 }

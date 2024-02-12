@@ -2,7 +2,7 @@ import { ActionIcon, Badge, Box, Center, Group, Paper, ScrollArea, Stack, Text, 
 import { mdiBullhornVariant, mdiCircleDouble, mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
 import { MouseEvent } from "react";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { LIVE_QUERY_COLORS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
@@ -41,7 +41,7 @@ export function QueriesPane(props: QueriesPaneProps) {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			title="Queries"
 			icon={mdiBullhornVariant}
 			rightSection={
@@ -131,6 +131,6 @@ export function QueriesPane(props: QueriesPaneProps) {
 					No live queries defined yet
 				</Center>	
 			)}
-		</Panel>
+		</ContentPane>
 	);
 }

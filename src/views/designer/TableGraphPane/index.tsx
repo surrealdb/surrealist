@@ -2,7 +2,7 @@ import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Pap
 import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiImageOutline, mdiPlus, mdiXml } from "@mdi/js";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
 import { ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import { NODE_TYPES, buildTableGraph as buildTableDiagram, createSnapshot } from "./helpers";
@@ -144,7 +144,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			title="Table Graph"
 			icon={mdiAdjust}
 			style={{ overflow: 'hidden' }}
@@ -352,6 +352,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				opened={isCreating}
 				onClose={closeCreator}
 			/>
-		</Panel>
+		</ContentPane>
 	);
 }

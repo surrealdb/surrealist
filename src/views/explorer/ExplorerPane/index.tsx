@@ -14,7 +14,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -199,7 +199,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	}, []);
 
 	return (
-		<Panel
+		<ContentPane
 			title="Record Explorer"
 			icon={mdiTable}
 			rightSection={
@@ -327,6 +327,6 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 					Select a table to view its records
 				</Center>
 			)}
-		</Panel>
+		</ContentPane>
 	);
 }

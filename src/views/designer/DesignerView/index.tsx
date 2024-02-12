@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { SplitValues, Splitter } from "~/components/Splitter";
-import { DesignPane } from "../DesignPane";
+import { SplitValues } from "~/components/Splitter";
 import { TableGraphPane } from "../TableGraphPane";
 import { useStable } from "~/hooks/stable";
 import { useTables } from "~/hooks/schema";
@@ -82,30 +81,30 @@ export function DesignerView(_props: DesignerViewProps) {
 	}, [isOnline]);
 
 	return (
-		<Splitter
-			minSize={SPLIT_SIZE}
-			bufferSize={500}
-			values={splitValues}
-			onChange={setSplitValues}
-			direction="horizontal"
-			endPane={
-				data && (
-					<DesignPane
-						value={data}
-						onChange={setData as any}
-						onClose={closeTable}
-						handle={saveHandle}
-					/>
-				)
-			}
-		>
-			<ReactFlowProvider>
-				<TableGraphPane
-					tables={tables}
-					active={data}
-					setActiveTable={setActiveTable}
-				/>
-			</ReactFlowProvider>
-		</Splitter>
+		// <Splitter
+		// 	minSize={SPLIT_SIZE}
+		// 	bufferSize={500}
+		// 	values={splitValues}
+		// 	onChange={setSplitValues}
+		// 	direction="horizontal"
+		// 	endPane={
+		// 		data && (
+		// 			<DesignPane
+		// 				value={data}
+		// 				onChange={setData as any}
+		// 				onClose={closeTable}
+		// 				handle={saveHandle}
+		// 			/>
+		// 		)
+		// 	}
+		// >
+		<ReactFlowProvider>
+			<TableGraphPane
+				tables={tables}
+				active={data}
+				setActiveTable={setActiveTable}
+			/>
+		</ReactFlowProvider>
+		// </Splitter>
 	);
 }

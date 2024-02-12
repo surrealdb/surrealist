@@ -2,7 +2,7 @@ import { editor } from "monaco-editor";
 import { mdiDatabase, mdiFileDocument, mdiStar, mdiText } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
@@ -78,7 +78,7 @@ export function QueryPane(props: QueryPaneProps) {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			title="Query"
 			icon={mdiDatabase}
 			rightSection={
@@ -161,6 +161,6 @@ export function QueryPane(props: QueryPaneProps) {
 					)}
 				</>
 			)}
-		</Panel>
+		</ContentPane>
 	);
 }

@@ -4,7 +4,7 @@ import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text } from "@ma
 import { mdiClose, mdiFormatListBulleted, mdiHistory, mdiLightningBolt, mdiPlus, mdiStar } from "@mdi/js";
 import { EditableText } from "~/components/EditableText";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -38,7 +38,7 @@ export function TabsPane(props: TabsPaneProps) {
 	});
 
 	return (
-		<Panel
+		<ContentPane
 			icon={mdiFormatListBulleted}
 			title="Queries"
 			leftSection={
@@ -88,6 +88,7 @@ export function TabsPane(props: TabsPaneProps) {
 									rightSection={
 										queries.length > 1 && (
 											<ActionIcon
+												component="div"
 												className={classes.queryClose}
 												onClick={(e) => removeTab(query.id, e)}
 											>
@@ -151,6 +152,6 @@ export function TabsPane(props: TabsPaneProps) {
 					</Button>
 				</Stack>
 			</Stack>
-		</Panel>
+		</ContentPane>
 	);
 }
