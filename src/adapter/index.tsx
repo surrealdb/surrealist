@@ -5,7 +5,7 @@ import { EmbedAdapter } from "./embed";
 
 export const adapter: SurrealistAdapter = "__TAURI__" in window
 	? new DesktopAdapter()
-	: "__EMBED__" in window
+	: document.querySelector('meta[name=embed]')
 		? new EmbedAdapter()
 		: new BrowserAdapter();
 

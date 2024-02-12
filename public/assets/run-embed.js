@@ -1,1 +1,0 @@
-window.__EMBED__ = true;
