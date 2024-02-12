@@ -1,6 +1,7 @@
 import { isEdgeTable } from "~/util/schema";
 import { useDatabaseStore } from "~/stores/database";
 import { useConnection } from "./connection";
+import { SANDBOX } from "~/constants";
 
 type TableMode = "ALL" | "TABLE" | "EDGE";
 
@@ -49,5 +50,5 @@ export function useHasSchemaAccess() {
 	const connection = useConnection();
 	const authMode = connection?.connection?.authMode || "none";
 
-	return authMode != "none" && authMode != "scope";
+	return connection?.id == SANDBOX || authMode != "none" && authMode != "scope";
 }

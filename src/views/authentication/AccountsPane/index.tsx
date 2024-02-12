@@ -140,8 +140,8 @@ export function AccountsPane(props: AccountsPaneProps) {
 				<Center h="100%" c="light.5">
 					{isOnline
 						? isDenied
-							? "No access to this information"
-							: `No ${props.title.toLocaleLowerCase()} found`
+							? `No ${props.title.toLocaleLowerCase()} found`
+							: "No access to this information"
 						: "Not connected"
 					}
 				</Center>
