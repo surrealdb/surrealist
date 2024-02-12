@@ -103,26 +103,9 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: us-east-2
+          aws-region: us-west-2
           aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
 
       - name: Upload web app
-        run: make deploy
-
-  sync-web:
-    name: Sync S3 deployment
-    needs: 
-      - version
-      - build-web
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        region: [af-south-1, ap-east-1, ap-south-1, ap-southeast-1, ap-southeast-2, ca-central-1, eu-central-1, eu-west-2, me-south-1, sa-east-1, us-west-2]
-    steps:
-    - uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: us-east-2
-        aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
-    - run: aws s3 sync --delete --exact-timestamp --source-region eu-west-2 --region ${{ matrix.region }} s3://dev.surrealist.app s3://dev.${{ matrix.region }}.surrealist.app
+        run: make deploy-dev
