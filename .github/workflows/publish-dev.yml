@@ -2,7 +2,7 @@ name: Publish Development Surrealist
 
 on:
   push:
-    branches: ["main-but-currently-disabled"]
+    branches: ["main"]
 
 permissions: write-all
 
