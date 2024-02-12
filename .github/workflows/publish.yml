@@ -37,6 +37,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
       
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -48,7 +53,6 @@ jobs:
 
       - name: Generate embed
         run: |
-          npm i -g pnpm
           rustup target add wasm32-unknown-unknown
           cargo install wasm-bindgen-cli
           pnpm embed:build
@@ -59,10 +63,12 @@ jobs:
           name: generated-embed
           path: src/generated
 
-  package:
-    name: Package
+  build-desktop:
+    name: Build Desktop
     runs-on: ${{ matrix.platform }}
-    needs: embed
+    needs:
+      - version 
+      - embed
     strategy:
       fail-fast: false
       matrix:
@@ -79,6 +85,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
       
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -96,8 +107,7 @@ jobs:
 
       - name: Frontend dependencies
         run: |
-          npm i -g pnpm
-          pnpm install --no-frozen-lockfile
+          pnpm ci
 
       - name: Download embed
         uses: actions/download-artifact@master
@@ -108,27 +118,17 @@ jobs:
       - name: Build application
         run: pnpm tauri build
 
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: us-east-2
-          aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
-
-      - name: Upload web app
-        if: matrix.platform == 'ubuntu-20.04'
-        run: make deploy
-
       - name: Upload bundles
         uses: actions/upload-artifact@v2
         with:
           name: bundles-${{ matrix.platform }}
           path: ./src-tauri/target/release/bundle
-  release:
+  release-desktop:
     name: Release binaries
     runs-on: ubuntu-20.04
     needs:
       - version
-      - package
+      - build-desktop
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -159,15 +159,60 @@ jobs:
             ./surrealist-${{ github.ref_name }}-linux.deb
             ./surrealist-${{ github.ref_name }}-windows.msi
 
-      - name: Publish web app
-        uses: actions/deploy-pages@v1
-        if: "!contains(github.ref, '-')"
+  build-web:
+    name: Build Web
+    runs-on: "ubuntu-20.04"
+    needs:
+      - version 
+      - embed
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [ 18 ] 
+    steps:
+      - name: Information
+        run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for web"
+        
+      - name: Code checkout
+        uses: actions/checkout@v3
 
-  sync:
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Frontend dependencies
+        run: |
+          pnpm ci
+
+      - name: Download embed
+        uses: actions/download-artifact@master
+        with:
+          name: generated-embed
+          path: src/generated
+
+      - name: Build application
+        run: pnpm build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-2
+          aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
+
+      - name: Upload web app
+        run: make deploy
+
+  sync-web:
     name: Sync S3 deployment
     needs: 
       - version
-      - package
+      - build-web
     runs-on: ubuntu-latest
     strategy:
       matrix:
