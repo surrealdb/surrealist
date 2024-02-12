@@ -29,6 +29,17 @@ main {
     }
 }
 
+.configuration-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+        padding: 7px 10px;
+        font-size: 15px;
+    }
+}
+
 .section {
     display: flex;
     flex-direction: column;

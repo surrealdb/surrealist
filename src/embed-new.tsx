@@ -60,6 +60,15 @@ function App() {
 		}
 	}, []);
 
+	const reset = useCallback(() => {
+		setDataset("none");
+		setSetup("");
+		setQuery("");
+		setVariables("");
+		setTheme("auto");
+		reloadIframe();
+	}, []);
+
 	useEffect(() => {
 		const { search } = new URL(url);
 		history.replaceState({}, null as unknown as string, `${location.pathname}${search}`);
@@ -73,7 +82,12 @@ function App() {
 			</div>
 			<div className="columns">
 				<form id="form">
-					<h2>Configuration</h2>
+					<div className="configuration-title">
+						<h2>Configuration</h2>
+						<button type="button" onClick={reset}>
+							reset
+						</button>
+					</div>
 					<div className="section">
 						<label htmlFor="dataset">Dataset</label>
 						<select 
@@ -196,25 +210,29 @@ function useDelayedValue<T>(value: T, seconds = 3) {
 
 	useEffect(() => {
 		ref.current++;
-		if (value != current) {
-			const thisRef = ref.current;
-			let count = seconds;
-			setCountdown(count);
-
-			const interval = setInterval(() => {
-				if (thisRef != ref.current) {
-					clearInterval(interval);
-				} else if (value == current) {
-					clearInterval(interval);
-					setCountdown(0);
-				} else if (count > 0) {
-					count--;
-					setCountdown(count);
-				} else {
-					setCurrent(value);
-				}
-			}, 1000);
+		if (value == current) {
+			setCountdown(0);
+			return;
 		}
+		
+		const thisRef = ref.current;
+		let count = seconds;
+		setCountdown(count);
+
+		const interval = setInterval(() => {
+			if (thisRef != ref.current) {
+				clearInterval(interval);
+			} else if (value == current) {
+				clearInterval(interval);
+				setCountdown(0);
+			} else if (count > 0) {
+				console.log(value, current);
+				count--;
+				setCountdown(count);
+			} else {
+				setCurrent(value);
+			}
+		}, 1000);
 	}, [ref, value, current, setCountdown]);
 
 	return [current, countdown, setCurrent] as const;
