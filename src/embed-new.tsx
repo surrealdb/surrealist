@@ -1,5 +1,5 @@
 import "./assets/styles/embed-new.scss";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 type Dataset = keyof typeof datasets;
@@ -45,6 +45,20 @@ function App() {
 		setDelayedUrl("");
 		setTimeout(() => setDelayedUrl(url), 1);
 	}, [setDelayedUrl, url]);
+
+	const onUrlInput = useCallback((e: FormEvent<HTMLInputElement>) => {
+		try {
+			const params = processUrl(e.currentTarget.value);
+			setDataset(params.dataset);
+			setSetup(params.setup);
+			setQuery(params.query);
+			setVariables(params.variables);
+			setTheme(params.theme);
+		} catch(_err) {
+			(_err);
+			alert("Invalid URL pasted");
+		}
+	}, []);
 
 	useEffect(() => {
 		const { search } = new URL(url);
@@ -128,7 +142,7 @@ function App() {
 					<h2>Preview</h2>
 					<div className="section">
 						<label>URL</label>
-						<input id="output" value={url} />
+						<input id="output" value={url} onInput={onUrlInput} />
 					</div>
 					<div className="section">
 						<label>Embed</label>
