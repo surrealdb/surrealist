@@ -107,7 +107,7 @@ jobs:
 
       - name: Frontend dependencies
         run: |
-          pnpm ci
+          pnpm i --frozen-lockfile
 
       - name: Download embed
         uses: actions/download-artifact@master
@@ -188,7 +188,7 @@ jobs:
 
       - name: Frontend dependencies
         run: |
-          pnpm ci
+          pnpm i --frozen-lockfile
 
       - name: Download embed
         uses: actions/download-artifact@master
