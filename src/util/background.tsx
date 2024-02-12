@@ -4,6 +4,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { setEditorTheme } from "./editor";
 import { getConnection } from "./connection";
 import { openConnection } from "~/database";
+import { fetchDatabaseSchema } from "./schema";
 
 function savePreference({ matches }: { matches: boolean }) {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -30,6 +31,9 @@ function computeColorScheme() {
 	setEditorTheme(actualScheme);
 }
 
+/**
+ * Watch for changes to the preferred and configured color schemes
+ */
 export function watchColorScheme() {
 	computeColorScheme();
 
@@ -73,6 +77,17 @@ export function watchConnectionSwitch() {
 	useConfigStore.subscribe((state, prev) => {
 		if (state.activeConnection !== prev.activeConnection && state.activeConnection && state.autoConnect) {
 			openConnection();
+		}
+	});
+}
+
+/**
+ * Watch for a change in active view
+ */
+export function watchViewSwitch() {
+	useConfigStore.subscribe((state, prev) => {
+		if (state.activeView !== prev.activeView) {
+			fetchDatabaseSchema();
 		}
 	});
 }

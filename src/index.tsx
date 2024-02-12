@@ -17,7 +17,7 @@ import { runUpdateChecker } from "./util/updater";
 import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
 import { useConfigStore } from "./stores/config";
-import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from './util/background';
+import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch, watchViewSwitch } from './util/background';
 
 import "reactflow/dist/style.css";
 
@@ -36,6 +36,7 @@ import "reactflow/dist/style.css";
 	watchColorScheme();
 	watchColorPreference();
 	watchConnectionSwitch();
+	watchViewSwitch();
 
 	// Initialize monaco
 	await document.fonts.ready;
