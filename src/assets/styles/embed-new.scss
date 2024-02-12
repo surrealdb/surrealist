@@ -29,7 +29,7 @@ main {
     }
 }
 
-.configuration-title {
+.title-button {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,6 +37,14 @@ main {
     button {
         padding: 7px 10px;
         font-size: 15px;
+        margin: 0px;
+
+        transition: background 2s ease;
+
+        &.green {
+            background-color: #4BB543;
+            transition: background 0s ease;
+        }
     }
 }
 

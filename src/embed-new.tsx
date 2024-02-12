@@ -1,5 +1,6 @@
 import "./assets/styles/embed-new.scss";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import { createRoot } from "react-dom/client";
 
 type Dataset = keyof typeof datasets;
@@ -23,6 +24,7 @@ function App() {
 	const [query, setQuery] = useState<string>(defaults.query);
 	const [variables, setVariables] = useState<string>(defaults.variables);
 	const [theme, setTheme] = useState<Theme>(defaults.theme);
+	const [copied, onCopy] = useBoomerang(false);
 
 	const url = useMemo(() => {
 		const search = new URLSearchParams();
@@ -82,7 +84,7 @@ function App() {
 			</div>
 			<div className="columns">
 				<form id="form">
-					<div className="configuration-title">
+					<div className="title-button">
 						<h2>Configuration</h2>
 						<button type="button" onClick={reset}>
 							reset
@@ -153,7 +155,14 @@ function App() {
 					</div>
 				</form>
 				<div className="preview">
-					<h2>Preview</h2>
+					<div className="title-button">
+						<h2>Preview</h2>
+						<CopyToClipboard text={url} onCopy={onCopy}>
+							<button type="button" className={copied ? "green" : ""}>
+								Copy URL
+							</button>
+						</CopyToClipboard>
+					</div>
 					<div className="section">
 						<label>URL</label>
 						<input id="output" value={url} onInput={onUrlInput} />
@@ -214,7 +223,7 @@ function useDelayedValue<T>(value: T, seconds = 3) {
 			setCountdown(0);
 			return;
 		}
-		
+
 		const thisRef = ref.current;
 		let count = seconds;
 		setCountdown(count);
@@ -236,6 +245,25 @@ function useDelayedValue<T>(value: T, seconds = 3) {
 	}, [ref, value, current, setCountdown]);
 
 	return [current, countdown, setCurrent] as const;
+}
+
+function useBoomerang(initial: boolean, timeout = 1000) {
+	const ref = useRef<number>(0);
+	const [state, setState] = useState(initial);
+
+	const trigger = useCallback(() => {
+		ref.current++;
+		const thisRef = ref.current;
+		setState(!initial);
+
+		setTimeout(() => {
+			if (thisRef == ref.current) {
+				setState(initial);
+			}
+		}, timeout);
+	}, [ref, initial, setState]);
+
+	return [state, trigger] as const;
 }
 
 (async () => {
