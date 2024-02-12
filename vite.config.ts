@@ -40,7 +40,8 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				index: '/index.html',
-				embed: '/embed.html'
+				embed: '/embed.html',
+				'embed-generator': '/embed-generator.html',
 			}
 		},
 	},
