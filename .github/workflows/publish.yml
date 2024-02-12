@@ -108,11 +108,15 @@ jobs:
       - name: Build application
         run: pnpm tauri build
 
-      - name: Upload web app
-        uses: actions/upload-pages-artifact@v1
-        if: matrix.platform == 'ubuntu-20.04'
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
-          path: ./dist
+          aws-region: us-east-2
+          aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
+
+      - name: Upload web app
+        if: matrix.platform == 'ubuntu-20.04'
+        run: make deploy
 
       - name: Upload bundles
         uses: actions/upload-artifact@v2
@@ -158,3 +162,20 @@ jobs:
       - name: Publish web app
         uses: actions/deploy-pages@v1
         if: "!contains(github.ref, '-')"
+
+  sync:
+    name: Sync S3 deployment
+    needs: 
+      - version
+      - package
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        region: [af-south-1, ap-east-1, ap-south-1, ap-southeast-1, ap-southeast-2, ca-central-1, eu-central-1, eu-west-2, me-south-1, sa-east-1, us-west-2]
+    steps:
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-east-2
+        aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
+    - run: aws s3 sync --delete --exact-timestamp --source-region eu-west-2 --region ${{ matrix.region }} s3://www.surrealist.app s3://www.${{ matrix.region }}.surrealist.app
