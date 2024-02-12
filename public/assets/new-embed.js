@@ -43,7 +43,11 @@ form.addEventListener('submit', async (e) => {
 });
 
 output.addEventListener('input', (e) => {
-    const url = new URL(output.value);
+    updateFromUrl(output.value);
+});
+
+function updateFromUrl(input) {
+    const url = new URL(input);
     const search = new URLSearchParams(url.search);
     const { dataset, setup, query, variables, theme } = Object.fromEntries(search.entries());
     const parsedVariables = parseJson(variables);
@@ -57,6 +61,6 @@ output.addEventListener('input', (e) => {
     themeField.value = validThemes.includes(theme) ? theme : 'auto';
 
     form.dispatchEvent(new CustomEvent("submit"));
-});
+}
 
-form.dispatchEvent(new CustomEvent("submit"));
+updateFromUrl(location);
