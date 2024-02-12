@@ -39,9 +39,9 @@ export default defineConfig({
 		sourcemap: !!process.env.TAURI_DEBUG,
 		rollupOptions: {
 			input: {
-				index: '/index.html',
-				embed: '/embed.html',
-				'embed-generator': '/embed-generator.html',
+				'surrealist': '/index.html',
+				'embed-run': '/embed/run.html',
+				'embed-new': '/embed/new.html'
 			}
 		},
 	},

@@ -17,10 +17,21 @@ default:
 	@echo "Choose a Makefile target:"
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print "  - " $$1}}' | sort
 
+.PHONY: setup
+setup:
+	@echo "Setup..."
+	pnpm install
+
+.PHONY: serve
+serve:
+	@echo "Serve..."
+	pnpm embed:build
+	pnpm tauri:dev
+
 .PHONY: deploy
 deploy:
 	@echo "Deploy..."
 	aws s3 sync --region eu-west-2 --cache-control "public, max-age=31536000, immutable" --exclude ".DS_Store" ./dist/assets s3://www.surrealist.app/assets/
 	aws s3 cp --region eu-west-2 --cache-control "public, max-age=86400" ./dist/favicon.ico s3://www.surrealist.app/
 	aws s3 cp --region eu-west-2 --cache-control "public, max-age=86400" ./dist/robots.txt s3://www.surrealist.app/
-	aws s3 sync --region eu-west-2 --cache-control "public, max-age=300" --exact-timestamps --delete --exclude "*" --include "*.html" ./dist/ s3://www.surrealist.app/
+	aws s3 sync --region eu-west-2 --cache-control "public, max-age=30" --exact-timestamps --delete --exclude "*" --include "*.html" ./dist/ s3://www.surrealist.app/

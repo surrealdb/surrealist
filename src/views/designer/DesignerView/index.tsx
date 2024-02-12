@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { SplitValues } from "~/components/Splitter";
+import { useEffect, useMemo } from "react";
 import { TableGraphPane } from "../TableGraphPane";
 import { useStable } from "~/hooks/stable";
 import { useTables } from "~/hooks/schema";
@@ -13,16 +12,12 @@ import { TableDefinition } from "~/types";
 import { ReactFlowProvider } from "reactflow";
 import { useIsConnected } from "~/hooks/connection";
 
-const SPLIT_SIZE: SplitValues = [undefined, 450];
-
 export interface DesignerViewProps {
 }
 
 export function DesignerView(_props: DesignerViewProps) {
 	const isOnline = useIsConnected();
 	const tables = useTables();
-
-	const [splitValues, setSplitValues] = useState<SplitValues>(SPLIT_SIZE);
 	const [data, setData] = useImmer<TableDefinition | null>(null);
 
 	const isValid = useMemo(() => {

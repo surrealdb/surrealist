@@ -18,8 +18,11 @@ function handler(event) {
 	}
 
 	switch (true) {
+		case request.uri === '/embed/new':
+			request.uri = '/embed/new.html';
+			return request;
 		case request.uri === '/embed':
-			request.uri = '/embed.html';
+			request.uri = '/embed/run.html';
 			return request;
 		case request.uri.includes('.') === false:
 			request.uri = '/index.html';
