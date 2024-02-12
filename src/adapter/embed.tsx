@@ -9,7 +9,8 @@ import { MantineColorScheme } from "@mantine/core";
 const THEMES = new Set(['light', 'dark', 'auto']);
 
 const DATASETS: Record<string, string> = {
-	'surreal-deal': "https://surreal-demo-testing.s3.eu-west-2.amazonaws.com/surreal_deal_v1.surql"
+	'surreal-deal': "https://surreal-demo-testing.s3.eu-west-2.amazonaws.com/surreal_deal_v1.surql",
+	'surreal-deal-mini': "https://surreal-demo-testing.s3.eu-west-2.amazonaws.com/surreal_deal_mini.surql"
 };
 
 export class EmbedAdapter extends BrowserAdapter {
