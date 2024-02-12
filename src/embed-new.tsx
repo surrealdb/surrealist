@@ -165,7 +165,7 @@ function App() {
 					</div>
 					<div className="section">
 						<label>URL</label>
-						<input id="output" value={url} onInput={onUrlInput} />
+						<input id="output" value={url} onInput={onUrlInput} onFocus={(e) => e.currentTarget.select()} />
 					</div>
 					<div className="section">
 						<label>Embed</label>
