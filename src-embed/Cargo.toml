@@ -2,9 +2,9 @@
 name = "surrealist-embed"
 version = "0.0.0"
 description = "Embedded functionality for Surrealist"
-authors = ["Starlane Studios"]
+authors = []
 license = "MIT"
-repository = "https://github.com/StarlaneStudios/Surrealist"
+repository = "https://github.com/surrealdb/surrealist"
 edition = "2021"
 publish = false
 

@@ -30,6 +30,12 @@ export interface SurrealistAdapter {
 	isPromotionSupported: boolean;
 
 	/**
+	 * Initialize any adapter specific services. This function is invoked
+	 * after the config has been loaded.
+	 */
+	initialize(): void;
+
+	/**
 	 * Set the window title
 	 *
 	 * @param title The title to set

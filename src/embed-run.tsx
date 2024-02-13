@@ -29,6 +29,9 @@ import { EmbedAdapter } from './adapter/embed';
 	watchColorScheme();
 	watchColorPreference();
 
+	// Initialize adapter
+	adapter.initialize();
+
 	// Initialize monaco
 	await document.fonts.ready;
 	await initializeMonaco();

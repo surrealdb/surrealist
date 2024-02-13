@@ -9,7 +9,6 @@ import { runUpdateChecker } from "~/util/updater";
 import { useCheckbox } from "~/hooks/events";
 
 const VERSION = import.meta.env.VERSION;
-const AUTHOR = import.meta.env.AUTHOR;
 
 export interface GeneralTabProps {
 	onClose: () => void;
@@ -66,7 +65,7 @@ export function GeneralTab({ onClose }: GeneralTabProps) {
 
 			<Group mt="xl" justify="center">
 				<Text c={isLight ? "light.4" : "dark.3"}>
-					Version {VERSION} by {AUTHOR}
+					Surrealist v{VERSION}
 				</Text>
 				<Spacer />
 				<Button variant="subtle" onClick={checkForUpdates}>

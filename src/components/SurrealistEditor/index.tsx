@@ -23,9 +23,9 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 	const containerRef = useRef<ElementRef<"div">>(null);
 	const elementRef = useRef<ElementRef<"div">>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-	const zoomLevel = useConfigStore((s) => s.fontZoomLevel);
+	const zoomLevel = useConfigStore((s) => s.editorScale);
 
-	const textSize = 15 * zoomLevel;
+	const textSize = Math.floor(15 * (zoomLevel / 100));
 
 	useEffect(() => {
 		const editor = monaco.editor.create(elementRef.current!, {
@@ -82,13 +82,9 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 	}, [props.value]);
 
 	useEffect(() => {
-		const editor = editorRef.current;
-
-		if (editor) {
-			editor.updateOptions({
-				fontSize: textSize
-			});
-		}
+		editorRef.current?.updateOptions({
+			fontSize: textSize
+		});
 	}, [textSize]);
 
 	return (

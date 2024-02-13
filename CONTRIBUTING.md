@@ -26,4 +26,4 @@ Before partaking in development on Surrealist we do ask you to read through our 
 Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) to help keep Surrealist an inclusive space for all.
 
 ## Final words
-For general questions and discussions, please join our [Starlane Discord Community](https://discord.gg/exaQDX2). We hope you enjoy contributing to the development of Surrealist, and of course thank you for reading!
+For general questions and discussions, please join our [Discord](https://discord.gg/surrealdb). We hope you enjoy contributing to the development of Surrealist, and of course thank you for reading!

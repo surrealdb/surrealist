@@ -223,8 +223,15 @@ export async function initializeMonaco() {
 	wireHighlighting();
 }
 
+/**
+ * Configure font highlighting
+ */
 export function wireHighlighting() {
 	wireTmGrammars(monaco, GRAMMAR_REGISTRY, GRAMMARS_MAPPING);
+
+	document.fonts.ready.then(() => {
+		monaco.editor.remeasureFonts();
+	}); 
 }
 
 /**

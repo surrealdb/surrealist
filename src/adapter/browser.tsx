@@ -11,6 +11,10 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public isUpdateCheckSupported = false;
 	public isPromotionSupported = true;
 
+	public initialize() {
+		// noop
+	}
+
 	public async setWindowTitle(title: string) {
 		document.title = title;
 	}

@@ -31,8 +31,8 @@ export const MANTINE_THEME = createTheme({
 	primaryShade: 6,
 	defaultRadius: "md",
 	fontSizes: {
-		xs: rem(9),
-		sm: rem(11),
+		xs: rem(11),
+		sm: rem(12),
 		md: rem(13),
 		lg: rem(15),
 		xl: rem(17),

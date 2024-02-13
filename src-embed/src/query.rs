@@ -1,12 +1,12 @@
-use wasm_bindgen::prelude::*;
-use surrealdb::sql::Array;
-use surrealdb::sql::Object;
-use surrealdb::sql::Value;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde_wasm_bindgen::{from_value, to_value};
 use std::collections::HashMap;
+use surrealdb::sql::Array;
+use surrealdb::sql::Object;
+use surrealdb::sql::Value;
 use tokio::sync::RwLock;
+use wasm_bindgen::prelude::*;
 
 use surrealdb::{
     engine::any::{connect, Any},

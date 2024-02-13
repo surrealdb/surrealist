@@ -11,6 +11,7 @@ import { printLog } from "~/util/helpers";
 import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { Result } from "~/typings/utilities";
 import { useDatabaseStore } from "~/stores/database";
+import { useConfigStore } from "~/stores/config";
 
 const WAIT_DURATION = 1000;
 
@@ -37,6 +38,24 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		document.addEventListener("contextmenu", (e) => {
 			e.preventDefault();
+		});
+	}
+
+	#setWindowScale(scale: number) {
+		invoke<void>("set_window_scale", {
+			scaleFactor: scale / 100
+		});
+	}
+
+	public initialize() {
+		const { windowScale } = useConfigStore.getState();
+
+		this.#setWindowScale(windowScale);
+
+		useConfigStore.subscribe((state, prev) => {
+			if (state.windowScale !== prev.windowScale) {
+				this.#setWindowScale(state.windowScale);
+			}
 		});
 	}
 

@@ -3,7 +3,7 @@ import { createBaseConfig, createBaseTab } from "~/util/defaults";
 import { MantineColorScheme } from "@mantine/core";
 import { create } from "zustand";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
-import { newId } from "~/util/helpers";
+import { clamp, newId } from "~/util/helpers";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -45,6 +45,8 @@ export type ConfigStore = SurrealistConfig & {
 	updateQueryTab: (payload: PartialId<TabQuery>) => void;
 	setActiveQueryTab: (tabId: string) => void;
 	setWindowPinned: (isPinned: boolean) => void;
+	setWindowScale: (windowScale: number) => void;
+	setEditorScale: (editorScale: number) => void;
 	toggleWindowPinned: () => void;
 	saveQuery: (query: SavedQuery) => void;
 	removeSavedQuery: (savedId: string) => void;
@@ -58,9 +60,6 @@ export type ConfigStore = SurrealistConfig & {
 	setUpdateChecker: (updateChecker: boolean) => void;
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
 	setResultMode: (resultMode: ResultMode) => void;
-	increaseFontZoomLevel: () => void;
-	decreaseFontZoomLevel: () => void;
-	resetFontZoomLevel: () => void;
 	setDesignerLayoutMode: (defaultDesignerLayoutMode: DesignerLayoutMode) => void;
 	setDesignerNodeMode: (defaultDesignerNodeMode: DesignerNodeMode) => void;
 	addHistoryEntry: (entry: HistoryQuery) => void;
@@ -175,6 +174,14 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setWindowPinned: (isPinned) => set(() => ({ isPinned })),
 
+		setWindowScale: (windowScale) => set(() => ({
+			windowScale: clamp(windowScale, 50, 150),
+		})),
+
+		setEditorScale: (editorScale) => set(() => ({
+			editorScale: clamp(editorScale, 50, 150),
+		})),
+
 		toggleWindowPinned: () => set((state) => ({
 			isPinned: !state.isPinned,
 		})),
@@ -217,18 +224,6 @@ export const useConfigStore = create<ConfigStore>()(
 		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
 
 		setResultMode: (resultMode) => set(() => ({ resultMode })),
-
-		increaseFontZoomLevel: () => set((state) => ({
-			fontZoomLevel: Math.min(state.fontZoomLevel + 0.1, 2),
-		})),
-
-		decreaseFontZoomLevel: () => set((state) => ({
-			fontZoomLevel: Math.max(state.fontZoomLevel - 0.1, 0.5),
-		})),
-
-		resetFontZoomLevel: () => set(() => ({
-			fontZoomLevel: 1,
-		})),
 
 		setDesignerLayoutMode: (defaultDesignerLayoutMode) => set(() => ({ defaultDesignerLayoutMode })),
 

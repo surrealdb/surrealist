@@ -5,8 +5,8 @@ use wasm_bindgen::prelude::*;
 mod console;
 mod query;
 mod schema;
-mod utils;
 mod types;
+mod utils;
 
 #[wasm_bindgen]
 pub fn initialize_embed() {

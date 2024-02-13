@@ -24,6 +24,8 @@ export interface SurrealistConfig {
 	sandbox: Connection;
 	activeView: ViewMode;
 	isPinned: boolean;
+	windowScale: number;
+	editorScale: number;
 	activeConnection: string | null;
 	autoConnect: boolean;
 	tableSuggest: boolean;
@@ -37,7 +39,6 @@ export interface SurrealistConfig {
 	localSurrealPort: number;
 	updateChecker: boolean;
 	resultMode: ResultMode;
-	fontZoomLevel: number;
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	defaultDesignerNodeMode: DesignerNodeMode,

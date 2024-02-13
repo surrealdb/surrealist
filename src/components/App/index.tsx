@@ -17,17 +17,13 @@ import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme } from "~/hooks/theme";
 
 export function App() {
+	const { toggleWindowPinned, setWindowScale, setEditorScale } = useConfigStore.getState();
+	const { hideAvailableUpdate } = useInterfaceStore.getState();
+
 	const colorScheme = useColorScheme();
-
-	const decreaseFontZoomLevel = useConfigStore((s) => s.decreaseFontZoomLevel);
-	const increaseFontZoomLevel = useConfigStore((s) => s.increaseFontZoomLevel);
-	const resetFontZoomLevel = useConfigStore((s) => s.resetFontZoomLevel);
-	const toggleWindowPinned = useConfigStore((s) => s.toggleWindowPinned);
-
 	const update = useInterfaceStore((s) => s.availableUpdate);
 	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
 	const isPinned = useConfigStore((s) => s.isPinned);
-	const hideAvailableUpdate = useInterfaceStore((s) => s.hideAvailableUpdate);
 
 	const closeUpdate = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
@@ -35,7 +31,7 @@ export function App() {
 	});
 
 	const openRelease = useStable(() => {
-		adapter.openUrl(`https://github.com/StarlaneStudios/Surrealist/releases/tag/v${update}`);
+		adapter.openUrl(`https://github.com/surrealdb/surrealist/releases/tag/v${update}`);
 		closeUpdate();
 	});
 
@@ -50,13 +46,20 @@ export function App() {
 		}
 	}, [isPinned]);
 
-	const togglePinned = useStable(toggleWindowPinned);
+	const updateWindowScale = (delta: number) => {
+		setWindowScale(useConfigStore.getState().windowScale + delta);
+	};
+
+	const updateEditorScale = (delta: number) => {
+		setEditorScale(useConfigStore.getState().editorScale + delta);
+	};
 
 	useHotkeys([
-		["mod+alt+equal", increaseFontZoomLevel],
-		["mod+alt+minus", decreaseFontZoomLevel],
-		["mod+alt+0", resetFontZoomLevel],
-		["f11", togglePinned],
+		["mod+equal", () => updateWindowScale(10)],
+		["mod+minus", () => updateWindowScale(-10)],
+		["mod+shift+equal", () => updateEditorScale(10)],
+		["mod+shift+minus", () => updateEditorScale(-10)],
+		["f11", toggleWindowPinned],
 	], []);
 
 	return (

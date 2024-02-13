@@ -2,9 +2,9 @@
 name = "surrealist"
 version = "0.0.0"
 description = "Powerful graphical SurrealDB query playground and database explorer for Browser and Desktop"
-authors = ["Starlane Studios"]
+authors = []
 license = "MIT"
-repository = "https://github.com/StarlaneStudios/Surrealist"
+repository = "https://github.com/surrealdb/surrealist"
 edition = "2021"
 publish = false
 
@@ -15,6 +15,12 @@ tauri-build = { version = "1.4.0", features = [] }
 tauri = { version = "1.4.1", features = [ "path-all", "dialog-open", "fs-read-file", "devtools", "dialog-save", "fs-write-file", "shell-open", "window-set-always-on-top", "window-set-title", "window-show"] }
 tauri-plugin-localhost = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 portpicker = "0.1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+webkit2gtk = "0.18" # if tauri build fails, make sure to match this version to what we have in tauri
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc = "0.2"
 
 [features]
 default = ["custom-protocol"]

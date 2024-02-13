@@ -3,7 +3,7 @@ import { defineConfig, PluginOption } from 'vite';
 import { readFileSync, cpSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const { version, author, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
+const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 function pages(): PluginOption {
 	return {
@@ -57,7 +57,6 @@ export default defineConfig({
 	},
 	define: {
 		'import.meta.env.VERSION': `"${version}"`,
-		'import.meta.env.AUTHOR': `"${author}"`,
 		'import.meta.env.SDB_VERSION': `"${surreal}"`,
 	}
 });

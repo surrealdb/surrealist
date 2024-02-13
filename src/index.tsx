@@ -38,6 +38,9 @@ import "reactflow/dist/style.css";
 	watchConnectionSwitch();
 	watchViewSwitch();
 
+	// Initialize adapter
+	adapter.initialize();
+
 	// Initialize monaco
 	await document.fonts.ready;
 	await initializeMonaco();
