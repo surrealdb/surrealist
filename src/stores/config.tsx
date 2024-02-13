@@ -40,7 +40,7 @@ export type ConfigStore = SurrealistConfig & {
 	setConnections: (connections: Connection[]) => void;
 	setActiveConnection: (connectionId: string) => void;
 	setActiveView: (activeView: ViewMode) => void;
-	addQueryTab: (query?: string) => void;
+	addQueryTab: (query?: string, name?: string) => void;
 	removeQueryTab: (tabId: string) => void;
 	updateQueryTab: (payload: PartialId<TabQuery>) => void;
 	setActiveQueryTab: (tabId: string) => void;
@@ -111,14 +111,15 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setActiveView: (activeView) => set(() => ({ activeView })),
 
-		addQueryTab: (query) => set((state) => updateConnection(state, (connection) => {
+		addQueryTab: (query, name) => set((state) => updateConnection(state, (connection) => {
 			const tabId = newId();
-
+			const baseName = name || "New query";
+			
 			let queryName = "";
 			let counter = 0;
 	
 			do {
-				queryName = `New query ${counter ? counter + 1 : ""}`.trim();
+				queryName = `${baseName} ${counter ? counter + 1 : ""}`.trim();
 				counter++;
 			} while (connection.queries.some((query) => query.name === queryName));
 
@@ -187,16 +188,18 @@ export const useConfigStore = create<ConfigStore>()(
 		})),
 
 		saveQuery: (query) => set((state) => {
-			const savedQueries = state.savedQueries;
+			const savedQueries = [...state.savedQueries];
 			const index = savedQueries.findIndex((entry) => entry.id === query.id);
 
 			if (index < 0) {
-				state.savedQueries.push(query);
+				savedQueries.push(query);
 			} else {
-				state.savedQueries[index] = query;
+				savedQueries[index] = query;
 			}
 
-			return { savedQueries };
+			return {
+				savedQueries
+			};
 		}),
 
 		removeSavedQuery: (savedId) => set((state) => ({
@@ -230,25 +233,32 @@ export const useConfigStore = create<ConfigStore>()(
 		setDesignerNodeMode: (defaultDesignerNodeMode) => set(() => ({ defaultDesignerNodeMode })),
 
 		addHistoryEntry: (entry) => set((state) => updateConnection(state, (connection) => {
-			connection.queryHistory.push(entry);
+			const queryHistory = [...connection.queryHistory];
 
-			if (connection.queryHistory.length > MAX_HISTORY_SIZE) {
-				connection.queryHistory.shift();
+			queryHistory.push(entry);
+
+			if (queryHistory.length > MAX_HISTORY_SIZE) {
+				queryHistory.shift();
 			}
 
-			return connection;
+			return {
+				queryHistory
+			};
 		})),
 
 		toggleTablePin: (table) => set((state) => updateConnection(state, (connection) => {
-			const index = connection.pinnedTables.indexOf(table);
+			const pinnedTables = [...connection.pinnedTables];
+			const index = pinnedTables.indexOf(table);
 
 			if (index < 0) {
-				connection.pinnedTables.push(table);
+				pinnedTables.push(table);
 			} else {
-				connection.pinnedTables.splice(index, 1);
+				pinnedTables.splice(index, 1);
 			}
 
-			return connection;
+			return {
+				pinnedTables
+			};
 		})),
 
 	})

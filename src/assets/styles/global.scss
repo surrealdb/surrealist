@@ -14,6 +14,10 @@ body {
     display: unset !important;
 }
 
+.mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
+    font-size: 0.75rem !important;
+}
+
 :root[data-mantine-color-scheme="light"] {
     --surrealist-divider-color: var(--mantine-color-slate-0);
     --surrealist-tooltip-bg: rgba(0, 0, 0, 0.4);

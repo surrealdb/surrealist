@@ -1,3 +1,5 @@
+import { unique } from "radash";
+import { useMemo } from "react";
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
@@ -57,3 +59,13 @@ export function useActiveQuery() {
 	return connection.queries.find((q) => q.id === connection.activeQuery);
 }
 
+/**
+ * Returns a list of all saved query tags
+ */
+export function useSavedQueryTags() {
+	const queries = useConfigStore((s) => s.savedQueries);
+
+	return useMemo(() => {
+		return unique(queries.flatMap((q) => q.tags));
+	}, [queries]);
+}

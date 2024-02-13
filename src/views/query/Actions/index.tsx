@@ -23,7 +23,7 @@ export function Actions(props: ActionsProps) {
 					onClick={props.openVariables}
 					variant="light"
 					color="surreal"
-					leftSection={
+					rightSection={
 						<Icon path={mdiTuneVariant} />
 					}
 				>

@@ -136,7 +136,6 @@ export function TabsPane(props: TabsPaneProps) {
 						variant="light"
 						leftSection={<Icon path={mdiStar} />}
 						onClick={props.openSaved}
-						style={{ flexShrink: 0 }}
 					>
 						Saved queries
 					</Button>
@@ -146,7 +145,6 @@ export function TabsPane(props: TabsPaneProps) {
 						variant="light"
 						leftSection={<Icon path={mdiHistory} />}
 						onClick={props.openHistory}
-						style={{ flexShrink: 0 }}
 					>
 						Query history
 					</Button>

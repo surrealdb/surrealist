@@ -1,149 +1,93 @@
 import classes from "./style.module.scss";
 
 import dayjs from "dayjs";
-import { Stack, Text } from "@mantine/core";
-import { Box, Button, Collapse, Drawer, Paper, SimpleGrid } from "@mantine/core";
-import { useHover } from "@mantine/hooks";
-import { mdiDelete, mdiLightningBolt } from "@mdi/js";
+import { ActionIcon, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { Box, Drawer, Paper } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import { mdiClose, mdiDelete, mdiLightningBolt, mdiMagnify } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { HistoryQuery } from "~/types";
-
-// import {
-// 	ActionIcon,
-// 	Box,
-// 	Button,
-// 	Collapse,
-// 	Divider,
-// 	Group,
-// 	Paper,
-// 	ScrollArea,
-// 	SimpleGrid,
-// 	Stack,
-// 	Text,
-// 	TextInput,
-// 	useMantineTheme,
-// } from "@mantine/core";
-
-// import { mdiClose, mdiDelete, mdiHistory, mdiMagnify, mdiPencil, mdiPlay } from "@mdi/js";
-// import { Fragment, useMemo } from "react";
-// import { useIsLight } from "~/hooks/theme";
-// import dayjs from "dayjs";
-// import { useStable } from "~/hooks/stable";
-// import { useHover, useInputState } from "@mantine/hooks";
-// import { HistoryEntry } from "~/types";
-// import { useActiveSession } from "~/hooks/environment";
-// import { Panel } from "~/components/Panel";
-// import { Icon } from "~/components/Icon";
-// import { executeQuery } from "~/database";
-// import { useConfigStore } from "~/stores/config";
-// import { themeColor } from "~/util/mantine";
-
-// export function HistoryPane() {
-// 	const isLight = useIsLight();
-// 	const activeSession = useActiveSession();
-// 	const entries = useConfigStore((s) => s.queryHistory);
-// 	const [search, setSearch] = useInputState("");
-
-// 	const filtered = useMemo(() => {
-// 		const needle = search.toLowerCase();
-
-// 		return entries.filter((entry) => entry.query.toLowerCase().includes(needle));
-// 	}, [search, entries]);
-
-// 	const historyList = useMemo(() => {
-// 		if (filtered.length === 0) {
-// 			return (
-// 				<Text ta="center" mt="sm">
-// 					No results found
-// 				</Text>
-// 			);
-// 		}
-
-// 		return filtered.map((entry, i) => (
-// 			<Fragment key={i}>
-// 				<HistoryRow
-// 					entry={entry}
-// 					isLight={isLight}
-// 				/>
-// 				{i !== entries.length - 1 && <Divider color={isLight ? "light.0" : "dark.5"} />}
-// 			</Fragment>
-// 		));
-// 	}, [activeSession, filtered, isLight]);
-
-// 	return (
-// 		<Panel title="History" icon={mdiHistory} rightSection={<HistoryActions />}>
-// 			<ScrollArea
-// 				style={{
-// 					position: "absolute",
-// 					inset: 12,
-// 					top: 0,
-// 				}}>
-// 				<TextInput
-// 					placeholder="Search history..."
-// 					leftSection={<Icon path={mdiMagnify} />}
-// 					value={search}
-// 					onChange={setSearch}
-// 					mb="lg"
-// 				/>
-
-// 				<Stack gap="sm">
-// 					{historyList}
-// 				</Stack>
-// 			</ScrollArea>
-// 		</Panel>
-// 	);
-// }
-
-// function HistoryActions() {
-// 	const setShowQueryListing = useConfigStore((s) => s.setShowQueryListing);
-// 	const clearHistory = useConfigStore((s) => s.clearHistory);
-
-// 	const emptyHistory = useStable(() => clearHistory());
-// 	const hideHistory = useStable(() => setShowQueryListing(false));
-
-// 	return (
-// 		<Group align="center">
-// 			<ActionIcon onClick={emptyHistory} title="Clear history">
-// 				<Icon color="light.4" path={mdiDelete} />
-// 			</ActionIcon>
-
-// 			<ActionIcon onClick={hideHistory} title="Hide history">
-// 				<Icon color="light.4" path={mdiClose} />
-// 			</ActionIcon>
-// 		</Group>
-// 	);
-// }
+import { Spacer } from "~/components/Spacer";
+import { useMemo } from "react";
+import { useIsLight } from "~/hooks/theme";
+import { useContextMenu } from "mantine-contextmenu";
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
+	onClose: () => void;
 }
 
-function HistoryRow({ entry }: HistoryRowProps) {
+function HistoryRow({ entry, onClose }: HistoryRowProps) {
 	const { updateCurrentConnection, addQueryTab } = useConfigStore.getState();
-	const { ref, hovered } = useHover();
+	const { showContextMenu } = useContextMenu();
+	
+	const isLight = useIsLight();
+	const connection = useActiveConnection();
 
-	const executeHistory = useStable(() => {
-		// 
+	const handleUseQuery = useStable(() => {
+		addQueryTab(entry.query);
+		onClose();
 	});
 
-	const removeEntry = useStable(() => {
-		// 
+	const handleDeleteQuery = useStable(() => {
+		updateCurrentConnection({
+			queryHistory: connection.queryHistory.filter((item) => item !== entry)
+		});
 	});
 	
 	return (
 		<Box
-			ref={ref}
-			// style={{ borderColor: themeColor(isLight ? "light.0" : "dark.3") }}
+			className={classes.query}
+			onContextMenu={showContextMenu([
+				{
+					key: 'edit',
+					title: 'Open in new tab',
+					icon: <Icon path={mdiLightningBolt} />,
+					onClick: () => handleUseQuery(),
+				},
+				{
+					key: 'remove',
+					title: 'Remove query',
+					color: 'red',
+					icon: <Icon path={mdiDelete} />,
+					onClick: () => handleDeleteQuery(),
+				}
+			])}
 		>
-			<Text mb={4}>
-				{dayjs(entry.timestamp).fromNow()}
-			</Text>
+			<Group h={28} mb="sm">
+				<Box>
+					{entry.origin && (
+						<Text size="xs" c="slate">
+							{entry.origin}
+						</Text>
+					)}
+					<Text>
+						Executed {dayjs(entry.timestamp).fromNow()}
+					</Text>
+				</Box>
+				<Spacer />
+				<Tooltip
+					position="top"
+					label="Open in new tab"
+					offset={10}
+					transitionProps={{ transition: "pop" }}
+					openDelay={250}
+				>
+					<ActionIcon
+						component="div"
+						className={classes.queryAction}
+						onClick={handleUseQuery}
+					>
+						<Icon path={mdiLightningBolt} size={0.9} />
+					</ActionIcon>
+				</Tooltip>
+			</Group>
 
-			<Paper withBorder mt="xs" p="xs">
+			<Paper mt="xs" p="xs" bg={isLight ? 'slate.1' : 'slate.9'}>
 				<Text
 					ff="JetBrains Mono"
 					className={classes.queryText}
@@ -153,17 +97,6 @@ function HistoryRow({ entry }: HistoryRowProps) {
 					{entry.query}
 				</Text>
 			</Paper>
-
-			<Collapse in={hovered}>
-				<SimpleGrid cols={3} mt="xs" pb="xs" spacing="xs">
-					<Button size="xs" variant="light" color="red" radius="sm" title="Remove" onClick={removeEntry}>
-						<Icon path={mdiDelete} color="red" />
-					</Button>
-					<Button size="xs" variant="light" color="pink" radius="sm" title="Run query" onClick={executeHistory}>
-						<Icon path={mdiLightningBolt} color="pink" />
-					</Button>
-				</SimpleGrid>
-			</Collapse>
 		</Box>
 	);
 }
@@ -174,20 +107,78 @@ export interface HistoryDrawerProps {
 }
 
 export function HistoryDrawer(props: HistoryDrawerProps) {
+	const { updateCurrentConnection } = useConfigStore.getState();
+
 	const connection = useActiveConnection();
+	const [filterText, setFilterText] = useInputState("");
+
+	const clearHistory = useStable(() => {
+		updateCurrentConnection({
+			queryHistory: []
+		});
+	});
+
+	const filtered = useMemo(() => {
+		if (!connection) return [];
+
+		const needle = filterText.toLowerCase();
+
+		return connection.queryHistory.filter((entry) =>
+			entry.query.toLowerCase().includes(needle)
+		).reverse();
+	}, [connection?.queryHistory, filterText]);
 
 	return (
 		<Drawer
 			opened={props.opened}
 			onClose={props.onClose}
 			position="right"
-			title={<ModalTitle>Query history</ModalTitle>}
+			withCloseButton={false}
+			trapFocus={false}
 		>
+			<Group mb="md" gap="sm">
+				<ModalTitle>
+					Query history
+				</ModalTitle>
+
+				{/* <Badge
+					color={isLight ? "slate.0" : "slate.9"}
+					radius="sm"
+					c="inherit"
+				>
+					{connection?.queryHistory?.length?.toString()}
+				</Badge> */}
+
+				<Spacer />
+
+				<ActionIcon onClick={clearHistory} title="Clear history">
+					<Icon path={mdiDelete} />
+				</ActionIcon>
+
+				<ActionIcon onClick={props.onClose}>
+					<Icon path={mdiClose} />
+				</ActionIcon>
+			</Group>
 			<Stack>
-				{connection?.queryHistory?.map((entry, i) => (
+				<TextInput
+					autoFocus
+					placeholder="Search history..."
+					leftSection={<Icon path={mdiMagnify} />}
+					value={filterText}
+					onChange={setFilterText}
+				/>
+
+				{filtered.length === 0 && (
+					<Text ta="center" mt="sm" c="slate">
+						No queries to display
+					</Text>
+				)}
+
+				{filtered.map((entry, i) => (
 					<HistoryRow
 						key={i}
 						entry={entry}
+						onClose={props.onClose}
 					/>
 				))}
 			</Stack>

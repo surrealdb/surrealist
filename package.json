@@ -37,6 +37,7 @@
 		"html-to-image": "^1.11.11",
 		"immer": "^10.0.2",
 		"klona": "^2.0.6",
+		"mantine-contextmenu": "^7.5.0",
 		"monaco-editor": "^0.41.0",
 		"monaco-editor-textmate": "^4.0.0",
 		"monaco-textmate": "^3.0.1",

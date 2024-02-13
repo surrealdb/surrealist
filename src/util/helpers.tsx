@@ -2,7 +2,7 @@ import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { uid } from "radash";
-import { CSSProperties } from "react";
+import { CSSProperties, FocusEvent } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
@@ -16,6 +16,10 @@ export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
 	overflow: "hidden",
 	textOverflow: "ellipsis",
+};
+
+export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLInputElement>) => {
+	e.target.select();
 };
 
 export function updateTitle() {

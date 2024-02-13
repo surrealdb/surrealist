@@ -1,0 +1,27 @@
+.query-text {
+	-webkit-user-select: all;
+	user-select: all;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.query-action {
+	display: none;
+}
+
+.query:hover .query-action {
+	display: flex;
+}
+
+.tag {
+	transition: all .1s;
+}
+
+.tag-active {
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	box-shadow: 0 7px 11px -6px rgba(0, 0, 0, 0.5);
+
+	:root[data-mantine-color-scheme="light"] & {
+		box-shadow: unset;
+	}
+}

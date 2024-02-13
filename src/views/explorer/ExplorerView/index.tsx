@@ -31,7 +31,7 @@ export function ExplorerView() {
 
 	return (
 		<PanelGroup direction="horizontal">
-			<Panel minSize={15} defaultSize={15} maxSize={25}>
+			<Panel style={{ minWidth: 225 }} defaultSize={15} maxSize={25}>
 				<TablesPane />
 			</Panel>
 			<PanelDragger />

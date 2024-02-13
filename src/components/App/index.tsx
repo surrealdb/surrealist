@@ -14,12 +14,14 @@ import { useConfigStore } from "~/stores/config";
 import { Scaffold } from "../Scaffold";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { MANTINE_THEME } from "~/util/mantine";
-import { useColorScheme } from "~/hooks/theme";
+import { useColorScheme, useIsLight } from "~/hooks/theme";
+import { ContextMenuProvider } from "mantine-contextmenu";
 
 export function App() {
 	const { toggleWindowPinned, setWindowScale, setEditorScale } = useConfigStore.getState();
 	const { hideAvailableUpdate } = useInterfaceStore.getState();
 
+	const isLight = useIsLight();
 	const colorScheme = useColorScheme();
 	const update = useInterfaceStore((s) => s.availableUpdate);
 	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
@@ -70,12 +72,18 @@ export function App() {
 		>
 			<Notifications />
 
-			<ErrorBoundary
-				FallbackComponent={AppErrorHandler} 
-				onReset={resetApplicationState}
+			<ContextMenuProvider
+				borderRadius="sm"
+				shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
+				submenuDelay={250}
 			>
-				<Scaffold />
-			</ErrorBoundary>
+				<ErrorBoundary
+					FallbackComponent={AppErrorHandler} 
+					onReset={resetApplicationState}
+				>
+					<Scaffold />
+				</ErrorBoundary>
+			</ContextMenuProvider>
 
 			<Transition
 				mounted={showUpdate}

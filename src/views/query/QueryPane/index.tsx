@@ -21,14 +21,17 @@ export interface QueryPaneProps {
 	showVariables: boolean;
 	canQuery: boolean;
 	isValid: boolean;
+	onSaveQuery: () => void;
 	openVariables: () => void;
 	setIsValid: (isValid: boolean) => void;
 }
 
 export function QueryPane(props: QueryPaneProps) {
-	const updateQueryTab = useConfigStore((s) => s.updateQueryTab);
+	const { updateQueryTab } = useConfigStore.getState();
+
 	const controls = useRef<editor.IStandaloneCodeEditor>();
 	const activeTab = useActiveQuery();
+	
 
 	const validateQuery = useStable(() => {
 		const isInvalid = updateQueryValidation(controls.current!);
@@ -63,7 +66,7 @@ export function QueryPane(props: QueryPaneProps) {
 		}
 	});
 
-	const formatQuery = useStable(() => {
+	const handleFormat = useStable(() => {
 		if (!activeTab) {
 			return;
 		}
@@ -124,7 +127,7 @@ export function QueryPane(props: QueryPaneProps) {
 							<Divider mb="sm" />
 							<Group gap="sm">
 								<ActionIcon
-									onClick={() => {}}
+									onClick={props.onSaveQuery}
 									title="Save query"
 									variant="light"
 								>
@@ -132,7 +135,7 @@ export function QueryPane(props: QueryPaneProps) {
 								</ActionIcon>
 
 								<ActionIcon
-									onClick={formatQuery}
+									onClick={handleFormat}
 									title="Format query"
 									variant="light"
 								>

@@ -1,10 +1,13 @@
-import '@mantine/core/styles.css';
+import "reactflow/dist/style.css";
+import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
+import "mantine-contextmenu/styles.layer.css";
 
-import "./adapter";
-
+import "./assets/styles/layers.scss";
 import "./assets/styles/fonts.scss";
 import "./assets/styles/global.scss";
+
+import "./adapter";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -19,7 +22,6 @@ import { adapter } from "./adapter";
 import { useConfigStore } from "./stores/config";
 import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch, watchViewSwitch } from './util/background';
 
-import "reactflow/dist/style.css";
 
 (async () => {
 	dayjs.extend(relativeTime);

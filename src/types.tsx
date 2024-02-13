@@ -70,12 +70,14 @@ export interface HistoryQuery {
 	id: string;
 	query: string;
 	timestamp: number;
+	origin?: string;
 }
 
 export interface SavedQuery {
 	id: string;
 	query: string;
 	name: string;
+	tags: string[];
 }
 
 export interface LiveQuery {

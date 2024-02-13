@@ -141,6 +141,8 @@ export const MANTINE_THEME = createTheme({
 		Tooltip: {
 			defaultProps: {
 				withinPortal: true,
+				transitionProps: { transition: "pop" },
+				openDelay: 250
 			},
 			styles: {
 				tooltip: {

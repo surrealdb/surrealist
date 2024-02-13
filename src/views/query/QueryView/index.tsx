@@ -3,25 +3,85 @@ import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
 import { TabsPane } from "../TabsPane";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { isEmbed } from "~/adapter";
-import { Box, Group, Stack } from "@mantine/core";
+import { Box, Button, Group, Modal, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
 import { Image } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { TextLogo } from "~/components/TextLogo";
+import { SavesDrawer } from "../SavesDrawer";
+import { mdiCheck } from "@mdi/js";
+import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
+import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
+import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
+import { useConfigStore } from "~/stores/config";
+import { SavedQuery } from "~/types";
+import { ModalTitle } from "~/components/ModalTitle";
 
 export function QueryView() {
+	const { saveQuery } = useConfigStore.getState();
+	
 	const [showVariables, showVariablesHandle] = useDisclosure();
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
 
 	const [showHistory, showHistoryHandle] = useDisclosure();
 	const [showSaved, showSavedHandle] = useDisclosure();
+
+	const tags = useSavedQueryTags();
+	const active = useActiveQuery();
+
+	const [isSaving, isSavingHandle] = useDisclosure();
+	const [editingId, setEditingId] = useState("");
+	const [saveName, setSaveName] = useInputState("");
+	const [saveContent, setSaveContent] = useInputState("");
+	const [saveTags, setSaveTags] = useInputState<string[]>([]);
+
+	const handleSaveRequest = useStable(async () => {
+		if (!active) {
+			return;
+		}
+
+		setEditingId("");
+		setSaveTags([]);
+		setSaveName(active.name);
+		setSaveContent(active.query);
+		isSavingHandle.open();
+	});
+
+	const handleEditRequest = useStable(async (entry: SavedQuery) => {
+		if (!active) {
+			return;
+		}
+
+		setEditingId(entry.id);
+		setSaveTags(entry.tags);
+		setSaveName(entry.name);
+		setSaveContent(entry.query);
+		isSavingHandle.open();
+	});
+
+	const handleSaveQuery = useStable(async () => {
+		if (!active || !saveName) {
+			return;
+		}
+		
+		saveQuery({
+			id: editingId || newId(),
+			name: saveName,
+			query: saveContent,
+			tags: saveTags
+		});
+
+		isSavingHandle.close();
+	});
 
 	return (
 		<Stack
@@ -49,7 +109,7 @@ export function QueryView() {
 				<PanelGroup direction="horizontal">
 					{!isEmbed && (
 						<>
-							<Panel defaultSize={15} minSize={15} maxSize={25}>
+							<Panel style={{ minWidth: 225 }} defaultSize={15} maxSize={25}>
 								<TabsPane
 									openHistory={showHistoryHandle.open}
 									openSaved={showSavedHandle.open}
@@ -69,6 +129,7 @@ export function QueryView() {
 											isValid={queryValid}
 											setIsValid={setQueryValid}
 											openVariables={showVariablesHandle.open}
+											onSaveQuery={handleSaveRequest}
 										/>
 									</Panel>
 									{showVariables && (
@@ -98,6 +159,87 @@ export function QueryView() {
 				opened={showHistory}
 				onClose={showHistoryHandle.close}
 			/>
+
+			<SavesDrawer
+				opened={showSaved}
+				onClose={showSavedHandle.close}
+				onSaveQuery={handleSaveRequest}
+				onEditQuery={handleEditRequest}
+			/>
+
+			<Modal
+				zIndex={201}
+				opened={isSaving}
+				onClose={isSavingHandle.close}
+				trapFocus={false}
+				title={
+					<ModalTitle>
+						{editingId ? "Edit query" : "Save query"}
+					</ModalTitle>
+				}
+			>
+				<Form onSubmit={handleSaveQuery}>
+					<Stack>
+						<TextInput
+							label="Name"
+							autoFocus
+							value={saveName}
+							onChange={setSaveName}
+							onFocus={ON_FOCUS_SELECT}
+						/>
+
+						<TagsInput
+							data={tags}
+							value={saveTags}
+							onChange={setSaveTags}
+							label={
+								<Group gap={4}>
+									Labels
+									<Text
+										span
+										size="xs"
+										c="slate"
+									>
+										(optional)
+									</Text>
+								</Group>
+							}
+						/>
+
+						{editingId && (
+							<Textarea
+								label="Query"
+								rows={6}
+								value={saveContent}
+								onChange={setSaveContent}
+								styles={{
+									input: {
+										fontFamily: "JetBrains Mono"
+									}
+								}}
+							/>	
+						)}
+
+						<Group>
+							<Button
+								onClick={isSavingHandle.close}
+								variant="light"
+							>
+								Close
+							</Button>
+							<Spacer />
+							<Button
+								color="surreal"
+								type="submit"
+								disabled={!saveName}
+								rightSection={<Icon path={mdiCheck} />}
+							>
+								Save
+							</Button>
+						</Group>
+					</Stack>
+				</Form>
+			</Modal>
 		</Stack>
 	);
 }

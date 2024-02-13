@@ -89,7 +89,7 @@ export async function executeQuery(options?: QueryOptions) {
 		return;
 	}
 
-	const { id, query, variables } = tabQuery;
+	const { id, query, variables, name } = tabQuery;
 	const queryStr = (options?.override || query).trim();
 	const variableJson = variables
 		? JSON.parse(variables)
@@ -130,6 +130,7 @@ export async function executeQuery(options?: QueryOptions) {
 		id: newId(),
 		query: queryStr,
 		timestamp: Date.now(),
+		origin: name
 	});
 }
 
