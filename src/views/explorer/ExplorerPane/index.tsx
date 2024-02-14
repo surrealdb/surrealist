@@ -9,7 +9,7 @@ import {
 	mdiWrench,
 } from "@mdi/js";
 
-import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
@@ -272,24 +272,28 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 						</Center>
 					)}
 
-					<Group style={{ position: "absolute", insetInline: 12, bottom: 12 }} gap="xl">
+					<Group
+						gap="xs"
+						justify="center"
+						style={{
+							position: "absolute",
+							insetInline: 12,
+							bottom: 12
+						}}
+					>
 						<Group gap="xs">
-							<Button
-								color="dark.5"
-								variant="outline"
-								c="light.4"
-								px="xs"
+							<ActionIcon
 								onClick={previousPage}
 								disabled={page <= 1}
-								style={{ opacity: page <= 1 ? 0.4 : 1 }}
 							>
 								<Icon path={mdiArrowLeft} />
-							</Button>
+							</ActionIcon>
 
 							<TextInput
 								value={pageText}
 								onChange={(e) => updatePageText(e.currentTarget.value)}
-								maw={46}
+								maw={36}
+								size="xs"
 								withAsterisk
 								onBlur={gotoPage}
 								onKeyDown={gotoPage}
@@ -303,22 +307,19 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 
 							<Text c="light.3">of {pageCount} pages</Text>
 
-							<Button
-								color="dark.5"
-								variant="outline"
-								c="light.4"
-								px="xs"
+							<ActionIcon
 								onClick={nextPage}
 								disabled={page >= pageCount}
-								style={{ opacity: page >= pageCount ? 0.4 : 1 }}>
+							>
 								<Icon path={mdiArrowRight} />
-							</Button>
+							</ActionIcon>
 						</Group>
 
 						<Select
 							value={pageSize}
 							onChange={updatePageSize as any}
 							data={PAGE_SIZES}
+							size="xs"
 						/>
 					</Group>
 				</>
