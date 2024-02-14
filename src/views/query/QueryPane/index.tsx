@@ -1,5 +1,5 @@
 import { editor } from "monaco-editor";
-import { mdiDatabase, mdiFileDocument, mdiStar, mdiText } from "@mdi/js";
+import { mdiDatabase, mdiFileUpload, mdiStar, mdiText } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { ContentPane } from "~/components/Pane";
@@ -15,7 +15,7 @@ import { SURQL_FILTERS } from "~/constants";
 import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
 import { format_query } from "~/generated/surrealist-embed";
-import { showError } from "~/util/helpers";
+import { getFileName, isUnnamedTab, showError } from "~/util/helpers";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
@@ -59,10 +59,19 @@ export function QueryPane(props: QueryPaneProps) {
 	});
 
 	const handleUpload = useStable(async () => {
+		if (!activeTab) return;
+
 		const [file] = await adapter.openFile('Open query from file', SURQL_FILTERS, false);
 
 		if (file) {
 			setQueryForced(file.content);
+			
+			if (isUnnamedTab(activeTab)) {
+				updateQueryTab({
+					id: activeTab.id,
+					name: getFileName(file.name)
+				});
+			}
 		}
 	});
 
@@ -136,7 +145,7 @@ export function QueryPane(props: QueryPaneProps) {
 
 								<ActionIcon
 									onClick={handleFormat}
-									title="Format query"
+									title="Cleanup query"
 									variant="light"
 								>
 									<Icon color="light.4" path={mdiText} />
@@ -147,7 +156,7 @@ export function QueryPane(props: QueryPaneProps) {
 									title="Load from file"
 									variant="light"
 								>
-									<Icon color="light.4" path={mdiFileDocument} />
+									<Icon color="light.4" path={mdiFileUpload} />
 								</ActionIcon>
 
 								<Spacer />

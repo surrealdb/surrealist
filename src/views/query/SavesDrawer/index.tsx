@@ -4,12 +4,12 @@ import clsx from "clsx";
 import { Accordion, Badge, Button, Paper, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
 import { Drawer, Group, ActionIcon } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiClose, mdiDelete, mdiLightningBolt, mdiMagnify, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiClose, mdiDelete, mdiLightningBolt, mdiMagnify, mdiPencil, mdiPlus, mdiText } from "@mdi/js";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
-import { useSavedQueryTags } from "~/hooks/connection";
+import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
@@ -24,10 +24,11 @@ export interface SavesDrawerProps {
 }
 
 export function SavesDrawer(props: SavesDrawerProps) {
-	const { addQueryTab, removeSavedQuery } = useConfigStore.getState();
+	const { addQueryTab, updateQueryTab, removeSavedQuery } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
 	const queries = useConfigStore((s) => s.savedQueries);
+	const activeTab = useActiveQuery();
 	const tags = useSavedQueryTags();
 	const isLight = useIsLight();
 
@@ -48,8 +49,16 @@ export function SavesDrawer(props: SavesDrawerProps) {
 	const handleUseQuery = useStable((entry: SavedQuery, e?: React.MouseEvent) => {
 		e?.stopPropagation();
 
-		addQueryTab(entry.query, entry.name);
 		props.onClose();
+		addQueryTab(entry.query, entry.name);
+	});
+
+	const handleReplaceQuery = useStable((entry: SavedQuery) => {
+		props.onClose();
+		updateQueryTab({
+			id: activeTab!.id,
+			query: entry.query
+		});
 	});
 
 	const handleDeleteQuery = useStable((entry: SavedQuery) => {
@@ -152,10 +161,16 @@ export function SavesDrawer(props: SavesDrawerProps) {
 						className={classes.query}
 						onContextMenu={showContextMenu([
 							{
-								key: 'edit',
+								key: 'open',
 								title: 'Open in new tab',
 								icon: <Icon path={mdiLightningBolt} />,
 								onClick: () => handleUseQuery(entry),
+							},
+							{
+								key: 'replace',
+								title: 'Open in current tab',
+								icon: <Icon path={mdiText} />,
+								onClick: () => handleReplaceQuery(entry),
 							},
 							{
 								key: 'edit',

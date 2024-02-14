@@ -3,22 +3,23 @@ import { Group, Button, Modal, TextInput, Image, Center, ActionIcon } from "@man
 import { mdiClose, mdiSync } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
-import { LocalDatabase } from "../LocalDatabase";
+import { LocalDatabase } from "./LocalDatabase";
 import { Spacer } from "../Spacer";
 import { ViewMode } from "~/types";
 import { adapter } from "~/adapter";
 import { useConnection } from "~/hooks/connection";
-import { Exporter } from "../Exporter";
+import { Exporter } from "./Exporter";
 import { useConfigStore } from "~/stores/config";
-import { Importer } from "../Importer";
+import { Importer } from "./Importer";
 import { closeConnection, openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
 import { showNotification } from "@mantine/notifications";
+import { useDisclosure } from "@mantine/hooks";
+import { ConsoleDrawer } from "./ConsoleDrawer";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -32,8 +33,8 @@ export function Toolbar(props: ToolbarProps) {
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
 	
 	const connection = useConnection();
-	const isLight = useIsLight();
 
+	const [showConsole, setShowConsole] = useDisclosure();
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
 
@@ -119,7 +120,9 @@ export function Toolbar(props: ToolbarProps) {
 			<Spacer />
 
 			{adapter.isServeSupported && (
-				<LocalDatabase />
+				<LocalDatabase
+					toggleConsole={setShowConsole.toggle}
+				/>
 			)}
 
 			<Importer />
@@ -145,6 +148,11 @@ export function Toolbar(props: ToolbarProps) {
 					</Group>
 				</Form>
 			</Modal>
+
+			<ConsoleDrawer
+				opened={showConsole}
+				onClose={setShowConsole.close}
+			/>
 		</Group>
 	);
 }

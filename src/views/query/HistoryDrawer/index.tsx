@@ -4,10 +4,10 @@ import dayjs from "dayjs";
 import { ActionIcon, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { Box, Drawer, Paper } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiClose, mdiDelete, mdiLightningBolt, mdiMagnify } from "@mdi/js";
+import { mdiClose, mdiDelete, mdiLightningBolt, mdiMagnify, mdiText } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
-import { useActiveConnection } from "~/hooks/connection";
+import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { HistoryQuery } from "~/types";
@@ -22,15 +22,24 @@ interface HistoryRowProps {
 }
 
 function HistoryRow({ entry, onClose }: HistoryRowProps) {
-	const { updateCurrentConnection, addQueryTab } = useConfigStore.getState();
+	const { updateCurrentConnection, updateQueryTab, addQueryTab } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	
 	const isLight = useIsLight();
 	const connection = useActiveConnection();
+	const activeTab = useActiveQuery();
 
 	const handleUseQuery = useStable(() => {
-		addQueryTab(entry.query);
 		onClose();
+		addQueryTab(entry.query);
+	});
+
+	const handleReplaceQuery = useStable(() => {
+		onClose();
+		updateQueryTab({
+			id: activeTab!.id,
+			query: entry.query
+		});
 	});
 
 	const handleDeleteQuery = useStable(() => {
@@ -44,10 +53,16 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 			className={classes.query}
 			onContextMenu={showContextMenu([
 				{
-					key: 'edit',
+					key: 'open',
 					title: 'Open in new tab',
 					icon: <Icon path={mdiLightningBolt} />,
 					onClick: () => handleUseQuery(),
+				},
+				{
+					key: 'replace',
+					title: 'Open in current tab',
+					icon: <Icon path={mdiText} />,
+					onClick: () => handleReplaceQuery(),
 				},
 				{
 					key: 'remove',

@@ -2848,10 +2848,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 
 [[package]]
-name = "surrealdb-beta"
+name = "surrealdb"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "523ff8e8a59013c00e5951f280718aa6449a8004d5fa8016d82fbb25463b8ec0"
+checksum = "7b4c189541c759c763d4f5859a853afe85773baa0c95891f262425ff422394b0"
 dependencies = [
  "async-channel",
  "bincode",
@@ -2866,13 +2866,14 @@ dependencies = [
  "path-clean",
  "pharos",
  "reqwest",
+ "revision",
  "ring 0.17.7",
  "rust_decimal",
  "rustls",
  "semver",
  "serde",
  "serde_json",
- "surrealdb-core-beta",
+ "surrealdb-core",
  "thiserror",
  "tokio",
  "tokio-tungstenite",
@@ -2886,10 +2887,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "surrealdb-core-beta"
+name = "surrealdb-core"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5c94b4b670c078870bc87388736b976aff7659ae2299af7ec88c8fa0cd7cf63"
+checksum = "3a7e106485a069b20d550953bda7538f299b119e206dbebd6b5dfbdf95c8b14a"
 dependencies = [
  "addr",
  "any_ascii",
@@ -2995,7 +2996,7 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
- "surrealdb-beta",
+ "surrealdb",
  "tokio",
  "wasm-bindgen",
  "wasm-bindgen-futures",

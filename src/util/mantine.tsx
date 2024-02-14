@@ -149,6 +149,7 @@ export const MANTINE_THEME = createTheme({
 					color: "white",
 					backgroundColor: "var(--surrealist-tooltip-bg)",
 					backdropFilter: "blur(4px)",
+					webkitBackdropFilter: "blur(4px)",
 				},
 			},
 		},

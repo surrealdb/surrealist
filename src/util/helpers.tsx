@@ -6,7 +6,7 @@ import { CSSProperties, FocusEvent } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
-import { ConnectionOptions, ViewMode } from "~/types";
+import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useExplorerStore } from "~/stores/explorer";
@@ -173,4 +173,27 @@ export function connectionUri(options: ConnectionOptions) {
  */
 export function clamp(value: number, min: number, max: number) {
 	return Math.min(Math.max(value, min), max);
+}
+
+/**
+ * Returns the file name without the extension
+ * 
+ * @param name The file name
+ * @returns The file name without the extension
+ */
+export function getFileName(name: string) {
+	return name.includes('.')
+		? name.slice(0, name.lastIndexOf('.'))
+		: name;
+}
+
+/**
+ * Returns whether the given tab has not been renamed
+ * from its default name.
+ * 
+ * @param tab The tab to check
+ * @returns True if the tab is unnamed
+ */
+export function isUnnamedTab(tab: TabQuery) {
+	return !!tab.name?.startsWith('New query');
 }

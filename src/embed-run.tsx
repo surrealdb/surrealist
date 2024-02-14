@@ -1,10 +1,11 @@
-import '@mantine/core/styles.css';
+import '@mantine/core/styles.layer.css';
 import "@mantine/notifications/styles.css";
 
-import "./adapter";
-
+import "./assets/styles/layers.scss";
 import "./assets/styles/fonts.scss";
 import "./assets/styles/global.scss";
+
+import "./adapter";
 
 import embedPath from './generated/surrealist-embed_bg.wasm?url';
 import initEmbed, { initialize_embed } from './generated/surrealist-embed';
