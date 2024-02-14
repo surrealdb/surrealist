@@ -20,12 +20,13 @@ export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
 		<Group
 			{...rest}
 			wrap="nowrap"
-			c="surreal"
+			c="surreal.5"
 			gap={0}
 			onClick={handleOpen}
 			style={{
 				cursor: onRecordClick ? "pointer" : undefined,
-			}}>
+			}}
+		>
 			<Text
 				ff="JetBrains Mono"
 				style={{

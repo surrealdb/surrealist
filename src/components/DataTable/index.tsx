@@ -84,15 +84,20 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 
 	const columnHeaders = useMemo(() => {
 		return keys.map(key => (
-			<Box key={key} component="th" bg={isLight ? "white" : "dark.7"}>
+			<Box
+				key={key}
+				component="th"
+			>
 				<Text
 					span
+					fw={700}
 					onClick={() => handleSortClick(key)}
 					style={{
 						cursor: onSortingChange ? "pointer" : undefined,
 						userSelect: "none",
 						WebkitUserSelect: "none",
-					}}>
+					}}
+				>
 					{key}
 					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? mdiChevronDown : mdiChevronUp} pos="absolute" />}
 				</Text>
@@ -136,7 +141,7 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 	return (
 		<div className={classes.tableContainer}>
 			<ScrollArea className={classes.tableWrapper}>
-				<Table striped className={classes.table}>
+				<Table className={classes.table}>
 					<thead>
 						<tr>{columnHeaders}</tr>
 					</thead>

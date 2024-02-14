@@ -15,12 +15,17 @@
 	user-select: text;
 
 	th {
+		text-align: start;
 		position: sticky;
 		top: 0;
 	}
 
+	tbody tr:nth-child(odd) {
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
 	th > *, td > * {
-		padding-inline: 24px;
+		padding-inline: 8px !important;
 	}
 
 	th:first-child > *, td:first-child > * {
