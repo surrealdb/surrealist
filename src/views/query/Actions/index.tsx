@@ -7,7 +7,7 @@ import { useStable } from "~/hooks/stable";
 export interface ActionsProps {
 	canQuery: boolean;
 	showVariables: boolean;
-	openVariables: () => void;
+	toggleVariables: () => void;
 }
 
 export function Actions(props: ActionsProps) {
@@ -17,20 +17,17 @@ export function Actions(props: ActionsProps) {
 
 	return (
 		<>
-			{!props.showVariables && (
-				<Button
-					size="xs"
-					onClick={props.openVariables}
-					variant="light"
-					color="surreal"
-					rightSection={
-						<Icon path={mdiTuneVariant} />
-					}
-				>
-					Show variables
-				</Button>
-			)}
-
+			<Button
+				size="xs"
+				variant="subtle"
+				onClick={props.toggleVariables}
+				color="slate"
+				rightSection={
+					<Icon path={mdiTuneVariant} />
+				}
+			>
+				{props.showVariables ? "Hide" : "Show"} variables
+			</Button>
 			<Button
 				size="xs"
 				onClick={runQuery}

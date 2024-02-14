@@ -22,7 +22,7 @@ export interface QueryPaneProps {
 	canQuery: boolean;
 	isValid: boolean;
 	onSaveQuery: () => void;
-	openVariables: () => void;
+	toggleVariables: () => void;
 	setIsValid: (isValid: boolean) => void;
 }
 
@@ -165,7 +165,7 @@ export function QueryPane(props: QueryPaneProps) {
 									<Actions
 										canQuery={props.canQuery}
 										showVariables={props.showVariables}
-										openVariables={props.openVariables}
+										toggleVariables={props.toggleVariables}
 									/>
 								)}
 							</Group>
