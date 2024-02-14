@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Group, ScrollArea, Text, TextInput } from "@mantine/core";
-import { mdiMagnify, mdiPin, mdiPlus, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text } from "@mantine/core";
+import { mdiDownload, mdiPin, mdiPlus, mdiTable, mdiUpload, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -15,7 +15,7 @@ import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
 import { useExplorerStore } from "~/stores/explorer";
 import { useConfigStore } from "~/stores/config";
-import { themeColor } from "~/util/mantine";
+import clsx from "clsx";
 
 export function TablesPane() {
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
@@ -67,91 +67,125 @@ export function TablesPane() {
 		<ContentPane
 			title="Tables"
 			icon={mdiViewSequential}
+			leftSection={
+				<Badge
+					color={isLight ? "slate.0" : "slate.9"}
+					radius="sm"
+					c="inherit"
+				>
+					{schema.length > 0 && schema.length.toString()}
+				</Badge>
+			}
 			rightSection={
-				<Group wrap="nowrap">
-					<ActionIcon title="Create table..." onClick={openCreator}>
-						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
-				</Group>
-			}>
-			<TextInput
+				<ActionIcon title="Create table..." onClick={openCreator}>
+					<Icon path={mdiPlus} />
+				</ActionIcon>
+			}
+		>
+			<Stack
+				pos="absolute"
+				top={0}
+				left={12}
+				right={12}
+				bottom={12}
+				gap={0}
+			>
+				<ScrollArea>
+					<Stack gap="xs">
+						{tablesFiltered.map((table) => {
+							const isActive = activeTable == table.schema.name;
+							const isPinned = connection.pinnedTables.includes(table.schema.name);
+							const [isEdge] = extractEdgeRecords(table);
+
+							return (
+								<Button
+									key={table.schema.name}
+									fullWidth
+									miw={0}
+									px={8}
+									color="slate"
+									variant={isActive ? "light" : "subtle"}
+									onClick={() => setExplorerTable(table.schema.name)}
+									className={clsx(classes.table, isActive && classes.tableActive)}
+									styles={{
+										label: {
+											flex: 1
+										}
+									}}
+									leftSection={
+										<Icon
+											path={isEdge ? mdiVectorLine : mdiTable}
+											color={isActive ? "surreal" : isLight ? "slate.2" : "slate.4"}
+										/>
+									}
+									rightSection={
+										isPinned && (
+											<Icon
+												onClick={(e) => togglePinned(e, table.schema.name)}
+												className={classes.pinButton}
+												color={isActive ? "surreal" : isLight ? "light.3" : "light.4"}
+												title="Unpin table"
+												path={mdiPin}
+												size="sm"
+											/>
+										)
+									}
+								>
+									{table.schema.name}
+								</Button>
+							);
+						})}
+					</Stack>
+				</ScrollArea>
+				<Spacer />
+				<Divider mb="xs" />
+				<Stack>
+					<Text
+						c="slate"
+						fz="lg"
+						fw={500}
+					>
+						Actions
+					</Text>
+					<Button
+						fullWidth
+						color="slate"
+						variant="light"
+						leftSection={<Icon path={mdiDownload} />}
+						onClick={() => {}}
+					>
+						Import database
+					</Button>
+					<Button
+						fullWidth
+						color="slate"
+						variant="light"
+						leftSection={<Icon path={mdiUpload} />}
+						onClick={() => {}}
+					>
+						Export database
+					</Button>
+				</Stack>
+			</Stack>
+			{/* <TextInput
 				placeholder="Search table..."
 				leftSection={<Icon path={mdiMagnify} />}
 				value={search}
 				onChange={setSearch}
 				mb="lg"
-			/>
+			/> */}
 
-			{isOnline && tablesFiltered.length === 0 ? (
+			{/* {isOnline && tablesFiltered.length === 0 ? (
 				<Text ta="center" pt="sm" c="light.5">
 					{hasAccess ? "No tables found" : "Unsupported auth mode"}
 				</Text>
 			) : isOnline ? (
-				<ScrollArea
-					classNames={{
-						viewport: classes.viewport,
-					}}
-					style={{
-						position: "absolute",
-						inset: 12,
-						top: 42,
-					}}>
-					{tablesFiltered.map((table) => {
-						const isActive = activeTable == table.schema.name;
-						const isPinned = connection.pinnedTables.includes(table.schema.name);
-						const [isEdge] = extractEdgeRecords(table);
-
-						return (
-							<Group
-								py="xs"
-								px="xs"
-								gap={6}
-								wrap="nowrap"
-								title={`Double-click to ${isPinned ? 'unpin' : 'pin'} table`}
-								key={table.schema.name}
-								className={classes.tableEntry}
-								onClick={() => setExplorerTable(table.schema.name)}
-								onDoubleClick={(e) => togglePinned(e, table.schema.name)}
-								style={{
-									backgroundColor: isActive ? themeColor("surreal") : undefined,
-									borderRadius: 8,
-								}}
-							>
-								<Icon
-									style={{ flexShrink: 0 }}
-									color={isActive ? "surreal" : isLight ? "light.3" : "light.5"}
-									path={isEdge ? mdiVectorLine : mdiTable}
-									size="sm"
-								/>
-
-								<Text
-									c={isActive ? (isLight ? "black" : "white") : isLight ? "light.7" : "light.1"}
-									className={classes.tableName}
-								>
-									{table.schema.name}
-								</Text>
-
-								<Spacer />
-
-								{isPinned && (
-									<Icon
-										onClick={(e) => togglePinned(e, table.schema.name)}
-										className={classes.pinButton}
-										color={isActive ? "surreal" : isLight ? "light.3" : "light.4"}
-										title="Unpin table"
-										path={mdiPin}
-										size="sm"
-									/>
-								)}
-							</Group>
-						);
-					})}
-				</ScrollArea>
+				
 			) : (
 				<Text ta="center" pt="sm" c="light.5">
 					Not connected
 				</Text>
-			)}
+			)} */}
 
 			<TableCreator
 				opened={isCreating}

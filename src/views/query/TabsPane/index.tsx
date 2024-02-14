@@ -51,9 +51,7 @@ export function TabsPane(props: TabsPaneProps) {
 				</Badge>
 			}
 			rightSection={
-				<ActionIcon
-					onClick={newTab}
-				>
+				<ActionIcon title="Create query..." onClick={newTab}>
 					<Icon path={mdiPlus} />
 				</ActionIcon>
 			}
@@ -67,7 +65,7 @@ export function TabsPane(props: TabsPaneProps) {
 				gap={0}
 			>
 				<ScrollArea>
-					<Stack gap="sm">
+					<Stack gap="xs">
 						{queries.map((query) => {
 							const isActive = query.id === activeQuery;
 
