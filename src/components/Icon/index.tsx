@@ -30,7 +30,8 @@ export const Icon = ({ size, color, path, style, left, right, ...rest }: IconPro
 			height: iconSize + 'em',
 			verticalAlign: 'middle',
 			marginRight: left ? '0.5em' : undefined,
-			marginLeft: right ? '0.5em' : undefined
+			marginLeft: right ? '0.5em' : undefined,
+			flexShrink: 0,
 		});
 	}, [color, left, right, size, style, theme]);
 

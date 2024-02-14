@@ -109,7 +109,7 @@ export function QueryView() {
 				<PanelGroup direction="horizontal">
 					{!isEmbed && (
 						<>
-							<Panel style={{ minWidth: 225 }} defaultSize={15} maxSize={25}>
+							<Panel minSize={15} defaultSize={15} maxSize={50}>
 								<TabsPane
 									openHistory={showHistoryHandle.open}
 									openSaved={showSavedHandle.open}

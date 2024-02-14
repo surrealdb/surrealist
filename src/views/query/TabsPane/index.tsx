@@ -50,6 +50,13 @@ export function TabsPane(props: TabsPaneProps) {
 					{queries.length > 0 && queries.length.toString()}
 				</Badge>
 			}
+			rightSection={
+				<ActionIcon
+					onClick={newTab}
+				>
+					<Icon path={mdiPlus} />
+				</ActionIcon>
+			}
 		>
 			<Stack
 				pos="absolute"
@@ -70,7 +77,7 @@ export function TabsPane(props: TabsPaneProps) {
 									fullWidth
 									miw={0}
 									px={8}
-									color={isActive ? "surreal": "slate"}
+									color="slate"
 									variant={isActive ? "light" : "subtle"}
 									onClick={() => setActiveQueryTab(query.id)}
 									className={clsx(classes.query, isActive && classes.queryActive)}
@@ -109,15 +116,6 @@ export function TabsPane(props: TabsPaneProps) {
 								</Button>
 							);
 						})}
-						<Button
-							fullWidth
-							color="slate"
-							variant="light"
-							leftSection={<Icon path={mdiPlus} />}
-							onClick={newTab}
-						>
-							New query
-						</Button>
 					</Stack>
 				</ScrollArea>
 				<Spacer />
