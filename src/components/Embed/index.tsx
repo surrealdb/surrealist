@@ -1,6 +1,5 @@
 import { Notifications } from "@mantine/notifications";
 import { Box, MantineProvider } from "@mantine/core";
-import { resetApplicationState } from "~/util/helpers";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { MANTINE_THEME, themeColor } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
@@ -9,13 +8,6 @@ import { QueryView } from "~/views/query/QueryView";
 export function Embed() {
 	const colorScheme = useColorScheme();
 	const isLight = useIsLight();
-
-	// useHotkeys([
-	// 	["mod+alt+equal", increaseFontZoomLevel],
-	// 	["mod+alt+minus", decreaseFontZoomLevel],
-	// 	["mod+alt+0", resetFontZoomLevel],
-	// 	["f11", togglePinned],
-	// ], []);
 
 	return (
 		<MantineProvider
@@ -27,7 +19,7 @@ export function Embed() {
 
 			<ErrorBoundary
 				FallbackComponent={AppErrorHandler} 
-				onReset={resetApplicationState}
+				onReset={location.reload}
 			>
 				<Box
 					h="100vh"

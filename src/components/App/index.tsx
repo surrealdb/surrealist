@@ -8,7 +8,7 @@ import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
-import { resetApplicationState, updateTitle } from "~/util/helpers";
+import { updateTitle } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { Scaffold } from "../Scaffold";
@@ -79,7 +79,7 @@ export function App() {
 			>
 				<ErrorBoundary
 					FallbackComponent={AppErrorHandler} 
-					onReset={resetApplicationState}
+					onReset={location.reload}
 				>
 					<Scaffold />
 				</ErrorBoundary>

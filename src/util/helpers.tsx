@@ -8,9 +8,6 @@ import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
 import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
 import { useConfigStore } from "~/stores/config";
-import { useDatabaseStore } from "~/stores/database";
-import { useExplorerStore } from "~/stores/explorer";
-import { useInterfaceStore } from "~/stores/interface";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -42,13 +39,6 @@ export function updateTitle() {
 	}
 
 	adapter.setWindowTitle(segments.join(' '));
-}
-
-export function resetApplicationState() {
-	useInterfaceStore.setState(useInterfaceStore.getInitialState());
-	useConfigStore.setState(useConfigStore.getInitialState());
-	useDatabaseStore.setState(useDatabaseStore.getInitialState());
-	useExplorerStore.setState(useExplorerStore.getInitialState());
 }
 
 /**
