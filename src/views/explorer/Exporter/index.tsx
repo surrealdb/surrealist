@@ -1,12 +1,12 @@
-import { ActionIcon, Button, Checkbox, Modal, Stack } from "@mantine/core";
+import { Button, Checkbox, Modal, Stack } from "@mantine/core";
 import { EXPORT_TYPES, ExportType, SURQL_FILTERS } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
-import { Icon } from "../../Icon";
-import { mdiDownload } from "@mdi/js";
-import { ModalTitle } from "../../ModalTitle";
+import { Icon } from "../../../components/Icon";
+import { mdiDownload, mdiUpload } from "@mdi/js";
+import { ModalTitle } from "../../../components/ModalTitle";
 import { Text } from "@mantine/core";
 import { useToggleList } from "~/hooks/toggle";
 import { adapter } from "~/adapter";
@@ -54,15 +54,17 @@ export function Exporter() {
 
 	return (
 		<>
-			<ActionIcon
-				size="xl"
-				title="Export database to file"
+			<Button
+				fullWidth
+				color="slate"
+				variant="light"
+				leftSection={<Icon path={mdiUpload} />}
 				onClick={openExporter}
 				loading={isExporting}
 				disabled={!isOnline}
 			>
-				<Icon path={mdiDownload} />
-			</ActionIcon>
+				Export database
+			</Button>
 
 			<Modal
 				opened={showExporter}
@@ -94,6 +96,7 @@ export function Exporter() {
 					onClick={handleExport}
 					loading={isExporting}
 					disabled={exportTypes.length === 0}
+					variant="gradient"
 				>
 					Save export
 					<Icon path={mdiDownload} right />

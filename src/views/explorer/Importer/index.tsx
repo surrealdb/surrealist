@@ -1,17 +1,16 @@
-import { ActionIcon, Button, Group, Modal, Paper } from "@mantine/core";
+import { Button, Group, Modal, Paper } from "@mantine/core";
 import { SURQL_FILTERS } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useRef, useState } from "react";
-import { Icon } from "../../Icon";
-import { mdiFileDocument, mdiUpload } from "@mdi/js";
+import { Icon } from "../../../components/Icon";
+import { mdiDownload, mdiFileDocument, mdiUpload } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { showNotification } from "@mantine/notifications";
 import { showError } from "~/util/helpers";
-import { ModalTitle } from "../../ModalTitle";
+import { ModalTitle } from "../../../components/ModalTitle";
 import { useDisclosure } from "@mantine/hooks";
-import { Spacer } from "../../Spacer";
 import { Text } from "@mantine/core";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { getActiveSurreal } from "~/util/surreal";
@@ -68,15 +67,17 @@ export function Importer() {
 
 	return (
 		<>
-			<ActionIcon
-				size="xl"
-				title="Import database from file"
+			<Button
+				fullWidth
+				color="slate"
+				variant="light"
+				leftSection={<Icon path={mdiDownload} />}
 				onClick={startImport}
 				loading={isImporting}
 				disabled={!isOnline}
 			>
-				<Icon path={mdiUpload} />
-			</ActionIcon>
+				Import database
+			</Button>
 			
 			<Modal
 				opened={showConfirm}
@@ -124,23 +125,16 @@ export function Importer() {
 					While existing data will be preserved, it may be overwritten by the imported data.
 				</Text>
 
-				<Group>
-					<Button
-						variant="light"
-						color={isLight ? "light.5" : "light.3"}
-						onClick={showConfirmHandle.close}
-					>
-						Close
-					</Button>
-					<Spacer />
-					<Button
-						onClick={confirmImport}
-						loading={isImporting}
-					>
-						Import
-						<Icon path={mdiUpload} right />
-					</Button>
-				</Group>
+				<Button
+					mt="xl"
+					fullWidth
+					onClick={confirmImport}
+					loading={isImporting}
+					variant="gradient"
+				>
+					Start import
+					<Icon path={mdiUpload} right />
+				</Button>
 			</Modal>
 		</>
 	);

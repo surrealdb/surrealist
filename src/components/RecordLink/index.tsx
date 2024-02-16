@@ -2,18 +2,19 @@ import { Group, Text } from "@mantine/core";
 import { mdiArrowTopRight } from "@mdi/js";
 import { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
-import { OpenFn } from "~/types";
 import { Icon } from "../Icon";
+import { useInspector } from "~/providers/Inspector";
 
 export interface RecordLinkProps extends ComponentPropsWithoutRef<"div"> {
 	value: string;
-	onRecordClick?: OpenFn;
 }
 
-export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
+export function RecordLink({ value, ...rest }: RecordLinkProps) {
+	const { inspect } = useInspector();
+
 	const handleOpen = useStable((e: MouseEvent) => {
-		onRecordClick?.(value);
 		e.stopPropagation();
+		inspect(value);
 	});
 
 	return (
@@ -24,11 +25,12 @@ export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
 			gap={0}
 			onClick={handleOpen}
 			style={{
-				cursor: onRecordClick ? "pointer" : undefined,
+				cursor: "pointer"
 			}}
 		>
 			<Text
 				ff="JetBrains Mono"
+				fw={600}
 				style={{
 					whiteSpace: "nowrap",
 					overflow: "hidden",
@@ -37,7 +39,7 @@ export function RecordLink({ value, onRecordClick, ...rest }: RecordLinkProps) {
 				}}>
 				{value}
 			</Text>
-			{onRecordClick && <Icon path={mdiArrowTopRight} right />}
+			<Icon path={mdiArrowTopRight} right />
 		</Group>
 	);
 }

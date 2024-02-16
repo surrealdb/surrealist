@@ -2929,6 +2929,7 @@ dependencies = [
  "radix_trie",
  "rand",
  "regex",
+ "reqwest",
  "revision",
  "ring 0.17.7",
  "roaring",

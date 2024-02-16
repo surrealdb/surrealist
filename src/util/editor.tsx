@@ -42,6 +42,7 @@ export const DARK_THEME = "surrealist-dark";
 export const BASE_EDITOR_CONFIG: editor.IStandaloneEditorConstructionOptions = {
 	scrollBeyondLastLine: false,
 	overviewRulerLanes: 0,
+	smoothScrolling: true,
 	fontFamily: "JetBrains Mono",
 	renderLineHighlight: "none",
 	lineDecorationsWidth: 12,

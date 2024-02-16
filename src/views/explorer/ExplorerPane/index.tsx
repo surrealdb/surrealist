@@ -6,10 +6,9 @@ import {
 	mdiPlus,
 	mdiRefresh,
 	mdiTable,
-	mdiWrench,
 } from "@mdi/js";
 
-import { ActionIcon, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
@@ -17,10 +16,8 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useExplorerStore } from "~/stores/explorer";
 import { getSurreal } from "~/util/surreal";
-import { HistoryHandle } from "~/hooks/history";
 import { EventBus, useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
@@ -33,12 +30,11 @@ const PAGE_SIZES = [
 ];
 
 export interface ExplorerPaneProps {
-	history: HistoryHandle<any>;
 	refreshEvent: EventBus;
+	openCreator: () => void;
 }
 
-export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
-	const isLight = useIsLight();
+export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 	const schema = useSchema();
 
 	const activeTable = useExplorerStore((s) => s.activeTable);
@@ -60,9 +56,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	const page = useExplorerStore((s) => s.page);
 	const updatePage = useExplorerStore((s) => s.updatePage);
 
-	const openEditor = useExplorerStore((s) => s.openEditor);
 	const closeEditor = useExplorerStore((s) => s.closeEditor);
-	const openCreator = useExplorerStore((s) => s.openCreator);
 	const setExplorerFiltering = useExplorerStore((s) => s.setExplorerFiltering);
 	const setExplorerFilter = useExplorerStore((s) => s.setExplorerFilter);
 	const clearExplorerData = useExplorerStore((s) => s.clearExplorerData);
@@ -71,11 +65,8 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
 	const requestCreate = useStable(async () => {
-		openCreator(activeTable || '');
-		history.clear();
+		openCreator();
 	});
-
-	const toggleInspector = useStable(() => isEditing ? openEditor() : closeEditor());
 
 	function setCurrentPage(number: number) {
 		updatePageText(number.toString());
@@ -183,20 +174,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		setCurrentPage(page + 1);
 	});
 
-	const openRecord = useStable((record: any) => {
-		const id = typeof record === "string" ? record : record.id;
-
-		history.push(id);
-		openEditor();
-	});
-
-	const headers = useMemo(() => {
-		if (!activeTable) {
-			return [];
-		}
-
-		return schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
-	}, []);
+	const headers = schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
 
 	return (
 		<ContentPane
@@ -205,25 +183,25 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 			rightSection={
 				<Group align="center">
 					<ActionIcon title="Create record" onClick={requestCreate}>
-						<Icon color="light.4" path={mdiPlus} />
+						<Icon path={mdiPlus} />
 					</ActionIcon>
 
-					<ActionIcon title="Toggle inspector" onClick={toggleInspector}>
+					{/* <ActionIcon title="Toggle inspector" onClick={toggleInspector}>
 						<Icon color="light.4" path={mdiWrench} />
-					</ActionIcon>
+					</ActionIcon> */}
 
 					<ActionIcon title="Refresh table" onClick={fetchRecords}>
-						<Icon color="light.4" path={mdiRefresh} />
+						<Icon path={mdiRefresh} />
 					</ActionIcon>
 
 					<ActionIcon title="Toggle filter" onClick={toggleFilter}>
-						<Icon color="light.4" path={mdiFilterVariant} />
+						<Icon path={mdiFilterVariant} />
 					</ActionIcon>
 
-					<Divider orientation="vertical" color={isLight ? "light.0" : "dark.5"} />
+					<Divider orientation="vertical" />
 
-					<Icon color="light.4" path={mdiDatabase} mr={-10} />
-					<Text c="light.4" lineClamp={1}>
+					<Icon path={mdiDatabase} mr={-10} />
+					<Text lineClamp={1}>
 						{recordCount || "no"} rows
 					</Text>
 				</Group>
@@ -238,10 +216,10 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 							onChange={setFilter}
 							error={!isFilterValid}
 							autoFocus
-							styles={(theme) => ({
+							styles={() => ({
 								input: {
 									fontFamily: "JetBrains Mono",
-									borderColor: (isFilterValid ? themeColor("gray") : themeColor("red")) + " !important",
+									borderColor: (isFilterValid ? undefined : themeColor("red")) + " !important",
 								},
 							})}
 						/>
@@ -258,17 +236,26 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 						>
 							<DataTable
 								data={records}
-								openRecord={openRecord}
-								active={history.current}
 								sorting={sortMode}
 								onSortingChange={updateSortMode}
-								onRowClick={openRecord}
 								headers={headers}
 							/>
 						</ScrollArea>
 					) : (
-						<Center h="90%" c="light.5">
-							Table has no records
+						<Center h="90%">
+							<Box ta="center">
+								<Text c="slate">
+									Table has no records
+								</Text>
+								<Button
+									mt={6}
+									variant="subtle"
+									color="surreal.5"
+									onClick={openCreator}
+								>
+									Would you like to create one?
+								</Button>
+							</Box>
 						</Center>
 					)}
 

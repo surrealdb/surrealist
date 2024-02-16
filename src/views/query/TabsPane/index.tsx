@@ -47,7 +47,7 @@ export function TabsPane(props: TabsPaneProps) {
 					radius="sm"
 					c="inherit"
 				>
-					{queries.length > 0 && queries.length.toString()}
+					{queries.length}
 				</Badge>
 			}
 			rightSection={

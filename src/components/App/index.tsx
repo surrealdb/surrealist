@@ -16,6 +16,7 @@ import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
+import { InspectorProvider } from "~/providers/Inspector";
 
 export function App() {
 	const { toggleWindowPinned, setWindowScale, setEditorScale } = useConfigStore.getState();
@@ -77,12 +78,14 @@ export function App() {
 				shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
 				submenuDelay={250}
 			>
-				<ErrorBoundary
-					FallbackComponent={AppErrorHandler} 
-					onReset={location.reload}
-				>
-					<Scaffold />
-				</ErrorBoundary>
+				<InspectorProvider>
+					<ErrorBoundary
+						FallbackComponent={AppErrorHandler} 
+						onReset={location.reload}
+					>
+						<Scaffold />
+					</ErrorBoundary>
+				</InspectorProvider>
 			</ContextMenuProvider>
 
 			<Transition

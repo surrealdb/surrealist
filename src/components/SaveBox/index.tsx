@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Button, Group, Notification, Portal } from "@mantine/core";
+import { Button, Group, GroupProps, Notification, Portal } from "@mantine/core";
 import { mdiCheck, mdiInformationOutline } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SaveableHandle } from "~/hooks/save";
@@ -11,6 +11,7 @@ import { clsx } from "clsx";
 export interface SaveBoxProps {
 	handle: SaveableHandle<any>;
 	inline?: boolean;
+	inlineProps?: GroupProps;
 	position?: "left" | "center" | "right";
 	saveText?: ReactNode;
 	revertText?: ReactNode;
@@ -20,11 +21,12 @@ export interface SaveBoxProps {
  * Used to present the managed state of a `useSaveable` hook
  * in the form of a save box.
  */
-export function SaveBox({ handle, inline, position, saveText, revertText }: SaveBoxProps) {
+export function SaveBox({ handle, inline, inlineProps, position, saveText, revertText }: SaveBoxProps) {
 
 	const saveButton = (
 		<Button
 			rightSection={<Icon path={mdiCheck} size="md" />}
+			variant="gradient"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={handle.save}
@@ -35,9 +37,8 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 
 	const revertButton = (
 		<Button
-			disabled={!handle.isSaveable}
 			onClick={handle.revert}
-			color="dark.4"
+			color="slate"
 		>
 			{revertText ?? 'Revert'}
 		</Button>
@@ -46,7 +47,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 
 	if (inline) {
 		return (
-			<Group gap={10} align="center" justify="apart">
+			<Group gap={10} align="center" justify="apart" {...inlineProps}>
 				{revertButton}
 				{saveButton}
 			</Group>

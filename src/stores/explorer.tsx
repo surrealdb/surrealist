@@ -15,9 +15,6 @@ export type ExplorerStore = {
 	recordCount: number,
 	filtering: boolean,
 	filter: string,
-	isCreating: boolean,
-	creatorId: string,
-	creatorBody: string,
 	isEditing: boolean,
 	recordHistory: string[],
 	activeRecord: ActiveRecord | null,
@@ -32,10 +29,7 @@ export type ExplorerStore = {
 	setExplorerData: (records: unknown[], recordCount: number) => void;
 	clearExplorerData: () => void;
 	setExplorerFiltering: (filtering: boolean) => void;
-	setExplorerFilter: (filter: string) => void;
-	openCreator: (creatorId: string) => void;
-	setCreatorId: (creatorId: string) => void;
-	setCreatorBody: (creatorBody: string) => void;
+	setExplorerFilter: (filter: string) => void;	
 	openEditor: () => void;
 	closeEditor: () => void;
 	setHistory: (recordHistory: string[]) => void;
@@ -54,9 +48,6 @@ export const useExplorerStore = create<ExplorerStore>((set) => ({
 	recordCount: 0,
 	filtering: false,
 	filter: '',
-	isCreating: false,
-	creatorId: '',
-	creatorBody: '',
 	isEditing: false,
 	recordHistory: [],
 	activeRecord: null,
@@ -82,15 +73,6 @@ export const useExplorerStore = create<ExplorerStore>((set) => ({
 	setExplorerFiltering: (filtering) => set(() => ({ filtering })),
 	setExplorerFilter: (filter: string) => set(() => ({ filter })),
 
-	openCreator: (creatorId) => set(() => ({
-		creatorId,
-		isEditing: false,
-		isCreating: true,
-		creatorBody: '{\n    \n}'
-	})),
-
-	setCreatorId: (creatorId) => set(() => ({ creatorId })),
-	setCreatorBody: (creatorBody) => set(() => ({ creatorBody })),
 	openEditor: () => set(() => ({
 		isEditing: true,
 		isCreating: false,

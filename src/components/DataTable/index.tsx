@@ -1,14 +1,15 @@
 import classes from "./style.module.scss";
-import { Box, Text, useMantineTheme } from "@mantine/core";
+import { Box, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { useMemo } from "react";
 import { renderDataCell } from "./datatypes";
-import { OpenFn, ColumnSort } from "~/types";
+import { ColumnSort } from "~/types";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { mdiChevronDown, mdiChevronUp } from "@mdi/js";
 import { alphabetical, isObject } from "radash";
+import { useInspector } from "~/providers/Inspector";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
@@ -18,15 +19,13 @@ interface DataTableProps {
 	data: any;
 	active?: string | null;
 	sorting?: ColumnSort | null;
-	openRecord?: OpenFn;
 	headers?: string[];
 	onSortingChange?: (order: ColumnSort | null) => void;
-	onRowClick?: (value: any) => void;
 }
 
-export function DataTable({ data, active, sorting, openRecord, headers, onSortingChange, onRowClick }: DataTableProps) {
-	const theme = useMantineTheme();
+export function DataTable({ data, active, sorting, headers, onSortingChange }: DataTableProps) {
 	const isLight = useIsLight();
+	const { inspect } = useInspector();
 
 	const handleSortClick = useStable((col: string) => {
 		if (!onSortingChange) return;
@@ -112,7 +111,7 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 
 				return (
 					<Box key={j} component="td" className={classes.tableValue} h={37}>
-						{renderDataCell(cellValue, openRecord)}
+						{renderDataCell(cellValue)}
 					</Box>
 				);
 			});
@@ -123,7 +122,7 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 				<Box
 					key={i}
 					component="tr"
-					onClick={() => onRowClick?.(value)}
+					onClick={() => value.id && inspect(value.id)}
 					style={{
 						backgroundColor: `${isActive ? "var(--mantine-color-light-6)" : undefined} !important`,
 					}}

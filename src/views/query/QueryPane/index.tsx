@@ -31,7 +31,6 @@ export function QueryPane(props: QueryPaneProps) {
 
 	const controls = useRef<editor.IStandaloneCodeEditor>();
 	const activeTab = useActiveQuery();
-	
 
 	const validateQuery = useStable(() => {
 		const isInvalid = updateQueryValidation(controls.current!);

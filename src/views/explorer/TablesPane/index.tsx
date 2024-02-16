@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text } from "@mantine/core";
-import { mdiDownload, mdiPin, mdiPlus, mdiTable, mdiUpload, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { mdiMagnify, mdiPin, mdiPinOff, mdiPlus, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -16,8 +16,15 @@ import { TableCreator } from "~/components/TableCreator";
 import { useExplorerStore } from "~/stores/explorer";
 import { useConfigStore } from "~/stores/config";
 import clsx from "clsx";
+import { Importer } from "../Importer";
+import { Exporter } from "../Exporter";
+import { useContextMenu } from "mantine-contextmenu";
 
-export function TablesPane() {
+export interface TablesPaneProps {
+	openRecordCreator: (table: string) => void;
+}
+
+export function TablesPane(props: TablesPaneProps) {
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
 	const isLight = useIsLight();
 	const [isCreating, setIsCreating] = useState(false);
@@ -26,6 +33,8 @@ export function TablesPane() {
 	const connection = useActiveConnection();
 	const isOnline = useIsConnected();
 	const schema = useTables();
+
+	const { showContextMenu } = useContextMenu();
 
 	const activeTable = useExplorerStore((s) => s.activeTable);
 	const setExplorerTable = useExplorerStore((s) => s.setExplorerTable);
@@ -55,9 +64,7 @@ export function TablesPane() {
 		setIsCreating(false);
 	});
 
-	const togglePinned = useStable((e: any, table: string) => {
-		e.stopPropagation();
-
+	const togglePinned = useStable((table: string) => {
 		if (table && connection) {
 			toggleTablePin(table);
 		}
@@ -68,13 +75,15 @@ export function TablesPane() {
 			title="Tables"
 			icon={mdiViewSequential}
 			leftSection={
-				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
-					radius="sm"
-					c="inherit"
-				>
-					{schema.length > 0 && schema.length.toString()}
-				</Badge>
+				schema.length > 0 && (
+					<Badge
+						color={isLight ? "slate.0" : "slate.9"}
+						radius="sm"
+						c="inherit"
+					>
+						{schema.length}
+					</Badge>
+				)
 			}
 			rightSection={
 				<ActionIcon title="Create table..." onClick={openCreator}>
@@ -92,6 +101,27 @@ export function TablesPane() {
 			>
 				<ScrollArea>
 					<Stack gap="xs">
+						{isOnline && (
+							<TextInput
+								placeholder="Search tables..."
+								leftSection={<Icon path={mdiMagnify} />}
+								value={search}
+								onChange={setSearch}
+								variant="unstyled"
+								autoFocus
+							/>
+						)}
+
+						{isOnline ? (tablesFiltered.length === 0 && (
+							<Text ta="center" pt="sm" c="light.5">
+								{hasAccess ? "No tables found" : "Unsupported auth mode"}
+							</Text>
+						)) : (
+							<Text ta="center" pt="sm" c="light.5">
+								Not connected
+							</Text>
+						)}
+
 						{tablesFiltered.map((table) => {
 							const isActive = activeTable == table.schema.name;
 							const isPinned = connection.pinnedTables.includes(table.schema.name);
@@ -107,6 +137,26 @@ export function TablesPane() {
 									variant={isActive ? "light" : "subtle"}
 									onClick={() => setExplorerTable(table.schema.name)}
 									className={clsx(classes.table, isActive && classes.tableActive)}
+									onContextMenu={showContextMenu([
+										{
+											key: 'open',
+											title: "View table records",
+											icon: <Icon path={mdiTable} />,
+											onClick: () => setExplorerTable(table.schema.name)
+										},
+										{
+											key: 'new',
+											title: "Create new record",
+											icon: <Icon path={mdiPlus} />,
+											onClick: () => props.openRecordCreator(table.schema.name)
+										},
+										{
+											key: 'pin',
+											title: isPinned ? "Unpin table" : "Pin table",
+											icon: <Icon path={isPinned ? mdiPinOff : mdiPin} />,
+											onClick: () => togglePinned(table.schema.name)
+										}
+									])}
 									styles={{
 										label: {
 											flex: 1
@@ -121,10 +171,7 @@ export function TablesPane() {
 									rightSection={
 										isPinned && (
 											<Icon
-												onClick={(e) => togglePinned(e, table.schema.name)}
-												className={classes.pinButton}
-												color={isActive ? "surreal" : isLight ? "light.3" : "light.4"}
-												title="Unpin table"
+												title="Pinned table"
 												path={mdiPin}
 												size="sm"
 											/>
@@ -147,45 +194,10 @@ export function TablesPane() {
 					>
 						Actions
 					</Text>
-					<Button
-						fullWidth
-						color="slate"
-						variant="light"
-						leftSection={<Icon path={mdiDownload} />}
-						onClick={() => {}}
-					>
-						Import database
-					</Button>
-					<Button
-						fullWidth
-						color="slate"
-						variant="light"
-						leftSection={<Icon path={mdiUpload} />}
-						onClick={() => {}}
-					>
-						Export database
-					</Button>
+					<Importer />
+					<Exporter />
 				</Stack>
 			</Stack>
-			{/* <TextInput
-				placeholder="Search table..."
-				leftSection={<Icon path={mdiMagnify} />}
-				value={search}
-				onChange={setSearch}
-				mb="lg"
-			/> */}
-
-			{/* {isOnline && tablesFiltered.length === 0 ? (
-				<Text ta="center" pt="sm" c="light.5">
-					{hasAccess ? "No tables found" : "Unsupported auth mode"}
-				</Text>
-			) : isOnline ? (
-				
-			) : (
-				<Text ta="center" pt="sm" c="light.5">
-					Not connected
-				</Text>
-			)} */}
 
 			<TableCreator
 				opened={isCreating}

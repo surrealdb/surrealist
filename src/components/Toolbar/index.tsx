@@ -11,9 +11,7 @@ import { Spacer } from "../Spacer";
 import { ViewMode } from "~/types";
 import { adapter } from "~/adapter";
 import { useConnection } from "~/hooks/connection";
-import { Exporter } from "./Exporter";
 import { useConfigStore } from "~/stores/config";
-import { Importer } from "./Importer";
 import { closeConnection, openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
@@ -124,10 +122,6 @@ export function Toolbar(props: ToolbarProps) {
 					toggleConsole={setShowConsole.toggle}
 				/>
 			)}
-
-			<Importer />
-
-			<Exporter />
 
 			<Modal
 				opened={!!editingTab}

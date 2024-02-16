@@ -28,7 +28,7 @@ import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { LiveView } from "~/views/live/LiveView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { VIEW_MODES } from "~/constants";
+import { SANDBOX, VIEW_MODES } from "~/constants";
 import { updateTitle } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -36,6 +36,7 @@ import { mdiCog } from "@mdi/js";
 import { Settings } from "../Settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
+import { surrealIcon } from "~/util/icons";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -87,7 +88,7 @@ export function Scaffold() {
 
 	// TODO Implement bottom console drawer
 
-	const { setActiveView } = useConfigStore.getState();
+	const { setActiveView, setActiveConnection } = useConfigStore.getState();
 	const { openConnectionCreator } = useInterfaceStore.getState();
 
 	const activeConnection = useConfigStore((s) => s.activeConnection);
@@ -112,6 +113,10 @@ export function Scaffold() {
 	const setViewMode = useStable((id: ViewMode) => {
 		updateTitle();
 		setActiveView(id);
+	});
+
+	const openSandbox = useStable(() => {
+		setActiveConnection(SANDBOX);
 	});
 
 	return (
@@ -196,9 +201,19 @@ export function Scaffold() {
 							Open or create a new connection to continue
 						</Text>
 						<Center mt="lg">
-							<Button size="xs" onClick={openConnectionCreator}>
-								Create connection
-							</Button>
+							<Stack>
+								<Button size="xs" onClick={openConnectionCreator}>
+									Create connection
+								</Button>
+								<Button
+									size="xs"
+									variant="light"
+									onClick={openSandbox}
+									leftSection={<Icon path={surrealIcon} color="surreal" />}
+								>
+									Open the sandbox
+								</Button>
+							</Stack>
 						</Center>
 					</div>
 				</Center>

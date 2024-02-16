@@ -150,6 +150,10 @@ export function isPermissionError(result: any) {
  * @returns The URI string
  */
 export function connectionUri(options: ConnectionOptions) {
+	if (options.protocol == "mem") {
+		return `${options.protocol}://`;
+	}
+
 	return `${options.protocol}://${options.hostname}`;
 }
 
@@ -186,4 +190,29 @@ export function getFileName(name: string) {
  */
 export function isUnnamedTab(tab: TabQuery) {
 	return !!tab.name?.startsWith('New query');
+}
+
+/**
+ * Attempt to parse the given string as a valid params object
+ * while silently handling any errors
+ * 
+ * @param paramString The string to parse
+ * @returns The parsed params object
+ */
+export function tryParseParams(paramString: string) {
+	let params: any = {};
+
+	try {
+		const parsed = JSON.parse(paramString);
+
+		if (typeof parsed !== "object" || Array.isArray(parsed)) {
+			throw new TypeError("Must be object");
+		}
+
+		params = parsed;
+	} catch {
+		console.warn("Invalid JSON in variables");
+	}
+
+	return params;
 }

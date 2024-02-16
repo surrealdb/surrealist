@@ -26,6 +26,7 @@ const PROTOCOLS: Selectable<Protocol>[] = [
 	{ label: "HTTPS", value: "https" },
 	{ label: "WS", value: "ws" },
 	{ label: "WSS", value: "wss" },
+	{ label: "Memory", value: "mem" },
 	// { label: "IndexDB", value: "idxdb" },
 ];
 
@@ -134,6 +135,8 @@ export function ConnectionEditor() {
 		}
 	}, [opened]);
 
+	const isMemory = details.connection.protocol === "mem";
+
 	return (
 		<Modal
 			opened={opened}
@@ -167,9 +170,10 @@ export function ConnectionEditor() {
 					/>
 					<TextInput
 						flex={1}
-						placeholder="localhost:8000"
 						value={details.connection.hostname}
 						onPaste={handleHostnamePaste}
+						disabled={isMemory}
+						placeholder={isMemory ? "Not applicable" : "localhost:8000"}
 						onChange={(e) =>
 							setDetails((draft) => {
 								draft.connection.hostname = e.target.value;

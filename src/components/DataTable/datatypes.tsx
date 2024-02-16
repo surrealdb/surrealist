@@ -1,8 +1,7 @@
+import dayjs from "dayjs";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import { mdiCheck, mdiClockOutline, mdiClose } from "@mdi/js";
-import dayjs from "dayjs";
 import { ReactNode } from "react";
-import { OpenFn } from "~/types";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
@@ -17,7 +16,6 @@ export interface DataCellType {
 
 export interface DataCellProps {
 	value: any;
-	openRecord?: OpenFn;
 }
 
 // ----- Data Cell Types -----
@@ -54,7 +52,7 @@ function NumberCell(props: DataCellProps) {
 }
 
 function ThingCell(props: DataCellProps) {
-	return <RecordLink value={props.value} onRecordClick={props.openRecord} />;
+	return <RecordLink value={props.value} />;
 }
 
 function DateTimeCell(props: DataCellProps) {
@@ -89,7 +87,7 @@ function ArrayCell(props: DataCellProps) {
 								<Group wrap="nowrap">
 									<span style={{ opacity: 0.5 }}>#{i + 1}</span>
 									<div key={i} style={TRUNCATE_STYLE}>
-										{renderDataCell(item, props.openRecord)}
+										{renderDataCell(item)}
 									</div>
 								</Group>
 							))}
@@ -155,14 +153,11 @@ const DataCellTypes = [
 	},
 ];
 
-export function renderDataCell(value: any, openRecord?: OpenFn): ReactNode {
+export function renderDataCell(value: any): ReactNode {
 	for (const type of DataCellTypes) {
 		// eslint-disable-next-line unicorn/prefer-regexp-test
 		if (type.match(value)) {
-			return type.component({
-				value,
-				openRecord,
-			});
+			return type.component({ value });
 		}
 	}
 
