@@ -1,4 +1,4 @@
-import { Connection, DesignerLayoutMode, DesignerNodeMode, DriverType, HistoryQuery, PartialId, ResultMode, SavedQuery, SurrealistConfig, TabQuery, ViewMode } from "~/types";
+import { Connection, DesignerNodeMode, DriverType, HistoryQuery, PartialId, ResultMode, SavedQuery, SurrealistConfig, TabQuery, ViewMode } from "~/types";
 import { createBaseConfig, createBaseTab } from "~/util/defaults";
 import { MantineColorScheme } from "@mantine/core";
 import { create } from "zustand";
@@ -60,7 +60,6 @@ export type ConfigStore = SurrealistConfig & {
 	setUpdateChecker: (updateChecker: boolean) => void;
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
 	setResultMode: (resultMode: ResultMode) => void;
-	setDesignerLayoutMode: (defaultDesignerLayoutMode: DesignerLayoutMode) => void;
 	setDesignerNodeMode: (defaultDesignerNodeMode: DesignerNodeMode) => void;
 	addHistoryEntry: (entry: HistoryQuery) => void;
 	toggleTablePin: (table: string) => void;
@@ -227,8 +226,6 @@ export const useConfigStore = create<ConfigStore>()(
 		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
 
 		setResultMode: (resultMode) => set(() => ({ resultMode })),
-
-		setDesignerLayoutMode: (defaultDesignerLayoutMode) => set(() => ({ defaultDesignerLayoutMode })),
 
 		setDesignerNodeMode: (defaultDesignerNodeMode) => set(() => ({ defaultDesignerNodeMode })),
 

@@ -27,6 +27,7 @@ export function themeColor(name: string) {
  */
 export const MANTINE_THEME = createTheme({
 	fontFamily: `-apple-system, ui-sans-serif, system-ui, Inter, "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"`,
+	fontFamilyMonospace: `JetBrains Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`,
 	primaryColor: "surreal",
 	primaryShade: 6,
 	defaultRadius: "md",
@@ -77,10 +78,10 @@ export const MANTINE_THEME = createTheme({
 			"#9f9fac",
 			"#848495",
 			"#6a6a7b",
-			"#535360",
-			"#3b3b44",
+			"#39393c",
+			"#2b2b2f",
 			"#222226",
-			"#19191d"
+			"#19191D"
 		]
 	},
 	defaultGradient: {
@@ -149,7 +150,7 @@ export const MANTINE_THEME = createTheme({
 					color: "white",
 					backgroundColor: "var(--surrealist-tooltip-bg)",
 					backdropFilter: "blur(4px)",
-					webkitBackdropFilter: "blur(4px)",
+					WebkitBackdropFilter: "blur(4px)",
 				},
 			},
 		},

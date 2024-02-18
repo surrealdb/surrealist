@@ -33,7 +33,7 @@ export function ExplorerView() {
 	return (
 		<>
 			<PanelGroup direction="horizontal">
-				<Panel minSize={15} defaultSize={18}  maxSize={25}>
+				<Panel minSize={15} defaultSize={18} maxSize={25}>
 					<TablesPane
 						openRecordCreator={openCreator}
 					/>

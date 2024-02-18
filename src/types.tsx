@@ -6,7 +6,6 @@ export type ResultMode = "table" | "json" | "combined";
 export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "live";
 export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary" | "simple";
-export type DesignerLayoutMode = "diagram" | "grid";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
 export type ColorScheme = "light" | "dark";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem";
@@ -42,7 +41,6 @@ export interface SurrealistConfig {
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	defaultDesignerNodeMode: DesignerNodeMode,
-	defaultDesignerLayoutMode: DesignerLayoutMode
 }
 
 export interface Connection {
@@ -53,7 +51,6 @@ export interface Connection {
 	connection: ConnectionOptions;
 	pinnedTables: string[];
 	designerNodeMode?: DesignerNodeMode;
-	designerLayoutMode?: DesignerLayoutMode;
 	liveQueries: LiveQuery[];
 	queryHistory: HistoryQuery[];
 }

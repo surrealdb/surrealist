@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useStable } from "./stable";
 
 /**
  * Trigger a new render and invoke the passed function
@@ -12,12 +13,14 @@ export function useLater<T extends any[]>(doLater: (...args: T) => unknown): (..
 	const [shouldFire, setShouldFire] = useState(false);
 	const argsRef = useRef<T>();
 
+	const stableLater = useStable(doLater);
+
 	useEffect(() => {
 		if (shouldFire) {
-			doLater(...argsRef.current!);
+			stableLater(...argsRef.current!);
 			setShouldFire(false);
 		}
-	}, [doLater, shouldFire]);
+	}, [shouldFire]);
 
 	return useCallback((...args) => {
 		setShouldFire(true);

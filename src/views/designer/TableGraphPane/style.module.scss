@@ -15,3 +15,61 @@
 		color: var(--mantine-color-surreal-5);
 	}
 }
+
+.diagram {
+
+	:global(.react-flow__handle) {
+		backdrop-filter: blur(2px);
+		-webkit-backdrop-filter: blur(2px);
+		background-color: rgba(0, 0, 0, 0.1) !important;
+		border: 1px solid var(--mantine-color-slate-5) !important;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: unset;
+
+		&::before {
+			content: "";
+			width: 9px;
+			height: 9px;
+			border-radius: 100%;
+			background-color: white;
+		}
+	}
+
+	:global(.react-flow__handle-left) {
+		width: 18px;
+		height: 18px;
+		left: -9px;
+	}
+
+	:global(.react-flow__handle-right) {
+		width: 18px;
+		height: 18px;
+		right: -9px;
+	}
+
+	:global(.react-flow__edge > path) {
+		stroke: white !important;
+	}
+
+}
+
+:root[data-mantine-color-scheme="light"] .diagram {
+
+	:global(.react-flow__handle) {
+		background-color: rgba(255, 255, 255, 0.01) !important;
+		border: 1px solid var(--mantine-color-slate-2) !important;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+
+		&::before {
+			background-color: var(--mantine-color-slate-4);
+		}
+	}
+
+	:global(.react-flow__edge > path) {
+		stroke: var(--mantine-color-slate-3) !important;
+	}
+
+}

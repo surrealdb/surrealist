@@ -51,11 +51,6 @@ export function GeneralElement({ data, setData }: ElementProps) {
 						}
 					/>
 					<Checkbox
-						label="Use table as view"
-						checked={!!data.schema.view}
-						onChange={updateHasView}
-					/>
-					<Checkbox
 						label="Record changefeed"
 						checked={!!data.schema.changefeed}
 						onChange={(e) =>

@@ -4,13 +4,35 @@ import { useStable } from "~/hooks/stable";
 import { useTables } from "~/hooks/schema";
 import { useImmer } from "use-immer";
 import { useSaveable } from "~/hooks/save";
-import { buildDefinitionQueries, isSchemaValid } from "../DesignPane/helpers";
+import { buildDefinitionQueries, isSchemaValid } from "../DesignDrawer/helpers";
 import { showError } from "~/util/helpers";
 import { getActiveSurreal } from "~/util/surreal";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { TableDefinition } from "~/types";
 import { ReactFlowProvider } from "reactflow";
 import { useIsConnected } from "~/hooks/connection";
+import { useDisclosure } from "@mantine/hooks";
+import { DesignDrawer } from "../DesignDrawer";
+
+const DEFAULT_DEF: TableDefinition = {
+	schema: {
+		name: "",
+		drop: false,
+		schemafull: false,
+		view: null,
+		permissions: {
+			select: "",
+			create: "",
+			update: "",
+			delete: ""
+		},
+		changefeed: false,
+		changetime: ""
+	},
+	fields: [],
+	indexes: [],
+	events: []
+};
 
 export interface DesignerViewProps {
 }
@@ -18,7 +40,9 @@ export interface DesignerViewProps {
 export function DesignerView(_props: DesignerViewProps) {
 	const isOnline = useIsConnected();
 	const tables = useTables();
-	const [data, setData] = useImmer<TableDefinition | null>(null);
+
+	const [isDesigning, isDesigningHandle] = useDisclosure();
+	const [data, setData] = useImmer<TableDefinition>(DEFAULT_DEF);
 
 	const isValid = useMemo(() => {
 		return data ? isSchemaValid(data) : true;
@@ -39,6 +63,7 @@ export function DesignerView(_props: DesignerViewProps) {
 
 			surreal.query(query)
 				.then(() => fetchDatabaseSchema())
+				.then(isDesigningHandle.close)
 				.catch((err) => {
 					showError("Failed to apply schema", err.message);
 				});
@@ -49,11 +74,6 @@ export function DesignerView(_props: DesignerViewProps) {
 	});
 
 	const setActiveTable = useStable((table: string) => {
-		if (saveHandle.isChanged) {
-			showError("Unsaved changes", "You have unsaved changes. Please save or revert them before switching tables.");
-			return;
-		}
-
 		const schema = tables.find((t) => t.schema.name === table);
 		
 		if (!schema) {
@@ -62,44 +82,41 @@ export function DesignerView(_props: DesignerViewProps) {
 
 		setData(schema);
 		saveHandle.track();
+		isDesigningHandle.open();
 	});
 
-	const closeTable = useStable(() => {
-		setData(null);
-		saveHandle.track();
+	const closeDrawer = useStable((force?: boolean) => {
+		if (saveHandle.isChanged && !force) {
+			return;
+		}
+		
+		isDesigningHandle.close();
 	});
 
 	useEffect(() => {
 		if (!isOnline) {
-			closeTable();
+			isDesigningHandle.close();
 		}
 	}, [isOnline]);
 
 	return (
-		// <Splitter
-		// 	minSize={SPLIT_SIZE}
-		// 	bufferSize={500}
-		// 	values={splitValues}
-		// 	onChange={setSplitValues}
-		// 	direction="horizontal"
-		// 	endPane={
-		// 		data && (
-		// 			<DesignPane
-		// 				value={data}
-		// 				onChange={setData as any}
-		// 				onClose={closeTable}
-		// 				handle={saveHandle}
-		// 			/>
-		// 		)
-		// 	}
-		// >
-		<ReactFlowProvider>
-			<TableGraphPane
-				tables={tables}
-				active={data}
-				setActiveTable={setActiveTable}
+		<>
+			<ReactFlowProvider>
+				<TableGraphPane
+					tables={tables}
+					active={isDesigning ? data : null}
+					setActiveTable={setActiveTable}
+				/>
+			</ReactFlowProvider>
+			
+			<DesignDrawer
+				opened={isDesigning}
+				onClose={closeDrawer}
+				handle={saveHandle}
+				value={data as any}
+				onChange={setData as any}
 			/>
-		</ReactFlowProvider>
+		</>
 		// </Splitter>
 	);
 }

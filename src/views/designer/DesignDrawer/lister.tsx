@@ -69,7 +69,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 								<Icon
 									path={mdiCircle}
 									color="surreal"
-									size={8}
+									size="xs"
 									style={{ flexShrink: 0 }}
 								/>
 								{item.name ? (

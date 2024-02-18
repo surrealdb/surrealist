@@ -1,9 +1,12 @@
+import classes from "./style.module.scss";
+
 import {
 	Accordion,
 	ActionIcon,
 	Badge,
 	Box,
 	Button,
+	Drawer,
 	Group,
 	Modal,
 	Paper,
@@ -15,7 +18,6 @@ import {
 import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
 import { MouseEvent, useMemo, useState } from "react";
 import { Updater } from "use-immer";
-import { ContentPane } from "~/components/Pane";
 import { useStable } from "~/hooks/stable";
 import { TableDefinition } from "~/types";
 import { fetchDatabaseSchema, isEdgeTable } from "~/util/schema";
@@ -29,23 +31,24 @@ import { FieldsElement } from "./elements/fields";
 import { IndexesElement } from "./elements/indexes";
 import { EventsElement } from "./elements/events";
 import { ModalTitle } from "~/components/ModalTitle";
-import { ViewElement } from "./elements/view";
 import { ChangefeedElement } from "./elements/changefeed";
 import { getSurreal } from "~/util/surreal";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { themeColor } from "~/util/mantine";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
 
 const INITIAL_TABS = ["general"];
 
-export interface SchemaPaneProps {
+export interface SchemaDrawerProps {
+	opened: boolean;
 	value: TableDefinition;
 	onChange: Updater<TableDefinition>;
 	handle: SaveableHandle<any>;
-	onClose: () => void;
+	onClose: (force?: boolean) => void;
 }
 
-export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps) {
+export function DesignDrawer({ opened, value, onChange, handle, onClose }: SchemaDrawerProps) {
 	const isLight = useIsLight();
 	const isShifting = useActiveKeys("Shift");
 	
@@ -71,7 +74,7 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 		}
 
 		setIsDeleting(false);
-		onClose();
+		onClose(true);
 
 		await surreal.query(`REMOVE TABLE ${value.schema.name}`);
 
@@ -81,33 +84,45 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 	const isEdge = useMemo(() => isEdgeTable(value), [value]);
 
 	return (
-		<ContentPane
-			icon={mdiWrench}
-			title="Design"
-			leftSection={
-				handle.isChanged && (handle.isSaveable ? (
-					<Badge color={isLight ? "blue.6" : "blue.4"}>Unsaved changes</Badge>
-				) : (
-					<Badge color={isLight ? "red.6" : "red.4"}>Missing required fields</Badge>
-				))
-			}
-			rightSection={
-				<Group wrap="nowrap">
-					<ActionIcon onClick={requestDelete} title="Delete table (Hold shift to force)">
-						<Icon color={isShifting ? "red" : "light.4"} path={mdiDelete} />
-					</ActionIcon>
-
-					<ActionIcon title="Refresh" onClick={onClose}>
-						<Icon color="light.4" path={mdiClose} />
-					</ActionIcon>
-				</Group>
-			}
+		<Drawer
+			opened={opened}
+			onClose={onClose}
+			position="right"
+			withCloseButton={false}
+			trapFocus={false}
+			size="lg"
 		>
+			<Group mb="md" gap="sm">
+				<ModalTitle>
+					<Icon path={mdiWrench} left size="sm" />
+					Table designer
+				</ModalTitle>
+
+				<Spacer />
+
+				{handle.isChanged && (handle.isSaveable ? (
+					<Badge color="blue" variant="light">
+						Unsaved changes
+					</Badge>
+				) : (
+					<Badge color="red" variant="light">
+						Missing required fields
+					</Badge>
+				))}
+
+				<ActionIcon title="Delete table (Hold shift to force)" onClick={requestDelete}>
+					<Icon color={isShifting ? "red" : undefined} path={mdiDelete} />
+				</ActionIcon>
+
+				<ActionIcon onClick={() => onClose(false)} disabled={handle.isChanged}>
+					<Icon path={mdiClose} />
+				</ActionIcon>
+			</Group>
 			<TextInput
 				mb="xs"
 				readOnly
 				value={value.schema.name}
-				onFocus={(e) => e.target.select()}
+				onFocus={ON_FOCUS_SELECT}
 				rightSectionWidth={76}
 				rightSection={
 					isEdge && (
@@ -130,7 +145,7 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 					}
 				}}
 			/>
-			<ScrollArea style={{ position: "absolute", inset: 12, top: 56, bottom: 12 }}>
+			<ScrollArea style={{ position: "absolute", inset: 12, top: 114, bottom: 12 }}>
 				<Accordion
 					multiple
 					defaultValue={INITIAL_TABS}
@@ -140,13 +155,6 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 						data={value}
 						setData={onChange}
 					/>
-
-					{value.schema.view && (
-						<ViewElement
-							data={value}
-							setData={onChange}
-						/>
-					)}
 
 					{value.schema.changefeed && (
 						<ChangefeedElement
@@ -177,7 +185,13 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 				</Accordion>
 
 				<Box mt="lg">
-					<SaveBox handle={handle} inline />
+					<SaveBox
+						handle={handle}
+						inline
+						inlineProps={{
+							className: classes.saveBox
+						}}
+					/>
 				</Box>
 			</ScrollArea>
 
@@ -186,11 +200,11 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 				onClose={closeDelete}
 				title={<ModalTitle>Are you sure?</ModalTitle>}
 			>
-				<Text c={isLight ? "light.6" : "light.1"}>
+				<Text>
 					You are about to delete this table and all data contained within it. This action cannot be undone.
 				</Text>
 				<Group mt="lg">
-					<Button onClick={closeDelete} color={isLight ? "light.5" : "light.3"} variant="light">
+					<Button onClick={closeDelete} color="slate" variant="light">
 						Close
 					</Button>
 					<Spacer />
@@ -199,6 +213,6 @@ export function DesignPane({ value, onChange, handle, onClose }: SchemaPaneProps
 					</Button>
 				</Group>
 			</Modal>
-		</ContentPane>
+		</Drawer>
 	);
 }

@@ -25,8 +25,7 @@ export function createBaseConfig(): SurrealistConfig {
 		resultMode: "json",
 		errorChecking: true,
 		lastPromptedVersion: null,
-		defaultDesignerNodeMode: 'fields',
-		defaultDesignerLayoutMode: 'diagram'
+		defaultDesignerNodeMode: 'summary'
 	};
 }
 

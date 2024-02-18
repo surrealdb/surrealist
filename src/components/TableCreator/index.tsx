@@ -3,10 +3,8 @@ import { mdiPlus, mdiTable, mdiVectorLine } from "@mdi/js";
 import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
-import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
 import { Form } from "../Form";
-import { Spacer } from "../Spacer";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
 import { ModalTitle } from "../ModalTitle";
@@ -18,7 +16,6 @@ export interface TableCreatorProps {
 }
 
 export function TableCreator({ opened, onClose }: TableCreatorProps) {
-	const isLight = useIsLight();
 	const [createType, setCreateType] = useState("table");
 	const [tableName, setTableName] = useInputState("");
 	const [tableIn, setTableIn] = useState<string[]>([]);
@@ -55,6 +52,7 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 				opened={opened}
 				onClose={onClose}
 				trapFocus={false}
+				size="sm"
 				title={
 					<ModalTitle>{`Create new ${createType}`}</ModalTitle>
 				}
@@ -91,13 +89,18 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 							</>
 						)}
 						<Group mt="lg">
-							<Button onClick={onClose} color={isLight ? "light.5" : "light.3"} variant="light">
+							<Button
+								onClick={onClose}
+								color="slate"
+								variant="light"
+								flex={1}
+							>
 								Close
 							</Button>
-							<Spacer />
 							<Button
-								color="surreal"
 								type="submit"
+								variant="gradient"
+								flex={1}
 								disabled={!tableName || (createType === "relation" && (!tableIn || !tableOut))}
 								rightSection={<Icon path={mdiPlus} />}
 							>

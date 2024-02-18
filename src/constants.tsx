@@ -117,11 +117,6 @@ export const DESIGNER_NODE_MODES = [
 	{ label: "Simple", value: "simple" },
 ];
 
-export const DESIGNER_LAYOUT_MODES = [
-	{ label: "Diagram", value: "diagram" },
-	{ label: "Grid", value: "grid" },
-];
-
 export const INDEX_TYPES = [
 	{ label: "Normal", value: "normal" },
 	{ label: "Unique", value: "unique" },

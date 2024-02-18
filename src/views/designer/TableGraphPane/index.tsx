@@ -1,26 +1,29 @@
-import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Stack, Text, Title, useMantineTheme } from "@mantine/core";
-import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiImageOutline, mdiPlus, mdiXml } from "@mdi/js";
-import { ElementRef, useEffect, useRef, useState } from "react";
+import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
-import { ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
-import { NODE_TYPES, buildTableGraph as buildTableDiagram, createSnapshot } from "./helpers";
+import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title } from "@mantine/core";
+import { mdiAdjust, mdiCog, mdiFullscreen, mdiHelpCircle, mdiImage, mdiPlus, mdiRefresh, mdiXml } from "@mdi/js";
+import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStoreApi } from "reactflow";
+import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
+import { DesignerNodeMode, TableDefinition } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveConnection } from "~/hooks/connection";
-import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
-import { useDesignerConfig } from "./hooks";
-import { TableGrid } from "./grid";
+import { DESIGNER_NODE_MODES } from "~/constants";
+import { useNodeMode } from "./hooks";
 import { RadioSelect } from "~/components/RadioSelect";
-import { useToggleList } from "~/hooks/toggle";
 import { adapter } from "~/adapter";
 import { showNotification } from "@mantine/notifications";
 import { sleep } from "radash";
 import { useConfigStore } from "~/stores/config";
+import { themeColor } from "~/util/mantine";
+import { useSchema } from "~/hooks/schema";
+import { useContextMenu } from "mantine-contextmenu";
+import { useBoolean } from "~/hooks/boolean";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -42,38 +45,63 @@ export interface TableGraphPaneProps {
 }
 
 export function TableGraphPane(props: TableGraphPaneProps) {
-	const { updateConnection } = useConfigStore.getState();
+	const { updateCurrentConnection } = useConfigStore.getState();
+	const { showContextMenu } = useContextMenu();
 
-	const theme = useMantineTheme();
-	const activeView = useConfigStore((s) => s.activeView);
-	const [nodes, setNodes, onNodesChange] = useNodesState([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const [expanded, toggleExpanded] = useToggleList();
-	const [isRendering, setIsRendering] = useState(false);
-	const [isCreating, setIsCreating] = useState(false);
-	const [showConfig, setShowConfig] = useState(false);
-	const [showExporter, setShowExporter] = useState(false);
-	const [showHelp, setShowHelp] = useState(false);
+	const schema = useSchema();
+	const isViewActive = useConfigStore((s) => s.activeView == "designer");
+
+	const [isComputing, setIsComputing] = useState(false);
+	const [isExporting, setIsExporting] = useState(false);
+	const [isCreating, isCreatingHandle] = useBoolean();
+	const [showConfig, showConfigHandle] = useBoolean();
+	const [showHelp, showHelpHandle] = useBoolean();
 	const ref = useRef<ElementRef<"div">>(null);
 	const isOnline = useIsConnected();
 	const activeSession = useActiveConnection();
+	const nodeMode = useNodeMode(activeSession);
 	const isLight = useIsLight();
-	
-	const { nodeMode, layoutMode } = useDesignerConfig(activeSession);
-	const { fitView, getViewport, setViewport } = useReactFlow();
 
-	useEffect(() => {
-		const [nodes, edges] = buildTableDiagram(
-			props.tables,
-			props.active,
-			nodeMode,
-			expanded,
-			(table) => toggleExpanded(table)
-		);
+	const { fitView, getViewport, setViewport } = useReactFlow();
+	const [nodes, setNodes, onNodesChange] = useNodesState([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+	const initialized = useRef(false);
+	const flowStore = useStoreApi();
+
+	const renderGraph = useStable(async () => {
+		const [nodes, edges] = buildFlowNodes(props.tables);
+
+		if (nodes.length === 0) {
+			setIsComputing(false);
+			return;
+		}
+
+		const doFit = !initialized.current;
+		initialized.current = true;
 
 		setNodes(nodes);
 		setEdges(edges);
-	}, [props.tables, props.active, nodeMode, expanded]);
+		setIsComputing(true);
+
+		// This has to be rediculously high because MacOS webview is truly terrible
+		// On chromium this could be as low as 3ms
+		await sleep(300);
+
+		const layoutNodes = [...flowStore.getState().nodeInternals.values()] as InternalNode[];
+
+		applyNodeLayout(layoutNodes, edges).then(async changes => {
+			onNodesChange(changes);
+
+			if (doFit) {
+				// Yet again, on chromium this could be 3ms
+				await sleep(100);
+				fitView();
+			}
+
+			setIsComputing(false);
+		});
+	});
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
 		const viewport = getViewport();
@@ -84,7 +112,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				extensions: [type],
 			},
 		], async () => {
-			setIsRendering(true);
+			setIsExporting(true);
 
 			await sleep(50);
 
@@ -93,7 +121,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return await createSnapshot(ref.current!, type);
 		});
 
-		setIsRendering(false);
+		setIsExporting(false);
 		setViewport(viewport);
 		
 		if (isSuccess) {
@@ -103,45 +131,46 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		}
 	});
 
-	const openHelp = useStable(() => {
-		setShowHelp(true);
-	});
-
-	const closeHelp = useStable(() => {
-		setShowHelp(false);
-	});
-
-	const showBox = !isOnline || props.tables.length === 0;
-
-	const openCreator = useStable(() => {
-		setIsCreating(true);
-	});
-
-	const closeCreator = useStable(() => {
-		setIsCreating(false);
-	});
-
-	const toggleConfig = useStable(() => {
-		setShowConfig(v => !v);
-	});
-
-	const toggleExporter = useStable(() => {
-		setShowExporter(v => !v);
-	});
+	const showBox = !isComputing && (!isOnline || props.tables.length === 0);
 
 	const setNodeMode = useStable((mode: string) => {
-		updateConnection({
+		updateCurrentConnection({
 			id: activeSession?.id,
 			designerNodeMode: mode as DesignerNodeMode,
 		});
 	});
 
-	const setLayoutMode = useStable((mode: string) => {
-		updateConnection({
-			id: activeSession?.id,
-			designerLayoutMode: mode as DesignerLayoutMode,
+	useLayoutEffect(() => {
+		if (isViewActive) {
+			setIsComputing(true);
+		}
+	}, [isViewActive]);
+
+	useLayoutEffect(() => {
+		if (isViewActive) {
+			setTimeout(() => {
+				renderGraph();
+			});
+		}
+	}, [schema]);
+
+	useEffect(() => {
+		renderGraph();
+	}, [nodeMode]);
+
+	useEffect(() => {
+		setNodes(curr => {
+			return curr.map(node => {
+				return {
+					...node,
+					data: {
+						...node.data,
+						isSelected: node.id === props.active?.schema.name
+					},
+				};
+			});
 		});
-	});
+	}, [props.active]);
 
 	return (
 		<ContentPane
@@ -150,88 +179,29 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			style={{ overflow: 'hidden' }}
 			rightSection={
 				<Group wrap="nowrap">
-					<ActionIcon title="Create table..." onClick={openCreator}>
-						<Icon color="light.4" path={mdiPlus} />
+					<ActionIcon title="Create table..." onClick={isCreatingHandle.open}>
+						<Icon path={mdiPlus} />
 					</ActionIcon>
-					{layoutMode == "diagram" && (
-						<Popover
-							opened={showExporter}
-							onChange={setShowExporter}
-							position="bottom-end"
-							offset={{ crossAxis: -4, mainAxis: 8 }}
-							withArrow
-							withinPortal
-							shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
-						>
-							<Popover.Target>
-								<ActionIcon
-									title="Export Graph"
-									onClick={toggleExporter}
-								>
-									<Icon color="light.4" path={mdiDownload} />
-								</ActionIcon>
-							</Popover.Target>
-							<Popover.Dropdown onMouseLeave={toggleExporter} p="xs">
-								<Stack pb={4}>
-									<Button
-										color="surreal"
-										variant="subtle"
-										fullWidth
-										size="xs"
-										onClick={() => saveImage('svg')}
-									>
-										Save as SVG
-										<Icon
-											right
-											path={mdiXml}
-										/>
-									</Button>
-									<Button
-										color="surreal"
-										variant="subtle"
-										fullWidth
-										size="xs"
-										onClick={() => saveImage('png')}
-									>
-										Save as PNG
-										<Icon
-											right
-											path={mdiImageOutline}
-										/>
-									</Button>
-								</Stack>
-							</Popover.Dropdown>
-						</Popover>
-					)}
 					<Popover
 						opened={showConfig}
-						onChange={setShowConfig}
+						onChange={showConfigHandle.set}
 						position="bottom-end"
 						offset={{ crossAxis: -4, mainAxis: 8 }}
-						withArrow
-						withinPortal
-						shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
+						shadow="sm"
 					>
 						<Popover.Target>
 							<ActionIcon
 								title="Graph Options"
-								onClick={toggleConfig}
+								onClick={showConfigHandle.toggle}
 							>
-								<Icon color="light.4" path={mdiCog} />
+								<Icon path={mdiCog} />
 							</ActionIcon>
 						</Popover.Target>
-						<Popover.Dropdown onMouseLeave={toggleConfig}>
+						<Popover.Dropdown onMouseLeave={showConfigHandle.close}>
 							<Stack pb={4}>
 								<ModalTitle>
 									Table graph options
 								</ModalTitle>
-								<RadioSelect
-									label="Table layout"
-									data={DESIGNER_LAYOUT_MODES}
-									value={layoutMode}
-									onChange={setLayoutMode}
-								/>
-
 								<RadioSelect
 									label="Table appearance"
 									data={DESIGNER_NODE_MODES}
@@ -241,76 +211,129 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							</Stack>
 						</Popover.Dropdown>
 					</Popover>
-					<ActionIcon title="Help" onClick={openHelp}>
-						<Icon color="light.4" path={mdiHelpCircle} />
+					<ActionIcon title="Help" onClick={showHelpHandle.open}>
+						<Icon path={mdiHelpCircle} />
 					</ActionIcon>
 				</Group>
 			}>
-			<div style={{ width: "100%", height: "100%" }}>
-				{showBox && (
-					<Center h="100%" pos="absolute" inset={0} style={{ zIndex: 1 }}>
-						<Paper py="md" px="xl" c="light.5" bg={isLight ? "light.0" : "dark.8"} ta="center" maw={400}>
-							{isOnline ? (
-								<>
-									No tables found
-									<Box mt={4} c="surreal" style={{ cursor: "pointer" }} onClick={openCreator}>
-										Click here to create a new table
-									</Box>
-								</>
-							) : (
-								"Not connected to database"
-							)}
-						</Paper>
-					</Center>
+			<div style={{ position: "relative", width: "100%", height: "100%" }}>
+				{isViewActive && (
+					<ReactFlow
+						ref={ref}
+						fitView
+						nodes={nodes}
+						edges={edges}
+						nodeTypes={NODE_TYPES}
+						nodesDraggable={false}
+						nodesConnectable={false}
+						edgesFocusable={false}
+						proOptions={{ hideAttribution: true }}
+						onNodesChange={onNodesChange}
+						onEdgesChange={onEdgesChange}
+						className={classes.diagram}
+						style={{ opacity: isComputing ? 0 : 1 }}
+						onNodeClick={(_ev, node) => {
+							props.setActiveTable(node.id);
+						}}
+						onContextMenu={showContextMenu([
+							{
+								key: 'create',
+								icon: <Icon path={mdiPlus} />,
+								title: 'Create table...',
+								onClick: isCreatingHandle.open
+							},
+							{
+								key: 'view',
+								icon: <Icon path={mdiFullscreen} />,
+								title: 'Reset viewport',
+								onClick: () => fitView()
+							},
+							{
+								key: 'refresh',
+								icon: <Icon path={mdiRefresh} />,
+								title: 'Refresh',
+								onClick: renderGraph
+							},
+							{ key: 'divider' },
+							{
+								key: 'download-png',
+								icon: <Icon path={mdiImage} />,
+								title: 'Export as PNG',
+								onClick: () => saveImage('png')
+							},
+							{
+								key: 'download-svg',
+								icon: <Icon path={mdiXml} />,
+								title: 'Export as SVG',
+								onClick: () => saveImage('svg')
+							},
+						])}
+					>
+						<Background
+							color={themeColor(isLight ? "slate.2": "slate.6")}
+						/>
+					</ReactFlow>
 				)}
 
-				<LoadingOverlay
-					visible={isRendering}
-					loaderProps={{
-						size: 50
-					}}
-					overlayProps={{
-						backgroundOpacity: 1,
-						color: isLight ? theme.white : theme.colors.dark[7]
-					}}
-				/>
+				{isExporting && (
+					<Stack
+						inset={0}
+						pos="absolute"
+						align="center"
+						justify="center"
+						bg="var(--mantine-color-body)"
+						style={{ zIndex: 5 }}
+					>
+						<Loader />
+						<Text fz="xl" fw={600}>
+							Exporting graph...
+						</Text>
+					</Stack>
+				)}
 
-				{activeView === "designer" && (
-					layoutMode === 'diagram' ? (
-						<ReactFlow
-							ref={ref}
-							nodeTypes={NODE_TYPES}
-							nodes={nodes}
-							edges={edges}
-							nodesDraggable={false}
-							nodesConnectable={false}
-							edgesFocusable={false}
-							proOptions={{ hideAttribution: true }}
-							onNodesChange={onNodesChange}
-							onEdgesChange={onEdgesChange}
-							onNodeClick={(_ev, node) => {
-								props.setActiveTable(node.id);
-							}}
-						/>
-					) : (
-						<TableGrid
-							ref={ref}
-							tables={props.tables}
-							active={props.active}
-							nodeMode={nodeMode}
-							expanded={expanded}
-							onExpand={toggleExpanded}
-							onSelectTable={(table) => {
-								props.setActiveTable(table.schema.name);
-							}}
-						/>
-					)
+				{isComputing ? (
+					<Stack
+						inset={0}
+						pos="absolute"
+						align="center"
+						justify="center"
+						style={{ zIndex: 4, pointerEvents: 'none' }}
+					>
+						<Loader />
+						<Text fz="xl" fw={600}>
+							Visualizing schema...
+						</Text>
+					</Stack>
+				) : showBox && (
+					<Stack
+						inset={0}
+						pos="absolute"
+						align="center"
+						justify="center"
+						gap="lg"
+					>
+						<Box ta="center">
+							<Text fz="xl" fw={600}>
+								No tables defined
+							</Text>
+							<Text>
+								Get started by creating a table
+							</Text>
+						</Box>
+						<Button
+							variant="light"
+							rightSection={<Icon path={mdiPlus} />}
+							onClick={isCreatingHandle.open}
+						>
+							Create a table
+						</Button>
+					</Stack>
 				)}
 			</div>
 
 			<Modal
 				opened={showHelp}
-				onClose={closeHelp}
+				onClose={showHelpHandle.close}
 				trapFocus={false}
 				size="lg"
 				title={<ModalTitle>Using the Table Graph</ModalTitle>}
@@ -350,7 +373,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 			<TableCreator
 				opened={isCreating}
-				onClose={closeCreator}
+				onClose={isCreatingHandle.close}
 			/>
 		</ContentPane>
 	);

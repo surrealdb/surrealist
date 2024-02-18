@@ -37,6 +37,7 @@ export function SaveBox({ handle, inline, inlineProps, position, saveText, rever
 
 	const revertButton = (
 		<Button
+			disabled={!handle.isChanged}
 			onClick={handle.revert}
 			color="slate"
 		>

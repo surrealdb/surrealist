@@ -1,8 +1,8 @@
 import { Stack, Switch, Select, MantineColorScheme, Slider, Box } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
-import { DesignerLayoutMode, DesignerNodeMode } from "~/types";
+import { DesignerNodeMode } from "~/types";
 import { Setting } from "../setting";
-import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
+import { DESIGNER_NODE_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useCheckbox } from "~/hooks/events";
 import { isDesktop } from "~/adapter";
@@ -17,7 +17,6 @@ export function AppearanceTab() {
 	const {
 		setColorScheme,
 		setWordWrap,
-		setDesignerLayoutMode,
 		setDesignerNodeMode,
 		setWindowScale,
 		setEditorScale
@@ -25,7 +24,6 @@ export function AppearanceTab() {
 
 	const colorScheme = useConfigStore((s) => s.colorScheme);
 	const wordWrap = useConfigStore((s) => s.wordWrap);
-	const defaultDesignerLayoutMode = useConfigStore((s) => s.defaultDesignerLayoutMode);
 	const defaultDesignerNodeMode = useConfigStore((s) => s.defaultDesignerNodeMode);
 	const editorScale = useConfigStore((s) => s.editorScale);
 	const windowScale = useConfigStore((s) => s.windowScale);
@@ -34,10 +32,6 @@ export function AppearanceTab() {
 
 	const updateColorScheme = useStable((value: string | null) => {
 		setColorScheme(value as MantineColorScheme || 'light');
-	});
-
-	const updateLayoutMode = useStable((mode: string | null) => {
-		setDesignerLayoutMode(mode as DesignerLayoutMode || 'diagram');
 	});
 
 	const updateNodeMode = useStable((mode: string | null) => {
@@ -62,11 +56,7 @@ export function AppearanceTab() {
 				<Select data={THEMES} value={colorScheme} onChange={updateColorScheme} />
 			</Setting>
 
-			<Setting label="Default designer layout">
-				<Select data={DESIGNER_LAYOUT_MODES} value={defaultDesignerLayoutMode} onChange={updateLayoutMode} />
-			</Setting>
-
-			<Setting label="Default designer node appearance">
+			<Setting label="Default designer appearance">
 				<Select data={DESIGNER_NODE_MODES} value={defaultDesignerNodeMode} onChange={updateNodeMode} />
 			</Setting>
 
