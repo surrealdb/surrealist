@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
 import { mdiBullhorn, mdiCodeBraces, mdiFlash } from "@mdi/js";
 import { TableDefinition } from "~/types";
 import { Handle, Position } from "reactflow";
@@ -7,8 +7,8 @@ import { Spacer } from "~/components/Spacer";
 import { themeColor } from "~/util/mantine";
 import { useActiveConnection } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
-import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { MouseEvent, useRef } from "react";
+import { ON_STOP_PROPAGATION, extractType } from "~/util/helpers";
+import { MouseEvent, useMemo, useRef } from "react";
 
 interface SummaryProps {
 	isLight: boolean;
@@ -36,6 +36,47 @@ function Summary(props: SummaryProps) {
 				{props.value}
 			</Text>
 		</Group>
+	);
+}
+
+interface FieldKindProps {
+	kind: string;
+}
+
+function FieldKind({ kind }: FieldKindProps) {
+
+	const [kindName, tooltip] = useMemo(() => {
+		return extractType(kind);
+	}, []);
+
+	const value = (
+		<Text c="surreal.6" ff="mono" maw="50%">
+			{kindName}
+		</Text>
+	);
+
+	if (tooltip.length === 0) {
+		return value;
+	}
+
+	const items = (
+		<Box>
+			{tooltip.map((type) => (
+				<Text key={type} fw={500}>
+					{type}
+				</Text>
+			))}
+		</Box>
+	);
+
+	return (
+		<Tooltip
+			position="top"
+			label={items}
+			openDelay={0}
+		>
+			{value}
+		</Tooltip>
 	);
 }
 
@@ -82,14 +123,9 @@ function Fields(props: FieldsProps) {
 								{field.name}
 							</Text>
 							{field.kind ? (
-								<Text
-									truncate
-									c="surreal.6"
-									title={field.kind}
-									ff="mono"
-								>
-									{field.kind}
-								</Text>
+								<FieldKind
+									kind={field.kind}
+								/>
 							) : (
 								<Text c="slate" title={field.kind}>
 									none

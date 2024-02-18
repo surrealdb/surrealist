@@ -9,6 +9,8 @@ import { getConnection } from "./connection";
 import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
 import { useConfigStore } from "~/stores/config";
 
+const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
+
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
 	overflow: "hidden",
@@ -90,6 +92,7 @@ export function mod(n: number, m: number) {
  * @param value The input string
  * @param prefix The prefix to trim
  * @returns The list of items
+ * @deprecated Use `extractType` instead
  */
 export function extractTypeList(input: string, prefix: string) {
 	return input
@@ -97,6 +100,20 @@ export function extractTypeList(input: string, prefix: string) {
 		.replace(">", "")
 		.split("|")
 		.map((t) => t.trim());
+}
+
+/**
+ * Extracts the kind and items out of a field kind
+ *
+ * @param value The input string
+ * @returns The sanitized kind and items list
+ */
+export function extractType(input: string): [string, string[]] {
+	const [, kind, items] = FIELD_KIND_PATTERN.exec(input) || [];
+
+	return items.trim().length > 0
+		? [kind, items.split("|").map((t) => t.trim())]
+		: [kind, []];
 }
 
 /**
