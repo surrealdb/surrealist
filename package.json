@@ -50,7 +50,7 @@
 		"react-error-boundary": "^4.0.12",
 		"react-resizable-panels": "^2.0.5",
 		"react-reverse-portal": "^2.1.1",
-		"reactflow": "^11.8.1",
+		"reactflow": "^11.10.4",
 		"remove": "^0.1.5",
 		"semver": "^7.5.4",
 		"semver-compare": "^1.0.0",
