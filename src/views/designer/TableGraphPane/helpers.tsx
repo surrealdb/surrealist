@@ -125,8 +125,6 @@ export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
  * @returns The changes to apply
  */
 export async function applyNodeLayout(nodes: InternalNode[], edges: Edge[]): Promise<NodeChange[]> {
-	console.log('Applying layout to nodes', nodes, edges);
-	
 	const elk = new ELK();
 	const graph = {
 		id: 'root',

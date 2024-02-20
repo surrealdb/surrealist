@@ -25,7 +25,6 @@ import { ViewMode } from "~/types";
 import { ExplorerView } from "~/views/explorer/ExplorerView";
 import { DesignerView } from "~/views/designer/DesignerView";
 import { AuthenticationView } from "~/views/authentication/AuthenticationView";
-import { LiveView } from "~/views/live/LiveView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { SANDBOX, VIEW_MODES } from "~/constants";
@@ -49,7 +48,6 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	explorer: createHtmlPortalNode(PORTAL_ATTRS),
 	designer: createHtmlPortalNode(PORTAL_ATTRS),
 	authentication: createHtmlPortalNode(PORTAL_ATTRS),
-	live: createHtmlPortalNode(PORTAL_ATTRS),
 };
 
 interface NavigationIconProps {
@@ -178,10 +176,6 @@ export function Scaffold() {
 
 					<InPortal node={VIEW_PORTALS.authentication}>
 						<AuthenticationView />
-					</InPortal>
-
-					<InPortal node={VIEW_PORTALS.live}>
-						<LiveView />
 					</InPortal>
 				</>
 			) : (

@@ -1,9 +1,13 @@
+use futures::StreamExt;
 use once_cell::sync::Lazy;
-use regex::Regex;
 use serde_wasm_bindgen::{from_value, to_value};
+use tokio::sync::Mutex;
+use wasm_bindgen_futures::js_sys::Array;
+use wasm_bindgen_futures::js_sys::Function;
+use wasm_bindgen_futures::js_sys::Object;
+use wasm_bindgen_futures::js_sys::Reflect;
 use std::collections::HashMap;
-use surrealdb::sql::Array;
-use surrealdb::sql::Object;
+use std::time::Duration;
 use surrealdb::sql::Value;
 use tokio::sync::RwLock;
 use wasm_bindgen::prelude::*;
@@ -16,11 +20,14 @@ use surrealdb::{
 };
 
 use crate::types::ConnectionInfo;
+use crate::types::LiveQuery;
 use crate::types::SurrealVersion;
+use crate::utils::error_to_js;
 use crate::utils::make_error;
 use crate::utils::to_js_err;
 
 static SURREAL: Lazy<RwLock<Option<Surreal<Any>>>> = Lazy::new(|| RwLock::new(None));
+static LIVE_QUERIES: Lazy<Mutex<HashMap<String, LiveQuery>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 #[wasm_bindgen]
 pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
@@ -133,19 +140,16 @@ pub async fn query_version() -> Option<JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn execute_query(query: String, params: String) -> String {
+pub async fn execute_query(id: Option<String>, query: String, params: String) -> Option<Array> {
     let container = SURREAL.read().await;
+    let mut builder = container.as_ref()?.query(query);
+    let mut queries = LIVE_QUERIES.lock().await;
 
-    if container.is_none() {
-        let error = Value::Array(make_error("No connection open")).into_json();
-
-        return serde_json::to_string(&error).unwrap();
+    if let Some(id) = id.as_ref() {
+        if let Some(live) = queries.remove(id) {
+            live.cancel();
+        }
     }
-
-    console_log!("Executing remote query {}", query);
-
-    let client = container.as_ref().unwrap();
-    let mut builder = client.query(query);
 
     if let Ok(vars) = json(&params) {
         builder = builder.bind(vars);
@@ -155,52 +159,81 @@ pub async fn execute_query(query: String, params: String) -> String {
 
     let response = builder.with_stats().await;
 
-    console_log!(
-        "Received response from database, success: {}",
-        response.is_ok()
-    );
-
-    let results: Array = match response {
+    return match response {
         Ok(mut response) => {
             let statement_count = response.num_statements();
-
-            let mut results = Array::with_capacity(statement_count);
-            let errors = response.take_errors();
+            let results = Array::new_with_length(statement_count as u32);
 
             for i in 0..statement_count {
-                let mut entry = Object::default();
-                let error = errors.get(&i);
-                let (result, status, stats) = match error {
-                    Some((stats, error)) => {
-                        (Value::from(error.to_string()), Value::from("ERR"), *stats)
-                    }
-                    None => {
-                        let (stats, res) = response.take::<Value>(i).unwrap();
-                        (res.unwrap(), Value::from("OK"), stats)
-                    }
-                };
+                let object = Object::new();
+                let (stats, res) = response.take::<Value>(i).unwrap();
+                let time = stats.execution_time.unwrap_or_else(|| Duration::default());
 
-                entry.insert("result".to_owned(), result);
-                entry.insert("status".to_owned(), status);
-                if let Some(time) = stats.execution_time {
-                    entry.insert("time".to_owned(), Value::Duration(time.into()));
-                };
+                Reflect::set(&object, &"success".into(), &res.is_ok().into()).unwrap();
+                Reflect::set(&object, &"execution_time".into(), &format!("{:?}", time).into()).unwrap();
+                Reflect::set(&object, &"result".into(), &match res {
+                    Ok(value) => serde_json::to_string(&value.into_json()).unwrap().into(),
+                    Err(error) => error_to_js(error),
+                }).unwrap();
 
-                results.push(Value::Object(entry));
+                results.set(i as u32, object.into());
             }
 
-            results
+            if let Some(id) = id {
+                match response.into_inner().stream::<Value>(()) {
+                    Ok(stream) => {
+                        queries.insert(id, LiveQuery::new(stream));
+                    },
+                    Err(error) => {
+                        console_log!("Failed to get live query stream: {:?}", error.to_string());
+                    }
+                };
+            }
+            
+            Some(results)
         }
         Err(error) => {
-            let message = error.to_string();
-
-            console_log!("Query resulted in error: {}", message);
-            make_error(&message)
+            Some(make_error(error))
         }
     };
+}
 
-    let result_value = Value::Array(results);
-    let result_json = serde_json::to_string(&result_value.into_json()).unwrap();
+#[wasm_bindgen]
+pub async fn watch_live_query(id: String, on_message: Function) -> Option<JsValue> {
+    
+    let mut stream = {
+        let mut queries = LIVE_QUERIES.lock().await;
+        queries.get_mut(&id)?.into_inner()?
+    };
 
-    result_json
+    while let Some(value) = stream.next().await {
+        let data = serde_json::to_string(&value.data.into_json()).unwrap().into();
+        let action = match value.action {
+            surrealdb::Action::Create => "create",
+            surrealdb::Action::Update => "update",
+            surrealdb::Action::Delete => "delete",
+            _ => unreachable!(),
+        };
+        
+        let payload = Object::new();
+
+        Reflect::set(&payload, &"queryId".into(), &value.query_id.to_string().into()).unwrap();
+        Reflect::set(&payload, &"action".into(), &action.into()).unwrap();
+        Reflect::set(&payload, &"data".into(), &data).unwrap();
+
+        on_message.call1(&JsValue::NULL, &payload).unwrap();
+    }
+
+    LIVE_QUERIES.lock().await.remove(&id);
+
+    Some(JsValue::NULL)
+}
+
+#[wasm_bindgen]
+pub async fn cancel_live_query(id: String) {
+    let mut queries = LIVE_QUERIES.lock().await;
+
+    if let Some(live) = queries.remove(&id) {
+        live.cancel();
+    }
 }

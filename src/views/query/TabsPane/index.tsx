@@ -10,6 +10,9 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { LiveIndicator } from "~/components/LiveIndicator";
+import { getSurreal } from "~/util/surreal";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -19,6 +22,7 @@ export interface TabsPaneProps {
 export function TabsPane(props: TabsPaneProps) {
 	const { addQueryTab, removeQueryTab, updateQueryTab, setActiveQueryTab } = useConfigStore.getState();
 	const { queries, activeQuery } = useActiveConnection();
+	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();
 
 	const newTab = useStable(() => {
@@ -28,6 +32,7 @@ export function TabsPane(props: TabsPaneProps) {
 	const removeTab = useStable((id: string, e: React.MouseEvent) => {
 		e.stopPropagation();
 		removeQueryTab(id);
+		getSurreal()?.cancelQueries(id);
 	});
 
 	const renameQuery = useStable((id: string, name: string) => {
@@ -41,6 +46,7 @@ export function TabsPane(props: TabsPaneProps) {
 		<ContentPane
 			icon={mdiFormatListBulleted}
 			title="Queries"
+			w={325}
 			leftSection={
 				<Badge
 					color={isLight ? "slate.0" : "slate.9"}
@@ -65,9 +71,10 @@ export function TabsPane(props: TabsPaneProps) {
 				gap={0}
 			>
 				<ScrollArea>
-					<Stack gap="xs">
+					<Stack gap="xs" pb="md">
 						{queries.map((query) => {
 							const isActive = query.id === activeQuery;
+							const isLive = liveTabs.has(query.id);
 
 							return (
 								<Button
@@ -91,15 +98,24 @@ export function TabsPane(props: TabsPaneProps) {
 										/>
 									}
 									rightSection={
-										queries.length > 1 && (
-											<ActionIcon
-												component="div"
-												className={classes.queryClose}
-												onClick={(e) => removeTab(query.id, e)}
-											>
-												<Icon path={mdiClose} />
-											</ActionIcon>
-										)
+										<>
+											{isLive && (
+												<LiveIndicator
+													className={classes.queryLive}
+													mr={5}
+												/>
+											)}
+
+											{queries.length > 1 && (
+												<ActionIcon
+													component="div"
+													className={classes.queryClose}
+													onClick={(e) => removeTab(query.id, e)}
+												>
+													<Icon path={mdiClose} />
+												</ActionIcon>
+											)}
+										</>
 									}
 								>
 									<EditableText

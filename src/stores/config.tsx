@@ -1,9 +1,10 @@
-import { Connection, DesignerNodeMode, DriverType, HistoryQuery, PartialId, ResultMode, SavedQuery, SurrealistConfig, TabQuery, ViewMode } from "~/types";
+import { Connection, DesignerNodeMode, DriverType, HistoryQuery, PartialId, QueryType, SavedQuery, SurrealistConfig, TabQuery, ViewMode } from "~/types";
 import { createBaseConfig, createBaseTab } from "~/util/defaults";
-import { MantineColorScheme } from "@mantine/core";
-import { create } from "zustand";
+import { extract_query_type } from "~/generated/surrealist-embed";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
+import { MantineColorScheme } from "@mantine/core";
 import { clamp, newId } from "~/util/helpers";
+import { create } from "zustand";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -59,7 +60,6 @@ export type ConfigStore = SurrealistConfig & {
 	setLocalSurrealPath: (surrealPath: string) => void;
 	setUpdateChecker: (updateChecker: boolean) => void;
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
-	setResultMode: (resultMode: ResultMode) => void;
 	setDesignerNodeMode: (defaultDesignerNodeMode: DesignerNodeMode) => void;
 	addHistoryEntry: (entry: HistoryQuery) => void;
 	toggleTablePin: (table: string) => void;
@@ -160,11 +160,17 @@ export const useConfigStore = create<ConfigStore>()(
 				return {};
 			}
 
+			const query = {
+				...connection.queries[index],
+				...payload,
+			};
+
+			if (payload.query !== undefined) {
+				query.queryType = extract_query_type(payload.query) as QueryType; 
+			}
+
 			return {
-				queries: connection.queries.with(index, {
-					...connection.queries[index],
-					...payload,
-				})
+				queries: connection.queries.with(index, query)
 			};
 		})),
 
@@ -224,8 +230,6 @@ export const useConfigStore = create<ConfigStore>()(
 		setUpdateChecker: (updateChecker) => set(() => ({ updateChecker })),
 
 		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
-
-		setResultMode: (resultMode) => set(() => ({ resultMode })),
 
 		setDesignerNodeMode: (defaultDesignerNodeMode) => set(() => ({ defaultDesignerNodeMode })),
 

@@ -1,5 +1,4 @@
 {
 	"typescript.tsdk": "frontend\\node_modules\\typescript\\lib",
-	"prettier.jsxSingleQuote": false,
 	"javascript.preferences.quoteStyle": "double"
 }

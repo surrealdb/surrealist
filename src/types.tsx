@@ -1,9 +1,11 @@
 import { MantineColorScheme } from "@mantine/core";
+import { QueryResponse } from "./util/surreal";
 
 export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
 export type DriverType = "file" | "memory" | "tikv";
-export type ResultMode = "table" | "json" | "combined";
-export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "live";
+export type ResultMode = "table" | "single" | "combined" | "live";
+export type QueryType = "invalid" | "mixed" | "live" | "normal";
+export type ViewMode = "query" | "explorer" | "designer" | "authentication";
 export type SourceMode = "schema" | "infer";
 export type DesignerNodeMode = "fields" | "summary" | "simple";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
@@ -37,7 +39,6 @@ export interface SurrealistConfig {
 	localSurrealPass: string;
 	localSurrealPort: number;
 	updateChecker: boolean;
-	resultMode: ResultMode;
 	errorChecking: boolean;
 	lastPromptedVersion: string | null;
 	defaultDesignerNodeMode: DesignerNodeMode,
@@ -60,7 +61,9 @@ export interface TabQuery {
 	query: string;
 	name?: string;
 	variables: string;
-	response: any;
+	response: QueryResponse[];
+	queryType: QueryType;
+	resultMode: ResultMode;
 }
 
 export interface HistoryQuery {

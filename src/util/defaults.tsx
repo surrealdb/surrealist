@@ -1,5 +1,6 @@
-import { Connection, ConnectionOptions, SurrealistConfig, TabQuery } from "~/types";
+import { Connection, ConnectionOptions, QueryType, SurrealistConfig, TabQuery } from "~/types";
 import { newId } from "./helpers";
+import { extract_query_type } from "~/generated/surrealist-embed";
 
 export function createBaseConfig(): SurrealistConfig {
 	return {
@@ -22,7 +23,6 @@ export function createBaseConfig(): SurrealistConfig {
 		localSurrealPass: "root",
 		localSurrealPort: 8000,
 		updateChecker: true,
-		resultMode: "json",
 		errorChecking: true,
 		lastPromptedVersion: null,
 		defaultDesignerNodeMode: 'summary'
@@ -67,7 +67,9 @@ export function createBaseTab(query?: string): TabQuery {
 		query: query || "",
 		name: "",
 		variables: "{}",
-		response: null
+		response: [],
+		queryType: query ? extract_query_type(query) as QueryType : "invalid",
+		resultMode: "combined"
 	};
 
 }

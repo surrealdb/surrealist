@@ -15,6 +15,12 @@
 	display: none;
 }
 
-.query:hover .query-close {
-	display: flex;
+.query:hover {
+	.query-live {
+		display: none;
+	}
+
+	.query-close {
+		display: flex;
+	}
 }

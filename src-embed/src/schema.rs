@@ -316,6 +316,21 @@ pub fn extract_user_definition(definition: &str) -> Result<JsValue, String> {
     Err(String::from("Failed to extract user"))
 }
 
+const QUERY_TYPE_INVALID: &str = "invalid";
+const QUERY_TYPE_NORMAL: &str = "normal";
+const QUERY_TYPE_LIVE: &str = "live";
+const QUERY_TYPE_MIXED: &str = "mixed";
+
+#[wasm_bindgen]
+pub fn extract_query_type(query: &str) -> String {
+    match parse(query) {
+        Err(_) => QUERY_TYPE_INVALID.into(),
+        Ok(query) if query.iter().all(|s| matches!(s, Statement::Live(_))) => QUERY_TYPE_LIVE.into(),
+        Ok(query) if query.iter().all(|s| !matches!(s, Statement::Live(_))) => QUERY_TYPE_NORMAL.into(),
+        Ok(_) => QUERY_TYPE_MIXED.into(),
+    }
+}
+
 #[wasm_bindgen]
 pub fn validate_query(query: &str) -> Option<String> {
     let parsed = parse(query);
@@ -331,25 +346,6 @@ pub fn validate_where_clause(clause: &str) -> bool {
     let query = "SELECT * FROM table WHERE ".to_owned() + clause;
 
     parse(&query).is_ok()
-}
-
-#[wasm_bindgen]
-pub fn validate_live_query(query: &str) -> Option<String> {
-    let parsed = parse(query);
-
-    match parsed {
-        Err(_) => return Some("Expected valid query".into()),
-        Ok(queries) => {
-            if queries.len() != 1 {
-                return Some("Expected single query".into());
-            }
-
-            match queries[0] {
-                Statement::Live(_) => None,
-                _ => Some("Expected live select".into()),
-            }
-        }
-    }
 }
 
 #[wasm_bindgen]

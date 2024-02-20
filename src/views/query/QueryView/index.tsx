@@ -7,7 +7,7 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { isEmbed } from "~/adapter";
-import { Box, Button, Group, Modal, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
+import { Button, Group, Modal, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
 import { Image } from "@mantine/core";
@@ -99,61 +99,52 @@ export function QueryView() {
 					<TextLogo h={16} />
 					<Spacer />
 					<Actions
+						queryTab={active!}
 						showVariables={showVariables}
-						canQuery={queryValid && variablesValid}
 						toggleVariables={showVariablesHandle.toggle}
 					/>
 				</Group>
 			)}	
-			<Box flex={1}>
-				<PanelGroup direction="horizontal">
-					{!isEmbed && (
-						<>
-							<Panel minSize={15} defaultSize={18} maxSize={50}>
-								<TabsPane
-									openHistory={showHistoryHandle.open}
-									openSaved={showSavedHandle.open}
+
+			<Group flex={1} wrap="nowrap" gap={6}>
+				{!isEmbed && (
+					<TabsPane
+						openHistory={showHistoryHandle.open}
+						openSaved={showSavedHandle.open}
+					/>
+				)}
+				<PanelGroup direction="vertical">
+					<Panel minSize={25}>
+						<PanelGroup direction="horizontal">
+							<Panel minSize={25}>
+								<QueryPane
+									showVariables={showVariables}
+									isValid={queryValid}
+									setIsValid={setQueryValid}
+									toggleVariables={showVariablesHandle.toggle}
+									onSaveQuery={handleSaveRequest}
 								/>
 							</Panel>
-							<PanelDragger />
-						</>
-					)}
-					<Panel minSize={10}>
-						<PanelGroup direction="vertical">
-							<Panel minSize={25}>
-								<PanelGroup direction="horizontal">
-									<Panel minSize={25}>
-										<QueryPane
-											showVariables={showVariables}
-											canQuery={queryValid && variablesValid}
-											isValid={queryValid}
-											setIsValid={setQueryValid}
-											toggleVariables={showVariablesHandle.toggle}
-											onSaveQuery={handleSaveRequest}
+							{showVariables && (
+								<>
+									<PanelDragger />
+									<Panel defaultSize={25} minSize={25} maxSize={40}>
+										<VariablesPane
+											isValid={variablesValid}
+											setIsValid={setVariablesValid}
+											closeVariables={showVariablesHandle.close}
 										/>
 									</Panel>
-									{showVariables && (
-										<>
-											<PanelDragger />
-											<Panel defaultSize={25} minSize={25} maxSize={40}>
-												<VariablesPane
-													isValid={variablesValid}
-													setIsValid={setVariablesValid}
-													closeVariables={showVariablesHandle.close}
-												/>
-											</Panel>
-										</>
-									)}
-								</PanelGroup>
-							</Panel>
-							<PanelDragger />
-							<Panel minSize={25}>
-								<ResultPane />
-							</Panel>
+								</>
+							)}
 						</PanelGroup>
 					</Panel>
+					<PanelDragger />
+					<Panel minSize={25}>
+						<ResultPane />
+					</Panel>
 				</PanelGroup>
-			</Box>
+			</Group>
 
 			<HistoryDrawer
 				opened={showHistory}

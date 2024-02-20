@@ -21,8 +21,17 @@ export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
 	e.stopPropagation();
 };
 
-export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLInputElement>) => {
-	e.target.select();
+export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
+	if (e.target instanceof HTMLInputElement) {
+		e.target.select();
+	} else {
+		const text = e.target.childNodes[0] as Text;
+		const range = document.createRange();
+
+		range.selectNode(text);
+		window.getSelection()?.removeAllRanges();
+		window.getSelection()?.addRange(range);
+	}
 };
 
 export function updateTitle() {

@@ -1,4 +1,33 @@
+use futures::stream::{AbortHandle, Abortable};
 use serde::{Deserialize, Serialize};
+use surrealdb::{method::QueryStream, sql::Value};
+
+pub struct LiveQuery {
+    stream: Option<Abortable<QueryStream<Value>>>,
+    abort: AbortHandle,
+}
+
+impl LiveQuery {
+
+    pub fn new(stream: QueryStream<Value>) -> Self {
+        let (handle, registration) = AbortHandle::new_pair();
+        let stream = Abortable::new(stream, registration);
+
+        Self {
+            stream: Some(stream),
+            abort: handle,
+        }
+    }
+    
+    pub fn cancel(&self) {
+        self.abort.abort();
+    }
+
+    pub fn into_inner(&mut self) -> Option<Abortable<QueryStream<Value>>> {
+        self.stream.take()
+    }
+
+}
 
 #[derive(Deserialize)]
 pub struct ScopeField {

@@ -104,21 +104,12 @@ export async function executeQuery(options?: QueryOptions) {
 			setQueryActive(true);
 		}
 
-		const response = await getSurreal()?.query(queryStr, variableJson);
+		const surreal = getSurreal();
+		const response = await surreal?.query(queryStr, variableJson, id) || [];
 
 		updateQueryTab({
 			id,
 			response
-		});
-	} catch (err: any) {
-		updateQueryTab({
-			id,
-			response: [
-				{
-					status: "ERR",
-					detail: err.message,
-				},
-			],
 		});
 	} finally {
 		if (options?.loader) {

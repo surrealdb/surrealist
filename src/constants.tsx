@@ -5,7 +5,8 @@ export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
 
 export interface ListingItem {
-	id: ResultMode;
+	label: string;
+	value: ResultMode;
 	icon: string;
 }
 
@@ -14,9 +15,10 @@ export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
 
 export const RESULT_LISTINGS: ListingItem[] = [
-	{ id: "combined", icon: mdiFormatListGroup },
-	{ id: "json", icon: mdiCodeJson },
-	{ id: "table", icon: mdiTable },
+	{ label: "Combined", value: "combined", icon: mdiFormatListGroup },
+	{ label: "JSON", value: "single", icon: mdiCodeJson },
+	{ label: "Table", value: "table", icon: mdiTable },
+	{ label: "Live", value: "live", icon: mdiBroadcast },
 ];
 
 export const EXPORT_TYPES = [
@@ -60,13 +62,6 @@ export const VIEW_MODES = [
 		name: "Authentication",
 		icon: mdiLockOpen,
 		desc: "Manage account details and database scopes",
-	},
-	{
-		id: "live",
-		name: "Live Query",
-		icon: mdiBroadcast,
-		desc: "Subscribe and receive live updates from the database",
-		desktop: true,
 	},
 ] as const;
 

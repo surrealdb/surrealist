@@ -74,6 +74,7 @@ export function TablesPane(props: TablesPaneProps) {
 		<ContentPane
 			title="Tables"
 			icon={mdiViewSequential}
+			w={325}
 			leftSection={
 				schema.length > 0 && (
 					<Badge
@@ -100,7 +101,7 @@ export function TablesPane(props: TablesPaneProps) {
 				gap={0}
 			>
 				<ScrollArea>
-					<Stack gap="xs">
+					<Stack gap="xs" pb="md">
 						{isOnline && (
 							<TextInput
 								placeholder="Search tables..."
@@ -109,6 +110,7 @@ export function TablesPane(props: TablesPaneProps) {
 								onChange={setSearch}
 								variant="unstyled"
 								autoFocus
+								mt={-8}
 							/>
 						)}
 

@@ -19,7 +19,6 @@ import { getFileName, isUnnamedTab, showError } from "~/util/helpers";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
-	canQuery: boolean;
 	isValid: boolean;
 	onSaveQuery: () => void;
 	toggleVariables: () => void;
@@ -162,7 +161,7 @@ export function QueryPane(props: QueryPaneProps) {
 
 								{!isEmbed && (
 									<Actions
-										canQuery={props.canQuery}
+										queryTab={activeTab}
 										showVariables={props.showVariables}
 										toggleVariables={props.toggleVariables}
 									/>

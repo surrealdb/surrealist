@@ -19,9 +19,9 @@
 .diagram {
 
 	:global(.react-flow__handle) {
-		backdrop-filter: blur(2px);
-		-webkit-backdrop-filter: blur(2px);
-		background-color: rgba(0, 0, 0, 0.1) !important;
+		// backdrop-filter: blur(2px);
+		// -webkit-backdrop-filter: blur(2px);
+		background-color: rgba(0, 0, 0, 0.4) !important;
 		border: 1px solid var(--mantine-color-slate-5) !important;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
 		display: flex;

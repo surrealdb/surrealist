@@ -1,6 +1,14 @@
 import { ColorScheme } from "~/types";
 import { create } from "zustand";
 
+interface LiveMessage {
+	id: string;
+	action: string;
+	queryId: string;
+	timestamp: number;
+	data: any;
+}
+
 export type InterfaceStore = {
 	colorPreference: ColorScheme;
 	colorScheme: ColorScheme;
@@ -9,6 +17,8 @@ export type InterfaceStore = {
 	showConnectionEditor: boolean;
 	isCreatingConnection: boolean;
 	editingConnectionId: string;
+	liveTabs: Set<string>;
+	liveQueryMessages: Record<string, LiveMessage[]>;
 
 	setColorPreference: (preference: ColorScheme) => void;
 	setColorScheme: (scheme: ColorScheme) => void;
@@ -17,6 +27,9 @@ export type InterfaceStore = {
 	openConnectionCreator: () => void;
 	openConnectionEditor: (editingId: string) => void;
 	closeConnectionEditor: () => void;
+	setIsLive: (id: string, live: boolean) => void;
+	pushLiveQueryMessage: (id: string, message: LiveMessage) => void;
+	clearLiveQueryMessages: (id: string) => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
@@ -29,6 +42,8 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	showConnectionEditor: false,
 	isCreatingConnection: false,
 	editingConnectionId: "",
+	liveTabs: new Set<string>(),
+	liveQueryMessages: {},
 
 	setColorPreference: (themePreference) => set(() => ({
 		colorPreference: themePreference
@@ -62,5 +77,39 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	closeConnectionEditor: () => set(() => ({
 		showConnectionEditor: false,
 	})),
+
+	setIsLive: (id, live) => set((state) => {
+		const liveTabs = new Set(state.liveTabs);
+
+		if (live) {
+			liveTabs.add(id);
+		} else {
+			liveTabs.delete(id);
+		}
+
+		return {
+			liveTabs
+		};
+	}),
+
+	pushLiveQueryMessage: (id, message) => set((state) => ({
+		liveQueryMessages: {
+			...state.liveQueryMessages,
+			[id]: [
+				message,
+				...(state.liveQueryMessages[id] || []).slice(0, 50)
+			]
+		}
+	})),
+
+	clearLiveQueryMessages: (id) => set((state) => {
+		const liveQueryMessages = { ...state.liveQueryMessages };
+
+		delete liveQueryMessages[id];
+
+		return {
+			liveQueryMessages
+		};
+	}),
 
 }));

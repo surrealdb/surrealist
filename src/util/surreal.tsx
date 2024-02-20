@@ -1,31 +1,43 @@
 import { mapKeys, snake } from 'radash';
-import { open_connection, close_connection, query_version, execute_query } from '../generated/surrealist-embed';
+import { open_connection, close_connection, query_version, execute_query, watch_live_query, cancel_live_query } from '../generated/surrealist-embed';
 import { SurrealOptions } from '~/types';
 import compare from 'semver-compare';
 import { showNotification } from '@mantine/notifications';
 import { Stack, Text } from '@mantine/core';
 import { Icon } from '~/components/Icon';
 import { mdiAlert } from '@mdi/js';
-import { connectionUri } from './helpers';
+import { connectionUri, newId } from './helpers';
+import { useInterfaceStore } from '~/stores/interface';
 
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 
+export interface QueryResponse {
+	execution_time: string;
+	success: boolean;
+	result: any;
+}
+
 export interface SurrealConnection {
 	close(): void;
-	query(query: string, params?: Record<string, any>): Promise<any>;
-	queryFirst(query: string): Promise<any>;
+	query(query: string, params?: Record<string, any>, id?: string): Promise<QueryResponse[]>;
+	queryFirst(query: string): Promise<QueryResponse[]>;
 	querySingle<T = any>(query: string): Promise<T>;
-	queryLive(query: string, params?: Record<string, any>): Promise<any>;
+	cancelQueries(id: string): void;
 }
 
 let instance: SurrealConnection | undefined;
 
 // Execute a query and parse the result
-async function executeQuery(query: string, params: any) {
+async function executeQuery(id: string | undefined, query: string, params: any) {
 	const paramJson = JSON.stringify(params || {});
-	const response = await execute_query(query, paramJson);
+	const responses = (await execute_query(id, query, paramJson) || []) as QueryResponse[];
 
-	return JSON.parse(response);
+	return responses.map(res => {
+		return {
+			...res,
+			result: JSON.parse(res.result)
+		};
+	});
 }
 
 // Display a notification if the database version is unsupported
@@ -124,11 +136,32 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			options.onDisconnect?.(1000, 'Closed by user');
 			killed = true;
 		},
-		query: async (query, params) => {
-			return executeQuery(query, params);
+		query: async (query, params, id) => {
+			const result = await executeQuery(id, query, params);
+
+			if (id) {
+				const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } = useInterfaceStore.getState();
+
+				setIsLive(id, true);
+
+				watch_live_query(id, ({ queryId, action, data }: any) => {
+					pushLiveQueryMessage(id, {
+						id: newId(),
+						action,
+						queryId,
+						data: JSON.parse(data),
+						timestamp: Date.now()
+					});
+				}).then(() => {
+					clearLiveQueryMessages(id);
+					setIsLive(id, false);
+				});
+			}
+
+			return result;
 		},
 		queryFirst: async (query) => {
-			const results = await executeQuery(query, {}) as any[];
+			const results = await executeQuery(undefined, query, {});
 
 			return results.map(res => {
 				return {
@@ -138,18 +171,18 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 			});
 		},
 		querySingle: async (query) => {
-			const results = await executeQuery(query, {}) as any[];
-			const { result, status } = results[0];
+			const results = await executeQuery(undefined, query, {});
+			const { success, result } = results[0];
 
-			if (status === 'OK') {
+			if (success) {
 				return Array.isArray(result) ? result[0] : result;
 			} else {
 				return null;
 			}
 		},
-		queryLive: async (query, params) => {
-			// 
-		}
+		cancelQueries(id) {
+			cancel_live_query(id);
+		},
 	};
 
 	instance = handle;

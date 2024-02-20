@@ -139,7 +139,7 @@ export function DataTable({ data, active, sorting, headers, onSortingChange }: D
 
 	return (
 		<div className={classes.tableContainer}>
-			<ScrollArea className={classes.tableWrapper}>
+			<ScrollArea className={classes.tableWrapper} scrollbars="y">
 				<Table className={classes.table}>
 					<thead>
 						<tr>{columnHeaders}</tr>

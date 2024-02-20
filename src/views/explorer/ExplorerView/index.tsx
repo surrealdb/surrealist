@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 import { useHistory } from "~/hooks/history";
 import { useIsConnected } from "~/hooks/connection";
 import { useEventBus } from "~/hooks/event";
-import { PanelGroup, Panel } from "react-resizable-panels";
-import { PanelDragger } from "~/components/Pane/dragger";
 import { TablesPane } from "../TablesPane";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { useDisclosure } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
+import { Group } from "@mantine/core";
 
 export function ExplorerView() {
 	const isOnline = useIsConnected();
@@ -32,20 +31,15 @@ export function ExplorerView() {
 
 	return (
 		<>
-			<PanelGroup direction="horizontal">
-				<Panel minSize={15} defaultSize={18} maxSize={25}>
-					<TablesPane
-						openRecordCreator={openCreator}
-					/>
-				</Panel>
-				<PanelDragger />
-				<Panel minSize={25}>
-					<ExplorerPane
-						refreshEvent={refreshEvent}
-						openCreator={isCreatingHandle.open}
-					/>
-				</Panel>
-			</PanelGroup>
+			<Group h="100%" wrap="nowrap" gap={6}>
+				<TablesPane
+					openRecordCreator={openCreator}
+				/>
+				<ExplorerPane
+					refreshEvent={refreshEvent}
+					openCreator={isCreatingHandle.open}
+				/>
+			</Group>
 			
 			<CreatorDrawer
 				opened={isCreating}

@@ -1,11 +1,12 @@
-import { Button } from "@mantine/core";
+import { Button, Tooltip } from "@mantine/core";
 import { mdiTuneVariant, mdiSendVariant } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { executeQuery } from "~/database";
 import { useStable } from "~/hooks/stable";
+import { TabQuery } from "~/types";
 
 export interface ActionsProps {
-	canQuery: boolean;
+	queryTab: TabQuery;
 	showVariables: boolean;
 	toggleVariables: () => void;
 }
@@ -31,7 +32,7 @@ export function Actions(props: ActionsProps) {
 			<Button
 				size="xs"
 				onClick={runQuery}
-				color={props.canQuery ? "surreal" : "red"}
+				color={props.queryTab.queryType === "invalid" ? "red" : "surreal"}
 				rightSection={
 					<Icon path={mdiSendVariant} />
 				}
