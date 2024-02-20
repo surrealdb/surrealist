@@ -32,7 +32,7 @@ interface HelpTitleProps {
 
 function HelpTitle({ isLight, children }: HelpTitleProps) {
 	return (
-		<Title order={2} size={14} c={isLight ? "light.7" : "light.1"} fw={600}>
+		<Title order={2} size={14} c={isLight ? "slate.9" : "white"} fw={600}>
 			{children}
 		</Title>
 	);
@@ -338,7 +338,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				size="lg"
 				title={<ModalTitle>Using the Table Graph</ModalTitle>}
 			>
-				<Text c={isLight ? "light.7" : "light.3"}>
+				<Text c={isLight ? "slate.7" : "slate.2"}>
 					<HelpTitle isLight={isLight}>How do I use the table graph?</HelpTitle>
 
 					<Text mt={8} mb="xl">

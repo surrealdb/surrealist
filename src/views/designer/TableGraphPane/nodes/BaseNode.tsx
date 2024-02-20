@@ -25,7 +25,7 @@ function Summary(props: SummaryProps) {
 	return (
 		<Group pr={4}>
 			<Icon path={props.icon} />
-			<Text c={props.isLight ? "light.9" : "white"}>
+			<Text c={props.isLight ? "slate.9" : "white"}>
 				{props.title}
 			</Text>
 			<Spacer />
@@ -186,7 +186,7 @@ export function BaseNode(props: BaseNodeProps) {
 				>
 					<Icon
 						path={icon}
-						color={isSelected ? "surreal" : isLight ? "light.2" : "slate.4"}
+						color={isSelected ? "surreal" : isLight ? "slate.7" : "slate.2"}
 					/>
 					<Text>
 						{table.schema.name}

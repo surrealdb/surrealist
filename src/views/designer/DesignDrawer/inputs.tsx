@@ -89,7 +89,7 @@ export function QueryInput(props: QueryInputProps) {
 					}}
 				/>
 				<Group mt="lg">
-					<Button onClick={closeEditor} color={isLight ? "light.5" : "light.3"} variant="light">
+					<Button onClick={closeEditor} variant="light">
 						Discard
 					</Button>
 					<Spacer />
@@ -123,14 +123,14 @@ export function PermissionInput(props: PermissionInputProps) {
 						color="green"
 						title="Grant full access"
 						onClick={() => props.onChange("FULL")}
-						variant={props.value.toUpperCase() === "FULL" ? "light" : "subtle"}>
+						variant={props.value.toUpperCase() === "FULL" ? "slate" : "subtle"}>
 						<Icon path={mdiCheck} />
 					</ActionIcon>
 					<ActionIcon
 						color="red.5"
 						title="Reject all access"
 						onClick={() => props.onChange("NONE")}
-						variant={props.value.toUpperCase() === "NONE" ? "light" : "subtle"}>
+						variant={props.value.toUpperCase() === "NONE" ? "slate" : "subtle"}>
 						<Icon path={mdiCancel} />
 					</ActionIcon>
 				</>

@@ -59,7 +59,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 							py="xs"
 							pr="xs"
 							pl="md"
-							bg={isLight ? "light.0" : "dark.9"}
+							bg={isLight ? "slate.0" : "slate.9"}
 							pos="relative"
 							radius="md"
 							style={{ border: 0, cursor: "pointer" }}

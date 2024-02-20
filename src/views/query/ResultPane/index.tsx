@@ -181,7 +181,7 @@ export function ResultPane() {
 						insetInline: 14,
 						bottom: 12,
 					}}>
-					<Divider w="100%" color={isLight ? "light.0" : "dark.5"} />
+					<Divider w="100%" />
 					<Pagination total={responses.length} value={resultTab} onChange={setResultTab} />
 				</Stack>
 			)}

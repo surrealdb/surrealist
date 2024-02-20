@@ -128,8 +128,8 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					isEdge && (
 						<Paper
 							title="This table is an edge"
-							bg={isLight ? "light.0" : "light.6"}
-							c={isLight ? "light.6" : "white"}
+							bg={isLight ? "slate.0" : "slate.6"}
+							c={isLight ? "slate.6" : "white"}
 							px="xs">
 							Edge
 						</Paper>

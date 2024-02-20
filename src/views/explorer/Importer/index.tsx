@@ -89,7 +89,7 @@ export function Importer() {
 					p="sm"
 					mb="md"
 					radius="md"
-					bg={isLight ? "light.1" : "dark.5"}
+					bg={isLight ? "slate.1" : "slate.7"}
 				>
 					<Group
 						gap={6}
@@ -99,11 +99,10 @@ export function Importer() {
 						<Icon
 							mt={-1}
 							path={mdiFileDocument}
-							color={isLight ? "light.9" : "light.0"}
 						/>
 						<Text
 							truncate
-							c={isLight ? "light.9" : "light.0"}
+							c={isLight ? "black" : "white"}
 							fw={600}
 						>
 							{importFile.current?.name}
@@ -113,14 +112,14 @@ export function Importer() {
 
 				<Text
 					mb="xl"
-					color={isLight ? "light.7" : "light.3"}
+					c={isLight ? "slate.7" : "slate.2"}
 				>
 					Are you sure you want to import the selected file?
 				</Text>
 
 				<Text
 					mb="xl"
-					color={isLight ? "light.7" : "light.3"}
+					c={isLight ? "slate.7" : "slate.2"}
 				>
 					While existing data will be preserved, it may be overwritten by the imported data.
 				</Text>

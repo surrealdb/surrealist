@@ -74,7 +74,7 @@ export function Exporter() {
 			>
 				<Text
 					mb="xl"
-					c={isLight ? "light.7" : "light.3"}
+					c={isLight ? "slate.7" : "slate.2"}
 				>
 					Select which elements you want to include in your export.
 				</Text>
