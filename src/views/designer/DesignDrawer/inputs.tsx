@@ -180,7 +180,6 @@ export function FieldKindInput(props: FieldKindInputProps) {
 				>
 					<Popover.Target>
 						<ActionIcon
-							color="light"
 							title="Select a table"
 							onClick={toggleTables}
 							variant="subtle"
@@ -200,7 +199,6 @@ export function FieldKindInput(props: FieldKindInputProps) {
 									style={{ flexShrink: 0 }}
 									onClick={() => insert(table)}
 									variant="light"
-									color="light"
 									miw={150}
 								>
 									{table.schema.name}

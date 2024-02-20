@@ -138,7 +138,7 @@ export function QueryPane(props: QueryPaneProps) {
 									title="Save query"
 									variant="light"
 								>
-									<Icon color="light.4" path={mdiStar} />
+									<Icon path={mdiStar} />
 								</ActionIcon>
 
 								<ActionIcon
@@ -146,7 +146,7 @@ export function QueryPane(props: QueryPaneProps) {
 									title="Cleanup query"
 									variant="light"
 								>
-									<Icon color="light.4" path={mdiText} />
+									<Icon path={mdiText} />
 								</ActionIcon>
 
 								<ActionIcon
@@ -154,7 +154,7 @@ export function QueryPane(props: QueryPaneProps) {
 									title="Load from file"
 									variant="light"
 								>
-									<Icon color="light.4" path={mdiFileUpload} />
+									<Icon path={mdiFileUpload} />
 								</ActionIcon>
 
 								<Spacer />

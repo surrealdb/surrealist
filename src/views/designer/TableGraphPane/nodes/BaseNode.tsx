@@ -24,7 +24,7 @@ function Summary(props: SummaryProps) {
 
 	return (
 		<Group pr={4}>
-			<Icon path={props.icon} color="light" />
+			<Icon path={props.icon} />
 			<Text c={props.isLight ? "light.9" : "white"}>
 				{props.title}
 			</Text>

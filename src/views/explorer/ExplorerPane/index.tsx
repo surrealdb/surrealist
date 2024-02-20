@@ -186,10 +186,6 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 						<Icon path={mdiPlus} />
 					</ActionIcon>
 
-					{/* <ActionIcon title="Toggle inspector" onClick={toggleInspector}>
-						<Icon color="light.4" path={mdiWrench} />
-					</ActionIcon> */}
-
 					<ActionIcon title="Refresh table" onClick={fetchRecords}>
 						<Icon path={mdiRefresh} />
 					</ActionIcon>

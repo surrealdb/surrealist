@@ -20,11 +20,11 @@ function ConsoleActions(props: ConsoleActionsProps) {
 	return (
 		<Group align="center">
 			<ActionIcon onClick={emptyConsole} title="Clear console">
-				<Icon color="light.4" path={mdiDelete} />
+				<Icon path={mdiDelete} />
 			</ActionIcon>
 
 			<ActionIcon onClick={props.onClose} title="Hide console">
-				<Icon color="light.4" path={mdiClose} />
+				<Icon path={mdiClose} />
 			</ActionIcon>
 		</Group>
 	);

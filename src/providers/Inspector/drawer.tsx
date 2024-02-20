@@ -205,7 +205,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					</ActionIcon>
 
 					<ActionIcon onClick={onClose} title="Close inspector">
-						<Icon color="light.4" path={mdiClose} />
+						<Icon path={mdiClose} />
 					</ActionIcon>
 				</Group>
 			</Group>
