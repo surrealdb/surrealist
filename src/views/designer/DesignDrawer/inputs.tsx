@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Button, Group, Modal, Popover, Stack, TextInput, Textarea, TextareaProps } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, Popover, Stack, TextInput, TextInputProps } from "@mantine/core";
 import { mdiCancel, mdiCheck, mdiTable, mdiWrench } from "@mdi/js";
 import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -11,7 +11,7 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { TableDefinition } from "~/types";
 import { useTables } from "~/hooks/schema";
 
-export interface QueryInputProps extends TextareaProps {
+export interface QueryInputProps extends TextInputProps {
 	onChangeText?: (value: string) => void;
 }
 
@@ -39,7 +39,7 @@ export function QueryInput(props: QueryInputProps) {
 		closeEditor();
 	});
 
-	const propagateChange = useStable((e: ChangeEvent<HTMLTextAreaElement>) => {
+	const propagateChange = useStable((e: ChangeEvent<HTMLInputElement>) => {
 		if (onChangeText) {
 			onChangeText(e.target.value);
 		}
@@ -49,12 +49,10 @@ export function QueryInput(props: QueryInputProps) {
 
 	return (
 		<>
-			<Textarea
+			<TextInput
 				label="Query input"
 				rightSectionWidth={44}
 				{...rest}
-				minRows={1}
-				maxRows={1}
 				className={classes.input}
 				onChange={propagateChange}
 				rightSection={
@@ -120,17 +118,19 @@ export function PermissionInput(props: PermissionInputProps) {
 			rightSection={
 				<>
 					<ActionIcon
-						color="green"
+						color="green.4"
 						title="Grant full access"
 						onClick={() => props.onChange("FULL")}
-						variant={props.value.toUpperCase() === "FULL" ? "slate" : "subtle"}>
+						variant={props.value.toUpperCase() === "FULL" ? "light" : "subtle"}
+					>
 						<Icon path={mdiCheck} />
 					</ActionIcon>
 					<ActionIcon
 						color="red.5"
 						title="Reject all access"
 						onClick={() => props.onChange("NONE")}
-						variant={props.value.toUpperCase() === "NONE" ? "slate" : "subtle"}>
+						variant={props.value.toUpperCase() === "NONE" ? "light" : "subtle"}
+					>
 						<Icon path={mdiCancel} />
 					</ActionIcon>
 				</>
