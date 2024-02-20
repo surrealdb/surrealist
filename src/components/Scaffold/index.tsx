@@ -188,10 +188,10 @@ export function Scaffold() {
 							mx="auto"
 							mb="xl"
 						/>
-						<Title c="light" ta="center" mt="md">
+						<Title c="slate" ta="center" mt="md">
 							Surrealist
 						</Title>
-						<Text c="light.2" ta="center">
+						<Text c="slate.2" ta="center">
 							Open or create a new connection to continue
 						</Text>
 						<Center mt="lg">

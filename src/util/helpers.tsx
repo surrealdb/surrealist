@@ -68,7 +68,7 @@ export function showError(title: string, subtitle: string) {
 		message: (
 			<Stack gap={0}>
 				<Text fw={600}>{title}</Text>
-				<Text c="light.5">{subtitle}</Text>
+				<Text c="slate">{subtitle}</Text>
 			</Stack>
 		),
 	});

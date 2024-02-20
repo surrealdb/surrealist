@@ -22,7 +22,7 @@ export interface DataCellProps {
 
 function NullishCell(props: DataCellProps) {
 	return (
-		<Text c="light.5" ff="JetBrains Mono">
+		<Text c="slate" ff="JetBrains Mono">
 			{props.value === null ? "null" : "—"}
 		</Text>
 	);

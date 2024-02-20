@@ -115,11 +115,11 @@ export function TablesPane(props: TablesPaneProps) {
 						)}
 
 						{isOnline ? (tablesFiltered.length === 0 && (
-							<Text ta="center" pt="sm" c="light.5">
+							<Text ta="center" pt="sm" c="slate">
 								{hasAccess ? "No tables found" : "Unsupported auth mode"}
 							</Text>
 						)) : (
-							<Text ta="center" pt="sm" c="light.5">
+							<Text ta="center" pt="sm" c="slate">
 								Not connected
 							</Text>
 						)}

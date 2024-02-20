@@ -168,7 +168,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					message: (
 						<Stack gap={0}>
 							<Text fw={600}>Database started</Text>
-							<Text c="light.5">Local database is now online</Text>
+							<Text c="slate">Local database is now online</Text>
 						</Stack>
 					),
 				});
@@ -190,7 +190,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				message: (
 					<Stack gap={0}>
 						<Text fw={600}>Database stopped</Text>
-						<Text c="light.5">Local database is now offline</Text>
+						<Text c="slate">Local database is now offline</Text>
 					</Stack>
 				),
 			});
@@ -216,7 +216,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				message: (
 					<Stack gap={0}>
 						<Text fw={600}>Failed to start database</Text>
-						<Text c="light.5">{msg}</Text>
+						<Text c="slate">{msg}</Text>
 					</Stack>
 				),
 			});

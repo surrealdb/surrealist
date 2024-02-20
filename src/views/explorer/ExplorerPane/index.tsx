@@ -288,7 +288,7 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 								}}
 							/>
 
-							<Text c="light.3">of {pageCount} pages</Text>
+							<Text c="slate">of {pageCount} pages</Text>
 
 							<ActionIcon
 								onClick={nextPage}
@@ -307,7 +307,7 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 					</Group>
 				</>
 			) : (
-				<Center h="100%" c="light.5">
+				<Center h="100%" c="slate">
 					Select a table to view its records
 				</Center>
 			)}

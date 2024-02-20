@@ -101,7 +101,7 @@ export function ScopePane() {
 				</Group>
 			}>
 			{scopes.length === 0 && (
-				<Center h="100%" c="light.5">
+				<Center h="100%" c="slate">
 					{isOnline ? "No scopes found" : "Not connected"}
 				</Center>
 			)}

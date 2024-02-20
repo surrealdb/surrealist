@@ -134,7 +134,7 @@ export function DataTable({ data, active, sorting, headers, onSortingChange }: D
 	}, [keys, values, isLight]);
 
 	if (!isRenderable(data)) {
-		return <Text c="light.4">Result could not be displayed as a table.</Text>;
+		return <Text c="slate">Result could not be displayed as a table.</Text>;
 	}
 
 	return (

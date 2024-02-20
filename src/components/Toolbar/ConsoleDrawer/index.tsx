@@ -34,7 +34,7 @@ function ConsoleOutputEntry({ index, message, formatter }: { index: number; mess
 	return (
 		<Text
 			key={index}
-			c="light.4"
+			c="slate"
 			ff="JetBrains Mono"
 			dangerouslySetInnerHTML={{ __html: formatter.toHtml(message) }}
 		/>
@@ -131,7 +131,7 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 			
 			{messages.length === 0 && (
 				<Center h="100%">
-					<Text c="light.5">No messages to display</Text>
+					<Text c="slate">No messages to display</Text>
 				</Center>
 			)}
 

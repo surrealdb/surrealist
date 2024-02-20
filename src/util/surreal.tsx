@@ -75,7 +75,7 @@ async function checkDatabaseVersion() {
 					/>
 					{title}
 				</Text>
-				<Text c="light.5">
+				<Text c="slate">
 					{message}
 				</Text>
 			</Stack>

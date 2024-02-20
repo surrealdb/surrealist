@@ -176,7 +176,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 					</Accordion>
 				</ScrollArea>
 			) : (
-				<Center h="100%" c="light.5">
+				<Center h="100%" c="slate">
 					<Stack>
 						<Icon
 							path={isLive ? mdiBroadcast : mdiBroadcastOff}

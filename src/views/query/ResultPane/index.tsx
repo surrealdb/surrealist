@@ -147,7 +147,7 @@ export function ResultPane() {
 						{resultMode == "combined" ? (
 							<CombinedJsonPreview results={responses} />
 						) : response.success ? (response.result?.length === 0 ? (
-							<Text c="light.4">No results found for query</Text>
+							<Text c="slate">No results found for query</Text>
 						) : resultMode == "table" ? (
 							<DataTable data={response.result} />
 						) : (
@@ -159,7 +159,7 @@ export function ResultPane() {
 						)}
 					</>
 				) : (
-					<Center h="100%" c="light.5">
+					<Center h="100%" c="slate">
 						<Stack>
 							<Icon
 								path={mdiLightningBolt}

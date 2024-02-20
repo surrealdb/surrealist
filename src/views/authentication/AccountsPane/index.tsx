@@ -137,7 +137,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 				</ActionIcon>
 			}>
 			{users.length === 0 && (
-				<Center h="100%" c="light.5">
+				<Center h="100%" c="slate">
 					{isOnline
 						? isDenied
 							? `No ${props.title.toLocaleLowerCase()} found`
