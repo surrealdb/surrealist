@@ -32,7 +32,7 @@ function App() {
 		if (dataset != 'none') search.append('dataset', dataset);
 		if (setup && setup.length > 0) search.append('setup', setup);
 		if (query && query.length > 0) search.append('query', query);
-		if (Object.keys(variables).length > 0) search.append('variables', JSON.stringify(variables));
+		if (Object.keys(variables).length > 0) search.append('variables', variables);
 		if (theme !== 'auto') search.append('theme', theme);
 
 		const url = new URL(location.toString());
@@ -196,6 +196,7 @@ function processUrl(input: string) {
 	const search = new URLSearchParams(url.search);
 	const { dataset, setup, query, variables, theme } = Object.fromEntries(search.entries());
 	const parsedVariables = parseJson(variables);
+	console.log(parsedVariables);
 
 	return {
 		dataset: Object.keys(datasets).includes(dataset) ? dataset : 'none',
