@@ -1,7 +1,7 @@
 import { Badge, ScrollArea, Text, Textarea } from "@mantine/core";
-import { ActionIcon, Button, Center, Group, Menu, Modal, Stack, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiAccountLock, mdiDelete, mdiDotsVertical, mdiKeyVariant, mdiPlus, mdiWrench } from "@mdi/js";
+import { mdiAccountLock, mdiKeyVariant, mdiPencil, mdiPlus } from "@mdi/js";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -78,9 +78,11 @@ export function ScopePane() {
 		setEditingSignup(scope.signup || "");
 	});
 
-	const removeScope = useStable(async (scope: string) => {
-		await getActiveSurreal().query(`REMOVE SCOPE ${scope}`);
+	const removeScope = useStable(async () => {
+		await getActiveSurreal().query(`REMOVE SCOPE ${editingName}`);
 		await fetchDatabaseSchema();
+
+		closeModal();
 	});
 
 	const closeModal = useStable(() => {
@@ -94,7 +96,7 @@ export function ScopePane() {
 			rightSection={
 				<Group wrap="nowrap">
 					<ActionIcon title="Add account" onClick={createAccount}>
-						<Icon color="light.4" path={mdiPlus} />
+						<Icon path={mdiPlus} />
 					</ActionIcon>
 				</Group>
 			}>
@@ -110,11 +112,16 @@ export function ScopePane() {
 				<Stack gap={0}>
 					{scopes.map((scope) => (
 						<Group key={scope.name} gap="xs" w="100%" wrap="nowrap">
-							<Icon color="violet.4" path={mdiKeyVariant} size={14} />
+							<Icon
+								color="violet.4"
+								path={mdiKeyVariant}
+							/>
 
-							<Text c={isLight ? "gray.9" : "gray.0"}>{scope.name}</Text>
+							<Text c={isLight ? "gray.9" : "gray.0"}>
+								{scope.name}
+							</Text>
 							<Spacer />
-							<Badge color="light">
+							<Badge color="slate">
 								{scope.signin && scope.signup
 									? "Signup & Signin"
 									: scope.signin
@@ -123,7 +130,13 @@ export function ScopePane() {
 											? "Signup only"
 											: "No auth"}
 							</Badge>
-							<Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
+							<ActionIcon
+								title="Edit user"
+								onClick={() => editScope(scope)}
+							>
+								<Icon path={mdiPencil} />
+							</ActionIcon>
+							{/* <Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
 								<Menu.Target>
 									<Button size="xs" px={5} color="dark" variant="subtle">
 										<Icon path={mdiDotsVertical} />
@@ -133,7 +146,7 @@ export function ScopePane() {
 									<Menu.Item
 										onClick={() => editScope(scope)}
 										leftSection={
-											<Icon path={mdiWrench} size={12} color="light.4" />
+											<Icon path={mdiWrench} />
 										}
 									>
 										Edit
@@ -141,13 +154,13 @@ export function ScopePane() {
 									<Menu.Item
 										onClick={() => removeScope(scope.name)}
 										leftSection={
-											<Icon path={mdiDelete} size={12} color="red" />
+											<Icon path={mdiDelete} color="red" />
 										}
 									>
 										Remove
 									</Menu.Item>
 								</Menu.Dropdown>
-							</Menu>
+							</Menu> */}
 						</Group>
 					))}
 				</Stack>
@@ -203,6 +216,15 @@ export function ScopePane() {
 							Close
 						</Button>
 						<Spacer />
+						{!isCreating && (
+							<Button
+								color="red"
+								onClick={removeScope}
+								variant="light"
+							>
+								Remove
+							</Button>	
+						)}
 						<Button color="surreal" disabled={!editingName} type="submit">
 							Save
 						</Button>

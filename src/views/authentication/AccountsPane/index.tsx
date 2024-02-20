@@ -133,7 +133,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			title={props.title}
 			rightSection={
 				<ActionIcon title="Add account" onClick={createUser}>
-					<Icon color="light.4" path={mdiPlus} />
+					<Icon path={mdiPlus} />
 				</ActionIcon>
 			}>
 			{users.length === 0 && (
@@ -156,8 +156,6 @@ export function AccountsPane(props: AccountsPaneProps) {
 							<Icon
 								color={props.iconColor}
 								path={mdiKeyVariant}
-								size={12}
-								style={{ flexShrink: 0 }}
 							/>
 							<Text c={isLight ? "gray.9" : "gray.0"}>
 								{user.name}
@@ -184,15 +182,17 @@ export function AccountsPane(props: AccountsPaneProps) {
 									</div>
 								</Tooltip>
 							)}
-							<Badge color="light">
+							<Badge
+								variant="light"
+								color="slate"
+							>
 								{formatRoles(user)}
 							</Badge>
 							<ActionIcon
-								color="light"
 								title="Edit user"
 								onClick={() => updateUser(user)}
 							>
-								<Icon path={mdiPencil} size={14} />
+								<Icon path={mdiPencil} />
 							</ActionIcon>
 						</Group>
 					))}
