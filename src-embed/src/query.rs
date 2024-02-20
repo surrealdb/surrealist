@@ -224,8 +224,6 @@ pub async fn watch_live_query(id: String, on_message: Function) -> Option<JsValu
         on_message.call1(&JsValue::NULL, &payload).unwrap();
     }
 
-    LIVE_QUERIES.lock().await.remove(&id);
-
     Some(JsValue::NULL)
 }
 
