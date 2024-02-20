@@ -14,8 +14,8 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 			h="100%"
 			spacing={6}
 			cols={{
-				base: 4,
-				lg: 2
+				base: 2,
+				lg: 4
 			}}
 			style={{
 				gridAutoRows: '1fr'
