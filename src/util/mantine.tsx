@@ -159,5 +159,32 @@ export const MANTINE_THEME = createTheme({
 				},
 			},
 		},
+		Drawer: {
+			styles: (theme: any, props: any) => {
+				const hasTopRight = props.position === "left" || props.position === "bottom";
+				const hasBottomRight = props.position === "left" || props.position === "top";
+				const hasTopLeft = props.position === "right" || props.position === "bottom";
+				const hasBottomLeft = props.position === "right" || props.position === "top";
+
+				const isHorizontal = props.position === "left" || props.position === "right";
+				const isVertical = props.position === "top" || props.position === "bottom";
+
+				return {
+					inner: {
+						top: isVertical ? 0 : theme.spacing.md,
+						bottom: isVertical ? 0 : theme.spacing.md,
+						left: isHorizontal ? 0 : theme.spacing.md,
+						right: isHorizontal ? 0 : theme.spacing.md,
+						width: 'unset'
+					},
+					content: {
+						borderTopRightRadius: hasTopRight ? theme.radius.lg : 0,
+						borderBottomRightRadius: hasBottomRight ? theme.radius.lg : 0,
+						borderTopLeftRadius: hasTopLeft ? theme.radius.lg : 0,
+						borderBottomLeftRadius: hasBottomLeft ? theme.radius.lg : 0,
+					}
+				};
+			}
+		}
 	}
 });

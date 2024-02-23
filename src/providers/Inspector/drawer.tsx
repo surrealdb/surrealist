@@ -7,7 +7,6 @@ import { Spacer } from "~/components/Spacer";
 import { HistoryHandle } from "~/hooks/history";
 import { ModalTitle } from "~/components/ModalTitle";
 import { getSurreal } from "~/util/surreal";
-import { themeColor } from "~/util/mantine";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
@@ -44,7 +43,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	const [recordBody, setRecordBody] = useState('');
 	
 	const isLight = useIsLight();
-	const inputColor = themeColor(currentRecord.exists ? "surreal" : "red");
+	const inputColor = currentRecord.exists ? undefined : 'var(--mantine-color-red-6)';
 
 	const isBodyValid = useMemo(() => {
 		try {
