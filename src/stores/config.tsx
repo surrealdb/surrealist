@@ -63,6 +63,7 @@ export type ConfigStore = SurrealistConfig & {
 	setDesignerNodeMode: (defaultDesignerNodeMode: DesignerNodeMode) => void;
 	addHistoryEntry: (entry: HistoryQuery) => void;
 	toggleTablePin: (table: string) => void;
+	softReset: () => void;
 }
 
 export const useConfigStore = create<ConfigStore>()(
@@ -87,9 +88,8 @@ export const useConfigStore = create<ConfigStore>()(
 		})),
 
 		removeConnection: (connectionId) => set((state) => {
-			const index = state.connections.findIndex((connection) => connection.id === connectionId);
 			return {
-				connections: index >= 0 ? state.connections.splice(index, 1) : state.connections,
+				connections: state.connections.filter((connection) => connection.id !== connectionId),
 				activeConnection: state.activeConnection == connectionId ? null : state.activeConnection,
 			};
 		}),
@@ -260,6 +260,11 @@ export const useConfigStore = create<ConfigStore>()(
 			return {
 				pinnedTables
 			};
+		})),
+
+		softReset: () => set(() => ({
+			activeConnection: null,
+			activeView: "query"
 		})),
 
 	})

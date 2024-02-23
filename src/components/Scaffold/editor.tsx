@@ -17,7 +17,7 @@ import { AUTH_MODES, CONNECTION_PROTOCOLS } from "~/constants";
 import { Icon } from "../Icon";
 import { EditableText } from "../EditableText";
 import { useDisclosure } from "@mantine/hooks";
-import { iconCheck, iconClose, iconPlus } from "~/util/icons";
+import { iconCheck, iconClose, iconDelete, iconPlus } from "~/util/icons";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 
@@ -29,7 +29,7 @@ export function ConnectionEditor() {
 	const isLight = useIsLight();
 	const connections = useConnections();
 
-	const { addConnection, updateConnection, setActiveConnection } = useConfigStore.getState();
+	const { addConnection, updateConnection, setActiveConnection, removeConnection } = useConfigStore.getState();
 	const { closeConnectionEditor } = useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
@@ -99,6 +99,11 @@ export function ConnectionEditor() {
 		});
 
 		e.preventDefault();
+	});
+
+	const deleteConnection = useStable(() => {
+		removeConnection(details.id);
+		closeConnectionEditor();
 	});
 
 	useLayoutEffect(() => {
@@ -339,6 +344,16 @@ export function ConnectionEditor() {
 						Close
 					</Button>
 					<Spacer />
+					{!isCreating && (
+						<Button
+							color="red"
+							onClick={deleteConnection}
+							variant="light"
+							leftSection={<Icon path={iconDelete} />}
+						>
+							Remove
+						</Button>	
+					)}
 					<Button
 						type="submit"
 						variant="gradient"

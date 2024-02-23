@@ -51,7 +51,7 @@ export function Connections() {
 			con.name.toLowerCase().includes(needle)
 			|| con.connection.hostname.toLowerCase().includes(needle)
 		);
-	}, [connection, search]);
+	}, [connections, connection, search]);
 
 	const isSandbox = connection?.id === SANDBOX;
 
@@ -170,6 +170,8 @@ export function Connections() {
 										className={classes.connection}
 										rightSection={
 											<ActionIcon
+												display="flex"
+												component="div"
 												className={classes.connectionOptions}
 												onClick={(e) => editConnection(con.id, e)}
 											>

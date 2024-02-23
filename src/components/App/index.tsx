@@ -18,7 +18,7 @@ import { InspectorProvider } from "~/providers/Inspector";
 import { iconClose } from "~/util/icons";
 
 export function App() {
-	const { toggleWindowPinned, setWindowScale, setEditorScale } = useConfigStore.getState();
+	const { toggleWindowPinned, setWindowScale, setEditorScale, softReset } = useConfigStore.getState();
 	const { hideAvailableUpdate } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
@@ -80,7 +80,7 @@ export function App() {
 				<InspectorProvider>
 					<ErrorBoundary
 						FallbackComponent={AppErrorHandler} 
-						onReset={location.reload}
+						onReset={softReset}
 					>
 						<Scaffold />
 					</ErrorBoundary>
