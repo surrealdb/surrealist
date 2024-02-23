@@ -15,10 +15,11 @@ export interface IconProps extends Omit<BoxProps, "left" | "right">, Omit<HTMLAt
 	color?: MantineColor;
 	left?: boolean;
 	right?: boolean;
+	noStroke?: boolean;
 	path: string;
 }
 
-export const Icon = ({ size, color, path, style, left, right, ...rest }: IconProps): JSX.Element | null => {
+export const Icon = ({ size, color, path, style, left, right, noStroke, ...rest }: IconProps): JSX.Element | null => {
 	const theme = useMantineTheme();
 
 	const svgStyle = useMemo(() => {
@@ -37,7 +38,11 @@ export const Icon = ({ size, color, path, style, left, right, ...rest }: IconPro
 
 	return (
 		<Box component="svg" viewBox="0 0 24 24" role="presentation" style={svgStyle} {...rest}>
-			<path d={path} style={{ fill: 'currentColor', stroke: 'currentcolor', strokeWidth: 0.5 }} />
+			<path d={path} style={{
+				fill: 'currentColor',
+				stroke: 'currentcolor',
+				strokeWidth: noStroke ? 0 : 0.5
+			}} />
 		</Box>
 	);
 };

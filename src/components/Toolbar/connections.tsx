@@ -1,10 +1,11 @@
+import classes from "./style.module.scss";
 import { ActionIcon, Box, Button, Group, Popover, Stack, Text, TextInput } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconCircle, iconDotsVertical, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconCircle, iconEdit, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
@@ -12,7 +13,7 @@ import { SANDBOX } from "~/constants";
 import { useInputState } from "@mantine/hooks";
 
 export function Connections() {
-	const { openConnectionCreator } = useInterfaceStore.getState();
+	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
 	const { setActiveConnection } = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
@@ -35,6 +36,12 @@ export function Connections() {
 	const activate = useStable((id: string) => {
 		setIsOpen(false);
 		setActiveConnection(id);
+	});
+
+	const editConnection = useStable((id: string, e: React.MouseEvent) => {
+		e.stopPropagation();
+		setIsOpen(false);
+		openConnectionEditor(id);
 	});
 
 	const filtered = useMemo(() => {
@@ -65,7 +72,7 @@ export function Connections() {
 						radius="lg"
 						onClick={toggleDropdown}
 						leftSection={isSandbox && (
-							<Icon path={iconSurreal} color="surreal" />
+							<Icon path={iconSurreal} size={1.2} noStroke />
 						)}
 						rightSection={
 							<Icon
@@ -75,7 +82,9 @@ export function Connections() {
 							/>
 						}
 					>
-						{connection.name}
+						<Text truncate fw={600} maw={200}>
+							{connection.name}
+						</Text>
 					</Button>
 				) : (
 					<Button
@@ -97,6 +106,7 @@ export function Connections() {
 						placeholder="Search..."
 						value={search}
 						onChange={setSearch}
+						variant="unstyled"
 						autoFocus
 						leftSection={
 							<Icon path={iconSearch} />
@@ -110,7 +120,7 @@ export function Connections() {
 							color={isSandbox ? "surreal" : "slate"}
 							leftSection={
 								<Group gap="xs">
-									<Icon path={iconSurreal} color="surreal" />
+									<Icon path={iconSurreal} size={1.2} noStroke />
 									Sandbox
 								</Group>
 							}
@@ -155,14 +165,16 @@ export function Connections() {
 										key={con.id}
 										variant="light"
 										radius="md"
+										pr={6}
 										color={isActive ? "surreal" : "slate"}
-										leftSection={
-											<Group gap="xs">
-												{con.name}
-											</Group>
-										}
+										className={classes.connection}
 										rightSection={
-											<Icon path={iconDotsVertical} />
+											<ActionIcon
+												className={classes.connectionOptions}
+												onClick={(e) => editConnection(con.id, e)}
+											>
+												<Icon path={iconEdit} />
+											</ActionIcon>
 										}
 										styles={{
 											label: {
@@ -170,7 +182,11 @@ export function Connections() {
 											}
 										}}
 										onClick={() => activate(con.id)}
-									/>
+									>
+										<Text truncate>
+											{con.name}
+										</Text>
+									</Button>
 								);
 							})}
 						</Stack>

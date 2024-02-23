@@ -15,13 +15,9 @@ body {
 }
 
 .mantine-contextmenu {
-    background-color: color-mix(in srgb, var(--mantine-color-slate-8) 65%, transparent);
+    background-color: color-mix(in srgb, var(--mantine-color-body) 50%, transparent);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-
-    @include light {
-        background-color: color-mix(in srgb, var(--mantine-color-white) 75%, transparent);
-    }
 }
 
 .mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
@@ -30,6 +26,12 @@ body {
 
 .mantine-ActionIcon-root:hover {
     --ai-hover-color: white;
+}
+
+.mantine-Popover-dropdown {
+    background-color: color-mix(in srgb, var(--mantine-color-body) 90%, transparent);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 :root {

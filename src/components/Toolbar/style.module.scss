@@ -18,3 +18,11 @@
 .manage-button :global(.mantine-Button-inner) {
 	justify-content: start;
 }
+
+.connection-options {
+	display: none;
+}
+
+.connection:hover .connection-options {
+	display: block;
+}
