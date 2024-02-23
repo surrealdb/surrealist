@@ -1,4 +1,4 @@
-import surrealistLogo from "~/assets/surrealist.png";
+import surrealistLogo from "~/assets/images/logo-small.png";
 import { Group, Button, Modal, TextInput, Image, Center, ActionIcon } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";

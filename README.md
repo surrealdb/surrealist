@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/github/contributors/surrealdb/surrealist">
 </p>
 
-Surrealist is a simple to use browser and desktop based query playground and database explorer for [SurrealDB](https://surrealdb.com/). Connect to any SurrealDB server and execute queries in a graphical interface, including table & variable auto completion, syntax highlighting, and much more. Switch to the explorer view to browse database tables, edit record contents, and traverse graph relationships. Use the designer view to create or modify your database schema, and manage logins and scopes with the authentication view.
+Surrealist is the official query playground, data explorer, and schema designer for [SurrealDB](https://surrealdb.com/). Connect to any SurrealDB server and execute queries in a graphical interface, including intelligent auto completion, syntax highlighting, and much more. Switch to the explorer view to browse database tables, edit record contents, and traverse graph relationships. Use the designer view to create or modify your database schema, and manage logins and scopes with the authentication view.
 
 ## Features
 - ⚡ SurrealQL syntax highlighting
@@ -32,7 +32,7 @@ Surrealist is a simple to use browser and desktop based query playground and dat
 - 📜 Query history & Query favoriting
 
 ## How to use
-You can [read our documentation](https://docs.surrealdb.com/surrealist) for information on how to use Surrealist.
+You can [read our documentation](https://docs.surrealdb.com/docs/tools/surrealist) for information on how to use Surrealist.
 
 ## Web App
 You can use Surrealist by visiting https://surrealist.app/

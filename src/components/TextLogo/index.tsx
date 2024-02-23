@@ -1,5 +1,5 @@
-import surrealistWhite from "~/assets/surrealist-white.svg";
-import surrealistBlack from "~/assets/surrealist-black.svg";
+import surrealistWhite from "~/assets/images/text-white.svg";
+import surrealistBlack from "~/assets/images/text-black.svg";
 
 import { useIsLight } from "~/hooks/theme";
 import { Image, ImageProps } from "@mantine/core";
