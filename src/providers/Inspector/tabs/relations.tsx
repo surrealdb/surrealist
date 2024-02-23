@@ -1,7 +1,8 @@
-import { Text } from "@mantine/core";
+import { Paper, Text } from "@mantine/core";
 import { ScrollArea, Group } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
+import { useIsLight } from "~/hooks/theme";
 import { OpenFn } from "~/types";
 import { iconCircle } from "~/util/icons";
 
@@ -12,19 +13,28 @@ interface RelationsListProps {
 }
 
 function RelationsList({ name, relations, onOpen }: RelationsListProps) {
-	if (relations.length === 0) {
-		return <Text>No {name} relations found</Text>;
-	}
+	const isLight = useIsLight();
 
 	return (
-		<>
+		<Paper
+			p="xs"
+			bg={isLight ? "slate.0" : "slate.9"}
+			radius="lg"
+			mt={6}
+		>
+			{relations.length === 0 && (
+				<Text pl={6} c="dimmed">
+					No {name} relations found
+				</Text>	
+			)}
+
 			{relations.map((relation) => (
 				<Group key={relation} gap="xs" wrap="nowrap">
 					<Icon path={iconCircle} size="lg" />
 					<RecordLink value={relation} />
 				</Group>
 			))}
-		</>
+		</Paper>
 	);
 }
 
@@ -46,13 +56,13 @@ export function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabP
 				top: 158,
 			}}>
 
-			<Text c={isLight ? "blue.9" : "light.0"} size="lg" mt={4}>
+			<Text c="bright" size="lg" fw={600} mt={4}>
 				Incoming relations
 			</Text>
 
 			<RelationsList name="incoming" relations={inputs} onOpen={onOpen} />
 
-			<Text c={isLight ? "blue.9" : "light.0"} size="lg" mt="xl">
+			<Text c="bright" size="lg" fw={600} mt="xl">
 				Outgoing relations
 			</Text>
 
