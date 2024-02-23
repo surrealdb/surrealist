@@ -13,7 +13,6 @@ import { Actions } from "../Actions";
 import { Image } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { TextLogo } from "~/components/TextLogo";
 import { SavesDrawer } from "../SavesDrawer";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -24,9 +23,12 @@ import { useConfigStore } from "~/stores/config";
 import { SavedQuery } from "~/types";
 import { ModalTitle } from "~/components/ModalTitle";
 import { iconCheck } from "~/util/icons";
+import { SurrealistLogo } from "~/components/SurrealistLogo";
+import { useIsLight } from "~/hooks/theme";
 
 export function QueryView() {
 	const { saveQuery } = useConfigStore.getState();
+	const isLight = useIsLight();
 	
 	const [showVariables, showVariablesHandle] = useDisclosure();
 	const [variablesValid, setVariablesValid] = useState(true);
@@ -96,7 +98,10 @@ export function QueryView() {
 						height={20}
 						width={20}
 					/>
-					<TextLogo h={16} />
+					<SurrealistLogo
+						h={16}
+						c={isLight ? "slate.9" : "white"}
+					/>
 					<Spacer />
 					<Actions
 						queryTab={active!}

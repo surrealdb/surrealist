@@ -1,15 +1,10 @@
 import classes from "./style.module.scss";
-import surrealistLogo from "~/assets/surrealist.png";
 
 import {
 	ActionIcon,
 	Box,
-	Button,
 	Center,
-	Image,
 	Stack,
-	Text,
-	Title,
 	Tooltip,
 } from "@mantine/core";
 
@@ -27,15 +22,16 @@ import { DesignerView } from "~/views/designer/DesignerView";
 import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { SANDBOX, VIEW_MODES } from "~/constants";
+import { VIEW_MODES } from "~/constants";
 import { updateTitle } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
-import { iconCog, iconSurreal } from "~/util/icons";
+import { iconCog } from "~/util/icons";
 import { isDesktop } from "~/adapter";
+import { FreshExperience } from "./fresh";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -84,16 +80,13 @@ function NavigationIcon({ name, isActive, isLight, icon, onClick }: NavigationIc
 export function Scaffold() {
 	const isLight = useIsLight();
 
-	// TODO Implement bottom console drawer
-
-	const { setActiveView, setActiveConnection } = useConfigStore.getState();
+	const { setActiveView } = useConfigStore.getState();
 	const { title, openConnectionCreator } = useInterfaceStore.getState();
 
 	const activeConnection = useConfigStore((s) => s.activeConnection);
 	const activeView = useConfigStore((s) => s.activeView);
 
 	const [showSettings, settingsHandle] = useDisclosure();
-	const [showConsole, showConsoleHandle] = useDisclosure();
 
 	const viewNode = VIEW_PORTALS[activeView];
 
@@ -111,10 +104,6 @@ export function Scaffold() {
 	const setViewMode = useStable((id: ViewMode) => {
 		updateTitle();
 		setActiveView(id);
-	});
-
-	const openSandbox = useStable(() => {
-		setActiveConnection(SANDBOX);
 	});
 
 	return (
@@ -188,38 +177,7 @@ export function Scaffold() {
 					</InPortal>
 				</>
 			) : (
-				<Center h="100%">
-					<div>
-						<Image
-							className={classes.emptyImage}
-							src={surrealistLogo}
-							maw={120}
-							mx="auto"
-							mb="xl"
-						/>
-						<Title c="slate" ta="center" mt="md">
-							Surrealist
-						</Title>
-						<Text c="slate.2" ta="center">
-							Open or create a new connection to continue
-						</Text>
-						<Center mt="lg">
-							<Stack>
-								<Button size="xs" onClick={openConnectionCreator}>
-									Create connection
-								</Button>
-								<Button
-									size="xs"
-									variant="light"
-									onClick={openSandbox}
-									leftSection={<Icon path={iconSurreal} color="surreal" />}
-								>
-									Open the sandbox
-								</Button>
-							</Stack>
-						</Center>
-					</div>
-				</Center>
+				<FreshExperience />
 			)}
 
 			<ConnectionEditor />
