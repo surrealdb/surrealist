@@ -37,7 +37,7 @@ export const Icon = ({ size, color, path, style, left, right, ...rest }: IconPro
 
 	return (
 		<Box component="svg" viewBox="0 0 24 24" role="presentation" style={svgStyle} {...rest}>
-			<path d={path} style={{ fill: 'currentColor' }} />
+			<path d={path} style={{ fill: 'currentColor', stroke: 'currentcolor', strokeWidth: 0.5 }} />
 		</Box>
 	);
 };
