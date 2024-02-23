@@ -14,7 +14,7 @@ import { Text } from "@mantine/core";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { getActiveSurreal } from "~/util/surreal";
 import { OpenedFile } from "~/adapter/base";
-import { iconDownload, iconFile, iconUpload } from "~/util/icons";
+import { iconDownload, iconFile } from "~/util/icons";
 
 export function Importer() {
 	const isLight = useIsLight();
@@ -132,7 +132,7 @@ export function Importer() {
 					variant="gradient"
 				>
 					Start import
-					<Icon path={iconUpload} right />
+					<Icon path={iconDownload} right />
 				</Button>
 			</Modal>
 		</>
