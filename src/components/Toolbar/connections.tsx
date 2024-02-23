@@ -11,6 +11,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
 import { useInputState } from "@mantine/hooks";
+import { updateTitle } from "~/util/helpers";
 
 export function Connections() {
 	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
@@ -36,6 +37,7 @@ export function Connections() {
 	const activate = useStable((id: string) => {
 		setIsOpen(false);
 		setActiveConnection(id);
+		updateTitle();
 	});
 
 	const editConnection = useStable((id: string, e: React.MouseEvent) => {

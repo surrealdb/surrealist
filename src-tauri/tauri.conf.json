@@ -15,7 +15,8 @@
 			"window": {
 				"setAlwaysOnTop": true,
 				"setTitle": true,
-				"show": true
+				"show": true,
+				"startDragging": true
 			},
 			"shell": {
 				"open": true
@@ -77,9 +78,8 @@
 		},
 		"windows": [
 			{
+				"label": "main",
 				"title": "Surrealist",
-				"fullscreen": false,
-				"resizable": true,
 				"height": 675,
 				"width": 1235,
 				"minHeight": 675,
@@ -88,4 +88,4 @@
 			}
 		]
 	}
-}
+} 

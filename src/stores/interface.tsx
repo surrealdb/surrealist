@@ -10,6 +10,7 @@ interface LiveMessage {
 }
 
 export type InterfaceStore = {
+	title: string;
 	colorPreference: ColorScheme;
 	colorScheme: ColorScheme;
 	availableUpdate: string;
@@ -20,6 +21,7 @@ export type InterfaceStore = {
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
 
+	setWindowTitle: (title: string) => void;
 	setColorPreference: (preference: ColorScheme) => void;
 	setColorScheme: (scheme: ColorScheme) => void;
 	setAvailableUpdate: (availableUpdate: string) => void;
@@ -33,6 +35,7 @@ export type InterfaceStore = {
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
+	title: "",
 	colorPreference: "dark",
 	colorScheme: "dark",
 	availableUpdate: "",
@@ -44,6 +47,8 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	editingConnectionId: "",
 	liveTabs: new Set<string>(),
 	liveQueryMessages: {},
+
+	setWindowTitle: (title) => set(() => ({ title })),
 
 	setColorPreference: (themePreference) => set(() => ({
 		colorPreference: themePreference

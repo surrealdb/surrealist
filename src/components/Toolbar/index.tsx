@@ -66,89 +66,92 @@ export function Toolbar(props: ToolbarProps) {
 	const isSandbox = connection?.id === "sandbox";
 
 	return (
-		<Group
-			p="xs"
-			gap="sm"
-			pos="relative"
-			align="center"
-			wrap="nowrap"
-			h={64}
-		>
-			<Center w={52}>
-				<Image
-					style={{ pointerEvents: "none", userSelect: "none" }}
-					src={surrealistLogo}
-					width={38}
-				/>
-			</Center>
-			
-			<Connections
-			
-			/>
-
-			{connection && (isConnected ? (isSandbox ? (
-				<ActionIcon
-					color="slate"
-					variant="transparent"
-					title="Reset sandbox environment"
-					onClick={resetSandbox}
-				>
-					<Icon path={iconReset} />
-				</ActionIcon>
-			) : (
-				<ActionIcon
-					color="slate"
-					variant="transparent"
-					title="Disconnect"
-					onClick={closeConnection}
-				>
-					<Icon path={iconClose} />
-				</ActionIcon>
-			)) : (
-				<Button
-					h={42}
-					radius="lg"
-					color="surreal"
-					variant="light"
-					loading={isConnecting}
-					onClick={connect}
-				>
-					Connect
-				</Button>
-			))}
-
-			<Spacer />
-
-			{adapter.isServeSupported && (
-				<LocalDatabase
-					toggleConsole={setShowConsole.toggle}
-				/>
-			)}
-
-			<Modal
-				opened={!!editingTab}
-				onClose={closeEditingTab}
-				withCloseButton={false}
+		<>
+			{/* <Group h={24} bg="dark.9" data-tauri-drag-region /> */}
+			<Group
+				p="xs"
+				gap="sm"
+				pos="relative"
+				align="center"
+				wrap="nowrap"
+				h={64}
 			>
-				<Form onSubmit={saveTabName}>
-					<Group>
-						<TextInput
-							style={{ flex: 1 }}
-							placeholder="Enter tab name"
-							value={tabName}
-							onChange={(e) => setTabName(e.target.value)}
-							autoFocus
-							onFocus={(e) => e.target.select()}
-						/>
-						<Button type="submit">Rename</Button>
-					</Group>
-				</Form>
-			</Modal>
+				<Center w={52}>
+					<Image
+						style={{ pointerEvents: "none", userSelect: "none" }}
+						src={surrealistLogo}
+						width={38}
+					/>
+				</Center>
+				
+				<Connections
+				
+				/>
 
-			<ConsoleDrawer
-				opened={showConsole}
-				onClose={setShowConsole.close}
-			/>
-		</Group>
+				{connection && (isConnected ? (isSandbox ? (
+					<ActionIcon
+						color="slate"
+						variant="transparent"
+						title="Reset sandbox environment"
+						onClick={resetSandbox}
+					>
+						<Icon path={iconReset} />
+					</ActionIcon>
+				) : (
+					<ActionIcon
+						color="slate"
+						variant="transparent"
+						title="Disconnect"
+						onClick={closeConnection}
+					>
+						<Icon path={iconClose} />
+					</ActionIcon>
+				)) : (
+					<Button
+						h={42}
+						radius="lg"
+						color="surreal"
+						variant="light"
+						loading={isConnecting}
+						onClick={connect}
+					>
+						Connect
+					</Button>
+				))}
+
+				<Spacer />
+
+				{adapter.isServeSupported && (
+					<LocalDatabase
+						toggleConsole={setShowConsole.toggle}
+					/>
+				)}
+
+				<Modal
+					opened={!!editingTab}
+					onClose={closeEditingTab}
+					withCloseButton={false}
+				>
+					<Form onSubmit={saveTabName}>
+						<Group>
+							<TextInput
+								style={{ flex: 1 }}
+								placeholder="Enter tab name"
+								value={tabName}
+								onChange={(e) => setTabName(e.target.value)}
+								autoFocus
+								onFocus={(e) => e.target.select()}
+							/>
+							<Button type="submit">Rename</Button>
+						</Group>
+					</Form>
+				</Modal>
+
+				<ConsoleDrawer
+					opened={showConsole}
+					onClose={setShowConsole.close}
+				/>
+			</Group>
+		</>
 	);
 }

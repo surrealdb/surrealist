@@ -8,6 +8,7 @@ import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
 import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
 import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 
@@ -34,6 +35,9 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
 	}
 };
 
+/**
+ * Update the title of the window
+ */
 export function updateTitle() {
 	const config = useConfigStore.getState();
 	const { pathname } = window.location;
@@ -53,7 +57,10 @@ export function updateTitle() {
 		segments.push('(Pinned)');
 	}
 
-	adapter.setWindowTitle(segments.join(' '));
+	const title = segments.join(' ');
+
+	adapter.setWindowTitle(title);
+	useInterfaceStore.getState().setWindowTitle(title);
 }
 
 /**

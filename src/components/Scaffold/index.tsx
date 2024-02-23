@@ -35,6 +35,7 @@ import { Settings } from "../Settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
 import { iconCog, iconSurreal } from "~/util/icons";
+import { isDesktop } from "~/adapter";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -86,7 +87,7 @@ export function Scaffold() {
 	// TODO Implement bottom console drawer
 
 	const { setActiveView, setActiveConnection } = useConfigStore.getState();
-	const { openConnectionCreator } = useInterfaceStore.getState();
+	const { title, openConnectionCreator } = useInterfaceStore.getState();
 
 	const activeConnection = useConfigStore((s) => s.activeConnection);
 	const activeView = useConfigStore((s) => s.activeView);
@@ -123,6 +124,15 @@ export function Scaffold() {
 				backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
 			}}
 		>
+			{isDesktop && (
+				<Center
+					data-tauri-drag-region
+					className={classes.titlebar}
+				>
+					{title}
+				</Center>
+			)}
+			
 			<Toolbar
 				viewMode={activeView}
 				onCreateTab={openConnectionCreator}

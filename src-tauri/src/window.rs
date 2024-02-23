@@ -1,3 +1,24 @@
+pub fn configure_window(window: tauri::Window) {
+    let _ = window.with_webview(move |webview| {
+        #[cfg(target_os = "macos")]
+        unsafe {
+            use cocoa::{
+                base::YES,
+                appkit::{NSWindow, NSWindowStyleMask, NSWindowTitleVisibility}
+            };
+
+            let id = webview.ns_window();
+            let mut style_mask = id.styleMask();
+
+            style_mask.set(NSWindowStyleMask::NSFullSizeContentViewWindowMask, true);
+
+            id.setStyleMask_(style_mask);
+            id.setTitlebarAppearsTransparent_(YES);
+            id.setTitleVisibility_(NSWindowTitleVisibility::NSWindowTitleHidden);
+        }
+    });
+}
+
 #[tauri::command]
 pub fn set_window_scale(window: tauri::Window, scale_factor: f64) {
     let _ = window.with_webview(move |webview| {

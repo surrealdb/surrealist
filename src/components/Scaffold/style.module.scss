@@ -5,6 +5,13 @@
 	padding: 6px;
 }
 
+.titlebar {
+	height: 16px;
+	user-select: none;
+	cursor: default;
+	color: var(--mantine-color-dimmed);
+}
+
 .wrapper {
 	gap: 16px;
 	flex: 1;
