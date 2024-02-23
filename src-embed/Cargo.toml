@@ -13,6 +13,7 @@ crate-type = ["cdylib"]
 
 [features]
 default = ["console_error_panic_hook"]
+indxdb = ["surrealdb/kv-indxdb"]
 
 [dependencies]
 once_cell = "1.18.0"

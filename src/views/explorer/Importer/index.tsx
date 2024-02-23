@@ -5,7 +5,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useRef, useState } from "react";
 import { Icon } from "../../../components/Icon";
-import { mdiDownload, mdiFileDocument, mdiUpload } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { showNotification } from "@mantine/notifications";
 import { showError } from "~/util/helpers";
@@ -15,6 +14,7 @@ import { Text } from "@mantine/core";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { getActiveSurreal } from "~/util/surreal";
 import { OpenedFile } from "~/adapter/base";
+import { iconDownload, iconFile, iconUpload } from "~/util/icons";
 
 export function Importer() {
 	const isLight = useIsLight();
@@ -71,7 +71,7 @@ export function Importer() {
 				fullWidth
 				color="slate"
 				variant="light"
-				leftSection={<Icon path={mdiDownload} />}
+				leftSection={<Icon path={iconDownload} />}
 				onClick={startImport}
 				loading={isImporting}
 				disabled={!isOnline}
@@ -98,7 +98,7 @@ export function Importer() {
 					>
 						<Icon
 							mt={-1}
-							path={mdiFileDocument}
+							path={iconFile}
 						/>
 						<Text
 							truncate
@@ -132,7 +132,7 @@ export function Importer() {
 					variant="gradient"
 				>
 					Start import
-					<Icon path={mdiUpload} right />
+					<Icon path={iconUpload} right />
 				</Button>
 			</Modal>
 		</>

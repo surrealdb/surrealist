@@ -1,9 +1,9 @@
 import { Text } from "@mantine/core";
 import { ScrollArea, Group } from "@mantine/core";
-import { mdiCircleMedium } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
 import { OpenFn } from "~/types";
+import { iconCircle } from "~/util/icons";
 
 interface RelationsListProps {
 	name: string;
@@ -20,7 +20,7 @@ function RelationsList({ name, relations, onOpen }: RelationsListProps) {
 		<>
 			{relations.map((relation) => (
 				<Group key={relation} gap="xs" wrap="nowrap">
-					<Icon path={mdiCircleMedium} />
+					<Icon path={iconCircle} size="lg" />
 					<RecordLink value={relation} />
 				</Group>
 			))}

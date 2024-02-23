@@ -1,4 +1,3 @@
-import { mdiAutoFix, mdiClose, mdiTuneVariant } from "@mdi/js";
 import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Badge, Group } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
@@ -7,6 +6,7 @@ import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { tryParseParams } from "~/util/helpers";
+import { iconAutoFix, iconClose, iconTune } from "~/util/icons";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 
@@ -86,7 +86,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 	return (
 		<ContentPane
 			title="Variables"
-			icon={mdiTuneVariant}
+			icon={iconTune}
 			rightSection={
 				<Group gap="xs">
 					{!props.isValid && (
@@ -102,14 +102,14 @@ export function VariablesPane(props: VariablesPaneProps) {
 						onClick={inferVariables}
 						title="Infer variables from query"
 					>
-						<Icon path={mdiAutoFix} />
+						<Icon path={iconAutoFix} />
 					</ActionIcon>
 					<ActionIcon
 						color="slate"
 						onClick={props.closeVariables}
 						title="Close variables"
 					>
-						<Icon path={mdiClose} />
+						<Icon path={iconClose} />
 					</ActionIcon>
 				</Group>
 			}

@@ -2,7 +2,6 @@ import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title } from "@mantine/core";
-import { mdiAdjust, mdiCog, mdiFullscreen, mdiHelpCircle, mdiImage, mdiPlus, mdiRefresh, mdiXml } from "@mdi/js";
 import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStoreApi } from "reactflow";
 import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
@@ -24,6 +23,7 @@ import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
 import { useBoolean } from "~/hooks/boolean";
+import { iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconTarget, iconXml } from "~/util/icons";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -175,12 +175,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	return (
 		<ContentPane
 			title="Table Graph"
-			icon={mdiAdjust}
+			icon={iconTarget}
 			style={{ overflow: 'hidden' }}
 			rightSection={
 				<Group wrap="nowrap">
 					<ActionIcon title="Create table..." onClick={isCreatingHandle.open}>
-						<Icon path={mdiPlus} />
+						<Icon path={iconPlus} />
 					</ActionIcon>
 					<Popover
 						opened={showConfig}
@@ -194,7 +194,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								title="Graph Options"
 								onClick={showConfigHandle.toggle}
 							>
-								<Icon path={mdiCog} />
+								<Icon path={iconCog} />
 							</ActionIcon>
 						</Popover.Target>
 						<Popover.Dropdown onMouseLeave={showConfigHandle.close}>
@@ -212,7 +212,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Popover.Dropdown>
 					</Popover>
 					<ActionIcon title="Help" onClick={showHelpHandle.open}>
-						<Icon path={mdiHelpCircle} />
+						<Icon path={iconHelp} />
 					</ActionIcon>
 				</Group>
 			}>
@@ -238,32 +238,32 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						onContextMenu={showContextMenu([
 							{
 								key: 'create',
-								icon: <Icon path={mdiPlus} />,
+								icon: <Icon path={iconPlus} />,
 								title: 'Create table...',
 								onClick: isCreatingHandle.open
 							},
 							{
 								key: 'view',
-								icon: <Icon path={mdiFullscreen} />,
+								icon: <Icon path={iconFullscreen} />,
 								title: 'Reset viewport',
 								onClick: () => fitView()
 							},
 							{
 								key: 'refresh',
-								icon: <Icon path={mdiRefresh} />,
+								icon: <Icon path={iconRefresh} />,
 								title: 'Refresh',
 								onClick: renderGraph
 							},
 							{ key: 'divider' },
 							{
 								key: 'download-png',
-								icon: <Icon path={mdiImage} />,
+								icon: <Icon path={iconImage} />,
 								title: 'Export as PNG',
 								onClick: () => saveImage('png')
 							},
 							{
 								key: 'download-svg',
-								icon: <Icon path={mdiXml} />,
+								icon: <Icon path={iconXml} />,
 								title: 'Export as SVG',
 								onClick: () => saveImage('svg')
 							},
@@ -322,7 +322,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Box>
 						<Button
 							variant="light"
-							rightSection={<Icon path={mdiPlus} />}
+							rightSection={<Icon path={iconPlus} />}
 							onClick={isCreatingHandle.open}
 						>
 							Create a table
@@ -349,7 +349,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					<HelpTitle isLight={isLight}>Can I change how tables are displayed?</HelpTitle>
 
 					<Text mt={8} mb="xl">
-						Press the <Icon path={mdiCog} size="sm" /> button in the top right corner to open the graph options. Inside you
+						Press the <Icon path={iconCog} size="sm" /> button in the top right corner to open the graph options. Inside you
 						can change the table layout and table appearance. These settings are saved per session, however you can configure
 						default values in the Surrealist settings.
 					</Text>
@@ -358,7 +358,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 					<Text mt={8} mb="xl">
 						Surrealist dermines edges by searching for correctly configured <Kbd>in</Kbd> and <Kbd>out</Kbd> fields. You
-						can automatically create a new edge table by pressing the <Icon path={mdiPlus} /> button on the Table Graph
+						can automatically create a new edge table by pressing the <Icon path={iconPlus} /> button on the Table Graph
 						panel. Keep in mind edges are only visible when the layout is set to Diagram.
 					</Text>
 

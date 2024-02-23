@@ -1,13 +1,3 @@
-import {
-	mdiArrowLeft,
-	mdiArrowRight,
-	mdiDatabase,
-	mdiFilterVariant,
-	mdiPlus,
-	mdiRefresh,
-	mdiTable,
-} from "@mdi/js";
-
 import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo } from "react";
@@ -21,6 +11,7 @@ import { getSurreal } from "~/util/surreal";
 import { EventBus, useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
+import { iconChevronLeft, iconChevronRight, iconFilter, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -179,24 +170,24 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 	return (
 		<ContentPane
 			title="Record Explorer"
-			icon={mdiTable}
+			icon={iconTable}
 			rightSection={
 				<Group align="center">
 					<ActionIcon title="Create record" onClick={requestCreate}>
-						<Icon path={mdiPlus} />
+						<Icon path={iconPlus} />
 					</ActionIcon>
 
 					<ActionIcon title="Refresh table" onClick={fetchRecords}>
-						<Icon path={mdiRefresh} />
+						<Icon path={iconRefresh} />
 					</ActionIcon>
 
 					<ActionIcon title="Toggle filter" onClick={toggleFilter}>
-						<Icon path={mdiFilterVariant} />
+						<Icon path={iconFilter} />
 					</ActionIcon>
 
 					<Divider orientation="vertical" />
 
-					<Icon path={mdiDatabase} mr={-10} />
+					<Icon path={iconServer} mr={-10} />
 					<Text lineClamp={1}>
 						{recordCount || "no"} rows
 					</Text>
@@ -207,7 +198,7 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 					{filtering && (
 						<TextInput
 							placeholder="Enter filter clause..."
-							leftSection={<Icon path={mdiFilterVariant} />}
+							leftSection={<Icon path={iconFilter} />}
 							value={filter}
 							onChange={setFilter}
 							error={!isFilterValid}
@@ -269,7 +260,7 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 								onClick={previousPage}
 								disabled={page <= 1}
 							>
-								<Icon path={mdiArrowLeft} />
+								<Icon path={iconChevronLeft} />
 							</ActionIcon>
 
 							<TextInput
@@ -294,7 +285,7 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 								onClick={nextPage}
 								disabled={page >= pageCount}
 							>
-								<Icon path={mdiArrowRight} />
+								<Icon path={iconChevronRight} />
 							</ActionIcon>
 						</Group>
 

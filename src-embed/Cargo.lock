@@ -1345,6 +1345,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "indxdb"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1de97697bf90e30042ea4ae3260a976253e0bb1703fa339541bcc047cc994180"
+dependencies = [
+ "js-sys",
+ "rexie",
+ "thiserror",
+ "tokio",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "inout"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2234,6 +2247,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "rexie"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fef172ff9cdf146cdc934e28cdeb137517bf954fb75e6ee8987dd44b58f351b1"
+dependencies = [
+ "console_error_panic_hook",
+ "js-sys",
+ "num-traits",
+ "thiserror",
+ "tokio",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "ring"
 version = "0.16.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2885,6 +2913,7 @@ dependencies = [
  "geo 0.27.0",
  "geo-types",
  "hex",
+ "indxdb",
  "ipnet",
  "lexicmp",
  "md-5",

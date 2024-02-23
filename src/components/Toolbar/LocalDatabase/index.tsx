@@ -1,6 +1,5 @@
 import { ActionIcon } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
-import { mdiConsole, mdiPlay, mdiStop } from "@mdi/js";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
@@ -8,6 +7,7 @@ import { Icon } from "../../Icon";
 import { closeConnection, openConnection } from "~/database";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
+import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 
 // TODO Check if localhost
 
@@ -79,7 +79,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 				loading={isPending}
 				color={isServing ? "red.5" : undefined}
 			>
-				<Icon path={isServing ? mdiStop : mdiPlay} />
+				<Icon path={isServing ? iconStop : iconPlay} />
 			</ActionIcon>
 
 			{hasStarted && (
@@ -88,7 +88,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 					title="Import database from file"
 					onClick={props.toggleConsole}
 				>
-					<Icon path={mdiConsole} />
+					<Icon path={iconConsole} />
 				</ActionIcon>
 			)}
 		</>

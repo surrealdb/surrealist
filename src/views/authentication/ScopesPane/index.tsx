@@ -1,7 +1,6 @@
 import { Badge, ScrollArea, Text, Textarea } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiAccountLock, mdiKeyVariant, mdiPencil, mdiPlus } from "@mdi/js";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -16,6 +15,7 @@ import { ScopeDefinition } from "~/types";
 import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
+import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 
 export function ScopePane() {
 	const isLight = useIsLight();
@@ -91,12 +91,12 @@ export function ScopePane() {
 
 	return (
 		<ContentPane
-			icon={mdiAccountLock}
+			icon={iconAccountSecure}
 			title="Database Scopes"
 			rightSection={
 				<Group wrap="nowrap">
 					<ActionIcon title="Add account" onClick={createAccount}>
-						<Icon path={mdiPlus} />
+						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Group>
 			}>
@@ -114,7 +114,7 @@ export function ScopePane() {
 						<Group key={scope.name} gap="xs" w="100%" wrap="nowrap">
 							<Icon
 								color="violet.4"
-								path={mdiKeyVariant}
+								path={iconKey}
 							/>
 
 							<Text c={isLight ? "gray.9" : "gray.0"}>
@@ -134,7 +134,7 @@ export function ScopePane() {
 								title="Edit user"
 								onClick={() => editScope(scope)}
 							>
-								<Icon path={mdiPencil} />
+								<Icon path={iconEdit} />
 							</ActionIcon>
 							{/* <Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
 								<Menu.Target>
@@ -212,7 +212,11 @@ export function ScopePane() {
 						/>
 					</Stack>
 					<Group mt="lg">
-						<Button onClick={closeModal} color={isLight ? "light.5" : "light.3"} variant="light">
+						<Button
+							onClick={closeModal}
+							variant="light"
+							color="slate"
+						>
 							Close
 						</Button>
 						<Spacer />
@@ -225,7 +229,12 @@ export function ScopePane() {
 								Remove
 							</Button>	
 						)}
-						<Button color="surreal" disabled={!editingName} type="submit">
+						<Button
+							disabled={!editingName}
+							variant="gradient"
+							type="submit"
+							rightSection={<Icon path={iconCheck} />}
+						>
 							Save
 						</Button>
 					</Group>

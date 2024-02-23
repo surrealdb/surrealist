@@ -1,12 +1,12 @@
 import classes from "./style.module.scss";
 import { Button, Group, GroupProps, Notification, Portal } from "@mantine/core";
-import { mdiCheck, mdiInformationOutline } from "@mdi/js";
 import { Icon } from "../Icon";
 import { SaveableHandle } from "~/hooks/save";
 import { ReactNode } from "react";
 import { capitalize } from "radash";
 import { Spacer } from "../Spacer";
 import { clsx } from "clsx";
+import { iconCheck, iconHelp } from "~/util/icons";
 
 export interface SaveBoxProps {
 	handle: SaveableHandle<any>;
@@ -25,7 +25,7 @@ export function SaveBox({ handle, inline, inlineProps, position, saveText, rever
 
 	const saveButton = (
 		<Button
-			rightSection={<Icon path={mdiCheck} size="md" />}
+			rightSection={<Icon path={iconCheck} />}
 			variant="gradient"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
@@ -65,7 +65,7 @@ export function SaveBox({ handle, inline, inlineProps, position, saveText, rever
 					)}
 					icon={
 						<Icon
-							path={mdiInformationOutline}
+							path={iconHelp}
 							size="lg"
 							mr={-8}
 						/>

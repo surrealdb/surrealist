@@ -39,9 +39,14 @@ export function isConnectionValid(details: ConnectionOptions | undefined) {
 	}
 
 	// Check for essential fields
-	const hasEssential = details.protocol && details.hostname && details.namespace && details.database && details.authMode;
+	const hasEssential = details.protocol && details.namespace && details.database && details.authMode;
 
 	if (!hasEssential) {
+		return false;
+	}
+
+	// Check for hostname
+	if (details.protocol !== "mem" && details.protocol !== "indxdb" && !details.hostname) {
 		return false;
 	}
 

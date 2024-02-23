@@ -1,6 +1,5 @@
 import surrealistLogo from "~/assets/surrealist.png";
 import { Group, Button, Modal, TextInput, Image, Center, ActionIcon } from "@mantine/core";
-import { mdiClose, mdiSync } from "@mdi/js";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { updateTitle } from "~/util/helpers";
@@ -18,6 +17,7 @@ import { Connections } from "./connections";
 import { showNotification } from "@mantine/notifications";
 import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
+import { iconClose, iconReset } from "~/util/icons";
 
 export interface ToolbarProps {
 	viewMode: ViewMode;
@@ -93,7 +93,7 @@ export function Toolbar(props: ToolbarProps) {
 					title="Reset sandbox environment"
 					onClick={resetSandbox}
 				>
-					<Icon path={mdiSync} />
+					<Icon path={iconReset} />
 				</ActionIcon>
 			) : (
 				<ActionIcon
@@ -102,11 +102,13 @@ export function Toolbar(props: ToolbarProps) {
 					title="Disconnect"
 					onClick={closeConnection}
 				>
-					<Icon path={mdiClose} />
+					<Icon path={iconClose} />
 				</ActionIcon>
 			)) : (
 				<Button
-					color="slate"
+					h={42}
+					radius="lg"
+					color="surreal"
 					variant="light"
 					loading={isConnecting}
 					onClick={connect}

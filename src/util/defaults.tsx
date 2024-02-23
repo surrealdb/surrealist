@@ -31,7 +31,7 @@ export function createBaseConfig(): SurrealistConfig {
 
 export function createBaseConnectionOptions(): ConnectionOptions {
 	return {
-		protocol: "wss",
+		protocol: "ws",
 		hostname: "",
 		namespace: "",
 		database: "",

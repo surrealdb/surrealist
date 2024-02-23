@@ -5,13 +5,13 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { Icon } from "../../../components/Icon";
-import { mdiDownload, mdiUpload } from "@mdi/js";
 import { ModalTitle } from "../../../components/ModalTitle";
 import { Text } from "@mantine/core";
 import { useToggleList } from "~/hooks/toggle";
 import { adapter } from "~/adapter";
 import { showNotification } from "@mantine/notifications";
 import { createDatabaseExport } from "~/util/exporter";
+import { iconDownload, iconUpload } from "~/util/icons";
 
 export function Exporter() {
 	const isLight = useIsLight();
@@ -58,7 +58,7 @@ export function Exporter() {
 				fullWidth
 				color="slate"
 				variant="light"
-				leftSection={<Icon path={mdiUpload} />}
+				leftSection={<Icon path={iconUpload} />}
 				onClick={openExporter}
 				loading={isExporting}
 				disabled={!isOnline}
@@ -97,9 +97,9 @@ export function Exporter() {
 					loading={isExporting}
 					disabled={exportTypes.length === 0}
 					variant="gradient"
+					rightSection={<Icon path={iconDownload} />}
 				>
 					Save export
-					<Icon path={mdiDownload} right />
 				</Button>
 			</Modal>
 		</>

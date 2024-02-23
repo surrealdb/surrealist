@@ -1,5 +1,5 @@
-import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench, mdiCodeJson, mdiFormatListGroup, mdiBroadcast } from "@mdi/js";
-import { ResultMode } from "./types";
+import { Protocol, ResultMode, Selectable } from "./types";
+import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconJSON, iconLive, iconQuery } from "./util/icons";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
@@ -15,10 +15,10 @@ export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
 
 export const RESULT_LISTINGS: ListingItem[] = [
-	{ label: "Combined", value: "combined", icon: mdiFormatListGroup },
-	{ label: "JSON", value: "single", icon: mdiCodeJson },
-	{ label: "Table", value: "table", icon: mdiTable },
-	{ label: "Live", value: "live", icon: mdiBroadcast },
+	{ label: "Combined", value: "combined", icon: iconCombined },
+	{ label: "JSON", value: "single", icon: iconJSON },
+	{ label: "Table", value: "table", icon: iconDataTable },
+	{ label: "Live", value: "live", icon: iconLive },
 ];
 
 export const EXPORT_TYPES = [
@@ -29,6 +29,15 @@ export const EXPORT_TYPES = [
 	"params",
 	"scopes"
 ] as const;
+
+export const CONNECTION_PROTOCOLS: Selectable<Protocol>[] = [
+	{ label: "HTTP", value: "http" },
+	{ label: "HTTPS", value: "https" },
+	{ label: "WS", value: "ws" },
+	{ label: "WSS", value: "wss" },
+	{ label: "Memory", value: "mem" },
+	{ label: "IndexedDB", value: "indxdb" },
+];
 
 export const AUTH_MODES = [
 	{ label: "Root authentication", value: "root" },
@@ -42,39 +51,26 @@ export const VIEW_MODES = [
 	{
 		id: "query",
 		name: "Query",
-		icon: mdiLightningBolt,
+		icon: iconQuery,
 		desc: "Execute queries against the database and inspect the results",
 	},
 	{
 		id: "explorer",
 		name: "Explorer",
-		icon: mdiTable,
+		icon: iconExplorer,
 		desc: "Explore the database tables, records, and relations",
 	},
 	{
 		id: "designer",
 		name: "Designer",
-		icon: mdiWrench,
+		icon: iconDesigner,
 		desc: "Define database tables and relations",
 	},
 	{
 		id: "authentication",
 		name: "Authentication",
-		icon: mdiLockOpen,
+		icon: iconAuth,
 		desc: "Manage account details and database scopes",
-	},
-] as const;
-
-export const STRUCTURE_TABS = [
-	{
-		id: "builder",
-		name: "Builder",
-		icon: mdiTable,
-	},
-	{
-		id: "graph",
-		name: "Visualizer",
-		icon: mdiChartBoxOutline,
 	},
 ] as const;
 

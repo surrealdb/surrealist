@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { Accordion, Badge, Button, Paper, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
 import { Drawer, Group, ActionIcon } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiClose, mdiDelete, mdiLightningBolt, mdiMagnify, mdiPencil, mdiPlus, mdiText } from "@mdi/js";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -15,6 +14,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { SavedQuery } from "~/types";
 import { useContextMenu } from "mantine-contextmenu";
+import { iconClose, iconDelete, iconEdit, iconPlus, iconQuery, iconSearch, iconText } from "~/util/icons";
 
 export interface SavesDrawerProps {
 	opened: boolean;
@@ -84,17 +84,17 @@ export function SavesDrawer(props: SavesDrawerProps) {
 				<Spacer />
 				
 				<ActionIcon onClick={props.onSaveQuery} title="Add query">
-					<Icon path={mdiPlus} />
+					<Icon path={iconPlus} />
 				</ActionIcon>
 
 				<ActionIcon onClick={props.onClose}>
-					<Icon path={mdiClose} />
+					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
 			<TextInput
 				autoFocus
 				placeholder="Search saved queries..."
-				leftSection={<Icon path={mdiMagnify} />}
+				leftSection={<Icon path={iconSearch} />}
 				value={filterText}
 				onChange={setFilterText}
 				mb="sm"
@@ -163,26 +163,26 @@ export function SavesDrawer(props: SavesDrawerProps) {
 							{
 								key: 'open',
 								title: 'Open in new tab',
-								icon: <Icon path={mdiLightningBolt} />,
+								icon: <Icon path={iconQuery} />,
 								onClick: () => handleUseQuery(entry),
 							},
 							{
 								key: 'replace',
 								title: 'Open in current tab',
-								icon: <Icon path={mdiText} />,
+								icon: <Icon path={iconText} />,
 								onClick: () => handleReplaceQuery(entry),
 							},
 							{
 								key: 'edit',
 								title: 'Edit query',
-								icon: <Icon path={mdiPencil} />,
+								icon: <Icon path={iconEdit} />,
 								onClick: () => props.onEditQuery(entry),
 							},
 							{
 								key: 'delete',
 								title: 'Delete query',
 								color: 'red',
-								icon: <Icon path={mdiDelete} />,
+								icon: <Icon path={iconDelete} />,
 								onClick: () => handleDeleteQuery(entry),
 							}
 						])}
@@ -208,7 +208,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 										className={classes.queryAction}
 										onClick={e => handleUseQuery(entry, e)}
 									>
-										<Icon path={mdiLightningBolt} size={0.9} />
+										<Icon path={iconQuery} size={0.9} />
 									</ActionIcon>
 								</Tooltip>
 								{/* <ActionIcon

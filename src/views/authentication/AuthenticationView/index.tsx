@@ -1,8 +1,8 @@
 import { SimpleGrid } from "@mantine/core";
 import { AccountsPane } from "../AccountsPane";
 import { ScopePane } from "../ScopesPane";
-import { mdiDatabaseLock, mdiFolderLock, mdiLock } from "@mdi/js";
 import { useIsConnected } from "~/hooks/connection";
+import { iconAuth, iconFolderSecure, iconServerSecure } from "~/util/icons";
 
 export interface AuthenticationViewProps {}
 
@@ -24,7 +24,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 			<AccountsPane
 				isOnline={isOnline}
 				title="Root Users"
-				icon={mdiLock}
+				icon={iconAuth}
 				iconColor="red.6"
 				field="kvUsers"
 				type="ROOT"
@@ -33,7 +33,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 			<AccountsPane
 				isOnline={isOnline}
 				title="Namespace Users"
-				icon={mdiFolderLock}
+				icon={iconFolderSecure}
 				iconColor="blue.6"
 				field="nsUsers"
 				type="NAMESPACE"
@@ -42,7 +42,7 @@ export function AuthenticationView(props: AuthenticationViewProps) {
 			<AccountsPane
 				isOnline={isOnline}
 				title="Database Users"
-				icon={mdiDatabaseLock}
+				icon={iconServerSecure}
 				iconColor="yellow.6"
 				field="dbUsers"
 				type="DATABASE"

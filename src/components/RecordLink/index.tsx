@@ -1,9 +1,9 @@
 import { Group, Text } from "@mantine/core";
-import { mdiArrowTopRight } from "@mdi/js";
 import { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { useInspector } from "~/providers/Inspector";
+import { iconArrowUpRight } from "~/util/icons";
 
 export interface RecordLinkProps extends ComponentPropsWithoutRef<"div"> {
 	value: string;
@@ -39,7 +39,7 @@ export function RecordLink({ value, ...rest }: RecordLinkProps) {
 				}}>
 				{value}
 			</Text>
-			<Icon path={mdiArrowTopRight} right />
+			<Icon path={iconArrowUpRight} right />
 		</Group>
 	);
 }

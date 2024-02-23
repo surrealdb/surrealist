@@ -5,9 +5,9 @@ import compare from 'semver-compare';
 import { showNotification } from '@mantine/notifications';
 import { Stack, Text } from '@mantine/core';
 import { Icon } from '~/components/Icon';
-import { mdiAlert } from '@mdi/js';
 import { connectionUri, newId } from './helpers';
 import { useInterfaceStore } from '~/stores/interface';
+import { iconWarning } from './icons';
 
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 
@@ -68,7 +68,7 @@ async function checkDatabaseVersion() {
 			<Stack gap={0}>
 				<Text fw={600}>
 					<Icon
-						path={mdiAlert}
+						path={iconWarning}
 						size="sm"
 						left
 						mt={-2}

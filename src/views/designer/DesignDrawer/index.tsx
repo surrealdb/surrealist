@@ -15,7 +15,6 @@ import {
 	TextInput,
 } from "@mantine/core";
 
-import { mdiClose, mdiDelete, mdiWrench } from "@mdi/js";
 import { MouseEvent, useMemo, useState } from "react";
 import { Updater } from "use-immer";
 import { useStable } from "~/hooks/stable";
@@ -37,6 +36,7 @@ import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { themeColor } from "~/util/mantine";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { iconClose, iconDelete, iconWrench } from "~/util/icons";
 
 const INITIAL_TABS = ["general"];
 
@@ -94,7 +94,7 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 		>
 			<Group mb="md" gap="sm">
 				<ModalTitle>
-					<Icon path={mdiWrench} left size="sm" />
+					<Icon path={iconWrench} left size="sm" />
 					Table designer
 				</ModalTitle>
 
@@ -111,11 +111,11 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 				))}
 
 				<ActionIcon title="Delete table (Hold shift to force)" onClick={requestDelete}>
-					<Icon color={isShifting ? "red" : undefined} path={mdiDelete} />
+					<Icon color={isShifting ? "red" : undefined} path={iconDelete} />
 				</ActionIcon>
 
 				<ActionIcon onClick={() => onClose(false)} disabled={handle.isChanged}>
-					<Icon path={mdiClose} />
+					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
 			<TextInput
@@ -204,11 +204,18 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					You are about to delete this table and all data contained within it. This action cannot be undone.
 				</Text>
 				<Group mt="lg">
-					<Button onClick={closeDelete} color="slate" variant="light">
+					<Button
+						onClick={closeDelete}
+						color="slate"
+						variant="light"
+					>
 						Close
 					</Button>
 					<Spacer />
-					<Button color="red" onClick={handleDelete}>
+					<Button
+						color="red"
+						onClick={handleDelete}
+					>
 						Delete
 					</Button>
 				</Group>

@@ -1,7 +1,5 @@
 import classes from "./style.module.scss";
-import clsx from "clsx";
 import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text } from "@mantine/core";
-import { mdiClose, mdiFormatListBulleted, mdiHistory, mdiLightningBolt, mdiPlus, mdiStar } from "@mdi/js";
 import { EditableText } from "~/components/EditableText";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -13,6 +11,8 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { LiveIndicator } from "~/components/LiveIndicator";
 import { getSurreal } from "~/util/surreal";
+import { iconClose, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
+import { Entry } from "~/components/Entry";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -44,7 +44,7 @@ export function TabsPane(props: TabsPaneProps) {
 
 	return (
 		<ContentPane
-			icon={mdiFormatListBulleted}
+			icon={iconList}
 			title="Queries"
 			w={325}
 			leftSection={
@@ -58,7 +58,7 @@ export function TabsPane(props: TabsPaneProps) {
 			}
 			rightSection={
 				<ActionIcon title="Create query..." onClick={newTab}>
-					<Icon path={mdiPlus} />
+					<Icon path={iconPlus} />
 				</ActionIcon>
 			}
 		>
@@ -77,32 +77,20 @@ export function TabsPane(props: TabsPaneProps) {
 							const isLive = liveTabs.has(query.id);
 
 							return (
-								<Button
+								<Entry
 									key={query.id}
-									fullWidth
-									miw={0}
-									px={8}
-									color="slate"
-									variant={isActive ? "light" : "subtle"}
+									isActive={isActive}
 									onClick={() => setActiveQueryTab(query.id)}
-									className={clsx(classes.query, isActive && classes.queryActive)}
-									styles={{
-										label: {
-											flex: 1
-										}
-									}}
+									className={classes.query}
 									leftSection={
-										<Icon
-											path={mdiLightningBolt}
-											color={isActive ? "surreal" : isLight ? "slate.2" : "slate.4"}
-										/>
+										<Icon path={iconQuery} />
 									}
 									rightSection={
 										<>
 											{isLive && (
 												<LiveIndicator
 													className={classes.queryLive}
-													mr={5}
+													mr={-4}
 												/>
 											)}
 
@@ -111,8 +99,10 @@ export function TabsPane(props: TabsPaneProps) {
 													component="div"
 													className={classes.queryClose}
 													onClick={(e) => removeTab(query.id, e)}
+													color={(isActive && isLight) ? "white" : undefined}
+													bg={isActive ? "rgba(255, 255, 255, 0.15)" : undefined}
 												>
-													<Icon path={mdiClose} />
+													<Icon path={iconClose} />
 												</ActionIcon>
 											)}
 										</>
@@ -127,7 +117,7 @@ export function TabsPane(props: TabsPaneProps) {
 											outline: 'none',
 										}}
 									/>
-								</Button>
+								</Entry>
 							);
 						})}
 					</Stack>
@@ -146,7 +136,7 @@ export function TabsPane(props: TabsPaneProps) {
 						fullWidth
 						color="slate"
 						variant="light"
-						leftSection={<Icon path={mdiStar} />}
+						leftSection={<Icon path={iconStar} />}
 						onClick={props.openSaved}
 					>
 						Saved queries
@@ -155,7 +145,7 @@ export function TabsPane(props: TabsPaneProps) {
 						fullWidth
 						color="slate"
 						variant="light"
-						leftSection={<Icon path={mdiHistory} />}
+						leftSection={<Icon path={iconHistory} />}
 						onClick={props.openHistory}
 					>
 						Query history

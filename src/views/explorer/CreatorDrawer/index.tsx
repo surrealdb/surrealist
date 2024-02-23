@@ -1,4 +1,3 @@
-import { mdiClose, mdiPlus } from "@mdi/js";
 import { ActionIcon, Badge, Button, Drawer, Group, Paper, Text, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
@@ -9,6 +8,7 @@ import { useLayoutEffect, useMemo, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
+import { iconClose, iconPlus } from "~/util/icons";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -82,7 +82,7 @@ export function CreatorDrawer({ opened, activeTable, onClose, onRefresh }: Creat
 				)}
 
 				<ActionIcon onClick={onClose}>
-					<Icon path={mdiClose} />
+					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
 
@@ -128,7 +128,7 @@ export function CreatorDrawer({ opened, activeTable, onClose, onRefresh }: Creat
 				variant="gradient"
 				onClick={handleSubmit}
 				rightSection={
-					<Icon path={mdiPlus} />
+					<Icon path={iconPlus} />
 				}
 				style={{
 					position: "absolute",

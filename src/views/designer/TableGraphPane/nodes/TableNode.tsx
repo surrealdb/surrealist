@@ -1,6 +1,6 @@
 import { BaseNode } from "./BaseNode";
-import { mdiTable } from "@mdi/js";
 import { NodeData } from "../helpers";
+import { iconTable } from "~/util/icons";
 
 interface TableNodeProps {
 	withoutGraph?: boolean;
@@ -10,7 +10,7 @@ interface TableNodeProps {
 export function TableNode({ withoutGraph, data }: TableNodeProps) {
 	return (
 		<BaseNode
-			icon={mdiTable}
+			icon={iconTable}
 			table={data.table}
 			isSelected={data.isSelected}
 			hasLeftEdge={!withoutGraph && data.hasLeftEdge}

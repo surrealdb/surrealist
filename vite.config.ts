@@ -1,23 +1,9 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig, PluginOption } from 'vite';
-import { readFileSync, cpSync, existsSync } from 'node:fs';
+import { defineConfig } from 'vite';
+import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
-
-function pages(): PluginOption {
-	return {
-		name: 'github-pages',
-
-		writeBundle() {
-			const from = fileURLToPath(new URL('dist/index.html', import.meta.url));
-			const to = fileURLToPath(new URL('dist/404.html', import.meta.url));
-
-			cpSync(from, to);
-		}
-	};
-}
-
 const generatedDir = fileURLToPath(new URL('src/generated', import.meta.url));
 
 if (!existsSync(generatedDir)) {
@@ -26,7 +12,7 @@ if (!existsSync(generatedDir)) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), pages()],
+	plugins: [react()],
 	clearScreen: false,
 	envPrefix: ['VITE_', 'TAURI_'],
 	server: {
@@ -53,7 +39,12 @@ export default defineConfig({
 	css: {
 		modules: {
 			localsConvention: 'dashesOnly'
-		}
+		},
+		preprocessorOptions: {
+			scss: {
+				additionalData: '@import "~/assets/styles/mixins.scss";',
+			},
+		},
 	},
 	define: {
 		'import.meta.env.VERSION': `"${version}"`,

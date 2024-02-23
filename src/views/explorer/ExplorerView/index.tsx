@@ -31,7 +31,11 @@ export function ExplorerView() {
 
 	return (
 		<>
-			<Group h="100%" wrap="nowrap" gap={6}>
+			<Group
+				h="100%"
+				wrap="nowrap"
+				gap="var(--surrealist-divider-size)"
+			>
 				<TablesPane
 					openRecordCreator={openCreator}
 				/>

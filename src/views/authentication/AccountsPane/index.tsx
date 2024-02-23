@@ -16,7 +16,6 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { mdiComment, mdiKeyVariant, mdiPencil, mdiPlus } from "@mdi/js";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -31,6 +30,7 @@ import { DatabaseSchema, UserDefinition } from "~/types";
 import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
+import { iconCheck, iconComment, iconEdit, iconKey, iconPlus } from "~/util/icons";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -133,7 +133,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			title={props.title}
 			rightSection={
 				<ActionIcon title="Add account" onClick={createUser}>
-					<Icon path={mdiPlus} />
+					<Icon path={iconPlus} />
 				</ActionIcon>
 			}>
 			{users.length === 0 && (
@@ -155,7 +155,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 						<Group key={user.name} gap="xs" w="100%" wrap="nowrap">
 							<Icon
 								color={props.iconColor}
-								path={mdiKeyVariant}
+								path={iconKey}
 							/>
 							<Text c={isLight ? "gray.9" : "gray.0"}>
 								{user.name}
@@ -175,7 +175,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 										<Icon
 											ml={6}
 											color={isLight ? "light" : "light.3"}
-											path={mdiComment}
+											path={iconComment}
 											size={10}
 											style={{ flexShrink: 0 }}
 										/>
@@ -192,7 +192,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 								title="Edit user"
 								onClick={() => updateUser(user)}
 							>
-								<Icon path={mdiPencil} />
+								<Icon path={iconEdit} />
 							</ActionIcon>
 						</Group>
 					))}
@@ -255,7 +255,11 @@ export function AccountsPane(props: AccountsPaneProps) {
 						/>
 					</Stack>
 					<Group mt="lg">
-						<Button onClick={closeModal} color={isLight ? "light.5" : "light.3"} variant="light">
+						<Button
+							onClick={closeModal}
+							color="slate"
+							variant="light"
+						>
 							Close
 						</Button>
 						<Spacer />
@@ -269,9 +273,11 @@ export function AccountsPane(props: AccountsPaneProps) {
 							</Button>	
 						)}
 						<Button
-							color="surreal"
 							disabled={!currentUser && (!editingName || !editingPassword)}
-							type="submit">
+							rightSection={<Icon path={iconCheck} />}
+							variant="gradient"
+							type="submit"
+						>
 							Save
 						</Button>
 					</Group>

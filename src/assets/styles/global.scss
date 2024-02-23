@@ -14,8 +14,26 @@ body {
     display: unset !important;
 }
 
+.mantine-contextmenu {
+    background-color: color-mix(in srgb, var(--mantine-color-slate-8) 65%, transparent);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    @include light {
+        background-color: color-mix(in srgb, var(--mantine-color-white) 75%, transparent);
+    }
+}
+
 .mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
     font-size: 0.75rem !important;
+}
+
+.mantine-ActionIcon-root:hover {
+    --ai-hover-color: white;
+}
+
+:root {
+    --surrealist-divider-size: 10px;
 }
 
 :root[data-mantine-color-scheme="light"] {

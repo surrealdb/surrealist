@@ -1,5 +1,4 @@
 import { ActionIcon, Button, Center, Divider, Group, Pagination, Stack, Text, Tooltip } from "@mantine/core";
-import { mdiBroadcastOff, mdiLightningBolt } from "@mdi/js";
 import { useActiveQuery } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
@@ -14,6 +13,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { ResultMode } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
+import { iconBroadcastOff, iconQuery } from "~/util/icons";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -84,7 +84,7 @@ export function ResultPane() {
 	return (
 		<ContentPane
 			title={panelTitle}
-			icon={mdiLightningBolt}
+			icon={iconQuery}
 			rightSection={
 				<Group align="center">
 					{resultMode == "live" ? (isLive && (
@@ -94,7 +94,7 @@ export function ResultPane() {
 							variant="light"
 							size="xs"
 							leftSection={
-								<Icon path={mdiBroadcastOff} />
+								<Icon path={iconBroadcastOff} />
 							}
 						>
 							Stop listening
@@ -162,7 +162,7 @@ export function ResultPane() {
 					<Center h="100%" c="slate">
 						<Stack>
 							<Icon
-								path={mdiLightningBolt}
+								path={iconQuery}
 								mx="auto"
 								size="lg"
 							/>

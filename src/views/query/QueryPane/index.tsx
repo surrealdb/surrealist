@@ -1,5 +1,4 @@
 import { editor } from "monaco-editor";
-import { mdiDatabase, mdiFileUpload, mdiStar, mdiText } from "@mdi/js";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { ContentPane } from "~/components/Pane";
@@ -16,6 +15,7 @@ import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
 import { format_query } from "~/generated/surrealist-embed";
 import { getFileName, isUnnamedTab, showError } from "~/util/helpers";
+import { iconFile, iconServer, iconStar, iconText } from "~/util/icons";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
@@ -90,7 +90,7 @@ export function QueryPane(props: QueryPaneProps) {
 	return (
 		<ContentPane
 			title="Query"
-			icon={mdiDatabase}
+			icon={iconServer}
 			rightSection={
 				!props.isValid && (
 					<Badge
@@ -138,7 +138,7 @@ export function QueryPane(props: QueryPaneProps) {
 									title="Save query"
 									variant="light"
 								>
-									<Icon path={mdiStar} />
+									<Icon path={iconStar} />
 								</ActionIcon>
 
 								<ActionIcon
@@ -146,7 +146,7 @@ export function QueryPane(props: QueryPaneProps) {
 									title="Cleanup query"
 									variant="light"
 								>
-									<Icon path={mdiText} />
+									<Icon path={iconText} />
 								</ActionIcon>
 
 								<ActionIcon
@@ -154,7 +154,7 @@ export function QueryPane(props: QueryPaneProps) {
 									title="Load from file"
 									variant="light"
 								>
-									<Icon path={mdiFileUpload} />
+									<Icon path={iconFile} />
 								</ActionIcon>
 
 								<Spacer />

@@ -1,13 +1,3 @@
-import {
-	mdiArrowLeftBold,
-	mdiClose,
-	mdiCodeJson,
-	mdiDelete,
-	mdiMagnify,
-	mdiRefresh,
-	mdiSwapVertical,
-} from "@mdi/js";
-
 import { useEffect, useMemo, useState } from "react";
 import { ActionIcon, Button, Center, Drawer, Group, Modal, Paper, Tabs, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
@@ -22,6 +12,7 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
+import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -176,7 +167,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		>
 			<Group mb="md" gap="sm">
 				<ModalTitle>
-					<Icon left path={mdiMagnify} />
+					<Icon left path={iconSearch} />
 					Record inspector
 				</ModalTitle>
 
@@ -188,12 +179,12 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 							onClick={history.pop}
 							title="Go to previous record"
 						>
-							<Icon path={mdiArrowLeftBold} />
+							<Icon path={iconArrowLeftFat} />
 						</ActionIcon>
 					)}
 
 					<ActionIcon onClick={refreshRecord} title="Refetch record">
-						<Icon path={mdiRefresh} />
+						<Icon path={iconRefresh} />
 					</ActionIcon>
 
 					<ActionIcon
@@ -201,11 +192,11 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 						onClick={isDeletingHandle.open}
 						title="Delete record (Hold shift to force)"
 					>
-						<Icon path={mdiDelete} />
+						<Icon path={iconDelete} />
 					</ActionIcon>
 
 					<ActionIcon onClick={onClose} title="Close inspector">
-						<Icon path={mdiClose} />
+						<Icon path={iconClose} />
 					</ActionIcon>
 				</Group>
 			</Group>
@@ -248,11 +239,11 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					<Tabs.List grow>
 						<Tabs.Tab value="content">
 							Content
-							<Icon path={mdiCodeJson} size={0.85} right />
+							<Icon path={iconJSON} size={0.85} right />
 						</Tabs.Tab>
 						<Tabs.Tab value="relations">
 							Relations
-							<Icon path={mdiSwapVertical} size={0.85} right />
+							<Icon path={iconTransfer} size={0.85} right />
 						</Tabs.Tab>
 					</Tabs.List>
 
@@ -289,11 +280,18 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					You are about to delete this record. This action cannot be undone.
 				</Text>
 				<Group mt="lg">
-					<Button onClick={isDeletingHandle.close} color={isLight ? "light.5" : "light.3"} variant="light">
+					<Button
+						onClick={isDeletingHandle.close}
+						variant="light"
+						color="slate"
+					>
 						Close
 					</Button>
 					<Spacer />
-					<Button color="red" onClick={handleDelete}>
+					<Button
+						color="red"
+						onClick={handleDelete}
+					>
 						Delete
 					</Button>
 				</Group>

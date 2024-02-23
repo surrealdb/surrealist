@@ -66,7 +66,7 @@ export const MANTINE_THEME = createTheme({
 			"#ff64c5",
 			"#fe38b4",
 			"#fe1ca9",
-			"#ff09a3",
+			"#ff00a0",
 			"#e4008e",
 			"#cc007f",
 			"#b3006f",
@@ -85,15 +85,20 @@ export const MANTINE_THEME = createTheme({
 		]
 	},
 	defaultGradient: {
-		from: "surreal.6",
+		from: "surreal",
 		to: "#9600FF",
-		deg: 90
+		deg: 110
 	},
 	components: {
 		Modal: {
 			defaultProps: {
 				centered: true,
 			}
+		},
+		Overlay: {
+			defaultProps: {
+				blur: 5
+			},
 		},
 		Menu: {
 			defaultProps: {

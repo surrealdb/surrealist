@@ -1,0 +1,5 @@
+@mixin light {
+	:root[data-mantine-color-scheme="light"] & {
+		@content;
+	}
+}

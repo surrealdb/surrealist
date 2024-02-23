@@ -1,11 +1,10 @@
 import { ActionIcon, Box, Button, Group, Popover, Stack, Text, TextInput } from "@mantine/core";
-import { mdiChevronDown, mdiCircle, mdiDotsVertical, mdiMagnify, mdiPlus } from "@mdi/js";
 import { useMemo, useState } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { surrealIcon } from "~/util/icons";
+import { iconChevronDown, iconCircle, iconDotsVertical, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
@@ -60,18 +59,18 @@ export function Connections() {
 			<Popover.Target>
 				{connection ? (
 					<Button
+						h={42}
 						variant="light"
 						color="slate"
 						radius="lg"
 						onClick={toggleDropdown}
 						leftSection={isSandbox && (
-							<Icon path={surrealIcon} color="surreal" />
+							<Icon path={iconSurreal} color="surreal" />
 						)}
 						rightSection={
 							<Icon
-								path={mdiCircle}
-								size={0.65}
-								ml={4}
+								path={iconCircle}
+								size="lg"
 								color={isConnected ? "green" : isConnecting ? "orange" : "red"}
 							/>
 						}
@@ -84,7 +83,7 @@ export function Connections() {
 						color="slate"
 						onClick={toggleDropdown}
 						rightSection={
-							<Icon path={mdiChevronDown} />
+							<Icon path={iconChevronDown} />
 						}
 					>
 						Select a connection
@@ -100,7 +99,7 @@ export function Connections() {
 						onChange={setSearch}
 						autoFocus
 						leftSection={
-							<Icon path={mdiMagnify} />
+							<Icon path={iconSearch} />
 						}
 					/>
 
@@ -111,7 +110,7 @@ export function Connections() {
 							color={isSandbox ? "surreal" : "slate"}
 							leftSection={
 								<Group gap="xs">
-									<Icon path={surrealIcon} color="surreal" />
+									<Icon path={iconSurreal} color="surreal" />
 									Sandbox
 								</Group>
 							}
@@ -134,7 +133,7 @@ export function Connections() {
 								mr={7}
 								onClick={createNew}
 							>
-								<Icon path={mdiPlus} />
+								<Icon path={iconPlus} />
 							</ActionIcon>
 						</Group>
 						<Stack gap="sm">
@@ -163,7 +162,7 @@ export function Connections() {
 											</Group>
 										}
 										rightSection={
-											<Icon path={mdiDotsVertical} />
+											<Icon path={iconDotsVertical} />
 										}
 										styles={{
 											label: {

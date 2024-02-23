@@ -1,5 +1,4 @@
 import { useEffect, useRef, useMemo } from "react";
-import { mdiClose, mdiDelete } from "@mdi/js";
 import { ActionIcon, Badge, Center, Drawer, Group, Paper, ScrollArea, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import AnsiToHtml from "ansi-to-html";
@@ -8,6 +7,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
+import { iconClose, iconDelete } from "~/util/icons";
 
 interface ConsoleActionsProps {
 	onClose: () => void;
@@ -20,11 +20,11 @@ function ConsoleActions(props: ConsoleActionsProps) {
 	return (
 		<Group align="center">
 			<ActionIcon onClick={emptyConsole} title="Clear console">
-				<Icon path={mdiDelete} />
+				<Icon path={iconDelete} />
 			</ActionIcon>
 
 			<ActionIcon onClick={props.onClose} title="Hide console">
-				<Icon path={mdiClose} />
+				<Icon path={iconClose} />
 			</ActionIcon>
 		</Group>
 	);
@@ -121,11 +121,11 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 				<Spacer />
 
 				<ActionIcon onClick={clearConsole} title="Clear console">
-					<Icon path={mdiDelete} />
+					<Icon path={iconDelete} />
 				</ActionIcon>
 
 				<ActionIcon onClick={props.onClose}>
-					<Icon path={mdiClose} />
+					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
 			

@@ -31,11 +31,10 @@ import { SANDBOX, VIEW_MODES } from "~/constants";
 import { updateTitle } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
-import { mdiCog } from "@mdi/js";
 import { Settings } from "../Settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
-import { surrealIcon } from "~/util/icons";
+import { iconCog, iconSurreal } from "~/util/icons";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -153,7 +152,7 @@ export function Scaffold() {
 							<NavigationIcon
 								name="Settings"
 								isLight={isLight}
-								icon={mdiCog}
+								icon={iconCog}
 								onClick={settingsHandle.toggle}
 							/>
 						</Stack>
@@ -203,7 +202,7 @@ export function Scaffold() {
 									size="xs"
 									variant="light"
 									onClick={openSandbox}
-									leftSection={<Icon path={surrealIcon} color="surreal" />}
+									leftSection={<Icon path={iconSurreal} color="surreal" />}
 								>
 									Open the sandbox
 								</Button>

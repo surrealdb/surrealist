@@ -1,6 +1,4 @@
 import surrealistIcon from "~/assets/surrealist.png";
-
-import { mdiClose } from "@mdi/js";
 import { useHotkeys } from "@mantine/hooks";
 import { MouseEvent, useEffect } from "react";
 import { Notifications } from "@mantine/notifications";
@@ -17,6 +15,7 @@ import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import { InspectorProvider } from "~/providers/Inspector";
+import { iconClose } from "~/util/icons";
 
 export function App() {
 	const { toggleWindowPinned, setWindowScale, setEditorScale } = useConfigStore.getState();
@@ -74,7 +73,7 @@ export function App() {
 			<Notifications />
 
 			<ContextMenuProvider
-				borderRadius="sm"
+				borderRadius="md"
 				shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
 				submenuDelay={250}
 			>
@@ -117,7 +116,7 @@ export function App() {
 								<Text c="gray.5">Version {update} is available</Text>
 							</Box>
 							<ActionIcon onClick={closeUpdate}>
-								<Icon path={mdiClose} />
+								<Icon path={iconClose} />
 							</ActionIcon>
 						</Group>
 					</Paper>

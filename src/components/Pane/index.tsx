@@ -35,7 +35,7 @@ export function ContentPane(props: ContentPaneProps) {
 						{icon && <Icon path={icon} c={isLight ? "slate.4" : "slate.3"} />}
 						<Text
 							fw={600}
-							c={isLight ? "dark.8" : "slate.0"}
+							c="bright"
 							className={classes.title}
 						>
 							{title}

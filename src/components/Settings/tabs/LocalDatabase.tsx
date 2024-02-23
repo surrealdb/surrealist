@@ -1,10 +1,10 @@
 import { Stack, TextInput, NumberInput, Select, Group, Tooltip, Box } from "@mantine/core";
-import { mdiInformation } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { DriverType } from "~/types";
 import { Setting } from "../setting";
 import { useConfigStore } from "~/stores/config";
+import { iconHelp } from "~/util/icons";
 
 const DRIVERS = [
 	{ label: "Memory", value: "memory" },
@@ -94,7 +94,7 @@ export function LocalDatabaseTab() {
 						}>
 						<Group gap={6}>
 							Surreal executable path
-							<Icon path={mdiInformation} size="sm" mt={-2} />
+							<Icon path={iconHelp} size="sm" mt={-2} />
 						</Group>
 					</Tooltip>
 				}>

@@ -1,7 +1,6 @@
 import { Center, Text } from "@mantine/core";
 import { Accordion, Badge, Group, ScrollArea, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { mdiBroadcast, mdiBroadcastOff, mdiContentCopy, mdiDelete, mdiHammer, mdiHelp, mdiPlus } from "@mdi/js";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
@@ -11,12 +10,13 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
 import { getSurreal } from "~/util/surreal";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
-	create: ["surreal.3", mdiPlus],
-	update: ["orange", mdiHammer],
-	delete: ["red", mdiDelete],
+	create: ["surreal.3", iconPlus],
+	update: ["orange", iconHammer],
+	delete: ["red", iconDelete],
 };
 
 function buildResult(index: number, {result, time}: any) {
@@ -110,7 +110,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 						}}
 					>
 						{messages.map(msg => {
-							const [color, icon] = LIVE_ACTION_COLORS[msg.action] || ["slate", mdiHelp];
+							const [color, icon] = LIVE_ACTION_COLORS[msg.action] || ["slate", iconHelp];
 		
 							return (
 								<Accordion.Item key={msg.id} value={msg.id}>
@@ -120,13 +120,13 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 											{
 												key: "copy",
 												title: "Copy live query id",
-												icon: <Icon path={mdiContentCopy} />,
+												icon: <Icon path={iconCopy} />,
 												onClick: () => navigator.clipboard.writeText(msg.queryId)
 											},
 											{
 												key: "kill",
 												title: "Kill live query",
-												icon: <Icon path={mdiDelete} />,
+												icon: <Icon path={iconDelete} />,
 												onClick: () => killQuery(msg.queryId)
 											}
 										])}
@@ -179,7 +179,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 				<Center h="100%" c="slate">
 					<Stack>
 						<Icon
-							path={isLive ? mdiBroadcast : mdiBroadcastOff}
+							path={isLive ? iconBroadcastOn : iconBroadcastOff}
 							mx="auto"
 							size="lg"
 						/>

@@ -15,11 +15,5 @@
 }
 
 .dragger {
-	flex: 0 0 6px;
-}
-
-@media (pointer: coarse) {
-	.dragger {
-		flex: 0 0 1rem;
-	}
+	flex: 0 0 var(--surrealist-divider-size);
 }

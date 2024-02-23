@@ -1,6 +1,4 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { mdiMagnify, mdiPin, mdiPinOff, mdiPlus, mdiTable, mdiVectorLine, mdiViewSequential } from "@mdi/js";
+import { ActionIcon, Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -15,10 +13,11 @@ import { Spacer } from "~/components/Spacer";
 import { TableCreator } from "~/components/TableCreator";
 import { useExplorerStore } from "~/stores/explorer";
 import { useConfigStore } from "~/stores/config";
-import clsx from "clsx";
 import { Importer } from "../Importer";
 import { Exporter } from "../Exporter";
 import { useContextMenu } from "mantine-contextmenu";
+import { iconList, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
+import { Entry } from "~/components/Entry";
 
 export interface TablesPaneProps {
 	openRecordCreator: (table: string) => void;
@@ -73,7 +72,7 @@ export function TablesPane(props: TablesPaneProps) {
 	return (
 		<ContentPane
 			title="Tables"
-			icon={mdiViewSequential}
+			icon={iconList}
 			w={325}
 			leftSection={
 				schema.length > 0 && (
@@ -88,7 +87,7 @@ export function TablesPane(props: TablesPaneProps) {
 			}
 			rightSection={
 				<ActionIcon title="Create table..." onClick={openCreator}>
-					<Icon path={mdiPlus} />
+					<Icon path={iconPlus} />
 				</ActionIcon>
 			}
 		>
@@ -105,7 +104,7 @@ export function TablesPane(props: TablesPaneProps) {
 						{isOnline && (
 							<TextInput
 								placeholder="Search tables..."
-								leftSection={<Icon path={mdiMagnify} />}
+								leftSection={<Icon path={iconSearch} />}
 								value={search}
 								onChange={setSearch}
 								variant="unstyled"
@@ -130,58 +129,46 @@ export function TablesPane(props: TablesPaneProps) {
 							const [isEdge] = extractEdgeRecords(table);
 
 							return (
-								<Button
+								<Entry
 									key={table.schema.name}
-									fullWidth
-									miw={0}
-									px={8}
-									color="slate"
-									variant={isActive ? "light" : "subtle"}
+									isActive={isActive}
 									onClick={() => setExplorerTable(table.schema.name)}
-									className={clsx(classes.table, isActive && classes.tableActive)}
+									// className={clsx(classes.table)}
 									onContextMenu={showContextMenu([
 										{
 											key: 'open',
 											title: "View table records",
-											icon: <Icon path={mdiTable} />,
+											icon: <Icon path={iconTable} />,
 											onClick: () => setExplorerTable(table.schema.name)
 										},
 										{
 											key: 'new',
 											title: "Create new record",
-											icon: <Icon path={mdiPlus} />,
+											icon: <Icon path={iconPlus} />,
 											onClick: () => props.openRecordCreator(table.schema.name)
 										},
 										{
 											key: 'pin',
 											title: isPinned ? "Unpin table" : "Pin table",
-											icon: <Icon path={isPinned ? mdiPinOff : mdiPin} />,
+											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
 											onClick: () => togglePinned(table.schema.name)
 										}
 									])}
-									styles={{
-										label: {
-											flex: 1
-										}
-									}}
 									leftSection={
-										<Icon
-											path={isEdge ? mdiVectorLine : mdiTable}
-											color={isActive ? "surreal" : isLight ? "slate.2" : "slate.4"}
-										/>
+										<Icon path={isEdge ? iconRelation : iconTable} />
 									}
 									rightSection={
 										isPinned && (
 											<Icon
 												title="Pinned table"
-												path={mdiPin}
+												path={iconPin}
 												size="sm"
 											/>
 										)
 									}
 								>
 									{table.schema.name}
-								</Button>
+								</Entry>
 							);
 						})}
 					</Stack>

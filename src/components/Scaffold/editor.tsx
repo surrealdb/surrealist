@@ -8,27 +8,18 @@ import { Form } from "../Form";
 import { useLayoutEffect } from "react";
 import { updateTitle } from "~/util/helpers";
 import { useConnections } from "~/hooks/connection";
-import { AuthMode, Connection, Protocol, Selectable } from "~/types";
+import { AuthMode, Connection, Protocol } from "~/types";
 import { ModalTitle } from "../ModalTitle";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
-import { mdiClose, mdiPlus } from "@mdi/js";
-import { AUTH_MODES } from "~/constants";
+import { AUTH_MODES, CONNECTION_PROTOCOLS } from "~/constants";
 import { Icon } from "../Icon";
 import { EditableText } from "../EditableText";
 import { useDisclosure } from "@mantine/hooks";
+import { iconCheck, iconClose, iconPlus } from "~/util/icons";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
-
-const PROTOCOLS: Selectable<Protocol>[] = [
-	{ label: "HTTP", value: "http" },
-	{ label: "HTTPS", value: "https" },
-	{ label: "WS", value: "ws" },
-	{ label: "WSS", value: "wss" },
-	{ label: "Memory", value: "mem" },
-	// { label: "IndexDB", value: "idxdb" },
-];
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -96,7 +87,7 @@ export function ConnectionEditor() {
 		}
 
 		const [, protocol, hostname] = result;
-		const isValid = PROTOCOLS.some((p) => p.value === protocol);
+		const isValid = CONNECTION_PROTOCOLS.some((p) => p.value === protocol);
 
 		if (!isValid) {
 			return;
@@ -136,6 +127,13 @@ export function ConnectionEditor() {
 	}, [opened]);
 
 	const isMemory = details.connection.protocol === "mem";
+	const isIndexDB = details.connection.protocol === "indxdb";
+
+	const placeholder = isMemory
+		? "Not applicable"
+		: isIndexDB
+			? "database_name"
+			: "localhost:8000";
 
 	return (
 		<Modal
@@ -159,12 +157,18 @@ export function ConnectionEditor() {
 				/>
 				<Group mb="lg">
 					<Select
-						data={PROTOCOLS}
-						maw={100}
+						data={CONNECTION_PROTOCOLS}
+						maw={110}
 						value={details.connection.protocol}
 						onChange={(value) =>
 							setDetails((draft) => {
-								draft.connection.protocol = value as Protocol;
+								const proto = value as Protocol;
+
+								draft.connection.protocol = proto;
+
+								if (value === "mem" || value === "indxdb") {
+									draft.connection.authMode = "none";
+								}
 							})
 						}
 					/>
@@ -173,7 +177,7 @@ export function ConnectionEditor() {
 						value={details.connection.hostname}
 						onPaste={handleHostnamePaste}
 						disabled={isMemory}
-						placeholder={isMemory ? "Not applicable" : "localhost:8000"}
+						placeholder={placeholder}
 						onChange={(e) =>
 							setDetails((draft) => {
 								draft.connection.hostname = e.target.value;
@@ -307,7 +311,7 @@ export function ConnectionEditor() {
 													draft.connection.scopeFields.splice(i, 1);
 												})
 											}>
-											<Icon path={mdiClose} color="red" />
+											<Icon path={iconClose} color="red" />
 										</ActionIcon>
 									</Group>
 								</Paper>
@@ -320,19 +324,28 @@ export function ConnectionEditor() {
 							Back
 						</Button>
 						<Spacer />
-						<Button rightSection={<Icon path={mdiPlus} />} variant="light" color="blue" onClick={addScopeField}>
+						<Button rightSection={<Icon path={iconPlus} />} variant="light" color="blue" onClick={addScopeField}>
 							Add field
 						</Button>
 					</Group>
 				</Modal>
 
 				<Group mt="lg">
-					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={closeConnectionEditor}>
+					<Button
+						color="slate"
+						variant="light"
+						onClick={closeConnectionEditor}
+					>
 						Close
 					</Button>
 					<Spacer />
-					<Button type="submit" disabled={!isValid}>
-						{isCreating ? "Create connection" : "Save connection"}
+					<Button
+						type="submit"
+						variant="gradient"
+						disabled={!isValid}
+						rightSection={<Icon path={isCreating ? iconPlus : iconCheck} />}
+					>
+						{isCreating ? "Create" : "Save"}
 					</Button>
 				</Group>
 			</Form>

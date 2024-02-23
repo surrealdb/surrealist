@@ -7,9 +7,9 @@ import { ColumnSort } from "~/types";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
-import { mdiChevronDown, mdiChevronUp } from "@mdi/js";
 import { alphabetical, isObject } from "radash";
 import { useInspector } from "~/providers/Inspector";
+import { iconChevronDown, iconChevronUp } from "~/util/icons";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
@@ -98,7 +98,7 @@ export function DataTable({ data, active, sorting, headers, onSortingChange }: D
 					}}
 				>
 					{key}
-					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? mdiChevronDown : mdiChevronUp} pos="absolute" />}
+					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? iconChevronDown : iconChevronUp} pos="absolute" />}
 				</Text>
 			</Box>
 		));

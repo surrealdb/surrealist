@@ -15,7 +15,6 @@ import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { TextLogo } from "~/components/TextLogo";
 import { SavesDrawer } from "../SavesDrawer";
-import { mdiCheck } from "@mdi/js";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
@@ -24,6 +23,7 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { SavedQuery } from "~/types";
 import { ModalTitle } from "~/components/ModalTitle";
+import { iconCheck } from "~/util/icons";
 
 export function QueryView() {
 	const { saveQuery } = useConfigStore.getState();
@@ -106,7 +106,11 @@ export function QueryView() {
 				</Group>
 			)}	
 
-			<Group flex={1} wrap="nowrap" gap={6}>
+			<Group
+				flex={1}
+				wrap="nowrap"
+				gap="var(--surrealist-divider-size)"
+			>
 				{!isEmbed && (
 					<TabsPane
 						openHistory={showHistoryHandle.open}
@@ -215,15 +219,16 @@ export function QueryView() {
 							<Button
 								onClick={isSavingHandle.close}
 								variant="light"
+								color="slate"
 							>
 								Close
 							</Button>
 							<Spacer />
 							<Button
-								color="surreal"
 								type="submit"
 								disabled={!saveName}
-								rightSection={<Icon path={mdiCheck} />}
+								variant="gradient"
+								rightSection={<Icon path={iconCheck} />}
 							>
 								Save
 							</Button>

@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import { ActionIcon, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { Box, Drawer, Paper } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { mdiClose, mdiDelete, mdiLightningBolt, mdiMagnify, mdiText } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
@@ -15,6 +14,7 @@ import { Spacer } from "~/components/Spacer";
 import { useMemo } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { useContextMenu } from "mantine-contextmenu";
+import { iconClose, iconDelete, iconQuery, iconSearch, iconText } from "~/util/icons";
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
@@ -55,20 +55,20 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				{
 					key: 'open',
 					title: 'Open in new tab',
-					icon: <Icon path={mdiLightningBolt} />,
+					icon: <Icon path={iconQuery} />,
 					onClick: () => handleUseQuery(),
 				},
 				{
 					key: 'replace',
 					title: 'Open in current tab',
-					icon: <Icon path={mdiText} />,
+					icon: <Icon path={iconText} />,
 					onClick: () => handleReplaceQuery(),
 				},
 				{
 					key: 'remove',
 					title: 'Remove query',
 					color: 'red',
-					icon: <Icon path={mdiDelete} />,
+					icon: <Icon path={iconDelete} />,
 					onClick: () => handleDeleteQuery(),
 				}
 			])}
@@ -97,7 +97,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 						className={classes.queryAction}
 						onClick={handleUseQuery}
 					>
-						<Icon path={mdiLightningBolt} size={0.9} />
+						<Icon path={iconQuery} size={0.9} />
 					</ActionIcon>
 				</Tooltip>
 			</Group>
@@ -167,18 +167,18 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 				<Spacer />
 
 				<ActionIcon onClick={clearHistory} title="Clear history">
-					<Icon path={mdiDelete} />
+					<Icon path={iconDelete} />
 				</ActionIcon>
 
 				<ActionIcon onClick={props.onClose}>
-					<Icon path={mdiClose} />
+					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
 			<Stack>
 				<TextInput
 					autoFocus
 					placeholder="Search history..."
-					leftSection={<Icon path={mdiMagnify} />}
+					leftSection={<Icon path={iconSearch} />}
 					value={filterText}
 					onChange={setFilterText}
 				/>

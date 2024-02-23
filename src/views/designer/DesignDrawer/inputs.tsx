@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Button, Group, Modal, Popover, Stack, TextInput, TextInputProps } from "@mantine/core";
-import { mdiCancel, mdiCheck, mdiTable, mdiWrench } from "@mdi/js";
 import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -10,6 +9,7 @@ import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { TableDefinition } from "~/types";
 import { useTables } from "~/hooks/schema";
+import { iconCancel, iconCheck, iconTable, iconWrench } from "~/util/icons";
 
 export interface QueryInputProps extends TextInputProps {
 	onChangeText?: (value: string) => void;
@@ -59,7 +59,7 @@ export function QueryInput(props: QueryInputProps) {
 					<Group gap={8} wrap="nowrap">
 						{props.rightSection}
 						<ActionIcon title="Advanced editor" onClick={openEditor} color={color}>
-							<Icon path={mdiWrench} size="sm" color={color} />
+							<Icon path={iconWrench} size="sm" color={color} />
 						</ActionIcon>
 					</Group>
 				}
@@ -87,12 +87,20 @@ export function QueryInput(props: QueryInputProps) {
 					}}
 				/>
 				<Group mt="lg">
-					<Button onClick={closeEditor} variant="light">
+					<Button
+						onClick={closeEditor}
+						variant="light"
+						color="slate"
+					>
 						Discard
 					</Button>
 					<Spacer />
-					<Button color="surreal" onClick={saveEditor} type="submit">
-						Save
+					<Button
+						variant="gradient"
+						onClick={saveEditor}
+						type="submit"
+					>
+						Done
 					</Button>
 				</Group>
 			</Modal>
@@ -123,7 +131,7 @@ export function PermissionInput(props: PermissionInputProps) {
 						onClick={() => props.onChange("FULL")}
 						variant={props.value.toUpperCase() === "FULL" ? "light" : "subtle"}
 					>
-						<Icon path={mdiCheck} />
+						<Icon path={iconCheck} />
 					</ActionIcon>
 					<ActionIcon
 						color="red.5"
@@ -131,7 +139,7 @@ export function PermissionInput(props: PermissionInputProps) {
 						onClick={() => props.onChange("NONE")}
 						variant={props.value.toUpperCase() === "NONE" ? "light" : "subtle"}
 					>
-						<Icon path={mdiCancel} />
+						<Icon path={iconCancel} />
 					</ActionIcon>
 				</>
 			}
@@ -184,7 +192,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 							onClick={toggleTables}
 							variant="subtle"
 						>
-							<Icon path={mdiTable} />
+							<Icon path={iconTable} />
 						</ActionIcon>
 					</Popover.Target>
 					<Popover.Dropdown p={0}>

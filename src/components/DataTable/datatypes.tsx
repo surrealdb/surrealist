@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
-import { mdiCheck, mdiClockOutline, mdiClose } from "@mdi/js";
 import { ReactNode } from "react";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 import { validate_thing } from "~/generated/surrealist-embed";
+import { iconCheck, iconClock, iconClose } from "~/util/icons";
 
 const DATETIME_REGEX = /^\d{4}-\d\d-\d\dt\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|z)?$/i;
 
@@ -29,7 +29,7 @@ function NullishCell(props: DataCellProps) {
 }
 
 function BooleanCell(props: DataCellProps) {
-	const icon = props.value ? <Icon path={mdiCheck} color="green" /> : <Icon path={mdiClose} color="red" />;
+	const icon = props.value ? <Icon path={iconCheck} color="green" /> : <Icon path={iconClose} color="red" />;
 
 	return <div>{icon}</div>;
 }
@@ -61,7 +61,7 @@ function DateTimeCell(props: DataCellProps) {
 
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
-			<Icon path={mdiClockOutline} left mt={-3} />
+			<Icon path={iconClock} left mt={-3} />
 			{date.toLocaleString()}
 		</Text>
 	);

@@ -1,6 +1,6 @@
-import { mdiVectorLine } from "@mdi/js";
 import { BaseNode } from "./BaseNode";
 import { NodeData } from "../helpers";
+import { iconRelation } from "~/util/icons";
 
 interface EdgeNodeProps {
 	withoutGraph?: boolean;
@@ -10,7 +10,7 @@ interface EdgeNodeProps {
 export function EdgeNode({ data, withoutGraph }: EdgeNodeProps) {
 	return (
 		<BaseNode
-			icon={mdiVectorLine}
+			icon={iconRelation}
 			table={data.table}
 			isSelected={data.isSelected}
 			hasLeftEdge={!withoutGraph}

@@ -1,5 +1,4 @@
 import { Group, Stack, Button, Text, ActionIcon, Paper, Modal } from "@mantine/core";
-import { mdiCircle, mdiClose, mdiPlus } from "@mdi/js";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -7,6 +6,7 @@ import { Spacer } from "~/components/Spacer";
 import { useLater } from "~/hooks/later";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { iconCircle, iconClose, iconPlus } from "~/util/icons";
 
 export interface ListerProps<T> {
 	name: string;
@@ -67,9 +67,9 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 						>
 							<Group gap="sm">
 								<Icon
-									path={mdiCircle}
+									path={iconCircle}
 									color="surreal"
-									size="xs"
+									size="xl"
 									style={{ flexShrink: 0 }}
 								/>
 								{item.name ? (
@@ -83,7 +83,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 								)}
 								<Spacer />
 								<ActionIcon role="button" component="div" onClick={(e) => handleRemove(e, i)} color="red">
-									<Icon path={mdiClose} color="red" />
+									<Icon path={iconClose} color="red" />
 								</ActionIcon>
 							</Group>
 						</Paper>
@@ -95,7 +95,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				</Text>
 			)}
 
-			<Button mt="md" size="xs" fullWidth variant="outline" rightSection={<Icon path={mdiPlus} />} onClick={handleCreate}>
+			<Button mt="md" size="xs" fullWidth variant="outline" rightSection={<Icon path={iconPlus} />} onClick={handleCreate}>
 				Add {props.name}
 			</Button>
 

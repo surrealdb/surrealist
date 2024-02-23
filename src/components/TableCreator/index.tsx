@@ -1,5 +1,4 @@
 import { Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput } from "@mantine/core";
-import { mdiPlus, mdiTable, mdiVectorLine } from "@mdi/js";
 import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -9,6 +8,7 @@ import { fetchDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
 import { ModalTitle } from "../ModalTitle";
 import { getActiveSurreal } from "~/util/surreal";
+import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 
 export interface TableCreatorProps {
 	opened: boolean;
@@ -59,10 +59,10 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 			>
 				<Tabs mb="xl" defaultValue="table" value={createType} onChange={setCreateType as any}>
 					<Tabs.List grow>
-						<Tabs.Tab value="table" rightSection={<Icon path={mdiTable} />}>
+						<Tabs.Tab value="table" rightSection={<Icon path={iconTable} />}>
 							Table
 						</Tabs.Tab>
-						<Tabs.Tab value="relation" rightSection={<Icon path={mdiVectorLine} />}>
+						<Tabs.Tab value="relation" rightSection={<Icon path={iconRelation} />}>
 							Relation
 						</Tabs.Tab>
 					</Tabs.List>
@@ -102,7 +102,7 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 								variant="gradient"
 								flex={1}
 								disabled={!tableName || (createType === "relation" && (!tableIn || !tableOut))}
-								rightSection={<Icon path={mdiPlus} />}
+								rightSection={<Icon path={iconPlus} />}
 							>
 								Create
 							</Button>

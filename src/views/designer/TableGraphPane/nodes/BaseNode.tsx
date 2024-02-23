@@ -1,5 +1,4 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
-import { mdiBullhorn, mdiCodeBraces, mdiFlash } from "@mdi/js";
 import { TableDefinition } from "~/types";
 import { Handle, Position } from "reactflow";
 import { Icon } from "~/components/Icon";
@@ -9,6 +8,7 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { ON_STOP_PROPAGATION, extractType } from "~/util/helpers";
 import { MouseEvent, useMemo, useRef } from "react";
+import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 
 interface SummaryProps {
 	isLight: boolean;
@@ -209,19 +209,19 @@ export function BaseNode(props: BaseNodeProps) {
 							<Stack gap="xs" mt={10} p={0}>
 								<Summary
 									isLight={isLight}
-									icon={mdiCodeBraces}
+									icon={iconJSON}
 									title="Fields"
 									value={table.fields.length}
 								/>
 								<Summary
 									isLight={isLight}
-									icon={mdiFlash}
+									icon={iconIndex}
 									title="Indexes"
 									value={table.indexes.length}
 								/>
 								<Summary
 									isLight={isLight}
-									icon={mdiBullhorn}
+									icon={iconBullhorn}
 									title="Events"
 									value={table.events.length}
 								/>

@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import { Box, BoxProps } from "@mantine/core";
 import { Icon } from "../Icon";
-import { mdiCircle } from "@mdi/js";
+import { iconCircle } from "~/util/icons";
 
 export interface LiveIndicatorProps extends BoxProps {
 }
@@ -21,10 +21,10 @@ export function LiveIndicator(props: LiveIndicatorProps) {
 			{...rest}
 		>
 			<Icon
-				path={mdiCircle}
+				path={iconCircle}
 				title="Live query active"
-				color="red"
-				size="sm"
+				color="white"
+				size="xl"
 			/>	
 		</Box>
 	);
