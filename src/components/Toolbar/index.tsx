@@ -123,7 +123,7 @@ export function Toolbar(props: ToolbarProps) {
 
 				<Spacer />
 
-				{adapter.isServeSupported && (
+				{connection && adapter.isServeSupported && (
 					<LocalDatabase
 						toggleConsole={setShowConsole.toggle}
 					/>

@@ -1,8 +1,7 @@
 import classes from "./style.module.scss";
 import primarySphere from "~/assets/images/primary-sphere.png";
 import secondarySphere from "~/assets/images/secondary-sphere.png";
-import logoTile from "~/assets/images/logo-tile.png";
-import { Box, Button, Center, Group, Text } from "@mantine/core";
+import { Box, Button, Group, Text } from "@mantine/core";
 import { SurrealistLogo } from "../SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
@@ -46,9 +45,9 @@ export function FreshExperience() {
 				className={classes.logo}
 			/>
 
-			<Center pos="absolute" inset={0}>
+			{/* <Center pos="absolute" inset={0}>
 				<img src={logoTile} />
-			</Center>
+			</Center> */}
 
 			<Text mb="xl" ta="center" maw={200}>
 				Create a new connection or open the sandbox to get started
