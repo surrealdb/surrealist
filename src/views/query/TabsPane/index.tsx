@@ -11,8 +11,10 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { LiveIndicator } from "~/components/LiveIndicator";
 import { getSurreal } from "~/util/surreal";
-import { iconClose, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
+import { iconClose, iconCopy, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
 import { Entry } from "~/components/Entry";
+import { useContextMenu } from "mantine-contextmenu";
+import { TabQuery } from "~/types";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -22,6 +24,7 @@ export interface TabsPaneProps {
 export function TabsPane(props: TabsPaneProps) {
 	const { addQueryTab, removeQueryTab, updateQueryTab, setActiveQueryTab } = useConfigStore.getState();
 	const { queries, activeQuery } = useActiveConnection();
+	const { showContextMenu } = useContextMenu();
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();
 
@@ -41,6 +44,14 @@ export function TabsPane(props: TabsPaneProps) {
 			name
 		});
 	});
+
+	const duplicateQuery = ({ query, name, variables }: TabQuery) => {
+		addQueryTab({
+			name: name?.replace(/ \d+$/, ""),
+			query,
+			variables
+		});
+	};
 
 	return (
 		<ContentPane
@@ -82,6 +93,14 @@ export function TabsPane(props: TabsPaneProps) {
 									isActive={isActive}
 									onClick={() => setActiveQueryTab(query.id)}
 									className={classes.query}
+									onContextMenu={showContextMenu([
+										{
+											key: "duplicate",
+											title: "Duplicate query",
+											icon: <Icon path={iconCopy} />,
+											onClick: () => duplicateQuery(query)
+										}
+									])}
 									leftSection={
 										<Icon path={iconQuery} />
 									}

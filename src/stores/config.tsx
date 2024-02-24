@@ -8,6 +8,12 @@ import { create } from "zustand";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
+interface NewQueryTab {
+	query?: string;
+	name?: string;
+	variables?: string;
+}
+
 function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
 	if (state.activeConnection == SANDBOX) {
 		return {
@@ -41,7 +47,7 @@ export type ConfigStore = SurrealistConfig & {
 	setConnections: (connections: Connection[]) => void;
 	setActiveConnection: (connectionId: string) => void;
 	setActiveView: (activeView: ViewMode) => void;
-	addQueryTab: (query?: string, name?: string) => void;
+	addQueryTab: (options?: NewQueryTab) => void;
 	removeQueryTab: (tabId: string) => void;
 	updateQueryTab: (payload: PartialId<TabQuery>) => void;
 	setActiveQueryTab: (tabId: string) => void;
@@ -110,9 +116,9 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setActiveView: (activeView) => set(() => ({ activeView })),
 
-		addQueryTab: (query, name) => set((state) => updateConnection(state, (connection) => {
+		addQueryTab: (options) => set((state) => updateConnection(state, (connection) => {
 			const tabId = newId();
-			const baseName = name || "New query";
+			const baseName = options?.name || "New query";
 			
 			let queryName = "";
 			let counter = 0;
@@ -124,7 +130,8 @@ export const useConfigStore = create<ConfigStore>()(
 
 			return {
 				queries: [...connection.queries, {
-					...createBaseTab(query),
+					...createBaseTab(options?.query),
+					variables: options?.variables || "{}",
 					name: queryName,
 					id: tabId,
 				}],

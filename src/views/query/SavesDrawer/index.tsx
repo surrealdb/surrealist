@@ -50,7 +50,10 @@ export function SavesDrawer(props: SavesDrawerProps) {
 		e?.stopPropagation();
 
 		props.onClose();
-		addQueryTab(entry.query, entry.name);
+		addQueryTab({
+			query: entry.query,
+			name: entry.name
+		});
 	});
 
 	const handleReplaceQuery = useStable((entry: SavedQuery) => {

@@ -31,7 +31,9 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 
 	const handleUseQuery = useStable(() => {
 		onClose();
-		addQueryTab(entry.query);
+		addQueryTab({
+			query: entry.query
+		});
 	});
 
 	const handleReplaceQuery = useStable(() => {
