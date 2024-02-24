@@ -1,48 +1,53 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Group, Popover, Stack, Text, TextInput } from "@mantine/core";
-import { useMemo, useState } from "react";
+import { ActionIcon, Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { useMemo } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconCircle, iconEdit, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconCircle, iconEdit, iconPlus, iconSearch, iconServer, iconSurreal } from "~/util/icons";
 import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
-import { useInputState } from "@mantine/hooks";
+import { useDisclosure, useInputState } from "@mantine/hooks";
 import { updateTitle } from "~/util/helpers";
+import { Entry } from "../Entry";
+
+const TRANSITION = {
+	in: { opacity: 1, transform: 'translateY(0)' },
+	out: { opacity: 0, transform: 'translateY(-20px)' },
+	common: { transformOrigin: 'top' },
+	transitionProperty: 'transform, opacity',
+};
 
 export function Connections() {
 	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
 	const { setActiveConnection } = useConfigStore.getState();
 
+	const [isListing, isListingHandle] = useDisclosure();
+
 	const [search, setSearch] = useInputState("");
-	const [isOpen, setIsOpen] = useState(false);
 	const connections = useConnections();
 	const connection = useConnection();
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
 
-	const toggleDropdown = useStable(() => {
-		setIsOpen((prev) => !prev);
-	});
-
 	const createNew = useStable(() => {
-		setIsOpen(false);
+		isListingHandle.close();
 		openConnectionCreator();
 	});
 
 	const activate = useStable((id: string) => {
-		setIsOpen(false);
+		isListingHandle.close();
 		setActiveConnection(id);
 		updateTitle();
 	});
 
 	const editConnection = useStable((id: string, e: React.MouseEvent) => {
 		e.stopPropagation();
-		setIsOpen(false);
+		isListingHandle.close();
 		openConnectionEditor(id);
 	});
 
@@ -58,57 +63,57 @@ export function Connections() {
 	const isSandbox = connection?.id === SANDBOX;
 
 	return (
-		<Popover
-			opened={isOpen}
-			onChange={setIsOpen}
-			position="bottom-start"
-			shadow="0 8px 25px rgba(0, 0, 0, 0.35)"
-			closeOnEscape
-		>
-			<Popover.Target>
-				{connection ? (
-					<Button
-						h={42}
-						variant="light"
-						color="slate"
-						radius="lg"
-						onClick={toggleDropdown}
-						leftSection={isSandbox && (
-							<Icon path={iconSurreal} size={1.2} noStroke />
-						)}
-						rightSection={
-							<Icon
-								path={iconCircle}
-								size="lg"
-								color={isConnected ? "green" : isConnecting ? "orange" : "red"}
-							/>
-						}
-					>
-						<Text truncate fw={600} maw={200}>
-							{connection.name}
-						</Text>
-					</Button>
-				) : (
-					<Button
-						variant="light"
-						color="slate"
-						onClick={toggleDropdown}
-						rightSection={
-							<Icon path={iconChevronDown} />
-						}
-					>
-						Select a connection
-					</Button>
-				)}
-			</Popover.Target>
-			<Popover.Dropdown w={300}>
+		<>
+			{connection ? (
+				<Button
+					h={42}
+					variant="light"
+					color="slate"
+					radius="lg"
+					onClick={isListingHandle.toggle}
+					leftSection={isSandbox && (
+						<Icon path={iconSurreal} size={1.2} noStroke />
+					)}
+					rightSection={
+						<Icon
+							path={iconCircle}
+							size="lg"
+							color={isConnected ? "green" : isConnecting ? "orange" : "red"}
+						/>
+					}
+				>
+					<Text truncate fw={600} maw={200}>
+						{connection.name}
+					</Text>
+				</Button>
+			) : (
+				<Button
+					variant="light"
+					color="slate"
+					onClick={isListingHandle.toggle}
+					rightSection={
+						<Icon path={iconChevronDown} />
+					}
+				>
+					Select a connection
+				</Button>
+			)}
+
+			<Modal
+				opened={isListing}
+				onClose={isListingHandle.close}
+				transitionProps={{ transition: TRANSITION }}
+				withCloseButton={false}
+				centered={false}
+			>
 				<Stack>
 					<TextInput
 						radius="md"
 						placeholder="Search..."
 						value={search}
 						onChange={setSearch}
-						variant="unstyled"
+						variant="outline"
+						color="red"
 						autoFocus
 						leftSection={
 							<Icon path={iconSearch} />
@@ -116,28 +121,21 @@ export function Connections() {
 					/>
 
 					{!search && (
-						<Button
-							variant="light"
-							radius="md"
-							color={isSandbox ? "surreal" : "slate"}
+						<Entry
+							isActive={isSandbox}
 							leftSection={
 								<Group gap="xs">
 									<Icon path={iconSurreal} size={1.2} noStroke />
 									Sandbox
 								</Group>
 							}
-							styles={{
-								label: {
-									flex: 1
-								}
-							}}
 							onClick={() => activate(SANDBOX)}
 						/>
 					)}
 
 					<Box>
 						<Group mb={4}>
-							<Text c="slate.2">
+							<Text c="slate.2" fz="lg">
 								Connections
 							</Text>
 							<Spacer />
@@ -163,16 +161,15 @@ export function Connections() {
 								const isActive = connection?.id === con.id;
 
 								return (
-									<Button
+									<Entry
 										key={con.id}
-										variant="light"
-										radius="md"
-										pr={6}
-										color={isActive ? "surreal" : "slate"}
+										isActive={isActive}
 										className={classes.connection}
+										leftSection={
+											<Icon path={iconServer} />
+										}
 										rightSection={
 											<ActionIcon
-												display="flex"
 												component="div"
 												className={classes.connectionOptions}
 												onClick={(e) => editConnection(con.id, e)}
@@ -180,23 +177,18 @@ export function Connections() {
 												<Icon path={iconEdit} />
 											</ActionIcon>
 										}
-										styles={{
-											label: {
-												flex: 1
-											}
-										}}
 										onClick={() => activate(con.id)}
 									>
 										<Text truncate>
 											{con.name}
 										</Text>
-									</Button>
+									</Entry>
 								);
 							})}
 						</Stack>
 					</Box>
 				</Stack>
-			</Popover.Dropdown>
-		</Popover>
+			</Modal>
+		</>
 	);
 }
