@@ -2860,9 +2860,9 @@ dependencies = [
 
 [[package]]
 name = "surrealdb-core"
-version = "1.2.0"
+version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a7e106485a069b20d550953bda7538f299b119e206dbebd6b5dfbdf95c8b14a"
+checksum = "fcf33ccbc2348089fab502d38198f86762fc951ec90413fbd63f9195e76e6e08"
 dependencies = [
  "addr",
  "any_ascii",
