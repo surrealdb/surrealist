@@ -120,7 +120,7 @@ export function TabsPane(props: TabsPaneProps) {
 											}
 										])}
 										leftSection={
-											<Icon path={iconQuery} />
+											<Icon path={iconQuery} {...handleProps} />
 										}
 										rightSection={
 											<>
@@ -144,7 +144,6 @@ export function TabsPane(props: TabsPaneProps) {
 												)}
 											</>
 										}
-										{...handleProps}
 									>
 										<EditableText
 											value={query.name || ''}
