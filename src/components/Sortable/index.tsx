@@ -122,7 +122,8 @@ export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
 			collisionDetection={closestCorners}
 			onDragStart={props.onSorting}
 			onDragEnd={handleDragEnd}
-			modifiers={[restrictToWindowEdges, ...(modifier ? [modifier] : [])]}>
+			modifiers={[restrictToWindowEdges, ...(modifier ? [modifier] : [])]}
+		>
 			<SortableContext items={props.items} strategy={strategy}>
 				{props.items.map((item) => (
 					<SortableChild key={item.id} item={item} disabled={props.disabled ?? false}>

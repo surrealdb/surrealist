@@ -1,10 +1,18 @@
-.query:hover {
-	.query-live {
-		display: none;
+.query {
+	cursor: pointer !important;
+
+	&.query-dragging {
+		cursor: grabbing !important;
 	}
 
-	.query-close {
-		display: flex;
+	&:hover {
+		.query-live {
+			display: none;
+		}
+	
+		.query-close {
+			display: flex;
+		}
 	}
 }
 

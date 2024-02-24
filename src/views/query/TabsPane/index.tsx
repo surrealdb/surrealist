@@ -15,6 +15,7 @@ import { Entry } from "~/components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
 import { Sortable } from "~/components/Sortable";
+import clsx from "clsx";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -95,7 +96,7 @@ export function TabsPane(props: TabsPaneProps) {
 							constraint={{ distance: 10 }}
 							onSorted={saveQueryOrder}
 						>
-							{({ item: query, handleProps }) => {
+							{({ item: query, handleProps, isDragging }) => {
 								const isActive = query.id === activeQuery;
 								const isLive = liveTabs.has(query.id);
 	
@@ -104,7 +105,7 @@ export function TabsPane(props: TabsPaneProps) {
 										key={query.id}
 										isActive={isActive}
 										onClick={() => setActiveQueryTab(query.id)}
-										className={classes.query}
+										className={clsx(classes.query, isDragging && classes.queryDragging)}
 										onContextMenu={showContextMenu([
 											{
 												key: "open",
@@ -120,7 +121,7 @@ export function TabsPane(props: TabsPaneProps) {
 											}
 										])}
 										leftSection={
-											<Icon path={iconQuery} {...handleProps} />
+											<Icon path={iconQuery} />
 										}
 										rightSection={
 											<>
@@ -144,6 +145,7 @@ export function TabsPane(props: TabsPaneProps) {
 												)}
 											</>
 										}
+										{...handleProps}
 									>
 										<EditableText
 											value={query.name || ''}
