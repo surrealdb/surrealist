@@ -1,4 +1,4 @@
-import surrealistIcon from "~/assets/surrealist.png";
+import surrealistIcon from "~/assets/images/logo.png";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";

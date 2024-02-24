@@ -1,4 +1,4 @@
-import surrealistIcon from "~/assets/surrealist.png";
+import surrealistIcon from "~/assets/images/logo.png";
 import { useHotkeys } from "@mantine/hooks";
 import { MouseEvent, useEffect } from "react";
 import { Notifications } from "@mantine/notifications";
