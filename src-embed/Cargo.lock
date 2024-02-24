@@ -2848,10 +2848,49 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 
 [[package]]
-name = "surrealdb-core-nightly"
-version = "1.3.20240222"
+name = "surrealdb"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85d315708e1f26ac4b6934706897326e928e888e09137f33551a87eef16a26e6"
+checksum = "7b4c189541c759c763d4f5859a853afe85773baa0c95891f262425ff422394b0"
+dependencies = [
+ "async-channel",
+ "bincode",
+ "chrono",
+ "dmp",
+ "flume",
+ "futures",
+ "futures-concurrency",
+ "geo 0.27.0",
+ "indexmap 2.1.0",
+ "once_cell",
+ "path-clean",
+ "pharos",
+ "reqwest",
+ "revision",
+ "ring 0.17.7",
+ "rust_decimal",
+ "rustls",
+ "semver",
+ "serde",
+ "serde_json",
+ "surrealdb-core",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+ "trice",
+ "url",
+ "uuid",
+ "wasm-bindgen-futures",
+ "wasmtimer",
+ "ws_stream_wasm",
+]
+
+[[package]]
+name = "surrealdb-core"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fcf33ccbc2348089fab502d38198f86762fc951ec90413fbd63f9195e76e6e08"
 dependencies = [
  "addr",
  "any_ascii",
@@ -2948,45 +2987,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "surrealdb-nightly"
-version = "1.3.20240222"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "572be9b73ad7f2f05d437ca839b4eef9867afa0d64028e284a06a87d0cddca1e"
-dependencies = [
- "async-channel",
- "bincode",
- "chrono",
- "dmp",
- "flume",
- "futures",
- "futures-concurrency",
- "geo 0.27.0",
- "indexmap 2.1.0",
- "once_cell",
- "path-clean",
- "pharos",
- "reqwest",
- "revision",
- "ring 0.17.7",
- "rust_decimal",
- "rustls",
- "semver",
- "serde",
- "serde_json",
- "surrealdb-core-nightly",
- "thiserror",
- "tokio",
- "tokio-tungstenite",
- "tracing",
- "trice",
- "url",
- "uuid",
- "wasm-bindgen-futures",
- "wasmtimer",
- "ws_stream_wasm",
-]
-
-[[package]]
 name = "surrealist-embed"
 version = "0.0.0"
 dependencies = [
@@ -2998,7 +2998,7 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
- "surrealdb-nightly",
+ "surrealdb",
  "tokio",
  "wasm-bindgen",
  "wasm-bindgen-futures",
