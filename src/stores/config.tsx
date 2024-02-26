@@ -1,9 +1,8 @@
-import { Connection, DesignerNodeMode, DriverType, HistoryQuery, PartialId, QueryType, SavedQuery, SurrealistConfig, TabQuery, ViewMode } from "~/types";
+import { Connection, HistoryQuery, PartialId, QueryType, SavedQuery, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
 import { createBaseConfig, createBaseTab } from "~/util/defaults";
 import { extract_query_type } from "~/generated/surrealist-embed";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
-import { MantineColorScheme } from "@mantine/core";
-import { clamp, newId } from "~/util/helpers";
+import { newId } from "~/util/helpers";
 import { create } from "zustand";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
@@ -35,11 +34,6 @@ function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
 }
 
 export type ConfigStore = SurrealistConfig & {
-	setColorScheme: (theme: MantineColorScheme) => void;
-	setAutoConnect: (autoConnect: boolean) => void;
-	setTableSuggest: (tableSuggest: boolean) => void;
-	setErrorChecking: (errorChecking: boolean) => void;
-	setWordWrap: (wordWrap: boolean) => void;
 	addConnection: (connection: Connection) => void;
 	removeConnection: (connectionId: string) => void;
 	updateConnection: (payload: PartialId<Connection>) => void;
@@ -51,40 +45,22 @@ export type ConfigStore = SurrealistConfig & {
 	removeQueryTab: (tabId: string) => void;
 	updateQueryTab: (payload: PartialId<TabQuery>) => void;
 	setActiveQueryTab: (tabId: string) => void;
-	setWindowPinned: (isPinned: boolean) => void;
-	setWindowScale: (windowScale: number) => void;
-	setEditorScale: (editorScale: number) => void;
-	toggleWindowPinned: () => void;
 	saveQuery: (query: SavedQuery) => void;
 	removeSavedQuery: (savedId: string) => void;
 	setSavedQueries: (queries: SavedQuery[]) => void;
-	setLocalSurrealUser: (surrealUser: string) => void;
-	setLocalSurrealPass: (surrealPass: string) => void;
-	setLocalSurrealPort: (surrealPort: number) => void;
-	setLocalSurrealDriver: (localDriver: DriverType) => void;
-	setLocalSurrealStorage: (localStorage: string) => void;
-	setLocalSurrealPath: (surrealPath: string) => void;
-	setUpdateChecker: (updateChecker: boolean) => void;
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
-	setDesignerNodeMode: (defaultDesignerNodeMode: DesignerNodeMode) => void;
 	addHistoryEntry: (entry: HistoryQuery) => void;
 	toggleTablePin: (table: string) => void;
+	updateBehaviorSettings: (settings: Partial<SurrealistBehaviorSettings>) => void;
+	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
+	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
+	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
 	softReset: () => void;
 }
 
 export const useConfigStore = create<ConfigStore>()(
 	(set) => ({
 		...createBaseConfig(),
-
-		setColorScheme: (colorScheme) => set(() => ({ colorScheme })),
-
-		setAutoConnect: (autoConnect) => set(() => ({ autoConnect })),
-
-		setTableSuggest: (tableSuggest) => set(() => ({ tableSuggest })),
-
-		setErrorChecking: (errorChecking) => set(() => ({ errorChecking })),
-
-		setWordWrap: (wordWrap) => set(() => ({ wordWrap })),
 
 		addConnection: (connection) => set((state) => ({
 			connections: [
@@ -131,6 +107,7 @@ export const useConfigStore = create<ConfigStore>()(
 			return {
 				queries: [...connection.queries, {
 					...createBaseTab(options?.query),
+					resultMode: state.settings.appearance.defaultResultMode,
 					variables: options?.variables || "{}",
 					name: queryName,
 					id: tabId,
@@ -185,20 +162,6 @@ export const useConfigStore = create<ConfigStore>()(
 			activeQuery: connectionId,
 		}))),
 
-		setWindowPinned: (isPinned) => set(() => ({ isPinned })),
-
-		setWindowScale: (windowScale) => set(() => ({
-			windowScale: clamp(windowScale, 50, 150),
-		})),
-
-		setEditorScale: (editorScale) => set(() => ({
-			editorScale: clamp(editorScale, 50, 150),
-		})),
-
-		toggleWindowPinned: () => set((state) => ({
-			isPinned: !state.isPinned,
-		})),
-
 		saveQuery: (query) => set((state) => {
 			const savedQueries = [...state.savedQueries];
 			const index = savedQueries.findIndex((entry) => entry.id === query.id);
@@ -222,23 +185,7 @@ export const useConfigStore = create<ConfigStore>()(
 			savedQueries,
 		})),
 
-		setLocalSurrealUser: (localSurrealUser) => set(() => ({ localSurrealUser })),
-
-		setLocalSurrealPass: (localSurrealPass) => set(() => ({ localSurrealPass })),
-
-		setLocalSurrealPort: (localSurrealPort) => set(() => ({ localSurrealPort })),
-
-		setLocalSurrealDriver: (localSurrealDriver) => set(() => ({ localSurrealDriver })),
-
-		setLocalSurrealStorage: (localSurrealStorage) => set(() => ({ localSurrealStorage })),
-
-		setLocalSurrealPath: (localSurrealPath) => set(() => ({ localSurrealPath })),
-
-		setUpdateChecker: (updateChecker) => set(() => ({ updateChecker })),
-
 		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
-
-		setDesignerNodeMode: (defaultDesignerNodeMode) => set(() => ({ defaultDesignerNodeMode })),
 
 		addHistoryEntry: (entry) => set((state) => updateConnection(state, (connection) => {
 			const queryHistory = [...connection.queryHistory];
@@ -272,6 +219,46 @@ export const useConfigStore = create<ConfigStore>()(
 		softReset: () => set(() => ({
 			activeConnection: null,
 			activeView: "query"
+		})),
+
+		updateBehaviorSettings: (settings) => set((state) => ({
+			settings: {
+				...state.settings,
+				behavior: {
+					...state.settings.behavior,
+					...settings,
+				}
+			}
+		})),
+
+		updateAppearanceSettings: (settings) => set((state) => ({
+			settings: {
+				...state.settings,
+				appearance: {
+					...state.settings.appearance,
+					...settings,
+				}
+			}
+		})),
+
+		updateTemplateSettings: (settings) => set((state) => ({
+			settings: {
+				...state.settings,
+				templates: {
+					...state.settings.templates,
+					...settings,
+				}
+			}
+		})),
+
+		updateServingSettings: (settings) => set((state) => ({
+			settings: {
+				...state.settings,
+				serving: {
+					...state.settings.serving,
+					...settings,
+				}
+			}
 		})),
 
 	})

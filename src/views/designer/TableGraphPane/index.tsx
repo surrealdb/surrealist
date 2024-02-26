@@ -5,7 +5,7 @@ import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Tex
 import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStoreApi } from "reactflow";
 import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
-import { DesignerNodeMode, TableDefinition } from "~/types";
+import { DiagramMode, TableDefinition } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
@@ -136,7 +136,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const setNodeMode = useStable((mode: string) => {
 		updateCurrentConnection({
 			id: activeSession?.id,
-			designerNodeMode: mode as DesignerNodeMode,
+			designerNodeMode: mode as DiagramMode,
 		});
 	});
 

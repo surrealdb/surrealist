@@ -1,4 +1,3 @@
-import { Result } from "~/typings/utilities";
 import { OpenedFile, SurrealistAdapter } from "./base";
 
 /**
@@ -7,13 +6,16 @@ import { OpenedFile, SurrealistAdapter } from "./base";
 export class BrowserAdapter implements SurrealistAdapter {
 
 	public isServeSupported = false;
-	public isPinningSupported = false;
 	public isUpdateCheckSupported = false;
-	public isPromotionSupported = true;
 
 	public initialize() {
 		// noop
 	}
+
+	public dumpDebug = async () => ({
+		"Platform": "Web",
+		"Navigator": navigator.userAgent,
+	});
 
 	public async setWindowTitle(title: string) {
 		document.title = title;
@@ -32,10 +34,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async stopDatabase() {
-		throw new Error("Not supported");
-	}
-
-	public async setWindowPinned() {
 		throw new Error("Not supported");
 	}
 

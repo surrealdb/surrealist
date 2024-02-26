@@ -19,9 +19,9 @@ import surrealistLightTheme from '~/assets/themes/surrealist-light.json';
 import surrealistDarkTheme from '~/assets/themes/surrealist-dark.json';
 import { Registry } from "monaco-textmate";
 import { wireTmGrammars } from "monaco-editor-textmate";
-import { useConfigStore } from "~/stores/config";
 import { ColorScheme } from "~/types";
 import { useInterfaceStore } from "~/stores/interface";
+import { getSetting } from "./config";
 
 self.MonacoEnvironment = {
 	getWorker: function (_workerId, label) {
@@ -145,7 +145,7 @@ export async function initializeMonaco() {
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: [" "],
 		provideCompletionItems: async (model, position, context) => {
-			const { tableSuggest } = useConfigStore.getState();
+			const tableSuggest = getSetting("behavior", "tableSuggest");
 			const surreal = getSurreal();
 
 			if (!tableSuggest || !surreal) {
@@ -192,10 +192,11 @@ export async function initializeMonaco() {
 	monaco.languages.registerCompletionItemProvider("surrealql", {
 		triggerCharacters: ["$"],
 		provideCompletionItems(_, position, context) {
+			const variableSuggest = getSetting("behavior", "variableSuggest");
 			const connection = getConnection();
 			const query = connection?.queries?.find((q) => q.id === connection?.activeQuery);
 
-			if (!connection || !query) {
+			if (!variableSuggest || !connection || !query) {
 				return;
 			}
 
@@ -321,13 +322,13 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor) {
  * @returns Whether the query is valid
  */
 export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
-	const { errorChecking } = useConfigStore.getState();
+	const queryErrorChecker = getSetting("behavior", "queryErrorChecker");
 
 	const model = editor.getModel()!;
 	const content = model.getValue();
 	const markers: editor.IMarkerData[] = [];
 
-	if (content && errorChecking) {
+	if (content && queryErrorChecker) {
 		try {
 			const message = validate_query(content) || "";
 			const match = message.match(ERR_REGEX);

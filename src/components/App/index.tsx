@@ -1,12 +1,11 @@
 import surrealistIcon from "~/assets/images/logo.png";
 import { useHotkeys } from "@mantine/hooks";
-import { MouseEvent, useEffect } from "react";
+import { MouseEvent } from "react";
 import { Notifications } from "@mantine/notifications";
 import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
-import { updateTitle } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { Scaffold } from "../Scaffold";
@@ -16,16 +15,16 @@ import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import { InspectorProvider } from "~/providers/Inspector";
 import { iconClose } from "~/util/icons";
+import { getSetting } from "~/util/config";
 
 export function App() {
-	const { toggleWindowPinned, setWindowScale, setEditorScale, softReset } = useConfigStore.getState();
+	const { softReset, updateBehaviorSettings, updateAppearanceSettings } = useConfigStore.getState();
 	const { hideAvailableUpdate } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
 	const colorScheme = useColorScheme();
 	const update = useInterfaceStore((s) => s.availableUpdate);
 	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
-	const isPinned = useConfigStore((s) => s.isPinned);
 
 	const closeUpdate = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
@@ -37,23 +36,22 @@ export function App() {
 		closeUpdate();
 	});
 
-	useEffect(() => {
-		updateTitle();
-	}, []);
-
-	useEffect(() => {
-		if (adapter.isPinningSupported) {
-			adapter.setWindowPinned(isPinned);
-			updateTitle();
-		}
-	}, [isPinned]);
-
 	const updateWindowScale = (delta: number) => {
-		setWindowScale(useConfigStore.getState().windowScale + delta);
+		updateAppearanceSettings({
+			windowScale: getSetting("appearance", "windowScale") + delta
+		});
 	};
 
 	const updateEditorScale = (delta: number) => {
-		setEditorScale(useConfigStore.getState().editorScale + delta);
+		updateAppearanceSettings({
+			editorScale: getSetting("appearance", "editorScale") + delta
+		});
+	};
+
+	const toggleWindowPinned = () => {
+		updateBehaviorSettings({
+			windowPinned: !getSetting("behavior", "windowPinned")
+		});
 	};
 
 	useHotkeys([
@@ -61,7 +59,7 @@ export function App() {
 		["mod+minus", () => updateWindowScale(-10)],
 		["mod+shift+equal", () => updateEditorScale(10)],
 		["mod+shift+minus", () => updateEditorScale(-10)],
-		["f11", toggleWindowPinned],
+		["f10", toggleWindowPinned],
 	], []);
 
 	return (

@@ -24,12 +24,12 @@ export const Entry = createPolymorphicComponent<'button', EntryProps>(
 				ref={ref}
 				fullWidth
 				miw={0}
-				mih={42}
+				h={42}
 				px={8}
 				color={isLight ? "slate.0" : "slate.7"}
-				variant={isActive ? "gradient" : "filled"}
-				className={clsx(classes.root, isActive && classes.active, className)}
 				{...rest}
+				variant={isActive ? "gradient" : rest.variant || "filled"}
+				className={clsx(classes.root, isActive && classes.active, className)}
 			>
 				{children}
 			</Button>

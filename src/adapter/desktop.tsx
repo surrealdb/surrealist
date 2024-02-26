@@ -1,4 +1,6 @@
+import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api/tauri";
+import { arch, type } from "@tauri-apps/api/os";
 import { appWindow } from "@tauri-apps/api/window";
 import { open as openURL } from "@tauri-apps/api/shell";
 import { save, open } from "@tauri-apps/api/dialog";
@@ -7,11 +9,10 @@ import { listen } from "@tauri-apps/api/event";
 import { Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { OpenedFile, SurrealistAdapter } from "./base";
-import { printLog } from "~/util/helpers";
-import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
-import { Result } from "~/typings/utilities";
+import { printLog, updateTitle } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
+import { watchStore } from "~/util/config";
 
 const WAIT_DURATION = 1000;
 
@@ -21,9 +22,7 @@ const WAIT_DURATION = 1000;
 export class DesktopAdapter implements SurrealistAdapter {
 
 	public isServeSupported = true;
-	public isPinningSupported = true;
 	public isUpdateCheckSupported = true;
-	public isPromotionSupported = false;
 
 	#startTask: any;
 
@@ -41,23 +40,31 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	#setWindowScale(scale: number) {
-		invoke<void>("set_window_scale", {
-			scaleFactor: scale / 100
-		});
-	}
-
 	public initialize() {
-		const { windowScale } = useConfigStore.getState();
+		watchStore({
+			initial: true,
+			store: useConfigStore,
+			select: (s) => s.settings.appearance.windowScale,
+			then: (scale) => invoke<void>("set_window_scale", { scaleFactor: scale / 100 }),
+		});
 
-		this.#setWindowScale(windowScale);
-
-		useConfigStore.subscribe((state, prev) => {
-			if (state.windowScale !== prev.windowScale) {
-				this.#setWindowScale(state.windowScale);
-			}
+		watchStore({
+			initial: true,
+			store: useConfigStore,
+			select: (s) => s.settings.behavior.windowPinned,
+			then: (pinned) => {
+				appWindow.setAlwaysOnTop(pinned);
+				updateTitle();
+			},
 		});
 	}
+
+	public dumpDebug = async () => ({
+		"Platform": "Desktop",
+		"OS": await type(),
+		"Architecture": await arch(),
+		"WebView": navigator.userAgent,
+	});
 
 	public async setWindowTitle(title: string) {
 		appWindow.setTitle(title || "Surrealist");
@@ -93,10 +100,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public stopDatabase() {
 		return invoke<void>("stop_database");
-	}
-
-	public async setWindowPinned(value: boolean) {
-		appWindow.setAlwaysOnTop(value);
 	}
 
 	public async openUrl(url: string) {

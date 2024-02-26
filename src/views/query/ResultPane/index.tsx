@@ -6,7 +6,7 @@ import { useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { DataTable } from "~/components/DataTable";
-import { RESULT_LISTINGS } from "~/constants";
+import { RESULT_MODES } from "~/constants";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
@@ -107,7 +107,7 @@ export function ResultPane() {
 
 					<Divider orientation="vertical" />
 
-					{RESULT_LISTINGS.map(item => {
+					{RESULT_MODES.map(item => {
 						const isActive = item.value == resultMode;
 
 						return (

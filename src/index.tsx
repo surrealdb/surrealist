@@ -21,6 +21,7 @@ import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
 import { useConfigStore } from "./stores/config";
 import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch, watchViewSwitch } from './util/background';
+import { getSetting } from "./util/config";
 
 
 (async () => {
@@ -54,7 +55,8 @@ import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnecti
 
 	// Check for updates
 	// TODO Auto updater
-	const { lastPromptedVersion, updateChecker } = useConfigStore.getState();
+	const { lastPromptedVersion } = useConfigStore.getState();
+	const updateChecker = getSetting("behavior", "updateChecker");
 
 	if (adapter.isUpdateCheckSupported && updateChecker) {
 		runUpdateChecker(lastPromptedVersion, false);

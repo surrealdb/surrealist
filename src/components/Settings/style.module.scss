@@ -1,0 +1,13 @@
+.settings-list {
+
+	:global(.mantine-Select-root),
+	:global(.mantine-TextInput-root),
+	:global(.mantine-NumberInput-root) {
+		width: 250px;
+	}
+
+	:global(.mantine-Checkbox-label) {
+		font-size: var(--mantine-font-size-md);
+	}
+
+}

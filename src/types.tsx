@@ -7,7 +7,8 @@ export type ResultMode = "table" | "single" | "combined" | "live";
 export type QueryType = "invalid" | "mixed" | "live" | "normal";
 export type ViewMode = "query" | "explorer" | "designer" | "authentication";
 export type SourceMode = "schema" | "infer";
-export type DesignerNodeMode = "fields" | "summary" | "simple";
+export type DiagramMode = "fields" | "summary" | "simple";
+export type DiagramDirection = "ltr" | "rtl";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
 export type ColorScheme = "light" | "dark";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
@@ -19,29 +20,36 @@ export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial
 
 export type Selectable<T extends string> = { label: string, value: T };
 
-export interface SurrealistConfig {
+export interface SurrealistBehaviorSettings {
+	updateChecker: boolean;
+	tableSuggest: boolean;
+	variableSuggest: boolean;
+	queryErrorChecker: boolean;
+	windowPinned: boolean;
+	autoConnect: boolean;
+}
+
+export interface SurrealistAppearanceSettings {
 	colorScheme: MantineColorScheme;
-	connections: Connection[];
-	sandbox: Connection;
-	activeView: ViewMode;
-	isPinned: boolean;
 	windowScale: number;
 	editorScale: number;
-	activeConnection: string | null;
-	autoConnect: boolean;
-	tableSuggest: boolean;
-	wordWrap: boolean;
-	savedQueries: SavedQuery[];
-	localSurrealDriver: DriverType;
-	localSurrealStorage: string;
-	localSurrealPath: string;
-	localSurrealUser: string;
-	localSurrealPass: string;
-	localSurrealPort: number;
-	updateChecker: boolean;
-	errorChecking: boolean;
-	lastPromptedVersion: string | null;
-	defaultDesignerNodeMode: DesignerNodeMode,
+	resultWordWrap: boolean;
+	defaultResultMode: ResultMode;
+	defaultDiagramMode: DiagramMode;
+	defaultDiagramDirection: DiagramDirection;
+}
+
+export interface SurrealistTemplateSettings {
+	list: any;
+}
+
+export interface SurrealistServingSettings {
+	driver: DriverType;
+	storage: string;
+	executable: string;
+	username: string;
+	password: string;
+	port: number;
 }
 
 export interface Connection {
@@ -51,8 +59,7 @@ export interface Connection {
 	activeQuery: string;
 	connection: ConnectionOptions;
 	pinnedTables: string[];
-	designerNodeMode?: DesignerNodeMode;
-	liveQueries: LiveQuery[];
+	designerNodeMode?: DiagramMode;
 	queryHistory: HistoryQuery[];
 }
 
@@ -80,10 +87,20 @@ export interface SavedQuery {
 	tags: string[];
 }
 
-export interface LiveQuery {
-	id: string;
-	name: string;
-	text: string;
+export interface SurrealistConfig {
+	configVersion: number;
+	connections: Connection[];
+	sandbox: Connection;
+	activeView: ViewMode;
+	activeConnection: string | null;
+	savedQueries: SavedQuery[];
+	lastPromptedVersion: string | null;
+	settings: {
+		behavior: SurrealistBehaviorSettings;
+		appearance: SurrealistAppearanceSettings;
+		templates: SurrealistTemplateSettings;
+		serving: SurrealistServingSettings;
+	}
 }
 
 export interface ScopeField {
@@ -191,12 +208,4 @@ export interface SurrealOptions {
 	onConnect?: () => void;
 	onDisconnect?: (code: number, reason: string) => void;
 	onError?: (error: any) => void;
-}
-
-export interface LiveMessage {
-	id: string;
-	timestamp: number;
-	query: LiveQuery;
-	action: string;
-	result: any;
 }

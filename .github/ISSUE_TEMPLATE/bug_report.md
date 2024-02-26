@@ -20,7 +20,10 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Environment (you can view the current version under Settings):**
- - Operating System [e.g. Windows]: 
- - Surrealist Version [e.g. 1.2.0]: 
- - SurrealDB Version [execute "surreal version"]: 
+**Environment:**
+```
+Paste your environment here by following these steps
+1. Open settings
+2. Left-click the version text
+3. Paste clipboard contents here
+```

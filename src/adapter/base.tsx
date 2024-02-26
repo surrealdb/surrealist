@@ -1,5 +1,3 @@
-import { Result } from "~/typings/utilities";
-
 export interface OpenedFile {
 	name: string;
 	content: string;
@@ -13,27 +11,20 @@ export interface SurrealistAdapter {
 	isServeSupported: boolean;
 
 	/**
-	 * Returns whether window pinning is supported
-	 */
-	isPinningSupported: boolean;
-
-	/**
 	 * Returns whether update checking is supported
 	 */
 	isUpdateCheckSupported: boolean;
-
-	/**
-	 * Returns whether promotion is supported
-	 * 
-	 * TODO Remove
-	 */
-	isPromotionSupported: boolean;
 
 	/**
 	 * Initialize any adapter specific services. This function is invoked
 	 * after the config has been loaded.
 	 */
 	initialize(): void;
+
+	/**
+	 * Return debug information about the current environment of the adapter
+	 */
+	dumpDebug(): Result<object>;
 
 	/**
 	 * Set the window title
@@ -70,11 +61,6 @@ export interface SurrealistAdapter {
 	 * Stop the currently running database
 	 */
 	stopDatabase(): Promise<void>;
-
-	/**
-	 * Set the pinned state of the window
-	 */
-	setWindowPinned(pinned: boolean): Promise<void>;
 
 	/**
 	 * Open the given URL in the default browser

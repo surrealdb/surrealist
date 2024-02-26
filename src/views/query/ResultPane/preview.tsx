@@ -5,8 +5,8 @@ import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { useSetting } from "~/hooks/config";
 import { useRelativeTime } from "~/hooks/time";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
@@ -40,7 +40,7 @@ export interface CombinedJsonPreviewProps {
 }
 
 export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
-	const wordWrap = useConfigStore((s) => s.wordWrap);
+	const [wordWrap] = useSetting("appearance", "resultWordWrap");
 
 	const contents = useMemo(() => {
 		return results.reduce((acc, cur, i) => acc + buildResult(i, cur), '').trim();
@@ -63,7 +63,7 @@ export interface SingleJsonPreviewProps {
 }
 
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
-	const wordWrap = useConfigStore((s) => s.wordWrap);
+	const [wordWrap] = useSetting("appearance", "resultWordWrap");
 
 	const contents = useMemo(() => {
 		return JSON.stringify(result, null, 4);

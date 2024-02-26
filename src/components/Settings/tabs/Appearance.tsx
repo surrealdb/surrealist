@@ -1,91 +1,67 @@
-import { Stack, Switch, Select, MantineColorScheme, Slider, Box } from "@mantine/core";
-import { useStable } from "~/hooks/stable";
-import { DesignerNodeMode } from "~/types";
-import { Setting } from "../setting";
-import { DESIGNER_NODE_MODES } from "~/constants";
-import { useConfigStore } from "~/stores/config";
+import { Select, Slider, Box, Checkbox } from "@mantine/core";
 import { useCheckbox } from "~/hooks/events";
 import { isDesktop } from "~/adapter";
+import { Label, SettingsSection } from "../utilities";
+import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, RESULT_MODES, THEMES } from "~/constants";
+import { useSetting } from "~/hooks/config";
 
-const THEMES = [
-	{ label: "Automatic", value: "auto" },
-	{ label: "Light", value: "light" },
-	{ label: "Dark", value: "dark" },
-];
+const CAT = "appearance";
 
 export function AppearanceTab() {
-	const {
-		setColorScheme,
-		setWordWrap,
-		setDesignerNodeMode,
-		setWindowScale,
-		setEditorScale
-	} = useConfigStore.getState();
+	const [colorScheme, setColorScheme] = useSetting(CAT, "colorScheme");
+	const [editorScale, setEditorScale] = useSetting(CAT, "editorScale");
+	const [windowScale, setWindowScale] = useSetting(CAT, "windowScale");
+	const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
+	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
+	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
+	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(CAT, "defaultDiagramDirection");
 
-	const colorScheme = useConfigStore((s) => s.colorScheme);
-	const wordWrap = useConfigStore((s) => s.wordWrap);
-	const defaultDesignerNodeMode = useConfigStore((s) => s.defaultDesignerNodeMode);
-	const editorScale = useConfigStore((s) => s.editorScale);
-	const windowScale = useConfigStore((s) => s.windowScale);
-
-	const updateWordWrap = useCheckbox(setWordWrap);
-
-	const updateColorScheme = useStable((value: string | null) => {
-		setColorScheme(value as MantineColorScheme || 'light');
-	});
-
-	const updateNodeMode = useStable((mode: string | null) => {
-		setDesignerNodeMode(mode as DesignerNodeMode || 'fields');
-	});
-
-	const updateWindowScale = useStable((scale: number) => {
-		setWindowScale(scale as number);
-	});
-
-	const updateEditorScale = useStable((scale: number) => {
-		setEditorScale(scale as number);
-	});
+	const updateResultWordWrap = useCheckbox(setResultWordWrap);
 
 	return (
-		<Stack gap="xs" style={{ overflow: 'hidden' }}>
-			<Setting label="Wrap query results">
-				<Switch checked={wordWrap} onChange={updateWordWrap} />
-			</Setting>
-
-			<Setting label="Interface theme">
-				<Select data={THEMES} value={colorScheme} onChange={updateColorScheme} />
-			</Setting>
-
-			<Setting label="Default designer appearance">
-				<Select data={DESIGNER_NODE_MODES} value={defaultDesignerNodeMode} onChange={updateNodeMode} />
-			</Setting>
-
-			<Setting label="Editor font scale" />
-			<Box pb="lg" px="sm">
-				<Slider
-					min={50}
-					max={150}
-					defaultValue={editorScale}
-					onChangeEnd={updateEditorScale}
-					marks={[
-						{ value: 50, label: '50%' },
-						{ value: 75, label: '75%' },
-						{ value: 100, label: '100%' },
-						{ value: 125, label: '125%' },
-						{ value: 150, label: '150%' },
-					]}
+		<>
+			<SettingsSection>
+				<Select
+					label="Theme"
+					data={THEMES}
+					value={colorScheme}
+					onChange={setColorScheme as any}
 				/>
-			</Box>
+				<Box>
+					<Label>
+						Editor font scale
+					</Label>
+					<Slider
+						mt="xs"
+						mb="lg"
+						mx="sm"
+						min={50}
+						max={150}
+						defaultValue={editorScale}
+						onChangeEnd={setEditorScale}
+						marks={[
+							{ value: 50, label: '50%' },
+							{ value: 75, label: '75%' },
+							{ value: 100, label: '100%' },
+							{ value: 125, label: '125%' },
+							{ value: 150, label: '150%' },
+						]}
+					/>
+				</Box>
 
-			{isDesktop && (
-				<>
-					<Setting label="Window scale" />
-					<Box pb="lg" px="sm">
+				{isDesktop && (
+					<Box>
+						<Label>
+							Window scale
+						</Label>
 						<Slider
+							mt="xs"
+							mb="lg"
+							mx="sm"
 							min={50}
 							max={150}
 							defaultValue={windowScale}
-							onChangeEnd={updateWindowScale}
+							onChangeEnd={setWindowScale}
 							marks={[
 								{ value: 50, label: '50%' },
 								{ value: 75, label: '75%' },
@@ -95,8 +71,39 @@ export function AppearanceTab() {
 							]}
 						/>
 					</Box>
-				</>
-			)}
-		</Stack>
+				)}
+			</SettingsSection>
+
+			<SettingsSection label="Query view">
+				<Checkbox
+					label="Qery results text wrapping"
+					checked={resultWordWrap}
+					onChange={updateResultWordWrap}
+				/>
+
+				<Select
+					label="Default result view"
+					data={RESULT_MODES}
+					value={defaultResultMode}
+					onChange={setDefaultResultMode as any}
+				/>
+			</SettingsSection>
+
+			<SettingsSection label="Designer view">
+				<Select
+					label="Default node mode"
+					data={DESIGNER_NODE_MODES}
+					value={defaultDiagramMode}
+					onChange={setDefaultDiagramMode as any}
+				/>
+
+				<Select
+					label="Default layout direction"
+					data={DESIGNER_DIRECTIONS}
+					value={defaultDiagramDirection}
+					onChange={setDefaultDiagramDirection as any}
+				/>
+			</SettingsSection>
+		</>
 	);
 }

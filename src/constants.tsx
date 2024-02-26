@@ -14,21 +14,18 @@ export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
 
-export const RESULT_LISTINGS: ListingItem[] = [
+export const THEMES = [
+	{ label: "Automatic", value: "auto" },
+	{ label: "Light", value: "light" },
+	{ label: "Dark", value: "dark" },
+];
+
+export const RESULT_MODES: ListingItem[] = [
 	{ label: "Combined", value: "combined", icon: iconCombined },
 	{ label: "JSON", value: "single", icon: iconJSON },
 	{ label: "Table", value: "table", icon: iconDataTable },
 	{ label: "Live", value: "live", icon: iconLive },
 ];
-
-export const EXPORT_TYPES = [
-	"records",
-	"tables",
-	"analyzers",
-	"functions",
-	"params",
-	"scopes"
-] as const;
 
 export const CONNECTION_PROTOCOLS: Selectable<Protocol>[] = [
 	{ label: "HTTP", value: "http" },
@@ -74,6 +71,15 @@ export const VIEW_MODES = [
 	},
 ] as const;
 
+export const EXPORT_TYPES = [
+	"records",
+	"tables",
+	"analyzers",
+	"functions",
+	"params",
+	"scopes"
+] as const;
+
 export const SURREAL_KINDS = [
 	{ label: "No kind specified", value: "" },
 	{ label: "Any", value: "any" },
@@ -108,6 +114,11 @@ export const DESIGNER_NODE_MODES = [
 	{ label: "Simple", value: "simple" },
 ];
 
+export const DESIGNER_DIRECTIONS = [
+	{ label: "Left to right", value: "ltr" },
+	{ label: "Right to left", value: "rtl" },
+];
+
 export const INDEX_TYPES = [
 	{ label: "Normal", value: "normal" },
 	{ label: "Unique", value: "unique" },
@@ -120,13 +131,4 @@ export const SURQL_FILTERS = [
 		name: "SurrealDB Schema",
 		extensions: ["surql", "sql", "surrealql"],
 	},
-];
-
-export const LIVE_QUERY_COLORS = [
-	"blue",
-	"green",
-	"orange",
-	"surreal",
-	"red",
-	"yellow",
 ];

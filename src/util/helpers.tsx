@@ -7,8 +7,8 @@ import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
 import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { getSetting } from "./config";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 
@@ -39,9 +39,9 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
  * Update the title of the window
  */
 export function updateTitle() {
-	const config = useConfigStore.getState();
 	const { pathname } = window.location;
-
+	
+	const windowPinned = getSetting("behavior", "windowPinned");
 	const activeView = pathname.split("/")[1] as ViewMode;
 	const session = getConnection();
 	const viewInfo = VIEW_MODES.find((v) => v.id === activeView);
@@ -53,7 +53,7 @@ export function updateTitle() {
 
 	segments.push(`Surrealist ${viewInfo?.name || ''}`);
 
-	if (config.isPinned) {
+	if (windowPinned) {
 		segments.push('(Pinned)');
 	}
 
@@ -61,6 +61,8 @@ export function updateTitle() {
 
 	adapter.setWindowTitle(title);
 	useInterfaceStore.getState().setWindowTitle(title);
+
+	console.log(title);
 }
 
 /**

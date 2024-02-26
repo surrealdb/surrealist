@@ -81,8 +81,9 @@ export function Scaffold() {
 	const isLight = useIsLight();
 
 	const { setActiveView } = useConfigStore.getState();
-	const { title, openConnectionCreator } = useInterfaceStore.getState();
+	const { openConnectionCreator } = useInterfaceStore.getState();
 
+	const title = useInterfaceStore((s) => s.title);
 	const activeConnection = useConfigStore((s) => s.activeConnection);
 	const activeView = useConfigStore((s) => s.activeView);
 

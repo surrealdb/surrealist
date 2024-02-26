@@ -5,10 +5,12 @@ import { setEditorTheme } from "./editor";
 import { getConnection } from "./connection";
 import { openConnection } from "~/database";
 import { fetchDatabaseSchema } from "./schema";
+import { getSetting, watchStore } from "./config";
+import { assign } from "radash";
 
-function savePreference({ matches }: { matches: boolean }) {
+const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
-}
+};
 
 /**
  * Watch for browser color preference changes and save them to the store
@@ -21,15 +23,15 @@ export function watchColorPreference() {
 	mediaQuery.addEventListener('change', savePreference);
 }
 
-function computeColorScheme() {
-	const { colorScheme } = useConfigStore.getState();
+const computeColorScheme = () => {
+	const colorScheme = getSetting("appearance", "colorScheme");
 	const { colorPreference } = useInterfaceStore.getState();
 
 	const actualScheme = colorScheme === "auto" ? colorPreference : colorScheme;
 
 	useInterfaceStore.getState().setColorScheme(actualScheme);
 	setEditorTheme(actualScheme);
-}
+};
 
 /**
  * Watch for changes to the preferred and configured color schemes
@@ -37,16 +39,16 @@ function computeColorScheme() {
 export function watchColorScheme() {
 	computeColorScheme();
 
-	useConfigStore.subscribe((state, prev) => {
-		if (state.colorScheme !== prev.colorScheme) {
-			computeColorScheme();
-		}
+	watchStore({
+		store: useConfigStore,
+		select: (state) => state.settings.appearance.colorScheme,
+		then: computeColorScheme,
 	});
 
-	useInterfaceStore.subscribe((state, prev) => {
-		if (state.colorPreference !== prev.colorPreference) {
-			computeColorScheme();
-		}
+	watchStore({
+		store: useInterfaceStore,
+		select: (state) => state.colorPreference,
+		then: computeColorScheme,
 	});
 }
 
@@ -54,9 +56,10 @@ export function watchColorScheme() {
  * Watch for changes to the store and save the config to the adapter
  */
 export async function watchConfigStore() {
-	const config = await adapter.loadConfig();
+	const config = JSON.parse(await adapter.loadConfig());
+	const merged = assign(useConfigStore.getState(), config);
 
-	useConfigStore.setState(JSON.parse(config));
+	useConfigStore.setState(merged);
 
 	// TODO include a ~300ms debounce
 	useConfigStore.subscribe((state) => {
@@ -68,16 +71,21 @@ export async function watchConfigStore() {
  * Watch for connection changes and open the connection if auto connect is enabled
  */
 export function watchConnectionSwitch() {
-	const { autoConnect } = useConfigStore.getState();
+	const autoConnect = getSetting("behavior", "autoConnect");
 
 	if (autoConnect && getConnection()) {
 		openConnection();
 	}
 
-	useConfigStore.subscribe((state, prev) => {
-		if (state.activeConnection !== prev.activeConnection && state.activeConnection && state.autoConnect) {
-			openConnection();
-		}
+	watchStore({
+		initial: true,
+		store: useConfigStore,
+		select: (state) => state.activeConnection,
+		then: (value) => {
+			if (value) {
+				openConnection();
+			}
+		},
 	});
 }
 
@@ -85,9 +93,9 @@ export function watchConnectionSwitch() {
  * Watch for a change in active view
  */
 export function watchViewSwitch() {
-	useConfigStore.subscribe((state, prev) => {
-		if (state.activeView !== prev.activeView) {
-			fetchDatabaseSchema();
-		}
+	watchStore({
+		store: useConfigStore,
+		select: (state) => state.activeView,
+		then: fetchDatabaseSchema,
 	});
 }

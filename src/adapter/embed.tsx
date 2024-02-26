@@ -71,13 +71,17 @@ export class EmbedAdapter extends BrowserAdapter {
 
 		const config = {
 			activeConnection: SANDBOX,
-			colorScheme: theme as MantineColorScheme || 'auto',
 			sandbox: {
 				...createSandboxConnection(),
 				activeQuery: mainTab.id,
 				queries: [mainTab]
+			},
+			settings: {
+				appearance: {
+					colorScheme: theme as MantineColorScheme || 'auto',
+				}
 			}
-		} satisfies Partial<SurrealistConfig>;
+		} satisfies DeepPartial<SurrealistConfig>;
 
 		return JSON.stringify(config);
 	}

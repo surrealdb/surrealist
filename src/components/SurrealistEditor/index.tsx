@@ -1,10 +1,10 @@
-import * as monaco from 'monaco-editor';
 import classes from './style.module.scss';
+import * as monaco from 'monaco-editor';
 import { CSSProperties, ElementRef, HTMLAttributes, useEffect, useRef } from "react";
 import { BASE_EDITOR_CONFIG, wireHighlighting } from "~/util/editor";
 import { Box, Paper } from "@mantine/core";
-import { useConfigStore } from '~/stores/config';
 import { clsx } from "clsx";
+import { useSetting } from '~/hooks/config';
 
 export interface SurrealistEditorProps extends Omit<HTMLAttributes<"div">, 'onChange'> {
 	style?: CSSProperties;
@@ -23,9 +23,9 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 	const containerRef = useRef<ElementRef<"div">>(null);
 	const elementRef = useRef<ElementRef<"div">>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-	const zoomLevel = useConfigStore((s) => s.editorScale);
+	const [editorScale] = useSetting("appearance", "editorScale");
 
-	const textSize = Math.floor(15 * (zoomLevel / 100));
+	const textSize = Math.floor(15 * (editorScale / 100));
 
 	useEffect(() => {
 		const editor = monaco.editor.create(elementRef.current!, {
