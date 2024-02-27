@@ -1,21 +1,19 @@
 pub fn configure_window(window: tauri::Window) {
     #[cfg(target_os = "macos")]
-    let _ = window.with_webview(move |webview| {
-        unsafe {
-            use cocoa::{
-                appkit::{NSWindow, NSWindowStyleMask, NSWindowTitleVisibility},
-                base::YES,
-            };
+    let _ = window.with_webview(move |webview| unsafe {
+        use cocoa::{
+            appkit::{NSWindow, NSWindowStyleMask, NSWindowTitleVisibility},
+            base::YES,
+        };
 
-            let id = webview.ns_window();
-            let mut style_mask = id.styleMask();
+        let id = webview.ns_window();
+        let mut style_mask = id.styleMask();
 
-            style_mask.set(NSWindowStyleMask::NSFullSizeContentViewWindowMask, true);
+        style_mask.set(NSWindowStyleMask::NSFullSizeContentViewWindowMask, true);
 
-            id.setStyleMask_(style_mask);
-            id.setTitlebarAppearsTransparent_(YES);
-            id.setTitleVisibility_(NSWindowTitleVisibility::NSWindowTitleHidden);
-        }
+        id.setStyleMask_(style_mask);
+        id.setTitlebarAppearsTransparent_(YES);
+        id.setTitleVisibility_(NSWindowTitleVisibility::NSWindowTitleHidden);
     });
 }
 
