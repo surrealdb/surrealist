@@ -76,7 +76,7 @@ export function AppearanceTab() {
 
 			<SettingsSection label="Query view">
 				<Checkbox
-					label="Qery results text wrapping"
+					label="Query results text wrapping"
 					checked={resultWordWrap}
 					onChange={updateResultWordWrap}
 				/>
