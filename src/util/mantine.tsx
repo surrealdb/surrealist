@@ -137,6 +137,11 @@ export const MANTINE_THEME = createTheme({
 				},
 			},
 		},
+		Checkbox: {
+			defaultProps: {
+				color: "transparent"
+			}
+		},
 		Switch: {
 			styles: {
 				root: {

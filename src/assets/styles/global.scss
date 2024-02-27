@@ -42,6 +42,19 @@ body {
     border-image-source: var(--surrealist-gradient);
 }
 
+.mantine-Checkbox-root {
+
+    .mantine-Checkbox-input {
+        transition: unset !important;
+    }
+
+    &[data-checked] .mantine-Checkbox-input {
+        background: var(--surrealist-gradient);
+        background-origin: border-box;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+}
+
 /* --- Variables --- */
 
 :root {

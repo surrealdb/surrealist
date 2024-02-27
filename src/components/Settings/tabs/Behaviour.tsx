@@ -12,7 +12,6 @@ export function BehaviourTab() {
 	const [variableSuggest, setVariableSuggest] = useSetting(CAT, "variableSuggest");
 	const [queryErrorChecker, setQueryErrorChecker] = useSetting(CAT, "queryErrorChecker");
 	const [windowPinned, setWindowPinned] = useSetting(CAT, "windowPinned");
-	const [autoRunQuery, setAutoRunQuery] = useSetting(CAT, "autoRunQuery");
 	const [autoConnect, setAutoConnect] = useSetting(CAT, "autoConnect");
 
 	const updateUpdateChecker = useCheckbox(setUpdateChecker);
@@ -20,7 +19,6 @@ export function BehaviourTab() {
 	const updateVariableSuggest = useCheckbox(setVariableSuggest);
 	const updateQueryErrorChecker = useCheckbox(setQueryErrorChecker);
 	const updateWindowPinned = useCheckbox(setWindowPinned);
-	const updateAutoRunQuery = useCheckbox(setAutoRunQuery);
 	const updateAutoConnect = useCheckbox(setAutoConnect);
 
 	return (
@@ -28,9 +26,9 @@ export function BehaviourTab() {
 			<SettingsSection>
 				{adapter.isUpdateCheckSupported && (
 					<Checkbox
+						label="Always check for updates"
 						checked={updateChecker}
 						onChange={updateUpdateChecker}
-						label="Always check for updates"
 					/>
 				)}
 
@@ -66,12 +64,6 @@ export function BehaviourTab() {
 					label="Validate query for errors"
 					checked={queryErrorChecker}
 					onChange={updateQueryErrorChecker}
-				/>
-
-				<Checkbox
-					label="Automatically run query when changed"
-					checked={autoRunQuery}
-					onChange={updateAutoRunQuery}
 				/>
 			</SettingsSection>
 		</>
