@@ -189,7 +189,7 @@ export function TablesPane(props: TablesPaneProps) {
 
 			<TableCreator
 				opened={isCreating}
-				onClose={closeCreator} 
+				onClose={closeCreator}
 			/>
 		</ContentPane>
 	);

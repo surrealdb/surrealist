@@ -127,7 +127,7 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
-			
+
 			{messages.length === 0 && (
 				<Center h="100%">
 					<Text c="slate">No messages to display</Text>

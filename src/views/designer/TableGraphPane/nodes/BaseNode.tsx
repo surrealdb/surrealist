@@ -114,7 +114,7 @@ function Fields(props: FieldsProps) {
 					p={0}
 				>
 					{fields.map((field) => (
-						<Flex key={field.name} justify="space-between" gap="lg"> 
+						<Flex key={field.name} justify="space-between" gap="lg">
 							<Text
 								truncate
 								title={field.name}

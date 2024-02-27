@@ -8,6 +8,7 @@ import {
 	Modal,
 	PasswordInput,
 	ScrollArea,
+	Select,
 	Stack,
 	Text,
 	TextInput,
@@ -231,6 +232,14 @@ export function AccountsPane(props: AccountsPaneProps) {
 							required={!currentUser}
 						/>
 
+						<Select
+							label="Select a role"
+							description="The role of the user on this database"
+							placeholder="Select a role"
+							data={ROLES}
+							required
+						/>
+
 						<Checkbox.Group
 							label="Select a role"
 							description="The role of the user on this database"
@@ -240,7 +249,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 						>
 							<Stack mt="xs">
 								{ROLES.map((role) => (
-									<Checkbox {...role} key={role.value} />	
+									<Checkbox {...role} key={role.value} />
 								))}
 							</Stack>
 						</Checkbox.Group>
@@ -270,7 +279,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 								variant="light"
 							>
 								Remove
-							</Button>	
+							</Button>
 						)}
 						<Button
 							disabled={!currentUser && (!editingName || !editingPassword)}

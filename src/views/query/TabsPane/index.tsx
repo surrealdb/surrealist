@@ -99,7 +99,7 @@ export function TabsPane(props: TabsPaneProps) {
 							{({ item: query, handleProps, isDragging }) => {
 								const isActive = query.id === activeQuery;
 								const isLive = liveTabs.has(query.id);
-	
+
 								return (
 									<Entry
 										key={query.id}
@@ -131,7 +131,7 @@ export function TabsPane(props: TabsPaneProps) {
 														mr={-4}
 													/>
 												)}
-	
+
 												{queries.length > 1 && (
 													<ActionIcon
 														component="div"

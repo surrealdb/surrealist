@@ -21,7 +21,7 @@ export interface ConnectionDetailsProps {
 
 export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const isLight = useIsLight();
-	
+
 	const [editingScope, editingScopeHandle] = useDisclosure();
 
 	const addScopeField = useStable(() => {
@@ -188,7 +188,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					)}
 				</Stack>
 			</Group>
-			
+
 			<Modal
 				opened={editingScope}
 				onClose={editingScopeHandle.close}
@@ -241,7 +241,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 						))}
 					</Stack>
 				)}
-				
+
 				<Group mt="lg">
 					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={editingScopeHandle.close}>
 						Back

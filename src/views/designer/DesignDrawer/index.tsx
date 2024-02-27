@@ -51,7 +51,7 @@ export interface SchemaDrawerProps {
 export function DesignDrawer({ opened, value, onChange, handle, onClose }: SchemaDrawerProps) {
 	const isLight = useIsLight();
 	const isShifting = useActiveKeys("Shift");
-	
+
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {

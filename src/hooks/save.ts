@@ -20,14 +20,14 @@ export interface SaveableOptions<T> {
 
 	/**
 	 * Called when the current state should be saved
-	 * 
+	 *
 	 * @param original The original state
 	 */
 	onSave: (original: T) => Task;
 
 	/**
 	 * Called when the current state should be reverted
-	 * 
+	 *
 	 * @param original The original state
 	 */
 	onRevert: (original: T) => void;
@@ -50,11 +50,11 @@ export interface SaveableHandle<T> {
 	 * Whether the state is currently being saved
 	 */
 	isSaving: boolean;
-	
+
 	/**
 	 * Forcefully schedule the tracked state to be refreshed
 	 * after the current render cycle.
-	 * 
+	 *
 	 * @param value Optional manual value to refresh to
 	 */
 	track: () => void;

@@ -29,7 +29,7 @@ export class EmbedAdapter extends BrowserAdapter {
 			setup,
 			theme,
 		} = Object.fromEntries(params.entries());
-		
+
 		// Initial query
 		if (query) {
 			mainTab.query = decodeURIComponent(query);

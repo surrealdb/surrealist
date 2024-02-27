@@ -11,14 +11,14 @@ export interface EntryProps extends ButtonProps {
 export const Entry = createPolymorphicComponent<'button', EntryProps>(
 	forwardRef<HTMLButtonElement, EntryProps>((props, ref) => {
 		const isLight = useIsLight();
-		
+
 		const {
 			isActive,
 			children,
 			className,
 			...rest
 		} = props;
-	
+
 		return (
 			<Button
 				ref={ref}

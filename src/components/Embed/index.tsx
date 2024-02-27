@@ -20,7 +20,7 @@ export function Embed() {
 				<Notifications />
 
 				<ErrorBoundary
-					FallbackComponent={AppErrorHandler} 
+					FallbackComponent={AppErrorHandler}
 					onReset={location.reload}
 				>
 					<Box

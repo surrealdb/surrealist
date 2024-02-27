@@ -92,61 +92,61 @@ function App() {
 					</div>
 					<div className="section">
 						<label htmlFor="dataset">Dataset</label>
-						<select 
-							name="dataset" 
+						<select
+							name="dataset"
 							id="dataset"
-							value={dataset} 
-							onInput={(e) => setDataset(e.currentTarget.value as Dataset)} 
+							value={dataset}
+							onInput={(e) => setDataset(e.currentTarget.value as Dataset)}
 						>
 							{Object.entries(datasets).map(([key, value]) => (
 								<option key={key} value={key}>{value}</option>
 							))}
 						</select>
 					</div>
-			
+
 					<div className="section">
 						<label htmlFor="setup">Setup</label>
-						<textarea 
-							name="setup" 
-							id="setup" 
-							placeholder="SELECT * FROM ..." 
-							rows={6} 
-							value={setup} 
-							onInput={(e) => setSetup(e.currentTarget.value)} 
+						<textarea
+							name="setup"
+							id="setup"
+							placeholder="SELECT * FROM ..."
+							rows={6}
+							value={setup}
+							onInput={(e) => setSetup(e.currentTarget.value)}
 						/>
 					</div>
-			
+
 					<div className="section">
 						<label htmlFor="query">Query</label>
-						<textarea 
-							name="query" 
-							id="query" 
-							placeholder="SELECT * FROM ..." 
+						<textarea
+							name="query"
+							id="query"
+							placeholder="SELECT * FROM ..."
 							rows={6}
-							value={query} 
-							onInput={(e) => setQuery(e.currentTarget.value)} 
+							value={query}
+							onInput={(e) => setQuery(e.currentTarget.value)}
 						/>
 					</div>
-			
+
 					<div className="section">
 						<label htmlFor="variables">Variables</label>
-						<textarea 
-							name="variables" 
-							id="variables" 
-							placeholder="{}" 
+						<textarea
+							name="variables"
+							id="variables"
+							placeholder="{}"
 							rows={6}
-							value={variables} 
-							onInput={(e) => setVariables(e.currentTarget.value)} 
+							value={variables}
+							onInput={(e) => setVariables(e.currentTarget.value)}
 						/>
 					</div>
-			
+
 					<div className="section">
 						<label htmlFor="theme">Theme</label>
-						<select 
-							name="theme" 
+						<select
+							name="theme"
 							id="theme"
-							value={theme} 
-							onInput={(e) => setTheme(e.currentTarget.value as Theme)} 
+							value={theme}
+							onInput={(e) => setTheme(e.currentTarget.value as Theme)}
 						>
 							{Object.entries(themes).map(([key, value]) => (
 								<option key={key} value={key}>{value}</option>

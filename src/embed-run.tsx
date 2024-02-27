@@ -23,7 +23,7 @@ import { EmbedAdapter } from './adapter/embed';
 	await initEmbed(embedPath);
 
 	initialize_embed();
-	
+
 	// Synchronize the config to the store
 	await watchConfigStore();
 

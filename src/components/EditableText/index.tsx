@@ -37,7 +37,7 @@ export const EditableText = (props: EditableTextProps) => {
 
 	const onKeyDown = useStable((e: React.KeyboardEvent<HTMLDivElement>) => {
 		e.stopPropagation();
-		
+
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			ref.current?.blur();

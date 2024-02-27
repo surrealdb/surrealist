@@ -7,7 +7,7 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 	if (import.meta.env.MODE === "development") {
 		return;
 	}
-	
+
 	const { setLastPromptedVersion } = useConfigStore.getState();
 	const { setAvailableUpdate } = useInterfaceStore.getState();
 

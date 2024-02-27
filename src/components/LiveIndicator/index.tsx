@@ -25,7 +25,7 @@ export function LiveIndicator(props: LiveIndicatorProps) {
 				title="Live query active"
 				color="white"
 				size="xl"
-			/>	
+			/>
 		</Box>
 	);
 }

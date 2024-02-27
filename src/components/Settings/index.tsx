@@ -80,7 +80,7 @@ export function Settings(props: SettingsProps) {
 		...c,
 		disabled: c.disabled ? c.disabled(flags) : false
 	}));
-	
+
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
 	const Component = activeCategory.component;
 
@@ -102,7 +102,7 @@ export function Settings(props: SettingsProps) {
 	useEffect(() => {
 		const now = new Date();
 		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 2000));
-		
+
 		if (valid.length >= 5) {
 			setFlags({ devTools: true });
 			setLogoClicked([]);

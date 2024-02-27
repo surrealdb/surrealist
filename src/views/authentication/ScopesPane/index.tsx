@@ -227,7 +227,7 @@ export function ScopePane() {
 								variant="light"
 							>
 								Remove
-							</Button>	
+							</Button>
 						)}
 						<Button
 							disabled={!editingName}

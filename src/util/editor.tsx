@@ -233,7 +233,7 @@ export function wireHighlighting() {
 
 	document.fonts.ready.then(() => {
 		monaco.editor.remeasureFonts();
-	}); 
+	});
 }
 
 /**
@@ -317,7 +317,7 @@ export function configureQueryEditor(editor: editor.IStandaloneCodeEditor) {
 
 /**
  * Perform validation on the given query editor
- * 
+ *
  * @param editor The editor instance
  * @returns Whether the query is valid
  */
@@ -359,7 +359,7 @@ export function updateQueryValidation(editor: editor.IStandaloneCodeEditor) {
 
 /**
  * Set the theme of the editor
- * 
+ *
  * @param scheme The color scheme
  */
 export function setEditorTheme(scheme: ColorScheme) {

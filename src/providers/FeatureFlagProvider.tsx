@@ -9,7 +9,7 @@ import { featureFlags } from '~/util/feature-flags';
 export function FeatureFlagsProvider({ children }: { children: ReactNode }) {
 	const fromConfig = useConfigStore((s) => s.featureFlags);
 	const setFeatureFlag = useConfigStore((s) => s.setFeatureFlag);
-	
+
 	useEffect(() => {
 		featureFlags.subscribe(setFeatureFlag);
 		return () => {

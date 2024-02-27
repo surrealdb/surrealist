@@ -47,7 +47,7 @@ export function DesignerView(_props: DesignerViewProps) {
 	const isValid = useMemo(() => {
 		return data ? isSchemaValid(data) : true;
 	}, [data]);
-	
+
 	const saveHandle = useSaveable({
 		valid: isValid,
 		track: {
@@ -75,7 +75,7 @@ export function DesignerView(_props: DesignerViewProps) {
 
 	const setActiveTable = useStable((table: string) => {
 		const schema = tables.find((t) => t.schema.name === table);
-		
+
 		if (!schema) {
 			throw new Error(`Could not find table ${table}`);
 		}
@@ -89,7 +89,7 @@ export function DesignerView(_props: DesignerViewProps) {
 		if (saveHandle.isChanged && !force) {
 			return;
 		}
-		
+
 		isDesigningHandle.close();
 	});
 
@@ -108,7 +108,7 @@ export function DesignerView(_props: DesignerViewProps) {
 					setActiveTable={setActiveTable}
 				/>
 			</ReactFlowProvider>
-			
+
 			<DesignDrawer
 				opened={isDesigning}
 				onClose={closeDrawer}

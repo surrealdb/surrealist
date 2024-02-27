@@ -39,7 +39,7 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 		editorRef.current = editor;
 
 		props.onMount?.(editor);
-		
+
 		if (props.language === "json") {
 			editor.onDidChangeModelLanguageConfiguration(() => {
 				wireHighlighting();
@@ -63,7 +63,7 @@ export function SurrealistEditor(props: SurrealistEditorProps) {
 					height: contentHeight
 				});
 			};
-			
+
 			editor.onDidContentSizeChange(updateHeight);
 			updateHeight();
 		}

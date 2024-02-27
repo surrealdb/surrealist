@@ -56,7 +56,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		const file = (typeof result === 'string')
 			? new File([result], '', { type: 'text/plain' })
 			: result;
-		
+
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement('a');
 

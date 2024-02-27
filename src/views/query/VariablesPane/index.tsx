@@ -66,7 +66,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 		const variables = matches
 			.map((v) => v.slice(1))
 			.filter((v) => !RESERVED_VARIABLES.has(v) && !currentKeys.includes(v));
-		
+
 		const newVars = variables.reduce((acc, v) => {
 			acc[v] = "";
 			return acc;

@@ -29,7 +29,7 @@ import { useIsLight } from "~/hooks/theme";
 export function QueryView() {
 	const { saveQuery } = useConfigStore.getState();
 	const isLight = useIsLight();
-	
+
 	const [showVariables, showVariablesHandle] = useDisclosure();
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
@@ -74,7 +74,7 @@ export function QueryView() {
 		if (!active || !saveName) {
 			return;
 		}
-		
+
 		saveQuery({
 			id: editingId || newId(),
 			name: saveName,
@@ -109,7 +109,7 @@ export function QueryView() {
 						toggleVariables={showVariablesHandle.toggle}
 					/>
 				</Group>
-			)}	
+			)}
 
 			<Group
 				flex={1}
@@ -217,7 +217,7 @@ export function QueryView() {
 										fontFamily: "JetBrains Mono"
 									}
 								}}
-							/>	
+							/>
 						)}
 
 						<Group>

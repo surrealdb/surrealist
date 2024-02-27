@@ -98,10 +98,10 @@ export const useConfigStore = create<ConfigStore>()(
 		addQueryTab: (options) => set((state) => updateConnection(state, (connection) => {
 			const tabId = newId();
 			const baseName = options?.name || "New query";
-			
+
 			let queryName = "";
 			let counter = 0;
-	
+
 			do {
 				queryName = `${baseName} ${counter ? counter + 1 : ""}`.trim();
 				counter++;
@@ -121,7 +121,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 		removeQueryTab: (queryId) => set((state) => updateConnection(state, (connection) => {
 			const index = connection.queries.findIndex((query) => query.id === queryId);
-			
+
 			if (index < 0) {
 				return {};
 			}
@@ -153,7 +153,7 @@ export const useConfigStore = create<ConfigStore>()(
 			};
 
 			if (payload.query !== undefined) {
-				query.queryType = extract_query_type(payload.query) as QueryType; 
+				query.queryType = extract_query_type(payload.query) as QueryType;
 			}
 
 			return {

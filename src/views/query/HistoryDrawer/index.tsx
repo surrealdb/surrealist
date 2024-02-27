@@ -24,7 +24,7 @@ interface HistoryRowProps {
 function HistoryRow({ entry, onClose }: HistoryRowProps) {
 	const { updateCurrentConnection, updateQueryTab, addQueryTab } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
-	
+
 	const isLight = useIsLight();
 	const connection = useActiveConnection();
 	const activeTab = useActiveQuery();
@@ -49,7 +49,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 			queryHistory: connection.queryHistory.filter((item) => item !== entry)
 		});
 	});
-	
+
 	return (
 		<Box
 			className={classes.query}

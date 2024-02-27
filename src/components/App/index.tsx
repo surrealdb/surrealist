@@ -79,7 +79,7 @@ export function App() {
 				>
 					<InspectorProvider>
 						<ErrorBoundary
-							FallbackComponent={AppErrorHandler} 
+							FallbackComponent={AppErrorHandler}
 							onReset={softReset}
 						>
 							<Scaffold />

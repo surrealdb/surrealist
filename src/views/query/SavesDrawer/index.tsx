@@ -84,7 +84,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 				<ModalTitle>Saved queries</ModalTitle>
 
 				<Spacer />
-				
+
 				<ActionIcon onClick={props.onSaveQuery} title="Add query">
 					<Icon path={iconPlus} />
 				</ActionIcon>
@@ -104,7 +104,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 			{showTags && (
 				<ScrollArea
 					w="100%"
-					scrollbars="x" 
+					scrollbars="x"
 					type="scroll"
 				>
 					<Group gap={6} pb="sm">

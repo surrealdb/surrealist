@@ -31,7 +31,7 @@ import { getSetting } from "./util/config";
 	await initEmbed(embedPath);
 
 	initialize_embed();
-	
+
 	// Synchronize the config to the store
 	await watchConfigStore();
 

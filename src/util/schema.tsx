@@ -55,37 +55,37 @@ export async function fetchDatabaseSchema() {
 		const tableQuery = tableInfo.reduce((acc, table) => {
 			return acc + `INFO FOR TABLE \`${table.name}\`;`;
 		}, "");
-	
+
 		const tableData = await surreal.queryFirst(tableQuery);
-	
+
 		tables = await map(tableInfo, async (table, index) => {
 			const tableInfo = tableData[index].result as SurrealInfoTB;
-	
+
 			const fieldInfo: TableField[] = await map(Object.values(tableInfo.fields), (definition) => {
 				return extract_field_definition(definition);
 			});
-	
+
 			const indexInfo: TableIndex[] = await map(Object.values(tableInfo.indexes), (definition) => {
 				return extract_index_definition(definition);
 			});
-	
+
 			const eventInfo: TableEvent[] = await map(Object.values(tableInfo.events), (definition) => {
 				return extract_event_definition(definition);
 			});
-	
+
 			const mappedFields = fieldInfo.map((field) => {
 				let kindTables: string[] = [];
-	
+
 				if (field.kind.startsWith("record")) {
 					kindTables = extractTypeList(field.kind, "record");
 				}
-	
+
 				return {
 					...field,
 					kindTables,
 				};
 			});
-	
+
 			const mappedIndexes = indexInfo.map((index) => {
 				return {
 					...index,
@@ -94,7 +94,7 @@ export async function fetchDatabaseSchema() {
 					vector: index.vector.replace('MTREE DIMENSION ', ''),
 				};
 			});
-	
+
 			return {
 				schema: {
 					...table,

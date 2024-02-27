@@ -41,7 +41,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	const [currentRecord, setCurrentRecord] = useState<ActiveRecord>(DEFAULT_RECORD);
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
-	
+
 	const isLight = useIsLight();
 	const inputColor = currentRecord.exists ? undefined : 'var(--mantine-color-red-6)';
 
@@ -198,7 +198,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					</ActionIcon>
 				</Group>
 			</Group>
-		
+
 			<TextInput
 				mb="xs"
 				value={recordId}

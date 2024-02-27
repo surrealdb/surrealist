@@ -78,7 +78,7 @@ export function Importer() {
 			>
 				Import database
 			</Button>
-			
+
 			<Modal
 				opened={showConfirm}
 				onClose={showConfirmHandle.close}

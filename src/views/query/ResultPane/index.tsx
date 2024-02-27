@@ -20,7 +20,7 @@ function computeRowCount(response: any) {
 		return 0;
 	}
 
-	// We can count an array, otherwise it's always 1 result (unless there is an error, in which case there is no result :D) 
+	// We can count an array, otherwise it's always 1 result (unless there is an error, in which case there is no result :D)
 	if (Array.isArray(response.result)) {
 		return response.result.length;
 	}
@@ -42,7 +42,7 @@ export function ResultPane() {
 
 	const responseCount = responses.length;
 	const rowCount = computeRowCount(response);
-	
+
 	const showCombined = resultMode == 'combined' || resultMode == "live";
 	const showTabs = !showCombined && responses.length > 1;
 	const showResponses = showCombined && responseCount > 0;
@@ -64,7 +64,7 @@ export function ResultPane() {
 			});
 		}
 	};
-	
+
 	useLayoutEffect(() => {
 		setResultTab(1);
 	}, [responses.length]);

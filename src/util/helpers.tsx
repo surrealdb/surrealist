@@ -40,7 +40,7 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
  */
 export function updateTitle() {
 	const { pathname } = window.location;
-	
+
 	const windowPinned = getSetting("behavior", "windowPinned");
 	const activeView = pathname.split("/")[1] as ViewMode;
 	const session = getConnection();
@@ -162,7 +162,7 @@ export function applyOrder<T>(items: T[], order: T[]) {
 
 /**
  * Wrap a promise in a timeout
- * 
+ *
  * @param cb The callback providing the promise
  * @param timeout The timeout in milliseconds
  * @returns The promise
@@ -184,7 +184,7 @@ export function isPermissionError(result: any) {
 
 /**
  * Convert the given connection options to a connection uri
- * 
+ *
  * @param options The connection options
  * @returns The URI string
  */
@@ -198,7 +198,7 @@ export function connectionUri(options: ConnectionOptions) {
 
 /**
  * Clamp a value between a min and max
- * 
+ *
  * @param value The value to clamp
  * @param min The minimum value
  * @param max The maximum value
@@ -210,7 +210,7 @@ export function clamp(value: number, min: number, max: number) {
 
 /**
  * Returns the file name without the extension
- * 
+ *
  * @param name The file name
  * @returns The file name without the extension
  */
@@ -223,7 +223,7 @@ export function getFileName(name: string) {
 /**
  * Returns whether the given tab has not been renamed
  * from its default name.
- * 
+ *
  * @param tab The tab to check
  * @returns True if the tab is unnamed
  */
@@ -234,7 +234,7 @@ export function isUnnamedTab(tab: TabQuery) {
 /**
  * Attempt to parse the given string as a valid params object
  * while silently handling any errors
- * 
+ *
  * @param paramString The string to parse
  * @returns The parsed params object
  */

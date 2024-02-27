@@ -29,7 +29,7 @@ export type ExplorerStore = {
 	setExplorerData: (records: unknown[], recordCount: number) => void;
 	clearExplorerData: () => void;
 	setExplorerFiltering: (filtering: boolean) => void;
-	setExplorerFilter: (filter: string) => void;	
+	setExplorerFilter: (filter: string) => void;
 	openEditor: () => void;
 	closeEditor: () => void;
 	setHistory: (recordHistory: string[]) => void;
@@ -65,7 +65,7 @@ export const useExplorerStore = create<ExplorerStore>((set) => ({
 	})),
 
 	setExplorerData: (records, recordCount) => set(() => ({ records, recordCount })),
-	clearExplorerData: () => set(() => ({ 
+	clearExplorerData: () => set(() => ({
 		records: [],
 		recordCount: 0,
 	})),

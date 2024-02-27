@@ -73,7 +73,7 @@ function NavigationIcon({ name, isActive, isLight, icon, onClick }: NavigationIc
 			>
 				<Icon path={icon} />
 			</ActionIcon>
-		</Tooltip>	
+		</Tooltip>
 	);
 }
 
@@ -96,7 +96,7 @@ export function Scaffold() {
 			loader: true
 		});
 	});
-	
+
 	useHotkeys([
 		["F9", () => userExecuteQuery()],
 		["mod+Enter", () => userExecuteQuery()],
@@ -122,7 +122,7 @@ export function Scaffold() {
 					{title}
 				</Center>
 			)}
-			
+
 			<Toolbar
 				viewMode={activeView}
 				onCreateTab={openConnectionCreator}

@@ -46,7 +46,7 @@ export function BehaviourTab() {
 					onChange={updateAutoConnect}
 				/>
 			</SettingsSection>
-			
+
 			<SettingsSection label="Query view">
 				<Checkbox
 					label="Auto complete table names"

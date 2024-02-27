@@ -113,13 +113,13 @@ export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
 			}
 		}
 	}
-	
+
 	return [nodes, edges];
 }
 
 /**
  * Apply a layout to the given nodes and edges
- * 
+ *
  * @param nodes The nodes to layout
  * @param edges The edges to layout
  * @returns The changes to apply
@@ -131,7 +131,7 @@ export async function applyNodeLayout(nodes: InternalNode[], edges: Edge[]): Pro
 		children: nodes.map(node => ({
 			id: node.id,
 			width: node.width,
-			height: node.height,	
+			height: node.height,
 		})),
 		edges: edges.map(edge => ({
 			id: edge.id,
@@ -143,7 +143,7 @@ export async function applyNodeLayout(nodes: InternalNode[], edges: Edge[]): Pro
 	const layout = await elk.layout(graph, {
 		layoutOptions: ELK_OPTIONS
 	});
-	
+
 	const children = layout.children || [];
 
 	return children.map(({ id, x, y }) => {
@@ -157,10 +157,10 @@ export async function applyNodeLayout(nodes: InternalNode[], edges: Edge[]): Pro
 
 /**
  * Create a snapshot of the given element
- * 
+ *
  * @param el The element to snapshot
  * @param type The type of output to create
- * @returns 
+ * @returns
  */
 export async function createSnapshot(el: HTMLElement, type: 'png' | 'svg') {
 	if (type == 'png') {

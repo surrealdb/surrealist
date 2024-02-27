@@ -25,7 +25,7 @@ function RelationsList({ name, relations, onOpen }: RelationsListProps) {
 			{relations.length === 0 && (
 				<Text pl={6} c="dimmed">
 					No {name} relations found
-				</Text>	
+				</Text>
 			)}
 
 			{relations.map((relation) => (

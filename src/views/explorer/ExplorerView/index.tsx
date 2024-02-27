@@ -19,7 +19,7 @@ export function ExplorerView() {
 	const openCreator = useStable((table?: string) => {
 		isCreatingHandle.open();
 	});
-	
+
 	const [history, setHistory] = useState<string[]>([]);
 	const inspectHistory = useHistory({ history, setHistory });
 
@@ -44,7 +44,7 @@ export function ExplorerView() {
 					openCreator={isCreatingHandle.open}
 				/>
 			</Group>
-			
+
 			<CreatorDrawer
 				opened={isCreating}
 				activeTable={activeTable}

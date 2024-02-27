@@ -4,13 +4,13 @@ export const PRIMARY_COLOR = "surreal.5";
 
 /**
  * Returns the variable for a Mantine color
- * 
+ *
  * @param name The name of the color, with optional shade
- * @returns The variable name 
+ * @returns The variable name
  */
 export function themeColor(name: string) {
 	let value;
-	
+
 	if (name === 'white' || name === 'black') {
 		value = name;
 	} else if (name.includes('.')) {

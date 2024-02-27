@@ -79,8 +79,8 @@ export function FreshExperience() {
 			</Group>
 
 			{/* <Stack ta="center" maw={200} mb="xl">
-				
-				
+
+
 			</Stack> */}
 		</Box>
 	);

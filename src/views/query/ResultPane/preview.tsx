@@ -111,7 +111,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 					>
 						{messages.map(msg => {
 							const [color, icon] = LIVE_ACTION_COLORS[msg.action] || ["slate", iconHelp];
-		
+
 							return (
 								<Accordion.Item key={msg.id} value={msg.id}>
 									<Accordion.Control

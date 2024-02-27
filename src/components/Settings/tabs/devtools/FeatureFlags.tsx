@@ -20,11 +20,11 @@ export function FeatureFlagsTab() {
 
 				return (
 					<Select
-						key={flag} 
-						label={flag} 
-						data={data} 
-						value={generateKey(flags[flag])} 
-						onChange={(k) => setFlags({ [flag]: k ? mapped[k] : def })} 
+						key={flag}
+						label={flag}
+						data={data}
+						value={generateKey(flags[flag])}
+						onChange={(k) => setFlags({ [flag]: k ? mapped[k] : def })}
 					/>
 				);
 			})}

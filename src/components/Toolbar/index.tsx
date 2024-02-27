@@ -30,7 +30,7 @@ export function Toolbar(props: ToolbarProps) {
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
-	
+
 	const connection = useConnection();
 
 	const [showConsole, setShowConsole] = useDisclosure();
@@ -85,9 +85,9 @@ export function Toolbar(props: ToolbarProps) {
 						width={38}
 					/>
 				</Center>
-				
+
 				<Connections
-				
+
 				/>
 
 				{connection && (isConnected ? (isSandbox ? (

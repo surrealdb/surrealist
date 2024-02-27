@@ -57,7 +57,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	setColorScheme: (colorScheme) => set(() => ({
 		colorScheme,
 	})),
-	
+
 	setAvailableUpdate: (availableUpdate) => set(() => ({
 		availableUpdate,
 		showAvailableUpdate: true,

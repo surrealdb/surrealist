@@ -49,7 +49,7 @@ export function QueryPane(props: QueryPaneProps) {
 
 	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor);
-		
+
 		controls.current = editor;
 
 		editor.focus();
@@ -63,7 +63,7 @@ export function QueryPane(props: QueryPaneProps) {
 
 		if (file) {
 			setQueryForced(file.content);
-			
+
 			if (isUnnamedTab(activeTab)) {
 				updateQueryTab({
 					id: activeTab.id,

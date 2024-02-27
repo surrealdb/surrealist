@@ -36,11 +36,11 @@ export function Exporter() {
 				SURQL_FILTERS,
 				() => {
 					setIsExporting(true);
-					
+
 					return createDatabaseExport(exportTypes);
 				}
 			);
-	
+
 			if (success) {
 				showNotification({
 					message: "Database export saved to disk",
@@ -86,7 +86,7 @@ export function Exporter() {
 							label={`Include ${type}`}
 							checked={exportTypes.includes(type)}
 							onChange={setExportTypes.bind(null, type)}
-						/>	
+						/>
 					))}
 				</Stack>
 

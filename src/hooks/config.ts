@@ -12,7 +12,7 @@ const ACTIONS = {
 /**
  * Subscribe to a setting in the config store and
  * expose an updater function to change the setting.
- * 
+ *
  * @param category The category of the setting.
  * @param key The key of the setting.
  */

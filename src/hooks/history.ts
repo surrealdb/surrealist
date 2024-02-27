@@ -32,7 +32,7 @@ export function useHistory<T = string>(options: HistoryOptions<T>): HistoryHandl
 		}
 
 		const next = [...history, value];
-		
+
 		if (next.length > 30) {
 			next.shift();
 		}

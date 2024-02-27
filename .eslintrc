@@ -36,7 +36,8 @@
 		"unicorn/no-nested-ternary": 0,
 		"unicorn/no-thenable": 0,
 		"unicorn/prefer-top-level-await": 0,
-		"unicorn/no-useless-undefined": 0
+		"unicorn/no-useless-undefined": 0,
+		"no-trailing-spaces": 1
 	},
 	"parserOptions": {
 		"warnOnUnsupportedTypeScriptVersion": false

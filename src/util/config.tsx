@@ -10,7 +10,7 @@ export type StoreType<T> = T extends UseBoundStore<StoreApi<infer I>> ? I : neve
 /**
  * Watch a store for changes and invoke the callback when the
  * selected state changes.
- * 
+ *
  * @param options The watch options
  */
 export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
@@ -36,7 +36,7 @@ export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
 
 /**
  * Get a single setting from the config store
- * 
+ *
  * @param category The category
  * @param key The setting key
  * @returns Setting value

@@ -68,7 +68,7 @@ export interface QueryOptions {
 
 /**
  * Execute a query against the active connection
- * 
+ *
  * @param options Query options
  */
 export async function executeQuery(options?: QueryOptions) {

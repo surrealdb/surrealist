@@ -50,10 +50,10 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 				stopServing();
 			});
 		}
-		
+
 		setHasStarted(true);
 	});
-	
+
 	useEffect(() => {
 		if (isServing) {
 			openConnection();

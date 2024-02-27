@@ -30,7 +30,7 @@ export function getActiveConnection() {
 
 /**
  * Returns whether the given connection is valid
- * 
+ *
  * TODO Replace with validation
  */
 export function isConnectionValid(details: ConnectionOptions | undefined) {

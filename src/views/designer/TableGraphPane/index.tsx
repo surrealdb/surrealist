@@ -117,13 +117,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			await sleep(50);
 
 			fitView();
-			
+
 			return await createSnapshot(ref.current!, type);
 		});
 
 		setIsExporting(false);
 		setViewport(viewport);
-		
+
 		if (isSuccess) {
 			showNotification({
 				message: "Snapshot saved to disk"

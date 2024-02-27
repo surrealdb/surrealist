@@ -113,11 +113,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 		content: () => Result<string | Blob | null>
 	): Promise<boolean> {
 		const filePath = await save({ title, defaultPath, filters });
-	
+
 		if (!filePath) {
 			return false;
 		}
-	
+
 		const result = await content();
 
 		if (!result) {
@@ -149,7 +149,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			: result === null
 				? []
 				: result;
-		
+
 		const tasks = urls.map(async (url) => ({
 			name: await basename(url),
 			content: await readTextFile(url)

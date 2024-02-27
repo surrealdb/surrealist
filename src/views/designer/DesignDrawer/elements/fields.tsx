@@ -33,7 +33,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 			d.fields.splice(index, 1);
 		});
 	});
-	
+
 	return (
 		<Accordion.Item value="fields">
 			<SectionTitle>

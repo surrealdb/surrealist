@@ -169,7 +169,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 		props.onChange(`record(${table.schema.name})`);
 		hideTables();
 	});
-	
+
 	return (
 		<TextInput
 			required

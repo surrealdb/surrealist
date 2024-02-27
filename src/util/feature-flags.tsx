@@ -2,7 +2,7 @@ import { FeatureFlags, TFeatureFlags } from "@theopensource-company/feature-flag
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
 import { Environment } from "./environment";
 
-// How to write a schema for feature flags: 
+// How to write a schema for feature flags:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
 export const featureFlagSchema = {
 	devTools: {

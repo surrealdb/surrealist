@@ -28,7 +28,7 @@ export function ConnectionEditor() {
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
 	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
-	
+
 	const [details, setDetails] = useImmer<Connection>(createBaseConnection());
 	const isValid = details.name && isConnectionValid(details.connection);
 
@@ -48,8 +48,8 @@ export function ConnectionEditor() {
 
 		updateTitle();
 	});
-	
-	
+
+
 	const generateName = useStable(() => {
 		let tabName = "";
 		let counter = 0;
@@ -122,7 +122,7 @@ export function ConnectionEditor() {
 							leftSection={<Icon path={iconDelete} />}
 						>
 							Remove
-						</Button>	
+						</Button>
 					)}
 					<Button
 						type="submit"

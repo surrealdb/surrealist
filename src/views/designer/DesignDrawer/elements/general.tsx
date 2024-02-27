@@ -23,7 +23,7 @@ export function GeneralElement({ data, setData }: ElementProps) {
 			});
 		}
 	});
-	
+
 	return (
 		<Accordion.Item value="general">
 			<SectionTitle>

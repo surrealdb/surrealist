@@ -44,11 +44,11 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 			setHistoryItems([id]);
 		}
 	});
-	
+
 	const stopInspect = useStable(() => {
 		isInspectingHandle.close();
 	});
-	
+
 	return (
 		<InspectorContext.Provider value={{history, inspect, stopInspect}}>
 			{children}
