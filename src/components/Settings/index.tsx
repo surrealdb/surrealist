@@ -88,7 +88,8 @@ export function Settings(props: SettingsProps) {
 		const debugDump = await adapter.dumpDebug();
 		const debugData = {
 			...debugDump,
-			version: VERSION
+			"Version": VERSION,
+			"Flags": Object.entries(flags).map(([key, value]) => `${key}: ${value}`).join(", ")
 		};
 
 		const debugText = Object.entries(debugData).reduce((acc, [key, value]) => {
