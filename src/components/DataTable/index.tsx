@@ -124,7 +124,7 @@ export function DataTable({ data, active, sorting, headers, onSortingChange }: D
 					component="tr"
 					onClick={() => value.id && inspect(value.id)}
 					style={{
-						backgroundColor: `${isActive ? "var(--mantine-color-light-6)" : undefined} !important`,
+						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
 					}}
 				>
 					{columns}

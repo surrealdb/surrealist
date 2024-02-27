@@ -158,7 +158,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 								color={props.iconColor}
 								path={iconKey}
 							/>
-							<Text c={isLight ? "gray.9" : "gray.0"}>
+							<Text>
 								{user.name}
 							</Text>
 							<Spacer />
@@ -175,7 +175,6 @@ export function AccountsPane(props: AccountsPaneProps) {
 									<div>
 										<Icon
 											ml={6}
-											color={isLight ? "light" : "light.3"}
 											path={iconComment}
 											size={10}
 											style={{ flexShrink: 0 }}

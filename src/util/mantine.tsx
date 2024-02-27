@@ -46,19 +46,6 @@ export const MANTINE_THEME = createTheme({
 		},
 	},
 	colors: {
-		// TODO REPLACE LIGHT WITH SLATE
-		light: [
-			"#f1f1f3",
-			"#d6d6dc",
-			"#bbbbc4",
-			"#9f9fac",
-			"#848495",
-			"#6a6a7b",
-			"#535360",
-			"#3b3b44",
-			"#232329",
-			"#19191d"
-		],
 		surreal: [
 			"#ffe8fb",
 			"#ffcfef",

@@ -73,7 +73,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 									style={{ flexShrink: 0 }}
 								/>
 								{item.name ? (
-									<Text c={isLight ? "black" : "white"}>
+									<Text c="bright">
 										{item.name}
 									</Text>
 								) : (

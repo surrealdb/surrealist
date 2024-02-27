@@ -117,7 +117,7 @@ export function ScopePane() {
 								path={iconKey}
 							/>
 
-							<Text c={isLight ? "gray.9" : "gray.0"}>
+							<Text>
 								{scope.name}
 							</Text>
 							<Spacer />
@@ -136,31 +136,6 @@ export function ScopePane() {
 							>
 								<Icon path={iconEdit} />
 							</ActionIcon>
-							{/* <Menu position="right-start" shadow="sm" withArrow arrowOffset={18}>
-								<Menu.Target>
-									<Button size="xs" px={5} color="dark" variant="subtle">
-										<Icon path={mdiDotsVertical} />
-									</Button>
-								</Menu.Target>
-								<Menu.Dropdown>
-									<Menu.Item
-										onClick={() => editScope(scope)}
-										leftSection={
-											<Icon path={mdiWrench} />
-										}
-									>
-										Edit
-									</Menu.Item>
-									<Menu.Item
-										onClick={() => removeScope(scope.name)}
-										leftSection={
-											<Icon path={mdiDelete} color="red" />
-										}
-									>
-										Remove
-									</Menu.Item>
-								</Menu.Dropdown>
-							</Menu> */}
 						</Group>
 					))}
 				</Stack>

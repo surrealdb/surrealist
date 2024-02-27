@@ -45,8 +45,6 @@ export function QueryInput(props: QueryInputProps) {
 		}
 	});
 
-	const color = isLight ? "light" : undefined;
-
 	return (
 		<>
 			<TextInput
@@ -58,8 +56,8 @@ export function QueryInput(props: QueryInputProps) {
 				rightSection={
 					<Group gap={8} wrap="nowrap">
 						{props.rightSection}
-						<ActionIcon title="Advanced editor" onClick={openEditor} color={color}>
-							<Icon path={iconWrench} size="sm" color={color} />
+						<ActionIcon title="Advanced editor" onClick={openEditor} color="slate">
+							<Icon path={iconWrench} size="sm" color="slate" />
 						</ActionIcon>
 					</Group>
 				}

@@ -212,8 +212,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					currentRecord.isEdge && (
 						<Paper
 							title="This record is an edge"
-							bg={isLight ? "light.0" : "light.6"}
-							c={isLight ? "light.6" : "white"}
+							bg="slate"
+							c="bright"
 							radius="xl"
 							px="xs"
 						>
@@ -264,7 +264,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				</Tabs>
 			) : (
 				<Center my="xl">
-					<Text c={isLight ? "light.7" : "light.3"}>
+					<Text>
 						Record not found in database
 					</Text>
 				</Center>
@@ -274,7 +274,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				opened={isDeleting}
 				onClose={isDeletingHandle.close}
 				title={<ModalTitle>Are you sure?</ModalTitle>}>
-				<Text c={isLight ? "light.6" : "light.1"}>
+				<Text>
 					You are about to delete this record. This action cannot be undone.
 				</Text>
 				<Group mt="lg">

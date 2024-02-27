@@ -243,11 +243,20 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 				)}
 
 				<Group mt="lg">
-					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={editingScopeHandle.close}>
+					<Button
+						color="slate"
+						variant="light"
+						onClick={editingScopeHandle.close}
+					>
 						Back
 					</Button>
 					<Spacer />
-					<Button rightSection={<Icon path={iconPlus} />} variant="light" color="blue" onClick={addScopeField}>
+					<Button
+						rightSection={<Icon path={iconPlus} />}
+						variant="light"
+						color="blue"
+						onClick={addScopeField}
+					>
 						Add field
 					</Button>
 				</Group>

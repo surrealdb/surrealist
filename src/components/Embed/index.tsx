@@ -1,7 +1,7 @@
 import { Notifications } from "@mantine/notifications";
 import { Box, MantineProvider } from "@mantine/core";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import { MANTINE_THEME, themeColor } from "~/util/mantine";
+import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { QueryView } from "~/views/query/QueryView";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlagProvider";
@@ -27,7 +27,7 @@ export function Embed() {
 						h="100vh"
 						p="md"
 						style={{
-							backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
+							backgroundColor: `var(--mantine-color-slate-${isLight ? 0 : 9})`
 						}}
 					>
 						<QueryView />
