@@ -1,4 +1,4 @@
-import { FeatureFlags } from "@theopensource-company/feature-flags";
+import { FeatureFlags, TFeatureFlags } from "@theopensource-company/feature-flags";
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
 import { Environment } from "./environment";
 
@@ -41,4 +41,7 @@ export const featureFlags = new FeatureFlags({
 		}
 	},
 });
+
 export const useFeatureFlags = featureFlagsHookFactory(featureFlags);
+
+export type FeatureFlagMap = TFeatureFlags<typeof featureFlagSchema>;

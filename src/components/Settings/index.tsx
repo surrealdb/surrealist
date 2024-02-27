@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { iconClose, iconEye, iconPlay, iconServer, iconWrench } from "~/util/icons";
-import { ActionIcon, Box, Center, Divider, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Center, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import { BehaviourTab } from "./tabs/Behaviour";
 import { ServingTab } from "./tabs/Serving";
 import { AppearanceTab } from "./tabs/Appearance";
@@ -14,12 +14,21 @@ import { Icon } from "../Icon";
 import { useClipboard } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
 import { adapter, isDesktop } from "~/adapter";
-import { useFeatureFlags } from "~/util/feature-flags";
+import { FeatureFlagMap, useFeatureFlags } from "~/util/feature-flags";
 import { FeatureFlagsTab } from "./tabs/devtools/FeatureFlags";
+import { mdiFlagOutline } from "@mdi/js";
+
+interface Category {
+	id: string;
+	name: string;
+	icon: string;
+	component: () => JSX.Element;
+	disabled?: (flags: FeatureFlagMap) => boolean;
+}
 
 const VERSION = import.meta.env.VERSION;
 
-const CATEGORIES = [
+const CATEGORIES: Category[] = [
 	{
 		id: "behaviour",
 		name: "Behavior",
@@ -37,21 +46,21 @@ const CATEGORIES = [
 		name: "Templates",
 		icon: iconServer,
 		component: TemplatesTab,
-		ifFlag: 'templates'
+		disabled: (flags) => !flags.templates
 	},
 	{
 		id: "serving",
 		name: "Database Serving",
 		icon: iconPlay,
 		component: ServingTab,
-		disabled: !isDesktop
+		disabled: () => !isDesktop
 	},
 	{
 		id: "feature-flags",
 		name: "Feature Flags",
-		icon: iconPlay,
+		icon: mdiFlagOutline,
 		component: FeatureFlagsTab,
-		ifFlag: 'devTools'
+		disabled: (flags) => !flags.devTools
 	}
 ];
 
@@ -69,7 +78,7 @@ export function Settings(props: SettingsProps) {
 
 	const categories = CATEGORIES.map((c) => ({
 		...c,
-		disabled: c.disabled || 'ifFlag' in c && c.ifFlag ? !flags[c.ifFlag as keyof typeof flags] : false,
+		disabled: c.disabled ? c.disabled(flags) : false
 	}));
 	
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
@@ -92,6 +101,7 @@ export function Settings(props: SettingsProps) {
 	useEffect(() => {
 		const now = new Date();
 		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 2000));
+		
 		if (valid.length >= 5) {
 			setFlags({ devTools: true });
 			setLogoClicked([]);
