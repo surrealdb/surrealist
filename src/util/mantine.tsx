@@ -93,6 +93,7 @@ export const MANTINE_THEME = createTheme({
 		Modal: {
 			defaultProps: {
 				centered: true,
+				withCloseButton: false,
 			}
 		},
 		Overlay: {
@@ -113,7 +114,7 @@ export const MANTINE_THEME = createTheme({
 		},
 		ActionIcon: {
 			defaultProps: {
-				variant: "subtle",
+				variant: "light",
 				color: "slate"
 			}
 		},
@@ -165,6 +166,9 @@ export const MANTINE_THEME = createTheme({
 			},
 		},
 		Drawer: {
+			defaultProps: {
+				withCloseButton: false,
+			},
 			styles: (theme: any, props: any) => {
 				const hasTopRight = props.position === "left" || props.position === "bottom";
 				const hasBottomRight = props.position === "left" || props.position === "top";

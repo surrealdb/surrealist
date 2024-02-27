@@ -88,7 +88,6 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 			opened={opened}
 			onClose={onClose}
 			position="right"
-			withCloseButton={false}
 			trapFocus={false}
 			size="lg"
 		>

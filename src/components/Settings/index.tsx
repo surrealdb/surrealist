@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { iconClose, iconEye, iconPlay, iconServer, iconWrench } from "~/util/icons";
-import { ActionIcon, Box, Divider, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import { BehaviourTab } from "./tabs/Behaviour";
 import { ServingTab } from "./tabs/Serving";
 import { AppearanceTab } from "./tabs/Appearance";
@@ -78,9 +78,8 @@ export function Settings(props: SettingsProps) {
 			<Modal
 				opened={props.opened}
 				onClose={props.onClose}
-				withCloseButton={false}
 				padding={0}
-				size="xl"
+				size={800}
 			>
 				<Group
 					h={500}
@@ -94,7 +93,10 @@ export function Settings(props: SettingsProps) {
 						bg={isLight ? "slate.0" : "slate.9"}
 					>
 						<Stack pt="sm" pb="xl" gap="xs">
-							<SurrealistLogo h={26} />
+							<SurrealistLogo
+								h={26}
+								c="bright"
+							/>
 							<Text
 								ta="center"
 								c={clipboard.copied ? "surreal.6" : "slate"}
@@ -122,9 +124,9 @@ export function Settings(props: SettingsProps) {
 						</Stack>
 					</Box>
 					<Stack
-						px="lg"
-						pt="lg"
-						gap={0}
+						px="xl"
+						pt="xl"
+						gap="md"
 						flex={1}
 					>
 						<Group>
@@ -132,11 +134,13 @@ export function Settings(props: SettingsProps) {
 								{activeCategory.name}
 							</Title>
 							<Spacer />
-							<ActionIcon onClick={props.onClose}>
+							<ActionIcon
+								onClick={props.onClose}
+								size="lg"
+							>
 								<Icon path={iconClose} />
 							</ActionIcon>
 						</Group>
-						<Divider mt="md" />
 						<ScrollArea flex={1} scrollbars="y">
 							<Stack
 								gap="xl"

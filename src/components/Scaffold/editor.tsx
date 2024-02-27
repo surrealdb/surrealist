@@ -96,7 +96,6 @@ export function ConnectionEditor() {
 		<Modal
 			opened={opened}
 			onClose={closeConnectionEditor}
-			withCloseButton={false}
 			trapFocus={false}
 			size="lg"
 		>

@@ -4,6 +4,7 @@ html, body, #root {
 
 body {
     font-weight: 500;
+    user-select: none;
 }
 
 /* --- Overrides --- */
@@ -45,7 +46,7 @@ body {
 .mantine-Checkbox-root {
 
     .mantine-Checkbox-input {
-        transition: unset !important;
+        background-color: var(--mantine-color-body);
     }
 
     &[data-checked] .mantine-Checkbox-input {
@@ -53,6 +54,63 @@ body {
         background-origin: border-box;
         border-color: rgba(255, 255, 255, 0.3);
     }
+}
+
+.mantine-Radio-root {
+    
+    &[data-checked] .mantine-Radio-radio {
+        background: var(--surrealist-gradient);
+        background-origin: border-box;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+}
+
+.mantine-Input-input {
+    transition: all .2s;
+    background-color: var(--mantine-color-body);
+    
+    &:not(:focus-within):not([data-variant="unstyled"]) {
+        border-color: var(--mantine-color-slate-5);
+    }
+
+    &:focus-within {
+        background-color: var(--mantine-color-slate-7);
+
+        @include light {
+            background-color: var(--mantine-color-slate-0);
+        }
+    }
+}
+
+.mantine-Select-input {
+    transition: all .2s;
+    background-color: var(--mantine-color-slate-6);
+
+    &:focus-within {
+        background-color: var(--mantine-color-slate-6);
+    }
+
+    @include light {
+        background-color: var(--mantine-color-slate-0);
+    }
+}
+
+.mantine-Select-option:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+
+    @include light {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+}
+
+.mantine-Slider-bar {
+    background: var(--surrealist-gradient);
+}
+
+.mantine-Slider-mark {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: transparent;
 }
 
 /* --- Variables --- */

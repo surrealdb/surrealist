@@ -101,7 +101,7 @@ export function TablesPane(props: TablesPaneProps) {
 			>
 				<ScrollArea>
 					<Stack gap="xs" pb="md">
-						{isOnline && (
+						{isOnline && schema.length > 0 && (
 							<TextInput
 								placeholder="Search tables..."
 								leftSection={<Icon path={iconSearch} />}
@@ -109,7 +109,6 @@ export function TablesPane(props: TablesPaneProps) {
 								onChange={setSearch}
 								variant="unstyled"
 								autoFocus
-								mt={-8}
 							/>
 						)}
 

@@ -79,7 +79,6 @@ export function SavesDrawer(props: SavesDrawerProps) {
 			opened={props.opened}
 			onClose={props.onClose}
 			position="right"
-			withCloseButton={false}
 		>
 			<Group mb="md">
 				<ModalTitle>Saved queries</ModalTitle>

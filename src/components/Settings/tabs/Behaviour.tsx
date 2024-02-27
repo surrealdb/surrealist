@@ -65,6 +65,7 @@ export function BehaviourTab() {
 					checked={queryErrorChecker}
 					onChange={updateQueryErrorChecker}
 				/>
+
 			</SettingsSection>
 		</>
 	);

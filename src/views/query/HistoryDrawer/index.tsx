@@ -150,7 +150,6 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 			opened={props.opened}
 			onClose={props.onClose}
 			position="right"
-			withCloseButton={false}
 			trapFocus={false}
 		>
 			<Group mb="md" gap="sm">

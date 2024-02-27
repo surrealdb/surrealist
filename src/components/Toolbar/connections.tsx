@@ -103,7 +103,6 @@ export function Connections() {
 				opened={isListing}
 				onClose={isListingHandle.close}
 				transitionProps={{ transition: TRANSITION }}
-				withCloseButton={false}
 				centered={false}
 			>
 				<Stack>

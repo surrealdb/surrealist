@@ -82,7 +82,6 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 			opened={props.opened}
 			onClose={props.onClose}
 			position="bottom"
-			withCloseButton={false}
 			styles={{
 				content: {
 					position: 'relative'

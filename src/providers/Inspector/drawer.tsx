@@ -160,7 +160,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			opened={opened}
 			onClose={onClose}
 			position="right"
-			withCloseButton={false}
 			trapFocus={false}
 			size="lg"
 		>
