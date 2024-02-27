@@ -4,6 +4,8 @@ import { extract_query_type } from "~/generated/surrealist-embed";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { newId } from "~/util/helpers";
 import { create } from "zustand";
+import { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
+import { featureFlagSchema } from "~/util/feature-flags";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -55,6 +57,7 @@ export type ConfigStore = SurrealistConfig & {
 	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
 	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
 	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
+	setFeatureFlag: <T extends FeatureFlag<typeof featureFlagSchema>>(key: T, value: FeatureFlagOption<typeof featureFlagSchema, T>) => void;
 	softReset: () => void;
 }
 
@@ -214,6 +217,13 @@ export const useConfigStore = create<ConfigStore>()(
 			return {
 				pinnedTables
 			};
+		})),
+
+		setFeatureFlag: (key, value) => set(({ featureFlags }) => ({
+			featureFlags: {
+				...featureFlags,
+				[key]: value,
+			}
 		})),
 
 		softReset: () => set(() => ({

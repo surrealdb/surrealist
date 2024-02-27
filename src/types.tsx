@@ -1,5 +1,7 @@
 import { MantineColorScheme } from "@mantine/core";
 import { QueryResponse } from "./util/surreal";
+import { TFeatureFlags } from "@theopensource-company/feature-flags";
+import { featureFlagSchema } from "./util/feature-flags";
 
 export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
 export type DriverType = "file" | "memory" | "tikv";
@@ -101,6 +103,7 @@ export interface SurrealistConfig {
 		templates: SurrealistTemplateSettings;
 		serving: SurrealistServingSettings;
 	}
+	featureFlags: Partial<TFeatureFlags<typeof featureFlagSchema>>,
 }
 
 export interface ScopeField {

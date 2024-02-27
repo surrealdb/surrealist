@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { iconClose, iconEye, iconPlay, iconServer, iconWrench } from "~/util/icons";
-import { ActionIcon, Box, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Center, Divider, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import { BehaviourTab } from "./tabs/Behaviour";
 import { ServingTab } from "./tabs/Serving";
 import { AppearanceTab } from "./tabs/Appearance";
@@ -8,12 +8,14 @@ import { TemplatesTab } from "./tabs/Templates";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealistLogo } from "../SurrealistLogo";
 import { Entry } from "../Entry";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spacer } from "../Spacer";
 import { Icon } from "../Icon";
 import { useClipboard } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
 import { adapter, isDesktop } from "~/adapter";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { FeatureFlagsTab } from "./tabs/devtools/FeatureFlags";
 
 const VERSION = import.meta.env.VERSION;
 
@@ -34,7 +36,8 @@ const CATEGORIES = [
 		id: "templates",
 		name: "Templates",
 		icon: iconServer,
-		component: TemplatesTab
+		component: TemplatesTab,
+		ifFlag: 'templates'
 	},
 	{
 		id: "serving",
@@ -42,6 +45,13 @@ const CATEGORIES = [
 		icon: iconPlay,
 		component: ServingTab,
 		disabled: !isDesktop
+	},
+	{
+		id: "feature-flags",
+		name: "Feature Flags",
+		icon: iconPlay,
+		component: FeatureFlagsTab,
+		ifFlag: 'devTools'
 	}
 ];
 
@@ -51,11 +61,17 @@ export interface SettingsProps {
 }
 
 export function Settings(props: SettingsProps) {
+	const [flags, setFlags] = useFeatureFlags();
 	const isLight = useIsLight();
 	const clipboard = useClipboard({ timeout: 1000 });
 	const [activeTab, setActiveTab] = useState("behaviour");
+	const [logoClicked, setLogoClicked] = useState<Date[]>([]);
 
-	const categories = CATEGORIES.filter((c) => !c.disabled);
+	const categories = CATEGORIES.map((c) => ({
+		...c,
+		disabled: c.disabled || 'ifFlag' in c && c.ifFlag ? !flags[c.ifFlag as keyof typeof flags] : false,
+	}));
+	
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
 	const Component = activeCategory.component;
 
@@ -72,6 +88,15 @@ export function Settings(props: SettingsProps) {
 
 		clipboard.copy(debugText);
 	});
+
+	useEffect(() => {
+		const now = new Date();
+		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 2000));
+		if (valid.length >= 5) {
+			setFlags({ devTools: true });
+			setLogoClicked([]);
+		}
+	}, [logoClicked]);
 
 	return (
 		<>
@@ -93,10 +118,12 @@ export function Settings(props: SettingsProps) {
 						bg={isLight ? "slate.0" : "slate.9"}
 					>
 						<Stack pt="sm" pb="xl" gap="xs">
-							<SurrealistLogo
-								h={26}
-								c="bright"
-							/>
+							<Center onClick={() => setLogoClicked([...logoClicked, new Date()].slice(0, 5))}>
+								<SurrealistLogo
+									h={26}
+									c="bright"
+								/>
+							</Center>
 							<Text
 								ta="center"
 								c={clipboard.copied ? "surreal.6" : "slate"}
@@ -108,7 +135,7 @@ export function Settings(props: SettingsProps) {
 							</Text>
 						</Stack>
 						<Stack gap="xs">
-							{categories.map(({ id, name, icon }) => (
+							{categories.map(({ id, name, icon, disabled }) => !disabled && (
 								<Entry
 									key={id}
 									variant="subtle"

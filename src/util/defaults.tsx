@@ -13,6 +13,7 @@ export function createBaseConfig(): SurrealistConfig {
 		activeConnection: null,
 		savedQueries: [],
 		lastPromptedVersion: null,
+		featureFlags: {},
 		settings: {
 			behavior: {
 				updateChecker: true,

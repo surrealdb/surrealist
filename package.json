@@ -28,6 +28,7 @@
 		"@mdi/js": "^7.2.96",
 		"@monaco-editor/react": "^4.5.1",
 		"@tauri-apps/api": "^1.4.0",
+		"@theopensource-company/feature-flags": "^0.4.5",
 		"@types/react-copy-to-clipboard": "^5.0.7",
 		"ansi-to-html": "^0.7.2",
 		"clsx": "^2.1.0",

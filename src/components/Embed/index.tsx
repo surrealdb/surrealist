@@ -4,34 +4,37 @@ import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { MANTINE_THEME, themeColor } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { QueryView } from "~/views/query/QueryView";
+import { FeatureFlagsProvider } from "~/providers/FeatureFlagProvider";
 
 export function Embed() {
 	const colorScheme = useColorScheme();
 	const isLight = useIsLight();
 
 	return (
-		<MantineProvider
-			withCssVariables
-			theme={MANTINE_THEME}
-			forceColorScheme={colorScheme}
-		>
-			<Notifications />
-
-			<ErrorBoundary
-				FallbackComponent={AppErrorHandler} 
-				onReset={location.reload}
+		<FeatureFlagsProvider>
+			<MantineProvider
+				withCssVariables
+				theme={MANTINE_THEME}
+				forceColorScheme={colorScheme}
 			>
-				<Box
-					h="100vh"
-					p="md"
-					style={{
-						backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
-					}}
+				<Notifications />
+
+				<ErrorBoundary
+					FallbackComponent={AppErrorHandler} 
+					onReset={location.reload}
 				>
-					<QueryView />
-				</Box>
-			</ErrorBoundary>
-		</MantineProvider>
+					<Box
+						h="100vh"
+						p="md"
+						style={{
+							backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
+						}}
+					>
+						<QueryView />
+					</Box>
+				</ErrorBoundary>
+			</MantineProvider>
+		</FeatureFlagsProvider>
 	);
 }
 
