@@ -35,7 +35,7 @@ fn main() {
     }
 
     // Build the Tauri instance
-   let tauri = builder
+    let tauri = builder
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,
@@ -46,8 +46,8 @@ fn main() {
         ])
         .setup(|app| {
             let window = app.get_window("main").unwrap();
-           configure_window(window);
-           Ok(())
+            configure_window(window);
+            Ok(())
         })
         .build(context)
         .expect("Tauri failed to initialize");
