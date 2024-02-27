@@ -1,4 +1,3 @@
-
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
 import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, ModalTitle, Paper, ActionIcon } from "@mantine/core";
@@ -8,7 +7,6 @@ import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 
@@ -20,8 +18,6 @@ export interface ConnectionDetailsProps {
 }
 
 export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
-	const isLight = useIsLight();
-
 	const [editingScope, editingScopeHandle] = useDisclosure();
 
 	const addScopeField = useStable(() => {
@@ -33,27 +29,27 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 		});
 	});
 
-	const handleHostnamePaste = useStable((e: React.ClipboardEvent<HTMLInputElement>) => {
-		const content = e.clipboardData.getData('Text');
-		const result = content.match(ENDPOINT_PATTERN);
-
-		if (result === null) {
-			return;
-		}
-
-		const [, protocol, hostname] = result;
-		const isValid = CONNECTION_PROTOCOLS.some((p) => p.value === protocol);
-
-		if (!isValid) {
-			return;
-		}
-
+	const handleEndpointChange = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		onChange((draft) => {
+			const content = e.target.value;
+			const result = content.match(ENDPOINT_PATTERN);
+
+			draft.connection.hostname = content;
+
+			if (result === null) {
+				return;
+			}
+
+			const [, protocol, hostname] = result;
+			const isValid = CONNECTION_PROTOCOLS.some((p) => p.value === protocol);
+
+			if (!isValid) {
+				return;
+			}
+
 			draft.connection.protocol = protocol as Protocol;
 			draft.connection.hostname = hostname;
 		});
-
-		e.preventDefault();
 	});
 
 	const isMemory = value.connection.protocol === "mem";
@@ -98,14 +94,9 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 				<TextInput
 					flex={1}
 					value={value.connection.hostname}
-					onPaste={handleHostnamePaste}
 					disabled={isMemory}
 					placeholder={placeholder}
-					onChange={(e) =>
-						onChange((draft) => {
-							draft.connection.hostname = e.target.value;
-						})
-					}
+					onChange={handleEndpointChange}
 				/>
 			</Group>
 			<Group gap="lg" align="start">
