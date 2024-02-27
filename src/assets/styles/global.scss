@@ -5,6 +5,7 @@ html, body, #root {
 body {
     font-weight: 500;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 /* --- Overrides --- */
@@ -71,10 +72,14 @@ body {
     background-color: var(--mantine-color-body);
     
     &:not(:focus-within):not([data-variant="unstyled"]) {
-        border-color: var(--mantine-color-slate-5);
+        border-color: var(--mantine-color-slate-6);
+
+        @include light {
+            border-color: var(--mantine-color-slate-1);
+        }
     }
 
-    &:focus-within {
+    &:hover,  &:focus-within {
         background-color: var(--mantine-color-slate-7);
 
         @include light {
@@ -83,24 +88,11 @@ body {
     }
 }
 
-.mantine-Select-input {
-    transition: all .2s;
-    background-color: var(--mantine-color-slate-6);
-
-    &:focus-within {
-        background-color: var(--mantine-color-slate-6);
-    }
-
-    @include light {
-        background-color: var(--mantine-color-slate-0);
-    }
-}
-
 .mantine-Select-option:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.075);
 
     @include light {
-        background-color: rgba(0, 0, 0, 0.1);
+        background-color: rgba(0, 0, 0, 0.075);
     }
 }
 
@@ -111,6 +103,10 @@ body {
 .mantine-Slider-mark {
     background-color: rgba(255, 255, 255, 0.3);
     border-color: transparent;
+}
+
+.mantine-InputWrapper-required {
+    color: var(--mantine-color-surreal-6);
 }
 
 /* --- Variables --- */

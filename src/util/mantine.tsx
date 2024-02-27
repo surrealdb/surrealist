@@ -94,6 +94,7 @@ export const MANTINE_THEME = createTheme({
 			defaultProps: {
 				centered: true,
 				withCloseButton: false,
+				padding: "lg"
 			}
 		},
 		Overlay: {
@@ -105,6 +106,11 @@ export const MANTINE_THEME = createTheme({
 			defaultProps: {
 				withinPortal: true,
 			},
+		},
+		Popover: {
+			defaultProps: {
+				shadow: "0 6px 12px 2px rgba(0, 0, 0, 0.15)"
+			}
 		},
 		Divider: {
 			defaultProps: {
@@ -130,6 +136,11 @@ export const MANTINE_THEME = createTheme({
 					display: "block",
 				},
 			},
+		},
+		Slider: {
+			defaultProps: {
+				color: "slate.2"
+			}
 		},
 		Tabs: {
 			styles: {
@@ -168,6 +179,7 @@ export const MANTINE_THEME = createTheme({
 		Drawer: {
 			defaultProps: {
 				withCloseButton: false,
+				padding: "lg"
 			},
 			styles: (theme: any, props: any) => {
 				const hasTopRight = props.position === "left" || props.position === "bottom";

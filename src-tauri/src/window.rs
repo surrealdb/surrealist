@@ -1,6 +1,6 @@
 pub fn configure_window(window: tauri::Window) {
+    #[cfg(target_os = "macos")]
     let _ = window.with_webview(move |webview| {
-        #[cfg(target_os = "macos")]
         unsafe {
             use cocoa::{
                 appkit::{NSWindow, NSWindowStyleMask, NSWindowTitleVisibility},

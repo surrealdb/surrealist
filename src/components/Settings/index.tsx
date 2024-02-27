@@ -168,7 +168,7 @@ export function Settings(props: SettingsProps) {
 						flex={1}
 					>
 						<Group>
-							<Title size={26}>
+							<Title size={26} c="bright">
 								{activeCategory.name}
 							</Title>
 							<Spacer />

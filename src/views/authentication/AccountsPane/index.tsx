@@ -8,6 +8,7 @@ import {
 	Modal,
 	PasswordInput,
 	ScrollArea,
+	Select,
 	Stack,
 	Text,
 	TextInput,
@@ -229,6 +230,14 @@ export function AccountsPane(props: AccountsPaneProps) {
 							value={editingPassword}
 							onChange={setEditingPassword}
 							required={!currentUser}
+						/>
+						
+						<Select
+							label="Select a role"
+							description="The role of the user on this database"
+							placeholder="Select a role"
+							data={ROLES}
+							required
 						/>
 
 						<Checkbox.Group
