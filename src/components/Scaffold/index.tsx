@@ -1,14 +1,11 @@
 import classes from "./style.module.scss";
 
 import {
-	ActionIcon,
 	Box,
 	Center,
 	Stack,
-	Tooltip,
 } from "@mantine/core";
 
-import clsx from "clsx";
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
@@ -24,7 +21,6 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { VIEW_MODES } from "~/constants";
 import { updateTitle } from "~/util/helpers";
-import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { useIsLight } from "~/hooks/theme";
@@ -32,6 +28,7 @@ import { themeColor } from "~/util/mantine";
 import { iconCog } from "~/util/icons";
 import { isDesktop } from "~/adapter";
 import { FreshExperience } from "./fresh";
+import { NavigationIcon } from "../NavigationIcon";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -45,37 +42,6 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	designer: createHtmlPortalNode(PORTAL_ATTRS),
 	authentication: createHtmlPortalNode(PORTAL_ATTRS),
 };
-
-interface NavigationIconProps {
-	name: string;
-	isActive?: boolean;
-	isLight: boolean;
-	icon: string;
-	onClick: () => void;
-}
-
-function NavigationIcon({ name, isActive, isLight, icon, onClick }: NavigationIconProps) {
-	return (
-		<Tooltip
-			position="right"
-			label={name}
-			ml="xs"
-			transitionProps={{
-				transition: "scale-x"
-			}}
-		>
-			<ActionIcon
-				color={isActive ? "surreal" : isLight ? "dark.8" : "dark.1"}
-				variant={isActive ? "gradient" : "subtle"}
-				className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
-				onClick={onClick}
-				radius="lg"
-			>
-				<Icon path={icon} />
-			</ActionIcon>
-		</Tooltip>
-	);
-}
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -178,7 +144,9 @@ export function Scaffold() {
 					</InPortal>
 				</>
 			) : (
-				<FreshExperience />
+				<FreshExperience
+					onClickSettings={settingsHandle.toggle}
+				/>
 			)}
 
 			<ConnectionEditor />

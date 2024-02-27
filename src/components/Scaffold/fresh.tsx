@@ -5,13 +5,18 @@ import { Box, Button, Group, Text } from "@mantine/core";
 import { SurrealistLogo } from "../SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
-import { iconPlus, iconSurreal } from "~/util/icons";
+import { iconCog, iconPlus, iconSurreal } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
+import { NavigationIcon } from "../NavigationIcon";
 
-export function FreshExperience() {
+export interface FreshExperienceProps {
+	onClickSettings: () => void;
+}
+
+export function FreshExperience(props: FreshExperienceProps) {
 	const { setActiveConnection } = useConfigStore.getState();
 	const { openConnectionCreator } = useInterfaceStore.getState();
 	const isLight = useIsLight();
@@ -45,10 +50,6 @@ export function FreshExperience() {
 				className={classes.logo}
 			/>
 
-			{/* <Center pos="absolute" inset={0}>
-				<img src={logoTile} />
-			</Center> */}
-
 			<Text mb="xl" ta="center" maw={200}>
 				Create a new connection or open the sandbox to get started
 			</Text>
@@ -78,10 +79,15 @@ export function FreshExperience() {
 				</Button>
 			</Group>
 
-			{/* <Stack ta="center" maw={200} mb="xl">
-
-
-			</Stack> */}
+			<NavigationIcon
+				name="Settings"
+				isLight={isLight}
+				icon={iconCog}
+				onClick={props.onClickSettings}
+				pos="absolute"
+				left={18}
+				bottom={18}
+			/>
 		</Box>
 	);
 }

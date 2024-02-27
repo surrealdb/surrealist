@@ -60,23 +60,6 @@
 	transform: none !important;
 }
 
-.view-button {
-	width: 48px;
-	height: 48px;
-	background-origin: border-box;
-	transition: none;
-
-	&-active {
-		box-shadow: 0 6px 25px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
-		border: 1px solid rgba(255, 255, 255, 0.3);
-		transition: box-shadow 0.3s cubic-bezier(.33, 1.8, .6, 1);
-
-		@include light {
-			box-shadow: 0 3px 15px rgba(186, 0, 171, 0.5);
-		}
-	}
-}
-
 .fresh {
 	overflow: hidden;
 	overflow: clip;
