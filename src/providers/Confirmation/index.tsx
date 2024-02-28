@@ -74,6 +74,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 				opened={isConfirming}
 				onClose={onDissmiss}
 				title={<ModalTitle>{options?.title ?? DEFAULT_TITLE}</ModalTitle>}
+				zIndex={210}
 			>
 				<Text>
 					{options?.message}

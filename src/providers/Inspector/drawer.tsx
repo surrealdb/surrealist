@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ActionIcon, Button, Center, Drawer, Group, Modal, Paper, Tabs, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, TextInput } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -7,11 +7,12 @@ import { Spacer } from "~/components/Spacer";
 import { HistoryHandle } from "~/hooks/history";
 import { ModalTitle } from "~/components/ModalTitle";
 import { getSurreal } from "~/util/surreal";
-import { useDisclosure, useInputState } from "@mantine/hooks";
+import { useInputState } from "@mantine/hooks";
 import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
 import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons";
+import { useConfirmation } from "../Confirmation";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -37,7 +38,6 @@ export interface InspectorDrawerProps {
 }
 
 export function InspectorDrawer({ opened, history, onClose, onRefresh }: InspectorDrawerProps) {
-	const [isDeleting, isDeletingHandle] = useDisclosure();
 	const [currentRecord, setCurrentRecord] = useState<ActiveRecord>(DEFAULT_RECORD);
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
@@ -134,19 +134,23 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		history.push(recordId);
 	});
 
-	const handleDelete = useStable(async () => {
-		const surreal = getSurreal();
+	const deleteRecord = useConfirmation({
+		message: "You are about to delete this record. This action cannot be undone.",
+		confirmText: "Delete",
+		onConfirm: async () => {
+			const surreal = getSurreal();
 
-		if (!surreal) {
-			return;
-		}
+			if (!surreal) {
+				return;
+			}
 
-		await surreal.query(`DELETE ${history.current}`);
+			await surreal.query(`DELETE ${history.current}`);
 
-		history.clear();
+			history.clear();
 
-		onRefresh();
-		onClose();
+			onRefresh();
+			onClose();
+		},
 	});
 
 	useEffect(() => {
@@ -187,7 +191,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 					<ActionIcon
 						disabled={!currentRecord.exists}
-						onClick={isDeletingHandle.open}
+						onClick={deleteRecord}
 						title="Delete record (Hold shift to force)"
 					>
 						<Icon path={iconDelete} />
@@ -269,31 +273,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					</Text>
 				</Center>
 			)}
-
-			<Modal
-				opened={isDeleting}
-				onClose={isDeletingHandle.close}
-				title={<ModalTitle>Are you sure?</ModalTitle>}>
-				<Text>
-					You are about to delete this record. This action cannot be undone.
-				</Text>
-				<Group mt="lg">
-					<Button
-						onClick={isDeletingHandle.close}
-						variant="light"
-						color="slate"
-					>
-						Close
-					</Button>
-					<Spacer />
-					<Button
-						color="red"
-						onClick={handleDelete}
-					>
-						Delete
-					</Button>
-				</Group>
-			</Modal>
 		</Drawer>
 	);
 }

@@ -5,23 +5,18 @@ import {
 	ActionIcon,
 	Badge,
 	Box,
-	Button,
 	Drawer,
 	Group,
-	Modal,
 	Paper,
 	ScrollArea,
-	Text,
 	TextInput,
 } from "@mantine/core";
 
-import { MouseEvent, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Updater } from "use-immer";
-import { useStable } from "~/hooks/stable";
 import { TableDefinition } from "~/types";
 import { fetchDatabaseSchema, isEdgeTable } from "~/util/schema";
 import { Icon } from "~/components/Icon";
-import { useActiveKeys } from "~/hooks/keys";
 import { useIsLight } from "~/hooks/theme";
 import { Spacer } from "~/components/Spacer";
 import { GeneralElement } from "./elements/general";
@@ -37,6 +32,7 @@ import { SaveableHandle } from "~/hooks/save";
 import { themeColor } from "~/util/mantine";
 import { ON_FOCUS_SELECT, tb } from "~/util/helpers";
 import { iconClose, iconDelete, iconWrench } from "~/util/icons";
+import { useConfirmation } from "~/providers/Confirmation";
 
 const INITIAL_TABS = ["general"];
 
@@ -50,35 +46,23 @@ export interface SchemaDrawerProps {
 
 export function DesignDrawer({ opened, value, onChange, handle, onClose }: SchemaDrawerProps) {
 	const isLight = useIsLight();
-	const isShifting = useActiveKeys("Shift");
 
-	const [isDeleting, setIsDeleting] = useState(false);
+	const removeTable = useConfirmation({
+		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
+		confirmText: "Remove",
+		onConfirm:  async () => {
+			const surreal = getSurreal();
 
-	const requestDelete = useStable((e: MouseEvent<HTMLButtonElement>) => {
-		if (e.shiftKey) {
-			handleDelete();
-		} else {
-			setIsDeleting(true);
+			if (!surreal) {
+				return;
+			}
+
+			onClose(true);
+
+			await surreal.query(`REMOVE TABLE ${tb(value.schema.name)}`);
+
+			fetchDatabaseSchema();
 		}
-	});
-
-	const closeDelete = useStable(() => {
-		setIsDeleting(false);
-	});
-
-	const handleDelete = useStable(async () => {
-		const surreal = getSurreal();
-
-		if (!surreal) {
-			return;
-		}
-
-		setIsDeleting(false);
-		onClose(true);
-
-		await surreal.query(`REMOVE TABLE ${tb(value.schema.name)}`);
-
-		fetchDatabaseSchema();
 	});
 
 	const isEdge = useMemo(() => isEdgeTable(value), [value]);
@@ -109,8 +93,8 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					</Badge>
 				))}
 
-				<ActionIcon title="Delete table (Hold shift to force)" onClick={requestDelete}>
-					<Icon color={isShifting ? "red" : undefined} path={iconDelete} />
+				<ActionIcon title="Delete table" onClick={removeTable}>
+					<Icon path={iconDelete} />
 				</ActionIcon>
 
 				<ActionIcon onClick={() => onClose(false)} disabled={handle.isChanged}>
@@ -193,32 +177,6 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					/>
 				</Box>
 			</ScrollArea>
-
-			<Modal
-				opened={isDeleting}
-				onClose={closeDelete}
-				title={<ModalTitle>Are you sure?</ModalTitle>}
-			>
-				<Text>
-					You are about to delete this table and all data contained within it. This action cannot be undone.
-				</Text>
-				<Group mt="lg">
-					<Button
-						onClick={closeDelete}
-						color="slate"
-						variant="light"
-					>
-						Close
-					</Button>
-					<Spacer />
-					<Button
-						color="red"
-						onClick={handleDelete}
-					>
-						Delete
-					</Button>
-				</Group>
-			</Modal>
 		</Drawer>
 	);
 }
