@@ -13,6 +13,7 @@ import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
 import { iconChevronLeft, iconChevronRight, iconFilter, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
 import { tb } from "~/util/helpers";
+import { useInterfaceStore } from "~/stores/interface";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -27,6 +28,8 @@ export interface ExplorerPaneProps {
 }
 
 export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
+	const { openTableCreator } = useInterfaceStore.getState();
+
 	const schema = useSchema();
 
 	const activeTable = useExplorerStore((s) => s.activeTable);
@@ -34,7 +37,6 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 	const recordCount = useExplorerStore((s) => s.recordCount);
 	const filtering = useExplorerStore((s) => s.filtering);
 	const filter = useExplorerStore((s) => s.filter);
-	const isEditing = useExplorerStore((s) => s.isEditing);
 
 	const pageText = useExplorerStore((s) => s.pageText);
 	const updatePageText = useExplorerStore((s) => s.updatePageText);
@@ -48,7 +50,6 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 	const page = useExplorerStore((s) => s.page);
 	const updatePage = useExplorerStore((s) => s.updatePage);
 
-	const closeEditor = useExplorerStore((s) => s.closeEditor);
 	const setExplorerFiltering = useExplorerStore((s) => s.setExplorerFiltering);
 	const setExplorerFilter = useExplorerStore((s) => s.setExplorerFilter);
 	const clearExplorerData = useExplorerStore((s) => s.clearExplorerData);
@@ -173,26 +174,28 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 			title="Record Explorer"
 			icon={iconTable}
 			rightSection={
-				<Group align="center">
-					<ActionIcon title="Create record" onClick={requestCreate}>
-						<Icon path={iconPlus} />
-					</ActionIcon>
+				activeTable && (
+					<Group align="center">
+						<ActionIcon title="Create record" onClick={requestCreate}>
+							<Icon path={iconPlus} />
+						</ActionIcon>
 
-					<ActionIcon title="Refresh table" onClick={fetchRecords}>
-						<Icon path={iconRefresh} />
-					</ActionIcon>
+						<ActionIcon title="Refresh table" onClick={fetchRecords}>
+							<Icon path={iconRefresh} />
+						</ActionIcon>
 
-					<ActionIcon title="Toggle filter" onClick={toggleFilter}>
-						<Icon path={iconFilter} />
-					</ActionIcon>
+						<ActionIcon title="Toggle filter" onClick={toggleFilter}>
+							<Icon path={iconFilter} />
+						</ActionIcon>
 
-					<Divider orientation="vertical" />
+						<Divider orientation="vertical" />
 
-					<Icon path={iconServer} mr={-10} />
-					<Text lineClamp={1}>
-						{recordCount || "no"} rows
-					</Text>
-				</Group>
+						<Icon path={iconServer} mr={-10} />
+						<Text lineClamp={1}>
+							{recordCount || "no"} rows
+						</Text>
+					</Group>
+				)
 			}>
 			{activeTable ? (
 				<>
@@ -299,8 +302,20 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 					</Group>
 				</>
 			) : (
-				<Center h="100%" c="slate">
-					Select a table to view its records
+				<Center h="90%">
+					<Box ta="center">
+						<Text c="slate">
+							No tables defined in this database
+						</Text>
+						<Button
+							mt={6}
+							variant="subtle"
+							color="surreal.5"
+							onClick={openTableCreator}
+						>
+							Would you like to create one?
+						</Button>
+					</Box>
 				</Center>
 			)}
 		</ContentPane>

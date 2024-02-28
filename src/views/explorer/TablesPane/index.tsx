@@ -1,5 +1,5 @@
 import { ActionIcon, Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -10,23 +10,24 @@ import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
-import { TableCreator } from "~/components/TableCreator";
 import { useExplorerStore } from "~/stores/explorer";
 import { useConfigStore } from "~/stores/config";
 import { Importer } from "../Importer";
 import { Exporter } from "../Exporter";
 import { useContextMenu } from "mantine-contextmenu";
-import { iconList, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
+import { iconDelete, iconList, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { Entry } from "~/components/Entry";
+import { useInterfaceStore } from "~/stores/interface";
 
 export interface TablesPaneProps {
 	openRecordCreator: (table: string) => void;
 }
 
 export function TablesPane(props: TablesPaneProps) {
+	const { openTableCreator } = useInterfaceStore.getState();
+
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
 	const isLight = useIsLight();
-	const [isCreating, setIsCreating] = useState(false);
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const connection = useActiveConnection();
@@ -44,7 +45,6 @@ export function TablesPane(props: TablesPaneProps) {
 
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();
-
 		const tables = search ? schema.filter((table) => table.schema.name.toLowerCase().includes(needle)) : schema;
 
 		return sort(tables, (table) => {
@@ -54,14 +54,6 @@ export function TablesPane(props: TablesPaneProps) {
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
 	}, [schema, search, connection.pinnedTables]);
-
-	const openCreator = useStable(() => {
-		setIsCreating(true);
-	});
-
-	const closeCreator = useStable(() => {
-		setIsCreating(false);
-	});
 
 	const togglePinned = useStable((table: string) => {
 		if (table && connection) {
@@ -86,7 +78,7 @@ export function TablesPane(props: TablesPaneProps) {
 				)
 			}
 			rightSection={
-				<ActionIcon title="Create table..." onClick={openCreator}>
+				<ActionIcon title="Create table..." onClick={openTableCreator}>
 					<Icon path={iconPlus} />
 				</ActionIcon>
 			}
@@ -151,6 +143,13 @@ export function TablesPane(props: TablesPaneProps) {
 											title: isPinned ? "Unpin table" : "Pin table",
 											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
 											onClick: () => togglePinned(table.schema.name)
+										},
+										{
+											key: 'remove',
+											title: "Remove table",
+											color: "red",
+											icon: <Icon path={iconDelete} />,
+											onClick: () => console.log("remove")
 										}
 									])}
 									leftSection={
@@ -186,11 +185,6 @@ export function TablesPane(props: TablesPaneProps) {
 					<Exporter />
 				</Stack>
 			</Stack>
-
-			<TableCreator
-				opened={isCreating}
-				onClose={closeCreator}
-			/>
 		</ContentPane>
 	);
 }

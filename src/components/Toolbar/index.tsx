@@ -8,7 +8,6 @@ import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { LocalDatabase } from "./LocalDatabase";
 import { Spacer } from "../Spacer";
-import { ViewMode } from "~/types";
 import { adapter } from "~/adapter";
 import { useConnection } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
@@ -20,12 +19,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
 import { iconClose, iconReset } from "~/util/icons";
 
-export interface ToolbarProps {
-	viewMode: ViewMode;
-	onCreateTab: () => void;
-}
-
-export function Toolbar(props: ToolbarProps) {
+export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);

@@ -17,6 +17,7 @@ import { InspectorProvider } from "~/providers/Inspector";
 import { iconClose } from "~/util/icons";
 import { getSetting } from "~/util/config";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlagProvider";
+import { ConfirmationProvider } from "~/providers/Confirmation";
 
 export function App() {
 	const { softReset, updateBehaviorSettings, updateAppearanceSettings } = useConfigStore.getState();
@@ -77,14 +78,16 @@ export function App() {
 					shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
 					submenuDelay={250}
 				>
-					<InspectorProvider>
-						<ErrorBoundary
-							FallbackComponent={AppErrorHandler}
-							onReset={softReset}
-						>
-							<Scaffold />
-						</ErrorBoundary>
-					</InspectorProvider>
+					<ConfirmationProvider>
+						<InspectorProvider>
+							<ErrorBoundary
+								FallbackComponent={AppErrorHandler}
+								onReset={softReset}
+							>
+								<Scaffold />
+							</ErrorBoundary>
+						</InspectorProvider>
+					</ConfirmationProvider>
 				</ContextMenuProvider>
 
 				<Transition

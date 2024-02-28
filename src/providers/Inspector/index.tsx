@@ -7,11 +7,11 @@ import { InspectorDrawer } from "./drawer";
 type InspectFunction = (id: string) => void;
 type StopInspectFunction = () => void;
 
-const InspectorContext = createContext<null | {
+const InspectorContext = createContext<{
 	history: HistoryHandle<string>;
 	inspect: InspectFunction;
 	stopInspect: StopInspectFunction;
-}>(null);
+} | null>(null);
 
 /**
  * Access the inspect function

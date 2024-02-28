@@ -18,6 +18,7 @@ export type InterfaceStore = {
 	showConnectionEditor: boolean;
 	isCreatingConnection: boolean;
 	editingConnectionId: string;
+	showTableCreator: boolean;
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
 
@@ -30,6 +31,8 @@ export type InterfaceStore = {
 	openConnectionEditor: (editingId: string) => void;
 	closeConnectionEditor: () => void;
 	setIsLive: (id: string, live: boolean) => void;
+	openTableCreator: () => void;
+	closeTableCreator: () => void;
 	pushLiveQueryMessage: (id: string, message: LiveMessage) => void;
 	clearLiveQueryMessages: (id: string) => void;
 };
@@ -40,11 +43,10 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	colorScheme: "dark",
 	availableUpdate: "",
 	showAvailableUpdate: false,
-	showTabCreator: false,
-	tabCreation: null,
 	showConnectionEditor: false,
 	isCreatingConnection: false,
 	editingConnectionId: "",
+	showTableCreator: false,
 	liveTabs: new Set<string>(),
 	liveQueryMessages: {},
 
@@ -81,6 +83,14 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	closeConnectionEditor: () => set(() => ({
 		showConnectionEditor: false,
+	})),
+
+	openTableCreator: () => set(() => ({
+		showTableCreator: true,
+	})),
+
+	closeTableCreator: () => set(() => ({
+		showTableCreator: false,
 	})),
 
 	setIsLive: (id, live) => set((state) => {

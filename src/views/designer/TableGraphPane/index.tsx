@@ -9,7 +9,6 @@ import { DiagramDirection, DiagramMode, TableDefinition } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
-import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveConnection } from "~/hooks/connection";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
@@ -23,6 +22,7 @@ import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
 import { useBoolean } from "~/hooks/boolean";
 import { iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconTarget, iconXml } from "~/util/icons";
+import { useInterfaceStore } from "~/stores/interface";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -44,6 +44,7 @@ export interface TableGraphPaneProps {
 }
 
 export function TableGraphPane(props: TableGraphPaneProps) {
+	const { openTableCreator } = useInterfaceStore.getState();
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
@@ -52,7 +53,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const [isComputing, setIsComputing] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
-	const [isCreating, isCreatingHandle] = useBoolean();
 	const [showConfig, showConfigHandle] = useBoolean();
 	const [showHelp, showHelpHandle] = useBoolean();
 	const ref = useRef<ElementRef<"div">>(null);
@@ -185,7 +185,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			style={{ overflow: 'hidden' }}
 			rightSection={
 				<Group wrap="nowrap">
-					<ActionIcon title="Create table..." onClick={isCreatingHandle.open}>
+					<ActionIcon title="Create table..." onClick={openTableCreator}>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 					<Popover
@@ -251,7 +251,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							key: 'create',
 							icon: <Icon path={iconPlus} />,
 							title: 'Create table...',
-							onClick: isCreatingHandle.open
+							onClick: openTableCreator
 						},
 						{
 							key: 'view',
@@ -333,7 +333,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						<Button
 							variant="light"
 							rightSection={<Icon path={iconPlus} />}
-							onClick={isCreatingHandle.open}
+							onClick={openTableCreator}
 						>
 							Create a table
 						</Button>
@@ -380,11 +380,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Text>
 				</Text>
 			</Modal>
-
-			<TableCreator
-				opened={isCreating}
-				onClose={isCreatingHandle.close}
-			/>
 		</ContentPane>
 	);
 }

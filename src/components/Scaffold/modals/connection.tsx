@@ -1,10 +1,10 @@
 import { Modal, Group, Button } from "@mantine/core";
-import { Spacer } from "../Spacer";
+import { Spacer } from "../../Spacer";
 import { useImmer } from "use-immer";
-import { Icon } from "../Icon";
+import { Icon } from "../../Icon";
 import { isConnectionValid } from "~/util/connection";
 import { useStable } from "~/hooks/stable";
-import { Form } from "../Form";
+import { Form } from "../../Form";
 import { useLayoutEffect } from "react";
 import { updateTitle } from "~/util/helpers";
 import { useConnections } from "~/hooks/connection";
@@ -13,7 +13,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
 import { iconCheck, iconDelete, iconPlus } from "~/util/icons";
-import { ConnectionDetails } from "../ConnectionDetails";
+import { ConnectionDetails } from "../../ConnectionDetails";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();

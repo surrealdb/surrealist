@@ -9,7 +9,7 @@ import {
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
-import { ConnectionEditor } from "./editor";
+import { ConnectionEditor } from "./modals/connection";
 import { executeQuery } from "~/database";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
 import { QueryView } from "~/views/query/QueryView";
@@ -29,6 +29,7 @@ import { iconCog } from "~/util/icons";
 import { isDesktop } from "~/adapter";
 import { FreshExperience } from "./fresh";
 import { NavigationIcon } from "../NavigationIcon";
+import { TableCreator } from "./modals/table";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -47,7 +48,6 @@ export function Scaffold() {
 	const isLight = useIsLight();
 
 	const { setActiveView } = useConfigStore.getState();
-	const { openConnectionCreator } = useInterfaceStore.getState();
 
 	const title = useInterfaceStore((s) => s.title);
 	const activeConnection = useConfigStore((s) => s.activeConnection);
@@ -90,10 +90,7 @@ export function Scaffold() {
 				</Center>
 			)}
 
-			<Toolbar
-				viewMode={activeView}
-				onCreateTab={openConnectionCreator}
-			/>
+			<Toolbar />
 
 			{activeConnection ? (
 				<>
@@ -151,6 +148,7 @@ export function Scaffold() {
 			)}
 
 			<ConnectionEditor />
+			<TableCreator />
 
 			<Settings
 				opened={showSettings}

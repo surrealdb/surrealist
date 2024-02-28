@@ -3,20 +3,20 @@ import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { useInputState } from "@mantine/hooks";
-import { Form } from "../Form";
+import { Form } from "../../Form";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
-import { ModalTitle } from "../ModalTitle";
+import { ModalTitle } from "../../ModalTitle";
 import { getActiveSurreal } from "~/util/surreal";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 import { tb } from "~/util/helpers";
+import { useInterfaceStore } from "~/stores/interface";
 
-export interface TableCreatorProps {
-	opened: boolean;
-	onClose: () => void;
-}
+export function TableCreator() {
+	const { closeTableCreator } = useInterfaceStore.getState();
 
-export function TableCreator({ opened, onClose }: TableCreatorProps) {
+	const opened = useInterfaceStore((s) => s.showTableCreator);
+
 	const [createType, setCreateType] = useState("table");
 	const [tableName, setTableName] = useInputState("");
 	const [tableIn, setTableIn] = useState<string[]>([]);
@@ -36,7 +36,7 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 			query += `DEFINE FIELD out ON ${tb(tableName)} TYPE record<${outTables}>;`;
 		}
 
-		onClose();
+		closeTableCreator();
 
 		await surreal.query(query);
 		await fetchDatabaseSchema();
@@ -54,7 +54,7 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 		<>
 			<Modal
 				opened={opened}
-				onClose={onClose}
+				onClose={closeTableCreator}
 				trapFocus={false}
 				size="sm"
 				title={
@@ -94,7 +94,7 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 						)}
 						<Group mt="lg">
 							<Button
-								onClick={onClose}
+								onClick={closeTableCreator}
 								color="slate"
 								variant="light"
 								flex={1}
