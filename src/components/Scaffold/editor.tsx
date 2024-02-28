@@ -1,6 +1,7 @@
 import { Modal, Group, Button } from "@mantine/core";
 import { Spacer } from "../Spacer";
 import { useImmer } from "use-immer";
+import { Icon } from "../Icon";
 import { isConnectionValid } from "~/util/connection";
 import { useStable } from "~/hooks/stable";
 import { Form } from "../Form";
@@ -11,12 +12,17 @@ import { Connection } from "~/types";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
-import { Icon } from "../Icon";
 import { iconCheck, iconDelete, iconPlus } from "~/util/icons";
 import { ConnectionDetails } from "../ConnectionDetails";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
+}
+
+function newConnection() {
+	const { settings } = useConfigStore.getState();
+
+	return createBaseConnection(settings);
 }
 
 export function ConnectionEditor() {
@@ -29,7 +35,7 @@ export function ConnectionEditor() {
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
 	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
 
-	const [details, setDetails] = useImmer<Connection>(createBaseConnection());
+	const [details, setDetails] = useImmer<Connection>(newConnection());
 	const isValid = details.name && isConnectionValid(details.connection);
 
 	const saveInfo = useStable(async () => {
@@ -77,7 +83,7 @@ export function ConnectionEditor() {
 
 	useLayoutEffect(() => {
 		if (opened) {
-			const base = createBaseConnection();
+			const base = newConnection();
 
 			if (isCreating) {
 				setDetails({

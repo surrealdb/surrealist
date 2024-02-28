@@ -1,49 +1,51 @@
-import { Connection, ConnectionOptions, QueryType, SurrealistConfig, TabQuery } from "~/types";
+import { Connection, ConnectionOptions, QueryType, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
 import { newId } from "./helpers";
 import { extract_query_type } from "~/generated/surrealist-embed";
 
 export const CONFIG_VERSION = 1;
 
 export function createBaseConfig(): SurrealistConfig {
+	const settings: SurrealistSettings = {
+		behavior: {
+			updateChecker: true,
+			tableSuggest: true,
+			variableSuggest: true,
+			queryErrorChecker: true,
+			windowPinned: false,
+			autoConnect: true
+		},
+		appearance: {
+			colorScheme: "auto",
+			windowScale: 100,
+			editorScale: 100,
+			resultWordWrap: true,
+			defaultResultMode: "combined",
+			defaultDiagramMode: "fields",
+			defaultDiagramDirection: "ltr"
+		},
+		templates: {
+			list: undefined
+		},
+		serving: {
+			driver: "memory",
+			storage: "",
+			executable: "",
+			username: "root",
+			password: "root",
+			port: 8000
+		}
+	};
+
 	return {
 		configVersion: CONFIG_VERSION,
 		connections: [],
-		sandbox: createSandboxConnection(),
+		sandbox: createSandboxConnection(settings),
 		activeView: 'query',
 		activeConnection: null,
 		savedQueries: [],
 		lastPromptedVersion: null,
 		featureFlags: {},
-		settings: {
-			behavior: {
-				updateChecker: true,
-				tableSuggest: true,
-				variableSuggest: true,
-				queryErrorChecker: true,
-				windowPinned: false,
-				autoConnect: true
-			},
-			appearance: {
-				colorScheme: "auto",
-				windowScale: 100,
-				editorScale: 100,
-				resultWordWrap: true,
-				defaultResultMode: "combined",
-				defaultDiagramMode: "fields",
-				defaultDiagramDirection: "ltr"
-			},
-			templates: {
-				list: undefined
-			},
-			serving: {
-				driver: "memory",
-				storage: "",
-				executable: "",
-				username: "root",
-				password: "root",
-				port: 8000
-			}
-		}
+		settings
 	};
 }
 
@@ -61,8 +63,8 @@ export function createBaseConnectionOptions(): ConnectionOptions {
 	};
 }
 
-export function createBaseConnection(): Connection {
-	const baseTab = createBaseTab();
+export function createBaseConnection(settings: SurrealistSettings): Connection {
+	const baseTab = createBaseTab(settings);
 
 	return {
 		id: newId(),
@@ -74,11 +76,13 @@ export function createBaseConnection(): Connection {
 		activeQuery: baseTab.id,
 		connection: createBaseConnectionOptions(),
 		pinnedTables: [],
-		queryHistory: []
+		queryHistory: [],
+		diagramMode: settings.appearance.defaultDiagramMode,
+		diagramDirection: settings.appearance.defaultDiagramDirection,
 	};
 }
 
-export function createBaseTab(query?: string, ): TabQuery {
+export function createBaseTab(settings: SurrealistSettings, query?: string, ): TabQuery {
 	return {
 		id: newId(),
 		query: query || "",
@@ -86,14 +90,14 @@ export function createBaseTab(query?: string, ): TabQuery {
 		variables: "{}",
 		response: [],
 		queryType: query ? extract_query_type(query) as QueryType : "invalid",
-		resultMode: "combined",
+		resultMode: settings.appearance.defaultResultMode,
 	};
 
 }
 
-export function createSandboxConnection(): Connection {
+export function createSandboxConnection(settings: SurrealistSettings): Connection {
 	return {
-		...createBaseConnection(),
+		...createBaseConnection(settings),
 		id: "sandbox",
 		name: "Sandbox",
 		connection: {

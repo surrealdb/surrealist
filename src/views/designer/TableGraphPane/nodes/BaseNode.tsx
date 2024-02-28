@@ -143,34 +143,39 @@ interface BaseNodeProps {
 	icon: string;
 	table: TableDefinition;
 	isSelected: boolean;
-	hasLeftEdge: boolean;
-	hasRightEdge: boolean;
-	withoutGraph?: boolean;
+	hasIncoming: boolean;
+	hasOutgoing: boolean;
 }
 
 export function BaseNode(props: BaseNodeProps) {
-	const { table, isSelected, hasLeftEdge, hasRightEdge, icon, withoutGraph } = props;
+	const { table, isSelected, hasIncoming, hasOutgoing, icon } = props;
+	const { diagramMode, diagramDirection } = useActiveConnection();
 
 	const isLight = useIsLight();
-	const { designerNodeMode } = useActiveConnection();
-
-	const showMore = designerNodeMode == 'summary' || (designerNodeMode == 'fields' && table.fields.length > 0);
+	const isLTR = diagramDirection == 'ltr';
+	const showMore = diagramMode == 'summary' || (diagramMode == 'fields' && table.fields.length > 0);
 
 	return (
 		<>
-			{!withoutGraph && (
-				<Handle
-					type="target"
-					position={Position.Left}
-					style={{
-						visibility: hasLeftEdge ? "visible" : "hidden"
-					}}
-				/>
-			)}
+			<Handle
+				type="target"
+				position={isLTR ? Position.Left : Position.Right}
+				style={{
+					visibility: hasIncoming ? 'visible' : 'hidden'
+				}}
+			/>
+
+			<Handle
+				type="source"
+				position={isLTR ? Position.Right : Position.Left}
+				style={{
+					visibility: hasOutgoing ? 'visible' : 'hidden'
+				}}
+			/>
 
 			<Paper
 				p="md"
-				w={withoutGraph ? undefined : 250}
+				w={250}
 				title={`Click to edit ${table.schema.name}`}
 				bg={isLight ? "white" : "slate.7"}
 				shadow={`0 8px 15px var(--mantine-color-slate-${isLight ? 0 : 9}`}
@@ -200,7 +205,7 @@ export function BaseNode(props: BaseNodeProps) {
 							mt="sm"
 						/>
 
-						{designerNodeMode == 'fields' ? (
+						{diagramMode == 'fields' ? (
 							<Fields
 								isLight={isLight}
 								table={table}
@@ -230,16 +235,6 @@ export function BaseNode(props: BaseNodeProps) {
 					</>
 				)}
 			</Paper>
-
-			{!withoutGraph && (
-				<Handle
-					type="source"
-					position={Position.Right}
-					style={{
-						visibility: hasRightEdge ? "visible" : "hidden",
-					}}
-				/>
-			)}
 		</>
 	);
 }

@@ -5,15 +5,14 @@ import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Tex
 import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStoreApi } from "reactflow";
 import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
-import { DiagramMode, TableDefinition } from "~/types";
+import { DiagramDirection, DiagramMode, TableDefinition } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
 import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveConnection } from "~/hooks/connection";
-import { DESIGNER_NODE_MODES } from "~/constants";
-import { useNodeMode } from "./hooks";
+import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { RadioSelect } from "~/components/RadioSelect";
 import { adapter } from "~/adapter";
 import { showNotification } from "@mantine/notifications";
@@ -59,7 +58,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const ref = useRef<ElementRef<"div">>(null);
 	const isOnline = useIsConnected();
 	const activeSession = useActiveConnection();
-	const nodeMode = useNodeMode(activeSession);
 	const isLight = useIsLight();
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
@@ -70,7 +68,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const flowStore = useStoreApi();
 
 	const renderGraph = useStable(async () => {
-		const [nodes, edges] = buildFlowNodes(props.tables);
+		const direction = activeSession.diagramDirection;
+		const [nodes, edges] = buildFlowNodes(props.tables, direction);
 
 		if (nodes.length === 0) {
 			setIsComputing(false);
@@ -90,7 +89,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 		const layoutNodes = [...flowStore.getState().nodeInternals.values()] as InternalNode[];
 
-		applyNodeLayout(layoutNodes, edges).then(async changes => {
+		applyNodeLayout(layoutNodes, edges, direction).then(async changes => {
 			onNodesChange(changes);
 
 			if (doFit) {
@@ -133,10 +132,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const showBox = !isComputing && (!isOnline || props.tables.length === 0);
 
-	const setNodeMode = useStable((mode: string) => {
+	const setDiagramMode = useStable((mode: string) => {
 		updateCurrentConnection({
 			id: activeSession?.id,
-			designerNodeMode: mode as DiagramMode,
+			diagramMode: mode as DiagramMode,
+		});
+	});
+
+	const setDiagramDirection = useStable((mode: string) => {
+		updateCurrentConnection({
+			id: activeSession?.id,
+			diagramDirection: mode as DiagramDirection,
 		});
 	});
 
@@ -156,7 +162,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	useEffect(() => {
 		renderGraph();
-	}, [nodeMode]);
+	}, [activeSession.diagramDirection]);
 
 	useEffect(() => {
 		setNodes(curr => {
@@ -205,8 +211,14 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<RadioSelect
 									label="Table appearance"
 									data={DESIGNER_NODE_MODES}
-									value={nodeMode}
-									onChange={setNodeMode}
+									value={activeSession.diagramMode}
+									onChange={setDiagramMode}
+								/>
+								<RadioSelect
+									label="Direction"
+									data={DESIGNER_DIRECTIONS}
+									value={activeSession.diagramDirection}
+									onChange={setDiagramDirection}
 								/>
 							</Stack>
 						</Popover.Dropdown>

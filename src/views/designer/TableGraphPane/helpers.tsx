@@ -1,6 +1,6 @@
 import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
 import { EdgeNode } from "./nodes/EdgeNode";
-import { TableDefinition } from "~/types";
+import { DiagramDirection, TableDefinition } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, NodeChange, Position } from "reactflow";
 import { toBlob, toSvg } from "html-to-image";
@@ -9,12 +9,6 @@ import ELK from "elkjs/lib/elk.bundled";
 export const NODE_TYPES = {
 	table: TableNode,
 	edge: EdgeNode,
-};
-
-const ELK_OPTIONS = {
-	'elk.algorithm': 'layered',
-	'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-	'elk.spacing.nodeNode': '80',
 };
 
 const EDGE_OPTIONS = {
@@ -28,8 +22,8 @@ export type InternalNode = Node & { width: number, height: number };
 export interface NodeData {
 	table: TableDefinition;
 	isSelected: boolean;
-	hasLeftEdge: boolean;
-	hasRightEdge: boolean;
+	hasIncoming: boolean;
+	hasOutgoing: boolean;
 }
 
 interface NormalizedTable {
@@ -52,7 +46,11 @@ function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
 	});
 }
 
-export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
+export function buildFlowNodes(
+	tables: TableDefinition[],
+	direction: DiagramDirection
+): [Node[], Edge[]] {
+	const isLTR = direction == "ltr";
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
 	const edges: Edge[] = [];
@@ -70,8 +68,8 @@ export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
 			data: {
 				table,
 				isSelected: false,
-				hasLeftEdge: false,
-				hasRightEdge: false
+				hasIncoming: false,
+				hasOutgoing: false
 			},
 		};
 
@@ -94,7 +92,7 @@ export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
 			const node = nodeIndex[fromTable];
 
 			if (node) {
-				node.data.hasRightEdge = true;
+				node.data.hasOutgoing = true;
 			}
 		}
 
@@ -109,7 +107,7 @@ export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
 			const node = nodeIndex[toTable];
 
 			if (node) {
-				node.data.hasLeftEdge = true;
+				node.data.hasIncoming = true;
 			}
 		}
 	}
@@ -124,7 +122,11 @@ export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
  * @param edges The edges to layout
  * @returns The changes to apply
  */
-export async function applyNodeLayout(nodes: InternalNode[], edges: Edge[]): Promise<NodeChange[]> {
+export async function applyNodeLayout(
+	nodes: InternalNode[],
+	edges: Edge[],
+	direction: DiagramDirection
+): Promise<NodeChange[]> {
 	const elk = new ELK();
 	const graph = {
 		id: 'root',
@@ -141,7 +143,12 @@ export async function applyNodeLayout(nodes: InternalNode[], edges: Edge[]): Pro
 	};
 
 	const layout = await elk.layout(graph, {
-		layoutOptions: ELK_OPTIONS
+		layoutOptions: {
+			'elk.algorithm': 'layered',
+			'elk.layered.spacing.nodeNodeBetweenLayers': '100',
+			'elk.spacing.nodeNode': '80',
+			'elk.direction': direction == "ltr" ? 'RIGHT' : 'LEFT'
+		}
 	});
 
 	const children = layout.children || [];

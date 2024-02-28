@@ -109,8 +109,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 			return {
 				queries: [...connection.queries, {
-					...createBaseTab(options?.query),
-					resultMode: state.settings.appearance.defaultResultMode,
+					...createBaseTab(state.settings, options?.query),
 					variables: options?.variables || "{}",
 					name: queryName,
 					id: tabId,

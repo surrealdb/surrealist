@@ -61,7 +61,8 @@ export interface Connection {
 	activeQuery: string;
 	connection: ConnectionOptions;
 	pinnedTables: string[];
-	designerNodeMode?: DiagramMode;
+	diagramMode: DiagramMode;
+	diagramDirection: DiagramDirection;
 	queryHistory: HistoryQuery[];
 }
 
@@ -89,6 +90,13 @@ export interface SavedQuery {
 	tags: string[];
 }
 
+export interface SurrealistSettings {
+	behavior: SurrealistBehaviorSettings;
+	appearance: SurrealistAppearanceSettings;
+	templates: SurrealistTemplateSettings;
+	serving: SurrealistServingSettings;
+}
+
 export interface SurrealistConfig {
 	configVersion: number;
 	connections: Connection[];
@@ -97,12 +105,7 @@ export interface SurrealistConfig {
 	activeConnection: string | null;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
-	settings: {
-		behavior: SurrealistBehaviorSettings;
-		appearance: SurrealistAppearanceSettings;
-		templates: SurrealistTemplateSettings;
-		serving: SurrealistServingSettings;
-	}
+	settings: SurrealistSettings;
 	featureFlags: Partial<TFeatureFlags<typeof featureFlagSchema>>,
 }
 
