@@ -2,6 +2,7 @@ import { ExportType } from "~/constants";
 import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./surreal";
 import { fork } from "radash";
+import { tb } from "./helpers";
 
 /**
  * Export the database schema and save it to a file
@@ -74,7 +75,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 
 			output.push(`${definition};`);
 
-			const tbInfo = await surreal.querySingle<SurrealInfoTB>(`INFO FOR TABLE \`${tableName}\``);
+			const tbInfo = await surreal.querySingle<SurrealInfoTB>(`INFO FOR TABLE ${tb(tableName)}`);
 
 			const tbFields = Object.values(tbInfo.fields);
 			const tbIndexes = Object.values(tbInfo.indexes);
@@ -113,7 +114,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 		output.push("BEGIN TRANSACTION;");
 
 		for (const [tableName] of dbTables) {
-			const tbData = await surreal.query(`SELECT * FROM \`${tableName}\``);
+			const tbData = await surreal.query(`SELECT * FROM ${tb(tableName)}`);
 			const tbRows = tbData[0].result as any[];
 
 			if (tbRows.length > 0) {

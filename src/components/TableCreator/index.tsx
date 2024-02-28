@@ -9,6 +9,7 @@ import { useTableNames } from "~/hooks/schema";
 import { ModalTitle } from "../ModalTitle";
 import { getActiveSurreal } from "~/util/surreal";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
+import { tb } from "~/util/helpers";
 
 export interface TableCreatorProps {
 	opened: boolean;
@@ -25,11 +26,14 @@ export function TableCreator({ opened, onClose }: TableCreatorProps) {
 	const createTable = useStable(async () => {
 		const surreal = getActiveSurreal();
 
-		let query = `DEFINE TABLE ${tableName};`;
+		let query = `DEFINE TABLE ${tb(tableName)};`;
 
 		if (createType === "relation") {
-			query += `DEFINE FIELD in ON \`${tableName}\` TYPE record<${tableIn.join("|")}>;`;
-			query += `DEFINE FIELD out ON \`${tableName}\` TYPE record<${tableOut.join("|")}>;`;
+			const inTables = tableIn.map((t) => tb(t)).join("|");
+			const outTables = tableOut.map((t) => tb(t)).join("|");
+
+			query += `DEFINE FIELD in ON ${tb(tableName)} TYPE record<${inTables}>;`;
+			query += `DEFINE FIELD out ON ${tb(tableName)} TYPE record<${outTables}>;`;
 		}
 
 		onClose();

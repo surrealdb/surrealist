@@ -4,6 +4,7 @@ import { objectify } from "radash";
 import { Accordion } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { Updater } from "use-immer";
+import { tb } from "~/util/helpers";
 
 export interface ElementProps {
 	data: TableDefinition;
@@ -45,7 +46,7 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	const eventIndex = objectify(current.events, (e) => e.name);
 
 	if (!equals(previous.schema, current.schema)) {
-		let query = `DEFINE TABLE ${current.schema.name}`;
+		let query = `DEFINE TABLE ${tb(current.schema.name)}`;
 
 		if (current.schema.drop) {
 			query += " DROP";
@@ -84,12 +85,12 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 	for (const field of previous.fields) {
 		if (!fieldIndex[field.name]) {
-			queries.push(`REMOVE FIELD ${field.name} ON TABLE \`${name}\``);
+			queries.push(`REMOVE FIELD ${field.name} ON TABLE ${tb(name)}`);
 		}
 	}
 
 	for (const field of current.fields) {
-		let query = `DEFINE FIELD ${field.name} ON TABLE \`${name}\``;
+		let query = `DEFINE FIELD ${field.name} ON TABLE ${tb(name)}`;
 
 		if (field.flexible) {
 			query += " FLEXIBLE";
@@ -122,12 +123,12 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 	for (const index of previous.indexes) {
 		if (!indexIndex[index.name]) {
-			queries.push(`REMOVE INDEX ${index.name} ON TABLE \`${name}\``);
+			queries.push(`REMOVE INDEX ${index.name} ON TABLE ${tb(name)}`);
 		}
 	}
 
 	for (const index of current.indexes) {
-		let query = `DEFINE INDEX ${index.name} ON TABLE \`${name}\` FIELDS ${index.fields}`;
+		let query = `DEFINE INDEX ${index.name} ON TABLE ${tb(name)} FIELDS ${index.fields}`;
 
 		switch (index.kind) {
 			case "unique": {
@@ -149,12 +150,12 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 
 	for (const event of previous.events) {
 		if (!eventIndex[event.name]) {
-			queries.push(`REMOVE EVENT ${event.name} ON TABLE \`${name}\``);
+			queries.push(`REMOVE EVENT ${event.name} ON TABLE ${tb(name)}`);
 		}
 	}
 
 	for (const event of current.events) {
-		const query = `DEFINE EVENT ${event.name} ON TABLE \`${name}\` WHEN ${event.cond} THEN (${event.then})`;
+		const query = `DEFINE EVENT ${event.name} ON TABLE ${tb(name)} WHEN ${event.cond} THEN (${event.then})`;
 
 		queries.push(query);
 	}

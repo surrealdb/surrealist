@@ -255,3 +255,13 @@ export function tryParseParams(paramString: string) {
 
 	return params;
 }
+
+/**
+ * Correctly escape a string for use as table name
+ *
+ * @param value The value to escape
+ * @returns The escaped value
+ */
+export function tb(value: string) {
+	return `\`${value}\``;
+}

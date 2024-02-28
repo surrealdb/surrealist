@@ -35,7 +35,7 @@ import { getSurreal } from "~/util/surreal";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { themeColor } from "~/util/mantine";
-import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { ON_FOCUS_SELECT, tb } from "~/util/helpers";
 import { iconClose, iconDelete, iconWrench } from "~/util/icons";
 
 const INITIAL_TABS = ["general"];
@@ -76,7 +76,7 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 		setIsDeleting(false);
 		onClose(true);
 
-		await surreal.query(`REMOVE TABLE ${value.schema.name}`);
+		await surreal.query(`REMOVE TABLE ${tb(value.schema.name)}`);
 
 		fetchDatabaseSchema();
 	});

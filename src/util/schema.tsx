@@ -3,7 +3,7 @@ import { map } from "radash";
 import { IndexKind, ScopeDefinition, TableDefinition, TableEvent, TableField, TableIndex, TableSchema, UserDefinition } from "~/types";
 import { SurrealInfoDB, SurrealInfoKV, SurrealInfoNS, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./surreal";
-import { extractTypeList } from './helpers';
+import { extractTypeList, tb } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
 
 /**
@@ -53,7 +53,7 @@ export async function fetchDatabaseSchema() {
 
 	if (tableInfo.length > 0) {
 		const tableQuery = tableInfo.reduce((acc, table) => {
-			return acc + `INFO FOR TABLE \`${table.name}\`;`;
+			return acc + `INFO FOR TABLE ${tb(table.name)};`;
 		}, "");
 
 		const tableData = await surreal.queryFirst(tableQuery);

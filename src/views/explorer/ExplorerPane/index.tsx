@@ -12,6 +12,7 @@ import { EventBus, useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
 import { iconChevronLeft, iconChevronRight, iconFilter, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
+import { tb } from "~/util/helpers";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -95,8 +96,8 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM \`${activeTable}\``;
-		let fetchQuery = `SELECT * FROM \`${activeTable}\``;
+		let countQuery = `SELECT * FROM count((SELECT * FROM ${tb(activeTable)}`;
+		let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;

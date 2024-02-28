@@ -43,7 +43,7 @@ export function CreatorDrawer({ opened, activeTable, onClose, onRefresh }: Creat
 			return;
 		}
 
-		await surreal.query(`CREATE \`${recordId}\` CONTENT ${recordBody}`);
+		await surreal.query(`CREATE ${recordId} CONTENT ${recordBody}`);
 
 		onClose();
 		onRefresh();
