@@ -68,8 +68,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const flowStore = useStoreApi();
 
 	const renderGraph = useStable(async () => {
-		const direction = activeSession.diagramDirection;
-		const [nodes, edges] = buildFlowNodes(props.tables, direction);
+		const [nodes, edges] = buildFlowNodes(props.tables);
 
 		if (nodes.length === 0) {
 			setIsComputing(false);
@@ -88,6 +87,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		await sleep(300);
 
 		const layoutNodes = [...flowStore.getState().nodeInternals.values()] as InternalNode[];
+		const direction = activeSession.diagramDirection;
 
 		applyNodeLayout(layoutNodes, edges, direction).then(async changes => {
 			onNodesChange(changes);
@@ -229,63 +229,61 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				</Group>
 			}>
 			<div style={{ position: "relative", width: "100%", height: "100%" }}>
-				{isViewActive && (
-					<ReactFlow
-						ref={ref}
-						fitView
-						nodes={nodes}
-						edges={edges}
-						nodeTypes={NODE_TYPES}
-						nodesDraggable={false}
-						nodesConnectable={false}
-						edgesFocusable={false}
-						proOptions={{ hideAttribution: true }}
-						onNodesChange={onNodesChange}
-						onEdgesChange={onEdgesChange}
-						className={classes.diagram}
-						style={{ opacity: isComputing ? 0 : 1 }}
-						onNodeClick={(_ev, node) => {
-							props.setActiveTable(node.id);
-						}}
-						onContextMenu={showContextMenu([
-							{
-								key: 'create',
-								icon: <Icon path={iconPlus} />,
-								title: 'Create table...',
-								onClick: isCreatingHandle.open
-							},
-							{
-								key: 'view',
-								icon: <Icon path={iconFullscreen} />,
-								title: 'Reset viewport',
-								onClick: () => fitView()
-							},
-							{
-								key: 'refresh',
-								icon: <Icon path={iconRefresh} />,
-								title: 'Refresh',
-								onClick: renderGraph
-							},
-							{ key: 'divider' },
-							{
-								key: 'download-png',
-								icon: <Icon path={iconImage} />,
-								title: 'Export as PNG',
-								onClick: () => saveImage('png')
-							},
-							{
-								key: 'download-svg',
-								icon: <Icon path={iconXml} />,
-								title: 'Export as SVG',
-								onClick: () => saveImage('svg')
-							},
-						])}
-					>
-						<Background
-							color={themeColor(isLight ? "slate.2": "slate.6")}
-						/>
-					</ReactFlow>
-				)}
+				<ReactFlow
+					ref={ref}
+					fitView
+					nodes={nodes}
+					edges={edges}
+					nodeTypes={NODE_TYPES}
+					nodesDraggable={false}
+					nodesConnectable={false}
+					edgesFocusable={false}
+					proOptions={{ hideAttribution: true }}
+					onNodesChange={onNodesChange}
+					onEdgesChange={onEdgesChange}
+					className={classes.diagram}
+					style={{ opacity: isComputing ? 0 : 1 }}
+					onNodeClick={(_ev, node) => {
+						props.setActiveTable(node.id);
+					}}
+					onContextMenu={showContextMenu([
+						{
+							key: 'create',
+							icon: <Icon path={iconPlus} />,
+							title: 'Create table...',
+							onClick: isCreatingHandle.open
+						},
+						{
+							key: 'view',
+							icon: <Icon path={iconFullscreen} />,
+							title: 'Reset viewport',
+							onClick: () => fitView()
+						},
+						{
+							key: 'refresh',
+							icon: <Icon path={iconRefresh} />,
+							title: 'Refresh',
+							onClick: renderGraph
+						},
+						{ key: 'divider' },
+						{
+							key: 'download-png',
+							icon: <Icon path={iconImage} />,
+							title: 'Export as PNG',
+							onClick: () => saveImage('png')
+						},
+						{
+							key: 'download-svg',
+							icon: <Icon path={iconXml} />,
+							title: 'Export as SVG',
+							onClick: () => saveImage('svg')
+						},
+					])}
+				>
+					<Background
+						color={themeColor(isLight ? "slate.2": "slate.6")}
+					/>
+				</ReactFlow>
 
 				{isExporting && (
 					<Stack

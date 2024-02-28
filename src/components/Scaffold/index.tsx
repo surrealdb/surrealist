@@ -20,7 +20,7 @@ import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { VIEW_MODES } from "~/constants";
-import { updateTitle } from "~/util/helpers";
+import { ON_STOP_PROPAGATION, updateTitle } from "~/util/helpers";
 import { Spacer } from "../Spacer";
 import { Settings } from "../Settings";
 import { useIsLight } from "~/hooks/theme";
@@ -76,6 +76,7 @@ export function Scaffold() {
 	return (
 		<div
 			className={classes.root}
+			onKeyDown={ON_STOP_PROPAGATION} // NOTE See https://github.com/xyflow/xyflow/issues/3924
 			style={{
 				backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
 			}}

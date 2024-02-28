@@ -46,11 +46,7 @@ function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
 	});
 }
 
-export function buildFlowNodes(
-	tables: TableDefinition[],
-	direction: DiagramDirection
-): [Node[], Edge[]] {
-	const isLTR = direction == "ltr";
+export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
 	const edges: Edge[] = [];
