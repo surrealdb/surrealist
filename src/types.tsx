@@ -22,6 +22,36 @@ export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial
 
 export type Selectable<T extends string> = { label: string, value: T };
 
+export interface ConnectionOptions {
+	namespace: string;
+	database: string;
+	protocol: Protocol;
+	hostname: string;
+	username: string;
+	password: string;
+	authMode: AuthMode;
+	scope: string;
+	scopeFields: ScopeField[];
+}
+
+export interface Connection {
+	id: string;
+	name: string;
+	queries: TabQuery[];
+	activeQuery: string;
+	connection: ConnectionOptions;
+	pinnedTables: string[];
+	diagramMode: DiagramMode;
+	diagramDirection: DiagramDirection;
+	queryHistory: HistoryQuery[];
+}
+
+export interface Template {
+	id: string;
+	name: string;
+	values: ConnectionOptions;
+}
+
 export interface SurrealistBehaviorSettings {
 	updateChecker: boolean;
 	tableSuggest: boolean;
@@ -42,7 +72,7 @@ export interface SurrealistAppearanceSettings {
 }
 
 export interface SurrealistTemplateSettings {
-	list: any;
+	list: Template[];
 }
 
 export interface SurrealistServingSettings {
@@ -52,18 +82,6 @@ export interface SurrealistServingSettings {
 	username: string;
 	password: string;
 	port: number;
-}
-
-export interface Connection {
-	id: string;
-	name: string;
-	queries: TabQuery[];
-	activeQuery: string;
-	connection: ConnectionOptions;
-	pinnedTables: string[];
-	diagramMode: DiagramMode;
-	diagramDirection: DiagramDirection;
-	queryHistory: HistoryQuery[];
 }
 
 export interface TabQuery {
@@ -195,18 +213,6 @@ export interface Analyzer {
 	name: string;
 	tokenizers: string[];
 	filters: string[];
-}
-
-export interface ConnectionOptions {
-	namespace: string;
-	database: string;
-	protocol: Protocol;
-	hostname: string;
-	username: string;
-	password: string;
-	authMode: AuthMode;
-	scope: string;
-	scopeFields: ScopeField[];
 }
 
 export interface SurrealOptions {

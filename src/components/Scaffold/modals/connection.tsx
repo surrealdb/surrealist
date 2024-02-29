@@ -1,4 +1,4 @@
-import { Modal, Group, Button } from "@mantine/core";
+import { Modal, Group, Button, Alert, Text, Menu } from "@mantine/core";
 import { Spacer } from "../../Spacer";
 import { useImmer } from "use-immer";
 import { Icon } from "../../Icon";
@@ -8,12 +8,13 @@ import { Form } from "../../Form";
 import { useLayoutEffect } from "react";
 import { updateTitle } from "~/util/helpers";
 import { useConnections } from "~/hooks/connection";
-import { Connection } from "~/types";
+import { Connection, Template } from "~/types";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
-import { iconCheck, iconDelete, iconPlus } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
 import { ConnectionDetails } from "../../ConnectionDetails";
+import { useSetting } from "~/hooks/config";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -35,6 +36,7 @@ export function ConnectionEditor() {
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
 	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
 
+	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
 	const isValid = details.name && isConnectionValid(details.connection);
 
@@ -73,6 +75,12 @@ export function ConnectionEditor() {
 		closeConnectionEditor();
 	});
 
+	const applyTemplate = useStable((template: Template) => {
+		setDetails(draft => {
+			draft.connection = template.values;
+		});
+	});
+
 	useLayoutEffect(() => {
 		if (!details.name.trim()) {
 			setDetails((draft) => {
@@ -106,6 +114,47 @@ export function ConnectionEditor() {
 			size="lg"
 		>
 			<Form onSubmit={saveInfo}>
+				{isCreating && templates.length > 0 && (
+					<Alert mb="sm" p="xs">
+						<Group>
+							<Icon
+								ml={6}
+								path={iconFile}
+								color="surreal.1"
+								size={1.2}
+							/>
+							<Text>
+								Initialize this connection with a template?
+							</Text>
+							<Spacer />
+							<Menu>
+								<Menu.Target>
+									<Button
+										color="slate"
+										variant="light"
+										rightSection={<Icon path={iconChevronDown} />}
+									>
+										Select template
+									</Button>
+								</Menu.Target>
+
+								<Menu.Dropdown>
+									{templates.map((template) => (
+										<Menu.Item
+											key={template.id}
+											leftSection={<Icon path={iconFile} />}
+											onClick={() => applyTemplate(template)}
+											miw={175}
+										>
+											{template.name}
+										</Menu.Item>
+									))}
+								</Menu.Dropdown>
+							</Menu>
+						</Group>
+					</Alert>
+				)}
+
 				<ConnectionDetails
 					value={details}
 					onChange={setDetails}

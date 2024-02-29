@@ -1,10 +1,9 @@
 import { SANDBOX } from "~/constants";
 import { BrowserAdapter } from "./browser";
 import { SurrealistConfig } from "~/types";
-import { createBaseTab, createSandboxConnection } from "~/util/defaults";
+import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
 import { getSurreal } from "~/util/surreal";
-import { MantineColorScheme } from "@mantine/core";
 
 const THEMES = new Set(['light', 'dark', 'auto']);
 
@@ -19,7 +18,8 @@ export class EmbedAdapter extends BrowserAdapter {
 	#setupQuery: string | undefined;
 
 	public async loadConfig() {
-		const mainTab = createBaseTab();
+		const settings = createBaseSettings();
+		const mainTab = createBaseTab(settings);
 		const params = new URL(document.location.toString()).searchParams;
 
 		const {
@@ -70,16 +70,12 @@ export class EmbedAdapter extends BrowserAdapter {
 		}
 
 		const config = {
+			settings,
 			activeConnection: SANDBOX,
 			sandbox: {
-				...createSandboxConnection(),
+				...createSandboxConnection(settings),
 				activeQuery: mainTab.id,
 				queries: [mainTab]
-			},
-			settings: {
-				appearance: {
-					colorScheme: theme as MantineColorScheme || 'auto',
-				}
 			}
 		} satisfies DeepPartial<SurrealistConfig>;
 

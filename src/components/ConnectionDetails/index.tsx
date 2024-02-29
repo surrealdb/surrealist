@@ -15,9 +15,10 @@ const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 export interface ConnectionDetailsProps {
 	value: Connection;
 	onChange: Updater<Connection>;
+	action?: React.ReactNode;
 }
 
-export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
+export function ConnectionDetails({ value, onChange, action }: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 
 	const addScopeField = useStable(() => {
@@ -63,17 +64,26 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 
 	return (
 		<>
-			<EditableText
-				mb="md"
-				fz={26}
-				fw={600}
-				value={value.name}
-				onChange={(value) =>
-					onChange((draft) => {
-						draft.name = value;
-					})
-				}
-			/>
+			<Group>
+				<Paper
+					px="xs"
+					py={4}
+					mb="md"
+					flex={1}
+				>
+					<EditableText
+						fz={22}
+						fw={600}
+						value={value.name}
+						onChange={(value) =>
+							onChange((draft) => {
+								draft.name = value;
+							})
+						}
+					/>
+				</Paper>
+				{action}
+			</Group>
 			<Group mb="lg">
 				<Select
 					data={CONNECTION_PROTOCOLS}

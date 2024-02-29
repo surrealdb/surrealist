@@ -22,14 +22,15 @@ import { useInterfaceStore } from "~/stores/interface";
 import { VIEW_MODES } from "~/constants";
 import { ON_STOP_PROPAGATION, updateTitle } from "~/util/helpers";
 import { Spacer } from "../Spacer";
-import { Settings } from "../Settings";
+import { Settings } from "./settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
-import { iconCog } from "~/util/icons";
-import { isDesktop } from "~/adapter";
+import { iconCog, iconDownload } from "~/util/icons";
+import { isBrowser, isDesktop } from "~/adapter";
 import { FreshExperience } from "./fresh";
 import { NavigationIcon } from "../NavigationIcon";
 import { TableCreator } from "./modals/table";
+import { DownloadModal } from "./modals/download";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -54,6 +55,7 @@ export function Scaffold() {
 	const activeView = useConfigStore((s) => s.activeView);
 
 	const [showSettings, settingsHandle] = useDisclosure();
+	const [showDownload, downloadHandle] = useDisclosure();
 
 	const viewNode = VIEW_PORTALS[activeView];
 
@@ -113,6 +115,15 @@ export function Scaffold() {
 
 							<Spacer />
 
+							{isBrowser && (
+								<NavigationIcon
+									name="Download App"
+									isLight={isLight}
+									icon={iconDownload}
+									onClick={downloadHandle.toggle}
+								/>
+							)}
+
 							<NavigationIcon
 								name="Settings"
 								isLight={isLight}
@@ -153,6 +164,11 @@ export function Scaffold() {
 			<Settings
 				opened={showSettings}
 				onClose={settingsHandle.close}
+			/>
+
+			<DownloadModal
+				opened={showDownload}
+				onClose={downloadHandle.close}
 			/>
 		</div>
 	);

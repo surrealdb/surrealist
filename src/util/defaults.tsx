@@ -5,7 +5,23 @@ import { extract_query_type } from "~/generated/surrealist-embed";
 export const CONFIG_VERSION = 1;
 
 export function createBaseConfig(): SurrealistConfig {
-	const settings: SurrealistSettings = {
+	const settings = createBaseSettings();
+
+	return {
+		configVersion: CONFIG_VERSION,
+		connections: [],
+		sandbox: createSandboxConnection(settings),
+		activeView: 'query',
+		activeConnection: null,
+		savedQueries: [],
+		lastPromptedVersion: null,
+		featureFlags: {},
+		settings
+	};
+}
+
+export function createBaseSettings(): SurrealistSettings {
+	return {
 		behavior: {
 			updateChecker: true,
 			tableSuggest: true,
@@ -24,7 +40,7 @@ export function createBaseConfig(): SurrealistConfig {
 			defaultDiagramDirection: "ltr"
 		},
 		templates: {
-			list: undefined
+			list: []
 		},
 		serving: {
 			driver: "memory",
@@ -34,18 +50,6 @@ export function createBaseConfig(): SurrealistConfig {
 			password: "root",
 			port: 8000
 		}
-	};
-
-	return {
-		configVersion: CONFIG_VERSION,
-		connections: [],
-		sandbox: createSandboxConnection(settings),
-		activeView: 'query',
-		activeConnection: null,
-		savedQueries: [],
-		lastPromptedVersion: null,
-		featureFlags: {},
-		settings
 	};
 }
 

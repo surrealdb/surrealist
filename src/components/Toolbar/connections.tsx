@@ -26,7 +26,6 @@ export function Connections() {
 	const { setActiveConnection } = useConfigStore.getState();
 
 	const [isListing, isListingHandle] = useDisclosure();
-
 	const [search, setSearch] = useInputState("");
 	const connections = useConnections();
 	const connection = useConnection();
