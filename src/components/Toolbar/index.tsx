@@ -18,6 +18,7 @@ import { showNotification } from "@mantine/notifications";
 import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
 import { iconClose, iconReset } from "~/util/icons";
+import { HelpAndSupport } from "./HelpAndSupport";
 
 export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
@@ -122,6 +123,8 @@ export function Toolbar() {
 						toggleConsole={setShowConsole.toggle}
 					/>
 				)}
+
+				<HelpAndSupport />
 
 				<Modal
 					opened={!!editingTab}
