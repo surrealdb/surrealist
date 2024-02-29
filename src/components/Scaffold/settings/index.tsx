@@ -16,7 +16,8 @@ import { useStable } from "~/hooks/stable";
 import { adapter, isDesktop } from "~/adapter";
 import { FeatureFlagMap, useFeatureFlags } from "~/util/feature-flags";
 import { FeatureFlagsTab } from "./tabs/devtools/FeatureFlags";
-import { mdiFlagOutline } from "@mdi/js";
+import { mdiFlagOutline, mdiScaleBalance } from "@mdi/js";
+import { LicensesTab } from "./tabs/Licenses";
 
 interface Category {
 	id: string;
@@ -61,6 +62,13 @@ const CATEGORIES: Category[] = [
 		icon: mdiFlagOutline,
 		component: FeatureFlagsTab,
 		disabled: (flags) => !flags.devTools
+	},
+	{
+		id: "licenses",
+		name: "OSS Licenses",
+		icon: mdiScaleBalance,
+		component: LicensesTab,
+		disabled: (flags) => !flags.listLicenses,
 	}
 ];
 
@@ -166,6 +174,7 @@ export function Settings(props: SettingsProps) {
 						pt="xl"
 						gap="md"
 						flex={1}
+						miw={0}
 					>
 						<Group>
 							<Title size={26} c="bright">

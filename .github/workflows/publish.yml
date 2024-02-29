@@ -28,7 +28,7 @@ jobs:
     needs: version
     strategy:
       matrix:
-        node-version: [ 18 ] 
+        node-version: [ 18 ]
     steps:
       - name: Code checkout
         uses: actions/checkout@v3
@@ -42,7 +42,7 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: 8
-      
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
@@ -67,17 +67,17 @@ jobs:
     name: Build Desktop
     runs-on: ${{ matrix.platform }}
     needs:
-      - version 
+      - version
       - embed
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 18 ] 
+        node-version: [ 18 ]
         platform: [ macos-latest, ubuntu-20.04, windows-latest ]
     steps:
       - name: Information
         run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for ${{ matrix.platform }}"
-        
+
       - name: Code checkout
         uses: actions/checkout@v3
 
@@ -90,7 +90,7 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: 8
-      
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
@@ -114,6 +114,9 @@ jobs:
         with:
           name: generated-embed
           path: src/generated
+
+      - name: Generate license report
+        run: pnpm generate-license-report
 
       - name: Build application
         run: pnpm tauri build
@@ -163,16 +166,16 @@ jobs:
     name: Build Web
     runs-on: "ubuntu-20.04"
     needs:
-      - version 
+      - version
       - embed
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 18 ] 
+        node-version: [ 18 ]
     steps:
       - name: Information
         run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for web"
-        
+
       - name: Code checkout
         uses: actions/checkout@v3
 
@@ -196,6 +199,9 @@ jobs:
           name: generated-embed
           path: src/generated
 
+      - name: Generate license report
+        run: pnpm generate-license-report
+
       - name: Build application
         run: pnpm build
 
@@ -210,7 +216,7 @@ jobs:
 
   sync-web:
     name: Sync S3 deployment
-    needs: 
+    needs:
       - version
       - build-web
     runs-on: ubuntu-latest

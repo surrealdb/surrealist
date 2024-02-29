@@ -15,7 +15,8 @@
 		"embed:build": "node ./scripts/generate-embed.js",
 		"release": "git push origin main:release --force",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"generate-license-report": "license-report --fields name --fields licenseType --fields link --fields installedVersion --fields author > src/assets/data/license-report.json"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.0.8",
@@ -71,6 +72,7 @@
 		"eslint": "^8.47.0",
 		"eslint-plugin-unicorn": "^48.0.1",
 		"eslint-plugin-unused-imports": "^3.0.0",
+		"license-report": "^6.5.0",
 		"sass": "^1.65.1",
 		"typescript": "^5.1.6",
 		"vite": "^4.4.9"

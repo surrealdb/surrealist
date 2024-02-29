@@ -10,6 +10,9 @@ export const featureFlagSchema = {
 	},
 	templates: {
 		options: [false, true]
+	},
+	listLicenses: {
+		options: [false, true]
 	}
 } as const;
 
@@ -20,9 +23,14 @@ export const featureFlags = new FeatureFlags({
 	environment: Environment,
 	defaults: {
 		prod: {},
+		preview: {
+			templates: true,
+			listLicenses: true,
+		},
 		dev: {
 			devTools: true,
 			templates: true,
+			listLicenses: true,
 		}
 	},
 
