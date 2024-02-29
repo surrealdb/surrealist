@@ -3,6 +3,7 @@ import { Text, Title, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { mdiBook, mdiBug, mdiChat, mdiRoutes } from "@mdi/js";
+import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { iconClose, iconHelp } from "~/util/icons";
@@ -11,22 +12,26 @@ const TILES = [
 	{
 		title: "Documentation",
 		description: "Need help? Check out our documentation for help.",
-		icon: mdiBook
+		icon: mdiBook,
+		onClick: () => adapter.openUrl("https://docs.surrealdb.com/docs/tools/surrealist")
 	},
 	{
 		title: "Report an issue",
 		description: "Something isn't working right? Let us know and we'll fix it.",
-		icon: mdiBug
+		icon: mdiBug,
+		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 	},
 	{
 		title: "Feedback",
 		description: "Have a suggestion or feedback? We'd love to hear it.",
-		icon: mdiChat
+		icon: mdiChat,
+		onClick: () => {}
 	},
 	{
 		title: "Restart the tour",
 		description: "Need to restart the tour? Click here to start over.",
-		icon: mdiRoutes
+		icon: mdiRoutes,
+		onClick: () => {}
 	}
 ];
 
@@ -66,8 +71,9 @@ export function HelpAndSupport() {
 					{TILES.map((tile, i) => (
 						<UnstyledButton
 							key={i}
-							className={classes.tile}
 							bg={isLight ? "slate.0" : "slate.9"}
+							className={classes.tile}
+							onClick={tile.onClick}
 							p="lg"
 						>
 							<Icon
