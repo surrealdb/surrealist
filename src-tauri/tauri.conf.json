@@ -13,10 +13,12 @@
 	"tauri": {
 		"allowlist": {
 			"window": {
-				"setAlwaysOnTop": true,
 				"setTitle": true,
-				"show": true,
-				"startDragging": true
+				"setAlwaysOnTop": true,
+				"startDragging": true,
+				"maximize": true,
+				"unmaximize": true,
+				"show": true
 			},
 			"shell": {
 				"open": true
