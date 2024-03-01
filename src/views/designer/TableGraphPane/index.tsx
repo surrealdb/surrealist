@@ -348,6 +348,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				onClose={showHelpHandle.close}
 				trapFocus={false}
 				size="lg"
+				withCloseButton
 				title={<ModalTitle>Using the Table Graph</ModalTitle>}
 			>
 				<Text c={isLight ? "slate.7" : "slate.2"}>
