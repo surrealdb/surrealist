@@ -28,7 +28,7 @@
 		"@mantine/notifications": "^7.6.1",
 		"@mdi/js": "^7.2.96",
 		"@monaco-editor/react": "^4.5.1",
-		"@tauri-apps/api": "^1.4.0",
+		"@tauri-apps/api": "^1.5.3",
 		"@theopensource-company/feature-flags": "^0.4.5",
 		"@types/react-copy-to-clipboard": "^5.0.7",
 		"ansi-to-html": "^0.7.2",
@@ -60,7 +60,7 @@
 		"zustand": "^4.5.0"
 	},
 	"devDependencies": {
-		"@tauri-apps/cli": "^1.4.0",
+		"@tauri-apps/cli": "^1.5.10",
 		"@types/node": "^20.4.9",
 		"@types/react": "^18.2.20",
 		"@types/react-dom": "^18.2.7",

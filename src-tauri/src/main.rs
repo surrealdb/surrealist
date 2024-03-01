@@ -11,7 +11,7 @@ extern crate objc;
 extern crate webkit2gtk;
 
 use database::DatabaseState;
-use tauri::{utils::config::AppUrl, Manager, RunEvent, WindowUrl};
+use tauri::{Manager, RunEvent};
 use window::configure_window;
 
 mod config;
@@ -19,23 +19,10 @@ mod database;
 mod window;
 
 fn main() {
-    let mut context = tauri::generate_context!();
-    let mut builder = tauri::Builder::default();
-
-    // Configure insecure localhost address in order
-    // to support connecting to non-HTTPS endpoints.
-    if cfg!(not(debug_assertions)) {
-        let port = portpicker::pick_unused_port().unwrap_or(24573);
-        let url = format!("http://localhost:{}", port).parse().unwrap();
-        let window_url = WindowUrl::External(url);
-
-        context.config_mut().build.dist_dir = AppUrl::Url(window_url.clone());
-
-        builder = builder.plugin(tauri_plugin_localhost::Builder::new(port).build());
-    }
+    let context = tauri::generate_context!();
 
     // Build the Tauri instance
-    let tauri = builder
+    let tauri = tauri::Builder::default()
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,

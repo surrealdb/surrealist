@@ -12,12 +12,12 @@ publish = false
 tauri-build = { version = "1.4.0", features = [] }
 
 [dependencies]
-tauri = { version = "1.4.1", features = [ "window-maximize", "window-unmaximize", "os-all", "window-start-dragging", "path-all", "dialog-open", "fs-read-file", "devtools", "dialog-save", "fs-write-file", "shell-open", "window-set-always-on-top", "window-set-title", "window-show"] }
-tauri-plugin-localhost = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri = { version = "1.6.1", features = [ "window-maximize", "window-unmaximize", "os-all", "window-start-dragging", "path-all", "dialog-open", "fs-read-file", "devtools", "dialog-save", "fs-write-file", "shell-open", "window-set-always-on-top", "window-set-title", "window-show"] }
+# tauri-plugin-localhost = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 portpicker = "0.1"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-webkit2gtk = "0.18" # if tauri build fails, make sure to match this version to what we have in tauri
+webkit2gtk = "0.18.2" # if tauri build fails, make sure to match this version to what we have in tauri
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc = "0.2"
