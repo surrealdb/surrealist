@@ -2,6 +2,7 @@ import fastDeepEqual from "fast-deep-equal";
 import { klona } from "klona";
 import { useMemo, useState } from "react";
 import { useStable } from "./stable";
+import { useLater } from "./later";
 
 type Task = unknown | Promise<unknown>;
 
@@ -88,11 +89,10 @@ export function useSaveable<T extends Record<string, any>>(options: SaveableOpti
 	const isChanged = !isEqual && !skipTrack;
 	const canSave = isChanged && options.valid !== false;
 
-	const trackValue = (value?: T) => {
-		console.log('SET SKIP TO FALSE');
+	const trackValue = useLater((value?: T) => {
 		setOriginal(klona(value ?? options.track));
 		setSkipTrack(false);
-	};
+	});
 
 	const save = useStable(async () => {
 		setIsSaving(true);
@@ -108,7 +108,6 @@ export function useSaveable<T extends Record<string, any>>(options: SaveableOpti
 	});
 
 	const track = useStable(() => {
-		console.log('SET SKIP TO TRUE');
 		setSkipTrack(true);
 		setTimeout(trackValue);
 	});
