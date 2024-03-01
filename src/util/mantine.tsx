@@ -117,6 +117,11 @@ export const MANTINE_THEME = createTheme({
 				spellCheck: "false",
 			},
 		},
+		Select: {
+			defaultProps: {
+				allowDeselect: false
+			}
+		},
 		Radio: {
 			styles: {
 				label: {

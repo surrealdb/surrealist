@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, Drawer, Group, Paper } from "@mantine/core";
+import { ActionIcon, Badge, Button, Drawer, Group, Paper, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -9,6 +9,10 @@ import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { useTableNames } from "~/hooks/schema";
+import { editor } from "monaco-editor";
+import { tb } from "~/util/helpers";
+import { Label } from "~/components/Scaffold/settings/utilities";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -17,8 +21,10 @@ export interface CreatorDrawerProps {
 }
 
 export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
+	const [recordTable, setRecordTable] = useState('');
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
+	const tables = useTableNames();
 
 	const isBodyValid = useMemo(() => {
 		try {
@@ -37,19 +43,29 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const handleSubmit = useStable(async () => {
 		const surreal = getSurreal();
 
-		if (!recordId || !isBodyValid || !surreal) {
+		if (!isBodyValid || !surreal) {
 			return;
 		}
 
-		await surreal.query(`CREATE ${recordId} CONTENT ${recordBody}`);
+		const record = recordId
+			? `${tb(recordTable)}:${tb(recordId)}`
+			: tb(recordTable);
+
+		await surreal.query(`CREATE ${record} CONTENT ${recordBody}`);
 
 		onClose();
 		RecordsChangedEvent.dispatch();
 	});
 
+	const focusEditor = useStable((editor: editor.IStandaloneCodeEditor) => {
+		editor.focus();
+		editor.setPosition({ lineNumber: 2, column: 5 });
+	});
+
 	useLayoutEffect(() => {
 		if (opened) {
-			setRecordId(table || '');
+			setRecordTable(table);
+			setRecordId('');
 			setRecordBody('{\n    \n}');
 		}
 	}, [opened]);
@@ -61,8 +77,16 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			position="right"
 			trapFocus={false}
 			size="lg"
+			styles={{
+				body: {
+					height: "100%",
+					display: "flex",
+					flexDirection: "column",
+					gap: "var(--mantine-spacing-lg)"
+				}
+			}}
 		>
-			<Group mb="md" gap="sm">
+			<Group gap="sm">
 				<ModalTitle>
 					<Icon left path={iconPlus} size="sm" />
 					Create record
@@ -84,51 +108,56 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				</ActionIcon>
 			</Group>
 
-			{/* <TextInput
-				mb="xs"
-				label="Record name"
-				value={recordId}
-				onChange={setRecordId}
-				autoFocus
-			/> */}
+			<Stack flex={1} gap={6}>
+				<SimpleGrid cols={2}>
+					<Select
+						data={tables}
+						label="Table"
+						value={recordTable}
+						onChange={setRecordTable as any}
+					/>
+					<TextInput
+						mb="xs"
+						label="Record id"
+						value={recordId}
+						onChange={setRecordId}
+						placeholder="Leave empty to generate"
+					/>
+				</SimpleGrid>
 
-			<Paper
-				mt="xs"
-				p="xs"
-				withBorder
-				style={{
-					position: "absolute",
-					insetInline: 16,
-					bottom: 62,
-					top: 64,
-				}}
-			>
-				<SurrealistEditor
-					language="json"
-					value={recordBody}
-					onChange={setRecordBody}
-					options={{
-						wrappingStrategy: "advanced",
-						wordWrap: "off",
-						suggest: {
-							showProperties: false,
-						},
-					}}
-				/>
-			</Paper>
+				<Stack flex={1} gap={2}>
+					<Label>Contents</Label>
+					<Paper
+						p="xs"
+						flex={1}
+						withBorder
+					>
+						<SurrealistEditor
+							language="json"
+							noExpand
+							autoSize
+							value={recordBody}
+							onChange={setRecordBody}
+							onMount={focusEditor}
+							options={{
+								wrappingStrategy: "advanced",
+								wordWrap: "off",
+								suggest: {
+									showProperties: false,
+								},
+							}}
+						/>
+					</Paper>
+				</Stack>
+			</Stack>
 
 			<Button
-				disabled={!recordId || !isBodyValid}
+				disabled={!isBodyValid}
 				variant="gradient"
 				onClick={handleSubmit}
 				rightSection={
 					<Icon path={iconPlus} />
 				}
-				style={{
-					position: "absolute",
-					insetInline: 12,
-					bottom: 12,
-				}}
 			>
 				Create record
 			</Button>

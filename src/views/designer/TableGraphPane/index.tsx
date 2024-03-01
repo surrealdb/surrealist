@@ -155,8 +155,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [isViewActive]);
 
 	useLayoutEffect(() => {
-		console.log('Something changed');
-
 		if (isViewActive) {
 			setTimeout(() => {
 				renderGraph();
