@@ -5,7 +5,7 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
-import { extractEdgeRecords } from "~/util/schema";
+import { extractEdgeRecords, fetchDatabaseSchema } from "~/util/schema";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -18,6 +18,9 @@ import { useContextMenu } from "mantine-contextmenu";
 import { iconDelete, iconList, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useInterfaceStore } from "~/stores/interface";
+import { useConfirmation } from "~/providers/Confirmation";
+import { getSurreal } from "~/util/surreal";
+import { tb } from "~/util/helpers";
 
 export interface TablesPaneProps {
 	openRecordCreator: (table: string) => void;
@@ -58,6 +61,26 @@ export function TablesPane(props: TablesPaneProps) {
 	const togglePinned = useStable((table: string) => {
 		if (table && connection) {
 			toggleTablePin(table);
+		}
+	});
+
+	const removeTable = useConfirmation({
+		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
+		confirmText: "Remove",
+		onConfirm:  async (table: string) => {
+			const surreal = getSurreal();
+
+			if (!surreal) {
+				return;
+			}
+
+			await surreal.query(`REMOVE TABLE ${tb(table)}`);
+
+			fetchDatabaseSchema();
+
+			if (activeTable == table) {
+				setExplorerTable("");
+			}
 		}
 	});
 
@@ -149,7 +172,7 @@ export function TablesPane(props: TablesPaneProps) {
 											title: "Remove table",
 											color: "red",
 											icon: <Icon path={iconDelete} />,
-											onClick: () => console.log("remove")
+											onClick: () => removeTable(table.schema.name)
 										}
 									])}
 									leftSection={
