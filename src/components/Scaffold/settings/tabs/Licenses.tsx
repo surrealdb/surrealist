@@ -26,8 +26,9 @@ export function LicensesTab() {
 					<Table.Tbody>
 						{licenseReport.map((pkg) => {
 							const link = pkg.link.startsWith('git+') ? pkg.link.slice(4) : pkg.link;
+
 							return (
-								<Table.Tr>
+								<Table.Tr key={pkg.name}>
 									<Table.Td>{pkg.name}</Table.Td>
 									<Table.Td>{pkg.licenseType}</Table.Td>
 									<Table.Td>{pkg.installedVersion}</Table.Td>
