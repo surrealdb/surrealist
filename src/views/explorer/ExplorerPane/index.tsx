@@ -8,12 +8,13 @@ import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
 import { useExplorerStore } from "~/stores/explorer";
 import { getSurreal } from "~/util/surreal";
-import { EventBus, useEventSubscription } from "~/hooks/event";
+import { useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
 import { iconChevronLeft, iconChevronRight, iconFilter, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
 import { tb } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
+import { RecordsChangedEvent } from "~/util/global-events";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -23,11 +24,10 @@ const PAGE_SIZES = [
 ];
 
 export interface ExplorerPaneProps {
-	refreshEvent: EventBus;
 	openCreator: () => void;
 }
 
-export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
+export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
 
 	const schema = useSchema();
@@ -127,7 +127,7 @@ export function ExplorerPane({ refreshEvent, openCreator }: ExplorerPaneProps) {
 		fetchRecords();
 	}, [activeTable, pageSize, page, sortMode, showFilter, filterClause]);
 
-	useEventSubscription(refreshEvent, () => {
+	useEventSubscription(RecordsChangedEvent, () => {
 		fetchRecords();
 	});
 

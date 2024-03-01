@@ -25,7 +25,7 @@ export function useConfirmation<T>(options: ConfirmOptions<T>): (value?: T) => v
 	const ctx = useContext(ConfirmContext);
 
 	if (!ctx) {
-		throw new Error("useInspector must be used within an InspectorProvider");
+		throw new Error("useConfirmation must be used within an ConfirmationProvider");
 	}
 
 	return useStable((value) => {

@@ -49,6 +49,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const { showContextMenu } = useContextMenu();
 
 	const schema = useSchema();
+	const isOnline = useIsConnected();
 	const isViewActive = useConfigStore((s) => s.activeView == "designer");
 
 	const [isComputing, setIsComputing] = useState(false);
@@ -56,7 +57,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [showConfig, showConfigHandle] = useBoolean();
 	const [showHelp, showHelpHandle] = useBoolean();
 	const ref = useRef<ElementRef<"div">>(null);
-	const isOnline = useIsConnected();
 	const activeSession = useActiveConnection();
 	const isLight = useIsLight();
 
@@ -158,7 +158,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				renderGraph();
 			});
 		}
-	}, [schema]);
+	}, [schema, isOnline]);
 
 	useEffect(() => {
 		renderGraph();

@@ -3,6 +3,7 @@ import { createContext, useContext, PropsWithChildren, useState } from "react";
 import { HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
 import { InspectorDrawer } from "./drawer";
+import { RecordsChangedEvent } from "~/util/global-events";
 
 type InspectFunction = (id: string) => void;
 type StopInspectFunction = () => void;
@@ -49,6 +50,10 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 		isInspectingHandle.close();
 	});
 
+	const dispatchEvent = useStable(() => {
+		RecordsChangedEvent.dispatch();
+	});
+
 	return (
 		<InspectorContext.Provider value={{history, inspect, stopInspect}}>
 			{children}
@@ -57,7 +62,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 				opened={isInspecting}
 				history={history}
 				onClose={isInspectingHandle.close}
-				onRefresh={() => {}}
+				onRefresh={dispatchEvent}
 			/>
 		</InspectorContext.Provider>
 	);

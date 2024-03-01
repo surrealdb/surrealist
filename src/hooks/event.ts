@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useStable } from "./stable";
 
 type EventFn<T> = T extends undefined ? () => void : (value: T) => void;
@@ -6,6 +6,32 @@ type EventFn<T> = T extends undefined ? () => void : (value: T) => void;
 export interface EventBus<T = undefined> {
 	listeners: Set<EventFn<T>>;
 	dispatch: EventFn<T>;
+	cleanup: () => void;
+}
+
+/**
+ * Define a new event bus which dispatches events to all listeners.
+ *
+ * @returns Event bus instance
+ */
+export function createEventBus<T = undefined>(): EventBus<T> {
+	const listeners = new Set<EventFn<T>>();
+
+	const dispatch = ((value: T) => {
+		for (const listener of listeners) {
+			listener(value);
+		}
+	}) as EventFn<T>;
+
+	const cleanup = () => {
+		listeners.clear();
+	};
+
+	return {
+		listeners,
+		dispatch,
+		cleanup
+	};
 }
 
 /**
@@ -14,18 +40,17 @@ export interface EventBus<T = undefined> {
  * @returns Event bus instance
  */
 export function useEventBus<T = undefined>(): EventBus<T> {
-	const listeners = useRef(new Set<(value: T) => void>()).current;
+	const bus = useRef<EventBus<T>>();
 
-	const dispatch = useStable((value: T) => {
-		for (const listener of listeners) {
-			listener(value);
-		}
-	});
+	if (!bus.current) {
+		bus.current = createEventBus();
+	}
 
-	return useMemo(() => ({
-		listeners,
-		dispatch
-	}), []) as any;
+	useEffect(() => {
+		return () => bus.current?.cleanup();
+	}, []);
+
+	return bus.current;
 }
 
 /**

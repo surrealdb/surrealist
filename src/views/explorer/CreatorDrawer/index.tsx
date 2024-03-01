@@ -5,20 +5,18 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
-import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
 import { iconClose, iconPlus } from "~/util/icons";
+import { RecordsChangedEvent } from "~/util/global-events";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
 	activeTable: string | null;
 	onClose: () => void;
-	onRefresh: () => void;
 }
 
-export function CreatorDrawer({ opened, activeTable, onClose, onRefresh }: CreatorDrawerProps) {
-	const isLight = useIsLight();
+export function CreatorDrawer({ opened, activeTable, onClose }: CreatorDrawerProps) {
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
 
@@ -46,7 +44,7 @@ export function CreatorDrawer({ opened, activeTable, onClose, onRefresh }: Creat
 		await surreal.query(`CREATE ${recordId} CONTENT ${recordBody}`);
 
 		onClose();
-		onRefresh();
+		RecordsChangedEvent.dispatch();
 	});
 
 	useLayoutEffect(() => {
