@@ -12,11 +12,11 @@ import { RecordsChangedEvent } from "~/util/global-events";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
-	activeTable: string | null;
+	table: string;
 	onClose: () => void;
 }
 
-export function CreatorDrawer({ opened, activeTable, onClose }: CreatorDrawerProps) {
+export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
 
@@ -49,7 +49,7 @@ export function CreatorDrawer({ opened, activeTable, onClose }: CreatorDrawerPro
 
 	useLayoutEffect(() => {
 		if (opened) {
-			setRecordId(activeTable || '');
+			setRecordId(table || '');
 			setRecordBody('{\n    \n}');
 		}
 	}, [opened]);

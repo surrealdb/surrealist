@@ -1,22 +1,26 @@
 import { ExplorerPane } from "../ExplorerPane";
-import { useEffect } from "react";
-import { useIsConnected } from "~/hooks/connection";
+import { useState } from "react";
 import { TablesPane } from "../TablesPane";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { useDisclosure } from "@mantine/hooks";
 import { Group } from "@mantine/core";
-import { useExplorerStore } from "~/stores/explorer";
+import { DisconnectedEvent } from "~/util/global-events";
+import { useEventSubscription } from "~/hooks/event";
+import { useStable } from "~/hooks/stable";
 
 export function ExplorerView() {
-	const isOnline = useIsConnected();
-	const activeTable = useExplorerStore((s) => s.activeTable);
+	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
+	const [creatorTable, setCreatorTable] = useState<string>();
 
-	useEffect(() => {
-		if (!isOnline) {
-			isCreatingHandle.close();
-		}
-	}, [isOnline]);
+	const openCreator = useStable((table?: string) => {
+		setCreatorTable(table || activeTable);
+		isCreatingHandle.open();
+	});
+
+	useEventSubscription(DisconnectedEvent, () => {
+		isCreatingHandle.close();
+	});
 
 	return (
 		<>
@@ -26,18 +30,23 @@ export function ExplorerView() {
 				gap="var(--surrealist-divider-size)"
 			>
 				<TablesPane
-					openRecordCreator={isCreatingHandle.open}
+					activeTable={activeTable}
+					onTableSelect={setActiveTable}
+					onCreateRecord={openCreator}
 				/>
 				<ExplorerPane
-					openCreator={isCreatingHandle.open}
+					activeTable={activeTable}
+					onCreateRecord={openCreator}
 				/>
 			</Group>
 
-			<CreatorDrawer
-				opened={isCreating}
-				activeTable={activeTable}
-				onClose={isCreatingHandle.close}
-			/>
+			{creatorTable && (
+				<CreatorDrawer
+					opened={isCreating}
+					table={creatorTable}
+					onClose={isCreatingHandle.close}
+				/>
+			)}
 		</>
 	);
 }

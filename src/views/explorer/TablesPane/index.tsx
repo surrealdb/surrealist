@@ -10,7 +10,6 @@ import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
-import { useExplorerStore } from "~/stores/explorer";
 import { useConfigStore } from "~/stores/config";
 import { Importer } from "../Importer";
 import { Exporter } from "../Exporter";
@@ -23,10 +22,12 @@ import { getSurreal } from "~/util/surreal";
 import { tb } from "~/util/helpers";
 
 export interface TablesPaneProps {
-	openRecordCreator: (table: string) => void;
+	activeTable: string | undefined;
+	onTableSelect: (table: string) => void;
+	onCreateRecord: (table: string) => void;
 }
 
-export function TablesPane(props: TablesPaneProps) {
+export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: TablesPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
 
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
@@ -38,9 +39,6 @@ export function TablesPane(props: TablesPaneProps) {
 	const schema = useTables();
 
 	const { showContextMenu } = useContextMenu();
-
-	const activeTable = useExplorerStore((s) => s.activeTable);
-	const setExplorerTable = useExplorerStore((s) => s.setExplorerTable);
 
 	const isPinned = useStable((table: string) => {
 		return connection.pinnedTables.includes(table);
@@ -79,7 +77,7 @@ export function TablesPane(props: TablesPaneProps) {
 			fetchDatabaseSchema();
 
 			if (activeTable == table) {
-				setExplorerTable("");
+				onTableSelect("");
 			}
 		}
 	});
@@ -146,20 +144,19 @@ export function TablesPane(props: TablesPaneProps) {
 								<Entry
 									key={table.schema.name}
 									isActive={isActive}
-									onClick={() => setExplorerTable(table.schema.name)}
-									// className={clsx(classes.table)}
+									onClick={() => onTableSelect(table.schema.name)}
 									onContextMenu={showContextMenu([
 										{
 											key: 'open',
 											title: "View table records",
 											icon: <Icon path={iconTable} />,
-											onClick: () => setExplorerTable(table.schema.name)
+											onClick: () => onTableSelect(table.schema.name)
 										},
 										{
 											key: 'new',
 											title: "Create new record",
 											icon: <Icon path={iconPlus} />,
-											onClick: () => props.openRecordCreator(table.schema.name)
+											onClick: () => onCreateRecord(table.schema.name)
 										},
 										{
 											key: 'pin',

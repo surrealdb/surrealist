@@ -7,6 +7,7 @@ import { getActiveConnection } from "./util/connection";
 import { getConnection } from "./util/connection";
 import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
+import { ConnectedEvent, DisconnectedEvent } from "./util/global-events";
 
 /**
  * Open a new connection to the data
@@ -30,11 +31,13 @@ export function openConnection(isSilent?: boolean, callback?: (success: boolean)
 				setIsConnected(true);
 				fetchDatabaseSchema();
 				callback?.(true);
+				ConnectedEvent.dispatch();
 			},
 			onDisconnect(code, reason) {
 				setIsConnecting(false);
 				setIsConnected(false);
 				callback?.(false);
+				DisconnectedEvent.dispatch();
 
 				if (code != 1000 && !isSilent) {
 					const subtitle = code === 1006 ? "Unexpected connection close" : reason || `Unknown reason`;

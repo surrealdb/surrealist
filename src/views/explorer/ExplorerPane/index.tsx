@@ -1,12 +1,11 @@
 import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
-import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo } from "react";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { FocusEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
-import { useExplorerStore } from "~/stores/explorer";
 import { getSurreal } from "~/util/surreal";
 import { useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
@@ -24,50 +23,33 @@ const PAGE_SIZES = [
 ];
 
 export interface ExplorerPaneProps {
-	openCreator: () => void;
+	activeTable: string | undefined;
+	onCreateRecord: () => void;
 }
 
-export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
+export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
 
 	const schema = useSchema();
 
-	const activeTable = useExplorerStore((s) => s.activeTable);
-	const records = useExplorerStore((s) => s.records);
-	const recordCount = useExplorerStore((s) => s.recordCount);
-	const filtering = useExplorerStore((s) => s.filtering);
-	const filter = useExplorerStore((s) => s.filter);
-
-	const pageText = useExplorerStore((s) => s.pageText);
-	const updatePageText = useExplorerStore((s) => s.updatePageText);
-
-	const pageSize = useExplorerStore((s) => s.pageSize);
-	const updatePageSize = useExplorerStore((s) => s.updatePageSize);
-
-	const sortMode = useExplorerStore((s) => s.sortMode);
-	const updateSortMode = useExplorerStore((s) => s.updateSortMode);
-
-	const page = useExplorerStore((s) => s.page);
-	const updatePage = useExplorerStore((s) => s.updatePage);
-
-	const setExplorerFiltering = useExplorerStore((s) => s.setExplorerFiltering);
-	const setExplorerFilter = useExplorerStore((s) => s.setExplorerFilter);
-	const clearExplorerData = useExplorerStore((s) => s.clearExplorerData);
-	const setExplorerData = useExplorerStore((s) => s.setExplorerData);
+	const [records, setRecords] = useState<unknown[]>([]);
+	const [recordCount, setRecordCount] = useState(0);
+	const [filtering, setFiltering] = useState(false);
+	const [filter, setFilter] = useInputState("");
+	const [pageText, setPageText] = useInputState("1");
+	const [pageSize, setPageSize] = useState("25");
+	const [sortMode, setSortMode] = useState<[string, "asc" | "desc"] | null>(null);
+	const [page, setPage] = useState(1);
 
 	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
 	function setCurrentPage(number: number) {
-		updatePageText(number.toString());
-		updatePage(number);
+		setPageText(number.toString());
+		setPage(number);
 	}
 
 	const toggleFilter = useStable(() => {
-		setExplorerFiltering(!filtering);
-	});
-
-	const setFilter = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setExplorerFilter(e.target.value);
+		setFiltering(!filtering);
 	});
 
 	const [showFilter] = useDebouncedValue(filtering, 250);
@@ -79,7 +61,8 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 
 	const fetchRecords = useStable(async () => {
 		if (!activeTable) {
-			clearExplorerData();
+			setRecords([]);
+			setRecordCount(0);
 			return;
 		}
 
@@ -112,7 +95,8 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 		const count = response[0].result?.[0] || 0;
 		const records = response[1].result || [];
 
-		setExplorerData(records, count);
+		setRecords(records);
+		setRecordCount(count);
 
 		if (page > pageCount) {
 			setCurrentPage(pageCount || 1);
@@ -136,7 +120,7 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 		let newPage = Number.parseInt(value).valueOf();
 
 		if (!value || Number.isNaN(newPage)) {
-			updatePageText(page.toString());
+			setPageText(page.toString());
 			return;
 		}
 
@@ -161,6 +145,10 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 		if (page >= pageCount) return;
 
 		setCurrentPage(page + 1);
+	});
+
+	const openCreator = useStable(() => {
+		onCreateRecord();
 	});
 
 	const headers = schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
@@ -225,7 +213,7 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 							<DataTable
 								data={records}
 								sorting={sortMode}
-								onSortingChange={updateSortMode}
+								onSortingChange={setSortMode}
 								headers={headers}
 							/>
 						</ScrollArea>
@@ -266,7 +254,7 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 
 							<TextInput
 								value={pageText}
-								onChange={(e) => updatePageText(e.currentTarget.value)}
+								onChange={setPageText}
 								maw={36}
 								size="xs"
 								withAsterisk
@@ -292,7 +280,7 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 
 						<Select
 							value={pageSize}
-							onChange={updatePageSize as any}
+							onChange={setPageSize as any}
 							data={PAGE_SIZES}
 							size="xs"
 						/>
