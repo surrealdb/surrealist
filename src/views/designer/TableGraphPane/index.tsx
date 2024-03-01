@@ -71,6 +71,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		const [nodes, edges] = buildFlowNodes(props.tables);
 
 		if (nodes.length === 0) {
+			setNodes([]);
+			setEdges([]);
 			setIsComputing(false);
 			return;
 		}
@@ -153,6 +155,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [isViewActive]);
 
 	useLayoutEffect(() => {
+		console.log('Something changed');
+
 		if (isViewActive) {
 			setTimeout(() => {
 				renderGraph();
