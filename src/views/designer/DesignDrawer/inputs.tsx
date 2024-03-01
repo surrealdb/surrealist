@@ -4,7 +4,6 @@ import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { TableDefinition } from "~/types";
@@ -17,7 +16,6 @@ export interface QueryInputProps extends TextInputProps {
 
 export function QueryInput(props: QueryInputProps) {
 	const { onChangeText, ...rest } = props;
-	const isLight = useIsLight();
 
 	const [isEditorOpen, setIsEditorOpen] = useState(false);
 	const [editorText, setEditorText] = useState<string | undefined>();
@@ -56,8 +54,13 @@ export function QueryInput(props: QueryInputProps) {
 				rightSection={
 					<Group gap={8} wrap="nowrap">
 						{props.rightSection}
-						<ActionIcon title="Advanced editor" onClick={openEditor} color="slate">
-							<Icon path={iconWrench} size="sm" color="slate" />
+						<ActionIcon
+							title="Advanced editor"
+							onClick={openEditor}
+							color="slate"
+							variant="subtle"
+						>
+							<Icon path={iconWrench} size="sm" />
 						</ActionIcon>
 					</Group>
 				}
@@ -97,6 +100,9 @@ export function QueryInput(props: QueryInputProps) {
 						variant="gradient"
 						onClick={saveEditor}
 						type="submit"
+						rightSection={
+							<Icon path={iconCheck} />
+						}
 					>
 						Done
 					</Button>
