@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, Drawer, Group, Paper, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Badge, Button, Drawer, Group, Paper } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -64,6 +64,7 @@ export function CreatorDrawer({ opened, activeTable, onClose }: CreatorDrawerPro
 		>
 			<Group mb="md" gap="sm">
 				<ModalTitle>
+					<Icon left path={iconPlus} size="sm" />
 					Create record
 				</ModalTitle>
 
@@ -83,17 +84,13 @@ export function CreatorDrawer({ opened, activeTable, onClose }: CreatorDrawerPro
 				</ActionIcon>
 			</Group>
 
-			<TextInput
+			{/* <TextInput
 				mb="xs"
 				label="Record name"
 				value={recordId}
 				onChange={setRecordId}
 				autoFocus
-			/>
-
-			<Text c="dark.0" size="sm">
-				Record contents
-			</Text>
+			/> */}
 
 			<Paper
 				mt="xs"
@@ -103,7 +100,7 @@ export function CreatorDrawer({ opened, activeTable, onClose }: CreatorDrawerPro
 					position: "absolute",
 					insetInline: 16,
 					bottom: 62,
-					top: 136,
+					top: 64,
 				}}
 			>
 				<SurrealistEditor

@@ -169,7 +169,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		>
 			<Group mb="md" gap="sm">
 				<ModalTitle>
-					<Icon left path={iconSearch} />
+					<Icon left path={iconSearch} size="sm" />
 					Record inspector
 				</ModalTitle>
 

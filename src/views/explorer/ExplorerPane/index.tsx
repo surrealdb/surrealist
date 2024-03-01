@@ -57,10 +57,6 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 
 	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
 
-	const requestCreate = useStable(async () => {
-		openCreator();
-	});
-
 	function setCurrentPage(number: number) {
 		updatePageText(number.toString());
 		updatePage(number);
@@ -168,6 +164,7 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 	});
 
 	const headers = schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
+	const hasTables = (schema?.tables?.length ?? 0) > 0;
 
 	return (
 		<ContentPane
@@ -176,7 +173,7 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 			rightSection={
 				activeTable && (
 					<Group align="center">
-						<ActionIcon title="Create record" onClick={requestCreate}>
+						<ActionIcon title="Create record" onClick={openCreator}>
 							<Icon path={iconPlus} />
 						</ActionIcon>
 
@@ -301,6 +298,12 @@ export function ExplorerPane({ openCreator }: ExplorerPaneProps) {
 						/>
 					</Group>
 				</>
+			) : hasTables ? (
+				<Center h="90%">
+					<Text ta="center" c="slate">
+						Select a table to view records
+					</Text>
+				</Center>
 			) : (
 				<Center h="90%">
 					<Box ta="center">
