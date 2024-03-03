@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import surrealistLogo from "~/assets/images/logo.png";
-import { Group, Button, Modal, TextInput, Image, Center, ActionIcon } from "@mantine/core";
+import { Group, Button, Modal, TextInput, Image, Center, ActionIcon, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { updateTitle } from "~/util/helpers";
@@ -17,14 +17,13 @@ import { Connections } from "./connections";
 import { showNotification } from "@mantine/notifications";
 import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
-import { iconClose, iconReset } from "~/util/icons";
+import { iconReset } from "~/util/icons";
 import { HelpAndSupport } from "./HelpAndSupport";
 
 export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
-	const isConnecting = useDatabaseStore((s) => s.isConnecting);
 
 	const connection = useConnection();
 
@@ -46,10 +45,6 @@ export function Toolbar() {
 		closeEditingTab();
 	});
 
-	const connect = useStable(() => {
-		openConnection();
-	});
-
 	const resetSandbox = useStable(() => {
 		closeConnection();
 		openConnection();
@@ -63,7 +58,6 @@ export function Toolbar() {
 
 	return (
 		<>
-			{/* <Group h={24} bg="dark.9" data-tauri-drag-region /> */}
 			<Group
 				p="xs"
 				gap="sm"
@@ -77,44 +71,23 @@ export function Toolbar() {
 					<Image
 						style={{ pointerEvents: "none", userSelect: "none" }}
 						src={surrealistLogo}
-						width={38}
+						height={26}
 					/>
 				</Center>
 
-				<Connections
+				<Connections />
 
-				/>
-
-				{connection && (isConnected ? (isSandbox ? (
-					<ActionIcon
-						color="slate"
-						variant="transparent"
-						title="Reset sandbox environment"
-						onClick={resetSandbox}
-					>
-						<Icon path={iconReset} />
-					</ActionIcon>
-				) : (
-					<ActionIcon
-						color="slate"
-						variant="transparent"
-						title="Disconnect"
-						onClick={closeConnection}
-					>
-						<Icon path={iconClose} />
-					</ActionIcon>
-				)) : (
-					<Button
-						h={42}
-						radius="lg"
-						color="surreal"
-						variant="light"
-						loading={isConnecting}
-						onClick={connect}
-					>
-						Connect
-					</Button>
-				))}
+				{isConnected && isSandbox && (
+					<Tooltip label="Reset sandbox environment">
+						<ActionIcon
+							color="slate"
+							variant="subtle"
+							onClick={resetSandbox}
+						>
+							<Icon path={iconReset} />
+						</ActionIcon>
+					</Tooltip>
+				)}
 
 				<Spacer />
 

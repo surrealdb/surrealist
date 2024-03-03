@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
 import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStoreApi } from "reactflow";
 import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
@@ -187,9 +187,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			style={{ overflow: 'hidden' }}
 			rightSection={
 				<Group wrap="nowrap">
-					<ActionIcon title="Create table..." onClick={openTableCreator}>
-						<Icon path={iconPlus} />
-					</ActionIcon>
+					<Tooltip label="New table">
+						<ActionIcon onClick={openTableCreator}>
+							<Icon path={iconPlus} />
+						</ActionIcon>
+					</Tooltip>
 					<Popover
 						opened={showConfig}
 						onChange={showConfigHandle.set}
@@ -198,12 +200,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						shadow="sm"
 					>
 						<Popover.Target>
-							<ActionIcon
-								title="Graph Options"
-								onClick={showConfigHandle.toggle}
-							>
-								<Icon path={iconCog} />
-							</ActionIcon>
+							<Tooltip label="Graph Options">
+								<ActionIcon onClick={showConfigHandle.toggle}>
+									<Icon path={iconCog} />
+								</ActionIcon>
+							</Tooltip>
 						</Popover.Target>
 						<Popover.Dropdown onMouseLeave={showConfigHandle.close}>
 							<Stack pb={4}>
@@ -225,9 +226,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							</Stack>
 						</Popover.Dropdown>
 					</Popover>
-					<ActionIcon title="Help" onClick={showHelpHandle.open}>
-						<Icon path={iconHelp} />
-					</ActionIcon>
+					<Tooltip label="Designer help">
+						<ActionIcon onClick={showHelpHandle.open}>
+							<Icon path={iconHelp} />
+						</ActionIcon>
+					</Tooltip>
 				</Group>
 			}>
 			<div style={{ position: "relative", width: "100%", height: "100%" }}>

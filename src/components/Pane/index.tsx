@@ -19,8 +19,8 @@ export function ContentPane(props: ContentPaneProps) {
 
 	return (
 		<Paper
-			className={classes.root}
 			radius="lg"
+			className={classes.root}
 			{...rest}
 		>
 			{title !== undefined && icon !== undefined && (

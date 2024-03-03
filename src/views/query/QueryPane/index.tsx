@@ -6,22 +6,18 @@ import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon, Badge, Box, Divider, Group } from "@mantine/core";
+import { Badge, Box, Divider, Group } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { Icon } from "~/components/Icon";
-import { adapter, isEmbed } from "~/adapter";
-import { SURQL_FILTERS } from "~/constants";
+import { isEmbed } from "~/adapter";
 import { Spacer } from "~/components/Spacer";
 import { Actions } from "../Actions";
-import { format_query } from "~/generated/surrealist-embed";
-import { getFileName, isUnnamedTab, showError } from "~/util/helpers";
-import { iconFile, iconServer, iconStar, iconText } from "~/util/icons";
+import { iconServer } from "~/util/icons";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
 	isValid: boolean;
 	onSaveQuery: () => void;
-	toggleVariables: () => void;
+	onToggleVariables: () => void;
 	setIsValid: (isValid: boolean) => void;
 }
 
@@ -56,36 +52,22 @@ export function QueryPane(props: QueryPaneProps) {
 		validateQuery();
 	});
 
-	const handleUpload = useStable(async () => {
-		if (!activeTab) return;
+	// const handleUpload = useStable(async () => {
+	// 	if (!activeTab) return;
 
-		const [file] = await adapter.openFile('Open query from file', SURQL_FILTERS, false);
+	// 	const [file] = await adapter.openFile('Open query from file', SURQL_FILTERS, false);
 
-		if (file) {
-			setQueryForced(file.content);
+	// 	if (file) {
+	// 		setQueryForced(file.content);
 
-			if (isUnnamedTab(activeTab)) {
-				updateQueryTab({
-					id: activeTab.id,
-					name: getFileName(file.name)
-				});
-			}
-		}
-	});
-
-	const handleFormat = useStable(() => {
-		if (!activeTab) {
-			return;
-		}
-
-		const formatted = format_query(activeTab.query);
-
-		if (formatted) {
-			setQueryForced(formatted);
-		} else {
-			showError('Formatting failed', 'Could not format query');
-		}
-	});
+	// 		if (isUnnamedTab(activeTab)) {
+	// 			updateQueryTab({
+	// 				id: activeTab.id,
+	// 				name: getFileName(file.name)
+	// 			});
+	// 		}
+	// 	}
+	// });
 
 	return (
 		<ContentPane
@@ -133,37 +115,14 @@ export function QueryPane(props: QueryPaneProps) {
 						>
 							<Divider mb="sm" />
 							<Group gap="sm">
-								<ActionIcon
-									onClick={props.onSaveQuery}
-									title="Save query"
-									variant="light"
-								>
-									<Icon path={iconStar} />
-								</ActionIcon>
-
-								<ActionIcon
-									onClick={handleFormat}
-									title="Cleanup query"
-									variant="light"
-								>
-									<Icon path={iconText} />
-								</ActionIcon>
-
-								<ActionIcon
-									onClick={handleUpload}
-									title="Load from file"
-									variant="light"
-								>
-									<Icon path={iconFile} />
-								</ActionIcon>
-
 								<Spacer />
 
 								{!isEmbed && (
 									<Actions
 										queryTab={activeTab}
 										showVariables={props.showVariables}
-										toggleVariables={props.toggleVariables}
+										onToggleVariables={props.onToggleVariables}
+										onSaveQuery={props.onSaveQuery}
 									/>
 								)}
 							</Group>

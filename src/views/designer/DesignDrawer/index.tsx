@@ -10,6 +10,7 @@ import {
 	Paper,
 	ScrollArea,
 	TextInput,
+	Tooltip,
 } from "@mantine/core";
 
 import { useMemo } from "react";
@@ -93,9 +94,11 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					</Badge>
 				))}
 
-				<ActionIcon title="Delete table" onClick={removeTable}>
-					<Icon path={iconDelete} />
-				</ActionIcon>
+				<Tooltip label="Remove table">
+					<ActionIcon onClick={removeTable} color="red">
+						<Icon path={iconDelete} />
+					</ActionIcon>
+				</Tooltip>
 
 				<ActionIcon onClick={() => onClose(false)} disabled={handle.isChanged}>
 					<Icon path={iconClose} />

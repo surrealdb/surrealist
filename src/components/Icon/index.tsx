@@ -6,8 +6,8 @@ const FONT_SIZES: Record<string, number> = {
 	xs: 0.5,
 	sm: 0.75,
 	md: 1,
-	lg: 1.5,
-	xl: 2,
+	lg: 1.25,
+	xl: 1.5,
 };
 
 export interface IconProps extends Omit<BoxProps, "left" | "right">, Omit<HTMLAttributes<SVGElement>, "style"> {

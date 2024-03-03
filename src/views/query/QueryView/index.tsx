@@ -106,7 +106,8 @@ export function QueryView() {
 					<Actions
 						queryTab={active!}
 						showVariables={showVariables}
-						toggleVariables={showVariablesHandle.toggle}
+						onToggleVariables={showVariablesHandle.toggle}
+						onSaveQuery={handleSaveRequest}
 					/>
 				</Group>
 			)}
@@ -130,7 +131,7 @@ export function QueryView() {
 									showVariables={showVariables}
 									isValid={queryValid}
 									setIsValid={setQueryValid}
-									toggleVariables={showVariablesHandle.toggle}
+									onToggleVariables={showVariablesHandle.toggle}
 									onSaveQuery={handleSaveRequest}
 								/>
 							</Panel>

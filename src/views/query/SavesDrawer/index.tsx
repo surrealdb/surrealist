@@ -86,9 +86,11 @@ export function SavesDrawer(props: SavesDrawerProps) {
 
 				<Spacer />
 
-				<ActionIcon onClick={props.onSaveQuery} title="Add query">
-					<Icon path={iconPlus} />
-				</ActionIcon>
+				<Tooltip label="Save current query">
+					<ActionIcon onClick={props.onSaveQuery}>
+						<Icon path={iconPlus} />
+					</ActionIcon>
+				</Tooltip>
 
 				<ActionIcon onClick={props.onClose}>
 					<Icon path={iconClose} />
@@ -214,17 +216,6 @@ export function SavesDrawer(props: SavesDrawerProps) {
 										<Icon path={iconQuery} size={0.9} />
 									</ActionIcon>
 								</Tooltip>
-								{/* <ActionIcon
-									className={classes.queryAction}
-									onClick={e => handleDeleteQuery(entry, e)}
-								>
-									<Icon path={mdiDelete} size={0.9} />
-								</ActionIcon> */}
-								{/* <ActionIcon
-									className={classes.queryAction}
-								>
-									<Icon path={mdiDotsVertical} size={0.9} />
-								</ActionIcon> */}
 							</Group>
 						</Accordion.Control>
 						<Accordion.Panel p={0} px={4}>

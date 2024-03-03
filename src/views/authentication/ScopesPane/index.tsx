@@ -1,4 +1,4 @@
-import { Badge, ScrollArea, Text, Textarea } from "@mantine/core";
+import { Badge, ScrollArea, Text, Textarea, Tooltip } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
@@ -94,11 +94,11 @@ export function ScopePane() {
 			icon={iconAccountSecure}
 			title="Database Scopes"
 			rightSection={
-				<Group wrap="nowrap">
-					<ActionIcon title="Add account" onClick={createAccount}>
+				<Tooltip label="New scope">
+					<ActionIcon onClick={createAccount}>
 						<Icon path={iconPlus} />
 					</ActionIcon>
-				</Group>
+				</Tooltip>
 			}>
 			{scopes.length === 0 && (
 				<Center h="100%" c="slate">
@@ -130,12 +130,11 @@ export function ScopePane() {
 											? "Signup only"
 											: "No auth"}
 							</Badge>
-							<ActionIcon
-								title="Edit user"
-								onClick={() => editScope(scope)}
-							>
-								<Icon path={iconEdit} />
-							</ActionIcon>
+							<Tooltip label="Edit scope">
+								<ActionIcon onClick={() => editScope(scope)}>
+									<Icon path={iconEdit} />
+								</ActionIcon>
+							</Tooltip>
 						</Group>
 					))}
 				</Stack>

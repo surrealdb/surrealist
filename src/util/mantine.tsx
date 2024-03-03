@@ -1,4 +1,4 @@
-import { createTheme, rem } from "@mantine/core";
+import { ActionIcon, Checkbox, Divider, Drawer, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, Tooltip, createTheme, rem } from "@mantine/core";
 
 export const PRIMARY_COLOR = "surreal.5";
 
@@ -32,11 +32,11 @@ export const MANTINE_THEME = createTheme({
 	primaryShade: 6,
 	defaultRadius: "md",
 	fontSizes: {
-		xs: rem(11),
-		sm: rem(12),
-		md: rem(13),
-		lg: rem(15),
-		xl: rem(17),
+		xs: rem(10),
+		sm: rem(11),
+		md: rem(12),
+		lg: rem(14),
+		xl: rem(16),
 	},
 	headings: {
 		sizes: {
@@ -44,6 +44,20 @@ export const MANTINE_THEME = createTheme({
 			h2: { fontSize: rem(20), fontWeight: '600' },
 			h3: { fontSize: rem(18), fontWeight: '500' },
 		},
+	},
+	spacing: {
+		xs: rem(6),
+		sm: rem(9),
+		md: rem(12),
+		lg: rem(16),
+		xl: rem(20),
+	},
+	radius: {
+		xs: rem(7),
+		sm: rem(9),
+		md: rem(11),
+		lg: rem(15),
+		xl: rem(19),
 	},
 	colors: {
 		surreal: [
@@ -77,98 +91,90 @@ export const MANTINE_THEME = createTheme({
 		deg: 110
 	},
 	components: {
-		Modal: {
+		Modal: Modal.extend({
 			defaultProps: {
 				centered: true,
 				withCloseButton: false,
 				padding: "lg"
 			}
-		},
-		Overlay: {
+		}),
+		Overlay: Overlay.extend({
 			defaultProps: {
 				blur: 5
 			},
-		},
-		Menu: {
-			defaultProps: {
-				withinPortal: true,
-			},
-		},
-		Popover: {
+		}),
+		Popover: Popover.extend({
 			defaultProps: {
 				shadow: "0 6px 12px 2px rgba(0, 0, 0, 0.15)"
 			}
-		},
-		Divider: {
+		}),
+		Divider: Divider.extend({
 			defaultProps: {
 				color: 'var(--surrealist-divider-color)',
 				size: 1,
 			},
-		},
-		ActionIcon: {
+		}),
+		ActionIcon: ActionIcon.extend({
 			defaultProps: {
 				variant: "light",
-				color: "slate"
+				color: "slate",
+				radius: "xs"
 			}
-		},
-		Input: {
-			defaultProps: {
-				autoComplete: "off",
-				spellCheck: "false",
-			},
-		},
-		Select: {
+		}),
+		Select: Select.extend({
 			defaultProps: {
 				allowDeselect: false
 			}
-		},
-		Radio: {
+		}),
+		Radio: Radio.extend({
 			styles: {
 				label: {
 					display: "block",
 				},
 			},
-		},
-		Slider: {
+		}),
+		Slider: Slider.extend({
 			defaultProps: {
 				color: "slate.2"
 			}
-		},
-		Tabs: {
+		}),
+		Tabs: Tabs.extend({
 			styles: {
 				tab: {
 					fontWeight: 600,
 				},
 			},
-		},
-		Checkbox: {
+		}),
+		Checkbox: Checkbox.extend({
 			defaultProps: {
-				color: "transparent"
+				color: "transparent",
+				radius: "xs"
 			}
-		},
-		Switch: {
+		}),
+		Switch: Switch.extend({
 			styles: {
 				root: {
 					display: "flex",
 				},
 			},
-		},
-		Tooltip: {
+		}),
+		Tooltip: Tooltip.extend({
 			defaultProps: {
-				withinPortal: true,
 				transitionProps: { transition: "pop" },
-				openDelay: 250
+				radius: "xs",
+				p: "sm"
 			},
 			styles: {
 				tooltip: {
 					color: "white",
-					backgroundColor: "var(--surrealist-tooltip-bg)",
+					padding: 4,
+					backgroundColor: "rgba(0, 0, 0, 0.7)",
 					backdropFilter: "blur(4px)",
 					WebkitBackdropFilter: "blur(4px)",
 				},
 			},
-		},
-		Drawer: {
+		}),
+		Drawer: Drawer.extend({
 			defaultProps: {
 				withCloseButton: false,
 				padding: "lg"
@@ -198,6 +204,6 @@ export const MANTINE_THEME = createTheme({
 					}
 				};
 			}
-		}
+		})
 	}
 });

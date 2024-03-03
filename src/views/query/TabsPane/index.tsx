@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text } from "@mantine/core";
+import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
 import { EditableText } from "~/components/EditableText";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -64,7 +64,7 @@ export function TabsPane(props: TabsPaneProps) {
 		<ContentPane
 			icon={iconList}
 			title="Queries"
-			w={325}
+			w={300}
 			leftSection={
 				<Badge
 					color={isLight ? "slate.0" : "slate.9"}
@@ -75,9 +75,11 @@ export function TabsPane(props: TabsPaneProps) {
 				</Badge>
 			}
 			rightSection={
-				<ActionIcon title="Create query..." onClick={newTab}>
-					<Icon path={iconPlus} />
-				</ActionIcon>
+				<Tooltip label="New query">
+					<ActionIcon onClick={newTab}>
+						<Icon path={iconPlus} />
+					</ActionIcon>
+				</Tooltip>
 			}
 		>
 			<Stack
@@ -134,13 +136,14 @@ export function TabsPane(props: TabsPaneProps) {
 
 												{queries.length > 1 && (
 													<ActionIcon
+														size="sm"
 														component="div"
+														variant="subtle"
 														className={classes.queryClose}
 														onClick={(e) => removeTab(query.id, e)}
 														color={(isActive && isLight) ? "white" : undefined}
-														bg={isActive ? "rgba(255, 255, 255, 0.15)" : undefined}
 													>
-														<Icon path={iconClose} />
+														<Icon path={iconClose} size="sm" />
 													</ActionIcon>
 												)}
 											</>

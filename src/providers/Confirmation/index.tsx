@@ -54,15 +54,11 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 
 	const onDissmiss = useStable(() => {
 		setIsConfirming(false);
-		setOptions(undefined);
-
 		options?.onDismiss?.();
 	});
 
 	const onConfirm = useStable(() => {
 		setIsConfirming(false);
-		setOptions(undefined);
-
 		options?.onConfirm?.(value);
 	});
 

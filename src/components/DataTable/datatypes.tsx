@@ -72,7 +72,7 @@ function ArrayCell(props: DataCellProps) {
 
 	return (
 		<div>
-			<HoverCard shadow="xl" withinPortal withArrow>
+			<HoverCard shadow="xl" withArrow>
 				<HoverCard.Target>
 					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Array({props.value.length})
@@ -102,7 +102,7 @@ function ArrayCell(props: DataCellProps) {
 function ObjectCell(props: DataCellProps) {
 	return (
 		<div>
-			<HoverCard width={280} shadow="md" withinPortal withArrow>
+			<HoverCard width={280} shadow="md" withArrow>
 				<HoverCard.Target>
 					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Object({Object.keys(props.value).length})

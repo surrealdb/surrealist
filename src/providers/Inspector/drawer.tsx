@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, TextInput, Tooltip } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -177,27 +177,32 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 				<Group align="center">
 					{history.canPop && (
-						<ActionIcon
-							onClick={history.pop}
-							title="Go to previous record"
-						>
-							<Icon path={iconArrowLeftFat} />
-						</ActionIcon>
+						<Tooltip label="Go back">
+							<ActionIcon
+								onClick={history.pop}
+							>
+								<Icon path={iconArrowLeftFat} />
+							</ActionIcon>
+						</Tooltip>
 					)}
 
-					<ActionIcon onClick={refreshRecord} title="Refetch record">
-						<Icon path={iconRefresh} />
-					</ActionIcon>
+					<Tooltip label="Refetch from database">
+						<ActionIcon onClick={refreshRecord}>
+							<Icon path={iconRefresh} />
+						</ActionIcon>
+					</Tooltip>
 
-					<ActionIcon
-						disabled={!currentRecord.exists}
-						onClick={deleteRecord}
-						title="Delete record (Hold shift to force)"
-					>
-						<Icon path={iconDelete} />
-					</ActionIcon>
+					<Tooltip label="Delete record">
+						<ActionIcon
+							disabled={!currentRecord.exists}
+							onClick={deleteRecord}
+							color="red"
+						>
+							<Icon path={iconDelete} />
+						</ActionIcon>
+					</Tooltip>
 
-					<ActionIcon onClick={onClose} title="Close inspector">
+					<ActionIcon onClick={onClose}>
 						<Icon path={iconClose} />
 					</ActionIcon>
 				</Group>
@@ -218,7 +223,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 							title="This record is an edge"
 							bg="slate"
 							c="bright"
-							radius="xl"
 							px="xs"
 						>
 							Edge

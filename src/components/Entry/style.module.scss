@@ -8,7 +8,15 @@
 	}
 
 	:global(.mantine-Button-section) {
-		color: var(--mantine-color-slate-2);
+		color: var(--mantine-color-slate-3);
+
+		&:where([data-position='left']) {
+			margin-inline-end: var(--mantine-spacing-sm);
+		}
+
+		&:where([data-position='right']) {
+			margin-inline-start: var(--mantine-spacing-sm);
+		}
 	}
 
 	&:hover {

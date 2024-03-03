@@ -119,6 +119,7 @@ export function ResultPane() {
 								<ActionIcon
 									onClick={() => setResultMode(item.value)}
 									color={isActive ? 'surreal' : undefined}
+									variant="subtle"
 								>
 									<Icon
 										color={isActive ? 'surreal' : undefined}

@@ -1,3 +1,4 @@
+import { mdiBrain, mdiXml } from "@mdi/js";
 import { Protocol, ResultMode, Selectable } from "./types";
 import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconJSON, iconLive, iconQuery } from "./util/icons";
 
@@ -69,6 +70,18 @@ export const VIEW_MODES = [
 		icon: iconAuth,
 		desc: "Manage account details and database scopes",
 	},
+	{
+		id: "models",
+		name: "ML Models",
+		icon: mdiBrain,
+		desc: "Manage SurrealML models",
+	},
+	{
+		id: "documentation",
+		name: "API Docs",
+		icon: mdiXml,
+		desc: "View the database schema and documentation",
+	}
 ] as const;
 
 export const EXPORT_TYPES = [

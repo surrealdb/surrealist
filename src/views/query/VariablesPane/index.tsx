@@ -1,5 +1,5 @@
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Badge, Group } from "@mantine/core";
+import { ActionIcon, Badge, Group, Text, Tooltip } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
@@ -97,17 +97,24 @@ export function VariablesPane(props: VariablesPaneProps) {
 							Invalid JSON
 						</Badge>
 					)}
-					<ActionIcon
-						color="slate"
-						onClick={inferVariables}
-						title="Infer variables from query"
-					>
-						<Icon path={iconAutoFix} />
-					</ActionIcon>
+					<Tooltip maw={175} multiline label={
+						<>
+							<Text>Infer variables from query</Text>
+							<Text c="dimmed" size="sm">
+								Automatically add missing variables to the editor
+							</Text>
+						</>
+					}>
+						<ActionIcon
+							color="slate"
+							onClick={inferVariables}
+						>
+							<Icon path={iconAutoFix} />
+						</ActionIcon>
+					</Tooltip>
 					<ActionIcon
 						color="slate"
 						onClick={props.closeVariables}
-						title="Close variables"
 					>
 						<Icon path={iconClose} />
 					</ActionIcon>

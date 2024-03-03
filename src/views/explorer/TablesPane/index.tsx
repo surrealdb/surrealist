@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Badge, Divider, ScrollArea, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -86,7 +86,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 		<ContentPane
 			title="Tables"
 			icon={iconList}
-			w={325}
+			w={300}
 			leftSection={
 				schema.length > 0 && (
 					<Badge
@@ -99,9 +99,11 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 				)
 			}
 			rightSection={
-				<ActionIcon title="Create table..." onClick={openTableCreator}>
-					<Icon path={iconPlus} />
-				</ActionIcon>
+				<Tooltip label="New table">
+					<ActionIcon onClick={openTableCreator}>
+						<Icon path={iconPlus} />
+					</ActionIcon>
+				</Tooltip>
 			}
 		>
 			<Stack

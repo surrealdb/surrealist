@@ -157,14 +157,6 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 					Query history
 				</ModalTitle>
 
-				{/* <Badge
-					color={isLight ? "slate.0" : "slate.9"}
-					radius="sm"
-					c="inherit"
-				>
-					{connection?.queryHistory?.length?.toString()}
-				</Badge> */}
-
 				<Spacer />
 
 				<ActionIcon onClick={clearHistory} title="Clear history">

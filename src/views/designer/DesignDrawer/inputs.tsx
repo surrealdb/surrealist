@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Button, Group, Modal, Popover, Stack, TextInput, TextInputProps } from "@mantine/core";
+import { ActionIcon, Button, Group, Modal, Popover, Stack, TextInput, TextInputProps, Tooltip } from "@mantine/core";
 import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -54,14 +54,15 @@ export function QueryInput(props: QueryInputProps) {
 				rightSection={
 					<Group gap={8} wrap="nowrap">
 						{props.rightSection}
-						<ActionIcon
-							title="Advanced editor"
-							onClick={openEditor}
-							color="slate"
-							variant="subtle"
-						>
-							<Icon path={iconWrench} size="sm" />
-						</ActionIcon>
+						<Tooltip label="Open advanced editor">
+							<ActionIcon
+								onClick={openEditor}
+								color="slate"
+								variant="subtle"
+							>
+								<Icon path={iconWrench} size="sm" />
+							</ActionIcon>
+						</Tooltip>
 					</Group>
 				}
 			/>
@@ -129,22 +130,24 @@ export function PermissionInput(props: PermissionInputProps) {
 			rightSectionWidth={114}
 			rightSection={
 				<>
-					<ActionIcon
-						color="green.4"
-						title="Grant full access"
-						onClick={() => props.onChange("FULL")}
-						variant={props.value.toUpperCase() === "FULL" ? "light" : "subtle"}
-					>
-						<Icon path={iconCheck} />
-					</ActionIcon>
-					<ActionIcon
-						color="red.5"
-						title="Reject all access"
-						onClick={() => props.onChange("NONE")}
-						variant={props.value.toUpperCase() === "NONE" ? "light" : "subtle"}
-					>
-						<Icon path={iconCancel} />
-					</ActionIcon>
+					<Tooltip label="Grant full access">
+						<ActionIcon
+							color="green.4"
+							onClick={() => props.onChange("FULL")}
+							variant={props.value.toUpperCase() === "FULL" ? "light" : "subtle"}
+						>
+							<Icon path={iconCheck} />
+						</ActionIcon>
+					</Tooltip>
+					<Tooltip label="Reject all access">
+						<ActionIcon
+							color="red.5"
+							onClick={() => props.onChange("NONE")}
+							variant={props.value.toUpperCase() === "NONE" ? "light" : "subtle"}
+						>
+							<Icon path={iconCancel} />
+						</ActionIcon>
+					</Tooltip>
 				</>
 			}
 		/>
@@ -186,18 +189,18 @@ export function FieldKindInput(props: FieldKindInputProps) {
 			rightSection={
 				<Popover
 					position="bottom"
-					withinPortal
 					opened={showTables}
 					onClose={hideTables}
 				>
 					<Popover.Target>
-						<ActionIcon
-							title="Select a table"
-							onClick={toggleTables}
-							variant="subtle"
-						>
-							<Icon path={iconTable} />
-						</ActionIcon>
+						<Tooltip label="Select a table">
+							<ActionIcon
+								onClick={toggleTables}
+								variant="subtle"
+							>
+								<Icon path={iconTable} />
+							</ActionIcon>
+						</Tooltip>
 					</Popover.Target>
 					<Popover.Dropdown p={0}>
 						<Stack

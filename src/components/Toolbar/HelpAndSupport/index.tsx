@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Text, Title, UnstyledButton } from "@mantine/core";
+import { Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { mdiBook, mdiBug, mdiChat, mdiRoutes } from "@mdi/js";
@@ -41,18 +41,21 @@ export function HelpAndSupport() {
 
 	return (
 		<>
-			<ActionIcon
-				size="xl"
-				title="Help & Support"
-				onClick={openHandle.toggle}
-			>
-				<Icon path={iconHelp} />
-			</ActionIcon>
+			<Tooltip label="Help and support">
+				<ActionIcon
+					w={36}
+					h={36}
+					onClick={openHandle.toggle}
+				>
+					<Icon path={iconHelp} size="lg" />
+				</ActionIcon>
+			</Tooltip>
 
 			<Modal
 				opened={isOpen}
 				onClose={openHandle.close}
 				ta="center"
+				size="sm"
 			>
 				<Title fz={20} c="bright">
 					How can we help you?
@@ -74,7 +77,7 @@ export function HelpAndSupport() {
 							bg={isLight ? "slate.0" : "slate.9"}
 							className={classes.tile}
 							onClick={tile.onClick}
-							p="lg"
+							p="md"
 						>
 							<Icon
 								path={tile.icon}

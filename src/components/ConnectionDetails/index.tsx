@@ -1,6 +1,6 @@
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
-import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, ModalTitle, Paper, ActionIcon } from "@mantine/core";
+import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, ModalTitle, Paper, ActionIcon, Tooltip } from "@mantine/core";
 import { CONNECTION_PROTOCOLS, AUTH_MODES } from "~/constants";
 import { iconClose, iconPlus } from "~/util/icons";
 import { EditableText } from "../EditableText";
@@ -227,16 +227,17 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 											})
 										}
 									/>
-									<ActionIcon
-										color="red"
-										title="Remove field"
-										onClick={() =>
-											onChange((draft) => {
-												draft.connection.scopeFields.splice(i, 1);
-											})
-										}>
-										<Icon path={iconClose} color="red" />
-									</ActionIcon>
+									<Tooltip label="Remove field">
+										<ActionIcon
+											color="red"
+											onClick={() =>
+												onChange((draft) => {
+													draft.connection.scopeFields.splice(i, 1);
+												})
+											}>
+											<Icon path={iconClose} color="red" />
+										</ActionIcon>
+									</Tooltip>
 								</Group>
 							</Paper>
 						))}

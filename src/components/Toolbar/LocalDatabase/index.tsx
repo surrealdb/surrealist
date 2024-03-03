@@ -1,4 +1,4 @@
-import { ActionIcon } from "@mantine/core";
+import { ActionIcon, Tooltip } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
@@ -64,24 +64,28 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 
 	return (
 		<>
-			<ActionIcon
-				size="xl"
-				title={isServing ? "Stop serving" : "Start serving"}
-				onClick={handleToggle}
-				loading={isPending}
-				color={isServing ? "red.5" : undefined}
-			>
-				<Icon path={isServing ? iconStop : iconPlay} />
-			</ActionIcon>
+			<Tooltip label={isServing ? "Stop serving" : "Start serving"}>
+				<ActionIcon
+					w={36}
+					h={36}
+					onClick={handleToggle}
+					loading={isPending}
+					color={isServing ? "red.5" : undefined}
+				>
+					<Icon path={isServing ? iconStop : iconPlay} size="lg" />
+				</ActionIcon>
+			</Tooltip>
 
 			{hasStarted && (
-				<ActionIcon
-					size="xl"
-					title="Import database from file"
-					onClick={props.toggleConsole}
-				>
-					<Icon path={iconConsole} />
-				</ActionIcon>
+				<Tooltip label="Open console">
+					<ActionIcon
+						w={36}
+						h={36}
+						onClick={props.toggleConsole}
+					>
+						<Icon path={iconConsole} size="lg" />
+					</ActionIcon>
+				</Tooltip>
 			)}
 		</>
 	);

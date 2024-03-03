@@ -13,6 +13,7 @@ import { SANDBOX } from "~/constants";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { updateTitle } from "~/util/helpers";
 import { Entry } from "../Entry";
+import { openConnection } from "~/database";
 
 const TRANSITION = {
 	in: { opacity: 1, transform: 'translateY(0)' },
@@ -59,32 +60,48 @@ export function Connections() {
 		);
 	}, [connections, connection, search]);
 
+	const connect = useStable(() => {
+		openConnection();
+	});
+
 	const isSandbox = connection?.id === SANDBOX;
 
 	return (
 		<>
 			{connection ? (
-				<Button
-					h={42}
-					variant="light"
-					color="slate"
-					radius="lg"
-					onClick={isListingHandle.toggle}
-					leftSection={isSandbox && (
-						<Icon path={iconSurreal} size={1.2} noStroke />
+				<Button.Group>
+					<Button
+						variant="light"
+						color="slate"
+						onClick={isListingHandle.toggle}
+						leftSection={isSandbox && (
+							<Icon path={iconSurreal} size={1.2} noStroke />
+						)}
+						rightSection={
+							isConnected && (
+								<Icon
+									path={iconCircle}
+									size="xl"
+									mr={-4}
+									color="green"
+								/>
+							)
+						}
+					>
+						<Text truncate fw={600} maw={200}>
+							{connection.name}
+						</Text>
+					</Button>
+					{!isConnected && (
+						<Button
+							variant="gradient"
+							onClick={connect}
+							loading={isConnecting}
+						>
+							Connect
+						</Button>
 					)}
-					rightSection={
-						<Icon
-							path={iconCircle}
-							size="lg"
-							color={isConnected ? "green" : isConnecting ? "orange" : "red"}
-						/>
-					}
-				>
-					<Text truncate fw={600} maw={200}>
-						{connection.name}
-					</Text>
-				</Button>
+				</Button.Group>
 			) : (
 				<Button
 					variant="light"
@@ -106,7 +123,6 @@ export function Connections() {
 			>
 				<Stack>
 					<TextInput
-						radius="md"
 						placeholder="Search..."
 						value={search}
 						onChange={setSearch}

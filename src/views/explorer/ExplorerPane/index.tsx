@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { FocusEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
@@ -161,17 +161,23 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			rightSection={
 				activeTable && (
 					<Group align="center">
-						<ActionIcon title="Create record" onClick={openCreator}>
-							<Icon path={iconPlus} />
-						</ActionIcon>
+						<Tooltip label="New record">
+							<ActionIcon onClick={openCreator}>
+								<Icon path={iconPlus} />
+							</ActionIcon>
+						</Tooltip>
 
-						<ActionIcon title="Refresh table" onClick={fetchRecords}>
-							<Icon path={iconRefresh} />
-						</ActionIcon>
+						<Tooltip label="Refresh records">
+							<ActionIcon onClick={fetchRecords}>
+								<Icon path={iconRefresh} />
+							</ActionIcon>
+						</Tooltip>
 
-						<ActionIcon title="Toggle filter" onClick={toggleFilter}>
-							<Icon path={iconFilter} />
-						</ActionIcon>
+						<Tooltip label={filtering ? "Hide filter" : "Filter records"}>
+							<ActionIcon onClick={toggleFilter}>
+								<Icon path={iconFilter} />
+							</ActionIcon>
+						</Tooltip>
 
 						<Divider orientation="vertical" />
 

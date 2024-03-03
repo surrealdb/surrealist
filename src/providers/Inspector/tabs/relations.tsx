@@ -19,7 +19,6 @@ function RelationsList({ name, relations, onOpen }: RelationsListProps) {
 		<Paper
 			p="xs"
 			bg={isLight ? "slate.0" : "slate.9"}
-			radius="lg"
 			mt={6}
 		>
 			{relations.length === 0 && (

@@ -109,23 +109,23 @@ body {
     color: var(--mantine-color-surreal-6);
 }
 
+.mantine-InputWrapper-description {
+    font-size: var(--mantine-font-size-xs);
+}
+
 /* --- Variables --- */
 
 :root {
-    --surrealist-divider-size: 10px;
+    --surrealist-divider-size: 6px;
     --surrealist-gradient: linear-gradient(110deg, var(--mantine-color-surreal-filled) 0%, #9600FF 100%);
 }
 
 :root[data-mantine-color-scheme="light"] {
     --surrealist-divider-color: var(--mantine-color-slate-0);
-    --surrealist-tooltip-bg: rgba(0, 0, 0, 0.4);
-
     --mantine-color-body: var(--mantine-color-white);   
 }
 
 :root[data-mantine-color-scheme="dark"] {
     --surrealist-divider-color: var(--mantine-color-slate-9);
-    --surrealist-tooltip-bg: rgba(255, 255, 255, 0.4);
-    
     --mantine-color-body: var(--mantine-color-slate-8);
 }

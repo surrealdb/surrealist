@@ -132,9 +132,11 @@ export function AccountsPane(props: AccountsPaneProps) {
 			icon={props.icon}
 			title={props.title}
 			rightSection={
-				<ActionIcon title="Add account" onClick={createUser}>
-					<Icon path={iconPlus} />
-				</ActionIcon>
+				<Tooltip label="New user">
+					<ActionIcon onClick={createUser}>
+						<Icon path={iconPlus} />
+					</ActionIcon>
+				</Tooltip>
 			}>
 			{users.length === 0 && (
 				<Center h="100%" c="slate">
@@ -169,7 +171,6 @@ export function AccountsPane(props: AccountsPaneProps) {
 										</Text>
 									}
 									position="bottom"
-									withinPortal
 								>
 									<div>
 										<Icon
@@ -187,12 +188,11 @@ export function AccountsPane(props: AccountsPaneProps) {
 							>
 								{formatRoles(user)}
 							</Badge>
-							<ActionIcon
-								title="Edit user"
-								onClick={() => updateUser(user)}
-							>
-								<Icon path={iconEdit} />
-							</ActionIcon>
+							<Tooltip label="Edit user">
+								<ActionIcon onClick={() => updateUser(user)}>
+									<Icon path={iconEdit} />
+								</ActionIcon>
+							</Tooltip>
 						</Group>
 					))}
 				</Stack>

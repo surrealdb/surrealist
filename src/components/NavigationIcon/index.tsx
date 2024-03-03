@@ -26,7 +26,7 @@ export function NavigationIcon({ name, isActive, isLight, icon, onClick, ...rest
 				variant={isActive ? "gradient" : "subtle"}
 				className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
 				onClick={onClick}
-				radius="lg"
+				radius="md"
 				{...rest}
 			>
 				<Icon path={icon} />
