@@ -7,6 +7,7 @@ import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { tryParseParams } from "~/util/helpers";
 import { iconAutoFix, iconClose, iconTune } from "~/util/icons";
+import { json } from "@codemirror/lang-json";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 
@@ -125,11 +126,6 @@ export function VariablesPane(props: VariablesPaneProps) {
 				language="json"
 				value={activeTab?.variables || ''}
 				onChange={setVariables}
-				style={{
-					position: "absolute",
-					insetBlock: 0,
-					insetInline: 24,
-				}}
 				options={{
 					wrappingStrategy: "advanced",
 					wordWrap: "on",
@@ -137,6 +133,9 @@ export function VariablesPane(props: VariablesPaneProps) {
 						showProperties: false,
 					}
 				}}
+				extensions={[
+					json()
+				]}
 			/>
 		</ContentPane>
 	);

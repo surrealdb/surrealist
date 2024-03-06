@@ -22,7 +22,7 @@ import { adapter } from "./adapter";
 import { useConfigStore } from "./stores/config";
 import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch, watchViewSwitch } from './util/background';
 import { getSetting } from "./util/config";
-
+import { generateEditorIcons } from "./util/editor/icons";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -43,6 +43,9 @@ import { getSetting } from "./util/config";
 
 	// Initialize adapter
 	adapter.initialize();
+
+	// Generate editor icons
+	generateEditorIcons();
 
 	// Initialize monaco
 	await document.fonts.ready;

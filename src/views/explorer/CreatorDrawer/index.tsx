@@ -13,6 +13,7 @@ import { useTableNames } from "~/hooks/schema";
 import { editor } from "monaco-editor";
 import { tb } from "~/util/helpers";
 import { Label } from "~/components/Scaffold/settings/utilities";
+import { json } from "@codemirror/lang-json";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -134,7 +135,6 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					>
 						<SurrealistEditor
 							language="json"
-							noExpand
 							autoSize
 							value={recordBody}
 							onChange={setRecordBody}
@@ -146,6 +146,9 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 									showProperties: false,
 								},
 							}}
+							extensions={[
+								json()
+							]}
 						/>
 					</Paper>
 				</Stack>

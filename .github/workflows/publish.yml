@@ -55,7 +55,7 @@ jobs:
         run: |
           rustup target add wasm32-unknown-unknown
           cargo install wasm-bindgen-cli
-          pnpm embed:build
+          make build-embed
 
       - name: Save artifacts
         uses: actions/upload-artifact@master
@@ -116,7 +116,7 @@ jobs:
           path: src/generated
 
       - name: Generate license report
-        run: pnpm generate-license-report
+        run: pnpm license-report
 
       - name: Build application
         run: pnpm tauri build
@@ -200,7 +200,7 @@ jobs:
           path: src/generated
 
       - name: Generate license report
-        run: pnpm generate-license-report
+        run: pnpm license-report
 
       - name: Build application
         run: pnpm build

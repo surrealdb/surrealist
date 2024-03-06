@@ -142,6 +142,7 @@ export const MANTINE_THEME = createTheme({
 			styles: {
 				tab: {
 					fontWeight: 600,
+					minHeight: 30
 				},
 			},
 		}),

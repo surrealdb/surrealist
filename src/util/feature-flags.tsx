@@ -13,7 +13,10 @@ export const featureFlagSchema = {
 	},
 	listLicenses: {
 		options: [false, true]
-	}
+	},
+	editor: {
+		options: ["monaco", "codemirror"]
+	},
 } as const;
 
 export const featureFlags = new FeatureFlags({
@@ -26,11 +29,13 @@ export const featureFlags = new FeatureFlags({
 		preview: {
 			templates: true,
 			listLicenses: true,
+			editor: "codemirror"
 		},
 		dev: {
 			devTools: true,
 			templates: true,
 			listLicenses: true,
+			editor: "monaco"
 		}
 	},
 

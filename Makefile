@@ -20,12 +20,22 @@ default:
 .PHONY: setup
 setup:
 	@echo "Setup..."
+	rustup target add wasm32-unknown-unknown
+	cargo install wasm-bindgen-cli
 	pnpm install
 
+.PHONY: build-embed
+EMBED_DIR = ./src-embed
+build-embed:
+	@echo "Building embed..."
+	cd $(EMBED_DIR) && cargo build --target wasm32-unknown-unknown --release --features indxdb
+	cd $(EMBED_DIR) && wasm-bindgen ./target/wasm32-unknown-unknown/release/surrealist_embed.wasm --out-dir ./dist --out-name surrealist-embed --target web
+	cd $(EMBED_DIR) && mkdir -p ../src/generated/
+	cd $(EMBED_DIR) && cp ./dist/* ../src/generated/
+
 .PHONY: serve
-serve:
-	@echo "Serve..."
-	pnpm embed:build
+serve: build-embed
+	@echo "Serving..."
 	pnpm tauri:dev
 
 .PHONY: deploy

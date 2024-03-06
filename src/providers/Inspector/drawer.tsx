@@ -1,4 +1,6 @@
+import classes from "./style.module.scss";
 import { useEffect, useMemo, useState } from "react";
+import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons";
 import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, TextInput, Tooltip } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
@@ -11,7 +13,6 @@ import { useInputState } from "@mantine/hooks";
 import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
-import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons";
 import { useConfirmation } from "../Confirmation";
 
 const DEFAULT_RECORD: ActiveRecord = {
@@ -166,6 +167,13 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			position="right"
 			trapFocus={false}
 			size="lg"
+			styles={{
+				body: {
+					height: "100%",
+					display: "flex",
+					flexDirection: "column"
+				}
+			}}
 		>
 			<Group mb="md" gap="sm">
 				<ModalTitle>
@@ -214,8 +222,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				onBlur={gotoRecord}
 				onKeyDown={gotoRecord}
 				onChange={setRecordId}
+				variant="filled"
 				onFocus={(e) => e.target.select()}
-				placeholder="table:id"
 				rightSectionWidth={76}
 				rightSection={
 					currentRecord.isEdge && (
@@ -241,7 +249,13 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			/>
 
 			{currentRecord.exists ? (
-				<Tabs defaultValue="content">
+				<Tabs
+					mt="sm"
+					defaultValue="content"
+					className={classes.tabs}
+					variant="pills"
+					radius="sm"
+				>
 					<Tabs.List grow>
 						<Tabs.Tab value="content">
 							Content

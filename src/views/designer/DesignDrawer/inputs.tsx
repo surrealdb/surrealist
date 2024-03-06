@@ -9,6 +9,7 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { TableDefinition } from "~/types";
 import { useTables } from "~/hooks/schema";
 import { iconCancel, iconCheck, iconTable, iconWrench } from "~/util/icons";
+import { surql } from "~/util/editor/extensions";
 
 export interface QueryInputProps extends TextInputProps {
 	onChangeText?: (value: string) => void;
@@ -72,14 +73,15 @@ export function QueryInput(props: QueryInputProps) {
 				onClose={closeEditor}
 				trapFocus={false}
 				size="xl"
-				title={<ModalTitle>SurrealQL Editor</ModalTitle>}
+				title={
+					<ModalTitle>Advanced editor</ModalTitle>
+				}
 			>
 				<SurrealistEditor
 					language="surrealql"
 					value={editorText}
 					onChange={setEditorText}
-					noExpand
-					height={250}
+					h={250}
 					options={{
 						wrappingStrategy: "advanced",
 						wordWrap: "on",
@@ -87,6 +89,9 @@ export function QueryInput(props: QueryInputProps) {
 							showProperties: false,
 						},
 					}}
+					extensions={[
+						surql()
+					]}
 				/>
 				<Group mt="lg">
 					<Button

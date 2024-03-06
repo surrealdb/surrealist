@@ -3,6 +3,8 @@ import classes from "../style.module.scss";
 import { SaveBox } from "~/components/SaveBox";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { SaveableHandle } from "~/hooks/save";
+import { json } from "@codemirror/lang-json";
+import { scrollPastEnd } from "@codemirror/view";
 
 export interface ContentTabProps {
 	value: string;
@@ -14,17 +16,14 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 	return (
 		<>
 			<Paper
+				flex={1}
+				mih={0}
 				mt="xs"
 				p="xs"
 				withBorder
-				style={{
-					position: "absolute",
-					insetInline: 12,
-					bottom: saveHandle.isChanged ? 62 : 14,
-					top: 156,
-				}}
 			>
 				<SurrealistEditor
+					h="100%"
 					language="json"
 					value={value}
 					onChange={onChange}
@@ -36,6 +35,10 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 							showProperties: false,
 						}
 					}}
+					extensions={[
+						json(),
+						scrollPastEnd()
+					]}
 				/>
 			</Paper>
 
@@ -44,12 +47,7 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 					handle={saveHandle}
 					inline
 					inlineProps={{
-						className: classes.saveBox,
-						style: {
-							position: "absolute",
-							insetInline: 12,
-							bottom: 12
-						}
+						className: classes.saveBox
 					}}
 				/>
 			)}

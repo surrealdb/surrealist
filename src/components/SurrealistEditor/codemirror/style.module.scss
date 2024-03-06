@@ -1,0 +1,158 @@
+.root {
+	min-height: 0;
+	flex: 1;
+
+	:global(.cm-editor) {
+		outline: none;
+		height: 100%;
+	}
+
+	:global(.cm-scroller) {
+		font-family: var(--mantine-font-family-monospace);
+	}
+
+	:global(.cm-gutters) {
+		border-right: none;
+	}
+
+	:global(.cm-gutters), :global(.cm-gutterElement) {
+		background-color: unset;
+	}
+
+	:global(.cm-lineNumbers) {
+		color: var(--mantine-color-slate-5);
+
+		@include light {
+			color: var(--mantine-color-slate-3);
+		}
+	}
+
+	:global(.cm-activeLineGutter) {
+		color: var(--mantine-color-slate-2);
+
+		@include light {
+			color: var(--mantine-color-slate-9);
+		}
+	}
+
+	:global(.cm-cursor), :global(.cm-dropCursor) {
+		border-color: var(--mantine-color-slate-1);
+		border-width: 2px;
+
+		@include light {
+			border-color: var(--mantine-color-slate-9);
+		}
+	}
+
+	:global(.cm-selectionBackground) {
+		background-color: rgba(71, 154, 255, 0.4) !important;
+	}
+
+	:global(.cm-selectionMatch), :global(.cm-searchMatch) {
+		background-color: rgba(84, 105, 133, 0.3) !important;
+	}
+
+	:global(.cm-searchMatch-selected) {
+		background-color: rgba(255, 0, 162, 0.3) !important;
+	}
+
+	:global(.cm-tooltip) {
+		overflow: hidden;
+		box-shadow: var(--mantine-shadow-sm);
+		border-radius: var(--mantine-radius-sm);
+		border-color: var(--mantine-color-dark-4);
+		background-color: color-mix(in srgb, var(--mantine-color-body) 75%, transparent);
+		backdrop-filter: blur(5px);
+		-webkit-backdrop-filter: blur(5px);
+	}
+
+	:global(.cm-tooltip-autocomplete) ul {
+		font-family: var(--mantine-font-family-monospace) !important;
+
+		li[aria-selected]  {
+			background-color: rgba(255, 0, 162, 0.3);
+		}
+	}
+
+	:global(.cm-completionMatchedText) {
+		color: white;
+		text-decoration: none;
+	}
+
+	$icons: (
+		"class",
+		"constant",
+		"enum",
+		"function",
+		"interface",
+		"keyword",
+		"method",
+		"namespace",
+		"property",
+		"text",
+		"type",
+		"variable"
+	);
+
+	@each $icon in $icons {
+		:global(.cm-completionIcon-#{$icon})::after {
+			content: var(--surrealist-editor-icon-#{$icon});
+		}
+	}
+
+	:global(.cm-completionIcon) {
+		padding-left: 4px;
+		opacity: 1;
+	}
+
+	:global(.cm-tooltip-autocomplete) ul li[aria-selected] :global(.cm-completionIcon)::after {
+		filter: brightness(0) saturate(100%) invert(1);
+	}
+
+	:global(.cm-diagnosticText) {
+		font-family: var(--mantine-font-family-monospace);
+	}
+
+	:global(.cm-diagnostic) {
+		max-width: 600px;
+	}
+
+	:global(.cm-lintRange) {
+		background-image: none;
+		text-decoration: underline;
+		text-decoration-style: wavy;
+	}
+
+	:global(.cm-lintRange-error) {
+		text-decoration-color: var(--mantine-color-red-6);
+	}
+
+	:global(.cm-lintRange-warning) {
+		text-decoration-color: var(--mantine-color-yellow-6);
+	}
+
+	:global(.cm-lintRange-info) {
+		text-decoration-color: var(--mantine-color-blue-6);
+	}
+
+	:global(.cm-lintRange-hint) {
+		text-decoration-color: var(--mantine-color-slate-5);
+	}
+
+	:global(.cm-diagnostic-error) {
+		border-color: var(--mantine-color-red-6);
+	}
+
+	:global(.cm-diagnostic-warning) {
+		border-color: var(--mantine-color-yellow-6);
+	}
+
+	:global(.cm-diagnostic-info) {
+		border-color: var(--mantine-color-blue-6);
+	}
+
+	:global(.cm-diagnostic-hint) {
+		border-color: var(--mantine-color-slate-5);
+	}
+
+}

@@ -1,13 +1,6 @@
-.table-container {
-	height: 100%;
-}
-
-.table-wrapper {
-	position: absolute !important;
-	inset: 12;
-	top: 0;
-	height: 100%;
-	width: 100%;
+.root {
+	position: absolute;
+	inset: 0;
 }
 
 .table {

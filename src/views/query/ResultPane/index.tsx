@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Center, Divider, Group, Pagination, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Divider, Group, Pagination, Stack, Text, Tooltip } from "@mantine/core";
 import { useActiveQuery } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
@@ -130,58 +130,52 @@ export function ResultPane() {
 						);
 					})}
 				</Group>
-			}>
-			<div
-				style={{
-					position: "absolute",
-					insetInline: 14,
-					top: 0,
-					bottom: showTabs ? 72 : 0,
-				}}>
-				{(activeTab && resultMode == "live") ? (
-					<LivePreview
-						query={activeTab}
-						isLive={isLive}
-					/>
-				) : response ? (
-					<>
-						{resultMode == "combined" ? (
-							<CombinedJsonPreview results={responses} />
-						) : response.success ? (response.result?.length === 0 ? (
-							<Text c="slate">No results found for query</Text>
-						) : resultMode == "table" ? (
+			}
+		>
+			{(activeTab && resultMode == "live") ? (
+				<LivePreview
+					query={activeTab}
+					isLive={isLive}
+				/>
+			) : response ? (
+				<>
+					{resultMode == "combined" ? (
+						<CombinedJsonPreview results={responses} />
+					) : response.success ? (response.result?.length === 0 ? (
+						<Text c="slate" flex={1}>
+							No results found for query
+						</Text>
+					) : resultMode == "table" ? (
+						<Box
+							mih={0}
+							flex={1}
+							pos="relative"
+						>
 							<DataTable data={response.result} />
-						) : (
-							<SingleJsonPreview result={response.result} />
-						)) : (
-							<Text c="red" ff="mono" style={{ whiteSpace: "pre-wrap" }}>
-								{response.result}
-							</Text>
-						)}
-					</>
-				) : (
-					<Center h="100%" c="slate">
-						<Stack>
-							<Icon
-								path={iconQuery}
-								mx="auto"
-								size="lg"
-							/>
-							Execute a query to view the results here
-						</Stack>
-					</Center>
-				)}
-			</div>
+						</Box>
+					) : (
+						<SingleJsonPreview result={response.result} />
+					)) : (
+						<Text c="red" ff="mono" style={{ whiteSpace: "pre-wrap" }}>
+							{response.result}
+						</Text>
+					)}
+				</>
+			) : (
+				<Center h="100%" c="slate">
+					<Stack>
+						<Icon
+							path={iconQuery}
+							mx="auto"
+							size="lg"
+						/>
+						Execute a query to view the results here
+					</Stack>
+				</Center>
+			)}
 
 			{showTabs && (
-				<Stack
-					gap="xs"
-					align="center"
-					style={{
-						position: "absolute",
-						insetInline: 14,
-						bottom: 12,
-					}}>
+				<Stack gap="xs" align="center">
 					<Divider w="100%" />
 					<Pagination total={responses.length} value={resultTab} onChange={setResultTab} />
 				</Stack>

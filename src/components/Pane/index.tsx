@@ -31,6 +31,7 @@ export function ContentPane(props: ContentPaneProps) {
 						gap="xs"
 						h={48}
 						wrap="nowrap"
+						className={classes.header}
 					>
 						{icon && <Icon path={icon} c={isLight ? "slate.4" : "slate.3"} />}
 						<Text
@@ -44,10 +45,19 @@ export function ContentPane(props: ContentPaneProps) {
 						<Spacer />
 						{rightSection}
 					</Group>
-					<Divider mx="sm" mb="sm" />
+					<Divider
+						mx="sm"
+						mb="sm"
+						className={classes.divider}
+					/>
 				</>
 			)}
-			<Box p="sm" pt={0} pos="relative" className={classes.content}>
+			<Box
+				p="sm"
+				pt={0}
+				pos="relative"
+				className={classes.content}
+			>
 				{children}
 			</Box>
 		</Paper>

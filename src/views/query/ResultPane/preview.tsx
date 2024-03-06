@@ -12,6 +12,7 @@ import { TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
 import { getSurreal } from "~/util/surreal";
+import { surql } from "~/util/editor/extensions";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	create: ["surreal.3", iconPlus],
@@ -20,7 +21,7 @@ const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 };
 
 function buildResult(index: number, {result, time}: any) {
-	const header = `\n\n// -------- Query ${index + 1 + (time ? ` (${time})` : '')} --------\n\n`;
+	const header = `\n\n-------- Query ${index + 1 + (time ? ` (${time})` : '')} --------\n\n`;
 	const content = JSON.stringify(result, null, 4);
 
 	return header + content;
@@ -54,6 +55,10 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 				readOnly: true,
 				wordWrap: wordWrap ? "on" : "off"
 			}}
+			readOnly
+			extensions={[
+				surql()
+			]}
 		/>
 	);
 }
@@ -77,6 +82,10 @@ export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 				readOnly: true,
 				wordWrap: wordWrap ? "on" : "off"
 			}}
+			readOnly
+			extensions={[
+				surql()
+			]}
 		/>
 	);
 }
@@ -167,6 +176,10 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 												options={{
 													readOnly: true
 												}}
+												readOnly
+												extensions={[
+													surql()
+												]}
 											/>
 										</Accordion.Panel>
 									)}

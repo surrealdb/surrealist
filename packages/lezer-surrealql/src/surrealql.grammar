@@ -1,0 +1,236 @@
+@precedence { FunctionJs Ident }
+@top SurrealQL { Expressions }
+
+Expressions { 
+  (Expression ";")* Expression ";"?
+}
+
+Expression {
+  Statement |
+  Value
+}
+
+Statement { 
+  BeginStatement |
+  BreakStatement |
+  CancelStatement |
+  CommitStatement |
+  ContinueStatement |
+  CreateStatement |
+  DefineStatement 
+}
+
+BeginStatement {
+  (kw<"BEGIN"> | kw<"begin">)
+  (kw<"TRANSACTION"> | kw<"transaction">)?
+}
+
+BreakStatement {
+  (kw<"BREAK"> | kw<"break">)
+}
+
+CancelStatement {
+  (kw<"CANCEL"> | kw<"cancel">)
+  (kw<"TRANSACTION"> | kw<"transaction">)?
+}
+
+CommitStatement {
+  (kw<"COMMIT"> | kw<"commit">)
+  (kw<"TRANSACTION"> | kw<"transaction">)?
+}
+
+ContinueStatement {
+  (kw<"CONTINUE"> | kw<"continue">)
+}
+
+CreateStatement {
+  (kw<"CREATE"> | kw<"create">)
+  (kw<"ONLY"> | kw<"only">)?
+  (Ident | VariableName)
+  (
+    ContentClause |
+    SetClause
+  )?
+  ReturnClause?
+  TimeoutClause?
+  ParallelClause?
+}
+
+DefineStatement {
+  (kw<"DEFINE"> | kw<"define">)
+  (
+    DefineAnalyzerStatement |
+    DefineNamespaceStatement |
+    DefineDatabaseStatement
+  )
+}
+
+DefineAnalyzerStatement {
+  (kw<"ANALYZER"> | kw<"analyzer">)
+  Ident
+  (
+    (kw<"TOKENIZERS"> | kw<"tokenizers">)
+    commaSep<AnalyzerTokenizers>
+  )?
+  // TODO implement filters
+}
+
+DefineNamespaceStatement {
+  (kw<"NAMESPACE"> | kw<"namespace"> | kw<"NS"> | kw<"ns">)
+  Ident
+}
+
+DefineDatabaseStatement {
+  (kw<"DATABASE"> | kw<"database"> | kw<"DB"> | kw<"db">)
+  Ident
+  (kw<"ON"> | kw<"on">)
+  Ident
+}
+
+// Values
+
+Value { String | Number | Bool | Null | None | VariableName | Ident | Object | Array | FunctionJs | Function }
+
+// Objects
+
+ObjectKey { 
+  Ident |
+  doubleString
+}
+
+ObjectProperty {
+  ObjectKey ":" Value
+}
+
+Object { "{" commaSep<ObjectProperty> "}" }
+
+// Arrays
+
+Array { "[" commaSep<Value> "]"}
+
+// JS Functions
+
+FunctionJs {
+  "function"
+  "(" commaSep<Value> ")"
+  "{" JavaScript? "}"
+}
+
+// Function invocation
+
+Function {
+  functionName
+  "(" commaSep<Value> ")"
+}
+
+// Assignment 
+
+Assignment {
+  Ident
+  "="
+  Value
+}
+
+// Clauses
+
+ContentClause {
+  (kw<"CONTENT"> | kw<"content">) Object
+}
+
+SetClause {
+  (kw<"SET"> | kw<"set">) commaSep<Assignment>
+}
+
+ReturnClause {
+  // TODO add support for projections
+  (kw<"RETURN"> | kw<"return">) 
+  (
+    kw<"NONE">   | kw<"none"> |
+    kw<"BEFORE"> | kw<"before"> |
+    kw<"AFTER">  | kw<"after"> |
+    kw<"DIFF">   | kw<"diff">
+  )
+}
+
+TimeoutClause {
+  (kw<"TIMEOUT"> | kw<"timeout">) 
+  // TODO actual timeout
+}
+
+ParallelClause {
+  kw<"PARALLEL"> | kw<"parallel">
+}
+
+// Support
+
+AnalyzerTokenizers {
+  kw<"blank"> |
+  kw<"camel"> |
+  kw<"class"> |
+  kw<"punct">
+}
+
+@tokens {
+  // Characters
+  "{" "}" "[" "]"
+
+  // Helpers
+  whitespace { $[ \n\r\t] }
+
+  // Comments
+  Comment { CommentHash | CommentDash | CommentSlash }
+  CommentHash { "#" ![\n]* }
+  CommentDash { "--" ![\n]* }
+  CommentSlash { "//" ![\n]* }
+
+  // Numbers
+  Number { Decimal | Float | Int }
+  frac { '.' @digit+ }
+  exp { $[eE] $[+\-]? @digit+ }
+  Int { @digit+ }
+  Float { @digit+ frac? exp? "f"? }
+  Decimal { @digit+ frac? ( "dec" | exp )? }
+  @precedence { Decimal Float Int }
+
+  // Strings
+  String { singleString | doubleString }
+  singleString { "'" ![\\\n']+ "'" }
+  doubleString { '"' ![\\\n"]+ '"' }
+
+  // Literal values
+  Bool { True | False }
+  True { "TRUE" | "true" }
+  False { "FALSE" | "false" }
+  Null { "NULL" | "null" }
+  None { "NONE" | "none" }
+
+  // Language
+  Keyword { @asciiLetter+ }
+  VariableName { "$" (@asciiLetter | @digit | "_" )+ }
+  Ident { 
+    (@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
+    @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
+    "`" ![\\\n`]+ '`'
+  }
+
+  // Functions
+  functionName { "rand" | "count" | @asciiLetter+ ( "::" @asciiLetter+ )+ }
+  JavaScript { ![\\\n}]+ }
+
+  @precedence { Keyword "function" JavaScript whitespace Comment functionName Bool None Null Number Ident }
+  
+  "function"
+}
+
+// TODO replace Ident with Keyword
+kw<term> { @specialize[@name=Keyword]<Ident, term> }
+
+commaSep<content> {
+  "" |
+  content ("," content)* ","?
+}
+
+@skip { whitespace | Comment }
+@detectDelim
+
+@external propSource surqlHighlighting from "./highlight"

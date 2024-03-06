@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Box, Text } from "@mantine/core";
+import { Box, BoxProps, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { useMemo } from "react";
 import { renderDataCell } from "./datatypes";
@@ -15,7 +15,7 @@ function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
 }
 
-interface DataTableProps {
+interface DataTableProps extends BoxProps{
 	data: any;
 	active?: string | null;
 	sorting?: ColumnSort | null;
@@ -23,9 +23,19 @@ interface DataTableProps {
 	onSortingChange?: (order: ColumnSort | null) => void;
 }
 
-export function DataTable({ data, active, sorting, headers, onSortingChange }: DataTableProps) {
+export function DataTable(props: DataTableProps) {
 	const isLight = useIsLight();
 	const { inspect } = useInspector();
+
+	const {
+		data,
+		active,
+		sorting,
+		headers,
+		onSortingChange,
+		className,
+		...rest
+	} = props;
 
 	const handleSortClick = useStable((col: string) => {
 		if (!onSortingChange) return;
@@ -138,15 +148,16 @@ export function DataTable({ data, active, sorting, headers, onSortingChange }: D
 	}
 
 	return (
-		<div className={classes.tableContainer}>
-			<ScrollArea className={classes.tableWrapper} scrollbars="y">
-				<Table className={classes.table}>
-					<thead>
-						<tr>{columnHeaders}</tr>
-					</thead>
-					<tbody>{recordRows}</tbody>
-				</Table>
-			</ScrollArea>
-		</div>
+		<ScrollArea
+			className={classes.root}
+			scrollbars="xy"
+		>
+			<Table className={classes.table}>
+				<thead>
+					<tr>{columnHeaders}</tr>
+				</thead>
+				<tbody>{recordRows}</tbody>
+			</Table>
+		</ScrollArea>
 	);
 }

@@ -3,10 +3,18 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+.header, .divider {
+	flex-shrink: 0;
 }
 
 .content {
 	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 .title {

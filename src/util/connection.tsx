@@ -29,6 +29,15 @@ export function getActiveConnection() {
 }
 
 /**
+ * Returns the active query tab
+ */
+export function getActiveQuery() {
+	const connection = getActiveConnection();
+
+	return connection.queries.find((q) => q.id === connection.activeQuery);
+}
+
+/**
  * Returns whether the given connection is valid
  *
  * TODO Replace with validation

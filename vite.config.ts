@@ -7,7 +7,7 @@ const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
 const generatedDir = fileURLToPath(new URL('src/generated', import.meta.url));
 
 if (!existsSync(generatedDir)) {
-	throw new Error('Surrealist embed generated files not found. Run `pnpm embed:build` to generate them.');
+	throw new Error('Surrealist embed generated files not found. Run `make build-embed` to generate them.');
 }
 
 // https://vitejs.dev/config/
