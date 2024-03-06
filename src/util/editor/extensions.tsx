@@ -5,7 +5,7 @@ import { validate_query } from "~/generated/surrealist-embed";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource } from "@codemirror/autocomplete";
-import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, lineNumbers, highlightActiveLineGutter } from "@codemirror/view";
+import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, lineNumbers, highlightActiveLineGutter, EditorView } from "@codemirror/view";
 import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit } from "@codemirror/language";
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { themeColor } from "../mantine";
@@ -61,6 +61,7 @@ export const surrealist = (): Extension => [
 	]),
 	indentUnit.of("    "),
 	EditorState.allowMultipleSelections.of(true),
+	EditorView.lineWrapping,
 ];
 
 /**
