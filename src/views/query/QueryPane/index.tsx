@@ -7,13 +7,30 @@ import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { ActionIcon, Group, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconServer, iconStar, iconText, iconTune } from "~/util/icons";
+import { iconAutoFix, iconServer, iconStar, iconText, iconTune } from "~/util/icons";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
 import { format_query, validate_query } from "~/generated/surrealist-embed";
-import { showError } from "~/util/helpers";
+import { showError, tryParseParams } from "~/util/helpers";
+import { Text } from "@mantine/core";
+
+const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
+
+const RESERVED_VARIABLES = new Set([
+	'auth',
+	'token',
+	'scope',
+	'session',
+	'before',
+	'after',
+	'value',
+	'input',
+	'this',
+	'parent',
+	'event',
+]);
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -86,6 +103,36 @@ export function QueryPane({
 		setShowVariables(!showVariables);
 	});
 
+	const inferVariables = useStable(() => {
+		if (!activeTab) return;
+
+		const query = activeTab.query;
+		const matches = query.match(VARIABLE_PATTERN) || [];
+
+		const currentVars = tryParseParams(activeTab.variables);
+		const currentKeys = Object.keys(currentVars);
+
+		const variables = matches
+			.map((v) => v.slice(1))
+			.filter((v) => !RESERVED_VARIABLES.has(v) && !currentKeys.includes(v));
+
+		const newVars = variables.reduce((acc, v) => {
+			acc[v] = "";
+			return acc;
+		}, {} as Record<string, any>);
+
+		const mergedVars = {
+			...currentVars,
+			...newVars
+		};
+
+		setShowVariables(true);
+		updateQueryTab({
+			id: activeTab.id,
+			variables: JSON.stringify(mergedVars, null, 4)
+		});
+	});
+
 	return (
 		<ContentPane
 			title="Query"
@@ -110,7 +157,7 @@ export function QueryPane({
 						</ActionIcon>
 					</Tooltip>
 
-					{/* <Tooltip maw={175} multiline label={
+					<Tooltip maw={175} multiline label={
 						<>
 							<Text>Infer variables from query</Text>
 							<Text c="dimmed" size="sm">
@@ -120,11 +167,11 @@ export function QueryPane({
 					}>
 						<ActionIcon
 							color="slate"
-							onClick={() => {}}
+							onClick={inferVariables}
 						>
 							<Icon path={iconAutoFix} />
 						</ActionIcon>
-					</Tooltip> */}
+					</Tooltip>
 
 					<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
 						<ActionIcon

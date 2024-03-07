@@ -1,29 +1,12 @@
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Badge, Group, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Group } from "@mantine/core";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
-import { tryParseParams } from "~/util/helpers";
-import { iconAutoFix, iconClose, iconTune } from "~/util/icons";
+import { iconClose, iconTune } from "~/util/icons";
 import { json } from "@codemirror/lang-json";
-
-const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
-
-const RESERVED_VARIABLES = new Set([
-	'auth',
-	'token',
-	'scope',
-	'session',
-	'before',
-	'after',
-	'value',
-	'input',
-	'this',
-	'parent',
-	'event',
-]);
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -55,35 +38,6 @@ export function VariablesPane(props: VariablesPaneProps) {
 		}
 	});
 
-	const inferVariables = useStable(() => {
-		if (!activeTab) return;
-
-		const query = activeTab.query;
-		const matches = query.match(VARIABLE_PATTERN) || [];
-
-		const currentVars = tryParseParams(activeTab.variables);
-		const currentKeys = Object.keys(currentVars);
-
-		const variables = matches
-			.map((v) => v.slice(1))
-			.filter((v) => !RESERVED_VARIABLES.has(v) && !currentKeys.includes(v));
-
-		const newVars = variables.reduce((acc, v) => {
-			acc[v] = "";
-			return acc;
-		}, {} as Record<string, any>);
-
-		const mergedVars = {
-			...currentVars,
-			...newVars
-		};
-
-		updateQueryTab({
-			id: activeTab.id,
-			variables: JSON.stringify(mergedVars, null, 4)
-		});
-	});
-
 	return (
 		<ContentPane
 			title="Variables"
@@ -98,21 +52,6 @@ export function VariablesPane(props: VariablesPaneProps) {
 							Invalid JSON
 						</Badge>
 					)}
-					<Tooltip maw={175} multiline label={
-						<>
-							<Text>Infer variables from query</Text>
-							<Text c="dimmed" size="sm">
-								Automatically add missing variables to the editor
-							</Text>
-						</>
-					}>
-						<ActionIcon
-							color="slate"
-							onClick={inferVariables}
-						>
-							<Icon path={iconAutoFix} />
-						</ActionIcon>
-					</Tooltip>
 					<ActionIcon
 						color="slate"
 						onClick={props.closeVariables}
