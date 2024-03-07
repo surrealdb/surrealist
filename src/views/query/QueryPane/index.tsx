@@ -1,6 +1,5 @@
 import { editor } from "monaco-editor";
 import { useStable } from "~/hooks/stable";
-import { useActiveQuery } from "~/hooks/connection";
 import { ContentPane } from "~/components/Pane";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
@@ -11,20 +10,22 @@ import { useConfigStore } from '~/stores/config';
 import { iconServer } from "~/util/icons";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
+import { TabQuery } from "~/types";
 
 export interface QueryPaneProps {
+	activeTab: TabQuery;
 	isValid: boolean;
 	setIsValid: (isValid: boolean) => void;
 }
 
 export function QueryPane({
+	activeTab,
 	isValid,
 	setIsValid,
 }: QueryPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const controls = useRef<editor.IStandaloneCodeEditor>();
-	const activeTab = useActiveQuery();
 	const [flags] = useFeatureFlags();
 
 	const validateQuery = useStable(() => {
@@ -38,7 +39,7 @@ export function QueryPane({
 	const setQueryForced = useStable((query: string) => {
 		validateQuery();
 		updateQueryTab({
-			id: activeTab!.id,
+			id: activeTab.id,
 			query
 		});
 	});
@@ -69,27 +70,23 @@ export function QueryPane({
 				)
 			}
 		>
-			{activeTab && (
-				<>
-					<SurrealistEditor
-						language="surrealql"
-						onMount={configure}
-						value={activeTab.query}
-						onChange={scheduleSetQuery}
-						options={{
-							quickSuggestions: false,
-							wordBasedSuggestions: false,
-							wrappingStrategy: "advanced",
-							wordWrap: "on",
-						}}
-						extensions={[
-							surql(),
-							surqlTableCompletion(),
-							surqlVariableCompletion()
-						]}
-					/>
-				</>
-			)}
+			<SurrealistEditor
+				language="surrealql"
+				onMount={configure}
+				value={activeTab.query}
+				onChange={scheduleSetQuery}
+				options={{
+					quickSuggestions: false,
+					wordBasedSuggestions: false,
+					wrappingStrategy: "advanced",
+					wordWrap: "on",
+				}}
+				extensions={[
+					surql(),
+					surqlTableCompletion(),
+					surqlVariableCompletion()
+				]}
+			/>
 		</ContentPane>
 	);
 }

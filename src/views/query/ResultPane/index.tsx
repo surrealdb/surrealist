@@ -1,5 +1,4 @@
 import { Box, Button, Center, Divider, Group, Pagination, Select, Stack, Text } from "@mantine/core";
-import { useActiveQuery } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
@@ -10,7 +9,7 @@ import { RESULT_MODES } from "~/constants";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { ResultMode } from "~/types";
+import { ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
 import { iconBroadcastOff, iconHelp, iconQuery } from "~/util/icons";
@@ -30,12 +29,14 @@ function computeRowCount(response: any) {
 }
 
 export interface ResultPaneProps {
+	activeTab: TabQuery;
 	showVariables: boolean;
 	onSaveQuery: () => void;
 	onToggleVariables: () => void;
 }
 
 export function ResultPane({
+	activeTab,
 	showVariables,
 	onSaveQuery,
 	onToggleVariables,
@@ -45,10 +46,9 @@ export function ResultPane({
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 
 	const isLight = useIsLight();
-	const activeTab = useActiveQuery();
 	const [resultTab, setResultTab] = useState<number>(1);
-	const resultMode = activeTab?.resultMode || "combined";
-	const responses = activeTab?.response || [];
+	const resultMode = activeTab.resultMode;
+	const responses = activeTab.response;
 	const response = responses[resultTab - 1];
 
 	const responseCount = responses.length;
@@ -59,21 +59,17 @@ export function ResultPane({
 	const showResponses = showCombined && responseCount > 0;
 	const showTime = response?.execution_time && !showCombined;
 
-	const isLive = activeTab ? liveTabs.has(activeTab.id) : false;
+	const isLive = liveTabs.has(activeTab.id);
 
 	const cancelQueries = useStable(() => {
-		if (activeTab) {
-			getSurreal()?.cancelQueries(activeTab.id);
-		}
+		getSurreal()?.cancelQueries(activeTab.id);
 	});
 
 	const setResultMode = (mode: ResultMode) => {
-		if (activeTab) {
-			updateQueryTab({
-				id: activeTab.id,
-				resultMode: mode
-			});
-		}
+		updateQueryTab({
+			id: activeTab.id,
+			resultMode: mode
+		});
 	};
 
 	useLayoutEffect(() => {
@@ -131,7 +127,7 @@ export function ResultPane({
 					/>
 
 					<Actions
-						queryTab={activeTab!}
+						queryTab={activeTab}
 						showVariables={showVariables}
 						onToggleVariables={onToggleVariables}
 						onSaveQuery={onSaveQuery}
@@ -139,7 +135,7 @@ export function ResultPane({
 				</Group>
 			}
 		>
-			{(activeTab && resultMode == "live") ? (
+			{(resultMode == "live") ? (
 				<LivePreview
 					query={activeTab}
 					isLive={isLive}

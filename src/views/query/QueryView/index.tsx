@@ -117,38 +117,42 @@ export function QueryView() {
 						openSaved={showSavedHandle.open}
 					/>
 				)}
-				<PanelGroup direction="vertical">
-					<Panel minSize={25}>
-						<PanelGroup direction="horizontal">
-							<Panel minSize={25}>
-								<QueryPane
-									isValid={queryValid}
-									setIsValid={setQueryValid}
-								/>
-							</Panel>
-							{showVariables && (
-								<>
-									<PanelDragger />
-									<Panel defaultSize={25} minSize={25} maxSize={40}>
-										<VariablesPane
-											isValid={variablesValid}
-											setIsValid={setVariablesValid}
-											closeVariables={showVariablesHandle.close}
-										/>
-									</Panel>
-								</>
-							)}
-						</PanelGroup>
-					</Panel>
-					<PanelDragger />
-					<Panel minSize={25}>
-						<ResultPane
-							showVariables={showVariables}
-							onToggleVariables={showVariablesHandle.toggle}
-							onSaveQuery={handleSaveRequest}
-						/>
-					</Panel>
-				</PanelGroup>
+				{active && (
+					<PanelGroup direction="vertical">
+						<Panel minSize={25}>
+							<PanelGroup direction="horizontal">
+								<Panel minSize={25}>
+									<QueryPane
+										activeTab={active}
+										isValid={queryValid}
+										setIsValid={setQueryValid}
+									/>
+								</Panel>
+								{showVariables && (
+									<>
+										<PanelDragger />
+										<Panel defaultSize={25} minSize={25} maxSize={40}>
+											<VariablesPane
+												isValid={variablesValid}
+												setIsValid={setVariablesValid}
+												closeVariables={showVariablesHandle.close}
+											/>
+										</Panel>
+									</>
+								)}
+							</PanelGroup>
+						</Panel>
+						<PanelDragger />
+						<Panel minSize={25}>
+							<ResultPane
+								activeTab={active}
+								showVariables={showVariables}
+								onToggleVariables={showVariablesHandle.toggle}
+								onSaveQuery={handleSaveRequest}
+							/>
+						</Panel>
+					</PanelGroup>
+				)}
 			</Group>
 
 			<HistoryDrawer
