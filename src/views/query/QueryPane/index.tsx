@@ -6,24 +6,21 @@ import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { Badge, Divider, Group } from "@mantine/core";
+import { Badge } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { isEmbed } from "~/adapter";
-import { Spacer } from "~/components/Spacer";
-import { Actions } from "../Actions";
 import { iconServer } from "~/util/icons";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 
 export interface QueryPaneProps {
-	showVariables: boolean;
 	isValid: boolean;
-	onSaveQuery: () => void;
-	onToggleVariables: () => void;
 	setIsValid: (isValid: boolean) => void;
 }
 
-export function QueryPane(props: QueryPaneProps) {
+export function QueryPane({
+	isValid,
+	setIsValid,
+}: QueryPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const controls = useRef<editor.IStandaloneCodeEditor>();
@@ -35,7 +32,7 @@ export function QueryPane(props: QueryPaneProps) {
 
 		const isInvalid = updateQueryValidation(controls.current!);
 
-		props.setIsValid(!isInvalid);
+		setIsValid(!isInvalid);
 	});
 
 	const setQueryForced = useStable((query: string) => {
@@ -57,29 +54,12 @@ export function QueryPane(props: QueryPaneProps) {
 		validateQuery();
 	});
 
-	// const handleUpload = useStable(async () => {
-	// 	if (!activeTab) return;
-
-	// 	const [file] = await adapter.openFile('Open query from file', SURQL_FILTERS, false);
-
-	// 	if (file) {
-	// 		setQueryForced(file.content);
-
-	// 		if (isUnnamedTab(activeTab)) {
-	// 			updateQueryTab({
-	// 				id: activeTab.id,
-	// 				name: getFileName(file.name)
-	// 			});
-	// 		}
-	// 	}
-	// });
-
 	return (
 		<ContentPane
 			title="Query"
 			icon={iconServer}
 			rightSection={
-				!props.isValid && (
+				!isValid && (
 					<Badge
 						color="red"
 						variant="light"
@@ -108,23 +88,6 @@ export function QueryPane(props: QueryPaneProps) {
 							surqlVariableCompletion()
 						]}
 					/>
-					{!isEmbed && (
-						<>
-							<Divider mb="sm" />
-							<Group gap="sm">
-								<Spacer />
-
-								{!isEmbed && (
-									<Actions
-										queryTab={activeTab}
-										showVariables={props.showVariables}
-										onToggleVariables={props.onToggleVariables}
-										onSaveQuery={props.onSaveQuery}
-									/>
-								)}
-							</Group>
-						</>
-					)}
 				</>
 			)}
 		</ContentPane>

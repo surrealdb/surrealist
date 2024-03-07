@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Button, Center, Divider, Group, Pagination, Stack, Text, Tooltip } from "@mantine/core";
+import { Box, Button, Center, Divider, Group, Pagination, Select, Stack, Text } from "@mantine/core";
 import { useActiveQuery } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
@@ -13,7 +13,8 @@ import { useInterfaceStore } from "~/stores/interface";
 import { ResultMode } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
-import { iconBroadcastOff, iconQuery } from "~/util/icons";
+import { iconBroadcastOff, iconHelp, iconQuery } from "~/util/icons";
+import { Actions } from "../Actions";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -28,7 +29,17 @@ function computeRowCount(response: any) {
 	return response.success ? 1 : 0;
 }
 
-export function ResultPane() {
+export interface ResultPaneProps {
+	showVariables: boolean;
+	onSaveQuery: () => void;
+	onToggleVariables: () => void;
+}
+
+export function ResultPane({
+	showVariables,
+	onSaveQuery,
+	onToggleVariables,
+}: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
@@ -69,6 +80,8 @@ export function ResultPane() {
 		setResultTab(1);
 	}, [responses.length]);
 
+	const modeIcon = RESULT_MODES.find(r => r.value == resultMode)?.icon ?? iconHelp;
+
 	const statusText = (showResponses
 		? `${responseCount} ${responseCount == 1 ? 'query' : 'queries'}`
 		: `${rowCount} ${rowCount == 1 ? 'row' : 'rows'} ${showTime ? ` in ${response.execution_time}` : ''}`);
@@ -107,28 +120,22 @@ export function ResultPane() {
 
 					<Divider orientation="vertical" />
 
-					{RESULT_MODES.map(item => {
-						const isActive = item.value == resultMode;
+					<Select
+						data={RESULT_MODES}
+						value={resultMode}
+						onChange={setResultMode as any}
+						w={130}
+						leftSection={
+							<Icon path={modeIcon} />
+						}
+					/>
 
-						return (
-							<Tooltip
-								key={item.value}
-								position="top"
-								label={`${item.label} mode`}
-							>
-								<ActionIcon
-									onClick={() => setResultMode(item.value)}
-									color={isActive ? 'surreal' : undefined}
-									variant="subtle"
-								>
-									<Icon
-										color={isActive ? 'surreal' : undefined}
-										path={item.icon}
-									/>
-								</ActionIcon>
-							</Tooltip>
-						);
-					})}
+					<Actions
+						queryTab={activeTab!}
+						showVariables={showVariables}
+						onToggleVariables={onToggleVariables}
+						onSaveQuery={onSaveQuery}
+					/>
 				</Group>
 			}
 		>

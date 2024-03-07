@@ -6,10 +6,9 @@ import { TabsPane } from "../TabsPane";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
-import { isEmbed } from "~/adapter";
+import { adapter, isEmbed } from "~/adapter";
 import { Button, Group, Modal, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
-import { Actions } from "../Actions";
 import { Image } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
@@ -25,6 +24,7 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { iconCheck } from "~/util/icons";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
+import { EmbedAdapter } from "~/adapter/embed";
 
 export function QueryView() {
 	const { saveQuery } = useConfigStore.getState();
@@ -90,7 +90,7 @@ export function QueryView() {
 			gap="md"
 			h="100%"
 		>
-			{isEmbed && (
+			{isEmbed && !(adapter as EmbedAdapter).hideTitlebar && (
 				<Group>
 					<Image
 						src={surrealistIcon}
@@ -103,12 +103,6 @@ export function QueryView() {
 						c={isLight ? "slate.9" : "white"}
 					/>
 					<Spacer />
-					<Actions
-						queryTab={active!}
-						showVariables={showVariables}
-						onToggleVariables={showVariablesHandle.toggle}
-						onSaveQuery={handleSaveRequest}
-					/>
 				</Group>
 			)}
 
@@ -128,11 +122,8 @@ export function QueryView() {
 						<PanelGroup direction="horizontal">
 							<Panel minSize={25}>
 								<QueryPane
-									showVariables={showVariables}
 									isValid={queryValid}
 									setIsValid={setQueryValid}
-									onToggleVariables={showVariablesHandle.toggle}
-									onSaveQuery={handleSaveRequest}
 								/>
 							</Panel>
 							{showVariables && (
@@ -151,7 +142,11 @@ export function QueryView() {
 					</Panel>
 					<PanelDragger />
 					<Panel minSize={25}>
-						<ResultPane />
+						<ResultPane
+							showVariables={showVariables}
+							onToggleVariables={showVariablesHandle.toggle}
+							onSaveQuery={handleSaveRequest}
+						/>
 					</Panel>
 				</PanelGroup>
 			</Group>

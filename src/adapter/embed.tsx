@@ -14,6 +14,8 @@ const DATASETS: Record<string, string> = {
 
 export class EmbedAdapter extends BrowserAdapter {
 
+	public hideTitlebar = false;
+
 	#datasetQuery: string | undefined;
 	#setupQuery: string | undefined;
 
@@ -28,7 +30,13 @@ export class EmbedAdapter extends BrowserAdapter {
 			dataset,
 			setup,
 			theme,
+			compact
 		} = Object.fromEntries(params.entries());
+
+		// Hide titlebar
+		if (compact !== undefined) {
+			this.hideTitlebar = true;
+		}
 
 		// Initial query
 		if (query) {
