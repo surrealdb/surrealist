@@ -1,6 +1,6 @@
 import { mdiBrain, mdiXml } from "@mdi/js";
 import { Protocol, ResultMode, Selectable } from "./types";
-import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconJSON, iconLive, iconQuery } from "./util/icons";
+import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery } from "./util/icons";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
@@ -23,7 +23,7 @@ export const THEMES = [
 
 export const RESULT_MODES: ListingItem[] = [
 	{ label: "Combined", value: "combined", icon: iconCombined },
-	{ label: "JSON", value: "single", icon: iconJSON },
+	{ label: "Individual", value: "single", icon: iconQuery },
 	{ label: "Table", value: "table", icon: iconDataTable },
 	{ label: "Live", value: "live", icon: iconLive },
 ];

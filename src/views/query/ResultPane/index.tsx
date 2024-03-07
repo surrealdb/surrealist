@@ -85,8 +85,8 @@ export function ResultPane({
 	const modeIcon = RESULT_MODES.find(r => r.value == resultMode)?.icon ?? iconHelp;
 
 	const statusText = (showResponses
-		? `${responseCount} ${responseCount == 1 ? 'query' : 'queries'}`
-		: `${rowCount} ${rowCount == 1 ? 'row' : 'rows'} ${showTime ? ` in ${response.execution_time}` : ''}`);
+		? `${responseCount} ${responseCount == 1 ? 'response' : 'responses'}`
+		: `${rowCount} ${rowCount == 1 ? 'result' : 'results'} ${showTime ? ` in ${response.execution_time}` : ''}`);
 
 	const panelTitle = resultMode == 'combined'
 		? 'Results'

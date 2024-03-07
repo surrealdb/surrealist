@@ -5,9 +5,9 @@ import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
 import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon, Group, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconServer, iconStar, iconText, iconTune } from "~/util/icons";
+import { iconAutoFix, iconServer, iconStar, iconText } from "~/util/icons";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
@@ -16,6 +16,7 @@ import { format_query, validate_query } from "~/generated/surrealist-embed";
 import { showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { mdiCodeBraces } from "@mdi/js";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 
@@ -164,12 +165,12 @@ export function QueryPane({
 						</Tooltip>
 
 						<Tooltip maw={175} multiline label={
-							<>
+							<Stack gap={4}>
 								<Text>Infer variables from query</Text>
 								<Text c="dimmed" size="sm">
-									Automatically add missing variables to the editor
+									Automatically add missing variables.
 								</Text>
-							</>
+							</Stack>
 						}>
 							<ActionIcon
 								color="slate"
@@ -184,7 +185,7 @@ export function QueryPane({
 								onClick={toggleVariables}
 								variant="light"
 							>
-								<Icon path={iconTune} />
+								<Icon path={mdiCodeBraces} />
 							</ActionIcon>
 						</Tooltip>
 					</Group>

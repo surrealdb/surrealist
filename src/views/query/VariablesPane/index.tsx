@@ -5,9 +5,10 @@ import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
-import { iconClose, iconTune } from "~/util/icons";
+import { iconClose } from "~/util/icons";
 import { json } from "@codemirror/lang-json";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { mdiCodeBraces } from "@mdi/js";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -43,7 +44,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 	return (
 		<ContentPane
 			title="Variables"
-			icon={iconTune}
+			icon={mdiCodeBraces}
 			rightSection={
 				props.switchPortal ? (
 					<OutPortal node={props.switchPortal} />
