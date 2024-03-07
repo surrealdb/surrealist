@@ -12,8 +12,8 @@ import { useInterfaceStore } from "~/stores/interface";
 import { ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
-import { iconBroadcastOff, iconHelp, iconQuery } from "~/util/icons";
-import { Actions } from "../Actions";
+import { iconBroadcastOff, iconCursor, iconHelp, iconQuery } from "~/util/icons";
+import { executeQuery } from "~/database";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -30,6 +30,7 @@ function computeRowCount(response: any) {
 
 export interface ResultPaneProps {
 	activeTab: TabQuery;
+	isQueryValid: boolean;
 	showVariables: boolean;
 	onSaveQuery: () => void;
 	onToggleVariables: () => void;
@@ -37,6 +38,7 @@ export interface ResultPaneProps {
 
 export function ResultPane({
 	activeTab,
+	isQueryValid,
 	showVariables,
 	onSaveQuery,
 	onToggleVariables,
@@ -71,6 +73,10 @@ export function ResultPane({
 			resultMode: mode
 		});
 	};
+
+	const runQuery = useStable(() => {
+		executeQuery();
+	});
 
 	useLayoutEffect(() => {
 		setResultTab(1);
@@ -126,12 +132,19 @@ export function ResultPane({
 						}
 					/>
 
-					<Actions
-						queryTab={activeTab}
-						showVariables={showVariables}
-						onToggleVariables={onToggleVariables}
-						onSaveQuery={onSaveQuery}
-					/>
+					<Button
+						size="xs"
+						radius="xs"
+						onClick={runQuery}
+						color={isQueryValid ? "surreal" : "red"}
+						variant={isQueryValid ? "gradient" : "filled"}
+						style={{ border: "none" }}
+						rightSection={
+							<Icon path={iconCursor} />
+						}
+					>
+						Run query
+					</Button>
 				</Group>
 			}
 		>

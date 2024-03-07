@@ -25,12 +25,13 @@ import { iconCheck } from "~/util/icons";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
 import { EmbedAdapter } from "~/adapter/embed";
+import { useBoolean } from "~/hooks/boolean";
 
 export function QueryView() {
 	const { saveQuery } = useConfigStore.getState();
 	const isLight = useIsLight();
 
-	const [showVariables, showVariablesHandle] = useDisclosure();
+	const [showVariables, showVariablesHandle] = useBoolean();
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
 
@@ -124,14 +125,16 @@ export function QueryView() {
 								<Panel minSize={25}>
 									<QueryPane
 										activeTab={active}
-										isValid={queryValid}
 										setIsValid={setQueryValid}
+										showVariables={showVariables}
+										onSaveQuery={handleSaveRequest}
+										setShowVariables={showVariablesHandle.set}
 									/>
 								</Panel>
 								{showVariables && (
 									<>
 										<PanelDragger />
-										<Panel defaultSize={25} minSize={25} maxSize={40}>
+										<Panel defaultSize={25} minSize={25}>
 											<VariablesPane
 												isValid={variablesValid}
 												setIsValid={setVariablesValid}
@@ -146,6 +149,7 @@ export function QueryView() {
 						<Panel minSize={25}>
 							<ResultPane
 								activeTab={active}
+								isQueryValid={queryValid}
 								showVariables={showVariables}
 								onToggleVariables={showVariablesHandle.toggle}
 								onSaveQuery={handleSaveRequest}
