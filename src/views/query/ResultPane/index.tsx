@@ -127,6 +127,12 @@ export function ResultPane({
 						value={resultMode}
 						onChange={setResultMode as any}
 						w={130}
+						styles={{
+							input: {
+								height: 34,
+								minHeight: 0
+							}
+						}}
 						leftSection={
 							<Icon path={modeIcon} />
 						}

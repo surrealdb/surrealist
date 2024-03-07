@@ -15,6 +15,7 @@ import { Icon } from "~/components/Icon";
 import { format_query, validate_query } from "~/generated/surrealist-embed";
 import { showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
+import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 
@@ -35,6 +36,7 @@ const RESERVED_VARIABLES = new Set([
 export interface QueryPaneProps {
 	activeTab: TabQuery;
 	showVariables: boolean;
+	switchPortal?: HtmlPortalNode<any>;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
 	onSaveQuery: () => void;
@@ -44,6 +46,7 @@ export function QueryPane({
 	activeTab,
 	showVariables,
 	setIsValid,
+	switchPortal,
 	setShowVariables,
 	onSaveQuery,
 }: QueryPaneProps) {
@@ -138,50 +141,54 @@ export function QueryPane({
 			title="Query"
 			icon={iconServer}
 			rightSection={
-				<Group gap="sm">
-					<Tooltip label="Save query">
-						<ActionIcon
-							onClick={onSaveQuery}
-							variant="light"
-						>
-							<Icon path={iconStar} />
-						</ActionIcon>
-					</Tooltip>
+				switchPortal ? (
+					<OutPortal node={switchPortal} />
+				) : (
+					<Group gap="sm">
+						<Tooltip label="Save query">
+							<ActionIcon
+								onClick={onSaveQuery}
+								variant="light"
+							>
+								<Icon path={iconStar} />
+							</ActionIcon>
+						</Tooltip>
 
-					<Tooltip label="Format query">
-						<ActionIcon
-							onClick={handleFormat}
-							variant="light"
-						>
-							<Icon path={iconText} />
-						</ActionIcon>
-					</Tooltip>
+						<Tooltip label="Format query">
+							<ActionIcon
+								onClick={handleFormat}
+								variant="light"
+							>
+								<Icon path={iconText} />
+							</ActionIcon>
+						</Tooltip>
 
-					<Tooltip maw={175} multiline label={
-						<>
-							<Text>Infer variables from query</Text>
-							<Text c="dimmed" size="sm">
-								Automatically add missing variables to the editor
-							</Text>
-						</>
-					}>
-						<ActionIcon
-							color="slate"
-							onClick={inferVariables}
-						>
-							<Icon path={iconAutoFix} />
-						</ActionIcon>
-					</Tooltip>
+						<Tooltip maw={175} multiline label={
+							<>
+								<Text>Infer variables from query</Text>
+								<Text c="dimmed" size="sm">
+									Automatically add missing variables to the editor
+								</Text>
+							</>
+						}>
+							<ActionIcon
+								color="slate"
+								onClick={inferVariables}
+							>
+								<Icon path={iconAutoFix} />
+							</ActionIcon>
+						</Tooltip>
 
-					<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
-						<ActionIcon
-							onClick={toggleVariables}
-							variant="light"
-						>
-							<Icon path={iconTune} />
-						</ActionIcon>
-					</Tooltip>
-				</Group>
+						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
+							<ActionIcon
+								onClick={toggleVariables}
+								variant="light"
+							>
+								<Icon path={iconTune} />
+							</ActionIcon>
+						</Tooltip>
+					</Group>
+				)
 			}
 		>
 			<SurrealistEditor

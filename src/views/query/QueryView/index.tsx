@@ -1,3 +1,4 @@
+import classes from "./style.module.scss";
 import surrealistIcon from "~/assets/images/logo.png";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -7,7 +8,7 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { adapter, isEmbed } from "~/adapter";
-import { Button, Group, Modal, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
+import { Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Image } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
@@ -26,6 +27,9 @@ import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
 import { EmbedAdapter } from "~/adapter/embed";
 import { useBoolean } from "~/hooks/boolean";
+import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
+
+const switchPortal = createHtmlPortalNode();
 
 export function QueryView() {
 	const { saveQuery } = useConfigStore.getState();
@@ -91,6 +95,15 @@ export function QueryView() {
 			gap="md"
 			h="100%"
 		>
+			<InPortal node={switchPortal}>
+				<SegmentedControl
+					data={['Query', 'Variables']}
+					value={showVariables ? 'Variables' : 'Query'}
+					onChange={showVariablesHandle.toggle}
+					className={classes.switcher}
+				/>
+			</InPortal>
+
 			{isEmbed && !(adapter as EmbedAdapter).hideTitlebar && (
 				<Group>
 					<Image
@@ -121,29 +134,47 @@ export function QueryView() {
 				{active && (
 					<PanelGroup direction="vertical">
 						<Panel minSize={25}>
-							<PanelGroup direction="horizontal">
-								<Panel minSize={25}>
-									<QueryPane
-										activeTab={active}
-										setIsValid={setQueryValid}
-										showVariables={showVariables}
-										onSaveQuery={handleSaveRequest}
-										setShowVariables={showVariablesHandle.set}
-									/>
-								</Panel>
-								{showVariables && (
-									<>
-										<PanelDragger />
-										<Panel defaultSize={25} minSize={25}>
-											<VariablesPane
-												isValid={variablesValid}
-												setIsValid={setVariablesValid}
-												closeVariables={showVariablesHandle.close}
-											/>
-										</Panel>
-									</>
-								)}
-							</PanelGroup>
+							{isEmbed ? (showVariables ? (
+								<VariablesPane
+									isValid={variablesValid}
+									switchPortal={switchPortal}
+									setIsValid={setVariablesValid}
+									closeVariables={showVariablesHandle.close}
+								/>
+							) : (
+								<QueryPane
+									activeTab={active}
+									setIsValid={setQueryValid}
+									switchPortal={switchPortal}
+									showVariables={showVariables}
+									onSaveQuery={handleSaveRequest}
+									setShowVariables={showVariablesHandle.set}
+								/>
+							)) : (
+								<PanelGroup direction="horizontal">
+									<Panel minSize={25}>
+										<QueryPane
+											activeTab={active}
+											setIsValid={setQueryValid}
+											showVariables={showVariables}
+											onSaveQuery={handleSaveRequest}
+											setShowVariables={showVariablesHandle.set}
+										/>
+									</Panel>
+									{showVariables && (
+										<>
+											<PanelDragger />
+											<Panel defaultSize={25} minSize={25}>
+												<VariablesPane
+													isValid={variablesValid}
+													setIsValid={setVariablesValid}
+													closeVariables={showVariablesHandle.close}
+												/>
+											</Panel>
+										</>
+									)}
+								</PanelGroup>
+							)}
 						</Panel>
 						<PanelDragger />
 						<Panel minSize={25}>

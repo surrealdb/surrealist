@@ -7,9 +7,11 @@ import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconTune } from "~/util/icons";
 import { json } from "@codemirror/lang-json";
+import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
+	switchPortal?: HtmlPortalNode<any>;
 	setIsValid: (isValid: boolean) => void;
 	closeVariables: () => void;
 }
@@ -43,22 +45,26 @@ export function VariablesPane(props: VariablesPaneProps) {
 			title="Variables"
 			icon={iconTune}
 			rightSection={
-				<Group gap="xs">
-					{!props.isValid && (
-						<Badge
-							color="red"
-							variant="light"
+				props.switchPortal ? (
+					<OutPortal node={props.switchPortal} />
+				) : (
+					<Group gap="xs">
+						{!props.isValid && (
+							<Badge
+								color="red"
+								variant="light"
+							>
+								Invalid JSON
+							</Badge>
+						)}
+						<ActionIcon
+							color="slate"
+							onClick={props.closeVariables}
 						>
-							Invalid JSON
-						</Badge>
-					)}
-					<ActionIcon
-						color="slate"
-						onClick={props.closeVariables}
-					>
-						<Icon path={iconClose} />
-					</ActionIcon>
-				</Group>
+							<Icon path={iconClose} />
+						</ActionIcon>
+					</Group>
+				)
 			}
 		>
 			<SurrealistEditor
