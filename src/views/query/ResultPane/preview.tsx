@@ -4,7 +4,7 @@ import { showNotification } from "@mantine/notifications";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { CodeEditor } from "~/components/CodeEditor";
 import { useSetting } from "~/hooks/config";
 import { useRelativeTime } from "~/hooks/time";
 import { useInterfaceStore } from "~/stores/interface";
@@ -48,7 +48,7 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 	}, [results]);
 
 	return (
-		<SurrealistEditor
+		<CodeEditor
 			language="json"
 			value={contents}
 			options={{
@@ -75,7 +75,7 @@ export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 	}, [result]);
 
 	return (
-		<SurrealistEditor
+		<CodeEditor
 			language="json"
 			value={contents}
 			options={{
@@ -169,7 +169,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 									</Accordion.Control>
 									{msg.data !== undefined && (
 										<Accordion.Panel>
-											<SurrealistEditor
+											<CodeEditor
 												autoSize
 												language="json"
 												value={JSON.stringify(msg.data, null, 4)}

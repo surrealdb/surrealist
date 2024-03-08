@@ -1,6 +1,6 @@
 import { ActionIcon, Badge, Button, Drawer, Group, Paper, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { CodeEditor } from "~/components/CodeEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useInputState } from "@mantine/hooks";
@@ -133,7 +133,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						flex={1}
 						withBorder
 					>
-						<SurrealistEditor
+						<CodeEditor
 							language="json"
 							autoSize
 							value={recordBody}

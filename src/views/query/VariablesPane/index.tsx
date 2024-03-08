@@ -1,6 +1,6 @@
 import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Badge, Group } from "@mantine/core";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
@@ -68,7 +68,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 				)
 			}
 		>
-			<SurrealistEditor
+			<CodeEditor
 				language="json"
 				value={activeTab?.variables || ''}
 				onChange={setVariables}

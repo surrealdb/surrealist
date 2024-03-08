@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import { Box } from "@mantine/core";
 import { useEffect, useRef } from "react";
-import { SurrealistEditorProps } from "../shared";
+import { CodeEditorProps } from "../shared";
 import { useSetting } from "~/hooks/config";
 import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
@@ -14,7 +14,7 @@ interface EditorRef {
 	editable: Compartment;
 }
 
-export function SurrealistCodemirrorEditor(props: SurrealistEditorProps) {
+export function InternalCodeMirrorEditor(props: CodeEditorProps) {
 	const {
 		value,
 		onChange,

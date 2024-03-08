@@ -2,7 +2,7 @@ import { Extension } from "@codemirror/state";
 import { BoxProps } from "@mantine/core";
 import { editor } from "monaco-editor";
 
-export interface SurrealistEditorProps extends BoxProps {
+export interface CodeEditorProps extends BoxProps {
 	value?: string;
 	extensions?: Extension[];
 	readOnly?: boolean;

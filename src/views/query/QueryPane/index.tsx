@@ -4,7 +4,7 @@ import { ContentPane } from "~/components/Pane";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebouncedCallback } from "~/hooks/debounce";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { iconAutoFix, iconServer, iconStar, iconText } from "~/util/icons";
@@ -192,7 +192,7 @@ export function QueryPane({
 				)
 			}
 		>
-			<SurrealistEditor
+			<CodeEditor
 				language="surrealql"
 				onMount={configure}
 				value={activeTab.query}

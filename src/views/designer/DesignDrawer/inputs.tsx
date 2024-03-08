@@ -4,7 +4,7 @@ import { ChangeEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { CodeEditor } from "~/components/CodeEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { TableDefinition } from "~/types";
 import { useTables } from "~/hooks/schema";
@@ -77,7 +77,7 @@ export function QueryInput(props: QueryInputProps) {
 					<ModalTitle>Advanced editor</ModalTitle>
 				}
 			>
-				<SurrealistEditor
+				<CodeEditor
 					language="surrealql"
 					value={editorText}
 					onChange={setEditorText}

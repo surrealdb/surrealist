@@ -1,7 +1,7 @@
 import { Paper } from "@mantine/core";
 import classes from "../style.module.scss";
 import { SaveBox } from "~/components/SaveBox";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
+import { CodeEditor } from "~/components/CodeEditor";
 import { SaveableHandle } from "~/hooks/save";
 import { json } from "@codemirror/lang-json";
 import { scrollPastEnd } from "@codemirror/view";
@@ -22,7 +22,7 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 				p="xs"
 				withBorder
 			>
-				<SurrealistEditor
+				<CodeEditor
 					h="100%"
 					language="json"
 					value={value}

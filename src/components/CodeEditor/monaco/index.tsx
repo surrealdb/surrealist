@@ -4,9 +4,9 @@ import { ElementRef, useEffect, useRef } from "react";
 import { BASE_EDITOR_CONFIG, wireHighlighting } from "~/util/editor";
 import { Box, Paper } from "@mantine/core";
 import { useSetting } from '~/hooks/config';
-import { SurrealistEditorProps } from '../shared';
+import { CodeEditorProps } from '../shared';
 
-export function SurrealistMonacoEditor(props: SurrealistEditorProps) {
+export function InternalMonacoEditor(props: CodeEditorProps) {
 	const containerRef = useRef<ElementRef<"div">>(null);
 	const elementRef = useRef<ElementRef<"div">>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
