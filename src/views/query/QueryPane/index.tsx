@@ -3,13 +3,13 @@ import { useStable } from "~/hooks/stable";
 import { ContentPane } from "~/components/Pane";
 import { useRef } from "react";
 import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
-import { useDebouncedCallback } from "~/hooks/debounce";
+import { useDebounced } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { iconAutoFix, iconServer, iconStar, iconText } from "~/util/icons";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
+import { selectionChanged, surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
 import { format_query, validate_query } from "~/generated/surrealist-embed";
@@ -17,6 +17,7 @@ import { showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { mdiCodeBraces } from "@mdi/js";
+import { SelectionRange } from "@codemirror/state";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 
@@ -41,6 +42,7 @@ export interface QueryPaneProps {
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
 	onSaveQuery: () => void;
+	onSelectionChange: (value: SelectionRange) => void;
 }
 
 export function QueryPane({
@@ -50,6 +52,7 @@ export function QueryPane({
 	switchPortal,
 	setShowVariables,
 	onSaveQuery,
+	onSelectionChange,
 }: QueryPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
@@ -79,7 +82,7 @@ export function QueryPane({
 		});
 	});
 
-	const scheduleSetQuery = useDebouncedCallback(200, setQueryForced);
+	const scheduleSetQuery = useDebounced(200, setQueryForced);
 
 	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
 		configureQueryEditor(editor);
@@ -136,6 +139,8 @@ export function QueryPane({
 			variables: JSON.stringify(mergedVars, null, 4)
 		});
 	});
+
+	const setSelection = useDebounced(350, onSelectionChange);
 
 	return (
 		<ContentPane
@@ -206,7 +211,8 @@ export function QueryPane({
 				extensions={[
 					surql(),
 					surqlTableCompletion(),
-					surqlVariableCompletion()
+					surqlVariableCompletion(),
+					selectionChanged(setSelection)
 				]}
 			/>
 		</ContentPane>

@@ -9,7 +9,7 @@ import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSe
 import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit } from "@codemirror/language";
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { themeColor } from "../mantine";
-import { EditorState, Extension } from "@codemirror/state";
+import { EditorState, Extension, SelectionRange } from "@codemirror/state";
 import { acceptWithTab } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
 import { StandardSQL } from "@codemirror/lang-sql";
@@ -166,5 +166,16 @@ const VARIABLE_SOURCE: CompletionSource = (context) => {
 export const surqlVariableCompletion = (): Extension => {
 	return StandardSQL.language.data.of({
 		autocomplete: VARIABLE_SOURCE
+	});
+};
+
+/**
+ * An extension that reports on selection changes
+ */
+export const selectionChanged = (cb: (ranges: SelectionRange) => void): Extension => {
+	return EditorView.updateListener.of((update) => {
+		if (update.selectionSet) {
+			cb(update.state.selection.main);
+		}
 	});
 };

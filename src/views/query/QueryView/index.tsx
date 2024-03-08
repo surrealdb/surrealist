@@ -28,6 +28,7 @@ import { useIsLight } from "~/hooks/theme";
 import { EmbedAdapter } from "~/adapter/embed";
 import { useBoolean } from "~/hooks/boolean";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { SelectionRange } from "@codemirror/state";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -41,6 +42,8 @@ export function QueryView() {
 
 	const [showHistory, showHistoryHandle] = useDisclosure();
 	const [showSaved, showSavedHandle] = useDisclosure();
+
+	const [selection, setSelection] = useState<SelectionRange>();
 
 	const tags = useSavedQueryTags();
 	const active = useActiveQuery();
@@ -149,6 +152,7 @@ export function QueryView() {
 									showVariables={showVariables}
 									onSaveQuery={handleSaveRequest}
 									setShowVariables={showVariablesHandle.set}
+									onSelectionChange={setSelection}
 								/>
 							)) : (
 								<PanelGroup direction="horizontal">
@@ -159,6 +163,7 @@ export function QueryView() {
 											showVariables={showVariables}
 											onSaveQuery={handleSaveRequest}
 											setShowVariables={showVariablesHandle.set}
+											onSelectionChange={setSelection}
 										/>
 									</Panel>
 									{showVariables && (
@@ -181,9 +186,7 @@ export function QueryView() {
 							<ResultPane
 								activeTab={active}
 								isQueryValid={queryValid}
-								showVariables={showVariables}
-								onToggleVariables={showVariablesHandle.toggle}
-								onSaveQuery={handleSaveRequest}
+								selection={selection}
 							/>
 						</Panel>
 					</PanelGroup>

@@ -14,6 +14,7 @@ import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
 import { iconBroadcastOff, iconCursor, iconHelp, iconQuery } from "~/util/icons";
 import { executeQuery } from "~/database";
+import { SelectionRange } from "@codemirror/state";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -31,17 +32,13 @@ function computeRowCount(response: any) {
 export interface ResultPaneProps {
 	activeTab: TabQuery;
 	isQueryValid: boolean;
-	showVariables: boolean;
-	onSaveQuery: () => void;
-	onToggleVariables: () => void;
+	selection: SelectionRange | undefined;
 }
 
 export function ResultPane({
 	activeTab,
 	isQueryValid,
-	showVariables,
-	onSaveQuery,
-	onToggleVariables,
+	selection,
 }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
@@ -75,7 +72,13 @@ export function ResultPane({
 	};
 
 	const runQuery = useStable(() => {
-		executeQuery();
+		if (selection?.empty === false) {
+			executeQuery({
+				override: activeTab.query.slice(selection.from, selection.to)
+			});
+		} else {
+			executeQuery();
+		}
 	});
 
 	useLayoutEffect(() => {
@@ -149,7 +152,7 @@ export function ResultPane({
 							<Icon path={iconCursor} />
 						}
 					>
-						Run query
+						Run {selection?.empty === false ? 'selection' : 'query'}
 					</Button>
 				</Group>
 			}
