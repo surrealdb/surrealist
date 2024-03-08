@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
 import clsx from "clsx";
-import { Accordion, Badge, Button, Paper, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
+import { Accordion, Badge, Button, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
 import { Drawer, Group, ActionIcon } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -10,11 +10,11 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { SavedQuery } from "~/types";
 import { useContextMenu } from "mantine-contextmenu";
 import { iconClose, iconDelete, iconEdit, iconPlus, iconQuery, iconSearch, iconText } from "~/util/icons";
+import { QueryPreview } from "~/components/QueryPreview";
 
 export interface SavesDrawerProps {
 	opened: boolean;
@@ -30,7 +30,6 @@ export function SavesDrawer(props: SavesDrawerProps) {
 	const queries = useConfigStore((s) => s.savedQueries);
 	const activeTab = useActiveQuery();
 	const tags = useSavedQueryTags();
-	const isLight = useIsLight();
 
 	const [filterTag, setFilterTag] = useState<string | null>(null);
 	const [filterText, setFilterText] = useInputState("");
@@ -201,15 +200,10 @@ export function SavesDrawer(props: SavesDrawerProps) {
 									{entry.name}
 								</Text>
 								<Spacer />
-								<Tooltip
-									position="top"
-									label="Open in new tab"
-									offset={10}
-									transitionProps={{ transition: "pop" }}
-									openDelay={250}
-								>
+								<Tooltip label="Open in new tab">
 									<ActionIcon
 										component="div"
+										variant="gradient"
 										className={classes.queryAction}
 										onClick={e => handleUseQuery(entry, e)}
 									>
@@ -219,30 +213,23 @@ export function SavesDrawer(props: SavesDrawerProps) {
 							</Group>
 						</Accordion.Control>
 						<Accordion.Panel p={0} px={4}>
-							<Paper p="xs" bg={isLight ? 'slate.1' : 'slate.9'}>
-								{entry.tags.length > 0 && (
-									<Group mb="xs" gap="xs">
-										{entry.tags.map((tag, i) => (
-											<Badge
-												key={i}
-												size="xs"
-												color="slate"
-												radius="sm"
-											>
-												{tag}
-											</Badge>
-										))}
-									</Group>
-								)}
-								<Text
-									ff="JetBrains Mono"
-									className={classes.queryText}
-									lineClamp={8}
-									fw={600}
-								>
-									{entry.query}
-								</Text>
-							</Paper>
+							<QueryPreview
+								value={entry.query}
+							/>
+							{entry.tags.length > 0 && (
+								<Group mt="sm" gap="xs">
+									{entry.tags.map((tag, i) => (
+										<Badge
+											key={i}
+											size="xs"
+											color="slate"
+											radius="sm"
+										>
+											{tag}
+										</Badge>
+									))}
+								</Group>
+							)}
 						</Accordion.Panel>
 					</Accordion.Item>
 				))}

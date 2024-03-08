@@ -1,8 +1,8 @@
 import classes from "./style.module.scss";
 
 import dayjs from "dayjs";
-import { ActionIcon, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
-import { Box, Drawer, Paper } from "@mantine/core";
+import { ActionIcon, Divider, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { Box, Drawer } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -15,6 +15,8 @@ import { useMemo } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { useContextMenu } from "mantine-contextmenu";
 import { iconClose, iconDelete, iconQuery, iconSearch, iconText } from "~/util/icons";
+import { QueryPreview } from "~/components/QueryPreview";
+import { capitalize } from "radash";
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
@@ -75,27 +77,30 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				}
 			])}
 		>
-			<Group h={28} mb="sm">
-				<Box>
+			<Group h={28} wrap="nowrap">
+				<Group gap="xs" wrap="nowrap" miw={0}>
+					<Text c="bright" style={{ flexShrink: 0 }}>
+						{capitalize(dayjs(entry.timestamp).fromNow())}
+					</Text>
 					{entry.origin && (
-						<Text size="xs" c="slate">
-							{entry.origin}
+						<Text c="slate" truncate miw={0}>
+							from {entry.origin}
+							from {entry.origin}
+							from {entry.origin}
+							from {entry.origin}
+							from {entry.origin}
+							from {entry.origin}
+							from {entry.origin}
+							from {entry.origin}
+							from {entry.origin}
 						</Text>
 					)}
-					<Text>
-						Executed {dayjs(entry.timestamp).fromNow()}
-					</Text>
-				</Box>
+				</Group>
 				<Spacer />
-				<Tooltip
-					position="top"
-					label="Open in new tab"
-					offset={10}
-					transitionProps={{ transition: "pop" }}
-					openDelay={250}
-				>
+				<Tooltip label="Open in new tab">
 					<ActionIcon
 						component="div"
+						variant="gradient"
 						className={classes.queryAction}
 						onClick={handleUseQuery}
 					>
@@ -104,16 +109,12 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				</Tooltip>
 			</Group>
 
-			<Paper mt="xs" p="xs" bg={isLight ? 'slate.1' : 'slate.9'}>
-				<Text
-					ff="JetBrains Mono"
-					className={classes.queryText}
-					lineClamp={8}
-					fw={600}
-				>
-					{entry.query}
-				</Text>
-			</Paper>
+			<QueryPreview
+				mt="xs"
+				value={entry.query}
+			/>
+
+			<Divider mt="md" color="slate.6" />
 		</Box>
 	);
 }

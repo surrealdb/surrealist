@@ -18,6 +18,14 @@ import { getActiveQuery } from "../connection";
 import { tryParseParams } from "../helpers";
 
 /**
+ * The color scheme used within editors
+ */
+export const colorTheme = () => [
+	syntaxHighlighting(DARK_STYLE, { fallback: true }),
+	syntaxHighlighting(LIGHT_STYLE, { fallback: true }),
+];
+
+/**
  * Shared Surrealist base configuration for all editors
  */
 export const surrealist = (): Extension => [
@@ -35,8 +43,7 @@ export const surrealist = (): Extension => [
 	autocompletion(),
 	rectangularSelection(),
 	crosshairCursor(),
-	syntaxHighlighting(LIGHT_STYLE, { fallback: true }),
-	syntaxHighlighting(DARK_STYLE, { fallback: true }),
+	colorTheme(),
 	indentationMarkers({
 		colors: {
 			light: themeColor('slate'),

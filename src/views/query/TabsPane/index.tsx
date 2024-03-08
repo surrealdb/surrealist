@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import { EditableText } from "~/components/EditableText";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -165,15 +165,8 @@ export function TabsPane(props: TabsPaneProps) {
 						</Sortable>
 					</Stack>
 				</ScrollArea>
-				<Divider mb="xs" />
+				<Divider my="lg" />
 				<Stack>
-					<Text
-						c="slate"
-						fz="lg"
-						fw={500}
-					>
-						Actions
-					</Text>
 					<Button
 						fullWidth
 						color="slate"
