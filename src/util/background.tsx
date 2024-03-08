@@ -2,7 +2,6 @@ import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { setEditorTheme } from "./editor";
-import { getConnection } from "./connection";
 import { openConnection } from "~/database";
 import { fetchDatabaseSchema } from "./schema";
 import { getSetting, watchStore } from "./config";
@@ -73,18 +72,14 @@ export async function watchConfigStore() {
  * Watch for connection changes and open the connection if auto connect is enabled
  */
 export function watchConnectionSwitch() {
-	const autoConnect = getSetting("behavior", "autoConnect");
-
-	if (autoConnect && getConnection()) {
-		openConnection();
-	}
-
 	watchStore({
 		initial: true,
 		store: useConfigStore,
 		select: (state) => state.activeConnection,
 		then: (value) => {
-			if (value) {
+			const autoConnect = getSetting("behavior", "autoConnect");
+
+			if (autoConnect && value) {
 				openConnection();
 			}
 		},
