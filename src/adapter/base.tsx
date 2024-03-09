@@ -16,6 +16,11 @@ export interface SurrealistAdapter {
 	isUpdateCheckSupported: boolean;
 
 	/**
+	 * Whether the window has a native titlebar
+	 */
+	hasTitlebar: boolean;
+
+	/**
 	 * Initialize any adapter specific services. This function is invoked
 	 * after the config has been loaded.
 	 */

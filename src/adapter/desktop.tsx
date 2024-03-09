@@ -23,6 +23,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
+	public hasTitlebar = false;
 
 	#startTask: any;
 
@@ -37,6 +38,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		document.addEventListener("contextmenu", (e) => {
 			e.preventDefault();
+		});
+
+		type().then(t => {
+			this.hasTitlebar = t === "Windows_NT" || t === "Linux";
 		});
 	}
 

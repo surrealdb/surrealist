@@ -26,7 +26,7 @@ import { Settings } from "./settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
 import { iconCog, iconDownload } from "~/util/icons";
-import { isBrowser, isDesktop } from "~/adapter";
+import { adapter, isBrowser } from "~/adapter";
 import { FreshExperience } from "./fresh";
 import { NavigationIcon } from "../NavigationIcon";
 import { TableCreator } from "./modals/table";
@@ -83,7 +83,7 @@ export function Scaffold() {
 				backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
 			}}
 		>
-			{isDesktop && (
+			{!adapter.hasTitlebar && (
 				<Center
 					data-tauri-drag-region
 					className={classes.titlebar}

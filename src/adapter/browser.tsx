@@ -7,6 +7,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
+	public hasTitlebar = true;
 
 	public initialize() {
 		// noop
