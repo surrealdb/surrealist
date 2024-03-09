@@ -7,7 +7,7 @@ export default {
 		{ format: "es", file: "./dist/index.js" }
 	],
 	external(id) {
-		return !/^[\.\/]/.test(id)
+		return !/^([\.\/]|\w:\\)/.test(id)
 	},
 	plugins: [
 		nodeResolve()
