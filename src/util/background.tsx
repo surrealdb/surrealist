@@ -58,8 +58,6 @@ export async function watchConfigStore() {
 	const config = JSON.parse(await adapter.loadConfig());
 	const merged = assign(useConfigStore.getState(), config);
 
-	console.log(merged);
-
 	useConfigStore.setState(merged);
 
 	// TODO include a ~300ms debounce

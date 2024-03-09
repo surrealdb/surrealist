@@ -123,6 +123,10 @@ export async function applyNodeLayout(
 	edges: Edge[],
 	direction: DiagramDirection
 ): Promise<NodeChange[]> {
+	if (nodes.some((node) => !node.width || !node.height)) {
+		return [];
+	}
+
 	const elk = new ELK();
 	const graph = {
 		id: 'root',

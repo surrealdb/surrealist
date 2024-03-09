@@ -98,7 +98,7 @@ function Fields(props: FieldsProps) {
 	};
 
 	return (
-		<Box display="flex">
+		<Box display="flex" style={{ cursor: 'pointer' }}>
 			<ScrollArea
 				flex={1}
 				mah={210}
@@ -181,7 +181,6 @@ export function BaseNode(props: BaseNodeProps) {
 				shadow={`0 8px 15px var(--mantine-color-slate-${isLight ? 0 : 9}`}
 				style={{
 					border: `1px solid ${themeColor(isSelected ? 'surreal' : isLight ? 'slate.2' : 'slate.5')}`,
-					cursor: 'pointer',
 					userSelect: 'none'
 				}}
 			>

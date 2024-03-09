@@ -5,6 +5,7 @@ import { SurrealInfoDB, SurrealInfoKV, SurrealInfoNS, SurrealInfoTB } from "~/ty
 import { getActiveSurreal } from "./surreal";
 import { extractTypeList, tb } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
+import isEqual from "fast-deep-equal";
 
 /**
  * Fetch information about a table schema
@@ -14,7 +15,7 @@ import { useDatabaseStore } from '~/stores/database';
  */
 export async function fetchDatabaseSchema() {
 	const surreal = getActiveSurreal();
-	const { setDatabaseSchema } = useDatabaseStore.getState();
+	const { databaseSchema, setDatabaseSchema } = useDatabaseStore.getState();
 	const [kvInfo, nsInfo, dbInfo] = await Promise.all([
 		surreal.querySingle<SurrealInfoKV | null>("INFO FOR KV"),
 		surreal.querySingle<SurrealInfoNS | null>("INFO FOR NS"),
@@ -107,13 +108,17 @@ export async function fetchDatabaseSchema() {
 		});
 	}
 
-	setDatabaseSchema({
+	const newSchema = {
 		tables,
 		scopes,
 		kvUsers,
 		nsUsers,
 		dbUsers,
-	});
+	};
+
+	if (!isEqual(newSchema, databaseSchema)) {
+		setDatabaseSchema(newSchema);
+	}
 }
 
 /**

@@ -2,8 +2,8 @@ import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from "reactflow";
 import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStoreApi } from "reactflow";
 import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
 import { DiagramDirection, DiagramMode, TableDefinition } from "~/types";
 import { useStable } from "~/hooks/stable";
@@ -49,6 +49,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const { showContextMenu } = useContextMenu();
 
 	const schema = useSchema();
+	const lastSchema = useRef('');
 	const isOnline = useIsConnected();
 	const isViewActive = useConfigStore((s) => s.activeView == "designer");
 
@@ -65,7 +66,30 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
 	const initialized = useRef(false);
-	const flowStore = useStoreApi();
+	const internals = useStore(s => s.nodeInternals);
+
+	const [computing, setComputing] = useState(false);
+	const doFit = useRef(false);
+
+	useLayoutEffect(() => {
+		if (doFit.current) {
+			fitView();
+			doFit.current = false;
+		} else if (computing) {
+			const layoutNodes = [...internals.values()] as InternalNode[];
+			const direction = activeSession.diagramDirection;
+
+			applyNodeLayout(layoutNodes, edges, direction).then(async changes => {
+				if (changes.length === 0) {
+					return;
+				}
+
+				onNodesChange(changes);
+				setComputing(false);
+				doFit.current = true;
+			});
+		}
+	}, [internals]);
 
 	const renderGraph = useStable(async () => {
 		const [nodes, edges] = buildFlowNodes(props.tables);
@@ -77,31 +101,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return;
 		}
 
-		const doFit = !initialized.current;
-		initialized.current = true;
-
 		setNodes(nodes);
 		setEdges(edges);
-		setIsComputing(true);
-
-		// This has to be rediculously high because MacOS webview is truly terrible
-		// On chromium this could be as low as 3ms
-		await sleep(300);
-
-		const layoutNodes = [...flowStore.getState().nodeInternals.values()] as InternalNode[];
-		const direction = activeSession.diagramDirection;
-
-		applyNodeLayout(layoutNodes, edges, direction).then(async changes => {
-			onNodesChange(changes);
-
-			if (doFit) {
-				// Yet again, on chromium this could be 3ms
-				await sleep(100);
-				fitView();
-			}
-
-			setIsComputing(false);
-		});
+		setComputing(true);
 	});
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
@@ -149,22 +151,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	useLayoutEffect(() => {
-		if (isViewActive) {
-			setIsComputing(true);
+		if (isViewActive && isOnline) {
+			renderGraph();
 		}
-	}, [isViewActive]);
-
-	useLayoutEffect(() => {
-		if (isViewActive) {
-			setTimeout(() => {
-				renderGraph();
-			});
-		}
-	}, [schema, isOnline]);
-
-	useEffect(() => {
-		renderGraph();
-	}, [activeSession.diagramDirection]);
+	}, [schema, isViewActive, isOnline, activeSession.diagramDirection]);
 
 	useEffect(() => {
 		setNodes(curr => {
@@ -240,14 +230,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					nodes={nodes}
 					edges={edges}
 					nodeTypes={NODE_TYPES}
-					nodesDraggable={false}
 					nodesConnectable={false}
 					edgesFocusable={false}
 					proOptions={{ hideAttribution: true }}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					className={classes.diagram}
-					style={{ opacity: isComputing ? 0 : 1 }}
+					style={{ opacity: computing ? 0 : 1 }}
 					onNodeClick={(_ev, node) => {
 						props.setActiveTable(node.id);
 					}}
@@ -267,7 +256,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						{
 							key: 'refresh',
 							icon: <Icon path={iconRefresh} />,
-							title: 'Refresh',
+							title: 'Reset graph',
 							onClick: renderGraph
 						},
 						{ key: 'divider' },
@@ -306,20 +295,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Stack>
 				)}
 
-				{isComputing ? (
-					<Stack
-						inset={0}
-						pos="absolute"
-						align="center"
-						justify="center"
-						style={{ zIndex: 4, pointerEvents: 'none' }}
-					>
-						<Loader />
-						<Text fz="xl" fw={600}>
-							Visualizing schema...
-						</Text>
-					</Stack>
-				) : showBox && (
+				{showBox && (
 					<Stack
 						inset={0}
 						pos="absolute"

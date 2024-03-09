@@ -61,8 +61,6 @@ export function updateTitle() {
 
 	adapter.setWindowTitle(title);
 	useInterfaceStore.getState().setWindowTitle(title);
-
-	console.log(title);
 }
 
 /**
@@ -264,4 +262,22 @@ export function tryParseParams(paramString: string) {
  */
 export function tb(value: string) {
 	return `\`${value}\``;
+}
+
+/**
+ * Compute a hash code for the given string
+ *
+ * @param value The string to hash
+ * @returns The hash code
+ */
+export function hashCode(value: string) {
+	let hash = 0;
+
+	for (let i = 0; i < value.length; i++) {
+		const code = value.codePointAt(i)!;
+		hash = ((hash << 5) - hash) + code;
+		hash = hash & hash;
+	}
+
+	return hash;
 }
