@@ -100,6 +100,7 @@ export function QueryPane({
 			let output = '';
 			let indent = 0;
 			let skipSpace = false;
+			const containedIn: string[] = [];
 
 			const newline = () => {
 				output += '\n' + ' '.repeat(indent * 4);
@@ -118,15 +119,19 @@ export function QueryPane({
 					continue;
 				}
 
-				if (char == '{' || char == '(') {
+				if (["{", "["].includes(containedIn.at(-1) as string) &&  char == ',') {
+					doNewline = true;
+				} else if (char == '{' || char == '(' || char == '[') {
 					indent++;
 					doNewline = true;
-				} else if (char == '}' || char == ')') {
+					containedIn.push(char);
+				} else if (char == '}' || char == ')' || char == ']') {
 					indent--;
 					newline();
+					containedIn.pop();
 				}
 
-				if (seek(i, 'FROM') || seek(i, 'WHERE') || seek(i, 'ORDER') || seek(i, 'GROUP') || seek(i, 'START') || seek(i, 'LIMIT') || seek(i, 'AND') || seek(i, 'OR')) {
+				if (seek(i, 'WHERE') || seek(i, 'ORDER') || seek(i, 'GROUP') || seek(i, 'START') || seek(i, 'LIMIT') || seek(i, 'AND') || seek(i, 'OR')) {
 					newline();
 				}
 
