@@ -1,6 +1,6 @@
 import { showNotification } from "@mantine/notifications";
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/surreal";
-import { newId, showError } from "./util/helpers";
+import { newId } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
 import { Text } from "@mantine/core";
 import { getActiveConnection } from "./util/connection";
@@ -8,39 +8,47 @@ import { getConnection } from "./util/connection";
 import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
 import { ConnectedEvent, DisconnectedEvent } from "./util/global-events";
+import { useInterfaceStore } from "./stores/interface";
+import { ConnectionOptions } from "./types";
+
+export interface ConnectOptions {
+	connection?: ConnectionOptions;
+}
 
 /**
  * Open a new connection to the data
- * @param isSilent Whether to hide error notifications
+ * @param options Whether to hide error notifications
  * @param callback Callback to run after the connection is opened
  */
-export function openConnection(isSilent?: boolean, callback?: (success: boolean) => void) {
+export function openConnection(options?: ConnectOptions): Promise<void> {
 	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
-	const connection = getActiveConnection();
+	const { openScopeSignup } = useInterfaceStore.getState();
+	const { connection } = getActiveConnection();
 
 	closeConnection();
 
-	try {
+	return new Promise((resolve, reject) => {
 		setIsConnecting(true);
 		setIsConnected(false);
 
 		openSurrealConnection({
-			connection,
+			connection: options?.connection || connection,
 			onConnect() {
 				setIsConnecting(false);
 				setIsConnected(true);
 				fetchDatabaseSchema();
-				callback?.(true);
+				resolve();
 				ConnectedEvent.dispatch();
 			},
 			onDisconnect(code, reason) {
 				setIsConnecting(false);
 				setIsConnected(false);
-				callback?.(false);
 				DisconnectedEvent.dispatch();
 
-				if (code != 1000 && !isSilent) {
-					const subtitle = code === 1006 ? "Unexpected connection close" : reason || `Unknown reason`;
+				if (code != 1000) {
+					const subtitle = code === 1006
+						? "Unexpected connection close"
+						: reason || `Unknown reason`;
 
 					showNotification({
 						color: "red.4",
@@ -48,7 +56,7 @@ export function openConnection(isSilent?: boolean, callback?: (success: boolean)
 						message: (
 							<div>
 								<Text c="white" w={600}>
-									Connection Closed
+									Connection lost
 								</Text>
 								<Text c="white" opacity={0.8} size="sm">
 									{subtitle} ({code})
@@ -58,10 +66,15 @@ export function openConnection(isSilent?: boolean, callback?: (success: boolean)
 					});
 				}
 			},
+			onError(error) {
+				reject(new Error(error));
+
+				if (error.includes("No record was returned")) {
+					openScopeSignup();
+				}
+			},
 		});
-	} catch (err: any) {
-		showError("Failed to open connection", err.message);
-	}
+	});
 }
 
 export interface QueryOptions {

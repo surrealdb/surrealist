@@ -3,11 +3,6 @@ use std::{error::Error, time::Duration};
 use wasm_bindgen::JsValue;
 use wasm_bindgen_futures::js_sys::{Array, Object, Reflect};
 
-/// Utility for wrapping a SDB error into a JS value
-pub fn to_js_err(err: surrealdb::Error) -> JsValue {
-    JsValue::from_str(&err.to_string())
-}
-
 /// Convert an Error to a JSON value
 pub fn error_to_js(err: impl Error) -> JsValue {
     serde_json::to_string(&err.to_string()).unwrap().into()

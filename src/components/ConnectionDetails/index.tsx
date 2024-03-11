@@ -1,6 +1,6 @@
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
-import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, ModalTitle, Paper, ActionIcon, Tooltip } from "@mantine/core";
+import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip } from "@mantine/core";
 import { CONNECTION_PROTOCOLS, AUTH_MODES } from "~/constants";
 import { iconClose, iconPlus } from "~/util/icons";
 import { EditableText } from "../EditableText";
@@ -9,6 +9,7 @@ import { Spacer } from "../Spacer";
 import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
+import { ModalTitle } from "../ModalTitle";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 
@@ -195,12 +196,12 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 				onClose={editingScopeHandle.close}
 				size={560}
 				title={
-					<ModalTitle>Editing scope data</ModalTitle>
+					<ModalTitle>Scope data editor</ModalTitle>
 				}
 			>
 				{value.connection.scopeFields?.length === 0 ? (
 					<Text c="gray" fs="italic">
-						No scope data defined
+						Press "Add field" to define scope fields
 					</Text>
 				) : (
 					<Stack>
@@ -208,7 +209,7 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 							<Paper key={i}>
 								<Group>
 									<TextInput
-										placeholder="Key"
+										placeholder="Field name"
 										style={{ flex: 1 }}
 										value={field.subject}
 										onChange={(e) =>

@@ -111,7 +111,7 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 
 	let killed = false;
 
-	const connection: any = mapKeys(options.connection.connection, key => snake(key));
+	const connection: any = mapKeys(options.connection, key => snake(key));
 	const details = {
 		...connection,
 		endpoint: connectionUri(connection).replace(/^ws/, "http")

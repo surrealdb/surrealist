@@ -5,15 +5,16 @@ import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconCircle, iconEdit, iconPlus, iconSearch, iconServer, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconCircle, iconCopy, iconEdit, iconPlus, iconSearch, iconServer, iconSurreal } from "~/util/icons";
 import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
 import { useDisclosure, useInputState } from "@mantine/hooks";
-import { updateTitle } from "~/util/helpers";
+import { newId, updateTitle } from "~/util/helpers";
 import { Entry } from "../Entry";
 import { openConnection } from "~/database";
+import { useContextMenu } from "mantine-contextmenu";
 
 const TRANSITION = {
 	in: { opacity: 1, transform: 'translateY(0)' },
@@ -24,7 +25,8 @@ const TRANSITION = {
 
 export function Connections() {
 	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
-	const { setActiveConnection } = useConfigStore.getState();
+	const { setActiveConnection, addConnection } = useConfigStore.getState();
+	const { showContextMenu } = useContextMenu();
 
 	const [isListing, isListingHandle] = useDisclosure();
 	const [search, setSearch] = useInputState("");
@@ -62,6 +64,17 @@ export function Connections() {
 
 	const connect = useStable(() => {
 		openConnection();
+	});
+
+	const duplicateConnection = useStable((id: string) => {
+		const con = connections.find((c) => c.id === id);
+
+		if (con) {
+			addConnection({
+				...con,
+				id: newId()
+			});
+		}
 	});
 
 	const isSandbox = connection?.id === SANDBOX;
@@ -179,6 +192,7 @@ export function Connections() {
 										key={con.id}
 										isActive={isActive}
 										className={classes.connection}
+										onClick={() => activate(con.id)}
 										leftSection={
 											<Icon path={iconServer} />
 										}
@@ -191,7 +205,14 @@ export function Connections() {
 												<Icon path={iconEdit} />
 											</ActionIcon>
 										}
-										onClick={() => activate(con.id)}
+										onContextMenu={showContextMenu([
+											{
+												key: "duplicate",
+												title: "Duplicate",
+												icon: <Icon path={iconCopy} />,
+												onClick: () => duplicateConnection(con.id),
+											}
+										])}
 									>
 										<Text truncate>
 											{con.name}

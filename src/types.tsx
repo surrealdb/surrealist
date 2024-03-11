@@ -3,7 +3,7 @@ import { QueryResponse } from "./util/surreal";
 import { TFeatureFlags } from "@theopensource-company/feature-flags";
 import { featureFlagSchema } from "./util/feature-flags";
 
-export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
+export type AuthMode = "none" | "root" | "namespace" | "database" | "scope" | "scope-signup";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type QueryType = "invalid" | "mixed" | "live" | "normal";
@@ -216,8 +216,8 @@ export interface Analyzer {
 }
 
 export interface SurrealOptions {
-	connection: Connection;
+	connection: ConnectionOptions;
 	onConnect?: () => void;
 	onDisconnect?: (code: number, reason: string) => void;
-	onError?: (error: any) => void;
+	onError?: (error: string) => void;
 }

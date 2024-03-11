@@ -38,10 +38,8 @@ import { EmbedAdapter } from './adapter/embed';
 	await initializeMonaco();
 
 	// Immedietely connect and initialize the dataset
-	openConnection(true, (success) => {
-		if (success) {
-			(adapter as EmbedAdapter).initializeDataset();
-		}
+	openConnection().then(() => {
+		(adapter as EmbedAdapter).initializeDataset();
 	});
 
 	// Render the app component

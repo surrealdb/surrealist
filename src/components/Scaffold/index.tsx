@@ -31,6 +31,7 @@ import { FreshExperience } from "./fresh";
 import { NavigationIcon } from "../NavigationIcon";
 import { TableCreator } from "./modals/table";
 import { DownloadModal } from "./modals/download";
+import { ScopeSignup } from "./modals/signup";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -158,8 +159,14 @@ export function Scaffold() {
 				/>
 			)}
 
+			{activeConnection && (
+				<>
+					<ScopeSignup />
+					<TableCreator />
+				</>
+			)}
+
 			<ConnectionEditor />
-			<TableCreator />
 
 			<Settings
 				opened={showSettings}

@@ -1,6 +1,7 @@
 use futures::StreamExt;
 use once_cell::sync::Lazy;
 use serde_wasm_bindgen::{from_value, to_value};
+use surrealdb::Error;
 use tokio::sync::Mutex;
 use wasm_bindgen_futures::js_sys::Array;
 use wasm_bindgen_futures::js_sys::Function;
@@ -24,21 +25,14 @@ use crate::types::LiveQuery;
 use crate::types::SurrealVersion;
 use crate::utils::error_to_js;
 use crate::utils::make_error;
-use crate::utils::to_js_err;
 
 static SURREAL: Lazy<RwLock<Option<Surreal<Any>>>> = Lazy::new(|| RwLock::new(None));
 static LIVE_QUERIES: Lazy<Mutex<HashMap<String, LiveQuery>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
-#[wasm_bindgen]
-pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
-    let mut instance = SURREAL.write().await;
-
+async fn create_connection(details: JsValue) -> Result<Surreal<Any>, Error> {
     let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
     let endpoint = format!("{}://{}", info.protocol, info.hostname);
-
-    console_log!("Connecting to {}", endpoint);
-
-    let db = connect(endpoint).await.map_err(to_js_err)?;
+    let db = connect(endpoint).await?;
 
     match info.auth_mode.as_str() {
         "root" => {
@@ -46,8 +40,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await
-            .map_err(to_js_err)?;
+            .await?;
         }
         "namespace" => {
             db.signin(Namespace {
@@ -55,8 +48,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await
-            .map_err(to_js_err)?;
+            .await?;
         }
         "database" => {
             db.signin(Database {
@@ -65,8 +57,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 username: info.username.as_str(),
                 password: info.password.as_str(),
             })
-            .await
-            .map_err(to_js_err)?;
+            .await?;
         }
         "scope" => {
             let field_map = info
@@ -81,18 +72,43 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
                 scope: info.scope.as_str(),
                 params: field_map,
             })
-            .await
-            .map_err(to_js_err)?;
+            .await?;
+        }
+        "scope-signup" => {
+            let field_map = info
+                .scope_fields
+                .iter()
+                .map(|field| (field.subject.as_str(), field.value.as_str()))
+                .collect::<HashMap<&str, &str>>();
+
+            db.signup(Scope {
+                namespace: info.namespace.as_str(),
+                database: info.database.as_str(),
+                scope: info.scope.as_str(),
+                params: field_map,
+            })
+            .await?;
         }
         _ => {}
     };
 
-    db.use_ns(info.namespace).await.map_err(to_js_err)?;
-    db.use_db(info.database).await.map_err(to_js_err)?;
+    db.use_ns(info.namespace).await?;
+    db.use_db(info.database).await?;
 
-    *instance = Some(db);
+    Ok(db)
+}
 
-    Ok(())
+#[wasm_bindgen]
+pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
+    let mut instance = SURREAL.write().await;
+
+    return match create_connection(details).await {
+        Ok(db) => {
+            *instance = Some(db);
+            Ok(())
+        }
+        Err(err) => Err(err.to_string().into())
+    };
 }
 
 #[wasm_bindgen]
