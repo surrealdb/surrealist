@@ -11,7 +11,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
 import { useDisclosure, useInputState } from "@mantine/hooks";
-import { newId, updateTitle } from "~/util/helpers";
+import { newId, showError, updateTitle } from "~/util/helpers";
 import { Entry } from "../Entry";
 import { openConnection } from "~/database";
 import { useContextMenu } from "mantine-contextmenu";
@@ -63,7 +63,9 @@ export function Connections() {
 	}, [connections, connection, search]);
 
 	const connect = useStable(() => {
-		openConnection();
+		openConnection().catch(err => {
+			showError('Connection failed', err.message);
+		});
 	});
 
 	const duplicateConnection = useStable((id: string) => {

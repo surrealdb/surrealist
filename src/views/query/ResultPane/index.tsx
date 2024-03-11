@@ -15,6 +15,7 @@ import { getSurreal } from "~/util/surreal";
 import { iconBroadcastOff, iconCursor, iconHelp, iconQuery } from "~/util/icons";
 import { executeQuery } from "~/database";
 import { SelectionRange } from "@codemirror/state";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -45,6 +46,7 @@ export function ResultPane({
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 
 	const isLight = useIsLight();
+	const [flags] = useFeatureFlags();
 	const [resultTab, setResultTab] = useState<number>(1);
 	const resultMode = activeTab.resultMode;
 	const responses = activeTab.response;
@@ -86,6 +88,7 @@ export function ResultPane({
 	}, [responses.length]);
 
 	const modeIcon = RESULT_MODES.find(r => r.value == resultMode)?.icon ?? iconHelp;
+	const hasSelection = flags.editor === "codemirror" && selection?.empty === false;
 
 	const statusText = (showResponses
 		? `${responseCount} ${responseCount == 1 ? 'response' : 'responses'}`
@@ -152,7 +155,7 @@ export function ResultPane({
 							<Icon path={iconCursor} />
 						}
 					>
-						Run {selection?.empty === false ? 'selection' : 'query'}
+						Run {hasSelection ? 'selection' : 'query'}
 					</Button>
 				</Group>
 			}

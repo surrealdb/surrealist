@@ -3,7 +3,6 @@ import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./uti
 import { newId } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
 import { Text } from "@mantine/core";
-import { getActiveConnection } from "./util/connection";
 import { getConnection } from "./util/connection";
 import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
@@ -21,9 +20,15 @@ export interface ConnectOptions {
  * @param callback Callback to run after the connection is opened
  */
 export function openConnection(options?: ConnectOptions): Promise<void> {
+	const currentConnection = getConnection();
+	const connection = options?.connection || currentConnection?.connection;
+
+	if (!connection) {
+		return Promise.reject(new Error("No connection available"));
+	}
+
 	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
 	const { openScopeSignup } = useInterfaceStore.getState();
-	const { connection } = getActiveConnection();
 
 	closeConnection();
 
@@ -32,7 +37,7 @@ export function openConnection(options?: ConnectOptions): Promise<void> {
 		setIsConnected(false);
 
 		openSurrealConnection({
-			connection: options?.connection || connection,
+			connection,
 			onConnect() {
 				setIsConnecting(false);
 				setIsConnected(true);
