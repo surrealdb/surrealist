@@ -558,6 +558,10 @@
 				{
 					"name": "keyword.control.where.surrealql",
 					"match": "\\b(WHERE|where)\\b"
+				},
+				{
+					"name": "keyword.control.notexists.surrealql",
+					"match": "\\b(NOT +EXISTS|not +exists)\\b"
 				}
 			]
 		},

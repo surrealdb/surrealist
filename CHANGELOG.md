@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.11.6 - SurrealDB 1.3.0
+- Support for SurrealDB 1.3.0
+
 ## 1.11.5 - SurrealDB 1.2.1
 - Support for SurrealDB 1.2.1
 	- Fixes some reported errors and crashes
