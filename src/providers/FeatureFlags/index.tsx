@@ -1,8 +1,4 @@
-import {
-	FeatureFlagProvider,
-	featureFlagsHookFactory,
-} from '@theopensource-company/feature-flags/react';
-
+import { FeatureFlagProvider } from '@theopensource-company/feature-flags/react';
 import { PropsWithChildren, useEffect } from 'react';
 import { useConfigStore } from '~/stores/config';
 import { featureFlags } from '~/util/feature-flags';
@@ -28,5 +24,3 @@ export function FeatureFlagsProvider({ children }: PropsWithChildren) {
 		</FeatureFlagProvider>
 	);
 }
-
-export const useFeatureFlags = featureFlagsHookFactory(featureFlags);

@@ -1,6 +1,6 @@
 import { FeatureFlags, TFeatureFlags } from "@theopensource-company/feature-flags";
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
-import { Environment } from "./environment";
+import { environment } from "./environment";
 
 // How to write a schema for feature flags:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
@@ -17,24 +17,32 @@ export const featureFlagSchema = {
 	editor: {
 		options: ["monaco", "codemirror"]
 	},
+	mlmodels: {
+		options: [false, true]
+	},
+	apidocs: {
+		options: [false, true]
+	}
 } as const;
 
 export const featureFlags = new FeatureFlags({
 	schema: featureFlagSchema,
 
 	// Defaults per environment
-	environment: Environment,
+	environment,
 	defaults: {
 		prod: {},
 		preview: {
 			templates: true,
 			listLicenses: true,
+			apidocs: true,
 			editor: "codemirror"
 		},
 		dev: {
 			devTools: true,
 			templates: true,
 			listLicenses: true,
+			apidocs: true,
 			editor: "monaco"
 		}
 	},

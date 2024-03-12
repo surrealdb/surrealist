@@ -4,7 +4,7 @@ import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { QueryView } from "~/views/query/QueryView";
-import { FeatureFlagsProvider } from "~/providers/FeatureFlagProvider";
+import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 
 export function Embed() {
 	const colorScheme = useColorScheme();

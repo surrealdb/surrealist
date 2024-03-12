@@ -16,7 +16,7 @@ import { ContextMenuProvider } from "mantine-contextmenu";
 import { InspectorProvider } from "~/providers/Inspector";
 import { iconClose } from "~/util/icons";
 import { getSetting } from "~/util/config";
-import { FeatureFlagsProvider } from "~/providers/FeatureFlagProvider";
+import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 
 export function App() {

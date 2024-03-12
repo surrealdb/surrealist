@@ -1,7 +1,7 @@
 import { MantineColorScheme } from "@mantine/core";
 import { QueryResponse } from "./util/surreal";
 import { TFeatureFlags } from "@theopensource-company/feature-flags";
-import { featureFlagSchema } from "./util/feature-flags";
+import { FeatureFlagMap, featureFlagSchema } from "./util/feature-flags";
 
 export type AuthMode = "none" | "root" | "namespace" | "database" | "scope" | "scope-signup";
 export type DriverType = "file" | "memory" | "tikv";
@@ -19,6 +19,7 @@ export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
+export type FeatureCondition = (flags: FeatureFlagMap) => boolean;
 
 export type Selectable<T extends string> = { label: string, value: T };
 
@@ -220,4 +221,12 @@ export interface SurrealOptions {
 	onConnect?: () => void;
 	onDisconnect?: (code: number, reason: string) => void;
 	onError?: (error: string) => void;
+}
+
+export interface ViewInfo {
+	id: string;
+	name: string;
+	icon: string;
+	desc: string;
+	disabled?: FeatureCondition;
 }

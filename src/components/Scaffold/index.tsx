@@ -32,6 +32,7 @@ import { NavigationIcon } from "../NavigationIcon";
 import { TableCreator } from "./modals/table";
 import { DownloadModal } from "./modals/download";
 import { ScopeSignup } from "./modals/signup";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -48,6 +49,7 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 
 export function Scaffold() {
 	const isLight = useIsLight();
+	const [flags] = useFeatureFlags();
 
 	const { setActiveView } = useConfigStore.getState();
 
@@ -59,6 +61,7 @@ export function Scaffold() {
 	const [showDownload, downloadHandle] = useDisclosure();
 
 	const viewNode = VIEW_PORTALS[activeView];
+	const viewModes = VIEW_MODES.filter((info) => info.disabled?.(flags) !== true);
 
 	const userExecuteQuery = useStable(() => {
 		executeQuery({
@@ -99,7 +102,7 @@ export function Scaffold() {
 				<>
 					<Box p="sm" className={classes.wrapper}>
 						<Stack gap="xs">
-							{VIEW_MODES.map((info) => {
+							{viewModes.map((info) => {
 								const isActive = info.id === activeView;
 
 								return (

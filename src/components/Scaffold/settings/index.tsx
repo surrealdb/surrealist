@@ -14,17 +14,18 @@ import { Icon } from "../../Icon";
 import { useClipboard } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
 import { adapter, isDesktop } from "~/adapter";
-import { FeatureFlagMap, useFeatureFlags } from "~/util/feature-flags";
-import { FeatureFlagsTab } from "./tabs/devtools/FeatureFlags";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { mdiFlagOutline, mdiScaleBalance } from "@mdi/js";
 import { LicensesTab } from "./tabs/Licenses";
+import { FeatureCondition } from "~/types";
 
 interface Category {
 	id: string;
 	name: string;
 	icon: string;
 	component: () => JSX.Element;
-	disabled?: (flags: FeatureFlagMap) => boolean;
+	disabled?: FeatureCondition;
 }
 
 const VERSION = import.meta.env.VERSION;
