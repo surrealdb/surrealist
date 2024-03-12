@@ -2,7 +2,7 @@ import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { uid } from "radash";
-import { CSSProperties, FocusEvent, SyntheticEvent } from "react";
+import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
@@ -69,13 +69,31 @@ export function updateTitle() {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showError(title: string, subtitle: string) {
+export function showError(info: {title: ReactNode, subtitle: ReactNode}) {
 	showNotification({
 		color: "red.6",
 		message: (
 			<Stack gap={0}>
-				<Text fw={600}>{title}</Text>
-				<Text c="slate.3">{subtitle}</Text>
+				<Text fw={600} c="bright">{info.title}</Text>
+				<Text>{info.subtitle}</Text>
+			</Stack>
+		),
+	});
+}
+
+/**
+ * Display an informative notification
+ *
+ * @param title The title message
+ * @param subtitle The subtitle message
+ */
+export function showInfo(info: {title: ReactNode, subtitle: ReactNode}) {
+	showNotification({
+		color: "surreal.6",
+		message: (
+			<Stack gap={0}>
+				<Text fw={600} c="bright">{info.title}</Text>
+				<Text>{info.subtitle}</Text>
 			</Stack>
 		),
 	});

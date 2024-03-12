@@ -52,7 +52,10 @@ export class EmbedAdapter extends BrowserAdapter {
 
 				mainTab.variables = JSON.stringify(parsed, null, 4);
 			} catch {
-				showError('Embed error', 'Variables could not be parsed');
+				showError({
+					title: 'Embed error',
+					subtitle: 'Variables could not be parsed'
+				});
 			}
 		}
 
@@ -63,7 +66,10 @@ export class EmbedAdapter extends BrowserAdapter {
 			if (datasetUrl) {
 				this.#datasetQuery = await fetch(datasetUrl).then(res => res.text());
 			} else {
-				showError('Embed error', 'Dataset not recognised');
+				showError({
+					title: 'Embed error',
+					subtitle: 'Dataset not recognised'
+				});
 			}
 		}
 
@@ -74,7 +80,10 @@ export class EmbedAdapter extends BrowserAdapter {
 
 		// Interface theme
 		if (theme && !THEMES.has(theme)) {
-			showError('Embed error', 'Theme not recognised');
+			showError({
+				title: 'Embed error',
+				subtitle: 'Theme not recognised'
+			});
 		}
 
 		const config = {

@@ -14,7 +14,6 @@ import { useActiveConnection } from "~/hooks/connection";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { RadioSelect } from "~/components/RadioSelect";
 import { adapter } from "~/adapter";
-import { showNotification } from "@mantine/notifications";
 import { sleep } from "radash";
 import { useConfigStore } from "~/stores/config";
 import { themeColor } from "~/util/mantine";
@@ -23,6 +22,7 @@ import { useContextMenu } from "mantine-contextmenu";
 import { useBoolean } from "~/hooks/boolean";
 import { iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconTarget, iconXml } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
+import { showInfo } from "~/util/helpers";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -128,8 +128,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		setViewport(viewport);
 
 		if (isSuccess) {
-			showNotification({
-				message: "Snapshot saved to disk"
+			showInfo({
+				title: "Designer",
+				subtitle: "Snapshot saved to disk"
 			});
 		}
 	});

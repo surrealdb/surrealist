@@ -151,7 +151,10 @@ export function QueryPane({
 				query: output
 			});
 		} else {
-			showError('Formatting failed', 'Could not format query');
+			showError({
+				title: 'Formatting failed',
+				subtitle: 'Could not format query'
+			});
 		}
 	});
 

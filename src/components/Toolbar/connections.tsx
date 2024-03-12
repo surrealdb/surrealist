@@ -64,7 +64,10 @@ export function Connections() {
 
 	const connect = useStable(() => {
 		openConnection().catch(err => {
-			showError('Connection failed', err.message);
+			showError({
+				title: 'Connection failed',
+				subtitle: err.message
+			});
 		});
 	});
 

@@ -3,7 +3,7 @@ import surrealistLogo from "~/assets/images/logo.png";
 import { Group, Button, Modal, TextInput, Image, Center, ActionIcon, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { updateTitle } from "~/util/helpers";
+import { showInfo, updateTitle } from "~/util/helpers";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { LocalDatabase } from "./LocalDatabase";
@@ -14,7 +14,6 @@ import { useConfigStore } from "~/stores/config";
 import { closeConnection, openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
-import { showNotification } from "@mantine/notifications";
 import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
 import { iconReset } from "~/util/icons";
@@ -24,7 +23,6 @@ export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
-
 	const connection = useConnection();
 
 	const [showConsole, setShowConsole] = useDisclosure();
@@ -49,8 +47,9 @@ export function Toolbar() {
 		closeConnection();
 		openConnection();
 
-		showNotification({
-			message: "Sandbox environment reset",
+		showInfo({
+			title: "Sandbox reset",
+			subtitle: "Existing data has been dropped",
 		});
 	});
 

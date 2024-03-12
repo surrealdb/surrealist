@@ -56,7 +56,10 @@ export function ScopePane() {
 			await getActiveSurreal().query(query);
 			await fetchDatabaseSchema();
 		} catch (err: any) {
-			showError("Failed to save scope", err.message);
+			showError({
+				title: "Failed to save scope",
+				subtitle: err.message
+			});
 		}
 	});
 

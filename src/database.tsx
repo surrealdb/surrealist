@@ -1,8 +1,6 @@
-import { showNotification } from "@mantine/notifications";
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/surreal";
-import { newId } from "./util/helpers";
+import { newId, showError } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
-import { Text } from "@mantine/core";
 import { getConnection } from "./util/connection";
 import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
@@ -55,19 +53,9 @@ export function openConnection(options?: ConnectOptions): Promise<void> {
 						? "Unexpected connection close"
 						: reason || `Unknown reason`;
 
-					showNotification({
-						color: "red.4",
-						bg: "red.6",
-						message: (
-							<div>
-								<Text c="white" w={600}>
-									Connection lost
-								</Text>
-								<Text c="white" opacity={0.8} size="sm">
-									{subtitle} ({code})
-								</Text>
-							</div>
-						),
+					showError({
+						title: "Connection lost",
+						subtitle: `${subtitle} (${code})`,
 					});
 				}
 			},
@@ -98,8 +86,9 @@ export async function executeQuery(options?: QueryOptions) {
 	const connection = getConnection();
 
 	if (!connection || !isConnected) {
-		showNotification({
-			message: "You must be connected to send a query",
+		showError({
+			title: "Failed to execute",
+			subtitle: "You must be connected to the database"
 		});
 		return;
 	}

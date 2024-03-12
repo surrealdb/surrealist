@@ -63,7 +63,7 @@ async function checkDatabaseVersion() {
 
 	showNotification({
 		autoClose: false,
-		color: 'orange',
+		color: 'orange.6',
 		message: (
 			<Stack gap={0}>
 				<Text fw={600}>

@@ -6,10 +6,8 @@ import { open as openURL } from "@tauri-apps/api/shell";
 import { save, open } from "@tauri-apps/api/dialog";
 import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
-import { Stack, Text } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 import { OpenedFile, SurrealistAdapter } from "./base";
-import { printLog, updateTitle } from "~/util/helpers";
+import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
 import { watchStore } from "~/util/config";
@@ -170,15 +168,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 			this.#startTask = setTimeout(() => {
 				useDatabaseStore.getState().confirmServing();
 
-				showNotification({
-					autoClose: 1500,
-					color: "green.6",
-					message: (
-						<Stack gap={0}>
-							<Text fw={600}>Database started</Text>
-							<Text c="slate">Local database is now online</Text>
-						</Stack>
-					),
+				showInfo({
+					title: "Serving started",
+					subtitle: "Local database is now online"
 				});
 			}, WAIT_DURATION);
 		});
@@ -192,15 +184,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			useDatabaseStore.getState().stopServing();
 
-			showNotification({
-				autoClose: 1500,
-				color: "red.6",
-				message: (
-					<Stack gap={0}>
-						<Text fw={600}>Database stopped</Text>
-						<Text c="slate">Local database is now offline</Text>
-					</Stack>
-				),
+			showInfo({
+				title: "Serving stopped",
+				subtitle: "Local database is now offline"
 			});
 		});
 
@@ -219,14 +205,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			useDatabaseStore.getState().stopServing();
 
-			showNotification({
-				color: "red.6",
-				message: (
-					<Stack gap={0}>
-						<Text fw={600}>Failed to start database</Text>
-						<Text c="slate">{msg}</Text>
-					</Stack>
-				),
+			showError({
+				title: "Serving failed",
+				subtitle: msg
 			});
 		});
 	}

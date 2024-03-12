@@ -83,7 +83,10 @@ export function AccountsPane(props: AccountsPaneProps) {
 			await getActiveSurreal().query(query);
 			await fetchDatabaseSchema();
 		} catch (err: any) {
-			showError("Failed to save account", err.message);
+			showError({
+				title: "Failed to save account",
+				subtitle: err.message
+			});
 		}
 	});
 

@@ -6,8 +6,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useRef, useState } from "react";
 import { Icon } from "../../../components/Icon";
 import { adapter } from "~/adapter";
-import { showNotification } from "@mantine/notifications";
-import { showError } from "~/util/helpers";
+import { showError, showInfo } from "~/util/helpers";
 import { ModalTitle } from "../../../components/ModalTitle";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
@@ -49,16 +48,19 @@ export function Importer() {
 
 			await getActiveSurreal().query(importFile.current!.content);
 
-			showNotification({
-				title: 'Import successful',
-				message: 'The database was successfully imported',
+			showInfo({
+				title: "Importer",
+				subtitle: "Database was successfully imported"
 			});
 
 			fetchDatabaseSchema();
 		} catch(err: any) {
 			console.error(err);
 
-			showError("Import failed", "There was an error importing the database");
+			showError({
+				title: "Import failed",
+				subtitle: "There was an error importing the database"
+			});
 		} finally {
 			setIsImporting(false);
 			showConfirmHandle.close();

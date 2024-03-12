@@ -9,9 +9,9 @@ import { ModalTitle } from "../../../components/ModalTitle";
 import { Text } from "@mantine/core";
 import { useToggleList } from "~/hooks/toggle";
 import { adapter } from "~/adapter";
-import { showNotification } from "@mantine/notifications";
 import { createDatabaseExport } from "~/util/exporter";
 import { iconDownload, iconUpload } from "~/util/icons";
+import { showInfo } from "~/util/helpers";
 
 export function Exporter() {
 	const isLight = useIsLight();
@@ -42,8 +42,9 @@ export function Exporter() {
 			);
 
 			if (success) {
-				showNotification({
-					message: "Database export saved to disk",
+				showInfo({
+					title: "Export",
+					subtitle: "Database export saved to disk",
 				});
 			}
 		} finally {

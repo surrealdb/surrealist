@@ -65,7 +65,10 @@ export function DesignerView(_props: DesignerViewProps) {
 				.then(() => fetchDatabaseSchema())
 				.then(isDesigningHandle.close)
 				.catch((err) => {
-					showError("Failed to apply schema", err.message);
+					showError({
+						title: "Failed to apply schema",
+						subtitle: err.message
+					});
 				});
 		},
 		onRevert({ data }) {
