@@ -126,8 +126,6 @@ export function ResultPane({
 						</Text>
 					)}
 
-					<Divider orientation="vertical" />
-
 					<Select
 						data={RESULT_MODES}
 						value={resultMode}
