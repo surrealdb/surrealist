@@ -1,10 +1,10 @@
 .root {
 	z-index: 10;
 	width: 74px;
-	transition: width .15s;
+	transition: all .15s ease-out;
 	border-right: 1px solid transparent;
 
-	&:hover {
+	&.expandable:hover {
 		width: 245px;
 		border-color: var(--mantine-color-slate-6);
 	}

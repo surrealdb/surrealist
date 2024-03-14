@@ -65,7 +65,7 @@ export function Toolbar() {
 				className={classes.root}
 				h={64}
 			>
-				<Box w={52} />
+				<Box w={59} />
 
 				<Connections />
 

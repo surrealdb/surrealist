@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	Box,
 	Center,
+	Flex,
 } from "@mantine/core";
 
 import { useStable } from "~/hooks/stable";
@@ -85,47 +86,53 @@ export function Scaffold() {
 				</Center>
 			)}
 
-			<Toolbar />
+			<Flex
+				direction="column"
+				flex={1}
+				pos="relative"
+			>
+				<Toolbar />
 
-			<Sidebar
-				onToggleSettings={settingsHandle.toggle}
-				onToggleDownload={downloadHandle.toggle}
-			/>
-
-			{activeConnection ? (
-				<>
-					<Box p="sm" className={classes.wrapper}>
-						<Box w={42} />
-						<Box className={classes.content}>
-							{viewNode && <OutPortal node={viewNode} />}
-						</Box>
-					</Box>
-
-					<InPortal node={VIEW_PORTALS.query}>
-						<QueryView />
-					</InPortal>
-
-					<InPortal node={VIEW_PORTALS.explorer}>
-						<ExplorerView />
-					</InPortal>
-
-					<InPortal node={VIEW_PORTALS.designer}>
-						<DesignerView />
-					</InPortal>
-
-					<InPortal node={VIEW_PORTALS.authentication}>
-						<AuthenticationView />
-					</InPortal>
-
-					<InPortal node={VIEW_PORTALS.documentation}>
-						<DocumentationView />
-					</InPortal>
-				</>
-			) : (
-				<FreshExperience
-					onClickSettings={settingsHandle.toggle}
+				<Sidebar
+					onToggleSettings={settingsHandle.toggle}
+					onToggleDownload={downloadHandle.toggle}
 				/>
-			)}
+
+				{activeConnection ? (
+					<>
+						<Box p="sm" className={classes.wrapper}>
+							<Box w={49} />
+							<Box className={classes.content}>
+								{viewNode && <OutPortal node={viewNode} />}
+							</Box>
+						</Box>
+
+						<InPortal node={VIEW_PORTALS.query}>
+							<QueryView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.explorer}>
+							<ExplorerView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.designer}>
+							<DesignerView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.authentication}>
+							<AuthenticationView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.documentation}>
+							<DocumentationView />
+						</InPortal>
+					</>
+				) : (
+					<FreshExperience
+						onClickSettings={settingsHandle.toggle}
+					/>
+				)}
+			</Flex>
 
 			{activeConnection && (
 				<>

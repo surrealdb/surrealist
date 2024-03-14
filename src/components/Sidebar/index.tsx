@@ -14,6 +14,8 @@ import { useFeatureFlags } from "~/util/feature-flags";
 import { updateTitle } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealistLogo } from "../SurrealistLogo";
+import { useConnection } from "~/hooks/connection";
+import clsx from "clsx";
 
 const NAVIGATION: ViewMode[][] = [
 	[
@@ -39,10 +41,11 @@ export function Sidebar({
 	onToggleDownload,
 	onToggleSettings,
 }: SidebarProps) {
-	const { setActiveView } = useConfigStore.getState();
+	const { setActiveView, setActiveConnection } = useConfigStore.getState();
 
 	const [flags] = useFeatureFlags();
 	const isLight = useIsLight();
+	const connection = useConnection();
 	const activeView = useConfigStore((s) => s.activeView);
 
 	const setViewMode = useStable((id: ViewMode) => {
@@ -70,12 +73,12 @@ export function Sidebar({
 		<ScrollArea
 			scrollbars="y"
 			type="never"
-			pos="fixed"
+			pos="absolute"
 			top={0}
 			left={0}
 			bottom={0}
 			bg={isLight ? "slate.0" : "slate.9"}
-			className={classes.root}
+			className={clsx(classes.root, connection && classes.expandable)}
 		>
 			<Flex
 				direction="column"
@@ -87,6 +90,7 @@ export function Sidebar({
 					mt={26}
 					wrap="nowrap"
 					gap="lg"
+					onClick={() => setActiveConnection(null as any)}
 				>
 					<Image
 						style={{ pointerEvents: "none", userSelect: "none" }}
@@ -103,7 +107,7 @@ export function Sidebar({
 					h="100%"
 					mt={30}
 				>
-					{navigation.map((items, i) => (
+					{connection && navigation.map((items, i) => (
 						<Fragment key={i}>
 							{items.map(info => (
 								<Group
@@ -113,7 +117,6 @@ export function Sidebar({
 								>
 									<NavigationIcon
 										name={info.name}
-										isLight={isLight}
 										isActive={info.id === activeView}
 										icon={info.icon}
 										onClick={() => setViewMode(info.id)}
@@ -131,7 +134,6 @@ export function Sidebar({
 					{isBrowser && (
 						<NavigationIcon
 							name="Download App"
-							isLight={isLight}
 							icon={iconDownload}
 							onClick={onToggleDownload}
 						/>
@@ -139,7 +141,6 @@ export function Sidebar({
 
 					<NavigationIcon
 						name="Settings"
-						isLight={isLight}
 						icon={iconCog}
 						onClick={onToggleSettings}
 					/>
