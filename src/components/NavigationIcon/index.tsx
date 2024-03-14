@@ -1,9 +1,9 @@
 import classes from "./style.module.scss";
 import clsx from "clsx";
-import { ActionIcon, ActionIconProps, Tooltip } from "@mantine/core";
 import { Icon } from "../Icon";
+import { Entry } from "../Entry";
 
-export interface NavigationIconProps extends ActionIconProps {
+export interface NavigationIconProps {
 	name: string;
 	isActive?: boolean;
 	isLight: boolean;
@@ -13,24 +13,16 @@ export interface NavigationIconProps extends ActionIconProps {
 
 export function NavigationIcon({ name, isActive, isLight, icon, onClick, ...rest }: NavigationIconProps) {
 	return (
-		<Tooltip
-			position="right"
-			label={name}
-			ml="xs"
-			transitionProps={{
-				transition: "scale-x"
-			}}
+		<Entry
+			className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
+			isActive={isActive}
+			onClick={onClick}
+			leftSection={
+				<Icon path={icon} size="lg" />
+			}
+			{...rest}
 		>
-			<ActionIcon
-				color={isActive ? "surreal" : isLight ? "dark.8" : "dark.1"}
-				variant={isActive ? "gradient" : "subtle"}
-				className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
-				onClick={onClick}
-				radius="md"
-				{...rest}
-			>
-				<Icon path={icon} />
-			</ActionIcon>
-		</Tooltip>
+			{name}
+		</Entry>
 	);
 }

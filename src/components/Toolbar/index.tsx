@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
-import surrealistLogo from "~/assets/images/logo.png";
-import { Group, Button, Modal, TextInput, Image, Center, ActionIcon, Tooltip } from "@mantine/core";
+import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Box } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { showInfo, updateTitle } from "~/util/helpers";
@@ -66,13 +65,7 @@ export function Toolbar() {
 				className={classes.root}
 				h={64}
 			>
-				<Center w={52}>
-					<Image
-						style={{ pointerEvents: "none", userSelect: "none" }}
-						src={surrealistLogo}
-						height={26}
-					/>
-				</Center>
+				<Box w={52} />
 
 				<Connections />
 

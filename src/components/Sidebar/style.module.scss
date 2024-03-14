@@ -1,0 +1,15 @@
+.root {
+	z-index: 10;
+	width: 74px;
+	transition: width .15s;
+	border-right: 1px solid transparent;
+
+	&:hover {
+		width: 245px;
+		border-color: var(--mantine-color-slate-6);
+	}
+
+	:global(.mantine-ScrollArea-viewport) > div {
+		display: unset !important;
+	}
+}

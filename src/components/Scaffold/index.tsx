@@ -3,8 +3,6 @@ import classes from "./style.module.scss";
 import {
 	Box,
 	Center,
-	Divider,
-	Stack,
 } from "@mantine/core";
 
 import { useStable } from "~/hooks/stable";
@@ -20,22 +18,17 @@ import { DesignerView } from "~/views/designer/DesignerView";
 import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { VIEW_MODES } from "~/constants";
-import { ON_STOP_PROPAGATION, updateTitle } from "~/util/helpers";
-import { Spacer } from "../Spacer";
+import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { Settings } from "./settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
-import { iconCog, iconDownload } from "~/util/icons";
-import { adapter, isBrowser } from "~/adapter";
+import { adapter } from "~/adapter";
 import { FreshExperience } from "./fresh";
-import { NavigationIcon } from "../NavigationIcon";
 import { TableCreator } from "./modals/table";
 import { DownloadModal } from "./modals/download";
 import { ScopeSignup } from "./modals/signup";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { DocumentationView } from "~/views/documentation/DocumentationView";
-import { Fragment, useMemo } from "react";
+import { Sidebar } from "../Sidebar";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -52,26 +45,8 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	documentation: createHtmlPortalNode(PORTAL_ATTRS),
 };
 
-const NAVIGATION: ViewMode[][] = [
-	[
-		"query",
-		"explorer",
-		"designer",
-		"authentication",
-	],
-	[
-		"models",
-	],
-	[
-		"documentation",
-	],
-];
-
 export function Scaffold() {
 	const isLight = useIsLight();
-	const [flags] = useFeatureFlags();
-
-	const { setActiveView } = useConfigStore.getState();
 
 	const title = useInterfaceStore((s) => s.title);
 	const activeConnection = useConfigStore((s) => s.activeConnection);
@@ -93,27 +68,6 @@ export function Scaffold() {
 		["mod+Enter", () => userExecuteQuery()],
 	]);
 
-	const setViewMode = useStable((id: ViewMode) => {
-		updateTitle();
-		setActiveView(id);
-	});
-
-	const navigation = useMemo(() => {
-		return NAVIGATION.flatMap((row) => {
-			const items = row.flatMap((id) => {
-				const info = VIEW_MODES[id];
-
-				if (!info || !info.disabled?.(flags) !== true) {
-					return [];
-				}
-
-				return [info];
-			});
-
-			return items.length > 0 ? [items] : [];
-		});
-	}, [flags]);
-
 	return (
 		<div
 			className={classes.root}
@@ -133,45 +87,15 @@ export function Scaffold() {
 
 			<Toolbar />
 
+			<Sidebar
+				onToggleSettings={settingsHandle.toggle}
+				onToggleDownload={downloadHandle.toggle}
+			/>
+
 			{activeConnection ? (
 				<>
 					<Box p="sm" className={classes.wrapper}>
-						<Stack gap="xs">
-							{navigation.map((items, i) => (
-								<Fragment key={i}>
-									{items.map(info => (
-										<NavigationIcon
-											name={info.name}
-											isLight={isLight}
-											isActive={info.id === activeView}
-											icon={info.icon}
-											onClick={() => setViewMode(info.id)}
-										/>
-									))}
-									{i < navigation.length - 1 && (
-										<Divider color={isLight ? "white" : "slate.7"} />
-									)}
-								</Fragment>
-							))}
-
-							<Spacer />
-
-							{isBrowser && (
-								<NavigationIcon
-									name="Download App"
-									isLight={isLight}
-									icon={iconDownload}
-									onClick={downloadHandle.toggle}
-								/>
-							)}
-
-							<NavigationIcon
-								name="Settings"
-								isLight={isLight}
-								icon={iconCog}
-								onClick={settingsHandle.toggle}
-							/>
-						</Stack>
+						<Box w={42} />
 						<Box className={classes.content}>
 							{viewNode && <OutPortal node={viewNode} />}
 						</Box>
