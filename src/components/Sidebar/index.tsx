@@ -41,7 +41,7 @@ export function Sidebar({
 	onToggleDownload,
 	onToggleSettings,
 }: SidebarProps) {
-	const { setActiveView, setActiveConnection } = useConfigStore.getState();
+	const { setActiveView } = useConfigStore.getState();
 
 	const [flags] = useFeatureFlags();
 	const isLight = useIsLight();
@@ -84,14 +84,10 @@ export function Sidebar({
 				direction="column"
 				h="100%"
 				px={16}
-				pb={16}
+				pb={18}
+				pt={22}
 			>
-				<Group
-					mt={26}
-					wrap="nowrap"
-					gap="lg"
-					onClick={() => setActiveConnection(null as any)}
-				>
+				<Group wrap="nowrap" gap="lg">
 					<Image
 						style={{ pointerEvents: "none", userSelect: "none" }}
 						src={surrealistLogo}
