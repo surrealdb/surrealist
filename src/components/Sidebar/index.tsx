@@ -106,7 +106,11 @@ export function Sidebar({
 					{navigation.map((items, i) => (
 						<Fragment key={i}>
 							{items.map(info => (
-								<Group gap="lg" wrap="nowrap">
+								<Group
+									key={info.id}
+									gap="lg"
+									wrap="nowrap"
+								>
 									<NavigationIcon
 										name={info.name}
 										isLight={isLight}

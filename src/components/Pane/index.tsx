@@ -13,8 +13,15 @@ export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDi
 	withTopPadding?: boolean;
 }
 
-export function ContentPane(props: ContentPaneProps) {
-	const { children, title, icon, leftSection, rightSection, ...rest } = props;
+export function ContentPane({
+	children,
+	title,
+	icon,
+	leftSection,
+	rightSection,
+	withTopPadding,
+	...rest
+}: ContentPaneProps) {
 
 	const isLight = useIsLight();
 
@@ -48,7 +55,7 @@ export function ContentPane(props: ContentPaneProps) {
 					</Group>
 					<Divider
 						mx="sm"
-						mb={props.withTopPadding === false ? undefined : "sm"}
+						mb={withTopPadding === false ? undefined : "sm"}
 						className={classes.divider}
 					/>
 				</>
