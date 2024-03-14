@@ -43,8 +43,8 @@ export function updateTitle() {
 
 	const windowPinned = getSetting("behavior", "windowPinned");
 	const activeView = pathname.split("/")[1] as ViewMode;
+	const viewInfo = VIEW_MODES[activeView];
 	const session = getConnection();
-	const viewInfo = VIEW_MODES.find((v) => v.id === activeView);
 	const segments: string[] = [];
 
 	if (session) {

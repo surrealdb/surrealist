@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	Box,
 	Center,
+	Divider,
 	Stack,
 } from "@mantine/core";
 
@@ -33,6 +34,8 @@ import { TableCreator } from "./modals/table";
 import { DownloadModal } from "./modals/download";
 import { ScopeSignup } from "./modals/signup";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { DocumentationView } from "~/views/documentation/DocumentationView";
+import { Fragment, useMemo } from "react";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -45,7 +48,24 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	explorer: createHtmlPortalNode(PORTAL_ATTRS),
 	designer: createHtmlPortalNode(PORTAL_ATTRS),
 	authentication: createHtmlPortalNode(PORTAL_ATTRS),
+	models: createHtmlPortalNode(PORTAL_ATTRS),
+	documentation: createHtmlPortalNode(PORTAL_ATTRS),
 };
+
+const NAVIGATION: ViewMode[][] = [
+	[
+		"query",
+		"explorer",
+		"designer",
+		"authentication",
+	],
+	[
+		"models",
+	],
+	[
+		"documentation",
+	],
+];
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -61,7 +81,6 @@ export function Scaffold() {
 	const [showDownload, downloadHandle] = useDisclosure();
 
 	const viewNode = VIEW_PORTALS[activeView];
-	const viewModes = VIEW_MODES.filter((info) => info.disabled?.(flags) !== true);
 
 	const userExecuteQuery = useStable(() => {
 		executeQuery({
@@ -78,6 +97,22 @@ export function Scaffold() {
 		updateTitle();
 		setActiveView(id);
 	});
+
+	const navigation = useMemo(() => {
+		return NAVIGATION.flatMap((row) => {
+			const items = row.flatMap((id) => {
+				const info = VIEW_MODES[id];
+
+				if (!info || !info.disabled?.(flags) !== true) {
+					return [];
+				}
+
+				return [info];
+			});
+
+			return items.length > 0 ? [items] : [];
+		});
+	}, [flags]);
 
 	return (
 		<div
@@ -102,20 +137,22 @@ export function Scaffold() {
 				<>
 					<Box p="sm" className={classes.wrapper}>
 						<Stack gap="xs">
-							{viewModes.map((info) => {
-								const isActive = info.id === activeView;
-
-								return (
-									<NavigationIcon
-										key={info.id}
-										name={info.name}
-										isActive={isActive}
-										isLight={isLight}
-										icon={info.icon}
-										onClick={() => setViewMode(info.id as ViewMode)}
-									/>
-								);
-							})}
+							{navigation.map((items, i) => (
+								<Fragment key={i}>
+									{items.map(info => (
+										<NavigationIcon
+											name={info.name}
+											isLight={isLight}
+											isActive={info.id === activeView}
+											icon={info.icon}
+											onClick={() => setViewMode(info.id)}
+										/>
+									))}
+									{i < navigation.length - 1 && (
+										<Divider color={isLight ? "white" : "slate.7"} />
+									)}
+								</Fragment>
+							))}
 
 							<Spacer />
 
@@ -154,6 +191,10 @@ export function Scaffold() {
 
 					<InPortal node={VIEW_PORTALS.authentication}>
 						<AuthenticationView />
+					</InPortal>
+
+					<InPortal node={VIEW_PORTALS.documentation}>
+						<DocumentationView />
 					</InPortal>
 				</>
 			) : (

@@ -1,17 +1,17 @@
 use futures::StreamExt;
 use once_cell::sync::Lazy;
 use serde_wasm_bindgen::{from_value, to_value};
+use std::collections::HashMap;
+use std::time::Duration;
+use surrealdb::sql::Value;
 use surrealdb::Error;
 use tokio::sync::Mutex;
+use tokio::sync::RwLock;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::js_sys::Array;
 use wasm_bindgen_futures::js_sys::Function;
 use wasm_bindgen_futures::js_sys::Object;
 use wasm_bindgen_futures::js_sys::Reflect;
-use std::collections::HashMap;
-use std::time::Duration;
-use surrealdb::sql::Value;
-use tokio::sync::RwLock;
-use wasm_bindgen::prelude::*;
 
 use surrealdb::{
     engine::any::{connect, Any},
@@ -27,7 +27,8 @@ use crate::utils::error_to_js;
 use crate::utils::make_error;
 
 static SURREAL: Lazy<RwLock<Option<Surreal<Any>>>> = Lazy::new(|| RwLock::new(None));
-static LIVE_QUERIES: Lazy<Mutex<HashMap<String, LiveQuery>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+static LIVE_QUERIES: Lazy<Mutex<HashMap<String, LiveQuery>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
 
 async fn create_connection(details: JsValue) -> Result<Surreal<Any>, Error> {
     let info: ConnectionInfo = from_value(details).expect("connection info should be valid");
@@ -102,13 +103,13 @@ async fn create_connection(details: JsValue) -> Result<Surreal<Any>, Error> {
 pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
     let mut instance = SURREAL.write().await;
 
-    return match create_connection(details).await {
+    match create_connection(details).await {
         Ok(db) => {
             *instance = Some(db);
             Ok(())
         }
-        Err(err) => Err(err.to_string().into())
-    };
+        Err(err) => Err(err.to_string().into()),
+    }
 }
 
 #[wasm_bindgen]
@@ -131,7 +132,7 @@ pub async fn query_version() -> Option<JsValue> {
     let client = container.as_ref().unwrap();
     let version = client.version().await;
 
-    return match version {
+    match version {
         Ok(version) => {
             console_log!("Database version is {}", version.to_string());
 
@@ -152,7 +153,7 @@ pub async fn query_version() -> Option<JsValue> {
             console_log!("Query resulted in error: {}", message);
             None
         }
-    };
+    }
 }
 
 #[wasm_bindgen]
@@ -175,7 +176,7 @@ pub async fn execute_query(id: Option<String>, query: String, params: String) ->
 
     let response = builder.with_stats().await;
 
-    return match response {
+    match response {
         Ok(mut response) => {
             let statement_count = response.num_statements();
             let results = Array::new_with_length(statement_count as u32);
@@ -183,14 +184,24 @@ pub async fn execute_query(id: Option<String>, query: String, params: String) ->
             for i in 0..statement_count {
                 let object = Object::new();
                 let (stats, res) = response.take::<Value>(i).unwrap();
-                let time = stats.execution_time.unwrap_or_else(|| Duration::default());
+                let time = stats.execution_time.unwrap_or_else(Duration::default);
 
                 Reflect::set(&object, &"success".into(), &res.is_ok().into()).unwrap();
-                Reflect::set(&object, &"execution_time".into(), &format!("{:?}", time).into()).unwrap();
-                Reflect::set(&object, &"result".into(), &match res {
-                    Ok(value) => serde_json::to_string(&value.into_json()).unwrap().into(),
-                    Err(error) => error_to_js(error),
-                }).unwrap();
+                Reflect::set(
+                    &object,
+                    &"execution_time".into(),
+                    &format!("{:?}", time).into(),
+                )
+                .unwrap();
+                Reflect::set(
+                    &object,
+                    &"result".into(),
+                    &match res {
+                        Ok(value) => serde_json::to_string(&value.into_json()).unwrap().into(),
+                        Err(error) => error_to_js(error),
+                    },
+                )
+                .unwrap();
 
                 results.set(i as u32, object.into());
             }
@@ -199,41 +210,45 @@ pub async fn execute_query(id: Option<String>, query: String, params: String) ->
                 match response.into_inner().stream::<Value>(()) {
                     Ok(stream) => {
                         queries.insert(id, LiveQuery::new(stream));
-                    },
+                    }
                     Err(error) => {
                         console_log!("Failed to get live query stream: {:?}", error.to_string());
                     }
                 };
             }
-            
+
             Some(results)
         }
-        Err(error) => {
-            Some(make_error(error))
-        }
-    };
+        Err(error) => Some(make_error(error)),
+    }
 }
 
 #[wasm_bindgen]
 pub async fn watch_live_query(id: String, on_message: Function) -> Option<JsValue> {
-    
     let mut stream = {
         let mut queries = LIVE_QUERIES.lock().await;
-        queries.get_mut(&id)?.into_inner()?
+        queries.get_mut(&id)?.take_stream()?
     };
 
     while let Some(value) = stream.next().await {
-        let data = serde_json::to_string(&value.data.into_json()).unwrap().into();
+        let data = serde_json::to_string(&value.data.into_json())
+            .unwrap()
+            .into();
         let action = match value.action {
             surrealdb::Action::Create => "create",
             surrealdb::Action::Update => "update",
             surrealdb::Action::Delete => "delete",
             _ => unreachable!(),
         };
-        
+
         let payload = Object::new();
 
-        Reflect::set(&payload, &"queryId".into(), &value.query_id.to_string().into()).unwrap();
+        Reflect::set(
+            &payload,
+            &"queryId".into(),
+            &value.query_id.to_string().into(),
+        )
+        .unwrap();
         Reflect::set(&payload, &"action".into(), &action.into()).unwrap();
         Reflect::set(&payload, &"data".into(), &data).unwrap();
 

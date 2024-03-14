@@ -1,5 +1,5 @@
 import { mdiBrain, mdiXml } from "@mdi/js";
-import { Protocol, ResultMode, Selectable, ViewInfo } from "./types";
+import { Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
 import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery } from "./util/icons";
 
 export type StructureTab = "graph" | "builder";
@@ -45,46 +45,46 @@ export const AUTH_MODES: Selectable<string>[] = [
 	{ label: "Anonymous", value: "none" },
 ];
 
-export const VIEW_MODES: ViewInfo[] = [
-	{
+export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
+	query: {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
 		desc: "Execute queries against the database and inspect the results",
 	},
-	{
+	explorer: {
 		id: "explorer",
 		name: "Explorer",
 		icon: iconExplorer,
 		desc: "Explore the database tables, records, and relations",
 	},
-	{
+	designer: {
 		id: "designer",
 		name: "Designer",
 		icon: iconDesigner,
 		desc: "Define database tables and relations",
 	},
-	{
+	authentication: {
 		id: "authentication",
 		name: "Authentication",
 		icon: iconAuth,
 		desc: "Manage account details and database scopes",
 	},
-	{
+	models: {
 		id: "models",
 		name: "ML Models",
 		icon: mdiBrain,
 		desc: "Manage SurrealML models",
 		disabled: (flags) => !flags.mlmodels,
 	},
-	{
+	documentation: {
 		id: "documentation",
 		name: "API Docs",
 		icon: mdiXml,
 		desc: "View the database schema and documentation",
 		disabled: (flags) => !flags.apidocs,
 	}
-] as const;
+};
 
 export const EXPORT_TYPES = [
 	"records",

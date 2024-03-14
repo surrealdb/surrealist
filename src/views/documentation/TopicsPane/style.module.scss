@@ -1,0 +1,13 @@
+.topic {
+	transition: none !important;
+	
+	&:not(:hover) :global(.mantine-Button-label) {
+		color: var(--mantine-color-slate-1);
+		font-weight: normal;
+	}
+
+	&:hover :global(.mantine-Button-label) {
+		font-weight: normal;
+	}
+
+}

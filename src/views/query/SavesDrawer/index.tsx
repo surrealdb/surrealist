@@ -14,7 +14,7 @@ import { useConfigStore } from "~/stores/config";
 import { SavedQuery } from "~/types";
 import { useContextMenu } from "mantine-contextmenu";
 import { iconClose, iconDelete, iconEdit, iconPlus, iconQuery, iconSearch, iconText } from "~/util/icons";
-import { QueryPreview } from "~/components/QueryPreview";
+import { CodePreview } from "~/components/CodePreview";
 
 export interface SavesDrawerProps {
 	opened: boolean;
@@ -213,7 +213,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 							</Group>
 						</Accordion.Control>
 						<Accordion.Panel p={0} px={4}>
-							<QueryPreview
+							<CodePreview
 								value={entry.query}
 							/>
 							{entry.tags.length > 0 && (

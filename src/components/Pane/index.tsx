@@ -10,6 +10,7 @@ export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDi
 	icon?: string;
 	leftSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
+	withTopPadding?: boolean;
 }
 
 export function ContentPane(props: ContentPaneProps) {
@@ -47,7 +48,7 @@ export function ContentPane(props: ContentPaneProps) {
 					</Group>
 					<Divider
 						mx="sm"
-						mb="sm"
+						mb={props.withTopPadding === false ? undefined : "sm"}
 						className={classes.divider}
 					/>
 				</>

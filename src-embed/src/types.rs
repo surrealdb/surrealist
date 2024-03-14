@@ -8,7 +8,6 @@ pub struct LiveQuery {
 }
 
 impl LiveQuery {
-
     pub fn new(stream: QueryStream<Value>) -> Self {
         let (handle, registration) = AbortHandle::new_pair();
         let stream = Abortable::new(stream, registration);
@@ -18,15 +17,14 @@ impl LiveQuery {
             abort: handle,
         }
     }
-    
+
     pub fn cancel(&self) {
         self.abort.abort();
     }
 
-    pub fn into_inner(&mut self) -> Option<Abortable<QueryStream<Value>>> {
+    pub fn take_stream(&mut self) -> Option<Abortable<QueryStream<Value>>> {
         self.stream.take()
     }
-
 }
 
 #[derive(Deserialize)]

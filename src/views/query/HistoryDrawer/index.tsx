@@ -15,7 +15,7 @@ import { useMemo } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { useContextMenu } from "mantine-contextmenu";
 import { iconClose, iconDelete, iconQuery, iconSearch, iconText } from "~/util/icons";
-import { QueryPreview } from "~/components/QueryPreview";
+import { CodePreview } from "~/components/CodePreview";
 import { capitalize } from "radash";
 
 interface HistoryRowProps {
@@ -109,7 +109,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				</Tooltip>
 			</Group>
 
-			<QueryPreview
+			<CodePreview
 				mt="xs"
 				value={entry.query}
 			/>

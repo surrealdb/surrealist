@@ -14,7 +14,12 @@ pub fn make_error(err: impl Error) -> Array {
     let entry = Object::new();
 
     Reflect::set(&entry, &"success".into(), &false.into()).unwrap();
-    Reflect::set(&entry, &"execution_time".into(), &format!("{:?}", Duration::ZERO).into()).unwrap();
+    Reflect::set(
+        &entry,
+        &"execution_time".into(),
+        &format!("{:?}", Duration::ZERO).into(),
+    )
+    .unwrap();
     Reflect::set(&entry, &"result".into(), &error_to_js(err)).unwrap();
 
     results.push(&entry);

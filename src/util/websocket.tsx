@@ -25,7 +25,7 @@ export const CLOSED_HANDLE: SurrealHandle = {
 };
 
 export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle {
-	const targetUri = connectionUri(options.connection.connection);
+	const targetUri = connectionUri(options.connection);
 	const endpoint = new URL("rpc", targetUri.replace("http", "ws"));
 	const socket = new WebSocket(endpoint.toString());
 	const requestMap = new Map<string, Request>();
@@ -113,7 +113,7 @@ export function createLocalWebSocket(options: LiveSurrealOptions): SurrealHandle
 	};
 
 	socket.addEventListener("open", async () => {
-		const { username, password, namespace, database, authMode, scope, scopeFields } = options.connection.connection;
+		const { username, password, namespace, database, authMode, scope, scopeFields } = options.connection;
 
 		if (authMode !== "none") {
 			const details: any = {};

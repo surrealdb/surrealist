@@ -22,6 +22,9 @@ export const featureFlagSchema = {
 	},
 	apidocs: {
 		options: [false, true]
+	},
+	themes: {
+		options: [false, true]
 	}
 } as const;
 

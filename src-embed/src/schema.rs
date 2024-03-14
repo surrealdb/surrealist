@@ -66,7 +66,7 @@ pub fn extract_scope_definition(definition: &str) -> Result<JsValue, String> {
             name: s.name.to_raw(),
             signup: signup[1..signup.len() - 1].to_owned(),
             signin: signin[1..signin.len() - 1].to_owned(),
-            session: s.session.clone().unwrap_or_default().to_string(),
+            session: s.session.unwrap_or_default().to_string(),
             comment: parse_comment(&s.comment),
         };
 
@@ -325,8 +325,12 @@ const QUERY_TYPE_MIXED: &str = "mixed";
 pub fn extract_query_type(query: &str) -> String {
     match parse(query) {
         Err(_) => QUERY_TYPE_INVALID.into(),
-        Ok(query) if query.iter().all(|s| matches!(s, Statement::Live(_))) => QUERY_TYPE_LIVE.into(),
-        Ok(query) if query.iter().all(|s| !matches!(s, Statement::Live(_))) => QUERY_TYPE_NORMAL.into(),
+        Ok(query) if query.iter().all(|s| matches!(s, Statement::Live(_))) => {
+            QUERY_TYPE_LIVE.into()
+        }
+        Ok(query) if query.iter().all(|s| !matches!(s, Statement::Live(_))) => {
+            QUERY_TYPE_NORMAL.into()
+        }
         Ok(_) => QUERY_TYPE_MIXED.into(),
     }
 }
@@ -350,7 +354,7 @@ pub fn validate_where_clause(clause: &str) -> bool {
 
 #[wasm_bindgen]
 pub fn validate_thing(value: &str) -> bool {
-    thing(&value).is_ok()
+    thing(value).is_ok()
 }
 
 #[wasm_bindgen]

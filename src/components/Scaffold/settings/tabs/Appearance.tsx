@@ -4,6 +4,7 @@ import { isDesktop } from "~/adapter";
 import { Label, SettingsSection } from "../utilities";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, RESULT_MODES, THEMES } from "~/constants";
 import { useSetting } from "~/hooks/config";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 const CAT = "appearance";
 
@@ -18,15 +19,19 @@ export function AppearanceTab() {
 
 	const updateResultWordWrap = useCheckbox(setResultWordWrap);
 
+	const [flags] = useFeatureFlags();
+
 	return (
 		<>
 			<SettingsSection>
-				<Select
-					label="Theme"
-					data={THEMES}
-					value={colorScheme}
-					onChange={setColorScheme as any}
-				/>
+				{flags.themes && (
+					<Select
+						label="Theme"
+						data={THEMES}
+						value={colorScheme}
+						onChange={setColorScheme as any}
+					/>
+				)}
 				<Box>
 					<Label>
 						Editor font scale

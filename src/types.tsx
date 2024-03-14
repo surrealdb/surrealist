@@ -7,13 +7,14 @@ export type AuthMode = "none" | "root" | "namespace" | "database" | "scope" | "s
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type QueryType = "invalid" | "mixed" | "live" | "normal";
-export type ViewMode = "query" | "explorer" | "designer" | "authentication";
+export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "models" | "documentation";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DiagramDirection = "ltr" | "rtl";
 export type IndexKind = "normal" | "unique" | "search" | "vector";
 export type ColorScheme = "light" | "dark";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
+export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "dotnet" | "java" | "php";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -60,6 +61,7 @@ export interface SurrealistBehaviorSettings {
 	queryErrorChecker: boolean;
 	windowPinned: boolean;
 	autoConnect: boolean;
+	docsLanguage: CodeLang;
 }
 
 export interface SurrealistAppearanceSettings {
@@ -224,7 +226,7 @@ export interface SurrealOptions {
 }
 
 export interface ViewInfo {
-	id: string;
+	id: ViewMode;
 	name: string;
 	icon: string;
 	desc: string;

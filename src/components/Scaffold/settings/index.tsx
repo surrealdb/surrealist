@@ -124,10 +124,11 @@ export function Settings(props: SettingsProps) {
 				opened={props.opened}
 				onClose={props.onClose}
 				padding={0}
-				size={800}
+				size={960}
 			>
 				<Group
-					h={500}
+					h="55vh"
+					mih={500}
 					gap="xs"
 					align="stretch"
 					wrap="nowrap"

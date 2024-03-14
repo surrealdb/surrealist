@@ -28,10 +28,11 @@ export function createBaseSettings(): SurrealistSettings {
 			variableSuggest: true,
 			queryErrorChecker: true,
 			windowPinned: false,
-			autoConnect: true
+			autoConnect: true,
+			docsLanguage: "cli"
 		},
 		appearance: {
-			colorScheme: "auto",
+			colorScheme: "dark",
 			windowScale: 100,
 			editorScale: 100,
 			resultWordWrap: true,
