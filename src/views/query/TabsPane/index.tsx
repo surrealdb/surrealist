@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Badge, Button, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import { EditableText } from "~/components/EditableText";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -10,7 +10,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { LiveIndicator } from "~/components/LiveIndicator";
 import { getSurreal } from "~/util/surreal";
-import { iconArrowUpRight, iconClose, iconCopy, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
+import { iconArrowUpRight, iconChevronRight, iconClose, iconCopy, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
@@ -163,29 +163,23 @@ export function TabsPane(props: TabsPaneProps) {
 								);
 							}}
 						</Sortable>
+						<Divider my="xs" />
+						<Entry
+							leftSection={<Icon path={iconStar} />}
+							rightSection={<Icon path={iconChevronRight} />}
+							onClick={props.openSaved}
+						>
+							Saved queries
+						</Entry>
+						<Entry
+							leftSection={<Icon path={iconHistory} />}
+							rightSection={<Icon path={iconChevronRight} />}
+							onClick={props.openHistory}
+						>
+							Query history
+						</Entry>
 					</Stack>
 				</ScrollArea>
-				<Divider my="lg" />
-				<Stack>
-					<Button
-						fullWidth
-						color="slate"
-						variant="light"
-						leftSection={<Icon path={iconStar} />}
-						onClick={props.openSaved}
-					>
-						Saved queries
-					</Button>
-					<Button
-						fullWidth
-						color="slate"
-						variant="light"
-						leftSection={<Icon path={iconHistory} />}
-						onClick={props.openHistory}
-					>
-						Query history
-					</Button>
-				</Stack>
 			</Stack>
 		</ContentPane>
 	);

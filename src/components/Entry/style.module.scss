@@ -4,7 +4,7 @@
 
 	:global(.mantine-Button-label) {
 		flex: 1;
-		color: var(--mantine-color-white);
+		color: var(--mantine-color-slate-0);
 	}
 
 	:global(.mantine-Button-section) {
@@ -22,7 +22,7 @@
 	&:hover {
 		background-color: var(--mantine-color-slate-6);
 
-		:global(.mantine-Button-section) {
+		:global(.mantine-Button-section), :global(.mantine-Button-label) {
 			color: var(--mantine-color-white);
 		}
 	}
@@ -31,7 +31,7 @@
 		border: 1px solid rgba(255, 255, 255, 0.3);
 		box-shadow: 0 12px 15px -10px rgba(0, 0, 0, 0.5);
 
-		:global(.mantine-Button-section) {
+		:global(.mantine-Button-section), :global(.mantine-Button-label) {
 			color: var(--mantine-color-white);
 		}
 	
