@@ -57,7 +57,7 @@ export function Toolbar() {
 	return (
 		<>
 			<Group
-				p="xs"
+				p="sm"
 				gap="sm"
 				pos="relative"
 				align="center"
@@ -65,7 +65,7 @@ export function Toolbar() {
 				className={classes.root}
 				h={64}
 			>
-				<Box w={59} />
+				<Box w={56} />
 
 				<Connections />
 
