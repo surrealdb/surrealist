@@ -16,6 +16,7 @@ import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
 import { Sortable } from "~/components/Sortable";
 import clsx from "clsx";
+import { Spacer } from "~/components/Spacer";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -163,23 +164,24 @@ export function TabsPane(props: TabsPaneProps) {
 								);
 							}}
 						</Sortable>
-						<Divider my="xs" />
-						<Entry
-							leftSection={<Icon path={iconStar} />}
-							rightSection={<Icon path={iconChevronRight} />}
-							onClick={props.openSaved}
-						>
-							Saved queries
-						</Entry>
-						<Entry
-							leftSection={<Icon path={iconHistory} />}
-							rightSection={<Icon path={iconChevronRight} />}
-							onClick={props.openHistory}
-						>
-							Query history
-						</Entry>
 					</Stack>
 				</ScrollArea>
+				<Spacer />
+				<Divider my="xs" />
+				<Entry
+					leftSection={<Icon path={iconStar} />}
+					rightSection={<Icon path={iconChevronRight} />}
+					onClick={props.openSaved}
+				>
+					Saved queries
+				</Entry>
+				<Entry
+					leftSection={<Icon path={iconHistory} />}
+					rightSection={<Icon path={iconChevronRight} />}
+					onClick={props.openHistory}
+				>
+					Query history
+				</Entry>
 			</Stack>
 		</ContentPane>
 	);

@@ -10,8 +10,9 @@ import { Text } from "@mantine/core";
 import { useToggleList } from "~/hooks/toggle";
 import { adapter } from "~/adapter";
 import { createDatabaseExport } from "~/util/exporter";
-import { iconDownload, iconUpload } from "~/util/icons";
+import { iconChevronRight, iconDownload, iconUpload } from "~/util/icons";
 import { showInfo } from "~/util/helpers";
+import { Entry } from "~/components/Entry";
 
 export function Exporter() {
 	const isLight = useIsLight();
@@ -55,17 +56,15 @@ export function Exporter() {
 
 	return (
 		<>
-			<Button
-				fullWidth
-				color="slate"
-				variant="light"
+			<Entry
 				leftSection={<Icon path={iconUpload} />}
+				rightSection={<Icon path={iconChevronRight} />}
 				onClick={openExporter}
 				loading={isExporting}
 				disabled={!isOnline}
 			>
 				Export database
-			</Button>
+			</Entry>
 
 			<Modal
 				opened={showExporter}

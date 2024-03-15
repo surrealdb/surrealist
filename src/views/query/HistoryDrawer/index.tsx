@@ -85,14 +85,6 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 					{entry.origin && (
 						<Text c="slate" truncate miw={0}>
 							from {entry.origin}
-							from {entry.origin}
-							from {entry.origin}
-							from {entry.origin}
-							from {entry.origin}
-							from {entry.origin}
-							from {entry.origin}
-							from {entry.origin}
-							from {entry.origin}
 						</Text>
 					)}
 				</Group>

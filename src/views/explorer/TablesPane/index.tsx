@@ -195,17 +195,8 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 				</ScrollArea>
 				<Spacer />
 				<Divider mb="xs" />
-				<Stack>
-					<Text
-						c="slate"
-						fz="lg"
-						fw={500}
-					>
-						Actions
-					</Text>
-					<Importer />
-					<Exporter />
-				</Stack>
+				<Exporter />
+				<Importer />
 			</Stack>
 		</ContentPane>
 	);

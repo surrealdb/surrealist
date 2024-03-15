@@ -13,7 +13,8 @@ import { Text } from "@mantine/core";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { getActiveSurreal } from "~/util/surreal";
 import { OpenedFile } from "~/adapter/base";
-import { iconDownload, iconFile } from "~/util/icons";
+import { iconChevronRight, iconDownload, iconFile } from "~/util/icons";
+import { Entry } from "~/components/Entry";
 
 export function Importer() {
 	const isLight = useIsLight();
@@ -69,17 +70,15 @@ export function Importer() {
 
 	return (
 		<>
-			<Button
-				fullWidth
-				color="slate"
-				variant="light"
+			<Entry
 				leftSection={<Icon path={iconDownload} />}
+				rightSection={<Icon path={iconChevronRight} />}
 				onClick={startImport}
 				loading={isImporting}
 				disabled={!isOnline}
 			>
 				Import database
-			</Button>
+			</Entry>
 
 			<Modal
 				opened={showConfirm}
