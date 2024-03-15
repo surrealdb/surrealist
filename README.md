@@ -32,7 +32,7 @@ Surrealist is the official query playground, data explorer, and schema designer 
 - 📜 Query history & Query favoriting
 
 ## How to use
-You can [read our documentation](https://docs.surrealdb.com/docs/tools/surrealist) for information on how to use Surrealist.
+You can [read our documentation](https://surrealdb.com/docs/surrealist) for information on how to use Surrealist.
 
 ## Web App
 You can use Surrealist by visiting https://surrealist.app/

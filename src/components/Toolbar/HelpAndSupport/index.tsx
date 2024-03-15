@@ -13,7 +13,7 @@ const TILES = [
 		title: "Documentation",
 		description: "Need help? Check out our documentation for help.",
 		icon: mdiBook,
-		onClick: () => adapter.openUrl("https://docs.surrealdb.com/docs/tools/surrealist")
+		onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist")
 	},
 	{
 		title: "Report an issue",
