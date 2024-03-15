@@ -4,7 +4,7 @@
 	transition: all .15s ease-out;
 	border-right: 1px solid transparent;
 
-	&.expandable:hover {
+	&.expanded {
 		width: 245px;
 		border-color: var(--mantine-color-slate-6);
 	}

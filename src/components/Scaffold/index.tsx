@@ -91,12 +91,12 @@ export function Scaffold() {
 				flex={1}
 				pos="relative"
 			>
-				<Toolbar />
-
 				<Sidebar
 					onToggleSettings={settingsHandle.toggle}
 					onToggleDownload={downloadHandle.toggle}
 				/>
+
+				<Toolbar />
 
 				{activeConnection ? (
 					<>

@@ -2,26 +2,36 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import { Icon } from "../Icon";
 import { Entry, EntryProps } from "../Entry";
+import { HTMLProps } from "react";
+import { Tooltip } from "@mantine/core";
 
-export interface NavigationIconProps extends EntryProps {
+export interface NavigationIconProps extends EntryProps, Omit<HTMLProps<HTMLButtonElement>, 'color' | 'size' | 'style' | 'type' | 'ref'> {
 	name: string;
 	isActive?: boolean;
 	icon: string;
+	withTooltip?: boolean;
 	onClick: () => void;
 }
 
-export function NavigationIcon({ name, isActive, icon, onClick, ...rest }: NavigationIconProps) {
+export function NavigationIcon({ name, isActive, icon, withTooltip, onClick, ...rest }: NavigationIconProps) {
 	return (
-		<Entry
-			className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
-			isActive={isActive}
-			onClick={onClick}
-			leftSection={
-				<Icon path={icon} size="lg" />
-			}
-			{...rest}
+		<Tooltip
+			label={name}
+			position="right"
+			disabled={!withTooltip}
+			offset={14}
 		>
-			{name}
-		</Entry>
+			<Entry
+				className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
+				isActive={isActive}
+				onClick={onClick}
+				leftSection={
+					<Icon path={icon} size="lg" />
+				}
+				{...rest}
+			>
+				{name}
+			</Entry>
+		</Tooltip>
 	);
 }

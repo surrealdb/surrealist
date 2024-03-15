@@ -72,6 +72,7 @@ export interface SurrealistAppearanceSettings {
 	defaultResultMode: ResultMode;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
+	expandSidebar: boolean;
 }
 
 export interface SurrealistTemplateSettings {

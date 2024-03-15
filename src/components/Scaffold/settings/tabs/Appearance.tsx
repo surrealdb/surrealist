@@ -16,14 +16,21 @@ export function AppearanceTab() {
 	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
 	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(CAT, "defaultDiagramDirection");
+	const [expandSidebar, setExpandSidebar] = useSetting(CAT, "expandSidebar");
 
 	const updateResultWordWrap = useCheckbox(setResultWordWrap);
+	const updateExpandSidebar = useCheckbox(setExpandSidebar);
 
 	const [flags] = useFeatureFlags();
 
 	return (
 		<>
 			<SettingsSection>
+				<Checkbox
+					label="Expand sidebar on hover"
+					checked={expandSidebar}
+					onChange={updateExpandSidebar}
+				/>
 				{flags.themes && (
 					<Select
 						label="Theme"

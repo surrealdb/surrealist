@@ -38,7 +38,8 @@ export function createBaseSettings(): SurrealistSettings {
 			resultWordWrap: true,
 			defaultResultMode: "combined",
 			defaultDiagramMode: "fields",
-			defaultDiagramDirection: "ltr"
+			defaultDiagramDirection: "ltr",
+			expandSidebar: true
 		},
 		templates: {
 			list: []

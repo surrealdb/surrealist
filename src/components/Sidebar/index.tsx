@@ -1,7 +1,8 @@
 import classes from "./style.module.scss";
+import clsx from "clsx";
 import surrealistLogo from "~/assets/images/logo.png";
 import { ScrollArea, Stack, Divider, Image, Flex, Group } from "@mantine/core";
-import { Fragment, useMemo } from "react";
+import { Fragment, useLayoutEffect, useMemo } from "react";
 import { isBrowser } from "~/adapter";
 import { iconDownload, iconCog } from "~/util/icons";
 import { NavigationIcon } from "../NavigationIcon";
@@ -15,7 +16,9 @@ import { updateTitle } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealistLogo } from "../SurrealistLogo";
 import { useConnection } from "~/hooks/connection";
-import clsx from "clsx";
+import { useSetting } from "~/hooks/config";
+import { useHover } from "@mantine/hooks";
+import { useBoolean } from "~/hooks/boolean";
 
 const NAVIGATION: ViewMode[][] = [
 	[
@@ -44,13 +47,22 @@ export function Sidebar({
 	const { setActiveView } = useConfigStore.getState();
 
 	const [flags] = useFeatureFlags();
+	const [expandable] = useSetting("appearance", "expandSidebar");
+	const [expanded, expandedHandle] = useBoolean();
+
 	const isLight = useIsLight();
 	const connection = useConnection();
 	const activeView = useConfigStore((s) => s.activeView);
+	const { ref, hovered } = useHover();
+
+	useLayoutEffect(() => {
+		expandedHandle.set(hovered);
+	}, [hovered]);
 
 	const setViewMode = useStable((id: ViewMode) => {
 		updateTitle();
 		setActiveView(id);
+		expandedHandle.close();
 	});
 
 	const navigation = useMemo(() => {
@@ -69,16 +81,20 @@ export function Sidebar({
 		});
 	}, [flags]);
 
+	const shouldExpand = connection && expandable && expanded;
+
 	return (
 		<ScrollArea
 			scrollbars="y"
 			type="never"
 			pos="absolute"
+			component="aside"
 			top={0}
 			left={0}
 			bottom={0}
 			bg={isLight ? "slate.0" : "slate.9"}
-			className={clsx(classes.root, connection && classes.expandable)}
+			viewportRef={ref}
+			className={clsx(classes.root, shouldExpand && classes.expanded)}
 		>
 			<Flex
 				direction="column"
@@ -102,6 +118,7 @@ export function Sidebar({
 					gap="sm"
 					h="100%"
 					mt={30}
+					component="nav"
 				>
 					{connection && navigation.map((items, i) => (
 						<Fragment key={i}>
@@ -115,7 +132,9 @@ export function Sidebar({
 										name={info.name}
 										isActive={info.id === activeView}
 										icon={info.icon}
+										withTooltip={!expandable}
 										onClick={() => setViewMode(info.id)}
+										onMouseEnter={expandedHandle.open}
 									/>
 								</Group>
 							))}
