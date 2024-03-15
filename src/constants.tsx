@@ -1,5 +1,5 @@
 import { mdiBrain, mdiXml } from "@mdi/js";
-import { Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
+import { AuthMode, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
 import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery } from "./util/icons";
 
 export type StructureTab = "graph" | "builder";
@@ -37,11 +37,12 @@ export const CONNECTION_PROTOCOLS: Selectable<Protocol>[] = [
 	{ label: "IndexedDB", value: "indxdb" },
 ];
 
-export const AUTH_MODES: Selectable<string>[] = [
-	{ label: "Root authentication", value: "root" },
-	{ label: "Namespace authentication", value: "namespace" },
-	{ label: "Database authentication", value: "database" },
-	{ label: "Scope authentication", value: "scope" },
+export const AUTH_MODES: Selectable<AuthMode>[] = [
+	{ label: "Root", value: "root" },
+	{ label: "Namespace", value: "namespace" },
+	{ label: "Database", value: "database" },
+	{ label: "Scope", value: "scope" },
+	{ label: "Token", value: "token" },
 	{ label: "Anonymous", value: "none" },
 ];
 

@@ -64,6 +64,7 @@ export function createBaseConnectionOptions(): ConnectionOptions {
 		username: "",
 		password: "",
 		authMode: "root",
+		token: "",
 		scope: "",
 		scopeFields: []
 	};
@@ -112,6 +113,7 @@ export function createSandboxConnection(settings: SurrealistSettings): Connectio
 			namespace: "sandbox",
 			database: "sandbox",
 			authMode: "none",
+			token: "",
 			scope: "",
 			scopeFields: [],
 			password: "",

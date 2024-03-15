@@ -43,6 +43,7 @@ pub struct ConnectionInfo {
     pub password: String,
     pub auth_mode: String,
     pub scope: String,
+    pub token: String,
     pub scope_fields: Vec<ScopeField>,
 }
 

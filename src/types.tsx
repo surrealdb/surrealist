@@ -3,7 +3,7 @@ import { QueryResponse } from "./util/surreal";
 import { TFeatureFlags } from "@theopensource-company/feature-flags";
 import { FeatureFlagMap, featureFlagSchema } from "./util/feature-flags";
 
-export type AuthMode = "none" | "root" | "namespace" | "database" | "scope" | "scope-signup";
+export type AuthMode = "none" | "root" | "namespace" | "database" | "token" | "scope" | "scope-signup";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type QueryType = "invalid" | "mixed" | "live" | "normal";
@@ -32,6 +32,7 @@ export interface ConnectionOptions {
 	username: string;
 	password: string;
 	authMode: AuthMode;
+	token: string;
 	scope: string;
 	scopeFields: ScopeField[];
 }

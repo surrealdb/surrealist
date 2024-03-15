@@ -1,8 +1,8 @@
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
-import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip } from "@mantine/core";
+import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip, Alert } from "@mantine/core";
 import { CONNECTION_PROTOCOLS, AUTH_MODES } from "~/constants";
-import { iconClose, iconPlus } from "~/util/icons";
+import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -10,8 +10,13 @@ import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 import { ModalTitle } from "../ModalTitle";
+import { useMemo } from "react";
+import { fastParseJwt } from "~/util/helpers";
+import dayjs from "dayjs";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
+const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
+const EXPIRE_WARNING = 1000 * 60 * 60 * 3;
 
 export interface ConnectionDetailsProps {
 	value: Connection;
@@ -62,6 +67,11 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 		: isIndexDB
 			? "database_name"
 			: "localhost:8000";
+
+	const isSystemMethod = SYSTEM_METHODS.has(value.connection.authMode);
+	const tokenPayload = useMemo(() => fastParseJwt(value.connection.token), [value.connection.token]);
+	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
+	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
 
 	return (
 		<>
@@ -149,7 +159,7 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 							})
 						}
 					/>
-					{value.connection.authMode !== "scope" && value.connection.authMode !== "none" && (
+					{isSystemMethod && (
 						<>
 							<TextInput
 								label="Username"
@@ -186,6 +196,44 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 							<Button mt={21} color="blue" variant="outline" onClick={editingScopeHandle.open}>
 								Edit scope data
 							</Button>
+						</>
+					)}
+
+					{value.connection.authMode === "token" && (
+						<>
+							<TextInput
+								label="Token"
+								value={value.connection.token}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.connection.token = e.target.value;
+									})
+								}
+								styles={{
+									input: {
+										fontFamily: "var(--mantine-font-family-monospace)"
+									}
+								}}
+							/>
+
+							{value.connection.token && (tokenPayload === null ? (
+								<Alert
+									color="red"
+									icon={<Icon path={iconWarning} />}
+								>
+									The provided token does not appear to be a valid JWT
+								</Alert>
+							) : tokenExpireSoon && (tokenExpire > Date.now() ? (
+								<Text c="slate">
+									<Icon path={iconWarning} c="yellow" size="sm" left />
+									This token expires in {dayjs(tokenExpire).fromNow()}
+								</Text>
+							) : (
+								<Text c="slate">
+									<Icon path={iconWarning} c="red" size="sm" left />
+									This token has expired
+								</Text>
+							)))}
 						</>
 					)}
 				</Stack>

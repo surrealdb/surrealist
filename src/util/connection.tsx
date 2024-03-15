@@ -67,6 +67,11 @@ export function isConnectionValid(details: ConnectionOptions | undefined) {
 		return false;
 	}
 
+	// Check for token
+	if (details.authMode === "token" && !details.token) {
+		return false;
+	}
+
 	return true;
 }
 

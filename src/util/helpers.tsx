@@ -299,3 +299,26 @@ export function hashCode(value: string) {
 
 	return hash;
 }
+
+/**
+ * Parse the JWT payload from the given token
+ * without checking for validity. This should
+ * never be used in a secure context and only
+ * for display purposes.
+ *
+ * @param token The JWT token
+ * @returns Parsed payload
+ */
+export function fastParseJwt(token: string) {
+	try {
+		const parts = token.split('.');
+
+		if (parts.length !== 3) {
+			return null;
+		}
+
+		return JSON.parse(atob(parts[1]));
+	} catch {
+		return null;
+	}
+}

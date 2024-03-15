@@ -60,6 +60,9 @@ async fn create_connection(details: JsValue) -> Result<Surreal<Any>, Error> {
             })
             .await?;
         }
+        "token" => {
+            db.authenticate(info.token.as_str()).await?;
+        }
         "scope" => {
             let field_map = info
                 .scope_fields
