@@ -261,44 +261,34 @@ export function computeCommands(): CommandCategory[] {
 				name: "Increase interface zoom",
 				icon: mdiMagnifyPlusOutline,
 				shortcut: "mod +",
-				action: launch(() => {
-					// todo
-				})
+				action: intent("increase-window-scale")
 			},
 			{
 				id: newId(),
 				name: "Decrease interface zoom",
 				icon: mdiMagnifyMinusOutline,
 				shortcut: "mod -",
-				action: launch(() => {
-					// todo
-				})
+				action: intent("decrease-window-scale")
 			}, {
 				id: newId(),
 				name: "Toggle window always on top",
 				icon: mdiPin,
 				shortcut: "F11",
-				action: launch(() => {
-					// todo
-				})
+				action: intent("toggle-pinned")
 			}] : []),
 			{
 				id: newId(),
 				name: "Increase editor zoom",
 				icon: mdiTextBoxPlusOutline,
 				shortcut: "mod shift +",
-				action: launch(() => {
-					// todo
-				})
+				action: intent("increase-editor-scale")
 			},
 			{
 				id: newId(),
 				name: "Decrease editor zoom",
 				icon: mdiTextBoxMinusOutline,
 				shortcut: "mod shift -",
-				action: launch(() => {
-					// todo
-				})
+				action: intent("decrease-editor-scale")
 			}
 		]
 	}, {
