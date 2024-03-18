@@ -5,7 +5,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { mdiBook, mdiBug, mdiChat, mdiRoutes } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
+import { useEventSubscription } from "~/hooks/event";
 import { useIsLight } from "~/hooks/theme";
+import { OpenHelpDialog } from "~/util/global-events";
 import { iconClose, iconHelp } from "~/util/icons";
 
 const TILES = [
@@ -38,6 +40,8 @@ const TILES = [
 export function HelpAndSupport() {
 	const [isOpen, openHandle] = useDisclosure();
 	const isLight = useIsLight();
+
+	useEventSubscription(OpenHelpDialog, openHandle.open);
 
 	return (
 		<>

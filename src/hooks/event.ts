@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useStable } from "./stable";
 
-type EventFn<T> = T extends undefined ? () => void : (value: T) => void;
+type EventFn<T> = (value: T) => void;
 
-export interface EventBus<T = undefined> {
+export interface EventBus<T> {
 	listeners: Set<EventFn<T>>;
 	dispatch: EventFn<T>;
 	cleanup: () => void;
@@ -14,7 +14,7 @@ export interface EventBus<T = undefined> {
  *
  * @returns Event bus instance
  */
-export function createEventBus<T = undefined>(): EventBus<T> {
+export function createEventBus<T>(): EventBus<T> {
 	const listeners = new Set<EventFn<T>>();
 
 	const dispatch = ((value: T) => {
@@ -39,7 +39,7 @@ export function createEventBus<T = undefined>(): EventBus<T> {
  *
  * @returns Event bus instance
  */
-export function useEventBus<T = undefined>(): EventBus<T> {
+export function useEventBus<T>(): EventBus<T> {
 	const bus = useRef<EventBus<T>>();
 
 	if (!bus.current) {

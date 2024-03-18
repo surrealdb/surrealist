@@ -15,6 +15,8 @@ import { createBaseConnection } from "~/util/defaults";
 import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
 import { ConnectionDetails } from "../../ConnectionDetails";
 import { useSetting } from "~/hooks/config";
+import { useEventSubscription } from "~/hooks/event";
+import { OpenNewConnectionDialog } from "~/util/global-events";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -30,7 +32,7 @@ export function ConnectionEditor() {
 	const connections = useConnections();
 
 	const { addConnection, updateConnection, setActiveConnection, removeConnection } = useConfigStore.getState();
-	const { closeConnectionEditor } = useInterfaceStore.getState();
+	const { closeConnectionEditor, openConnectionCreator } = useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
@@ -105,6 +107,10 @@ export function ConnectionEditor() {
 			}
 		}
 	}, [opened]);
+
+	useEventSubscription(OpenNewConnectionDialog, () => {
+		openConnectionCreator();
+	});
 
 	return (
 		<Modal

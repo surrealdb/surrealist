@@ -18,6 +18,7 @@ import { iconClose } from "~/util/icons";
 import { getSetting } from "~/util/config";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { ConfirmationProvider } from "~/providers/Confirmation";
+import { useUrlHandler } from "~/util/url-handler";
 
 export function App() {
 	const { softReset, updateBehaviorSettings, updateAppearanceSettings } = useConfigStore.getState();
@@ -63,6 +64,8 @@ export function App() {
 		["mod+shift+minus", () => updateEditorScale(-10)],
 		["f10", toggleWindowPinned],
 	], []);
+
+	useUrlHandler();
 
 	return (
 		<FeatureFlagsProvider>

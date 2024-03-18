@@ -2,13 +2,18 @@ import banner from "~/assets/images/banner.webp";
 import { ActionIcon, Button, Divider, Image, List, Modal, Stack, Text, Title } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { iconArrowUpRight, iconCircle, iconClose } from "~/util/icons";
+import { useEventSubscription } from "~/hooks/event";
+import { OpenDownloadDialog } from "~/util/global-events";
 
 export interface DownloadModalProps {
 	opened: boolean;
 	onClose: () => void;
+	onOpen: () => void;
 }
 
-export function DownloadModal({ opened, onClose }: DownloadModalProps) {
+export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
+	useEventSubscription(OpenDownloadDialog, onOpen);
+
 	return (
 		<Modal
 			opened={opened}

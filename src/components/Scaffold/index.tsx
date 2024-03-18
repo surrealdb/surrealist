@@ -169,11 +169,13 @@ export function Scaffold() {
 			<Settings
 				opened={showSettings}
 				onClose={settingsHandle.close}
+				onOpen={settingsHandle.open}
 			/>
 
 			<DownloadModal
 				opened={showDownload}
 				onClose={downloadHandle.close}
+				onOpen={downloadHandle.open}
 			/>
 		</div>
 	);

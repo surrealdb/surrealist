@@ -18,6 +18,8 @@ import { useFeatureFlags } from "~/util/feature-flags";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { mdiFlagOutline, mdiScaleBalance } from "@mdi/js";
 import { LicensesTab } from "./tabs/Licenses";
+import { useEventSubscription } from "~/hooks/event";
+import { OpenSettingsDialog } from "~/util/global-events";
 import { FeatureCondition } from "~/types";
 
 interface Category {
@@ -76,6 +78,7 @@ const CATEGORIES: Category[] = [
 export interface SettingsProps {
 	opened: boolean;
 	onClose: () => void;
+	onOpen: () => void;
 }
 
 export function Settings(props: SettingsProps) {
@@ -89,6 +92,14 @@ export function Settings(props: SettingsProps) {
 		...c,
 		disabled: c.disabled ? c.disabled(flags) : false
 	}));
+
+	useEventSubscription(OpenSettingsDialog, (id) => {
+		id ??= 'behaviour';
+		if (id == 'feature-flags' || categories.some(c => c.id == id && !c.disabled)) {
+			setActiveTab(id);
+		}
+		props.onOpen();
+	});
 
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
 	const Component = activeCategory.component;
@@ -156,7 +167,7 @@ export function Settings(props: SettingsProps) {
 							</Text>
 						</Stack>
 						<Stack gap="xs">
-							{categories.map(({ id, name, icon, disabled }) => !disabled && (
+							{categories.map(({ id, name, icon, disabled }) => (!disabled || id == activeTab) && (
 								<Entry
 									key={id}
 									variant="subtle"
