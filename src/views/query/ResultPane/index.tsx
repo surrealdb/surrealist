@@ -13,7 +13,6 @@ import { ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/util/surreal";
 import { iconBroadcastOff, iconCursor, iconHelp, iconQuery } from "~/util/icons";
-import { executeQuery } from "~/database";
 import { SelectionRange } from "@codemirror/state";
 import { useFeatureFlags } from "~/util/feature-flags";
 
@@ -34,12 +33,14 @@ export interface ResultPaneProps {
 	activeTab: TabQuery;
 	isQueryValid: boolean;
 	selection: SelectionRange | undefined;
+	onRunQuery: () => void;
 }
 
 export function ResultPane({
 	activeTab,
 	isQueryValid,
 	selection,
+	onRunQuery,
 }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
@@ -72,16 +73,6 @@ export function ResultPane({
 			resultMode: mode
 		});
 	};
-
-	const runQuery = useStable(() => {
-		if (selection?.empty === false) {
-			executeQuery({
-				override: activeTab.query.slice(selection.from, selection.to)
-			});
-		} else {
-			executeQuery();
-		}
-	});
 
 	useLayoutEffect(() => {
 		setResultTab(1);
@@ -145,7 +136,7 @@ export function ResultPane({
 					<Button
 						size="xs"
 						radius="xs"
-						onClick={runQuery}
+						onClick={onRunQuery}
 						color={isQueryValid ? "surreal" : "red"}
 						variant={isQueryValid ? "gradient" : "filled"}
 						style={{ border: "none" }}

@@ -1,5 +1,5 @@
 import { mdiBrain, mdiXml } from "@mdi/js";
-import { AuthMode, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
+import { AuthMode, CodeLang, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
 import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery } from "./util/icons";
 
 export type StructureTab = "graph" | "builder";
@@ -44,6 +44,17 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 	{ label: "Scope", value: "scope" },
 	{ label: "Token", value: "token" },
 	{ label: "Anonymous", value: "none" },
+];
+
+export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
+	{ label: "CLI", value: "cli" },
+	{ label: "Rust", value: "rust" },
+	{ label: "JavaScript", value: "js" },
+	{ label: "Go", value: "go" },
+	{ label: "Python", value: "py" },
+	{ label: ".NET", value: "dotnet" },
+	{ label: "Java", value: "java" },
+	{ label: "PHP", value: "php" }
 ];
 
 export const VIEW_MODES: Record<ViewMode, ViewInfo> = {

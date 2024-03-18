@@ -21,7 +21,7 @@
 	<meta name="og:description" content="Powerful graphical SurrealDB query playground and database explorer, available for web and desktop ⚡">
 	<meta name="og:image" content="https://raw.githubusercontent.com/surrealdb/surrealist/main/.github/branding/banner.png">
 </head>
-<body>
+<body onkeydown="event.stopPropagation()">
 	<div id="root"></div>
 	<script src="./src/index.tsx" type="module"></script>
 </body>

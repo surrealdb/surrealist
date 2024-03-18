@@ -8,7 +8,17 @@ const INTENT_REGISTRY = {
 	'new-table': null,
 	'toggle-serving': null,
 	'open-serving-console': null,
+	'increase-window-scale': null,
+	'decrease-window-scale': null,
+	'increase-editor-scale': null,
+	'decrease-editor-scale': null,
+	'toggle-pinned': null,
 	'new-query': 'query',
+	'run-query': 'query',
+	'save-query': 'query',
+	'format-query': 'query',
+	'toggle-variables': 'query',
+	'infer-variables': 'query',
 	'explore-table': 'explorer',
 	'design-table': 'designer',
 	'open-saved-queries': 'query',
@@ -17,6 +27,7 @@ const INTENT_REGISTRY = {
 	'export-database': 'explorer',
 	'create-user': 'authentication',
 	'create-scope': 'authentication',
+	'docs-switch-language': 'documentation',
 } satisfies IntentMap;
 
 export type IntentType = keyof typeof INTENT_REGISTRY;

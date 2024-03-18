@@ -10,7 +10,7 @@ import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKey
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { themeColor } from "../mantine";
 import { EditorState, Extension, SelectionRange } from "@codemirror/state";
-import { acceptWithTab } from "./keybinds";
+import { acceptWithTab, runQuery } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
 import { StandardSQL } from "@codemirror/lang-sql";
 import { useDatabaseStore } from "~/stores/database";
@@ -57,6 +57,7 @@ export const surrealist = (): Extension => [
 		wholeWords: true
 	}),
 	keymap.of([
+		runQuery,
 		acceptWithTab,
 		indentWithTab,
 		...closeBracketsKeymap,

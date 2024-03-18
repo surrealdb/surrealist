@@ -203,7 +203,9 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 												{cmd.shortcut && (
 													<>
 														<Spacer />
-														<Shortcut value={cmd.shortcut} size="xs" />
+														{(Array.isArray(cmd.shortcut) ? cmd.shortcut : [cmd.shortcut]).map((shortcut, i) => (
+															<Shortcut key={i} value={shortcut} size="xs" />
+														))}
 													</>
 												)}
 											</UnstyledButton>

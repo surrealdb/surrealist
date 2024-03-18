@@ -4,19 +4,10 @@ import { mdiXml } from "@mdi/js";
 import { DocsArticleTopic, DocsTopic, isGroup, isLink, isSection } from "~/docs/types";
 import { RefObject, useMemo } from "react";
 import { ScrollFader } from "~/components/ScrollFader";
-import { CodeLang, Selectable } from "~/types";
+import { CodeLang } from "~/types";
 import { useStable } from "~/hooks/stable";
-
-const LANGUAGES: Selectable<CodeLang>[] = [
-	{ label: "CLI", value: "cli" },
-	{ label: "Rust", value: "rust" },
-	{ label: "JavaScript", value: "js" },
-	{ label: "Go", value: "go" },
-	{ label: "Python", value: "py" },
-	{ label: ".NET", value: "dotnet" },
-	{ label: "Java", value: "java" },
-	{ label: "PHP", value: "php" }
-];
+import { CODE_LANGUAGES } from "~/constants";
+import { useIntent } from "~/hooks/url";
 
 export interface ArticlePaneProps {
 	docs: DocsTopic[];
@@ -80,6 +71,10 @@ export function ArticlePane({
 		}
 	});
 
+	useIntent("docs-switch-language", ({ lang }) => {
+		onLanguageChange(lang as CodeLang);
+	});
+
 	return (
 		<ContentPane
 			icon={mdiXml}
@@ -87,7 +82,7 @@ export function ArticlePane({
 			withTopPadding={false}
 			rightSection={
 				<Select
-					data={LANGUAGES}
+					data={CODE_LANGUAGES}
 					value={language}
 					onChange={onLanguageChange as any}
 				/>

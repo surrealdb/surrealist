@@ -1,5 +1,4 @@
 import surrealistIcon from "~/assets/images/logo.png";
-import { useHotkeys } from "@mantine/hooks";
 import { MouseEvent } from "react";
 import { Notifications } from "@mantine/notifications";
 import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";
@@ -15,13 +14,12 @@ import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import { InspectorProvider } from "~/providers/Inspector";
 import { iconClose } from "~/util/icons";
-import { getSetting } from "~/util/config";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { useUrlHandler } from "~/hooks/url";
 
 export function App() {
-	const { softReset, updateBehaviorSettings, updateAppearanceSettings } = useConfigStore.getState();
+	const { softReset } = useConfigStore.getState();
 	const { hideAvailableUpdate } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
@@ -38,32 +36,6 @@ export function App() {
 		adapter.openUrl(`https://github.com/surrealdb/surrealist/releases/tag/v${update}`);
 		closeUpdate();
 	});
-
-	const updateWindowScale = (delta: number) => {
-		updateAppearanceSettings({
-			windowScale: getSetting("appearance", "windowScale") + delta
-		});
-	};
-
-	const updateEditorScale = (delta: number) => {
-		updateAppearanceSettings({
-			editorScale: getSetting("appearance", "editorScale") + delta
-		});
-	};
-
-	const toggleWindowPinned = () => {
-		updateBehaviorSettings({
-			windowPinned: !getSetting("behavior", "windowPinned")
-		});
-	};
-
-	useHotkeys([
-		["mod+equal", () => updateWindowScale(10)],
-		["mod+minus", () => updateWindowScale(-10)],
-		["mod+shift+equal", () => updateEditorScale(10)],
-		["mod+shift+minus", () => updateEditorScale(-10)],
-		["f10", toggleWindowPinned],
-	], []);
 
 	useUrlHandler();
 

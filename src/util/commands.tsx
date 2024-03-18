@@ -1,8 +1,8 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
-import { SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAccountSecure, iconAuth, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStop, iconSurreal, iconUpload } from "./icons";
-import { mdiBook, mdiMagnifyMinusOutline, mdiMagnifyPlusOutline, mdiPin, mdiTextBoxMinusOutline, mdiTextBoxPlusOutline } from "@mdi/js";
+import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
+import { iconAccountSecure, iconAuth, iconAutoFix, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStop, iconSurreal, iconText, iconUpload, iconXml } from "./icons";
+import { mdiBook, mdiCodeBraces, mdiMagnifyMinusOutline, mdiMagnifyPlusOutline, mdiPin, mdiStarPlusOutline, mdiTextBoxMinusOutline, mdiTextBoxPlusOutline } from "@mdi/js";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
@@ -19,7 +19,7 @@ export interface Command {
 	id: string;
 	name: string;
 	icon: string;
-	shortcut?: string;
+	shortcut?: string | string[];
 	action: Action;
 }
 
@@ -45,7 +45,7 @@ const intent = (intent: IntentType, payload?: IntentPayload) => ({ type: "intent
  * Compute available commands based on the current state
  */
 export function computeCommands(): CommandCategory[] {
-	const { connections, commandHistory, setActiveView, setActiveConnection } = useConfigStore.getState();
+	const { activeView, connections, commandHistory, setActiveView, setActiveConnection } = useConfigStore.getState();
 	const { isServing, databaseSchema } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
@@ -126,6 +126,39 @@ export function computeCommands(): CommandCategory[] {
 		}, {
 			name: 'Query',
 			commands: [
+				...(activeView === "query" ? [
+					{
+						id: newId(),
+						name: "Run query",
+						icon: iconPlay,
+						shortcut: ["F9", "mod enter"],
+						action: intent("run-query")
+					},
+					{
+						id: newId(),
+						name: "Save query",
+						icon: mdiStarPlusOutline,
+						action: intent("save-query")
+					},
+					{
+						id: newId(),
+						name: "Format query",
+						icon: iconText,
+						action: intent("format-query")
+					},
+					{
+						id: newId(),
+						name: "Toggle variables panel",
+						icon: mdiCodeBraces,
+						action: intent("toggle-variables")
+					},
+					{
+						id: newId(),
+						name: "Infer variables from query",
+						icon: iconAutoFix,
+						action: intent("infer-variables")
+					}
+				] : []),
 				{
 					id: newId(),
 					name: "View saved queries",
@@ -189,26 +222,38 @@ export function computeCommands(): CommandCategory[] {
 					action: intent("create-scope")
 				}
 			]
+		}, {
+			name: "API Docs",
+			commands: CODE_LANGUAGES.map(lang => ({
+				id: newId(),
+				name: `Preview snippets in ${lang.label}`,
+				icon: iconXml,
+				action: intent("docs-switch-language", { lang: lang.value })
+			}))
+		});
+	}
+
+	if (isDesktop) {
+		categories.push({
+			name: "Serving",
+			commands: [
+				{
+					id: newId(),
+					name: `${isServing ? 'Stop' : 'Start'} database serving`,
+					icon: isServing ? iconStop : iconPlay,
+					action: intent("toggle-serving")
+				},
+				{
+					id: newId(),
+					name: "Open serving console",
+					icon: iconConsole,
+					action: intent("open-serving-console")
+				},
+			]
 		});
 	}
 
 	categories.push({
-		name: "Serving",
-		commands: [
-			{
-				id: newId(),
-				name: `${isServing ? 'Stop' : 'Start'} database serving`,
-				icon: isServing ? iconStop : iconPlay,
-				action: intent("toggle-serving")
-			},
-			{
-				id: newId(),
-				name: "Reveal output console",
-				icon: iconConsole,
-				action: intent("open-serving-console")
-			},
-		]
-	}, {
 		name: "Settings",
 		commands: [
 			...(isDesktop ? [{
@@ -278,6 +323,14 @@ export function computeCommands(): CommandCategory[] {
 				icon: mdiBook,
 				action: href("https://surrealdb.com/docs/")
 			},
+			{
+				id: newId(),
+				name: "Open start screen",
+				icon: iconChevronRight,
+				action: launch(() => {
+					setActiveConnection(null);
+				})
+			}
 		]
 	});
 

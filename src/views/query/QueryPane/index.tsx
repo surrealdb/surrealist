@@ -18,6 +18,7 @@ import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { mdiCodeBraces } from "@mdi/js";
 import { SelectionRange } from "@codemirror/state";
+import { useIntent } from "~/hooks/url";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -193,6 +194,9 @@ export function QueryPane({
 	});
 
 	const setSelection = useDebounced(350, onSelectionChange);
+
+	useIntent("format-query", handleFormat);
+	useIntent("infer-variables", inferVariables);
 
 	return (
 		<ContentPane
