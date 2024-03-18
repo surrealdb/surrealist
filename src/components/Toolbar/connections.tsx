@@ -13,10 +13,9 @@ import { SANDBOX } from "~/constants";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { Y_SLIDE_TRANSITION, newId, showError, updateTitle } from "~/util/helpers";
 import { Entry } from "../Entry";
-import { useEventSubscription } from "~/hooks/event";
-import { OpenConnectionsDialog } from "~/util/global-events";
 import { openConnection } from "~/database";
 import { useContextMenu } from "mantine-contextmenu";
+import { useIntent } from "~/hooks/url";
 
 export function Connections() {
 	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
@@ -79,8 +78,11 @@ export function Connections() {
 
 	const isSandbox = connection?.id === SANDBOX;
 
-	useEventSubscription(OpenConnectionsDialog, (search) => {
-		if (search) setSearch(search);
+	useIntent("open-connections", ({ search }) => {
+		if (search) {
+			setSearch(search);
+		}
+
 		isListingHandle.open();
 	});
 

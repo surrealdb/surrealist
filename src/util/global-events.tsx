@@ -1,4 +1,5 @@
 import { createEventBus } from "~/hooks/event";
+import { Intent, IntentType } from "./intents";
 
 /**
  * Invoked after a connection has been established
@@ -16,26 +17,6 @@ export const DisconnectedEvent = createEventBus();
 export const RecordsChangedEvent = createEventBus();
 
 /**
- * Invoked when you need to open the settings modal
+ * Invoked when an interface intent is dispatched
  */
-export const OpenSettingsDialog = createEventBus<undefined | 'behaviour' | 'appearance' | 'templates' | 'serving' | 'feature-flags' | 'licenses'>();
-
-/**
- * Invoked when you need to open the settings modal
- */
-export const OpenConnectionsDialog = createEventBus<undefined | string>();
-
-/**
- * Invoked when you need to open the settings modal
- */
-export const OpenNewConnectionDialog = createEventBus();
-
-/**
- * Invoked when you need to open the settings modal
- */
-export const OpenHelpDialog = createEventBus();
-
-/**
- * Invoked when you need to open the settings modal
- */
-export const OpenDownloadDialog = createEventBus();
+export const IntentEvent = createEventBus<Intent<IntentType>>();

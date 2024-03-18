@@ -41,12 +41,12 @@ export function openConnection(options?: ConnectOptions): Promise<void> {
 				setIsConnected(true);
 				fetchDatabaseSchema();
 				resolve();
-				ConnectedEvent.dispatch();
+				ConnectedEvent.dispatch(null);
 			},
 			onDisconnect(code, reason) {
 				setIsConnecting(false);
 				setIsConnected(false);
-				DisconnectedEvent.dispatch();
+				DisconnectedEvent.dispatch(null);
 
 				if (code != 1000) {
 					const subtitle = code === 1006

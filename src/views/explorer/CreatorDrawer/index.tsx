@@ -55,7 +55,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		await surreal.query(`CREATE ${record} CONTENT ${recordBody}`);
 
 		onClose();
-		RecordsChangedEvent.dispatch();
+		RecordsChangedEvent.dispatch(null);
 	});
 
 	const focusEditor = useStable((editor: editor.IStandaloneCodeEditor) => {

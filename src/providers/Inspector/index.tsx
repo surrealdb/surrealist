@@ -51,7 +51,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 	});
 
 	const dispatchEvent = useStable(() => {
-		RecordsChangedEvent.dispatch();
+		RecordsChangedEvent.dispatch(null);
 	});
 
 	return (

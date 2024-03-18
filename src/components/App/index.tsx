@@ -18,7 +18,7 @@ import { iconClose } from "~/util/icons";
 import { getSetting } from "~/util/config";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { ConfirmationProvider } from "~/providers/Confirmation";
-import { useUrlHandler } from "~/util/url-handler";
+import { useUrlHandler } from "~/hooks/url";
 
 export function App() {
 	const { softReset, updateBehaviorSettings, updateAppearanceSettings } = useConfigStore.getState();

@@ -18,9 +18,8 @@ import { useFeatureFlags } from "~/util/feature-flags";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { mdiFlagOutline, mdiScaleBalance } from "@mdi/js";
 import { LicensesTab } from "./tabs/Licenses";
-import { useEventSubscription } from "~/hooks/event";
-import { OpenSettingsDialog } from "~/util/global-events";
 import { FeatureCondition } from "~/types";
+import { useIntent } from "~/hooks/url";
 
 interface Category {
 	id: string;
@@ -81,7 +80,11 @@ export interface SettingsProps {
 	onOpen: () => void;
 }
 
-export function Settings(props: SettingsProps) {
+export function Settings({
+	opened,
+	onClose,
+	onOpen
+}: SettingsProps) {
 	const [flags, setFlags] = useFeatureFlags();
 	const isLight = useIsLight();
 	const clipboard = useClipboard({ timeout: 1000 });
@@ -93,12 +96,12 @@ export function Settings(props: SettingsProps) {
 		disabled: c.disabled ? c.disabled(flags) : false
 	}));
 
-	useEventSubscription(OpenSettingsDialog, (id) => {
-		id ??= 'behaviour';
-		if (id == 'feature-flags' || categories.some(c => c.id == id && !c.disabled)) {
-			setActiveTab(id);
+	useIntent("open-settings", ({ tab }) => {
+		if (tab) {
+			setActiveTab(tab);
 		}
-		props.onOpen();
+
+		onOpen();
 	});
 
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
@@ -132,8 +135,8 @@ export function Settings(props: SettingsProps) {
 	return (
 		<>
 			<Modal
-				opened={props.opened}
-				onClose={props.onClose}
+				opened={opened}
+				onClose={onClose}
 				padding={0}
 				size={960}
 			>
@@ -195,7 +198,7 @@ export function Settings(props: SettingsProps) {
 							</Title>
 							<Spacer />
 							<ActionIcon
-								onClick={props.onClose}
+								onClick={onClose}
 								size="lg"
 							>
 								<Icon path={iconClose} />

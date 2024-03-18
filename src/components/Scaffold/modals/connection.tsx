@@ -15,8 +15,7 @@ import { createBaseConnection } from "~/util/defaults";
 import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
 import { ConnectionDetails } from "../../ConnectionDetails";
 import { useSetting } from "~/hooks/config";
-import { useEventSubscription } from "~/hooks/event";
-import { OpenNewConnectionDialog } from "~/util/global-events";
+import { useIntent } from "~/hooks/url";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -108,7 +107,7 @@ export function ConnectionEditor() {
 		}
 	}, [opened]);
 
-	useEventSubscription(OpenNewConnectionDialog, () => {
+	useIntent("new-connection", () => {
 		openConnectionCreator();
 	});
 
