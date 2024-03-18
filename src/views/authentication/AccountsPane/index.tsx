@@ -31,6 +31,7 @@ import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { iconCheck, iconComment, iconEdit, iconKey, iconPlus } from "~/util/icons";
+import { useIntent } from "~/hooks/url";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -128,6 +129,12 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 			return roleInfo ? roleInfo.label : role;
 		}).join(' / ');
+	});
+
+	useIntent("create-user", ({ level }) => {
+		if (level == props.type) {
+			createUser();
+		}
 	});
 
 	return (

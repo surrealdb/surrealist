@@ -11,9 +11,10 @@ import { getActiveSurreal } from "~/util/surreal";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 import { tb } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
+import { useIntent } from "~/hooks/url";
 
 export function TableCreator() {
-	const { closeTableCreator } = useInterfaceStore.getState();
+	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showTableCreator);
 
@@ -49,6 +50,8 @@ export function TableCreator() {
 			setTableOut([]);
 		}
 	}, [opened]);
+
+	useIntent("new-table", openTableCreator);
 
 	return (
 		<>

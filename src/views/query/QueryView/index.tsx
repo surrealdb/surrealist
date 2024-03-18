@@ -29,6 +29,7 @@ import { EmbedAdapter } from "~/adapter/embed";
 import { useBoolean } from "~/hooks/boolean";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
+import { useIntent } from "~/hooks/url";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -92,6 +93,9 @@ export function QueryView() {
 
 		isSavingHandle.close();
 	});
+
+	useIntent("open-saved-queries", showSavedHandle.open);
+	useIntent("open-query-history", showHistoryHandle.open);
 
 	return (
 		<Stack

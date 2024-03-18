@@ -1,5 +1,4 @@
 import { ActionIcon, Tooltip } from "@mantine/core";
-import { useHotkeys } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
@@ -8,6 +7,7 @@ import { closeConnection, openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
+import { useIntent } from "~/hooks/url";
 
 // TODO Check if localhost
 
@@ -17,7 +17,7 @@ export interface LocalDatabaseProps {
 	toggleConsole: () => void;
 }
 
-export function LocalDatabase(props: LocalDatabaseProps) {
+export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 	const [hasStarted, setHasStarted] = useState(false);
 
 	const cancelServe = useDatabaseStore((s) => s.cancelServe);
@@ -60,7 +60,8 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 		}
 	}, [isServing]);
 
-	useHotkeys([["ctrl+s", handleToggle]], []);
+	useIntent("toggle-serving", handleToggle);
+	useIntent("open-serving-console", toggleConsole);
 
 	return (
 		<>
@@ -81,7 +82,7 @@ export function LocalDatabase(props: LocalDatabaseProps) {
 					<ActionIcon
 						w={36}
 						h={36}
-						onClick={props.toggleConsole}
+						onClick={toggleConsole}
 					>
 						<Icon path={iconConsole} size="lg" />
 					</ActionIcon>

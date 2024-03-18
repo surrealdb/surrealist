@@ -96,14 +96,6 @@ export function Settings({
 		disabled: c.disabled ? c.disabled(flags) : false
 	}));
 
-	useIntent("open-settings", ({ tab }) => {
-		if (tab) {
-			setActiveTab(tab);
-		}
-
-		onOpen();
-	});
-
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
 	const Component = activeCategory.component;
 
@@ -131,6 +123,14 @@ export function Settings({
 			setLogoClicked([]);
 		}
 	}, [logoClicked]);
+
+	useIntent("open-settings", ({ tab }) => {
+		if (tab) {
+			setActiveTab(tab);
+		}
+
+		onOpen();
+	});
 
 	return (
 		<>

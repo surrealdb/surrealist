@@ -13,6 +13,7 @@ import { adapter } from "~/adapter";
 import { mdiOpenInNew } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Shortcut } from "~/components/Shortcut";
+import { dispatchIntent } from "~/hooks/url";
 
 export interface CommandPaletteModalProps {
 	opened: boolean;
@@ -68,6 +69,20 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 
 	const activate = (cmd: Command) => {
 		switch (cmd.action.type) {
+			case "insert": {
+				setSearch(cmd.action.content);
+				break;
+			}
+			case "href": {
+				onClose();
+				adapter.openUrl(cmd.action.href);
+				break;
+			}
+			case "intent": {
+				onClose();
+				dispatchIntent(cmd.action.intent, cmd.action.payload);
+				break;
+			}
 			case "launch": {
 				const query = search.trim();
 
@@ -77,14 +92,6 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 
 				onClose();
 				cmd.action.handler();
-				break;
-			}
-			case "insert": {
-				setSearch(cmd.action.content);
-				break;
-			}
-			case "href": {
-				adapter.openUrl(cmd.action.href);
 				break;
 			}
 		}

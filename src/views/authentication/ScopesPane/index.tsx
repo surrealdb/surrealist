@@ -16,6 +16,7 @@ import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
+import { useIntent } from "~/hooks/url";
 
 export function ScopePane() {
 	const isLight = useIsLight();
@@ -63,7 +64,7 @@ export function ScopePane() {
 		}
 	});
 
-	const createAccount = useStable(() => {
+	const createScope = useStable(() => {
 		setIsEditing(true);
 		setIsCreating(true);
 		setEditingName("");
@@ -92,13 +93,15 @@ export function ScopePane() {
 		setIsEditing(false);
 	});
 
+	useIntent("create-scope", createScope);
+
 	return (
 		<ContentPane
 			icon={iconAccountSecure}
 			title="Database Scopes"
 			rightSection={
 				<Tooltip label="New scope">
-					<ActionIcon onClick={createAccount}>
+					<ActionIcon onClick={createScope}>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>

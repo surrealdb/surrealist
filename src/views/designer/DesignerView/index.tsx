@@ -13,6 +13,7 @@ import { ReactFlowProvider } from "reactflow";
 import { useIsConnected } from "~/hooks/connection";
 import { useDisclosure } from "@mantine/hooks";
 import { DesignDrawer } from "../DesignDrawer";
+import { useIntent } from "~/hooks/url";
 
 const DEFAULT_DEF: TableDefinition = {
 	schema: {
@@ -101,6 +102,10 @@ export function DesignerView(_props: DesignerViewProps) {
 			isDesigningHandle.close();
 		}
 	}, [isOnline]);
+
+	useIntent("design-table", ({ table }) => {
+		setActiveTable(table);
+	});
 
 	return (
 		<>

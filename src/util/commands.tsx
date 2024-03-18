@@ -1,17 +1,19 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAccountSecure, iconAuth, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconSurreal, iconUpload } from "./icons";
+import { iconAccountSecure, iconAuth, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStop, iconSurreal, iconUpload } from "./icons";
 import { mdiBook, mdiMagnifyMinusOutline, mdiMagnifyPlusOutline, mdiPin, mdiTextBoxMinusOutline, mdiTextBoxPlusOutline } from "@mdi/js";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
+import { IntentPayload, IntentType } from "./intents";
 
 type LaunchAction = { type: "launch", handler: () => void };
 type InsertAction = { type: "insert", content: string };
 type HrefAction = { type: "href", href: string };
+type IntentAction = { type: "intent", intent: IntentType, payload?: IntentPayload };
 
-type Action = LaunchAction | InsertAction | HrefAction;
+type Action = LaunchAction | InsertAction | HrefAction | IntentAction;
 
 export interface Command {
 	id: string;
@@ -36,12 +38,15 @@ const insert = (content: string) => ({ type: 'insert', content } as const);
 /** Create an href command */
 const href = (href: string) => ({ type: 'href', href } as const);
 
+/** Create an intent command */
+const intent = (intent: IntentType, payload?: IntentPayload) => ({ type: "intent", intent, payload } as const);
+
 /**
  * Compute available commands based on the current state
  */
 export function computeCommands(): CommandCategory[] {
 	const { connections, commandHistory, setActiveView, setActiveConnection } = useConfigStore.getState();
-	const { databaseSchema } = useDatabaseStore.getState();
+	const { isServing, databaseSchema } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
 	const categories: CommandCategory[] = [];
@@ -78,9 +83,7 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: `Create new connection`,
 				icon: iconPlus,
-				action: launch(() => {
-					// todo
-				})
+				action: intent("new-connection")
 			}
 		]
 	});
@@ -105,25 +108,19 @@ export function computeCommands(): CommandCategory[] {
 					id: newId(),
 					name: `Explore table ${table.schema.name}`,
 					icon: iconChevronRight,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("explore-table", { table: table.schema.name })
 				})),
 				...tables.map(table => ({
 					id: newId(),
 					name: `Design table ${table.schema.name}`,
 					icon: iconChevronRight,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("design-table", { table: table.schema.name })
 				})),
 				{
 					id: newId(),
 					name: `Create new table`,
 					icon: iconPlus,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("new-table")
 				}
 			]
 		}, {
@@ -133,25 +130,19 @@ export function computeCommands(): CommandCategory[] {
 					id: newId(),
 					name: "View saved queries",
 					icon: iconStar,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("open-saved-queries")
 				},
 				{
 					id: newId(),
 					name: "View query history",
 					icon: iconHistory,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("open-query-history")
 				},
 				{
 					id: newId(),
 					name: "Create new query",
 					icon: iconPlus,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("new-query")
 				}
 			]
 		}, {
@@ -161,17 +152,13 @@ export function computeCommands(): CommandCategory[] {
 					id: newId(),
 					name: "Import database",
 					icon: iconUpload,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("import-database")
 				},
 				{
 					id: newId(),
 					name: "Export database",
 					icon: iconDownload,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("export-database")
 				}
 			]
 		}, {
@@ -181,33 +168,25 @@ export function computeCommands(): CommandCategory[] {
 					id: newId(),
 					name: "Create root user",
 					icon: iconAuth,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("create-user", { level: "ROOT" })
 				},
 				{
 					id: newId(),
 					name: "Create namespace user",
 					icon: iconFolderSecure,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("create-user", { level: "NAMESPACE" })
 				},
 				{
 					id: newId(),
 					name: "Create database user",
 					icon: iconServerSecure,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("create-user", { level: "DATABASE" })
 				},
 				{
 					id: newId(),
 					name: "Create scope",
 					icon: iconAccountSecure,
-					action: launch(() => {
-						// todo
-					})
+					action: intent("create-scope")
 				}
 			]
 		});
@@ -218,19 +197,15 @@ export function computeCommands(): CommandCategory[] {
 		commands: [
 			{
 				id: newId(),
-				name: "Start/Stop serving",
-				icon: iconPlay,
-				action: launch(() => {
-					// todo
-				})
+				name: `${isServing ? 'Stop' : 'Start'} database serving`,
+				icon: isServing ? iconStop : iconPlay,
+				action: intent("toggle-serving")
 			},
 			{
 				id: newId(),
 				name: "Reveal output console",
 				icon: iconConsole,
-				action: launch(() => {
-					// todo
-				})
+				action: intent("open-serving-console")
 			},
 		]
 	}, {
@@ -289,17 +264,13 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: "Open Settings",
 				icon: iconCog,
-				action: launch(() => {
-					// todo
-				})
+				action: intent("open-settings")
 			},
 			{
 				id: newId(),
 				name: "Open Help & Support",
 				icon: iconHelp,
-				action: launch(() => {
-					// todo
-				})
+				action: intent("open-help")
 			},
 			{
 				id: newId(),

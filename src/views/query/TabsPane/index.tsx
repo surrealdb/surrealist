@@ -17,6 +17,7 @@ import { TabQuery } from "~/types";
 import { Sortable } from "~/components/Sortable";
 import clsx from "clsx";
 import { Spacer } from "~/components/Spacer";
+import { useIntent } from "~/hooks/url";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -60,6 +61,8 @@ export function TabsPane(props: TabsPaneProps) {
 			variables
 		});
 	};
+
+	useIntent('new-query', addQueryTab);
 
 	return (
 		<ContentPane

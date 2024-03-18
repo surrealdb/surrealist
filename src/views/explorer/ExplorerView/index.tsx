@@ -7,6 +7,7 @@ import { Group } from "@mantine/core";
 import { DisconnectedEvent } from "~/util/global-events";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
 
 export function ExplorerView() {
 	const [activeTable, setActiveTable] = useState<string>();
@@ -20,6 +21,10 @@ export function ExplorerView() {
 
 	useEventSubscription(DisconnectedEvent, () => {
 		isCreatingHandle.close();
+	});
+
+	useIntent("explore-table", ({ table }) => {
+		setActiveTable(table);
 	});
 
 	return (

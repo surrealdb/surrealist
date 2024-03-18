@@ -5,7 +5,7 @@ import { useConfigStore } from "~/stores/config";
 import { ViewMode } from "~/types";
 import { IntentEvent } from "~/util/global-events";
 import { useEventSubscription } from "./event";
-import { IntentPayload, IntentType, isIntent } from "~/util/intents";
+import { IntentPayload, IntentType, getIntentView, isIntent } from "~/util/intents";
 
 /**
  * Sync the active view to the URL and handle incoming intents
@@ -40,7 +40,7 @@ export function useUrlHandler() {
 				return { ...acc, [key]: value };
 			}, {} as any);
 
-			IntentEvent.dispatch({ type, payload });
+			dispatchIntent(type, payload);
 		}
 
 		history.replaceState(null, document.title, location.pathname);
@@ -81,5 +81,12 @@ export function useIntent(type: IntentType, handler: (payload: IntentPayload) =>
  * @param payload Optional payload
  */
 export function dispatchIntent(intent: IntentType, payload?: IntentPayload) {
+	const { setActiveView } = useConfigStore.getState();
+	const view = getIntentView(intent);
+
+	if (view) {
+		setActiveView(view);
+	}
+
 	IntentEvent.dispatch({ type: intent, payload });
 }

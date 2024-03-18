@@ -13,6 +13,7 @@ import { createDatabaseExport } from "~/util/exporter";
 import { iconChevronRight, iconDownload, iconUpload } from "~/util/icons";
 import { showInfo } from "~/util/helpers";
 import { Entry } from "~/components/Entry";
+import { useIntent } from "~/hooks/url";
 
 export function Exporter() {
 	const isLight = useIsLight();
@@ -53,6 +54,8 @@ export function Exporter() {
 			closeExporter();
 		}
 	});
+
+	useIntent("export-database", openExporter);
 
 	return (
 		<>

@@ -58,7 +58,6 @@ export function ConnectionEditor() {
 		updateTitle();
 	});
 
-
 	const generateName = useStable(() => {
 		let tabName = "";
 		let counter = 0;

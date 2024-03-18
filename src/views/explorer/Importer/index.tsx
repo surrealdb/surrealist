@@ -15,6 +15,7 @@ import { getActiveSurreal } from "~/util/surreal";
 import { OpenedFile } from "~/adapter/base";
 import { iconChevronRight, iconDownload, iconFile } from "~/util/icons";
 import { Entry } from "~/components/Entry";
+import { useIntent } from "~/hooks/url";
 
 export function Importer() {
 	const isLight = useIsLight();
@@ -67,6 +68,8 @@ export function Importer() {
 			showConfirmHandle.close();
 		}
 	});
+
+	useIntent("import-database", startImport);
 
 	return (
 		<>
