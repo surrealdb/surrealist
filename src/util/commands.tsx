@@ -273,6 +273,14 @@ export function computeCommands(): CommandCategory[] {
 				action: launch(() => {
 					// todo
 				})
+			}, {
+				id: newId(),
+				name: "Toggle window always on top",
+				icon: mdiPin,
+				shortcut: "F11",
+				action: launch(() => {
+					// todo
+				})
 			}] : []),
 			{
 				id: newId(),
@@ -291,16 +299,7 @@ export function computeCommands(): CommandCategory[] {
 				action: launch(() => {
 					// todo
 				})
-			},
-			{
-				id: newId(),
-				name: "Toggle window always on top",
-				icon: mdiPin,
-				shortcut: "F11",
-				action: launch(() => {
-					// todo
-				})
-			},
+			}
 		]
 	}, {
 		name: "Navigation",

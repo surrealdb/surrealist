@@ -138,7 +138,7 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 				content: classes.paletteModal
 			}}
 		>
-			<Box>
+			<Box p="lg">
 				{connection && (
 					<Group gap="xs" mb="sm" c="surreal">
 						<Icon path={iconServer} size="sm" />
@@ -158,16 +158,16 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 				/>
 			</Box>
 
-			<Divider color="slate.6" my="md" />
+			<Divider color="slate.6" mx="lg" />
 
-			<Box h={350}>
+			<Box h={350}pb={0}>
 				<ScrollArea
 					viewportRef={ref}
 					scrollbars="y"
 					h="100%"
 				>
 					{filtered.length > 0 ? (
-						<Stack>
+						<Stack p="lg">
 							{filtered.map(cat => (
 								<Fragment key={cat.name}>
 									<Text c="slate" fw={500}>
