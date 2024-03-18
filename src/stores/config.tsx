@@ -58,6 +58,7 @@ export type ConfigStore = SurrealistConfig & {
 	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
 	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
 	setFeatureFlag: <T extends FeatureFlag<typeof featureFlagSchema>>(key: T, value: FeatureFlagOption<typeof featureFlagSchema, T>) => void;
+	pushCommand: (command: string) => void;
 	softReset: () => void;
 }
 
@@ -269,6 +270,25 @@ export const useConfigStore = create<ConfigStore>()(
 				}
 			}
 		})),
+
+		pushCommand: (command) => set((state) => {
+			const commandHistory = [...state.commandHistory];
+			const index = commandHistory.indexOf(command);
+
+			if (index >= 0) {
+				commandHistory.splice(index, 1);
+			}
+
+			commandHistory.unshift(command);
+
+			if (commandHistory.length > 3) {
+				commandHistory.pop();
+			}
+
+			return {
+				commandHistory
+			};
+		})
 
 	})
 );

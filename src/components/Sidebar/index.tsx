@@ -4,7 +4,7 @@ import surrealistLogo from "~/assets/images/logo.png";
 import { ScrollArea, Stack, Divider, Image, Flex, Group } from "@mantine/core";
 import { Fragment, useLayoutEffect, useMemo } from "react";
 import { isBrowser } from "~/adapter";
-import { iconDownload, iconCog } from "~/util/icons";
+import { iconDownload, iconCog, iconSearch } from "~/util/icons";
 import { NavigationIcon } from "../NavigationIcon";
 import { Spacer } from "../Spacer";
 import { VIEW_MODES } from "~/constants";
@@ -19,6 +19,7 @@ import { useConnection } from "~/hooks/connection";
 import { useSetting } from "~/hooks/config";
 import { useHover } from "@mantine/hooks";
 import { useBoolean } from "~/hooks/boolean";
+import { Shortcut } from "../Shortcut";
 
 const NAVIGATION: ViewMode[][] = [
 	[
@@ -37,11 +38,13 @@ const NAVIGATION: ViewMode[][] = [
 
 export interface SidebarProps {
 	onToggleDownload: () => void;
+	onTogglePalette: () => void;
 	onToggleSettings: () => void;
 }
 
 export function Sidebar({
 	onToggleDownload,
+	onTogglePalette,
 	onToggleSettings,
 }: SidebarProps) {
 	const { setActiveView } = useConfigStore.getState();
@@ -153,6 +156,17 @@ export function Sidebar({
 							onClick={onToggleDownload}
 						/>
 					)}
+
+					<NavigationIcon
+						name={
+							<Group wrap="nowrap">
+								Search
+								<Shortcut value="mod K" />
+							</Group>
+						}
+						icon={iconSearch}
+						onClick={onTogglePalette}
+					/>
 
 					<NavigationIcon
 						name="Settings"

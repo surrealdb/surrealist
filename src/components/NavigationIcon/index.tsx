@@ -2,11 +2,11 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import { Icon } from "../Icon";
 import { Entry, EntryProps } from "../Entry";
-import { HTMLProps } from "react";
+import { HTMLProps, ReactNode } from "react";
 import { Tooltip } from "@mantine/core";
 
-export interface NavigationIconProps extends EntryProps, Omit<HTMLProps<HTMLButtonElement>, 'color' | 'size' | 'style' | 'type' | 'ref'> {
-	name: string;
+export interface NavigationIconProps extends EntryProps, Omit<HTMLProps<HTMLButtonElement>, 'name' | 'color' | 'size' | 'style' | 'type' | 'ref'> {
+	name: ReactNode;
 	isActive?: boolean;
 	icon: string;
 	withTooltip?: boolean;

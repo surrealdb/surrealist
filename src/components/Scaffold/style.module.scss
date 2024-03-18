@@ -103,3 +103,46 @@
 	right: 0;
 	left: 0;
 }
+
+.palette-modal {
+	border: 1px solid var(--mantine-color-slate-6);
+	background-color: hsla(240, 6%, 14%, 0.5);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	padding: var(--mantine-spacing-lg);
+	padding-bottom: 0;
+}
+
+.palette-input input {
+	font-size: 1.15rem;
+	background-color: unset !important;
+
+	&::placeholder {
+		color: var(--mantine-color-slate-4);
+	}
+}
+
+.command {
+	display: flex;
+	height: 2.5rem;
+	align-items: center;
+	padding-inline: var(--mantine-spacing-sm);
+	border-radius: var(--mantine-radius-md);
+	gap: var(--mantine-spacing-md);
+
+	.command-icon {
+		color: var(--mantine-color-slate-3);
+	}
+
+	.command-label {
+		color: var(--mantine-color-slate-0);
+	}
+
+	&[data-active="true"] {
+		background-color: var(--mantine-color-slate-6);
+
+		.command-icon, .command-label {
+			color: white;
+		}
+	}
+}

@@ -1,3 +1,5 @@
+import { Platform } from "~/types";
+
 export interface OpenedFile {
 	name: string;
 	content: string;
@@ -19,6 +21,11 @@ export interface SurrealistAdapter {
 	 * Whether the window has a native titlebar
 	 */
 	hasTitlebar: boolean;
+
+	/**
+	 * The currently active platform
+	 */
+	platform: Platform;
 
 	/**
 	 * Initialize any adapter specific services. This function is invoked

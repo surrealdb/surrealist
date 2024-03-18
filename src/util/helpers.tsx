@@ -18,6 +18,13 @@ export const TRUNCATE_STYLE: CSSProperties = {
 	textOverflow: "ellipsis",
 };
 
+export const Y_SLIDE_TRANSITION = {
+	in: { opacity: 1, transform: 'translateY(0)' },
+	out: { opacity: 0, transform: 'translateY(-20px)' },
+	common: { transformOrigin: 'top' },
+	transitionProperty: 'transform, opacity',
+};
+
 export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
 	e.stopPropagation();
 };
@@ -321,4 +328,19 @@ export function fastParseJwt(token: string) {
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * A simplistic fuzzy match function which matches
+ * the query against the target string
+ *
+ * @param query The query to match
+ * @param target The target string
+ * @returns Result
+ */
+export function fuzzyMatch(query: string, target: string) {
+	const pattern = query.split(' ').join('.*?');
+	const regex = new RegExp(pattern, 'i');
+
+	return regex.test(target);
 }

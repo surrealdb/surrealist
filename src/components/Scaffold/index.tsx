@@ -8,7 +8,7 @@ import {
 
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
-import { useDisclosure, useHotkeys } from "@mantine/hooks";
+import { getHotkeyHandler, useDisclosure } from "@mantine/hooks";
 import { ConnectionEditor } from "./modals/connection";
 import { executeQuery } from "~/database";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
@@ -19,7 +19,6 @@ import { DesignerView } from "~/views/designer/DesignerView";
 import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { Settings } from "./settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
@@ -30,6 +29,9 @@ import { DownloadModal } from "./modals/download";
 import { ScopeSignup } from "./modals/signup";
 import { DocumentationView } from "~/views/documentation/DocumentationView";
 import { Sidebar } from "../Sidebar";
+import { CommandPaletteModal } from "./modals/palette";
+import { useEffect } from "react";
+import { useBoolean } from "~/hooks/boolean";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -53,6 +55,7 @@ export function Scaffold() {
 	const activeConnection = useConfigStore((s) => s.activeConnection);
 	const activeView = useConfigStore((s) => s.activeView);
 
+	const [showPalette, paletteHandle] = useBoolean();
 	const [showSettings, settingsHandle] = useDisclosure();
 	const [showDownload, downloadHandle] = useDisclosure();
 
@@ -64,15 +67,29 @@ export function Scaffold() {
 		});
 	});
 
-	useHotkeys([
-		["F9", () => userExecuteQuery()],
-		["mod+Enter", () => userExecuteQuery()],
-	]);
+	useEffect(() => {
+		const handle = (e: any) => {
+
+			// NOTE See https://github.com/xyflow/xyflow/issues/3924
+			e.stopPropagation();
+
+			getHotkeyHandler([
+				["F9", () => userExecuteQuery()],
+				["mod+Enter", () => userExecuteQuery()],
+				["mod+K", paletteHandle.open],
+			])(e);
+		};
+
+		document.body.addEventListener('keydown', handle);
+
+		return () => {
+			document.body.removeEventListener('keydown', handle);
+		};
+	}, []);
 
 	return (
 		<div
 			className={classes.root}
-			onKeyDown={ON_STOP_PROPAGATION} // NOTE See https://github.com/xyflow/xyflow/issues/3924
 			style={{
 				backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
 			}}
@@ -93,6 +110,7 @@ export function Scaffold() {
 			>
 				<Sidebar
 					onToggleSettings={settingsHandle.toggle}
+					onTogglePalette={paletteHandle.toggle}
 					onToggleDownload={downloadHandle.toggle}
 				/>
 
@@ -142,6 +160,11 @@ export function Scaffold() {
 			)}
 
 			<ConnectionEditor />
+
+			<CommandPaletteModal
+				opened={showPalette}
+				onClose={paletteHandle.close}
+			/>
 
 			<Settings
 				opened={showSettings}

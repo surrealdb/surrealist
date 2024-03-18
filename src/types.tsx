@@ -15,6 +15,7 @@ export type IndexKind = "normal" | "unique" | "search" | "vector";
 export type ColorScheme = "light" | "dark";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "dotnet" | "java" | "php";
+export type Platform = "darwin" | "windows" | "linux";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -129,7 +130,8 @@ export interface SurrealistConfig {
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	settings: SurrealistSettings;
-	featureFlags: Partial<TFeatureFlags<typeof featureFlagSchema>>,
+	featureFlags: Partial<TFeatureFlags<typeof featureFlagSchema>>;
+	commandHistory: string[];
 }
 
 export interface ScopeField {

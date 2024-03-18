@@ -11,17 +11,10 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
 import { useDisclosure, useInputState } from "@mantine/hooks";
-import { newId, showError, updateTitle } from "~/util/helpers";
+import { Y_SLIDE_TRANSITION, newId, showError, updateTitle } from "~/util/helpers";
 import { Entry } from "../Entry";
 import { openConnection } from "~/database";
 import { useContextMenu } from "mantine-contextmenu";
-
-const TRANSITION = {
-	in: { opacity: 1, transform: 'translateY(0)' },
-	out: { opacity: 0, transform: 'translateY(-20px)' },
-	common: { transformOrigin: 'top' },
-	transitionProperty: 'transform, opacity',
-};
 
 export function Connections() {
 	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
@@ -136,7 +129,7 @@ export function Connections() {
 			<Modal
 				opened={isListing}
 				onClose={isListingHandle.close}
-				transitionProps={{ transition: TRANSITION }}
+				transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 				centered={false}
 			>
 				<Stack>

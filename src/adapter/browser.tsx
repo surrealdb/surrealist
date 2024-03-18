@@ -1,3 +1,4 @@
+import { Platform } from "~/types";
 import { OpenedFile, SurrealistAdapter } from "./base";
 
 /**
@@ -8,9 +9,18 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
 	public hasTitlebar = true;
+	public platform: Platform = "windows";
 
 	public initialize() {
-		// noop
+		const platform = navigator.platform.toLowerCase();
+
+		if (platform.includes('win')) {
+			this.platform = 'windows';
+		} else if (platform.includes('mac') || platform.includes('darwin')) {
+			this.platform = 'darwin';
+		} else if (platform.includes('linux')) {
+			this.platform = 'linux';
+		}
 	}
 
 	public dumpDebug = async () => ({

@@ -16,6 +16,7 @@ export function createBaseConfig(): SurrealistConfig {
 		savedQueries: [],
 		lastPromptedVersion: null,
 		featureFlags: {},
+		commandHistory: [],
 		settings
 	};
 }

@@ -11,6 +11,7 @@ import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
 import { watchStore } from "~/util/config";
+import { Platform } from "~/types";
 
 const WAIT_DURATION = 1000;
 
@@ -22,6 +23,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
 	public hasTitlebar = false;
+	public platform: Platform = "windows";
 
 	#startTask: any;
 
@@ -73,7 +75,22 @@ export class DesktopAdapter implements SurrealistAdapter {
 		appWindow.setTitle(title || "Surrealist");
 	}
 
-	public loadConfig() {
+	public async loadConfig() {
+		switch (await type()) {
+			case "Windows_NT": {
+				this.platform = "windows";
+				break;
+			}
+			case "Darwin": {
+				this.platform = "darwin";
+				break;
+			}
+			case "Linux": {
+				this.platform = "linux";
+				break;
+			}
+		}
+
 		return invoke<string>("load_config");
 	}
 
