@@ -1,236 +1,632 @@
-@precedence { FunctionJs Ident }
-@top SurrealQL { Expressions }
+@precedence {
+	ident,
+	FunctionJs,
+	Int,
+	RecordId,
+	Ident,
+	Object,
+	Number,
+	ObjectContent,
+	NestableExpressions @left
+}
 
-Expressions { 
-  (Expression ";")* Expression ";"?
+@top SurrealQL { Expressions }
+@top SingleExpression { Expression }
+@top PermissionsContent { none | full | WhereClause }
+@top QlValue { Value }
+
+Expressions {
+	(Expression ";")* Expression ";"?
+}
+
+NestableExpressions {
+	(NestableExpression ";")* NestableExpression ";"?
 }
 
 Expression {
-  Statement |
-  Value
+	Statement |
+	Value
 }
 
-Statement { 
-  BeginStatement |
-  BreakStatement |
-  CancelStatement |
-  CommitStatement |
-  ContinueStatement |
-  CreateStatement |
-  DefineStatement 
+NestableExpression {
+	NestableStatement |
+	Value
 }
 
-BeginStatement {
-  (kw<"BEGIN"> | kw<"begin">)
-  (kw<"TRANSACTION"> | kw<"transaction">)?
+SubQuery {
+	"("
+	NestableExpression
+	")"
 }
 
-BreakStatement {
-  (kw<"BREAK"> | kw<"break">)
+Block {
+	"{"
+	NestableExpressions
+	"}"
 }
 
-CancelStatement {
-  (kw<"CANCEL"> | kw<"cancel">)
-  (kw<"TRANSACTION"> | kw<"transaction">)?
+TransactionStatement {
+	BeginStatement |
+	CancelStatement |
+	CommitStatement
 }
 
-CommitStatement {
-  (kw<"COMMIT"> | kw<"commit">)
-  (kw<"TRANSACTION"> | kw<"transaction">)?
+NestableStatement {
+	CreateStatement |
+	SelectStatement |
+	BreakStatement |
+	ContinueStatement |
+	ForStatement |
+	ReturnStatement
 }
 
-ContinueStatement {
-  (kw<"CONTINUE"> | kw<"continue">)
+Statement {
+	TransactionStatement |
+	DefineStatement |
+	NestableStatement
 }
 
-CreateStatement {
-  (kw<"CREATE"> | kw<"create">)
-  (kw<"ONLY"> | kw<"only">)?
-  (Ident | VariableName)
-  (
-    ContentClause |
-    SetClause
-  )?
-  ReturnClause?
-  TimeoutClause?
-  ParallelClause?
-}
+// Transaction statements
+
+BeginStatement { begin transaction? }
+CancelStatement { cancel transaction? }
+CommitStatement { commit transaction? }
+
+// Define statements
 
 DefineStatement {
-  (kw<"DEFINE"> | kw<"define">)
-  (
-    DefineAnalyzerStatement |
-    DefineNamespaceStatement |
-    DefineDatabaseStatement
-  )
+	define
+	(
+		DefineAnalyzerStatement |
+		DefineNamespaceStatement |
+		DefineDatabaseStatement |
+		DefineEventStatement |
+		DefineFieldStatement |
+		DefineFunctionStatement
+	)
 }
 
-DefineAnalyzerStatement {
-  (kw<"ANALYZER"> | kw<"analyzer">)
-  Ident
-  (
-    (kw<"TOKENIZERS"> | kw<"tokenizers">)
-    commaSep<AnalyzerTokenizers>
-  )?
-  // TODO implement filters
+// TODO implement filters
+DefineAnalyzerStatement { analyzer Ident TokenizersClause? CommentClause? }
+DefineEventStatement { event Ident on table? Ident WhenThenClause CommentClause? }
+DefineNamespaceStatement { namespace Ident CommentClause? }
+DefineDatabaseStatement { database Ident on Ident CommentClause? }
+
+DefineFieldStatement {
+	field
+	IfNotExistsClause?
+	Ident
+	on table?
+	Ident
+	(
+		TypeClause |
+		DefaultClause |
+		ReadonlyClause |
+		ValueClause |
+		AssertClause |
+		PermissionsForClause |
+		CommentClause
+	)*
 }
 
-DefineNamespaceStatement {
-  (kw<"NAMESPACE"> | kw<"namespace"> | kw<"NS"> | kw<"ns">)
-  Ident
+DefineFunctionStatement {
+	function
+	IfNotExistsClause?
+	customFunctionName
+	"("
+	(
+		VariableName ":" Type
+		( "," VariableName ":" Type )*
+	)?
+	")"
+	Block
+	(
+		PermissionsBasicClause |
+		CommentClause
+	)*
 }
 
-DefineDatabaseStatement {
-  (kw<"DATABASE"> | kw<"database"> | kw<"DB"> | kw<"db">)
-  Ident
-  (kw<"ON"> | kw<"on">)
-  Ident
+DefineIndexStatement {
+	index
+	IfNotExistsClause?
+	Ident
+	on table?
+	Ident
+	FieldsColumnsClause
 }
+
+// Data statements
+
+CreateStatement {
+	create only?
+	( Ident | VariableName | Function )
+	( ContentClause | SetClause )?
+	ReturnClause?
+	TimeoutClause?
+	ParallelClause?
+}
+
+SelectStatement {
+	(select)
+	(
+		value Predicate |
+		commaSep<InclusivePredicate>
+	)
+	(from)
+	(only)?
+	(
+		NestableStatement |
+
+		commaSep<Value>
+		WithClause?
+		WhereClause?
+		SplitClause?
+		GroupClause?
+		// // TODO order by clause
+		LimitStartComboClause?
+		FetchClause?
+		TimeoutClause?
+		ParallelClause?
+		ExplainClause?
+	)
+}
+
+// Control statements
+BreakStatement { break }
+ContinueStatement { continue }
+ForStatement { for VariableName in ( Array | VariableName | SubQuery | Block ) Block }
+ReturnStatement { return NestableExpression }
 
 // Values
 
-Value { String | Number | Bool | Null | None | VariableName | Ident | Object | Array | FunctionJs | Function }
+Value { String | Number | true | false | null | none | VariableName | Ident | Array | RecordId | FunctionJs | Function | SubQuery | Object | TypeCast }
 
 // Objects
 
-ObjectKey { 
-  Ident |
-  doubleString
+ObjectKey {
+	rawident |
+	singleString |
+	doubleString
 }
 
 ObjectProperty {
-  ObjectKey ":" Value
+	ObjectKey ":" Value
 }
 
-Object { "{" commaSep<ObjectProperty> "}" }
+ObjectContent {
+	commaSep<ObjectProperty>
+}
+
+Object {
+	"{" ObjectContent? "}"
+}
+
+BlockOrObject {
+	"{"
+	(
+		"}" |
+		ObjectProperty ("," commaSep<ObjectProperty>)? "}" |
+		NestableExpressions "}"
+	)
+}
 
 // Arrays
 
-Array { "[" commaSep<Value> "]"}
+Array { "[" commaSep<Value>? "]"}
+
+// Record Ids
+
+RecordId {
+	Ident
+	":"
+	(
+		String |
+		Number |
+		Array |
+		Object
+	)
+}
 
 // JS Functions
 
 FunctionJs {
-  "function"
-  "(" commaSep<Value> ")"
-  "{" JavaScript? "}"
+	"function"
+	"(" commaSep<Value>? ")"
+	"{" JavaScript? "}"
 }
 
 // Function invocation
 
 Function {
-  functionName
-  "(" commaSep<Value> ")"
+	functionName
+	"(" commaSep<Value>? ")"
 }
 
-// Assignment 
+// Assignment
 
-Assignment {
-  Ident
-  "="
-  Value
+FieldAssignment {
+	Ident
+	"="
+	Value
 }
 
 // Clauses
 
+FieldsColumnsClause {
+	( fields | columns ) commaSep<Ident>
+}
+
+UniqueClause {
+	unique
+}
+
+SearchAnalyzerClause {
+	search analyzer
+	Ident
+
+}
+
+Bm25Clause {
+	bm25
+}
+
 ContentClause {
-  (kw<"CONTENT"> | kw<"content">) Object
+	content Object
 }
 
 SetClause {
-  (kw<"SET"> | kw<"set">) commaSep<Assignment>
+	set commaSep<FieldAssignment>
+}
+
+IfNotExistsClause {
+	if not exists
 }
 
 ReturnClause {
-  // TODO add support for projections
-  (kw<"RETURN"> | kw<"return">) 
-  (
-    kw<"NONE">   | kw<"none"> |
-    kw<"BEFORE"> | kw<"before"> |
-    kw<"AFTER">  | kw<"after"> |
-    kw<"DIFF">   | kw<"diff">
-  )
+	// TODO add support for projections
+	return
+	( none | before | after | diff )
 }
 
 TimeoutClause {
-  (kw<"TIMEOUT"> | kw<"timeout">) 
-  // TODO actual timeout
+	timeout
+	// TODO actual timeout
 }
 
 ParallelClause {
-  kw<"PARALLEL"> | kw<"parallel">
+	parallel
+}
+
+FetchClause {
+	fetch
+	commaSep<Ident>
+}
+
+StartClause {
+	start
+	at?
+	(Int | VariableName)
+}
+
+LimitClause {
+	limit
+	by?
+	(Int | VariableName)
+}
+
+LimitStartComboClause {
+	StartClause LimitClause? |
+	LimitClause StartClause?
+}
+
+GroupClause {
+	group
+	by?
+	commaSep<Ident>
+}
+
+SplitClause {
+	split
+	at?
+	Ident
+}
+
+WhereClause {
+	where
+	Value
+}
+
+WithClause {
+	with
+	(
+		noindex |
+		index commaSep<Ident>
+	)
+}
+
+ExplainClause {
+	explain
+	full?
+}
+
+TokenizersClause { tokenizers commaSep<AnalyzerTokenizers> }
+
+WhenThenClause {
+	(
+		when
+		(SubQuery | Block)
+	)?
+	then?
+	(SubQuery | Block)
+}
+
+TypeClause {
+	flexible?
+	type
+	// TODO proper types
+	Ident
+}
+
+ReadonlyClause {
+	readonly
+}
+
+DefaultClause {
+	default
+	Value
+}
+
+ValueClause {
+	value
+	Value
+}
+
+AssertClause {
+	assert
+	Value
+}
+
+PermissionsForClause {
+	permissions
+	(
+		// TODO make case insensitive but not a keyword
+		none | full |
+		(
+			for
+			// TODO make case insensitive but not a keyword
+			("select" | "create" | "update" | "delete")
+			WhereClause
+		)+
+	)
+}
+
+PermissionsBasicClause {
+	permissions
+	none | full | WhereClause
+}
+
+CommentClause {
+	comment
+	String
 }
 
 // Support
 
 AnalyzerTokenizers {
-  kw<"blank"> |
-  kw<"camel"> |
-  kw<"class"> |
-  kw<"punct">
+	"blank" |
+	"camel" |
+	"class" |
+	"punct"
+}
+
+Predicate {
+	Value |
+	Value as Ident
+}
+
+InclusivePredicate {
+	"*" |
+	Predicate
+}
+
+// Idiom {
+// 	Ident
+// 	("." Ident)*
+// }
+
+// Types
+
+Type {
+	StringType |
+	NumberType |
+	AnyType |
+	BoolType |
+	BytesType |
+	DatetimeType |
+	DecimalType |
+	DurationType |
+	FloatType |
+	IntType |
+	NullType |
+	ObjectType |
+	ArrayType |
+	SetType |
+	RecordType |
+	OptionType |
+	GeometryType
+}
+
+TypeBracketOpen { "<" }
+TypeBracketClose { ">" }
+
+StringType[@name="Type"] { "string" }
+NumberType[@name="Type"] { "number" }
+AnyType[@name="Type"] { "any" }
+BoolType[@name="Type"] { "bool" }
+BytesType[@name="Type"] { "bytes" }
+DatetimeType[@name="Type"] { "datetime" }
+DecimalType[@name="Type"] { "decimal" }
+DurationType[@name="Type"] { "duration" }
+FloatType[@name="Type"] { "float" }
+IntType[@name="Type"] { "int" }
+NullType[@name="Type"] { "null" }
+ObjectType[@name="Type"] { "object" }
+ArrayType[@name="Type"] { "array" ( TypeBracketOpen Type TypeBracketClose )? }
+SetType[@name="Type"] { "set" ( TypeBracketOpen Type TypeBracketClose )? }
+RecordType[@name="Type"] { "record" ( TypeBracketOpen ( rawident | Int ) TypeBracketClose )? }
+OptionType[@name="Type"] { "option" ( TypeBracketOpen Type TypeBracketClose ) }
+GeometryType[@name="Type"] {
+	"geometry"
+	(
+		TypeBracketOpen
+		( "feature" | "point" | "line" | "polygon" | "multipoint" | "multiline" | "multipolygon" | "collection" )
+		TypeBracketClose
+	)?
+}
+
+TypeCast {
+	TypeBracketOpen Type TypeBracketClose Value
 }
 
 @tokens {
-  // Characters
-  "{" "}" "[" "]"
+	// Characters
+	"{"[@name=BraceOpen]
+	"}"[@name=BraceClose]
+	"["
+	"]"
+	":"[@name=Colon]
 
-  // Helpers
-  whitespace { $[ \n\r\t] }
+	// Helpers
+	whitespace { $[ \n\r\t] }
 
-  // Comments
-  Comment { CommentHash | CommentDash | CommentSlash }
-  CommentHash { "#" ![\n]* }
-  CommentDash { "--" ![\n]* }
-  CommentSlash { "//" ![\n]* }
+	// Comments
+	Comment { CommentHash | CommentDash | CommentSlash }
+	CommentHash { "#" ![\n]* }
+	CommentDash { "--" ![\n]* }
+	CommentSlash { "//" ![\n]* }
 
-  // Numbers
-  Number { Decimal | Float | Int }
-  frac { '.' @digit+ }
-  exp { $[eE] $[+\-]? @digit+ }
-  Int { @digit+ }
-  Float { @digit+ frac? exp? "f"? }
-  Decimal { @digit+ frac? ( "dec" | exp )? }
-  @precedence { Decimal Float Int }
+	// Numbers
+	Number { Int | Float | Decimal }
+	frac { '.' @digit+ }
+	exp { $[eE] $[+\-]? @digit+ }
+	Int { @digit+ }
+	Float { @digit+ frac? exp? "f"? }
+	Decimal { @digit+ frac? exp? "dec"? }
 
-  // Strings
-  String { singleString | doubleString }
-  singleString { "'" ![\\\n']+ "'" }
-  doubleString { '"' ![\\\n"]+ '"' }
+	// Strings
+	String { singleString | doubleString }
+	singleString { "'" ![']+ "'" }
+	doubleString { '"' !["]+ '"' }
 
-  // Literal values
-  Bool { True | False }
-  True { "TRUE" | "true" }
-  False { "FALSE" | "false" }
-  Null { "NULL" | "null" }
-  None { "NONE" | "none" }
+	// Language
+	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
+	Ident {
+		rawident |
+		"`" ![`]+ '`' |
+		"⟨" ![⟩]+ "⟩"
+	}
+	rawident {
+		(@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
+		@digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+
+	}
 
-  // Language
-  Keyword { @asciiLetter+ }
-  VariableName { "$" (@asciiLetter | @digit | "_" )+ }
-  Ident { 
-    (@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
-    @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
-    "`" ![\\\n`]+ '`'
-  }
+	// Functions
+	JavaScript { ![\\\n}]+ }
+	functionName[@name=function] {
+		"rand" | "RAND" |
+		"count" | "COUNT" |
+		@asciiLetter+ functionNameSegment+
+	}
 
-  // Functions
-  functionName { "rand" | "count" | @asciiLetter+ ( "::" @asciiLetter+ )+ }
-  JavaScript { ![\\\n}]+ }
+	functionNameSegment { "::" @asciiLetter+ }
+	customFunctionName[@name=function] {
+		"fn" functionNameSegment*
+	}
 
-  @precedence { Keyword "function" JavaScript whitespace Comment functionName Bool None Null Number Ident }
-  
-  "function"
+	@precedence { "function" JavaScript whitespace Comment customFunctionName functionName Number Int rawident Ident String singleString doubleString }
+
+	"function"
 }
 
-// TODO replace Ident with Keyword
-kw<term> { @specialize[@name=Keyword]<Ident, term> }
-
 commaSep<content> {
-  "" |
-  content ("," content)* ","?
+	content ("," content)*
 }
 
 @skip { whitespace | Comment }
 @detectDelim
 
 @external propSource surqlHighlighting from "./highlight"
+
+@external extend { rawident } tokens from "./tokens" {
+	analyzer		[@name=Keyword],
+	as				[@name=Keyword],
+	assert			[@name=Keyword],
+	at				[@name=Keyword],
+	begin			[@name=Keyword],
+	bm25			[@name=Keyword],
+	break			[@name=Keyword],
+	by				[@name=Keyword],
+	cancel			[@name=Keyword],
+	columns			[@name=Keyword],
+	comment			[@name=Keyword],
+	commit			[@name=Keyword],
+	content			[@name=Keyword],
+	continue		[@name=Keyword],
+	create			[@name=Keyword],
+	database		[@name=Keyword],
+	default			[@name=Keyword],
+	define			[@name=Keyword],
+	dimension		[@name=Keyword],
+	exists			[@name=Keyword],
+	explain			[@name=Keyword],
+	event			[@name=Keyword],
+	fetch			[@name=Keyword],
+	field			[@name=Keyword],
+	fields			[@name=Keyword],
+	flexible		[@name=Keyword],
+	for				[@name=Keyword],
+	from			[@name=Keyword],
+	function		[@name=Keyword],
+	group			[@name=Keyword],
+	highlights		[@name=Keyword],
+	if				[@name=Keyword],
+	in				[@name=Keyword],
+	index			[@name=Keyword],
+	limit			[@name=Keyword],
+	mtree			[@name=Keyword],
+	namespace		[@name=Keyword],
+	noindex			[@name=Keyword],
+	not				[@name=Keyword],
+	on				[@name=Keyword],
+	only			[@name=Keyword],
+	parallel		[@name=Keyword],
+	permissions		[@name=Keyword],
+	readonly		[@name=Keyword],
+	return			[@name=Keyword],
+	search			[@name=Keyword],
+	select			[@name=Keyword],
+	set				[@name=Keyword],
+	split			[@name=Keyword],
+	start			[@name=Keyword],
+	table			[@name=Keyword],
+	then			[@name=Keyword],
+	timeout			[@name=Keyword],
+	tokenizers		[@name=Keyword],
+	transaction		[@name=Keyword],
+	type			[@name=Keyword],
+	unique			[@name=Keyword],
+	value			[@name=Keyword],
+	when			[@name=Keyword],
+	where			[@name=Keyword],
+	with			[@name=Keyword],
+
+	// Literals
+	after			[@name=Literal],
+	before			[@name=Literal],
+	diff			[@name=Literal],
+	false			[@name=Literal],
+	full			[@name=Literal],
+	none			[@name=Literal],
+	null			[@name=Literal],
+	true			[@name=Literal]
+}

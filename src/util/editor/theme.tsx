@@ -2,37 +2,39 @@ import { HighlightStyle } from "@codemirror/language";
 import { tags as t } from "@lezer/highlight";
 
 /**
- * The light syntax highlighting style
- */
-export const LIGHT_STYLE = HighlightStyle.define([
-	{ tag: t.keyword, color: "#e600a4" },
-	{ tag: t.operator, color: "#e600a4" },
-	{ tag: t.number, color: "#d19a66" },
-	{ tag: t.string, color: "#98c379" },
-	{ tag: t.comment, color: "#5c6370" },
-	{ tag: t.propertyName, color: "#e06c75" },
-	{ tag: t.variableName, color: "#E06C75" },
-	{ tag: t.punctuation, color: "#abb2bf" },
-	{ tag: t.function(t.name), color: "#56b6c2" },
-	{ tag: t.null, color: "#56b6c2" },
-	{ tag: t.bool, color: "#56b6c2" },
-	{ tag: t.name, color: "#c2c2c2" },
-], { themeType: 'light' });
-
-/**
  * The dark syntax highlighting style
  */
 export const DARK_STYLE = HighlightStyle.define([
-	{ tag: t.keyword, color: "#e600a4" },
-	{ tag: t.operator, color: "#e600a4" },
-	{ tag: t.number, color: "#d19a66" },
-	{ tag: t.string, color: "#98c379" },
-	{ tag: t.comment, color: "#5c6370" },
+	{ tag: t.keyword, color: "#ff009e" },
+	{ tag: t.operator, color: "#ff009e" },
+	{ tag: t.number, color: "#00dbff" },
+	{ tag: t.string, color: "#00ff6e" },
+	{ tag: t.comment, color: "#737e98" },
 	{ tag: t.propertyName, color: "#e06c75" },
-	{ tag: t.variableName, color: "#E06C75" },
-	{ tag: t.punctuation, color: "#abb2bf" },
-	{ tag: t.function(t.name), color: "#56b6c2" },
-	{ tag: t.null, color: "#56b6c2" },
-	{ tag: t.bool, color: "#56b6c2" },
-	{ tag: t.name, color: "#c2c2c2" },
+	{ tag: t.variableName, color: "#ffde00" },
+	{ tag: t.punctuation, color: "#ffffff" },
+	{ tag: t.function(t.name), color: "#ff9b67" },
+	{ tag: t.null, color: "#9d2fff" },
+	{ tag: t.bool, color: "#9d2fff" },
+	{ tag: t.name, color: "#ffffff" },
+	{ tag: t.typeName, color: "#ffde00" },
 ], { themeType: 'dark' });
+
+/**
+ * The light syntax highlighting style
+ */
+export const LIGHT_STYLE = HighlightStyle.define([
+	{ tag: t.keyword, color: "#ff009e" },
+	{ tag: t.operator, color: "#ff009e" },
+	{ tag: t.number, color: "#00dbff" },
+	{ tag: t.string, color: "#68DE74" },
+	{ tag: t.comment, color: "#737e98" },
+	{ tag: t.propertyName, color: "#e06c75" },
+	{ tag: t.variableName, color: "#ffc845" },
+	{ tag: t.punctuation, color: "#000000" },
+	{ tag: t.function(t.name), color: "#ff9b67" },
+	{ tag: t.null, color: "#9d2fff" },
+	{ tag: t.bool, color: "#9d2fff" },
+	{ tag: t.name, color: "#000000" },
+	{ tag: t.typeName, color: "#ffc845" },
+], { themeType: 'light' });

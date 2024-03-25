@@ -58,7 +58,7 @@ export function InternalCodeMirrorEditor(props: CodeEditorProps) {
 		const editor = new EditorView({
 			state: initialState,
 			parent: ref.current!,
-			scrollTo: EditorView.scrollIntoView(0)
+			scrollTo: EditorView.scrollIntoView(0),
 		});
 
 		editorRef.current = {
