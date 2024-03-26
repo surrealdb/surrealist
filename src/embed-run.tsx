@@ -46,4 +46,8 @@ import { EmbedAdapter } from './adapter/embed';
 	const root = document.querySelector("#root")!;
 
 	createRoot(root).render(<Embed />);
+
+	// NOTE Temporary until react flow is fixed
+	document.body.addEventListener('keydown', e => e.stopPropagation());
+
 })();

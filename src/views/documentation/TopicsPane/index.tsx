@@ -1,12 +1,13 @@
-import { ScrollArea, Stack } from "@mantine/core";
+import { ScrollArea, Stack, TextInput } from "@mantine/core";
 import { ContentPane } from "~/components/Pane";
 import { DocsTopic } from "~/docs/types";
-import { iconList } from "~/util/icons";
+import { iconList, iconSearch } from "~/util/icons";
 import { renderTopics } from "./topics";
 import { ScrollFader } from "~/components/ScrollFader";
 import { CodeLang } from "~/types";
 import { RefObject } from "react";
 import { useStable } from "~/hooks/stable";
+import { Icon } from "~/components/Icon";
 
 export interface TocPaneProps {
 	active: string;
@@ -34,11 +35,11 @@ export function TocPane({
 			withTopPadding={false}
 			w={300}
 		>
-			{/* <TextInput
+			<TextInput
 				leftSection={<Icon path={iconSearch} />}
 				placeholder="Search topics..."
 				autoFocus
-			/> */}
+			/>
 
 			<ScrollFader />
 

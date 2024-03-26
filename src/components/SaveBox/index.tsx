@@ -9,7 +9,7 @@ import { clsx } from "clsx";
 import { iconCheck, iconHelp } from "~/util/icons";
 
 export interface SaveBoxProps {
-	handle: SaveableHandle<any>;
+	handle: SaveableHandle;
 	inline?: boolean;
 	inlineProps?: GroupProps;
 	position?: "left" | "center" | "right";

@@ -11,3 +11,13 @@
 		padding-left: 1px;
 	}
 }
+
+.animation {
+	width: 1.875em !important;
+	height: 1.875em!important;
+
+	* {
+		fill: currentColor !important;
+		stroke: currentColor !important;
+	}
+}

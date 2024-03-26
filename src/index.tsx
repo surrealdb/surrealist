@@ -64,4 +64,8 @@ import { generateEditorIcons } from "./util/editor/icons";
 	if (adapter.isUpdateCheckSupported && updateChecker) {
 		runUpdateChecker(lastPromptedVersion, false);
 	}
+
+	// NOTE Temporary until react flow is fixed
+	document.body.addEventListener('keydown', e => e.stopPropagation());
+
 })();

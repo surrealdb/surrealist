@@ -1,14 +1,6 @@
 import { HTMLAttributes, useMemo } from "react";
 import { Box, BoxProps, MantineColor, MantineSize, useMantineTheme } from "@mantine/core";
-import { themeColor } from "~/util/mantine";
-
-const FONT_SIZES: Record<string, number> = {
-	xs: 0.5,
-	sm: 0.75,
-	md: 1,
-	lg: 1.25,
-	xl: 1.5,
-};
+import { getIconSize, themeColor } from "~/util/mantine";
 
 export interface IconProps extends Omit<BoxProps, "left" | "right">, Omit<HTMLAttributes<SVGElement>, "style"> {
 	size?: MantineSize | number;
@@ -46,13 +38,3 @@ export const Icon = ({ size, color, path, style, left, right, noStroke, ...rest 
 		</Box>
 	);
 };
-
-function getIconSize(size: string | number | undefined): number {
-	if (size === undefined) {
-		return 1;
-	} else if (typeof size === 'number') {
-		return size;
-	} else {
-		return FONT_SIZES[size] || 1;
-	}
-}

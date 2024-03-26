@@ -1,3 +1,4 @@
+import autoFixAnim from "~/assets/animation/autofix.json";
 import { editor } from "monaco-editor";
 import { useStable } from "~/hooks/stable";
 import { ContentPane } from "~/components/Pane";
@@ -7,7 +8,7 @@ import { useDebounced } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconServer, iconStar, iconText } from "~/util/icons";
+import { iconServer, iconStar, iconText } from "~/util/icons";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { selectionChanged, surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
@@ -19,6 +20,7 @@ import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { mdiCodeBraces } from "@mdi/js";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
+import { HoverIcon } from "~/components/HoverIcon";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -233,12 +235,11 @@ export function QueryPane({
 								</Text>
 							</Stack>
 						}>
-							<ActionIcon
+							<HoverIcon
 								color="slate"
 								onClick={inferVariables}
-							>
-								<Icon path={iconAutoFix} />
-							</ActionIcon>
+								animation={autoFixAnim}
+							/>
 						</Tooltip>
 
 						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>

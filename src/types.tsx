@@ -7,7 +7,7 @@ export type AuthMode = "none" | "root" | "namespace" | "database" | "token" | "s
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type QueryType = "invalid" | "mixed" | "live" | "normal";
-export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "models" | "documentation";
+export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "functions" | "models" | "documentation";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DiagramDirection = "ltr" | "rtl";
@@ -193,6 +193,8 @@ export interface DatabaseSchema {
 	dbUsers: UserDefinition[];
 	scopes: ScopeDefinition[];
 	tables: TableDefinition[];
+	functions: FunctionDefinition[];
+	models: ModelDefinition[];
 }
 
 export interface UserDefinition {
@@ -206,6 +208,22 @@ export interface ScopeDefinition {
 	session: string | null;
 	signin: string | null;
 	signup: string | null;
+}
+
+export interface FunctionDefinition {
+	name: string;
+	block: string;
+	arguments: { name: string, kind: string }[];
+	permission: string;
+	comment: string;
+}
+
+export interface ModelDefinition {
+	name: string;
+	hash: string;
+	version: string;
+	permission: string;
+	comment: string;
 }
 
 export interface TableDefinition {
@@ -232,6 +250,7 @@ export interface ViewInfo {
 	id: ViewMode;
 	name: string;
 	icon: string;
+	anim?: any;
 	desc: string;
 	disabled?: FeatureCondition;
 }

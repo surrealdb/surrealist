@@ -316,6 +316,75 @@ pub fn extract_user_definition(definition: &str) -> Result<JsValue, String> {
     Err(String::from("Failed to extract user"))
 }
 
+#[derive(Serialize)]
+pub struct FunctionArgInfo {
+    pub name: String,
+    pub kind: String
+}
+
+#[derive(Serialize)]
+pub struct FunctionInfo {
+    pub name: String,
+    pub block: String,
+    pub arguments: Vec<FunctionArgInfo>,
+    pub permission: String,
+    pub comment: String,
+}
+
+#[wasm_bindgen]
+pub fn extract_function_definition(definition: &str) -> Result<JsValue, String> {
+    let parsed = parse(definition)?;
+    let query = &parsed[0];
+
+    if let Statement::Define(DefineStatement::Function(f)) = query {
+        let info = FunctionInfo {
+            name: f.name.to_string(),
+            block: format!("{:#}", f.block),
+            permission: f.permissions.to_string(),
+            comment: parse_comment(&f.comment),
+            arguments: f.args.iter().map(|a| FunctionArgInfo {
+                name: a.0.to_string(),
+                kind: a.1.to_string()
+            }).collect(),
+        };
+
+        return to_response(&info, "function");
+    }
+
+    Err(String::from("Failed to extract function"))
+}
+
+#[derive(Serialize)]
+pub struct ModelInfo {
+    pub name: String,
+    pub hash: String,
+    pub version: String,
+    pub permission: String,
+    pub comment: String,
+}
+
+#[wasm_bindgen]
+pub fn extract_model_definition(definition: &str) -> Result<JsValue, String> {
+    console_log!("Parsing {}", definition);
+    
+    let parsed = parse(definition)?;
+    let query = &parsed[0];
+
+    if let Statement::Define(DefineStatement::Model(m)) = query {
+        let info = ModelInfo {
+            name: m.name.to_string(),
+            hash: m.hash.to_string(),
+            version: m.version.to_string(),
+            permission: m.permissions.to_string(),
+            comment: parse_comment(&m.comment),
+        };
+
+        return to_response(&info, "model");
+    }
+
+    Err(String::from("Failed to extract model"))
+}
+
 const QUERY_TYPE_INVALID: &str = "invalid";
 const QUERY_TYPE_NORMAL: &str = "normal";
 const QUERY_TYPE_LIVE: &str = "live";

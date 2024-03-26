@@ -6,7 +6,7 @@ import { CodeEditorProps } from "../shared";
 import { useSetting } from "~/hooks/config";
 import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { surrealist } from "~/util/editor/extensions";
+import { editorBase } from "~/util/editor/extensions";
 import { forceLinting } from "@codemirror/lint";
 
 interface EditorRef {
@@ -21,6 +21,7 @@ export function InternalCodeMirrorEditor(props: CodeEditorProps) {
 		extensions,
 		className,
 		readOnly,
+		autoFocus,
 		language: _1,
 		onMount: _3,
 		options: _4,
@@ -37,7 +38,7 @@ export function InternalCodeMirrorEditor(props: CodeEditorProps) {
 
 	useEffect(() => {
 		const editable = new Compartment();
-		const editableExt = editable.of(EditorView.editable.of(!readOnly));
+		const editableExt = editable.of(EditorState.readOnly.of(!!readOnly));
 
 		const changeHandler = EditorView.updateListener.of((update) => {
 			if (update.docChanged) {
@@ -48,7 +49,7 @@ export function InternalCodeMirrorEditor(props: CodeEditorProps) {
 		const initialState = EditorState.create({
 			doc: value,
 			extensions: [
-				surrealist(),
+				editorBase(),
 				changeHandler,
 				editableExt,
 				extensions || [],
@@ -65,6 +66,13 @@ export function InternalCodeMirrorEditor(props: CodeEditorProps) {
 			editor,
 			editable
 		};
+
+		if (autoFocus) {
+			const timer = setInterval(() => {
+				editor.focus();
+				if(editor.hasFocus) clearInterval(timer);
+			}, 50);
+		}
 
 		return () => {
 			editor.destroy();
@@ -95,7 +103,7 @@ export function InternalCodeMirrorEditor(props: CodeEditorProps) {
 
 	useEffect(() => {
 		const { editor, editable } = editorRef.current!;
-		const editableExt = EditorView.editable.of(!readOnly);
+		const editableExt = EditorState.readOnly.of(!!readOnly);
 
 		editor.dispatch({
 			effects: editable.reconfigure(editableExt)

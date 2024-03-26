@@ -65,6 +65,7 @@ export function Exporter() {
 				onClick={openExporter}
 				loading={isExporting}
 				disabled={!isOnline}
+				style={{ flexShrink: 0 }}
 			>
 				Export database
 			</Entry>

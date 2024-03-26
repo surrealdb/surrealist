@@ -1,11 +1,12 @@
-import { extract_event_definition, extract_field_definition, extract_index_definition, extract_scope_definition, extract_table_definition, extract_user_definition } from '../generated/surrealist-embed';
 import { map } from "radash";
-import { IndexKind, ScopeDefinition, TableDefinition, TableEvent, TableField, TableIndex, TableSchema, UserDefinition } from "~/types";
+import { extract_event_definition, extract_field_definition, extract_function_definition, extract_index_definition, extract_scope_definition, extract_table_definition, extract_user_definition } from '../generated/surrealist-embed';
+import { FunctionDefinition, IndexKind, ModelDefinition, ScopeDefinition, TableDefinition, TableEvent, TableField, TableIndex, TableSchema, UserDefinition } from "~/types";
 import { SurrealInfoDB, SurrealInfoKV, SurrealInfoNS, SurrealInfoTB } from "~/typings/surreal";
 import { getActiveSurreal } from "./surreal";
 import { extractTypeList, tb } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
 import isEqual from "fast-deep-equal";
+import dedent from "dedent";
 
 /**
  * Fetch information about a table schema
@@ -28,6 +29,8 @@ export async function fetchDatabaseSchema() {
 	const dbUsersMap = Object.values(dbInfo?.users ?? {});
 	const dbScopesMap = Object.values(dbInfo?.scopes ?? {});
 	const dbTablesMap = Object.values(dbInfo?.tables ?? {});
+	const dbFunctionsMap = Object.values(dbInfo?.functions ?? {});
+	// const dbModelsMap = Object.values(dbInfo?.models ?? {});
 
 	const kvUsers: UserDefinition[] = await map(kvUsersMap, async (definition) => {
 		return extract_user_definition(definition);
@@ -48,6 +51,28 @@ export async function fetchDatabaseSchema() {
 	const tableInfo: TableSchema[] = await map(dbTablesMap, (definition) => {
 		return extract_table_definition(definition);
 	});
+
+	// const models: ModelDefinition[] = await map(dbModelsMap, (definition) => {
+	// 	return extract_model_definition(definition);
+	// });
+
+	const functions: FunctionDefinition[] = await map(dbFunctionsMap, (definition) => {
+		const func = extract_function_definition(definition);
+
+		return {
+			...func,
+			block: dedent(func.block.slice(1, -1))
+		};
+	});
+
+	// NOTE - change when DEFINE MODEL exists
+	const models = Object.keys(dbInfo?.models ?? {}).map((name) => ({
+		name,
+		hash: "",
+		version: "",
+		permission: "",
+		comment: "",
+	} as ModelDefinition));
 
 	// Fetch table information
 	let tables: TableDefinition[] = [];
@@ -114,11 +139,50 @@ export async function fetchDatabaseSchema() {
 		kvUsers,
 		nsUsers,
 		dbUsers,
+		functions,
+		models,
 	};
 
 	if (!isEqual(newSchema, databaseSchema)) {
 		setDatabaseSchema(newSchema);
 	}
+}
+
+/**
+ * Build a function definition query
+ */
+export function buildFunctionDefinition(func: FunctionDefinition) : string {
+	const args = func.arguments.map((arg) => `$${arg.name}: ${arg.kind}`).join(", ");
+	const block = func.block.split("\n").map((line) => `\t${line}`).join("\n");
+
+	let query = `DEFINE FUNCTION fn::${func.name}(${args}) {\n${block}\n}`;
+
+	if (func.permission) {
+		query += ` PERMISSIONS ${func.permission}`;
+	}
+
+	if (func.comment) {
+		query += ` COMMENT "${func.comment}"`;
+	}
+
+	return query;
+}
+
+/**
+ * Build a model definition query
+ */
+export function buildModelDefinition(func: ModelDefinition) : string {
+	let query = `DEFINE MODEL ${func.name} {`;
+
+	if (func.permission) {
+		query += ` PERMISSIONS ${func.permission}`;
+	}
+
+	if (func.comment) {
+		query += ` COMMENT "${func.comment}"`;
+	}
+
+	return query;
 }
 
 /**

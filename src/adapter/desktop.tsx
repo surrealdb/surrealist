@@ -1,4 +1,4 @@
-import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
+import { readBinaryFile, readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api/tauri";
 import { arch, type } from "@tauri-apps/api/os";
 import { appWindow } from "@tauri-apps/api/window";
@@ -6,7 +6,7 @@ import { open as openURL } from "@tauri-apps/api/shell";
 import { save, open } from "@tauri-apps/api/dialog";
 import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
-import { OpenedFile, SurrealistAdapter } from "./base";
+import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
@@ -153,11 +153,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openFile(
+	public async openTextFile(
 		title: string,
 		filters: any,
 		multiple: boolean
-	): Promise<OpenedFile[]> {
+	): Promise<OpenedTextFile[]> {
 		const result = await open({
 			title,
 			filters,
@@ -173,6 +173,31 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const tasks = urls.map(async (url) => ({
 			name: await basename(url),
 			content: await readTextFile(url)
+		}));
+
+		return Promise.all(tasks);
+	}
+
+	public async openBinaryFile(
+		title: string,
+		filters: any,
+		multiple: boolean
+	): Promise<OpenedBinaryFile[]> {
+		const result = await open({
+			title,
+			filters,
+			multiple
+		});
+
+		const urls = typeof result === "string"
+			? [result]
+			: result === null
+				? []
+				: result;
+
+		const tasks = urls.map(async (url) => ({
+			name: await basename(url),
+			content: new Blob([await readBinaryFile(url)])
 		}));
 
 		return Promise.all(tasks);

@@ -1,8 +1,8 @@
 import { Accordion, TextInput } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
-import { QueryInput } from "../inputs";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
+import { CodeInput } from "~/components/Inputs";
 
 export function EventsElement({ data, setData }: ElementProps) {
 
@@ -49,21 +49,21 @@ export function EventsElement({ data, setData }: ElementProps) {
 									})
 								}
 							/>
-							<QueryInput
+							<CodeInput
 								required
 								label="Event condition"
 								value={event.cond}
-								onChangeText={(value) =>
+								onChange={(value) =>
 									setData((draft) => {
 										draft.events[i].cond = value;
 									})
 								}
 							/>
-							<QueryInput
+							<CodeInput
 								required
 								label="Event result"
 								value={event.then}
-								onChangeText={(value) =>
+								onChange={(value) =>
 									setData((draft) => {
 										draft.events[i].then = value;
 									})

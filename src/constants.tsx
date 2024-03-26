@@ -1,6 +1,12 @@
-import { mdiBrain, mdiXml } from "@mdi/js";
+import queryIcon from "~/assets/animation/query.json";
+import explorerIcon from "~/assets/animation/explorer.json";
+import designerIcon from "~/assets/animation/designer.json";
+import authIcon from "~/assets/animation/auth.json";
+
+import { mdiBrain, mdiFunction } from "@mdi/js";
 import { AuthMode, CodeLang, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
-import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery } from "./util/icons";
+import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery, iconXml } from "./util/icons";
+import { getConnection } from "./util/connection";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
@@ -14,6 +20,7 @@ export interface ListingItem {
 export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
+export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
 export const THEMES = [
 	{ label: "Automatic", value: "auto" },
@@ -62,39 +69,56 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
+		anim: queryIcon,
 		desc: "Execute queries against the database and inspect the results",
 	},
 	explorer: {
 		id: "explorer",
 		name: "Explorer",
 		icon: iconExplorer,
+		anim: explorerIcon,
 		desc: "Explore the database tables, records, and relations",
 	},
 	designer: {
 		id: "designer",
 		name: "Designer",
 		icon: iconDesigner,
+		anim: designerIcon,
 		desc: "Define database tables and relations",
 	},
 	authentication: {
 		id: "authentication",
 		name: "Authentication",
 		icon: iconAuth,
+		anim: authIcon,
 		desc: "Manage account details and database scopes",
+	},
+	functions: {
+		id: "functions",
+		name: "Functions",
+		icon: mdiFunction,
+		desc: "Create and update schema level functions",
+		disabled: (flags) => !flags.functions_view,
 	},
 	models: {
 		id: "models",
-		name: "ML Models",
+		name: "Models",
 		icon: mdiBrain,
-		desc: "Manage SurrealML models",
-		disabled: (flags) => !flags.mlmodels,
+		desc: "Upload and manage machine learning models",
+		disabled: (flags) => {
+			if (!flags.models_view) return true;
+			if (flags.models_view === 'force') return false;
+
+			const protocol = getConnection()?.connection?.protocol;
+			return !protocol || !ML_SUPPORTED.has(protocol);
+		},
 	},
 	documentation: {
 		id: "documentation",
 		name: "API Docs",
-		icon: mdiXml,
+		icon: iconXml,
 		desc: "View the database schema and documentation",
-		disabled: (flags) => !flags.apidocs,
+		disabled: (flags) => !flags.apidocs_view,
 	}
 };
 

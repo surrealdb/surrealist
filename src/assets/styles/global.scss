@@ -8,15 +8,16 @@ body {
     -webkit-user-select: none;
 }
 
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
 /* --- Overrides --- */
 
 .__dbk__container {
     overflow: visible;
 }
-
-// .mantine-ScrollArea-viewport > div {
-//     display: unset !important;
-// }
 
 .mantine-contextmenu {
     background-color: color-mix(in srgb, var(--mantine-color-body) 50%, transparent);

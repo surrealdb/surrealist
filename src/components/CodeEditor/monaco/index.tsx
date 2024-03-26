@@ -78,7 +78,6 @@ export function InternalMonacoEditor(props: CodeEditorProps) {
 			ref={containerRef}
 			className={classes.root}
 			style={{
-				// position: props.autoSize ? 'relative' : undefined,
 				fontFamily: "JetBrains Mono",
 				...props.style,
 			}}

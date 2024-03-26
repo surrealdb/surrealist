@@ -3,17 +3,36 @@ import clsx from "clsx";
 import { Icon } from "../Icon";
 import { Entry, EntryProps } from "../Entry";
 import { HTMLProps, ReactNode } from "react";
-import { Tooltip } from "@mantine/core";
+import { Box, Tooltip } from "@mantine/core";
+import { useHoverIcon } from "~/hooks/hover-icon";
 
 export interface NavigationIconProps extends EntryProps, Omit<HTMLProps<HTMLButtonElement>, 'name' | 'color' | 'size' | 'style' | 'type' | 'ref'> {
 	name: ReactNode;
 	isActive?: boolean;
-	icon: string;
+	icon: string | any;
 	withTooltip?: boolean;
 	onClick: () => void;
 }
 
-export function NavigationIcon({ name, isActive, icon, withTooltip, onClick, ...rest }: NavigationIconProps) {
+export function NavigationIcon({
+	name,
+	isActive,
+	icon,
+	withTooltip,
+	onClick,
+	...rest
+}: NavigationIconProps) {
+	const hasIcon = typeof icon === 'string';
+
+	const {
+		ref,
+		onMouseEnter,
+		onMouseLeave
+	} = useHoverIcon({
+		animation: hasIcon ? {w: 0, h: 0, layers:[]} : icon,
+		className: classes.animation
+	});
+
 	return (
 		<Tooltip
 			label={name}
@@ -21,17 +40,27 @@ export function NavigationIcon({ name, isActive, icon, withTooltip, onClick, ...
 			disabled={!withTooltip}
 			offset={14}
 		>
-			<Entry
-				className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
-				isActive={isActive}
-				onClick={onClick}
-				leftSection={
-					<Icon path={icon} size="lg" />
-				}
-				{...rest}
+			<Box
+				w="100%"
+				onMouseEnter={onMouseEnter}
+				onMouseLeave={onMouseLeave}
 			>
-				{name}
-			</Entry>
+				<Entry
+					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
+					isActive={isActive}
+					onClick={onClick}
+					leftSection={
+						hasIcon ? (
+							<Icon path={icon} size="lg" />
+						) : (
+							<div ref={ref} />
+						)
+					}
+					{...rest}
+				>
+					{name}
+				</Entry>
+			</Box>
 		</Tooltip>
 	);
 }

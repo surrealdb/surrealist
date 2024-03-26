@@ -2,29 +2,34 @@ import { FeatureFlags, TFeatureFlags } from "@theopensource-company/feature-flag
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
 import { environment } from "./environment";
 
+const Bool = [false, true] as const;
+
 // How to write a schema for feature flags:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
 export const featureFlagSchema = {
 	devTools: {
-		options: [false, true]
+		options: Bool
 	},
 	templates: {
-		options: [false, true]
+		options: Bool
 	},
 	listLicenses: {
-		options: [false, true]
+		options: Bool
 	},
 	editor: {
 		options: ["monaco", "codemirror"]
 	},
-	mlmodels: {
-		options: [false, true]
+	functions_view: {
+		options: Bool
 	},
-	apidocs: {
-		options: [false, true]
+	models_view: {
+		options: [false, true, 'force']
+	},
+	apidocs_view: {
+		options: Bool
 	},
 	themes: {
-		options: [false, true]
+		options: Bool
 	}
 } as const;
 
@@ -38,14 +43,14 @@ export const featureFlags = new FeatureFlags({
 		preview: {
 			templates: true,
 			listLicenses: true,
-			apidocs: true,
+			apidocs_view: true,
 			editor: "codemirror"
 		},
 		dev: {
 			devTools: true,
 			templates: true,
 			listLicenses: true,
-			apidocs: true,
+			apidocs_view: true,
 			editor: "monaco"
 		}
 	},

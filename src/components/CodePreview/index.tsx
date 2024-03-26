@@ -3,8 +3,8 @@ import clsx from "clsx";
 import { surrealql } from "codemirror-surrealql";
 import { EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { ActionIcon, CopyButton, Paper, PaperProps, Text } from "@mantine/core";
-import { useEffect, useRef } from "react";
+import { ActionIcon, Box, CopyButton, Paper, PaperProps, Text } from "@mantine/core";
+import { ReactNode, useEffect, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { colorTheme } from "~/util/editor/extensions";
 import { Icon } from "../Icon";
@@ -15,6 +15,7 @@ export interface CodePreviewProps extends PaperProps {
 	title?: string;
 	withCopy?: boolean;
 	extensions?: Extension;
+	rightSection?: ReactNode;
 }
 
 export function CodePreview({
@@ -22,6 +23,7 @@ export function CodePreview({
 	title,
 	withCopy,
 	extensions,
+	rightSection,
 	className,
 	...rest
 }: CodePreviewProps) {
@@ -93,7 +95,7 @@ export function CodePreview({
 				fz="lg"
 				{...rest}
 			>
-				{withCopy && (
+				{withCopy ? (
 					<CopyButton value={value}>
 						{({ copied, copy }) => (
 							<ActionIcon
@@ -108,6 +110,15 @@ export function CodePreview({
 							</ActionIcon>
 						)}
 					</CopyButton>
+				) : rightSection && (
+					<Box
+						pos="absolute"
+						top={6}
+						right={6}
+						style={{ zIndex: 1 }}
+					>
+						{rightSection}
+					</Box>
 				)}
 			</Paper>
 		</>

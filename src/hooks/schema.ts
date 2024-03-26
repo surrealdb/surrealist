@@ -5,6 +5,27 @@ import { SANDBOX } from "~/constants";
 
 type TableMode = "ALL" | "TABLE" | "EDGE";
 
+const BASE_KINDS = [
+	'any',
+	'null',
+	'bool',
+	'bytes',
+	'datetime',
+	'decimal',
+	'duration',
+	'float',
+	'int',
+	'number',
+	'object',
+	'point',
+	'string',
+	'uuid',
+	'geometry<>',
+	'option<>',
+	'set<>',
+	'array<>',
+];
+
 /**
  * Access the current database schema
  */
@@ -51,4 +72,17 @@ export function useHasSchemaAccess() {
 	const authMode = connection?.connection?.authMode || "none";
 
 	return connection?.id == SANDBOX || authMode != "none" && authMode != "scope";
+}
+
+/**
+ * Returns a dynamic list of field kinds based
+ * on the current schema.
+ */
+export function useKindList() {
+	const tables = useTableNames();
+
+	return [
+		...BASE_KINDS,
+		...tables.map(t => `record<${t}>`)
+	];
 }

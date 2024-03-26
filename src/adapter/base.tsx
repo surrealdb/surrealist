@@ -1,8 +1,13 @@
 import { Platform } from "~/types";
 
-export interface OpenedFile {
+export interface OpenedTextFile {
 	name: string;
 	content: string;
+}
+
+export interface OpenedBinaryFile {
+	name: string;
+	content: Blob;
 }
 
 export interface SurrealistAdapter {
@@ -92,12 +97,21 @@ export interface SurrealistAdapter {
 	): Promise<boolean>;
 
 	/**
-	 * Open a file locally
+	 * Open a text file locally
 	 */
-	openFile(
+	openTextFile(
 		title: string,
 		filters: any,
 		multiple: boolean
-	): Promise<OpenedFile[]>;
+	): Promise<OpenedTextFile[]>;
+
+	/**
+	 * Open a binary file locally
+	 */
+	openBinaryFile(
+		title: string,
+		filters: any,
+		multiple: boolean
+	): Promise<OpenedBinaryFile[]>;
 
 }

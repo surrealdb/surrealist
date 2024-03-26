@@ -3,13 +3,18 @@ import { useState } from "react";
 import { TablesPane } from "../TablesPane";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { useDisclosure } from "@mantine/hooks";
-import { Group } from "@mantine/core";
+import { Button, Center, Group, Stack } from "@mantine/core";
 import { DisconnectedEvent } from "~/util/global-events";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
+import { Icon } from "~/components/Icon";
+import { iconExplorer, iconPlus } from "~/util/icons";
+import { useInterfaceStore } from "~/stores/interface";
 
 export function ExplorerView() {
+	const { openTableCreator } = useInterfaceStore.getState();
+
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [creatorTable, setCreatorTable] = useState<string>();
@@ -39,10 +44,31 @@ export function ExplorerView() {
 					onTableSelect={setActiveTable}
 					onCreateRecord={openCreator}
 				/>
-				<ExplorerPane
-					activeTable={activeTable}
-					onCreateRecord={openCreator}
-				/>
+				{activeTable ? (
+					<ExplorerPane
+						activeTable={activeTable}
+						onCreateRecord={openCreator}
+					/>
+				) : (
+					<Center flex={1}>
+						<Stack
+							align="center"
+							justify="center"
+						>
+							<Icon path={iconExplorer} size={2.5} />
+							Select a table to view or edit
+							<Group>
+								<Button
+									variant="light"
+									leftSection={<Icon path={iconPlus} />}
+									onClick={openTableCreator}
+								>
+									Create table
+								</Button>
+							</Group>
+						</Stack>
+					</Center>
+				)}
 			</Group>
 
 			{creatorTable && (

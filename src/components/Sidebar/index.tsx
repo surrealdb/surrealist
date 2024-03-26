@@ -29,6 +29,7 @@ const NAVIGATION: ViewMode[][] = [
 		"authentication",
 	],
 	[
+		"functions",
 		"models",
 	],
 	[
@@ -134,7 +135,7 @@ export function Sidebar({
 									<NavigationIcon
 										name={info.name}
 										isActive={info.id === activeView}
-										icon={info.icon}
+										icon={info.anim || info.icon}
 										withTooltip={!expandable}
 										onClick={() => setViewMode(info.id)}
 										onMouseEnter={expandedHandle.open}

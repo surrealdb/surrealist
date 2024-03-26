@@ -33,6 +33,8 @@ import { CommandPaletteModal } from "./modals/palette";
 import { useBoolean } from "~/hooks/boolean";
 import { useWindowSettings } from "./hooks";
 import { useCompatHotkeys } from "~/hooks/hotkey";
+import { FunctionsView } from "~/views/functions/FunctionsView";
+import { ModelsView } from "~/views/models/ModelsView";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -45,6 +47,7 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	explorer: createHtmlPortalNode(PORTAL_ATTRS),
 	designer: createHtmlPortalNode(PORTAL_ATTRS),
 	authentication: createHtmlPortalNode(PORTAL_ATTRS),
+	functions: createHtmlPortalNode(PORTAL_ATTRS),
 	models: createHtmlPortalNode(PORTAL_ATTRS),
 	documentation: createHtmlPortalNode(PORTAL_ATTRS),
 };
@@ -127,6 +130,14 @@ export function Scaffold() {
 
 						<InPortal node={VIEW_PORTALS.authentication}>
 							<AuthenticationView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.functions}>
+							<FunctionsView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.models}>
+							<ModelsView />
 						</InPortal>
 
 						<InPortal node={VIEW_PORTALS.documentation}>

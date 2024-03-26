@@ -1,5 +1,5 @@
 import { Platform } from "~/types";
-import { OpenedFile, SurrealistAdapter } from "./base";
+import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
  * Surrealist adapter for running as web app
@@ -84,7 +84,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openFile(): Promise<OpenedFile[]> {
+	public async openTextFile(): Promise<OpenedTextFile[]> {
 		const el = document.createElement('input');
 
 		el.type = 'file';
@@ -98,6 +98,33 @@ export class BrowserAdapter implements SurrealistAdapter {
 				const tasks = files.map(async (file) => ({
 					name: file.name,
 					content: await file.text(),
+				}));
+
+				const results = await Promise.all(tasks);
+
+				resolve(results);
+			});
+
+			el.addEventListener('error', async () => {
+				reject(new Error('Failed to read file'));
+			});
+		});
+	}
+
+	public async openBinaryFile(): Promise<OpenedBinaryFile[]> {
+		const el = document.createElement('input');
+
+		el.type = 'file';
+		el.style.display = 'none';
+
+		el.click();
+
+		return new Promise((resolve, reject) => {
+			el.addEventListener('change', async () => {
+				const files = [...(el.files ?? [])];
+				const tasks = files.map(async (file) => ({
+					name: file.name,
+					content: file,
 				}));
 
 				const results = await Promise.all(tasks);

@@ -115,6 +115,9 @@ importers:
       klona:
         specifier: ^2.0.6
         version: 2.0.6
+      lottie-web:
+        specifier: ^5.12.2
+        version: 5.12.2
       mantine-contextmenu:
         specifier: ^7.5.0
         version: 7.5.0(@mantine/core@7.6.2)(@mantine/hooks@7.6.2)(clsx@2.1.0)(react@18.2.0)
@@ -3312,6 +3315,10 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     dependencies:
       js-tokens: 4.0.0
+    dev: false
+
+  /lottie-web@5.12.2:
+    resolution: {integrity: sha512-uvhvYPC8kGPjXT3MyKMrL3JitEAmDMp30lVkuq/590Mw9ok6pWcFCwXJveo0t5uqYw1UREQHofD+jVpdjBv8wg==}
     dev: false
 
   /lower-case@2.0.2:

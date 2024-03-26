@@ -55,7 +55,6 @@ export function ContentPane({
 					</Group>
 					<Divider
 						mx="sm"
-						mb={withTopPadding === false ? undefined : "sm"}
 						className={classes.divider}
 					/>
 				</>
@@ -63,6 +62,7 @@ export function ContentPane({
 			<Box
 				p="sm"
 				pt={0}
+				mt={withTopPadding === false ? undefined : "sm"}
 				pos="relative"
 				className={classes.content}
 			>

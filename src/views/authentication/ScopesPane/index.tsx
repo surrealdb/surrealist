@@ -1,4 +1,4 @@
-import { Badge, ScrollArea, Text, Textarea, Tooltip } from "@mantine/core";
+import { Badge, ScrollArea, Text, Tooltip } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Modal, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
@@ -10,16 +10,15 @@ import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { ScopeDefinition } from "~/types";
 import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
+import { CodeInput } from "~/components/Inputs";
 
 export function ScopePane() {
-	const isLight = useIsLight();
 	const isOnline = useIsConnected();
 	const schema = useSchema();
 
@@ -160,31 +159,29 @@ export function ScopePane() {
 						{isCreating && (
 							<TextInput label="Enter scope name" value={editingName} onChange={setEditingName} autoFocus required />
 						)}
-						<Textarea
+						<CodeInput
 							label="Sign in query"
 							placeholder="e.g. SELECT * FROM user ..."
 							value={editingSignin}
 							onChange={setEditingSignin}
-							minRows={4}
 							styles={{
 								input: {
 									fontFamily: "JetBrains Mono",
 								},
 							}}
 						/>
-						<Textarea
+						<CodeInput
 							label="Sign up query"
 							placeholder="e.g. CREATE USER ..."
 							value={editingSignup}
 							onChange={setEditingSignup}
-							minRows={4}
 							styles={{
 								input: {
 									fontFamily: "JetBrains Mono",
 								},
 							}}
 						/>
-						<TextInput
+						<CodeInput
 							label="Session duration"
 							placeholder="e.g. 12h"
 							value={editingSession}

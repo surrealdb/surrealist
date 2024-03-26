@@ -1,9 +1,9 @@
 import { Accordion, TextInput, Checkbox } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
-import { QueryInput, PermissionInput, FieldKindInput } from "../inputs";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
 import { useTableNames } from "~/hooks/schema";
+import { CodeInput, FieldKindInput, PermissionInput } from "~/components/Inputs";
 
 export function FieldsElement({ data, setData }: ElementProps) {
 	const tableList = useTableNames();
@@ -79,28 +79,28 @@ export function FieldsElement({ data, setData }: ElementProps) {
 									})
 								}
 							/>
-							<QueryInput
+							<CodeInput
 								label="Field value"
 								value={field.value}
-								onChangeText={(value) =>
+								onChange={(value) =>
 									setData((draft) => {
 										draft.fields[i].value = value;
 									})
 								}
 							/>
-							<QueryInput
+							<CodeInput
 								label="Field assertion"
 								value={field.assert}
-								onChangeText={(value) =>
+								onChange={(value) =>
 									setData((draft) => {
 										draft.fields[i].assert = value;
 									})
 								}
 							/>
-							<QueryInput
+							<CodeInput
 								label="Default value"
 								value={field.default}
-								onChangeText={(value) =>
+								onChange={(value) =>
 									setData((draft) => {
 										draft.fields[i].default = value;
 									})

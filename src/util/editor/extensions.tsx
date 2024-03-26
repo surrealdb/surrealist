@@ -26,9 +26,9 @@ export const colorTheme = () => [
 ];
 
 /**
- * Shared Surrealist base configuration for all editors
+ * Shared base configuration for all dedicated editors
  */
-export const surrealist = (): Extension => [
+export const editorBase = (): Extension => [
 	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),
@@ -69,6 +69,28 @@ export const surrealist = (): Extension => [
 	]),
 	indentUnit.of("    "),
 	EditorState.allowMultipleSelections.of(true),
+	EditorView.lineWrapping,
+];
+
+/**
+ * Shared base configuration for all input editors
+ */
+export const inputBase = (): Extension => [
+	highlightSpecialChars(),
+	history(),
+	drawSelection(),
+	indentOnInput(),
+	bracketMatching(),
+	closeBrackets(),
+	colorTheme(),
+	keymap.of([
+		acceptWithTab,
+		indentWithTab,
+		...closeBracketsKeymap,
+		...defaultKeymap,
+		...historyKeymap,
+	]),
+	indentUnit.of("    "),
 	EditorView.lineWrapping,
 ];
 

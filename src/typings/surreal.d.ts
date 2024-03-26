@@ -21,6 +21,7 @@ export interface SurrealInfoNS {
 export interface SurrealInfoDB {
 	analyzers: Record<string, string>;
 	functions: Record<string, string>;
+	models: Record<string, string>;
 	params: Record<string, string>;
 	scopes: Record<string, string>;
 	tables: Record<string, string>;

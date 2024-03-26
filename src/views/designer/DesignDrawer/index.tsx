@@ -41,7 +41,7 @@ export interface SchemaDrawerProps {
 	opened: boolean;
 	value: TableDefinition;
 	onChange: Updater<TableDefinition>;
-	handle: SaveableHandle<any>;
+	handle: SaveableHandle;
 	onClose: (force?: boolean) => void;
 }
 

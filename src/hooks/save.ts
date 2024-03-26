@@ -34,7 +34,7 @@ export interface SaveableOptions<T> {
 
 }
 
-export interface SaveableHandle<T> {
+export interface SaveableHandle {
 
 	/**
 	 * Whether the state is currently considered changed
@@ -80,7 +80,7 @@ export interface SaveableHandle<T> {
  * @param options The saveable options
  * @returns The saveable handle
  */
-export function useSaveable<T extends Record<string, any>>(options: SaveableOptions<T>): SaveableHandle<T> {
+export function useSaveable<T extends Record<string, any>>(options: SaveableOptions<T>): SaveableHandle {
 	const [isSaving, setIsSaving] = useState(false);
 	const [skipTrack, setSkipTrack] = useState(false);
 	const [original, setOriginal] = useState(klona(options.track));

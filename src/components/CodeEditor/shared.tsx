@@ -6,6 +6,7 @@ export interface CodeEditorProps extends BoxProps {
 	value?: string;
 	extensions?: Extension[];
 	readOnly?: boolean;
+	autoFocus?: boolean;
 	onChange?: (value: string) => void;
 
 	/** @deprecated monaco only */

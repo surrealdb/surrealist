@@ -8,7 +8,7 @@ import { scrollPastEnd } from "@codemirror/view";
 
 export interface ContentTabProps {
 	value: string;
-	saveHandle: SaveableHandle<any>;
+	saveHandle: SaveableHandle
 	onChange: (value: string) => void;
 }
 

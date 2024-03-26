@@ -2,6 +2,14 @@ import { ActionIcon, Checkbox, Divider, Drawer, Modal, Overlay, Popover, Radio, 
 
 export const PRIMARY_COLOR = "surreal.5";
 
+const ICON_SIZES: Record<string, number> = {
+	xs: 0.5,
+	sm: 0.75,
+	md: 1,
+	lg: 1.25,
+	xl: 1.5,
+};
+
 /**
  * Returns the variable for a Mantine color
  *
@@ -20,6 +28,22 @@ export function themeColor(name: string) {
 	}
 
 	return `var(--mantine-color-${value})`;
+}
+
+/**
+ * Parse the icon size into a number
+ *
+ * @param size The size to parse
+ * @returns The size as a number
+ */
+export function getIconSize(size: string | number | undefined): number {
+	if (size === undefined) {
+		return 1;
+	} else if (typeof size === 'number') {
+		return size;
+	} else {
+		return ICON_SIZES[size] || 1;
+	}
 }
 
 /**

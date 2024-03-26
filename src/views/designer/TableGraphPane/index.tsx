@@ -20,7 +20,7 @@ import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
 import { useBoolean } from "~/hooks/boolean";
-import { iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconTarget, iconXml } from "~/util/icons";
+import { iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation, iconXml } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
 
@@ -174,7 +174,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	return (
 		<ContentPane
 			title="Table Graph"
-			icon={iconTarget}
+			icon={iconRelation}
 			style={{ overflow: 'hidden' }}
 			rightSection={
 				<Group wrap="nowrap">

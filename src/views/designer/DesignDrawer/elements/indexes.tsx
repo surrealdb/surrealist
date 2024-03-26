@@ -1,9 +1,9 @@
 import { Accordion, TextInput, Select } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
-import { QueryInput } from "../inputs";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
 import { INDEX_TYPES } from "~/constants";
+import { CodeInput } from "~/components/Inputs";
 
 export function IndexesElement({ data, setData }: ElementProps) {
 
@@ -52,11 +52,11 @@ export function IndexesElement({ data, setData }: ElementProps) {
 									})
 								}
 							/>
-							<QueryInput
+							<CodeInput
 								required
 								label="Indexed fields"
 								value={index.fields}
-								onChangeText={(value) =>
+								onChange={(value) =>
 									setData((draft) => {
 										draft.indexes[i].fields = value;
 									})
@@ -73,12 +73,12 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								}
 							/>
 							{index.kind === 'search' && (
-								<QueryInput
+								<CodeInput
 									required
 									label="Search expression"
 									value={index.search}
 									placeholder="ascii BM25 HIGHLIGHTS"
-									onChangeText={(value) =>
+									onChange={(value) =>
 										setData((draft) => {
 											draft.indexes[i].search = value;
 										})
@@ -86,12 +86,12 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								/>
 							)}
 							{index.kind === 'vector' && (
-								<QueryInput
+								<CodeInput
 									required
 									label="Vector expression"
 									value={index.vector}
 									placeholder="..."
-									onChangeText={(value) =>
+									onChange={(value) =>
 										setData((draft) => {
 											draft.indexes[i].vector = value;
 										})

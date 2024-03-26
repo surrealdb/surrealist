@@ -12,7 +12,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { getActiveSurreal } from "~/util/surreal";
-import { OpenedFile } from "~/adapter/base";
+import { OpenedTextFile } from "~/adapter/base";
 import { iconChevronRight, iconDownload, iconFile } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useIntent } from "~/hooks/url";
@@ -23,11 +23,11 @@ export function Importer() {
 	const [showConfirm, showConfirmHandle] = useDisclosure();
 	const [isImporting, setIsImporting] = useState(false);
 
-	const importFile = useRef<OpenedFile | null>(null);
+	const importFile = useRef<OpenedTextFile | null>(null);
 
 	const startImport = useStable(async () => {
 		try {
-			const [file] = await adapter.openFile(
+			const [file] = await adapter.openTextFile(
 				'Import query file',
 				SURQL_FILTERS,
 				false
@@ -79,6 +79,7 @@ export function Importer() {
 				onClick={startImport}
 				loading={isImporting}
 				disabled={!isOnline}
+				style={{ flexShrink: 0 }}
 			>
 				Import database
 			</Entry>

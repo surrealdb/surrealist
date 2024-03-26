@@ -86,7 +86,8 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 		<ContentPane
 			title="Tables"
 			icon={iconList}
-			w={300}
+			w={275}
+			style={{ flexShrink: 0 }}
 			leftSection={
 				schema.length > 0 && (
 					<Badge
@@ -128,11 +129,11 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 						)}
 
 						{isOnline ? (tablesFiltered.length === 0 && (
-							<Text ta="center" pt="sm" c="slate">
+							<Text c="slate" ta="center" mt="lg">
 								{hasAccess ? "No tables found" : "Unsupported auth mode"}
 							</Text>
 						)) : (
-							<Text ta="center" pt="sm" c="slate">
+							<Text c="slate" ta="center" mt="lg">
 								Not connected
 							</Text>
 						)}
