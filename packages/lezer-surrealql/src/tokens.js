@@ -30,6 +30,7 @@ import {
 	_function,
 	group,
 	mtree,
+	highlights,
 	_if,
 	_in,
 	index,
