@@ -82,13 +82,14 @@ DefineStatement {
 		DefineDatabaseStatement |
 		DefineEventStatement |
 		DefineFieldStatement |
-		DefineFunctionStatement
+		DefineFunctionStatement |
+		DefineIndexStatement
 	)
 }
 
 // TODO implement filters
 DefineAnalyzerStatement { analyzer Ident TokenizersClause? CommentClause? }
-DefineEventStatement { event Ident on table? Ident WhenThenClause CommentClause? }
+DefineEventStatement { event Ident OnTableClause WhenThenClause CommentClause? }
 DefineNamespaceStatement { namespace Ident CommentClause? }
 DefineDatabaseStatement { database Ident on Ident CommentClause? }
 
@@ -96,8 +97,7 @@ DefineFieldStatement {
 	field
 	IfNotExistsClause?
 	Ident
-	on table?
-	Ident
+	OnTableClause
 	(
 		TypeClause |
 		DefaultClause |
@@ -130,9 +130,13 @@ DefineIndexStatement {
 	index
 	IfNotExistsClause?
 	Ident
-	on table?
-	Ident
+	OnTableClause
 	FieldsColumnsClause
+	(
+		UniqueClause |
+		SearchAnalyzerClause |
+		MtreeClause
+	)
 }
 
 // Data statements
@@ -252,6 +256,10 @@ FieldAssignment {
 
 // Clauses
 
+OnTableClause {
+	on table? Ident
+}
+
 FieldsColumnsClause {
 	( fields | columns ) commaSep<Ident>
 }
@@ -263,12 +271,44 @@ UniqueClause {
 SearchAnalyzerClause {
 	search analyzer
 	Ident
-
+	Bm25Clause?
+	DocIdsOrderClause?
+	DocLenghtsOrderClause?
+	PostingsOrderClause?
+	TermsOrderClause?
+	DocIdsCacheClause?
+	DocLenghtsCacheClause?
+	PostingsCacheClause?
+	TermsCacheClause?
+	highlights?
 }
 
-Bm25Clause {
-	bm25
+Bm25Clause { bm25 ( "(" Float "," Float ")")? }
+DocIdsCacheClause { doc_ids_cache Int }
+DocIdsOrderClause { doc_ids_order Int }
+DocLenghtsCacheClause { doc_lengths_cache Int }
+DocLenghtsOrderClause { doc_lengths_order Int }
+PostingsCacheClause { postings_cache Int }
+PostingsOrderClause { postings_order Int }
+TermsCacheClause { terms_cache Int }
+TermsOrderClause { terms_order Int}
+
+MtreeClause {
+	mtree
+	MtreeDimensionClause?
+	MtreeDistClause?
+	MtreeTypeClause?
+	MtreeCapacityClause?
+	DocIdsOrderClause?
+	DocIdsCacheClause?
+	MtreeCacheClause?
 }
+
+MtreeDimensionClause { dimension Int }
+MtreeDistClause { dist ( euclidean | cosine | manhattan | minkowski ) }
+MtreeTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
+MtreeCapacityClause { capacity Int }
+MtreeCacheClause { mtree_cache Int }
 
 ContentClause {
 	content Object
@@ -558,75 +598,98 @@ commaSep<content> {
 @external propSource surqlHighlighting from "./highlight"
 
 @external extend { rawident } tokens from "./tokens" {
-	analyzer		[@name=Keyword],
-	as				[@name=Keyword],
-	assert			[@name=Keyword],
-	at				[@name=Keyword],
-	begin			[@name=Keyword],
-	bm25			[@name=Keyword],
-	break			[@name=Keyword],
-	by				[@name=Keyword],
-	cancel			[@name=Keyword],
-	columns			[@name=Keyword],
-	comment			[@name=Keyword],
-	commit			[@name=Keyword],
-	content			[@name=Keyword],
-	continue		[@name=Keyword],
-	create			[@name=Keyword],
-	database		[@name=Keyword],
-	default			[@name=Keyword],
-	define			[@name=Keyword],
-	dimension		[@name=Keyword],
-	exists			[@name=Keyword],
-	explain			[@name=Keyword],
-	event			[@name=Keyword],
-	fetch			[@name=Keyword],
-	field			[@name=Keyword],
-	fields			[@name=Keyword],
-	flexible		[@name=Keyword],
-	for				[@name=Keyword],
-	from			[@name=Keyword],
-	function		[@name=Keyword],
-	group			[@name=Keyword],
-	highlights		[@name=Keyword],
-	if				[@name=Keyword],
-	in				[@name=Keyword],
-	index			[@name=Keyword],
-	limit			[@name=Keyword],
-	mtree			[@name=Keyword],
-	namespace		[@name=Keyword],
-	noindex			[@name=Keyword],
-	not				[@name=Keyword],
-	on				[@name=Keyword],
-	only			[@name=Keyword],
-	parallel		[@name=Keyword],
-	permissions		[@name=Keyword],
-	readonly		[@name=Keyword],
-	return			[@name=Keyword],
-	search			[@name=Keyword],
-	select			[@name=Keyword],
-	set				[@name=Keyword],
-	split			[@name=Keyword],
-	start			[@name=Keyword],
-	table			[@name=Keyword],
-	then			[@name=Keyword],
-	timeout			[@name=Keyword],
-	tokenizers		[@name=Keyword],
-	transaction		[@name=Keyword],
-	type			[@name=Keyword],
-	unique			[@name=Keyword],
-	value			[@name=Keyword],
-	when			[@name=Keyword],
-	where			[@name=Keyword],
-	with			[@name=Keyword],
+	analyzer			[@name=Keyword],
+	as					[@name=Keyword],
+	assert				[@name=Keyword],
+	at					[@name=Keyword],
+	begin				[@name=Keyword],
+	bm25				[@name=Keyword],
+	break				[@name=Keyword],
+	by					[@name=Keyword],
+	cancel				[@name=Keyword],
+	capacity			[@name=Keyword],
+	columns				[@name=Keyword],
+	comment				[@name=Keyword],
+	commit				[@name=Keyword],
+	content				[@name=Keyword],
+	continue			[@name=Keyword],
+	create				[@name=Keyword],
+	database			[@name=Keyword],
+	default				[@name=Keyword],
+	define				[@name=Keyword],
+	dimension			[@name=Keyword],
+	dist				[@name=Keyword],
+	doc_ids_cache		[@name=Keyword],
+	doc_ids_order		[@name=Keyword],
+	doc_lengths_cache	[@name=Keyword],
+	doc_lengths_order	[@name=Keyword],
+	exists				[@name=Keyword],
+	explain				[@name=Keyword],
+	event				[@name=Keyword],
+	fetch				[@name=Keyword],
+	field				[@name=Keyword],
+	fields				[@name=Keyword],
+	flexible			[@name=Keyword],
+	for					[@name=Keyword],
+	from				[@name=Keyword],
+	function			[@name=Keyword],
+	group				[@name=Keyword],
+	highlights			[@name=Keyword],
+	if					[@name=Keyword],
+	in					[@name=Keyword],
+	index				[@name=Keyword],
+	limit				[@name=Keyword],
+	mtree				[@name=Keyword],
+	mtree_cache			[@name=Keyword],
+	namespace			[@name=Keyword],
+	noindex				[@name=Keyword],
+	not					[@name=Keyword],
+	on					[@name=Keyword],
+	only				[@name=Keyword],
+	parallel			[@name=Keyword],
+	permissions			[@name=Keyword],
+	postings_cache		[@name=Keyword],
+	postings_order		[@name=Keyword],
+	readonly			[@name=Keyword],
+	return				[@name=Keyword],
+	search				[@name=Keyword],
+	select				[@name=Keyword],
+	set					[@name=Keyword],
+	split				[@name=Keyword],
+	start				[@name=Keyword],
+	table				[@name=Keyword],
+	terms_cache			[@name=Keyword],
+	terms_order			[@name=Keyword],
+	then				[@name=Keyword],
+	timeout				[@name=Keyword],
+	tokenizers			[@name=Keyword],
+	transaction			[@name=Keyword],
+	type				[@name=Keyword],
+	unique				[@name=Keyword],
+	value				[@name=Keyword],
+	when				[@name=Keyword],
+	where				[@name=Keyword],
+	with				[@name=Keyword],
 
 	// Literals
-	after			[@name=Literal],
-	before			[@name=Literal],
-	diff			[@name=Literal],
-	false			[@name=Literal],
-	full			[@name=Literal],
-	none			[@name=Literal],
-	null			[@name=Literal],
-	true			[@name=Literal]
+	after				[@name=Literal],
+	before				[@name=Literal],
+	diff				[@name=Literal],
+	false				[@name=Literal],
+	full				[@name=Literal],
+	none				[@name=Literal],
+	null				[@name=Literal],
+	true				[@name=Literal],
+
+	f32					[@name=Literal],
+	f64					[@name=Literal],
+	i16					[@name=Literal],
+	i32					[@name=Literal],
+	i64					[@name=Literal],
+
+	euclidean			[@name=Literal],
+	cosine				[@name=Literal],
+	manhattan			[@name=Literal],
+	minkowski			[@name=Literal]
+
 }
