@@ -119,7 +119,7 @@ export const MANTINE_THEME = createTheme({
 			defaultProps: {
 				centered: true,
 				withCloseButton: false,
-				padding: "lg"
+				padding: 24
 			}
 		}),
 		Overlay: Overlay.extend({
@@ -129,7 +129,12 @@ export const MANTINE_THEME = createTheme({
 		}),
 		Popover: Popover.extend({
 			defaultProps: {
-				shadow: "0 6px 12px 2px rgba(0, 0, 0, 0.15)"
+				shadow: "0 6px 12px 2px rgba(0, 0, 0, 0.15)",
+			},
+			styles: {
+				dropdown: {
+					padding: 18
+				}
 			}
 		}),
 		Divider: Divider.extend({
