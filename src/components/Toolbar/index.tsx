@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Box } from "@mantine/core";
+import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Box, Menu, Text } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { showInfo, updateTitle } from "~/util/helpers";
@@ -15,8 +15,12 @@ import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
 import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
-import { iconReset } from "~/util/icons";
+import { iconReset, iconTable } from "~/util/icons";
 import { HelpAndSupport } from "./HelpAndSupport";
+import { DATASETS } from "~/constants";
+import { DataSet } from "~/types";
+import { fetchDatabaseSchema } from "~/util/schema";
+import { getSurreal } from "~/util/surreal";
 
 export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
@@ -52,6 +56,18 @@ export function Toolbar() {
 		});
 	});
 
+	const applyDataset = useStable(async (info: DataSet) => {
+		const dataset = await fetch(info.url).then(res => res.text());
+
+		await getSurreal()?.query(dataset);
+		await fetchDatabaseSchema();
+
+		showInfo({
+			title: "Dataset loaded",
+			subtitle: `${info.name} has been applied`
+		});
+	});
+
 	const isSandbox = connection?.id === "sandbox";
 
 	return (
@@ -70,15 +86,42 @@ export function Toolbar() {
 				<Connections />
 
 				{isConnected && isSandbox && (
-					<Tooltip label="Reset sandbox environment">
-						<ActionIcon
-							color="slate"
-							variant="subtle"
-							onClick={resetSandbox}
+					<>
+						<Tooltip label="Reset sandbox environment">
+							<ActionIcon
+								color="slate"
+								variant="subtle"
+								onClick={resetSandbox}
+							>
+								<Icon path={iconReset} />
+							</ActionIcon>
+						</Tooltip>
+						<Menu
+							position="right-start"
 						>
-							<Icon path={iconReset} />
-						</ActionIcon>
-					</Tooltip>
+							<Menu.Target>
+								<Tooltip label="Load demo dataset">
+									<ActionIcon
+										color="slate"
+										variant="subtle"
+									>
+										<Icon path={iconTable} />
+									</ActionIcon>
+								</Tooltip>
+							</Menu.Target>
+							<Menu.Dropdown miw={200}>
+								{Object.entries(DATASETS).map(([id, info]) => (
+									<Menu.Item
+										key={id}
+										onClick={() => applyDataset(info)}
+									>
+										<Text fw={600}>{info.name}</Text>
+										<Text c="slate">Click to apply</Text>
+									</Menu.Item>
+								))}
+							</Menu.Dropdown>
+						</Menu>
+					</>
 				)}
 
 				<Spacer />

@@ -1,4 +1,4 @@
-import { SANDBOX } from "~/constants";
+import { DATASETS, SANDBOX } from "~/constants";
 import { BrowserAdapter } from "./browser";
 import { SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
@@ -6,11 +6,6 @@ import { showError } from "~/util/helpers";
 import { getSurreal } from "~/util/surreal";
 
 const THEMES = new Set(['light', 'dark', 'auto']);
-
-const DATASETS: Record<string, string> = {
-	'surreal-deal': "https://datasets.surrealdb.com/surreal-deal-v1.surql",
-	'surreal-deal-mini': "https://datasets.surrealdb.com/surreal-deal-mini-v1.surql"
-};
 
 export class EmbedAdapter extends BrowserAdapter {
 
@@ -61,7 +56,7 @@ export class EmbedAdapter extends BrowserAdapter {
 
 		// Premade dataset loading
 		if (dataset) {
-			const datasetUrl = DATASETS[dataset];
+			const datasetUrl = DATASETS[dataset].url;
 
 			if (datasetUrl) {
 				this.#datasetQuery = await fetch(datasetUrl).then(res => res.text());

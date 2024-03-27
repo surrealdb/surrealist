@@ -254,3 +254,8 @@ export interface ViewInfo {
 	desc: string;
 	disabled?: FeatureCondition;
 }
+
+export interface DataSet {
+	name: string;
+	url: string;
+}

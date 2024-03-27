@@ -4,7 +4,7 @@ import designerIcon from "~/assets/animation/designer.json";
 import authIcon from "~/assets/animation/auth.json";
 
 import { mdiBrain, mdiFunction } from "@mdi/js";
-import { AuthMode, CodeLang, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
+import { AuthMode, CodeLang, DataSet, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
 import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery, iconXml } from "./util/icons";
 import { getConnection } from "./util/connection";
 
@@ -21,6 +21,17 @@ export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
+
+export const DATASETS: Record<string, DataSet> = {
+	'surreal-deal': {
+		name: "Surreal Deal",
+		url: "https://datasets.surrealdb.com/surreal-deal-v1.surql"
+	},
+	'surreal-deal-mini': {
+		name: "Surreal Deal (Mini)",
+		url: "https://datasets.surrealdb.com/surreal-deal-mini-v1.surql"
+	}
+};
 
 export const THEMES = [
 	{ label: "Automatic", value: "auto" },
