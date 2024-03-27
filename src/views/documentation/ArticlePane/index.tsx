@@ -1,6 +1,5 @@
 import { Box, ScrollArea, Select } from "@mantine/core";
 import { ContentPane } from "~/components/Pane";
-import { mdiXml } from "@mdi/js";
 import { DocsArticleTopic, DocsTopic, isGroup, isLink, isSection } from "~/docs/types";
 import { RefObject, useMemo } from "react";
 import { ScrollFader } from "~/components/ScrollFader";
@@ -8,6 +7,7 @@ import { CodeLang } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { CODE_LANGUAGES } from "~/constants";
 import { useIntent } from "~/hooks/url";
+import { iconXml } from "~/util/icons";
 
 export interface ArticlePaneProps {
 	docs: DocsTopic[];
@@ -77,7 +77,7 @@ export function ArticlePane({
 
 	return (
 		<ContentPane
-			icon={mdiXml}
+			icon={iconXml}
 			title="Documentation"
 			withTopPadding={false}
 			rightSection={

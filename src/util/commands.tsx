@@ -1,7 +1,7 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAccountSecure, iconAuth, iconAutoFix, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStop, iconSurreal, iconText, iconUpload, iconXml } from "./icons";
+import { iconAccountSecure, iconAuth, iconAutoFix, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStop, iconSurreal, iconText, iconUpload, iconXml } from "./icons";
 import { mdiBook, mdiCodeBraces, mdiMagnifyMinusOutline, mdiMagnifyPlusOutline, mdiPin, mdiStarPlusOutline, mdiTextBoxMinusOutline, mdiTextBoxPlusOutline } from "@mdi/js";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
@@ -272,7 +272,7 @@ export function computeCommands(): CommandCategory[] {
 			}, {
 				id: newId(),
 				name: "Toggle window always on top",
-				icon: mdiPin,
+				icon: iconPin,
 				shortcut: "F11",
 				action: intent("toggle-pinned")
 			}] : []),

@@ -35,11 +35,11 @@ export function TocPane({
 			withTopPadding={false}
 			w={300}
 		>
-			<TextInput
+			{/* <TextInput
 				leftSection={<Icon path={iconSearch} />}
 				placeholder="Search topics..."
 				autoFocus
-			/>
+			/> */}
 
 			<ScrollFader />
 
