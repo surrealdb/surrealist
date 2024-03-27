@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Box, Menu, Text } from "@mantine/core";
+import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Box, Menu } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { showInfo, updateTitle } from "~/util/helpers";
@@ -15,7 +15,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
 import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
-import { iconReset, iconTable } from "~/util/icons";
+import { iconFile, iconReset } from "~/util/icons";
 import { HelpAndSupport } from "./HelpAndSupport";
 import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
@@ -96,27 +96,27 @@ export function Toolbar() {
 								<Icon path={iconReset} />
 							</ActionIcon>
 						</Tooltip>
-						<Menu
-							position="right-start"
-						>
+						<Menu withArrow>
 							<Menu.Target>
 								<Tooltip label="Load demo dataset">
 									<ActionIcon
 										color="slate"
 										variant="subtle"
 									>
-										<Icon path={iconTable} />
+										<Icon path={iconFile} />
 									</ActionIcon>
 								</Tooltip>
 							</Menu.Target>
 							<Menu.Dropdown miw={200}>
+								<Menu.Label>
+									Select a dataset
+								</Menu.Label>
 								{Object.entries(DATASETS).map(([id, info]) => (
 									<Menu.Item
 										key={id}
 										onClick={() => applyDataset(info)}
 									>
-										<Text fw={600}>{info.name}</Text>
-										<Text c="slate">Click to apply</Text>
+										{info.name}
 									</Menu.Item>
 								))}
 							</Menu.Dropdown>
