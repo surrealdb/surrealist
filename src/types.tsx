@@ -128,6 +128,7 @@ export interface SurrealistConfig {
 	activeConnection: string | null;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
+	lastViewedNewsAt: number | null;
 	settings: SurrealistSettings;
 	featureFlags: Partial<TFeatureFlags<typeof featureFlagSchema>>;
 	commandHistory: string[];

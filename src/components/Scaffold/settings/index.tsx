@@ -8,7 +8,7 @@ import { TemplatesTab } from "./tabs/Templates";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealistLogo } from "../../SurrealistLogo";
 import { Entry } from "../../Entry";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Spacer } from "../../Spacer";
 import { Icon } from "../../Icon";
 import { useClipboard } from "@mantine/hooks";
@@ -90,6 +90,7 @@ export function Settings({
 	const clipboard = useClipboard({ timeout: 1000 });
 	const [activeTab, setActiveTab] = useState("behaviour");
 	const [logoClicked, setLogoClicked] = useState<Date[]>([]);
+	const tabsRef = useRef<HTMLDivElement>(null);
 
 	const categories = CATEGORIES.map((c) => ({
 		...c,
@@ -127,6 +128,10 @@ export function Settings({
 	useIntent("open-settings", ({ tab }) => {
 		if (tab) {
 			setActiveTab(tab);
+
+			setTimeout(() => {
+				tabsRef.current?.querySelector<HTMLElement>(`[data-tab="${tab}"]`)?.focus();
+			}, 250);
 		}
 
 		onOpen();
@@ -169,13 +174,14 @@ export function Settings({
 								{clipboard.copied ? "Copied to clipboard!" : `Version ${VERSION}`}
 							</Text>
 						</Stack>
-						<Stack gap="xs">
+						<Stack gap="xs" ref={tabsRef}>
 							{categories.map(({ id, name, icon, disabled }) => (!disabled || id == activeTab) && (
 								<Entry
 									key={id}
 									variant="subtle"
 									isActive={activeTab === id}
 									onClick={() => setActiveTab(id)}
+									data-tab={id}
 									leftSection={
 										<Icon path={icon} />
 									}

@@ -30,6 +30,9 @@ export const featureFlagSchema = {
 	},
 	themes: {
 		options: Bool
+	},
+	newsfeed: {
+		options: Bool
 	}
 } as const;
 
@@ -51,7 +54,8 @@ export const featureFlags = new FeatureFlags({
 			templates: true,
 			listLicenses: true,
 			apidocs_view: true,
-			editor: "monaco"
+			editor: "monaco",
+			newsfeed: true
 		}
 	},
 

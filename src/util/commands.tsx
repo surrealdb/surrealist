@@ -2,7 +2,7 @@ import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
 import { iconAccountSecure, iconAuth, iconAutoFix, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStop, iconSurreal, iconText, iconUpload, iconXml } from "./icons";
-import { mdiBook, mdiCodeBraces, mdiMagnifyMinusOutline, mdiMagnifyPlusOutline, mdiPin, mdiStarPlusOutline, mdiTextBoxMinusOutline, mdiTextBoxPlusOutline } from "@mdi/js";
+import { mdiBook, mdiCodeBraces, mdiMagnifyMinusOutline, mdiMagnifyPlusOutline, mdiNewspaperVariantOutline, mdiStarPlusOutline, mdiTextBoxMinusOutline, mdiTextBoxPlusOutline } from "@mdi/js";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
@@ -305,6 +305,12 @@ export function computeCommands(): CommandCategory[] {
 				name: "Open Help & Support",
 				icon: iconHelp,
 				action: intent("open-help")
+			},
+			{
+				id: newId(),
+				name: "Open latest news",
+				icon: mdiNewspaperVariantOutline,
+				action: intent("open-news")
 			},
 			{
 				id: newId(),

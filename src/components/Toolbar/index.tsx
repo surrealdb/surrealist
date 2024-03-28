@@ -21,9 +21,12 @@ import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
 import { fetchDatabaseSchema } from "~/util/schema";
 import { getSurreal } from "~/util/surreal";
+import { NewsFeed } from "./NewsFeed";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
+	const [flags] = useFeatureFlags();
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const connection = useConnection();
@@ -130,6 +133,10 @@ export function Toolbar() {
 					<LocalDatabase
 						toggleConsole={setShowConsole.toggle}
 					/>
+				)}
+
+				{flags.newsfeed && (
+					<NewsFeed />
 				)}
 
 				<HelpAndSupport />
