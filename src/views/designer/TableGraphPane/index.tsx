@@ -55,7 +55,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const [isComputing, setIsComputing] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
-	const [showConfig, showConfigHandle] = useBoolean();
 	const [showHelp, showHelpHandle] = useBoolean();
 	const ref = useRef<ElementRef<"div">>(null);
 	const activeSession = useActiveConnection();
@@ -64,8 +63,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
-	const initialized = useRef(false);
 	const internals = useStore(s => s.nodeInternals);
 
 	const [computing, setComputing] = useState(false);
@@ -184,24 +181,19 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</ActionIcon>
 					</Tooltip>
 					<Popover
-						opened={showConfig}
-						onChange={showConfigHandle.set}
 						position="bottom-end"
 						offset={{ crossAxis: -4, mainAxis: 8 }}
 						shadow="sm"
 					>
 						<Popover.Target>
 							<Tooltip label="Graph Options">
-								<ActionIcon onClick={showConfigHandle.toggle}>
+								<ActionIcon>
 									<Icon path={iconCog} />
 								</ActionIcon>
 							</Tooltip>
 						</Popover.Target>
-						<Popover.Dropdown onMouseLeave={showConfigHandle.close}>
-							<Stack pb={4}>
-								<ModalTitle>
-									Table graph options
-								</ModalTitle>
+						<Popover.Dropdown>
+							<Stack w={150}>
 								<RadioSelect
 									label="Table appearance"
 									data={DESIGNER_NODE_MODES}
