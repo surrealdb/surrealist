@@ -1,3 +1,4 @@
+import compare from 'semver-compare';
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/surreal";
 import { newId, showError } from "./util/helpers";
 import { fetchDatabaseSchema } from "./util/schema";
@@ -7,6 +8,12 @@ import { useConfigStore } from "./stores/config";
 import { ConnectedEvent, DisconnectedEvent } from "./util/global-events";
 import { useInterfaceStore } from "./stores/interface";
 import { ConnectionOptions } from "./types";
+import { showNotification } from '@mantine/notifications';
+import { Stack, Text } from '@mantine/core';
+import { Icon } from '~/components/Icon';
+import { iconWarning } from './util/icons';
+
+const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 
 export interface ConnectOptions {
 	connection?: ConnectionOptions;
@@ -25,7 +32,7 @@ export function openConnection(options?: ConnectOptions): Promise<void> {
 		return Promise.reject(new Error("No connection available"));
 	}
 
-	const { setIsConnected, setIsConnecting } = useDatabaseStore.getState();
+	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
 	const { openScopeSignup } = useInterfaceStore.getState();
 
 	closeConnection();
@@ -36,16 +43,43 @@ export function openConnection(options?: ConnectOptions): Promise<void> {
 
 		openSurrealConnection({
 			connection,
-			onConnect() {
+			onConnect(version) {
 				setIsConnecting(false);
 				setIsConnected(true);
+				setVersion(version);
 				fetchDatabaseSchema();
 				resolve();
+
 				ConnectedEvent.dispatch(null);
+
+				if (version.length > 0 && compare(version, MINIMUM_VERSION) < 0) {
+					showNotification({
+						autoClose: false,
+						color: 'orange.6',
+						message: (
+							<Stack gap={0}>
+								<Text fw={600}>
+									<Icon
+										path={iconWarning}
+										size="sm"
+										left
+										mt={-2}
+									/>
+									Unsupported database version
+								</Text>
+								<Text c="slate">
+									The remote database is using an older version of SurrealDB ({version}) while this version of Surrealist recommends at least {MINIMUM_VERSION}
+								</Text>
+							</Stack>
+						)
+					});
+				}
 			},
 			onDisconnect(code, reason) {
 				setIsConnecting(false);
 				setIsConnected(false);
+				setVersion("");
+
 				DisconnectedEvent.dispatch(null);
 
 				if (code != 1000) {

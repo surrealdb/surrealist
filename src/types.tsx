@@ -242,7 +242,7 @@ export interface Analyzer {
 
 export interface SurrealOptions {
 	connection: ConnectionOptions;
-	onConnect?: () => void;
+	onConnect?: (version: string) => void;
 	onDisconnect?: (code: number, reason: string) => void;
 	onError?: (error: string) => void;
 }

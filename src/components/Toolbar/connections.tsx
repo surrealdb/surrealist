@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Box, Button, Group, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
@@ -29,6 +29,7 @@ export function Connections() {
 
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
+	const remoteVersion = useDatabaseStore((s) => s.version);
 
 	const createNew = useStable(() => {
 		isListingHandle.close();
@@ -99,12 +100,29 @@ export function Connections() {
 						)}
 						rightSection={
 							isConnected && (
-								<Icon
-									path={iconCircle}
-									size="xl"
-									mr={-4}
-									color="green"
-								/>
+								<Tooltip
+									label={
+										<Stack gap={0}>
+											<Group gap="xs">
+												<Text c="slate.1">Version:</Text>
+												<Text>{remoteVersion}</Text>
+											</Group>
+											<Group gap="xs">
+												<Text c="slate.1">Protocol:</Text>
+												<Text>{connection.connection.protocol}</Text>
+											</Group>
+										</Stack>
+									}
+								>
+									<div>
+										<Icon
+											path={iconCircle}
+											size="xl"
+											mr={-4}
+											color="green"
+										/>
+									</div>
+								</Tooltip>
 							)
 						}
 					>

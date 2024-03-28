@@ -1,13 +1,8 @@
 import { mapKeys, snake } from 'radash';
 import { open_connection, close_connection, query_version, execute_query, watch_live_query, cancel_live_query } from '../generated/surrealist-embed';
 import { SurrealOptions } from '~/types';
-import compare from 'semver-compare';
-import { showNotification } from '@mantine/notifications';
-import { Stack, Text } from '@mantine/core';
-import { Icon } from '~/components/Icon';
 import { connectionUri, newId } from './helpers';
 import { useInterfaceStore } from '~/stores/interface';
-import { iconWarning } from './icons';
 
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 
@@ -37,49 +32,6 @@ async function executeQuery(id: string | undefined, query: string, params: any) 
 			...res,
 			result: JSON.parse(res.result)
 		};
-	});
-}
-
-// Display a notification if the database version is unsupported
-async function checkDatabaseVersion() {
-	const semver = await query_version();
-
-	let title: string;
-	let message: string;
-
-	if (semver == undefined) {
-		title = 'Failed to retrieve database version';
-		message = 'Failed to retrieve the remote database version. This may be caused by a network error or an older version of SurrealDB';
-	} else {
-		const version = `${semver.major}.${semver.minor}.${semver.patch}`;
-
-		if (compare(version, MINIMUM_VERSION) >= 0) {
-			return;
-		}
-
-		title = 'Unsupported database version';
-		message = `The remote database is using an older version of SurrealDB (${version}) while this version of Surrealist recommends at least ${MINIMUM_VERSION}`;
-	}
-
-	showNotification({
-		autoClose: false,
-		color: 'orange.6',
-		message: (
-			<Stack gap={0}>
-				<Text fw={600}>
-					<Icon
-						path={iconWarning}
-						size="sm"
-						left
-						mt={-2}
-					/>
-					{title}
-				</Text>
-				<Text c="slate">
-					{message}
-				</Text>
-			</Stack>
-		)
 	});
 }
 
@@ -117,9 +69,11 @@ export function openSurrealConnection(options: SurrealOptions): SurrealConnectio
 		endpoint: connectionUri(connection).replace(/^ws/, "http")
 	};
 
-	open_connection(details).then(() => {
-		options.onConnect?.();
-		checkDatabaseVersion();
+	open_connection(details).then(async () => {
+		const semver = await query_version();
+		const version = `${semver.major}.${semver.minor}.${semver.patch}`;
+
+		options.onConnect?.(version);
 	}).catch(err => {
 		console.error('Failed to open connection', err);
 

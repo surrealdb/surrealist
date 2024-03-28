@@ -3,25 +3,27 @@ import { printLog } from "~/util/helpers";
 import { create } from 'zustand';
 
 export type DatabaseStore = {
-	isServing: boolean,
-	servePending: boolean,
-	isConnecting: boolean,
-	isConnected: boolean,
-	isQueryActive: boolean,
-	consoleOutput: string[],
-	databaseSchema: DatabaseSchema | null
+	isServing: boolean;
+	servePending: boolean;
+	isConnecting: boolean;
+	isConnected: boolean;
+	isQueryActive: boolean;
+	consoleOutput: string[];
+	databaseSchema: DatabaseSchema | null;
+	version: string;
 
-	setQueryActive: (isQueryActive: boolean) => void
-	clearSchema: () => void
-	prepareServe: () => void
-	confirmServing: () => void
-	stopServing: () => void
-	cancelServe: () => void
-	pushConsoleLine: (line: string) => void
-	clearConsole: () => void
-	setDatabaseSchema: (databaseSchema: DatabaseSchema) => void
-	setIsConnecting: (isConnecting: boolean) => void
-	setIsConnected: (isConnected: boolean) => void
+	setQueryActive: (isQueryActive: boolean) => void;
+	clearSchema: () => void;
+	prepareServe: () => void;
+	confirmServing: () => void;
+	stopServing: () => void;
+	cancelServe: () => void;
+	pushConsoleLine: (line: string) => void;
+	clearConsole: () => void;
+	setDatabaseSchema: (databaseSchema: DatabaseSchema) => void;
+	setIsConnecting: (isConnecting: boolean) => void;
+	setIsConnected: (isConnected: boolean) => void;
+	setVersion: (version: string) => void;
 };
 
 export const useDatabaseStore = create<DatabaseStore>((set) => ({
@@ -32,6 +34,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	isQueryActive: false,
 	consoleOutput: [],
 	databaseSchema: null,
+	version: "",
 
 	setQueryActive: (isQueryActive) => set(() => ({
 		isQueryActive
@@ -83,5 +86,9 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	setIsConnected: (isConnected) => set((state) => ({
 		isConnected,
 		databaseSchema: isConnected ? state.databaseSchema : null,
-	}))
+	})),
+
+	setVersion: (version) => set(() => ({
+		version
+	})),
 }));
