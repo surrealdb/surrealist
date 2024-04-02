@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 import { Box, BoxProps, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
-import { useMemo } from "react";
+import { MouseEvent, useMemo } from "react";
 import { renderDataCell } from "./datatypes";
 import { ColumnSort } from "~/types";
 import { useIsLight } from "~/hooks/theme";
@@ -21,6 +21,7 @@ interface DataTableProps extends BoxProps{
 	sorting?: ColumnSort | null;
 	headers?: string[];
 	onSortingChange?: (order: ColumnSort | null) => void;
+	onRowContextMenu?: (event: MouseEvent, row: any) => void;
 }
 
 export function DataTable(props: DataTableProps) {
@@ -133,6 +134,7 @@ export function DataTable(props: DataTableProps) {
 					key={i}
 					component="tr"
 					onClick={() => value.id && inspect(value.id)}
+					onContextMenu={(e) => props.onRowContextMenu?.(e, value)}
 					style={{
 						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
 					}}

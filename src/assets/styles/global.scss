@@ -19,12 +19,6 @@ input::-ms-clear {
     overflow: visible;
 }
 
-.mantine-contextmenu {
-    background-color: color-mix(in srgb, var(--mantine-color-body) 50%, transparent);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-}
-
 .mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
     font-size: 0.75rem !important;
 }
@@ -33,8 +27,8 @@ input::-ms-clear {
     --ai-hover-color: white;
 }
 
-.mantine-Popover-dropdown, .mantine-Menu-dropdown {
-    background-color: color-mix(in srgb, var(--mantine-color-body) 90%, transparent);
+.mantine-contextmenu, .mantine-Popover-dropdown, .mantine-Menu-dropdown {
+    background-color: color-mix(in srgb, var(--mantine-color-body) 65%, transparent);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 }

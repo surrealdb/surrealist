@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { FocusEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
+import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -10,10 +10,12 @@ import { getSurreal } from "~/util/surreal";
 import { useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
-import { iconChevronLeft, iconChevronRight, iconFilter, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconCopy, iconDelete, iconFilter, iconPlus, iconQuery, iconRefresh, iconServer, iconTable } from "~/util/icons";
 import { tb } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { useContextMenu } from "mantine-contextmenu";
+import { useConfigStore } from "~/stores/config";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -28,7 +30,9 @@ export interface ExplorerPaneProps {
 }
 
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
+	const { addQueryTab, setActiveView } = useConfigStore.getState();
 	const { openTableCreator } = useInterfaceStore.getState();
+	const { showContextMenu } = useContextMenu();
 
 	const schema = useSchema();
 
@@ -151,6 +155,61 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		onCreateRecord();
 	});
 
+	const openRecordQuery = (id: string, prefix: string) => {
+		setActiveView("query");
+		addQueryTab({
+			query: `${prefix} ${id}`
+		});
+	};
+
+	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
+		showContextMenu([
+			{
+				key: "copy",
+				title: "Copy record id",
+				icon: <Icon path={iconCopy} />,
+				onClick: () => {
+					navigator.clipboard.writeText(record.id);
+				}
+			},
+			{
+				key: "delete",
+				title: "Delete record",
+				color: "red",
+				icon: <Icon path={iconDelete} />,
+				onClick: async () => {
+					if (!record.id) return;
+
+					// TODO Use confirmation
+					await getSurreal()?.query(`DELETE ${record.id}`);
+
+					fetchRecords();
+				}
+			},
+			{
+				key: "divider"
+			},
+			{
+				key: "select",
+				title: "Use in SELECT query",
+				icon: <Box w={18} />,
+				onClick: () => openRecordQuery(record.id, 'SELECT * FROM')
+			},
+			{
+				key: "select",
+				title: "Use in UPDATE query",
+				icon: <Box w={18} />,
+				onClick: () => openRecordQuery(record.id, 'UPDATE')
+			},
+			{
+				key: "select",
+				title: "Use in DELETE query",
+				icon: <Box w={18} />,
+				onClick: () => openRecordQuery(record.id, 'DELETE')
+			},
+		])(e);
+	});
+
 	const headers = schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
 	const hasTables = (schema?.tables?.length ?? 0) > 0;
 
@@ -220,6 +279,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 								data={records}
 								sorting={sortMode}
 								onSortingChange={setSortMode}
+								onRowContextMenu={onRecordContextMenu}
 								headers={headers}
 							/>
 						</ScrollArea>
