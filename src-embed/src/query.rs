@@ -104,11 +104,9 @@ async fn create_connection(details: JsValue) -> Result<Surreal<Any>, Error> {
 
 #[wasm_bindgen]
 pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
-    let mut instance = SURREAL.write().await;
-
     match create_connection(details).await {
         Ok(db) => {
-            *instance = Some(db);
+            *SURREAL.write().await = Some(db);
             Ok(())
         }
         Err(err) => Err(err.to_string().into()),
@@ -117,9 +115,7 @@ pub async fn open_connection(details: JsValue) -> Result<(), JsValue> {
 
 #[wasm_bindgen]
 pub async fn close_connection() {
-    let mut instance = SURREAL.write().await;
-
-    *instance = None;
+    *SURREAL.write().await = None;
 }
 
 #[wasm_bindgen]
