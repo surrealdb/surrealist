@@ -15,6 +15,8 @@ export class EmbedAdapter extends BrowserAdapter {
 	#setupQuery: string | undefined;
 
 	public async loadConfig() {
+		console.log('loading config');
+
 		const settings = createBaseSettings();
 		const mainTab = createBaseTab(settings);
 		const params = new URL(document.location.toString()).searchParams;
@@ -81,7 +83,7 @@ export class EmbedAdapter extends BrowserAdapter {
 			});
 		}
 
-		const config = {
+		return {
 			settings,
 			activeConnection: SANDBOX,
 			sandbox: {
@@ -90,8 +92,6 @@ export class EmbedAdapter extends BrowserAdapter {
 				queries: [mainTab]
 			}
 		} satisfies DeepPartial<SurrealistConfig>;
-
-		return JSON.stringify(config);
 	}
 
 	public async saveConfig() {
@@ -106,6 +106,18 @@ export class EmbedAdapter extends BrowserAdapter {
 		if (this.#setupQuery) {
 			getSurreal()?.query(this.#setupQuery);
 		}
+	}
+
+	public async hasLegacyConfig() {
+		return false;
+	}
+
+	public async getLegacyConfig() {
+		// not applicable
+	}
+
+	public async handleLegacyCleanup() {
+		// not applicable
 	}
 
 }
