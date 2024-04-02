@@ -46,7 +46,7 @@ export function FunctionsView() {
 	const updateCreateName = useStable((e: ChangeEvent<HTMLInputElement>) => {
 		const name = e.target.value
 			.replaceAll(/\s/g, '_')
-			.replaceAll(/\W/g, '')
+			.replaceAll(/[^\w:]/g, '')
 			.toLocaleLowerCase();
 
 		setCreateName(name);

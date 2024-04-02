@@ -32,23 +32,23 @@ export async function fetchDatabaseSchema() {
 	const dbFunctionsMap = Object.values(dbInfo?.functions ?? {});
 	// const dbModelsMap = Object.values(dbInfo?.models ?? {});
 
-	const kvUsers: UserDefinition[] = await map(kvUsersMap, async (definition) => {
+	const kvUsers: UserDefinition[] = kvUsersMap.map((definition) => {
 		return extract_user_definition(definition);
 	});
 
-	const nsUsers: UserDefinition[] = await map(nsUsersMap, async (definition) => {
+	const nsUsers: UserDefinition[] = nsUsersMap.map((definition) => {
 		return extract_user_definition(definition);
 	});
 
-	const dbUsers: UserDefinition[] = await map(dbUsersMap, async (definition) => {
+	const dbUsers: UserDefinition[] = dbUsersMap.map((definition) => {
 		return extract_user_definition(definition);
 	});
 
-	const scopes: ScopeDefinition[] = await map(dbScopesMap, async (definition) => {
+	const scopes: ScopeDefinition[] = dbScopesMap.map((definition) => {
 		return extract_scope_definition(definition);
 	});
 
-	const tableInfo: TableSchema[] = await map(dbTablesMap, (definition) => {
+	const tableInfo: TableSchema[] = dbTablesMap.map((definition) => {
 		return extract_table_definition(definition);
 	});
 
@@ -61,6 +61,7 @@ export async function fetchDatabaseSchema() {
 
 		return {
 			...func,
+			name: func.name.replaceAll('`', ''),
 			block: dedent(func.block.slice(1, -1))
 		};
 	});
