@@ -3,6 +3,7 @@ import { ElementProps, SectionTitle } from "../helpers";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
 import { CodeInput } from "~/components/Inputs";
+import { iconBullhorn } from "~/util/icons";
 
 export function EventsElement({ data, setData }: ElementProps) {
 
@@ -24,7 +25,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="events">
-			<SectionTitle>
+			<SectionTitle icon={iconBullhorn}>
 				Events
 			</SectionTitle>
 			<Accordion.Panel>

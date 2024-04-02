@@ -1,15 +1,14 @@
 import banner from "~/assets/images/banner.webp";
 import { ActionIcon, Button, Divider, Image, List, Modal, Stack, Text, Title } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { iconArrowUpRight, iconCircle, iconClose } from "~/util/icons";
+import { iconArrowUpRight, iconCircleFilled, iconClose } from "~/util/icons";
 
 export interface DownloadModalProps {
 	opened: boolean;
 	onClose: () => void;
-	onOpen: () => void;
 }
 
-export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
+export function DownloadModal({ opened, onClose }: DownloadModalProps) {
 	return (
 		<Modal
 			opened={opened}
@@ -30,7 +29,7 @@ export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
 
 			<Divider />
 
-			<Stack p="lg">
+			<Stack p={24}>
 				<Title c="bright" fz={32} ta="center">
 					Surrealist for Desktop
 				</Title>
@@ -41,7 +40,7 @@ export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
 
 				<List
 					fz="lg"
-					icon={<Icon path={iconCircle} color="surreal" />}
+					icon={<Icon path={iconCircleFilled} color="surreal" />}
 				>
 					<List.Item>
 						Access Surrealist in offline environments

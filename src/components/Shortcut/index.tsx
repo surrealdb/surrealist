@@ -1,11 +1,11 @@
 import { mdiAppleKeyboardCommand, mdiAppleKeyboardControl, mdiAppleKeyboardOption, mdiAppleKeyboardShift } from "@mdi/js";
-import { Group, Kbd, KbdProps, Text } from "@mantine/core";
+import { BoxProps, Group, Kbd, Text } from "@mantine/core";
 import { Fragment, ReactNode, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { capitalize } from "radash";
 import { Icon } from "../Icon";
 
-export interface ShortcutProps extends Omit<KbdProps, 'children'> {
+export interface ShortcutProps extends Omit<BoxProps, 'children'> {
 	value: string;
 }
 
@@ -35,7 +35,7 @@ export function Shortcut({ value, ...rest }: ShortcutProps) {
 					break;
 				}
 				default: {
-					code = <Text>{capitalize(part)}</Text>;
+					code = <Text fz="lg">{capitalize(part)}</Text>;
 					break;
 				}
 			}
@@ -51,10 +51,19 @@ export function Shortcut({ value, ...rest }: ShortcutProps) {
 	}, [value]);
 
 	return (
-		<Kbd {...rest}>
-			<Group gap="xs" wrap="nowrap">
-				{content}
-			</Group>
-		</Kbd>
+		<Group
+			gap={4}
+			wrap="nowrap"
+			{...rest}
+		>
+			{content.map((part, i) => (
+				<Fragment key={i}>
+					<Kbd p={0} px={4} miw={24} h={24} ta="center">
+						{part}
+					</Kbd>
+					{i < content.length - 1 && <Text c="slate">+</Text>}
+				</Fragment>
+			))}
+		</Group>
 	);
 }

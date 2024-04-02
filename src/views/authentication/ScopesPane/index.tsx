@@ -112,7 +112,7 @@ export function ScopePane() {
 			)}
 
 			<ScrollArea
-				style={{ position: "absolute", inset: 12, paddingRight: 8, top: 0 }}
+				style={{ position: "absolute", inset: 10, top: 0 }}
 			>
 				<Stack gap={0}>
 					{scopes.map((scope) => (

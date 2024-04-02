@@ -1,10 +1,11 @@
 import { TableDefinition } from "~/types";
 import { default as equals } from "fast-deep-equal";
 import { objectify } from "radash";
-import { Accordion } from "@mantine/core";
+import { Accordion, Group } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { Updater } from "use-immer";
 import { tb } from "~/util/helpers";
+import { Icon } from "~/components/Icon";
 
 export interface ElementProps {
 	data: TableDefinition;
@@ -16,12 +17,15 @@ export const TABLE_TYPES = [
 	{ label: "Schemafull", value: "schemafull" },
 ];
 
-export function SectionTitle({ children }: { children: string }) {
+export function SectionTitle({ children, icon }: { children: string, icon: string }) {
 	return (
 		<Accordion.Control>
-			<Text fw={700} size="lg">
-				{children}
-			</Text>
+			<Group gap="sm">
+				<Icon path={icon} size={0.85} />
+				<Text fw={600} size="lg">
+					{children}
+				</Text>
+			</Group>
 		</Accordion.Control>
 	);
 }

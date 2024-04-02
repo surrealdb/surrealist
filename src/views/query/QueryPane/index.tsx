@@ -8,7 +8,7 @@ import { useDebounced } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconServer, iconStar, iconText } from "~/util/icons";
+import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { selectionChanged, surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
@@ -17,7 +17,6 @@ import { format_query, validate_query } from "~/generated/surrealist-embed";
 import { showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { mdiCodeBraces } from "@mdi/js";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
 import { HoverIcon } from "~/components/HoverIcon";
@@ -247,7 +246,7 @@ export function QueryPane({
 								onClick={toggleVariables}
 								variant="light"
 							>
-								<Icon path={mdiCodeBraces} />
+								<Icon path={iconBraces} />
 							</ActionIcon>
 						</Tooltip>
 					</Group>

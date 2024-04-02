@@ -20,7 +20,7 @@ import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
 import { useBoolean } from "~/hooks/boolean";
-import { iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation, iconXml } from "~/util/icons";
+import { iconAPI, iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
 
@@ -261,7 +261,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						},
 						{
 							key: 'download-svg',
-							icon: <Icon path={iconXml} />,
+							icon: <Icon path={iconAPI} />,
 							title: 'Export as SVG',
 							onClick: () => saveImage('svg')
 						},

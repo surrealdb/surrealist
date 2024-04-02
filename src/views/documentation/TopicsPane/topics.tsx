@@ -1,13 +1,12 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Collapse, Group, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { mdiOpenInNew } from "@mdi/js";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { DocsArticleTopic, DocsGroupTopic, DocsLinkTopic, DocsSectionTopic, DocsTopic, isArticle, isGroup, isLink, isSection } from "~/docs/types";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconChevronUp } from "~/util/icons";
+import { iconChevronDown, iconChevronUp, iconOpen } from "~/util/icons";
 
 interface TopicProps<T> {
 	active: string;
@@ -67,7 +66,7 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 			className={classes.topic}
 		>
 			{entry.title}
-			<Icon path={mdiOpenInNew} size="sm" right />
+			<Icon path={iconOpen} size="sm" right />
 		</Entry>
 	);
 }

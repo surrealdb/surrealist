@@ -39,11 +39,28 @@ input::-ms-clear {
     -webkit-backdrop-filter: blur(5px);
 }
 
-.mantine-Tabs-tab[data-active] {
-    border-color: unset;
-    border-image-slice: 1;
-    border-image-source: var(--surrealist-gradient);
+.mantine-Tabs-list {
+    background-color: var(--mantine-color-slate-9);
+    border-radius: var(--mantine-radius-md);
 }
+
+.mantine-Tabs-tab {
+    &:hover {
+        background-color: unset;
+        color: var(--mantine-color-bright);
+    }
+    
+    &[data-active] {
+        background: var(--surrealist-gradient);
+        background-origin: border-box;
+    }
+}
+
+// .mantine-Tabs-tab[data-active] {
+//     border-color: unset;
+//     border-image-slice: 1;
+//     border-image-source: var(--surrealist-gradient);
+// }
 
 .mantine-Checkbox-root {
 

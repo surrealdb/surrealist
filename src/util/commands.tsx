@@ -1,12 +1,12 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAccountSecure, iconAuth, iconAutoFix, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStop, iconSurreal, iconText, iconUpload, iconXml } from "./icons";
-import { mdiBook, mdiCodeBraces, mdiMagnifyMinusOutline, mdiMagnifyPlusOutline, mdiNewspaperVariantOutline, mdiStarPlusOutline, mdiTextBoxMinusOutline, mdiTextBoxPlusOutline } from "@mdi/js";
+import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
+import { mdiNewspaperVariantOutline } from "@mdi/js";
 
 type LaunchAction = { type: "launch", handler: () => void };
 type InsertAction = { type: "insert", content: string };
@@ -137,7 +137,7 @@ export function computeCommands(): CommandCategory[] {
 					{
 						id: newId(),
 						name: "Save query",
-						icon: mdiStarPlusOutline,
+						icon: iconStarPlus,
 						action: intent("save-query")
 					},
 					{
@@ -149,7 +149,7 @@ export function computeCommands(): CommandCategory[] {
 					{
 						id: newId(),
 						name: "Toggle variables panel",
-						icon: mdiCodeBraces,
+						icon: iconBraces,
 						action: intent("toggle-variables")
 					},
 					{
@@ -227,7 +227,7 @@ export function computeCommands(): CommandCategory[] {
 			commands: CODE_LANGUAGES.map(lang => ({
 				id: newId(),
 				name: `Preview snippets in ${lang.label}`,
-				icon: iconXml,
+				icon: iconAPI,
 				action: intent("docs-switch-language", { lang: lang.value })
 			}))
 		});
@@ -259,14 +259,14 @@ export function computeCommands(): CommandCategory[] {
 			...(isDesktop ? [{
 				id: newId(),
 				name: "Increase interface zoom",
-				icon: mdiMagnifyPlusOutline,
+				icon: iconMagnifyPlus,
 				shortcut: "mod +",
 				action: intent("increase-window-scale")
 			},
 			{
 				id: newId(),
 				name: "Decrease interface zoom",
-				icon: mdiMagnifyMinusOutline,
+				icon: iconMagnifyMinus,
 				shortcut: "mod -",
 				action: intent("decrease-window-scale")
 			}, {
@@ -279,14 +279,14 @@ export function computeCommands(): CommandCategory[] {
 			{
 				id: newId(),
 				name: "Increase editor zoom",
-				icon: mdiTextBoxPlusOutline,
+				icon: iconTextBoxPlus,
 				shortcut: "mod shift +",
 				action: intent("increase-editor-scale")
 			},
 			{
 				id: newId(),
 				name: "Decrease editor zoom",
-				icon: mdiTextBoxMinusOutline,
+				icon: iconTextBoxMinus,
 				shortcut: "mod shift -",
 				action: intent("decrease-editor-scale")
 			}
@@ -314,18 +314,18 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				id: newId(),
-				name: "Browse SurrealDB Docs",
-				icon: mdiBook,
-				action: href("https://surrealdb.com/docs/")
-			},
-			{
-				id: newId(),
 				name: "Open start screen",
 				icon: iconChevronRight,
 				action: launch(() => {
 					setActiveConnection(null);
 				})
-			}
+			},
+			{
+				id: newId(),
+				name: "Browse SurrealDB Docs",
+				icon: iconBook,
+				action: href("https://surrealdb.com/docs/")
+			},
 		]
 	});
 

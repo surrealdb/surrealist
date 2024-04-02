@@ -4,6 +4,7 @@ import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
 import { INDEX_TYPES } from "~/constants";
 import { CodeInput } from "~/components/Inputs";
+import { iconIndex } from "~/util/icons";
 
 export function IndexesElement({ data, setData }: ElementProps) {
 
@@ -27,7 +28,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="indexes">
-			<SectionTitle>
+			<SectionTitle icon={iconIndex}>
 				Indexes
 			</SectionTitle>
 			<Accordion.Panel>

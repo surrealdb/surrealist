@@ -4,6 +4,7 @@ import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
 import { useTableNames } from "~/hooks/schema";
 import { CodeInput, FieldKindInput, PermissionInput } from "~/components/Inputs";
+import { iconJSON } from "~/util/icons";
 
 export function FieldsElement({ data, setData }: ElementProps) {
 	const tableList = useTableNames();
@@ -36,7 +37,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="fields">
-			<SectionTitle>
+			<SectionTitle icon={iconJSON}>
 				Fields
 			</SectionTitle>
 			<Accordion.Panel>

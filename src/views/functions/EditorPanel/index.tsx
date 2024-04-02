@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Autocomplete, Badge, Box, Button, Flex, Group, ScrollArea, SimpleGrid, Text, TextInput, Tooltip } from "@mantine/core";
+import { Autocomplete, Badge, Box, Button, Divider, Flex, Group, ScrollArea, SimpleGrid, Text, TextInput, Tooltip } from "@mantine/core";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { Updater } from "use-immer";
 import { adapter } from "~/adapter";
@@ -87,6 +87,7 @@ export function EditorPanel({
 						draft.block = value;
 					})}
 				/>
+				<Divider orientation="vertical" />
 				<Flex
 					w={300}
 					h="100%"

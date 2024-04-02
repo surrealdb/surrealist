@@ -53,7 +53,7 @@ export function FreshExperience(props: FreshExperienceProps) {
 				Create a new connection or open the sandbox to get started
 			</Text>
 
-			<Group mb="xl">
+			<Group mb={38}>
 				<Button
 					variant="gradient"
 					onClick={openConnectionCreator}

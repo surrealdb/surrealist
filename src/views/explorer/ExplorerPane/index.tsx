@@ -181,7 +181,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 						<Divider orientation="vertical" />
 
-						<Icon path={iconServer} mr={-10} />
+						<Icon path={iconServer} mr={-6} />
 						<Text lineClamp={1}>
 							{recordCount || "no"} rows
 						</Text>

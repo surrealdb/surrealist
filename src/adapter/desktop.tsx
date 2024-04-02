@@ -12,6 +12,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
 import { watchStore } from "~/util/config";
 import { Platform } from "~/types";
+import { getHotkeyHandler } from "@mantine/hooks";
 
 const WAIT_DURATION = 1000;
 
@@ -39,6 +40,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		document.addEventListener("contextmenu", (e) => {
 			e.preventDefault();
 		});
+
+		document.body.addEventListener("keydown", getHotkeyHandler([
+			["mod+alt+i", () => invoke("toggle_devtools")]
+		]));
 
 		type().then(t => {
 			this.hasTitlebar = t === "Windows_NT" || t === "Linux";
@@ -91,13 +96,29 @@ export class DesktopAdapter implements SurrealistAdapter {
 			}
 		}
 
-		return invoke<string>("load_config");
+		const config = await invoke<string>("load_config");
+
+		return JSON.parse(config);
 	}
 
 	public saveConfig(config: string) {
 		return invoke<void>("save_config", {
-			config,
+			config: JSON.stringify(config)
 		});
+	}
+
+	public async hasLegacyConfig() {
+		return invoke<boolean>("has_legacy_config");
+	}
+
+	public async getLegacyConfig() {
+		const config = await invoke<string>("load_legacy_config");
+
+		return JSON.parse(config);
+	}
+
+	public async handleLegacyCleanup() {
+		return invoke<void>("complete_legacy_migrate");
 	}
 
 	public async startDatabase(

@@ -43,3 +43,12 @@ pub fn set_window_scale(window: tauri::Window, scale_factor: f64) {
         }
     });
 }
+
+#[tauri::command]
+pub fn toggle_devtools(window: tauri::Window) {
+    if window.is_devtools_open() {
+        window.close_devtools();
+    } else {
+        window.open_devtools();
+    }
+}

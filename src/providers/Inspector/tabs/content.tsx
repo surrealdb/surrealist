@@ -4,7 +4,6 @@ import { SaveBox } from "~/components/SaveBox";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveableHandle } from "~/hooks/save";
 import { json } from "@codemirror/lang-json";
-import { scrollPastEnd } from "@codemirror/view";
 
 export interface ContentTabProps {
 	value: string;
@@ -16,11 +15,10 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 	return (
 		<>
 			<Paper
-				flex={1}
+				flex="1 0 0"
 				mih={0}
 				mt="xs"
 				p="xs"
-				withBorder
 			>
 				<CodeEditor
 					h="100%"
@@ -36,8 +34,7 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 						}
 					}}
 					extensions={[
-						json(),
-						scrollPastEnd()
+						json()
 					]}
 				/>
 			</Paper>

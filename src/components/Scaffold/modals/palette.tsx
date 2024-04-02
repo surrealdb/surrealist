@@ -3,14 +3,13 @@ import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput, Unstyle
 import { useConnection } from "~/hooks/connection";
 import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { Icon } from "~/components/Icon";
-import { iconServer } from "~/util/icons";
+import { iconOpen, iconServer } from "~/util/icons";
 import { Fragment, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Command, CommandCategory, computeCommands } from "~/util/commands";
 import { useInputState } from "@mantine/hooks";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { adapter } from "~/adapter";
-import { mdiOpenInNew } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Shortcut } from "~/components/Shortcut";
 import { dispatchIntent } from "~/hooks/url";
@@ -194,7 +193,7 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 												</Text>
 												{cmd.action.type == "href" && (
 													<Icon
-														path={mdiOpenInNew}
+														path={iconOpen}
 														className={classes.commandIcon}
 														size="sm"
 														ml={-8}
@@ -203,9 +202,11 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 												{cmd.shortcut && (
 													<>
 														<Spacer />
-														{(Array.isArray(cmd.shortcut) ? cmd.shortcut : [cmd.shortcut]).map((shortcut, i) => (
-															<Shortcut key={i} value={shortcut} size="xs" />
-														))}
+														<Group gap="lg">
+															{(Array.isArray(cmd.shortcut) ? cmd.shortcut : [cmd.shortcut]).map((shortcut, i) => (
+																<Shortcut key={i} value={shortcut} />
+															))}
+														</Group>
 													</>
 												)}
 											</UnstyledButton>

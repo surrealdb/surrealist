@@ -53,14 +53,32 @@ export interface SurrealistAdapter {
 	/**
 	 * Load the config from the adapter
 	 */
-	loadConfig(): Promise<string>;
+	loadConfig(): Promise<any>;
 
 	/**
 	 * Save the config to the adapter
 	 *
 	 * @param config The config to save
 	 */
-	saveConfig(config: string): Promise<void>;
+	saveConfig(config: any): Promise<void>;
+
+	/**
+	 * Check whether the adapter has a legacy config. This is
+	 * called after loadConfig.
+	 */
+	hasLegacyConfig(): Result<boolean>;
+
+	/**
+	 * Return the legacy config used for migration
+	 */
+	getLegacyConfig(): Promise<any>;
+
+	/**
+	 * Clean up any legacy config. This is called after the config
+	 * has been migrated, or if the user chooses to ignore the
+	 * migration.
+	 */
+	handleLegacyCleanup(): Promise<void>;
 
 	/**
 	 * Start the database with the given parameters

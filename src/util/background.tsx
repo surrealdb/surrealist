@@ -55,14 +55,14 @@ export function watchColorScheme() {
  * Watch for changes to the store and save the config to the adapter
  */
 export async function watchConfigStore() {
-	const config = JSON.parse(await adapter.loadConfig());
+	const config = await adapter.loadConfig();
 	const merged = assign(useConfigStore.getState(), config);
 
 	useConfigStore.setState(merged);
 
 	// TODO include a ~300ms debounce
 	useConfigStore.subscribe((state) => {
-		adapter.saveConfig(JSON.stringify(state));
+		adapter.saveConfig(state);
 	});
 }
 

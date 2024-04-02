@@ -2,36 +2,35 @@ import classes from "./style.module.scss";
 import { Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { mdiBook, mdiBug, mdiChat, mdiRoutes } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
-import { iconClose, iconHelp } from "~/util/icons";
+import { iconBook, iconBug, iconChat, iconClose, iconHelp, iconRoutes } from "~/util/icons";
 
 const TILES = [
 	{
 		title: "Documentation",
 		description: "Need help? Check out our documentation for help.",
-		icon: mdiBook,
+		icon: iconBook,
 		onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist")
 	},
 	{
 		title: "Report an issue",
 		description: "Something isn't working right? Let us know and we'll fix it.",
-		icon: mdiBug,
+		icon: iconBug,
 		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 	},
 	{
 		title: "Feedback",
 		description: "Have a suggestion or feedback? We'd love to hear it.",
-		icon: mdiChat,
+		icon: iconChat,
 		onClick: () => {}
 	},
 	{
 		title: "Restart the tour",
 		description: "Need to restart the tour? Click here to start over.",
-		icon: mdiRoutes,
+		icon: iconRoutes,
 		onClick: () => {}
 	}
 ];

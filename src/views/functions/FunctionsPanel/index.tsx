@@ -3,9 +3,8 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
-import { iconCopy, iconDelete, iconList, iconPlus, iconSearch } from "~/util/icons";
+import { iconCopy, iconDelete, iconFunction, iconList, iconPlus, iconSearch } from "~/util/icons";
 import { FunctionDefinition } from "~/types";
-import { mdiFunction } from "@mdi/js";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
@@ -95,12 +94,12 @@ export function FunctionsPanel({
 							key={i}
 							isActive={f.name === active}
 							onClick={() => onSelect(f.name)}
-							leftSection={<Icon path={mdiFunction} />}
+							leftSection={<Icon path={iconFunction} />}
 							onContextMenu={showContextMenu([
 								{
 									key: 'open',
 									title: "Edit function",
-									icon: <Icon path={mdiFunction} />,
+									icon: <Icon path={iconFunction} />,
 									onClick: () => onSelect(f.name)
 								},
 								{

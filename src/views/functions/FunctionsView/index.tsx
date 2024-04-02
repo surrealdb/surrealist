@@ -3,8 +3,7 @@ import { FunctionsPanel } from "../FunctionsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { ChangeEvent, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { mdiFunction } from "@mdi/js";
-import { iconChevronRight, iconPlus } from "~/util/icons";
+import { iconChevronRight, iconFunction, iconPlus } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -140,7 +139,7 @@ export function FunctionsView() {
 							align="center"
 							justify="center"
 						>
-							<Icon path={mdiFunction} size={2.5} />
+							<Icon path={iconFunction} size={2.5} />
 							Select a function to view or edit
 							<Group>
 								<Button

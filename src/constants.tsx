@@ -3,9 +3,8 @@ import explorerIcon from "~/assets/animation/explorer.json";
 import designerIcon from "~/assets/animation/designer.json";
 import authIcon from "~/assets/animation/auth.json";
 
-import { mdiBrain, mdiFunction } from "@mdi/js";
 import { AuthMode, CodeLang, DataSet, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
-import { iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconLive, iconQuery, iconXml } from "./util/icons";
+import { iconAPI, iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconFunction, iconLive, iconModel, iconQuery } from "./util/icons";
 import { getConnection } from "./util/connection";
 
 export type StructureTab = "graph" | "builder";
@@ -25,10 +24,6 @@ export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const DATASETS: Record<string, DataSet> = {
 	'surreal-deal': {
 		name: "Surreal Deal",
-		url: "https://datasets.surrealdb.com/surreal-deal-v1.surql"
-	},
-	'surreal-deal-mini': {
-		name: "Surreal Deal (Mini)",
 		url: "https://datasets.surrealdb.com/surreal-deal-mini-v1.surql"
 	}
 };
@@ -107,14 +102,14 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 	functions: {
 		id: "functions",
 		name: "Functions",
-		icon: mdiFunction,
+		icon: iconFunction,
 		desc: "Create and update schema level functions",
 		disabled: (flags) => !flags.functions_view,
 	},
 	models: {
 		id: "models",
 		name: "Models",
-		icon: mdiBrain,
+		icon: iconModel,
 		desc: "Upload and manage machine learning models",
 		disabled: (flags) => {
 			if (!flags.models_view) return true;
@@ -127,7 +122,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 	documentation: {
 		id: "documentation",
 		name: "API Docs",
-		icon: iconXml,
+		icon: iconAPI,
 		desc: "View the database schema and documentation",
 		disabled: (flags) => !flags.apidocs_view,
 	}

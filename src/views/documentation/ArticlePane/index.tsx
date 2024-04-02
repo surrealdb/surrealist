@@ -7,7 +7,7 @@ import { CodeLang } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { CODE_LANGUAGES } from "~/constants";
 import { useIntent } from "~/hooks/url";
-import { iconXml } from "~/util/icons";
+import { iconAPI } from "~/util/icons";
 
 export interface ArticlePaneProps {
 	docs: DocsTopic[];
@@ -77,7 +77,7 @@ export function ArticlePane({
 
 	return (
 		<ContentPane
-			icon={iconXml}
+			icon={iconAPI}
 			title="Documentation"
 			withTopPadding={false}
 			rightSection={
@@ -115,7 +115,7 @@ export function ArticlePane({
 								borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-6)" : "none"
 							}}
 						>
-							<Box maw={1500} mx="auto">
+							<Box maw={1500}>
 								<Content
 									topic={doc}
 									language={language}

@@ -75,6 +75,13 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 			position="right"
 			trapFocus={false}
 			size="lg"
+			styles={{
+				body: {
+					height: "100%",
+					display: "flex",
+					flexDirection: "column"
+				}
+			}}
 		>
 			<Group mb="md" gap="sm">
 				<ModalTitle>
@@ -131,11 +138,18 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					}
 				}}
 			/>
-			<ScrollArea style={{ position: "absolute", inset: 12, top: 114, bottom: 12 }}>
+			<ScrollArea
+				mt="sm"
+				flex="1 1 0"
+			>
 				<Accordion
 					multiple
 					defaultValue={INITIAL_TABS}
-					chevronPosition="left"
+					variant="separated"
+					classNames={{
+						item: classes.accordionItem,
+						label: classes.accordionLabel,
+					}}
 				>
 					<GeneralElement
 						data={value}
@@ -169,17 +183,16 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 						setData={onChange}
 					/>
 				</Accordion>
-
-				<Box mt="lg">
-					<SaveBox
-						handle={handle}
-						inline
-						inlineProps={{
-							className: classes.saveBox
-						}}
-					/>
-				</Box>
 			</ScrollArea>
+			<Box mt="lg">
+				<SaveBox
+					handle={handle}
+					inline
+					inlineProps={{
+						className: classes.saveBox
+					}}
+				/>
+			</Box>
 		</Drawer>
 	);
 }

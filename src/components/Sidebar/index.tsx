@@ -48,7 +48,7 @@ export function Sidebar({
 	onTogglePalette,
 	onToggleSettings,
 }: SidebarProps) {
-	const { setActiveView, setActiveConnection } = useConfigStore.getState();
+	const { setActiveView } = useConfigStore.getState();
 
 	const [flags] = useFeatureFlags();
 	const [expandable] = useSetting("appearance", "expandSidebar");
@@ -96,7 +96,7 @@ export function Sidebar({
 			top={0}
 			left={0}
 			bottom={0}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={connection ? (isLight ? "slate.0" : "slate.9") : undefined}
 			viewportRef={ref}
 			className={clsx(classes.root, shouldExpand && classes.expanded)}
 		>
@@ -108,15 +108,8 @@ export function Sidebar({
 				pt={22}
 			>
 				<Group wrap="nowrap" gap="lg">
-					<Image
-						src={surrealistLogo}
-						onClick={() => setActiveConnection(null)}
-						w={42}
-					/>
-					<SurrealistLogo
-						h={21}
-						style={{ flexShrink: 0 }}
-					/>
+					<Image src={surrealistLogo} w={42} />
+					<SurrealistLogo h={21} style={{ flexShrink: 0 }} />
 				</Group>
 				<Stack
 					gap="sm"

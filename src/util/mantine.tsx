@@ -1,4 +1,4 @@
-import { ActionIcon, Checkbox, Divider, Drawer, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, Tooltip, createTheme, rem } from "@mantine/core";
+import { ActionIcon, Checkbox, Divider, Drawer, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, TagsInput, Tooltip, createTheme, rem } from "@mantine/core";
 
 export const PRIMARY_COLOR = "surreal.5";
 
@@ -163,6 +163,9 @@ export const MANTINE_THEME = createTheme({
 			}
 		}),
 		Tabs: Tabs.extend({
+			defaultProps: {
+				variant: "pills",
+			},
 			styles: {
 				tab: {
 					fontWeight: 600,
@@ -182,6 +185,16 @@ export const MANTINE_THEME = createTheme({
 					display: "flex",
 				},
 			},
+		}),
+		TagsInput: TagsInput.extend({
+			styles: {
+				pill: {
+					backgroundColor: "var(--mantine-color-surreal-6)",
+				},
+				input: {
+					display: "flex",
+				}
+			}
 		}),
 		Tooltip: Tooltip.extend({
 			defaultProps: {

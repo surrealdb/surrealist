@@ -2,6 +2,7 @@ import { Accordion, Stack, Select, Checkbox } from "@mantine/core";
 import { ElementProps, SectionTitle, TABLE_TYPES } from "../helpers";
 import { ChangeEvent } from "react";
 import { useStable } from "~/hooks/stable";
+import { iconTable } from "~/util/icons";
 
 export function GeneralElement({ data, setData }: ElementProps) {
 
@@ -26,7 +27,7 @@ export function GeneralElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="general">
-			<SectionTitle>
+			<SectionTitle icon={iconTable}>
 				General
 			</SectionTitle>
 			<Accordion.Panel>

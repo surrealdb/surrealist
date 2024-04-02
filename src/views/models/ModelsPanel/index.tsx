@@ -1,10 +1,9 @@
 import { Badge, Tooltip, ActionIcon, TextInput, ScrollArea, Stack, Group } from "@mantine/core";
-import { mdiBrain } from "@mdi/js";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
-import { iconDownload, iconList, iconSearch, iconUpload } from "~/util/icons";
+import { iconDownload, iconList, iconModel, iconSearch, iconUpload } from "~/util/icons";
 import { ModelDefinition } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { Text } from "@mantine/core";
@@ -85,7 +84,7 @@ export function ModelsPanel({
 							key={i}
 							isActive={m.name === active}
 							onClick={() => onSelect(m.name)}
-							leftSection={<Icon path={mdiBrain} />}
+							leftSection={<Icon path={iconModel} />}
 							onContextMenu={showContextMenu([
 								{
 									key: 'download',

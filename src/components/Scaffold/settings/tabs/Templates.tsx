@@ -94,6 +94,7 @@ export function TemplatesTab() {
 				{templates.map((template) => (
 					<Entry
 						key={template.id}
+						variant="filled"
 						onClick={() => openEditor(template)}
 						leftSection={
 							<Icon path={iconFile} />

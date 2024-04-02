@@ -2,8 +2,7 @@ import { Button, Center, Group, Stack, Text } from "@mantine/core";
 import { ModelsPanel } from "../ModelsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { Icon } from "~/components/Icon";
-import { mdiBrain } from "@mdi/js";
-import { iconUpload } from "~/util/icons";
+import { iconModel, iconUpload } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { adapter } from "~/adapter";
 import { useActiveConnection } from "~/hooks/connection";
@@ -121,7 +120,7 @@ export function ModelsView() {
 						align="center"
 						justify="center"
 					>
-						<Icon path={mdiBrain} size={2.5} />
+						<Icon path={iconModel} size={2.5} />
 						<Text maw={250} ta="center">
 							Press the button to upload a new SurrealML model to this database
 						</Text>

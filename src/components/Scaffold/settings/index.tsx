@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { iconClose, iconEye, iconPlay, iconServer, iconWrench } from "~/util/icons";
+import { iconBalance, iconClose, iconEye, iconFlag, iconPlay, iconServer, iconWrench } from "~/util/icons";
 import { ActionIcon, Box, Center, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import { BehaviourTab } from "./tabs/Behaviour";
 import { ServingTab } from "./tabs/Serving";
@@ -16,7 +16,6 @@ import { useStable } from "~/hooks/stable";
 import { adapter, isDesktop } from "~/adapter";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
-import { mdiFlagOutline, mdiScaleBalance } from "@mdi/js";
 import { LicensesTab } from "./tabs/Licenses";
 import { FeatureCondition } from "~/types";
 import { useIntent } from "~/hooks/url";
@@ -61,14 +60,14 @@ const CATEGORIES: Category[] = [
 	{
 		id: "feature-flags",
 		name: "Feature Flags",
-		icon: mdiFlagOutline,
+		icon: iconFlag,
 		component: FeatureFlagsTab,
 		disabled: (flags) => !flags.devTools
 	},
 	{
 		id: "licenses",
 		name: "OSS Licenses",
-		icon: mdiScaleBalance,
+		icon: iconBalance,
 		component: LicensesTab,
 		disabled: (flags) => !flags.listLicenses,
 	}

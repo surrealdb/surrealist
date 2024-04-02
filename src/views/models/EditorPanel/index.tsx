@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 import { Center, Divider, Group, Text } from "@mantine/core";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
-import { mdiFunction } from "@mdi/js";
 import { Updater } from "use-immer";
 import { Icon } from "~/components/Icon";
 import { PermissionInput } from "~/components/Inputs";
@@ -10,7 +9,7 @@ import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
 import { ModelDefinition } from "~/types";
-import { iconCheck, iconCopy } from "~/util/icons";
+import { iconCheck, iconCopy, iconFunction } from "~/util/icons";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -29,7 +28,7 @@ export function EditorPanel({
 	return (
 		<ContentPane
 			title="Function Editor"
-			icon={mdiFunction}
+			icon={iconFunction}
 		>
 			<Group
 				h="100%"

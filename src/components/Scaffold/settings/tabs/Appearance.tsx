@@ -39,6 +39,9 @@ export function AppearanceTab() {
 						onChange={setColorScheme as any}
 					/>
 				)}
+			</SettingsSection>
+
+			<SettingsSection label="Scale">
 				<Box>
 					<Label>
 						Editor font scale
@@ -46,7 +49,7 @@ export function AppearanceTab() {
 					<Slider
 						mt="xs"
 						mb="lg"
-						mx="sm"
+						mx="xs"
 						min={50}
 						max={150}
 						defaultValue={editorScale}
@@ -60,7 +63,6 @@ export function AppearanceTab() {
 						]}
 					/>
 				</Box>
-
 				{isDesktop && (
 					<Box>
 						<Label>

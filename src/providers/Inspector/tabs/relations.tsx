@@ -48,12 +48,8 @@ export interface RelationsTabProps {
 export function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabProps) {
 	return (
 		<ScrollArea
-			style={{
-				position: "absolute",
-				insetInline: 12,
-				bottom: 0,
-				top: 158,
-			}}>
+			flex="1 0 0"
+		>
 
 			<Text c="bright" size="lg" fw={600} mt={4}>
 				Incoming relations

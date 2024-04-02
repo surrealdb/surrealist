@@ -1,10 +1,11 @@
 import { Accordion, TextInput } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
+import { iconLive } from "~/util/icons";
 
 export function ChangefeedElement({ data, setData }: ElementProps) {
 	return (
 		<Accordion.Item value="changefeed">
-			<SectionTitle>
+			<SectionTitle icon={iconLive}>
 				Changefeed
 			</SectionTitle>
 			<Accordion.Panel>

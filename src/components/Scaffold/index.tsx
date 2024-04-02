@@ -35,6 +35,7 @@ import { useWindowSettings } from "./hooks";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { FunctionsView } from "~/views/functions/FunctionsView";
 import { ModelsView } from "~/views/models/ModelsView";
+import { LegacyModal } from "./modals/legacy";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -159,6 +160,7 @@ export function Scaffold() {
 			)}
 
 			<ConnectionEditor />
+			<LegacyModal />
 
 			<CommandPaletteModal
 				opened={showPalette}
@@ -174,7 +176,6 @@ export function Scaffold() {
 			<DownloadModal
 				opened={showDownload}
 				onClose={downloadHandle.close}
-				onOpen={downloadHandle.open}
 			/>
 		</div>
 	);

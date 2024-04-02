@@ -6,7 +6,7 @@ import { Spacer } from "~/components/Spacer";
 import { useLater } from "~/hooks/later";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { iconCircle, iconClose, iconPlus } from "~/util/icons";
+import { iconClose, iconPlus } from "~/util/icons";
 
 export interface ListerProps<T> {
 	name: string;
@@ -56,22 +56,15 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 					{props.value.map((item, i) => (
 						<Paper
 							key={i}
-							py="xs"
-							pr="xs"
+							p="xs"
 							pl="md"
-							bg={isLight ? "slate.0" : "slate.9"}
+							bg={isLight ? "slate.0" : "slate.8"}
 							pos="relative"
 							radius="md"
 							style={{ border: 0, cursor: "pointer" }}
 							onClick={() => openEditor(i)}
 						>
 							<Group gap="sm">
-								<Icon
-									path={iconCircle}
-									color="surreal"
-									size="xl"
-									style={{ flexShrink: 0 }}
-								/>
 								{item.name ? (
 									<Text c="bright">
 										{item.name}
@@ -82,7 +75,13 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 									</Text>
 								)}
 								<Spacer />
-								<ActionIcon role="button" component="div" onClick={(e) => handleRemove(e, i)} color="red">
+								<ActionIcon
+									role="button"
+									component="div"
+									onClick={(e) => handleRemove(e, i)}
+									color="red"
+									variant="subtle"
+								>
 									<Icon path={iconClose} color="red" />
 								</ActionIcon>
 							</Group>
@@ -95,7 +94,14 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				</Text>
 			)}
 
-			<Button mt="md" size="xs" fullWidth variant="outline" rightSection={<Icon path={iconPlus} />} onClick={handleCreate}>
+			<Button
+				mt="md"
+				size="xs"
+				fullWidth
+				variant="gradient"
+				rightSection={<Icon path={iconPlus} />}
+				onClick={handleCreate}
+			>
 				Add {props.name}
 			</Button>
 
@@ -103,13 +109,23 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				opened={isEditing}
 				onClose={closeEditor}
 				trapFocus={false}
-				size="lg"
 				title={
 					<ModalTitle>{`Editing ${props.name}`}</ModalTitle>
 				}
 			>
 				<Stack>
 					{editingData && props.children(editingData, editingIndex)}
+
+					<Group mt="md">
+						<Button
+							variant="light"
+							color="slate"
+							flex={1}
+							onClick={closeEditor}
+						>
+							Finish editing
+						</Button>
+					</Group>
 				</Stack>
 			</Modal>
 		</>

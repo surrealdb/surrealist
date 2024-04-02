@@ -16,6 +16,7 @@ use window::configure_window;
 
 mod config;
 mod database;
+mod helpers;
 mod window;
 
 fn main() {
@@ -26,10 +27,14 @@ fn main() {
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,
+            config::load_legacy_config,
             config::save_config,
+            config::has_legacy_config,
+            config::complete_legacy_migrate,
             database::start_database,
             database::stop_database,
             window::set_window_scale,
+            window::toggle_devtools,
         ])
         .setup(|app| {
             let window = app.get_window("main").unwrap();
