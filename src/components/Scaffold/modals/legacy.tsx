@@ -1,14 +1,13 @@
-import { Button, Center, Group, Modal, Stack, Text } from "@mantine/core";
-import { ModalTitle } from "~/components/ModalTitle";
+import logoUrl from "~/assets/images/logo-tile.png";
+import { Anchor, Button, Group, Image, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect } from "react";
 import { adapter } from "~/adapter";
-import { Spacer } from "~/components/Spacer";
-import { useStable } from "~/hooks/stable";
 import { migrateLegacyConfig } from "~/util/migrator";
 import { useConfigStore } from "~/stores/config";
 import { Icon } from "~/components/Icon";
-import { iconCheck, iconReset } from "~/util/icons";
+import { iconChevronRight } from "~/util/icons";
+import { SurrealistLogo } from "~/components/SurrealistLogo";
 
 export function LegacyModal() {
 	const [isOpen, openHandle] = useDisclosure();
@@ -17,24 +16,15 @@ export function LegacyModal() {
 		const hasLegacy = await adapter.hasLegacyConfig();
 
 		if (hasLegacy) {
+			const legacy = await adapter.getLegacyConfig();
+			const migrated = migrateLegacyConfig(legacy);
+
+			useConfigStore.setState(migrated);
+
+			adapter.handleLegacyCleanup();
 			openHandle.open();
 		}
 	};
-
-	const skipMigration = useStable(async () => {
-		adapter.handleLegacyCleanup();
-		openHandle.close();
-	});
-
-	const runMigration = useStable(async () => {
-		const legacy = await adapter.getLegacyConfig();
-		const migrated = migrateLegacyConfig(legacy);
-
-		useConfigStore.setState(migrated);
-
-		adapter.handleLegacyCleanup();
-		openHandle.close();
-	});
 
 	useEffect(() => {
 		checkLegacyConfig();
@@ -44,44 +34,48 @@ export function LegacyModal() {
 		<Modal
 			opened={isOpen}
 			onClose={openHandle.close}
-			closeOnClickOutside={false}
-			closeOnEscape={false}
+			trapFocus={false}
+			size="sm"
 		>
-			<Center>
-				<Icon path={iconReset} size={2.5} c="bright" mb="sm" />
-			</Center>
-
-			<ModalTitle ta="center" mb="xl">
-				Config update required
-			</ModalTitle>
+			<Group mb="xl" gap="md" wrap="nowrap">
+				<Image
+					src={logoUrl}
+					w={42}
+				/>
+				<Stack gap={6} align="start">
+					<SurrealistLogo c="bright" h={20} />
+					<Text>
+						Level up your SurrealDB experience
+					</Text>
+				</Stack>
+			</Group>
 
 			<Stack>
-				<Text>
-					Your configuration file is outdated and needs to be migrated to a new format. Click the button below to start the migration process, or press skip to reset the configuration to default values.
+				<Text c="bright">
+					Welcome back to Surrealist!
+				</Text>
+
+				<Text c="bright">
+					Your configuration has been automatically migrated to the new format so you can continue where you left off.
 				</Text>
 
 				<Text>
-					The original configuration will be backed up and can be restored at any time.
+					Want to learn more about the new Surrealist? Feel free to visit
+					the <Anchor href="https://github.com/surrealdb/Surrealist/releases/tag/v2.0.0">changelog</Anchor> or
+					read our updated <Anchor href="https://surrealdb.com/docs/surrealist">documentation</Anchor>.
 				</Text>
-
-				<Group>
-					<Button
-						color="slate"
-						variant="light"
-						onClick={skipMigration}
-					>
-						Skip
-					</Button>
-					<Spacer />
-					<Button
-						variant="gradient"
-						onClick={runMigration}
-						rightSection={<Icon path={iconCheck} />}
-					>
-						Migrate now
-					</Button>
-				</Group>
 			</Stack>
+
+			<Button
+				mt="xl"
+				size="xs"
+				fullWidth
+				variant="gradient"
+				onClick={openHandle.close}
+				rightSection={<Icon path={iconChevronRight} />}
+			>
+				Get started
+			</Button>
 		</Modal>
 	);
 }
