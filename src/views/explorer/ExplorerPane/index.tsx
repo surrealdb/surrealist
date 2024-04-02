@@ -10,7 +10,7 @@ import { getSurreal } from "~/util/surreal";
 import { useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
-import { iconChevronLeft, iconChevronRight, iconCopy, iconDelete, iconFilter, iconPlus, iconQuery, iconRefresh, iconServer, iconTable } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconClose, iconCopy, iconDelete, iconFilter, iconPlus, iconQuery, iconRefresh, iconServer, iconTable, iconWrench } from "~/util/icons";
 import { tb } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
 import { RecordsChangedEvent } from "~/util/global-events";
@@ -165,6 +165,27 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
 		showContextMenu([
 			{
+				key: "select",
+				title: "Use in SELECT query",
+				icon: <Icon path={iconQuery} />,
+				onClick: () => openRecordQuery(record.id, 'SELECT * FROM')
+			},
+			{
+				key: "select",
+				title: "Use in UPDATE query",
+				icon: <Icon path={iconWrench} />,
+				onClick: () => openRecordQuery(record.id, 'UPDATE')
+			},
+			{
+				key: "select",
+				title: "Use in DELETE query",
+				icon: <Icon path={iconClose} />,
+				onClick: () => openRecordQuery(record.id, 'DELETE')
+			},
+			{
+				key: "divider"
+			},
+			{
 				key: "copy",
 				title: "Copy record id",
 				icon: <Icon path={iconCopy} />,
@@ -185,27 +206,6 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 					fetchRecords();
 				}
-			},
-			{
-				key: "divider"
-			},
-			{
-				key: "select",
-				title: "Use in SELECT query",
-				icon: <Box w={18} />,
-				onClick: () => openRecordQuery(record.id, 'SELECT * FROM')
-			},
-			{
-				key: "select",
-				title: "Use in UPDATE query",
-				icon: <Box w={18} />,
-				onClick: () => openRecordQuery(record.id, 'UPDATE')
-			},
-			{
-				key: "select",
-				title: "Use in DELETE query",
-				icon: <Box w={18} />,
-				onClick: () => openRecordQuery(record.id, 'DELETE')
 			},
 		])(e);
 	});

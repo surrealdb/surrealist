@@ -19,12 +19,24 @@ input::-ms-clear {
     overflow: visible;
 }
 
-.mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
-    font-size: 0.75rem !important;
-}
-
 .mantine-ActionIcon-root:hover {
     --ai-hover-color: white;
+}
+
+.mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
+    font-size: 0.65rem !important;
+}
+
+.mantine-contextmenu {
+    padding: var(--mantine-spacing-xs);
+}
+
+.mantine-contextmenu-item-button {
+    border-radius: var(--mantine-radius-xs);
+}
+
+.mantine-contextmenu-divider {
+    margin-block: var(--mantine-spacing-xs);
 }
 
 .mantine-contextmenu, .mantine-Popover-dropdown, .mantine-Menu-dropdown {
