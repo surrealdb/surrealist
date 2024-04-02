@@ -1,5 +1,15 @@
 import classes from "../style.module.scss";
-import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
+import {
+	Box,
+	Divider,
+	Group,
+	Modal,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+	UnstyledButton,
+} from "@mantine/core";
 import { useConnection } from "~/hooks/connection";
 import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { Icon } from "~/components/Icon";
@@ -19,7 +29,10 @@ export interface CommandPaletteModalProps {
 	onClose: () => void;
 }
 
-export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProps) {
+export function CommandPaletteModal({
+	opened,
+	onClose,
+}: CommandPaletteModalProps) {
 	const { pushCommand } = useConfigStore.getState();
 
 	const connection = useConnection();
@@ -40,28 +53,41 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 	}, [opened]);
 
 	const [filtered, flattened] = useMemo(() => {
-		const filtered = categories.flatMap(cat => {
+		const filtered = categories.flatMap((cat) => {
 			if (search && cat.search === false) {
 				return [];
 			}
 
 			const commands = fuzzyMatch(search, cat.name)
 				? cat.commands
-				: cat.commands.filter(cmd => fuzzyMatch(search, cmd.name));
+				: cat.commands.filter(
+					(cmd) =>
+						fuzzyMatch(search, cmd.name) ||
+							cmd.aliases?.find((alias) =>
+								fuzzyMatch(search, alias)
+							)
+				);
 
-			return commands.length === 0 ? [] : [{
-				...cat,
-				commands,
-			}];
+			return commands.length === 0
+				? []
+				: [
+					{
+						...cat,
+						commands,
+					},
+				];
 		});
 
-		const flattened = filtered.flatMap(cat => cat.commands);
+		const flattened = filtered.flatMap((cat) => cat.commands);
 
 		return [filtered, flattened];
 	}, [categories, search]);
 
 	useLayoutEffect(() => {
-		if (flattened.length > 0 && (!selected || !flattened.includes(selected))) {
+		if (
+			flattened.length > 0 &&
+			(!selected || !flattened.includes(selected))
+		) {
 			setSelected(flattened[0]);
 		}
 	}, [flattened]);
@@ -106,17 +132,22 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 			let target: Command | undefined;
 
 			if (e.key == "ArrowDown" || (e.key == "Tab" && !e.shiftKey)) {
-				target = flattened[flattened.indexOf(selected) + 1] ?? flattened[0];
+				target =
+					flattened[flattened.indexOf(selected) + 1] ?? flattened[0];
 			} else if (e.key == "ArrowUp" || (e.key == "Tab" && e.shiftKey)) {
-				target = flattened[flattened.indexOf(selected) - 1] ?? flattened.at(-1);
+				target =
+					flattened[flattened.indexOf(selected) - 1] ??
+					flattened.at(-1);
 			}
 
 			if (target) {
 				setSelected(target);
 
-				ref.current?.querySelector(`[data-cmd="${target.id}"]`)?.scrollIntoView({
-					block: "nearest"
-				});
+				ref.current
+					?.querySelector(`[data-cmd="${target.id}"]`)
+					?.scrollIntoView({
+						block: "nearest",
+					});
 
 				e.stopPropagation();
 				e.preventDefault();
@@ -134,16 +165,14 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 			size="lg"
 			onKeyDown={handleKeyDown}
 			classNames={{
-				content: classes.paletteModal
+				content: classes.paletteModal,
 			}}
 		>
 			<Box p="lg">
 				{connection && (
 					<Group gap="xs" mb="sm" c="surreal">
 						<Icon path={iconServer} size="sm" />
-						<Text>
-							In {connection.name}
-						</Text>
+						<Text>In {connection.name}</Text>
 					</Group>
 				)}
 				<TextInput
@@ -159,42 +188,46 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 
 			<Divider color="slate.6" mx="lg" />
 
-			<Box h={350}pb={0}>
-				<ScrollArea
-					viewportRef={ref}
-					scrollbars="y"
-					h="100%"
-				>
+			<Box h={350} pb={0}>
+				<ScrollArea viewportRef={ref} scrollbars="y" h="100%">
 					{filtered.length > 0 ? (
 						<Stack p="lg">
-							{filtered.map(cat => (
+							{filtered.map((cat) => (
 								<Fragment key={cat.name}>
 									<Text c="slate" fw={500}>
 										{cat.name}
 									</Text>
 									<Stack gap={2}>
-										{cat.commands.map(cmd => (
+										{cat.commands.map((cmd) => (
 											<UnstyledButton
 												key={cmd.name}
 												onClick={() => activate(cmd)}
-												onMouseMove={() => setSelected(cmd)}
+												onMouseMove={() =>
+													setSelected(cmd)
+												}
 												className={classes.command}
 												data-active={selected === cmd}
 												data-cmd={cmd.id}
 											>
 												<Icon
 													path={cmd.icon}
-													className={classes.commandIcon}
+													className={
+														classes.commandIcon
+													}
 												/>
 												<Text
-													className={classes.commandLabel}
+													className={
+														classes.commandLabel
+													}
 												>
 													{cmd.name}
 												</Text>
 												{cmd.action.type == "href" && (
 													<Icon
 														path={iconOpen}
-														className={classes.commandIcon}
+														className={
+															classes.commandIcon
+														}
 														size="sm"
 														ml={-8}
 													/>
@@ -203,9 +236,24 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 													<>
 														<Spacer />
 														<Group gap="lg">
-															{(Array.isArray(cmd.shortcut) ? cmd.shortcut : [cmd.shortcut]).map((shortcut, i) => (
-																<Shortcut key={i} value={shortcut} />
-															))}
+															{(Array.isArray(
+																cmd.shortcut
+															)
+																? cmd.shortcut
+																: [cmd.shortcut]
+															).map(
+																(
+																	shortcut,
+																	i
+																) => (
+																	<Shortcut
+																		key={i}
+																		value={
+																			shortcut
+																		}
+																	/>
+																)
+															)}
 														</Group>
 													</>
 												)}
@@ -216,11 +264,7 @@ export function CommandPaletteModal({ opened, onClose }: CommandPaletteModalProp
 							))}
 						</Stack>
 					) : (
-						<Text
-							ta="center"
-							py="md"
-							c="slate"
-						>
+						<Text ta="center" py="md" c="slate">
 							No matching commands found
 						</Text>
 					)}

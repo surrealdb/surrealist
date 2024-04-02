@@ -1,12 +1,13 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload } from "./icons";
+import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
 import { mdiNewspaperVariantOutline } from "@mdi/js";
+import { featureFlags } from "./feature-flags";
 
 type LaunchAction = { type: "launch", handler: () => void };
 type InsertAction = { type: "insert", content: string };
@@ -21,6 +22,7 @@ export interface Command {
 	icon: string;
 	shortcut?: string | string[];
 	action: Action;
+	aliases?: string[];
 }
 
 export interface CommandCategory {
@@ -289,7 +291,48 @@ export function computeCommands(): CommandCategory[] {
 				icon: iconTextBoxMinus,
 				shortcut: "mod shift -",
 				action: intent("decrease-editor-scale")
-			}
+			},
+			{
+				id: newId(),
+				name: "Manage Behaviour",
+				icon: iconWrench,
+				action: intent("open-settings", { tab: 'behaviour' })
+			},
+			{
+				id: newId(),
+				name: "Manage Appearance",
+				icon: iconEye,
+				action: intent("open-settings", { tab: 'appearance' })
+			},
+			...(featureFlags.get('templates') ? [
+				{
+					id: newId(),
+					name: "Manage Templates",
+					icon: iconServer,
+					action: intent("open-settings", { tab: 'templates' }),
+				}
+			] : []),
+			...(isDesktop ? [
+				{
+					id: newId(),
+					name: "Manage Database Serving",
+					icon: iconPlay,
+					action: intent("open-settings", { tab: 'serving' }),
+				}
+			] : []),
+			{
+				id: newId(),
+				name: "Manage Feature Flags",
+				icon: iconFlag,
+				action: intent("open-settings", { tab: 'feature-flags' })
+			},
+			{
+				id: newId(),
+				name: "View OSS Licenses",
+				icon: iconBalance,
+				action: intent("open-settings", { tab: 'licenses' }),
+				aliases: ["Manage OSS Licenses"],
+			},
 		]
 	}, {
 		name: "Navigation",
