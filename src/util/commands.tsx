@@ -95,14 +95,14 @@ export function computeCommands(): CommandCategory[] {
 
 		categories.push({
 			name: 'Views',
-			commands: Object.values(VIEW_MODES).map(view => ({
+			commands: Object.values(VIEW_MODES).flatMap(view => view.disabled?.(featureFlags.store) ? [] : [{
 				id: newId(),
 				name: `Open ${view.name} view`,
 				icon: view.icon,
 				action: launch(() => {
 					setActiveView(view.id);
 				})
-			}))
+			}])
 		}, {
 			name: 'Tables',
 			commands: [
