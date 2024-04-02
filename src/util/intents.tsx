@@ -14,6 +14,7 @@ const INTENT_REGISTRY = {
 	'increase-editor-scale': null,
 	'decrease-editor-scale': null,
 	'toggle-pinned': null,
+	'download-app': null,
 	'new-query': 'query',
 	'run-query': 'query',
 	'save-query': 'query',

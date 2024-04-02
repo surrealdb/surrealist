@@ -176,6 +176,7 @@ export function Scaffold() {
 			<DownloadModal
 				opened={showDownload}
 				onClose={downloadHandle.close}
+				onOpen={downloadHandle.open}
 			/>
 		</div>
 	);

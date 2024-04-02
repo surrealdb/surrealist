@@ -369,6 +369,12 @@ export function computeCommands(): CommandCategory[] {
 				icon: iconBook,
 				action: href("https://surrealdb.com/docs/")
 			},
+			{
+				id: newId(),
+				name: "Download Desktop App",
+				icon: iconDownload,
+				action: intent('download-app'),
+			},
 		]
 	});
 
