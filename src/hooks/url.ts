@@ -16,6 +16,8 @@ export function useUrlHandler() {
 
 	const syncViewToUrl = useCallback(() => {
 		const url = location.pathname.toLowerCase();
+		const params = new URLSearchParams(location.search);
+		const intent = params.get('intent');
 		const views = Object.keys(VIEW_MODES) as ViewMode[];
 		const target = views.find((v) => url === `/${v}`);
 
@@ -25,25 +27,20 @@ export function useUrlHandler() {
 			history.replaceState(null, document.title, `/${activeView}`);
 		}
 
-		const params = new URLSearchParams(location.search);
-		const intent = params.get('intent');
+		if (intent) {
+			const [type, ...args] = intent.split(':');
 
-		if (!intent) {
-			return;
+			if (isIntent(type)) {
+				const payload = (args.join(':') || '').split(',').reduce((acc, arg) => {
+					const [key, value] = arg.split('=');
+					return { ...acc, [key]: value };
+				}, {} as any);
+
+				dispatchIntent(type, payload);
+			}
+
+			history.replaceState(null, document.title, location.pathname);
 		}
-
-		const [type, args] = intent.split(':');
-
-		if (isIntent(type)) {
-			const payload = (args || '').split(',').reduce((acc, arg) => {
-				const [key, value] = arg.split('=');
-				return { ...acc, [key]: value };
-			}, {} as any);
-
-			dispatchIntent(type, payload);
-		}
-
-		history.replaceState(null, document.title, location.pathname);
 	}, []);
 
 	// Sync initial URL to active view
