@@ -16,7 +16,7 @@ import {
 import { useMemo } from "react";
 import { Updater } from "use-immer";
 import { TableDefinition } from "~/types";
-import { fetchDatabaseSchema, isEdgeTable } from "~/util/schema";
+import { syncDatabaseSchema, isEdgeTable } from "~/util/schema";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { Spacer } from "~/components/Spacer";
@@ -61,8 +61,9 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 			onClose(true);
 
 			await surreal.query(`REMOVE TABLE ${tb(value.schema.name)}`);
-
-			fetchDatabaseSchema();
+			await syncDatabaseSchema({
+				tables: [value.schema.name]
+			});
 		}
 	});
 

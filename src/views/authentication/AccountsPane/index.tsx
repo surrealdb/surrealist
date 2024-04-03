@@ -29,7 +29,7 @@ import { useIsLight } from "~/hooks/theme";
 import { DatabaseSchema, UserDefinition } from "~/types";
 import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
 import { iconCheck, iconComment, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 
@@ -82,7 +82,9 @@ export function AccountsPane(props: AccountsPaneProps) {
 			}
 
 			await getActiveSurreal().query(query);
-			await fetchDatabaseSchema();
+			await syncDatabaseSchema({
+				users: true
+			});
 		} catch (err: any) {
 			showError({
 				title: "Failed to save account",
@@ -120,7 +122,9 @@ export function AccountsPane(props: AccountsPaneProps) {
 		closeModal();
 
 		await getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.type}`);
-		await fetchDatabaseSchema();
+		await syncDatabaseSchema({
+			users: true
+		});
 	});
 
 	const formatRoles = useStable((user: UserDefinition) => {

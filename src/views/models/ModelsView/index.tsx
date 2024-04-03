@@ -10,7 +10,8 @@ import { useImmer } from "use-immer";
 import { useSchema } from "~/hooks/schema";
 import { useSaveable } from "~/hooks/save";
 import { ConnectionOptions, ModelDefinition } from "~/types";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
+import { useViewEffect } from "~/hooks/view";
 
 const SURML_FILTERS = [
 	{
@@ -69,7 +70,9 @@ export function ModelsView() {
 			});
 		}
 
-		fetchDatabaseSchema();
+		syncDatabaseSchema({
+			models: true
+		});
 	});
 
 	const downloadModel = useStable(async (model: ModelDefinition) => {
@@ -87,6 +90,12 @@ export function ModelsView() {
 				headers
 			}).then(res => res.blob())
 		);
+	});
+
+	useViewEffect("models", () => {
+		syncDatabaseSchema({
+			models: true
+		});
 	});
 
 	return (

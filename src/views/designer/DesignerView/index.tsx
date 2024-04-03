@@ -7,13 +7,14 @@ import { useSaveable } from "~/hooks/save";
 import { buildDefinitionQueries, isSchemaValid } from "../DesignDrawer/helpers";
 import { showError } from "~/util/helpers";
 import { getActiveSurreal } from "~/util/surreal";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
 import { TableDefinition } from "~/types";
 import { ReactFlowProvider } from "reactflow";
 import { useIsConnected } from "~/hooks/connection";
 import { useDisclosure } from "@mantine/hooks";
 import { DesignDrawer } from "../DesignDrawer";
 import { useIntent } from "~/hooks/url";
+import { useViewEffect } from "~/hooks/view";
 
 const DEFAULT_DEF: TableDefinition = {
 	schema: {
@@ -63,7 +64,9 @@ export function DesignerView(_props: DesignerViewProps) {
 			const surreal = getActiveSurreal();
 
 			surreal.query(query)
-				.then(() => fetchDatabaseSchema())
+				.then(() => syncDatabaseSchema({
+					tables: [data.schema.name]
+				}))
 				.then(isDesigningHandle.close)
 				.catch((err) => {
 					showError({
@@ -105,6 +108,12 @@ export function DesignerView(_props: DesignerViewProps) {
 
 	useIntent("design-table", ({ table }) => {
 		setActiveTable(table);
+	});
+
+	useViewEffect("designer", () => {
+		syncDatabaseSchema({
+			tables: true
+		});
 	});
 
 	return (

@@ -193,9 +193,9 @@ export interface DatabaseSchema {
 	nsUsers: UserDefinition[];
 	dbUsers: UserDefinition[];
 	scopes: ScopeDefinition[];
-	tables: TableDefinition[];
 	functions: FunctionDefinition[];
 	models: ModelDefinition[];
+	tables: TableDefinition[];
 }
 
 export interface UserDefinition {

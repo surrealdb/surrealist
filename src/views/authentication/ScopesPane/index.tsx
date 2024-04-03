@@ -13,7 +13,7 @@ import { useStable } from "~/hooks/stable";
 import { ScopeDefinition } from "~/types";
 import { getActiveSurreal } from "~/util/surreal";
 import { showError } from "~/util/helpers";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
 import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
@@ -54,7 +54,9 @@ export function ScopePane() {
 			}
 
 			await getActiveSurreal().query(query);
-			await fetchDatabaseSchema();
+			await syncDatabaseSchema({
+				scopes: true
+			});
 		} catch (err: any) {
 			showError({
 				title: "Failed to save scope",
@@ -83,7 +85,9 @@ export function ScopePane() {
 
 	const removeScope = useStable(async () => {
 		await getActiveSurreal().query(`REMOVE SCOPE ${editingName}`);
-		await fetchDatabaseSchema();
+		await syncDatabaseSchema({
+			scopes: true
+		});
 
 		closeModal();
 	});

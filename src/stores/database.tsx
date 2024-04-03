@@ -1,6 +1,6 @@
 import { DatabaseSchema } from "~/types";
-import { printLog } from "~/util/helpers";
 import { create } from 'zustand';
+import { createDatabaseSchema } from "~/util/defaults";
 
 export type DatabaseStore = {
 	isServing: boolean;
@@ -9,7 +9,7 @@ export type DatabaseStore = {
 	isConnected: boolean;
 	isQueryActive: boolean;
 	consoleOutput: string[];
-	databaseSchema: DatabaseSchema | null;
+	databaseSchema: DatabaseSchema;
 	version: string;
 
 	setQueryActive: (isQueryActive: boolean) => void;
@@ -33,7 +33,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	isConnected: false,
 	isQueryActive: false,
 	consoleOutput: [],
-	databaseSchema: null,
+	databaseSchema: createDatabaseSchema(),
 	version: "",
 
 	setQueryActive: (isQueryActive) => set(() => ({
@@ -41,7 +41,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	})),
 
 	clearSchema: () => set(() => ({
-		databaseSchema: null,
+		databaseSchema: createDatabaseSchema(),
 	})),
 
 	prepareServe: () => set(() => ({
@@ -74,10 +74,9 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 		consoleOutput: [],
 	})),
 
-	setDatabaseSchema: (databaseSchema) => set(() => {
-		printLog("Received database schema", "#e600a4", databaseSchema);
-		return { databaseSchema };
-	}),
+	setDatabaseSchema: (databaseSchema) => set(() => ({
+		databaseSchema
+	})),
 
 	setIsConnecting: (isConnecting) => set(() => ({
 		isConnecting,
@@ -85,7 +84,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 
 	setIsConnected: (isConnected) => set((state) => ({
 		isConnected,
-		databaseSchema: isConnected ? state.databaseSchema : null,
+		databaseSchema: isConnected ? state.databaseSchema : createDatabaseSchema(),
 	})),
 
 	setVersion: (version) => set(() => ({

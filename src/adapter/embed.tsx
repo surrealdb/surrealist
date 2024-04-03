@@ -15,8 +15,6 @@ export class EmbedAdapter extends BrowserAdapter {
 	#setupQuery: string | undefined;
 
 	public async loadConfig() {
-		console.log('loading config');
-
 		const settings = createBaseSettings();
 		const mainTab = createBaseTab(settings);
 		const params = new URL(document.location.toString()).searchParams;

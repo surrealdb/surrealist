@@ -3,11 +3,18 @@ import { AccountsPane } from "../AccountsPane";
 import { ScopePane } from "../ScopesPane";
 import { useIsConnected } from "~/hooks/connection";
 import { iconAuth, iconFolderSecure, iconServerSecure } from "~/util/icons";
+import { useViewEffect } from "~/hooks/view";
+import { syncDatabaseSchema } from "~/util/schema";
 
-export interface AuthenticationViewProps {}
-
-export function AuthenticationView(props: AuthenticationViewProps) {
+export function AuthenticationView() {
 	const isOnline = useIsConnected();
+
+	useViewEffect("authentication", () => {
+		syncDatabaseSchema({
+			users: true,
+			scopes: true
+		});
+	});
 
 	return (
 		<SimpleGrid

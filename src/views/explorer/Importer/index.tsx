@@ -10,7 +10,7 @@ import { showError, showInfo } from "~/util/helpers";
 import { ModalTitle } from "../../../components/ModalTitle";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
 import { getActiveSurreal } from "~/util/surreal";
 import { OpenedTextFile } from "~/adapter/base";
 import { iconChevronRight, iconDownload, iconFile } from "~/util/icons";
@@ -55,7 +55,7 @@ export function Importer() {
 				subtitle: "Database was successfully imported"
 			});
 
-			fetchDatabaseSchema();
+			await syncDatabaseSchema();
 		} catch(err: any) {
 			console.error(err);
 

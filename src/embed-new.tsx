@@ -196,7 +196,6 @@ function processUrl(input: string) {
 	const search = new URLSearchParams(url.search);
 	const { dataset, setup, query, variables, theme } = Object.fromEntries(search.entries());
 	const parsedVariables = parseJson(variables);
-	console.log(parsedVariables);
 
 	return {
 		dataset: Object.keys(datasets).includes(dataset) ? dataset : 'none',
@@ -236,7 +235,6 @@ function useDelayedValue<T>(value: T, seconds = 3) {
 				clearInterval(interval);
 				setCountdown(0);
 			} else if (count > 0) {
-				console.log(value, current);
 				count--;
 				setCountdown(count);
 			} else {

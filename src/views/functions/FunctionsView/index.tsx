@@ -12,9 +12,10 @@ import { FunctionDefinition } from "~/types";
 import { useImmer } from "use-immer";
 import { useSchema } from "~/hooks/schema";
 import { useSaveable } from "~/hooks/save";
-import { buildFunctionDefinition, fetchDatabaseSchema } from "~/util/schema";
+import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
 import { getActiveSurreal, getSurreal } from "~/util/surreal";
 import { useConfirmation } from "~/providers/Confirmation";
+import { useViewEffect } from "~/hooks/view";
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
@@ -34,7 +35,9 @@ export function FunctionsView() {
 			const query = buildFunctionDefinition(details!);
 
 			await getActiveSurreal().query(query).catch(console.error);
-			await fetchDatabaseSchema();
+			await syncDatabaseSchema({
+				functions: true
+			});
 
 			editFunction(details!.name);
 		},
@@ -101,11 +104,19 @@ export function FunctionsView() {
 			}
 
 			await surreal.query(`REMOVE FUNCTION fn::${name}`);
-			await fetchDatabaseSchema();
+			await syncDatabaseSchema({
+				functions: true
+			});
 
 			setDetails(null);
 			handle.track();
 		},
+	});
+
+	useViewEffect("functions", () => {
+		syncDatabaseSchema({
+			functions: true
+		});
 	});
 
 	return (

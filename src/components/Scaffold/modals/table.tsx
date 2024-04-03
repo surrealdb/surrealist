@@ -4,7 +4,7 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { useInputState } from "@mantine/hooks";
 import { Form } from "../../Form";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
 import { ModalTitle } from "../../ModalTitle";
 import { getActiveSurreal } from "~/util/surreal";
@@ -40,7 +40,9 @@ export function TableCreator() {
 		closeTableCreator();
 
 		await surreal.query(query);
-		await fetchDatabaseSchema();
+		await syncDatabaseSchema({
+			tables: [tableName]
+		});
 	});
 
 	useLayoutEffect(() => {

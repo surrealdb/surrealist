@@ -1,4 +1,4 @@
-import { Connection, ConnectionOptions, QueryType, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
+import { Connection, ConnectionOptions, DatabaseSchema, QueryType, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
 import { newId } from "./helpers";
 import { extract_query_type } from "~/generated/surrealist-embed";
 
@@ -121,5 +121,18 @@ export function createSandboxConnection(settings: SurrealistSettings): Connectio
 			password: "",
 			username: ""
 		}
+	};
+}
+
+export function createDatabaseSchema(): DatabaseSchema {
+	return {
+		kvUsers: [],
+		nsUsers: [],
+		dbUsers: [],
+		scopes: [],
+		functions: [],
+		models: [],
+		tables: [],
+		tableMap: {},
 	};
 }

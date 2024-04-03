@@ -19,7 +19,7 @@ import { iconFile, iconReset } from "~/util/icons";
 import { HelpAndSupport } from "./HelpAndSupport";
 import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
 import { getSurreal } from "~/util/surreal";
 import { NewsFeed } from "./NewsFeed";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -63,7 +63,7 @@ export function Toolbar() {
 		const dataset = await fetch(info.url).then(res => res.text());
 
 		await getSurreal()?.query(dataset);
-		await fetchDatabaseSchema();
+		await syncDatabaseSchema();
 
 		showInfo({
 			title: "Dataset loaded",

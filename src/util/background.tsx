@@ -3,7 +3,6 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { setEditorTheme } from "./editor";
 import { openConnection } from "~/database";
-import { fetchDatabaseSchema } from "./schema";
 import { getSetting, watchStore } from "./config";
 import { assign } from "radash";
 
@@ -81,16 +80,5 @@ export function watchConnectionSwitch() {
 				openConnection();
 			}
 		},
-	});
-}
-
-/**
- * Watch for a change in active view
- */
-export function watchViewSwitch() {
-	watchStore({
-		store: useConfigStore,
-		select: (state) => state.activeView,
-		then: fetchDatabaseSchema,
 	});
 }

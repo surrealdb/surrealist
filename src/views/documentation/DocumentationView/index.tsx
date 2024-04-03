@@ -5,6 +5,8 @@ import { useMemo, useRef, useState } from "react";
 import { useSchema } from "~/hooks/schema";
 import { buildDocumentation } from "~/docs";
 import { useSetting } from "~/hooks/config";
+import { useViewEffect } from "~/hooks/view";
+import { syncDatabaseSchema } from "~/util/schema";
 
 export function DocumentationView() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
@@ -14,6 +16,12 @@ export function DocumentationView() {
 	const [active, setActive] = useState("");
 
 	const docs = useMemo(() => schema ? buildDocumentation(schema) : [], [schema]);
+
+	useViewEffect("documentation", () => {
+		syncDatabaseSchema({
+			tables: true
+		});
+	});
 
 	return (
 		<>

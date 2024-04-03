@@ -11,6 +11,8 @@ import { useIntent } from "~/hooks/url";
 import { Icon } from "~/components/Icon";
 import { iconExplorer, iconPlus } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
+import { useViewEffect } from "~/hooks/view";
+import { syncDatabaseSchema } from "~/util/schema";
 
 export function ExplorerView() {
 	const { openTableCreator } = useInterfaceStore.getState();
@@ -30,6 +32,12 @@ export function ExplorerView() {
 
 	useIntent("explore-table", ({ table }) => {
 		setActiveTable(table);
+	});
+
+	useViewEffect("explorer", () => {
+		syncDatabaseSchema({
+			tables: true
+		});
 	});
 
 	return (

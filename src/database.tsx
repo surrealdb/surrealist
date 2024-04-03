@@ -1,7 +1,7 @@
 import compare from 'semver-compare';
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/surreal";
 import { newId, showError } from "./util/helpers";
-import { fetchDatabaseSchema } from "./util/schema";
+import { syncDatabaseSchema } from "./util/schema";
 import { getConnection } from "./util/connection";
 import { useDatabaseStore } from "./stores/database";
 import { useConfigStore } from "./stores/config";
@@ -47,7 +47,7 @@ export function openConnection(options?: ConnectOptions): Promise<void> {
 				setIsConnecting(false);
 				setIsConnected(true);
 				setVersion(version);
-				fetchDatabaseSchema();
+				syncDatabaseSchema();
 				resolve();
 
 				ConnectedEvent.dispatch(null);

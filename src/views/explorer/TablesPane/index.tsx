@@ -5,7 +5,7 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
 import { useInputState } from "@mantine/hooks";
-import { extractEdgeRecords, fetchDatabaseSchema } from "~/util/schema";
+import { extractEdgeRecords, syncDatabaseSchema } from "~/util/schema";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { sort } from "radash";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -73,8 +73,9 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 			}
 
 			await surreal.query(`REMOVE TABLE ${tb(table)}`);
-
-			fetchDatabaseSchema();
+			await syncDatabaseSchema({
+				tables: [table]
+			});
 
 			if (activeTable == table) {
 				onTableSelect("");
