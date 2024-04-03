@@ -30,6 +30,7 @@ export function ArticlePane({
 
 		const flatten = (list: DocsTopic[]) => {
 			for (const topic of list) {
+				if (topic.languagesExclude?.includes(language)) continue;
 				if (isLink(topic)) continue;
 
 				if (isSection(topic)) {
@@ -37,7 +38,7 @@ export function ArticlePane({
 					continue;
 				}
 
-				if(isGroup(topic)) {
+				if (isGroup(topic)) {
 					flatten(topic.children);
 					continue;
 				}
@@ -49,7 +50,7 @@ export function ArticlePane({
 		flatten(docs);
 
 		return result;
-	}, [docs]);
+	}, [docs, language]);
 
 	const onScroll = useStable((position: { x: number; y: number }) => {
 		const topics = scrollRef.current?.querySelectorAll("[data-topic]") as NodeListOf<HTMLElement>;

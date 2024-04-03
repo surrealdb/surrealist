@@ -5,7 +5,7 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 import { connectionUri } from "~/util/helpers";
 
-export function DocsGlobalConnecting({ language, topic }: TopicProps) {
+export function DocsGlobalInit({ language, topic }: TopicProps) {
 
 	const { connection } = useActiveConnection();
 	const endpoint = connectionUri(connection);
@@ -15,16 +15,27 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${endpoint} --namespace ${esc_namespace} --database ${connection.database}
+			$ surreal sql --endpoint ${endpoint} --namespace ${connection.namespace} --database ${connection.database}
 		`,
 		js: `
+			import { Surreal } from 'surrealdb.js';
+
+			// Create a new Surreal instance
+			const db = new Surreal();
+
+			// Connect to the database
 			await db.connect(${esc_endpoint}, {
 				namespace: ${esc_namespace},
 				database: ${esc_database}
 			});
 		`,
 		rust: `
+			use surrealdb::engine::any;
+
+			// Connect to the database
 			let db = any::connect(${esc_endpoint}).await?;
+
+			// Specify namespace and database
 			db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
 		`,
 		py: `
@@ -56,7 +67,7 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Connecting">
+		<Article title="Initialises">
 			<div>
 				<p>
 				The connecting API is used to establish a connection to a SurrealDB instance. The connection is used to interact with the database and perform operations on the data. While connecting to the database, the user can specify the namespace and database to connect to, as well as the authentication details for the connection.
@@ -68,7 +79,7 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Opening a connection"
+					title="initialise"
 					values={snippets}
 				/>
 			</Box>

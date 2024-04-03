@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 import clsx from "clsx";
 import { surrealql } from "codemirror-surrealql";
-import { EditorState, Extension } from "@codemirror/state";
+import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { ActionIcon, Box, CopyButton, Paper, PaperProps, Text } from "@mantine/core";
 import { ReactNode, useEffect, useRef } from "react";
@@ -9,6 +9,11 @@ import { useIsLight } from "~/hooks/theme";
 import { colorTheme } from "~/util/editor/extensions";
 import { Icon } from "../Icon";
 import { iconCheck, iconCopy } from "~/util/icons";
+
+interface EditorRef {
+	editor: EditorView;
+	config: Compartment;
+}
 
 export interface CodePreviewProps extends PaperProps {
 	value: string;
@@ -28,14 +33,17 @@ export function CodePreview({
 	...rest
 }: CodePreviewProps) {
 	const isLight = useIsLight();
+	const editorRef = useRef<EditorRef>();
 	const ref = useRef<HTMLDivElement | null>(null);
-	const editorRef = useRef<EditorView>();
 
 	useEffect(() => {
+		const config = new Compartment();
+		const configExt = config.of(extensions || surrealql());
+
 		const initialState = EditorState.create({
 			doc: value,
 			extensions: [
-				extensions || surrealql(),
+				configExt,
 				colorTheme(),
 				EditorState.readOnly.of(true),
 				EditorView.lineWrapping,
@@ -47,7 +55,10 @@ export function CodePreview({
 			parent: ref.current!
 		});
 
-		editorRef.current = editor;
+		editorRef.current = {
+			editor,
+			config
+		};
 
 		return () => {
 			editor.destroy();
@@ -55,7 +66,7 @@ export function CodePreview({
 	}, []);
 
 	useEffect(() => {
-		const editor = editorRef.current!;
+		const { editor } = editorRef.current!;
 
 		if (value == editor.state.doc.toString()) {
 			return;
@@ -71,6 +82,14 @@ export function CodePreview({
 
 		editor.dispatch(transaction);
 	}, [value]);
+
+	useEffect(() => {
+		const { editor, config } = editorRef.current!;
+
+		editor.dispatch({
+			effects: config.reconfigure(extensions || surrealql())
+		});
+	}, [extensions]);
 
 	return (
 		<>

@@ -5,27 +5,52 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 import { connectionUri } from "~/util/helpers";
 
-export function DocsGlobalConnecting({ language, topic }: TopicProps) {
+export function DocsGlobalSignIn({ language, topic }: TopicProps) {
 
 	const { connection } = useActiveConnection();
 	const endpoint = connectionUri(connection);
-	const esc_endpoint = JSON.stringify(endpoint);
 	const esc_namespace = JSON.stringify(connection.namespace);
 	const esc_database = JSON.stringify(connection.database);
 
+	const descriptions = {
+		cli: `With the SurrealDB CLI, you can only signin via system users. This example shows a command on how to signin with the username and password left blank.`,
+		_: `With SurrealDB's SDKs, you can signin as both system and scope users. This example shows how to signin to a scope named user, where the scope's SIGNIN clause requires the email and pass properties.`,
+	};
+
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${endpoint} --namespace ${esc_namespace} --database ${connection.database}
+			$ surreal sql -e ${endpoint} --ns ${connection.namespace} --db ${connection.database} --user ... --pass ...
 		`,
 		js: `
-			await db.connect(${esc_endpoint}, {
+			const token = await db.signin({
 				namespace: ${esc_namespace},
-				database: ${esc_database}
+				database: ${esc_database},
+				scope: "user",
+				email: "info@surrealdb.com",
+				pass: "123456",
 			});
 		`,
 		rust: `
-			let db = any::connect(${esc_endpoint}).await?;
-			db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
+			use serde::Serialize;
+			use surrealdb::opt::auth::Scope;
+
+			#[derive(Serialize)]
+			struct Credentials<'a> {
+				email: &'a str,
+				pass: &'a str,
+			}
+
+			let jwt = db.signin(Scope {
+				namespace: ${esc_namespace},
+				database: ${esc_database},
+				scope: "user",
+				params: Credentials {
+					email: "info@surrealdb.com",
+					pass: "123456",
+				},
+			}).await?;
+
+			let token = jwt.as_insecure_token();
 		`,
 		py: `
 		# Connect to a local endpoint
@@ -56,10 +81,10 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Connecting">
+		<Article title="Sign In">
 			<div>
 				<p>
-				The connecting API is used to establish a connection to a SurrealDB instance. The connection is used to interact with the database and perform operations on the data. While connecting to the database, the user can specify the namespace and database to connect to, as well as the authentication details for the connection.
+					{descriptions[language as keyof typeof descriptions] ?? descriptions._}
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}
@@ -68,7 +93,7 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Opening a connection"
+					title="Sign In"
 					values={snippets}
 				/>
 			</Box>

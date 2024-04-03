@@ -6,6 +6,9 @@ import { Snippets } from "./types";
 import { useMemo } from "react";
 import dedent from "dedent";
 
+import { rust } from "@codemirror/lang-rust";
+import { javascript } from "@codemirror/lang-javascript";
+
 export interface ArticleProps {
 	title: string;
 	children: React.ReactNode | [React.ReactNode, React.ReactNode];
@@ -28,7 +31,8 @@ export function Article({
 }
 
 const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
-	// todo
+	rust: rust(),
+	js: javascript(),
 };
 
 export interface DocsPreviewProps extends PaperProps{
