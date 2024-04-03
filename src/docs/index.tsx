@@ -158,63 +158,79 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		},
 		{
 			id: newId(),
-			title: "Tables",
+			title: `Tables`,
 			topics: [
 				{
 					id: newId(),
 					title: "Introduction",
-					component: DocsGlobalTablesIntroduction
+					component: DocsGlobalTablesIntroduction,
 				},
-				{
+				...schema.tables.map(table => ({
 					id: newId(),
-					title: "Selecting fields",
-					component: DocsGlobalTablesSelect,
-				},
-				{
-					id: newId(),
-					title: "Selecting all fields",
-					component: DocsGlobalTablesSelectAllFields,
-				},
-				{
-					id: newId(),
-					title: "Creating records",
-					component: DocsGlobalTablesCreatingRecords,
-				},
-				{
-					id: newId(),
-					title: "Inserting records",
-					component: DocsGlobalTablesInsertingRecords,
-				},
-				{
-					id: newId(),
-					title: "Updating records",
-					component: DocsGlobalTablesUpdatingRecords,
-				},
-				{
-					id: newId(),
-					title: "Deleting records",
-					component: DocsGlobalTablesDeletingRecords,
-				},
-				{
-					id: newId(),
-					title: "Live selecting",
-					component: DocsGlobalTablesLiveSelecting,
-				},
-				{
-					id: newId(),
-					title: "Manage indexes",
-					component: DocsGlobalTablesManageIndexes,
-				},
-				{
-					id: newId(),
-					title: "Manage fields",
-					component: DocsGlobalTablesManageFields,
-				},
-				{
-					id: newId(),
-					title: "Manage events",
-					component: DocsGlobalTablesManageEvents,
-				}
+					title: `${table.schema.name}`,
+					children: [
+						{
+							id: newId(),
+							title: "Selecting fields",
+							component: DocsGlobalTablesSelect,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Selecting all fields",
+							component: DocsGlobalTablesSelectAllFields,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Creating records",
+							component: DocsGlobalTablesCreatingRecords,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Inserting records",
+							component: DocsGlobalTablesInsertingRecords,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Updating records",
+							component: DocsGlobalTablesUpdatingRecords,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Deleting records",
+							component: DocsGlobalTablesDeletingRecords,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Live selecting",
+							component: DocsGlobalTablesLiveSelecting,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Manage indexes",
+							component: DocsGlobalTablesManageIndexes,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Manage fields",
+							component: DocsGlobalTablesManageFields,
+							extra: { table }
+						},
+						{
+							id: newId(),
+							title: "Manage events",
+							component: DocsGlobalTablesManageEvents,
+							extra: { table }
+						}
+					]
+				})),
 			]
 		},
 		{
