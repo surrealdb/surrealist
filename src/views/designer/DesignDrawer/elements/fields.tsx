@@ -16,7 +16,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 				assert: "",
 				flexible: false,
 				kind: "",
-				kindTables: [],
+				kind_meta: [],
 				value: "",
 				default: "",
 				permissions: {

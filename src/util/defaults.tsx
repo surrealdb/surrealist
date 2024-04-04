@@ -133,6 +133,5 @@ export function createDatabaseSchema(): DatabaseSchema {
 		functions: [],
 		models: [],
 		tables: [],
-		tableMap: {},
 	};
 }
