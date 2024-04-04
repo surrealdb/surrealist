@@ -4,7 +4,7 @@ use concat_string::concat_string;
 use serde::Serialize;
 use serde_wasm_bindgen::to_value;
 use surrealdb::sql::{
-    parse, statements::DefineStatement, thing, Index, Kind, Permissions, Statement, Strand
+    parse, statements::DefineStatement, thing, Index, Kind, Permissions, Statement, Strand,
 };
 use wasm_bindgen::prelude::*;
 
@@ -349,7 +349,7 @@ pub fn extract_user_definition(definition: &str) -> Result<JsValue, String> {
 #[derive(Serialize)]
 pub struct FunctionArgInfo {
     pub name: String,
-    pub kind: String
+    pub kind: String,
 }
 
 #[derive(Serialize)]
@@ -372,10 +372,14 @@ pub fn extract_function_definition(definition: &str) -> Result<JsValue, String> 
             block: format!("{:#}", f.block),
             permission: f.permissions.to_string(),
             comment: parse_comment(&f.comment),
-            arguments: f.args.iter().map(|a| FunctionArgInfo {
-                name: a.0.to_string(),
-                kind: a.1.to_string()
-            }).collect(),
+            arguments: f
+                .args
+                .iter()
+                .map(|a| FunctionArgInfo {
+                    name: a.0.to_string(),
+                    kind: a.1.to_string(),
+                })
+                .collect(),
         };
 
         return to_response(&info, "function");
@@ -396,7 +400,7 @@ pub struct ModelInfo {
 #[wasm_bindgen]
 pub fn extract_model_definition(definition: &str) -> Result<JsValue, String> {
     console_log!("Parsing {}", definition);
-    
+
     let parsed = parse(definition)?;
     let query = &parsed[0];
 

@@ -109,9 +109,9 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 
 	// Tables
 	if (should('tables')) {
-		const isLimited = options && Array.isArray(options.tables);
+		const isLimited = Array.isArray(options?.tables);
 		const tableNames = isLimited
-			? (options.tables ?? []) as string[]
+			? options!.tables as string[]
 			: Object.keys(dbInfo.tables);
 
 		const tbInfoMap = await Promise.all(tableNames.map((table) => {
