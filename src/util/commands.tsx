@@ -1,12 +1,11 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
+import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
-import { mdiNewspaperVariantOutline } from "@mdi/js";
 import { featureFlags } from "./feature-flags";
 
 type LaunchAction = { type: "launch", handler: () => void };
@@ -352,7 +351,7 @@ export function computeCommands(): CommandCategory[] {
 			{
 				id: newId(),
 				name: "Open latest news",
-				icon: mdiNewspaperVariantOutline,
+				icon: iconNewspaper,
 				action: intent("open-news")
 			},
 			{

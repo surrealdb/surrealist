@@ -4,11 +4,10 @@ import { Alert, Anchor, Badge, Box, Button, Divider, Drawer, Flex, Image, Indica
 import { Text } from "@mantine/core";
 import { ActionIcon } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { mdiNewspaperVariantOutline } from "@mdi/js";
 import { Fragment, useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { useIntent } from "~/hooks/url";
-import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "~/util/icons";
+import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose, iconNewspaper } from "~/util/icons";
 import { useConfigStore } from "~/stores/config";
 
 const FEED_URL = "https://surrealdb.com/feed/news.rss";
@@ -106,7 +105,7 @@ export function NewsFeed() {
 						h={36}
 						onClick={openHandle.toggle}
 					>
-						<Icon path={mdiNewspaperVariantOutline} size="lg" />
+						<Icon path={iconNewspaper} size="lg" />
 					</ActionIcon>
 				</Indicator>
 			</Tooltip>
