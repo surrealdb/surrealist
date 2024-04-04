@@ -20,8 +20,8 @@ const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	delete: ["red", iconDelete],
 };
 
-function buildResult(index: number, {result, time}: any) {
-	const header = `\n\n-------- Query ${index + 1 + (time ? ` (${time})` : '')} --------\n\n`;
+function buildResult(index: number, {result, execution_time}: any) {
+	const header = `\n\n-------- Query ${index + 1 + (execution_time ? ` (${execution_time})` : '')} --------\n\n`;
 	const content = JSON.stringify(result, null, 4);
 
 	return header + content;
