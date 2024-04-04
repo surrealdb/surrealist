@@ -229,11 +229,11 @@ export function extractEdgeRecords(table: TableDefinition): [boolean, string[], 
 	let outRecords: string[] = [];
 
 	for (const f of table.fields) {
-		if (f.name == "in" && f.kind.startsWith("record")) {
-			inRecords = f.kindTables;
+		if (f.name == "in" && f.kind == "record") {
+			inRecords = f.kind_meta;
 			hasIn = true;
-		} else if (f.name == "out" && f.kind.startsWith("record")) {
-			outRecords = f.kindTables;
+		} else if (f.name == "out" && f.kind == "record") {
+			outRecords = f.kind_meta;
 			hasOut = true;
 		}
 	}

@@ -1,8 +1,10 @@
+use std::vec;
+
 use concat_string::concat_string;
 use serde::Serialize;
 use serde_wasm_bindgen::to_value;
 use surrealdb::sql::{
-    parse, statements::DefineStatement, thing, Index, Permissions, Statement, Strand,
+    parse, statements::DefineStatement, thing, Index, Kind, Permissions, Statement, Strand
 };
 use wasm_bindgen::prelude::*;
 
@@ -134,6 +136,7 @@ pub struct FieldInfo {
     pub name: String,
     pub flexible: bool,
     pub kind: String,
+    pub kind_meta: Vec<String>,
     pub value: String,
     pub assert: String,
     pub default: String,
@@ -147,10 +150,37 @@ pub fn extract_field_definition(definition: &str) -> Result<JsValue, String> {
     let query = &parsed[0];
 
     if let Statement::Define(DefineStatement::Field(f)) = query {
+        let kind = match &f.kind {
+            Some(k) => match k {
+                Kind::Record(_) => "record".to_owned(),
+                Kind::Geometry(_) => "geometry".to_owned(),
+                Kind::Option(_) => "option".to_owned(),
+                Kind::Set(_, _) => "set".to_owned(),
+                Kind::Array(_, _) => "array".to_owned(),
+                other => other.to_string(),
+            },
+            None => "".to_owned(),
+        };
+
+        let kind_meta = match &f.kind {
+            Some(k) => match k {
+                Kind::Record(items) => items.iter().map(|i| i.to_string()).collect(),
+                Kind::Geometry(items) => items.iter().map(|i| i.to_string()).collect(),
+                Kind::Option(value) => vec![value.to_string()],
+                Kind::Set(kind, max) | Kind::Array(kind, max) => match max {
+                    Some(max) => vec![kind.to_string(), max.to_string()],
+                    None => vec![kind.to_string()],
+                },
+                _ => vec![],
+            },
+            None => vec![],
+        };
+
         let info = FieldInfo {
             name: f.name.to_string(),
             flexible: f.flex,
-            kind: f.kind.as_ref().map_or("".to_owned(), |k| k.to_string()),
+            kind,
+            kind_meta,
             value: f.value.as_ref().map_or("".to_owned(), |v| v.to_string()),
             assert: f.assert.as_ref().map_or("".to_owned(), |a| a.to_string()),
             default: f.default.as_ref().map_or("".to_owned(), |v| v.to_string()),

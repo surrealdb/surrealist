@@ -167,7 +167,7 @@ export interface TableField {
 	name: string;
 	flexible: boolean;
 	kind: string;
-	kindTables: string[];
+	kind_meta: string[];
 	value: string;
 	default: string;
 	assert: string;

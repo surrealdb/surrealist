@@ -24,7 +24,7 @@ export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const DATASETS: Record<string, DataSet> = {
 	'surreal-deal': {
 		name: "Surreal Deal",
-		url: "https://datasets.surrealdb.com/surreal-deal-mini-v1.surql"
+		url: "https://datasets.surrealdb.com/surreal-deal-mini-v2.surql"
 	}
 };
 
