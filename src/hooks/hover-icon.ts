@@ -26,6 +26,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 
 	const onMouseEnter = useStable(() => {
 		itemRef.current?.setDirection(1);
+		itemRef.current?.setSpeed(1.2);
 		itemRef.current?.play();
 	});
 
@@ -34,6 +35,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 			itemRef.current?.goToAndStop(0);
 		} else {
 			itemRef.current?.setDirection(-1);
+			itemRef.current?.setSpeed(1.8);
 			itemRef.current?.play();
 		}
 	});
