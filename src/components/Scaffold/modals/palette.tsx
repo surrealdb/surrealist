@@ -161,14 +161,14 @@ export function CommandPaletteModal({
 			onClose={onClose}
 			transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 			centered={false}
-			padding={0}
 			size="lg"
 			onKeyDown={handleKeyDown}
 			classNames={{
 				content: classes.paletteModal,
+				body: classes.paletteBody,
 			}}
 		>
-			<Box p="lg">
+			<Box>
 				{connection && (
 					<Group gap="xs" mb="sm" c="surreal">
 						<Icon path={iconServer} size="sm" />
@@ -186,18 +186,18 @@ export function CommandPaletteModal({
 				/>
 			</Box>
 
-			<Divider color="slate.6" mx="lg" />
+			<Divider color="slate.6" my="lg" />
 
 			<Box h={350} pb={0}>
 				<ScrollArea viewportRef={ref} scrollbars="y" h="100%">
 					{filtered.length > 0 ? (
-						<Stack p="lg">
+						<Stack pb="xl">
 							{filtered.map((cat) => (
-								<Fragment key={cat.name}>
+								<Box key={cat.name}>
 									<Text c="slate" fw={500}>
 										{cat.name}
 									</Text>
-									<Stack gap={2}>
+									<Stack mt="xs" gap={2}>
 										{cat.commands.map((cmd) => (
 											<UnstyledButton
 												key={cmd.name}
@@ -260,7 +260,7 @@ export function CommandPaletteModal({
 											</UnstyledButton>
 										))}
 									</Stack>
-								</Fragment>
+								</Box>
 							))}
 						</Stack>
 					) : (
