@@ -21,18 +21,18 @@ const TILES = [
 		icon: iconBug,
 		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 	},
-	{
-		title: "Feedback",
-		description: "Have a suggestion or feedback? We'd love to hear it.",
-		icon: iconChat,
-		onClick: () => {}
-	},
-	{
-		title: "Restart the tour",
-		description: "Need to restart the tour? Click here to start over.",
-		icon: iconRoutes,
-		onClick: () => {}
-	}
+	// {
+	// 	title: "Feedback",
+	// 	description: "Have a suggestion or feedback? We'd love to hear it.",
+	// 	icon: iconChat,
+	// 	onClick: () => {}
+	// },
+	// {
+	// 	title: "Restart the tour",
+	// 	description: "Need to restart the tour? Click here to start over.",
+	// 	icon: iconRoutes,
+	// 	onClick: () => {}
+	// }
 ];
 
 export function HelpAndSupport() {
