@@ -132,6 +132,7 @@ export interface SurrealistConfig {
 	settings: SurrealistSettings;
 	featureFlags: Partial<TFeatureFlags<typeof featureFlagSchema>>;
 	commandHistory: string[];
+	onboarding: string[];
 }
 
 export interface ScopeField {

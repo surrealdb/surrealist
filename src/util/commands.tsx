@@ -1,7 +1,7 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
+import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
@@ -46,7 +46,7 @@ const intent = (intent: IntentType, payload?: IntentPayload) => ({ type: "intent
  * Compute available commands based on the current state
  */
 export function computeCommands(): CommandCategory[] {
-	const { activeView, connections, commandHistory, setActiveView, setActiveConnection } = useConfigStore.getState();
+	const { activeView, connections, commandHistory, setActiveView, setActiveConnection, resetOnboardings } = useConfigStore.getState();
 	const { isServing, databaseSchema } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
@@ -356,14 +356,6 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				id: newId(),
-				name: "Open start screen",
-				icon: iconChevronRight,
-				action: launch(() => {
-					setActiveConnection(null);
-				})
-			},
-			{
-				id: newId(),
 				name: "Browse SurrealDB Docs",
 				icon: iconBook,
 				action: href("https://surrealdb.com/docs/")
@@ -373,6 +365,18 @@ export function computeCommands(): CommandCategory[] {
 				name: "Download Desktop App",
 				icon: iconDownload,
 				action: intent('download-app'),
+			}
+		]
+	}, {
+		name: "Developer",
+		commands: [
+			{
+				id: newId(),
+				name: "Open start screen",
+				icon: iconChevronRight,
+				action: launch(() => {
+					setActiveConnection(null);
+				})
 			},
 			{
 				id: newId(),
@@ -380,6 +384,14 @@ export function computeCommands(): CommandCategory[] {
 				icon: iconRefresh,
 				action: launch(() => {
 					location.reload();
+				}),
+			},
+			{
+				id: newId(),
+				name: "Reset tours",
+				icon: iconReset,
+				action: launch(() => {
+					resetOnboardings();
 				}),
 			},
 		]

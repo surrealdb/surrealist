@@ -6,6 +6,7 @@ import { newId } from "~/util/helpers";
 import { create } from "zustand";
 import { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
 import { featureFlagSchema } from "~/util/feature-flags";
+import { unique } from "radash";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -60,11 +61,13 @@ export type ConfigStore = SurrealistConfig & {
 	setFeatureFlag: <T extends FeatureFlag<typeof featureFlagSchema>>(key: T, value: FeatureFlagOption<typeof featureFlagSchema, T>) => void;
 	pushCommand: (command: string) => void;
 	updateViewedNews: () => void;
+	completeOnboarding: (key: string) => void;
+	resetOnboardings: () => void;
 	softReset: () => void;
 }
 
 export const useConfigStore = create<ConfigStore>()(
-	(set) => ({
+	(set, get) => ({
 		...createBaseConfig(),
 
 		addConnection: (connection) => set((state) => ({
@@ -293,6 +296,14 @@ export const useConfigStore = create<ConfigStore>()(
 
 		updateViewedNews: () => set(() => ({
 			lastViewedNewsAt: Date.now()
+		})),
+
+		completeOnboarding: (key) => set((state) => ({
+			onboarding: unique([...state.onboarding, key])
+		})),
+
+		resetOnboardings: () => set(() => ({
+			onboarding: []
 		})),
 
 	})

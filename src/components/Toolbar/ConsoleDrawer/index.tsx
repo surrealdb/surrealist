@@ -68,7 +68,7 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 		>
 			<Group mb="md" gap="sm">
 				<ModalTitle>
-					Local database console
+					Serving output
 				</ModalTitle>
 
 				{isServing ? (

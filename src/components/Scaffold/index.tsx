@@ -36,6 +36,7 @@ import { useCompatHotkeys } from "~/hooks/hotkey";
 import { FunctionsView } from "~/views/functions/FunctionsView";
 import { ModelsView } from "~/views/models/ModelsView";
 import { LegacyModal } from "./modals/legacy";
+import { SandboxModal } from "./modals/sandbox";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -161,6 +162,7 @@ export function Scaffold() {
 
 			<ConnectionEditor />
 			<LegacyModal />
+			<SandboxModal />
 
 			<CommandPaletteModal
 				opened={showPalette}
