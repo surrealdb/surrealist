@@ -1,7 +1,7 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
+import { iconAPI, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
@@ -373,6 +373,14 @@ export function computeCommands(): CommandCategory[] {
 				name: "Download Desktop App",
 				icon: iconDownload,
 				action: intent('download-app'),
+			},
+			{
+				id: newId(),
+				name: "Reload window",
+				icon: iconRefresh,
+				action: launch(() => {
+					location.reload();
+				}),
 			},
 		]
 	});

@@ -9,8 +9,7 @@ import { Icon } from "~/components/Icon";
 import { useIntent } from "~/hooks/url";
 import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose, iconNewspaper } from "~/util/icons";
 import { useConfigStore } from "~/stores/config";
-
-const FEED_URL = "https://surrealdb.com/feed/news.rss";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 interface NewsItem {
 	id: string;
@@ -24,6 +23,7 @@ interface NewsItem {
 
 export function NewsFeed() {
 	const { updateViewedNews } = useConfigStore.getState();
+	const [{ newsfeed, newsfeed_enforce }] = useFeatureFlags();
 
 	const [isOpen, openHandle] = useDisclosure();
 	const [isLoading, setLoading] = useState(true);
@@ -41,13 +41,13 @@ export function NewsFeed() {
 		setLoading(true);
 
 		try {
-			const response = await fetch(FEED_URL);
+			const response = await fetch(`https://surrealdb.com/feed/${newsfeed}.rss`);
 			const body = await response.text();
 			const result = new DOMParser().parseFromString(body, 'text/xml');
 
 			const items = [...result.querySelectorAll('item')]
 				.filter(item =>
-					[...item.querySelectorAll('category')].some(child => child.textContent?.toLowerCase() === "surrealist")
+					!newsfeed_enforce || [...item.querySelectorAll('category')].some(child => child.textContent?.toLowerCase() === "surrealist")
 				)
 				.map(item => ({
 					id: item.querySelector('guid')?.textContent || '',

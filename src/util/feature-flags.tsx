@@ -32,7 +32,10 @@ export const featureFlagSchema = {
 		options: Bool
 	},
 	newsfeed: {
-		options: Bool
+		options: [false, 'news', 'blog']
+	},
+	newsfeed_enforce: {
+		options: [false, true]
 	}
 } as const;
 
@@ -42,12 +45,22 @@ export const featureFlags = new FeatureFlags({
 	// Defaults per environment
 	environment,
 	defaults: {
-		prod: {},
-		preview: {
+		prod: {
+			newsfeed_enforce: true,
 			templates: true,
 			listLicenses: true,
+			functions_view: true,
+			models_view: true,
 			apidocs_view: true,
-			editor: "codemirror"
+		},
+		preview: {
+			newsfeed_enforce: true,
+			templates: true,
+			listLicenses: true,
+			functions_view: true,
+			models_view: true,
+			apidocs_view: true,
+			editor: "codemirror",
 		},
 		dev: {
 			devTools: true,
@@ -55,7 +68,7 @@ export const featureFlags = new FeatureFlags({
 			listLicenses: true,
 			apidocs_view: true,
 			editor: "monaco",
-			newsfeed: true
+			newsfeed: 'news'
 		}
 	},
 
