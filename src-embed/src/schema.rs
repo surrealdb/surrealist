@@ -464,3 +464,8 @@ pub fn validate_thing(value: &str) -> bool {
 pub fn format_query(value: &str) -> Option<String> {
     parse(value).ok().map(|q| q.to_string())
 }
+
+#[wasm_bindgen]
+pub fn get_statement_count(value: &str) -> usize {
+    return parse(value).unwrap().len();
+}

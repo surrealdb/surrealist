@@ -17,6 +17,7 @@ import { syncDatabaseSchema } from "~/util/schema";
 import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
+import { get_statement_count } from "~/generated/surrealist-embed";
 
 export function ScopePane() {
 	const isOnline = useIsConnected();
@@ -45,12 +46,17 @@ export function ScopePane() {
 				query += ` SESSION ${editingSession}`;
 			}
 
+
+			const [openSymbol, closeSymbol] = get_statement_count(editingSignin) > 1
+				? ["{", "}"]
+				: ["(", ")"];
+
 			if (editingSignin) {
-				query += ` SIGNIN (${editingSignin})`;
+				query += ` SIGNIN ${openSymbol + editingSignin + closeSymbol}`;
 			}
 
 			if (editingSignup) {
-				query += ` SIGNUP (${editingSignup})`;
+				query += ` SIGNIN ${openSymbol + editingSignup + closeSymbol}`;
 			}
 
 			await getActiveSurreal().query(query);
