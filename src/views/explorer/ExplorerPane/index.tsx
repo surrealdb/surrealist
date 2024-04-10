@@ -198,13 +198,7 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		store.dispatch(openEditor());
 	});
 
-	const headers = useMemo(() => {
-		if (!table) {
-			return [];
-		}
-
-		return schema?.tables?.find((t) => t.schema.name === table)?.fields?.map((f) => f.name) || [];
-	}, []);
+	const headers = schema?.tables?.find((t) => t.schema.name === table)?.fields?.map((f) => f.name) || [];
 
 	return (
 		<Panel
