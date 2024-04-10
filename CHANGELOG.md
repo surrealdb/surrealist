@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.11.7 - SurrealDB 1.4.0
+- Support for SurrealDB 1.3.0
+- Fixed rendering of incorrect columns in explorer view
+
 ## 1.11.6 - SurrealDB 1.3.0
 - Support for SurrealDB 1.3.0
 
