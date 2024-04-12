@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../../Icon";
-import { closeConnection, openConnection } from "~/database";
+import { openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
@@ -39,7 +39,6 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 		}
 
 		if (isServing) {
-			closeConnection();
 			adapter.stopDatabase();
 
 			cancelServe();
