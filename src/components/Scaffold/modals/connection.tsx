@@ -1,21 +1,22 @@
-import { Modal, Group, Button, Alert, Text, Menu } from "@mantine/core";
+import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack } from "@mantine/core";
 import { Spacer } from "../../Spacer";
 import { useImmer } from "use-immer";
 import { Icon } from "../../Icon";
 import { isConnectionValid } from "~/util/connection";
 import { useStable } from "~/hooks/stable";
 import { Form } from "../../Form";
-import { useLayoutEffect } from "react";
+import { Fragment, useLayoutEffect, useMemo } from "react";
 import { updateTitle } from "~/util/helpers";
 import { useConnections } from "~/hooks/connection";
 import { Connection, Template } from "~/types";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
-import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlay, iconPlus } from "~/util/icons";
 import { ConnectionDetails } from "../../ConnectionDetails";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
+import { useDatabaseStore } from "~/stores/database";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -32,6 +33,7 @@ export function ConnectionEditor() {
 
 	const { addConnection, updateConnection, setActiveConnection, removeConnection } = useConfigStore.getState();
 	const { closeConnectionEditor, openConnectionCreator } = useInterfaceStore.getState();
+	const { isServing } = useDatabaseStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
@@ -81,6 +83,39 @@ export function ConnectionEditor() {
 		});
 	});
 
+	const templateList = useMemo(() => {
+		const list = templates.map(info => ({
+			info,
+			icon: iconFile
+		}));
+
+		if (isServing) {
+			const { username, password, port } = useConfigStore.getState().settings.serving;
+
+			list.push({
+				icon: iconPlay,
+				info: {
+					id: "serving",
+					name: "Local database",
+					values: {
+						authMode: "root",
+						database: "",
+						namespace: "",
+						protocol: "ws",
+						hostname: `localhost:${port}`,
+						scope: "",
+						scopeFields: [],
+						token: "",
+						username,
+						password
+					}
+				}
+			});
+		}
+
+		return list;
+	}, [templates, isServing]);
+
 	useLayoutEffect(() => {
 		if (!details.name.trim()) {
 			setDetails((draft) => {
@@ -118,7 +153,7 @@ export function ConnectionEditor() {
 			size="lg"
 		>
 			<Form onSubmit={saveInfo}>
-				{isCreating && templates.length > 0 && (
+				{templateList.length > 0 && (
 					<Alert mb="sm" p="xs">
 						<Group>
 							<Icon
@@ -128,7 +163,7 @@ export function ConnectionEditor() {
 								size={1.2}
 							/>
 							<Text>
-								Initialize this connection with a template?
+								{isCreating ? 'Initialize' : 'Configure'} this connection with a template?
 							</Text>
 							<Spacer />
 							<Menu>
@@ -143,16 +178,20 @@ export function ConnectionEditor() {
 								</Menu.Target>
 
 								<Menu.Dropdown>
-									{templates.map((template) => (
-										<Menu.Item
-											key={template.id}
-											leftSection={<Icon path={iconFile} />}
-											onClick={() => applyTemplate(template)}
-											miw={175}
-										>
-											{template.name}
-										</Menu.Item>
-									))}
+									<Stack gap={4}>
+										{templateList.map(({ info, icon }, i) => (
+											<Fragment key={info.id}>
+												<Menu.Item
+													leftSection={<Icon path={icon} mr="xs" />}
+													onClick={() => applyTemplate(info)}
+													miw={175}
+												>
+													{info.name}
+												</Menu.Item>
+												{i < templateList.length - 1 && <Divider color="slate" />}
+											</Fragment>
+										))}
+									</Stack>
 								</Menu.Dropdown>
 							</Menu>
 						</Group>
