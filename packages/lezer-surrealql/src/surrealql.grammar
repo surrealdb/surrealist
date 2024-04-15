@@ -160,18 +160,19 @@ SelectStatement {
 	(only)?
 	(
 		NestableStatement |
-
-		commaSep<Value>
-		WithClause?
-		WhereClause?
-		SplitClause?
-		GroupClause?
-		// // TODO order by clause
-		LimitStartComboClause?
-		FetchClause?
-		TimeoutClause?
-		ParallelClause?
-		ExplainClause?
+		(
+			commaSep<Value>
+			WithClause?
+			WhereClause?
+			SplitClause?
+			GroupClause?
+			OrderClause?
+			LimitStartComboClause?
+			FetchClause?
+			TimeoutClause?
+			ParallelClause?
+			ExplainClause?
+		)
 	)
 }
 
@@ -183,7 +184,7 @@ ReturnStatement { return NestableExpression }
 
 // Values
 
-Value { String | Number | true | false | null | none | VariableName | Ident | Array | RecordId | FunctionJs | Function | SubQuery | Object | TypeCast }
+Value { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Object | TypeCast }
 
 // Objects
 
@@ -363,6 +364,13 @@ GroupClause {
 	group
 	by?
 	commaSep<Ident>
+}
+
+OrderClause {
+	order
+	by?
+	commaSep<Ident>
+	( asc | desc )?
 }
 
 SplitClause {
@@ -600,6 +608,7 @@ commaSep<content> {
 @external extend { rawident } tokens from "./tokens" {
 	analyzer			[@name=Keyword],
 	as					[@name=Keyword],
+	asc					[@name=Keyword],
 	assert				[@name=Keyword],
 	at					[@name=Keyword],
 	begin				[@name=Keyword],
@@ -617,6 +626,7 @@ commaSep<content> {
 	database			[@name=Keyword],
 	default				[@name=Keyword],
 	define				[@name=Keyword],
+	desc				[@name=Keyword],
 	dimension			[@name=Keyword],
 	dist				[@name=Keyword],
 	doc_ids_cache		[@name=Keyword],
@@ -646,6 +656,7 @@ commaSep<content> {
 	not					[@name=Keyword],
 	on					[@name=Keyword],
 	only				[@name=Keyword],
+	order				[@name=Keyword],
 	parallel			[@name=Keyword],
 	permissions			[@name=Keyword],
 	postings_cache		[@name=Keyword],
