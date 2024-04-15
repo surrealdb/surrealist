@@ -55,10 +55,13 @@ TransactionStatement {
 NestableStatement {
 	CreateStatement |
 	SelectStatement |
+	DeleteStatement |
+
 	BreakStatement |
 	ContinueStatement |
 	ForStatement |
-	ReturnStatement
+	ReturnStatement |
+	IfElseStatement
 }
 
 Statement {
@@ -188,8 +191,6 @@ DefineTokenStatement {
 	( value String )
 }
 
-// DEFINE USER [ IF NOT EXISTS ] @name ON [ ROOT | NAMESPACE | DATABASE ] [ PASSWORD @pass | PASSHASH @hash ] ROLES @roles
-
 DefineUserStatement {
 	user
 	IfNotExistsClause?
@@ -233,6 +234,60 @@ SelectStatement {
 			ParallelClause?
 			ExplainClause?
 		)
+	)
+}
+
+DeleteStatement {
+	delete only?
+	(
+		NestableStatement |
+		(
+			commaSep<Value>
+			WhereClause?
+			ReturnClause?
+			TimeoutClause?
+			ParallelClause?
+		)
+	)
+}
+
+// IF @condition [ THEN ]
+// 	@expression
+// [ ELSE IF @condition [ THEN ]
+// 	@expression ... ]
+// [ ELSE
+// 	@expression ]
+// [ END ]
+
+IfElseStatement {
+	if
+	(
+		Legacy {
+			Value
+			then
+			( Block | SubQuery)
+			(
+				else if
+				Value
+				then
+				( Block | SubQuery)
+			)*
+			(
+				else
+				( Block | SubQuery)
+			)?
+			end
+		} |
+		Modern {
+			Value Block
+			(
+				else if
+				Value Block
+			)*
+			(
+				else Block
+			)?
+		}
 	)
 }
 
@@ -783,6 +838,8 @@ piped<content> {
 	doc_lengths_cache	[@name=Keyword],
 	doc_lengths_order	[@name=Keyword],
 	drop				[@name=Keyword],
+	else				[@name=Keyword],
+	end					[@name=Keyword],
 	exists				[@name=Keyword],
 	explain				[@name=Keyword],
 	event				[@name=Keyword],
