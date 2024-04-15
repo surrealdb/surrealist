@@ -67,6 +67,7 @@ NestableStatement {
 Statement {
 	TransactionStatement |
 	DefineStatement |
+	InfoForStatement |
 	NestableStatement
 }
 
@@ -291,6 +292,18 @@ IfElseStatement {
 	)
 }
 
+InfoForStatement {
+	info for
+	(
+		root |
+		ns | namespace |
+		db | database |
+		( scope Ident ) |
+		( table Ident)
+	)
+	structure?
+}
+
 // Control statements
 BreakStatement { break }
 ContinueStatement { continue }
@@ -353,7 +366,7 @@ Duration {
 
 DurationPart {
 	int ~int
-  	( ns | us | µs | ms | singleLetterDurationUnit )
+  	( nsUnit | us | µs | ms | singleLetterDurationUnit )
 }
 
 // JS Functions
@@ -827,6 +840,7 @@ piped<content> {
 	changefeed			[@name=Keyword],
 	create				[@name=Keyword],
 	database			[@name=Keyword],
+	db					[@name=Keyword],
 	default				[@name=Keyword],
 	define				[@name=Keyword],
 	delete				[@name=Keyword],
@@ -855,6 +869,7 @@ piped<content> {
 	if					[@name=Keyword],
 	in					[@name=Keyword],
 	index				[@name=Keyword],
+	info				[@name=Keyword],
 	limit				[@name=Keyword],
 	mtree				[@name=Keyword],
 	mtree_cache			[@name=Keyword],
@@ -862,6 +877,7 @@ piped<content> {
 	noindex				[@name=Keyword],
 	normal				[@name=Keyword],
 	not					[@name=Keyword],
+	ns					[@name=Keyword],
 	on					[@name=Keyword],
 	only				[@name=Keyword],
 	order				[@name=Keyword],
@@ -889,6 +905,7 @@ piped<content> {
 	signup				[@name=Keyword],
 	split				[@name=Keyword],
 	start				[@name=Keyword],
+	structure			[@name=Keyword],
 	table				[@name=Keyword],
 	terms_cache			[@name=Keyword],
 	terms_order			[@name=Keyword],
@@ -928,7 +945,7 @@ piped<content> {
 	manhattan			[@name=Literal],
 	minkowski			[@name=Literal],
 
-	ns,
+	nsUnit,
 	us,
 	µs,
 	ms,
