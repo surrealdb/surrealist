@@ -5,6 +5,7 @@
 	RecordId,
 	Ident,
 	Object,
+  Duration,
 	Number,
 	ObjectContent,
 	NestableExpressions @left
@@ -78,19 +79,20 @@ DefineStatement {
 	define
 	(
 		DefineAnalyzerStatement |
-		DefineNamespaceStatement |
 		DefineDatabaseStatement |
 		DefineEventStatement |
 		DefineFieldStatement |
 		DefineFunctionStatement |
-		DefineIndexStatement
+		DefineIndexStatement |
+		DefineNamespaceStatement |
+		DefineParamStatement |
+		DefineScopeStatement
 	)
 }
 
 // TODO implement filters
 DefineAnalyzerStatement { analyzer Ident TokenizersClause? CommentClause? }
 DefineEventStatement { event Ident OnTableClause WhenThenClause CommentClause? }
-DefineNamespaceStatement { namespace Ident CommentClause? }
 DefineDatabaseStatement { database Ident on Ident CommentClause? }
 
 DefineFieldStatement {
@@ -139,6 +141,28 @@ DefineIndexStatement {
 	)
 }
 
+DefineNamespaceStatement { namespace Ident CommentClause? }
+
+DefineParamStatement {
+	param
+	IfNotExistsClause?
+	VariableName
+	value
+	Value
+}
+
+DefineScopeStatement {
+	scope
+	IfNotExistsClause?
+	Ident
+	(
+		SessionClause |
+		SigninClause |
+		SignupClause |
+		CommentClause
+	)*
+}
+
 // Data statements
 
 CreateStatement {
@@ -184,7 +208,7 @@ ReturnStatement { return NestableExpression }
 
 // Values
 
-Value { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast }
+Value { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast | Duration }
 
 // Objects
 
@@ -223,10 +247,22 @@ RecordId {
 	":"
 	(
 		RecordIdIdent |
-		Number |
+		Int |
 		Array |
 		Object
 	)
+}
+
+// Durations
+
+Duration {
+	//TODO why does it require a space between the duration parts?
+	DurationPart+
+}
+
+DurationPart {
+	int ~int
+  	( ns | us | µs | ms | singleLetterDurationUnit )
 }
 
 // JS Functions
@@ -253,6 +289,21 @@ FieldAssignment {
 }
 
 // Clauses
+
+SessionClause {
+	session
+	Duration
+}
+
+SignupClause {
+	signup
+	( SubQuery | Block )
+}
+
+SigninClause {
+	signin
+	( SubQuery | Block )
+}
 
 OnTableClause {
 	on table? Ident
@@ -537,9 +588,14 @@ TypeCast {
 String { singleString ~string | doubleString ~string }
 
 Ident {
-		rawident ~ident |
+	rawident ~ident |
     tickIdent
 }
+
+Number { Int | Float | Decimal }
+Int { int ~int }
+Float[@dynamicPrecedence=-1] { int ~int frac? exp? "f"? }
+Decimal[@dynamicPrecedence=-1] { int ~int frac? exp? "dec" }
 
 @tokens {
 	// Characters
@@ -559,24 +615,21 @@ Ident {
 	CommentSlash { "//" ![\n]* }
 
 	// Numbers
-	Number { Int | Float | Decimal }
+	int { @digit+ }
 	frac { '.' @digit+ }
 	exp { $[eE] $[+\-]? @digit+ }
-	Int { @digit+ }
-	Float { @digit+ frac? exp? "f"? }
-	Decimal { @digit+ frac? exp? "dec"? }
 
-  singleString { "'" ![']+ "'" }
+	singleString { "'" ![']+ "'" }
 	doubleString { '"' !["]+ '"' }
 
 	// Language
 	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
-  tickIdent {
-    "`" ![`]+ '`'
-  }
-  bracketIdent {
-    "⟨" ![⟩]+ "⟩"
-  }
+	tickIdent {
+		"`" ![`]+ '`'
+	}
+	bracketIdent {
+		"⟨" ![⟩]+ "⟩"
+	}
 	rawident {
 		(@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
 		@digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+
@@ -595,7 +648,9 @@ Ident {
 		"fn" functionNameSegment*
 	}
 
-	@precedence { "function" JavaScript whitespace Comment customFunctionName functionName Number Int rawident Ident String singleString doubleString }
+  singleLetterDurationUnit {"s" | "m" | "h" | "d" | "w" | "y"}
+
+	@precedence { "function" JavaScript whitespace Comment customFunctionName  functionName int exp "dec" rawident singleLetterDurationUnit "f" singleString doubleString }
 
 	"function"
 }
@@ -662,14 +717,19 @@ commaSep<content> {
 	only				[@name=Keyword],
 	order				[@name=Keyword],
 	parallel			[@name=Keyword],
+	param				[@name=Keyword],
 	permissions			[@name=Keyword],
 	postings_cache		[@name=Keyword],
 	postings_order		[@name=Keyword],
 	readonly			[@name=Keyword],
 	return				[@name=Keyword],
+	scope				[@name=Keyword],
 	search				[@name=Keyword],
 	select				[@name=Keyword],
+	session				[@name=Keyword],
 	set					[@name=Keyword],
+	signin				[@name=Keyword],
+	signup				[@name=Keyword],
 	split				[@name=Keyword],
 	start				[@name=Keyword],
 	table				[@name=Keyword],
@@ -705,6 +765,10 @@ commaSep<content> {
 	euclidean			[@name=Literal],
 	cosine				[@name=Literal],
 	manhattan			[@name=Literal],
-	minkowski			[@name=Literal]
+	minkowski			[@name=Literal],
 
+	ns,
+	us,
+	µs,
+	ms
 }

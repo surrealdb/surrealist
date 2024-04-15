@@ -51,14 +51,19 @@ import {
 	only,
 	order,
 	parallel,
+	param,
 	permissions,
 	postings_cache,
 	postings_order,
 	readonly,
 	_return,
+	scope,
 	search,
 	select,
+	session,
 	set,
+	signin,
+	signup,
 	split,
 	start,
 	table,
@@ -95,6 +100,11 @@ import {
 	cosine,
 	manhattan,
 	minkowski,
+
+	ns,
+	us,
+	µs,
+	ms,
 } from "./parser.terms";
 
 const tokenMap = {
@@ -150,14 +160,19 @@ const tokenMap = {
 	only,
 	order,
 	parallel,
+	param,
 	permissions,
 	postings_cache,
 	postings_order,
 	readonly,
 	return: _return,
+	scope,
 	search,
 	select,
+	session,
 	set,
+	signin,
+	signup,
 	split,
 	start,
 	table,
@@ -194,6 +209,11 @@ const tokenMap = {
 	cosine,
 	manhattan,
 	minkowski,
+
+	ns,
+	us,
+	µs,
+	ms,
 };
 
 export const tokens = function(t) {
