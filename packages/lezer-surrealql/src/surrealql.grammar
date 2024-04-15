@@ -536,6 +536,11 @@ TypeCast {
 // Strings
 String { singleString ~string | doubleString ~string }
 
+Ident {
+		rawident ~ident |
+    tickIdent
+}
+
 @tokens {
 	// Characters
 	"{"[@name=BraceOpen]
@@ -561,18 +566,17 @@ String { singleString ~string | doubleString ~string }
 	Float { @digit+ frac? exp? "f"? }
 	Decimal { @digit+ frac? exp? "dec"? }
 
-	singleString { "'" ![']+ "'" }
+  singleString { "'" ![']+ "'" }
 	doubleString { '"' !["]+ '"' }
 
 	// Language
 	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
-	Ident {
-		rawident |
-		"`" ![`]+ '`'
-	}
-	bracketIdent {
-		"⟨" ![⟩]+ "⟩"
-	}
+  tickIdent {
+    "`" ![`]+ '`'
+  }
+  bracketIdent {
+    "⟨" ![⟩]+ "⟩"
+  }
 	rawident {
 		(@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
 		@digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+
