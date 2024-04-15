@@ -87,7 +87,9 @@ DefineStatement {
 		DefineNamespaceStatement |
 		DefineParamStatement |
 		DefineScopeStatement |
-		DefineTableStatement
+		DefineTableStatement |
+		DefineTokenStatement |
+		DefineUserStatement
 	)
 }
 
@@ -175,6 +177,26 @@ DefineTableStatement {
 	ChangefeedClause?
 	PermissionsForClause?
 	CommentClause?
+}
+
+DefineTokenStatement {
+	token
+	IfNotExistsClause?
+	Ident
+	( on ( namespace | database | scope Ident ) )
+	TokenTypeClause
+	( value String )
+}
+
+// DEFINE USER [ IF NOT EXISTS ] @name ON [ ROOT | NAMESPACE | DATABASE ] [ PASSWORD @pass | PASSHASH @hash ] ROLES @roles
+
+DefineUserStatement {
+	user
+	IfNotExistsClause?
+	Ident
+	( on ( root | namespace | database ) )
+	( ( password | passhash ) String )
+	( roles commaSep<Ident> )
 }
 
 // Data statements
@@ -548,6 +570,23 @@ CommentClause {
 	String
 }
 
+TokenTypeClause {
+	type
+	(
+		jwks |
+		eddsa |
+		es256 |
+		es384 |
+		es512 |
+		ps256 |
+		ps384 |
+		ps512 |
+		rs256 |
+		rs384 |
+		rs512
+	)
+}
+
 // Support
 
 AnalyzerTokenizers {
@@ -772,12 +811,16 @@ piped<content> {
 	out					[@name=Keyword],
 	parallel			[@name=Keyword],
 	param				[@name=Keyword],
+	passhash			[@name=Keyword],
+	password			[@name=Keyword],
 	permissions			[@name=Keyword],
 	postings_cache		[@name=Keyword],
 	postings_order		[@name=Keyword],
 	readonly			[@name=Keyword],
 	relation			[@name=Keyword],
 	return				[@name=Keyword],
+	roles				[@name=Keyword],
+	root				[@name=Keyword],
 	scope				[@name=Keyword],
 	schemafull			[@name=Keyword],
 	schemaless			[@name=Keyword],
@@ -795,11 +838,13 @@ piped<content> {
 	then				[@name=Keyword],
 	timeout				[@name=Keyword],
 	to					[@name=Keyword],
+	token				[@name=Keyword],
 	tokenizers			[@name=Keyword],
 	transaction			[@name=Keyword],
 	type				[@name=Keyword],
 	unique				[@name=Keyword],
 	update				[@name=Keyword],
+	user				[@name=Keyword],
 	value				[@name=Keyword],
 	when				[@name=Keyword],
 	where				[@name=Keyword],
@@ -834,5 +879,17 @@ piped<content> {
 	selectPermissions	[@name=PermissionTarget],
 	updatePermissions	[@name=PermissionTarget],
 	createPermissions	[@name=PermissionTarget],
-	deletePermissions	[@name=PermissionTarget]
+	deletePermissions	[@name=PermissionTarget],
+
+	jwks				[@name=TokenType],
+	eddsa				[@name=TokenType],
+	es256				[@name=TokenType],
+	es384				[@name=TokenType],
+	es512				[@name=TokenType],
+	ps256				[@name=TokenType],
+	ps384				[@name=TokenType],
+	ps512				[@name=TokenType],
+	rs256				[@name=TokenType],
+	rs384				[@name=TokenType],
+	rs512				[@name=TokenType]
 }
