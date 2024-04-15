@@ -1,3 +1,4 @@
+import posthog from "posthog-js";
 import { useDidUpdate, useWindowEvent } from "@mantine/hooks";
 import { useCallback, useEffect } from "react";
 import { VIEW_MODES } from "~/constants";
@@ -53,6 +54,7 @@ export function useUrlHandler() {
 	useDidUpdate(() => {
 		if (location.pathname !== `/${activeView}`) {
 			history.pushState(null, document.title, `/${activeView}`);
+			posthog.capture('$pageview');
 		}
 	}, [activeView]);
 }

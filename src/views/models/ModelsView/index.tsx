@@ -1,3 +1,4 @@
+import posthog from "posthog-js";
 import { Button, Center, Group, Stack, Text } from "@mantine/core";
 import { ModelsPanel } from "../ModelsPanel";
 import { EditorPanel } from "../EditorPanel";
@@ -73,6 +74,8 @@ export function ModelsView() {
 		syncDatabaseSchema({
 			models: true
 		});
+
+		posthog.capture('model_import');
 	});
 
 	const downloadModel = useStable(async (model: ModelDefinition) => {

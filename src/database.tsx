@@ -1,3 +1,4 @@
+import posthog from "posthog-js";
 import compare from 'semver-compare';
 import { closeSurrealConnection, getSurreal, openSurrealConnection } from "./util/surreal";
 import { newId, showError } from "./util/helpers";
@@ -40,6 +41,10 @@ export function openConnection(options?: ConnectOptions): Promise<void> {
 	return new Promise((resolve, reject) => {
 		setIsConnecting(true);
 		setIsConnected(false);
+
+		posthog.capture('connection_open', {
+			protocol: connection.protocol
+		});
 
 		openSurrealConnection({
 			connection,
@@ -155,6 +160,8 @@ export async function executeQuery(options?: QueryOptions) {
 			id,
 			response
 		});
+
+		posthog.capture('query_execute');
 	} finally {
 		if (options?.loader) {
 			setQueryActive(false);

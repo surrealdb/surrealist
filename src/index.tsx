@@ -23,9 +23,19 @@ import { useConfigStore } from "./stores/config";
 import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from './util/background';
 import { getSetting } from "./util/config";
 import { generateEditorIcons } from "./util/editor/icons";
+import posthog from 'posthog-js';
+import { isProduction } from "./util/environment";
 
 (async () => {
 	dayjs.extend(relativeTime);
+
+	// Initialize posthog
+	if (isProduction) {
+		posthog.init(import.meta.env.POSTHOG, {
+			api_host: 'https://app.posthog.com',
+			autocapture: false
+		});
+	}
 
 	// Load the surrealist embed library
 	await initEmbed(embedPath);

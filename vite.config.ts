@@ -49,5 +49,6 @@ export default defineConfig({
 	define: {
 		'import.meta.env.VERSION': `"${version}"`,
 		'import.meta.env.SDB_VERSION': `"${surreal}"`,
+		'import.meta.env.POSTHOG': `"phc_Q5dvPPsAnEhuHR9sFACJqVGZtShguecgghSn1xOnjjE"`,
 	}
 });

@@ -1,5 +1,6 @@
 import classes from "./style.module.scss";
 import dayjs from "dayjs";
+import posthog from "posthog-js";
 import { Alert, Anchor, Badge, Box, Button, Divider, Drawer, Flex, Image, Indicator, Loader, ScrollArea, Stack, Title, Tooltip, Transition, TypographyStylesProvider, UnstyledButton } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { ActionIcon } from "@mantine/core";
@@ -79,6 +80,9 @@ export function NewsFeed() {
 	const readArticle = (item: NewsItem) => {
 		setReading(item);
 		readingHandle.open();
+		posthog.capture('newsfeed_read', {
+			article: item.id
+		});
 	};
 
 	useEffect(() => {
@@ -89,6 +93,8 @@ export function NewsFeed() {
 		if (isOpen) {
 			fetchFeed();
 			updateViewedNews();
+
+			posthog.capture('newsfeed_open');
 		} else {
 			readingHandle.close();
 		}

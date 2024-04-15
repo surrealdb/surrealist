@@ -1,3 +1,4 @@
+import posthog from "posthog-js";
 import { ActionIcon, Tooltip } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
@@ -48,6 +49,8 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 			adapter.startDatabase(username, password, port, driver, storage, executable).catch(() => {
 				stopServing();
 			});
+
+			posthog.capture('serve_start');
 		}
 
 		setHasStarted(true);

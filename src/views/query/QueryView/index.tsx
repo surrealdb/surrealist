@@ -1,5 +1,6 @@
 import classes from "./style.module.scss";
 import surrealistIcon from "~/assets/images/logo.png";
+import posthog from "posthog-js";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
@@ -93,6 +94,8 @@ export function QueryView() {
 		});
 
 		isSavingHandle.close();
+
+		posthog.capture('query_save');
 	});
 
 	const runQuery = useStable(() => {

@@ -59,6 +59,7 @@
 		"monaco-editor-textmate": "^4.0.0",
 		"monaco-textmate": "^3.0.1",
 		"onigasm": "^2.2.5",
+		"posthog-js": "^1.121.4",
 		"radash": "^11.0.0",
 		"react": "^18.2.0",
 		"react-copy-to-clipboard": "^5.1.0",
