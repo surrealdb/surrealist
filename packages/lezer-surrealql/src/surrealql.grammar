@@ -56,6 +56,7 @@ NestableStatement {
 	CreateStatement |
 	SelectStatement |
 	DeleteStatement |
+	InsertStatement |
 
 	BreakStatement |
 	ContinueStatement |
@@ -252,13 +253,25 @@ DeleteStatement {
 	)
 }
 
-// IF @condition [ THEN ]
-// 	@expression
-// [ ELSE IF @condition [ THEN ]
-// 	@expression ... ]
-// [ ELSE
-// 	@expression ]
-// [ END ]
+InsertStatement {
+	insert
+	ignore?
+	into
+	Ident
+	(
+		Object |
+		( "[" commaSep<Object> "]" ) |
+		(
+			"(" commaSep<Ident> ")"
+			values
+			commaSep<(
+				"(" commaSep<Value> ")"
+			)>
+			on duplicate key update
+			commaSep<FieldAssignment>
+		)
+	)
+}
 
 IfElseStatement {
 	if
@@ -852,6 +865,7 @@ piped<content> {
 	doc_lengths_cache	[@name=Keyword],
 	doc_lengths_order	[@name=Keyword],
 	drop				[@name=Keyword],
+	duplicate			[@name=Keyword],
 	else				[@name=Keyword],
 	end					[@name=Keyword],
 	exists				[@name=Keyword],
@@ -867,9 +881,13 @@ piped<content> {
 	group				[@name=Keyword],
 	highlights			[@name=Keyword],
 	if					[@name=Keyword],
+	ignore				[@name=Keyword],
 	in					[@name=Keyword],
 	index				[@name=Keyword],
 	info				[@name=Keyword],
+	insert				[@name=Keyword],
+	into				[@name=Keyword],
+	key					[@name=Keyword],
 	limit				[@name=Keyword],
 	mtree				[@name=Keyword],
 	mtree_cache			[@name=Keyword],
@@ -920,6 +938,7 @@ piped<content> {
 	update				[@name=Keyword],
 	user				[@name=Keyword],
 	value				[@name=Keyword],
+	values				[@name=Keyword],
 	when				[@name=Keyword],
 	where				[@name=Keyword],
 	with				[@name=Keyword],
