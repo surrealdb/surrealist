@@ -41,14 +41,14 @@ export function ServingTab() {
 					label="Initial root user"
 					placeholder="root"
 					value={username}
-					onChange={setUsername as any}
+					onChange={e => setUsername(e.target.value)}
 				/>
 
 				<TextInput
 					label="Initial root password"
 					placeholder="root"
 					value={password}
-					onChange={setPassword as any}
+					onChange={e => setPassword(e.target.value)}
 				/>
 
 				<Select
@@ -70,7 +70,7 @@ export function ServingTab() {
 				<TextInput
 					label="SurrealDB executable path"
 					value={executable}
-					onChange={setExecutable as any}
+					onChange={e => setExecutable(e.target.value)}
 				/>
 
 			</SettingsSection>
