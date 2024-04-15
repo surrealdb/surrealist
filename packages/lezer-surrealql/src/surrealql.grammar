@@ -86,7 +86,8 @@ DefineStatement {
 		DefineIndexStatement |
 		DefineNamespaceStatement |
 		DefineParamStatement |
-		DefineScopeStatement
+		DefineScopeStatement |
+		DefineTableStatement
 	)
 }
 
@@ -161,6 +162,19 @@ DefineScopeStatement {
 		SignupClause |
 		CommentClause
 	)*
+}
+
+DefineTableStatement {
+	table
+	IfNotExistsClause?
+	Ident
+	drop?
+	(schemafull | schemaless)?
+	TableTypeClause?
+	TableViewClause?
+	ChangefeedClause?
+	PermissionsForClause?
+	CommentClause?
 }
 
 // Data statements
@@ -289,6 +303,34 @@ FieldAssignment {
 }
 
 // Clauses
+
+TableTypeClause {
+	type
+	(
+		any |
+		normal |
+		(
+			relation
+			( ( in | from ) piped<Ident> )?
+			( ( out | to ) piped<Ident> )?
+		)
+	)
+}
+
+TableViewClause {
+	as
+	select
+	commaSep<InclusivePredicate>
+	from
+	commaSep<Value>
+	WhereClause?
+	GroupClause?
+}
+
+ChangefeedClause {
+	changefeed
+	Duration
+}
 
 SessionClause {
 	session
@@ -490,8 +532,8 @@ PermissionsForClause {
 		(
 			for
 			// TODO make case insensitive but not a keyword
-			("select" | "create" | "update" | "delete")
-			WhereClause
+			( selectPermissions | createPermissions | updatePermissions | deletePermissions )
+			( WhereClause | none | full )
 		)+
 	)
 }
@@ -533,23 +575,25 @@ InclusivePredicate {
 // Types
 
 Type {
-	StringType |
-	NumberType |
-	AnyType |
-	BoolType |
-	BytesType |
-	DatetimeType |
-	DecimalType |
-	DurationType |
-	FloatType |
-	IntType |
-	NullType |
-	ObjectType |
-	ArrayType |
-	SetType |
-	RecordType |
-	OptionType |
-	GeometryType
+	piped<(
+		StringType |
+		NumberType |
+		AnyType |
+		BoolType |
+		BytesType |
+		DatetimeType |
+		DecimalType |
+		DurationType |
+		FloatType |
+		IntType |
+		NullType |
+		ObjectType |
+		ArrayType |
+		SetType |
+		RecordType |
+		OptionType |
+		GeometryType
+	)>
 }
 
 TypeBracketOpen { "<" }
@@ -569,7 +613,7 @@ NullType[@name="Type"] { "null" }
 ObjectType[@name="Type"] { "object" }
 ArrayType[@name="Type"] { "array" ( TypeBracketOpen Type TypeBracketClose )? }
 SetType[@name="Type"] { "set" ( TypeBracketOpen Type TypeBracketClose )? }
-RecordType[@name="Type"] { "record" ( TypeBracketOpen ( rawident | Int ) TypeBracketClose )? }
+RecordType[@name="Type"] { "record" ( TypeBracketOpen piped<( rawident | Int )> TypeBracketClose )? }
 OptionType[@name="Type"] { "option" ( TypeBracketOpen Type TypeBracketClose ) }
 GeometryType[@name="Type"] {
 	"geometry"
@@ -659,6 +703,10 @@ commaSep<content> {
 	content ("," content)*
 }
 
+piped<content> {
+	content ("|" content)*
+}
+
 @skip { whitespace | Comment }
 @detectDelim
 
@@ -666,6 +714,7 @@ commaSep<content> {
 
 @external extend { rawident } tokens from "./tokens" {
 	analyzer			[@name=Keyword],
+	any					[@name=Keyword],
 	as					[@name=Keyword],
 	asc					[@name=Keyword],
 	assert				[@name=Keyword],
@@ -681,10 +730,12 @@ commaSep<content> {
 	commit				[@name=Keyword],
 	content				[@name=Keyword],
 	continue			[@name=Keyword],
+	changefeed			[@name=Keyword],
 	create				[@name=Keyword],
 	database			[@name=Keyword],
 	default				[@name=Keyword],
 	define				[@name=Keyword],
+	delete				[@name=Keyword],
 	desc				[@name=Keyword],
 	dimension			[@name=Keyword],
 	dist				[@name=Keyword],
@@ -692,6 +743,7 @@ commaSep<content> {
 	doc_ids_order		[@name=Keyword],
 	doc_lengths_cache	[@name=Keyword],
 	doc_lengths_order	[@name=Keyword],
+	drop				[@name=Keyword],
 	exists				[@name=Keyword],
 	explain				[@name=Keyword],
 	event				[@name=Keyword],
@@ -712,18 +764,23 @@ commaSep<content> {
 	mtree_cache			[@name=Keyword],
 	namespace			[@name=Keyword],
 	noindex				[@name=Keyword],
+	normal				[@name=Keyword],
 	not					[@name=Keyword],
 	on					[@name=Keyword],
 	only				[@name=Keyword],
 	order				[@name=Keyword],
+	out					[@name=Keyword],
 	parallel			[@name=Keyword],
 	param				[@name=Keyword],
 	permissions			[@name=Keyword],
 	postings_cache		[@name=Keyword],
 	postings_order		[@name=Keyword],
 	readonly			[@name=Keyword],
+	relation			[@name=Keyword],
 	return				[@name=Keyword],
 	scope				[@name=Keyword],
+	schemafull			[@name=Keyword],
+	schemaless			[@name=Keyword],
 	search				[@name=Keyword],
 	select				[@name=Keyword],
 	session				[@name=Keyword],
@@ -737,10 +794,12 @@ commaSep<content> {
 	terms_order			[@name=Keyword],
 	then				[@name=Keyword],
 	timeout				[@name=Keyword],
+	to					[@name=Keyword],
 	tokenizers			[@name=Keyword],
 	transaction			[@name=Keyword],
 	type				[@name=Keyword],
 	unique				[@name=Keyword],
+	update				[@name=Keyword],
 	value				[@name=Keyword],
 	when				[@name=Keyword],
 	where				[@name=Keyword],
@@ -770,5 +829,10 @@ commaSep<content> {
 	ns,
 	us,
 	µs,
-	ms
+	ms,
+
+	selectPermissions	[@name=PermissionTarget],
+	updatePermissions	[@name=PermissionTarget],
+	createPermissions	[@name=PermissionTarget],
+	deletePermissions	[@name=PermissionTarget]
 }
