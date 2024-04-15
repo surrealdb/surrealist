@@ -41,7 +41,7 @@ SubQuery {
 
 Block {
 	"{"
-	NestableExpressions
+	NestableExpressions ~ident
 	"}"
 }
 
@@ -184,14 +184,14 @@ ReturnStatement { return NestableExpression }
 
 // Values
 
-Value { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Object | TypeCast }
+Value { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast }
 
 // Objects
 
-ObjectKey {
-	rawident |
-	singleString |
-	doubleString
+ObjectKey[@dynamicPrecedence=2] {
+	rawident ~ident |
+	singleString ~string |
+	doubleString ~string
 }
 
 ObjectProperty {
@@ -206,26 +206,23 @@ Object {
 	"{" ObjectContent? "}"
 }
 
-BlockOrObject {
-	"{"
-	(
-		"}" |
-		ObjectProperty ("," commaSep<ObjectProperty>)? "}" |
-		NestableExpressions "}"
-	)
-}
-
 // Arrays
 
 Array { "[" commaSep<Value>? "]"}
 
 // Record Ids
 
+RecordIdIdent[@dynamicPrecedence=1] {
+  rawident ~ident |
+  Ident ~ident |
+  bracketIdent
+}
+
 RecordId {
-	Ident
+	RecordIdIdent
 	":"
 	(
-		String |
+		RecordIdIdent |
 		Number |
 		Array |
 		Object
@@ -536,6 +533,9 @@ TypeCast {
 	TypeBracketOpen Type TypeBracketClose Value
 }
 
+// Strings
+String { singleString ~string | doubleString ~string }
+
 @tokens {
 	// Characters
 	"{"[@name=BraceOpen]
@@ -561,8 +561,6 @@ TypeCast {
 	Float { @digit+ frac? exp? "f"? }
 	Decimal { @digit+ frac? exp? "dec"? }
 
-	// Strings
-	String { singleString | doubleString }
 	singleString { "'" ![']+ "'" }
 	doubleString { '"' !["]+ '"' }
 
@@ -570,7 +568,9 @@ TypeCast {
 	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
 	Ident {
 		rawident |
-		"`" ![`]+ '`' |
+		"`" ![`]+ '`'
+	}
+	bracketIdent {
 		"⟨" ![⟩]+ "⟩"
 	}
 	rawident {
