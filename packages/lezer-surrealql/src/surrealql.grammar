@@ -62,13 +62,23 @@ NestableStatement {
 	ContinueStatement |
 	ForStatement |
 	ReturnStatement |
-	IfElseStatement
+	ThrowStatement |
+	IfElseStatement |
+	LetStatement |
+	RelateStatement |
+	UpdateStatement
 }
 
 Statement {
 	TransactionStatement |
 	DefineStatement |
+	RemoveStatement |
 	InfoForStatement |
+	KillStatement |
+	LiveSelectStatement |
+	ShowStatement |
+	SleepStatement |
+	UseStatement |
 	NestableStatement
 }
 
@@ -202,6 +212,23 @@ DefineUserStatement {
 	( roles commaSep<Ident> )
 }
 
+// Remove statement
+
+RemoveStatement {
+	( namespace IfExistsClause? Ident ) |
+	( database IfExistsClause? Ident ) |
+	( user IfExistsClause? Ident on ( root | namespace | database ) ) |
+	( token IfExistsClause? Ident on ( namespace | database | scope ) ) |
+	( event IfExistsClause? Ident on table? Ident ) |
+	( field IfExistsClause? Ident on table? Ident ) |
+	( index IfExistsClause? Ident on table? Ident ) |
+	( analyzer IfExistsClause? Ident ) |
+	( function IfExistsClause? customFunctionName ) |
+	( param IfExistsClause? VariableName ) |
+	( scope IfExistsClause? Ident ) |
+	( table IfExistsClause? Ident )
+}
+
 // Data statements
 
 CreateStatement {
@@ -305,6 +332,16 @@ IfElseStatement {
 	)
 }
 
+relateSubject { Array | Ident | functionName | VariableName | RecordId }
+RelateStatement {
+	relate only?
+	relateSubject "->" relateSubject "->" relateSubject
+	( ContentClause | SetClause )?
+	ReturnClause?
+	TimeoutClause?
+	ParallelClause?
+}
+
 InfoForStatement {
 	info for
 	(
@@ -317,11 +354,66 @@ InfoForStatement {
 	structure?
 }
 
+UpdateStatement {
+	update only?
+	(
+		NestableStatement |
+		(
+			commaSep<Value>
+			(
+				ContentClause |
+				MergeClause |
+				PatchClause |
+				SetClause
+			)?
+			WhereClause?
+			ReturnClause?
+			TimeoutClause?
+			ParallelClause?
+		)
+	)
+}
+
 // Control statements
 BreakStatement { break }
 ContinueStatement { continue }
 ForStatement { for VariableName in ( Array | VariableName | SubQuery | Block ) Block }
 ReturnStatement { return NestableExpression }
+ThrowStatement { throw Value }
+
+// Live statements
+KillStatement { kill String }
+LiveSelectStatement {
+	live select
+	(
+		diff |
+		value Predicate |
+		commaSep<InclusivePredicate>
+	)
+	from commaSep<Ident>
+	WhereClause?
+	FetchClause?
+}
+
+// Other statements
+LetStatement { let VariableName "=" Value }
+ShowStatement {
+	show changes for table
+	Ident
+	( since String )?
+	( limit Int )?
+}
+
+SleepStatement {
+	sleep Duration
+}
+
+useNs { ( ns | namespace ) Ident }
+useDb { ( db | database ) Ident }
+UseStatement {
+	use
+	( useNs | useDb | ( useNs useDb ) )
+}
 
 // Values
 
@@ -406,6 +498,14 @@ FieldAssignment {
 }
 
 // Clauses
+
+MergeClause {
+	merge Object
+}
+
+PatchClause {
+	patch Array
+}
 
 TableTypeClause {
 	type
@@ -516,6 +616,10 @@ IfNotExistsClause {
 	if not exists
 }
 
+IfExistsClause {
+	if exists
+}
+
 ReturnClause {
 	// TODO add support for projections
 	return
@@ -604,8 +708,7 @@ WhenThenClause {
 TypeClause {
 	flexible?
 	type
-	// TODO proper types
-	Ident
+	Type
 }
 
 ReadonlyClause {
@@ -634,8 +737,7 @@ PermissionsForClause {
 		none | full |
 		(
 			for
-			// TODO make case insensitive but not a keyword
-			( selectPermissions | createPermissions | updatePermissions | deletePermissions )
+			commaSep<( selectPermissions | createPermissions | updatePermissions | deletePermissions )>
 			( WhereClause | none | full )
 		)+
 	)
@@ -768,6 +870,8 @@ Decimal[@dynamicPrecedence=-1] { int ~int frac? exp? "dec" }
 	"["
 	"]"
 	":"[@name=Colon]
+	"->"[@name=GraphRight]
+	"<-"[@name=GraphLeft]
 
 	// Helpers
 	whitespace { $[ \n\r\t] }
@@ -845,12 +949,13 @@ piped<content> {
 	by					[@name=Keyword],
 	cancel				[@name=Keyword],
 	capacity			[@name=Keyword],
+	changefeed			[@name=Keyword],
+	changes				[@name=Keyword],
 	columns				[@name=Keyword],
 	comment				[@name=Keyword],
 	commit				[@name=Keyword],
 	content				[@name=Keyword],
 	continue			[@name=Keyword],
-	changefeed			[@name=Keyword],
 	create				[@name=Keyword],
 	database			[@name=Keyword],
 	db					[@name=Keyword],
@@ -888,7 +993,11 @@ piped<content> {
 	insert				[@name=Keyword],
 	into				[@name=Keyword],
 	key					[@name=Keyword],
+	kill				[@name=Keyword],
+	let					[@name=Keyword],
 	limit				[@name=Keyword],
+	live				[@name=Keyword],
+	merge				[@name=Keyword],
 	mtree				[@name=Keyword],
 	mtree_cache			[@name=Keyword],
 	namespace			[@name=Keyword],
@@ -904,10 +1013,12 @@ piped<content> {
 	param				[@name=Keyword],
 	passhash			[@name=Keyword],
 	password			[@name=Keyword],
+	patch				[@name=Keyword],
 	permissions			[@name=Keyword],
 	postings_cache		[@name=Keyword],
 	postings_order		[@name=Keyword],
 	readonly			[@name=Keyword],
+	relate				[@name=Keyword],
 	relation			[@name=Keyword],
 	return				[@name=Keyword],
 	roles				[@name=Keyword],
@@ -919,8 +1030,11 @@ piped<content> {
 	select				[@name=Keyword],
 	session				[@name=Keyword],
 	set					[@name=Keyword],
+	show				[@name=Keyword],
+	since				[@name=Keyword],
 	signin				[@name=Keyword],
 	signup				[@name=Keyword],
+	sleep				[@name=Keyword],
 	split				[@name=Keyword],
 	start				[@name=Keyword],
 	structure			[@name=Keyword],
@@ -928,6 +1042,7 @@ piped<content> {
 	terms_cache			[@name=Keyword],
 	terms_order			[@name=Keyword],
 	then				[@name=Keyword],
+	throw				[@name=Keyword],
 	timeout				[@name=Keyword],
 	to					[@name=Keyword],
 	token				[@name=Keyword],
@@ -936,6 +1051,7 @@ piped<content> {
 	type				[@name=Keyword],
 	unique				[@name=Keyword],
 	update				[@name=Keyword],
+	use					[@name=Keyword],
 	user				[@name=Keyword],
 	value				[@name=Keyword],
 	values				[@name=Keyword],
