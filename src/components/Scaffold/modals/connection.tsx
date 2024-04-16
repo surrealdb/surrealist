@@ -53,6 +53,7 @@ export function ConnectionEditor() {
 			updateConnection({
 				id: editingId,
 				name: details.name,
+				icon: details.icon,
 				connection: details.connection,
 			});
 		}
@@ -79,6 +80,7 @@ export function ConnectionEditor() {
 
 	const applyTemplate = useStable((template: Template) => {
 		setDetails(draft => {
+			draft.icon = template.icon;
 			draft.connection = template.values;
 		});
 	});
@@ -97,6 +99,7 @@ export function ConnectionEditor() {
 				info: {
 					id: "serving",
 					name: "Local database",
+					icon: 0,
 					values: {
 						authMode: "root",
 						database: "",
@@ -154,7 +157,7 @@ export function ConnectionEditor() {
 		>
 			<Form onSubmit={saveInfo}>
 				{templateList.length > 0 && (
-					<Alert mb="sm" p="xs">
+					<Alert mb="xl" p="xs">
 						<Group>
 							<Icon
 								ml={6}

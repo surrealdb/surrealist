@@ -5,7 +5,7 @@ import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconCircle, iconCopy, iconEdit, iconPlus, iconSearch, iconServer, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconCircle, iconCopy, iconEdit, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
@@ -16,6 +16,7 @@ import { Entry } from "../Entry";
 import { openConnection } from "~/database";
 import { useContextMenu } from "mantine-contextmenu";
 import { useIntent } from "~/hooks/url";
+import { USER_ICONS } from "~/util/user-icons";
 
 export function Connections() {
 	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
@@ -95,8 +96,10 @@ export function Connections() {
 						variant="light"
 						color="slate"
 						onClick={isListingHandle.toggle}
-						leftSection={isSandbox && (
+						leftSection={isSandbox ? (
 							<Icon path={iconSurreal} size={1.2} noStroke />
+						) : (
+							<Icon path={USER_ICONS[connection.icon ?? 0]} size={0.85} mt={-0} />
 						)}
 						rightSection={
 							isConnected && (
@@ -219,7 +222,7 @@ export function Connections() {
 										className={classes.connection}
 										onClick={() => activate(con.id)}
 										leftSection={
-											<Icon path={iconServer} />
+											<Icon path={USER_ICONS[con.icon ?? 0]} />
 										}
 										rightSection={
 											<ActionIcon

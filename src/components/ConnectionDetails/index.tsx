@@ -1,6 +1,7 @@
+import dayjs from "dayjs";
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
-import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip, Alert } from "@mantine/core";
+import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip, Alert, SimpleGrid, Popover } from "@mantine/core";
 import { CONNECTION_PROTOCOLS, AUTH_MODES } from "~/constants";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { EditableText } from "../EditableText";
@@ -12,7 +13,7 @@ import { Text } from "@mantine/core";
 import { ModalTitle } from "../ModalTitle";
 import { useMemo } from "react";
 import { fastParseJwt } from "~/util/helpers";
-import dayjs from "dayjs";
+import { USER_ICONS } from "~/util/user-icons";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -21,11 +22,11 @@ const EXPIRE_WARNING = 1000 * 60 * 60 * 3;
 export interface ConnectionDetailsProps {
 	value: Connection;
 	onChange: Updater<Connection>;
-	action?: React.ReactNode;
 }
 
-export function ConnectionDetails({ value, onChange, action }: ConnectionDetailsProps) {
+export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
+	const [showIcons, showIconsHandle] = useDisclosure();
 
 	const addScopeField = useStable(() => {
 		onChange((draft) => {
@@ -59,6 +60,12 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 		});
 	});
 
+	const updateIcon = (index: number) => {
+		onChange((draft) => {
+			draft.icon = index;
+		});
+	};
+
 	const isMemory = value.connection.protocol === "mem";
 	const isIndexDB = value.connection.protocol === "indxdb";
 
@@ -75,13 +82,38 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 
 	return (
 		<>
-			<Group>
-				<Paper
-					px="xs"
-					py={4}
-					mb="md"
-					flex={1}
-				>
+			<Paper
+				mb="xl"
+				flex={1}
+			>
+				<Group>
+					<Popover
+						opened={showIcons}
+						onClose={showIconsHandle.close}
+						position="bottom-start"
+					>
+						<Popover.Target>
+							<ActionIcon
+								variant="subtle"
+								onClick={showIconsHandle.toggle}
+							>
+								<Icon path={USER_ICONS[value.icon ?? 0]} size="lg" />
+							</ActionIcon>
+						</Popover.Target>
+						<Popover.Dropdown>
+							<SimpleGrid cols={8} spacing={4}>
+								{USER_ICONS.map((icon, i) => (
+									<ActionIcon
+										key={i}
+										variant={value.icon === i ? "gradient" : "subtle"}
+										onClick={() => updateIcon(i)}
+									>
+										<Icon path={icon} />
+									</ActionIcon>
+								))}
+							</SimpleGrid>
+						</Popover.Dropdown>
+					</Popover>
 					<EditableText
 						fz={22}
 						fw={600}
@@ -92,9 +124,8 @@ export function ConnectionDetails({ value, onChange, action }: ConnectionDetails
 							})
 						}
 					/>
-				</Paper>
-				{action}
-			</Group>
+				</Group>
+			</Paper>
 			<Group mb="lg">
 				<Select
 					data={CONNECTION_PROTOCOLS}

@@ -18,6 +18,7 @@ const CAT = "templates";
 const PLACEHOLDER: Connection = {
 	id: "",
 	name: "New template",
+	icon: 0,
 	queries: [],
 	activeQuery: "",
 	connection: createBaseConnectionOptions(),
@@ -43,6 +44,7 @@ export function TemplatesTab() {
 			...PLACEHOLDER,
 			id: template.id,
 			name: template.name,
+			icon: template.icon,
 			connection: template.values
 		});
 	});
@@ -53,6 +55,7 @@ export function TemplatesTab() {
 		const template: Template = {
 			id: details.id,
 			name: details.name,
+			icon: details.icon,
 			values: details.connection
 		};
 

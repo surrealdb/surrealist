@@ -79,6 +79,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	return {
 		id: newId(),
 		name: "",
+		icon: 0,
 		queries: [{
 			...baseTab,
 			name: "New query"

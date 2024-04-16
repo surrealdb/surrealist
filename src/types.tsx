@@ -40,6 +40,7 @@ export interface ConnectionOptions {
 export interface Connection {
 	id: string;
 	name: string;
+	icon: number;
 	queries: TabQuery[];
 	activeQuery: string;
 	connection: ConnectionOptions;
@@ -52,6 +53,7 @@ export interface Connection {
 export interface Template {
 	id: string;
 	name: string;
+	icon: number;
 	values: ConnectionOptions;
 }
 
