@@ -192,7 +192,7 @@ export function QueryView() {
 									{showVariables && (
 										<>
 											<PanelDragger />
-											<Panel defaultSize={25} minSize={25}>
+											<Panel defaultSize={40} minSize={25}>
 												<VariablesPane
 													isValid={variablesValid}
 													setIsValid={setVariablesValid}
