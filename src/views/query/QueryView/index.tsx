@@ -8,7 +8,7 @@ import { TabsPane } from "../TabsPane";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
-import { adapter, isEmbed } from "~/adapter";
+import { adapter, isMini } from "~/adapter";
 import { Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Image } from "@mantine/core";
@@ -26,7 +26,7 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { iconCheck } from "~/util/icons";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
-import { EmbedAdapter } from "~/adapter/embed";
+import { MiniAdapter } from "~/adapter/mini";
 import { useBoolean } from "~/hooks/boolean";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
@@ -130,7 +130,7 @@ export function QueryView() {
 				/>
 			</InPortal>
 
-			{isEmbed && !(adapter as EmbedAdapter).hideTitlebar && (
+			{isMini && !(adapter as MiniAdapter).hideTitlebar && (
 				<Group>
 					<Image
 						src={surrealistIcon}
@@ -151,7 +151,7 @@ export function QueryView() {
 				wrap="nowrap"
 				gap="var(--surrealist-divider-size)"
 			>
-				{!isEmbed && (
+				{!isMini && (
 					<TabsPane
 						openHistory={showHistoryHandle.open}
 						openSaved={showSavedHandle.open}
@@ -160,7 +160,7 @@ export function QueryView() {
 				{active && (
 					<PanelGroup direction="vertical">
 						<Panel minSize={25}>
-							{isEmbed ? (showVariables ? (
+							{isMini ? (showVariables ? (
 								<VariablesPane
 									isValid={variablesValid}
 									switchPortal={switchPortal}

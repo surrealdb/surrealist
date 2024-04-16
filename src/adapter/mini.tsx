@@ -7,7 +7,7 @@ import { getSurreal } from "~/util/surreal";
 
 const THEMES = new Set(['light', 'dark', 'auto']);
 
-export class EmbedAdapter extends BrowserAdapter {
+export class MiniAdapter extends BrowserAdapter {
 
 	public hideTitlebar = false;
 
@@ -48,7 +48,7 @@ export class EmbedAdapter extends BrowserAdapter {
 				mainTab.variables = JSON.stringify(parsed, null, 4);
 			} catch {
 				showError({
-					title: 'Embed error',
+					title: 'Startup error',
 					subtitle: 'Variables could not be parsed'
 				});
 			}
@@ -62,7 +62,7 @@ export class EmbedAdapter extends BrowserAdapter {
 				this.#datasetQuery = await fetch(datasetUrl).then(res => res.text());
 			} else {
 				showError({
-					title: 'Embed error',
+					title: 'Startup error',
 					subtitle: 'Dataset not recognised'
 				});
 			}
@@ -76,7 +76,7 @@ export class EmbedAdapter extends BrowserAdapter {
 		// Interface theme
 		if (theme && !THEMES.has(theme)) {
 			showError({
-				title: 'Embed error',
+				title: 'Startup error',
 				subtitle: 'Theme not recognised'
 			});
 		}

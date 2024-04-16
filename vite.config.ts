@@ -26,8 +26,8 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				'surrealist': '/index.html',
-				'embed-run': '/embed/run.html',
-				'embed-new': '/embed/new.html'
+				'mini-run': '/mini/run.html',
+				'mini-new': '/mini/new.html'
 			}
 		},
 	},

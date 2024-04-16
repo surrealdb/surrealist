@@ -1,4 +1,4 @@
-import "./assets/styles/embed-new.scss";
+import "../assets/styles/embed-new.scss";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { createRoot } from "react-dom/client";
@@ -80,7 +80,7 @@ function App() {
 		<main>
 			<div className="logo">
 				<img src="/favicon.ico" alt="Surrealist logo" width="80" />
-				<h1>Surrealist Embed Generator</h1>
+				<h1>Surrealist Mini Generator</h1>
 			</div>
 			<div className="columns">
 				<form id="form">
@@ -168,7 +168,7 @@ function App() {
 						<input id="output" value={url} onInput={onUrlInput} onFocus={(e) => e.currentTarget.select()} />
 					</div>
 					<div className="section">
-						<label>Embed</label>
+						<label>Preview</label>
 						<iframe src={delayedUrl} width="100%" height="550" frameBorder={0} />
 						<div>
 							<button type="button" onClick={reloadIframe}>

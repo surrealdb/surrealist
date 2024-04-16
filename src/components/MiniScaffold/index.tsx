@@ -6,7 +6,7 @@ import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { QueryView } from "~/views/query/QueryView";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 
-export function Embed() {
+export function MiniScaffold() {
 	const colorScheme = useColorScheme();
 	const isLight = useIsLight();
 
