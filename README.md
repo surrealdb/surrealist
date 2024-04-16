@@ -7,7 +7,7 @@
 <br>
 
 <h1 align="center">
-  <img src=".github/images/logo-text.png" height="34">
+  <a href="https://surrealdb.com/docs/surrealist"><img src=".github/images/logo-text.png" height="34"></a>
 </h1>
 
 <br> 
