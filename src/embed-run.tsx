@@ -10,7 +10,6 @@ import "./adapter";
 import embedPath from './generated/surrealist-embed_bg.wasm?url';
 import initEmbed, { initialize_embed } from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
-import { initializeMonaco } from "./util/editor";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from './util/background';
 import { Embed } from './components/Embed';
 import { openConnection } from './database';
@@ -32,10 +31,6 @@ import { EmbedAdapter } from './adapter/embed';
 
 	// Initialize adapter
 	adapter.initialize();
-
-	// Initialize monaco
-	await document.fonts.ready;
-	await initializeMonaco();
 
 	// Immedietely connect and initialize the dataset
 	openConnection().then(() => {

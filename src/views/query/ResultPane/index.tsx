@@ -79,7 +79,7 @@ export function ResultPane({
 	}, [responses.length]);
 
 	const modeIcon = RESULT_MODES.find(r => r.value == resultMode)?.icon ?? iconHelp;
-	const hasSelection = flags.editor === "codemirror" && selection?.empty === false;
+	const hasSelection = selection?.empty === false;
 
 	const statusText = (showResponses
 		? `${responseCount} ${responseCount == 1 ? 'response' : 'responses'}`

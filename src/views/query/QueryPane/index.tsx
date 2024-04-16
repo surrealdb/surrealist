@@ -1,15 +1,11 @@
 import autoFixAnim from "~/assets/animation/autofix.json";
-import { editor } from "monaco-editor";
 import { useStable } from "~/hooks/stable";
 import { ContentPane } from "~/components/Pane";
-import { useRef } from "react";
-import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
 import { useDebounced } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { selectionChanged, surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
@@ -57,25 +53,10 @@ export function QueryPane({
 }: QueryPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
-	const controls = useRef<editor.IStandaloneCodeEditor>();
-	const [flags] = useFeatureFlags();
-
-	const validateQuery = useStable(() => {
-		if (flags.editor != "monaco") return;
-
-		const isInvalid = updateQueryValidation(controls.current!);
-
-		setIsValid(!isInvalid);
-	});
-
 	const setQueryForced = useStable((query: string) => {
-		if (flags.editor === "monaco") {
-			validateQuery();
-		} else {
-			const error = validate_query(query);
+		const error = validate_query(query);
 
-			setIsValid(!error);
-		}
+		setIsValid(!error);
 
 		updateQueryTab({
 			id: activeTab.id,
@@ -84,15 +65,6 @@ export function QueryPane({
 	});
 
 	const scheduleSetQuery = useDebounced(200, setQueryForced);
-
-	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
-		configureQueryEditor(editor);
-
-		controls.current = editor;
-
-		editor.focus();
-		validateQuery();
-	});
 
 	const handleFormat = useStable(() => {
 		const formatted = format_query(activeTab.query);
@@ -254,16 +226,8 @@ export function QueryPane({
 			}
 		>
 			<CodeEditor
-				language="surrealql"
-				onMount={configure}
 				value={activeTab.query}
 				onChange={scheduleSetQuery}
-				options={{
-					quickSuggestions: false,
-					wordBasedSuggestions: false,
-					wrappingStrategy: "advanced",
-					wordWrap: "on",
-				}}
 				extensions={[
 					surql(),
 					surqlTableCompletion(),

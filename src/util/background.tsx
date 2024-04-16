@@ -1,7 +1,6 @@
 import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { setEditorTheme } from "./editor";
 import { openConnection } from "~/database";
 import { getSetting, watchStore } from "./config";
 import { assign } from "radash";
@@ -28,7 +27,6 @@ const computeColorScheme = () => {
 	const actualScheme = colorScheme === "auto" ? colorPreference : colorScheme;
 
 	useInterfaceStore.getState().setColorScheme(actualScheme);
-	setEditorTheme(actualScheme);
 };
 
 /**

@@ -10,7 +10,6 @@ import { getSurreal } from "~/util/surreal";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { useTableNames } from "~/hooks/schema";
-import { editor } from "monaco-editor";
 import { tb } from "~/util/helpers";
 import { Label } from "~/components/Scaffold/settings/utilities";
 import { json } from "@codemirror/lang-json";
@@ -56,11 +55,6 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 
 		onClose();
 		RecordsChangedEvent.dispatch(null);
-	});
-
-	const focusEditor = useStable((editor: editor.IStandaloneCodeEditor) => {
-		editor.focus();
-		editor.setPosition({ lineNumber: 2, column: 5 });
 	});
 
 	useLayoutEffect(() => {
@@ -134,18 +128,9 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						withBorder
 					>
 						<CodeEditor
-							language="json"
-							autoSize
+							autoFocus
 							value={recordBody}
 							onChange={setRecordBody}
-							onMount={focusEditor}
-							options={{
-								wrappingStrategy: "advanced",
-								wordWrap: "off",
-								suggest: {
-									showProperties: false,
-								},
-							}}
 							extensions={[
 								json()
 							]}

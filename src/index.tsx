@@ -15,7 +15,6 @@ import embedPath from './generated/surrealist-embed_bg.wasm?url';
 import initEmbed, { initialize_embed } from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
 import { App } from "./components/App";
-import { initializeMonaco } from "./util/editor";
 import { runUpdateChecker } from "./util/updater";
 import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
@@ -55,10 +54,6 @@ import { isProduction } from "./util/environment";
 
 	// Generate editor icons
 	generateEditorIcons();
-
-	// Initialize monaco
-	await document.fonts.ready;
-	await initializeMonaco();
 
 	// Render the app component
 	const root = document.querySelector("#root")!;

@@ -68,16 +68,8 @@ export function VariablesPane(props: VariablesPaneProps) {
 			}
 		>
 			<CodeEditor
-				language="json"
 				value={activeTab?.variables || ''}
 				onChange={setVariables}
-				options={{
-					wrappingStrategy: "advanced",
-					wordWrap: "on",
-					suggest: {
-						showProperties: false,
-					}
-				}}
 				extensions={[
 					json()
 				]}

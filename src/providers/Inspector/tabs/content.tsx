@@ -22,17 +22,8 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 			>
 				<CodeEditor
 					h="100%"
-					language="json"
 					value={value}
 					onChange={onChange}
-					options={{
-						scrollBeyondLastLine: true,
-						wrappingStrategy: "advanced",
-						wordWrap: "off",
-						suggest: {
-							showProperties: false,
-						}
-					}}
 					extensions={[
 						json()
 					]}

@@ -6,7 +6,7 @@ import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
-import { iconBook, iconBug, iconChat, iconClose, iconHelp, iconRoutes } from "~/util/icons";
+import { iconBook, iconBug, iconClose, iconHelp } from "~/util/icons";
 
 const TILES = [
 	{

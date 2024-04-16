@@ -14,7 +14,7 @@ import { useConnection } from "~/hooks/connection";
 import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { Icon } from "~/components/Icon";
 import { iconOpen, iconServer } from "~/util/icons";
-import { Fragment, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Command, CommandCategory, computeCommands } from "~/util/commands";
 import { useInputState } from "@mantine/hooks";
 import { useConfigStore } from "~/stores/config";

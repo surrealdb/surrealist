@@ -37,7 +37,6 @@
 		"@mantine/hooks": "^7.6.2",
 		"@mantine/notifications": "^7.6.2",
 		"@mdi/js": "^7.2.96",
-		"@monaco-editor/react": "^4.5.1",
 		"@replit/codemirror-indentation-markers": "^6.5.0",
 		"@tauri-apps/api": "^1.5.3",
 		"@theopensource-company/feature-flags": "^0.4.5",
@@ -55,9 +54,6 @@
 		"klona": "^2.0.6",
 		"lottie-web": "^5.12.2",
 		"mantine-contextmenu": "^7.5.0",
-		"monaco-editor": "^0.41.0",
-		"monaco-editor-textmate": "^4.0.0",
-		"monaco-textmate": "^3.0.1",
 		"onigasm": "^2.2.5",
 		"posthog-js": "^1.121.4",
 		"radash": "^11.0.0",
@@ -92,10 +88,5 @@
 		"sass": "^1.65.1",
 		"typescript": "^5.1.6",
 		"vite": "^4.4.9"
-	},
-	"pnpm": {
-		"patchedDependencies": {
-			"monaco-editor@0.41.0": "patches/monaco-editor@0.41.0.patch"
-		}
 	}
 }

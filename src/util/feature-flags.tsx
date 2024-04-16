@@ -16,9 +16,6 @@ export const featureFlagSchema = {
 	listLicenses: {
 		options: Bool
 	},
-	editor: {
-		options: ["monaco", "codemirror"]
-	},
 	functions_view: {
 		options: Bool
 	},
@@ -60,14 +57,12 @@ export const featureFlags = new FeatureFlags({
 			functions_view: true,
 			models_view: true,
 			apidocs_view: true,
-			editor: "codemirror",
 		},
 		dev: {
 			devTools: true,
 			templates: true,
 			listLicenses: true,
 			apidocs_view: true,
-			editor: "monaco",
 			newsfeed: 'news'
 		}
 	},
