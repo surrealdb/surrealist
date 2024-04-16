@@ -123,6 +123,7 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 			config.settings.templates.list.push({
 				id: env.id,
 				name: env.name,
+				icon: 0,
 				values: migrateConnectionOptions({
 					endpoint: "",
 					authMode: "root",
