@@ -417,7 +417,16 @@ UseStatement {
 
 // Values
 
-Value { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast | Duration }
+BaseValue { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast | Duration }
+Value { BaseValue | BinaryExpression }
+
+// Binary expressions
+
+BinaryExpression {
+	BaseValue
+	Operator
+	BaseValue
+}
 
 // Objects
 
@@ -847,7 +856,7 @@ GeometryType[@name="Type"] {
 }
 
 TypeCast {
-	TypeBracketOpen Type TypeBracketClose Value
+	TypeBracketOpen Type TypeBracketClose BaseValue
 }
 
 // Strings
@@ -862,6 +871,51 @@ Number { Int | Float | Decimal }
 Int { int ~int }
 Float[@dynamicPrecedence=-1] { int ~int frac? exp? "f"? }
 Decimal[@dynamicPrecedence=-1] { int ~int frac? exp? "dec" }
+
+Operator {
+	"&&" | and |
+	"||" | or |
+	"??" |
+	"?:" |
+	"="  | is |
+	"!=" | ( is opNot ) |
+	"==" |
+	"?=" |
+	"*=" |
+	"~"  |
+	"!~" |
+	"*~" |
+	"<"  |
+	"<=" |
+	">"  |
+	">=" |
+	"+"  |
+	"-"  |
+	"*"  | "×" |
+	"/"  | "÷" |
+	"**" |
+	"∋"  | contains |
+	"∌"  | containsnot |
+	"⊇"  | containsall |
+	"⊃"	 | containsany |
+	"⊅"  | containsnone |
+	"∈"	 | inside | in |
+	"∉"  | notinside | ( opNot opIn ) |
+	"⊆"  | allinside |
+	"⊂"  | anyinside |
+	"⊄"  | noneinside |
+
+	outside |
+	intersects |
+
+	"@@" | ( "@" Int "@" ) |
+	(
+		"<|"
+		Int
+		( "," ( hamming | levenshtein ) )
+		"|>"
+	)
+}
 
 @tokens {
 	// Characters
@@ -918,7 +972,7 @@ Decimal[@dynamicPrecedence=-1] { int ~int frac? exp? "dec" }
 
   singleLetterDurationUnit {"s" | "m" | "h" | "d" | "w" | "y"}
 
-	@precedence { "function" JavaScript whitespace Comment customFunctionName  functionName int exp "dec" rawident singleLetterDurationUnit "f" singleString doubleString }
+	@precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName  functionName int exp "dec" rawident singleLetterDurationUnit "f" singleString doubleString }
 
 	"function"
 }
@@ -1100,5 +1154,28 @@ piped<content> {
 	ps512				[@name=TokenType],
 	rs256				[@name=TokenType],
 	rs384				[@name=TokenType],
-	rs512				[@name=TokenType]
+	rs512				[@name=TokenType],
+
+	// Operators
+	and,
+	or,
+	is,
+	opNot,
+	opIn,
+	contains,
+	containsnot,
+	containsall,
+	containsany,
+	containsnone,
+	inside,
+	notinside,
+	allinside,
+	anyinside,
+	noneinside,
+	outside,
+	intersects,
+
+	// KNN
+	hamming				[@name=KnnDistance],
+	levenshtein			[@name=KnnDistance]
 }

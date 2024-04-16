@@ -163,6 +163,27 @@ import {
 	rs256,
 	rs384,
 	rs512,
+
+	and,
+	or,
+	is,
+	opNot,
+	opIn,
+	contains,
+	containsnot,
+	containsall,
+	containsany,
+	containsnone,
+	inside,
+	notinside,
+	allinside,
+	anyinside,
+	noneinside,
+	outside,
+	intersects,
+
+	hamming,
+	levenshtein
 } from "./parser.terms";
 
 const tokenMap = {
@@ -325,6 +346,25 @@ const tokenMap = {
 	rs256,
 	rs384,
 	rs512,
+
+	and,
+	or,
+	is,
+	contains,
+	containsnot,
+	containsall,
+	containsany,
+	containsnone,
+	inside,
+	notinside,
+	allinside,
+	anyinside,
+	noneinside,
+	outside,
+	intersects,
+
+	hamming,
+	levenshtein
 };
 
 const tryMapped = {
@@ -333,6 +373,8 @@ const tryMapped = {
 	update: [updatePermissions],
 	delete: [deletePermissions],
 	ns: [nsUnit],
+	not: [opNot],
+	in: [opIn],
 };
 
 export const tokens = function(t, stack) {
