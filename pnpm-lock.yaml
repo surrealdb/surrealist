@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  monaco-editor@0.41.0:
-    hash: vt5qlsj63ahkjwzfmx55icnboi
-    path: patches/monaco-editor@0.41.0.patch
-
 importers:
 
   .:
@@ -73,9 +68,6 @@ importers:
       '@mdi/js':
         specifier: ^7.2.96
         version: 7.2.96
-      '@monaco-editor/react':
-        specifier: ^4.5.1
-        version: 4.5.1(monaco-editor@0.41.0)(react-dom@18.2.0)(react@18.2.0)
       '@replit/codemirror-indentation-markers':
         specifier: ^6.5.0
         version: 6.5.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)
@@ -127,18 +119,6 @@ importers:
       mantine-contextmenu:
         specifier: ^7.5.0
         version: 7.5.0(@mantine/core@7.6.2)(@mantine/hooks@7.6.2)(clsx@2.1.0)(react@18.2.0)
-      monaco-editor:
-        specifier: ^0.41.0
-        version: 0.41.0(patch_hash=vt5qlsj63ahkjwzfmx55icnboi)
-      monaco-editor-textmate:
-        specifier: ^4.0.0
-        version: 4.0.0(monaco-editor@0.41.0)(monaco-textmate@3.0.1)
-      monaco-textmate:
-        specifier: ^3.0.1
-        version: 3.0.1(onigasm@2.2.5)
-      onigasm:
-        specifier: ^2.2.5
-        version: 2.2.5
       posthog-js:
         specifier: ^1.121.4
         version: 1.121.4
@@ -1188,28 +1168,6 @@ packages:
 
   /@mdi/js@7.2.96:
     resolution: {integrity: sha512-paR9M9ZT7rKbh2boksNUynuSZMHhqRYnEZOm/KrZTjQ4/FzyhjLHuvw/8XYzP+E7fS4+/Ms/82EN1pl/OFsiIA==}
-    dev: false
-
-  /@monaco-editor/loader@1.3.3(monaco-editor@0.41.0):
-    resolution: {integrity: sha512-6KKF4CTzcJiS8BJwtxtfyYt9shBiEv32ateQ9T4UVogwn4HM/uPo9iJd2Dmbkpz8CM6Y0PDUpjnZzCwC+eYo2Q==}
-    peerDependencies:
-      monaco-editor: '>= 0.21.0 < 1'
-    dependencies:
-      monaco-editor: 0.41.0(patch_hash=vt5qlsj63ahkjwzfmx55icnboi)
-      state-local: 1.0.7
-    dev: false
-
-  /@monaco-editor/react@4.5.1(monaco-editor@0.41.0)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-NNDFdP+2HojtNhCkRfE6/D6ro6pBNihaOzMbGK84lNWzRu+CfBjwzGt4jmnqimLuqp5yE5viHS2vi+QOAnD5FQ==}
-    peerDependencies:
-      monaco-editor: '>= 0.25.0 < 1'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      '@monaco-editor/loader': 1.3.3(monaco-editor@0.41.0)
-      monaco-editor: 0.41.0(patch_hash=vt5qlsj63ahkjwzfmx55icnboi)
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
@@ -2827,10 +2785,6 @@ packages:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
     dev: true
 
-  /fast-plist@0.1.3:
-    resolution: {integrity: sha512-d9cEfo/WcOezgPLAC/8t8wGb6YOD6JTCPMw2QcG2nAdFmyY+9rTUizCTaGjIZAloWENTEUMAPpkUAIJJJ0i96A==}
-    dev: false
-
   /fastq@1.15.0:
     resolution: {integrity: sha512-wBrocU2LCXXa+lWBt8RoIRD89Fi8OdABODa/kEnyeyjS5aZO5/GNvI5sEINADqP/h8M29UHTHUb53sUu5Ihqdw==}
     dependencies:
@@ -3379,6 +3333,7 @@ packages:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
     dependencies:
       yallist: 3.1.1
+    dev: true
 
   /lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
@@ -3484,30 +3439,6 @@ packages:
       yargs-unparser: 2.0.0
     dev: true
 
-  /monaco-editor-textmate@4.0.0(monaco-editor@0.41.0)(monaco-textmate@3.0.1):
-    resolution: {integrity: sha512-Clwup5LJzVfwURQrS+odSEC5/hZBEG36pQnvBKt4OtBndF8r2xLeXUZcK/AqEBK2u0Npy7frFp9hG7m66Ol9hA==}
-    peerDependencies:
-      monaco-editor: 0.x.x
-      monaco-textmate: ^3.0.0
-    dependencies:
-      monaco-editor: 0.41.0(patch_hash=vt5qlsj63ahkjwzfmx55icnboi)
-      monaco-textmate: 3.0.1(onigasm@2.2.5)
-    dev: false
-
-  /monaco-editor@0.41.0(patch_hash=vt5qlsj63ahkjwzfmx55icnboi):
-    resolution: {integrity: sha512-1o4olnZJsiLmv5pwLEAmzHTE/5geLKQ07BrGxlF4Ri/AXAc2yyDGZwHjiTqD8D/ROKUZmwMA28A+yEowLNOEcA==}
-    dev: false
-    patched: true
-
-  /monaco-textmate@3.0.1(onigasm@2.2.5):
-    resolution: {integrity: sha512-ZxxY3OsqUczYP1sGqo97tu+CJmMBwuSW+dL0WEBdDhOZ5G1zntw72hvBc68ZQAirosWvbDKgN1dL5k173QtFww==}
-    peerDependencies:
-      onigasm: ^2.0.0
-    dependencies:
-      fast-plist: 0.1.3
-      onigasm: 2.2.5
-    dev: false
-
   /ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
     dev: true
@@ -3583,12 +3514,6 @@ packages:
     dependencies:
       wrappy: 1.0.2
     dev: true
-
-  /onigasm@2.2.5:
-    resolution: {integrity: sha512-F+th54mPc0l1lp1ZcFMyL/jTs2Tlq4SqIHKIXGZOR/VkHkF9A7Fr5rRr5+ZG/lWeRsyrClLYRq7s/yFQ/XhWCA==}
-    dependencies:
-      lru-cache: 5.1.1
-    dev: false
 
   /optionator@0.9.3:
     resolution: {integrity: sha512-JjCoypp+jKn1ttEFExxhetCKeJt9zhAgAve5FXHixTvFDW/5aEktX9bufBKLRRMdU7bNtpLfcGu94B3cdEJgjg==}
@@ -4315,10 +4240,6 @@ packages:
     resolution: {integrity: sha512-IxD2jw+DDiQ3FaXr6QcvSt5uE2vDWBYcC7bbCWfI5R9kEoj8Zgi4rFwPXALOjTtE96iIdZjcJFLQVr7r7xIdAA==}
     dev: false
 
-  /state-local@1.0.7:
-    resolution: {integrity: sha512-HTEHMNieakEnoe33shBYcZ7NX83ACUjCu8c40iOGEZsngj9zRnkqS9j1pqQPXwobB0ZcVTk27REb7COQ0UR59w==}
-    dev: false
-
   /statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
@@ -4734,6 +4655,7 @@ packages:
 
   /yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
+    dev: true
 
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
