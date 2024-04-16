@@ -1,1181 +1,1197 @@
 @precedence {
-	ident,
-	FunctionJs,
-	Int,
-	RecordId,
-	Ident,
-	Object,
-  Duration,
-	Number,
-	ObjectContent,
-	NestableExpressions @left
-}
+	range @left,
+	  ident,
+	  FunctionJs,
+	  Int,
+	  RecordId,
+	  Ident,
+	  Object,
+	Duration,
+	  Number,
+	  ObjectContent,
+	  NestableExpressions @left
+  }
 
-@top SurrealQL { Expressions }
-@top SingleExpression { Expression }
-@top PermissionsContent { none | full | WhereClause }
-@top QlValue { Value }
+  @top SurrealQL { Expressions }
+  @top SingleExpression { Expression }
+  @top PermissionsContent { none | full | WhereClause }
+  @top QlValue { Value }
 
-Expressions {
-	(Expression ";")* Expression ";"?
-}
+  Expressions {
+	  (Expression ";")* Expression ";"?
+  }
 
-NestableExpressions {
-	(NestableExpression ";")* NestableExpression ";"?
-}
+  NestableExpressions {
+	  (NestableExpression ";")* NestableExpression ";"?
+  }
 
-Expression {
-	Statement |
-	Value
-}
+  Expression {
+	  Statement |
+	  Value
+  }
 
-NestableExpression {
-	NestableStatement |
-	Value
-}
+  NestableExpression {
+	  NestableStatement |
+	  Value
+  }
 
-SubQuery {
-	"("
-	NestableExpression
-	")"
-}
+  SubQuery {
+	  "("
+	  NestableExpression
+	  ")"
+  }
 
-Block {
-	"{"
-	NestableExpressions ~ident
-	"}"
-}
+  Block {
+	  "{"
+	  NestableExpressions ~ident
+	  "}"
+  }
 
-TransactionStatement {
-	BeginStatement |
-	CancelStatement |
-	CommitStatement
-}
+  TransactionStatement {
+	  BeginStatement |
+	  CancelStatement |
+	  CommitStatement
+  }
 
-NestableStatement {
-	CreateStatement |
-	SelectStatement |
-	DeleteStatement |
-	InsertStatement |
+  NestableStatement {
+	  CreateStatement |
+	  SelectStatement |
+	  DeleteStatement |
+	  InsertStatement |
 
-	BreakStatement |
-	ContinueStatement |
-	ForStatement |
-	ReturnStatement |
-	ThrowStatement |
-	IfElseStatement |
-	LetStatement |
-	RelateStatement |
-	UpdateStatement
-}
+	  BreakStatement |
+	  ContinueStatement |
+	  ForStatement |
+	  ReturnStatement |
+	  ThrowStatement |
+	  IfElseStatement |
+	  LetStatement |
+	  RelateStatement |
+	  UpdateStatement
+  }
 
-Statement {
-	TransactionStatement |
-	DefineStatement |
-	RemoveStatement |
-	InfoForStatement |
-	KillStatement |
-	LiveSelectStatement |
-	ShowStatement |
-	SleepStatement |
-	UseStatement |
-	NestableStatement
-}
+  Statement {
+	  TransactionStatement |
+	  DefineStatement |
+	  RemoveStatement |
+	  InfoForStatement |
+	  KillStatement |
+	  LiveSelectStatement |
+	  ShowStatement |
+	  SleepStatement |
+	  UseStatement |
+	  NestableStatement
+  }
 
-// Transaction statements
+  // Transaction statements
 
-BeginStatement { begin transaction? }
-CancelStatement { cancel transaction? }
-CommitStatement { commit transaction? }
+  BeginStatement { begin transaction? }
+  CancelStatement { cancel transaction? }
+  CommitStatement { commit transaction? }
 
-// Define statements
+  // Define statements
 
-DefineStatement {
-	define
-	(
-		DefineAnalyzerStatement |
-		DefineDatabaseStatement |
-		DefineEventStatement |
-		DefineFieldStatement |
-		DefineFunctionStatement |
-		DefineIndexStatement |
-		DefineNamespaceStatement |
-		DefineParamStatement |
-		DefineScopeStatement |
-		DefineTableStatement |
-		DefineTokenStatement |
-		DefineUserStatement
-	)
-}
+  DefineStatement {
+	  define
+	  (
+		  DefineAnalyzerStatement |
+		  DefineDatabaseStatement |
+		  DefineEventStatement |
+		  DefineFieldStatement |
+		  DefineFunctionStatement |
+		  DefineIndexStatement |
+		  DefineNamespaceStatement |
+		  DefineParamStatement |
+		  DefineScopeStatement |
+		  DefineTableStatement |
+		  DefineTokenStatement |
+		  DefineUserStatement
+	  )
+  }
 
-// TODO implement filters
-DefineAnalyzerStatement { analyzer Ident TokenizersClause? CommentClause? }
-DefineEventStatement { event Ident OnTableClause WhenThenClause CommentClause? }
-DefineDatabaseStatement { database Ident on Ident CommentClause? }
+  // TODO implement filters
+  DefineAnalyzerStatement { analyzer Ident TokenizersClause? CommentClause? }
+  DefineEventStatement { event Ident OnTableClause WhenThenClause CommentClause? }
+  DefineDatabaseStatement { database Ident on Ident CommentClause? }
 
-DefineFieldStatement {
-	field
-	IfNotExistsClause?
-	Ident
-	OnTableClause
-	(
-		TypeClause |
-		DefaultClause |
-		ReadonlyClause |
-		ValueClause |
-		AssertClause |
-		PermissionsForClause |
-		CommentClause
-	)*
-}
+  DefineFieldStatement {
+	  field
+	  IfNotExistsClause?
+	  Ident
+	  OnTableClause
+	  (
+		  TypeClause |
+		  DefaultClause |
+		  ReadonlyClause |
+		  ValueClause |
+		  AssertClause |
+		  PermissionsForClause |
+		  CommentClause
+	  )*
+  }
 
-DefineFunctionStatement {
-	function
-	IfNotExistsClause?
-	customFunctionName
-	"("
-	(
-		VariableName ":" Type
-		( "," VariableName ":" Type )*
-	)?
-	")"
-	Block
-	(
-		PermissionsBasicClause |
-		CommentClause
-	)*
-}
+  DefineFunctionStatement {
+	  function
+	  IfNotExistsClause?
+	  customFunctionName
+	  "("
+	  (
+		  VariableName ":" Type
+		  ( "," VariableName ":" Type )*
+	  )?
+	  ")"
+	  Block
+	  (
+		  PermissionsBasicClause |
+		  CommentClause
+	  )*
+  }
 
-DefineIndexStatement {
-	index
-	IfNotExistsClause?
-	Ident
-	OnTableClause
-	FieldsColumnsClause
-	(
-		UniqueClause |
-		SearchAnalyzerClause |
-		MtreeClause
-	)
-}
+  DefineIndexStatement {
+	  index
+	  IfNotExistsClause?
+	  Ident
+	  OnTableClause
+	  FieldsColumnsClause
+	  (
+		  UniqueClause |
+		  SearchAnalyzerClause |
+		  MtreeClause
+	  )
+  }
 
-DefineNamespaceStatement { namespace Ident CommentClause? }
+  DefineNamespaceStatement { namespace Ident CommentClause? }
 
-DefineParamStatement {
-	param
-	IfNotExistsClause?
-	VariableName
-	value
-	Value
-}
+  DefineParamStatement {
+	  param
+	  IfNotExistsClause?
+	  VariableName
+	  value
+	  Value
+  }
 
-DefineScopeStatement {
-	scope
-	IfNotExistsClause?
-	Ident
-	(
-		SessionClause |
-		SigninClause |
-		SignupClause |
-		CommentClause
-	)*
-}
+  DefineScopeStatement {
+	  scope
+	  IfNotExistsClause?
+	  Ident
+	  (
+		  SessionClause |
+		  SigninClause |
+		  SignupClause |
+		  CommentClause
+	  )*
+  }
 
-DefineTableStatement {
-	table
-	IfNotExistsClause?
-	Ident
-	drop?
-	(schemafull | schemaless)?
-	TableTypeClause?
-	TableViewClause?
-	ChangefeedClause?
-	PermissionsForClause?
-	CommentClause?
-}
+  DefineTableStatement {
+	  table
+	  IfNotExistsClause?
+	  Ident
+	  drop?
+	  (schemafull | schemaless)?
+	  TableTypeClause?
+	  TableViewClause?
+	  ChangefeedClause?
+	  PermissionsForClause?
+	  CommentClause?
+  }
 
-DefineTokenStatement {
-	token
-	IfNotExistsClause?
-	Ident
-	( on ( namespace | database | scope Ident ) )
-	TokenTypeClause
-	( value String )
-}
+  DefineTokenStatement {
+	  token
+	  IfNotExistsClause?
+	  Ident
+	  ( on ( namespace | database | scope Ident ) )
+	  TokenTypeClause
+	  ( value String )
+  }
 
-DefineUserStatement {
-	user
-	IfNotExistsClause?
-	Ident
-	( on ( root | namespace | database ) )
-	( ( password | passhash ) String )
-	( roles commaSep<Ident> )
-}
+  DefineUserStatement {
+	  user
+	  IfNotExistsClause?
+	  Ident
+	  ( on ( root | namespace | database ) )
+	  ( ( password | passhash ) String )
+	  ( roles commaSep<Ident> )
+  }
 
-// Remove statement
+  // Remove statement
 
-RemoveStatement {
-	( namespace IfExistsClause? Ident ) |
-	( database IfExistsClause? Ident ) |
-	( user IfExistsClause? Ident on ( root | namespace | database ) ) |
-	( token IfExistsClause? Ident on ( namespace | database | scope ) ) |
-	( event IfExistsClause? Ident on table? Ident ) |
-	( field IfExistsClause? Ident on table? Ident ) |
-	( index IfExistsClause? Ident on table? Ident ) |
-	( analyzer IfExistsClause? Ident ) |
-	( function IfExistsClause? customFunctionName ) |
-	( param IfExistsClause? VariableName ) |
-	( scope IfExistsClause? Ident ) |
-	( table IfExistsClause? Ident )
-}
+  RemoveStatement {
+	  ( namespace IfExistsClause? Ident ) |
+	  ( database IfExistsClause? Ident ) |
+	  ( user IfExistsClause? Ident on ( root | namespace | database ) ) |
+	  ( token IfExistsClause? Ident on ( namespace | database | scope ) ) |
+	  ( event IfExistsClause? Ident on table? Ident ) |
+	  ( field IfExistsClause? Ident on table? Ident ) |
+	  ( index IfExistsClause? Ident on table? Ident ) |
+	  ( analyzer IfExistsClause? Ident ) |
+	  ( function IfExistsClause? customFunctionName ) |
+	  ( param IfExistsClause? VariableName ) |
+	  ( scope IfExistsClause? Ident ) |
+	  ( table IfExistsClause? Ident )
+  }
 
-// Data statements
+  // Data statements
 
-CreateStatement {
-	create only?
-	( Ident | VariableName | Function )
-	( ContentClause | SetClause )?
-	ReturnClause?
-	TimeoutClause?
-	ParallelClause?
-}
+  CreateStatement {
+	  create only?
+	  ( Ident | VariableName | Function )
+	  ( ContentClause | SetClause )?
+	  ReturnClause?
+	  TimeoutClause?
+	  ParallelClause?
+  }
 
-SelectStatement {
-	(select)
-	(
-		value Predicate |
-		commaSep<InclusivePredicate>
-	)
-	(from)
-	(only)?
-	(
-		NestableStatement |
-		(
-			commaSep<Value>
-			WithClause?
-			WhereClause?
-			SplitClause?
-			GroupClause?
-			OrderClause?
-			LimitStartComboClause?
-			FetchClause?
-			TimeoutClause?
-			ParallelClause?
-			ExplainClause?
-		)
-	)
-}
+  SelectStatement {
+	  (select)
+	  (
+		  value Predicate |
+		  commaSep<InclusivePredicate>
+	  )
+	  (from)
+	  (only)?
+	  (
+		  NestableStatement |
+		  (
+			  commaSep<Value>
+			  WithClause?
+			  WhereClause?
+			  SplitClause?
+			  GroupClause?
+			  OrderClause?
+			  LimitStartComboClause?
+			  FetchClause?
+			  TimeoutClause?
+			  ParallelClause?
+			  ExplainClause?
+		  )
+	  )
+  }
 
-DeleteStatement {
-	delete only?
-	(
-		NestableStatement |
-		(
-			commaSep<Value>
-			WhereClause?
-			ReturnClause?
-			TimeoutClause?
-			ParallelClause?
-		)
-	)
-}
+  DeleteStatement {
+	  delete only?
+	  (
+		  NestableStatement |
+		  (
+			  commaSep<Value>
+			  WhereClause?
+			  ReturnClause?
+			  TimeoutClause?
+			  ParallelClause?
+		  )
+	  )
+  }
 
-InsertStatement {
-	insert
-	ignore?
-	into
-	Ident
-	(
-		Object |
-		( "[" commaSep<Object> "]" ) |
-		(
-			"(" commaSep<Ident> ")"
-			values
-			commaSep<(
-				"(" commaSep<Value> ")"
-			)>
-			on duplicate key update
-			commaSep<FieldAssignment>
-		)
-	)
-}
+  InsertStatement {
+	  insert
+	  ignore?
+	  into
+	  Ident
+	  (
+		  Object |
+		  ( "[" commaSep<Object> "]" ) |
+		  (
+			  "(" commaSep<Ident> ")"
+			  values
+			  commaSep<(
+				  "(" commaSep<Value> ")"
+			  )>
+			  on duplicate key update
+			  commaSep<FieldAssignment>
+		  )
+	  )
+  }
 
-IfElseStatement {
-	if
-	(
-		Legacy {
-			Value
-			then
-			( Block | SubQuery)
-			(
-				else if
-				Value
-				then
-				( Block | SubQuery)
-			)*
-			(
-				else
-				( Block | SubQuery)
-			)?
-			end
-		} |
-		Modern {
-			Value Block
-			(
-				else if
-				Value Block
-			)*
-			(
-				else Block
-			)?
-		}
-	)
-}
+  IfElseStatement {
+	  if
+	  (
+		  Legacy {
+			  Value
+			  then
+			  ( Block | SubQuery)
+			  (
+				  else if
+				  Value
+				  then
+				  ( Block | SubQuery)
+			  )*
+			  (
+				  else
+				  ( Block | SubQuery)
+			  )?
+			  end
+		  } |
+		  Modern {
+			  Value Block
+			  (
+				  else if
+				  Value Block
+			  )*
+			  (
+				  else Block
+			  )?
+		  }
+	  )
+  }
 
-relateSubject { Array | Ident | functionName | VariableName | RecordId }
-RelateStatement {
-	relate only?
-	relateSubject "->" relateSubject "->" relateSubject
-	( ContentClause | SetClause )?
-	ReturnClause?
-	TimeoutClause?
-	ParallelClause?
-}
+  relateSubject { Array | Ident | functionName | VariableName | RecordId }
+  RelateStatement {
+	  relate only?
+	  relateSubject "->" relateSubject "->" relateSubject
+	  ( ContentClause | SetClause )?
+	  ReturnClause?
+	  TimeoutClause?
+	  ParallelClause?
+  }
 
-InfoForStatement {
-	info for
-	(
-		root |
-		ns | namespace |
-		db | database |
-		( scope Ident ) |
-		( table Ident)
-	)
-	structure?
-}
+  InfoForStatement {
+	  info for
+	  (
+		  root |
+		  ns | namespace |
+		  db | database |
+		  ( scope Ident ) |
+		  ( table Ident)
+	  )
+	  structure?
+  }
 
-UpdateStatement {
-	update only?
-	(
-		NestableStatement |
-		(
-			commaSep<Value>
-			(
-				ContentClause |
-				MergeClause |
-				PatchClause |
-				SetClause
-			)?
-			WhereClause?
-			ReturnClause?
-			TimeoutClause?
-			ParallelClause?
-		)
-	)
-}
+  UpdateStatement {
+	  update only?
+	  (
+		  NestableStatement |
+		  (
+			  commaSep<Value>
+			  (
+				  ContentClause |
+				  MergeClause |
+				  PatchClause |
+				  SetClause
+			  )?
+			  WhereClause?
+			  ReturnClause?
+			  TimeoutClause?
+			  ParallelClause?
+		  )
+	  )
+  }
 
-// Control statements
-BreakStatement { break }
-ContinueStatement { continue }
-ForStatement { for VariableName in ( Array | VariableName | SubQuery | Block ) Block }
-ReturnStatement { return NestableExpression }
-ThrowStatement { throw Value }
+  // Control statements
+  BreakStatement { break }
+  ContinueStatement { continue }
+  ForStatement { for VariableName in ( Array | VariableName | SubQuery | Block ) Block }
+  ReturnStatement { return NestableExpression }
+  ThrowStatement { throw Value }
 
-// Live statements
-KillStatement { kill String }
-LiveSelectStatement {
-	live select
-	(
-		diff |
-		value Predicate |
-		commaSep<InclusivePredicate>
-	)
-	from commaSep<Ident>
-	WhereClause?
-	FetchClause?
-}
+  // Live statements
+  KillStatement { kill String }
+  LiveSelectStatement {
+	  live select
+	  (
+		  diff |
+		  value Predicate |
+		  commaSep<InclusivePredicate>
+	  )
+	  from commaSep<Ident>
+	  WhereClause?
+	  FetchClause?
+  }
 
-// Other statements
-LetStatement { let VariableName "=" Value }
-ShowStatement {
-	show changes for table
-	Ident
-	( since String )?
-	( limit Int )?
-}
+  // Other statements
+  LetStatement { let VariableName "=" Value }
+  ShowStatement {
+	  show changes for table
+	  Ident
+	  ( since String )?
+	  ( limit Int )?
+  }
 
-SleepStatement {
-	sleep Duration
-}
+  SleepStatement {
+	  sleep Duration
+  }
 
-useNs { ( ns | namespace ) Ident }
-useDb { ( db | database ) Ident }
-UseStatement {
-	use
-	( useNs | useDb | ( useNs useDb ) )
-}
+  useNs { ( ns | namespace ) Ident }
+  useDb { ( db | database ) Ident }
+  UseStatement {
+	  use
+	  ( useNs | useDb | ( useNs useDb ) )
+  }
 
-// Values
+  // Values
 
-BaseValue { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast | Duration }
-Value { BaseValue | BinaryExpression }
+  BaseValue { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast | Duration }
+  Value { BaseValue | BinaryExpression }
 
-// Binary expressions
+  // Binary expressions
 
-BinaryExpression {
-	BaseValue
-	Operator
-	BaseValue
-}
+  BinaryExpression {
+	  BaseValue
+	  Operator
+	  BaseValue
+  }
 
-// Objects
+  // Objects
 
-ObjectKey[@dynamicPrecedence=2] {
+  ObjectKey[@dynamicPrecedence=2] {
+	  rawident ~ident |
+	  singleString ~string |
+	  doubleString ~string
+  }
+
+  ObjectProperty {
+	  ObjectKey ":" Value
+  }
+
+  ObjectContent {
+	  commaSep<ObjectProperty>
+  }
+
+  Object {
+	  "{" ObjectContent? "}"
+  }
+
+  // Arrays
+
+  Array { "[" commaSep<Value>? "]"}
+
+  // Record Ids
+
+  RecordIdIdent[@dynamicPrecedence=1] {
 	rawident ~ident |
-	singleString ~string |
-	doubleString ~string
-}
-
-ObjectProperty {
-	ObjectKey ":" Value
-}
-
-ObjectContent {
-	commaSep<ObjectProperty>
-}
-
-Object {
-	"{" ObjectContent? "}"
-}
-
-// Arrays
-
-Array { "[" commaSep<Value>? "]"}
-
-// Record Ids
-
-RecordIdIdent[@dynamicPrecedence=1] {
-  rawident ~ident |
-  Ident ~ident |
-  bracketIdent
-}
-
-RecordId {
-	RecordIdIdent
-	":"
-	(
-		RecordIdIdent |
-		Int |
-		Array |
-		Object
-	)
-}
-
-// Durations
-
-Duration {
-	//TODO why does it require a space between the duration parts?
-	DurationPart+
-}
-
-DurationPart {
-	int ~int
-  	( nsUnit | us | µs | ms | singleLetterDurationUnit )
-}
-
-// JS Functions
-
-FunctionJs {
-	"function"
-	"(" commaSep<Value>? ")"
-	"{" JavaScript? "}"
-}
-
-// Function invocation
-
-Function {
-	functionName
-	"(" commaSep<Value>? ")"
-}
-
-// Assignment
-
-FieldAssignment {
-	Ident
-	"="
-	Value
-}
-
-// Clauses
-
-MergeClause {
-	merge Object
-}
-
-PatchClause {
-	patch Array
-}
-
-TableTypeClause {
-	type
-	(
-		any |
-		normal |
-		(
-			relation
-			( ( in | from ) piped<Ident> )?
-			( ( out | to ) piped<Ident> )?
-		)
-	)
-}
-
-TableViewClause {
-	as
-	select
-	commaSep<InclusivePredicate>
-	from
-	commaSep<Value>
-	WhereClause?
-	GroupClause?
-}
-
-ChangefeedClause {
-	changefeed
-	Duration
-}
-
-SessionClause {
-	session
-	Duration
-}
-
-SignupClause {
-	signup
-	( SubQuery | Block )
-}
-
-SigninClause {
-	signin
-	( SubQuery | Block )
-}
-
-OnTableClause {
-	on table? Ident
-}
-
-FieldsColumnsClause {
-	( fields | columns ) commaSep<Ident>
-}
-
-UniqueClause {
-	unique
-}
-
-SearchAnalyzerClause {
-	search analyzer
-	Ident
-	Bm25Clause?
-	DocIdsOrderClause?
-	DocLenghtsOrderClause?
-	PostingsOrderClause?
-	TermsOrderClause?
-	DocIdsCacheClause?
-	DocLenghtsCacheClause?
-	PostingsCacheClause?
-	TermsCacheClause?
-	highlights?
-}
-
-Bm25Clause { bm25 ( "(" Float "," Float ")")? }
-DocIdsCacheClause { doc_ids_cache Int }
-DocIdsOrderClause { doc_ids_order Int }
-DocLenghtsCacheClause { doc_lengths_cache Int }
-DocLenghtsOrderClause { doc_lengths_order Int }
-PostingsCacheClause { postings_cache Int }
-PostingsOrderClause { postings_order Int }
-TermsCacheClause { terms_cache Int }
-TermsOrderClause { terms_order Int}
-
-MtreeClause {
-	mtree
-	MtreeDimensionClause?
-	MtreeDistClause?
-	MtreeTypeClause?
-	MtreeCapacityClause?
-	DocIdsOrderClause?
-	DocIdsCacheClause?
-	MtreeCacheClause?
-}
-
-MtreeDimensionClause { dimension Int }
-MtreeDistClause { dist ( euclidean | cosine | manhattan | minkowski ) }
-MtreeTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
-MtreeCapacityClause { capacity Int }
-MtreeCacheClause { mtree_cache Int }
-
-ContentClause {
-	content Object
-}
-
-SetClause {
-	set commaSep<FieldAssignment>
-}
-
-IfNotExistsClause {
-	if not exists
-}
-
-IfExistsClause {
-	if exists
-}
-
-ReturnClause {
-	// TODO add support for projections
-	return
-	( none | before | after | diff )
-}
-
-TimeoutClause {
-	timeout
-	// TODO actual timeout
-}
-
-ParallelClause {
-	parallel
-}
-
-FetchClause {
-	fetch
-	commaSep<Ident>
-}
-
-StartClause {
-	start
-	at?
-	(Int | VariableName)
-}
-
-LimitClause {
-	limit
-	by?
-	(Int | VariableName)
-}
-
-LimitStartComboClause {
-	StartClause LimitClause? |
-	LimitClause StartClause?
-}
-
-GroupClause {
-	group
-	by?
-	commaSep<Ident>
-}
-
-OrderClause {
-	order
-	by?
-	commaSep<Ident>
-	( asc | desc )?
-}
-
-SplitClause {
-	split
-	at?
-	Ident
-}
-
-WhereClause {
-	where
-	Value
-}
-
-WithClause {
-	with
-	(
-		noindex |
-		index commaSep<Ident>
-	)
-}
-
-ExplainClause {
-	explain
-	full?
-}
-
-TokenizersClause { tokenizers commaSep<AnalyzerTokenizers> }
-
-WhenThenClause {
-	(
-		when
-		(SubQuery | Block)
-	)?
-	then?
-	(SubQuery | Block)
-}
-
-TypeClause {
-	flexible?
-	type
-	Type
-}
-
-ReadonlyClause {
-	readonly
-}
-
-DefaultClause {
-	default
-	Value
-}
-
-ValueClause {
-	value
-	Value
-}
-
-AssertClause {
-	assert
-	Value
-}
-
-PermissionsForClause {
-	permissions
-	(
-		// TODO make case insensitive but not a keyword
-		none | full |
-		(
-			for
-			commaSep<( selectPermissions | createPermissions | updatePermissions | deletePermissions )>
-			( WhereClause | none | full )
-		)+
-	)
-}
-
-PermissionsBasicClause {
-	permissions
-	none | full | WhereClause
-}
-
-CommentClause {
-	comment
-	String
-}
-
-TokenTypeClause {
-	type
-	(
-		jwks |
-		eddsa |
-		es256 |
-		es384 |
-		es512 |
-		ps256 |
-		ps384 |
-		ps512 |
-		rs256 |
-		rs384 |
-		rs512
-	)
-}
-
-// Support
-
-AnalyzerTokenizers {
-	"blank" |
-	"camel" |
-	"class" |
-	"punct"
-}
-
-Predicate {
-	Value |
-	Value as Ident
-}
-
-InclusivePredicate {
-	"*" |
-	Predicate
-}
-
-// Idiom {
-// 	Ident
-// 	("." Ident)*
-// }
-
-// Types
-
-Type {
-	piped<(
-		StringType |
-		NumberType |
-		AnyType |
-		BoolType |
-		BytesType |
-		DatetimeType |
-		DecimalType |
-		DurationType |
-		FloatType |
-		IntType |
-		NullType |
-		ObjectType |
-		ArrayType |
-		SetType |
-		RecordType |
-		OptionType |
-		GeometryType
-	)>
-}
-
-TypeBracketOpen { "<" }
-TypeBracketClose { ">" }
-
-StringType[@name="Type"] { "string" }
-NumberType[@name="Type"] { "number" }
-AnyType[@name="Type"] { "any" }
-BoolType[@name="Type"] { "bool" }
-BytesType[@name="Type"] { "bytes" }
-DatetimeType[@name="Type"] { "datetime" }
-DecimalType[@name="Type"] { "decimal" }
-DurationType[@name="Type"] { "duration" }
-FloatType[@name="Type"] { "float" }
-IntType[@name="Type"] { "int" }
-NullType[@name="Type"] { "null" }
-ObjectType[@name="Type"] { "object" }
-ArrayType[@name="Type"] { "array" ( TypeBracketOpen Type TypeBracketClose )? }
-SetType[@name="Type"] { "set" ( TypeBracketOpen Type TypeBracketClose )? }
-RecordType[@name="Type"] { "record" ( TypeBracketOpen piped<( rawident | Int )> TypeBracketClose )? }
-OptionType[@name="Type"] { "option" ( TypeBracketOpen Type TypeBracketClose ) }
-GeometryType[@name="Type"] {
-	"geometry"
-	(
-		TypeBracketOpen
-		( "feature" | "point" | "line" | "polygon" | "multipoint" | "multiline" | "multipolygon" | "collection" )
-		TypeBracketClose
-	)?
-}
-
-TypeCast {
-	TypeBracketOpen Type TypeBracketClose BaseValue
-}
-
-// Strings
-String { singleString ~string | doubleString ~string }
-
-Ident {
-	rawident ~ident |
-    tickIdent
-}
-
-Number { Int | Float | Decimal }
-Int { int ~int }
-Float[@dynamicPrecedence=-1] { int ~int frac? exp? "f"? }
-Decimal[@dynamicPrecedence=-1] { int ~int frac? exp? "dec" }
-
-Operator {
-	"&&" | and |
-	"||" | or |
-	"??" |
-	"?:" |
-	"="  | is |
-	"!=" | ( is opNot ) |
-	"==" |
-	"?=" |
-	"*=" |
-	"~"  |
-	"!~" |
-	"*~" |
-	"<"  |
-	"<=" |
-	">"  |
-	">=" |
-	"+"  |
-	"-"  |
-	"*"  | "×" |
-	"/"  | "÷" |
-	"**" |
-	"∋"  | contains |
-	"∌"  | containsnot |
-	"⊇"  | containsall |
-	"⊃"	 | containsany |
-	"⊅"  | containsnone |
-	"∈"	 | inside | in |
-	"∉"  | notinside | ( opNot opIn ) |
-	"⊆"  | allinside |
-	"⊂"  | anyinside |
-	"⊄"  | noneinside |
-
-	outside |
-	intersects |
-
-	"@@" | ( "@" Int "@" ) |
-	(
-		"<|"
-		Int
-		( "," ( hamming | levenshtein ) )
-		"|>"
-	)
-}
-
-@tokens {
-	// Characters
-	"{"[@name=BraceOpen]
-	"}"[@name=BraceClose]
-	"["
-	"]"
-	":"[@name=Colon]
-	"->"[@name=GraphRight]
-	"<-"[@name=GraphLeft]
-
-	// Helpers
-	whitespace { $[ \n\r\t] }
-
-	// Comments
-	Comment { CommentHash | CommentDash | CommentSlash }
-	CommentHash { "#" ![\n]* }
-	CommentDash { "--" ![\n]* }
-	CommentSlash { "//" ![\n]* }
-
-	// Numbers
-	int { @digit+ }
-	frac { '.' @digit+ }
-	exp { $[eE] $[+\-]? @digit+ }
-
-	singleString { "'" ![']+ "'" }
-	doubleString { '"' !["]+ '"' }
-
-	// Language
-	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
-	tickIdent {
-		"`" ![`]+ '`'
-	}
-	bracketIdent {
-		"⟨" ![⟩]+ "⟩"
-	}
-	rawident {
-		(@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
-		@digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+
-	}
-
-	// Functions
-	JavaScript { ![\\\n}]+ }
-	functionName[@name=function] {
-		"rand" | "RAND" |
-		"count" | "COUNT" |
-		@asciiLetter+ functionNameSegment+
-	}
-
-	functionNameSegment { "::" @asciiLetter+ }
-	customFunctionName[@name=function] {
-		"fn" functionNameSegment*
-	}
-
-  singleLetterDurationUnit {"s" | "m" | "h" | "d" | "w" | "y"}
-
-	@precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName  functionName int exp "dec" rawident singleLetterDurationUnit "f" singleString doubleString }
-
-	"function"
-}
-
-commaSep<content> {
-	content ("," content)*
-}
-
-piped<content> {
-	content ("|" content)*
-}
-
-@skip { whitespace | Comment }
-@detectDelim
-
-@external propSource surqlHighlighting from "./highlight"
-
-@external extend { rawident } tokens from "./tokens" {
-	analyzer			[@name=Keyword],
-	any					[@name=Keyword],
-	as					[@name=Keyword],
-	asc					[@name=Keyword],
-	assert				[@name=Keyword],
-	at					[@name=Keyword],
-	begin				[@name=Keyword],
-	bm25				[@name=Keyword],
-	break				[@name=Keyword],
-	by					[@name=Keyword],
-	cancel				[@name=Keyword],
-	capacity			[@name=Keyword],
-	changefeed			[@name=Keyword],
-	changes				[@name=Keyword],
-	columns				[@name=Keyword],
-	comment				[@name=Keyword],
-	commit				[@name=Keyword],
-	content				[@name=Keyword],
-	continue			[@name=Keyword],
-	create				[@name=Keyword],
-	database			[@name=Keyword],
-	db					[@name=Keyword],
-	default				[@name=Keyword],
-	define				[@name=Keyword],
-	delete				[@name=Keyword],
-	desc				[@name=Keyword],
-	dimension			[@name=Keyword],
-	dist				[@name=Keyword],
-	doc_ids_cache		[@name=Keyword],
-	doc_ids_order		[@name=Keyword],
-	doc_lengths_cache	[@name=Keyword],
-	doc_lengths_order	[@name=Keyword],
-	drop				[@name=Keyword],
-	duplicate			[@name=Keyword],
-	else				[@name=Keyword],
-	end					[@name=Keyword],
-	exists				[@name=Keyword],
-	explain				[@name=Keyword],
-	event				[@name=Keyword],
-	fetch				[@name=Keyword],
-	field				[@name=Keyword],
-	fields				[@name=Keyword],
-	flexible			[@name=Keyword],
-	for					[@name=Keyword],
-	from				[@name=Keyword],
-	function			[@name=Keyword],
-	group				[@name=Keyword],
-	highlights			[@name=Keyword],
-	if					[@name=Keyword],
-	ignore				[@name=Keyword],
-	in					[@name=Keyword],
-	index				[@name=Keyword],
-	info				[@name=Keyword],
-	insert				[@name=Keyword],
-	into				[@name=Keyword],
-	key					[@name=Keyword],
-	kill				[@name=Keyword],
-	let					[@name=Keyword],
-	limit				[@name=Keyword],
-	live				[@name=Keyword],
-	merge				[@name=Keyword],
-	mtree				[@name=Keyword],
-	mtree_cache			[@name=Keyword],
-	namespace			[@name=Keyword],
-	noindex				[@name=Keyword],
-	normal				[@name=Keyword],
-	not					[@name=Keyword],
-	ns					[@name=Keyword],
-	on					[@name=Keyword],
-	only				[@name=Keyword],
-	order				[@name=Keyword],
-	out					[@name=Keyword],
-	parallel			[@name=Keyword],
-	param				[@name=Keyword],
-	passhash			[@name=Keyword],
-	password			[@name=Keyword],
-	patch				[@name=Keyword],
-	permissions			[@name=Keyword],
-	postings_cache		[@name=Keyword],
-	postings_order		[@name=Keyword],
-	readonly			[@name=Keyword],
-	relate				[@name=Keyword],
-	relation			[@name=Keyword],
-	return				[@name=Keyword],
-	roles				[@name=Keyword],
-	root				[@name=Keyword],
-	scope				[@name=Keyword],
-	schemafull			[@name=Keyword],
-	schemaless			[@name=Keyword],
-	search				[@name=Keyword],
-	select				[@name=Keyword],
-	session				[@name=Keyword],
-	set					[@name=Keyword],
-	show				[@name=Keyword],
-	since				[@name=Keyword],
-	signin				[@name=Keyword],
-	signup				[@name=Keyword],
-	sleep				[@name=Keyword],
-	split				[@name=Keyword],
-	start				[@name=Keyword],
-	structure			[@name=Keyword],
-	table				[@name=Keyword],
-	terms_cache			[@name=Keyword],
-	terms_order			[@name=Keyword],
-	then				[@name=Keyword],
-	throw				[@name=Keyword],
-	timeout				[@name=Keyword],
-	to					[@name=Keyword],
-	token				[@name=Keyword],
-	tokenizers			[@name=Keyword],
-	transaction			[@name=Keyword],
-	type				[@name=Keyword],
-	unique				[@name=Keyword],
-	update				[@name=Keyword],
-	use					[@name=Keyword],
-	user				[@name=Keyword],
-	value				[@name=Keyword],
-	values				[@name=Keyword],
-	when				[@name=Keyword],
-	where				[@name=Keyword],
-	with				[@name=Keyword],
-
-	// Literals
-	after				[@name=Literal],
-	before				[@name=Literal],
-	diff				[@name=Literal],
-	false				[@name=Literal],
-	full				[@name=Literal],
-	none				[@name=Literal],
-	null				[@name=Literal],
-	true				[@name=Literal],
-
-	f32					[@name=Literal],
-	f64					[@name=Literal],
-	i16					[@name=Literal],
-	i32					[@name=Literal],
-	i64					[@name=Literal],
-
-	euclidean			[@name=Literal],
-	cosine				[@name=Literal],
-	manhattan			[@name=Literal],
-	minkowski			[@name=Literal],
-
-	nsUnit,
-	us,
-	µs,
-	ms,
-
-	selectPermissions	[@name=PermissionTarget],
-	updatePermissions	[@name=PermissionTarget],
-	createPermissions	[@name=PermissionTarget],
-	deletePermissions	[@name=PermissionTarget],
-
-	jwks				[@name=TokenType],
-	eddsa				[@name=TokenType],
-	es256				[@name=TokenType],
-	es384				[@name=TokenType],
-	es512				[@name=TokenType],
-	ps256				[@name=TokenType],
-	ps384				[@name=TokenType],
-	ps512				[@name=TokenType],
-	rs256				[@name=TokenType],
-	rs384				[@name=TokenType],
-	rs512				[@name=TokenType],
-
-	// Operators
-	and,
-	or,
-	is,
-	opNot,
-	opIn,
-	contains,
-	containsnot,
-	containsall,
-	containsany,
-	containsnone,
-	inside,
-	notinside,
-	allinside,
-	anyinside,
-	noneinside,
-	outside,
-	intersects,
-
-	// KNN
-	hamming				[@name=KnnDistance],
-	levenshtein			[@name=KnnDistance]
-}
+	tickIdent ~ident |
+	bracketIdent
+  }
+
+  RecordIdValue {
+	  RecordIdIdent |
+	  Int |
+	  Array |
+	  Object
+  }
+
+  RecordIdRange {
+	  ( RecordIdValue !range ">"? )?
+	  ".."
+	  ( !range "="? RecordIdValue )?
+  }
+
+  RecordId {
+	  RecordIdIdent
+	  ":"
+	  ( RecordIdValue | RecordIdRange )
+  }
+
+  // Durations
+
+  Duration {
+	  //TODO why does it require a space between the duration parts?
+	  DurationPart+
+  }
+
+  DurationPart {
+	  int ~int
+		( nsUnit | us | µs | ms | singleLetterDurationUnit )
+  }
+
+  // JS Functions
+
+  FunctionJs {
+	  "function"
+	  "(" commaSep<Value>? ")"
+	  "{" JavaScript? "}"
+  }
+
+  // Function invocation
+
+  Function {
+	  functionName
+	  "(" commaSep<Value>? ")"
+  }
+
+  // Assignment
+
+  FieldAssignment {
+	  Ident
+	  assignmentOperator
+	  Value
+  }
+
+  // Clauses
+
+  MergeClause {
+	  merge Object
+  }
+
+  PatchClause {
+	  patch Array
+  }
+
+  TableTypeClause {
+	  type
+	  (
+		  any |
+		  normal |
+		  (
+			  relation
+			  ( ( in | from ) piped<Ident> )?
+			  ( ( out | to ) piped<Ident> )?
+		  )
+	  )
+  }
+
+  TableViewClause {
+	  as
+	  select
+	  commaSep<InclusivePredicate>
+	  from
+	  commaSep<Value>
+	  WhereClause?
+	  GroupClause?
+  }
+
+  ChangefeedClause {
+	  changefeed
+	  Duration
+  }
+
+  SessionClause {
+	  session
+	  Duration
+  }
+
+  SignupClause {
+	  signup
+	  ( SubQuery | Block )
+  }
+
+  SigninClause {
+	  signin
+	  ( SubQuery | Block )
+  }
+
+  OnTableClause {
+	  on table? Ident
+  }
+
+  FieldsColumnsClause {
+	  ( fields | columns ) commaSep<Ident>
+  }
+
+  UniqueClause {
+	  unique
+  }
+
+  SearchAnalyzerClause {
+	  search analyzer
+	  Ident
+	  Bm25Clause?
+	  DocIdsOrderClause?
+	  DocLenghtsOrderClause?
+	  PostingsOrderClause?
+	  TermsOrderClause?
+	  DocIdsCacheClause?
+	  DocLenghtsCacheClause?
+	  PostingsCacheClause?
+	  TermsCacheClause?
+	  highlights?
+  }
+
+  Bm25Clause { bm25 ( "(" Float "," Float ")")? }
+  DocIdsCacheClause { doc_ids_cache Int }
+  DocIdsOrderClause { doc_ids_order Int }
+  DocLenghtsCacheClause { doc_lengths_cache Int }
+  DocLenghtsOrderClause { doc_lengths_order Int }
+  PostingsCacheClause { postings_cache Int }
+  PostingsOrderClause { postings_order Int }
+  TermsCacheClause { terms_cache Int }
+  TermsOrderClause { terms_order Int}
+
+  MtreeClause {
+	  mtree
+	  MtreeDimensionClause?
+	  MtreeDistClause?
+	  MtreeTypeClause?
+	  MtreeCapacityClause?
+	  DocIdsOrderClause?
+	  DocIdsCacheClause?
+	  MtreeCacheClause?
+  }
+
+  MtreeDimensionClause { dimension Int }
+  MtreeDistClause { dist ( euclidean | cosine | manhattan | minkowski ) }
+  MtreeTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
+  MtreeCapacityClause { capacity Int }
+  MtreeCacheClause { mtree_cache Int }
+
+  ContentClause {
+	  content Object
+  }
+
+  SetClause {
+	  set commaSep<FieldAssignment>
+  }
+
+  IfNotExistsClause {
+	  if not exists
+  }
+
+  IfExistsClause {
+	  if exists
+  }
+
+  ReturnClause {
+	  return
+	  ( none ~returnvalue | before | after | diff | commaSep<Value> ~returnvalue )
+  }
+
+  TimeoutClause {
+	  timeout
+	  Duration
+  }
+
+  ParallelClause {
+	  parallel
+  }
+
+  FetchClause {
+	  fetch
+	  commaSep<Ident>
+  }
+
+  StartClause {
+	  start
+	  at?
+	  (Int | VariableName)
+  }
+
+  LimitClause {
+	  limit
+	  by?
+	  (Int | VariableName)
+  }
+
+  LimitStartComboClause {
+	  StartClause LimitClause? |
+	  LimitClause StartClause?
+  }
+
+  GroupClause {
+	  group
+	  by?
+	  commaSep<Ident>
+  }
+
+  OrderClause {
+	  order
+	  by?
+	  commaSep<Ident>
+	  ( asc | desc )?
+  }
+
+  SplitClause {
+	  split
+	  at?
+	  Ident
+  }
+
+  WhereClause {
+	  where
+	  Value
+  }
+
+  WithClause {
+	  with
+	  (
+		  noindex |
+		  index commaSep<Ident>
+	  )
+  }
+
+  ExplainClause {
+	  explain
+	  full?
+  }
+
+  TokenizersClause { tokenizers commaSep<AnalyzerTokenizers> }
+
+  WhenThenClause {
+	  (
+		  when
+		  Value
+	  )?
+	  then?
+	  (SubQuery | Block)
+  }
+
+  TypeClause {
+	  flexible?
+	  type
+	  Type
+  }
+
+  ReadonlyClause {
+	  readonly
+  }
+
+  DefaultClause {
+	  default
+	  Value
+  }
+
+  ValueClause {
+	  value
+	  Value
+  }
+
+  AssertClause {
+	  assert
+	  Value
+  }
+
+  PermissionsForClause {
+	  permissions
+	  (
+		  // TODO make case insensitive but not a keyword
+		  none | full |
+		  (
+			  for
+			  commaSep<( selectPermissions | createPermissions | updatePermissions | deletePermissions )>
+			  ( WhereClause | none | full )
+		  )+
+	  )
+  }
+
+  PermissionsBasicClause {
+	  permissions
+	  none | full | WhereClause
+  }
+
+  CommentClause {
+	  comment
+	  String
+  }
+
+  TokenTypeClause {
+	  type
+	  (
+		  jwks |
+		  eddsa |
+		  es256 |
+		  es384 |
+		  es512 |
+		  ps256 |
+		  ps384 |
+		  ps512 |
+		  rs256 |
+		  rs384 |
+		  rs512
+	  )
+  }
+
+  // Support
+
+  AnalyzerTokenizers {
+	  "blank" |
+	  "camel" |
+	  "class" |
+	  "punct"
+  }
+
+  Predicate {
+	  Value |
+	  Value as Ident
+  }
+
+  InclusivePredicate {
+	  "*" |
+	  Predicate
+  }
+
+  // Idiom {
+  // 	Ident
+  // 	("." Ident)*
+  // }
+
+  // Types
+
+  Type {
+	  piped<(
+		  StringType |
+		  NumberType |
+		  AnyType |
+		  BoolType |
+		  BytesType |
+		  DatetimeType |
+		  DecimalType |
+		  DurationType |
+		  FloatType |
+		  IntType |
+		  NullType |
+		  ObjectType |
+		  ArrayType |
+		  SetType |
+		  RecordType |
+		  OptionType |
+		  GeometryType
+	  )>
+  }
+
+  TypeBracketOpen { "<" }
+  TypeBracketClose { ">" }
+
+  StringType[@name="Type"] { "string" }
+  NumberType[@name="Type"] { "number" }
+  AnyType[@name="Type"] { "any" }
+  BoolType[@name="Type"] { "bool" }
+  BytesType[@name="Type"] { "bytes" }
+  DatetimeType[@name="Type"] { "datetime" }
+  DecimalType[@name="Type"] { "decimal" }
+  DurationType[@name="Type"] { "duration" }
+  FloatType[@name="Type"] { "float" }
+  IntType[@name="Type"] { "int" }
+  NullType[@name="Type"] { "null" }
+  ObjectType[@name="Type"] { "object" }
+  ArrayType[@name="Type"] { "array" ( TypeBracketOpen Type TypeBracketClose )? }
+  SetType[@name="Type"] { "set" ( TypeBracketOpen Type TypeBracketClose )? }
+  RecordType[@name="Type"] { "record" ( TypeBracketOpen piped<( rawident | Int )> TypeBracketClose )? }
+  OptionType[@name="Type"] { "option" ( TypeBracketOpen Type TypeBracketClose ) }
+  GeometryType[@name="Type"] {
+	  "geometry"
+	  (
+		  TypeBracketOpen
+		  ( "feature" | "point" | "line" | "polygon" | "multipoint" | "multiline" | "multipolygon" | "collection" )
+		  TypeBracketClose
+	  )?
+  }
+
+  TypeCast {
+	  TypeBracketOpen Type TypeBracketClose BaseValue
+  }
+
+  // Strings
+  String { singleString ~string | doubleString ~string }
+
+  Ident {
+	  rawident ~ident |
+	  tickIdent
+  }
+
+  Number { Int | Float | Decimal }
+  Int[@name=Number] { int ~int }
+  Float[@dynamicPrecedence=-1, @name=Number] { int ~int frac? exp? "f"? }
+  Decimal[@dynamicPrecedence=-1, @name=Number] { int ~int frac? exp? "dec" }
+
+  Operator {
+	  "&&" | and |
+	  "||" | or |
+	  "??" |
+	  "?:" |
+	  "="  | is |
+	  "!=" | ( is opNot ) |
+	  "==" |
+	  "?=" |
+	  "*=" |
+	  "~"  |
+	  "!~" |
+	  "*~" |
+	  "<"  |
+	  "<=" |
+	  ">"  |
+	  ">=" |
+	  "+"  |
+	  "+=" |
+	  "-"  |
+	  "-=" |
+	  "*"  | "×" |
+	  "/"  | "÷" |
+	  "**" |
+	  "∋"  | contains |
+	  "∌"  | containsnot |
+	  "⊇"  | containsall |
+	  "⊃"	 | containsany |
+	  "⊅"  | containsnone |
+	  "∈"	 | inside | in |
+	  "∉"  | notinside | ( opNot opIn ) |
+	  "⊆"  | allinside |
+	  "⊂"  | anyinside |
+	  "⊄"  | noneinside |
+
+	  outside |
+	  intersects |
+
+	  "@@" | ( "@" Int "@" ) |
+	  (
+		  "<|"
+		  Int
+		  ( "," ( hamming | levenshtein ) )
+		  "|>"
+	  )
+  }
+
+  assignmentOperator[@name=Operator] {
+	"="  |
+	"+=" |
+	"-="
+  }
+
+  @tokens {
+	  // Characters
+	  "{"[@name=BraceOpen]
+	  "}"[@name=BraceClose]
+	  "["
+	  "]"
+	  ":"[@name=Colon]
+	  "->"[@name=GraphRight]
+	  "<-"[@name=GraphLeft]
+
+	  // Helpers
+	  whitespace { $[ \n\r\t] }
+
+	  // Comments
+	  Comment { CommentHash | CommentDash | CommentSlash }
+	  CommentHash { "#" ![\n]* }
+	  CommentDash { "--" ![\n]* }
+	  CommentSlash { "//" ![\n]* }
+
+	  // Numbers
+	  int { @digit+ }
+	  frac { '.' @digit+ }
+	  exp { $[eE] $[+\-]? @digit+ }
+
+	  singleString { "'" ![']+ "'" }
+	  doubleString { '"' !["]+ '"' }
+
+	  // Language
+	  VariableName { "$" (@asciiLetter | @digit | "_" )+ }
+	  tickIdent {
+		  "`" ![`]+ '`'
+	  }
+	  bracketIdent {
+		  "⟨" ![⟩]+ "⟩"
+	  }
+	  rawident {
+		  (@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
+		  @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+
+	  }
+
+	  // Functions
+	  JavaScript { ![\\\n}]+ }
+	  functionName[@name=function] {
+		  "rand" | "RAND" |
+		  "count" | "COUNT" |
+		  @asciiLetter+ functionNameSegment+
+	  }
+
+	  functionNameSegment { "::" @asciiLetter+ }
+	  customFunctionName[@name=function] {
+		  "fn" functionNameSegment*
+	  }
+
+	singleLetterDurationUnit {"s" | "m" | "h" | "d" | "w" | "y"}
+
+	  @precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName  functionName int exp "dec" rawident singleLetterDurationUnit "f" singleString doubleString }
+
+	  "function"
+  }
+
+  commaSep<content> {
+	  content ("," content)*
+  }
+
+  piped<content> {
+	  content ("|" content)*
+  }
+
+  @skip { whitespace | Comment }
+  @detectDelim
+
+  @external propSource surqlHighlighting from "./highlight"
+
+  @external extend { rawident } tokens from "./tokens" {
+	  analyzer			[@name=Keyword],
+	  any				[@name=Keyword],
+	  as				[@name=Keyword],
+	  asc				[@name=Keyword],
+	  assert			[@name=Keyword],
+	  at				[@name=Keyword],
+	  begin				[@name=Keyword],
+	  bm25				[@name=Keyword],
+	  break				[@name=Keyword],
+	  by				[@name=Keyword],
+	  cancel			[@name=Keyword],
+	  capacity			[@name=Keyword],
+	  changefeed		[@name=Keyword],
+	  changes			[@name=Keyword],
+	  columns			[@name=Keyword],
+	  comment			[@name=Keyword],
+	  commit			[@name=Keyword],
+	  content			[@name=Keyword],
+	  continue			[@name=Keyword],
+	  create			[@name=Keyword],
+	  database			[@name=Keyword],
+	  db				[@name=Keyword],
+	  default			[@name=Keyword],
+	  define			[@name=Keyword],
+	  delete			[@name=Keyword],
+	  desc				[@name=Keyword],
+	  dimension			[@name=Keyword],
+	  dist				[@name=Keyword],
+	  doc_ids_cache		[@name=Keyword],
+	  doc_ids_order		[@name=Keyword],
+	  doc_lengths_cache	[@name=Keyword],
+	  doc_lengths_order	[@name=Keyword],
+	  drop				[@name=Keyword],
+	  duplicate			[@name=Keyword],
+	  else				[@name=Keyword],
+	  end				[@name=Keyword],
+	  exists			[@name=Keyword],
+	  explain			[@name=Keyword],
+	  event				[@name=Keyword],
+	  fetch				[@name=Keyword],
+	  field				[@name=Keyword],
+	  fields			[@name=Keyword],
+	  flexible			[@name=Keyword],
+	  for				[@name=Keyword],
+	  from				[@name=Keyword],
+	  function			[@name=Keyword],
+	  group				[@name=Keyword],
+	  highlights		[@name=Keyword],
+	  if				[@name=Keyword],
+	  ignore			[@name=Keyword],
+	  in				[@name=Keyword],
+	  index				[@name=Keyword],
+	  info				[@name=Keyword],
+	  insert			[@name=Keyword],
+	  into				[@name=Keyword],
+	  key				[@name=Keyword],
+	  kill				[@name=Keyword],
+	  let				[@name=Keyword],
+	  limit				[@name=Keyword],
+	  live				[@name=Keyword],
+	  merge				[@name=Keyword],
+	  mtree				[@name=Keyword],
+	  mtree_cache		[@name=Keyword],
+	  namespace			[@name=Keyword],
+	  noindex			[@name=Keyword],
+	  normal			[@name=Keyword],
+	  not				[@name=Keyword],
+	  ns				[@name=Keyword],
+	  on				[@name=Keyword],
+	  only				[@name=Keyword],
+	  order				[@name=Keyword],
+	  out				[@name=Keyword],
+	  parallel			[@name=Keyword],
+	  param				[@name=Keyword],
+	  passhash			[@name=Keyword],
+	  password			[@name=Keyword],
+	  patch				[@name=Keyword],
+	  permissions		[@name=Keyword],
+	  postings_cache	[@name=Keyword],
+	  postings_order	[@name=Keyword],
+	  readonly			[@name=Keyword],
+	  relate			[@name=Keyword],
+	  relation			[@name=Keyword],
+	  return			[@name=Keyword],
+	  roles				[@name=Keyword],
+	  root				[@name=Keyword],
+	  scope				[@name=Keyword],
+	  schemafull		[@name=Keyword],
+	  schemaless		[@name=Keyword],
+	  search			[@name=Keyword],
+	  select			[@name=Keyword],
+	  session			[@name=Keyword],
+	  set				[@name=Keyword],
+	  show				[@name=Keyword],
+	  since				[@name=Keyword],
+	  signin			[@name=Keyword],
+	  signup			[@name=Keyword],
+	  sleep				[@name=Keyword],
+	  split				[@name=Keyword],
+	  start				[@name=Keyword],
+	  structure			[@name=Keyword],
+	  table				[@name=Keyword],
+	  terms_cache		[@name=Keyword],
+	  terms_order		[@name=Keyword],
+	  then				[@name=Keyword],
+	  throw				[@name=Keyword],
+	  timeout			[@name=Keyword],
+	  to				[@name=Keyword],
+	  token				[@name=Keyword],
+	  tokenizers		[@name=Keyword],
+	  transaction		[@name=Keyword],
+	  type				[@name=Keyword],
+	  unique			[@name=Keyword],
+	  update			[@name=Keyword],
+	  use				[@name=Keyword],
+	  user				[@name=Keyword],
+	  value				[@name=Keyword],
+	  values			[@name=Keyword],
+	  when				[@name=Keyword],
+	  where				[@name=Keyword],
+	  with				[@name=Keyword],
+
+	  // Literals
+	  after				[@name=Literal],
+	  before			[@name=Literal],
+	  diff				[@name=Literal],
+	  false				[@name=Literal],
+	  full				[@name=Literal],
+	  none				[@name=Literal],
+	  null				[@name=Literal],
+	  true				[@name=Literal],
+
+	  f32				[@name=Literal],
+	  f64				[@name=Literal],
+	  i16				[@name=Literal],
+	  i32				[@name=Literal],
+	  i64				[@name=Literal],
+
+	  euclidean			[@name=Literal],
+	  cosine			[@name=Literal],
+	  manhattan			[@name=Literal],
+	  minkowski			[@name=Literal],
+
+	  nsUnit,
+	  us,
+	  µs,
+	  ms,
+
+	  selectPermissions	[@name=PermissionTarget],
+	  updatePermissions	[@name=PermissionTarget],
+	  createPermissions	[@name=PermissionTarget],
+	  deletePermissions	[@name=PermissionTarget],
+
+	  jwks				[@name=TokenType],
+	  eddsa				[@name=TokenType],
+	  es256				[@name=TokenType],
+	  es384				[@name=TokenType],
+	  es512				[@name=TokenType],
+	  ps256				[@name=TokenType],
+	  ps384				[@name=TokenType],
+	  ps512				[@name=TokenType],
+	  rs256				[@name=TokenType],
+	  rs384				[@name=TokenType],
+	  rs512				[@name=TokenType],
+
+	  // Operators
+	  and,
+	  or,
+	  is,
+	  opNot,
+	  opIn,
+	  contains,
+	  containsnot,
+	  containsall,
+	  containsany,
+	  containsnone,
+	  inside,
+	  notinside,
+	  allinside,
+	  anyinside,
+	  noneinside,
+	  outside,
+	  intersects,
+
+	  // KNN
+	  hamming			[@name=KnnDistance],
+	  levenshtein		[@name=KnnDistance]
+  }

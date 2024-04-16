@@ -15,5 +15,8 @@ export const surqlHighlighting = styleTags({
 	"[ ]": t.squareBracket,
 	"< >": t.angleBracket,
 	"{ }": t.brace,
-	"TypeBracketOpen TypeBracketClose": t.typeName
+	"TypeBracketOpen TypeBracketClose": t.typeName,
+	"Literal": t.literal,
+	"RecordIdIdent": t.className,
+	"Operator": t.operator,
 });

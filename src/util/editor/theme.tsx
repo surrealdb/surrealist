@@ -6,7 +6,7 @@ import { tags as t } from "@lezer/highlight";
  */
 export const DARK_STYLE = HighlightStyle.define([
 	{ tag: t.keyword, color: "#ff009e" },
-	{ tag: t.operator, color: "#ff009e" },
+	{ tag: t.operator, color: "#ff00ff" },
 	{ tag: t.number, color: "#00dbff" },
 	{ tag: t.string, color: "#00ff6e" },
 	{ tag: t.comment, color: "#737e98" },
@@ -18,6 +18,8 @@ export const DARK_STYLE = HighlightStyle.define([
 	{ tag: t.bool, color: "#9d2fff" },
 	{ tag: t.name, color: "#ffffff" },
 	{ tag: t.typeName, color: "#ffde00" },
+	{ tag: t.literal, color: "#9d2fff" },
+	{ tag: t.className, color: "#0084ff" },
 ], { themeType: 'dark' });
 
 /**
@@ -25,7 +27,7 @@ export const DARK_STYLE = HighlightStyle.define([
  */
 export const LIGHT_STYLE = HighlightStyle.define([
 	{ tag: t.keyword, color: "#ff009e" },
-	{ tag: t.operator, color: "#ff009e" },
+	{ tag: t.operator, color: "#ff00ff" },
 	{ tag: t.number, color: "#00dbff" },
 	{ tag: t.string, color: "#68DE74" },
 	{ tag: t.comment, color: "#737e98" },
@@ -37,4 +39,6 @@ export const LIGHT_STYLE = HighlightStyle.define([
 	{ tag: t.bool, color: "#9d2fff" },
 	{ tag: t.name, color: "#000000" },
 	{ tag: t.typeName, color: "#ffc845" },
+	{ tag: t.literal, color: "#9d2fff" },
+	{ tag: t.className, color: "#0084ff" },
 ], { themeType: 'light' });
