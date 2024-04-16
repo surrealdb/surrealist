@@ -49,6 +49,7 @@ export default defineConfig({
 	define: {
 		'import.meta.env.VERSION': `"${version}"`,
 		'import.meta.env.SDB_VERSION': `"${surreal}"`,
-		'import.meta.env.POSTHOG': `"phc_Q5dvPPsAnEhuHR9sFACJqVGZtShguecgghSn1xOnjjE"`,
+		'import.meta.env.POSTHOG_KEY': `"phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404"`,
+		'import.meta.env.POSTHOG_URL': `"https://eu.posthog.com"`,
 	}
 });

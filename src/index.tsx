@@ -31,8 +31,8 @@ import { isProduction } from "./util/environment";
 
 	// Initialize posthog
 	if (isProduction) {
-		posthog.init(import.meta.env.POSTHOG, {
-			api_host: 'https://app.posthog.com',
+		posthog.init(import.meta.env.POSTHOG_KEY, {
+			api_host: import.meta.env.POSTHOG_URL,
 			autocapture: false
 		});
 	}
