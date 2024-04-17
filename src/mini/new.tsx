@@ -1,14 +1,9 @@
+import { mapValues } from "radash";
 import "../assets/styles/embed-new.scss";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { createRoot } from "react-dom/client";
-
-type Dataset = keyof typeof datasets;
-const datasets = {
-	none: "None",
-	'surreal-deal': "Surreal Deal",
-	'surreal-deal-mini': "Surreal Deal (mini)"
-};
+import { DATASETS } from "~/constants";
 
 type Theme = keyof typeof themes;
 const themes = {
@@ -17,9 +12,14 @@ const themes = {
 	dark: "Dark"
 };
 
+const datasets = {
+	"none": "None",
+	...mapValues(DATASETS, (value) => value.name)
+};
+
 function App() {
 	const defaults = useMemo(() => processUrl(location.toString()), []);
-	const [dataset, setDataset] = useState<Dataset>(defaults.dataset);
+	const [dataset, setDataset] = useState<string>(defaults.dataset);
 	const [setup, setSetup] = useState<string>(defaults.setup);
 	const [query, setQuery] = useState<string>(defaults.query);
 	const [variables, setVariables] = useState<string>(defaults.variables);
@@ -96,10 +96,10 @@ function App() {
 							name="dataset"
 							id="dataset"
 							value={dataset}
-							onInput={(e) => setDataset(e.currentTarget.value as Dataset)}
+							onInput={(e) => setDataset(e.currentTarget.value)}
 						>
-							{Object.entries(datasets).map(([key, value]) => (
-								<option key={key} value={key}>{value}</option>
+							{Object.entries(datasets).map(([key, name]) => (
+								<option key={key} value={key}>{name}</option>
 							))}
 						</select>
 					</div>
@@ -198,13 +198,13 @@ function processUrl(input: string) {
 	const parsedVariables = parseJson(variables);
 
 	return {
-		dataset: Object.keys(datasets).includes(dataset) ? dataset : 'none',
+		dataset: Object.keys(DATASETS).includes(dataset) ? dataset : 'none',
 		setup: setup ? setup.toString() : '',
 		query: query ? query.toString() : '',
 		variables: Object.keys(parsedVariables).length > 0 ? JSON.stringify(parsedVariables, null, 4) : '',
 		theme: Object.keys(themes).includes(theme) ? theme : 'auto'
 	} as {
-		dataset: Dataset;
+		dataset: string;
 		setup: string;
 		query: string;
 		variables: string;
