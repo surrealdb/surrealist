@@ -5,6 +5,7 @@ import { printLog, tb } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
 import { executeQuerySingle } from '~/connection';
 import { createDatabaseSchema } from "./defaults";
+import { klona } from "klona";
 
 const printMsg = (...args: any[]) => printLog("Schema", "#e600a4", ...args);
 
@@ -41,7 +42,11 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	schema.dbUsers = dbInfo.users;
 
 	// Scopes
-	schema.scopes = dbInfo.scopes;
+	schema.scopes = dbInfo.scopes.map(sc => ({
+		...sc,
+		signin: sc?.signin?.slice(1, -1),
+		signup: sc?.signup?.slice(1, -1),
+	}));
 
 	// Schema functions
 	schema.functions = dbInfo.functions.map(info => ({
@@ -64,7 +69,7 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	}));
 
 	if (isLimited) {
-		schema.tables = databaseSchema.tables;
+		schema.tables = klona(databaseSchema.tables);
 	}
 
 	for (const [idx, tableName] of tableNames.entries()) {
@@ -78,7 +83,10 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 			schema: table,
 			fields: Object.values(info.fields),
 			indexes: Object.values(info.indexes),
-			events: Object.values(info.events)
+			events: Object.values(info.events).map(ev => ({
+				...ev,
+				then: ev.then.map(th => th.slice(1, -1))
+			})),
 		};
 
 		if (!isLimited || index === -1) {

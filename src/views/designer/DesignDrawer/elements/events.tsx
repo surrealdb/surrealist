@@ -12,7 +12,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 			d.events.push({
 				name: "",
 				when: "",
-				then: [],
+				then: [""],
 			});
 		});
 	});
@@ -39,7 +39,6 @@ export function EventsElement({ data, setData }: ElementProps) {
 					{(event, i) => (
 						<>
 							<TextInput
-								required
 								autoFocus
 								label="Event name"
 								placeholder="event_name"
@@ -51,7 +50,6 @@ export function EventsElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<CodeInput
-								required
 								label="Event condition"
 								value={event.when}
 								onChange={(value) =>
@@ -61,12 +59,13 @@ export function EventsElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<CodeInput
-								required
-								label="Event result"
-								value={event.then.toString()}
+								mt="sm"
+								label="Event handler"
+								multiline
+								value={event.then[0]}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.events[i].then = [value];
+										draft.events[i].then[0] = value;
 									})
 								}
 							/>

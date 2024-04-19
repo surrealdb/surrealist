@@ -162,8 +162,8 @@ importers:
         specifier: 1.0.0-beta.4
         version: 1.0.0-beta.4
       surrealdb.wasm:
-        specifier: 1.0.0-beta.4
-        version: 1.0.0-beta.4
+        specifier: 1.0.0-beta.6
+        version: 1.0.0-beta.6
       surrealql.wasm:
         specifier: ^0.1.1
         version: 0.1.1
@@ -4538,8 +4538,8 @@ packages:
       utf-8-validate: 6.0.3
     dev: false
 
-  /surrealdb.wasm@1.0.0-beta.4:
-    resolution: {integrity: sha512-TwVE5EI81N0nDsvYhVfg7RFo7zpQumwAmj235eiD/KgzpiuVFrRqJSoCeUntK7hZGmObHruShWsowDNzuz0f1w==}
+  /surrealdb.wasm@1.0.0-beta.6:
+    resolution: {integrity: sha512-vv4O1p4EoyV7b5a1H4ul/XXpbtTiH7UbA9jJOCa5U2PvfJq0v3B5MxbzWszFlQfVj9JU0z69bakwyWoD9MJzPA==}
     dependencies:
       surrealdb.js: 1.0.0-beta.4
       zod: 3.22.5
