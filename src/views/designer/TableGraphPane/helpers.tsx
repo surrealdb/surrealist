@@ -1,6 +1,6 @@
 import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
 import { EdgeNode } from "./nodes/EdgeNode";
-import { DiagramDirection, TableDefinition } from "~/types";
+import { DiagramDirection, TableInfo } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, NodeChange, Position } from "reactflow";
 import { toBlob, toSvg } from "html-to-image";
@@ -20,7 +20,7 @@ const EDGE_OPTIONS = {
 export type InternalNode = Node & { width: number, height: number };
 
 export interface NodeData {
-	table: TableDefinition;
+	table: TableInfo;
 	isSelected: boolean;
 	hasIncoming: boolean;
 	hasOutgoing: boolean;
@@ -28,12 +28,12 @@ export interface NodeData {
 
 interface NormalizedTable {
 	isEdge: boolean;
-	table: TableDefinition;
+	table: TableInfo;
 	from: string[];
 	to: string[];
 }
 
-function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
+function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 	return tables.map((table) => {
 		const [isEdge, from, to] = extractEdgeRecords(table);
 
@@ -46,7 +46,7 @@ function normalizeTables(tables: TableDefinition[]): NormalizedTable[] {
 	});
 }
 
-export function buildFlowNodes(tables: TableDefinition[]): [Node[], Edge[]] {
+export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
 	const edges: Edge[] = [];

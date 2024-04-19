@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../../Icon";
-import { openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
+import { openConnection } from "~/connection";
 
 // TODO Check if localhost
 

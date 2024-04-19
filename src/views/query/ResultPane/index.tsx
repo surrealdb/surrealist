@@ -11,10 +11,9 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
-import { getSurreal } from "~/util/surreal";
 import { iconBroadcastOff, iconCursor, iconHelp, iconQuery } from "~/util/icons";
 import { SelectionRange } from "@codemirror/state";
-import { useFeatureFlags } from "~/util/feature-flags";
+import { cancelLiveQueries } from "~/connection";
 
 function computeRowCount(response: any) {
 	if (!response) {
@@ -47,7 +46,6 @@ export function ResultPane({
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 
 	const isLight = useIsLight();
-	const [flags] = useFeatureFlags();
 	const [resultTab, setResultTab] = useState<number>(1);
 	const resultMode = activeTab.resultMode;
 	const responses = activeTab.response;
@@ -64,7 +62,7 @@ export function ResultPane({
 	const isLive = liveTabs.has(activeTab.id);
 
 	const cancelQueries = useStable(() => {
-		getSurreal()?.cancelQueries(activeTab.id);
+		cancelLiveQueries(activeTab.id);
 	});
 
 	const setResultMode = (mode: ResultMode) => {

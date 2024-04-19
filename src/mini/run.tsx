@@ -7,21 +7,14 @@ import "../assets/styles/global.scss";
 
 import "../adapter";
 
-import embedPath from '../generated/surrealist-embed_bg.wasm?url';
-import initEmbed, { initialize_embed } from '../generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
 import { MiniScaffold } from '../components/MiniScaffold';
-import { openConnection } from '../database';
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
+import { openConnection } from '~/connection';
 
 (async () => {
-
-	// Load the surrealist embed library
-	await initEmbed(embedPath);
-
-	initialize_embed();
 
 	// Synchronize the config to the store
 	await watchConfigStore();

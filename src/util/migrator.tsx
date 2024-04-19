@@ -109,7 +109,7 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 					name: q.name || 'Untitled query',
 					variables: "{}",
 					response: [],
-					queryType: "invalid",
+					valid: true,
 					resultMode: config.settings.appearance.defaultResultMode
 				}))
 			});

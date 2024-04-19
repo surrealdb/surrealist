@@ -9,13 +9,13 @@ import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
 import { selectionChanged, surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
-import { format_query, validate_query } from "~/generated/surrealist-embed";
-import { showError, tryParseParams } from "~/util/helpers";
+import { tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
 import { HoverIcon } from "~/components/HoverIcon";
+import { formatQuery, validateQuery } from "~/util/surrealql";
 
 const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -54,10 +54,9 @@ export function QueryPane({
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const setQueryForced = useStable((query: string) => {
-		const error = validate_query(query);
+		const error = !validateQuery(query);
 
 		setIsValid(!error);
-
 		updateQueryTab({
 			id: activeTab.id,
 			query
@@ -67,69 +66,10 @@ export function QueryPane({
 	const scheduleSetQuery = useDebounced(200, setQueryForced);
 
 	const handleFormat = useStable(() => {
-		const formatted = format_query(activeTab.query);
-
-		// NOTE replace with lezer tree based system
-		if (formatted) {
-			let output = '';
-			let indent = 0;
-			let skipSpace = false;
-			const containedIn: string[] = [];
-
-			const newline = () => {
-				output += '\n' + ' '.repeat(indent * 4);
-				skipSpace = true;
-			};
-
-			const seek = (i: number, text: string) => {
-				return formatted.slice(i, i + text.length) === text;
-			};
-
-			for (let i = 0; i < formatted.length; i++) {
-				const char = formatted.charAt(i);
-				let doNewline = false;
-
-				if (char == ' ' && skipSpace) {
-					continue;
-				}
-
-				if (["{", "["].includes(containedIn.at(-1) as string) &&  char == ',') {
-					doNewline = true;
-				} else if (char == '{' || char == '(' || char == '[') {
-					indent++;
-					doNewline = true;
-					containedIn.push(char);
-				} else if (char == '}' || char == ')' || char == ']') {
-					indent--;
-					newline();
-					containedIn.pop();
-				}
-
-				if (seek(i, 'WHERE') || seek(i, 'ORDER') || seek(i, 'GROUP') || seek(i, 'START') || seek(i, 'LIMIT') || seek(i, 'AND') || seek(i, 'OR')) {
-					newline();
-				}
-
-				output += char;
-
-				if (char == ';') {
-					output += '\n';
-				} else if (doNewline) {
-					newline();
-				} else if (skipSpace) {
-					skipSpace = false;
-				}
-			}
-
-			updateQueryTab({
-				id : activeTab.id,
-				query: output
-			});
-		} else {
-			showError({
-				title: 'Formatting failed',
-				subtitle: 'Could not format query'
-			});
-		}
+		updateQueryTab({
+			id : activeTab.id,
+			query: formatQuery(activeTab.query)
+		});
 	});
 
 	const toggleVariables = useStable(() => {

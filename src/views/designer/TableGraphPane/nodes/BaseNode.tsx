@@ -1,5 +1,5 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
-import { TableDefinition } from "~/types";
+import { TableInfo } from "~/types";
 import { Handle, Position } from "reactflow";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -82,7 +82,7 @@ function FieldKind({ kind }: FieldKindProps) {
 
 interface FieldsProps {
 	isLight: boolean;
-	table: TableDefinition;
+	table: TableInfo;
 }
 
 function Fields(props: FieldsProps) {
@@ -141,7 +141,7 @@ function Fields(props: FieldsProps) {
 
 interface BaseNodeProps {
 	icon: string;
-	table: TableDefinition;
+	table: TableInfo;
 	isSelected: boolean;
 	hasIncoming: boolean;
 	hasOutgoing: boolean;

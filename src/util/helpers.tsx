@@ -212,11 +212,30 @@ export function isPermissionError(result: any) {
  * @returns The URI string
  */
 export function connectionUri(options: ConnectionOptions) {
-	if (options.protocol == "mem") {
-		return `${options.protocol}://`;
+	const basePath = options.protocol === "mem"
+		? `${options.protocol}://`
+		: `${options.protocol}://${options.hostname}`;
+
+	const url = new URL(basePath);
+	url.pathname = url.pathname === "/" ? "/rpc" : url.pathname;
+	return url.toString();
+}
+
+/**
+ * Convert the given connection options to a version uri
+ *
+ * @param options The connection options
+ * @returns The URI string
+ */
+export function versionUri(options: ConnectionOptions) {
+	if (options.protocol === "mem" || options.protocol === "indxdb") {
+		return undefined;
 	}
 
-	return `${options.protocol}://${options.hostname}`;
+	const protocol = options.protocol.replace(/^ws/, "http");
+	const versionURI = new URL("/version", `${protocol}://${options.hostname}`);
+
+	return versionURI.toString();
 }
 
 /**

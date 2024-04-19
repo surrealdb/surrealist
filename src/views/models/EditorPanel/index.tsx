@@ -8,13 +8,13 @@ import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
-import { ModelDefinition } from "~/types";
+import { SchemaModel } from "~/types";
 import { iconCheck, iconCopy, iconFunction } from "~/util/icons";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
-	details: ModelDefinition;
-	onChange: Updater<ModelDefinition>;
+	details: SchemaModel;
+	onChange: Updater<SchemaModel>;
 }
 
 export function EditorPanel({

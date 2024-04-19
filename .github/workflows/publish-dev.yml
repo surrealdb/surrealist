@@ -20,53 +20,11 @@ jobs:
         id: extract_version
         uses: Saionaro/extract-package-version@v1.2.1
 
-  embed:
-    name: Generate embed files
-    runs-on: ubuntu-latest
-    needs: version
-    strategy:
-      matrix:
-        node-version: [ 18 ]
-    steps:
-      - name: Code checkout
-        uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-embed -> target'
-
-      - name: Generate embed
-        run: |
-          rustup target add wasm32-unknown-unknown
-          cargo install wasm-bindgen-cli
-          make build-embed
-
-      - name: Save artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: generated-embed
-          path: src/generated
-
   build-web:
     name: Build Web
     runs-on: "ubuntu-20.04"
     needs:
       - version
-      - embed
     strategy:
       fail-fast: false
       matrix:
@@ -91,12 +49,6 @@ jobs:
       - name: Frontend dependencies
         run: |
           pnpm i --frozen-lockfile
-
-      - name: Download embed
-        uses: actions/download-artifact@master
-        with:
-          name: generated-embed
-          path: src/generated
 
       - name: Generate license report
         run: pnpm license-report

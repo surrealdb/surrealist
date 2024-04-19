@@ -1,26 +1,15 @@
 import dayjs from "dayjs";
+import { RecordId, Decimal } from "surrealdb.js";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
-import { validate_thing } from "~/generated/surrealist-embed";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
-
-const DATETIME_REGEX = /^\d{4}-\d\d-\d\dt\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|z)?$/i;
-
-export interface DataCellType {
-	match: (value: any) => boolean;
-	component: React.FC<DataCellProps>;
-}
-
-export interface DataCellProps {
-	value: any;
-}
 
 // ----- Data Cell Types -----
 
-function NullishCell(props: DataCellProps) {
+function NullishCell(props: { value: null | undefined }) {
 	return (
 		<Text c="slate" ff="JetBrains Mono">
 			{props.value === null ? "null" : "—"}
@@ -28,13 +17,15 @@ function NullishCell(props: DataCellProps) {
 	);
 }
 
-function BooleanCell(props: DataCellProps) {
-	const icon = props.value ? <Icon path={iconCheck} color="green" /> : <Icon path={iconClose} color="red" />;
+function BooleanCell(props: { value: boolean }) {
+	const icon = props.value
+		? <Icon path={iconCheck} color="green" />
+		: <Icon path={iconClose} color="red" />;
 
 	return <div>{icon}</div>;
 }
 
-function StringCell(props: DataCellProps) {
+function StringCell(props: { value: string }) {
 	return (
 		<Text
 			title={props.value}
@@ -47,15 +38,15 @@ function StringCell(props: DataCellProps) {
 	);
 }
 
-function NumberCell(props: DataCellProps) {
+function NumberCell(props: { value: number }) {
 	return <Text>{props.value.toLocaleString()}</Text>;
 }
 
-function ThingCell(props: DataCellProps) {
+function ThingCell(props: { value: RecordId }) {
 	return <RecordLink value={props.value} />;
 }
 
-function DateTimeCell(props: DataCellProps) {
+function DateTimeCell(props: { value: Date }) {
 	const date = new Date(props.value);
 	const relative = dayjs(date).fromNow();
 
@@ -67,8 +58,8 @@ function DateTimeCell(props: DataCellProps) {
 	);
 }
 
-function ArrayCell(props: DataCellProps) {
-	const items = props.value as any[];
+function ArrayCell(props: { value: any[] }) {
+	const items = props.value ;
 
 	return (
 		<div>
@@ -99,7 +90,7 @@ function ArrayCell(props: DataCellProps) {
 	);
 }
 
-function ObjectCell(props: DataCellProps) {
+function ObjectCell(props: { value: any }) {
 	return (
 		<div>
 			<HoverCard width={280} shadow="md" withArrow>
@@ -118,48 +109,38 @@ function ObjectCell(props: DataCellProps) {
 	);
 }
 
-const DataCellTypes = [
-	{
-		match: (value: any) => value === null || value === undefined,
-		component: NullishCell,
-	},
-	{
-		match: (value: any) => typeof value == "string" && validate_thing(value),
-		component: ThingCell,
-	},
-	{
-		match: (value: any) => typeof value == "string" && DATETIME_REGEX.test(value),
-		component: DateTimeCell,
-	},
-	{
-		match: (value: any) => typeof value === "boolean",
-		component: BooleanCell,
-	},
-	{
-		match: (value: any) => typeof value === "string",
-		component: StringCell,
-	},
-	{
-		match: (value: any) => typeof value === "number",
-		component: NumberCell,
-	},
-	{
-		match: (value: any) => Array.isArray(value),
-		component: ArrayCell,
-	},
-	{
-		match: (value: any) => typeof value === "object",
-		component: ObjectCell,
-	},
-];
-
 export function renderDataCell(value: any): ReactNode {
-	for (const type of DataCellTypes) {
-		// eslint-disable-next-line unicorn/prefer-regexp-test
-		if (type.match(value)) {
-			return type.component({ value });
-		}
+	if (value instanceof Date) {
+		return <DateTimeCell value={value} />;
 	}
 
-	return <Text c="red">Unknown</Text>;
+	if (value === undefined || value === null) {
+		return <NullishCell value={value} />;
+	}
+
+	if (typeof value === "boolean") {
+		return <BooleanCell value={value} />;
+	}
+
+	if (value instanceof Decimal) {
+		return <NumberCell value={value.toNumber()} />;
+	}
+
+	if (typeof value === "number") {
+		return <NumberCell value={value} />;
+	}
+
+	if (value instanceof RecordId) {
+		return <ThingCell value={value} />;
+	}
+
+	if (Array.isArray(value)) {
+		return <ArrayCell value={value} />;
+	}
+
+	if (typeof value === "object") {
+		return <ObjectCell value={value} />;
+	}
+
+	return <StringCell value={value.toString()} />;
 }

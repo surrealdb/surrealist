@@ -1,17 +1,14 @@
 import { ExportType } from "~/constants";
-import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
-import { getActiveSurreal } from "./surreal";
 import { fork } from "radash";
 import { tb } from "./helpers";
+import { executeQuerySingle } from "~/connection";
+import { SchemaInfoDB, SchemaInfoTB } from "~/types";
 
 /**
  * Export the database schema and save it to a file
- *
- * TODO Move this logic to Rust
  */
 export async function createDatabaseExport(types: ExportType[]) {
-	const surreal = getActiveSurreal();
-	const result = await surreal.querySingle<SurrealInfoDB>("INFO FOR DB");
+	const result = await executeQuerySingle<SchemaInfoDB>("INFO FOR DB");
 
 	const dbTables = Object.entries(result.tables);
 	const dbParams = Object.values(result.params);
@@ -75,7 +72,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 
 			output.push(`${definition};`);
 
-			const tbInfo = await surreal.querySingle<SurrealInfoTB>(`INFO FOR TABLE ${tb(tableName)}`);
+			const tbInfo = await executeQuerySingle<SchemaInfoTB>(`INFO FOR TABLE ${tb(tableName)}`);
 
 			const tbFields = Object.values(tbInfo.fields);
 			const tbIndexes = Object.values(tbInfo.indexes);
@@ -114,7 +111,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 		output.push("BEGIN TRANSACTION;");
 
 		for (const [tableName] of dbTables) {
-			const tbData = await surreal.query(`SELECT * FROM ${tb(tableName)}`);
+			const tbData = await executeQuerySingle(`SELECT * FROM ${tb(tableName)}`);
 			const tbRows = tbData[0].result as any[];
 
 			if (tbRows.length > 0) {

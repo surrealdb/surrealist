@@ -25,13 +25,12 @@ import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useHasSchemaAccess, useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { DatabaseSchema, UserDefinition } from "~/types";
-import { getActiveSurreal } from "~/util/surreal";
+import { DatabaseSchema, SchemaUser } from "~/types";
 import { showError } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
 import { iconCheck, iconComment, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
+import { executeQuery } from "~/connection";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -49,19 +48,18 @@ export interface AccountsPaneProps {
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
-	const isLight = useIsLight();
 	const isOnline = useIsConnected();
 	const isDenied = useHasSchemaAccess();
 	const schema = useSchema();
 
 	const [isEditing, setIsEditing] = useState(false);
-	const [currentUser, setCurrentUser] = useState<UserDefinition | null>(null);
+	const [currentUser, setCurrentUser] = useState<SchemaUser | null>(null);
 	const [editingName, setEditingName] = useInputState("");
 	const [editingPassword, setEditingPassword] = useInputState("");
 	const [editingComment, setEditingComment] = useInputState("");
 	const [editingRole, setEditingRole] = useState<string[]>([]);
 
-	const users = (schema?.[props.field] || []) as UserDefinition[];
+	const users = (schema?.[props.field] || []) as SchemaUser[];
 
 	const closeSaving = useStable(() => {
 		setIsEditing(false);
@@ -81,10 +79,8 @@ export function AccountsPane(props: AccountsPaneProps) {
 				query += ` COMMENT "${editingComment}"`;
 			}
 
-			await getActiveSurreal().query(query);
-			await syncDatabaseSchema({
-				users: true
-			});
+			await executeQuery(query);
+			await syncDatabaseSchema();
 		} catch (err: any) {
 			showError({
 				title: "Failed to save account",
@@ -101,7 +97,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 		setEditingRole([]);
 	});
 
-	const updateUser = useStable((user: UserDefinition) => {
+	const updateUser = useStable((user: SchemaUser) => {
 		setIsEditing(true);
 		setCurrentUser(user);
 		setEditingName(user.name);
@@ -121,13 +117,11 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 		closeModal();
 
-		await getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.type}`);
-		await syncDatabaseSchema({
-			users: true
-		});
+		await executeQuery(`REMOVE USER ${currentUser.name} ON ${props.type}`);
+		await syncDatabaseSchema();
 	});
 
-	const formatRoles = useStable((user: UserDefinition) => {
+	const formatRoles = useStable((user: SchemaUser) => {
 		return user.roles.map((role) => {
 			const roleInfo = ROLES.find((r) => r.value === role);
 

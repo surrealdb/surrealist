@@ -10,14 +10,14 @@ import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { ScopeDefinition } from "~/types";
-import { getActiveSurreal } from "~/util/surreal";
+import { SchemaScope } from "~/types";
 import { showError } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
 import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
-import { get_statement_count } from "~/generated/surrealist-embed";
+import { executeQuery } from "~/connection";
+import { getStatementCount } from "~/util/surrealql";
 
 export function ScopePane() {
 	const isOnline = useIsConnected();
@@ -30,7 +30,7 @@ export function ScopePane() {
 	const [editingSignup, setEditingSignup] = useInputState("");
 	const [editingSession, setEditingSession] = useInputState("");
 
-	const scopes = (schema?.scopes || []) as ScopeDefinition[];
+	const scopes = (schema?.scopes || []) as SchemaScope[];
 
 	const closeEditing = useStable(() => {
 		setIsEditing(false);
@@ -46,8 +46,7 @@ export function ScopePane() {
 				query += ` SESSION ${editingSession}`;
 			}
 
-
-			const [openSymbol, closeSymbol] = get_statement_count(editingSignin) > 1
+			const [openSymbol, closeSymbol] = getStatementCount(editingSignin) > 1
 				? ["{", "}"]
 				: ["(", ")"];
 
@@ -59,10 +58,8 @@ export function ScopePane() {
 				query += ` SIGNIN ${openSymbol + editingSignup + closeSymbol}`;
 			}
 
-			await getActiveSurreal().query(query);
-			await syncDatabaseSchema({
-				scopes: true
-			});
+			await executeQuery(query);
+			await syncDatabaseSchema();
 		} catch (err: any) {
 			showError({
 				title: "Failed to save scope",
@@ -80,7 +77,7 @@ export function ScopePane() {
 		setEditingSignup("");
 	});
 
-	const editScope = useStable((scope: ScopeDefinition) => {
+	const editScope = useStable((scope: SchemaScope) => {
 		setIsEditing(true);
 		setIsCreating(false);
 		setEditingName(scope.name);
@@ -90,10 +87,8 @@ export function ScopePane() {
 	});
 
 	const removeScope = useStable(async () => {
-		await getActiveSurreal().query(`REMOVE SCOPE ${editingName}`);
-		await syncDatabaseSchema({
-			scopes: true
-		});
+		await executeQuery(`REMOVE SCOPE ${editingName}`);
+		await syncDatabaseSchema();
 
 		closeModal();
 	});

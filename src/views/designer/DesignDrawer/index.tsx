@@ -15,7 +15,7 @@ import {
 
 import { useMemo } from "react";
 import { Updater } from "use-immer";
-import { TableDefinition } from "~/types";
+import { TableInfo } from "~/types";
 import { syncDatabaseSchema, isEdgeTable } from "~/util/schema";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
@@ -26,21 +26,20 @@ import { FieldsElement } from "./elements/fields";
 import { IndexesElement } from "./elements/indexes";
 import { EventsElement } from "./elements/events";
 import { ModalTitle } from "~/components/ModalTitle";
-import { ChangefeedElement } from "./elements/changefeed";
-import { getSurreal } from "~/util/surreal";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { themeColor } from "~/util/mantine";
 import { ON_FOCUS_SELECT, tb } from "~/util/helpers";
 import { iconClose, iconDelete, iconWrench } from "~/util/icons";
 import { useConfirmation } from "~/providers/Confirmation";
+import { executeQuery } from "~/connection";
 
 const INITIAL_TABS = ["general"];
 
 export interface SchemaDrawerProps {
 	opened: boolean;
-	value: TableDefinition;
-	onChange: Updater<TableDefinition>;
+	value: TableInfo;
+	onChange: Updater<TableInfo>;
 	handle: SaveableHandle;
 	onClose: (force?: boolean) => void;
 }
@@ -52,15 +51,9 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
 		onConfirm:  async () => {
-			const surreal = getSurreal();
-
-			if (!surreal) {
-				return;
-			}
-
 			onClose(true);
 
-			await surreal.query(`REMOVE TABLE ${tb(value.schema.name)}`);
+			await executeQuery(`REMOVE TABLE ${tb(value.schema.name)}`);
 			await syncDatabaseSchema({
 				tables: [value.schema.name]
 			});
@@ -156,13 +149,6 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 						data={value}
 						setData={onChange}
 					/>
-
-					{value.schema.changefeed && (
-						<ChangefeedElement
-							data={value}
-							setData={onChange}
-						/>
-					)}
 
 					<PermissionsElement
 						data={value}

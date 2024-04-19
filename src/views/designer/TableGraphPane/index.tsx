@@ -5,7 +5,7 @@ import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Tex
 import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from "reactflow";
 import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
-import { DiagramDirection, DiagramMode, TableDefinition } from "~/types";
+import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
@@ -38,8 +38,8 @@ function HelpTitle({ isLight, children }: HelpTitleProps) {
 }
 
 export interface TableGraphPaneProps {
-	active: TableDefinition | null;
-	tables: TableDefinition[];
+	active: TableInfo | null;
+	tables: TableInfo[];
 	setActiveTable: (table: string) => void;
 }
 

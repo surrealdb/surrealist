@@ -4,16 +4,16 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
 import { iconDownload, iconList, iconModel, iconSearch, iconUpload } from "~/util/icons";
-import { ModelDefinition } from "~/types";
+import { SchemaModel } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 import { useContextMenu } from "mantine-contextmenu";
 
 export interface ModelsPanelProps {
 	active: string;
-	models: ModelDefinition[];
+	models: SchemaModel[];
 	onSelect: (id: string) => void;
-	onDownload: (model: ModelDefinition) => void;
+	onDownload: (model: SchemaModel) => void;
 	onUpload: () => void;
 }
 

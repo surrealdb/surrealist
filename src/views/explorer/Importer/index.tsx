@@ -11,11 +11,11 @@ import { ModalTitle } from "../../../components/ModalTitle";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 import { syncDatabaseSchema } from "~/util/schema";
-import { getActiveSurreal } from "~/util/surreal";
 import { OpenedTextFile } from "~/adapter/base";
 import { iconChevronRight, iconDownload, iconFile } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useIntent } from "~/hooks/url";
+import { executeQuery } from "~/connection";
 
 export function Importer() {
 	const isLight = useIsLight();
@@ -48,7 +48,7 @@ export function Importer() {
 		try {
 			setIsImporting(true);
 
-			await getActiveSurreal().query(importFile.current!.content);
+			await executeQuery(importFile.current!.content);
 
 			showInfo({
 				title: "Importer",

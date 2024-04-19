@@ -11,8 +11,8 @@ export function EventsElement({ data, setData }: ElementProps) {
 		setData((d) => {
 			d.events.push({
 				name: "",
-				cond: "",
-				then: "",
+				when: "",
+				then: [],
 			});
 		});
 	});
@@ -53,20 +53,20 @@ export function EventsElement({ data, setData }: ElementProps) {
 							<CodeInput
 								required
 								label="Event condition"
-								value={event.cond}
+								value={event.when}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.events[i].cond = value;
+										draft.events[i].when = value;
 									})
 								}
 							/>
 							<CodeInput
 								required
 								label="Event result"
-								value={event.then}
+								value={event.then.toString()}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.events[i].then = value;
+										draft.events[i].then = [value];
 									})
 								}
 							/>

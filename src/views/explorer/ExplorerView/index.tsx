@@ -35,9 +35,7 @@ export function ExplorerView() {
 	});
 
 	useViewEffect("explorer", () => {
-		syncDatabaseSchema({
-			tables: true
-		});
+		syncDatabaseSchema();
 	});
 
 	return (

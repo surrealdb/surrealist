@@ -31,7 +31,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
-import { executeQuery } from "~/database";
+import { executeUserQuery } from "~/connection";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -101,13 +101,11 @@ export function QueryView() {
 	const runQuery = useStable(() => {
 		if (!active) return;
 
-		if (selection?.empty === false) {
-			executeQuery({
-				override: active.query.slice(selection.from, selection.to)
-			});
-		} else {
-			executeQuery();
-		}
+		executeUserQuery({
+			override: selection?.empty === false
+				? active.query.slice(selection.from, selection.to)
+				: undefined
+		});
 	});
 
 	useIntent("open-saved-queries", showSavedHandle.open);

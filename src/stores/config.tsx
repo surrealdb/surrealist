@@ -1,12 +1,12 @@
-import { Connection, HistoryQuery, PartialId, QueryType, SavedQuery, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
+import { Connection, HistoryQuery, PartialId, SavedQuery, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
 import { createBaseConfig, createBaseTab } from "~/util/defaults";
-import { extract_query_type } from "~/generated/surrealist-embed";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { newId } from "~/util/helpers";
 import { create } from "zustand";
 import { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
 import { featureFlagSchema } from "~/util/feature-flags";
 import { unique } from "radash";
+import { validateQuery } from "~/util/surrealql";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -157,7 +157,7 @@ export const useConfigStore = create<ConfigStore>()(
 			};
 
 			if (payload.query !== undefined) {
-				query.queryType = extract_query_type(payload.query) as QueryType;
+				query.valid = !validateQuery(query.query);
 			}
 
 			return {

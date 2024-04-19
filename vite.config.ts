@@ -1,14 +1,9 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
-const generatedDir = fileURLToPath(new URL('src/generated', import.meta.url));
-
-if (!existsSync(generatedDir)) {
-	throw new Error('Surrealist embed generated files not found. Run `make build-embed` to generate them.');
-}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,7 +15,7 @@ export default defineConfig({
 		strictPort: true
 	},
 	build: {
-		target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
+		target: "esnext",
 		minify: process.env.TAURI_DEBUG ? false : 'esbuild',
 		sourcemap: !!process.env.TAURI_DEBUG,
 		rollupOptions: {
@@ -29,6 +24,11 @@ export default defineConfig({
 				'mini-run': '/mini/run.html',
 				'mini-new': '/mini/new.html'
 			}
+		},
+	},
+	esbuild: {
+		supported: {
+			'top-level-await': true //browsers can handle top-level-await features
 		},
 	},
 	resolve: {
@@ -51,5 +51,11 @@ export default defineConfig({
 		'import.meta.env.SDB_VERSION': `"${surreal}"`,
 		'import.meta.env.POSTHOG_KEY': `"phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404"`,
 		'import.meta.env.POSTHOG_URL': `"https://eu.posthog.com"`,
-	}
+	},
+	optimizeDeps: {
+		exclude: ['surrealdb.wasm', 'surrealql.wasm'],
+		esbuildOptions: {
+			target: 'esnext',
+		},
+	},
 });

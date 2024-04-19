@@ -1,21 +1,19 @@
 import { MantineColorScheme } from "@mantine/core";
-import { QueryResponse } from "./util/surreal";
 import { TFeatureFlags } from "@theopensource-company/feature-flags";
 import { FeatureFlagMap, featureFlagSchema } from "./util/feature-flags";
 
 export type AuthMode = "none" | "root" | "namespace" | "database" | "token" | "scope" | "scope-signup";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
-export type QueryType = "invalid" | "mixed" | "live" | "normal";
 export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "functions" | "models" | "documentation";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DiagramDirection = "ltr" | "rtl";
-export type IndexKind = "normal" | "unique" | "search" | "vector";
 export type ColorScheme = "light" | "dark";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "dotnet" | "java" | "php";
 export type Platform = "darwin" | "windows" | "linux";
+export type TableType = "ANY" | "NORMAL" | "RELATION";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -91,13 +89,19 @@ export interface SurrealistServingSettings {
 	port: number;
 }
 
+export interface QueryResponse {
+	execution_time: string;
+	success: boolean;
+	result: any;
+}
+
 export interface TabQuery {
 	id: string;
 	query: string;
 	name?: string;
 	variables: string;
+	valid: boolean;
 	response: QueryResponse[];
-	queryType: QueryType;
 	resultMode: ResultMode;
 }
 
@@ -144,97 +148,129 @@ export interface ScopeField {
 
 export interface TableView {
 	expr: string;
-	what: string;
 	cond: string;
 	group: string;
 }
 
 export interface Permissions {
-	select: string;
-	create: string;
-	update: string;
-	delete: string;
+	select: boolean | string;
+	create: boolean | string;
+	update: boolean | string;
+	delete: boolean | string;
 }
 
-export interface TableSchema {
-	name: string;
-	drop: boolean;
-	schemafull: boolean;
-	view: TableView | null;
-	permissions: Permissions;
-	changefeed: boolean;
-	changetime: string;
-}
-
-export interface TableField {
-	name: string;
-	flexible: boolean;
-	kind: string;
-	kind_meta: string[];
-	value: string;
-	default: string;
-	assert: string;
-	permissions: Permissions;
-}
-
-export interface TableIndex {
-	name: string;
-	fields: string;
-	kind: IndexKind;
-	search: string;
-	vector: string;
-}
-
-export interface TableEvent {
-	name: string;
-	cond: string;
-	then: string;
+export interface Kind {
+	kind: TableType;
+	in?: string[];
+	out?: string[];
 }
 
 export interface DatabaseSchema {
-	kvUsers: UserDefinition[];
-	nsUsers: UserDefinition[];
-	dbUsers: UserDefinition[];
-	scopes: ScopeDefinition[];
-	functions: FunctionDefinition[];
-	models: ModelDefinition[];
-	tables: TableDefinition[];
+	kvUsers: SchemaUser[];
+	nsUsers: SchemaUser[];
+	dbUsers: SchemaUser[];
+	scopes: SchemaScope[];
+	functions: SchemaFunction[];
+	models: SchemaModel[];
+	tables: TableInfo[];
 }
 
-export interface UserDefinition {
+export interface SchemaTable {
+	name: string;
+	drop: boolean;
+	full: boolean;
+	permissions: Permissions;
+	kind: Kind;
+	view?: string;
+	changefeed?: string;
+}
+
+export interface SchemaField {
+	name: string;
+	flex: boolean;
+	readonly: boolean;
+	kind?: string;
+	value?: string;
+	assert?: string;
+	default?: string;
+	permissions: Permissions;
+}
+
+export interface SchemaIndex {
+	name: string;
+	cols: string;
+	index: string;
+}
+
+export interface SchemaEvent {
+	name: string;
+	when: string;
+	then: string[];
+}
+
+export interface SchemaUser {
 	name: string;
 	comment: string;
 	roles: string[];
 }
 
-export interface ScopeDefinition {
+export interface SchemaScope {
 	name: string;
-	session: string | null;
-	signin: string | null;
-	signup: string | null;
+	signin?: string;
+	signup?: string;
+	session?: string;
 }
 
-export interface FunctionDefinition {
+export interface SchemaFunction {
 	name: string;
 	block: string;
 	arguments: { name: string, kind: string }[];
-	permission: string;
+	permission: boolean | string;
 	comment: string;
 }
 
-export interface ModelDefinition {
+export interface SchemaModel {
 	name: string;
 	hash: string;
 	version: string;
-	permission: string;
+	permission: boolean | string;
 	comment: string;
 }
 
-export interface TableDefinition {
-	schema: TableSchema;
-	fields: TableField[];
-	indexes: TableIndex[];
-	events: TableEvent[];
+export interface TableInfo {
+	schema: SchemaTable;
+	fields: SchemaField[];
+	indexes: SchemaIndex[];
+	events: SchemaEvent[];
+}
+
+export interface SchemaInfoKV {
+	namespaces: any[];
+	users: SchemaUser[];
+}
+
+export interface SchemaInfoNS {
+	databases: any[];
+	tokens: any[];
+	users: SchemaUser[];
+}
+
+export interface SchemaInfoDB {
+	analyzers: any[];
+	functions: SchemaFunction[];
+	models: SchemaModel[];
+	params: any[];
+	scopes: SchemaScope[];
+	tables: SchemaTable[];
+	tokens: any[];
+	users: SchemaUser[];
+}
+
+export interface SchemaInfoTB {
+	events: SchemaEvent[];
+	fields: SchemaField[];
+	indexes: SchemaIndex[];
+	tables: any[];
 }
 
 export interface Analyzer {

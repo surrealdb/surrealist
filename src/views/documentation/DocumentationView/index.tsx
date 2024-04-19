@@ -18,9 +18,7 @@ export function DocumentationView() {
 	const docs = useMemo(() => schema ? buildDocumentation(schema) : [], [schema]);
 
 	useViewEffect("documentation", () => {
-		syncDatabaseSchema({
-			tables: true
-		});
+		syncDatabaseSchema();
 	});
 
 	return (

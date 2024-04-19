@@ -1,6 +1,6 @@
-import { Connection, ConnectionOptions, DatabaseSchema, QueryType, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
+import { Connection, ConnectionOptions, DatabaseSchema, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
 import { newId } from "./helpers";
-import { extract_query_type } from "~/generated/surrealist-embed";
+import { validateQuery } from "./surrealql";
 
 export const CONFIG_VERSION = 1;
 
@@ -100,7 +100,7 @@ export function createBaseTab(settings: SurrealistSettings, query?: string, ): T
 		name: "",
 		variables: "{}",
 		response: [],
-		queryType: query ? extract_query_type(query) as QueryType : "invalid",
+		valid: query? !validateQuery(query) : true,
 		resultMode: settings.appearance.defaultResultMode,
 	};
 

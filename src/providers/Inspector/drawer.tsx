@@ -8,12 +8,12 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { HistoryHandle } from "~/hooks/history";
 import { ModalTitle } from "~/components/ModalTitle";
-import { getSurreal } from "~/util/surreal";
 import { useInputState } from "@mantine/hooks";
 import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
 import { useConfirmation } from "../Confirmation";
+import { executeQuery } from "~/connection";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -74,12 +74,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	});
 
 	const fetchRecord = useStable(async (id: string) => {
-		const surreal = getSurreal();
-
-		if (!surreal) {
-			return;
-		}
-
 		const contentQuery = `SELECT * FROM ONLY ${id}`;
 		const inputQuery = `SELECT VALUE <-? FROM ONLY ${id}`;
 		const outputsQuery = `SELECT VALUE ->? FROM ONLY ${id}`;
@@ -88,7 +82,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			{ result: content },
 			{ result: inputs},
 			{ result: outputs}
-		] = await surreal.query(`${contentQuery};${inputQuery};${outputsQuery}`);
+		] = await executeQuery(`${contentQuery};${inputQuery};${outputsQuery}`);
 
 		const formatted = JSON.stringify(content, null, 4);
 
@@ -115,13 +109,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	});
 
 	const saveRecord = useStable(async () => {
-		const surreal = getSurreal();
-
-		if (!surreal) {
-			return;
-		}
-
-		await surreal.query(`UPDATE ${history.current} CONTENT ${recordBody}`);
+		await executeQuery(`UPDATE ${history.current} CONTENT ${recordBody}`);
 
 		refreshRecord();
 		onRefresh();
@@ -139,13 +127,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		message: "You are about to delete this record. This action cannot be undone.",
 		confirmText: "Delete",
 		onConfirm: async () => {
-			const surreal = getSurreal();
-
-			if (!surreal) {
-				return;
-			}
-
-			await surreal.query(`DELETE ${history.current}`);
+			await executeQuery(`DELETE ${history.current}`);
 
 			history.clear();
 

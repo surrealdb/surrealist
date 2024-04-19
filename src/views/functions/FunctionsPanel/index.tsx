@@ -4,17 +4,17 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
 import { iconCopy, iconDelete, iconFunction, iconList, iconPlus, iconSearch } from "~/util/icons";
-import { FunctionDefinition } from "~/types";
+import { SchemaFunction } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
 
 export interface FunctionsPanelProps {
 	active: string;
-	functions: FunctionDefinition[];
+	functions: SchemaFunction[];
 	onSelect: (id: string) => void;
 	onDelete: (id: string) => void;
-	onDuplicate: (def: FunctionDefinition) => void;
+	onDuplicate: (def: SchemaFunction) => void;
 	onCreate: () => void;
 }
 

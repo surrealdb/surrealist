@@ -10,7 +10,7 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useImmer } from "use-immer";
 import { useSchema } from "~/hooks/schema";
 import { useSaveable } from "~/hooks/save";
-import { ConnectionOptions, ModelDefinition } from "~/types";
+import { ConnectionOptions, SchemaModel } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
 import { useViewEffect } from "~/hooks/view";
 
@@ -40,7 +40,7 @@ export function ModelsView() {
 	const models = useSchema()?.models ?? [];
 	const { connection } = useActiveConnection();
 
-	const [details, setDetails] = useImmer<ModelDefinition | null>(null);
+	const [details, setDetails] = useImmer<SchemaModel | null>(null);
 
 	const handle = useSaveable({
 		track: {
@@ -71,14 +71,12 @@ export function ModelsView() {
 			});
 		}
 
-		syncDatabaseSchema({
-			models: true
-		});
+		syncDatabaseSchema();
 
 		posthog.capture('model_import');
 	});
 
-	const downloadModel = useStable(async (model: ModelDefinition) => {
+	const downloadModel = useStable(async (model: SchemaModel) => {
 		// TODO Replace with version field when definition work properly
 		const [, name, version] = /^(\w+)<(.+)>$/.exec(model.name) || [];
 
@@ -96,9 +94,7 @@ export function ModelsView() {
 	});
 
 	useViewEffect("models", () => {
-		syncDatabaseSchema({
-			models: true
-		});
+		syncDatabaseSchema();
 	});
 
 	return (

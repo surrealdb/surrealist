@@ -9,7 +9,6 @@ import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { LiveIndicator } from "~/components/LiveIndicator";
-import { getSurreal } from "~/util/surreal";
 import { iconArrowUpRight, iconChevronRight, iconClose, iconCopy, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
@@ -18,6 +17,7 @@ import { Sortable } from "~/components/Sortable";
 import clsx from "clsx";
 import { Spacer } from "~/components/Spacer";
 import { useIntent } from "~/hooks/url";
+import { cancelLiveQueries } from "~/connection";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -38,7 +38,7 @@ export function TabsPane(props: TabsPaneProps) {
 	const removeTab = useStable((id: string, e: React.MouseEvent) => {
 		e.stopPropagation();
 		removeQueryTab(id);
-		getSurreal()?.cancelQueries(id);
+		cancelLiveQueries(id);
 	});
 
 	const renameQuery = useStable((id: string, name: string) => {

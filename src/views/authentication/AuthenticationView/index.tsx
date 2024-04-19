@@ -10,10 +10,7 @@ export function AuthenticationView() {
 	const isOnline = useIsConnected();
 
 	useViewEffect("authentication", () => {
-		syncDatabaseSchema({
-			users: true,
-			scopes: true
-		});
+		syncDatabaseSchema();
 	});
 
 	return (

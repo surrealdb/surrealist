@@ -1,7 +1,6 @@
 import { linter } from "@codemirror/lint";
 import { surrealql } from "codemirror-surrealql";
 import { getSetting } from "../config";
-import { validate_query } from "~/generated/surrealist-embed";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource } from "@codemirror/autocomplete";
@@ -16,6 +15,7 @@ import { StandardSQL } from "@codemirror/lang-sql";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveQuery } from "../connection";
 import { tryParseParams } from "../helpers";
+import { validateQuery } from "../surrealql";
 
 /**
  * The color scheme used within editors
@@ -107,7 +107,7 @@ export const surql = (): Extension => [
 			return [];
 		}
 
-		const message = validate_query(content) || "";
+		const message = validateQuery(content) || "";
 		const match = message.match(/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i);
 
 		if (match) {

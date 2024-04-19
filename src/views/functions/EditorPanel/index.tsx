@@ -13,16 +13,16 @@ import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { FunctionDefinition } from "~/types";
+import { SchemaFunction } from "~/types";
 import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus } from "~/util/icons";
 import { SURQL_FILTERS } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
-	details: FunctionDefinition;
+	details: SchemaFunction;
 	isCreating: boolean;
-	onChange: Updater<FunctionDefinition>;
+	onChange: Updater<SchemaFunction>;
 	onDelete: (name: string) => void;
 }
 

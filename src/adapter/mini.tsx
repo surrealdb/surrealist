@@ -3,7 +3,7 @@ import { BrowserAdapter } from "./browser";
 import { SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
-import { getSurreal } from "~/util/surreal";
+import { executeQuery } from "~/connection";
 
 const THEMES = new Set(['light', 'dark', 'auto']);
 
@@ -98,11 +98,11 @@ export class MiniAdapter extends BrowserAdapter {
 
 	public initializeDataset() {
 		if (this.#datasetQuery) {
-			getSurreal()?.query(this.#datasetQuery);
+			executeQuery(this.#datasetQuery);
 		}
 
 		if (this.#setupQuery) {
-			getSurreal()?.query(this.#setupQuery);
+			executeQuery(this.#setupQuery);
 		}
 	}
 

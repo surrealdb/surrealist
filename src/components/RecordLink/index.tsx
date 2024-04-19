@@ -1,3 +1,4 @@
+import { RecordId } from "surrealdb.js";
 import { Group, Text } from "@mantine/core";
 import { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
@@ -6,15 +7,16 @@ import { useInspector } from "~/providers/Inspector";
 import { iconArrowUpRight } from "~/util/icons";
 
 export interface RecordLinkProps extends ComponentPropsWithoutRef<"div"> {
-	value: string;
+	value: RecordId;
 }
 
 export function RecordLink({ value, ...rest }: RecordLinkProps) {
 	const { inspect } = useInspector();
+	const recordText = `${value.tb}:${value.id}`;
 
 	const handleOpen = useStable((e: MouseEvent) => {
 		e.stopPropagation();
-		inspect(value);
+		inspect(recordText);
 	});
 
 	return (
@@ -37,7 +39,7 @@ export function RecordLink({ value, ...rest }: RecordLinkProps) {
 					textOverflow: "ellipsis",
 					maxWidth: 300,
 				}}>
-				{value}
+				{recordText}
 			</Text>
 			<Icon path={iconArrowUpRight} right />
 		</Group>

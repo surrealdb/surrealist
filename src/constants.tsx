@@ -176,13 +176,6 @@ export const DESIGNER_DIRECTIONS = [
 	{ label: "Right to left", value: "rtl" },
 ];
 
-export const INDEX_TYPES = [
-	{ label: "Normal", value: "normal" },
-	{ label: "Unique", value: "unique" },
-	{ label: "Search", value: "search" },
-	// { label: "Vector", value: "vector" },
-];
-
 export const SURQL_FILTERS = [
 	{
 		name: "SurrealDB Schema",

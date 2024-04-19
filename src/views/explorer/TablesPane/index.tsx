@@ -18,8 +18,8 @@ import { iconDelete, iconList, iconPin, iconPinOff, iconPlus, iconRelation, icon
 import { Entry } from "~/components/Entry";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfirmation } from "~/providers/Confirmation";
-import { getSurreal } from "~/util/surreal";
 import { tb } from "~/util/helpers";
+import { executeQuery } from "~/connection";
 
 export interface TablesPaneProps {
 	activeTable: string | undefined;
@@ -66,13 +66,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
 		onConfirm:  async (table: string) => {
-			const surreal = getSurreal();
-
-			if (!surreal) {
-				return;
-			}
-
-			await surreal.query(`REMOVE TABLE ${tb(table)}`);
+			await executeQuery(`REMOVE TABLE ${tb(table)}`);
 			await syncDatabaseSchema({
 				tables: [table]
 			});

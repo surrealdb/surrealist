@@ -10,8 +10,8 @@ import { useInterfaceStore } from "~/stores/interface";
 import { TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
-import { getSurreal } from "~/util/surreal";
 import { surql } from "~/util/editor/extensions";
+import { executeQuery } from "~/connection";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	create: ["surreal.3", iconPlus],
@@ -27,7 +27,7 @@ function buildResult(index: number, {result, execution_time}: any) {
 }
 
 function killQuery(id: string) {
-	getSurreal()?.query("KILL $id", { id });
+	executeQuery("KILL $id", { id });
 
 	showNotification({
 		title: "Query killed",

@@ -2,10 +2,10 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import { surrealql } from "codemirror-surrealql";
 import { ActionIcon, Button, Group, InputBase, InputBaseProps, Popover, Stack, TextInput, Tooltip } from "@mantine/core";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { TableDefinition } from "~/types";
+import { TableInfo } from "~/types";
 import { useTables } from "~/hooks/schema";
 import { iconCancel, iconCheck, iconTable } from "~/util/icons";
 import { inputBase } from "~/util/editor/extensions";
@@ -125,12 +125,35 @@ export function PermissionInput({
 	value,
 	onChange,
 	...rest
-}: CodeInputProps) {
+}: Omit<CodeInputProps, 'value'|'onChange'> & {
+	value: string | boolean;
+	onChange: (value: string | boolean) => void;
+}) {
+	const textValue = useMemo(() => {
+		if (value === true) {
+			return "FULL";
+		} else if (value === false) {
+			return "NONE";
+		} else {
+			return value;
+		}
+	}, [value]);
+
+	const handleChange = useStable((value: string) => {
+		if (value === "FULL" || value === "true") {
+			onChange(true);
+		} else if (value === "NONE" || value === "false") {
+			onChange(false);
+		} else {
+			onChange(value);
+		}
+	});
+
 	return (
 		<CodeInput
 			placeholder="WHERE user = $auth.id"
-			value={value}
-			onChange={onChange}
+			value={textValue}
+			onChange={handleChange}
 			rightSectionWidth={70}
 			rightSection={
 				<Group gap="xs">
@@ -138,7 +161,7 @@ export function PermissionInput({
 						<ActionIcon
 							color="green.4"
 							onClick={() => onChange("FULL")}
-							variant={value.toUpperCase() === "FULL" ? "light" : "subtle"}
+							variant={textValue.toUpperCase() === "FULL" ? "light" : "subtle"}
 						>
 							<Icon path={iconCheck} />
 						</ActionIcon>
@@ -146,8 +169,8 @@ export function PermissionInput({
 					<Tooltip label="Reject all access">
 						<ActionIcon
 							color="red.5"
-							onClick={() => onChange("NONE")}
-							variant={value.toUpperCase() === "NONE" ? "light" : "subtle"}
+							onClick={() => onChange("FULL")}
+							variant={textValue.toUpperCase() === "FALSE" ? "light" : "subtle"}
 						>
 							<Icon path={iconCancel} />
 						</ActionIcon>
@@ -177,8 +200,8 @@ export function FieldKindInput(props: FieldKindInputProps) {
 		setShowTables((prev) => !prev);
 	});
 
-	const insert = useStable((table: TableDefinition) => {
-		props.onChange(`record(${table.schema.name})`);
+	const insert = useStable((table: TableInfo) => {
+		props.onChange(`record<${table.schema.name}>`);
 		hideTables();
 	});
 

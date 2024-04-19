@@ -349,8 +349,8 @@
 		  root |
 		  ns | namespace |
 		  db | database |
-		  ( scope Ident ) |
-		  ( table Ident)
+		  ( sc Ident | scope Ident) |
+		  ( tb Ident | table Ident)
 	  )
 	  structure?
   }
@@ -1093,6 +1093,7 @@
 	  return			[@name=Keyword],
 	  roles				[@name=Keyword],
 	  root				[@name=Keyword],
+	  sc				[@name=Keyword],
 	  scope				[@name=Keyword],
 	  schemafull		[@name=Keyword],
 	  schemaless		[@name=Keyword],
@@ -1108,6 +1109,7 @@
 	  split				[@name=Keyword],
 	  start				[@name=Keyword],
 	  structure			[@name=Keyword],
+	  tb				[@name=Keyword],
 	  table				[@name=Keyword],
 	  terms_cache		[@name=Keyword],
 	  terms_order		[@name=Keyword],

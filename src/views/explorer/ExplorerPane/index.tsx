@@ -4,9 +4,7 @@ import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } f
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { validate_where_clause } from "~/generated/surrealist-embed";
 import { useStable } from "~/hooks/stable";
-import { getSurreal } from "~/util/surreal";
 import { useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
@@ -16,6 +14,8 @@ import { useInterfaceStore } from "~/stores/interface";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
+import { executeQuery } from "~/connection";
+import { validateWhere } from "~/util/surrealql";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -60,7 +60,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const [filterClause] = useDebouncedValue(filter, 500);
 
 	const isFilterValid = useMemo(() => {
-		return (!showFilter || !filter) || validate_where_clause(filter);
+		return (!showFilter || !filter) || !validateWhere(filter);
 	}, [showFilter, filter]);
 
 	const fetchRecords = useStable(async () => {
@@ -70,9 +70,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			return;
 		}
 
-		const surreal = getSurreal();
-
-		if (!surreal || !isFilterValid) {
+		if (!isFilterValid) {
 			return;
 		}
 
@@ -95,7 +93,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			fetchQuery += ` START ${startAt}`;
 		}
 
-		const response = await surreal.query(`${countQuery};${fetchQuery}`);
+		const response = await executeQuery(`${countQuery};${fetchQuery}`);
 		const count = response[0].result?.[0] || 0;
 		const records = response[1].result || [];
 
@@ -202,7 +200,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					if (!record.id) return;
 
 					// TODO Use confirmation
-					await getSurreal()?.query(`DELETE ${record.id}`);
+					await executeQuery(`DELETE ${record.id}`);
 
 					fetchRecords();
 				}

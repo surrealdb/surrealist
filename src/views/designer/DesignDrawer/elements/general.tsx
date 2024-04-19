@@ -1,29 +1,17 @@
-import { Accordion, Stack, Select, Checkbox } from "@mantine/core";
-import { ElementProps, SectionTitle, TABLE_TYPES } from "../helpers";
-import { ChangeEvent } from "react";
-import { useStable } from "~/hooks/stable";
+import { Accordion, Stack, Select, Checkbox, TextInput, MultiSelect } from "@mantine/core";
+import { ElementProps, SectionTitle } from "../helpers";
 import { iconTable } from "~/util/icons";
+import { Selectable, TableType } from "~/types";
+import { useTableNames } from "~/hooks/schema";
+
+const TABLE_TYPES: Selectable<TableType>[] = [
+	{ label: "Any", value: "ANY" },
+	{ label: "Normal", value: "NORMAL" },
+	{ label: "Relation", value: "RELATION" }
+];
 
 export function GeneralElement({ data, setData }: ElementProps) {
-
-	const updateHasView = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		const newIsView = e.target.checked;
-
-		if (newIsView) {
-			setData((draft) => {
-				draft.schema.view = {
-					expr: "",
-					what: "",
-					cond: "",
-					group: "",
-				};
-			});
-		} else {
-			setData((draft) => {
-				draft.schema.view = null;
-			});
-		}
-	});
+	const tables = useTableNames();
 
 	return (
 		<Accordion.Item value="general">
@@ -32,13 +20,12 @@ export function GeneralElement({ data, setData }: ElementProps) {
 			</SectionTitle>
 			<Accordion.Panel>
 				<Stack>
-					<Select
-						data={TABLE_TYPES}
-						label="Table Type"
-						value={data.schema.schemafull ? "schemafull" : "schemaless"}
-						onChange={(value) =>
+					<Checkbox
+						label="Enforce schema"
+						checked={data.schema.full}
+						onChange={(e) =>
 							setData((draft) => {
-								draft.schema.schemafull = value === "schemafull";
+								draft.schema.full = e.target.checked;
 							})
 						}
 					/>
@@ -51,12 +38,48 @@ export function GeneralElement({ data, setData }: ElementProps) {
 							})
 						}
 					/>
-					<Checkbox
-						label="Record changefeed"
-						checked={!!data.schema.changefeed}
-						onChange={(e) =>
+					<Select
+						data={TABLE_TYPES}
+						label="Table type"
+						value={data.schema.kind.kind}
+						onChange={(value) =>
 							setData((draft) => {
-								draft.schema.changefeed = e.target.checked;
+								draft.schema.kind.kind = value as TableType;
+							})
+						}
+					/>
+					{data.schema.kind.kind === "RELATION" && (
+						<>
+							<MultiSelect
+								data={tables}
+								label="Incoming tables"
+								value={data.schema.kind.in || []}
+								onChange={(value) =>
+									setData((draft) => {
+										draft.schema.kind.in = value;
+									})
+								}
+							/>
+
+							<MultiSelect
+								data={tables}
+								label="Outgoing tables"
+								value={data.schema.kind.out || []}
+								onChange={(value) =>
+									setData((draft) => {
+										draft.schema.kind.out = value;
+									})
+								}
+							/>
+						</>
+					)}
+					<TextInput
+						label="Changefeed duration"
+						placeholder="7d"
+						value={data.schema.changefeed || ""}
+						onChange={(value) =>
+							setData((draft) => {
+								draft.schema.changefeed = value.currentTarget.value;
 							})
 						}
 					/>

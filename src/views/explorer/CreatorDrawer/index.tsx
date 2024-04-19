@@ -6,13 +6,13 @@ import { Spacer } from "~/components/Spacer";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { getSurreal } from "~/util/surreal";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { useTableNames } from "~/hooks/schema";
 import { tb } from "~/util/helpers";
 import { Label } from "~/components/Scaffold/settings/utilities";
 import { json } from "@codemirror/lang-json";
+import { executeQuery } from "~/connection";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -41,9 +41,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	}, [recordBody]);
 
 	const handleSubmit = useStable(async () => {
-		const surreal = getSurreal();
-
-		if (!isBodyValid || !surreal) {
+		if (!isBodyValid) {
 			return;
 		}
 
@@ -51,7 +49,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			? `${tb(recordTable)}:${tb(recordId)}`
 			: tb(recordTable);
 
-		await surreal.query(`CREATE ${record} CONTENT ${recordBody}`);
+		await executeQuery(`CREATE ${record} CONTENT ${recordBody}`);
 
 		onClose();
 		RecordsChangedEvent.dispatch(null);

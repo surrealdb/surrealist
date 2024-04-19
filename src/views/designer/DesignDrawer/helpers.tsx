@@ -1,4 +1,4 @@
-import { TableDefinition } from "~/types";
+import { TableInfo } from "~/types";
 import { default as equals } from "fast-deep-equal";
 import { objectify } from "radash";
 import { Accordion, Group } from "@mantine/core";
@@ -8,14 +8,9 @@ import { tb } from "~/util/helpers";
 import { Icon } from "~/components/Icon";
 
 export interface ElementProps {
-	data: TableDefinition;
-	setData: Updater<TableDefinition>;
+	data: TableInfo;
+	setData: Updater<TableInfo>;
 }
-
-export const TABLE_TYPES = [
-	{ label: "Schemaless", value: "schemaless" },
-	{ label: "Schemafull", value: "schemafull" },
-];
 
 export function SectionTitle({ children, icon }: { children: string, icon: string }) {
 	return (
@@ -30,7 +25,7 @@ export function SectionTitle({ children, icon }: { children: string, icon: strin
 	);
 }
 
-function buildPermission(type: string, value: string) {
+function buildPermission(type: string, value: boolean | string) {
 	return ` FOR ${type} ${value}`;
 }
 
@@ -41,7 +36,7 @@ function buildPermission(type: string, value: string) {
  * @param current Current state
  * @returns The queries to execute
  */
-export function buildDefinitionQueries(previous: TableDefinition, current: TableDefinition) {
+export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) {
 	const queries: string[] = [];
 	const name = current.schema.name;
 
@@ -50,32 +45,34 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	const eventIndex = objectify(current.events, (e) => e.name);
 
 	if (!equals(previous.schema, current.schema)) {
-		let query = `DEFINE TABLE ${tb(current.schema.name)}`;
+		const tableType = current.schema.kind.kind;
+
+		let query = `DEFINE TABLE ${tb(current.schema.name)} TYPE ${tableType}`;
+
+		if (tableType === "RELATION" && current.schema.kind.in) {
+			query += ` IN ${current.schema.kind.in.join(", ")}`;
+		}
+
+		if (tableType === "RELATION" && current.schema.kind.out) {
+			query += ` OUT ${current.schema.kind.out.join(", ")}`;
+		}
 
 		if (current.schema.drop) {
 			query += " DROP";
 		}
 
-		if (current.schema.schemafull) {
+		if (current.schema.full) {
 			query += " SCHEMAFULL";
 		} else {
 			query += " SCHEMALESS";
 		}
 
 		if (current.schema.view) {
-			query += ` AS SELECT ${current.schema.view.expr} FROM ${current.schema.view.what}`;
-
-			if (current.schema.view.cond) {
-				query += ` WHERE ${current.schema.view.cond}`;
-			}
-
-			if (current.schema.view.group) {
-				query += ` GROUP BY ${current.schema.view.group}`;
-			}
+			query += ` ${current.schema.view}`;
 		}
 
 		if (current.schema.changefeed) {
-			query += ` CHANGEFEED ${current.schema.changetime}`;
+			query += ` CHANGEFEED ${current.schema.changefeed}`;
 		}
 
 		query += " PERMISSIONS";
@@ -96,7 +93,7 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	for (const field of current.fields) {
 		let query = `DEFINE FIELD ${field.name} ON TABLE ${tb(name)}`;
 
-		if (field.flexible) {
+		if (field.flex) {
 			query += " FLEXIBLE";
 		}
 
@@ -132,24 +129,7 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	}
 
 	for (const index of current.indexes) {
-		let query = `DEFINE INDEX ${index.name} ON TABLE ${tb(name)} FIELDS ${index.fields}`;
-
-		switch (index.kind) {
-			case "unique": {
-				query += " UNIQUE";
-				break;
-			}
-			case "search": {
-				query += ` SEARCH ANALYZER ${index.search}`;
-				break;
-			}
-			case "vector": {
-				query += ` MTREE DIMENSION ${index.vector}`;
-				break;
-			}
-		}
-
-		queries.push(query);
+		queries.push(`DEFINE INDEX ${index.name} ON TABLE ${tb(name)} FIELDS ${index.cols} ${index.index}`);
 	}
 
 	for (const event of previous.events) {
@@ -159,7 +139,7 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 	}
 
 	for (const event of current.events) {
-		const query = `DEFINE EVENT ${event.name} ON TABLE ${tb(name)} WHEN ${event.cond} THEN (${event.then})`;
+		const query = `DEFINE EVENT ${event.name} ON TABLE ${tb(name)} WHEN ${event.when} THEN ${event.then}`;
 
 		queries.push(query);
 	}
@@ -170,18 +150,18 @@ export function buildDefinitionQueries(previous: TableDefinition, current: Table
 /**
  * Returns whether the schema is valid
  *
- * @param schema The schema to check
+ * @param info The schema to check
  * @returns Whether the schema is valid
  */
-export function isSchemaValid(schema: TableDefinition): boolean {
+export function isSchemaValid(info: TableInfo): boolean {
 	const result =
-		schema.schema.name &&
-		schema.schema.permissions.create &&
-		schema.schema.permissions.select &&
-		schema.schema.permissions.update &&
-		schema.schema.permissions.delete &&
-		(!schema.schema.changefeed || schema.schema.changetime) &&
-		schema.fields.every(
+		info.schema.name &&
+		info.schema.permissions.create &&
+		info.schema.permissions.select &&
+		info.schema.permissions.update &&
+		info.schema.permissions.delete &&
+		(info.schema.kind.kind !== "RELATION" || (info.schema.kind.in && info.schema.kind.out)) &&
+		info.fields.every(
 			(field) =>
 				field.name &&
 				field.permissions.create &&
@@ -189,18 +169,16 @@ export function isSchemaValid(schema: TableDefinition): boolean {
 				field.permissions.update &&
 				field.permissions.delete
 		) &&
-		schema.indexes.every(
+		info.indexes.every(
 			(index) =>
 				index.name &&
-				index.fields &&
-				index.kind &&
-				(index.kind != 'search' || index.search) &&
-				(index.kind != 'vector' || index.vector)
+				index.cols &&
+				index.index
 		) &&
-		schema.events.every(
+		info.events.every(
 			(event) =>
 				event.name &&
-				event.cond &&
+				event.when &&
 				event.then
 		);
 

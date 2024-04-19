@@ -11,8 +11,6 @@ import "./adapter";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import embedPath from './generated/surrealist-embed_bg.wasm?url';
-import initEmbed, { initialize_embed } from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
 import { App } from "./components/App";
 import { runUpdateChecker } from "./util/updater";
@@ -35,11 +33,6 @@ import { isProduction } from "./util/environment";
 			autocapture: false
 		});
 	}
-
-	// Load the surrealist embed library
-	await initEmbed(embedPath);
-
-	initialize_embed();
 
 	// Synchronize the config to the store
 	await watchConfigStore();

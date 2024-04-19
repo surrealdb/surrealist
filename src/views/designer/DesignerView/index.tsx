@@ -6,30 +6,30 @@ import { useImmer } from "use-immer";
 import { useSaveable } from "~/hooks/save";
 import { buildDefinitionQueries, isSchemaValid } from "../DesignDrawer/helpers";
 import { showError } from "~/util/helpers";
-import { getActiveSurreal } from "~/util/surreal";
 import { syncDatabaseSchema } from "~/util/schema";
-import { TableDefinition } from "~/types";
+import { TableInfo } from "~/types";
 import { ReactFlowProvider } from "reactflow";
 import { useIsConnected } from "~/hooks/connection";
 import { useDisclosure } from "@mantine/hooks";
 import { DesignDrawer } from "../DesignDrawer";
 import { useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
+import { executeQuery } from "~/connection";
 
-const DEFAULT_DEF: TableDefinition = {
+const DEFAULT_DEF: TableInfo = {
 	schema: {
 		name: "",
 		drop: false,
-		schemafull: false,
-		view: null,
+		full: false,
+		kind: {
+			kind: "ANY"
+		},
 		permissions: {
 			select: "",
 			create: "",
 			update: "",
 			delete: ""
-		},
-		changefeed: false,
-		changetime: ""
+		}
 	},
 	fields: [],
 	indexes: [],
@@ -44,7 +44,7 @@ export function DesignerView(_props: DesignerViewProps) {
 	const tables = useTables();
 
 	const [isDesigning, isDesigningHandle] = useDisclosure();
-	const [data, setData] = useImmer<TableDefinition>(DEFAULT_DEF);
+	const [data, setData] = useImmer<TableInfo>(DEFAULT_DEF);
 
 	const isValid = useMemo(() => {
 		return data ? isSchemaValid(data) : true;
@@ -61,9 +61,8 @@ export function DesignerView(_props: DesignerViewProps) {
 			}
 
 			const query = buildDefinitionQueries(previous, data!);
-			const surreal = getActiveSurreal();
 
-			surreal.query(query)
+			executeQuery(query)
 				.then(() => syncDatabaseSchema({
 					tables: [data.schema.name]
 				}))
@@ -111,9 +110,7 @@ export function DesignerView(_props: DesignerViewProps) {
 	});
 
 	useViewEffect("designer", () => {
-		syncDatabaseSchema({
-			tables: true
-		});
+		syncDatabaseSchema();
 	});
 
 	return (

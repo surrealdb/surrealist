@@ -1,8 +1,7 @@
-import { Accordion, TextInput, Select } from "@mantine/core";
+import { Accordion, TextInput } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
-import { INDEX_TYPES } from "~/constants";
 import { CodeInput } from "~/components/Inputs";
 import { iconIndex } from "~/util/icons";
 
@@ -12,10 +11,8 @@ export function IndexesElement({ data, setData }: ElementProps) {
 		setData((d) => {
 			d.indexes.push({
 				name: "",
-				fields: "",
-				kind: 'normal',
-				search: "",
-				vector: "",
+				cols: "",
+				index: "",
 			});
 		});
 	});
@@ -56,49 +53,22 @@ export function IndexesElement({ data, setData }: ElementProps) {
 							<CodeInput
 								required
 								label="Indexed fields"
-								value={index.fields}
+								value={index.cols}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.indexes[i].fields = value;
+										draft.indexes[i].cols = value;
 									})
 								}
 							/>
-							<Select
-								label="Index type"
-								value={index.kind}
-								data={INDEX_TYPES}
+							<CodeInput
+								label="Index value"
+								value={index.index}
 								onChange={(value: any) =>
 									setData((draft) => {
-										draft.indexes[i].kind = value;
+										draft.indexes[i].index = value;
 									})
 								}
 							/>
-							{index.kind === 'search' && (
-								<CodeInput
-									required
-									label="Search expression"
-									value={index.search}
-									placeholder="ascii BM25 HIGHLIGHTS"
-									onChange={(value) =>
-										setData((draft) => {
-											draft.indexes[i].search = value;
-										})
-									}
-								/>
-							)}
-							{index.kind === 'vector' && (
-								<CodeInput
-									required
-									label="Vector expression"
-									value={index.vector}
-									placeholder="..."
-									onChange={(value) =>
-										setData((draft) => {
-											draft.indexes[i].vector = value;
-										})
-									}
-								/>
-							)}
 						</>
 					)}
 				</Lister>

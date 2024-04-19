@@ -7,11 +7,11 @@ import { Form } from "../../Form";
 import { syncDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
 import { ModalTitle } from "../../ModalTitle";
-import { getActiveSurreal } from "~/util/surreal";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 import { tb } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
 import { useIntent } from "~/hooks/url";
+import { executeQuery } from "~/connection";
 
 export function TableCreator() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
@@ -25,8 +25,6 @@ export function TableCreator() {
 	const tableList = useTableNames("TABLE");
 
 	const createTable = useStable(async () => {
-		const surreal = getActiveSurreal();
-
 		let query = `DEFINE TABLE ${tb(tableName)};`;
 
 		if (createType === "relation") {
@@ -39,7 +37,7 @@ export function TableCreator() {
 
 		closeTableCreator();
 
-		await surreal.query(query);
+		await executeQuery(query);
 		await syncDatabaseSchema({
 			tables: [tableName]
 		});

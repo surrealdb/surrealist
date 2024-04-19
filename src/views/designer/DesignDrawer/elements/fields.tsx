@@ -14,9 +14,9 @@ export function FieldsElement({ data, setData }: ElementProps) {
 			d.fields.push({
 				name: "",
 				assert: "",
-				flexible: false,
+				flex: false,
+				readonly: false,
 				kind: "",
-				kind_meta: [],
 				value: "",
 				default: "",
 				permissions: {
@@ -64,16 +64,16 @@ export function FieldsElement({ data, setData }: ElementProps) {
 							/>
 							<Checkbox
 								label="Is field flexible"
-								checked={field.flexible}
+								checked={field.flex}
 								onChange={(e) =>
 									setData((draft) => {
-										draft.fields[i].flexible = e.target.checked;
+										draft.fields[i].flex = e.target.checked;
 									})
 								}
 							/>
 							<FieldKindInput
 								label="Field kind"
-								value={field.kind}
+								value={field.kind || ""}
 								onChange={(value) =>
 									setData((draft) => {
 										draft.fields[i].kind = value || "";
@@ -82,7 +82,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 							/>
 							<CodeInput
 								label="Field value"
-								value={field.value}
+								value={field.value || ""}
 								onChange={(value) =>
 									setData((draft) => {
 										draft.fields[i].value = value;
@@ -91,7 +91,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 							/>
 							<CodeInput
 								label="Field assertion"
-								value={field.assert}
+								value={field.assert || ""}
 								onChange={(value) =>
 									setData((draft) => {
 										draft.fields[i].assert = value;
@@ -100,7 +100,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 							/>
 							<CodeInput
 								label="Default value"
-								value={field.default}
+								value={field.default || ""}
 								onChange={(value) =>
 									setData((draft) => {
 										draft.fields[i].default = value;

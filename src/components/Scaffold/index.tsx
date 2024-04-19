@@ -10,7 +10,6 @@ import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
 import { useDisclosure } from "@mantine/hooks";
 import { ConnectionEditor } from "./modals/connection";
-import { executeQuery } from "~/database";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
 import { QueryView } from "~/views/query/QueryView";
 import { ViewMode } from "~/types";
@@ -37,6 +36,7 @@ import { FunctionsView } from "~/views/functions/FunctionsView";
 import { ModelsView } from "~/views/models/ModelsView";
 import { LegacyModal } from "./modals/legacy";
 import { SandboxModal } from "./modals/sandbox";
+import { executeUserQuery } from "~/connection";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -68,7 +68,7 @@ export function Scaffold() {
 	const viewNode = VIEW_PORTALS[activeView];
 
 	const userExecuteQuery = useStable(() => {
-		executeQuery({
+		executeUserQuery({
 			loader: true
 		});
 	});

@@ -8,20 +8,20 @@ import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Form } from "~/components/Form";
-import { FunctionDefinition } from "~/types";
+import { SchemaFunction } from "~/types";
 import { useImmer } from "use-immer";
 import { useSchema } from "~/hooks/schema";
 import { useSaveable } from "~/hooks/save";
 import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
-import { getActiveSurreal, getSurreal } from "~/util/surreal";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useViewEffect } from "~/hooks/view";
+import { executeQuery } from "~/connection";
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
-	const duplicationRef = useRef<FunctionDefinition | null>(null);
+	const duplicationRef = useRef<SchemaFunction | null>(null);
 
-	const [details, setDetails] = useImmer<FunctionDefinition | null>(null);
+	const [details, setDetails] = useImmer<SchemaFunction | null>(null);
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [showCreator, showCreatorHandle] = useDisclosure();
 	const [createName, setCreateName] = useState("");
@@ -34,10 +34,8 @@ export function FunctionsView() {
 		onSave: async () => {
 			const query = buildFunctionDefinition(details!);
 
-			await getActiveSurreal().query(query).catch(console.error);
-			await syncDatabaseSchema({
-				functions: true
-			});
+			await executeQuery(query).catch(console.error);
+			await syncDatabaseSchema();
 
 			editFunction(details!.name);
 		},
@@ -87,7 +85,7 @@ export function FunctionsView() {
 		handle.track();
 	});
 
-	const duplicateFunction = useStable((def: FunctionDefinition) => {
+	const duplicateFunction = useStable((def: SchemaFunction) => {
 		showCreatorHandle.open();
 		duplicationRef.current = def;
 		setCreateName(def.name);
@@ -97,16 +95,8 @@ export function FunctionsView() {
 		message: "You are about to remove this function. This action cannot be undone.",
 		confirmText: "Remove",
 		onConfirm: async (name: string) => {
-			const surreal = getSurreal();
-
-			if (!surreal) {
-				return;
-			}
-
-			await surreal.query(`REMOVE FUNCTION fn::${name}`);
-			await syncDatabaseSchema({
-				functions: true
-			});
+			await executeQuery(`REMOVE FUNCTION fn::${name}`);
+			await syncDatabaseSchema();
 
 			setDetails(null);
 			handle.track();
@@ -114,9 +104,7 @@ export function FunctionsView() {
 	});
 
 	useViewEffect("functions", () => {
-		syncDatabaseSchema({
-			functions: true
-		});
+		syncDatabaseSchema();
 	});
 
 	return (

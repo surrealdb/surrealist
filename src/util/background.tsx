@@ -1,9 +1,9 @@
 import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { openConnection } from "~/database";
 import { getSetting, watchStore } from "./config";
 import { assign } from "radash";
+import { openConnection } from "~/connection";
 
 const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");

@@ -10,7 +10,6 @@ import { Spacer } from "../Spacer";
 import { adapter } from "~/adapter";
 import { useConnection } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
-import { closeConnection, openConnection } from "~/database";
 import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
 import { useDisclosure } from "@mantine/hooks";
@@ -20,9 +19,9 @@ import { HelpAndSupport } from "./HelpAndSupport";
 import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
-import { getSurreal } from "~/util/surreal";
 import { NewsFeed } from "./NewsFeed";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { executeQuery, openConnection } from "~/connection";
 
 export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
@@ -50,7 +49,6 @@ export function Toolbar() {
 	});
 
 	const resetSandbox = useStable(() => {
-		closeConnection();
 		openConnection();
 
 		showInfo({
@@ -62,7 +60,7 @@ export function Toolbar() {
 	const applyDataset = useStable(async (info: DataSet) => {
 		const dataset = await fetch(info.url).then(res => res.text());
 
-		await getSurreal()?.query(dataset);
+		await executeQuery(dataset);
 		await syncDatabaseSchema();
 
 		showInfo({

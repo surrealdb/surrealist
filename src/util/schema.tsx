@@ -1,28 +1,15 @@
-import { extract_event_definition, extract_field_definition, extract_function_definition, extract_index_definition, extract_scope_definition, extract_table_definition, extract_user_definition } from '../generated/surrealist-embed';
-import { FunctionDefinition, ModelDefinition, TableDefinition } from "~/types";
-import { SurrealInfoDB, SurrealInfoKV, SurrealInfoNS, SurrealInfoTB } from "~/typings/surreal";
-import { getActiveSurreal } from "./surreal";
-import { printLog, tb } from './helpers';
-import { useDatabaseStore } from '~/stores/database';
-import { klona } from "klona";
 import dedent from "dedent";
 import equal from 'fast-deep-equal';
+import { SchemaFunction, SchemaModel, SchemaInfoDB, SchemaInfoKV, SchemaInfoNS, SchemaInfoTB, TableInfo } from "~/types";
+import { printLog, tb } from './helpers';
+import { useDatabaseStore } from '~/stores/database';
+import { executeQuerySingle } from '~/connection';
+import { createDatabaseSchema } from "./defaults";
 
 const printMsg = (...args: any[]) => printLog("Schema", "#e600a4", ...args);
 
-let KV_USERS_CACHE: any = {};
-let NS_USERS_CACHE: any = {};
-let DB_USERS_CACHE: any = {};
-let DB_SCOPES_CACHE: any = {};
-let DB_FUNCTIONS_CACHE: any = {};
-const DB_TABLES_CACHE: any = {};
-
 export interface SchemaSyncOptions {
-	users?: boolean;
-	scopes?: boolean;
-	functions?: boolean;
-	models?: boolean;
-	tables?: boolean | string[];
+	tables?: string[];
 }
 
 /**
@@ -31,145 +18,73 @@ export interface SchemaSyncOptions {
  * @param options Sync options
  */
 export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
+	const { isConnected } = useDatabaseStore.getState();
+
+	if (!isConnected) {
+		return;
+	}
+
 	const { databaseSchema, setDatabaseSchema } = useDatabaseStore.getState();
-	const surreal = getActiveSurreal();
-	const schema = klona(databaseSchema);
+	const schema = createDatabaseSchema();
 
 	printMsg("Synchronizing database schema");
 
-	const should = (key: keyof SchemaSyncOptions) => !options || !!options[key];
-
 	const [kvInfo, nsInfo, dbInfo] = await Promise.all([
-		surreal.querySingle<SurrealInfoKV>("INFO FOR KV"),
-		surreal.querySingle<SurrealInfoNS>("INFO FOR NS"),
-		surreal.querySingle<SurrealInfoDB>("INFO FOR DB")
+		executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE"),
+		executeQuerySingle<SchemaInfoNS>("INFO FOR NS STRUCTURE"),
+		executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE")
 	]);
 
 	// KV users, NS users, and DB users
-	if (should('users')) {
-		if (!equal(KV_USERS_CACHE, kvInfo.users)) {
-			printMsg("Updating KV users");
-			schema.kvUsers = Object.values(kvInfo.users).map(info => extract_user_definition(info));
-			KV_USERS_CACHE = kvInfo.users;
-		}
-
-		if (!equal(NS_USERS_CACHE, nsInfo.users)) {
-			printMsg("Updating NS users");
-			schema.nsUsers = Object.values(nsInfo.users).map(info => extract_user_definition(info));
-			NS_USERS_CACHE = nsInfo.users;
-		}
-
-		if (!equal(DB_USERS_CACHE, dbInfo.users)) {
-			printMsg("Updating DB users");
-			schema.dbUsers = Object.values(dbInfo.users).map(info => extract_user_definition(info));
-			DB_USERS_CACHE = dbInfo.users;
-		}
-	}
+	schema.kvUsers = kvInfo.users;
+	schema.nsUsers = nsInfo.users;
+	schema.dbUsers = dbInfo.users;
 
 	// Scopes
-	if (should('scopes') && !equal(DB_SCOPES_CACHE, dbInfo.scopes)) {
-		printMsg("Updating scopes");
-		schema.scopes = Object.values(dbInfo.scopes).map(info => extract_scope_definition(info));
-		DB_SCOPES_CACHE = dbInfo.scopes;
-	}
+	schema.scopes = dbInfo.scopes;
 
 	// Schema functions
-	if (should('functions') && !equal(DB_FUNCTIONS_CACHE, dbInfo.functions)) {
-		printMsg("Updating functions");
-
-		schema.functions = Object.values(dbInfo.functions).map(info => {
-			const func = extract_function_definition(info);
-
-			return {
-				...func,
-				name: func.name.replaceAll('`', ''),
-				block: dedent(func.block.slice(1, -1))
-			};
-		});
-
-		DB_FUNCTIONS_CACHE = dbInfo.functions;
-	}
+	schema.functions = dbInfo.functions.map(info => ({
+		...info,
+		name: info.name.replaceAll('`', ''),
+		block: dedent(info.block.slice(1, -1))
+	}));
 
 	// Schema models
-	if (should('models')) {
-		printMsg("Updating models");
-
-		schema.models = [];
-
-		for (const name of Object.keys(dbInfo.models)) {
-			schema.models.push({
-				name,
-				hash: "",
-				version: "",
-				permission: "",
-				comment: "",
-			});
-		}
-	}
+	schema.models = dbInfo.models;
 
 	// Tables
-	if (should('tables')) {
-		const isLimited = Array.isArray(options?.tables);
-		const tableNames = isLimited
-			? options!.tables as string[]
-			: Object.keys(dbInfo.tables);
+	const isLimited = Array.isArray(options?.tables);
+	const tableNames = isLimited
+		? options!.tables as string[]
+		: dbInfo.tables.map(t => t.name);
 
-		const tbInfoMap = await Promise.all(tableNames.map((table) => {
-			return surreal.querySingle<SurrealInfoTB>(`INFO FOR TABLE ${tb(table)}`);
-		}));
+	const tbInfoMap = await Promise.all(tableNames.map((table) => {
+		return executeQuerySingle<SchemaInfoTB>(`INFO FOR TABLE ${tb(table)} STRUCTURE`);
+	}));
 
-		for (const [idx, tableName] of tableNames.entries()) {
-			const tbInfo = tbInfoMap[idx];
-			const table = dbInfo.tables[tableName];
+	if (isLimited) {
+		schema.tables = databaseSchema.tables;
+	}
 
-			const cacheData = {
-				table,
-				fields: tbInfo.fields,
-				indexes: tbInfo.indexes,
-				events: tbInfo.events,
-			};
+	for (const [idx, tableName] of tableNames.entries()) {
+		printMsg("Updating table", tableName);
 
-			if (equal(DB_TABLES_CACHE[tableName], cacheData)) {
-				continue;
-			}
+		const info = tbInfoMap[idx];
+		const table = dbInfo.tables.find(t => t.name === tableName)!;
+		const index = schema.tables.findIndex(t => t.schema.name === tableName);
 
-			printMsg("Updating table", tableName);
+		const definition: TableInfo = {
+			schema: table,
+			fields: Object.values(info.fields),
+			indexes: Object.values(info.indexes),
+			events: Object.values(info.events)
+		};
 
-			const fields = Object.values(tbInfo.fields).map(info => extract_field_definition(info));
-			const indexes = Object.values(tbInfo.indexes).map(info => extract_index_definition(info));
-			const events = Object.values(tbInfo.events).map(info => extract_event_definition(info));
-
-			const index = schema.tables.findIndex(t => t.schema.name === tableName);
-			const definition: TableDefinition = {
-				schema: extract_table_definition(table),
-				fields,
-				indexes,
-				events,
-			};
-
-			if (index === -1) {
-				schema.tables.push(definition);
-			} else {
-				schema.tables[index] = definition;
-			}
-
-			DB_TABLES_CACHE[tableName] = cacheData;
-		}
-
-		if (!isLimited) {
-			const staleTables = Object.keys(DB_TABLES_CACHE).filter(table => !tableNames.includes(table));
-
-			for (const table of staleTables) {
-				printMsg("Discarding table", table);
-
-				delete DB_TABLES_CACHE[table];
-
-				const index = schema.tables.findIndex(t => t.schema.name === table);
-
-				if (index >= 0) {
-					schema.tables.splice(index, 1);
-				}
-			}
+		if (!isLimited || index === -1) {
+			schema.tables.push(definition);
+		} else {
+			schema.tables[index] = definition;
 		}
 	}
 
@@ -182,7 +97,7 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 /**
  * Build a function definition query
  */
-export function buildFunctionDefinition(func: FunctionDefinition) : string {
+export function buildFunctionDefinition(func: SchemaFunction) : string {
 	const args = func.arguments.map((arg) => `$${arg.name}: ${arg.kind}`).join(", ");
 	const block = func.block.split("\n").map((line) => `\t${line}`).join("\n");
 
@@ -202,7 +117,7 @@ export function buildFunctionDefinition(func: FunctionDefinition) : string {
 /**
  * Build a model definition query
  */
-export function buildModelDefinition(func: ModelDefinition) : string {
+export function buildModelDefinition(func: SchemaModel) : string {
 	let query = `DEFINE MODEL ${func.name} {`;
 
 	if (func.permission) {
@@ -222,18 +137,28 @@ export function buildModelDefinition(func: ModelDefinition) : string {
  * @param table The table to check
  * @returns True if the table is an edge table
  */
-export function extractEdgeRecords(table: TableDefinition): [boolean, string[], string[]] {
+export function extractEdgeRecords(table: TableInfo): [boolean, string[], string[]] {
+	const { kind } = table.schema;
+
+	if (kind.kind === "RELATION") {
+		return [
+			kind.kind === "RELATION",
+			kind.in || [],
+			kind.out || []
+		];
+	}
+
 	let hasIn = false;
 	let hasOut = false;
 	let inRecords: string[] = [];
 	let outRecords: string[] = [];
 
 	for (const f of table.fields) {
-		if (f.name == "in" && f.kind == "record") {
-			inRecords = f.kind_meta;
+		if (f.name == "in" && f.kind?.startsWith("record")) {
+			inRecords = extractKindMeta(f.kind);
 			hasIn = true;
-		} else if (f.name == "out" && f.kind == "record") {
-			outRecords = f.kind_meta;
+		} else if (f.name == "out" && f.kind?.startsWith("record")) {
+			outRecords = extractKindMeta(f.kind);
 			hasOut = true;
 		}
 	}
@@ -242,11 +167,23 @@ export function extractEdgeRecords(table: TableDefinition): [boolean, string[], 
 }
 
 /**
+ * Extract the kind meta from a kind string
+ *
+ * @param kind The kind string
+ * @returns The meta
+ */
+export function extractKindMeta(kind: string): string[] {
+	const [_, meta] = /^\w+<(.*)>$/.exec(kind) || [];
+
+	return meta?.split("|").map(m => m.trim()) || [];
+}
+
+/**
  * Returns true if the table is an edge table
  *
  * @param table The table to check
  * @returns True if the table is an edge table
  */
-export function isEdgeTable(table: TableDefinition) {
+export function isEdgeTable(table: TableInfo) {
 	return extractEdgeRecords(table)[0];
 }
