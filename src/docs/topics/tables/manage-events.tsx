@@ -4,19 +4,32 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
 
-export function DocsGlobalTokens({ language, topic }: TopicProps) {
+export function DocsTablesManageEvents({ language, topic }: TopicProps) {
 
 	const schema = useSchema();
 
 	const snippets = useMemo<Snippets>(() => ({
+		cli: `
+			$ surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
+		`,
 		js: `
-			await db.authenticate("...");
+		import { Surreal } from 'surrealdb.js';
+
+		const db = new Surreal();
+
+		import { Surreal } from 'surrealdb.js';
+		const db = new Surreal();
+		await db.connect('<the actual address of the connection>/rpc', {
+			namespace: '<the actual ns of the connection>',
+			database: '<the action db of the connection>'
+		});
+
 		`,
 		rust: `
-			use surrealdb::opt::auth::Jwt;
-
-			let jwt = Jwt::from("...");
-			db.authenticate(jwt).await?;
+		//Connect to a local endpoint
+		DB.connect::<Ws>("127.0.0.1:8000").await?;
+		//Connect to a remote endpoint
+		DB.connect::<Wss>("cloud.surrealdb.com").await?;
 		`,
 		py: `
 		# Connect to a local endpoint
@@ -47,19 +60,18 @@ export function DocsGlobalTokens({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Tokens">
+		<Article title="Manage Events">
 			<div>
+				<h3>Table: {topic.extra?.table?.schema?.name}</h3>
 				<p>
-					When signin in or up to SurrealDB, you receive a JWT token. This JWT, for the time it lives, can be used to authenticate future sessions to SurrealDB. As an integrator, you are expected yourself to persist this token, if you need to retrieve it at a later moment in time.
-				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
+					Events can be used to trigger actions in your application when any change or modification
+					is made to data in a record. This can be useful for updating a UI, sending notifications.
 				</p>
 			</div>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Authenticate with an issued token"
+					title="Manage Events"
 					values={snippets}
 				/>
 			</Box>

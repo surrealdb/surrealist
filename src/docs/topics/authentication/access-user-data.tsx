@@ -4,7 +4,7 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalAccessUserData({ language, topic }: TopicProps) {
+export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 
 	const { connection } = useActiveConnection();
 
@@ -15,30 +15,8 @@ export function DocsGlobalAccessUserData({ language, topic }: TopicProps) {
 		js: `
 			await db.info();
 		`,
-		rust: `
-			let mut result = db.query("$auth").await?;
-			let info: Person = result.take(0)?;
-		`,
-		py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
-		`,
-		go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
-		`,
 		dotnet: `
-		await db.Connect();
-		`,
-		java:`
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
+		await db.Info<User>();
 		`,
 		php: `
 		// Connect to a local endpoint
@@ -51,7 +29,7 @@ export function DocsGlobalAccessUserData({ language, topic }: TopicProps) {
 		<Article title="Access user data">
 			<div>
 				<p>
-					Signing up a new user
+				You can access information about a user that is currently authenticated with a scope. This information includes the user's name, email, and other details.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}

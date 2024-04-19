@@ -22,25 +22,17 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 			db.use_db(${esc_database}).await?;
 		`,
 		py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
+		await db.use(database:${esc_database})
 		`,
 		go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
+		db.Use(database:${esc_database})
 		`,
 		dotnet: `
-		await db.Connect();
+		db.Use(database:${esc_database})
 		`,
 		java:`
 		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
+		driver.use(${esc_database});
 		`,
 		php: `
 		// Connect to a local endpoint
@@ -52,7 +44,7 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 		<Article title="Databases">
 			<div>
 				<p>
-					Define the namespace to use for the connection.
+					The database is the primary storage in a namespace. It contains the tables, views, and indexes that are used to store and retrieve data.You can specify which database to use and also switch between multiple databases.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}

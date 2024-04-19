@@ -4,7 +4,7 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
 
-export function DocsGlobalTablesManageFields({ language, topic }: TopicProps) {
+export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
 
 	const schema = useSchema();
 
@@ -60,19 +60,17 @@ export function DocsGlobalTablesManageFields({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Manage Fields">
+		<Article title="Manage Indexes">
 			<div>
+				<h3>Table: {topic.extra?.table?.schema?.name} </h3>
 				<p>
-					Signing up a new user
-				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
+					Indexes are used to speed up the retrieval of records from a table. They are created on columns in a table.
 				</p>
 			</div>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Manage Fields"
+					title="Manage Indexes"
 					values={snippets}
 				/>
 			</Box>

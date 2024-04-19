@@ -3,26 +3,16 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
-import { connectionUri } from "~/util/helpers";
 
-export function DocsGlobalSignIn({ language, topic }: TopicProps) {
+export function DocsAuthSignUp({ language, topic }: TopicProps) {
 
 	const { connection } = useActiveConnection();
-	const endpoint = connectionUri(connection);
 	const esc_namespace = JSON.stringify(connection.namespace);
 	const esc_database = JSON.stringify(connection.database);
 
-	const descriptions = {
-		cli: `With the SurrealDB CLI, you can only signin via system users. This example shows a command on how to signin with the username and password left blank.`,
-		_: `With SurrealDB's SDKs, you can signin as both system and scope users. This example shows how to signin to a scope named user, where the scope's SIGNIN clause requires the email and pass properties.`,
-	};
-
 	const snippets = useMemo<Snippets>(() => ({
-		cli: `
-			$ surreal sql -e ${endpoint} --ns ${connection.namespace} --db ${connection.database} --user ... --pass ...
-		`,
 		js: `
-			const token = await db.signin({
+			await db.signup({
 				namespace: ${esc_namespace},
 				database: ${esc_database},
 				scope: "user",
@@ -40,7 +30,7 @@ export function DocsGlobalSignIn({ language, topic }: TopicProps) {
 				pass: &'a str,
 			}
 
-			let jwt = db.signin(Scope {
+			let jwt = db.signup(Scope {
 				namespace: ${esc_namespace},
 				database: ${esc_database},
 				scope: "user",
@@ -53,25 +43,44 @@ export function DocsGlobalSignIn({ language, topic }: TopicProps) {
 			let token = jwt.as_insecure_token();
 		`,
 		py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
+		token = await db.signup({
+			'NS': 'test',
+			'DB': 'test',
+			'SC': 'user',
+			'email': 'info@surrealdb.com',
+			'pass': '123456',
+		})
 		`,
 		go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
+		db.Signup(map[string]string{
+			"NS": "clear-crocodile-production",
+			"DB": "web-scraping-application",
+			"SC": "user",
+			"email": "info@surrealdb.com",
+			"pass": "123456",
+		})
 		`,
 		dotnet: `
-		await db.Connect();
+		var authParams = new AuthParams
+		{
+			Namespace = "test",
+			Database = "test",
+			Scope = "user",
+			Email = "info@surrealdb.com",
+			Password = "123456"
+		};
+
+		Jwt jwt = await db.SignUp(authParams);
+
+		public class AuthParams : ScopeAuth
+		{
+			public string? Username { get; set; }
+			public string? Email { get; set; }
+			public string? Password { get; set; }
+		}
 		`,
 		java:`
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
+		driver.signUp(namespace, database, scope, email, password)
 		`,
 		php: `
 		// Connect to a local endpoint
@@ -81,10 +90,10 @@ export function DocsGlobalSignIn({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Sign In">
+		<Article title="Sign Up">
 			<div>
 				<p>
-					{descriptions[language as keyof typeof descriptions] ?? descriptions._}
+					When working with SurrealDB Scopes, you can let anonymous users signup and create an account in your database. In a scope's SIGNUP-clause, you can specify variables which later need to be passed in an SDK or Web Request, email and pass in this case. The scope is called user for this example.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}
@@ -93,7 +102,7 @@ export function DocsGlobalSignIn({ language, topic }: TopicProps) {
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Sign In"
+					title="Sign Up"
 					values={snippets}
 				/>
 			</Box>

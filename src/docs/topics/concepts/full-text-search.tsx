@@ -4,7 +4,7 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
 
-export function DocsGlobalTablesCreatingRecords({ language, topic }: TopicProps) {
+export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 
 	const schema = useSchema();
 
@@ -60,10 +60,11 @@ export function DocsGlobalTablesCreatingRecords({ language, topic }: TopicProps)
 	}), []);
 
 	return (
-		<Article title="Creating Records">
+		<Article title="Full Text Search">
 			<div>
 				<p>
-					Signing up a new user
+					Full Text Search enables search capabilities within your database connection.
+					This enables text matching, proximity matching, proximity search, and more. In SurrealDB Full-Text Search is ACID-COMPLIANT and you can access this using <a href="https://surrealdb.com/docs/surrealdb/surrealql/functions/search#searchhighlight"> Search funnctions</a>, <a href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/indexes/"> Indexes</a>. To learn more checkout this <a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search"> Reference guide</a>
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}
@@ -72,7 +73,7 @@ export function DocsGlobalTablesCreatingRecords({ language, topic }: TopicProps)
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Creating Records"
+					title="Full Text Search"
 					values={snippets}
 				/>
 			</Box>

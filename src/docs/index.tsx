@@ -2,38 +2,38 @@ import { newId } from "~/util/helpers";
 import { DocsTopic } from "./types";
 import { DatabaseSchema } from "~/types";
 import { DocsGlobalIntroduction } from "./topics/global/introduction";
-import { DocsGlobalInit } from "./topics/global/Initi";
+import { DocsGlobalInit } from "./topics/global/initialize";
 import { DocsGlobalConnecting } from "./topics/global/connecting";
 // import { DocsGlobalHandlingErrors } from "./topics/global/handling-errors";
 import { DocsGlobalNamespaces } from "./topics/global/namespaces";
 import { DocsGlobalDatabases } from "./topics/global/databases";
 // import {DocsGlobalAuthentication} from "./topics/global/authentication";
 // import {DocsGlobalSystemUsers} from "./topics/global/system-users";
-import {DocsGlobalSignUp} from "./topics/global/sign-up";
-import {DocsGlobalSignIn} from "./topics/global/sign-in";
-import {DocsGlobalTokens} from "./topics/global/tokens";
-import {DocsGlobalAccessUserData} from "./topics/global/access-user-data";
+import {DocsAuthSignUp} from "./topics/authentication/sign-up";
+import {DocsAuthSignIn} from "./topics/authentication/sign-in";
+import {DocsAuthTokens} from "./topics/authentication/tokens";
+import {DocsAuthAccessUserData} from "./topics/authentication/access-user-data";
 import {DocsGlobalSchema} from "./topics/global/schema";
 import {DocsGlobalSchemaTables} from "./topics/global/schema-tables";
-import {DocsGlobalSchemaParams} from "./topics/global/params";
-import {DocsGlobalSchemaScopes} from "./topics/global/scopes";
-import {DocsGlobalSchemaUsers} from "./topics/global/users";
-import {DocsGlobalSchemaFunctions} from "./topics/global/functions";
-import {DocsGlobalSchemaAnalyzers} from "./topics/global/schema-analyzers";
-import {DocsGlobalTablesIntroduction} from "./topics/global/tables-introduction";
-import {DocsGlobalTablesSelect} from "./topics/global/tables-select";
-import {DocsGlobalTablesSelectAllFields} from "./topics/global/tables-select-all-fields";
-import {DocsGlobalTablesCreatingRecords} from "./topics/global/tables-creating-records";
-import {DocsGlobalTablesInsertingRecords} from "./topics/global/tables-inserting-records";
-import {DocsGlobalTablesUpdatingRecords} from "./topics/global/tables-updating-records";
-import {DocsGlobalTablesDeletingRecords} from "./topics/global/tables-deleting-records";
-import {DocsGlobalTablesLiveSelecting} from "./topics/global/tables-live-selecting";
-import {DocsGlobalTablesManageIndexes} from "./topics/global/tables-manage-indexes";
-import {DocsGlobalTablesManageFields} from "./topics/global/tables-manage-fields";
-import {DocsGlobalTablesManageEvents} from "./topics/global/tables-manage-events";
-import {DocsGlobalFullTextSearch} from "./topics/global/concepts-full-text-search";
-import {DocsGlobalGraphTraversal} from "./topics/global/concepts-graph-traversal";
-import {DocsGlobalSurrealML} from "./topics/global/concepts-surrealml";
+import {DocsSchemaParams} from "./topics/schema/params";
+import {DocsSchemaScopes} from "./topics/schema/scopes";
+import {DocsSchemaUsers} from "./topics/schema/users";
+import {DocsSchemaFunctions} from "./topics/schema/functions";
+import {DocsSchemaAnalyzers} from "./topics/schema/analyzers";
+import {DocsTablesIntroduction} from "./topics/tables/introduction";
+import {DocsTablesSelect} from "./topics/tables/select";
+import {DocsTablesSelectAllFields} from "./topics/tables/select-all-fields";
+import {DocsTablesCreatingRecords} from "./topics/tables/creating-records";
+import {DocsTablesInsertingRecords} from "./topics/tables/inserting-records";
+import {DocsTablesUpdatingRecords} from "./topics/tables/updating-records";
+import {DocsTablesDeletingRecords} from "./topics/tables/deleting-records";
+import {DocsTablesLiveSelecting} from "./topics/tables/live-selecting";
+import {DocsTablesManageIndexes} from "./topics/tables/manage-indexes";
+import {DocsTablesManageFields} from "./topics/tables/manage-fields";
+import {DocsTablesManageEvents} from "./topics/tables/manage-events";
+import {DocsConceptsFullTextSearch} from "./topics/concepts/full-text-search";
+import {DocsConceptsGraphTraversal} from "./topics/concepts/graph-traversal";
+import {DocsConceptsSurrealML} from "./topics/concepts/surrealml";
 
 
 /**
@@ -94,24 +94,25 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "Sign up",
-					component: DocsGlobalSignUp,
+					component: DocsAuthSignUp,
 					languagesExclude: ['cli']
 				},
 				{
 					id: newId(),
 					title: "Sign in",
-					component: DocsGlobalSignIn
+					component: DocsAuthSignIn
 				},
 				{
 					id: newId(),
 					title: "Tokens",
-					component: DocsGlobalTokens,
+					component: DocsAuthTokens,
 					languagesExclude: ['cli']
 				},
 				{
 					id: newId(),
 					title: "Access user data",
-					component: DocsGlobalAccessUserData
+					component: DocsAuthAccessUserData,
+					languagesExclude: ['rust', 'py', 'go','java']
 				}
 			]
 		},
@@ -119,40 +120,44 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 			id: newId(),
 			title: "Schema",
 			topics: [
-				{
-					id: newId(),
-					title: "Introduction",
-					component: DocsGlobalSchema
-				},
-				{
-					id: newId(),
-					title: "Tables",
-					component: DocsGlobalSchemaTables
-				},
+				// {
+				// 	id: newId(),
+				// 	title: "Introduction",
+				// 	component: DocsGlobalSchema
+				// },
+				// {
+				// 	id: newId(),
+				// 	title: "Tables",
+				// 	component: DocsGlobalSchemaTables
+				// },
 				{
 					id: newId(),
 					title: "Params",
-					component: DocsGlobalSchemaParams
+					component: DocsSchemaParams
 				},
 				{
 					id: newId(),
 					title: "Scopes",
-					component: DocsGlobalSchemaScopes
+					component: DocsSchemaScopes,
+					languagesExclude: ['rust', 'py', 'go','java','js','php']
 				},
 				{
 					id: newId(),
 					title: "Users",
-					component: DocsGlobalSchemaUsers
+					component: DocsSchemaUsers,
+					languagesExclude: ['rust', 'py', 'go','java','js','php']
 				},
 				{
 					id: newId(),
 					title: "Functions",
-					component: DocsGlobalSchemaFunctions
+					component: DocsSchemaFunctions,
+					languagesExclude: ['rust', 'py', 'go','java','js','php']
 				},
 				{
 					id: newId(),
 					title: "Analyzers",
-					component: DocsGlobalSchemaAnalyzers
+					component: DocsSchemaAnalyzers,
+					languagesExclude: ['rust', 'py', 'go','java']
 				}
 			]
 		},
@@ -163,7 +168,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "Introduction",
-					component: DocsGlobalTablesIntroduction,
+					component: DocsTablesIntroduction,
 				},
 				...schema.tables.map(table => ({
 					id: newId(),
@@ -172,63 +177,63 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 						{
 							id: newId(),
 							title: "Selecting fields",
-							component: DocsGlobalTablesSelect,
+							component: DocsTablesSelect,
 							extra: { table }
 						},
 						{
 							id: newId(),
 							title: "Selecting all fields",
-							component: DocsGlobalTablesSelectAllFields,
+							component: DocsTablesSelectAllFields,
 							extra: { table }
 						},
 						{
 							id: newId(),
 							title: "Creating records",
-							component: DocsGlobalTablesCreatingRecords,
+							component: DocsTablesCreatingRecords,
 							extra: { table }
 						},
 						{
 							id: newId(),
 							title: "Inserting records",
-							component: DocsGlobalTablesInsertingRecords,
+							component: DocsTablesInsertingRecords,
 							extra: { table }
 						},
 						{
 							id: newId(),
 							title: "Updating records",
-							component: DocsGlobalTablesUpdatingRecords,
+							component: DocsTablesUpdatingRecords,
 							extra: { table }
 						},
 						{
 							id: newId(),
 							title: "Deleting records",
-							component: DocsGlobalTablesDeletingRecords,
+							component: DocsTablesDeletingRecords,
 							extra: { table }
 						},
 						{
 							id: newId(),
 							title: "Live selecting",
-							component: DocsGlobalTablesLiveSelecting,
+							component: DocsTablesLiveSelecting,
 							extra: { table }
 						},
-						{
-							id: newId(),
-							title: "Manage indexes",
-							component: DocsGlobalTablesManageIndexes,
-							extra: { table }
-						},
-						{
-							id: newId(),
-							title: "Manage fields",
-							component: DocsGlobalTablesManageFields,
-							extra: { table }
-						},
-						{
-							id: newId(),
-							title: "Manage events",
-							component: DocsGlobalTablesManageEvents,
-							extra: { table }
-						}
+						// {
+						// 	id: newId(),
+						// 	title: "Manage indexes",
+						// 	component: DocsTablesManageIndexes,
+						// 	extra: { table }
+						// },
+						// {
+						// 	id: newId(),
+						// 	title: "Manage fields",
+						// 	component: DocsTablesManageFields,
+						// 	extra: { table }
+						// },
+						// {
+						// 	id: newId(),
+						// 	title: "Manage events",
+						// 	component: DocsTablesManageEvents,
+						// 	extra: { table }
+						// }
 					]
 				})),
 			]
@@ -240,17 +245,17 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "Full-text search",
-					component: DocsGlobalFullTextSearch
+					component: DocsConceptsFullTextSearch
 				},
-				{
-					id: newId(),
-					title: "Graph traversal",
-					component: DocsGlobalGraphTraversal
-				},
+				// {
+				// 	id: newId(),
+				// 	title: "Graph traversal",
+				// 	component: DocsGlobalGraphTraversal
+				// },
 				{
 					id: newId(),
 					title: "SurrealML",
-					component: DocsGlobalSurrealML
+					component: DocsConceptsSurrealML
 				}
 			]
 		},

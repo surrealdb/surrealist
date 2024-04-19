@@ -4,7 +4,7 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
 
-export function DocsGlobalTablesManageEvents({ language, topic }: TopicProps) {
+export function DocsConceptsGraphTraversal({ language, topic }: TopicProps) {
 
 	const schema = useSchema();
 
@@ -60,7 +60,7 @@ export function DocsGlobalTablesManageEvents({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Manage Events">
+		<Article title="Graph Traversal">
 			<div>
 				<p>
 					Signing up a new user
@@ -72,7 +72,7 @@ export function DocsGlobalTablesManageEvents({ language, topic }: TopicProps) {
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Manage Events"
+					title="Graph Traversal"
 					values={snippets}
 				/>
 			</Box>

@@ -59,7 +59,7 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 		<Article title="Connecting">
 			<div>
 				<p>
-				The connecting API is used to establish a connection to a SurrealDB instance. The connection is used to interact with the database and perform operations on the data. While connecting to the database, the user can specify the namespace and database to connect to, as well as the authentication details for the connection.
+				The connection API is used to establish a connection to a SurrealDB instance. The connection is used to interact with the database and perform operations on the data. While connecting to the database, the user can specify the namespace and database to connect to, as well as the authentication details for the connection.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}

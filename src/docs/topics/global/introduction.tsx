@@ -113,7 +113,9 @@ export function DocsGlobalIntroduction() {
 									onClick={() => window.open(lib.link)}
 								>
 									<Icon />
-									{lib.name}
+									<Text mt="xs">
+										{lib.name}
+									</Text>
 								</Paper>
 							);
 						})}

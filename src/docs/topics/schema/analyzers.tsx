@@ -3,14 +3,16 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
+import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalGraphTraversal({ language, topic }: TopicProps) {
+export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 
 	const schema = useSchema();
+	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
+		${connection.namespace}/${connection.database}> DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
 		`,
 		js: `
 		import { Surreal } from 'surrealdb.js';
@@ -60,10 +62,10 @@ export function DocsGlobalGraphTraversal({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Graph Traversal">
+		<Article title="Analyzers">
 			<div>
 				<p>
-					Signing up a new user
+					Analyzers are used to enable full-text search on a table within your database. If you have any analzers defined for a table, you can use the full-text search capabilities of SurrealDB. Checkout the section on <a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search"> Full Text Search for more information.</a>
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}
@@ -72,7 +74,7 @@ export function DocsGlobalGraphTraversal({ language, topic }: TopicProps) {
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Graph Traversal"
+					title="Analyzers"
 					values={snippets}
 				/>
 			</Box>

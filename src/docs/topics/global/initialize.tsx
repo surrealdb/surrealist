@@ -70,7 +70,7 @@ export function DocsGlobalInit({ language, topic }: TopicProps) {
 		<Article title="Initialises">
 			<div>
 				<p>
-				The connecting API is used to establish a connection to a SurrealDB instance. The connection is used to interact with the database and perform operations on the data. While connecting to the database, the user can specify the namespace and database to connect to, as well as the authentication details for the connection.
+					To initialise a connection to SurrealDB, you need to create a new instance of the Surreal class and connect.This will allow you to interact with the database and run queries to the database. Do this by importing the Surreal class and create a new instance of the class. Then, use the connect method to connect to the database.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}

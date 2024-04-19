@@ -3,14 +3,20 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
+import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalTablesInsertingRecords({ language, topic }: TopicProps) {
-
+export function DocsSchemaScopes({ language, topic }: TopicProps) {
 	const schema = useSchema();
+	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
+		${connection.namespace}/${connection.database}>
+		-- Enable scope authentication directly in SurrealDB
+		DEFINE SCOPE account SESSION 24h
+			SIGNUP ( CREATE user SET email = $email, pass = crypto::argon2::generate($pass) )
+			SIGNIN ( SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(pass, $pass) )
+		;
 		`,
 		js: `
 		import { Surreal } from 'surrealdb.js';
@@ -60,10 +66,10 @@ export function DocsGlobalTablesInsertingRecords({ language, topic }: TopicProps
 	}), []);
 
 	return (
-		<Article title="Inserting Records">
+		<Article title="Scopes">
 			<div>
 				<p>
-					Signing up a new user
+					Within SurrealDB, scopes are a way to manage access to data. They are defined within the schema and can be used to restrict access to certain parts of the data. To access data within a scope, you must first sign in with the appropriate credentials. In SDKs you can run qu
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}
@@ -72,7 +78,7 @@ export function DocsGlobalTablesInsertingRecords({ language, topic }: TopicProps
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Inserting Records"
+					title="Scopes"
 					values={snippets}
 				/>
 			</Box>

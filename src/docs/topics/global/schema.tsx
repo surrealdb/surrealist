@@ -63,7 +63,9 @@ export function DocsGlobalSchema({ language, topic }: TopicProps) {
 		<Article title="Schema">
 			<div>
 				<p>
-					Signing up a new user
+				Since you have already connected to a SurrealDB instance and defined user credentials, you can now specify the schema in your database.
+
+				The schema contains the tables, relationships, and indexes that are used to store and retrieve data which define the structure of the data that is stored in the database and the relationships between the different tables in the database.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}

@@ -22,25 +22,16 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 			db.use_ns(${esc_namespace}).await?;
 		`,
 		py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
+		await db.use(namespace:${esc_namespace})
 		`,
 		go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
+		db.Use(namespace:${esc_namespace})
 		`,
 		dotnet: `
-		await db.Connect();
+		db.Use(namespace:${esc_namespace})
 		`,
 		java:`
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
+		driver.use(namespace:${esc_namespace});
 		`,
 		php: `
 		// Connect to a local endpoint
@@ -52,7 +43,7 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 		<Article title="Namespaces">
 			<div>
 				<p>
-					Define the namespace to use for the connection.
+					After connecting to a SurrealDB instance, you can specify the namespace to use. Namespaces are used to group related data together this contains information regarding the users, roles, tokens, and databases that are available to the namespace.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}

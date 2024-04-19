@@ -3,14 +3,17 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
+import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalTablesSelect({ language, topic }: TopicProps) {
-
+export function DocsSchemaUsers({ language, topic }: TopicProps) {
 	const schema = useSchema();
+	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
+		${connection.namespace}/${connection.database}>
+		-- Create a root user
+		DEFINE USER username ON ROOT PASSWORD '123456' ROLES OWNER;
 		`,
 		js: `
 		import { Surreal } from 'surrealdb.js';
@@ -60,10 +63,10 @@ export function DocsGlobalTablesSelect({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Selecting Fields">
+		<Article title="Users">
 			<div>
 				<p>
-					Signing up a new user
+					Managing permissions for Users within SurrealDB can be done using Scopes. Scopes are a way to group permissions together and assign them to Users with scopes you can manage authentication and access control for your table and fields.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}
@@ -72,7 +75,7 @@ export function DocsGlobalTablesSelect({ language, topic }: TopicProps) {
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Selecting Fields"
+					title="Users"
 					values={snippets}
 				/>
 			</Box>

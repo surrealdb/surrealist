@@ -3,14 +3,23 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
+import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalSchemaScopes({ language, topic }: TopicProps) {
+export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 
 	const schema = useSchema();
+	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
+		${connection.namespace}/${connection.database}> -- It is necessary to prefix the name of your function with "fn::"
+		-- This indicates that it's a custom function
+		DEFINE FUNCTION fn::greet($name: string) {
+			RETURN "Hello, " + $name + "!";
+		}
+
+		-- Returns: "Hello, BOB!"
+		RETURN fn::greet("BOB");
 		`,
 		js: `
 		import { Surreal } from 'surrealdb.js';
@@ -60,10 +69,10 @@ export function DocsGlobalSchemaScopes({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Scopes">
+		<Article title="Functions">
 			<div>
 				<p>
-					Signing up a new user
+					Functions are a way to encapsulate logic in a database. To define functions you have to be a system user (namespace,database,root) They can be used to perform calculations, manipulate data, or perform other operations. In SurrealDB functions can be written just as you would in your programming language of choice.
 				</p>
 				<p>
 					{topic.extra?.table?.schema?.name}
@@ -72,7 +81,7 @@ export function DocsGlobalSchemaScopes({ language, topic }: TopicProps) {
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Scopes"
+					title="Functions"
 					values={snippets}
 				/>
 			</Box>
