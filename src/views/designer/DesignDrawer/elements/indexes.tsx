@@ -61,7 +61,8 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<CodeInput
-								label="Index value"
+								label="Index type"
+								placeholder="UNIQUE"
 								value={index.index}
 								onChange={(value: any) =>
 									setData((draft) => {

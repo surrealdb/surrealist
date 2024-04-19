@@ -40,6 +40,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 						<>
 							<TextInput
 								autoFocus
+								required
 								label="Event name"
 								placeholder="event_name"
 								value={event.name}
@@ -50,6 +51,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<CodeInput
+								required
 								label="Event condition"
 								value={event.when}
 								onChange={(value) =>
@@ -60,6 +62,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 							/>
 							<CodeInput
 								mt="sm"
+								required
 								label="Event handler"
 								multiline
 								value={event.then[0]}
