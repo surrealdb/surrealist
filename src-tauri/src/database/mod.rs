@@ -27,7 +27,11 @@ pub fn start_database(
     let start_at = Instant::now();
 
     if process.is_some() {
-        return Err("Database already running".to_owned());
+        window
+            .emit("database:start", true)
+            .expect("start result should be delivered");
+
+        return Ok(());
     }
 
     let child_result = start_surreal_process(username, password, port, driver, storage, executable);
