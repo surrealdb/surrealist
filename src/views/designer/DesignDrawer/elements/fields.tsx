@@ -63,11 +63,20 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								}
 							/>
 							<Checkbox
-								label="Is field flexible"
+								label="Flexible"
 								checked={field.flex}
 								onChange={(e) =>
 									setData((draft) => {
 										draft.fields[i].flex = e.target.checked;
+									})
+								}
+							/>
+							<Checkbox
+								label="Readonly"
+								checked={field.readonly}
+								onChange={(e) =>
+									setData((draft) => {
+										draft.fields[i].readonly = e.target.checked;
 									})
 								}
 							/>
