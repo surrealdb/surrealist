@@ -17,6 +17,7 @@ import { SchemaFunction } from "~/types";
 import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus } from "~/util/icons";
 import { SURQL_FILTERS } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
+import { surql } from "~/util/editor/extensions";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -86,6 +87,9 @@ export function EditorPanel({
 					onChange={value => onChange((draft: any) => {
 						draft.block = value;
 					})}
+					extensions={[
+						surql(),
+					]}
 				/>
 				<Divider orientation="vertical" />
 				<Flex
@@ -176,12 +180,12 @@ export function EditorPanel({
 								</Tooltip>
 							</Group>
 							<Stack gap="xs" mt="xs">
-								{details.arguments.length === 0 && (
+								{details.args.length === 0 && (
 									<Text c="slate">
 										No arguments defined
 									</Text>
 								)}
-								{details.arguments.map((arg, index) => (
+								{details.args.map(([name, kind], index) => (
 									<Group
 										key={index}
 										gap="xs"
@@ -189,11 +193,11 @@ export function EditorPanel({
 										<TextInput
 											flex={1}
 											variant="unstyled"
-											value={arg.name}
+											value={name}
 											leftSection="$"
 											placeholder="name"
 											onChange={e => onChange((draft: any) => {
-												draft.arguments[index].name = e.target.value;
+												draft.arguments[index][0] = e.target.value;
 											})}
 											styles={{
 												input: {
@@ -208,10 +212,10 @@ export function EditorPanel({
 											flex={1}
 											data={kinds}
 											variant="unstyled"
-											value={arg.kind}
+											value={kind}
 											placeholder="type"
 											onChange={value => onChange((draft: any) => {
-												draft.arguments[index].kind = value;
+												draft.arguments[index][1] = value;
 											})}
 											styles={{
 												input: {
@@ -234,9 +238,9 @@ export function EditorPanel({
 							</Stack>
 							<PermissionInput
 								label="Permission"
-								value={details.permission}
+								value={details.permissions}
 								onChange={value => onChange((draft) => {
-									draft.permission = value;
+									draft.permissions = value;
 								})}
 							/>
 							<Textarea

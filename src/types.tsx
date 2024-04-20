@@ -224,8 +224,8 @@ export interface SchemaScope {
 export interface SchemaFunction {
 	name: string;
 	block: string;
-	arguments: { name: string, kind: string }[];
-	permission: boolean | string;
+	args: [string, string][];
+	permissions: boolean | string;
 	comment: string;
 }
 

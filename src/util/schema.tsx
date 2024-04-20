@@ -106,13 +106,13 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
  * Build a function definition query
  */
 export function buildFunctionDefinition(func: SchemaFunction) : string {
-	const args = func.arguments.map((arg) => `$${arg.name}: ${arg.kind}`).join(", ");
+	const args = func.args.map(([name, kind]) => `$${name}: ${kind}`).join(", ");
 	const block = func.block.split("\n").map((line) => `\t${line}`).join("\n");
 
 	let query = `DEFINE FUNCTION fn::${func.name}(${args}) {\n${block}\n}`;
 
-	if (func.permission) {
-		query += ` PERMISSIONS ${func.permission}`;
+	if (func.permissions) {
+		query += ` PERMISSIONS ${func.permissions}`;
 	}
 
 	if (func.comment) {

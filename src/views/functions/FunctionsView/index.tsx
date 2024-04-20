@@ -27,7 +27,7 @@ export function FunctionsView() {
 	const [createName, setCreateName] = useState("");
 
 	const handle = useSaveable({
-		valid: !!details && details.arguments.every((arg) => arg.name && arg.kind),
+		valid: !!details && details.args.every(([name, kind]) => name && kind),
 		track: {
 			details
 		},
@@ -73,10 +73,10 @@ export function FunctionsView() {
 
 		setDetails({
 			...(duplication || {
-				arguments: [],
+				args: [],
 				comment: "",
 				block: "",
-				permission: "FULL"
+				permissions: true
 			}),
 			name: createName
 		});
