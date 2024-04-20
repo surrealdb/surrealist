@@ -333,7 +333,7 @@
 	  )
   }
 
-  relateSubject { Array | Ident | functionName | VariableName | RecordId }
+  relateSubject { Array | Ident | Function | VariableName | RecordId }
   RelateStatement {
 	  relate only?
 	  relateSubject "->" relateSubject "->" relateSubject
@@ -504,7 +504,7 @@
 
   Function {
 	  functionName
-	  "(" commaSep<Value>? ")"
+	  commaSep<Value>? ")"
   }
 
   // Assignment
@@ -719,7 +719,7 @@
 		  Value
 	  )?
 	  then?
-	  (SubQuery | Block)
+	  commaSep<(SubQuery | Block)>
   }
 
   TypeClause {
@@ -876,9 +876,9 @@
   }
 
   Number { Int | Float | Decimal }
-  Int[@name=Number] { int ~int }
-  Float[@dynamicPrecedence=-1, @name=Number] { int ~int frac? exp? "f"? }
-  Decimal[@dynamicPrecedence=-1, @name=Number] { int ~int frac? exp? "dec" }
+  Int[@name=Number] { "-"? int ~int }
+  Float[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "f"? }
+  Decimal[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "dec" }
 
   Operator {
 	  "&&" | and |
@@ -969,16 +969,19 @@
 		  "⟨" ![⟩]+ "⟩"
 	  }
 	  rawident {
-		  (@asciiLetter | "_") (@asciiLetter | @digit | "_")+ |
-		  @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")+
+		  ( (@asciiLetter | "_") (@asciiLetter | @digit | "_")* ) |
+		  ( @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")* )
 	  }
 
 	  // Functions
 	  JavaScript { ![\\\n}]+ }
 	  functionName[@name=function] {
-		  "rand" | "RAND" |
-		  "count" | "COUNT" |
-		  @asciiLetter+ functionNameSegment+
+		  (
+			"rand" | "RAND" |
+			"count" | "COUNT" |
+			@asciiLetter+ functionNameSegment+
+		  )
+		  "("
 	  }
 
 	  functionNameSegment { "::" @asciiLetter+ }
@@ -988,7 +991,7 @@
 
 	singleLetterDurationUnit {"s" | "m" | "h" | "d" | "w" | "y"}
 
-	  @precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName  functionName int exp "dec" rawident singleLetterDurationUnit "f" singleString doubleString }
+	  @precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName functionName exp "dec" rawident int singleLetterDurationUnit "f" singleString doubleString }
 
 	  "function"
   }
