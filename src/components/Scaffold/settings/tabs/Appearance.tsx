@@ -2,7 +2,7 @@ import { Select, Slider, Box, Checkbox } from "@mantine/core";
 import { useCheckbox } from "~/hooks/events";
 import { isDesktop } from "~/adapter";
 import { Label, SettingsSection } from "../utilities";
-import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, RESULT_MODES, THEMES } from "~/constants";
+import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, VALUE_MODES, RESULT_MODES, THEMES } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useFeatureFlags } from "~/util/feature-flags";
 
@@ -14,6 +14,7 @@ export function AppearanceTab() {
 	const [windowScale, setWindowScale] = useSetting(CAT, "windowScale");
 	const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
 	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
+	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
 	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(CAT, "defaultDiagramDirection");
 	const [expandSidebar, setExpandSidebar] = useSetting(CAT, "expandSidebar");
@@ -39,6 +40,12 @@ export function AppearanceTab() {
 						onChange={setColorScheme as any}
 					/>
 				)}
+				<Select
+					label="Value formatting mode"
+					data={VALUE_MODES}
+					value={valueMode}
+					onChange={setValueMode as any}
+				/>
 			</SettingsSection>
 
 			<SettingsSection label="Scale">

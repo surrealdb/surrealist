@@ -14,6 +14,7 @@ export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "dotnet" | "java" | "php";
 export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type ValueMode = "json" | "sql";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -74,6 +75,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
 	expandSidebar: boolean;
+	valueMode: ValueMode;
 }
 
 export interface SurrealistTemplateSettings {
@@ -101,7 +103,6 @@ export interface TabQuery {
 	name?: string;
 	variables: string;
 	valid: boolean;
-	response: QueryResponse[];
 	resultMode: ResultMode;
 }
 

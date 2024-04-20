@@ -1,4 +1,4 @@
-import { DatabaseSchema } from "~/types";
+import { DatabaseSchema, QueryResponse } from "~/types";
 import { create } from 'zustand';
 import { createDatabaseSchema } from "~/util/defaults";
 
@@ -11,6 +11,7 @@ export type DatabaseStore = {
 	consoleOutput: string[];
 	databaseSchema: DatabaseSchema;
 	version: string;
+	responses: Record<string, QueryResponse[]>;
 
 	setQueryActive: (isQueryActive: boolean) => void;
 	clearSchema: () => void;
@@ -24,6 +25,7 @@ export type DatabaseStore = {
 	setIsConnecting: (isConnecting: boolean) => void;
 	setIsConnected: (isConnected: boolean) => void;
 	setVersion: (version: string) => void;
+	setQueryResponse: (tab: string, response: QueryResponse[]) => void;
 };
 
 export const useDatabaseStore = create<DatabaseStore>((set) => ({
@@ -35,6 +37,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	consoleOutput: [],
 	databaseSchema: createDatabaseSchema(),
 	version: "",
+	responses: {},
 
 	setQueryActive: (isQueryActive) => set(() => ({
 		isQueryActive
@@ -90,4 +93,12 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	setVersion: (version) => set(() => ({
 		version
 	})),
+
+	setQueryResponse: (tab, response) => set((state) => ({
+		responses: {
+			...state.responses,
+			[tab]: response
+		}
+	})),
+
 }));

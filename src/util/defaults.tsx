@@ -42,7 +42,8 @@ export function createBaseSettings(): SurrealistSettings {
 			defaultResultMode: "combined",
 			defaultDiagramMode: "fields",
 			defaultDiagramDirection: "ltr",
-			expandSidebar: true
+			expandSidebar: true,
+			valueMode: "sql",
 		},
 		templates: {
 			list: []
@@ -99,7 +100,6 @@ export function createBaseTab(settings: SurrealistSettings, query?: string, ): T
 		query: query || "",
 		name: "",
 		variables: "{}",
-		response: [],
 		valid: query? !validateQuery(query) : true,
 		resultMode: settings.appearance.defaultResultMode,
 	};

@@ -201,8 +201,8 @@ export async function executeQuerySingle<T = any>(query: string): Promise<T> {
  * @param options Query options
  */
 export async function executeUserQuery(options?: UserQueryOptions) {
-	const { setQueryActive, isConnected } = useDatabaseStore.getState();
-	const { addHistoryEntry, updateQueryTab } = useConfigStore.getState();
+	const { setQueryActive, isConnected, setQueryResponse } = useDatabaseStore.getState();
+	const { addHistoryEntry } = useConfigStore.getState();
 	const connection = getConnection();
 
 	if (!connection || !isConnected) {
@@ -239,10 +239,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		// TODO Handle live queries
 
-		updateQueryTab({
-			id,
-			response
-		});
+		setQueryResponse(id, response);
 
 		posthog.capture('query_execute');
 	} finally {

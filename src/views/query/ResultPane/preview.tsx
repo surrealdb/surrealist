@@ -12,6 +12,7 @@ import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
 import { surql } from "~/util/editor/extensions";
 import { executeQuery } from "~/connection";
+import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	create: ["surreal.3", iconPlus],
@@ -19,11 +20,10 @@ const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	delete: ["red", iconDelete],
 };
 
-function buildResult(index: number, {result, execution_time}: any) {
+function buildResult(index: number, {result, execution_time}: any, format: Formatter) {
 	const header = `\n\n-------- Query ${index + 1 + (execution_time ? ` (${execution_time})` : '')} --------\n\n`;
-	const content = JSON.stringify(result, null, 4);
 
-	return header + content;
+	return header + format(result);
 }
 
 function killQuery(id: string) {
@@ -40,11 +40,11 @@ export interface CombinedJsonPreviewProps {
 }
 
 export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
-	// const [wordWrap] = useSetting("appearance", "resultWordWrap");
+	const [format, mode] = useValueFormatter();
 
 	const contents = useMemo(() => {
-		return results.reduce((acc, cur, i) => acc + buildResult(i, cur), '').trim();
-	}, [results]);
+		return results.reduce((acc, cur, i) => acc + buildResult(i, cur, format), '').trim();
+	}, [results, mode]);
 
 	return (
 		<CodeEditor
@@ -62,11 +62,8 @@ export interface SingleJsonPreviewProps {
 }
 
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
-	// const [wordWrap] = useSetting("appearance", "resultWordWrap");
-
-	const contents = useMemo(() => {
-		return JSON.stringify(result, null, 4);
-	}, [result]);
+	const [format, mode] = useValueFormatter();
+	const contents = useMemo(() => format(result), [result, mode]);
 
 	return (
 		<CodeEditor

@@ -9,13 +9,14 @@ import { RESULT_MODES } from "~/constants";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { ResultMode, TabQuery } from "~/types";
+import { QueryResponse, ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { iconBroadcastOff, iconCursor, iconHelp, iconQuery } from "~/util/icons";
 import { SelectionRange } from "@codemirror/state";
 import { cancelLiveQueries } from "~/connection";
+import { useDatabaseStore } from "~/stores/database";
 
-function computeRowCount(response: any) {
+function computeRowCount(response: QueryResponse) {
 	if (!response) {
 		return 0;
 	}
@@ -44,20 +45,21 @@ export function ResultPane({
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
+	const responseMap = useDatabaseStore((s) => s.responses);
 
 	const isLight = useIsLight();
 	const [resultTab, setResultTab] = useState<number>(1);
 	const resultMode = activeTab.resultMode;
-	const responses = activeTab.response;
-	const response = responses[resultTab - 1];
+	const responses = responseMap[activeTab.id] || [];
+	const activeResponse = responses[resultTab - 1];
 
 	const responseCount = responses.length;
-	const rowCount = computeRowCount(response);
+	const rowCount = computeRowCount(activeResponse);
 
 	const showCombined = resultMode == 'combined' || resultMode == "live";
 	const showTabs = !showCombined && responses.length > 1;
 	const showResponses = showCombined && responseCount > 0;
-	const showTime = response?.execution_time && !showCombined;
+	const showTime = !showCombined && !!activeResponse?.execution_time;
 
 	const isLive = liveTabs.has(activeTab.id);
 
@@ -81,7 +83,7 @@ export function ResultPane({
 
 	const statusText = (showResponses
 		? `${responseCount} ${responseCount == 1 ? 'response' : 'responses'}`
-		: `${rowCount} ${rowCount == 1 ? 'result' : 'results'} ${showTime ? ` in ${response.execution_time}` : ''}`);
+		: `${rowCount} ${rowCount == 1 ? 'result' : 'results'} ${showTime ? ` in ${activeResponse.execution_time}` : ''}`);
 
 	const panelTitle = resultMode == 'combined'
 		? 'Results'
@@ -152,11 +154,11 @@ export function ResultPane({
 					query={activeTab}
 					isLive={isLive}
 				/>
-			) : response ? (
+			) : activeResponse ? (
 				<>
 					{resultMode == "combined" ? (
 						<CombinedJsonPreview results={responses} />
-					) : response.success ? (response.result?.length === 0 ? (
+					) : activeResponse.success ? (activeResponse.result?.length === 0 ? (
 						<Text c="slate" flex={1}>
 							No results found for query
 						</Text>
@@ -166,13 +168,13 @@ export function ResultPane({
 							flex={1}
 							pos="relative"
 						>
-							<DataTable data={response.result} />
+							<DataTable data={activeResponse.result} />
 						</Box>
 					) : (
-						<SingleJsonPreview result={response.result} />
+						<SingleJsonPreview result={activeResponse.result} />
 					)) : (
 						<Text c="red" ff="mono" style={{ whiteSpace: "pre-wrap" }}>
-							{response.result}
+							{activeResponse.result}
 						</Text>
 					)}
 				</>

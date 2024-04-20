@@ -3,7 +3,7 @@ import explorerIcon from "~/assets/animation/explorer.json";
 import designerIcon from "~/assets/animation/designer.json";
 import authIcon from "~/assets/animation/auth.json";
 
-import { AuthMode, CodeLang, DataSet, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
+import { AuthMode, CodeLang, DataSet, ValueMode, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
 import { iconAPI, iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconFunction, iconLive, iconModel, iconQuery } from "./util/icons";
 import { getConnection } from "./util/connection";
 
@@ -68,6 +68,11 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: ".NET", value: "dotnet" },
 	{ label: "Java", value: "java" },
 	{ label: "PHP", value: "php" }
+];
+
+export const VALUE_MODES: Selectable<ValueMode>[] = [
+	{ label: "JSON", value: "json" },
+	{ label: "SurrealQL", value: "sql" },
 ];
 
 export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
