@@ -54,9 +54,7 @@ export function QueryPane({
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const setQueryForced = useStable((query: string) => {
-		const error = !validateQuery(query);
-
-		setIsValid(!error);
+		setIsValid(!validateQuery(query));
 		updateQueryTab({
 			id: activeTab.id,
 			query
