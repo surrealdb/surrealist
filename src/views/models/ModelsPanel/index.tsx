@@ -82,8 +82,8 @@ export function ModelsPanel({
 					{models.map((m, i) => (
 						<Entry
 							key={i}
-							isActive={m.name === active}
-							onClick={() => onSelect(m.name)}
+							// isActive={m.name === active}
+							// onClick={() => onSelect(m.name)}
 							leftSection={<Icon path={iconModel} />}
 							onContextMenu={showContextMenu([
 								{
@@ -94,7 +94,14 @@ export function ModelsPanel({
 								}
 							])}
 						>
-							{m.name}
+							<Stack gap={0} align="start">
+								<Text>
+									{m.name}
+								</Text>
+								<Text opacity={0.6} size="sm">
+									{m.version}
+								</Text>
+							</Stack>
 						</Entry>
 					))}
 				</Stack>
