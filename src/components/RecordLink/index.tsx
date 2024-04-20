@@ -5,6 +5,7 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { useInspector } from "~/providers/Inspector";
 import { iconArrowUpRight } from "~/util/icons";
+import { formatValue } from "~/util/surrealql";
 
 export interface RecordLinkProps extends ComponentPropsWithoutRef<"div"> {
 	value: RecordId;
@@ -12,7 +13,7 @@ export interface RecordLinkProps extends ComponentPropsWithoutRef<"div"> {
 
 export function RecordLink({ value, ...rest }: RecordLinkProps) {
 	const { inspect } = useInspector();
-	const recordText = `${value.tb}:${value.id}`;
+	const recordText = formatValue(value);
 
 	const handleOpen = useStable((e: MouseEvent) => {
 		e.stopPropagation();

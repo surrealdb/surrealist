@@ -13,6 +13,8 @@ import { tb } from "~/util/helpers";
 import { Label } from "~/components/Scaffold/settings/utilities";
 import { json } from "@codemirror/lang-json";
 import { executeQuery } from "~/connection";
+import { RecordId } from "surrealdb.js";
+import { formatValue } from "~/util/surrealql";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -46,7 +48,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		}
 
 		const record = recordId
-			? `${tb(recordTable)}:${tb(recordId)}`
+			? formatValue(new RecordId(recordTable, recordId))
 			: tb(recordTable);
 
 		await executeQuery(`CREATE ${record} CONTENT ${recordBody}`);
