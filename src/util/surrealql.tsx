@@ -11,7 +11,7 @@ export function validateQuery(sql: string): string | undefined {
 		SurrealQL.validate(sql);
 		return undefined;
 	} catch(err: any) {
-		return err.message;
+		return err;
 	}
 }
 

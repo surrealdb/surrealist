@@ -118,13 +118,15 @@ export const surql = (): Extension => [
 			const position = view.state.doc.line(lineNumber).from + column - 1;
 			const word = view.state.wordAt(position);
 
-			if (!word) {
-				return [];
-			}
-
-			return [{
+			return [word ? {
 				from: word.from,
 				to: word.to,
+				message: reason,
+				severity: "error",
+				source: "SurrealQL"
+			} : {
+				from: position,
+				to: position + 1,
 				message: reason,
 				severity: "error",
 				source: "SurrealQL"
