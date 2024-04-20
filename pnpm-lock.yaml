@@ -159,11 +159,11 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       surrealdb.js:
-        specifier: 1.0.0-beta.4
-        version: 1.0.0-beta.4
+        specifier: 1.0.0-beta.5
+        version: 1.0.0-beta.5
       surrealdb.wasm:
-        specifier: 1.0.0-beta.6
-        version: 1.0.0-beta.6
+        specifier: 1.0.0-beta.7
+        version: 1.0.0-beta.7(surrealdb.js@1.0.0-beta.5)
       surrealql.wasm:
         specifier: ^0.1.1
         version: 0.1.1
@@ -4523,8 +4523,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /surrealdb.js@1.0.0-beta.4:
-    resolution: {integrity: sha512-pGOMuPz8OO+bgpmmPmfUPtopz8y1J97dCSsfzRaVkYdT/+fSMWqV3ftJYp9egX1IzTxK78gIQCE25oXfvALlsQ==}
+  /surrealdb.js@1.0.0-beta.5:
+    resolution: {integrity: sha512-8JEHCLm/ulm4gBX9XJ/MGKofHlBw14mRAiG/1spvadQ1N51UsmDXMHD11YPACXZ2yBjJfDeYY1EdH9OW4PnrQA==}
     dependencies:
       '@icholy/duration': 5.1.0
       cbor-redux: 1.0.0
@@ -4538,10 +4538,12 @@ packages:
       utf-8-validate: 6.0.3
     dev: false
 
-  /surrealdb.wasm@1.0.0-beta.6:
-    resolution: {integrity: sha512-vv4O1p4EoyV7b5a1H4ul/XXpbtTiH7UbA9jJOCa5U2PvfJq0v3B5MxbzWszFlQfVj9JU0z69bakwyWoD9MJzPA==}
+  /surrealdb.wasm@1.0.0-beta.7(surrealdb.js@1.0.0-beta.5):
+    resolution: {integrity: sha512-s3JwDa2m4pz+h+zk96tMtjNxLU0u4fx+cZeOwOjnjK9v0PTvMyhjQWgyGaMrJgQ5ZX7rFuOL60guZabwt/zlZw==}
+    peerDependencies:
+      surrealdb.js: ^1.0.0-beta.5
     dependencies:
-      surrealdb.js: 1.0.0-beta.4
+      surrealdb.js: 1.0.0-beta.5
       zod: 3.22.5
     dev: false
 
