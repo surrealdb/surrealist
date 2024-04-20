@@ -24,7 +24,7 @@ interface NewsItem {
 
 export function NewsFeed() {
 	const { updateViewedNews } = useConfigStore.getState();
-	const [{ newsfeed, newsfeed_enforce }] = useFeatureFlags();
+	const [{ newsfeed }] = useFeatureFlags();
 
 	const [isOpen, openHandle] = useDisclosure();
 	const [isLoading, setLoading] = useState(true);
@@ -42,13 +42,13 @@ export function NewsFeed() {
 		setLoading(true);
 
 		try {
-			const response = await fetch(`https://surrealdb.com/feed/${newsfeed}.rss`);
+			const response = await fetch(`https://surrealdb.com/feed/news.rss`);
 			const body = await response.text();
 			const result = new DOMParser().parseFromString(body, 'text/xml');
 
 			const items = [...result.querySelectorAll('item')]
 				.filter(item =>
-					!newsfeed_enforce || [...item.querySelectorAll('category')].some(child => child.textContent?.toLowerCase() === "surrealist")
+					[...item.querySelectorAll('category')].some(child => child.textContent?.toLowerCase() === "surrealist")
 				)
 				.map(item => ({
 					id: item.querySelector('guid')?.textContent || '',
@@ -104,17 +104,19 @@ export function NewsFeed() {
 
 	return (
 		<>
-			<Tooltip label="Latest news">
-				<Indicator disabled={unreadIds.length === 0}>
-					<ActionIcon
-						w={36}
-						h={36}
-						onClick={openHandle.toggle}
-					>
-						<Icon path={iconNewspaper} size="lg" />
-					</ActionIcon>
-				</Indicator>
-			</Tooltip>
+			{newsfeed && (
+				<Tooltip label="Latest news">
+					<Indicator disabled={unreadIds.length === 0}>
+						<ActionIcon
+							w={36}
+							h={36}
+							onClick={openHandle.toggle}
+						>
+							<Icon path={iconNewspaper} size="lg" />
+						</ActionIcon>
+					</Indicator>
+				</Tooltip>
+			)}
 
 			<Drawer
 				opened={isOpen}

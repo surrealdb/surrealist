@@ -4,7 +4,7 @@ import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { newId } from "~/util/helpers";
 import { create } from "zustand";
 import { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
-import { featureFlagSchema } from "~/util/feature-flags";
+import { schema } from "~/util/feature-flags";
 import { unique } from "radash";
 import { validateQuery } from "~/util/surrealql";
 
@@ -58,7 +58,7 @@ export type ConfigStore = SurrealistConfig & {
 	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
 	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
 	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
-	setFeatureFlag: <T extends FeatureFlag<typeof featureFlagSchema>>(key: T, value: FeatureFlagOption<typeof featureFlagSchema, T>) => void;
+	setFeatureFlag: <T extends FeatureFlag<typeof schema>>(key: T, value: FeatureFlagOption<typeof schema, T>) => void;
 	pushCommand: (command: string) => void;
 	updateViewedNews: () => void;
 	completeOnboarding: (key: string) => void;

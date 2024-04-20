@@ -1,6 +1,5 @@
 import { MantineColorScheme } from "@mantine/core";
-import { TFeatureFlags } from "@theopensource-company/feature-flags";
-import { FeatureFlagMap, featureFlagSchema } from "./util/feature-flags";
+import { FeatureFlagMap } from "./util/feature-flags";
 
 export type AuthMode = "none" | "root" | "namespace" | "database" | "token" | "scope" | "scope-signup";
 export type DriverType = "file" | "memory" | "tikv";
@@ -137,7 +136,7 @@ export interface SurrealistConfig {
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
 	settings: SurrealistSettings;
-	featureFlags: Partial<TFeatureFlags<typeof featureFlagSchema>>;
+	featureFlags: Partial<FeatureFlagMap>;
 	commandHistory: string[];
 	onboarding: string[];
 }

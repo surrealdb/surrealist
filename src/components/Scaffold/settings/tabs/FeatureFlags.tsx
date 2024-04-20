@@ -1,5 +1,5 @@
 import { Stack, Select, Group, ActionIcon } from "@mantine/core";
-import { featureFlagSchema, featureFlags, useFeatureFlags } from "~/util/feature-flags";
+import { featureFlags, schema, useFeatureFlags } from "~/util/feature-flags";
 import { useMemo } from "react";
 import { Spacer } from "~/components/Spacer";
 import { Text } from "@mantine/core";
@@ -14,8 +14,8 @@ export function FeatureFlagsTab() {
 	return (
 		<Stack gap="xs" style={{ overflow: 'hidden' }}>
 			{flagNames.map((flag) => {
-				const mapped = Object.fromEntries(featureFlagSchema[flag].options.map(v => [v.toString(), v]));
-				const data = featureFlagSchema[flag].options.map((value) => value.toString());
+				const mapped = Object.fromEntries(schema[flag].options.map(v => [v.toString(), v]));
+				const data = schema[flag].options.map((value) => value.toString());
 
 				return (
 					<Group key={flag} gap="xs">

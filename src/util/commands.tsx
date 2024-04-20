@@ -303,14 +303,12 @@ export function computeCommands(): CommandCategory[] {
 				icon: iconEye,
 				action: intent("open-settings", { tab: 'appearance' })
 			},
-			...(featureFlags.get('templates') ? [
-				{
-					id: newId(),
-					name: "Manage Templates",
-					icon: iconServer,
-					action: intent("open-settings", { tab: 'templates' }),
-				}
-			] : []),
+			{
+				id: newId(),
+				name: "Manage Templates",
+				icon: iconServer,
+				action: intent("open-settings", { tab: 'templates' }),
+			},
 			...(isDesktop ? [
 				{
 					id: newId(),

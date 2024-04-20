@@ -2,87 +2,56 @@ import { FeatureFlags, TFeatureFlags } from "@theopensource-company/feature-flag
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
 import { environment } from "./environment";
 
-const Bool = [false, true] as const;
-
-// How to write a schema for feature flags:
+// How to manage feature flag schema:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
-export const featureFlagSchema = {
-	devTools: {
-		options: Bool
-	},
-	templates: {
-		options: Bool
-	},
-	listLicenses: {
-		options: Bool
-	},
-	functions_view: {
-		options: Bool
+export const schema = {
+	featureFlags: {
+		options: [false, true]
 	},
 	models_view: {
 		options: [false, true, 'force']
 	},
 	apidocs_view: {
-		options: Bool
+		options: [false, true]
 	},
 	themes: {
-		options: Bool
+		options: [false, true]
 	},
 	newsfeed: {
-		options: [false, 'news', 'blog']
-	},
-	newsfeed_enforce: {
 		options: [false, true]
-	}
+	},
 } as const;
 
 export const featureFlags = new FeatureFlags({
-	schema: featureFlagSchema,
-
-	// Defaults per environment
 	environment,
+	schema,
 	defaults: {
-		prod: {
-			newsfeed_enforce: true,
-			templates: true,
-			listLicenses: true,
-			functions_view: true,
-			models_view: true,
+		development: {
+			featureFlags: true,
+			models_view: "force",
 			apidocs_view: true,
+			newsfeed: true
 		},
 		preview: {
-			newsfeed_enforce: true,
-			templates: true,
-			listLicenses: true,
-			functions_view: true,
 			models_view: true,
 			apidocs_view: true,
+			newsfeed: true
 		},
-		dev: {
-			devTools: true,
-			templates: true,
-			listLicenses: true,
+		production: {
+			models_view: true,
 			apidocs_view: true,
-			newsfeed: 'news'
-		}
+			newsfeed: true
+		},
 	},
-
-	// Feature flags may be overwritten per environment
 	overrides: (flag) => {
-		const v = import.meta.env[`VITE_FFLAG_${flag.toUpperCase()}`];
-		if (v) {
-			const lower = v?.toLowerCase();
-			return lower === 'true'
-				? true
-				: lower === 'false'
-					? false
-					: !v || Number.isNaN(+v)
-						? v
-						: Number.parseInt(v);
+		const value = import.meta.env[`VITE_FFLAG_${flag.toUpperCase()}`];
+
+		if (value) {
+			return JSON.parse(value);
 		}
 	},
 });
 
 export const useFeatureFlags = featureFlagsHookFactory(featureFlags);
 
-export type FeatureFlagMap = TFeatureFlags<typeof featureFlagSchema>;
+export type FeatureFlagMap = TFeatureFlags<typeof schema>;

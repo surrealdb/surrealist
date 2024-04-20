@@ -48,7 +48,6 @@ const CATEGORIES: Category[] = [
 		name: "Templates",
 		icon: iconServer,
 		component: TemplatesTab,
-		disabled: (flags) => !flags.templates
 	},
 	{
 		id: "serving",
@@ -62,14 +61,13 @@ const CATEGORIES: Category[] = [
 		name: "Feature Flags",
 		icon: iconFlag,
 		component: FeatureFlagsTab,
-		disabled: (flags) => !flags.devTools
+		disabled: (flags) => !flags.featureFlags
 	},
 	{
 		id: "licenses",
 		name: "OSS Licenses",
 		icon: iconBalance,
 		component: LicensesTab,
-		disabled: (flags) => !flags.listLicenses,
 	}
 ];
 
@@ -119,7 +117,7 @@ export function Settings({
 		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 2000));
 
 		if (valid.length >= 5) {
-			setFlags({ devTools: true });
+			setFlags({ featureFlags: true });
 			setLogoClicked([]);
 		}
 	}, [logoClicked]);

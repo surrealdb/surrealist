@@ -109,7 +109,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Functions",
 		icon: iconFunction,
 		desc: "Create and update schema level functions",
-		disabled: (flags) => !flags.functions_view,
 	},
 	models: {
 		id: "models",
