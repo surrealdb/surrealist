@@ -1,6 +1,8 @@
 import { encodeCbor } from "surrealdb.js";
 import { SurrealQL, Value } from "surrealql.wasm/v1";
 
+(window as any).SurrealQL = SurrealQL;
+
 /**
  * Validate a query and return an error message if invalid
  */
@@ -41,9 +43,7 @@ export function validateWhere(where: string): string | undefined {
  * Returns the amount of statements in a query
  */
 export function getStatementCount(sql: string): number {
-	console.log(SurrealQL.parse(sql));
-
-	return 1;
+	return SurrealQL.parse(sql).length;
 }
 
 /**
