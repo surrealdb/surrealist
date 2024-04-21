@@ -9,8 +9,6 @@ import { spawn } from "node:child_process";
 const base = new URL('..', import.meta.url);
 const checksumFile = fileURLToPath(new URL('./dist/checksum', base))
 
-console.log(checksumFile);
-
 const hash = generateGrammarHash();
 let currentHash = '';
 try { currentHash = fs.readFileSync(checksumFile).toString(); } catch(err) { err; }
