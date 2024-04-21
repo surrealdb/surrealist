@@ -239,8 +239,9 @@ export function NewsFeed() {
 							>
 								{isLoading && isEmpty ? (
 									<Loader
-										mt={64}
-										style={{ alignSelf: "center" }}
+										mt={32}
+										mx="auto"
+										display="block"
 									/>
 								) : isEmpty ? (
 									<Text
