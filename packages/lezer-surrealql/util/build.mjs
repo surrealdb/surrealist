@@ -17,6 +17,7 @@ if (hash != currentHash) {
 	fs.writeFileSync(checksumFile, hash);
 	const child = spawn(`pnpm`, ['compile'], {
 		cwd: path.dirname(fileURLToPath(base)),
+		shell: process.platform == 'win32',
 	});
 
 	child.stdout.setEncoding('utf8');
