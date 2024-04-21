@@ -162,11 +162,11 @@ importers:
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
       surrealdb.wasm:
-        specifier: 1.0.0-beta.7
-        version: 1.0.0-beta.7(surrealdb.js@1.0.0-beta.5)
+        specifier: 1.0.0-beta.8
+        version: 1.0.0-beta.8(surrealdb.js@1.0.0-beta.5)
       surrealql.wasm:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.3
+        version: 0.1.3
       use-immer:
         specifier: ^0.9.0
         version: 0.9.0(immer@10.0.2)(react@18.2.0)
@@ -4538,8 +4538,8 @@ packages:
       utf-8-validate: 6.0.3
     dev: false
 
-  /surrealdb.wasm@1.0.0-beta.7(surrealdb.js@1.0.0-beta.5):
-    resolution: {integrity: sha512-s3JwDa2m4pz+h+zk96tMtjNxLU0u4fx+cZeOwOjnjK9v0PTvMyhjQWgyGaMrJgQ5ZX7rFuOL60guZabwt/zlZw==}
+  /surrealdb.wasm@1.0.0-beta.8(surrealdb.js@1.0.0-beta.5):
+    resolution: {integrity: sha512-1Q8ObtF9kdixnkZUhjvxkkJjI/SZ3hxLwbwI8rwuTySbNmm9HfzYvKffb+EvPC0x549Z3cyBahP63LYtAkgjHQ==}
     peerDependencies:
       surrealdb.js: ^1.0.0-beta.5
     dependencies:
@@ -4547,8 +4547,8 @@ packages:
       zod: 3.22.5
     dev: false
 
-  /surrealql.wasm@0.1.1:
-    resolution: {integrity: sha512-0XeNmG4Rz/MXe2cbw8abnyQX0sGudtg60dvS7HH39DFHiY0Ll8K0ACuIR8LN8R6x3pRUNtmUsQ5ole2PBTIkdQ==}
+  /surrealql.wasm@0.1.3:
+    resolution: {integrity: sha512-cYqIRwDrOO/1n8vBR8okggm9zVuXtsAtnxrl/JA5okSmJ/K78h1O4y04AOd9sTSJF3r0J7BEtbpxHQropfTGew==}
     dev: false
 
   /tabbable@6.2.0:

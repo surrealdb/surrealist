@@ -68,8 +68,8 @@
 		"semver": "^7.5.4",
 		"semver-compare": "^1.0.0",
 		"surrealdb.js": "1.0.0-beta.5",
-		"surrealdb.wasm": "1.0.0-beta.7",
-		"surrealql.wasm": "^0.1.1",
+		"surrealdb.wasm": "1.0.0-beta.8",
+		"surrealql.wasm": "^0.1.3",
 		"use-immer": "^0.9.0",
 		"zustand": "^4.5.0"
 	},

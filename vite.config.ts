@@ -58,4 +58,5 @@ export default defineConfig({
 			target: 'esnext',
 		},
 	},
+	assetsInclude: ['**/surrealdb.wasm/dist/*.wasm', '**/surrealql.wasm/dist/*.wasm']
 });
