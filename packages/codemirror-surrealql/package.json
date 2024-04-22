@@ -7,7 +7,6 @@
 	"type": "module",
 	"scripts": {
 		"build": "cm-buildhelper src/surrealql.ts",
-		"prepare": "pnpm build",
 		"test": "cm-runtests"
 	},
 	"main": "dist/index.cjs",

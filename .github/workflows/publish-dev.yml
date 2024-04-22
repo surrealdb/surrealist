@@ -1,4 +1,4 @@
-name: Publish Development Surrealist
+name: Publish Development
 
 on:
   push:

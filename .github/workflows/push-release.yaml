@@ -1,0 +1,89 @@
+name: Publish Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+    version:
+        name: Extract version
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.extract_version.outputs.version }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v3
+              with:
+                  version: 8
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+
+            - name: Extract version
+              id: extract_version
+              uses: Saionaro/extract-package-version@v1.2.1
+
+    publish-web:
+        name: Publish web
+        if: ${{ github.event.release.prerelease }}
+        needs:
+            - version
+
+        runs-on: 'ubuntu-latest'
+        steps:
+            - name: Information
+              run: echo "Building Surrealist Web version ${{ needs.version.outputs.version }}"
+
+            - name: Code checkout
+              uses: actions/checkout@v4
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v3
+              with:
+                  version: 8
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+
+            - name: install frontend dependencies
+              run: pnpm i --frozen-lockfile
+
+            - name: Generate license report
+              run: pnpm license-report
+
+            - name: Set version
+              run: pnpm pkg set version=${{ needs.version.outputs.version }}
+
+            - name: Build application
+              run: pnpm build
+              env:
+                VITE_SURREALIST_PREVIEW: "${{ github.event.release.prerelease }}"
+
+            - uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-region: us-west-2
+                aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
+                aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
+
+            - name: Download release assets
+              uses: robinraju/release-downloader@v1.10
+              with:
+                releaseId: ${{ github.event.release.id }}
+                out-file-path: release-assets
+
+            - name: Deploy Production
+              if: ${{ !github.event.release.prerelease }}
+              run: |
+                aws s3 sync --region eu-west-2 --cache-control "public, max-age=31536000, immutable" --exclude ".DS_Store" ./dist/assets s3://dev.surrealist.app/assets/
+                aws s3 cp --region eu-west-2 --cache-control "public, max-age=86400" ./dist/favicon.ico s3://dev.surrealist.app/
+                aws s3 sync --region eu-west-2 --cache-control "public, max-age=30" --exact-timestamps --delete --exclude "*" --include "*.html" ./dist/ s3://dev.surrealist.app/
+                aws s2 cp --region eu-west-2 --cache-control "public, max-age=0" ./release-assets/latest.json s3://dev.surrealist.app/

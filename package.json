@@ -7,14 +7,15 @@
 	"author": "SurrealDB",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build",
+		"build": "tsc && pnpm grammar:build && vite build",
 		"preview": "vite preview",
 		"tauri": "tauri",
 		"tauri:dev": "tauri dev",
 		"tauri:build": "tauri build",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"license-report": "license-report --fields name --fields licenseType --fields link --fields installedVersion --fields author > src/assets/data/license-report.json"
+		"license-report": "license-report --fields name --fields licenseType --fields link --fields installedVersion --fields author > src/assets/data/license-report.json",
+		"grammar:build": "cd packages/lezer-surrealql && pnpm build && cd ../codemirror-surrealql && pnpm build"
 	},
 	"dependencies": {
 		"@codemirror/autocomplete": "^6.13.0",

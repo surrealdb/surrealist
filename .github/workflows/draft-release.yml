@@ -1,0 +1,156 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        required: true
+        type: boolean
+        description: "Is this a pre-release? If not, this will be considered the latest release"
+        default: true
+      summary:
+        required: true
+        type: string
+        description: "Include a short summary of this release which will be shown to people when they are prompted to update."
+      version:
+        required: false
+        type: string
+        description: "Optionally input a custom version. If not, the version string will automatically be generated based on the version in package.json"
+
+jobs:
+    version:
+        name: Extract version
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.extract_version.outputs.version }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v3
+              with:
+                  version: 8
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+
+            - name: Auto adjust version
+              if: ${{ !inputs.version }}
+              run: |
+                  v=$(pnpm pkg get version)
+                  v=${v:1:-1}-$(date +'%-m%-d')
+                  pnpm pkg set version=$v
+
+            - name: Set inputted version
+              if: ${{ inputs.version }}
+              run: |
+                  pnpm pkg set version=${{ inputs.version }}
+
+            - name: Extract version
+              id: extract_version
+              uses: Saionaro/extract-package-version@v1.2.1
+
+    build-tauri:
+        name: Build Tauri
+        needs:
+            - version
+        permissions:
+            contents: write
+        strategy:
+            fail-fast: true
+            matrix:
+                settings:
+                    - platform: "macos-latest"
+                      id: 'macos-aarch64'
+                      args: "--target aarch64-apple-darwin"
+                    - platform: "macos-latest"
+                      id: 'macos-x86_64'
+                      args: "--target x86_64-apple-darwin"
+                    # TODO(tauri-2) ubuntu-22.04
+                    - platform: "ubuntu-20.04"
+                      id: 'linux'
+                      args: "--target linux"
+                    - platform: "windows-latest"
+                      id: 'windows'
+                      args: "--target windows"
+
+        runs-on: ${{ matrix.settings.platform }}
+        steps:
+            - name: Information
+              run: echo "Building Surrealist Desktop v${{ needs.version.outputs.version }} for ${{ matrix.settings.id }}"
+
+            - name: Code checkout
+              uses: actions/checkout@v4
+
+            - name: Install dependencies (ubuntu only)
+              # TODO(tauri-2) ubuntu-22.04
+              if: matrix.settings.platform == 'ubuntu-20.04'
+              # TODO(tauri-2) libwebkit2gtk-4.1-dev
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v3
+              with:
+                  version: 8
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+
+            - name: Setup Rust stable
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: ${{ matrix.settings.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
+              with:
+                  workspaces: "./src-tauri -> target"
+
+            - name: install frontend dependencies
+              run: pnpm i --frozen-lockfile
+
+            - name: Generate license report
+              run: pnpm license-report
+
+            - name: Set version
+              run: pnpm pkg set version=${{ needs.version.outputs.version }}
+
+            - name: Persist Apple API Key
+              if: matrix.settings.platform == 'macos-latest'
+              env:
+                  APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
+              shell: bash
+              run: echo "$APPLE_API_KEY_CONTENT" >> ${{ github.workspace }}/apple-api-key.p8
+
+            - uses: tauri-apps/tauri-action@v0
+              id: build
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+                  VITE_SURREALIST_PREVIEW: "${{ inputs.prerelease }}"
+                  APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+                  APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+                  APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+                  APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+                  APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+                  APPLE_API_KEY_PATH: ${{ github.workspace }}/apple-api-key.p8
+              with:
+                  appVersion: surrealist-v${{ needs.version.outputs.version }}
+                  releaseId: surrealist-v${{ needs.version.outputs.version }}
+                  tagName: surrealist-v${{ needs.version.outputs.version }}
+                  args: "${{ matrix.settings.args }} --config '{  }'"
+                  releaseName: 'Surrealist v${{ needs.version.outputs.version }}'
+                  releaseBody: ${{ inputs.summary }}
+                  releaseDraft: true
+                  prerelease: ${{ inputs.prerelease }}
+                  updaterJsonKeepUniversal: true

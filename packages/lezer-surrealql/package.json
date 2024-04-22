@@ -13,10 +13,8 @@
 		"require": "./dist/index.cjs"
 	},
 	"scripts": {
-		"build": "node util/build.mjs",
-		"prepare": "pnpm build",
-		"hash": "node util/hash.mjs",
-		"compile": "lezer-generator src/surrealql.grammar -o src/parser.js && rollup -c"
+		"build": "lezer-generator src/surrealql.grammar -o src/parser.js && rollup -c",
+		"prepack": "pnpm build"
 	},
 	"dependencies": {
 		"@lezer/highlight": "^1.2.0",
