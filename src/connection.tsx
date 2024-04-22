@@ -1,6 +1,6 @@
 import posthog from "posthog-js";
 import { surrealdbWasmEngines } from 'surrealdb.wasm';
-import { Surreal, QueryResult, AnyAuth, ScopeAuth, Token } from 'surrealdb.js';
+import { Surreal, QueryResult, AnyAuth, ScopeAuth, Token, UUID } from 'surrealdb.js';
 import { ConnectionOptions, QueryResponse } from './types';
 import { getConnection } from './util/connection';
 import { useDatabaseStore } from './stores/database';
@@ -11,6 +11,7 @@ import { useInterfaceStore } from "./stores/interface";
 import { useConfigStore } from "./stores/config";
 import { compare } from "semver";
 import { objectify } from "radash";
+import { getLiveQueries } from "./util/surrealql";
 
 const printMsg = (...args: any[]) => printLog("Conn", "#1cccfc", ...args);
 
@@ -24,7 +25,7 @@ export interface UserQueryOptions {
 }
 
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
-const LIVE_QUERIES = new Map<string, Set<string>>();
+const LIVE_QUERIES = new Map<string, Set<UUID>>();
 const SURREAL = new Surreal({
 	engines: surrealdbWasmEngines() as any
 });
@@ -201,6 +202,7 @@ export async function executeQuerySingle<T = any>(query: string): Promise<T> {
  * @param options Query options
  */
 export async function executeUserQuery(options?: UserQueryOptions) {
+	const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } = useInterfaceStore.getState();
 	const { setQueryActive, isConnected, setQueryResponse } = useDatabaseStore.getState();
 	const { addHistoryEntry } = useConfigStore.getState();
 	const connection = getConnection();
@@ -236,11 +238,37 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		const responseRaw = await SURREAL.query_raw(queryStr, variableJson) || [];
 		const response = mapResults(responseRaw);
+		const liveIds = getLiveQueries(queryStr).flatMap(idx => {
+			const res = response[idx];
 
-		// TODO Handle live queries
+			if (!res.success || !(res.result instanceof UUID)) {
+				return [];
+			}
+
+			return [res.result];
+		});
+
+		cancelLiveQueries(id);
+		clearLiveQueryMessages(id);
+		setIsLive(id, liveIds.length > 0);
+
+		LIVE_QUERIES.set(id, new Set(liveIds));
+
+		const timestamp = Date.now();
+
+		for (const queryId of liveIds) {
+			SURREAL.subscribeLive(queryId, (action, data) => {
+				pushLiveQueryMessage(id, {
+					id: newId(),
+					queryId: queryId.toString(),
+					action,
+					data,
+					timestamp
+				});
+			});
+		}
 
 		setQueryResponse(id, response);
-
 		posthog.capture('query_execute');
 	} finally {
 		if (options?.loader) {
@@ -259,8 +287,14 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 /**
  * Cancel the active live queries for the given query ID
  */
-export function cancelLiveQueries(query: string) {
-	// todo
+export function cancelLiveQueries(tab: string) {
+	const { setIsLive } = useInterfaceStore.getState();
+
+	for (const id of LIVE_QUERIES.get(tab) || []) {
+		SURREAL.kill(id);
+	}
+
+	setIsLive(tab, false);
 }
 
 function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {

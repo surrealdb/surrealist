@@ -13,11 +13,12 @@ import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, ic
 import { surql } from "~/util/editor/extensions";
 import { executeQuery } from "~/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
+import { useRefreshTimer } from "~/hooks/timer";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
-	create: ["surreal.3", iconPlus],
-	update: ["orange", iconHammer],
-	delete: ["red", iconDelete],
+	'CREATE': ["surreal.3", iconPlus],
+	'UPDATE': ["orange", iconHammer],
+	'DELETE': ["red", iconDelete],
 };
 
 function buildResult(index: number, {result, execution_time}: any, format: Formatter) {
@@ -83,9 +84,12 @@ export interface LivePreviewProps {
 
 export function LivePreview({ query, isLive }: LivePreviewProps) {
 	const messages = useInterfaceStore((s) => s.liveQueryMessages[query.id] || []);
-	const format = useRelativeTime();
+	const formatTime = useRelativeTime();
 
 	const { showContextMenu } = useContextMenu();
+	const [format] = useValueFormatter();
+
+	useRefreshTimer(30_000);
 
 	return (
 		<>
@@ -144,11 +148,11 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 												</Text>
 											</Badge>
 											<Stack gap={0}>
-												<Text c="slate" size="xs">
-													{format(msg.timestamp)}
-												</Text>
 												<Text>
-													Query <Text span ff="mono" onFocus={ON_FOCUS_SELECT}>{msg.queryId}</Text>
+													{formatTime(msg.timestamp)}
+												</Text>
+												<Text c="slate" size="xs">
+													<Text span ff="mono" onFocus={ON_FOCUS_SELECT}>{msg.queryId}</Text>
 												</Text>
 											</Stack>
 										</Group>
@@ -156,7 +160,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 									{msg.data !== undefined && (
 										<Accordion.Panel>
 											<CodeEditor
-												value={JSON.stringify(msg.data, null, 4)}
+												value={format(msg.data)}
 												readOnly
 												extensions={[
 													surql()

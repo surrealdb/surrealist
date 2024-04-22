@@ -1,8 +1,6 @@
 import { encodeCbor } from "surrealdb.js";
 import { SurrealQL, Value } from "surrealql.wasm/v1";
 
-(window as any).SurrealQL = SurrealQL;
-
 /**
  * Validate a query and return an error message if invalid
  */
@@ -61,57 +59,30 @@ export function formatValue(value: any, json: boolean = false, pretty: boolean =
 	return parsed[json ? 'json' : 'format'](pretty);
 }
 
+/**
+ * Return the the indexes of the live query statements in the given query
+ *
+ * @param query The query to parse
+ * @returns The indexes of the live query statements
+ */
+export function getLiveQueries(query: string): number[] {
+	const tree: any[] = SurrealQL.parse(query);
+
+	return tree.reduce((acc: number[], stmt, idx) => {
+		if (stmt.Live) {
+			acc.push(idx);
+		}
+
+		return acc;
+	}, []);
+}
+
+/**
+ * Format the given query
+ *
+ * @param query Query string
+ * @returns Formatted query
+ */
 export function formatQuery(query: string) {
-	const formatted = SurrealQL.format(query, false);
-
-	let output = '';
-	let indent = 0;
-	let skipSpace = false;
-	const containedIn: string[] = [];
-
-	const newline = () => {
-		output += '\n' + ' '.repeat(indent * 4);
-		skipSpace = true;
-	};
-
-	const seek = (i: number, text: string) => {
-		return formatted.slice(i, i + text.length) === text;
-	};
-
-	for (let i = 0; i < formatted.length; i++) {
-		const char = formatted.charAt(i);
-		let doNewline = false;
-
-		if (char == ' ' && skipSpace) {
-			continue;
-		}
-
-		if (["{", "["].includes(containedIn.at(-1) as string) &&  char == ',') {
-			doNewline = true;
-		} else if (char == '{' || char == '(' || char == '[') {
-			indent++;
-			doNewline = true;
-			containedIn.push(char);
-		} else if (char == '}' || char == ')' || char == ']') {
-			indent--;
-			newline();
-			containedIn.pop();
-		}
-
-		if (seek(i, 'WHERE') || seek(i, 'ORDER') || seek(i, 'GROUP') || seek(i, 'START') || seek(i, 'LIMIT') || seek(i, 'AND') || seek(i, 'OR')) {
-			newline();
-		}
-
-		output += char;
-
-		if (char == ';') {
-			output += '\n';
-		} else if (doNewline) {
-			newline();
-		} else if (skipSpace) {
-			skipSpace = false;
-		}
-	}
-
-	return output;
+	return SurrealQL.format(query, true);
 }
