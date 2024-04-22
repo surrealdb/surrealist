@@ -10,7 +10,6 @@ import "./assets/styles/global.scss";
 import "./adapter";
 
 import dayjs from "dayjs";
-import compare from "semver-compare";
 import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
@@ -23,7 +22,7 @@ import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnecti
 import { getSetting } from "./util/config";
 import { generateEditorIcons } from "./util/editor/icons";
 import { isProduction } from "./util/environment";
-import { useInterfaceStore } from "./stores/interface";
+import { promptChangelog } from "./util/changelogs";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -68,11 +67,5 @@ import { useInterfaceStore } from "./stores/interface";
 	document.body.addEventListener('keydown', e => e.stopPropagation());
 
 	// Check for new release
-	const { previousVersion, setPreviousVersion } = useConfigStore.getState();
-	const { showChangelog } = useInterfaceStore.getState();
-
-	if (compare(import.meta.env.VERSION, previousVersion) > 0) {
-		setPreviousVersion(import.meta.env.VERSION);
-		showChangelog();
-	}
+	promptChangelog();
 })();

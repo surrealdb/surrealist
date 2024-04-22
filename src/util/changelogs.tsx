@@ -1,3 +1,7 @@
+import compare from "semver-compare";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+
 const CHANGELOGS = import.meta.glob("~/assets/changelogs/*.md", { eager: true });
 
 export const changelogs = Object.entries(CHANGELOGS).map(([path, value]: any) => {
@@ -9,3 +13,13 @@ export const changelogs = Object.entries(CHANGELOGS).map(([path, value]: any) =>
 		content: value.html
 	};
 });
+
+export function promptChangelog() {
+	const { previousVersion, setPreviousVersion } = useConfigStore.getState();
+	const { showChangelog } = useInterfaceStore.getState();
+
+	if (compare(import.meta.env.VERSION, previousVersion) > 0) {
+		setPreviousVersion(import.meta.env.VERSION);
+		showChangelog();
+	}
+}

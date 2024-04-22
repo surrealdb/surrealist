@@ -8,6 +8,7 @@ import { useConfigStore } from "~/stores/config";
 import { Icon } from "~/components/Icon";
 import { iconChevronRight } from "~/util/icons";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
+import { promptChangelog } from "~/util/changelogs";
 
 export function LegacyModal() {
 	const [isOpen, openHandle] = useDisclosure();
@@ -23,6 +24,8 @@ export function LegacyModal() {
 
 			adapter.handleLegacyCleanup();
 			openHandle.open();
+
+			promptChangelog();
 		}
 	};
 
