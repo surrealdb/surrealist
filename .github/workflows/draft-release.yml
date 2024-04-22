@@ -143,7 +143,7 @@ jobs:
                   APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
                   APPLE_API_KEY_PATH: ${{ github.workspace }}/apple-api-key.p8
               with:
-                  appVersion: surrealist-v${{ needs.version.outputs.version }}
+                #   appVersion: surrealist-v${{ needs.version.outputs.version }}
                   releaseId: surrealist-v${{ needs.version.outputs.version }}
                   tagName: surrealist-v${{ needs.version.outputs.version }}
                   args: "${{ matrix.settings.args }} --config '{  }'"
@@ -151,4 +151,4 @@ jobs:
                   releaseBody: ${{ inputs.summary }}
                   releaseDraft: true
                   prerelease: ${{ inputs.prerelease }}
-                  updaterJsonKeepUniversal: true
+                #   updaterJsonKeepUniversal: true
