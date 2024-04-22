@@ -4,7 +4,7 @@ import { CodeLang } from "~/types";
 interface BaseDocsTopic {
 	id: string;
 	title: string;
-	languagesExclude?: CodeLang[];
+	excludeLanguages?: CodeLang[];
 }
 
 export interface TopicProps {

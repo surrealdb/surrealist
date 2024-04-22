@@ -13,8 +13,6 @@ import {DocsAuthSignUp} from "./topics/authentication/sign-up";
 import {DocsAuthSignIn} from "./topics/authentication/sign-in";
 import {DocsAuthTokens} from "./topics/authentication/tokens";
 import {DocsAuthAccessUserData} from "./topics/authentication/access-user-data";
-import {DocsGlobalSchema} from "./topics/global/schema";
-import {DocsGlobalSchemaTables} from "./topics/global/schema-tables";
 import {DocsSchemaParams} from "./topics/schema/params";
 import {DocsSchemaScopes} from "./topics/schema/scopes";
 import {DocsSchemaUsers} from "./topics/schema/users";
@@ -28,11 +26,7 @@ import {DocsTablesInsertingRecords} from "./topics/tables/inserting-records";
 import {DocsTablesUpdatingRecords} from "./topics/tables/updating-records";
 import {DocsTablesDeletingRecords} from "./topics/tables/deleting-records";
 import {DocsTablesLiveSelecting} from "./topics/tables/live-selecting";
-import {DocsTablesManageIndexes} from "./topics/tables/manage-indexes";
-import {DocsTablesManageFields} from "./topics/tables/manage-fields";
-import {DocsTablesManageEvents} from "./topics/tables/manage-events";
 import {DocsConceptsFullTextSearch} from "./topics/concepts/full-text-search";
-import {DocsConceptsGraphTraversal} from "./topics/concepts/graph-traversal";
 import {DocsConceptsSurrealML} from "./topics/concepts/surrealml";
 
 
@@ -53,7 +47,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 			id: newId(),
 			title: "Initialises",
 			component: DocsGlobalInit,
-			languagesExclude: ['cli']
+			excludeLanguages: ['cli']
 		},
 		{
 			id: newId(),
@@ -95,7 +89,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					id: newId(),
 					title: "Sign up",
 					component: DocsAuthSignUp,
-					languagesExclude: ['cli']
+					excludeLanguages: ['cli']
 				},
 				{
 					id: newId(),
@@ -106,13 +100,13 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					id: newId(),
 					title: "Tokens",
 					component: DocsAuthTokens,
-					languagesExclude: ['cli']
+					excludeLanguages: ['cli']
 				},
 				{
 					id: newId(),
 					title: "Access user data",
 					component: DocsAuthAccessUserData,
-					languagesExclude: ['rust', 'py', 'go','java']
+					excludeLanguages: ['rust', 'py', 'go','java']
 				}
 			]
 		},
@@ -139,25 +133,25 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					id: newId(),
 					title: "Scopes",
 					component: DocsSchemaScopes,
-					languagesExclude: ['rust', 'py', 'go','java','js','php']
+					excludeLanguages: ['rust', 'py', 'go','java','js','php']
 				},
 				{
 					id: newId(),
 					title: "Users",
 					component: DocsSchemaUsers,
-					languagesExclude: ['rust', 'py', 'go','java','js','php']
+					excludeLanguages: ['rust', 'py', 'go','java','js','php']
 				},
 				{
 					id: newId(),
 					title: "Functions",
 					component: DocsSchemaFunctions,
-					languagesExclude: ['rust', 'py', 'go','java','js','php']
+					excludeLanguages: ['rust', 'py', 'go','java','js','php']
 				},
 				{
 					id: newId(),
 					title: "Analyzers",
 					component: DocsSchemaAnalyzers,
-					languagesExclude: ['rust', 'py', 'go','java']
+					excludeLanguages: ['rust', 'py', 'go','java']
 				}
 			]
 		},

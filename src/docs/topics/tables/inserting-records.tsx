@@ -51,8 +51,8 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 	return (
 		<Article title="Inserting Records">
 			<div>
+				<h3> Table: {topic.extra?.table?.schema?.name} </h3>
 				<p>
-					<h3> Table: {topic.extra?.table?.schema?.name} </h3>
 					Insert records into a table in the database. It could also be used to update existing fields in records within a table.
 				</p>
 			</div>

@@ -7,6 +7,7 @@ import { ScrollFader } from "~/components/ScrollFader";
 import { CodeLang } from "~/types";
 import { RefObject } from "react";
 import { useStable } from "~/hooks/stable";
+import { useSetting } from "~/hooks/config";
 
 export interface TocPaneProps {
 	active: string;
@@ -20,6 +21,7 @@ export function TocPane({
 	docs,
 	scrollRef
 }: TocPaneProps) {
+	const [lang] = useSetting("behavior", "docsLanguage");
 
 	const onOpen = useStable((topic: string) => {
 		scrollRef.current
@@ -58,7 +60,7 @@ export function TocPane({
 				}}
 			>
 				<Stack gap="xs" my="md">
-					{renderTopics(docs, active, onOpen)}
+					{renderTopics(docs, active, lang, onOpen)}
 				</Stack>
 			</ScrollArea>
 		</ContentPane>

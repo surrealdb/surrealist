@@ -30,7 +30,7 @@ export function ArticlePane({
 
 		const flatten = (list: DocsTopic[]) => {
 			for (const topic of list) {
-				if (topic.languagesExclude?.includes(language)) continue;
+				if (topic.excludeLanguages?.includes(language)) continue;
 				if (isLink(topic)) continue;
 
 				if (isSection(topic)) {

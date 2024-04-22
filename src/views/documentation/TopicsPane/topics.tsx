@@ -6,11 +6,13 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { DocsArticleTopic, DocsGroupTopic, DocsLinkTopic, DocsSectionTopic, DocsTopic, isArticle, isGroup, isLink, isSection } from "~/docs/types";
 import { useStable } from "~/hooks/stable";
+import { CodeLang } from "~/types";
 import { iconChevronDown, iconChevronUp, iconOpen } from "~/util/icons";
 
 interface TopicProps<T> {
 	active: string;
 	entry: T;
+	lang: CodeLang;
 	onOpen: (topic: string) => void
 }
 
@@ -32,7 +34,7 @@ export function ArticleTopic({ active, entry, onOpen }: TopicProps<DocsArticleTo
 	);
 }
 
-export function GroupTopic({ active, entry, onOpen }: TopicProps<DocsGroupTopic>) {
+export function GroupTopic({ active, entry, lang, onOpen }: TopicProps<DocsGroupTopic>) {
 
 	const onClick = useStable(() => {
 		onOpen(entry.children[0].id);
@@ -52,7 +54,7 @@ export function GroupTopic({ active, entry, onOpen }: TopicProps<DocsGroupTopic>
 			</Entry>
 			<Collapse in={hasFocus}>
 				<Stack gap="xs" ml="lg">
-					{renderTopics(entry.children, active, onOpen)}
+					{renderTopics(entry.children, active, lang, onOpen)}
 				</Stack>
 			</Collapse>
 		</>
@@ -71,7 +73,7 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 	);
 }
 
-export function SectionTopic({ entry, active, onOpen }: TopicProps<DocsSectionTopic>) {
+export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSectionTopic>) {
 	const [opened, { toggle }] = useDisclosure(true);
 
 	return (
@@ -94,21 +96,24 @@ export function SectionTopic({ entry, active, onOpen }: TopicProps<DocsSectionTo
 			</Group>
 			<Collapse in={opened}>
 				<Stack gap="xs">
-					{renderTopics(entry.topics, active, onOpen)}
+					{renderTopics(entry.topics, active, lang, onOpen)}
 				</Stack>
 			</Collapse>
 		</>
 	);
 }
 
-export function renderTopics(entries: DocsTopic[], active: string, onOpen: (topic: string) => void) {
-	return entries.map((entry) => {
+export function renderTopics(entries: DocsTopic[], active: string, lang: CodeLang, onOpen: (topic: string) => void) {
+	return entries.filter((entry) => {
+		return entry?.excludeLanguages?.includes(lang) !== true;
+	}).map((entry) => {
 		if (isSection(entry)) {
 			return (
 				<SectionTopic
 					key={entry.id}
 					active={active}
 					entry={entry}
+					lang={lang}
 					onOpen={onOpen}
 				/>
 			);
@@ -118,6 +123,7 @@ export function renderTopics(entries: DocsTopic[], active: string, onOpen: (topi
 					key={entry.id}
 					active={active}
 					entry={entry}
+					lang={lang}
 					onOpen={onOpen}
 				/>
 			);
@@ -127,6 +133,7 @@ export function renderTopics(entries: DocsTopic[], active: string, onOpen: (topi
 					key={entry.id}
 					active={active}
 					entry={entry}
+					lang={lang}
 					onOpen={onOpen}
 				/>
 			);
@@ -136,6 +143,7 @@ export function renderTopics(entries: DocsTopic[], active: string, onOpen: (topi
 					key={entry.id}
 					active={active}
 					entry={entry}
+					lang={lang}
 					onOpen={onOpen}
 				/>
 			);
