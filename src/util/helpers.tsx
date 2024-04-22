@@ -161,7 +161,7 @@ export function extractType(input: string): [string, string[]] {
  * Create a new unique id
  */
 export function newId() {
-	return uid(5);
+	return uid(9);
 }
 
 /**
