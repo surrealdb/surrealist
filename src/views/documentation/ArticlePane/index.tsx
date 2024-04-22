@@ -121,11 +121,11 @@ export function ArticlePane({
 						return (
 							<Box
 								key={index}
-								px="xl"
+								mx="xl"
 								py={42}
 								data-topic={doc.id}
 								style={{
-									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-6)" : "none"
+									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-7)" : "none"
 								}}
 							>
 								<Group c="bright" my="xl">
@@ -142,11 +142,11 @@ export function ArticlePane({
 						return (
 							<Box
 								key={index}
-								px="xl"
+								mx="xl"
 								py={42}
 								data-topic={doc.id}
 								style={{
-									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-6)" : "none"
+									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-7)" : "none"
 								}}
 							>
 								<Box maw={1500}>
