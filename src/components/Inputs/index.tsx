@@ -169,8 +169,8 @@ export function PermissionInput({
 					<Tooltip label="Reject all access">
 						<ActionIcon
 							color="red.5"
-							onClick={() => onChange("FULL")}
-							variant={textValue.toUpperCase() === "FALSE" ? "light" : "subtle"}
+							onClick={() => onChange("NONE")}
+							variant={textValue.toUpperCase() === "NONE" ? "light" : "subtle"}
 						>
 							<Icon path={iconCancel} />
 						</ActionIcon>
@@ -239,6 +239,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 						>
 							{tables.map((table) => (
 								<Button
+									key={table.schema.name}
 									style={{ flexShrink: 0 }}
 									onClick={() => insert(table)}
 									variant="light"

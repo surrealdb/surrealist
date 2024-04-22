@@ -80,7 +80,10 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 		const index = schema.tables.findIndex(t => t.schema.name === tableName);
 
 		const definition: TableInfo = {
-			schema: table,
+			schema: {
+				...table,
+				changefeed: table.changefeed?.replace(/^CHANGEFEED /, '')
+			},
 			fields: Object.values(info.fields),
 			indexes: Object.values(info.indexes),
 			events: Object.values(info.events).map(ev => ({

@@ -2,7 +2,7 @@
 export function SurrealIcon() {
 	return (
 		<svg viewBox="0 0 128 128" height={32}>
-			<linearGradient id="surreal" x1="1" y1="6" x2="127" y2="122" gradientUnits="userSpaceOnUse"><stop stop-color="#FF00A0" /><stop offset="1" stop-color="#9600FF" /></linearGradient><path fill="url(#surreal)" d="M48.9819 45.8954L10.1163 6.4375L1.49123 15.194L40.3037 54.5981C43.9144 58.2638 43.9144 64.2225 40.3037 67.8881L1.49121 107.292L10.1163 116.049L48.9819 76.5908C57.3351 68.1102 57.3351 54.376 48.9819 45.8954ZM126.5 108.315H44.9116V121.5H126.5V108.315Z"/>
+			<linearGradient id="surreal" x1="1" y1="6" x2="127" y2="122" gradientUnits="userSpaceOnUse"><stop stopColor="#FF00A0" /><stop offset="1" stopColor="#9600FF" /></linearGradient><path fill="url(#surreal)" d="M48.9819 45.8954L10.1163 6.4375L1.49123 15.194L40.3037 54.5981C43.9144 58.2638 43.9144 64.2225 40.3037 67.8881L1.49121 107.292L10.1163 116.049L48.9819 76.5908C57.3351 68.1102 57.3351 54.376 48.9819 45.8954ZM126.5 108.315H44.9116V121.5H126.5V108.315Z"/>
 		</svg>
 	);
 }

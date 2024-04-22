@@ -4,8 +4,10 @@ import { objectify } from "radash";
 import { Accordion, Group } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { Updater } from "use-immer";
-import { tb } from "~/util/helpers";
+import { printLog, tb } from "~/util/helpers";
 import { Icon } from "~/components/Icon";
+
+const printMsg = (...args: any[]) => printLog("Designer", "#0cd6e8", ...args);
 
 export interface ElementProps {
 	data: TableInfo;
@@ -26,7 +28,7 @@ export function SectionTitle({ children, icon }: { children: string, icon: strin
 }
 
 function buildPermission(type: string, value: boolean | string) {
-	return ` FOR ${type} ${value}`;
+	return ` FOR ${type} ${value === true ? 'FULL' : value === false ? 'NONE' : value}`;
 }
 
 /**
@@ -144,6 +146,10 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 		queries.push(query);
 	}
 
+	printMsg("Applying queries:");
+
+	for (const query of queries) printMsg(query);
+
 	return queries.join(";\n");
 }
 
@@ -156,30 +162,29 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 export function isSchemaValid(info: TableInfo): boolean {
 	const result =
 		info.schema.name &&
-		info.schema.permissions.create &&
-		info.schema.permissions.select &&
-		info.schema.permissions.update &&
-		info.schema.permissions.delete &&
+		info.schema.permissions.create !== "" &&
+		info.schema.permissions.select !== "" &&
+		info.schema.permissions.update !== "" &&
+		info.schema.permissions.delete !== "" &&
 		(info.schema.kind.kind !== "RELATION" || (info.schema.kind.in && info.schema.kind.out)) &&
 		info.fields.every(
 			(field) =>
 				field.name &&
-				field.permissions.create &&
-				field.permissions.select &&
-				field.permissions.update &&
-				field.permissions.delete
+				field.permissions.create !== "" &&
+				field.permissions.select !== "" &&
+				field.permissions.update !== "" &&
+				field.permissions.delete !== ""
 		) &&
 		info.indexes.every(
 			(index) =>
 				index.name &&
-				index.cols &&
-				index.index
+				index.cols
 		) &&
 		info.events.every(
 			(event) =>
 				event.name &&
 				event.when &&
-				event.then
+				event.then[0].length > 0
 		);
 
 	return !!result;
