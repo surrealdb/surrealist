@@ -11,7 +11,7 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		Select * from ${table.schema.name}
+		SELECT * FROM ${table.schema.name}
 		`,
 		js: `
 		db.select('${table.schema.name}');

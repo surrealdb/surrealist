@@ -19,7 +19,7 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql -e ${endpoint} --ns ${connection.namespace} --db ${connection.database} --user ... --pass ...
+			surreal sql  -e ${endpoint} --ns ${connection.namespace} --db ${connection.database} --user ... --pass ...
 		`,
 		js: `
 		// Authenticate with a root user

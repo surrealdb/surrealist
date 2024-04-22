@@ -12,7 +12,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		UPDATE ${table.schema.name}:DEMO
+		UPDATE ${table.schema.name}:demo
 		`,
 		js: `
 		// Update all records in a table

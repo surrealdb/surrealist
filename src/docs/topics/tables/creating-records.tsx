@@ -11,7 +11,7 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		CREATE ${table.schema.name}:DEMO
+		CREATE ${table.schema.name}:demo
 		`,
 		js: `
 		db.create('${table.schema.name}');

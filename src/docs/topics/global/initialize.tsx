@@ -15,7 +15,7 @@ export function DocsGlobalInit({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${endpoint} --namespace ${connection.namespace} --database ${connection.database}
+			surreal sql --endpoint ${endpoint} --namespace ${connection.namespace} --database ${connection.database}
 		`,
 		js: `
 			import { Surreal } from 'surrealdb.js';

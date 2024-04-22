@@ -3,41 +3,51 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
+import { useActiveConnection } from "~/hooks/connection";
+import { connectionUri } from "~/util/helpers";
 
 export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 
 	const schema = useSchema();
+	const { connection } = useActiveConnection();
+	const endpoint = connectionUri(connection);
+	const esc_endpoint = JSON.stringify(endpoint);
+	const esc_namespace = JSON.stringify(connection.namespace);
+	const esc_database = JSON.stringify(connection.database);
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
+		DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+		DEFINE INDEX page_hostname ON page FIELDS hostname;
+		DEFINE INDEX page_date_indexed ON page FIELDS date;
+		DEFINE INDEX unique_page ON page FIELDS hostname, path UNIQUE;
+		DEFINE INDEX page_title ON page FIELDS title SEARCH ANALYZER simple BM25(1.2,0.75);
+		DEFINE INDEX page_path ON page FIELDS path SEARCH ANALYZER simple BM25(1.2,0.75);
+		DEFINE INDEX page_h1 ON page FIELDS h1 SEARCH ANALYZER simple BM25(1.2,0.75);
+		DEFINE INDEX page_h2 ON page FIELDS h2 SEARCH ANALYZER simple BM25(1.2,0.75);
+		DEFINE INDEX page_h3 ON page FIELDS h3 SEARCH ANALYZER simple BM25(1.2,0.75);
+		DEFINE INDEX page_h4 ON page FIELDS h4 SEARCH ANALYZER simple BM25(1.2,0.75);
+		DEFINE INDEX page_content ON page FIELDS content SEARCH ANALYZER simple BM25(1.2,0.75) HIGHLIGHTS;
+		DEFINE INDEX page_code ON page FIELDS code SEARCH ANALYZER simple BM25(1.2,0.75);
 		`,
 		js: `
-		import { Surreal } from 'surrealdb.js';
-
-		const db = new Surreal();
-
-		import { Surreal } from 'surrealdb.js';
-		const db = new Surreal();
-		await db.connect('<the actual address of the connection>/rpc', {
-			namespace: '<the actual ns of the connection>',
-			database: '<the action db of the connection>'
-		});
-
+		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+		DEFINE INDEX page_hostname ON page FIELDS hostname;
+		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
 		rust: `
-		//Connect to a local endpoint
-		DB.connect::<Ws>("127.0.0.1:8000").await?;
-		//Connect to a remote endpoint
-		DB.connect::<Wss>("cloud.surrealdb.com").await?;
+		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+		DEFINE INDEX page_hostname ON page FIELDS hostname;
+		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
 		py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
+		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+		DEFINE INDEX page_hostname ON page FIELDS hostname;
+		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
 		go: `
 		// Connect to a local endpoint
@@ -46,7 +56,10 @@ export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 		dotnet: `
-		await db.Connect();
+		db.Query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+		DEFINE INDEX page_hostname ON page FIELDS hostname;
+		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
 		java:`
 		// Connect to a local endpoint

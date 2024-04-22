@@ -15,7 +15,7 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			$ surreal sql --endpoint ${endpoint} --namespace ${esc_namespace} --database ${connection.database}
+			surreal sql --endpoint ${endpoint} --namespace ${esc_namespace} --database ${connection.database}
 		`,
 		js: `
 			await db.connect(${esc_endpoint}, {
