@@ -129,7 +129,7 @@ jobs:
               shell: bash
               run: echo "$APPLE_API_KEY_CONTENT" >> ${{ github.workspace }}/apple-api-key.p8
 
-            - uses: tauri-apps/tauri-action@v0.5.1
+            - uses: tauri-apps/tauri-action@v0
               id: build
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -143,10 +143,10 @@ jobs:
                   APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
                   APPLE_API_KEY_PATH: ${{ github.workspace }}/apple-api-key.p8
               with:
-                #   appVersion: surrealist-v${{ needs.version.outputs.version }}
-                  releaseId: surrealist-v${{ needs.version.outputs.version }}
-                  tagName: surrealist-v${{ needs.version.outputs.version }}
-                  args: "${{ matrix.settings.args }} --config '{  }'"
+                  appVersion: surrealist-v${{ needs.version.outputs.version }}
+                #   releaseId: surrealist-v${{ needs.version.outputs.version }}
+                #   tagName: surrealist-v${{ needs.version.outputs.version }}
+                  args: "${{ matrix.settings.args }}"
                   releaseName: 'Surrealist v${{ needs.version.outputs.version }}'
                   releaseBody: ${{ inputs.summary }}
                   releaseDraft: true
