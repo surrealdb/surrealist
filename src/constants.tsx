@@ -63,11 +63,11 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: "CLI", value: "cli" },
 	{ label: "Rust", value: "rust" },
 	{ label: "JavaScript", value: "js" },
-	{ label: "Go", value: "go" },
+	// { label: "Go", value: "go" },
 	{ label: "Python", value: "py" },
 	{ label: ".NET", value: "dotnet" },
-	{ label: "Java", value: "java" },
-	{ label: "PHP", value: "php" }
+	// { label: "Java", value: "java" },
+	// { label: "PHP", value: "php" }
 ];
 
 export const VALUE_MODES: Selectable<ValueMode>[] = [

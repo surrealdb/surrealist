@@ -36,7 +36,7 @@ function App() {
 		if (theme !== 'auto') search.append('theme', theme);
 
 		const url = new URL(location.toString());
-		url.pathname = url.hostname == 'localhost' ? 'embed/run.html' : 'embed';
+		url.pathname = url.hostname == 'localhost' ? 'mini/run.html' : 'mini';
 		url.search = search.toString();
 
 		return url.toString();
