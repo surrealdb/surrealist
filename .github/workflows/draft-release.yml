@@ -129,7 +129,7 @@ jobs:
               shell: bash
               run: echo "$APPLE_API_KEY_CONTENT" >> ${{ github.workspace }}/apple-api-key.p8
 
-            - uses: tauri-apps/tauri-action@v0
+            - uses: tauri-apps/tauri-action@v0.2
               id: build
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
