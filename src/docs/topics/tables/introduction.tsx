@@ -10,7 +10,7 @@ export function DocsTablesIntroduction({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}>
+		
 		-- Create schemafull user table.
 		DEFINE TABLE table_name SCHEMAFULL;
 		`,

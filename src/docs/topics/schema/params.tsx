@@ -13,10 +13,10 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
 		// Assign the variable on the connection
-		${connection.namespace}/${connection.database}> DEFINE PARAM $endpointBase VALUE "https://dummyjson.com";
+		DEFINE PARAM $endpointBase VALUE "https://dummyjson.com";
 
 		// Remove a parameter from the connection
-		${connection.namespace}/${connection.database}> REMOVE PARAM $endpointBase;
+		REMOVE PARAM $endpointBase;
 
 		`,
 		js: `

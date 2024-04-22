@@ -11,7 +11,7 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}>
+		
 		-- Create a root user
 		DEFINE USER username ON ROOT PASSWORD '123456' ROLES OWNER;
 		`,

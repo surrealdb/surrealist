@@ -11,7 +11,7 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> INSERT INTO ${table.schema.name} {
+		INSERT INTO ${table.schema.name} {
 			field: value
 		};
 		`,

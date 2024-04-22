@@ -11,7 +11,7 @@ export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> LIVE SELECT DIFF FROM ${table.schema.name};
+		LIVE SELECT DIFF FROM ${table.schema.name};
 		`,
 		js: `
 		// The uuid of the live query will be returned

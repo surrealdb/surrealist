@@ -12,7 +12,7 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> -- It is necessary to prefix the name of your function with "fn::"
+		-- It is necessary to prefix the name of your function with "fn::"
 		-- This indicates that it's a custom function
 		DEFINE FUNCTION fn::greet($name: string) {
 			RETURN "Hello, " + $name + "!";

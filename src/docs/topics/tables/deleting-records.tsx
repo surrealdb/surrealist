@@ -11,7 +11,7 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> DELETE ${table.schema.name}:DEMO
+		DELETE ${table.schema.name}:DEMO
 		`,
 		js: `
 		db.delete('${table.schema.name}');

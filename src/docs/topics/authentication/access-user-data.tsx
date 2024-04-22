@@ -10,7 +10,7 @@ export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			${connection.namespace}/${connection.database}> $auth;
+			RETURN $auth;
 		`,
 		js: `
 			await db.info();

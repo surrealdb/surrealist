@@ -12,7 +12,7 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> $ Select ${fieldName} from ${topic.extra?.table?.schema?.name}
+		$ Select ${fieldName} from ${topic.extra?.table?.schema?.name}
 		`,
 		js: `
 		// Select a specific record from a table

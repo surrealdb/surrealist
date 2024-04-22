@@ -12,7 +12,7 @@ export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
+		DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
 		`,
 		js: `
 		import { Surreal } from 'surrealdb.js';

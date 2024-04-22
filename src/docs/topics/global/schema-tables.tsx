@@ -11,10 +11,10 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> CREATE townsperson, cat, dog SET created_at = time::now(), name = "Just a " + meta::tb(id);
+		CREATE townsperson, cat, dog SET created_at = time::now(), name = "Just a " + meta::tb(id);
 
 		// Select all records from the townsperson table
-		${connection.namespace}/${connection.database}> SELECT * FROM townsperson;
+		SELECT * FROM townsperson;
 		`,
 		js: `
 		// Create a record with a random ID

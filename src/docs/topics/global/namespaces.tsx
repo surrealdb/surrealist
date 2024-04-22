@@ -11,7 +11,7 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-			${connection.namespace}/${connection.database}> USE NS ${connection.namespace};
+			USE NS ${connection.namespace};
 		`,
 		js: `
 			await db.use({
