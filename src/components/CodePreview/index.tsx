@@ -99,7 +99,6 @@ export function CodePreview({
 					tt="uppercase"
 					fw={600}
 					mb="sm"
-					pl="xs"
 					c="bright"
 				>
 					{title}

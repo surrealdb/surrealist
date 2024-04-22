@@ -128,7 +128,6 @@ export function DocsGlobalIntroduction() {
 					tt="uppercase"
 					fw={600}
 					mb="sm"
-					pl="xs"
 					c="bright"
 				>
 					Select a preview language
