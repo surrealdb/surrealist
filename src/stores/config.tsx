@@ -59,6 +59,7 @@ export type ConfigStore = SurrealistConfig & {
 	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
 	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
 	setFeatureFlag: <T extends FeatureFlag<typeof schema>>(key: T, value: FeatureFlagOption<typeof schema, T>) => void;
+	setPreviousVersion: (previousVersion: string) => void;
 	pushCommand: (command: string) => void;
 	updateViewedNews: () => void;
 	completeOnboarding: (key: string) => void;
@@ -293,6 +294,10 @@ export const useConfigStore = create<ConfigStore>()(
 				commandHistory
 			};
 		}),
+
+		setPreviousVersion: (previousVersion) => set(() => ({
+			previousVersion
+		})),
 
 		updateViewedNews: () => set(() => ({
 			lastViewedNewsAt: Date.now()

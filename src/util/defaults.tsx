@@ -9,6 +9,7 @@ export function createBaseConfig(): SurrealistConfig {
 
 	return {
 		configVersion: CONFIG_VERSION,
+		previousVersion: import.meta.env.VERSION,
 		connections: [],
 		sandbox: createSandboxConnection(settings),
 		activeView: 'query',

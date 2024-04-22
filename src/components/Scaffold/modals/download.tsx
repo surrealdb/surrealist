@@ -17,7 +17,7 @@ export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
 		<Modal
 			opened={opened}
 			onClose={onClose}
-			size={550}
+			size={475}
 			padding={0}
 		>
 			<ActionIcon
@@ -33,7 +33,7 @@ export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
 
 			<Stack p={24}>
 				<Text size="lg">
-					Take your SurrealDB journey to the next level with Surrealist Desktop and gain advanced capabilities designed for an optimized experience
+					Take your SurrealDB journey to the next level with Surrealist Desktop and gain advanced capabilities designed for an optimized experience.
 				</Text>
 
 				<List

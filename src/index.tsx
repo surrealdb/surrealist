@@ -10,6 +10,8 @@ import "./assets/styles/global.scss";
 import "./adapter";
 
 import dayjs from "dayjs";
+import compare from "semver-compare";
+import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { App } from "./components/App";
@@ -20,8 +22,8 @@ import { useConfigStore } from "./stores/config";
 import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from './util/background';
 import { getSetting } from "./util/config";
 import { generateEditorIcons } from "./util/editor/icons";
-import posthog from 'posthog-js';
 import { isProduction } from "./util/environment";
+import { useInterfaceStore } from "./stores/interface";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -64,5 +66,14 @@ import { isProduction } from "./util/environment";
 
 	// NOTE Temporary until react flow is fixed
 	document.body.addEventListener('keydown', e => e.stopPropagation());
+
+	// Check for new release
+	const { previousVersion, setPreviousVersion } = useConfigStore.getState();
+	const { setShowChangelogAlert } = useInterfaceStore.getState();
+
+	if (compare(import.meta.env.VERSION, previousVersion) > 0) {
+		setShowChangelogAlert(true);
+		setPreviousVersion(import.meta.env.VERSION);
+	}
 
 })();

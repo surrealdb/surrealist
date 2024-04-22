@@ -128,6 +128,7 @@ export interface SurrealistSettings {
 
 export interface SurrealistConfig {
 	configVersion: number;
+	previousVersion: string;
 	connections: Connection[];
 	sandbox: Connection;
 	activeView: ViewMode;

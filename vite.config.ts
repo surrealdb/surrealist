@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { Mode, plugin as markdown } from 'vite-plugin-markdown';
 import { defineConfig } from 'vite';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -7,7 +8,12 @@ const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react()],
+	plugins: [
+		react(),
+		markdown({
+			mode: [Mode.HTML]
+		})
+	],
 	clearScreen: false,
 	envPrefix: ['VITE_', 'TAURI_'],
 	server: {

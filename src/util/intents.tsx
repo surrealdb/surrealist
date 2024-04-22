@@ -4,6 +4,7 @@ const INTENT_REGISTRY = {
 	'open-connections': null,
 	'open-help': null,
 	'open-news': null,
+	'open-changelog': null,
 	'open-settings': null,
 	'new-connection': null,
 	'new-table': null,

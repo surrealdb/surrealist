@@ -360,6 +360,12 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				id: newId(),
+				name: "Open version changelogs",
+				icon: iconStar,
+				action: intent("open-changelog"),
+			},
+			{
+				id: newId(),
 				name: "Download Desktop App",
 				icon: iconDownload,
 				action: intent('download-app'),

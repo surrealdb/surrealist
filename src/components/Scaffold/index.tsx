@@ -37,6 +37,7 @@ import { ModelsView } from "~/views/models/ModelsView";
 import { LegacyModal } from "./modals/legacy";
 import { SandboxModal } from "./modals/sandbox";
 import { executeUserQuery } from "~/connection";
+import { ChangelogModal } from "./modals/changelog";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -163,6 +164,7 @@ export function Scaffold() {
 			<ConnectionEditor />
 			<LegacyModal />
 			<SandboxModal />
+			<ChangelogModal />
 
 			<CommandPaletteModal
 				opened={showPalette}

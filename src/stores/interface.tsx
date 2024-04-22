@@ -22,6 +22,7 @@ export type InterfaceStore = {
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
 	showScopeSignup: boolean;
+	showChangelogAlert: boolean;
 
 	setWindowTitle: (title: string) => void;
 	setColorPreference: (preference: ColorScheme) => void;
@@ -38,6 +39,7 @@ export type InterfaceStore = {
 	clearLiveQueryMessages: (id: string) => void;
 	openScopeSignup: () => void;
 	closeScopeSignup: () => void;
+	setShowChangelogAlert: (show: boolean) => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
@@ -53,6 +55,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	liveTabs: new Set<string>(),
 	liveQueryMessages: {},
 	showScopeSignup: false,
+	showChangelogAlert: false,
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
@@ -137,6 +140,10 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	closeScopeSignup: () => set(() => ({
 		showScopeSignup: false,
+	})),
+
+	setShowChangelogAlert: (show) => set(() => ({
+		showChangelogAlert: show,
 	})),
 
 }));

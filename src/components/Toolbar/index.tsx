@@ -14,7 +14,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { Connections } from "./connections";
 import { useDisclosure } from "@mantine/hooks";
 import { ConsoleDrawer } from "./ConsoleDrawer";
-import { iconFile, iconReset } from "~/util/icons";
+import { iconFile, iconReset, iconStar } from "~/util/icons";
 import { HelpAndSupport } from "./HelpAndSupport";
 import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
@@ -22,11 +22,14 @@ import { syncDatabaseSchema } from "~/util/schema";
 import { NewsFeed } from "./NewsFeed";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { executeQuery, openConnection } from "~/connection";
+import { useInterfaceStore } from "~/stores/interface";
+import { dispatchIntent } from "~/hooks/url";
 
 export function Toolbar() {
 	const { updateConnection } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
+	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const connection = useConnection();
 
@@ -67,6 +70,10 @@ export function Toolbar() {
 			title: "Dataset loaded",
 			subtitle: `${info.name} has been applied`
 		});
+	});
+
+	const openChangelog = useStable(() => {
+		dispatchIntent("open-changelog");
 	});
 
 	const isSandbox = connection?.id === "sandbox";
@@ -126,6 +133,23 @@ export function Toolbar() {
 				)}
 
 				<Spacer />
+
+				{showChangelog && (
+					<Button
+						h={34}
+						size="xs"
+						radius="xs"
+						color="surreal"
+						variant="gradient"
+						style={{ border: "none" }}
+						onClick={openChangelog}
+						leftSection={
+							<Icon path={iconStar} left />
+						}
+					>
+						See what's new in {import.meta.env.VERSION}
+					</Button>
+				)}
 
 				{connection && adapter.isServeSupported && (
 					<LocalDatabase
