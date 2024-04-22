@@ -42,7 +42,7 @@ export function NewsFeed() {
 		setLoading(true);
 
 		try {
-			const response = await fetch(`https://surrealdb.com/feed/news.rss`);
+			const response = await fetch(`https://surrealdb.com/feed/blog.rss`);
 			const body = await response.text();
 			const result = new DOMParser().parseFromString(body, 'text/xml');
 
