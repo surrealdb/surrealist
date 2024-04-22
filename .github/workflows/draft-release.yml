@@ -60,7 +60,7 @@ jobs:
         permissions:
             contents: write
         strategy:
-            fail-fast: true
+            fail-fast: false
             matrix:
                 settings:
                     - platform: "macos-latest"
@@ -144,11 +144,11 @@ jobs:
                   APPLE_API_KEY_PATH: ${{ github.workspace }}/apple-api-key.p8
               with:
                   appVersion: surrealist-v${{ needs.version.outputs.version }}
-                #   releaseId: surrealist-v${{ needs.version.outputs.version }}
-                #   tagName: surrealist-v${{ needs.version.outputs.version }}
+                  releaseId: surrealist-v${{ needs.version.outputs.version }}
+                  tagName: surrealist-v${{ needs.version.outputs.version }}
                   args: "${{ matrix.settings.args }}"
                   releaseName: 'Surrealist v${{ needs.version.outputs.version }}'
                   releaseBody: ${{ inputs.summary }}
                   releaseDraft: true
                   prerelease: ${{ inputs.prerelease }}
-                #   updaterJsonKeepUniversal: true
+                  updaterJsonKeepUniversal: true
