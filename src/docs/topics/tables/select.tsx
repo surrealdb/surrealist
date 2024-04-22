@@ -1,15 +1,14 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/docs/components";
+import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
+import { getTable } from "~/docs/helpers";
 
 export function DocsTablesSelect({ language, topic }: TopicProps) {
+	const table = getTable(topic);
+	const fieldName = table.fields.find(({ name }: { name: string }) => !['id', 'in', 'out'].includes(name))?.name ?? 'table:id';
 
-	const fieldName = topic.extra?.table?.fields.find(({ name }: { name: string }) => !['id', 'in', 'out'].includes(name))?.name ?? 'record:id';
-
-	const schema = useSchema();
 	const { connection } = useActiveConnection();
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
@@ -42,9 +41,8 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Selecting Fields">
+		<Article title={<TableTitle title="Selecting individual fields" table={table.schema.name} />}>
 			<div>
-				<h2>Table: {topic.extra?.table?.schema?.name} </h2>
 				<p>
 					Selecting fields operation is useful when you want to retrieve specific fields in a table without retrieving all the fields. To do this, you need to know the field name in the table you want to retrieve.
 				</p>

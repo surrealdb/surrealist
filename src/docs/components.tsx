@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { Extension } from "@codemirror/state";
-import { Box, PaperProps, SimpleGrid, Title } from "@mantine/core";
+import { Badge, Box, Group, PaperProps, SimpleGrid, Title } from "@mantine/core";
 import { CodePreview } from "~/components/CodePreview";
 import { CodeLang } from "~/types";
 import { Snippets } from "./types";
@@ -11,7 +11,7 @@ import { rust } from "@codemirror/lang-rust";
 import { javascript } from "@codemirror/lang-javascript";
 
 export interface ArticleProps {
-	title: string;
+	title?: React.ReactNode;
 	children: React.ReactNode | [React.ReactNode, React.ReactNode];
 }
 
@@ -21,9 +21,11 @@ export function Article({
 }: ArticleProps) {
 	return (
 		<Box className={classes.article}>
-			<Title mb="sm" c="bright">
-				{title}
-			</Title>
+			{title && (
+				<Title mb="sm" c="bright">
+					{title}
+				</Title>
+			)}
 			<SimpleGrid cols={2} spacing={64}>
 				{children}
 			</SimpleGrid>
@@ -56,5 +58,16 @@ export function DocsPreview({ title, values, language }: DocsPreviewProps) {
 			extensions={snippet ? EXTENSIONS[language] : undefined}
 			withCopy
 		/>
+	);
+}
+
+export function TableTitle({ title, table }: { title: string, table: string|undefined }) {
+	return (
+		<Group>
+			{title}
+			<Badge variant="light">
+				{table}
+			</Badge>
+		</Group>
 	);
 }

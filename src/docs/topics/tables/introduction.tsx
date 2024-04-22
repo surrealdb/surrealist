@@ -2,34 +2,32 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsTablesIntroduction({ language, topic }: TopicProps) {
 
-	const schema = useSchema();
 	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
 		${connection.namespace}/${connection.database}>
 		-- Create schemafull user table.
-		DEFINE TABLE user SCHEMAFULL;
+		DEFINE TABLE table_name SCHEMAFULL;
 		`,
 		js: `
-		db.create('${topic.extra?.table?.schema?.name}');
+		db.create('table_name');
 		`,
 		rust: `
-		db.create("${topic.extra?.table?.schema?.name}").await?;
+		db.create("table_name").await?;
 		`,
 		py: `
-		db.create('${topic.extra?.table?.schema?.name}')
+		db.create('table_name')
 		`,
 		go: `
-		db.Create("${topic.extra?.table?.schema?.name}", map[string]interface{}{})
+		db.Create("table_name", map[string]interface{}{})
 		`,
 		dotnet: `
-		db.Create<${topic.extra?.table?.schema?.name}>("${topic.extra?.table?.schema?.name}");
+		db.Create<TableName>("table_name");
 		`,
 		java:`
 		// Connect to a local endpoint

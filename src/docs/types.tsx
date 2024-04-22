@@ -27,6 +27,7 @@ export interface DocsGroupTopic extends BaseDocsTopic {
 
 export interface DocsSectionTopic extends BaseDocsTopic {
 	topics: DocsTopic[];
+	icon: string;
 }
 
 export type DocsTopic = DocsSectionTopic | DocsLinkTopic | DocsArticleTopic | DocsGroupTopic;

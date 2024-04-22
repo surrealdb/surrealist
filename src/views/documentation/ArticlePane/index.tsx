@@ -1,6 +1,6 @@
-import { Box, ScrollArea, Select } from "@mantine/core";
+import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
 import { ContentPane } from "~/components/Pane";
-import { DocsArticleTopic, DocsTopic, isGroup, isLink, isSection } from "~/docs/types";
+import { DocsArticleTopic, DocsSectionTopic, DocsTopic, isGroup, isLink, isSection } from "~/docs/types";
 import { RefObject, useMemo } from "react";
 import { ScrollFader } from "~/components/ScrollFader";
 import { CodeLang } from "~/types";
@@ -8,6 +8,9 @@ import { useStable } from "~/hooks/stable";
 import { CODE_LANGUAGES } from "~/constants";
 import { useIntent } from "~/hooks/url";
 import { iconAPI } from "~/util/icons";
+import { Icon } from "~/components/Icon";
+
+type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
 export interface ArticlePaneProps {
 	docs: DocsTopic[];
@@ -26,28 +29,38 @@ export function ArticlePane({
 }: ArticlePaneProps) {
 
 	const flattened = useMemo(() => {
-		const result: DocsArticleTopic[] = [];
+		const result: ReadableArticle[] = [];
 
 		const flatten = (list: DocsTopic[]) => {
+			const items: ReadableArticle[] = [];
+
 			for (const topic of list) {
-				if (topic.excludeLanguages?.includes(language)) continue;
-				if (isLink(topic)) continue;
+				if (topic.excludeLanguages?.includes(language) || isLink(topic)) {
+					continue;
+				}
 
 				if (isSection(topic)) {
-					flatten(topic.topics);
+					const children = flatten(topic.topics);
+
+					if (children.length > 0) {
+						items.push(topic, ...children);
+					}
+
 					continue;
 				}
 
 				if (isGroup(topic)) {
-					flatten(topic.children);
+					items.push(...flatten(topic.children));
 					continue;
 				}
 
-				result.push(topic);
+				items.push(topic);
 			}
+
+			return items;
 		};
 
-		flatten(docs);
+		result.push(...flatten(docs));
 
 		return result;
 	}, [docs, language]);
@@ -104,26 +117,47 @@ export function ArticlePane({
 				}}
 			>
 				{flattened.map((doc, index) => {
-					const Content = doc.component;
-
-					return (
-						<Box
-							key={index}
-							px="xl"
-							py={42}
-							data-topic={doc.id}
-							style={{
-								borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-6)" : "none"
-							}}
-						>
-							<Box maw={1500}>
-								<Content
-									topic={doc}
-									language={language}
-								/>
+					if (isSection(doc)) {
+						return (
+							<Box
+								key={index}
+								px="xl"
+								py={42}
+								data-topic={doc.id}
+								style={{
+									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-6)" : "none"
+								}}
+							>
+								<Group c="bright" my="xl">
+									<Icon path={doc.icon} size={2}/>
+									<Title order={1} fz={36}>
+										{doc.title}
+									</Title>
+								</Group>
 							</Box>
-						</Box>
-					);
+						);
+					} else {
+						const Content = doc.component;
+
+						return (
+							<Box
+								key={index}
+								px="xl"
+								py={42}
+								data-topic={doc.id}
+								style={{
+									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-6)" : "none"
+								}}
+							>
+								<Box maw={1500}>
+									<Content
+										topic={doc}
+										language={language}
+									/>
+								</Box>
+							</Box>
+						);
+					}
 				})}
 			</ScrollArea>
 		</ContentPane>

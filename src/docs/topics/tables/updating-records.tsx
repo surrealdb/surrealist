@@ -1,25 +1,25 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/docs/components";
+import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
+import { getTable } from "~/docs/helpers";
 
 export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const fieldName = topic.extra?.table?.fields.find(({ name }: { name: string }) => !['id', 'in', 'out'].includes(name))?.name ?? 'id';
+	const table = getTable(topic);
+	const fieldName = table.fields.find(({ name }: { name: string }) => !['id', 'in', 'out'].includes(name))?.name ?? 'id';
 	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> UPDATE ${topic.extra?.table?.schema?.name}:DEMO
+		${connection.namespace}/${connection.database}> UPDATE ${table.schema.name}:DEMO
 		`,
 		js: `
 		// Update all records in a table
-		await db.update('${topic.extra?.table?.schema?.name}');
+		await db.update('${table.schema.name}');
 
 		// Update a record with a specific ID
-		const [person] = await db.update('${topic.extra?.table?.schema?.name}: ${fieldName}', {
+		const [person] = await db.update('${table.schema.name}: ${fieldName}', {
 			name: 'Tobie',
 			settings: {
 				active: true,
@@ -29,20 +29,20 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 
 		`,
 		rust: `
-		db.update("${topic.extra?.table?.schema?.name}").await?;
+		db.update("${table.schema.name}").await?;
 		`,
 		py: `
 		# Update all records in a table
-		db.update("${topic.extra?.table?.schema?.name}");
+		db.update("${table.schema.name}");
 
 		# Update a record with a specific ID
-		person = await db.update('${topic.extra?.table?.schema?.name}: ${fieldName}', {
+		person = await db.update('${table.schema.name}: ${fieldName}', {
 			'name': 'Jill'
 		})
 
 		`,
 		go: `
-		db.Update("${topic.extra?.table?.schema?.name}", map[string]interface{}{
+		db.Update("${table.schema.name}", map[string]interface{}{
 			"name": "ElecTwix",
 			"settings": map[string]bool{
 				"active": true,
@@ -51,7 +51,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		});
 		`,
 		dotnet: `
-		await db.Upsert(${topic.extra?.table?.schema?.name});
+		await db.Upsert(${table.schema.name});
 		`,
 		java:`
 		// Connect to a local endpoint
@@ -65,11 +65,11 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Updating Records">
+		<Article title={<TableTitle title="Updating records" table={table.schema.name} />}>
 			<div>
-				<h3>Table: {topic.extra?.table?.schema?.name} </h3>
+				<h3>Table: {table.schema.name} </h3>
 				<p>
-					Update or modify all existing record in the table <b>{topic.extra?.table?.schema?.name}</b> or specific records.
+					Update or modify all existing record in the table <b>{table.schema.name}</b> or specific records.
 				</p>
 			</div>
 			<Box>

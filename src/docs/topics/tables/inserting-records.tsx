@@ -1,43 +1,43 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/docs/components";
+import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
+import { getTable } from "~/docs/helpers";
 
 export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
+	const table = getTable(topic);
 	const { connection } = useActiveConnection();
-	const schema = useSchema();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> INSERT INTO ${topic.extra?.table?.schema?.name} {
+		${connection.namespace}/${connection.database}> INSERT INTO ${table.schema.name} {
 			field: value
 		};
 		`,
 		js: `
-		await db.insert('${topic.extra?.table?.schema?.name}', {
+		await db.insert('${table.schema.name}', {
 			field: value
 		});
 		`,
 		rust: `
-		db.update("${topic.extra?.table?.schema?.name}").merge(Document {
+		db.update("${table.schema.name}").merge(Document {
         updated_at: Datetime::default(),
 	}).await?;
 		`,
 		py: `
 		await db.query("""
-        insert into ${topic.extra?.table?.schema?.name} {
+        insert into ${table.schema.name} {
         	field:value
         };
 		`,
 		go: `
-		db.Query("INSERT INTO ${topic.extra?.table?.schema?.name} {
+		db.Query("INSERT INTO ${table.schema.name} {
 			field: value
 		};")
 		`,
 		dotnet: `
-		await db.Merge<${topic.extra?.table?.schema?.name}>(merge);
+		await db.Merge<${table.schema.name}>(merge);
 		`,
 		java:`
 		`,
@@ -49,9 +49,8 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Inserting Records">
+		<Article title={<TableTitle title="Inserting records" table={table.schema.name} />}>
 			<div>
-				<h3> Table: {topic.extra?.table?.schema?.name} </h3>
 				<p>
 					Insert records into a table in the database. It could also be used to update existing fields in records within a table.
 				</p>

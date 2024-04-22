@@ -1,33 +1,32 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/docs/components";
+import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
+import { getTable } from "~/docs/helpers";
 
 export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
-
-	const schema = useSchema();
+	const table = getTable(topic);
 	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> CREATE ${topic.extra?.table?.schema?.name}:DEMO
+		${connection.namespace}/${connection.database}> CREATE ${table.schema.name}:DEMO
 		`,
 		js: `
-		db.create('${topic.extra?.table?.schema?.name}');
+		db.create('${table.schema.name}');
 		`,
 		rust: `
-		db.create("${topic.extra?.table?.schema?.name}").await?;
+		db.create("${table.schema.name}").await?;
 		`,
 		py: `
-		db.create('${topic.extra?.table?.schema?.name}')
+		db.create('${table.schema.name}')
 		`,
 		go: `
-		db.Create("${topic.extra?.table?.schema?.name}", map[string]interface{}{})
+		db.Create("${table.schema.name}", map[string]interface{}{})
 		`,
 		dotnet: `
-		db.Create<${topic.extra?.table?.schema?.name}>("${topic.extra?.table?.schema?.name}");
+		db.Create<${table.schema.name}>("${table.schema.name}");
 		`,
 		java:`
 		driver.create(thing, data)
@@ -40,13 +39,10 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Creating Records">
-			<div>
-				<h3>Table: {topic.extra?.table?.schema?.name} </h3>
-				<p>
-					Add a new record to the table<b> {topic.extra?.table?.schema?.name} </b>. The record will have a random record ID if not specified after the table name. You can also specify the fields of the record.
-				</p>
-			</div>
+		<Article title={<TableTitle title="Creating records" table={table.schema.name} />}>
+			<p>
+				Add a new record to the table<b> {table.schema.name} </b>. The record will have a random record ID if not specified after the table name. You can also specify the fields of the record.
+			</p>
 			<Box>
 				<DocsPreview
 					language={language}

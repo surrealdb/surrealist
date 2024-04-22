@@ -28,6 +28,8 @@ import {DocsTablesDeletingRecords} from "./topics/tables/deleting-records";
 import {DocsTablesLiveSelecting} from "./topics/tables/live-selecting";
 import {DocsConceptsFullTextSearch} from "./topics/concepts/full-text-search";
 import {DocsConceptsSurrealML} from "./topics/concepts/surrealml";
+import { iconAuth, iconBook, iconDesigner, iconStar, iconTable } from "~/util/icons";
+import { DocsTablesInfo } from "./topics/tables/info";
 
 
 /**
@@ -73,6 +75,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		{
 			id: newId(),
 			title: "Authentication",
+			icon: iconAuth,
 			topics: [
 				// {
 				// 	id: newId(),
@@ -113,6 +116,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		{
 			id: newId(),
 			title: "Schema",
+			icon: iconDesigner,
 			topics: [
 				// {
 				// 	id: newId(),
@@ -158,6 +162,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		{
 			id: newId(),
 			title: `Tables`,
+			icon: iconTable,
 			topics: [
 				{
 					id: newId(),
@@ -168,6 +173,12 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					id: newId(),
 					title: `${table.schema.name}`,
 					children: [
+						{
+							id: newId(),
+							title: "Table information",
+							component: DocsTablesInfo,
+							extra: { table }
+						},
 						{
 							id: newId(),
 							title: "Selecting fields",
@@ -235,6 +246,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		{
 			id: newId(),
 			title: "Concepts",
+			icon: iconStar,
 			topics: [
 				{
 					id: newId(),
@@ -256,6 +268,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		{
 			id: newId(),
 			title: "Learn more",
+			icon: iconBook,
 			topics: [
 				{
 					id: newId(),

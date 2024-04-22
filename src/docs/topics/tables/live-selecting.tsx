@@ -1,28 +1,27 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/docs/components";
+import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
+import { getTable } from "~/docs/helpers";
 
 export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
 	const { connection } = useActiveConnection();
-
-	const schema = useSchema();
+	const table = getTable(topic);
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> LIVE SELECT DIFF FROM ${topic.extra?.table?.schema?.name};
+		${connection.namespace}/${connection.database}> LIVE SELECT DIFF FROM ${table.schema.name};
 		`,
 		js: `
 		// The uuid of the live query will be returned
 		const queryUuid = await db.live(
-			"${topic.extra?.table?.schema?.name}",
+			"${table.schema.name}",
 			// The callback function takes an object with the 'action' and 'result' properties
 			({ action, result }) => {
 				// action can be: 'CREATE', 'UPDATE', 'DELETE' or 'CLOSE'
 				if (action === 'CLOSE') return;
-
+table_name
 				// result contains either the entire record, or a set of JSON patches when diff mode is enabled
 						processSomeLiveQueryUpdate(result);
 			}
@@ -56,7 +55,7 @@ export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
 
 		`,
 		dotnet: `
-		await using var liveQuery = db.ListenLive<${topic.extra?.table?.schema?.name}>(queryUuid);
+		await using var liveQuery = db.ListenLive<${table.schema.name}>(queryUuid);
 
 		// Option 1
 		// Consume the live query via an IAsyncEnumerable,
@@ -77,7 +76,7 @@ export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
 			});
 
 
-		await using var liveQuery = await db.LiveQuery<${topic.extra?.table?.schema?.name}>($"LIVE SELECT * FROM type::table({table});");
+		await using var liveQuery = await db.LiveQuery<${table.schema.name}>($"LIVE SELECT * FROM type::table({table});");
 
 // Consume the live query...
 		`
@@ -94,11 +93,10 @@ export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Live Selecting">
+		<Article title={<TableTitle title="Live queries" table={table.schema.name} />}>
 			<div>
-				<h3>Table: {topic.extra?.table?.schema?.name}</h3>
 				<p>
-					Create realtime query notifications for changes to selected records on <b>{topic.extra?.table?.schema?.name}</b> and see live updates  in the live message view in the console.
+					Create realtime query notifications for changes to selected records on <b>{table.schema.name}</b> and see live updates  in the live message view in the console.
 				</p>
 			</div>
 			<Box>

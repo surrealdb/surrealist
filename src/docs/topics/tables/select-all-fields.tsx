@@ -1,33 +1,32 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/docs/components";
+import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
+import { getTable } from "~/docs/helpers";
 
 export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
-
-	const schema = useSchema();
+	const table = getTable(topic);
 	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(() => ({
 		cli: `
-		${connection.namespace}/${connection.database}> Select * from ${topic.extra?.table?.schema?.name}
+		${connection.namespace}/${connection.database}> Select * from ${table.schema.name}
 		`,
 		js: `
-		db.select('${topic.extra?.table?.schema?.name}');
+		db.select('${table.schema.name}');
 		`,
 		rust: `
-		let people: Vec<Person> = db.select("${topic.extra?.table?.schema?.name}").await?;
+		let people: Vec<Person> = db.select("${table.schema.name}").await?;
 		`,
 		py: `
-		db.select('${topic.extra?.table?.schema?.name}');
+		db.select('${table.schema.name}');
 		`,
 		go: `
-		db.Select('${topic.extra?.table?.schema?.name}');
+		db.Select('${table.schema.name}');
 		`,
 		dotnet: `
-		db.Select('${topic.extra?.table?.schema?.name}');
+		db.Select('${table.schema.name}');
 		`,
 		java:`
 		driver.select("thing", rowType)
@@ -40,9 +39,8 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 	}), []);
 
 	return (
-		<Article title="Selecting all fields">
+		<Article title={<TableTitle title="Selecting all fields" table={table.schema.name} />}>
 			<div>
-				<h2>Table: {topic.extra?.table?.schema?.name} </h2>
 				<p>
 					Selecting all fields in a table is a common operation when you want to retrieve all the fields in a table. This operation is useful when you want to retrieve all the fields in a table without specifying the fields explicitly.
 				</p>
