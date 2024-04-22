@@ -1,3 +1,4 @@
+import classes from "./style.module.scss";
 import { Extension } from "@codemirror/state";
 import { Box, PaperProps, SimpleGrid, Title } from "@mantine/core";
 import { CodePreview } from "~/components/CodePreview";
@@ -19,7 +20,7 @@ export function Article({
 	children,
 }: ArticleProps) {
 	return (
-		<Box>
+		<Box className={classes.article}>
 			<Title mb="sm" c="bright">
 				{title}
 			</Title>

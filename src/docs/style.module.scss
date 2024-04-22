@@ -1,3 +1,9 @@
+.article {
+	p:first-child {
+		margin-top: 0;
+	}
+}
+
 .library {
 	display: flex;
 	align-items: center;
@@ -9,11 +15,15 @@
 	gap: 8;
 
 	&:hover {
-		background: var(--surrealist-gradient) !important;
-		box-shadow: var(--surrealist-glow);
+		background-color: var(--mantine-color-slate-6);
+	}
+}
 
-		svg * {
-			fill: white !important;
-		}
+.library-active {
+	background: var(--surrealist-gradient) !important;
+	box-shadow: var(--surrealist-glow);
+
+	svg * {
+		fill: white !important;
 	}
 }

@@ -1,61 +1,87 @@
 import classes from "../../style.module.scss";
 import { Article } from "~/docs/components";
-import { Anchor, Box, Paper, SimpleGrid, Text, Title } from "@mantine/core";
-import { DotNetIcon, GoLangIcon, JavaIcon, JavaScriptIcon, PhpIcon, PythonIcon, RustIcon } from "~/docs/icons";
-import { CodePreview } from "~/components/CodePreview";
+import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
+import { DotNetIcon, JavaScriptIcon, PythonIcon, RustIcon, SurrealIcon } from "~/docs/icons";
 import { useActiveConnection } from "~/hooks/connection";
-import { connectionUri } from "~/util/helpers";
+import { useSetting } from "~/hooks/config";
+import { CodeLang } from "~/types";
+import clsx from "clsx";
+import { Icon } from "~/components/Icon";
+import { iconOpen } from "~/util/icons";
+import { adapter } from "~/adapter";
 
-const LIBRARIES = [
+interface Library {
+	id: CodeLang;
+	name: string;
+	icon: React.FC<{ active?: boolean }>;
+	color: string;
+	link: string;
+}
+
+const LIBRARIES: Library[] = [
 	{
+		id: "cli",
+		name: "CLI",
+		icon: SurrealIcon,
+		color: "#FF00A0",
+		link: "https://surrealdb.com/docs/surrealdb/cli"
+	},
+	{
+		id: "rust",
 		name: "Rust",
 		icon: RustIcon,
 		color: "#f46624",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/rust"
 	},
 	{
+		id: "js",
 		name: "JavaScript",
 		icon: JavaScriptIcon,
 		color: "#F7DF1E",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/javascript"
 	},
+	// {
+	// 	id: "golang",
+	// 	name: "GoLang",
+	// 	icon: GoLangIcon,
+	// 	color: "#00ADD8",
+	// 	link: "https://surrealdb.com/docs/surrealdb/integration/sdks/golang"
+	// },
 	{
-		name: "GoLang",
-		icon: GoLangIcon,
-		color: "#00ADD8",
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/golang"
-	},
-	{
+		id: "py",
 		name: "Python",
 		icon: PythonIcon,
 		color: "#3776AB",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/python"
 	},
 	{
+		id: "dotnet",
 		name: ".NET",
 		icon: DotNetIcon,
 		color: "#512BD4",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/dotnet"
 	},
-	{
-		name: "Java",
-		icon: JavaIcon,
-		color: "#007396",
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/java"
-	},
-	{
-		name: "PHP",
-		icon: PhpIcon,
-		color: "#777BB4",
-		link: "https://github.com/surrealdb/surrealdb.php"
-	}
+	// {
+	// 	id: "java",
+	// 	name: "Java",
+	// 	icon: JavaIcon,
+	// 	color: "#007396",
+	// 	link: "https://surrealdb.com/docs/surrealdb/integration/sdks/java"
+	// },
+	// {
+	// 	id: "php",
+	// 	name: "PHP",
+	// 	icon: PhpIcon,
+	// 	color: "#777BB4",
+	// 	link: "https://github.com/surrealdb/surrealdb.php"
+	// }
 ];
 
 export function DocsGlobalIntroduction() {
-
+	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
 	const { connection } = useActiveConnection();
 
-	const cliCommand = `$ surreal sql --endpoint ${connectionUri(connection)} --namespace ${connection.namespace} --database ${connection.database}`;
+	const active = LIBRARIES.find((lib) => lib.id === language);
 
 	return (
 		<Article title="Surrealist API Docs">
@@ -70,16 +96,33 @@ export function DocsGlobalIntroduction() {
 					Client libraries provide the most streamlined way to interact with SurrealDB. They handle the low-level details of the connection and provide a high-level API for interacting with the database. We provide client libraries for a variety of languages, including Rust, JavaScript, Python, and many more.
 				</p>
 				<Title order={2} mt="xl">
-					SurrealDB CLI
+					Using the CLI
 				</Title>
 				<p>
-					When working outside of a programming environment, the SurrealDB CLI provides a convenient way to interact with your database. It provides a simple command-line interface for executing queries and managing your database.
+					When working outside of a programming environment, the SurrealDB CLI provides a convenient way to interact with your database. It provides a simple command-line interface for executing queries, which is especially useful for limited environments.
 				</p>
+				{active && (
+					<>
+						<Title order={2} mt="xl">
+							Learn more
+						</Title>
+						<p>
+							You can learn more about the selected language by visiting the official documentation.
+						</p>
+						<Button
+							variant="gradient"
+							rightSection={<Icon path={iconOpen} />}
+							onClick={() => adapter.openUrl(active.link)}
+							size="xs"
+						>
+							Visit {active.name} docs
+						</Button>
+					</>
+				)}
 			</div>
 			<Box>
 				<Text
 					fz="lg"
-					ta="center"
 					ff="mono"
 					tt="uppercase"
 					fw={600}
@@ -87,12 +130,10 @@ export function DocsGlobalIntroduction() {
 					pl="xs"
 					c="bright"
 				>
-					Client libraries
+					Select a preview language
 				</Text>
 				<Paper
-					p="lg"
 					radius="xl"
-					withBorder
 				>
 					<SimpleGrid cols={{
 						xs: 1,
@@ -103,16 +144,17 @@ export function DocsGlobalIntroduction() {
 					}}>
 						{LIBRARIES.map((lib) => {
 							const Icon = lib.icon;
+							const isActive = language === lib.id;
 
 							return (
 								<Paper
 									key={lib.name}
 									radius="xl"
 									bg="slate.9"
-									className={classes.library}
-									onClick={() => window.open(lib.link)}
+									className={clsx(classes.library, isActive && classes.libraryActive)}
+									onClick={() => setLanguage(lib.id)}
 								>
-									<Icon />
+									<Icon active={isActive} />
 									<Text mt="xs">
 										{lib.name}
 									</Text>
@@ -121,31 +163,6 @@ export function DocsGlobalIntroduction() {
 						})}
 					</SimpleGrid>
 				</Paper>
-
-				<Text
-					fz="lg"
-					ta="center"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					mt="xl"
-					mb="sm"
-					pl="xs"
-					c="bright"
-				>
-					SurrealDB CLI
-				</Text>
-				<CodePreview
-					value={cliCommand}
-					withCopy
-				/>
-				<Text
-					ta="center"
-					mt="xs"
-					c="slate"
-				>
-					Follow the <Anchor href="https://surrealdb.com/docs/surrealdb/cli">CLI guide</Anchor> for more information on how to use the SurrealDB CLI.
-				</Text>
 			</Box>
 		</Article>
 	);
