@@ -29,7 +29,6 @@ import {DocsTablesLiveSelecting} from "./topics/tables/live-selecting";
 import {DocsConceptsFullTextSearch} from "./topics/concepts/full-text-search";
 import {DocsConceptsSurrealML} from "./topics/concepts/surrealml";
 import { iconAuth, iconBook, iconDesigner, iconStar, iconTable } from "~/util/icons";
-import { DocsTablesInfo } from "./topics/tables/info";
 
 
 /**
@@ -173,12 +172,12 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					id: newId(),
 					title: `${table.schema.name}`,
 					children: [
-						{
-							id: newId(),
-							title: "Table information",
-							component: DocsTablesInfo,
-							extra: { table }
-						},
+						// {
+						// 	id: newId(),
+						// 	title: "Table information",
+						// 	component: DocsTablesInfo,
+						// 	extra: { table }
+						// },
 						{
 							id: newId(),
 							title: "Selecting fields",
