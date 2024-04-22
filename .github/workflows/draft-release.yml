@@ -36,7 +36,6 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 18
-                  cache: "pnpm"
 
             - name: Auto adjust version
               if: ${{ !inputs.version }}
@@ -103,7 +102,6 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 18
-                  cache: "pnpm"
 
             - name: Setup Rust stable
               uses: dtolnay/rust-toolchain@stable
