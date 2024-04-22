@@ -1,6 +1,7 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Collapse, Group, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -66,6 +67,7 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 		<Entry
 			h={24}
 			className={classes.topic}
+			onClick={() => adapter.openUrl(entry.link)}
 		>
 			{entry.title}
 			<Icon path={iconOpen} size="sm" right />
