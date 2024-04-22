@@ -84,7 +84,7 @@ export function DocsGlobalIntroduction() {
 	const active = LIBRARIES.find((lib) => lib.id === language);
 
 	return (
-		<Article title="Surrealist API Docs">
+		<Article>
 			<div>
 				<p>
 					SurrealDB offers a rich set of client libraries and connection protocols to make it easy to integrate SurrealDB into your application. This page provides documentation for using these libraries and protocols within the context of your database and schema. You can change the language of the code examples by selecting a different language from the dropdown in the top right corner of this panel.
@@ -114,6 +114,7 @@ export function DocsGlobalIntroduction() {
 							rightSection={<Icon path={iconOpen} />}
 							onClick={() => adapter.openUrl(active.link)}
 							size="xs"
+							radius="sm"
 						>
 							Visit {active.name} docs
 						</Button>

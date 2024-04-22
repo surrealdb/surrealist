@@ -28,7 +28,10 @@ export function SandboxModal() {
 		>
 			<Stack>
 				<Text c="bright">
-					The Sandbox provides an easy to use playground to test, experiment, and learn SurrealDB. You can use the sandbox without having
+					The Sandbox provides an easy to use playground to test, experiment, and learn SurrealDB.
+				</Text>
+				<Text>
+					You can use the sandbox without having
 					to start a database up, and data will be reset after you close Surrealist. Additionally, you can use the buttons in the toolbar
 					to manually reset the sandbox or load an official dataset.
 				</Text>

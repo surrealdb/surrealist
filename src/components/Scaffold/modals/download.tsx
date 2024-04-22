@@ -1,5 +1,5 @@
-import banner from "~/assets/images/banner.webp";
-import { ActionIcon, Button, Divider, Image, List, Modal, Stack, Text, Title } from "@mantine/core";
+import banner from "~/assets/images/banner.png";
+import { ActionIcon, Button, Image, List, Modal, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { iconArrowUpRight, iconCircleFilled, iconClose } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
@@ -31,15 +31,9 @@ export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
 
 			<Image src={banner} />
 
-			<Divider />
-
 			<Stack p={24}>
-				<Title c="bright" fz={32} ta="center">
-					Surrealist for Desktop
-				</Title>
-
 				<Text size="lg">
-					Take your SurrealDB journey to the next level with Surrealist for Desktop and gain advanced capabilities designed for an optimized experience
+					Take your SurrealDB journey to the next level with Surrealist Desktop and gain advanced capabilities designed for an optimized experience
 				</Text>
 
 				<List

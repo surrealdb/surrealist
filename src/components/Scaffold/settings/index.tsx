@@ -150,7 +150,8 @@ export function Settings({
 					wrap="nowrap"
 				>
 					<Box
-						p="md"
+						pt="lg"
+						px="xl"
 						w={250}
 						bg={isLight ? "slate.0" : "slate.9"}
 					>

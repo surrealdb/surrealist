@@ -141,7 +141,10 @@ export function ScopePane() {
 											: "No auth"}
 							</Badge>
 							<Tooltip label="Edit scope">
-								<ActionIcon onClick={() => editScope(scope)}>
+								<ActionIcon
+									onClick={() => editScope(scope)}
+									variant="subtle"
+								>
 									<Icon path={iconEdit} />
 								</ActionIcon>
 							</Tooltip>

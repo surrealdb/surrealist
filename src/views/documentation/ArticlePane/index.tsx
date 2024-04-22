@@ -122,15 +122,13 @@ export function ArticlePane({
 							<Box
 								key={index}
 								mx="xl"
-								py={42}
+								pt={48}
+								pb={10}
 								data-topic={doc.id}
-								style={{
-									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-7)" : "none"
-								}}
 							>
 								<Group c="bright" my="xl">
-									<Icon path={doc.icon} size={2}/>
-									<Title order={1} fz={36}>
+									<Icon path={doc.icon} size={1.65}/>
+									<Title order={1} fz={28}>
 										{doc.title}
 									</Title>
 								</Group>

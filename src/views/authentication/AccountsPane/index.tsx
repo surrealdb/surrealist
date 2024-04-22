@@ -197,7 +197,10 @@ export function AccountsPane(props: AccountsPaneProps) {
 								{formatRoles(user)}
 							</Badge>
 							<Tooltip label="Edit user">
-								<ActionIcon onClick={() => updateUser(user)}>
+								<ActionIcon
+									onClick={() => updateUser(user)}
+									variant="subtle"
+								>
 									<Icon path={iconEdit} />
 								</ActionIcon>
 							</Tooltip>
