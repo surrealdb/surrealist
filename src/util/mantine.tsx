@@ -176,7 +176,7 @@ export const MANTINE_THEME = createTheme({
 		Checkbox: Checkbox.extend({
 			defaultProps: {
 				color: "transparent",
-				radius: "xs"
+				radius: 5
 			}
 		}),
 		Switch: Switch.extend({
