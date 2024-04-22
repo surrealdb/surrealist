@@ -148,6 +148,7 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 		}
 	}
 
+	config.previousVersion = "1.11.8";
 	config.activeConnection = legacy.activeTab;
 	config.settings.behavior.windowPinned = legacy.isPinned;
 	config.settings.behavior.autoConnect = legacy.autoConnect;
