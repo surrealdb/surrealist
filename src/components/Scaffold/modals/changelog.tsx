@@ -5,21 +5,12 @@ import { useIntent } from "~/hooks/url";
 import { changelogs } from "~/util/changelogs";
 import { Text } from "@mantine/core";
 import dayjs from "dayjs";
-import { Fragment, useEffect } from "react";
-import { useInterfaceStore } from "~/stores/interface";
+import { Fragment } from "react";
 
 export function ChangelogModal() {
-	const { setShowChangelogAlert } = useInterfaceStore.getState();
-
 	const [opened, openedHandle] = useDisclosure();
 
 	useIntent("open-changelog", openedHandle.open);
-
-	useEffect(() => {
-		if (opened) {
-			setShowChangelogAlert(false);
-		}
-	}, [opened]);
 
 	return (
 		<>

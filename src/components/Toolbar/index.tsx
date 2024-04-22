@@ -26,10 +26,12 @@ import { useInterfaceStore } from "~/stores/interface";
 import { dispatchIntent } from "~/hooks/url";
 
 export function Toolbar() {
+	const { readChangelog } = useInterfaceStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
+	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const connection = useConnection();
 
@@ -74,6 +76,7 @@ export function Toolbar() {
 
 	const openChangelog = useStable(() => {
 		dispatchIntent("open-changelog");
+		readChangelog();
 	});
 
 	const isSandbox = connection?.id === "sandbox";
@@ -139,8 +142,8 @@ export function Toolbar() {
 						h={34}
 						size="xs"
 						radius="xs"
-						color="surreal"
-						variant="gradient"
+						color="slate"
+						variant={hasReadChangelog ? "filled" : "gradient"}
 						style={{ border: "none" }}
 						onClick={openChangelog}
 						leftSection={

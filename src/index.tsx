@@ -69,11 +69,10 @@ import { useInterfaceStore } from "./stores/interface";
 
 	// Check for new release
 	const { previousVersion, setPreviousVersion } = useConfigStore.getState();
-	const { setShowChangelogAlert } = useInterfaceStore.getState();
+	const { showChangelog } = useInterfaceStore.getState();
 
 	if (compare(import.meta.env.VERSION, previousVersion) > 0) {
-		setShowChangelogAlert(true);
 		setPreviousVersion(import.meta.env.VERSION);
+		showChangelog();
 	}
-
 })();
