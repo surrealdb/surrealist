@@ -49,15 +49,7 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 	if (!equals(previous.schema, current.schema)) {
 		const tableType = current.schema.kind.kind;
 
-		let query = `DEFINE TABLE ${tb(current.schema.name)} TYPE ${tableType}`;
-
-		if (tableType === "RELATION" && current.schema.kind.in) {
-			query += ` IN ${current.schema.kind.in.join(", ")}`;
-		}
-
-		if (tableType === "RELATION" && current.schema.kind.out) {
-			query += ` OUT ${current.schema.kind.out.join(", ")}`;
-		}
+		let query = `DEFINE TABLE ${tb(current.schema.name)}`;
 
 		if (current.schema.drop) {
 			query += " DROP";
@@ -67,6 +59,16 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 			query += " SCHEMAFULL";
 		} else {
 			query += " SCHEMALESS";
+		}
+
+		query + ` TYPE ${tableType}`;
+
+		if (tableType === "RELATION" && current.schema.kind.in) {
+			query += ` IN ${current.schema.kind.in.join(", ")}`;
+		}
+
+		if (tableType === "RELATION" && current.schema.kind.out) {
+			query += ` OUT ${current.schema.kind.out.join(", ")}`;
 		}
 
 		if (current.schema.view) {
@@ -82,8 +84,6 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 		query += buildPermission("select", current.schema.permissions.select);
 		query += buildPermission("update", current.schema.permissions.update);
 		query += buildPermission("delete", current.schema.permissions.delete);
-
-		queries.push(query);
 	}
 
 	for (const field of previous.fields) {
