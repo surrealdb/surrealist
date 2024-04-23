@@ -1,8 +1,13 @@
-import { Result } from "~/typings/utilities";
+import { Platform } from "~/types";
 
-export interface OpenedFile {
+export interface OpenedTextFile {
 	name: string;
 	content: string;
+}
+
+export interface OpenedBinaryFile {
+	name: string;
+	content: Blob;
 }
 
 export interface SurrealistAdapter {
@@ -13,19 +18,30 @@ export interface SurrealistAdapter {
 	isServeSupported: boolean;
 
 	/**
-	 * Returns whether window pinning is supported
-	 */
-	isPinningSupported: boolean;
-
-	/**
 	 * Returns whether update checking is supported
 	 */
 	isUpdateCheckSupported: boolean;
 
 	/**
-	 * Returns whether promotion is supported
+	 * Whether the window has a native titlebar
 	 */
-	isPromotionSupported: boolean;
+	hasTitlebar: boolean;
+
+	/**
+	 * The currently active platform
+	 */
+	platform: Platform;
+
+	/**
+	 * Initialize any adapter specific services. This function is invoked
+	 * after the config has been loaded.
+	 */
+	initialize(): void;
+
+	/**
+	 * Return debug information about the current environment of the adapter
+	 */
+	dumpDebug(): Result<object>;
 
 	/**
 	 * Set the window title
@@ -37,14 +53,32 @@ export interface SurrealistAdapter {
 	/**
 	 * Load the config from the adapter
 	 */
-	loadConfig(): Promise<string>;
+	loadConfig(): Promise<any>;
 
 	/**
 	 * Save the config to the adapter
 	 *
 	 * @param config The config to save
 	 */
-	saveConfig(config: string): Promise<void>;
+	saveConfig(config: any): Promise<void>;
+
+	/**
+	 * Check whether the adapter has a legacy config. This is
+	 * called after loadConfig.
+	 */
+	hasLegacyConfig(): Result<boolean>;
+
+	/**
+	 * Return the legacy config used for migration
+	 */
+	getLegacyConfig(): Promise<any>;
+
+	/**
+	 * Clean up any legacy config. This is called after the config
+	 * has been migrated, or if the user chooses to ignore the
+	 * migration.
+	 */
+	handleLegacyCleanup(): Promise<void>;
 
 	/**
 	 * Start the database with the given parameters
@@ -64,11 +98,6 @@ export interface SurrealistAdapter {
 	stopDatabase(): Promise<void>;
 
 	/**
-	 * Set the pinned state of the window
-	 */
-	setWindowPinned(pinned: boolean): Promise<void>;
-
-	/**
 	 * Open the given URL in the default browser
 	 *
 	 * @param url The URL to open
@@ -86,12 +115,21 @@ export interface SurrealistAdapter {
 	): Promise<boolean>;
 
 	/**
-	 * Open a file locally
+	 * Open a text file locally
 	 */
-	openFile(
+	openTextFile(
 		title: string,
 		filters: any,
 		multiple: boolean
-	): Promise<OpenedFile[]>;
+	): Promise<OpenedTextFile[]>;
+
+	/**
+	 * Open a binary file locally
+	 */
+	openBinaryFile(
+		title: string,
+		filters: any,
+		multiple: boolean
+	): Promise<OpenedBinaryFile[]>;
 
 }

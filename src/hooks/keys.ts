@@ -5,6 +5,9 @@ import { useState } from "react";
  * Returns whether any of the keys is currently pressed
  * and updates the state when key is pressed or released.
  *
+ * NOTE This function currently isnt working due to the
+ * react-flow fix in place inside the Scaffold.
+ *
  * @param keys Keys to listen for
  * @returns Whether any of the keys is currently pressed
  */

@@ -1,204 +1,77 @@
-import { mapKeys, snake } from 'radash';
-import { open_connection, close_connection, query_version, execute_remote_query, execute_local_query } from '../generated/surrealist-embed';
-import { ConnectionOptions, SurrealOptions } from '~/types';
-import { store } from '~/store';
-import compare from 'semver-compare';
-import { showNotification } from '@mantine/notifications';
-import { Stack, Text } from '@mantine/core';
-import { Icon } from '~/components/Icon';
-import { mdiAlert } from '@mdi/js';
+import { SANDBOX } from "~/constants";
+import { useConfigStore } from "~/stores/config";
+import { ConnectionOptions } from "~/types";
 
-const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
+/**
+ * Returns the currently active connection
+ */
+export function getConnection() {
+	const { connections, activeConnection, sandbox } = useConfigStore.getState();
 
-export interface SurrealConnection {
-	close(): void;
-	query(query: string, params?: Record<string, any>): Promise<any>;
-	queryFirst(query: string): Promise<any>;
-	querySingle<T = any>(query: string): Promise<T>;
-}
-
-let instance: SurrealConnection | undefined;
-
-// Construct a fake error result
-function createError(message: string) {
-	return [{ time: '', status: 'ERR', result: 'Surrealist: ' + message }];
-}
-
-// Execute a query and parse the result
-async function executeQuery(query: string, params: any, connection: ConnectionOptions) {
-	const paramJson = JSON.stringify(params || {});
-	const response = connection.method === 'remote'
-		? await execute_remote_query(query, paramJson)
-		: await execute_local_query(connection, query, paramJson);
-
-	return JSON.parse(response);
-}
-
-// Schedule a query timeout error
-async function scheduleTimeout(seconds: number) {
-	return new Promise(res =>
-		setTimeout(() => res(createError(`query timed out after ${seconds} seconds. You can increase this timeout in the Surrealist settings`)), seconds * 1000)
-	);
-}
-
-// Execute a query with timeout
-async function execute(query: string, params: any, connection: ConnectionOptions) {
-	const { queryTimeout } = store.getState().config;
-
-	try {
-		const result = await Promise.race([
-			executeQuery(query, params, connection),
-			scheduleTimeout(queryTimeout)
-		]);
-
-		return result;
-	} catch(err: any) {
-		console.error('Query failed:', err);
-
-		return createError('an unknown error has occurred, please check the console for more details');
-	}
-}
-
-// Display a notification if the database version is unsupported
-async function checkDatabaseVersion() {
-	const semver = await query_version();
-
-	let title: string;
-	let message: string;
-
-	if (semver == undefined) {
-		title = 'Failed to retrieve database version';
-		message = 'Failed to retrieve the remote database version. This may be caused by a network error or an older version of SurrealDB';
-	} else {
-		const version = `${semver.major}.${semver.minor}.${semver.patch}`;
-
-		if (compare(version, MINIMUM_VERSION) >= 0) {
-			return;
-		}
-
-		title = 'Unsupported database version';
-		message = `The remote database is using an older version of SurrealDB (${version}) while this version of Surrealist recommends at least ${MINIMUM_VERSION}`;
+	if (activeConnection === SANDBOX) {
+		return sandbox;
 	}
 
-	showNotification({
-		autoClose: false,
-		color: 'orange',
-		message: (
-			<Stack spacing={0}>
-				<Text weight={600}>
-					<Icon
-						path={mdiAlert}
-						size="sm"
-						left
-						mt={-2}
-					/>
-					{title}
-				</Text>
-				<Text color="light.5">
-					{message}
-				</Text>
-			</Stack>
-		)
-	});
+	return connections.find((con) => con.id === activeConnection);
 }
 
 /**
- * Access the active surreal instance
+ * Returns the currently active connection
  */
-export function getSurreal(): SurrealConnection | undefined {
-	return instance;
+export function getActiveConnection() {
+	const connection = getConnection();
+
+	if (!connection) {
+		throw new Error("Session unavailable");
+	}
+
+	return connection;
 }
 
 /**
- * Forcefully access the active surreal instance
+ * Returns the active query tab
  */
-export function getActiveSurreal(): SurrealConnection {
-	if (!instance) {
-		throw new Error("No active surreal instance");
-	}
+export function getActiveQuery() {
+	const connection = getActiveConnection();
 
-	return instance;
+	return connection.queries.find((q) => q.id === connection.activeQuery);
 }
 
 /**
- * Instantiate a connection to SurrealDB through the WASM module
+ * Returns whether the given connection is valid
+ *
+ * TODO Replace with validation
  */
-export function openSurrealConnection(options: SurrealOptions): SurrealConnection {
-	if (instance) {
-		return instance!;
+export function isConnectionValid(details: ConnectionOptions | undefined) {
+	if (!details) {
+		return false;
 	}
 
-	let killed = false;
+	// Check for essential fields
+	const hasEssential = details.protocol && details.namespace && details.database && details.authMode;
 
-	const connection: any = mapKeys(options.connection, key => snake(key));
-	const details = {
-		...connection,
-		endpoint: connection.endpoint.replace(/^ws/, "http")
-	};
-
-	if (options.connection.method === 'remote') {
-		open_connection(details).then(() => {
-			options.onConnect?.();
-			checkDatabaseVersion();
-		}).catch(err => {
-			console.error('Failed to open connection', err);
-
-			if (!killed) {
-				options.onError?.(err);
-				options.onDisconnect?.(1000, 'Failed to open connection');
-				killed = true;
-			}
-		});
-	} else {
-		setTimeout(() => {
-			options.onConnect?.();
-		}, 0);
+	if (!hasEssential) {
+		return false;
 	}
 
-	const handle: SurrealConnection = {
-		close: () => {
-			close_connection();
-			options.onDisconnect?.(1000, 'Closed by user');
-			killed = true;
-		},
-		query: async (query, params) => {
-			return execute(query, params, details);
-		},
-		queryFirst: async (query) => {
-			const results = await execute(query, {}, details) as any[];
+	// Check for hostname
+	if (details.protocol !== "mem" && details.protocol !== "indxdb" && !details.hostname) {
+		return false;
+	}
 
-			return results.map(res => {
-				return {
-					...res,
-					result: Array.isArray(res.result) ? res.result[0] : res.result
-				};
-			});
-		},
-		querySingle: async (query) => {
-			const results = await execute(query, {}, details) as any[];
-			const { result, status } = results[0];
+	// Check for username and password
+	const checkUserPass = details.authMode === "root" || details.authMode === "database" || details.authMode === "namespace";
+	const hasUserPass = details.username && details.password;
 
-			if (status === 'OK') {
-				return Array.isArray(result) ? result[0] : result;
-			} else {
-				return null;
-			}
-		}
-	};
+	if (checkUserPass && !hasUserPass) {
+		return false;
+	}
 
-	instance = handle;
+	// Check for token
+	if (details.authMode === "token" && !details.token) {
+		return false;
+	}
 
-	return handle;
+	return true;
 }
 
-/**
- * Close the active surreal connection
- */
-export function closeSurrealConnection() {
-	if (!instance) {
-		return;
-	}
-
-	instance.close();
-	instance = undefined;
-}

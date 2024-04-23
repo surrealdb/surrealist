@@ -1,42 +1,31 @@
-import { Group, HoverCard, Stack, Text } from "@mantine/core";
-import { mdiCheck, mdiClockOutline, mdiClose } from "@mdi/js";
 import dayjs from "dayjs";
+import { RecordId, Decimal } from "surrealdb.js";
+import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import { ReactNode } from "react";
-import { OpenFn } from "~/types";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
-import { validate_thing } from "~/generated/surrealist-embed";
-
-const DATETIME_REGEX = /^\d{4}-\d\d-\d\dt\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|z)?$/i;
-
-export interface DataCellType {
-	match: (value: any) => boolean;
-	component: React.FC<DataCellProps>;
-}
-
-export interface DataCellProps {
-	value: any;
-	openRecord?: OpenFn;
-}
+import { iconCheck, iconClock, iconClose } from "~/util/icons";
 
 // ----- Data Cell Types -----
 
-function NullishCell(props: DataCellProps) {
+function NullishCell(props: { value: null | undefined }) {
 	return (
-		<Text color="light.5" ff="JetBrains Mono">
+		<Text c="slate" ff="JetBrains Mono">
 			{props.value === null ? "null" : "—"}
 		</Text>
 	);
 }
 
-function BooleanCell(props: DataCellProps) {
-	const icon = props.value ? <Icon path={mdiCheck} color="green" /> : <Icon path={mdiClose} color="red" />;
+function BooleanCell(props: { value: boolean }) {
+	const icon = props.value
+		? <Icon path={iconCheck} color="green" />
+		: <Icon path={iconClose} color="pink.9" />;
 
 	return <div>{icon}</div>;
 }
 
-function StringCell(props: DataCellProps) {
+function StringCell(props: { value: string }) {
 	return (
 		<Text
 			title={props.value}
@@ -49,32 +38,32 @@ function StringCell(props: DataCellProps) {
 	);
 }
 
-function NumberCell(props: DataCellProps) {
+function NumberCell(props: { value: number }) {
 	return <Text>{props.value.toLocaleString()}</Text>;
 }
 
-function ThingCell(props: DataCellProps) {
-	return <RecordLink value={props.value} onRecordClick={props.openRecord} />;
+function ThingCell(props: { value: RecordId }) {
+	return <RecordLink value={props.value} />;
 }
 
-function DateTimeCell(props: DataCellProps) {
+function DateTimeCell(props: { value: Date }) {
 	const date = new Date(props.value);
 	const relative = dayjs(date).fromNow();
 
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
-			<Icon path={mdiClockOutline} left mt={-3} />
+			<Icon path={iconClock} left mt={-3} />
 			{date.toLocaleString()}
 		</Text>
 	);
 }
 
-function ArrayCell(props: DataCellProps) {
-	const items = props.value as any[];
+function ArrayCell(props: { value: any[] }) {
+	const items = props.value ;
 
 	return (
 		<div>
-			<HoverCard shadow="xl" withinPortal withArrow>
+			<HoverCard shadow="xl" withArrow>
 				<HoverCard.Target>
 					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Array({props.value.length})
@@ -84,12 +73,12 @@ function ArrayCell(props: DataCellProps) {
 					{items.length > 15 ? (
 						<Text size="sm">Too large to preview</Text>
 					) : (
-						<Stack spacing="sm">
+						<Stack gap="sm">
 							{items.map((item, i) => (
-								<Group noWrap>
+								<Group wrap="nowrap">
 									<span style={{ opacity: 0.5 }}>#{i + 1}</span>
 									<div key={i} style={TRUNCATE_STYLE}>
-										{renderDataCell(item, props.openRecord)}
+										{renderDataCell(item)}
 									</div>
 								</Group>
 							))}
@@ -101,10 +90,10 @@ function ArrayCell(props: DataCellProps) {
 	);
 }
 
-function ObjectCell(props: DataCellProps) {
+function ObjectCell(props: { value: any }) {
 	return (
 		<div>
-			<HoverCard width={280} shadow="md" withinPortal withArrow>
+			<HoverCard width={280} shadow="md" withArrow>
 				<HoverCard.Target>
 					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Object({Object.keys(props.value).length})
@@ -120,51 +109,38 @@ function ObjectCell(props: DataCellProps) {
 	);
 }
 
-const DataCellTypes = [
-	{
-		match: (value: any) => value === null || value === undefined,
-		component: NullishCell,
-	},
-	{
-		match: (value: any) => typeof value == "string" && validate_thing(value),
-		component: ThingCell,
-	},
-	{
-		match: (value: any) => typeof value == "string" && DATETIME_REGEX.test(value),
-		component: DateTimeCell,
-	},
-	{
-		match: (value: any) => typeof value === "boolean",
-		component: BooleanCell,
-	},
-	{
-		match: (value: any) => typeof value === "string",
-		component: StringCell,
-	},
-	{
-		match: (value: any) => typeof value === "number",
-		component: NumberCell,
-	},
-	{
-		match: (value: any) => Array.isArray(value),
-		component: ArrayCell,
-	},
-	{
-		match: (value: any) => typeof value === "object",
-		component: ObjectCell,
-	},
-];
-
-export function renderDataCell(value: any, openRecord?: OpenFn): ReactNode {
-	for (const type of DataCellTypes) {
-		// eslint-disable-next-line unicorn/prefer-regexp-test
-		if (type.match(value)) {
-			return type.component({
-				value,
-				openRecord,
-			});
-		}
+export function renderDataCell(value: any): ReactNode {
+	if (value instanceof Date) {
+		return <DateTimeCell value={value} />;
 	}
 
-	return <Text color="red">Unknown</Text>;
+	if (value === undefined || value === null) {
+		return <NullishCell value={value} />;
+	}
+
+	if (typeof value === "boolean") {
+		return <BooleanCell value={value} />;
+	}
+
+	if (value instanceof Decimal) {
+		return <NumberCell value={value.toNumber()} />;
+	}
+
+	if (typeof value === "number") {
+		return <NumberCell value={value} />;
+	}
+
+	if (value instanceof RecordId) {
+		return <ThingCell value={value} />;
+	}
+
+	if (Array.isArray(value)) {
+		return <ArrayCell value={value} />;
+	}
+
+	if (typeof value === "object") {
+		return <ObjectCell value={value} />;
+	}
+
+	return <StringCell value={value.toString()} />;
 }

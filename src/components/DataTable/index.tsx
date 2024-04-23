@@ -1,32 +1,42 @@
 import classes from "./style.module.scss";
-import { Box, Text, useMantineTheme } from "@mantine/core";
+import { Box, BoxProps, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
-import { useMemo } from "react";
+import { MouseEvent, useMemo } from "react";
 import { renderDataCell } from "./datatypes";
-import { OpenFn, ColumnSort } from "~/types";
+import { ColumnSort } from "~/types";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
-import { mdiChevronDown, mdiChevronUp } from "@mdi/js";
 import { alphabetical, isObject } from "radash";
+import { useInspector } from "~/providers/Inspector";
+import { iconChevronDown, iconChevronUp } from "~/util/icons";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
 }
 
-interface DataTableProps {
+interface DataTableProps extends BoxProps{
 	data: any;
 	active?: string | null;
 	sorting?: ColumnSort | null;
-	openRecord?: OpenFn;
 	headers?: string[];
 	onSortingChange?: (order: ColumnSort | null) => void;
-	onRowClick?: (value: any) => void;
+	onRowContextMenu?: (event: MouseEvent, row: any) => void;
 }
 
-export function DataTable({ data, active, sorting, openRecord, headers, onSortingChange, onRowClick }: DataTableProps) {
-	const theme = useMantineTheme();
+export function DataTable(props: DataTableProps) {
 	const isLight = useIsLight();
+	const { inspect } = useInspector();
+
+	const {
+		data,
+		active,
+		sorting,
+		headers,
+		onSortingChange,
+		className,
+		...rest
+	} = props;
 
 	const handleSortClick = useStable((col: string) => {
 		if (!onSortingChange) return;
@@ -84,25 +94,26 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 
 	const columnHeaders = useMemo(() => {
 		return keys.map(key => (
-			<Box key={key} component="th" bg={isLight ? "white" : "dark.7"}>
+			<Box
+				key={key}
+				component="th"
+			>
 				<Text
 					span
+					fw={700}
 					onClick={() => handleSortClick(key)}
 					style={{
 						cursor: onSortingChange ? "pointer" : undefined,
 						userSelect: "none",
 						WebkitUserSelect: "none",
-					}}>
+					}}
+				>
 					{key}
-					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? mdiChevronDown : mdiChevronUp} pos="absolute" />}
+					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? iconChevronDown : iconChevronUp} pos="absolute" />}
 				</Text>
 			</Box>
 		));
 	}, [isLight, keys, sorting]);
-
-	const activeColor = useMemo(() => {
-		return theme.fn.rgba(theme.fn.themeColor("light.6"), isLight ? 0.15 : 0.4);
-	}, [isLight]);
 
 	const recordRows = useMemo(() => {
 		return values.map((value, i) => {
@@ -111,7 +122,7 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 
 				return (
 					<Box key={j} component="td" className={classes.tableValue} h={37}>
-						{renderDataCell(cellValue, openRecord)}
+						{renderDataCell(cellValue)}
 					</Box>
 				);
 			});
@@ -122,10 +133,12 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 				<Box
 					key={i}
 					component="tr"
-					onClick={() => onRowClick?.(value)}
-					sx={{
-						backgroundColor: `${isActive ? activeColor : undefined} !important`,
-					}}>
+					onClick={() => value.id && inspect(value.id)}
+					onContextMenu={(e) => props.onRowContextMenu?.(e, value)}
+					style={{
+						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
+					}}
+				>
 					{columns}
 				</Box>
 			);
@@ -133,19 +146,20 @@ export function DataTable({ data, active, sorting, openRecord, headers, onSortin
 	}, [keys, values, isLight]);
 
 	if (!isRenderable(data)) {
-		return <Text color="light.4">Result could not be displayed as a table.</Text>;
+		return <Text c="slate">Result could not be displayed as a table.</Text>;
 	}
 
 	return (
-		<div className={classes.tableContainer}>
-			<ScrollArea className={classes.tableWrapper}>
-				<Table striped className={classes.table}>
-					<thead>
-						<tr>{columnHeaders}</tr>
-					</thead>
-					<tbody>{recordRows}</tbody>
-				</Table>
-			</ScrollArea>
-		</div>
+		<ScrollArea
+			className={classes.root}
+			scrollbars="xy"
+		>
+			<Table className={classes.table}>
+				<thead>
+					<tr>{columnHeaders}</tr>
+				</thead>
+				<tbody>{recordRows}</tbody>
+			</Table>
+		</ScrollArea>
 	);
 }

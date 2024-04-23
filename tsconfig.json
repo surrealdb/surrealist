@@ -15,7 +15,7 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"module": "esnext",
-		"moduleResolution": "node",
+		"moduleResolution": "Bundler",
 		"baseUrl": ".",
 		"allowJs": false,
 		"noEmit": true,

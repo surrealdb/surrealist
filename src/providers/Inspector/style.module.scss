@@ -1,0 +1,14 @@
+.save-box > button {
+	flex: 1;
+}
+
+.tabs, .tabs > :global(.mantine-Tabs-panel) {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.tabs :global(.mantine-Tabs-tab[data-active]) {
+	background: var(--surrealist-gradient);
+}

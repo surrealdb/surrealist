@@ -1,19 +1,9 @@
-.input {
-	background: none;
-	border: none;
-	font-weight: inherit;
-	font-size: inherit;
-	text-transform: inherit;
-	font-family: inherit;
-	color: inherit;
+.root {
+	min-width: 20px;
+	text-align: start;
 	outline: none;
 }
 
-.sizer {
-	white-space: pre;
-	position: absolute;
-	visibility: hidden;
-	pointer-events: none;
-	-webkit-user-select: none;
-	user-select: none;
-} 
+.decorate:focus {
+	font-style: italic;
+}

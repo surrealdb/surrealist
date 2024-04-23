@@ -1,0 +1,66 @@
+name: Publish Development
+
+on:
+  push:
+    branches: ["main"]
+
+permissions: write-all
+
+jobs:
+  version:
+    name: Extract version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Extract version
+        id: extract_version
+        uses: Saionaro/extract-package-version@v1.2.1
+
+  build-web:
+    name: Build Web
+    runs-on: "ubuntu-20.04"
+    needs:
+      - version
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [ 18 ]
+    steps:
+      - name: Information
+        run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for web"
+
+      - name: Code checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Frontend dependencies
+        run: |
+          pnpm i --frozen-lockfile
+
+      - name: Generate license report
+        run: pnpm license-report
+
+      - name: Build application
+        run: VITE_SURREALIST_PREVIEW=true pnpm build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-west-2
+          aws-access-key-id: ${{ secrets.AMAZON_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AMAZON_SECRET_KEY }}
+
+      - name: Upload web app
+        run: make deploy-dev

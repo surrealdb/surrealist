@@ -1,38 +1,63 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useStable } from "./stable";
 
-type EventFn<T> = T extends undefined ? () => void : (value: T) => void;
+type EventFn<T> = (value: T) => void;
 
-export interface EventBus<T = undefined> {
+export interface EventBus<T> {
 	listeners: Set<EventFn<T>>;
 	dispatch: EventFn<T>;
+	cleanup: () => void;
 }
 
 /**
  * Define a new event bus which dispatches events to all listeners.
- * 
+ *
  * @returns Event bus instance
  */
-export function useEventBus<T = undefined>(): EventBus<T> {
-	const listeners = useRef(new Set<(value: T) => void>()).current;
+export function createEventBus<T>(): EventBus<T> {
+	const listeners = new Set<EventFn<T>>();
 
-	const dispatch = useStable((value: T) => {
+	const dispatch = ((value: T) => {
 		for (const listener of listeners) {
 			listener(value);
 		}
-	});
+	}) as EventFn<T>;
 
-	return useMemo(() => ({
+	const cleanup = () => {
+		listeners.clear();
+	};
+
+	return {
 		listeners,
-		dispatch
-	}), []) as any;
+		dispatch,
+		cleanup
+	};
+}
+
+/**
+ * Define a new event bus which dispatches events to all listeners.
+ *
+ * @returns Event bus instance
+ */
+export function useEventBus<T>(): EventBus<T> {
+	const bus = useRef<EventBus<T>>();
+
+	if (!bus.current) {
+		bus.current = createEventBus();
+	}
+
+	useEffect(() => {
+		return () => bus.current?.cleanup();
+	}, []);
+
+	return bus.current;
 }
 
 /**
  * Subscribe to an event bus and call the callback when an event is dispatched.
  * The lifecycle of the subscription is tied to the component. The provided
  * callback does not have to be stable.
- * 
+ *
  * @param bus The event bus to subscribe to
  * @param callback The callback to invoke when an event is dispatched
  */

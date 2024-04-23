@@ -1,0 +1,29 @@
+.root {
+	position: relative;
+	z-index: 0;
+
+	&::before {
+		content: "";
+		inset: 0;
+		background-color: white;
+		position: absolute;
+		border-radius: 100%;
+		animation: live-pulse 1.4s infinite;
+	}
+}
+
+@keyframes live-pulse {
+	0% {
+		transform: scale(0);
+		opacity: 0.8;
+	}
+
+	55% {
+		opacity: 0.15;
+	}
+
+	100% {
+		transform: scale(1);
+		opacity: 0;
+	}
+}

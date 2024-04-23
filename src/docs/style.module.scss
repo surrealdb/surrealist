@@ -1,0 +1,29 @@
+.article {
+	p:first-child {
+		margin-top: 0;
+	}
+}
+
+.library {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	transition: box-shadow 0.1s;
+	cursor: pointer;
+	aspect-ratio: 1;
+	gap: 8;
+
+	&:hover {
+		background-color: var(--mantine-color-slate-6);
+	}
+}
+
+.library-active {
+	background: var(--surrealist-gradient) !important;
+	box-shadow: var(--surrealist-glow);
+
+	svg * {
+		fill: white !important;
+	}
+}

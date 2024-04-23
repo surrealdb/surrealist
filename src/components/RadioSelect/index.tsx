@@ -1,8 +1,7 @@
-import { Radio, Stack } from "@mantine/core";
-import { SelectItem } from "@mantine/core";
+import { ComboboxItem, Radio, Stack } from "@mantine/core";
 
 export interface RadioSelectProps {
-	data: ReadonlyArray<SelectItem>;
+	data: ReadonlyArray<ComboboxItem>;
 	value?: string;
 	label?: string;
 	onChange?(value: string): void;

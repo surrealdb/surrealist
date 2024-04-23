@@ -1,15 +1,17 @@
 import classes from "./style.module.scss";
-import { Button, Group, Notification, Portal, clsx } from "@mantine/core";
-import { mdiCheck, mdiInformationOutline } from "@mdi/js";
+import { Button, Group, GroupProps, Notification, Portal } from "@mantine/core";
 import { Icon } from "../Icon";
 import { SaveableHandle } from "~/hooks/save";
 import { ReactNode } from "react";
 import { capitalize } from "radash";
 import { Spacer } from "../Spacer";
+import { clsx } from "clsx";
+import { iconCheck, iconHelp } from "~/util/icons";
 
 export interface SaveBoxProps {
-	handle: SaveableHandle<any>;
+	handle: SaveableHandle;
 	inline?: boolean;
+	inlineProps?: GroupProps;
 	position?: "left" | "center" | "right";
 	saveText?: ReactNode;
 	revertText?: ReactNode;
@@ -19,11 +21,12 @@ export interface SaveBoxProps {
  * Used to present the managed state of a `useSaveable` hook
  * in the form of a save box.
  */
-export function SaveBox({ handle, inline, position, saveText, revertText }: SaveBoxProps) {
+export function SaveBox({ handle, inline, inlineProps, position, saveText, revertText }: SaveBoxProps) {
 
 	const saveButton = (
 		<Button
-			rightIcon={<Icon path={mdiCheck} size="md" />}
+			rightSection={<Icon path={iconCheck} />}
+			variant="gradient"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={handle.save}
@@ -34,9 +37,9 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 
 	const revertButton = (
 		<Button
-			disabled={!handle.isSaveable}
+			disabled={!handle.isChanged}
 			onClick={handle.revert}
-			color="dark.4"
+			color="slate"
 		>
 			{revertText ?? 'Revert'}
 		</Button>
@@ -45,7 +48,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 
 	if (inline) {
 		return (
-			<Group spacing={10} align="center" position="apart">
+			<Group gap={10} align="center" justify="apart" {...inlineProps}>
 				{revertButton}
 				{saveButton}
 			</Group>
@@ -62,7 +65,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 					)}
 					icon={
 						<Icon
-							path={mdiInformationOutline}
+							path={iconHelp}
 							size="lg"
 							mr={-8}
 						/>
@@ -77,7 +80,7 @@ export function SaveBox({ handle, inline, position, saveText, revertText }: Save
 						}
 					}}
 				>
-					<Group spacing={10} align="center">
+					<Group gap={10} align="center">
 						There are unsaved changes
 						<Spacer />
 						{revertButton}

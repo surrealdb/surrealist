@@ -1,7 +1,11 @@
+.root {
+	z-index: 1;
+}
+
 .entry-button {
 
 	:global(.mantine-Button-inner) {
-		justify-content: start;
+		justify-content: space-between;
 	}
 
 	:global(.mantine-Button-rightIcon) {
@@ -17,4 +21,12 @@
 
 .manage-button :global(.mantine-Button-inner) {
 	justify-content: start;
+}
+
+.connection-options {
+	display: none;
+}
+
+.connection:hover .connection-options {
+	display: flex;
 }

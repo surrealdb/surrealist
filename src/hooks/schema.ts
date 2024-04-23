@@ -1,14 +1,36 @@
-import { useStoreValue } from "~/store";
 import { isEdgeTable } from "~/util/schema";
-import { useConnectionDetails } from "./environment";
+import { useDatabaseStore } from "~/stores/database";
+import { useConnection } from "./connection";
+import { SANDBOX } from "~/constants";
 
 type TableMode = "ALL" | "TABLE" | "EDGE";
+
+const BASE_KINDS = [
+	'any',
+	'null',
+	'bool',
+	'bytes',
+	'datetime',
+	'decimal',
+	'duration',
+	'float',
+	'int',
+	'number',
+	'object',
+	'point',
+	'string',
+	'uuid',
+	'geometry<>',
+	'option<>',
+	'set<>',
+	'array<>',
+];
 
 /**
  * Access the current database schema
  */
 export function useSchema() {
-	return useStoreValue((state) => state.database.databaseSchema);
+	return useDatabaseStore((s) => s.databaseSchema);
 }
 
 /**
@@ -46,8 +68,21 @@ export function useTableNames(mode: TableMode = "ALL") {
  * Returns whether the current connection has schema access
  */
 export function useHasSchemaAccess() {
-	const connection = useConnectionDetails();
-	const authMode = connection?.authMode || "none";
+	const connection = useConnection();
+	const authMode = connection?.connection?.authMode || "none";
 
-	return authMode != "none" && authMode != "scope";
+	return connection?.id == SANDBOX || authMode != "none" && authMode != "scope";
+}
+
+/**
+ * Returns a dynamic list of field kinds based
+ * on the current schema.
+ */
+export function useKindList() {
+	const tables = useTableNames();
+
+	return [
+		...BASE_KINDS,
+		...tables.map(t => `record<${t}>`)
+	];
 }

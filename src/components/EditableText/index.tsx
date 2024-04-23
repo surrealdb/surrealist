@@ -1,117 +1,85 @@
-import { ElementRef, HTMLAttributes, useEffect, useRef } from 'react';
-import { useInputState, useToggle } from '@mantine/hooks';
-import classes from './style.module.scss';
+import classes from "./style.module.scss";
+import { HTMLAttributes, useEffect, useRef, useState } from 'react';
 import { useStable } from '~/hooks/stable';
+import { Text, TextProps } from '@mantine/core';
+import { useLater } from '~/hooks/later';
+import clsx from "clsx";
 
-export interface EditableTextProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
+export interface EditableTextProps extends TextProps, Omit<HTMLAttributes<HTMLDivElement>, 'onChange' | 'style' | 'color'> {
 	value: string;
+	withDoubleClick?: boolean;
+	withDecoration?: boolean;
 	onChange: (value: string) => void;
-	placeholder?: string;
-	activation?: 'focus' | 'doubleClick';
-	inputProps?: HTMLAttributes<HTMLInputElement>;
-	minWidth?: number;
 }
 
 export const EditableText = (props: EditableTextProps) => {
-	const inputRef = useRef<ElementRef<'input'>>(null);
-	const sizerRef = useRef<ElementRef<'span'>>(null);
+	const ref = useRef<HTMLDivElement>(null);
+	const [isEditing, setIsEditing] = useState(false);
 
-	const [ editText, setEditText ] = useInputState(props.value);
-	const [ isEditing, setIsEditing ] = useToggle();
-	
 	const {
 		value,
 		onChange,
-		placeholder,
-		inputProps,
-		activation,
-		minWidth,
+		withDoubleClick,
+		withDecoration,
 		...rest
 	} = props;
 
-	const activateMode = activation || 'focus';
+	const doFocus = useLater(() => {
+		ref.current!.focus();
 
-	const recomputeSize = useStable(() => {
-		const input = inputRef.current!;
-		const sizer = sizerRef.current!;
-		const minSize = minWidth || 50;
+		const text = ref.current!.childNodes[0] as Text;
+		const range = document.createRange();
 
-		input.style.width = `${Math.max(minSize, sizer.offsetWidth + 5)}px`;
+		range.selectNode(text);
+		window.getSelection()?.removeAllRanges();
+		window.getSelection()?.addRange(range);
+	});
+
+	const onKeyDown = useStable((e: React.KeyboardEvent<HTMLDivElement>) => {
+		e.stopPropagation();
+
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			ref.current?.blur();
+		}
+
+		rest?.onKeyDown?.(e);
+	});
+
+	const onBlur = useStable((e: React.FocusEvent<HTMLDivElement>) => {
+		const textValue = ref.current?.textContent?.replaceAll('\n', '');
+
+		onChange(textValue || '');
+		setIsEditing(false);
+
+		rest?.onBlur?.(e);
+	});
+
+	const onDoubleClick = useStable((e: React.MouseEvent<HTMLDivElement>) => {
+		if (withDoubleClick) {
+			setIsEditing(true);
+			doFocus();
+		}
+
+		rest?.onDoubleClick?.(e);
 	});
 
 	useEffect(() => {
-		setEditText(value);
+		if (ref.current) {
+			ref.current.textContent = value;
+		}
 	}, [value]);
 
-	useEffect(() => {
-		const sizer = sizerRef.current!;
-		const observer = new ResizeObserver(recomputeSize);
-
-		observer.observe(sizer);
-		
-		return () => observer.disconnect();
-	}, []);
-
-	const activate = useStable(() => {
-		setIsEditing(true);
-		inputRef.current?.focus();
-		inputRef.current?.select();
-	});
-
-	const handleFocus = useStable(() => {
-		if (activateMode === 'focus') {
-			activate();
-		}
-	});
-
-	const handleClick = useStable(() => {
-		if (activateMode === 'doubleClick') {
-			activate();
-		}
-	});
-
-	const handleBlur = () => {
-		if (!isEditing) return;
-
-		setIsEditing(false);
-		onChange(editText);
-	};
-
-	const handleKey = useStable((e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key == 'Enter' && document.activeElement !== inputRef.current) {
-			handleFocus();
-		} else if (e.key === 'Enter' || e.key === 'Escape') {
-			inputRef.current?.blur();
-		}
-
-		e.stopPropagation();
-	});
-
 	return (
-		<div
-			className={classes.root}
-			onClick={handleFocus}
-			onDoubleClick={handleClick}
+		<Text
+			ref={ref}
+			onBlur={onBlur}
+			onKeyDown={onKeyDown}
+			onDoubleClick={onDoubleClick}
+			contentEditable={!withDoubleClick || isEditing ? "plaintext-only" as any : "false"}
+			className={clsx(classes.root, withDecoration && classes.decorate)}
+			role="textbox"
 			{...rest}
-		>
-			<input
-				ref={inputRef}
-				className={classes.input}
-				value={editText}
-				onChange={setEditText}
-				placeholder={placeholder}
-				readOnly={!isEditing}
-				style={{ pointerEvents: isEditing ? 'all' : 'none' }}
-				onBlur={handleBlur}
-				onKeyDown={handleKey}
-				{...inputProps}
-			/>
-			<span
-				ref={sizerRef}
-				className={classes.sizer}
-			>
-				{editText || placeholder}
-			</span>
-		</div>
+		/>
 	);
 };

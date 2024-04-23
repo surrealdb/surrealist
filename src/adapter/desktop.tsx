@@ -1,19 +1,22 @@
+import { readBinaryFile, readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api/tauri";
+import { arch, type } from "@tauri-apps/api/os";
 import { appWindow } from "@tauri-apps/api/window";
 import { open as openURL } from "@tauri-apps/api/shell";
 import { save, open } from "@tauri-apps/api/dialog";
 import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
-import { Stack, Text } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import { store } from "~/store";
-import { OpenedFile, SurrealistAdapter } from "./base";
-import { printLog } from "~/util/helpers";
-import { readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
-import { Result } from "~/typings/utilities";
-import { confirmServing, pushConsoleLine, stopServing } from "~/stores/database";
+import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
+import { useDatabaseStore } from "~/stores/database";
+import { useConfigStore } from "~/stores/config";
+import { watchStore } from "~/util/config";
+import { Platform } from "~/types";
+import { getHotkeyHandler } from "@mantine/hooks";
 
 const WAIT_DURATION = 1000;
+
+const printMsg = (...args: any[]) => printLog("Desktop", "#9150e6", ...args);
 
 /**
  * Surrealist adapter for running as Wails desktop app
@@ -21,9 +24,9 @@ const WAIT_DURATION = 1000;
 export class DesktopAdapter implements SurrealistAdapter {
 
 	public isServeSupported = true;
-	public isPinningSupported = true;
 	public isUpdateCheckSupported = true;
-	public isPromotionSupported = false;
+	public hasTitlebar = false;
+	public platform: Platform = "windows";
 
 	#startTask: any;
 
@@ -39,20 +42,85 @@ export class DesktopAdapter implements SurrealistAdapter {
 		document.addEventListener("contextmenu", (e) => {
 			e.preventDefault();
 		});
+
+		document.body.addEventListener("keydown", getHotkeyHandler([
+			["mod+alt+i", () => invoke("toggle_devtools")]
+		]));
+
+		type().then(t => {
+			this.hasTitlebar = t === "Windows_NT" || t === "Linux";
+		});
 	}
+
+	public initialize() {
+		watchStore({
+			initial: true,
+			store: useConfigStore,
+			select: (s) => s.settings.appearance.windowScale,
+			then: (scale) => invoke<void>("set_window_scale", { scaleFactor: scale / 100 }),
+		});
+
+		watchStore({
+			initial: true,
+			store: useConfigStore,
+			select: (s) => s.settings.behavior.windowPinned,
+			then: (pinned) => {
+				appWindow.setAlwaysOnTop(pinned);
+				updateTitle();
+			},
+		});
+	}
+
+	public dumpDebug = async () => ({
+		"Platform": "Desktop",
+		"OS": await type(),
+		"Architecture": await arch(),
+		"WebView": navigator.userAgent,
+	});
 
 	public async setWindowTitle(title: string) {
 		appWindow.setTitle(title || "Surrealist");
 	}
 
-	public loadConfig() {
-		return invoke<string>("load_config");
+	public async loadConfig() {
+		switch (await type()) {
+			case "Windows_NT": {
+				this.platform = "windows";
+				break;
+			}
+			case "Darwin": {
+				this.platform = "darwin";
+				break;
+			}
+			case "Linux": {
+				this.platform = "linux";
+				break;
+			}
+		}
+
+		const config = await invoke<string>("load_config");
+
+		return JSON.parse(config);
 	}
 
 	public saveConfig(config: string) {
 		return invoke<void>("save_config", {
-			config,
+			config: JSON.stringify(config)
 		});
+	}
+
+	public async hasLegacyConfig() {
+		return invoke<boolean>("has_legacy_config");
+	}
+
+	public async getLegacyConfig() {
+		const config = await invoke<string>("load_legacy_config");
+
+		return JSON.parse(config);
+	}
+
+	public async handleLegacyCleanup() {
+		return invoke<void>("complete_legacy_migrate");
 	}
 
 	public async startDatabase(
@@ -77,10 +145,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return invoke<void>("stop_database");
 	}
 
-	public async setWindowPinned(value: boolean) {
-		appWindow.setAlwaysOnTop(value);
-	}
-
 	public async openUrl(url: string) {
 		openURL(url);
 	}
@@ -92,11 +156,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 		content: () => Result<string | Blob | null>
 	): Promise<boolean> {
 		const filePath = await save({ title, defaultPath, filters });
-	
+
 		if (!filePath) {
 			return false;
 		}
-	
+
 		const result = await content();
 
 		if (!result) {
@@ -112,11 +176,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openFile(
+	public async openTextFile(
 		title: string,
 		filters: any,
 		multiple: boolean
-	): Promise<OpenedFile[]> {
+	): Promise<OpenedTextFile[]> {
 		const result = await open({
 			title,
 			filters,
@@ -128,7 +192,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			: result === null
 				? []
 				: result;
-		
+
 		const tasks = urls.map(async (url) => ({
 			name: await basename(url),
 			content: await readTextFile(url)
@@ -137,53 +201,66 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return Promise.all(tasks);
 	}
 
+	public async openBinaryFile(
+		title: string,
+		filters: any,
+		multiple: boolean
+	): Promise<OpenedBinaryFile[]> {
+		const result = await open({
+			title,
+			filters,
+			multiple
+		});
+
+		const urls = typeof result === "string"
+			? [result]
+			: result === null
+				? []
+				: result;
+
+		const tasks = urls.map(async (url) => ({
+			name: await basename(url),
+			content: new Blob([await readBinaryFile(url)])
+		}));
+
+		return Promise.all(tasks);
+	}
+
 	private initDatabaseEvents() {
 		listen("database:start", () => {
-			printLog("Runner", "#f2415f", "Received database start signal");
+			printMsg("Received database start signal");
 
 			this.#startTask = setTimeout(() => {
-				store.dispatch(confirmServing());
+				useDatabaseStore.getState().confirmServing();
 
-				showNotification({
-					autoClose: 1500,
-					color: "green.6",
-					message: (
-						<Stack spacing={0}>
-							<Text weight={600}>Database started</Text>
-							<Text color="light.5">Local database is now online</Text>
-						</Stack>
-					),
+				showInfo({
+					title: "Serving started",
+					subtitle: "Local database is now online"
 				});
 			}, WAIT_DURATION);
 		});
 
 		listen("database:stop", () => {
-			printLog("Runner", "#f2415f", "Received database stop signal");
+			printMsg("Received database stop signal");
 
 			if (this.#startTask) {
 				clearTimeout(this.#startTask);
 			}
 
-			store.dispatch(stopServing());
+			useDatabaseStore.getState().stopServing();
 
-			showNotification({
-				autoClose: 1500,
-				color: "red.6",
-				message: (
-					<Stack spacing={0}>
-						<Text weight={600}>Database stopped</Text>
-						<Text color="light.5">Local database is now offline</Text>
-					</Stack>
-				),
+			showInfo({
+				title: "Serving stopped",
+				subtitle: "Local database is now offline"
 			});
 		});
 
 		listen("database:output", (event) => {
-			store.dispatch(pushConsoleLine(event.payload as string));
+			useDatabaseStore.getState().pushConsoleLine(event.payload as string);
 		});
 
 		listen("database:error", (event) => {
-			printLog("Runner", "#f2415f", "Received database error signal");
+			printMsg("Received database error signal");
 
 			const msg = event.payload as string;
 
@@ -191,16 +268,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 				clearTimeout(this.#startTask);
 			}
 
-			store.dispatch(stopServing());
+			useDatabaseStore.getState().stopServing();
 
-			showNotification({
-				color: "red.6",
-				message: (
-					<Stack spacing={0}>
-						<Text weight={600}>Failed to start database</Text>
-						<Text color="light.5">{msg}</Text>
-					</Stack>
-				),
+			showError({
+				title: "Serving failed",
+				subtitle: msg
 			});
 		});
 	}

@@ -1,32 +1,19 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig, PluginOption } from 'vite';
-import { readFileSync, cpSync, existsSync } from 'node:fs';
+import { Mode, plugin as markdown } from 'vite-plugin-markdown';
+import { defineConfig } from 'vite';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const { version, author, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
-
-function pages(): PluginOption {
-	return {
-		name: 'github-pages',
-
-		writeBundle() {
-			const from = fileURLToPath(new URL('dist/index.html', import.meta.url));
-			const to = fileURLToPath(new URL('dist/404.html', import.meta.url));
-
-			cpSync(from, to);
-		}
-	};
-}
-
-const generatedDir = fileURLToPath(new URL('src/generated', import.meta.url));
-
-if (!existsSync(generatedDir)) {
-	throw new Error('Surrealist embed generated files not found. Run `pnpm embed:build` to generate them.');
-}
+const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), pages()],
+	plugins: [
+		react(),
+		markdown({
+			mode: [Mode.HTML]
+		})
+	],
 	clearScreen: false,
 	envPrefix: ['VITE_', 'TAURI_'],
 	server: {
@@ -34,9 +21,21 @@ export default defineConfig({
 		strictPort: true
 	},
 	build: {
-		target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
+		target: "esnext",
 		minify: process.env.TAURI_DEBUG ? false : 'esbuild',
 		sourcemap: !!process.env.TAURI_DEBUG,
+		rollupOptions: {
+			input: {
+				'surrealist': '/index.html',
+				'mini-run': '/mini/run.html',
+				'mini-new': '/mini/new.html'
+			}
+		},
+	},
+	esbuild: {
+		supported: {
+			'top-level-await': true //browsers can handle top-level-await features
+		},
 	},
 	resolve: {
 		alias: {
@@ -46,11 +45,24 @@ export default defineConfig({
 	css: {
 		modules: {
 			localsConvention: 'dashesOnly'
-		}
+		},
+		preprocessorOptions: {
+			scss: {
+				additionalData: '@import "~/assets/styles/mixins.scss";',
+			},
+		},
 	},
 	define: {
 		'import.meta.env.VERSION': `"${version}"`,
-		'import.meta.env.AUTHOR': `"${author}"`,
 		'import.meta.env.SDB_VERSION': `"${surreal}"`,
-	}
+		'import.meta.env.POSTHOG_KEY': `"phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404"`,
+		'import.meta.env.POSTHOG_URL': `"https://eu.posthog.com"`,
+	},
+	optimizeDeps: {
+		exclude: ['surrealdb.wasm', 'surrealql.wasm'],
+		esbuildOptions: {
+			target: 'esnext',
+		},
+	},
+	assetsInclude: ['**/surrealdb.wasm/dist/*.wasm', '**/surrealql.wasm/dist/*.wasm']
 });

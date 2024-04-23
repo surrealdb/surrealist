@@ -1,62 +1,156 @@
-import { ColorScheme } from "@mantine/core";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { TabCreation } from "~/types";
+import { ColorScheme } from "~/types";
+import { create } from "zustand";
 
-const interfaceSlice = createSlice({
-	name: "interface",
-	initialState: {
-		nativeTheme: "light" as ColorScheme,
-		availableUpdate: "",
+interface LiveMessage {
+	id: string;
+	action: string;
+	queryId: string;
+	timestamp: number;
+	data: any;
+}
+
+export type InterfaceStore = {
+	title: string;
+	colorPreference: ColorScheme;
+	colorScheme: ColorScheme;
+	availableUpdate: string;
+	showAvailableUpdate: boolean;
+	showConnectionEditor: boolean;
+	isCreatingConnection: boolean;
+	editingConnectionId: string;
+	showTableCreator: boolean;
+	liveTabs: Set<string>;
+	liveQueryMessages: Record<string, LiveMessage[]>;
+	showScopeSignup: boolean;
+	showChangelogAlert: boolean;
+	hasReadChangelog: boolean;
+
+	setWindowTitle: (title: string) => void;
+	setColorPreference: (preference: ColorScheme) => void;
+	setColorScheme: (scheme: ColorScheme) => void;
+	setAvailableUpdate: (availableUpdate: string) => void;
+	hideAvailableUpdate: () => void;
+	openConnectionCreator: () => void;
+	openConnectionEditor: (editingId: string) => void;
+	closeConnectionEditor: () => void;
+	setIsLive: (id: string, live: boolean) => void;
+	openTableCreator: () => void;
+	closeTableCreator: () => void;
+	pushLiveQueryMessage: (id: string, message: LiveMessage) => void;
+	clearLiveQueryMessages: (id: string) => void;
+	openScopeSignup: () => void;
+	closeScopeSignup: () => void;
+	showChangelog: () => void;
+	readChangelog: () => void;
+};
+
+export const useInterfaceStore = create<InterfaceStore>((set) => ({
+	title: "",
+	colorPreference: "dark",
+	colorScheme: "dark",
+	availableUpdate: "",
+	showAvailableUpdate: false,
+	showConnectionEditor: false,
+	isCreatingConnection: false,
+	editingConnectionId: "",
+	showTableCreator: false,
+	liveTabs: new Set<string>(),
+	liveQueryMessages: {},
+	showScopeSignup: false,
+	showChangelogAlert: false,
+	hasReadChangelog: false,
+
+	setWindowTitle: (title) => set(() => ({ title })),
+
+	setColorPreference: (themePreference) => set(() => ({
+		colorPreference: themePreference
+	})),
+
+	setColorScheme: (colorScheme) => set(() => ({
+		colorScheme,
+	})),
+
+	setAvailableUpdate: (availableUpdate) => set(() => ({
+		availableUpdate,
+		showAvailableUpdate: true,
+	})),
+
+	hideAvailableUpdate: () => set(() => ({
 		showAvailableUpdate: false,
-		showTabCreator: false,
-		tabCreation: null as TabCreation | null,
-		showTabEditor: false,
-		editingId: "",
-	},
-	reducers: {
-		
-		setNativeTheme(state, action: PayloadAction<ColorScheme>) {
-			state.nativeTheme = action.payload;
-		},
+	})),
 
-		setAvailableUpdate(state, action: PayloadAction<string>) {
-			state.showAvailableUpdate = true;
-			state.availableUpdate = action.payload;
-		},
+	openConnectionCreator: () => set(() => ({
+		editingConnectionId: "",
+		showConnectionEditor: true,
+		isCreatingConnection: true,
+	})),
 
-		hideAvailableUpdate(state) {
-			state.showAvailableUpdate = false;
-		},
+	openConnectionEditor: (editingId) => set(() => ({
+		editingConnectionId: editingId,
+		showConnectionEditor: true,
+		isCreatingConnection: false,
+	})),
 
-		openTabCreator(state, action: PayloadAction<TabCreation>) {
-			state.showTabCreator = true;
-			state.tabCreation = action.payload;
-		},
+	closeConnectionEditor: () => set(() => ({
+		showConnectionEditor: false,
+	})),
 
-		closeTabCreator(state) {
-			state.showTabCreator = false;
-		},
+	openTableCreator: () => set(() => ({
+		showTableCreator: true,
+	})),
 
-		openTabEditor(state, action: PayloadAction<string>) {
-			state.showTabEditor = true;
-			state.editingId = action.payload;
-		},
+	closeTableCreator: () => set(() => ({
+		showTableCreator: false,
+	})),
 
-		closeTabEditor(state) {
-			state.showTabEditor = false;
-		},
+	setIsLive: (id, live) => set((state) => {
+		const liveTabs = new Set(state.liveTabs);
 
-	}
-});
+		if (live) {
+			liveTabs.add(id);
+		} else {
+			liveTabs.delete(id);
+		}
 
-export const interfaceReducer = interfaceSlice.reducer;
+		return {
+			liveTabs
+		};
+	}),
 
-export const {
-	setNativeTheme,
-	setAvailableUpdate,
-	hideAvailableUpdate,
-	openTabCreator,
-	closeTabCreator,
-	openTabEditor,
-	closeTabEditor,
-} = interfaceSlice.actions;
+	pushLiveQueryMessage: (id, message) => set((state) => ({
+		liveQueryMessages: {
+			...state.liveQueryMessages,
+			[id]: [
+				message,
+				...(state.liveQueryMessages[id] || []).slice(0, 50)
+			]
+		}
+	})),
+
+	clearLiveQueryMessages: (id) => set((state) => {
+		const liveQueryMessages = { ...state.liveQueryMessages };
+
+		delete liveQueryMessages[id];
+
+		return {
+			liveQueryMessages
+		};
+	}),
+
+	openScopeSignup: () => set(() => ({
+		showScopeSignup: true,
+	})),
+
+	closeScopeSignup: () => set(() => ({
+		showScopeSignup: false,
+	})),
+
+	showChangelog: () => set(() => ({
+		showChangelogAlert: true,
+	})),
+
+	readChangelog: () => set(() => ({
+		hasReadChangelog: true,
+	})),
+
+}));

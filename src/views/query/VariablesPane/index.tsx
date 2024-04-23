@@ -1,63 +1,79 @@
-import { mdiTune } from "@mdi/js";
+import { ContentPane } from "~/components/Pane";
+import { ActionIcon, Badge, Group } from "@mantine/core";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { useActiveSession } from "~/hooks/environment";
-import { store } from "~/store";
-import { Panel } from "~/components/Panel";
-import { useState } from "react";
-import { Text } from "@mantine/core";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { updateSession } from "~/stores/config";
+import { useActiveQuery } from "~/hooks/connection";
+import { useConfigStore } from "~/stores/config";
+import { iconBraces, iconClose } from "~/util/icons";
+import { json } from "@codemirror/lang-json";
+import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 
-export function VariablesPane() {
-	const activeSession = useActiveSession();
+export interface VariablesPaneProps {
+	isValid: boolean;
+	switchPortal?: HtmlPortalNode<any>;
+	setIsValid: (isValid: boolean) => void;
+	closeVariables: () => void;
+}
 
-	if (!activeSession) {
-		throw new Error("This should not happen");
-	}
-
-	const [isInvalid, setIsInvalid] = useState(false);
+export function VariablesPane(props: VariablesPaneProps) {
+	const { updateQueryTab } = useConfigStore.getState();
+	const activeTab = useActiveQuery();
 
 	const setVariables = useStable((content: string | undefined) => {
 		try {
-			const json = content || "{}";
+			const json = content || "";
 			const parsed = JSON.parse(json);
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
-				throw new TypeError("Invalid JSON");
+				throw new TypeError("Must be object");
 			}
 
-			store.dispatch(updateSession({
-				id: activeSession.id,
+			updateQueryTab({
+				id: activeTab!.id,
 				variables: json,
-			}));
+			});
 
-			setIsInvalid(false);
+			props.setIsValid(true);
 		} catch {
-			setIsInvalid(true);
+			props.setIsValid(false);
 		}
 	});
 
-	const jsonAlert = isInvalid ? <Text color="red">Invalid variable JSON</Text> : undefined;
-
 	return (
-		<Panel title="Variables" icon={mdiTune} rightSection={jsonAlert}>
-			<SurrealistEditor
-				language="json"
-				value={activeSession?.variables?.toString()}
+		<ContentPane
+			title="Variables"
+			icon={iconBraces}
+			rightSection={
+				props.switchPortal ? (
+					<OutPortal node={props.switchPortal} />
+				) : (
+					<Group gap="xs">
+						{!props.isValid && (
+							<Badge
+								color="red"
+								variant="light"
+							>
+								Invalid JSON
+							</Badge>
+						)}
+						<ActionIcon
+							color="slate"
+							onClick={props.closeVariables}
+						>
+							<Icon path={iconClose} />
+						</ActionIcon>
+					</Group>
+				)
+			}
+		>
+			<CodeEditor
+				value={activeTab?.variables || ''}
 				onChange={setVariables}
-				style={{
-					position: "absolute",
-					insetBlock: 0,
-					insetInline: 24,
-				}}
-				options={{
-					wrappingStrategy: "advanced",
-					wordWrap: "on",
-					suggest: {
-						showProperties: false,
-					}
-				}}
+				extensions={[
+					json()
+				]}
 			/>
-		</Panel>
+		</ContentPane>
 	);
 }

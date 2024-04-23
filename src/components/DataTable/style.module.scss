@@ -1,13 +1,6 @@
-.table-container {
-	height: 100%;
-}
-
-.table-wrapper {
-	position: absolute !important;
-	inset: 12;
-	top: 0;
-	height: 100%;
-	width: 100%;
+.root {
+	position: absolute;
+	inset: 0;
 }
 
 .table {
@@ -15,12 +8,19 @@
 	user-select: text;
 
 	th {
+		background-color: var(--mantine-color-body);
+		color: var(--mantine-color-bright);
+		text-align: start;
 		position: sticky;
 		top: 0;
 	}
 
+	tbody tr:nth-child(odd) {
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
 	th > *, td > * {
-		padding-inline: 24px;
+		padding-inline: 8px !important;
 	}
 
 	th:first-child > *, td:first-child > * {

@@ -1,63 +1,71 @@
+import "reactflow/dist/style.css";
+import "@mantine/core/styles.layer.css";
+import "@mantine/notifications/styles.css";
+import "mantine-contextmenu/styles.layer.css";
+
+import "./assets/styles/layers.scss";
+import "./assets/styles/fonts.scss";
+import "./assets/styles/global.scss";
+
 import "./adapter";
 
 import dayjs from "dayjs";
+import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
-import embedPath from './generated/surrealist-embed_bg.wasm?url';
-import initEmbed, { initialize_embed } from './generated/surrealist-embed';
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
-import { store } from "./store";
 import { App } from "./components/App";
-import { initializeMonaco } from "./util/editor";
 import { runUpdateChecker } from "./util/updater";
-import { updateTitle, watchNativeTheme } from "./util/helpers";
+import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
-import { registerConfigSaver } from "./util/saver";
-import { initialize } from "./stores/config";
+import { useConfigStore } from "./stores/config";
+import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from './util/background';
+import { getSetting } from "./util/config";
+import { generateEditorIcons } from "./util/editor/icons";
+import { isProduction } from "./util/environment";
+import { promptChangelog } from "./util/changelogs";
 
-import "reactflow/dist/style.css";
-import { createViewRouter } from "./routing";
-
-(async () => {	
+(async () => {
 	dayjs.extend(relativeTime);
-	
-	// Load the surrealist embed library
-	await initEmbed(embedPath);
 
-	initialize_embed();
+	// Initialize posthog
+	if (isProduction) {
+		posthog.init(import.meta.env.POSTHOG_KEY, {
+			api_host: import.meta.env.POSTHOG_URL,
+			autocapture: false
+		});
+	}
 
-	// Load existing config
-	const config = await adapter.loadConfig();
+	// Synchronize the config to the store
+	await watchConfigStore();
 
-	store.dispatch(initialize(config));
+	updateTitle();
+	watchColorScheme();
+	watchColorPreference();
+	watchConnectionSwitch();
 
-	const { lastPromptedVersion, updateChecker } = store.getState().config;
+	// Initialize adapter
+	adapter.initialize();
+
+	// Generate editor icons
+	generateEditorIcons();
+
+	// Render the app component
+	const root = document.querySelector("#root")!;
+
+	createRoot(root).render(<App />);
 
 	// Check for updates
+	// TODO Auto updater
+	const { lastPromptedVersion } = useConfigStore.getState();
+	const updateChecker = getSetting("behavior", "updateChecker");
+
 	if (adapter.isUpdateCheckSupported && updateChecker) {
 		runUpdateChecker(lastPromptedVersion, false);
 	}
 
-	// Save the configuration to disk
-	registerConfigSaver();
+	// NOTE Temporary until react flow is fixed
+	document.body.addEventListener('keydown', e => e.stopPropagation());
 
-	// Apply initial title
-	updateTitle();
-
-	// Listen for theme changes
-	watchNativeTheme();
-
-	// Init monaco
-	await document.fonts.ready;
-	await initializeMonaco();
-
-	// Render the app component
-	const root = document.querySelector("#root")!;
-	const router = createViewRouter();
-
-	createRoot(root).render(
-		<Provider store={store}>
-			<App router={router} />
-		</Provider>
-	);
+	// Check for new release
+	promptChangelog();
 })();

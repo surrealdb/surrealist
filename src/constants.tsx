@@ -1,21 +1,136 @@
-import { mdiLightningBolt, mdiTable, mdiLockOpen, mdiChartBoxOutline, mdiWrench, mdiCodeJson, mdiFormatListGroup, mdiBroadcast } from "@mdi/js";
-import { ResultListing } from "./types";
+import queryIcon from "~/assets/animation/query.json";
+import explorerIcon from "~/assets/animation/explorer.json";
+import designerIcon from "~/assets/animation/designer.json";
+import authIcon from "~/assets/animation/auth.json";
+
+import { AuthMode, CodeLang, DataSet, ValueMode, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
+import { iconAPI, iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconFunction, iconLive, iconModel, iconQuery } from "./util/icons";
+import { getConnection } from "./util/connection";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = typeof EXPORT_TYPES[number];
 
 export interface ListingItem {
-	id: ResultListing;
+	label: string;
+	value: ResultMode;
 	icon: string;
 }
 
+export const SANDBOX = "sandbox";
+export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
+export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
-export const RESULT_LISTINGS: ListingItem[] = [
-	{ id: "combined", icon: mdiFormatListGroup },
-	{ id: "json", icon: mdiCodeJson },
-	{ id: "table", icon: mdiTable },
+export const DATASETS: Record<string, DataSet> = {
+	'surreal-deal': {
+		name: "Surreal Deal",
+		url: "https://datasets.surrealdb.com/surreal-deal-mini-v2.surql"
+	}
+};
+
+export const THEMES = [
+	{ label: "Automatic", value: "auto" },
+	{ label: "Light", value: "light" },
+	{ label: "Dark", value: "dark" },
 ];
+
+export const RESULT_MODES: ListingItem[] = [
+	{ label: "Combined", value: "combined", icon: iconCombined },
+	{ label: "Individual", value: "single", icon: iconQuery },
+	{ label: "Table", value: "table", icon: iconDataTable },
+	{ label: "Live", value: "live", icon: iconLive },
+];
+
+export const CONNECTION_PROTOCOLS: Selectable<Protocol>[] = [
+	{ label: "HTTP", value: "http" },
+	{ label: "HTTPS", value: "https" },
+	{ label: "WS", value: "ws" },
+	{ label: "WSS", value: "wss" },
+	{ label: "Memory", value: "mem" },
+	{ label: "IndexedDB", value: "indxdb" },
+];
+
+export const AUTH_MODES: Selectable<AuthMode>[] = [
+	{ label: "Root", value: "root" },
+	{ label: "Namespace", value: "namespace" },
+	{ label: "Database", value: "database" },
+	{ label: "Scope", value: "scope" },
+	{ label: "Token", value: "token" },
+	{ label: "Anonymous", value: "none" },
+];
+
+export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
+	{ label: "CLI", value: "cli" },
+	{ label: "Rust", value: "rust" },
+	{ label: "JavaScript", value: "js" },
+	// { label: "Go", value: "go" },
+	{ label: "Python", value: "py" },
+	{ label: ".NET", value: "dotnet" },
+	// { label: "Java", value: "java" },
+	// { label: "PHP", value: "php" }
+];
+
+export const VALUE_MODES: Selectable<ValueMode>[] = [
+	{ label: "JSON", value: "json" },
+	{ label: "SurrealQL", value: "sql" },
+];
+
+export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
+	query: {
+		id: "query",
+		name: "Query",
+		icon: iconQuery,
+		anim: queryIcon,
+		desc: "Execute queries against the database and inspect the results",
+	},
+	explorer: {
+		id: "explorer",
+		name: "Explorer",
+		icon: iconExplorer,
+		anim: explorerIcon,
+		desc: "Explore the database tables, records, and relations",
+	},
+	designer: {
+		id: "designer",
+		name: "Designer",
+		icon: iconDesigner,
+		anim: designerIcon,
+		desc: "Define database tables and relations",
+	},
+	authentication: {
+		id: "authentication",
+		name: "Authentication",
+		icon: iconAuth,
+		anim: authIcon,
+		desc: "Manage account details and database scopes",
+	},
+	functions: {
+		id: "functions",
+		name: "Functions",
+		icon: iconFunction,
+		desc: "Create and update schema level functions",
+	},
+	models: {
+		id: "models",
+		name: "Models",
+		icon: iconModel,
+		desc: "Upload and manage machine learning models",
+		disabled: (flags) => {
+			if (!flags.models_view) return true;
+			if (flags.models_view === 'force') return false;
+
+			const protocol = getConnection()?.connection?.protocol;
+			return !protocol || !ML_SUPPORTED.has(protocol);
+		},
+	},
+	documentation: {
+		id: "documentation",
+		name: "API Docs",
+		icon: iconAPI,
+		desc: "View the database schema and documentation",
+		disabled: (flags) => !flags.apidocs_view,
+	}
+};
 
 export const EXPORT_TYPES = [
 	"records",
@@ -24,61 +139,6 @@ export const EXPORT_TYPES = [
 	"functions",
 	"params",
 	"scopes"
-] as const;
-
-export const AUTH_MODES = [
-	{ label: "Root authentication", value: "root" },
-	{ label: "Namespace authentication", value: "namespace" },
-	{ label: "Database authentication", value: "database" },
-	{ label: "Scope authentication", value: "scope" },
-	{ label: "Anonymous", value: "none" },
-];
-
-export const VIEW_MODES = [
-	{
-		id: "query",
-		name: "Query",
-		icon: mdiLightningBolt,
-		desc: "Execute queries against the database and inspect the results",
-	},
-	{
-		id: "explorer",
-		name: "Explorer",
-		icon: mdiTable,
-		desc: "Explore the database tables, records, and relations",
-	},
-	{
-		id: "designer",
-		name: "Designer",
-		icon: mdiWrench,
-		desc: "Define database tables and relations",
-	},
-	{
-		id: "authentication",
-		name: "Authentication",
-		icon: mdiLockOpen,
-		desc: "Manage account details and database scopes",
-	},
-	{
-		id: "live",
-		name: "Live Query",
-		icon: mdiBroadcast,
-		desc: "Subscribe and receive live updates from the database",
-		desktop: true,
-	},
-] as const;
-
-export const STRUCTURE_TABS = [
-	{
-		id: "builder",
-		name: "Builder",
-		icon: mdiTable,
-	},
-	{
-		id: "graph",
-		name: "Visualizer",
-		icon: mdiChartBoxOutline,
-	},
 ] as const;
 
 export const SURREAL_KINDS = [
@@ -115,16 +175,9 @@ export const DESIGNER_NODE_MODES = [
 	{ label: "Simple", value: "simple" },
 ];
 
-export const DESIGNER_LAYOUT_MODES = [
-	{ label: "Diagram", value: "diagram" },
-	{ label: "Grid", value: "grid" },
-];
-
-export const INDEX_TYPES = [
-	{ label: "Normal", value: "normal" },
-	{ label: "Unique", value: "unique" },
-	{ label: "Search", value: "search" },
-	// { label: "Vector", value: "vector" },
+export const DESIGNER_DIRECTIONS = [
+	{ label: "Left to right", value: "ltr" },
+	{ label: "Right to left", value: "rtl" },
 ];
 
 export const SURQL_FILTERS = [
@@ -132,13 +185,4 @@ export const SURQL_FILTERS = [
 		name: "SurrealDB Schema",
 		extensions: ["surql", "sql", "surrealql"],
 	},
-];
-
-export const LIVE_QUERY_COLORS = [
-	"blue",
-	"green",
-	"orange",
-	"surreal",
-	"red",
-	"yellow",
 ];

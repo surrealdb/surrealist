@@ -8,7 +8,7 @@ export function useRelativeTime() {
 		const timer = setInterval(() => {
 			setCounter(counter => counter + 1);
 		}, 60_000);
-		
+
 		return () => clearInterval(timer);
 	}, []);
 

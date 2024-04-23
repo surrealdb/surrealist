@@ -1,0 +1,14 @@
+.query-text {
+	-webkit-user-select: all;
+	user-select: all;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.query-action {
+	display: none;
+}
+
+.query:hover .query-action {
+	display: flex;
+}

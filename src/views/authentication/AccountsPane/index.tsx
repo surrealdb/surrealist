@@ -16,21 +16,21 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { mdiComment, mdiKeyVariant, mdiPencil, mdiPlus } from "@mdi/js";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
-import { Panel } from "~/components/Panel";
+import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useHasSchemaAccess, useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { DatabaseSchema, UserDefinition } from "~/types";
-import { getActiveSurreal } from "~/util/connection";
+import { DatabaseSchema, SchemaUser } from "~/types";
 import { showError } from "~/util/helpers";
-import { fetchDatabaseSchema } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
+import { iconCheck, iconComment, iconEdit, iconKey, iconPlus } from "~/util/icons";
+import { useIntent } from "~/hooks/url";
+import { executeQuery } from "~/connection";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -48,19 +48,18 @@ export interface AccountsPaneProps {
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
-	const isLight = useIsLight();
 	const isOnline = useIsConnected();
 	const isDenied = useHasSchemaAccess();
 	const schema = useSchema();
 
 	const [isEditing, setIsEditing] = useState(false);
-	const [currentUser, setCurrentUser] = useState<UserDefinition | null>(null);
+	const [currentUser, setCurrentUser] = useState<SchemaUser | null>(null);
 	const [editingName, setEditingName] = useInputState("");
 	const [editingPassword, setEditingPassword] = useInputState("");
 	const [editingComment, setEditingComment] = useInputState("");
 	const [editingRole, setEditingRole] = useState<string[]>([]);
 
-	const users = (schema?.[props.field] || []) as UserDefinition[];
+	const users = (schema?.[props.field] || []) as SchemaUser[];
 
 	const closeSaving = useStable(() => {
 		setIsEditing(false);
@@ -80,10 +79,13 @@ export function AccountsPane(props: AccountsPaneProps) {
 				query += ` COMMENT "${editingComment}"`;
 			}
 
-			await getActiveSurreal().query(query);
-			await fetchDatabaseSchema();
+			await executeQuery(query);
+			await syncDatabaseSchema();
 		} catch (err: any) {
-			showError("Failed to save account", err.message);
+			showError({
+				title: "Failed to save account",
+				subtitle: err.message
+			});
 		}
 	});
 
@@ -95,7 +97,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 		setEditingRole([]);
 	});
 
-	const updateUser = useStable((user: UserDefinition) => {
+	const updateUser = useStable((user: SchemaUser) => {
 		setIsEditing(true);
 		setCurrentUser(user);
 		setEditingName(user.name);
@@ -115,11 +117,11 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 		closeModal();
 
-		await getActiveSurreal().query(`REMOVE USER ${currentUser.name} ON ${props.type}`);
-		await fetchDatabaseSchema();
+		await executeQuery(`REMOVE USER ${currentUser.name} ON ${props.type}`);
+		await syncDatabaseSchema();
 	});
 
-	const formatRoles = useStable((user: UserDefinition) => {
+	const formatRoles = useStable((user: SchemaUser) => {
 		return user.roles.map((role) => {
 			const roleInfo = ROLES.find((r) => r.value === role);
 
@@ -127,39 +129,47 @@ export function AccountsPane(props: AccountsPaneProps) {
 		}).join(' / ');
 	});
 
+	useIntent("create-user", ({ level }) => {
+		if (level == props.type) {
+			createUser();
+		}
+	});
+
 	return (
-		<Panel
+		<ContentPane
 			icon={props.icon}
 			title={props.title}
 			rightSection={
-				<ActionIcon title="Add account" onClick={createUser}>
-					<Icon color="light.4" path={mdiPlus} />
-				</ActionIcon>
+				<Tooltip label="New user">
+					<ActionIcon onClick={createUser}>
+						<Icon path={iconPlus} />
+					</ActionIcon>
+				</Tooltip>
 			}>
 			{users.length === 0 && (
-				<Center h="100%" c="light.5">
+				<Center h="100%" c="slate">
 					{isOnline
 						? isDenied
-							? "No access to this information"
-							: `No ${props.title.toLocaleLowerCase()} found`
+							? `No ${props.title.toLocaleLowerCase()} found`
+							: "No access to this information"
 						: "Not connected"
 					}
 				</Center>
 			)}
 
 			<ScrollArea
-				style={{ position: "absolute", inset: 12, paddingRight: 8, top: 0 }}
+				style={{ position: "absolute", inset: 10, top: 0 }}
 			>
-				<Stack spacing={0}>
+				<Stack gap={0}>
 					{users.map((user) => (
-						<Group key={user.name} spacing="xs" w="100%" noWrap>
+						<Group key={user.name} gap="xs" w="100%" wrap="nowrap">
 							<Icon
 								color={props.iconColor}
-								path={mdiKeyVariant}
-								size={12}
-								style={{ flexShrink: 0 }}
+								path={iconKey}
 							/>
-							<Text color={isLight ? "gray.9" : "gray.0"}>{user.name}</Text>
+							<Text>
+								{user.name}
+							</Text>
 							<Spacer />
 							{user.comment && (
 								<Tooltip
@@ -169,29 +179,31 @@ export function AccountsPane(props: AccountsPaneProps) {
 										</Text>
 									}
 									position="bottom"
-									withinPortal
 								>
 									<div>
 										<Icon
 											ml={6}
-											color={isLight ? "light" : "light.3"}
-											path={mdiComment}
+											path={iconComment}
 											size={10}
 											style={{ flexShrink: 0 }}
 										/>
 									</div>
 								</Tooltip>
 							)}
-							<Badge color="light">
+							<Badge
+								variant="light"
+								color="slate"
+							>
 								{formatRoles(user)}
 							</Badge>
-							<ActionIcon
-								color="light"
-								title="Edit user"
-								onClick={() => updateUser(user)}
-							>
-								<Icon path={mdiPencil} size={14} />
-							</ActionIcon>
+							<Tooltip label="Edit user">
+								<ActionIcon
+									onClick={() => updateUser(user)}
+									variant="subtle"
+								>
+									<Icon path={iconEdit} />
+								</ActionIcon>
+							</Tooltip>
 						</Group>
 					))}
 				</Stack>
@@ -238,7 +250,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 						>
 							<Stack mt="xs">
 								{ROLES.map((role) => (
-									<Checkbox {...role} key={role.value} />	
+									<Checkbox {...role} key={role.value} />
 								))}
 							</Stack>
 						</Checkbox.Group>
@@ -253,28 +265,33 @@ export function AccountsPane(props: AccountsPaneProps) {
 						/>
 					</Stack>
 					<Group mt="lg">
-						<Button onClick={closeModal} color={isLight ? "light.5" : "light.3"} variant="light">
+						<Button
+							onClick={closeModal}
+							color="slate"
+							variant="light"
+						>
 							Close
 						</Button>
 						<Spacer />
 						{currentUser && (
 							<Button
-								color="red"
+								color="pink.9"
 								onClick={removeUser}
-								variant="light"
 							>
 								Remove
-							</Button>	
+							</Button>
 						)}
 						<Button
-							color="surreal"
 							disabled={!currentUser && (!editingName || !editingPassword)}
-							type="submit">
+							rightSection={<Icon path={iconCheck} />}
+							variant="gradient"
+							type="submit"
+						>
 							Save
 						</Button>
 					</Group>
 				</Form>
 			</Modal>
-		</Panel>
+		</ContentPane>
 	);
 }

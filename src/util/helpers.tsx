@@ -2,13 +2,15 @@ import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { uid } from "radash";
-import { CSSProperties } from "react";
+import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
-import { store } from "~/store";
-import { getActiveSession } from "./environments";
-import { setNativeTheme } from "~/stores/interface";
-import { ViewMode } from "~/types";
+import { getConnection } from "./connection";
+import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
+import { useInterfaceStore } from "~/stores/interface";
+import { getSetting } from "./config";
+
+const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -16,13 +18,40 @@ export const TRUNCATE_STYLE: CSSProperties = {
 	textOverflow: "ellipsis",
 };
 
+export const Y_SLIDE_TRANSITION = {
+	in: { opacity: 1, transform: 'translateY(0)' },
+	out: { opacity: 0, transform: 'translateY(-20px)' },
+	common: { transformOrigin: 'top' },
+	transitionProperty: 'transform, opacity',
+};
+
+export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
+	e.stopPropagation();
+};
+
+export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
+	if (e.target instanceof HTMLInputElement) {
+		e.target.select();
+	} else {
+		const text = e.target.childNodes[0] as Text;
+		const range = document.createRange();
+
+		range.selectNode(text);
+		window.getSelection()?.removeAllRanges();
+		window.getSelection()?.addRange(range);
+	}
+};
+
+/**
+ * Update the title of the window
+ */
 export function updateTitle() {
-	const { config } = store.getState();
 	const { pathname } = window.location;
 
+	const windowPinned = getSetting("behavior", "windowPinned");
 	const activeView = pathname.split("/")[1] as ViewMode;
-	const session = getActiveSession();
-	const viewInfo = VIEW_MODES.find((v) => v.id === activeView);
+	const viewInfo = VIEW_MODES[activeView];
+	const session = getConnection();
 	const segments: string[] = [];
 
 	if (session) {
@@ -31,24 +60,14 @@ export function updateTitle() {
 
 	segments.push(`Surrealist ${viewInfo?.name || ''}`);
 
-	if (config.isPinned) {
+	if (windowPinned) {
 		segments.push('(Pinned)');
 	}
 
-	adapter.setWindowTitle(segments.join(' '));
-}
+	const title = segments.join(' ');
 
-/**
- * Watch for changes to the native theme
- */
-export function watchNativeTheme() {
-	const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
-
-	store.dispatch(setNativeTheme(mediaMatch.matches ? "dark" : "light"));
-
-	mediaMatch.addEventListener("change", (event) => {
-		store.dispatch(setNativeTheme(event.matches ? "dark" : "light"));
-	});
+	adapter.setWindowTitle(title);
+	useInterfaceStore.getState().setWindowTitle(title);
 }
 
 /**
@@ -57,13 +76,31 @@ export function watchNativeTheme() {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showError(title: string, subtitle: string) {
+export function showError(info: {title: ReactNode, subtitle: ReactNode}) {
 	showNotification({
-		color: "red.6",
+		color: "pink.9",
 		message: (
-			<Stack spacing={0}>
-				<Text weight={600}>{title}</Text>
-				<Text color="light.5">{subtitle}</Text>
+			<Stack gap={0}>
+				<Text fw={600} c="bright">{info.title}</Text>
+				<Text>{info.subtitle}</Text>
+			</Stack>
+		),
+	});
+}
+
+/**
+ * Display an informative notification
+ *
+ * @param title The title message
+ * @param subtitle The subtitle message
+ */
+export function showInfo(info: {title: ReactNode, subtitle: ReactNode}) {
+	showNotification({
+		color: "surreal.6",
+		message: (
+			<Stack gap={0}>
+				<Text fw={600} c="bright">{info.title}</Text>
+				<Text>{info.subtitle}</Text>
 			</Stack>
 		),
 	});
@@ -96,6 +133,7 @@ export function mod(n: number, m: number) {
  * @param value The input string
  * @param prefix The prefix to trim
  * @returns The list of items
+ * @deprecated Use `extractType` instead
  */
 export function extractTypeList(input: string, prefix: string) {
 	return input
@@ -106,10 +144,24 @@ export function extractTypeList(input: string, prefix: string) {
 }
 
 /**
+ * Extracts the kind and items out of a field kind
+ *
+ * @param value The input string
+ * @returns The sanitized kind and items list
+ */
+export function extractType(input: string): [string, string[]] {
+	const [, kind, items] = FIELD_KIND_PATTERN.exec(input) || [];
+
+	return items.trim().length > 0
+		? [kind, items.split("|").map((t) => t.trim())]
+		: [kind, []];
+}
+
+/**
  * Create a new unique id
  */
 export function newId() {
-	return uid(5);
+	return uid(9);
 }
 
 /**
@@ -129,4 +181,185 @@ export function applyOrder<T>(items: T[], order: T[]) {
 
 		return item;
 	});
+}
+
+/**
+ * Wrap a promise in a timeout
+ *
+ * @param cb The callback providing the promise
+ * @param timeout The timeout in milliseconds
+ * @returns The promise
+ */
+export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
+	return new Promise<T>((res, rej) =>
+		setTimeout(() => cb().then(res).catch(rej), timeout)
+	);
+}
+/**
+ * Returns whether the result is a permission error
+ *
+ * @param result The result to check
+ * @returns True if the result is a permission error
+ */
+export function isPermissionError(result: any) {
+	return typeof result === 'string' && result.includes('Not enough permissions to perform this action');
+}
+
+/**
+ * Convert the given connection options to a connection uri
+ *
+ * @param options The connection options
+ * @returns The URI string
+ */
+export function connectionUri(options: ConnectionOptions) {
+	const basePath = options.protocol === "mem"
+		? `${options.protocol}://`
+		: `${options.protocol}://${options.hostname}`;
+
+	const url = new URL(basePath);
+	url.pathname = url.pathname === "/" ? "/rpc" : url.pathname;
+	return url.toString();
+}
+
+/**
+ * Convert the given connection options to a version uri
+ *
+ * @param options The connection options
+ * @returns The URI string
+ */
+export function versionUri(options: ConnectionOptions) {
+	if (options.protocol === "mem" || options.protocol === "indxdb") {
+		return undefined;
+	}
+
+	const protocol = options.protocol.replace(/^ws/, "http");
+	const versionURI = new URL("/version", `${protocol}://${options.hostname}`);
+
+	return versionURI.toString();
+}
+
+/**
+ * Clamp a value between a min and max
+ *
+ * @param value The value to clamp
+ * @param min The minimum value
+ * @param max The maximum value
+ * @returns The clamped value
+ */
+export function clamp(value: number, min: number, max: number) {
+	return Math.min(Math.max(value, min), max);
+}
+
+/**
+ * Returns the file name without the extension
+ *
+ * @param name The file name
+ * @returns The file name without the extension
+ */
+export function getFileName(name: string) {
+	return name.includes('.')
+		? name.slice(0, name.lastIndexOf('.'))
+		: name;
+}
+
+/**
+ * Returns whether the given tab has not been renamed
+ * from its default name.
+ *
+ * @param tab The tab to check
+ * @returns True if the tab is unnamed
+ */
+export function isUnnamedTab(tab: TabQuery) {
+	return !!tab.name?.startsWith('New query');
+}
+
+/**
+ * Attempt to parse the given string as a valid params object
+ * while silently handling any errors
+ *
+ * @param paramString The string to parse
+ * @returns The parsed params object
+ */
+export function tryParseParams(paramString: string) {
+	let params: any = {};
+
+	try {
+		const parsed = JSON.parse(paramString);
+
+		if (typeof parsed !== "object" || Array.isArray(parsed)) {
+			throw new TypeError("Must be object");
+		}
+
+		params = parsed;
+	} catch {
+		console.warn("Invalid JSON in variables");
+	}
+
+	return params;
+}
+
+/**
+ * Correctly escape a string for use as table name
+ *
+ * @param value The value to escape
+ * @returns The escaped value
+ */
+export function tb(value: string) {
+	return `\`${value}\``;
+}
+
+/**
+ * Compute a hash code for the given string
+ *
+ * @param value The string to hash
+ * @returns The hash code
+ */
+export function hashCode(value: string) {
+	let hash = 0;
+
+	for (let i = 0; i < value.length; i++) {
+		const code = value.codePointAt(i)!;
+		hash = ((hash << 5) - hash) + code;
+		hash = hash & hash;
+	}
+
+	return hash;
+}
+
+/**
+ * Parse the JWT payload from the given token
+ * without checking for validity. This should
+ * never be used in a secure context and only
+ * for display purposes.
+ *
+ * @param token The JWT token
+ * @returns Parsed payload
+ */
+export function fastParseJwt(token: string) {
+	try {
+		const parts = token.split('.');
+
+		if (parts.length !== 3) {
+			return null;
+		}
+
+		return JSON.parse(atob(parts[1]));
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * A simplistic fuzzy match function which matches
+ * the query against the target string
+ *
+ * @param query The query to match
+ * @param target The target string
+ * @returns Result
+ */
+export function fuzzyMatch(query: string, target: string) {
+	const pattern = query.split(' ').join('.*?');
+	const regex = new RegExp(pattern, 'i');
+
+	return regex.test(target);
 }

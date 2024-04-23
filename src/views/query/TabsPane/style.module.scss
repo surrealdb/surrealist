@@ -1,0 +1,21 @@
+.query {
+	cursor: pointer !important;
+
+	&.query-dragging {
+		cursor: grabbing !important;
+	}
+
+	&:hover {
+		.query-live {
+			display: none;
+		}
+	
+		.query-close {
+			display: flex;
+		}
+	}
+}
+
+.query-close {
+	display: none;
+}

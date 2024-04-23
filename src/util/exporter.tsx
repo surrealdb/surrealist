@@ -1,16 +1,14 @@
 import { ExportType } from "~/constants";
-import { SurrealInfoDB, SurrealInfoTB } from "~/typings/surreal";
-import { getActiveSurreal } from "./connection";
 import { fork } from "radash";
+import { tb } from "./helpers";
+import { executeQuerySingle } from "~/connection";
+import { SchemaInfoDB, SchemaInfoTB } from "~/types";
 
 /**
  * Export the database schema and save it to a file
- * 
- * TODO Move this logic to Rust
  */
 export async function createDatabaseExport(types: ExportType[]) {
-	const surreal = getActiveSurreal();
-	const result = await surreal.querySingle<SurrealInfoDB>("INFO FOR DB");
+	const result = await executeQuerySingle<SchemaInfoDB>("INFO FOR DB");
 
 	const dbTables = Object.entries(result.tables);
 	const dbParams = Object.values(result.params);
@@ -30,7 +28,7 @@ export async function createDatabaseExport(types: ExportType[]) {
 	pushSection("OPTION");
 
 	output.push("OPTION IMPORT;");
-	
+
 	// Include analyzers
 	if (types.includes('analyzers') && dbAnalyzers.length > 0) {
 		pushSection("ANALYZERS");
@@ -71,34 +69,34 @@ export async function createDatabaseExport(types: ExportType[]) {
 	if (types.includes('tables')) {
 		for (const [tableName, definition] of dbTables) {
 			pushSection(`TABLE: ${tableName}`);
-	
+
 			output.push(`${definition};`);
-	
-			const tbInfo = await surreal.querySingle<SurrealInfoTB>(`INFO FOR TABLE \`${tableName}\``);
-	
+
+			const tbInfo = await executeQuerySingle<SchemaInfoTB>(`INFO FOR TABLE ${tb(tableName)}`);
+
 			const tbFields = Object.values(tbInfo.fields);
 			const tbIndexes = Object.values(tbInfo.indexes);
 			const tbEvents = Object.values(tbInfo.events);
-	
+
 			if (tbFields.length > 0) {
 				output.push("");
-	
+
 				for (const fieldDef of tbFields) {
 					output.push(`${fieldDef};`);
 				}
 			}
-	
+
 			if (tbIndexes.length > 0) {
 				output.push("");
-	
+
 				for (const indexDef of tbIndexes) {
 					output.push(`${indexDef};`);
 				}
 			}
-	
+
 			if (tbEvents.length > 0) {
 				output.push("");
-	
+
 				for (const eventDef of tbEvents) {
 					output.push(`${eventDef};`);
 				}
@@ -113,14 +111,14 @@ export async function createDatabaseExport(types: ExportType[]) {
 		output.push("BEGIN TRANSACTION;");
 
 		for (const [tableName] of dbTables) {
-			const tbData = await surreal.query(`SELECT * FROM \`${tableName}\``);
+			const tbData = await executeQuerySingle(`SELECT * FROM ${tb(tableName)}`);
 			const tbRows = tbData[0].result as any[];
 
 			if (tbRows.length > 0) {
 				pushSection(`TABLE DATA: ${tableName}`);
-				
+
 				const [edges, records] = fork(tbRows, (row) => row.in && row.out);
-				
+
 				for (const entry of records) {
 					output.push(`UPDATE ${entry.id} CONTENT ${JSON.stringify(entry)};`);
 				}

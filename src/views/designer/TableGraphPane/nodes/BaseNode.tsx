@@ -1,16 +1,17 @@
-import { Button, Divider, Flex, Group, Paper, Stack, Text, useMantineTheme } from "@mantine/core";
-import { mdiBullhorn, mdiChevronDown,  mdiChevronUp, mdiCodeBraces, mdiFlash } from "@mdi/js";
-import { DesignerNodeMode, TableDefinition } from "~/types";
+import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
+import { TableInfo } from "~/types";
 import { Handle, Position } from "reactflow";
-import { useHandleStyle } from "../hooks";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { useStable } from "~/hooks/stable";
-import { MAX_FIELDS } from "../helpers";
+import { themeColor } from "~/util/mantine";
+import { useActiveConnection } from "~/hooks/connection";
+import { useIsLight } from "~/hooks/theme";
+import { ON_STOP_PROPAGATION, extractType } from "~/util/helpers";
+import { MouseEvent, useMemo, useRef } from "react";
+import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 
 interface SummaryProps {
 	isLight: boolean;
-	white: string;
 	icon: string;
 	title: string;
 	value: number;
@@ -23,12 +24,14 @@ function Summary(props: SummaryProps) {
 
 	return (
 		<Group pr={4}>
-			<Icon path={props.icon} color="light" />
-			<Text color={props.isLight ? "light.9" : props.white}>{props.title}</Text>
+			<Icon path={props.icon} />
+			<Text c={props.isLight ? "slate.9" : "white"}>
+				{props.title}
+			</Text>
 			<Spacer />
 			<Text
-				color={valueColor}
-				weight={600}
+				c={valueColor}
+				fw={600}
 			>
 				{props.value}
 			</Text>
@@ -36,170 +39,193 @@ function Summary(props: SummaryProps) {
 	);
 }
 
-interface ElementsProps {
-	isLight: boolean;
-	table: TableDefinition;
-	expanded: boolean;
-	onExpand: (name: string) => void;
+interface FieldKindProps {
+	kind: string;
 }
 
-function Elements(props: ElementsProps) {
-	const { colors, white } = useMantineTheme();
+function FieldKind({ kind }: FieldKindProps) {
 
-	const fields = props.table.fields.slice(0, props.expanded ? undefined : MAX_FIELDS);
-	const overflow = props.table.fields.length - MAX_FIELDS;
+	const [kindName, tooltip] = useMemo(() => {
+		return extractType(kind);
+	}, []);
 
-	const toggleOverflow = useStable((e: any) => {
-		e.stopPropagation();
-		props.onExpand(props.table.schema.name);
-	});
+	const value = (
+		<Text c="surreal.6" ff="mono" maw="50%">
+			{kindName}
+		</Text>
+	);
+
+	if (tooltip.length === 0) {
+		return value;
+	}
+
+	const items = (
+		<Box>
+			{tooltip.map((type) => (
+				<Text key={type} fw={500}>
+					{type}
+				</Text>
+			))}
+		</Box>
+	);
 
 	return (
-		<Stack spacing="xs" mt={10} p={0}>
-			{fields.length === 0 && (
-				<Text align="center" color={props.isLight ? "dimmed" : colors.dark[3]}>
-					No fields defined
-				</Text>
-			)}
-			{fields.map((field) => (
-				<Flex key={field.name} justify="space-between" gap="lg"> 
-					<Text
-						truncate
-						color={props.isLight ? undefined : white}
-						title={field.name}
-					>
-						{field.name}
-					</Text>
-					{field.kind ? (
-						<Text
-							truncate
-							color="surreal"
-							title={field.kind}
-						>
-							{field.kind}
-						</Text>
-					) : (
-						<Text
-							color="gray.7"
-							title={field.kind}
-						>
-							none
-						</Text>
-					)}
-				</Flex>
-			))}
-			{overflow > 0 && (
-				<Button
-					color="light"
-					variant="subtle"
-					onClick={toggleOverflow}
-					size="xs"
-					h={26}
+		<Tooltip
+			position="top"
+			label={items}
+			openDelay={0}
+		>
+			{value}
+		</Tooltip>
+	);
+}
+
+interface FieldsProps {
+	isLight: boolean;
+	table: TableInfo;
+}
+
+function Fields(props: FieldsProps) {
+	const fields = props.table.fields;
+
+	const skipMouseUp = useRef(false);
+
+	const onClick = (e: MouseEvent<HTMLElement>) => {
+		if (skipMouseUp.current) {
+			skipMouseUp.current = false;
+			e.stopPropagation();
+		}
+	};
+
+	return (
+		<Box display="flex" style={{ cursor: 'pointer' }}>
+			<ScrollArea
+				flex={1}
+				mah={210}
+				onScrollPositionChange={() => skipMouseUp.current = true}
+				onClickCapture={onClick}
+				onWheelCapture={ON_STOP_PROPAGATION}
+				onMouseDownCapture={ON_STOP_PROPAGATION}
+				onMouseUpCapture={ON_STOP_PROPAGATION}
+			>
+				<Stack
+					gap="xs"
+					mt={10}
+					p={0}
 				>
-					{props.expanded ? `Show less` : `Show ${overflow} more`}
-					<Icon
-						path={props.expanded ? mdiChevronUp : mdiChevronDown}
-						right
-					/>
-				</Button>
-			)}
-		</Stack>
+					{fields.map((field) => (
+						<Flex key={field.name} justify="space-between" gap="lg">
+							<Text
+								truncate
+								title={field.name}
+								c={props.isLight ? undefined : "white"}
+							>
+								{field.name}
+							</Text>
+							{field.kind ? (
+								<FieldKind
+									kind={field.kind}
+								/>
+							) : (
+								<Text c="slate" title={field.kind}>
+									none
+								</Text>
+							)}
+						</Flex>
+					))}
+				</Stack>
+			</ScrollArea>
+		</Box>
 	);
 }
 
 interface BaseNodeProps {
 	icon: string;
-	isLight: boolean;
-	table: TableDefinition;
+	table: TableInfo;
 	isSelected: boolean;
-	hasLeftEdge: boolean;
-	hasRightEdge: boolean;
-	nodeMode: DesignerNodeMode;
-	withoutGraph?: boolean;
-	expanded: boolean;
-	onExpand: (name: string) => void;
+	hasIncoming: boolean;
+	hasOutgoing: boolean;
 }
 
 export function BaseNode(props: BaseNodeProps) {
-	const { colors, white, ...theme } = useMantineTheme();
-	const { isLight, table, isSelected, hasLeftEdge, hasRightEdge, icon, nodeMode, withoutGraph, expanded, onExpand } = props;
+	const { table, isSelected, hasIncoming, hasOutgoing, icon } = props;
+	const { diagramMode, diagramDirection } = useActiveConnection();
 
-	const handleStyle = useHandleStyle();
-	const primaryColor = theme.fn.primaryColor();
+	const isLight = useIsLight();
+	const isLTR = diagramDirection == 'ltr';
+	const showMore = diagramMode == 'summary' || (diagramMode == 'fields' && table.fields.length > 0);
 
 	return (
 		<>
-			{!withoutGraph && (
-				<Handle
-					type="target"
-					position={Position.Left}
-					style={{
-						...handleStyle,
-						visibility: hasLeftEdge ? "visible" : "hidden",
-					}}
-				/>
-			)}
+			<Handle
+				type="target"
+				position={isLTR ? Position.Left : Position.Right}
+				style={{
+					visibility: hasIncoming ? 'visible' : 'hidden'
+				}}
+			/>
+
+			<Handle
+				type="source"
+				position={isLTR ? Position.Right : Position.Left}
+				style={{
+					visibility: hasOutgoing ? 'visible' : 'hidden'
+				}}
+			/>
 
 			<Paper
-				w={withoutGraph ? undefined : 250}
-				p={8}
-				radius="md"
+				p="md"
+				w={250}
 				title={`Click to edit ${table.schema.name}`}
+				bg={isLight ? "white" : "slate.7"}
+				shadow={`0 8px 15px var(--mantine-color-slate-${isLight ? 0 : 9}`}
 				style={{
-					backgroundColor: isLight ? colors.gray[1] : colors.dark[6],
-					border: `2px solid ${isSelected ? primaryColor : 'transparent'}`,
-					cursor: 'pointer',
+					border: `1px solid ${themeColor(isSelected ? 'surreal' : isLight ? 'slate.2' : 'slate.5')}`,
 					userSelect: 'none'
 				}}
 			>
 				<Group
 					style={{ color: isLight ? undefined : "white" }}
-					position="center"
-					spacing="xs"
+					gap="xs"
 				>
 					<Icon
 						path={icon}
-						color={isLight ? "light.5" : "light.4"}
+						color={isSelected ? "surreal" : isLight ? "slate.7" : "slate.2"}
 					/>
-					<Text align="center">
+					<Text>
 						{table.schema.name}
 					</Text>
 				</Group>
 
-				{nodeMode != 'simple' && (
+				{showMore && (
 					<>
 						<Divider
-							color={isLight ? "gray.3" : "dark.4"}
-							mt={6}
+							color={isLight ? 'slate.2' : 'slate.6'}
+							mt="sm"
 						/>
 
-						{nodeMode == 'fields' ? (
-							<Elements
+						{diagramMode == 'fields' ? (
+							<Fields
 								isLight={isLight}
 								table={table}
-								expanded={expanded}
-								onExpand={onExpand}
 							/>
 						) : (
-							<Stack spacing="xs" mt={10} p={0}>
+							<Stack gap="xs" mt={10} p={0}>
 								<Summary
 									isLight={isLight}
-									white={white}
-									icon={mdiCodeBraces}
+									icon={iconJSON}
 									title="Fields"
 									value={table.fields.length}
 								/>
 								<Summary
 									isLight={isLight}
-									white={white}
-									icon={mdiFlash}
+									icon={iconIndex}
 									title="Indexes"
 									value={table.indexes.length}
 								/>
 								<Summary
 									isLight={isLight}
-									white={white}
-									icon={mdiBullhorn}
+									icon={iconBullhorn}
 									title="Events"
 									value={table.events.length}
 								/>
@@ -208,17 +234,6 @@ export function BaseNode(props: BaseNodeProps) {
 					</>
 				)}
 			</Paper>
-
-			{!withoutGraph && (
-				<Handle
-					type="source"
-					position={Position.Right}
-					style={{
-						...handleStyle,
-						visibility: hasRightEdge ? "visible" : "hidden",
-					}}
-				/>
-			)}
 		</>
 	);
 }

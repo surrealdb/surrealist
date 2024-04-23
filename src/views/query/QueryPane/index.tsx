@@ -1,166 +1,178 @@
-import classes from './style.module.scss';
-import { editor } from "monaco-editor";
-import { mdiClose, mdiDatabase, mdiFileDocument, mdiPlusBoxMultiple } from "@mdi/js";
+import autoFixAnim from "~/assets/animation/autofix.json";
 import { useStable } from "~/hooks/stable";
-import { useActiveSession } from "~/hooks/environment";
-import { store } from "~/store";
-import { Panel } from "~/components/Panel";
-import { useRef } from "react";
-import { configureQueryEditor, updateQueryValidation } from "~/util/editor";
-import { useDebouncedCallback } from "~/hooks/debounce";
-import { SurrealistEditor } from "~/components/SurrealistEditor";
-import { ActionIcon, Group, ScrollArea, Tabs } from "@mantine/core";
+import { ContentPane } from "~/components/Pane";
+import { useDebounced } from "~/hooks/debounce";
+import { CodeEditor } from "~/components/CodeEditor";
+import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
+import { useConfigStore } from '~/stores/config';
+import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
+import { selectionChanged, surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
+import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
-import { adapter } from "~/adapter";
-import { SURQL_FILTERS } from "~/constants";
-import { EditableText } from "~/components/EditableText";
-import { updateQueryTab, removeQueryTab, addQueryTab, setActiveQueryTab } from '~/stores/config';
+import { tryParseParams } from "~/util/helpers";
+import { Text } from "@mantine/core";
+import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { SelectionRange } from "@codemirror/state";
+import { useIntent } from "~/hooks/url";
+import { HoverIcon } from "~/components/HoverIcon";
+import { formatQuery, validateQuery } from "~/util/surrealql";
 
-export function QueryPane() {
-	const { queries, activeQueryId } = useActiveSession();
-	const controls = useRef<editor.IStandaloneCodeEditor>();
+const VARIABLE_PATTERN = /\$\w+/gi;
+const RESERVED_VARIABLES = new Set([
+	'auth',
+	'token',
+	'scope',
+	'session',
+	'before',
+	'after',
+	'value',
+	'input',
+	'this',
+	'parent',
+	'event',
+]);
 
-	const showTabs = queries.length > 1;
-	const queryIndex = queries.findIndex(({ id }) => id === activeQueryId);
-	const queryInfo = queries[queryIndex];
-	const queryText = queryInfo?.text || "";
+export interface QueryPaneProps {
+	activeTab: TabQuery;
+	showVariables: boolean;
+	switchPortal?: HtmlPortalNode<any>;
+	setIsValid: (isValid: boolean) => void;
+	setShowVariables: (show: boolean) => void;
+	onSaveQuery: () => void;
+	onSelectionChange: (value: SelectionRange) => void;
+}
 
-	const setQueryForced = useStable((content: string | undefined) => {
-		store.dispatch(updateQueryTab({
-			text: content || ""
-		}));
+export function QueryPane({
+	activeTab,
+	showVariables,
+	setIsValid,
+	switchPortal,
+	setShowVariables,
+	onSaveQuery,
+	onSelectionChange,
+}: QueryPaneProps) {
+	const { updateQueryTab } = useConfigStore.getState();
 
-		updateQueryValidation(controls.current!);
+	const setQueryForced = useStable((query: string) => {
+		setIsValid(!validateQuery(query));
+		updateQueryTab({
+			id: activeTab.id,
+			query
+		});
 	});
 
-	const scheduleSetQuery = useDebouncedCallback(200, setQueryForced);
+	const scheduleSetQuery = useDebounced(200, setQueryForced);
 
-	const configure = useStable((editor: editor.IStandaloneCodeEditor) => {
-		configureQueryEditor(editor);
-		updateQueryValidation(editor);
-
-		controls.current = editor;
-
-		editor.focus();
+	const handleFormat = useStable(() => {
+		updateQueryTab({
+			id : activeTab.id,
+			query: formatQuery(activeTab.query)
+		});
 	});
 
-	const handleUpload = useStable(async () => {
-		const [file] = await adapter.openFile('Load query from file', SURQL_FILTERS, false);
-
-		if (file) {
-			setQueryForced(file.content);
-		}
+	const toggleVariables = useStable(() => {
+		setShowVariables(!showVariables);
 	});
 
-	const removeTab = useStable((tab: number) => {
-		store.dispatch(removeQueryTab(tab));
+	const inferVariables = useStable(() => {
+		if (!activeTab) return;
+
+		const query = activeTab.query;
+		const matches = query.match(VARIABLE_PATTERN) || [];
+
+		const currentVars = tryParseParams(activeTab.variables);
+		const currentKeys = Object.keys(currentVars);
+
+		const variables = matches
+			.map((v) => v.slice(1))
+			.filter((v) => !RESERVED_VARIABLES.has(v) && !currentKeys.includes(v));
+
+		const newVars = variables.reduce((acc, v) => {
+			acc[v] = "";
+			return acc;
+		}, {} as Record<string, any>);
+
+		const mergedVars = {
+			...currentVars,
+			...newVars
+		};
+
+		setShowVariables(true);
+		updateQueryTab({
+			id: activeTab.id,
+			variables: JSON.stringify(mergedVars, null, 4)
+		});
 	});
 
-	const appendTab = useStable(() => {
-		store.dispatch(addQueryTab());
-	});
+	const setSelection = useDebounced(350, onSelectionChange);
 
-	const handleTabChange = useStable((value: string | null) => {
-		if (value) {
-			const tabId = Number.parseInt(value);
-
-			if (activeQueryId !== Number.parseInt(value)) {
-				store.dispatch(setActiveQueryTab(tabId));
-
-				controls.current?.focus?.();
-			}
-		}
-	});
-
-	const setTabName = useStable((name: string) => {
-		store.dispatch(updateQueryTab({
-			name: name
-		}));
-	});
+	useIntent("format-query", handleFormat);
+	useIntent("infer-variables", inferVariables);
 
 	return (
-		<Panel
+		<ContentPane
 			title="Query"
-			icon={mdiDatabase}
+			icon={iconServer}
 			rightSection={
-				<Group>
-					<ActionIcon onClick={appendTab} title="New query tab">
-						<Icon color="light.4" path={mdiPlusBoxMultiple} />
-					</ActionIcon>
+				switchPortal ? (
+					<OutPortal node={switchPortal} />
+				) : (
+					<Group gap="sm">
+						<Tooltip label="Save query">
+							<ActionIcon
+								onClick={onSaveQuery}
+								variant="light"
+							>
+								<Icon path={iconStar} />
+							</ActionIcon>
+						</Tooltip>
 
-					<ActionIcon onClick={handleUpload} title="Load from file">
-						<Icon color="light.4" path={mdiFileDocument} />
-					</ActionIcon>
-				</Group>
+						<Tooltip label="Format query">
+							<ActionIcon
+								onClick={handleFormat}
+								variant="light"
+							>
+								<Icon path={iconText} />
+							</ActionIcon>
+						</Tooltip>
+
+						<Tooltip maw={175} multiline label={
+							<Stack gap={4}>
+								<Text>Infer variables from query</Text>
+								<Text c="dimmed" size="sm">
+									Automatically add missing variables.
+								</Text>
+							</Stack>
+						}>
+							<HoverIcon
+								color="slate"
+								onClick={inferVariables}
+								animation={autoFixAnim}
+							/>
+						</Tooltip>
+
+						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
+							<ActionIcon
+								onClick={toggleVariables}
+								variant="light"
+							>
+								<Icon path={iconBraces} />
+							</ActionIcon>
+						</Tooltip>
+					</Group>
+				)
 			}
 		>
-			{showTabs && (
-				<Tabs
-					mt={-4}
-					value={activeQueryId.toString()}
-					onTabChange={handleTabChange}
-				>
-					<ScrollArea
-						pb="xs"
-					>
-						<Tabs.List style={{ flexWrap: "nowrap" }}>
-							{queries.map(({ id, name }) => {
-								return (
-									<Tabs.Tab
-										py={6}
-										px={10}
-										key={id}
-										value={id.toString()}
-									>
-										<Group spacing="xs" noWrap>
-											<EditableText
-												value={name || ""}
-												onChange={setTabName}
-												placeholder={`Query ${id}`}
-												activation="doubleClick"
-												minWidth={5}
-												className={classes.tabName}
-											/>
-											{id > 1 && (
-												<ActionIcon
-													size="xs"
-													component="div"
-													onClick={(e) => {
-														e.stopPropagation();
-														removeTab(id);
-													}}
-												>
-													<Icon path={mdiClose} color="gray.6" />
-												</ActionIcon>
-											)}
-										</Group>
-									</Tabs.Tab>
-								);
-							})}
-						</Tabs.List>
-					</ScrollArea>
-				</Tabs>
-			)}
-
-			<SurrealistEditor
-				noExpand
-				language="surrealql"
-				onMount={configure}
-				value={queryText}
+			<CodeEditor
+				value={activeTab.query}
 				onChange={scheduleSetQuery}
-				style={{
-					position: "absolute",
-					insetInline: 24,
-					top: showTabs ? 50 : 0,
-					bottom: 0
-				}}
-				options={{
-					quickSuggestions: false,
-					wordBasedSuggestions: false,
-					wrappingStrategy: "advanced",
-					wordWrap: "on"
-				}}
+				extensions={[
+					surql(),
+					surqlTableCompletion(),
+					surqlVariableCompletion(),
+					selectionChanged(setSelection)
+				]}
 			/>
-		</Panel>
+		</ContentPane>
 	);
 }

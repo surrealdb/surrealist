@@ -1,30 +1,21 @@
-import {
-	mdiArrowLeft,
-	mdiArrowRight,
-	mdiDatabase,
-	mdiFilterVariant,
-	mdiPlus,
-	mdiRefresh,
-	mdiTable,
-	mdiWrench,
-} from "@mdi/js";
-
-import { ActionIcon, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
-import { ChangeEvent, FocusEvent, KeyboardEvent, useEffect, useMemo } from "react";
+import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
-import { validate_where_clause } from "~/generated/surrealist-embed";
+import { ContentPane } from "~/components/Pane";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { store, useStoreValue } from "~/store";
-import { clearExplorerData, closeEditor, openCreator, openEditor, setExplorerData, setExplorerFilter, setExplorerFiltering, updatePage, updatePageSize, updatePageText, updateSortMode } from "~/stores/explorer";
-import { getSurreal } from "~/util/connection";
-import { HistoryHandle } from "~/hooks/history";
-import { EventBus, useEventSubscription } from "~/hooks/event";
-import { useStoreState } from "~/hooks/store";
+import { useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
+import { themeColor } from "~/util/mantine";
+import { iconChevronLeft, iconChevronRight, iconClose, iconCopy, iconDelete, iconFilter, iconPlus, iconQuery, iconRefresh, iconServer, iconTable, iconWrench } from "~/util/icons";
+import { tb } from "~/util/helpers";
+import { useInterfaceStore } from "~/stores/interface";
+import { RecordsChangedEvent } from "~/util/global-events";
+import { useContextMenu } from "mantine-contextmenu";
+import { useConfigStore } from "~/stores/config";
+import { executeQuery } from "~/connection";
+import { validateWhere } from "~/util/surrealql";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -34,56 +25,27 @@ const PAGE_SIZES = [
 ];
 
 export interface ExplorerPaneProps {
-	history: HistoryHandle<any>;
-	refreshEvent: EventBus;
+	activeTable: string | undefined;
+	onCreateRecord: () => void;
 }
 
-export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
-	const isLight = useIsLight();
+export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
+	const { addQueryTab, setActiveView } = useConfigStore.getState();
+	const { openTableCreator } = useInterfaceStore.getState();
+	const { showContextMenu } = useContextMenu();
+
 	const schema = useSchema();
 
-	const table = useStoreValue((state) => state.explorer.activeTable);
-	const records = useStoreValue((state) => state.explorer.records);
-	const recordCount = useStoreValue((state) => state.explorer.recordCount);
-	const filtering = useStoreValue((state) => state.explorer.filtering);
-	const filter = useStoreValue((state) => state.explorer.filter);
-
-	const [pageText, setPageText] = useStoreState(
-		(state) => state.explorer.pageText,
-		(value) => updatePageText(value),
-	);
-
-	const [pageSize, setPageSize] = useStoreState(
-		(state) => state.explorer.pageSize,
-		(value) => updatePageSize(value),
-	);
-
-	const [sortMode, setSortMode] = useStoreState(
-		(state) => state.explorer.sortMode,
-		(value) => updateSortMode(value),
-	);
-
-	const [page, setPage] = useStoreState(
-		(state) => state.explorer.page,
-		(value) => updatePage(value),
-	);
+	const [records, setRecords] = useState<unknown[]>([]);
+	const [recordCount, setRecordCount] = useState(0);
+	const [filtering, setFiltering] = useState(false);
+	const [filter, setFilter] = useInputState("");
+	const [pageText, setPageText] = useInputState("1");
+	const [pageSize, setPageSize] = useState("25");
+	const [sortMode, setSortMode] = useState<[string, "asc" | "desc"] | null>(null);
+	const [page, setPage] = useState(1);
 
 	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
-
-	const requestCreate = useStable(async () => {
-		store.dispatch(openCreator(table || ''));
-		history.clear();
-	});
-
-	const toggleInspector = useStable(() => {
-		const { isEditing } = store.getState().explorer;
-
-		if (isEditing) {
-			store.dispatch(closeEditor());
-		} else {
-			store.dispatch(openEditor());
-		}
-	});
 
 	function setCurrentPage(number: number) {
 		setPageText(number.toString());
@@ -91,29 +53,24 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 	}
 
 	const toggleFilter = useStable(() => {
-		store.dispatch(setExplorerFiltering(!filtering));
-	});
-
-	const setFilter = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		store.dispatch(setExplorerFilter(e.target.value));
+		setFiltering(!filtering);
 	});
 
 	const [showFilter] = useDebouncedValue(filtering, 250);
 	const [filterClause] = useDebouncedValue(filter, 500);
 
 	const isFilterValid = useMemo(() => {
-		return (!showFilter || !filter) || validate_where_clause(filter);
+		return (!showFilter || !filter) || !validateWhere(filter);
 	}, [showFilter, filter]);
 
 	const fetchRecords = useStable(async () => {
-		if (!table) {
-			store.dispatch(clearExplorerData());
+		if (!activeTable) {
+			setRecords([]);
+			setRecordCount(0);
 			return;
 		}
 
-		const surreal = getSurreal();
-
-		if (!surreal || !isFilterValid) {
+		if (!isFilterValid) {
 			return;
 		}
 
@@ -121,8 +78,8 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		const startAt = (page - 1) * Number.parseInt(pageSize);
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM \`${table}\``;
-		let fetchQuery = `SELECT * FROM \`${table}\``;
+		let countQuery = `SELECT * FROM count((SELECT * FROM ${tb(activeTable)}`;
+		let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;
@@ -136,11 +93,12 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 			fetchQuery += ` START ${startAt}`;
 		}
 
-		const response = await surreal.query(`${countQuery};${fetchQuery}`);
+		const response = await executeQuery(`${countQuery};${fetchQuery}`);
 		const count = response[0].result?.[0] || 0;
 		const records = response[1].result || [];
 
-		store.dispatch(setExplorerData({ records, count }));
+		setRecords(records);
+		setRecordCount(count);
 
 		if (page > pageCount) {
 			setCurrentPage(pageCount || 1);
@@ -149,9 +107,9 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 
 	useEffect(() => {
 		fetchRecords();
-	}, [table, pageSize, page, sortMode, showFilter, filterClause]);
+	}, [activeTable, pageSize, page, sortMode, showFilter, filterClause]);
 
-	useEventSubscription(refreshEvent, () => {
+	useEventSubscription(RecordsChangedEvent, () => {
 		fetchRecords();
 	});
 
@@ -191,59 +149,116 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 		setCurrentPage(page + 1);
 	});
 
-	const openRecord = useStable((record: any) => {
-		const id = typeof record === "string" ? record : record.id;
-
-		history.push(id);
-		store.dispatch(openEditor());
+	const openCreator = useStable(() => {
+		onCreateRecord();
 	});
 
-	const headers = schema?.tables?.find((t) => t.schema.name === table)?.fields?.map((f) => f.name) || [];
+	const openRecordQuery = (id: string, prefix: string) => {
+		setActiveView("query");
+		addQueryTab({
+			query: `${prefix} ${id}`
+		});
+	};
+
+	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
+		showContextMenu([
+			{
+				key: "select",
+				title: "Use in SELECT query",
+				icon: <Icon path={iconQuery} />,
+				onClick: () => openRecordQuery(record.id, 'SELECT * FROM')
+			},
+			{
+				key: "select",
+				title: "Use in UPDATE query",
+				icon: <Icon path={iconWrench} />,
+				onClick: () => openRecordQuery(record.id, 'UPDATE')
+			},
+			{
+				key: "select",
+				title: "Use in DELETE query",
+				icon: <Icon path={iconClose} />,
+				onClick: () => openRecordQuery(record.id, 'DELETE')
+			},
+			{
+				key: "divider"
+			},
+			{
+				key: "copy",
+				title: "Copy record id",
+				icon: <Icon path={iconCopy} />,
+				onClick: () => {
+					navigator.clipboard.writeText(record.id);
+				}
+			},
+			{
+				key: "delete",
+				title: "Delete record",
+				color: "pink.7",
+				icon: <Icon path={iconDelete} />,
+				onClick: async () => {
+					if (!record.id) return;
+
+					// TODO Use confirmation
+					await executeQuery(`DELETE ${record.id}`);
+
+					fetchRecords();
+				}
+			},
+		])(e);
+	});
+
+	const headers = schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
+	const hasTables = (schema?.tables?.length ?? 0) > 0;
 
 	return (
-		<Panel
+		<ContentPane
 			title="Record Explorer"
-			icon={mdiTable}
+			icon={iconTable}
 			rightSection={
-				<Group align="center">
-					<ActionIcon title="Create record" onClick={requestCreate}>
-						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
+				activeTable && (
+					<Group align="center">
+						<Tooltip label="New record">
+							<ActionIcon onClick={openCreator}>
+								<Icon path={iconPlus} />
+							</ActionIcon>
+						</Tooltip>
 
-					<ActionIcon title="Toggle inspector" onClick={toggleInspector}>
-						<Icon color="light.4" path={mdiWrench} />
-					</ActionIcon>
+						<Tooltip label="Refresh records">
+							<ActionIcon onClick={fetchRecords}>
+								<Icon path={iconRefresh} />
+							</ActionIcon>
+						</Tooltip>
 
-					<ActionIcon title="Refresh table" onClick={fetchRecords}>
-						<Icon color="light.4" path={mdiRefresh} />
-					</ActionIcon>
+						<Tooltip label={filtering ? "Hide filter" : "Filter records"}>
+							<ActionIcon onClick={toggleFilter}>
+								<Icon path={iconFilter} />
+							</ActionIcon>
+						</Tooltip>
 
-					<ActionIcon title="Toggle filter" onClick={toggleFilter}>
-						<Icon color="light.4" path={mdiFilterVariant} />
-					</ActionIcon>
+						<Divider orientation="vertical" />
 
-					<Divider orientation="vertical" color={isLight ? "light.0" : "dark.5"} />
-
-					<Icon color="light.4" path={mdiDatabase} mr={-10} />
-					<Text color="light.4" lineClamp={1}>
-						{recordCount || "no"} rows
-					</Text>
-				</Group>
+						<Icon path={iconServer} mr={-6} />
+						<Text lineClamp={1}>
+							{recordCount || "no"} rows
+						</Text>
+					</Group>
+				)
 			}>
-			{table ? (
+			{activeTable ? (
 				<>
 					{filtering && (
 						<TextInput
 							placeholder="Enter filter clause..."
-							icon={<Icon path={mdiFilterVariant} />}
+							leftSection={<Icon path={iconFilter} />}
 							value={filter}
 							onChange={setFilter}
 							error={!isFilterValid}
 							autoFocus
-							styles={(theme) => ({
+							styles={() => ({
 								input: {
 									fontFamily: "JetBrains Mono",
-									borderColor: (isFilterValid ? theme.fn.themeColor("gray") : theme.fn.themeColor("red")) + " !important",
+									borderColor: (isFilterValid ? undefined : themeColor("pink.9")) + " !important",
 								},
 							})}
 						/>
@@ -260,38 +275,52 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 						>
 							<DataTable
 								data={records}
-								openRecord={openRecord}
-								active={history.current}
 								sorting={sortMode}
 								onSortingChange={setSortMode}
-								onRowClick={openRecord}
+								onRowContextMenu={onRecordContextMenu}
 								headers={headers}
 							/>
 						</ScrollArea>
 					) : (
-						<Center h="90%" c="light.5">
-							Table has no records
+						<Center h="90%">
+							<Box ta="center">
+								<Text c="slate">
+									Table has no records
+								</Text>
+								<Button
+									mt={6}
+									variant="subtle"
+									color="surreal.5"
+									onClick={openCreator}
+								>
+									Would you like to create one?
+								</Button>
+							</Box>
 						</Center>
 					)}
 
-					<Group style={{ position: "absolute", insetInline: 12, bottom: 12 }} spacing="xl">
-						<Group spacing="xs">
-							<Button
-								color="dark.5"
-								variant="outline"
-								c="light.4"
-								px="xs"
+					<Group
+						gap="xs"
+						justify="center"
+						style={{
+							position: "absolute",
+							insetInline: 12,
+							bottom: 12
+						}}
+					>
+						<Group gap="xs">
+							<ActionIcon
 								onClick={previousPage}
 								disabled={page <= 1}
-								style={{ opacity: page <= 1 ? 0.4 : 1 }}
 							>
-								<Icon path={mdiArrowLeft} />
-							</Button>
+								<Icon path={iconChevronLeft} />
+							</ActionIcon>
 
 							<TextInput
 								value={pageText}
 								onChange={setPageText}
-								maw={46}
+								maw={36}
+								size="xs"
 								withAsterisk
 								onBlur={gotoPage}
 								onKeyDown={gotoPage}
@@ -303,32 +332,47 @@ export function ExplorerPane({ history, refreshEvent }: ExplorerPaneProps) {
 								}}
 							/>
 
-							<Text color="light.3">of {pageCount} pages</Text>
+							<Text c="slate">of {pageCount} pages</Text>
 
-							<Button
-								color="dark.5"
-								variant="outline"
-								c="light.4"
-								px="xs"
+							<ActionIcon
 								onClick={nextPage}
 								disabled={page >= pageCount}
-								style={{ opacity: page >= pageCount ? 0.4 : 1 }}>
-								<Icon path={mdiArrowRight} />
-							</Button>
+							>
+								<Icon path={iconChevronRight} />
+							</ActionIcon>
 						</Group>
 
 						<Select
 							value={pageSize}
 							onChange={setPageSize as any}
 							data={PAGE_SIZES}
+							size="xs"
 						/>
 					</Group>
 				</>
+			) : hasTables ? (
+				<Center h="90%">
+					<Text ta="center" c="slate">
+						Select a table to view records
+					</Text>
+				</Center>
 			) : (
-				<Center h="100%" c="light.5">
-					Select a table to view its records
+				<Center h="90%">
+					<Box ta="center">
+						<Text c="slate">
+							No tables defined in this database
+						</Text>
+						<Button
+							mt={6}
+							variant="subtle"
+							color="surreal.5"
+							onClick={openTableCreator}
+						>
+							Would you like to create one?
+						</Button>
+					</Box>
 				</Center>
 			)}
-		</Panel>
+		</ContentPane>
 	);
 }

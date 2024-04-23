@@ -1,119 +1,187 @@
 import classes from "./style.module.scss";
-import surrealistLogo from "~/assets/icon.png";
 
 import {
 	Box,
-	Button,
 	Center,
-	Group,
-	Image,
-	Text,
-	Title,
+	Flex,
 } from "@mantine/core";
 
-import { store, useStoreValue } from "~/store";
 import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
-import { Splitter } from "../Splitter";
-import { ConsolePane } from "../ConsolePane";
-import { useHotkeys } from "@mantine/hooks";
-import { adapter } from "~/adapter";
-import { TabCreator } from "./creator";
-import { TabEditor } from "./editor";
-import { executeQuery } from "~/database";
-import { AddressBar } from "./address";
-import { ViewListing } from "./listing";
-import { openTabCreator } from "~/stores/interface";
-import { Outlet, useLocation } from "react-router-dom";
+import { useDisclosure } from "@mantine/hooks";
+import { ConnectionEditor } from "./modals/connection";
+import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
+import { QueryView } from "~/views/query/QueryView";
 import { ViewMode } from "~/types";
-import { useEffect } from "react";
-import { setActiveURL } from "~/stores/config";
+import { ExplorerView } from "~/views/explorer/ExplorerView";
+import { DesignerView } from "~/views/designer/DesignerView";
+import { AuthenticationView } from "~/views/authentication/AuthenticationView";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { Settings } from "./settings";
+import { useIsLight } from "~/hooks/theme";
+import { themeColor } from "~/util/mantine";
+import { adapter } from "~/adapter";
+import { StartScreen } from "./start";
+import { TableCreator } from "./modals/table";
+import { DownloadModal } from "./modals/download";
+import { ScopeSignup } from "./modals/signup";
+import { DocumentationView } from "~/views/documentation/DocumentationView";
+import { Sidebar } from "../Sidebar";
+import { CommandPaletteModal } from "./modals/palette";
+import { useBoolean } from "~/hooks/boolean";
+import { useWindowSettings } from "./hooks";
+import { useCompatHotkeys } from "~/hooks/hotkey";
+import { FunctionsView } from "~/views/functions/FunctionsView";
+import { ModelsView } from "~/views/models/ModelsView";
+import { LegacyModal } from "./modals/legacy";
+import { SandboxModal } from "./modals/sandbox";
+import { executeUserQuery } from "~/connection";
+import { ChangelogModal } from "./modals/changelog";
+
+const PORTAL_ATTRS = {
+	attributes: {
+		style: "height: 100%"
+	}
+};
+
+const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
+	query: createHtmlPortalNode(PORTAL_ATTRS),
+	explorer: createHtmlPortalNode(PORTAL_ATTRS),
+	designer: createHtmlPortalNode(PORTAL_ATTRS),
+	authentication: createHtmlPortalNode(PORTAL_ATTRS),
+	functions: createHtmlPortalNode(PORTAL_ATTRS),
+	models: createHtmlPortalNode(PORTAL_ATTRS),
+	documentation: createHtmlPortalNode(PORTAL_ATTRS),
+};
 
 export function Scaffold() {
-	const activeSession = useStoreValue((state) => state.config.activeTab);
-	const enableConsole = useStoreValue((state) => state.config.enableConsole);
+	const isLight = useIsLight();
 
-	const { pathname } = useLocation();
-	const activeView = pathname.split("/")[1] as ViewMode;
+	const title = useInterfaceStore((s) => s.title);
+	const activeConnection = useConfigStore((s) => s.activeConnection);
+	const activeView = useConfigStore((s) => s.activeView);
 
-	const showTabCreator = useStable((envId?: string) => {
-		store.dispatch(openTabCreator({
-			environment: envId,
-		}));
-	});
+	const [showPalette, paletteHandle] = useBoolean();
+	const [showSettings, settingsHandle] = useDisclosure();
+	const [showDownload, downloadHandle] = useDisclosure();
 
-	const createNewTab = useStable(() => {
-		showTabCreator();
-	});
+	const viewNode = VIEW_PORTALS[activeView];
 
 	const userExecuteQuery = useStable(() => {
-		executeQuery({
+		executeUserQuery({
 			loader: true
 		});
 	});
 
-	useEffect(() => {
-		store.dispatch(setActiveURL(pathname));
-	}, [pathname]);
-	
-	useHotkeys([
+	useWindowSettings();
+	useCompatHotkeys([
 		["F9", () => userExecuteQuery()],
 		["mod+Enter", () => userExecuteQuery()],
+		["mod+K", paletteHandle.open]
 	]);
 
 	return (
-		<div className={classes.root}>
-			<Toolbar
-				viewMode={activeView}
-				onCreateTab={showTabCreator}
-			/>
-
-			{activeSession ? (
-				<>
-					<Group p="xs">
-						<ViewListing
-							viewMode={activeView}
-						/>
-						
-						<AddressBar
-							viewMode={activeView}
-							onQuery={userExecuteQuery}
-						/>
-					</Group>
-
-					<Box p="xs" className={classes.content}>
-						<Splitter
-							minSize={100}
-							bufferSize={200}
-							direction="vertical"
-							endPane={adapter.isServeSupported && enableConsole && <ConsolePane />}
-						>
-							<Outlet />
-						</Splitter>
-					</Box>
-				</>
-			) : (
-				<Center h="100%">
-					<div>
-						<Image className={classes.emptyImage} src={surrealistLogo} width={120} mx="auto" />
-						<Title color="light" align="center" mt="md">
-							Surrealist
-						</Title>
-						<Text color="light.2" align="center">
-							Open or create a new session to continue
-						</Text>
-						<Center mt="lg">
-							<Button size="xs" onClick={createNewTab}>
-								Create session
-							</Button>
-						</Center>
-					</div>
+		<div
+			className={classes.root}
+			style={{
+				backgroundColor: isLight
+					? (activeConnection ? themeColor("slate.0") : "white")
+					: (activeConnection ? themeColor("slate.9") : "black")
+			}}
+		>
+			{!adapter.hasTitlebar && (
+				<Center
+					data-tauri-drag-region
+					className={classes.titlebar}
+				>
+					{title}
 				</Center>
 			)}
 
-			<TabCreator />
+			<Flex
+				direction="column"
+				flex={1}
+				pos="relative"
+			>
+				{activeConnection ? (
+					<>
+						<Sidebar
+							onToggleSettings={settingsHandle.toggle}
+							onTogglePalette={paletteHandle.toggle}
+							onToggleDownload={downloadHandle.toggle}
+						/>
 
-			<TabEditor />
+						<Toolbar />
+
+						<Box p="sm" className={classes.wrapper}>
+							<Box w={49} />
+							<Box className={classes.content}>
+								{viewNode && <OutPortal node={viewNode} />}
+							</Box>
+						</Box>
+
+						<InPortal node={VIEW_PORTALS.query}>
+							<QueryView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.explorer}>
+							<ExplorerView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.designer}>
+							<DesignerView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.authentication}>
+							<AuthenticationView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.functions}>
+							<FunctionsView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.models}>
+							<ModelsView />
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.documentation}>
+							<DocumentationView />
+						</InPortal>
+					</>
+				) : (
+					<StartScreen />
+				)}
+			</Flex>
+
+			{activeConnection && (
+				<>
+					<ScopeSignup />
+					<TableCreator />
+				</>
+			)}
+
+			<ConnectionEditor />
+			<LegacyModal />
+			<SandboxModal />
+			<ChangelogModal />
+
+			<CommandPaletteModal
+				opened={showPalette}
+				onClose={paletteHandle.close}
+			/>
+
+			<Settings
+				opened={showSettings}
+				onClose={settingsHandle.close}
+				onOpen={settingsHandle.open}
+			/>
+
+			<DownloadModal
+				opened={showDownload}
+				onClose={downloadHandle.close}
+				onOpen={downloadHandle.open}
+			/>
 		</div>
 	);
 }

@@ -1,12 +1,15 @@
-import { useStoreValue } from "~/store";
+import { useInterfaceStore } from "~/stores/interface";
+
+/**
+ * Returns the color scheme currently in use
+ */
+export function useColorScheme() {
+	return useInterfaceStore(s => s.colorScheme);
+}
 
 /**
  * Returns whether the current color scheme is light or not
  */
 export function useIsLight() {
-	const colorScheme = useStoreValue((state) => state.config.theme);
-	const defaultScheme = useStoreValue((state) => state.interface.nativeTheme);
-	const actualTheme = colorScheme == "automatic" ? defaultScheme : colorScheme;
-
-	return actualTheme == "light";
+	return useColorScheme() === "light";
 }

@@ -1,75 +1,140 @@
-import { ConnectionOptions, SurrealistSession, SurrealistConfig } from "~/types";
+import { Connection, ConnectionOptions, DatabaseSchema, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
 import { newId } from "./helpers";
+import { validateQuery } from "./surrealql";
+
+export const CONFIG_VERSION = 1;
 
 export function createBaseConfig(): SurrealistConfig {
+	const settings = createBaseSettings();
+
 	return {
-		theme: "automatic",
-		tabs: [],
-		environments: [createBaseEnvironment()],
-		activeUrl: '/',
-		isPinned: false,
-		activeTab: null,
-		autoConnect: true,
-		tableSuggest: true,
-		wordWrap: true,
-		queryHistory: [],
-		queryFavorites: [],
-		localDriver: "memory",
-		localStorage: "",
-		surrealPath: "",
-		surrealUser: "root",
-		surrealPass: "root",
-		surrealPort: 8000,
-		enableConsole: false,
-		enableListing: false,
-		queryTimeout: 10,
-		updateChecker: true,
-		queryListing: "history",
-		resultListing: "json",
-		fontZoomLevel: 1,
-		errorChecking: true,
+		configVersion: CONFIG_VERSION,
+		previousVersion: import.meta.env.VERSION,
+		connections: [],
+		sandbox: createSandboxConnection(settings),
+		activeView: 'query',
+		activeConnection: null,
+		savedQueries: [],
 		lastPromptedVersion: null,
-		tabSearch: false,
-		defaultDesignerNodeMode: 'fields',
-		defaultDesignerLayoutMode: 'diagram'
+		featureFlags: {},
+		commandHistory: [],
+		lastViewedNewsAt: null,
+		onboarding: [],
+		settings
 	};
 }
 
-export function createBaseConnection(): ConnectionOptions {
+export function createBaseSettings(): SurrealistSettings {
 	return {
-		method: "remote",
-		endpoint: "",
+		behavior: {
+			updateChecker: true,
+			tableSuggest: true,
+			variableSuggest: true,
+			queryErrorChecker: true,
+			windowPinned: false,
+			autoConnect: true,
+			docsLanguage: "cli"
+		},
+		appearance: {
+			colorScheme: "dark",
+			windowScale: 100,
+			editorScale: 100,
+			resultWordWrap: true,
+			defaultResultMode: "combined",
+			defaultDiagramMode: "fields",
+			defaultDiagramDirection: "ltr",
+			expandSidebar: true,
+			valueMode: "sql",
+		},
+		templates: {
+			list: []
+		},
+		serving: {
+			driver: "memory",
+			storage: "",
+			executable: "",
+			username: "root",
+			password: "root",
+			port: 8000
+		}
+	};
+}
+
+export function createBaseConnectionOptions(): ConnectionOptions {
+	return {
+		protocol: "ws",
+		hostname: "",
 		namespace: "",
 		database: "",
 		username: "",
 		password: "",
 		authMode: "root",
+		token: "",
 		scope: "",
 		scopeFields: []
 	};
 }
 
-export function createBaseSession(query?: string): SurrealistSession {
+export function createBaseConnection(settings: SurrealistSettings): Connection {
+	const baseTab = createBaseTab(settings);
+
 	return {
-		id: "",
+		id: newId(),
 		name: "",
-		environment: "",
-		queries: [{ id: 1, text: query || '' }],
-		activeQueryId: 1,
-		lastQueryId: 1,
-		variables: "{}",
-		lastResponse: [],
-		connection: createBaseConnection(),
-		pinned: false,
+		icon: 0,
+		queries: [{
+			...baseTab,
+			name: "New query"
+		}],
+		activeQuery: baseTab.id,
+		connection: createBaseConnectionOptions(),
 		pinnedTables: [],
-		liveQueries: [],
+		queryHistory: [],
+		diagramMode: settings.appearance.defaultDiagramMode,
+		diagramDirection: settings.appearance.defaultDiagramDirection,
 	};
 }
 
-export function createBaseEnvironment() {
+export function createBaseTab(settings: SurrealistSettings, query?: string, ): TabQuery {
 	return {
 		id: newId(),
-		name: "Default",
-		connection: {},
+		query: query || "",
+		name: "",
+		variables: "{}",
+		valid: query ? !validateQuery(query) : true,
+		resultMode: settings.appearance.defaultResultMode,
+	};
+
+}
+
+export function createSandboxConnection(settings: SurrealistSettings): Connection {
+	return {
+		...createBaseConnection(settings),
+		id: "sandbox",
+		name: "Sandbox",
+		connection: {
+			protocol: "mem",
+			hostname: "",
+			namespace: "sandbox",
+			database: "sandbox",
+			authMode: "none",
+			token: "",
+			scope: "",
+			scopeFields: [],
+			password: "",
+			username: ""
+		}
+	};
+}
+
+export function createDatabaseSchema(): DatabaseSchema {
+	return {
+		kvUsers: [],
+		nsUsers: [],
+		dbUsers: [],
+		scopes: [],
+		functions: [],
+		models: [],
+		tables: [],
 	};
 }

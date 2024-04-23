@@ -1,0 +1,15 @@
+.root {
+	z-index: 10;
+	width: 74px;
+	transition: all .15s ease-out;
+	border-right: 1px solid transparent;
+
+	&.expanded {
+		width: 230px;
+		border-color: var(--mantine-color-slate-6);
+	}
+
+	:global(.mantine-ScrollArea-viewport) > div {
+		display: unset !important;
+	}
+}

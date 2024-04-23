@@ -8,7 +8,7 @@ import { useStable } from "./stable";
  * @param exec The callback to execute
  * @returns The debounced callback
  */
-export function useDebouncedCallback<T>(delay: number, exec: (value: T) => void): (value: T) => void {
+export function useDebounced<T>(delay: number, exec: (value: T) => void): (value: T) => void {
 	const task = useRef<any>(null);
 
 	useEffect(() => {

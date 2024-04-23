@@ -1,64 +1,89 @@
 import { ExplorerPane } from "../ExplorerPane";
+import { useState } from "react";
 import { TablesPane } from "../TablesPane";
-import { useEffect, useState } from "react";
-import { InspectorPane } from "../InspectorPane";
-import { SplitValues, Splitter } from "~/components/Splitter";
-import { CreatorPane } from "../CreatorPane";
-import { useHistory } from "~/hooks/history";
-import { store, useStoreValue } from "~/store";
-import { closeEditor, setHistory } from "~/stores/explorer";
-import { useIsConnected } from "~/hooks/connection";
-import { useEventBus } from "~/hooks/event";
-
-const SPLIT_SIZE: SplitValues = [200, 308];
+import { CreatorDrawer } from "../CreatorDrawer";
+import { useDisclosure } from "@mantine/hooks";
+import { Button, Center, Group, Stack } from "@mantine/core";
+import { DisconnectedEvent } from "~/util/global-events";
+import { useEventSubscription } from "~/hooks/event";
+import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
+import { Icon } from "~/components/Icon";
+import { iconExplorer, iconPlus } from "~/util/icons";
+import { useInterfaceStore } from "~/stores/interface";
+import { useViewEffect } from "~/hooks/view";
+import { syncDatabaseSchema } from "~/util/schema";
 
 export function ExplorerView() {
-	const [splitValues, setSplitValues] = useState<SplitValues>([250, 450]);
-	const isOnline = useIsConnected();
-	const refreshEvent = useEventBus();
+	const { openTableCreator } = useInterfaceStore.getState();
 
-	const {
-		isEditing,
-		isCreating,
-		recordHistory,
-	} = useStoreValue(state => state.explorer);
-	
-	const history = useHistory({
-		history: recordHistory,
-		setHistory: (items) => store.dispatch(setHistory(items))
+	const [activeTable, setActiveTable] = useState<string>();
+	const [isCreating, isCreatingHandle] = useDisclosure();
+	const [creatorTable, setCreatorTable] = useState<string>();
+
+	const openCreator = useStable((table?: string) => {
+		setCreatorTable(table || activeTable);
+		isCreatingHandle.open();
 	});
 
-	useEffect(() => {
-		if (!isOnline) {
-			store.dispatch(closeEditor());
-		}
-	}, [isOnline]);
+	useEventSubscription(DisconnectedEvent, () => {
+		isCreatingHandle.close();
+	});
+
+	useIntent("explore-table", ({ table }) => {
+		setActiveTable(table);
+	});
+
+	useViewEffect("explorer", () => {
+		syncDatabaseSchema();
+	});
 
 	return (
-		<Splitter
-			minSize={SPLIT_SIZE}
-			bufferSize={495}
-			values={splitValues}
-			onChange={setSplitValues}
-			direction="horizontal"
-			startPane={<TablesPane />}
-			endPane={
-				isCreating ? (
-					<CreatorPane
-						refreshEvent={refreshEvent}
+		<>
+			<Group
+				h="100%"
+				wrap="nowrap"
+				gap="var(--surrealist-divider-size)"
+			>
+				<TablesPane
+					activeTable={activeTable}
+					onTableSelect={setActiveTable}
+					onCreateRecord={openCreator}
+				/>
+				{activeTable ? (
+					<ExplorerPane
+						activeTable={activeTable}
+						onCreateRecord={openCreator}
 					/>
-				) : isEditing ? (
-					<InspectorPane
-						history={history}
-						refreshEvent={refreshEvent}
-					/>
-				) : null
-			}
-		>
-			<ExplorerPane
-				history={history}
-				refreshEvent={refreshEvent}
-			/>
-		</Splitter>
+				) : (
+					<Center flex={1}>
+						<Stack
+							align="center"
+							justify="center"
+						>
+							<Icon path={iconExplorer} size={2.5} />
+							Select a table to view or edit
+							<Group>
+								<Button
+									variant="light"
+									leftSection={<Icon path={iconPlus} />}
+									onClick={openTableCreator}
+								>
+									Create table
+								</Button>
+							</Group>
+						</Stack>
+					</Center>
+				)}
+			</Group>
+
+			{creatorTable && (
+				<CreatorDrawer
+					opened={isCreating}
+					table={creatorTable}
+					onClose={isCreatingHandle.close}
+				/>
+			)}
+		</>
 	);
 }

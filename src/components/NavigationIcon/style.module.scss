@@ -1,0 +1,23 @@
+.view-button {
+	height: 41px !important;
+
+	&-active {
+		box-shadow: var(--surrealist-glow) !important;
+		transition: box-shadow 0.3s cubic-bezier(.33, 1.8, .6, 1);
+	}
+
+	:global(.mantine-Button-inner) {
+		justify-content: start;
+		padding-left: 1px;
+	}
+}
+
+.animation {
+	width: 1.875em !important;
+	height: 1.875em!important;
+
+	* {
+		fill: currentColor !important;
+		stroke: currentColor !important;
+	}
+}

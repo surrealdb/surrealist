@@ -1,0 +1,40 @@
+.input {
+	input, textarea {
+		font-family: 'JetBrains Mono';
+		scrollbar-width: none;
+	}
+
+	textarea::-webkit-scrollbar { 
+		display: none;
+	}
+}
+
+.code-input {
+
+	:global(.cm-editor) {
+		outline: none;
+		height: 100%;
+	}
+
+	:global(.cm-scroller) {
+		font-family: var(--mantine-font-family-monospace);
+	}
+
+	:global(.cm-cursor) {
+		border-color: var(--mantine-color-slate-1);
+		border-width: 2px;
+
+		@include light {
+			border-color: var(--mantine-color-slate-9);
+		}
+	}
+
+	:global(.cm-line) {
+		padding-left: 0;
+	}
+
+	:global(.cm-selectionBackground) {
+		background-color: rgba(71, 154, 255, 0.4) !important;
+	}
+
+}

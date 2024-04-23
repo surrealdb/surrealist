@@ -1,221 +1,299 @@
-import {
-	Modal,
-	Stack,
-	Paper,
-	Group,
-	TextInput,
-	ActionIcon,
-	Button,
-	PasswordInput,
-	Select,
-	SimpleGrid,
-	Text,
-	SegmentedControl,
-	Alert
-} from "@mantine/core";
-
-import { mdiClose, mdiInformation, mdiPlus } from "@mdi/js";
+import dayjs from "dayjs";
+import { AuthMode, Connection, Protocol } from "~/types";
+import { Updater } from "use-immer";
+import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip, Alert, SimpleGrid, Popover } from "@mantine/core";
+import { CONNECTION_PROTOCOLS, AUTH_MODES } from "~/constants";
+import { iconClose, iconPlus, iconWarning } from "~/util/icons";
+import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
-import { AUTH_MODES } from "~/constants";
-import { AuthMode, ConnectMethod, ConnectionOptions } from "~/types";
-import { Updater } from "use-immer";
-import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
+import { useDisclosure } from "@mantine/hooks";
+import { Text } from "@mantine/core";
 import { ModalTitle } from "../ModalTitle";
+import { useMemo } from "react";
+import { fastParseJwt } from "~/util/helpers";
+import { USER_ICONS } from "~/util/user-icons";
 
-const METHODS = [
-	{ label: 'Database', value: 'remote' },
-	{ label: 'Sandbox', value: 'local' }
-];
+const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
+const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
+const EXPIRE_WARNING = 1000 * 60 * 60 * 3;
 
 export interface ConnectionDetailsProps {
-	value: Partial<ConnectionOptions>;
-	onChange: Updater<ConnectionOptions>;
-	optional?: boolean;
-	placeholders?: Partial<ConnectionOptions>;
-	withLocal?: boolean;
+	value: Connection;
+	onChange: Updater<Connection>;
 }
 
-export function ConnectionDetails({ value, onChange, optional, placeholders }: ConnectionDetailsProps) {
-	const isLight = useIsLight();
-	const authMode = value.authMode || placeholders?.authMode;
-	const modePlaceholder = AUTH_MODES.find((mode) => mode.value === placeholders?.authMode)?.label;
-	const passPlaceholder = placeholders?.password && "•".repeat(placeholders.password.length);
-	const [editingScope, setEditingScope] = useState(false);
-
-	const openScopeEditor = useStable(() => {
-		setEditingScope(true);
-	});
-
-	const closeEditingScope = useStable(() => {
-		setEditingScope(false);
-	});
+export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
+	const [editingScope, editingScopeHandle] = useDisclosure();
+	const [showIcons, showIconsHandle] = useDisclosure();
 
 	const addScopeField = useStable(() => {
 		onChange((draft) => {
-			draft.scopeFields.push({
+			draft.connection.scopeFields.push({
 				subject: "",
 				value: "",
 			});
 		});
 	});
 
-	const namespaceInput = (
-		<TextInput
-			label="Namespace"
-			value={value.namespace || ""}
-			placeholder={placeholders?.namespace}
-			onChange={(e) =>
-				onChange((draft) => {
-					draft.namespace = e.target.value;
-				})
-			}
-		/>
-	);
+	const handleEndpointChange = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		onChange((draft) => {
+			const content = e.target.value;
+			const result = content.match(ENDPOINT_PATTERN);
 
-	const databaseInput = (
-		<TextInput
-			label="Database"
-			value={value.database || ""}
-			placeholder={placeholders?.database}
-			onChange={(e) =>
-				onChange((draft) => {
-					draft.database = e.target.value;
-				})
+			draft.connection.hostname = content;
+
+			if (result === null) {
+				return;
 			}
-		/>
-	);
+
+			const [, protocol, hostname] = result;
+			const isValid = CONNECTION_PROTOCOLS.some((p) => p.value === protocol);
+
+			if (!isValid) {
+				return;
+			}
+
+			draft.connection.protocol = protocol as Protocol;
+			draft.connection.hostname = hostname;
+		});
+	});
+
+	const updateIcon = (index: number) => {
+		onChange((draft) => {
+			draft.icon = index;
+		});
+	};
+
+	const isMemory = value.connection.protocol === "mem";
+	const isIndexDB = value.connection.protocol === "indxdb";
+
+	const placeholder = isMemory
+		? "Not applicable"
+		: isIndexDB
+			? "database_name"
+			: "localhost:8000";
+
+	const isSystemMethod = SYSTEM_METHODS.has(value.connection.authMode);
+	const tokenPayload = useMemo(() => fastParseJwt(value.connection.token), [value.connection.token]);
+	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
+	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
 
 	return (
 		<>
-			<SegmentedControl
-				data={METHODS}
-				fullWidth
-				mb="sm"
-				color="surreal"
-				value={value.method || ''}
-				onChange={(val) =>
-					onChange((draft) => {
-						draft.method = val as ConnectMethod;
-					})
-				}
-			/>
-
-			{value.method == 'remote' ? (
-				<SimpleGrid cols={2} spacing="xl">
-					<Stack>
-						<TextInput
-							label="Endpoint URL"
-							value={value.endpoint || ""}
-							placeholder={placeholders?.endpoint}
-							autoFocus={!optional}
-							onChange={(e) =>
-								onChange((draft) => {
-									draft.endpoint = e.target.value;
-								})
-							}
-						/>
-						{namespaceInput}
-						{databaseInput}
-					</Stack>
-					<Stack>
-						<Select
-							label="Authentication mode"
-							value={value.authMode || ""}
-							placeholder={modePlaceholder}
-							clearable
-							data={AUTH_MODES}
-							onChange={(value) =>
-								onChange((draft) => {
-									draft.authMode = value as AuthMode;
-								})
-							}
-						/>
-						{authMode !== "scope" && authMode !== "none" && (
-							<>
-								<TextInput
-									label="Username"
-									value={value.username || ""}
-									placeholder={placeholders?.username}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.username = e.target.value;
-										})
-									}
-								/>
-								<PasswordInput
-									label="Password"
-									value={value.password || ""}
-									placeholder={passPlaceholder}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.password = e.target.value;
-										})
-									}
-								/>
-							</>
-						)}
-
-						{authMode === "scope" && (
-							<>
-								<TextInput
-									label="Scope"
-									value={value.scope || ""}
-									placeholder={placeholders?.scope}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.scope = e.target.value;
-										})
-									}
-								/>
-								<Button mt={21} color="blue" variant="outline" onClick={openScopeEditor}>
-									Edit scope data
-								</Button>
-							</>
-						)}
-					</Stack>
-				</SimpleGrid>
-			) : (
-				<>
-					<Alert
-						mb="lg"
-						color="blue"
-						icon={<Icon path={mdiInformation} />}
+			<Paper
+				mb="xl"
+				flex={1}
+			>
+				<Group>
+					<Popover
+						opened={showIcons}
+						onClose={showIconsHandle.close}
+						position="bottom-start"
 					>
-						Sandbox sessions provide a convenient way to test queries locally without having to install SurrealDB, however data is kept in memory and
-						does not persist between restarts.
-					</Alert>
-					<SimpleGrid cols={2} spacing="xl">
-						{namespaceInput}
-						{databaseInput}
-					</SimpleGrid>
-				</>
-			)}
-			
+						<Popover.Target>
+							<ActionIcon
+								variant="subtle"
+								onClick={showIconsHandle.toggle}
+							>
+								<Icon path={USER_ICONS[value.icon ?? 0]} size="lg" />
+							</ActionIcon>
+						</Popover.Target>
+						<Popover.Dropdown>
+							<SimpleGrid cols={8} spacing={4}>
+								{USER_ICONS.map((icon, i) => (
+									<ActionIcon
+										key={i}
+										variant={value.icon === i ? "gradient" : "subtle"}
+										onClick={() => updateIcon(i)}
+									>
+										<Icon path={icon} />
+									</ActionIcon>
+								))}
+							</SimpleGrid>
+						</Popover.Dropdown>
+					</Popover>
+					<EditableText
+						fz={22}
+						fw={600}
+						value={value.name}
+						onChange={(value) =>
+							onChange((draft) => {
+								draft.name = value;
+							})
+						}
+					/>
+				</Group>
+			</Paper>
+			<Group mb="lg">
+				<Select
+					data={CONNECTION_PROTOCOLS}
+					maw={110}
+					value={value.connection.protocol}
+					onChange={(value) =>
+						onChange((draft) => {
+							const proto = value as Protocol;
+
+							draft.connection.protocol = proto;
+
+							if (value === "mem" || value === "indxdb") {
+								draft.connection.authMode = "none";
+							}
+						})
+					}
+				/>
+				<TextInput
+					flex={1}
+					value={value.connection.hostname}
+					disabled={isMemory}
+					placeholder={placeholder}
+					onChange={handleEndpointChange}
+				/>
+			</Group>
+			<Group gap="lg" align="start">
+				<Stack gap="xs" flex={1}>
+					<Text fz="xl" c="slate">
+						Database
+					</Text>
+					<TextInput
+						label="Namespace"
+						value={value.connection.namespace}
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.connection.namespace = e.target.value;
+							})
+						}
+					/>
+					<TextInput
+						label="Database"
+						value={value.connection.database}
+						onChange={(e) =>
+							onChange((draft) => {
+								draft.connection.database = e.target.value;
+							})
+						}
+					/>
+				</Stack>
+				<Divider orientation="vertical" />
+				<Stack gap="xs" flex={1}>
+					<Text fz="xl" c="slate">
+						Authentication
+					</Text>
+					<Select
+						label="Method"
+						value={value.connection.authMode}
+						data={AUTH_MODES}
+						onChange={(value) =>
+							onChange((draft) => {
+								draft.connection.authMode = value as AuthMode;
+							})
+						}
+					/>
+					{isSystemMethod && (
+						<>
+							<TextInput
+								label="Username"
+								value={value.connection.username}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.connection.username = e.target.value;
+									})
+								}
+							/>
+							<PasswordInput
+								label="Password"
+								value={value.connection.password}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.connection.password = e.target.value;
+									})
+								}
+							/>
+						</>
+					)}
+
+					{value.connection.authMode === "scope" && (
+						<>
+							<TextInput
+								label="Scope"
+								value={value.connection.scope}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.connection.scope = e.target.value;
+									})
+								}
+							/>
+							<Button mt={21} color="blue" variant="outline" onClick={editingScopeHandle.open}>
+								Edit scope data
+							</Button>
+						</>
+					)}
+
+					{value.connection.authMode === "token" && (
+						<>
+							<TextInput
+								label="Token"
+								value={value.connection.token}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.connection.token = e.target.value;
+									})
+								}
+								styles={{
+									input: {
+										fontFamily: "var(--mantine-font-family-monospace)"
+									}
+								}}
+							/>
+
+							{value.connection.token && (tokenPayload === null ? (
+								<Alert
+									color="red"
+									icon={<Icon path={iconWarning} />}
+								>
+									The provided token does not appear to be a valid JWT
+								</Alert>
+							) : tokenExpireSoon && (tokenExpire > Date.now() ? (
+								<Text c="slate">
+									<Icon path={iconWarning} c="yellow" size="sm" left />
+									This token expires in {dayjs(tokenExpire).fromNow()}
+								</Text>
+							) : (
+								<Text c="slate">
+									<Icon path={iconWarning} c="red" size="sm" left />
+									This token has expired
+								</Text>
+							)))}
+						</>
+					)}
+				</Stack>
+			</Group>
+
 			<Modal
 				opened={editingScope}
-				onClose={closeEditingScope}
+				onClose={editingScopeHandle.close}
 				size={560}
-				title={<ModalTitle>Editing scope data</ModalTitle>}
+				title={
+					<ModalTitle>Scope data editor</ModalTitle>
+				}
 			>
-				{value.scopeFields?.length === 0 ? (
-					<Text color="gray" italic>
-						No scope data defined
+				{value.connection.scopeFields?.length === 0 ? (
+					<Text c="gray" fs="italic">
+						Press "Add field" to define scope fields
 					</Text>
 				) : (
 					<Stack>
-						{value.scopeFields?.map((field, i) => (
+						{value.connection.scopeFields?.map((field, i) => (
 							<Paper key={i}>
 								<Group>
 									<TextInput
-										placeholder="Key"
+										placeholder="Field name"
 										style={{ flex: 1 }}
 										value={field.subject}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.scopeFields[i].subject = e.target.value;
+												draft.connection.scopeFields[i].subject = e.target.value;
 											})
 										}
 									/>
@@ -225,20 +303,21 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 										value={field.value}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.scopeFields[i].value = e.target.value;
+												draft.connection.scopeFields[i].value = e.target.value;
 											})
 										}
 									/>
-									<ActionIcon
-										color="red"
-										title="Remove field"
-										onClick={() =>
-											onChange((draft) => {
-												draft.scopeFields.splice(i, 1);
-											})
-										}>
-										<Icon path={mdiClose} color="red" />
-									</ActionIcon>
+									<Tooltip label="Remove field">
+										<ActionIcon
+											color="pink.9"
+											onClick={() =>
+												onChange((draft) => {
+													draft.connection.scopeFields.splice(i, 1);
+												})
+											}>
+											<Icon path={iconClose} color="red" />
+										</ActionIcon>
+									</Tooltip>
 								</Group>
 							</Paper>
 						))}
@@ -246,11 +325,20 @@ export function ConnectionDetails({ value, onChange, optional, placeholders }: C
 				)}
 
 				<Group mt="lg">
-					<Button color={isLight ? "light.5" : "light.3"} variant="light" onClick={closeEditingScope}>
+					<Button
+						color="slate"
+						variant="light"
+						onClick={editingScopeHandle.close}
+					>
 						Back
 					</Button>
 					<Spacer />
-					<Button rightIcon={<Icon path={mdiPlus} />} variant="light" color="blue" onClick={addScopeField}>
+					<Button
+						rightSection={<Icon path={iconPlus} />}
+						variant="light"
+						color="blue"
+						onClick={addScopeField}
+					>
 						Add field
 					</Button>
 				</Group>

@@ -1,85 +1,145 @@
-import { ColorScheme } from "@mantine/core";
+import { MantineColorScheme } from "@mantine/core";
+import { FeatureFlagMap } from "./util/feature-flags";
 
-export type AuthMode = "none" | "root" | "namespace" | "database" | "scope";
+export type AuthMode = "none" | "root" | "namespace" | "database" | "token" | "scope" | "scope-signup";
 export type DriverType = "file" | "memory" | "tikv";
-export type QueryListing = "history" | "favorites";
-export type ResultListing = "table" | "json" | "combined";
-export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "live";
+export type ResultMode = "table" | "single" | "combined" | "live";
+export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "functions" | "models" | "documentation";
 export type SourceMode = "schema" | "infer";
-export type DesignerNodeMode = "fields" | "summary" | "simple";
-export type DesignerLayoutMode = "diagram" | "grid";
-export type IndexKind = "normal" | "unique" | "search" | "vector";
-export type ConnectMethod = "remote" | "local";
+export type DiagramMode = "fields" | "summary" | "simple";
+export type DiagramDirection = "ltr" | "rtl";
+export type ColorScheme = "light" | "dark";
+export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
+export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "dotnet" | "java" | "php";
+export type Platform = "darwin" | "windows" | "linux";
+export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type ValueMode = "json" | "sql";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
+export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
+export type FeatureCondition = (flags: FeatureFlagMap) => boolean;
+export type Selectable<T extends string> = { label: string, value: T };
+
+export interface ConnectionOptions {
+	namespace: string;
+	database: string;
+	protocol: Protocol;
+	hostname: string;
+	username: string;
+	password: string;
+	authMode: AuthMode;
+	token: string;
+	scope: string;
+	scopeFields: ScopeField[];
+}
+
+export interface Connection {
+	id: string;
+	name: string;
+	icon: number;
+	queries: TabQuery[];
+	activeQuery: string;
+	connection: ConnectionOptions;
+	pinnedTables: string[];
+	diagramMode: DiagramMode;
+	diagramDirection: DiagramDirection;
+	queryHistory: HistoryQuery[];
+}
+
+export interface Template {
+	id: string;
+	name: string;
+	icon: number;
+	values: ConnectionOptions;
+}
+
+export interface SurrealistBehaviorSettings {
+	updateChecker: boolean;
+	tableSuggest: boolean;
+	variableSuggest: boolean;
+	queryErrorChecker: boolean;
+	windowPinned: boolean;
+	autoConnect: boolean;
+	docsLanguage: CodeLang;
+}
+
+export interface SurrealistAppearanceSettings {
+	colorScheme: MantineColorScheme;
+	windowScale: number;
+	editorScale: number;
+	resultWordWrap: boolean;
+	defaultResultMode: ResultMode;
+	defaultDiagramMode: DiagramMode;
+	defaultDiagramDirection: DiagramDirection;
+	expandSidebar: boolean;
+	valueMode: ValueMode;
+}
+
+export interface SurrealistTemplateSettings {
+	list: Template[];
+}
+
+export interface SurrealistServingSettings {
+	driver: DriverType;
+	storage: string;
+	executable: string;
+	username: string;
+	password: string;
+	port: number;
+}
+
+export interface QueryResponse {
+	execution_time: string;
+	success: boolean;
+	result: any;
+}
+
+export interface TabQuery {
+	id: string;
+	query: string;
+	name?: string;
+	variables: string;
+	valid: boolean;
+	resultMode: ResultMode;
+}
+
+export interface HistoryQuery {
+	id: string;
+	query: string;
+	timestamp: number;
+	origin?: string;
+}
+
+export interface SavedQuery {
+	id: string;
+	query: string;
+	name: string;
+	tags: string[];
+}
+
+export interface SurrealistSettings {
+	behavior: SurrealistBehaviorSettings;
+	appearance: SurrealistAppearanceSettings;
+	templates: SurrealistTemplateSettings;
+	serving: SurrealistServingSettings;
+}
 
 export interface SurrealistConfig {
-	theme: ColorScheme | "automatic";
-	tabs: SurrealistSession[];
-	environments: SurrealistEnvironment[];
-	activeUrl: string;
-	isPinned: boolean,
-	activeTab: string | null;
-	autoConnect: boolean;
-	tableSuggest: boolean;
-	wordWrap: boolean;
-	queryHistory: HistoryEntry[];
-	queryFavorites: FavoritesEntry[];
-	localDriver: DriverType;
-	localStorage: string;
-	surrealPath: string;
-	surrealUser: string;
-	surrealPass: string;
-	surrealPort: number;
-	enableConsole: boolean;
-	enableListing: boolean;
-	queryTimeout: number;
-	updateChecker: boolean;
-	queryListing: QueryListing;
-	resultListing: ResultListing;
-	fontZoomLevel: number;
-	errorChecking: boolean;
+	configVersion: number;
+	previousVersion: string;
+	connections: Connection[];
+	sandbox: Connection;
+	activeView: ViewMode;
+	activeConnection: string | null;
+	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
-	tabSearch: boolean;
-	defaultDesignerNodeMode: DesignerNodeMode,
-	defaultDesignerLayoutMode: DesignerLayoutMode
-}
-
-export interface SurrealistEnvironment {
-	id: string;
-	name: string;
-	connection: Partial<ConnectionOptions>;
-}
-
-export interface SurrealistSession {
-	id: string;
-	name: string;
-	environment: string;
-	queries: SessionQuery[];
-	activeQueryId: number;
-	lastQueryId: number;
-	variables: string;
-	connection: ConnectionOptions;
-	lastResponse: any;
-	pinned: boolean;
-	pinnedTables: string[];
-	designerNodeMode?: DesignerNodeMode;
-	designerLayoutMode?: DesignerLayoutMode;
-	liveQueries: LiveQuery[];
-}
-
-export interface SessionQuery {
-	id: number;
-	text: string;
-	name?: string;
-}
-
-export interface LiveQuery {
-	id: string;
-	name: string;
-	text: string;
+	lastViewedNewsAt: number | null;
+	settings: SurrealistSettings;
+	featureFlags: Partial<FeatureFlagMap>;
+	commandHistory: string[];
+	onboarding: string[];
 }
 
 export interface ScopeField {
@@ -87,94 +147,131 @@ export interface ScopeField {
 	value: string;
 }
 
-export interface HistoryEntry {
-	id: string;
-	query: string;
-	timestamp: number;
-	tabName: string;
-}
-
-export interface FavoritesEntry {
-	id: string;
-	query: string;
-	name: string;
-}
-
 export interface TableView {
 	expr: string;
-	what: string;
 	cond: string;
 	group: string;
 }
 
 export interface Permissions {
-	select: string;
-	create: string;
-	update: string;
-	delete: string;
+	select: boolean | string;
+	create: boolean | string;
+	update: boolean | string;
+	delete: boolean | string;
 }
 
-export interface TableSchema {
-	name: string;
-	drop: boolean;
-	schemafull: boolean;
-	view: TableView | null;
-	permissions: Permissions;
-	changefeed: boolean;
-	changetime: string;
-}
-
-export interface TableField {
-	name: string;
-	flexible: boolean;
-	kind: string;
-	kindTables: string[];
-	value: string;
-	default: string;
-	assert: string;
-	permissions: Permissions;
-}
-
-export interface TableIndex {
-	name: string;
-	fields: string;
-	kind: IndexKind;
-	search: string;
-	vector: string;
-}
-
-export interface TableEvent {
-	name: string;
-	cond: string;
-	then: string;
+export interface Kind {
+	kind: TableType;
+	in?: string[];
+	out?: string[];
 }
 
 export interface DatabaseSchema {
-	kvUsers: UserDefinition[];
-	nsUsers: UserDefinition[];
-	dbUsers: UserDefinition[];
-	scopes: ScopeDefinition[];
-	tables: TableDefinition[];
+	kvUsers: SchemaUser[];
+	nsUsers: SchemaUser[];
+	dbUsers: SchemaUser[];
+	scopes: SchemaScope[];
+	functions: SchemaFunction[];
+	models: SchemaModel[];
+	tables: TableInfo[];
 }
 
-export interface UserDefinition {
+export interface SchemaTable {
+	name: string;
+	drop: boolean;
+	full: boolean;
+	permissions: Permissions;
+	kind: Kind;
+	view?: string;
+	changefeed?: { expiry: string, store_original: boolean };
+}
+
+export interface SchemaField {
+	name: string;
+	flex: boolean;
+	readonly: boolean;
+	kind?: string;
+	value?: string;
+	assert?: string;
+	default?: string;
+	permissions: Permissions;
+}
+
+export interface SchemaIndex {
+	name: string;
+	cols: string;
+	index: string;
+}
+
+export interface SchemaEvent {
+	name: string;
+	when: string;
+	then: string[];
+}
+
+export interface SchemaUser {
 	name: string;
 	comment: string;
 	roles: string[];
 }
 
-export interface ScopeDefinition {
+export interface SchemaScope {
 	name: string;
-	session: string | null;
-	signin: string | null;
-	signup: string | null;
+	signin?: string;
+	signup?: string;
+	session?: string;
 }
 
-export interface TableDefinition {
-	schema: TableSchema;
-	fields: TableField[];
-	indexes: TableIndex[];
-	events: TableEvent[];
+export interface SchemaFunction {
+	name: string;
+	block: string;
+	args: [string, string][];
+	permissions: boolean | string;
+	comment: string;
+}
+
+export interface SchemaModel {
+	name: string;
+	hash: string;
+	version: string;
+	permission: boolean | string;
+	comment: string;
+}
+
+export interface TableInfo {
+	schema: SchemaTable;
+	fields: SchemaField[];
+	indexes: SchemaIndex[];
+	events: SchemaEvent[];
+}
+
+export interface SchemaInfoKV {
+	namespaces: any[];
+	users: SchemaUser[];
+}
+
+export interface SchemaInfoNS {
+	databases: any[];
+	tokens: any[];
+	users: SchemaUser[];
+}
+
+export interface SchemaInfoDB {
+	analyzers: any[];
+	functions: SchemaFunction[];
+	models: SchemaModel[];
+	params: any[];
+	scopes: SchemaScope[];
+	tables: SchemaTable[];
+	tokens: any[];
+	users: SchemaUser[];
+}
+
+export interface SchemaInfoTB {
+	events: SchemaEvent[];
+	fields: SchemaField[];
+	indexes: SchemaIndex[];
+	tables: any[];
 }
 
 export interface Analyzer {
@@ -183,41 +280,23 @@ export interface Analyzer {
 	filters: string[];
 }
 
-export interface TabCreation {
-	environment?: string;
-	name?: string;
-	query?: string;
-	connection?: Partial<ConnectionOptions>;
-}
-
-export interface ConnectionOptions {
-	method: ConnectMethod;
-	namespace: string;
-	database: string;
-	endpoint: string;
-	username: string;
-	password: string;
-	authMode: AuthMode;
-	scope: string;
-	scopeFields: ScopeField[];
-}
-
 export interface SurrealOptions {
 	connection: ConnectionOptions;
-	onConnect?: () => void;
+	onConnect?: (version: string) => void;
 	onDisconnect?: (code: number, reason: string) => void;
-	onError?: (error: any) => void;
+	onError?: (error: string) => void;
 }
 
-export interface TablePinAction {
-	session: string;
-	table: string;
+export interface ViewInfo {
+	id: ViewMode;
+	name: string;
+	icon: string;
+	anim?: any;
+	desc: string;
+	disabled?: FeatureCondition;
 }
 
-export interface LiveMessage {
-	id: string;
-	timestamp: number;
-	query: LiveQuery;
-	action: string;
-	result: any;
+export interface DataSet {
+	name: string;
+	url: string;
 }

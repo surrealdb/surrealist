@@ -1,0 +1,28 @@
+{
+	"name": "lezer-surrealql",
+	"private": true,
+	"version": "0.0.1",
+	"author": "SurrealDB",
+	"description": "SurrealQL grammar for Lezer",
+	"type": "module",
+	"types": "dist/index.d.ts",
+	"module": "dist/index.js",
+	"main": "dist/index.cjs",
+	"exports": {
+		"import": "./dist/index.js",
+		"require": "./dist/index.cjs"
+	},
+	"scripts": {
+		"build": "lezer-generator src/surrealql.grammar -o src/parser.js && rollup -c",
+		"prepack": "pnpm build"
+	},
+	"dependencies": {
+		"@lezer/highlight": "^1.2.0",
+		"@lezer/lr": "^1.0.0"
+	},
+	"devDependencies": {
+		"@lezer/generator": "^1.0.0",
+		"rollup": "^2.52.2",
+    	"@rollup/plugin-node-resolve": "^9.0.0"
+	}
+}

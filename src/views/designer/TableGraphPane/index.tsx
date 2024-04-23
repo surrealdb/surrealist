@@ -1,27 +1,28 @@
-import { ActionIcon, Box, Button, Center, Group, Kbd, LoadingOverlay, Modal, Paper, Popover, Stack, Text, Title, useMantineTheme } from "@mantine/core";
-import { mdiAdjust, mdiCog, mdiDownload, mdiHelpCircle, mdiImageOutline, mdiPlus, mdiXml } from "@mdi/js";
-import { ElementRef, useEffect, useRef, useState } from "react";
+import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
-import { Panel } from "~/components/Panel";
-import { DesignerLayoutMode, DesignerNodeMode, TableDefinition } from "~/types";
-import { ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
-import { NODE_TYPES, buildTableGraph as buildTableDiagram, createSnapshot } from "./helpers";
+import { ContentPane } from "~/components/Pane";
+import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from "reactflow";
+import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
+import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
-import { TableCreator } from "~/components/TableCreator";
 import { ModalTitle } from "~/components/ModalTitle";
-import { useActiveSession } from "~/hooks/environment";
-import { store } from "~/store";
-import { DESIGNER_LAYOUT_MODES, DESIGNER_NODE_MODES } from "~/constants";
-import { useDesignerConfig } from "./hooks";
-import { TableGrid } from "./grid";
+import { useActiveConnection } from "~/hooks/connection";
+import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { RadioSelect } from "~/components/RadioSelect";
-import { useToggleList } from "~/hooks/toggle";
-import { updateSession } from "~/stores/config";
 import { adapter } from "~/adapter";
-import { showNotification } from "@mantine/notifications";
 import { sleep } from "radash";
+import { useConfigStore } from "~/stores/config";
+import { themeColor } from "~/util/mantine";
+import { useSchema } from "~/hooks/schema";
+import { useContextMenu } from "mantine-contextmenu";
+import { useBoolean } from "~/hooks/boolean";
+import { iconAPI, iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation } from "~/util/icons";
+import { useInterfaceStore } from "~/stores/interface";
+import { showInfo } from "~/util/helpers";
 
 interface HelpTitleProps {
 	isLight: boolean;
@@ -30,48 +31,77 @@ interface HelpTitleProps {
 
 function HelpTitle({ isLight, children }: HelpTitleProps) {
 	return (
-		<Title order={2} size={14} color={isLight ? "light.7" : "light.1"} weight={600}>
+		<Title order={2} size={14} c={isLight ? "slate.9" : "white"} fw={600}>
 			{children}
 		</Title>
 	);
 }
 
 export interface TableGraphPaneProps {
-	active: TableDefinition | null;
-	tables: TableDefinition[];
+	active: TableInfo | null;
+	tables: TableInfo[];
 	setActiveTable: (table: string) => void;
 }
 
 export function TableGraphPane(props: TableGraphPaneProps) {
-	const theme = useMantineTheme();
+	const { openTableCreator } = useInterfaceStore.getState();
+	const { updateCurrentConnection } = useConfigStore.getState();
+	const { showContextMenu } = useContextMenu();
+
+	const schema = useSchema();
+	const lastSchema = useRef('');
+	const isOnline = useIsConnected();
+	const isViewActive = useConfigStore((s) => s.activeView == "designer");
+
+	const [isComputing, setIsComputing] = useState(false);
+	const [isExporting, setIsExporting] = useState(false);
+	const [showHelp, showHelpHandle] = useBoolean();
+	const ref = useRef<ElementRef<"div">>(null);
+	const activeSession = useActiveConnection();
+	const isLight = useIsLight();
+
+	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const [expanded, toggleExpanded] = useToggleList();
-	const [isRendering, setIsRendering] = useState(false);
-	const [isCreating, setIsCreating] = useState(false);
-	const [showConfig, setShowConfig] = useState(false);
-	const [showExporter, setShowExporter] = useState(false);
-	const [showHelp, setShowHelp] = useState(false);
-	const ref = useRef<ElementRef<"div">>(null);
-	const isOnline = useIsConnected();
-	const activeSession = useActiveSession();
-	const isLight = useIsLight();
-	
-	const { nodeMode, layoutMode } = useDesignerConfig(activeSession);
-	const { fitView, getViewport, setViewport } = useReactFlow();
+	const internals = useStore(s => s.nodeInternals);
 
-	useEffect(() => {
-		const [nodes, edges] = buildTableDiagram(
-			props.tables,
-			props.active,
-			nodeMode,
-			expanded,
-			(table) => toggleExpanded(table)
-		);
+	const [computing, setComputing] = useState(false);
+	const doFit = useRef(false);
+
+	useLayoutEffect(() => {
+		if (doFit.current) {
+			fitView();
+			doFit.current = false;
+		} else if (computing) {
+			const layoutNodes = [...internals.values()] as InternalNode[];
+			const direction = activeSession.diagramDirection;
+
+			applyNodeLayout(layoutNodes, edges, direction).then(async changes => {
+				if (changes.length === 0) {
+					return;
+				}
+
+				onNodesChange(changes);
+				setComputing(false);
+				doFit.current = true;
+			});
+		}
+	}, [internals]);
+
+	const renderGraph = useStable(async () => {
+		const [nodes, edges] = buildFlowNodes(props.tables);
+
+		if (nodes.length === 0) {
+			setNodes([]);
+			setEdges([]);
+			setIsComputing(false);
+			return;
+		}
 
 		setNodes(nodes);
 		setEdges(edges);
-	}, [props.tables, props.active, nodeMode, expanded]);
+		setComputing(true);
+	});
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
 		const viewport = getViewport();
@@ -82,232 +112,218 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				extensions: [type],
 			},
 		], async () => {
-			setIsRendering(true);
+			setIsExporting(true);
 
 			await sleep(50);
 
 			fitView();
-			
+
 			return await createSnapshot(ref.current!, type);
 		});
 
-		setIsRendering(false);
+		setIsExporting(false);
 		setViewport(viewport);
-		
+
 		if (isSuccess) {
-			showNotification({
-				message: "Snapshot saved to disk"
+			showInfo({
+				title: "Designer",
+				subtitle: "Snapshot saved to disk"
 			});
 		}
 	});
 
-	const openHelp = useStable(() => {
-		setShowHelp(true);
-	});
+	const showBox = !isComputing && (!isOnline || props.tables.length === 0);
 
-	const closeHelp = useStable(() => {
-		setShowHelp(false);
-	});
-
-	const showBox = !isOnline || props.tables.length === 0;
-
-	const openCreator = useStable(() => {
-		setIsCreating(true);
-	});
-
-	const closeCreator = useStable(() => {
-		setIsCreating(false);
-	});
-
-	const toggleConfig = useStable(() => {
-		setShowConfig(v => !v);
-	});
-
-	const toggleExporter = useStable(() => {
-		setShowExporter(v => !v);
-	});
-
-	const setNodeMode = useStable((mode: string) => {
-		store.dispatch(updateSession({
+	const setDiagramMode = useStable((mode: string) => {
+		updateCurrentConnection({
 			id: activeSession?.id,
-			designerNodeMode: mode as DesignerNodeMode,
-		}));
+			diagramMode: mode as DiagramMode,
+		});
 	});
 
-	const setLayoutMode = useStable((mode: string) => {
-		store.dispatch(updateSession({
+	const setDiagramDirection = useStable((mode: string) => {
+		updateCurrentConnection({
 			id: activeSession?.id,
-			designerLayoutMode: mode as DesignerLayoutMode,
-		}));
+			diagramDirection: mode as DiagramDirection,
+		});
 	});
+
+	useLayoutEffect(() => {
+		if (isViewActive && isOnline) {
+			renderGraph();
+		}
+	}, [schema, isViewActive, isOnline, activeSession.diagramDirection]);
+
+	useEffect(() => {
+		setNodes(curr => {
+			return curr.map(node => {
+				return {
+					...node,
+					data: {
+						...node.data,
+						isSelected: node.id === props.active?.schema.name
+					},
+				};
+			});
+		});
+	}, [props.active]);
 
 	return (
-		<Panel
+		<ContentPane
 			title="Table Graph"
-			icon={mdiAdjust}
+			icon={iconRelation}
 			style={{ overflow: 'hidden' }}
 			rightSection={
-				<Group noWrap>
-					<ActionIcon title="Create table..." onClick={openCreator}>
-						<Icon color="light.4" path={mdiPlus} />
-					</ActionIcon>
-					{layoutMode == "diagram" && (
-						<Popover
-							opened={showExporter}
-							onChange={setShowExporter}
-							position="bottom-end"
-							offset={{ crossAxis: -4, mainAxis: 8 }}
-							withArrow
-							withinPortal
-							shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
-						>
-							<Popover.Target>
-								<ActionIcon
-									title="Export Graph"
-									onClick={toggleExporter}
-								>
-									<Icon color="light.4" path={mdiDownload} />
-								</ActionIcon>
-							</Popover.Target>
-							<Popover.Dropdown onMouseLeave={toggleExporter} p="xs">
-								<Stack pb={4}>
-									<Button
-										color="surreal"
-										variant="subtle"
-										fullWidth
-										size="xs"
-										onClick={() => saveImage('svg')}
-									>
-										Save as SVG
-										<Icon
-											right
-											path={mdiXml}
-										/>
-									</Button>
-									<Button
-										color="surreal"
-										variant="subtle"
-										fullWidth
-										size="xs"
-										onClick={() => saveImage('png')}
-									>
-										Save as PNG
-										<Icon
-											right
-											path={mdiImageOutline}
-										/>
-									</Button>
-								</Stack>
-							</Popover.Dropdown>
-						</Popover>
-					)}
+				<Group wrap="nowrap">
+					<Tooltip label="New table">
+						<ActionIcon onClick={openTableCreator}>
+							<Icon path={iconPlus} />
+						</ActionIcon>
+					</Tooltip>
 					<Popover
-						opened={showConfig}
-						onChange={setShowConfig}
 						position="bottom-end"
 						offset={{ crossAxis: -4, mainAxis: 8 }}
-						withArrow
-						withinPortal
-						shadow={`0 8px 25px rgba(0, 0, 0, ${isLight ? 0.2 : 0.75})`}
+						shadow="sm"
 					>
 						<Popover.Target>
-							<ActionIcon
-								title="Graph Options"
-								onClick={toggleConfig}
-							>
-								<Icon color="light.4" path={mdiCog} />
-							</ActionIcon>
+							<Tooltip label="Graph Options">
+								<ActionIcon>
+									<Icon path={iconCog} />
+								</ActionIcon>
+							</Tooltip>
 						</Popover.Target>
-						<Popover.Dropdown onMouseLeave={toggleConfig}>
-							<Stack pb={4}>
-								<ModalTitle>
-									Table graph options
-								</ModalTitle>
-								<RadioSelect
-									label="Table layout"
-									data={DESIGNER_LAYOUT_MODES}
-									value={layoutMode}
-									onChange={setLayoutMode}
-								/>
-
+						<Popover.Dropdown>
+							<Stack w={150}>
 								<RadioSelect
 									label="Table appearance"
 									data={DESIGNER_NODE_MODES}
-									value={nodeMode}
-									onChange={setNodeMode}
+									value={activeSession.diagramMode}
+									onChange={setDiagramMode}
+								/>
+								<RadioSelect
+									label="Direction"
+									data={DESIGNER_DIRECTIONS}
+									value={activeSession.diagramDirection}
+									onChange={setDiagramDirection}
 								/>
 							</Stack>
 						</Popover.Dropdown>
 					</Popover>
-					<ActionIcon title="Help" onClick={openHelp}>
-						<Icon color="light.4" path={mdiHelpCircle} />
-					</ActionIcon>
+					<Tooltip label="Designer help">
+						<ActionIcon onClick={showHelpHandle.open}>
+							<Icon path={iconHelp} />
+						</ActionIcon>
+					</Tooltip>
 				</Group>
 			}>
-			<div style={{ width: "100%", height: "100%" }}>
-				{showBox && (
-					<Center h="100%" pos="absolute" inset={0} style={{ zIndex: 1 }}>
-						<Paper py="md" px="xl" c="light.5" bg={isLight ? "light.0" : "dark.8"} ta="center" maw={400}>
-							{isOnline ? (
-								<>
-									No tables found
-									<Box mt={4} c="surreal" style={{ cursor: "pointer" }} onClick={openCreator}>
-										Click here to create a new table
-									</Box>
-								</>
-							) : (
-								"Not connected to database"
-							)}
-						</Paper>
-					</Center>
+			<div style={{ position: "relative", width: "100%", height: "100%" }}>
+				<ReactFlow
+					ref={ref}
+					fitView
+					nodes={nodes}
+					edges={edges}
+					nodeTypes={NODE_TYPES}
+					nodesConnectable={false}
+					edgesFocusable={false}
+					proOptions={{ hideAttribution: true }}
+					onNodesChange={onNodesChange}
+					onEdgesChange={onEdgesChange}
+					className={classes.diagram}
+					style={{ opacity: computing ? 0 : 1 }}
+					onNodeClick={(_ev, node) => {
+						props.setActiveTable(node.id);
+					}}
+					onContextMenu={showContextMenu([
+						{
+							key: 'create',
+							icon: <Icon path={iconPlus} />,
+							title: 'Create table...',
+							onClick: openTableCreator
+						},
+						{
+							key: 'view',
+							icon: <Icon path={iconFullscreen} />,
+							title: 'Reset viewport',
+							onClick: () => fitView()
+						},
+						{
+							key: 'refresh',
+							icon: <Icon path={iconRefresh} />,
+							title: 'Reset graph',
+							onClick: renderGraph
+						},
+						{ key: 'divider' },
+						{
+							key: 'download-png',
+							icon: <Icon path={iconImage} />,
+							title: 'Export as PNG',
+							onClick: () => saveImage('png')
+						},
+						{
+							key: 'download-svg',
+							icon: <Icon path={iconAPI} />,
+							title: 'Export as SVG',
+							onClick: () => saveImage('svg')
+						},
+					])}
+				>
+					<Background
+						color={themeColor(isLight ? "slate.2": "slate.6")}
+					/>
+				</ReactFlow>
+
+				{isExporting && (
+					<Stack
+						inset={0}
+						pos="absolute"
+						align="center"
+						justify="center"
+						bg="var(--mantine-color-body)"
+						style={{ zIndex: 5 }}
+					>
+						<Loader />
+						<Text fz="xl" fw={600}>
+							Exporting graph...
+						</Text>
+					</Stack>
 				)}
 
-				<LoadingOverlay
-					visible={isRendering}
-					overlayOpacity={1}
-					overlayColor={isLight ? theme.white : theme.colors.dark[7]}
-					loaderProps={{ size: 50 }}
-				/>
-				
-				{layoutMode == 'diagram' ? (
-					<ReactFlow
-						ref={ref}
-						nodeTypes={NODE_TYPES}
-						nodes={nodes}
-						edges={edges}
-						nodesDraggable={false}
-						nodesConnectable={false}
-						edgesFocusable={false}
-						proOptions={{ hideAttribution: true }}
-						onNodesChange={onNodesChange}
-						onEdgesChange={onEdgesChange}
-						onNodeClick={(_ev, node) => {
-							props.setActiveTable(node.id);
-						}}
-					/>
-				) : (
-					<TableGrid
-						ref={ref}
-						tables={props.tables}
-						active={props.active}
-						nodeMode={nodeMode}
-						expanded={expanded}
-						onExpand={toggleExpanded}
-						onSelectTable={(table) => {
-							props.setActiveTable(table.schema.name);
-						}}
-					/>
+				{showBox && (
+					<Stack
+						inset={0}
+						pos="absolute"
+						align="center"
+						justify="center"
+						gap="lg"
+					>
+						<Box ta="center">
+							<Text fz="xl" fw={600}>
+								No tables defined
+							</Text>
+							<Text>
+								Get started by creating a table
+							</Text>
+						</Box>
+						<Button
+							variant="light"
+							rightSection={<Icon path={iconPlus} />}
+							onClick={openTableCreator}
+						>
+							Create a table
+						</Button>
+					</Stack>
 				)}
 			</div>
 
 			<Modal
 				opened={showHelp}
-				onClose={closeHelp}
+				onClose={showHelpHandle.close}
 				trapFocus={false}
 				size="lg"
+				withCloseButton
 				title={<ModalTitle>Using the Table Graph</ModalTitle>}
 			>
-				<Text color={isLight ? "light.7" : "light.3"}>
+				<Text c={isLight ? "slate.7" : "slate.2"}>
 					<HelpTitle isLight={isLight}>How do I use the table graph?</HelpTitle>
 
 					<Text mt={8} mb="xl">
@@ -318,7 +334,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					<HelpTitle isLight={isLight}>Can I change how tables are displayed?</HelpTitle>
 
 					<Text mt={8} mb="xl">
-						Press the <Icon path={mdiCog} size="sm" /> button in the top right corner to open the graph options. Inside you
+						Press the <Icon path={iconCog} size="sm" /> button in the top right corner to open the graph options. Inside you
 						can change the table layout and table appearance. These settings are saved per session, however you can configure
 						default values in the Surrealist settings.
 					</Text>
@@ -327,7 +343,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 					<Text mt={8} mb="xl">
 						Surrealist dermines edges by searching for correctly configured <Kbd>in</Kbd> and <Kbd>out</Kbd> fields. You
-						can automatically create a new edge table by pressing the <Icon path={mdiPlus} /> button on the Table Graph
+						can automatically create a new edge table by pressing the <Icon path={iconPlus} /> button on the Table Graph
 						panel. Keep in mind edges are only visible when the layout is set to Diagram.
 					</Text>
 
@@ -339,11 +355,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Text>
 				</Text>
 			</Modal>
-
-			<TableCreator
-				opened={isCreating}
-				onClose={closeCreator}
-			/>
-		</Panel>
+		</ContentPane>
 	);
 }
