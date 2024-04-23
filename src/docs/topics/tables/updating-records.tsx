@@ -7,14 +7,18 @@ import { getTable } from "~/docs/helpers";
 
 export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
-	const fieldName = table.fields.find(({ name }: { name: string }) => !['id', 'in', 'out'].includes(name))?.name ?? 'id';
+	const fieldName =
+		table.fields.find(
+			({ name }: { name: string }) => !["id", "in", "out"].includes(name)
+		)?.name ?? "id";
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		UPDATE ${table.schema.name}:demo
 		`,
-		js: `
+			js: `
 		// Update all records in a table
 		await db.update('${table.schema.name}');
 
@@ -28,10 +32,10 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		});
 
 		`,
-		rust: `
+			rust: `
 		db.update("${table.schema.name}").await?;
 		`,
-		py: `
+			py: `
 		# Update all records in a table
 		db.update("${table.schema.name}");
 
@@ -41,7 +45,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		})
 
 		`,
-		go: `
+			go: `
 		db.Update("${table.schema.name}", map[string]interface{}{
 			"name": "ElecTwix",
 			"settings": map[string]bool{
@@ -50,26 +54,35 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 			},
 		});
 		`,
-		dotnet: `
+			csharp: `
 		await db.Upsert(${table.schema.name});
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		SurrealWebSocketConnection.connect(timeout)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
-		<Article title={<TableTitle title="Updating records" table={table.schema.name} />}>
+		<Article
+			title={
+				<TableTitle
+					title="Updating records"
+					table={table.schema.name}
+				/>
+			}
+		>
 			<div>
 				<h3>Table: {table.schema.name} </h3>
 				<p>
-					Update or modify all existing record in the table <b>{table.schema.name}</b> or specific records.
+					Update or modify all existing record in the table{" "}
+					<b>{table.schema.name}</b> or specific records.
 				</p>
 			</div>
 			<Box>

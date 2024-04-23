@@ -9,11 +9,12 @@ export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const table = getTable(topic);
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		LIVE SELECT DIFF FROM ${table.schema.name};
 		`,
-		js: `
+			js: `
 		// The uuid of the live query will be returned
 		const queryUuid = await db.live(
 			"${table.schema.name}",
@@ -42,19 +43,19 @@ table_name
 		)
 
 		`,
-		rust: `
+			rust: `
 		//Connect to a local endpoint
 		DB.connect::<Ws>("127.0.0.1:8000").await?;
 		//Connect to a remote endpoint
 		DB.connect::<Wss>("cloud.surrealdb.com").await?;
 		`,
-		py: `
+			py: `
 
 		`,
-		go: `
+			go: `
 
 		`,
-		dotnet: `
+			csharp: `
 		await using var liveQuery = db.ListenLive<${table.schema.name}>(queryUuid);
 
 		// Option 1
@@ -79,24 +80,30 @@ table_name
 		await using var liveQuery = await db.LiveQuery<${table.schema.name}>($"LIVE SELECT * FROM type::table({table});");
 
 // Consume the live query...
-		`
-		,
-		java:`
+		`,
+			java: `
 		// Connect to a local endpoint
 		SurrealWebSocketConnection.connect(timeout)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
-		<Article title={<TableTitle title="Live queries" table={table.schema.name} />}>
+		<Article
+			title={
+				<TableTitle title="Live queries" table={table.schema.name} />
+			}
+		>
 			<div>
 				<p>
-					Create realtime query notifications for changes to selected records on <b>{table.schema.name}</b> and see live updates  in the live message view in the console.
+					Create realtime query notifications for changes to selected
+					records on <b>{table.schema.name}</b> and see live updates
+					in the live message view in the console.
 				</p>
 			</div>
 			<Box>

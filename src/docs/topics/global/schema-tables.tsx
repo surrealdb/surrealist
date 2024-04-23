@@ -6,17 +6,17 @@ import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
-
 	const schema = useSchema();
 	const { connection } = useActiveConnection();
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		CREATE townsperson, cat, dog SET created_at = time::now(), name = "Just a " + meta::tb(id);
 
 		// Select all records from the townsperson table
 		SELECT * FROM townsperson;
 		`,
-		js: `
+			js: `
 		// Create a record with a random ID
 		const [person] = await db.create<Person>('person');
 
@@ -37,7 +37,7 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 		await db.select<Person>('person:tobie');
 
 		`,
-		rust: `
+			rust: `
 		// Create a record with a random ID
 		let people: Vec<Person> = db.create("person").await?;
 
@@ -61,7 +61,7 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 		let person: Option<Person> = db.select(("person", "h5wxrf2ewk8xjxosxtyc")).await?;
 
 			`,
-		py: `
+			py: `
 		# Create a record with a random ID
 		person = await db.create('person')
 
@@ -81,7 +81,7 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 		# Select a specific record from a table
 		person = await db.select('person:h5wxrf2ewk8xjxosxtyc')
 		`,
-		go: `
+			go: `
 		// Create a record with a random ID
 		db.Create("person", map[string]interface{}{})
 
@@ -119,7 +119,7 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 
 		db.Create("person:hugh", data)
 		`,
-		dotnet: `
+			csharp: `
 				// Create a record with a random ID
 		var person = await db.Create<Person>("person");
 
@@ -148,24 +148,26 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 		// Select a specific record from a table, given a non-string id
 		await db.Select<Person>(("person", new Guid("8424486b-85b3-4448-ac8d-5d51083391c7")));
 		`,
-		java:`
+			java: `
 		driver.update(thing, data)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Tables">
 			<div>
 				<p>
-					When interacting with SurrealDB, you will be working with tables. Tables are the primary storage in a database. They contain the data that you want to store and retrieve. You can create, read, update, and delete data from tables. You can also create indexes on tables to speed up queries.
-				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
+					When interacting with SurrealDB, you will be working with
+					tables. Tables are the primary storage in a database. They
+					contain the data that you want to store and retrieve. You
+					can create, read, update, and delete data from tables. You
+					can also create indexes on tables to speed up queries.
 				</p>
 			</div>
 			<Box>

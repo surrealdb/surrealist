@@ -7,7 +7,6 @@ import { useActiveConnection } from "~/hooks/connection";
 import { connectionUri } from "~/util/helpers";
 
 export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
-
 	const schema = useSchema();
 	const { connection } = useActiveConnection();
 	const endpoint = connectionUri(connection);
@@ -15,8 +14,9 @@ export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 	const esc_namespace = JSON.stringify(connection.namespace);
 	const esc_database = JSON.stringify(connection.database);
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
 		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
 		DEFINE INDEX page_hostname ON page FIELDS hostname;
@@ -31,56 +31,75 @@ export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 		DEFINE INDEX page_content ON page FIELDS content SEARCH ANALYZER simple BM25(1.2,0.75) HIGHLIGHTS;
 		DEFINE INDEX page_code ON page FIELDS code SEARCH ANALYZER simple BM25(1.2,0.75);
 		`,
-		js: `
+			js: `
 		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
 		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
 		DEFINE INDEX page_hostname ON page FIELDS hostname;
 		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
-		rust: `
+			rust: `
 		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
 		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
 		DEFINE INDEX page_hostname ON page FIELDS hostname;
 		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
-		py: `
+			py: `
 		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
 		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
 		DEFINE INDEX page_hostname ON page FIELDS hostname;
 		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
-		go: `
+			go: `
 		// Connect to a local endpoint
 		surrealdb.New("ws://localhost:8000/rpc");
 		// Connect to a remote endpoint
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
-		dotnet: `
-		db.Query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
-		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-		DEFINE INDEX page_hostname ON page FIELDS hostname;
-		DEFINE INDEX page_date_indexed ON page FIELDS date;');
+			csharp: `
+		await this.RawQuery(
+			"""
+				DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+
+				DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+				DEFINE INDEX page_hostname ON page FIELDS hostname;
+				DEFINE INDEX page_date_indexed ON page FIELDS date;
+			"""
+		);
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		SurrealWebSocketConnection.connect(timeout)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Full Text Search">
 			<div>
 				<p>
-					Full Text Search enables search capabilities within your database connection.
-					This enables text matching, proximity matching, proximity search, and more. In SurrealDB Full-Text Search is ACID-COMPLIANT and you can access this using <a href="https://surrealdb.com/docs/surrealdb/surrealql/functions/search#searchhighlight"> Search funnctions</a>, <a href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/indexes/"> Indexes</a>. To learn more checkout this <a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search"> Reference guide</a>
-				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
+					Full Text Search enables search capabilities within your
+					database connection. This enables text matching, proximity
+					matching, proximity search, and more. In SurrealDB Full-Text
+					Search is ACID-COMPLIANT and you can access this using{" "}
+					<a href="https://surrealdb.com/docs/surrealdb/surrealql/functions/search#searchhighlight">
+						{" "}
+						Search functions
+					</a>
+					,{" "}
+					<a href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/indexes/">
+						{" "}
+						Indexes
+					</a>
+					. To learn more checkout this{" "}
+					<a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
+						{" "}
+						Reference guide
+					</a>
 				</p>
 			</div>
 			<Box>

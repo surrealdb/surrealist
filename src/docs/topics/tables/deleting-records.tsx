@@ -9,40 +9,52 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		DELETE ${table.schema.name}:demo
 		`,
-		js: `
+			js: ` 
 		db.delete('${table.schema.name}');
 		`,
-		rust: `
+			rust: `
 		db.delete("${table.schema.name}").await?;
 		`,
-		py: `
+			py: `
 		db.delete('${table.schema.name}')
 		`,
-		go: `
+			go: `
 		db.Delete("${table.schema.name}", map[string]interface{}{})
 		`,
-		dotnet: `
+			csharp: `
 		db.delete<${table.schema.name}>("${table.schema.name}");
 		`,
-		java:`
+			java: `
 		driver.delete(thing, data)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
-		<Article title={<TableTitle title="Deleting records" table={table.schema.name} />}>
+		<Article
+			title={
+				<TableTitle
+					title="Deleting records"
+					table={table.schema.name}
+				/>
+			}
+		>
 			<div>
 				<p>
-					Deleting records is a common operation when you want to remove records from a table. This operation is useful when you want to remove records from a table and can also be based on certain conditions using the Where clause.
+					Deleting records is a common operation when you want to
+					remove records from a table. This operation is useful when
+					you want to remove records from a table and can also be
+					based on certain conditions using the Where clause.
 				</p>
 			</div>
 			<Box>

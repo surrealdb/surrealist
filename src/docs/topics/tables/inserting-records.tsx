@@ -9,50 +9,60 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		INSERT INTO ${table.schema.name} {
 			field: value
 		};
 		`,
-		js: `
+			js: `
 		await db.insert('${table.schema.name}', {
 			field: value
 		});
 		`,
-		rust: `
+			rust: `
 		db.update("${table.schema.name}").merge(Document {
         updated_at: Datetime::default(),
 	}).await?;
 		`,
-		py: `
+			py: `
 		await db.query("""
         insert into ${table.schema.name} {
         	field:value
         };
 		`,
-		go: `
+			go: `
 		db.Query("INSERT INTO ${table.schema.name} {
 			field: value
 		};")
 		`,
-		dotnet: `
+			csharp: `
 		await db.Merge<${table.schema.name}>(merge);
 		`,
-		java:`
+			java: `
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
-		<Article title={<TableTitle title="Inserting records" table={table.schema.name} />}>
+		<Article
+			title={
+				<TableTitle
+					title="Inserting records"
+					table={table.schema.name}
+				/>
+			}
+		>
 			<div>
 				<p>
-					Insert records into a table in the database. It could also be used to update existing fields in records within a table.
+					Insert records into a table in the database. It could also
+					be used to update existing fields in records within a table.
 				</p>
 			</div>
 			<Box>

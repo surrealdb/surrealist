@@ -5,49 +5,52 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsGlobalDatabases({ language, topic }: TopicProps) {
-
 	const { connection } = useActiveConnection();
+	const esc_namespace = JSON.stringify(connection.namespace);
 	const esc_database = JSON.stringify(connection.database);
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 			USE DB ${connection.database};
 		`,
-		js: `
+			js: `
 			await db.use({
 				database: ${esc_database}
 			});
 		`,
-		rust: `
+			rust: `
 			db.use_db(${esc_database}).await?;
 		`,
-		py: `
+			py: `
 		await db.use(database:${esc_database})
 		`,
-		go: `
+			go: `
 		db.Use(database:${esc_database})
 		`,
-		dotnet: `
-		db.Use(database:${esc_database})
+			csharp: `
+		await db.Use(${esc_namespace}, ${esc_database});
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		driver.use(${esc_database});
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Databases">
 			<div>
 				<p>
-					The database is the primary storage in a namespace. It contains the tables, views, and indexes that are used to store and retrieve data.You can specify which database to use and also switch between multiple databases.
-				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
+					The database is the primary storage in a namespace. It
+					contains the tables, views, and indexes that are used to
+					store and retrieve data.You can specify which database to
+					use and also switch between multiple databases.
 				</p>
 			</div>
 			<Box>

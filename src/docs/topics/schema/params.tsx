@@ -6,12 +6,12 @@ import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsSchemaParams({ language, topic }: TopicProps) {
-
 	const schema = useSchema();
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		// Assign the variable on the connection
 		DEFINE PARAM $endpointBase VALUE "https://dummyjson.com";
 
@@ -19,7 +19,7 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 		REMOVE PARAM $endpointBase;
 
 		`,
-		js: `
+			js: `
 			// Assign the variable on the connection
 			await db.let('name', {
 				first: 'Tobie',
@@ -36,7 +36,7 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 			async db.unset(name);
 
 		`,
-		rust: `
+			rust: `
 		// Assign the variable on the connection
 		db.set("name", Name {
 			first: "Tobie",
@@ -51,7 +51,7 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 		// Use the variable in a subsequent query
 		db.query("SELECT * FROM person WHERE name.first = $name.first").await?;
 		`,
-		py: `
+			py: `
 		# Assign the variable on the connection
 		await db.let("name", {
 			"first": "Tobie",
@@ -64,7 +64,7 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 		# Use the variable in a subsequent query
 		await db.query('SELECT * FROM person WHERE name.first = $name.first')
 		`,
-		go: `
+			go: `
 		// Assign the variable on the connection
 
 		db.Let("name", map[string]string{
@@ -78,36 +78,37 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 		// Use the variable in a subsequent query
 		db.Query("SELECT * FROM person WHERE name.first = $name.first", nil);
 		`,
-		dotnet: `
+			csharp: `
 		// Assign the variable on the connection
-			await db.Set("name", new Name { FirstName = "Tobie", LastName = "Morgan Hitchcock" });
+		await db.Set("name", new { FirstName = "Tobie", LastName = "Morgan Hitchcock" });
 
 		// Use the variable in a subsequent query
-			await db.Query($"CREATE person SET name = $name");
+		await db.Query($"CREATE person SET name = $name");
 
 		// Use the variable in a subsequent query
-			await db.Query($"SELECT * FROM person WHERE name.first_name = $name.first_name");
+		await db.Query($"SELECT * FROM person WHERE name.first_name = $name.first_name");
 		`,
-		java:`
+			java: `
 		driver.let(key, value)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Params">
 			<div>
 				<p>
-					In your database you can define parameters that can be used in your queries. These parameters
-					can be used to store values that are used in multiple queries, or to store values that are used in other parts of your application.
+					In your database you can define parameters that can be used
+					in your queries. These parameters can be used to store
+					values that are used in multiple queries, or to store values
+					that are used in other parts of your application.
 				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
-				</p>
+
 			</div>
 			<Box>
 				<DocsPreview

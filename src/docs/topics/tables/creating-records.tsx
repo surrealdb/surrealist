@@ -9,39 +9,50 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		CREATE ${table.schema.name}:demo
 		`,
-		js: `
+			js: ` 
 		db.create('${table.schema.name}');
 		`,
-		rust: `
+			rust: `
 		db.create("${table.schema.name}").await?;
 		`,
-		py: `
+			py: `
 		db.create('${table.schema.name}')
 		`,
-		go: `
+			go: `
 		db.Create("${table.schema.name}", map[string]interface{}{})
 		`,
-		dotnet: `
+			csharp: `
 		db.Create<${table.schema.name}>("${table.schema.name}");
 		`,
-		java:`
+			java: `
 		driver.create(thing, data)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
-		<Article title={<TableTitle title="Creating records" table={table.schema.name} />}>
+		<Article
+			title={
+				<TableTitle
+					title="Creating records"
+					table={table.schema.name}
+				/>
+			}
+		>
 			<p>
-				Add a new record to the table<b> {table.schema.name} </b>. The record will have a random record ID if not specified after the table name. You can also specify the fields of the record.
+				Add a new record to the table<b> {table.schema.name} </b>. The
+				record will have a random record ID if not specified after the
+				table name. You can also specify the fields of the record.
 			</p>
 			<Box>
 				<DocsPreview
