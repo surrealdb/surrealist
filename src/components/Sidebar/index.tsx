@@ -106,16 +106,15 @@ export function Sidebar({
 				h="100%"
 				px={16}
 				pb={18}
-				pt={22}
 			>
-				<Group wrap="nowrap" gap="lg">
+				<Group wrap="nowrap" gap="lg" pt="sm">
 					<Image src={surrealistLogo} w={42} />
 					<SurrealistLogo h={21} style={{ flexShrink: 0 }} />
 				</Group>
 				<Stack
 					gap="sm"
 					h="100%"
-					mt={30}
+					mt={24}
 					component="nav"
 				>
 					{connection && navigation.map((items, i) => (
