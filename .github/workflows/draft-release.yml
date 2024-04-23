@@ -49,6 +49,18 @@ jobs:
               run: |
                   pnpm pkg set version=${{ inputs.version }}
 
+            - name: Validate unique version
+              run: |
+                v=$(pnpm pkg get version)
+                v=${v:1:-1}
+                TAG="surrealist-v$v"
+                if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+                  echo "ERR: Tag ${TAG} already exists! Please bump the version."
+                  exit 1
+                else
+                  echo "OK: All clear! No such tag as ${TAG} found."
+                fi
+
             - name: Extract version
               id: extract_version
               uses: Saionaro/extract-package-version@v1.2.1
@@ -81,16 +93,6 @@ jobs:
         steps:
             - name: Information
               run: echo "Building Surrealist Desktop v${{ needs.version.outputs.version }} for ${{ matrix.settings.id }}"
-
-            - name: Validate unique version
-              run: |
-                TAG="surrealist-v${{ needs.version.outputs.version }}"
-                if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
-                  echo "ERR: Tag ${TAG} already exists! Please bump the version."
-                  exit 1
-                else
-                  echo "OK: All clear! No such tag as ${TAG} found."
-                fi
 
             - name: Code checkout
               uses: actions/checkout@v4
