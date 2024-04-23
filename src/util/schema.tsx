@@ -115,7 +115,7 @@ export function buildFunctionDefinition(func: SchemaFunction) : string {
 	let query = `DEFINE FUNCTION fn::${func.name}(${args}) {\n${block}\n}`;
 
 	if (func.permissions) {
-		query += ` PERMISSIONS ${func.permissions}`;
+		query += ` PERMISSIONS ${displaySchemaPermission(func.permissions)}`;
 	}
 
 	if (func.comment) {
@@ -132,7 +132,7 @@ export function buildModelDefinition(func: SchemaModel) : string {
 	let query = `DEFINE MODEL ${func.name} {`;
 
 	if (func.permission) {
-		query += ` PERMISSIONS ${func.permission}`;
+		query += ` PERMISSIONS ${displaySchemaPermission(func.permission)}`;
 	}
 
 	if (func.comment) {
@@ -197,4 +197,18 @@ export function extractKindMeta(kind: string): string[] {
  */
 export function isEdgeTable(table: TableInfo) {
 	return extractEdgeRecords(table)[0];
+}
+
+/**
+ * Display a single schema permission
+ *
+ * @param permission Either a string which will be transformed into `WHERE ${permission}`, or a boolean representing FULL/NONE
+ * @returns A string which is the permission in SurrealQL format
+ */
+export function displaySchemaPermission(permission: string | boolean) {
+	return typeof permission == 'string'
+		? `WHERE ${permission}`
+		: permission
+			? 'FULL'
+			: 'NONE';
 }
