@@ -16,7 +16,7 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		`,
 		js: `
 		// Select a specific record from a table
-			const [person] = await db.select('${fieldName}');
+		const [person] = await db.select('${fieldName}');
 		`,
 		rust: `
 
