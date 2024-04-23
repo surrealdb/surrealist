@@ -82,7 +82,12 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 		const definition: TableInfo = {
 			schema: {
 				...table,
-				changefeed: table.changefeed?.replace(/^CHANGEFEED /, '')
+				changefeed: typeof table.changefeed === "object"
+					? table.changefeed
+					: typeof table.changefeed === "string" ? {
+						expiry: (table.changefeed as string).replaceAll(/CHANGEFEED|INCLUDE ORIGINAL/g, '').trim(),
+						store_original: (table.changefeed as string).includes('INCLUDE ORIGINAL'),
+					} : undefined
 			},
 			fields: Object.values(info.fields),
 			indexes: Object.values(info.indexes),
@@ -91,6 +96,8 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 				then: ev.then.map(th => th.slice(1, -1))
 			})),
 		};
+
+		console.log(definition.schema.changefeed);
 
 		if (!isLimited || index === -1) {
 			schema.tables.push(definition);

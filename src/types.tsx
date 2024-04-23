@@ -183,7 +183,7 @@ export interface SchemaTable {
 	permissions: Permissions;
 	kind: Kind;
 	view?: string;
-	changefeed?: string;
+	changefeed?: { expiry: string, store_original: boolean };
 }
 
 export interface SchemaField {

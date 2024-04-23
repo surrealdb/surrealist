@@ -33,6 +33,7 @@ import { ON_FOCUS_SELECT, tb } from "~/util/helpers";
 import { iconClose, iconDelete, iconWrench } from "~/util/icons";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/connection";
+import { ChangefeedElement } from "./elements/changefeed";
 
 const INITIAL_TABS = ["general"];
 
@@ -151,6 +152,11 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					/>
 
 					<PermissionsElement
+						data={value}
+						setData={onChange}
+					/>
+
+					<ChangefeedElement
 						data={value}
 						setData={onChange}
 					/>

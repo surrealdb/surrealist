@@ -1,4 +1,4 @@
-import { Accordion, Stack, Select, Checkbox, TextInput, MultiSelect } from "@mantine/core";
+import { Accordion, Stack, Select, Checkbox, MultiSelect } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
 import { iconTable } from "~/util/icons";
 import { Selectable, TableType } from "~/types";
@@ -73,16 +73,6 @@ export function GeneralElement({ data, setData }: ElementProps) {
 							/>
 						</>
 					)}
-					<TextInput
-						label="Changefeed duration"
-						placeholder="7d"
-						value={data.schema.changefeed || ""}
-						onChange={(value) =>
-							setData((draft) => {
-								draft.schema.changefeed = value.currentTarget.value;
-							})
-						}
-					/>
 				</Stack>
 			</Accordion.Panel>
 		</Accordion.Item>

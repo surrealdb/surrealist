@@ -75,8 +75,12 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 			query += ` ${current.schema.view}`;
 		}
 
-		if (current.schema.changefeed) {
-			query += ` CHANGEFEED ${current.schema.changefeed}`;
+		if (current.schema.changefeed?.expiry) {
+			query += ` CHANGEFEED ${current.schema.changefeed.expiry}`;
+
+			if (current.schema.changefeed.store_original) {
+				query += " INCLUDE ORIGINAL";
+			}
 		}
 
 		query += " PERMISSIONS";
@@ -84,6 +88,8 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 		query += buildPermission("select", current.schema.permissions.select);
 		query += buildPermission("update", current.schema.permissions.update);
 		query += buildPermission("delete", current.schema.permissions.delete);
+
+		queries.push(query);
 	}
 
 	for (const field of previous.fields) {
