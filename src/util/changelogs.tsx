@@ -12,6 +12,8 @@ export const changelogs = Object.entries(CHANGELOGS).map(([path, value]: any) =>
 		metadata: value.attributes,
 		content: value.html
 	};
+}).sort((a, b) => {
+	return compare(b.version, a.version);
 });
 
 export function promptChangelog() {
