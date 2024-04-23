@@ -72,10 +72,10 @@ jobs:
                     # TODO(tauri-2) ubuntu-22.04
                     - platform: "ubuntu-20.04"
                       id: 'linux'
-                      args: "--target linux"
+                      args: ""
                     - platform: "windows-latest"
                       id: 'windows'
-                      args: "--target windows"
+                      args: ""
 
         runs-on: ${{ matrix.settings.platform }}
         steps:
@@ -151,4 +151,3 @@ jobs:
                   releaseBody: ${{ inputs.summary }}
                   releaseDraft: true
                   prerelease: ${{ inputs.prerelease }}
-                  updaterJsonKeepUniversal: true
