@@ -24,7 +24,7 @@ export interface UserQueryOptions {
 	loader?: boolean;
 }
 
-const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss']);
+const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
 const SURREAL = new Surreal({
