@@ -26,7 +26,7 @@ export function DocsTablesIntroduction({ language, topic }: TopicProps) {
 			go: `
 		db.Create("table_name", map[string]interface{}{})
 		`,
-			dotnet: `
+			csharp: `
 		await db.Create<TableName>("table_name");
 		`,
 			java: `

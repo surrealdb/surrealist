@@ -28,7 +28,7 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 			go: `
 		db.Use(namespace:${esc_namespace})
 		`,
-			dotnet: `
+			csharp: `
 		await db.Use(${esc_namespace}, ${esc_database});
 		`,
 			java: `

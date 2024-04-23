@@ -9,13 +9,14 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 	const schema = useSchema();
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		
 		-- Create a root user
 		DEFINE USER username ON ROOT PASSWORD '123456' ROLES OWNER;
 		`,
-		js: `
+			js: `
 		import { Surreal } from 'surrealdb.js';
 
 		const db = new Surreal();
@@ -28,13 +29,13 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 		});
 
 		`,
-		rust: `
+			rust: `
 		//Connect to a local endpoint
 		DB.connect::<Ws>("127.0.0.1:8000").await?;
 		//Connect to a remote endpoint
 		DB.connect::<Wss>("cloud.surrealdb.com").await?;
 		`,
-		py: `
+			py: `
 		# Connect to a local endpoint
 		db = Surreal()
 		await db.connect('http://127.0.0.1:8000/rpc')
@@ -42,35 +43,37 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 		db = Surreal()
 		await db.connect('https://cloud.surrealdb.com/rpc')
 		`,
-		go: `
+			go: `
 		// Connect to a local endpoint
 		surrealdb.New("ws://localhost:8000/rpc");
 		// Connect to a remote endpoint
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
-		dotnet: `
+			csharp: `
 		await db.Connect();
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		SurrealWebSocketConnection.connect(timeout)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Users">
 			<div>
 				<p>
-					Managing permissions for Users within SurrealDB can be done using Scopes. Scopes are a way to group permissions together and assign them to Users with scopes you can manage authentication and access control for your table and fields.
+					Managing permissions for Users within SurrealDB can be done
+					using Scopes. Scopes are a way to group permissions together
+					and assign them to Users with scopes you can manage
+					authentication and access control for your table and fields.
 				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
-				</p>
+				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

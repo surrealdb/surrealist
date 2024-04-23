@@ -1,7 +1,13 @@
 import classes from "../../style.module.scss";
 import { Article } from "~/docs/components";
 import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
-import { DotNetIcon, JavaScriptIcon, PythonIcon, RustIcon, SurrealIcon } from "~/docs/icons";
+import {
+	DotNetIcon,
+	JavaScriptIcon,
+	PythonIcon,
+	RustIcon,
+	SurrealIcon,
+} from "~/docs/icons";
 import { useActiveConnection } from "~/hooks/connection";
 import { useSetting } from "~/hooks/config";
 import { CodeLang } from "~/types";
@@ -24,21 +30,21 @@ const LIBRARIES: Library[] = [
 		name: "CLI",
 		icon: SurrealIcon,
 		color: "#FF00A0",
-		link: "https://surrealdb.com/docs/surrealdb/cli"
+		link: "https://surrealdb.com/docs/surrealdb/cli",
 	},
 	{
 		id: "rust",
 		name: "Rust",
 		icon: RustIcon,
 		color: "#f46624",
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/rust"
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/rust",
 	},
 	{
 		id: "js",
 		name: "JavaScript",
 		icon: JavaScriptIcon,
 		color: "#F7DF1E",
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/javascript"
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/javascript",
 	},
 	// {
 	// 	id: "golang",
@@ -52,14 +58,14 @@ const LIBRARIES: Library[] = [
 		name: "Python",
 		icon: PythonIcon,
 		color: "#3776AB",
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/python"
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/python",
 	},
 	{
-		id: "dotnet",
+		id: "csharp",
 		name: ".NET",
 		icon: DotNetIcon,
 		color: "#512BD4",
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/dotnet"
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/dotnet",
 	},
 	// {
 	// 	id: "java",
@@ -87,19 +93,34 @@ export function DocsGlobalIntroduction() {
 		<Article>
 			<div>
 				<p>
-					SurrealDB offers a rich set of client libraries and connection protocols to make it easy to integrate SurrealDB into your application. This page provides documentation for using these libraries and protocols within the context of your database and schema. You can change the language of the code examples by selecting a different language from the dropdown in the top right corner of this panel.
+					SurrealDB offers a rich set of client libraries and
+					connection protocols to make it easy to integrate SurrealDB
+					into your application. This page provides documentation for
+					using these libraries and protocols within the context of
+					your database and schema. You can change the language of the
+					code examples by selecting a different language from the
+					dropdown in the top right corner of this panel.
 				</p>
 				<Title order={2} mt="xl">
 					Client libraries
 				</Title>
 				<p>
-					Client libraries provide the most streamlined way to interact with SurrealDB. They handle the low-level details of the connection and provide a high-level API for interacting with the database. We provide client libraries for a variety of languages, including Rust, JavaScript, Python, and many more.
+					Client libraries provide the most streamlined way to
+					interact with SurrealDB. They handle the low-level details
+					of the connection and provide a high-level API for
+					interacting with the database. We provide client libraries
+					for a variety of languages, including Rust, JavaScript,
+					Python, and many more.
 				</p>
 				<Title order={2} mt="xl">
 					Using the CLI
 				</Title>
 				<p>
-					When working outside of a programming environment, the SurrealDB CLI provides a convenient way to interact with your database. It provides a simple command-line interface for executing queries, which is especially useful for limited environments.
+					When working outside of a programming environment, the
+					SurrealDB CLI provides a convenient way to interact with
+					your database. It provides a simple command-line interface
+					for executing queries, which is especially useful for
+					limited environments.
 				</p>
 				{active && (
 					<>
@@ -107,7 +128,8 @@ export function DocsGlobalIntroduction() {
 							Learn more
 						</Title>
 						<p>
-							You can learn more about the selected language by visiting the official documentation.
+							You can learn more about the selected language by
+							visiting the official documentation.
 						</p>
 						<Button
 							variant="gradient"
@@ -132,16 +154,16 @@ export function DocsGlobalIntroduction() {
 				>
 					Select a preview language
 				</Text>
-				<Paper
-					radius="xl"
-				>
-					<SimpleGrid cols={{
-						xs: 1,
-						sm: 2,
-						md: 3,
-						lg: 4,
-						xl: 6
-					}}>
+				<Paper radius="xl">
+					<SimpleGrid
+						cols={{
+							xs: 1,
+							sm: 2,
+							md: 3,
+							lg: 4,
+							xl: 6,
+						}}
+					>
 						{LIBRARIES.map((lib) => {
 							const Icon = lib.icon;
 							const isActive = language === lib.id;
@@ -151,13 +173,14 @@ export function DocsGlobalIntroduction() {
 									key={lib.name}
 									radius="xl"
 									bg="slate.9"
-									className={clsx(classes.library, isActive && classes.libraryActive)}
+									className={clsx(
+										classes.library,
+										isActive && classes.libraryActive
+									)}
 									onClick={() => setLanguage(lib.id)}
 								>
 									<Icon active={isActive} />
-									<Text mt="xs">
-										{lib.name}
-									</Text>
+									<Text mt="xs">{lib.name}</Text>
 								</Paper>
 							);
 						})}

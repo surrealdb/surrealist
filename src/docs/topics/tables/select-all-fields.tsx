@@ -9,40 +9,52 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 	const table = getTable(topic);
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		SELECT * FROM ${table.schema.name}
 		`,
-		js: `
+			js: `
 		db.select('${table.schema.name}');
 		`,
-		rust: `
+			rust: `
 		let people: Vec<Person> = db.select("${table.schema.name}").await?;
 		`,
-		py: `
+			py: `
 		db.select('${table.schema.name}');
 		`,
-		go: `
+			go: `
 		db.Select('${table.schema.name}');
 		`,
-		dotnet: `
+			csharp: `
 		db.Select('${table.schema.name}');
 		`,
-		java:`
+			java: `
 		driver.select("thing", rowType)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
-		<Article title={<TableTitle title="Selecting all fields" table={table.schema.name} />}>
+		<Article
+			title={
+				<TableTitle
+					title="Selecting all fields"
+					table={table.schema.name}
+				/>
+			}
+		>
 			<div>
 				<p>
-					Selecting all fields in a table is a common operation when you want to retrieve all the fields in a table. This operation is useful when you want to retrieve all the fields in a table without specifying the fields explicitly.
+					Selecting all fields in a table is a common operation when
+					you want to retrieve all the fields in a table. This
+					operation is useful when you want to retrieve all the fields
+					in a table without specifying the fields explicitly.
 				</p>
 			</div>
 			<Box>

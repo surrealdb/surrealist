@@ -28,7 +28,7 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 			go: `
 		db.Use(database:${esc_database})
 		`,
-			dotnet: `
+			csharp: `
 		await db.Use(${esc_namespace}, ${esc_database});
 		`,
 			java: `

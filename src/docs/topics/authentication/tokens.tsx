@@ -5,20 +5,20 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
 
 export function DocsAuthTokens({ language, topic }: TopicProps) {
-
 	const schema = useSchema();
 
-	const snippets = useMemo<Snippets>(() => ({
-		js: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			js: `
 			await db.authenticate("...");
 		`,
-		rust: `
+			rust: `
 			use surrealdb::opt::auth::Jwt;
 
 			let jwt = Jwt::from("...");
 			db.authenticate(jwt).await?;
 		`,
-		py: `
+			py: `
 		# Connect to a local endpoint
 		db = Surreal()
 		await db.connect('http://127.0.0.1:8000/rpc')
@@ -26,35 +26,38 @@ export function DocsAuthTokens({ language, topic }: TopicProps) {
 		db = Surreal()
 		await db.connect('https://cloud.surrealdb.com/rpc')
 		`,
-		go: `
+			go: `
 		db.Authenticate("jwt")
 		`,
-		dotnet: `
+			csharp: `
 		// Sign in or sign up as a scoped user
 		Jwt jwt = await db.SignUp(authParams);
 
 		await db.Authenticate(jwt);
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		driver.authenticate(token)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Tokens">
 			<div>
 				<p>
-					When signin in or up to SurrealDB, you receive a JWT token. This JWT, for the time it lives, can be used to authenticate future sessions to SurrealDB. As an integrator, you are expected yourself to persist this token, if you need to retrieve it at a later moment in time.
+					When signin in or up to SurrealDB, you receive a JWT token.
+					This JWT, for the time it lives, can be used to authenticate
+					future sessions to SurrealDB. As an integrator, you are
+					expected yourself to persist this token, if you need to
+					retrieve it at a later moment in time.
 				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
-				</p>
+				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

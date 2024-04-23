@@ -110,7 +110,7 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 			"pass": "root",
 		})
 		`,
-			dotnet: `
+			csharp: `
 		// Sign in as root user
 		await db.SignIn(
 			new RootAuth

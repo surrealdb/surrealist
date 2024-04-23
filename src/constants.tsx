@@ -3,12 +3,33 @@ import explorerIcon from "~/assets/animation/explorer.json";
 import designerIcon from "~/assets/animation/designer.json";
 import authIcon from "~/assets/animation/auth.json";
 
-import { AuthMode, CodeLang, DataSet, ValueMode, Protocol, ResultMode, Selectable, ViewInfo, ViewMode } from "./types";
-import { iconAPI, iconAuth, iconCombined, iconDataTable, iconDesigner, iconExplorer, iconFunction, iconLive, iconModel, iconQuery } from "./util/icons";
+import {
+	AuthMode,
+	CodeLang,
+	DataSet,
+	ValueMode,
+	Protocol,
+	ResultMode,
+	Selectable,
+	ViewInfo,
+	ViewMode,
+} from "./types";
+import {
+	iconAPI,
+	iconAuth,
+	iconCombined,
+	iconDataTable,
+	iconDesigner,
+	iconExplorer,
+	iconFunction,
+	iconLive,
+	iconModel,
+	iconQuery,
+} from "./util/icons";
 import { getConnection } from "./util/connection";
 
 export type StructureTab = "graph" | "builder";
-export type ExportType = typeof EXPORT_TYPES[number];
+export type ExportType = (typeof EXPORT_TYPES)[number];
 
 export interface ListingItem {
 	label: string;
@@ -22,10 +43,10 @@ export const MAX_LIVE_MESSAGES = 50;
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
 export const DATASETS: Record<string, DataSet> = {
-	'surreal-deal': {
+	"surreal-deal": {
 		name: "Surreal Deal",
-		url: "https://datasets.surrealdb.com/surreal-deal-mini-v2.surql"
-	}
+		url: "https://datasets.surrealdb.com/surreal-deal-mini-v2.surql",
+	},
 };
 
 export const THEMES = [
@@ -65,7 +86,7 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: "JavaScript", value: "js" },
 	// { label: "Go", value: "go" },
 	{ label: "Python", value: "py" },
-	{ label: ".NET", value: "dotnet" },
+	{ label: ".NET", value: "csharp" },
 	// { label: "Java", value: "java" },
 	// { label: "PHP", value: "php" }
 ];
@@ -117,7 +138,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		desc: "Upload and manage machine learning models",
 		disabled: (flags) => {
 			if (!flags.models_view) return true;
-			if (flags.models_view === 'force') return false;
+			if (flags.models_view === "force") return false;
 
 			const protocol = getConnection()?.connection?.protocol;
 			return !protocol || !ML_SUPPORTED.has(protocol);
@@ -129,7 +150,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconAPI,
 		desc: "View the database schema and documentation",
 		disabled: (flags) => !flags.apidocs_view,
-	}
+	},
 };
 
 export const EXPORT_TYPES = [
@@ -138,7 +159,7 @@ export const EXPORT_TYPES = [
 	"analyzers",
 	"functions",
 	"params",
-	"scopes"
+	"scopes",
 ] as const;
 
 export const SURREAL_KINDS = [

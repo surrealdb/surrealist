@@ -7,44 +7,59 @@ import { getTable } from "~/docs/helpers";
 
 export function DocsTablesSelect({ language, topic }: TopicProps) {
 	const table = getTable(topic);
-	const fieldName = table.fields.find(({ name }: { name: string }) => !['id', 'in', 'out'].includes(name))?.name ?? 'table:id';
+	const fieldName =
+		table.fields.find(
+			({ name }: { name: string }) => !["id", "in", "out"].includes(name)
+		)?.name ?? "table:id";
 
 	const { connection } = useActiveConnection();
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		SELECT ${fieldName} FROM ${topic.extra?.table?.schema?.name}
 		`,
-		js: `
+			js: `
 		// Select a specific record from a table
 		const [person] = await db.select('${fieldName}');
 		`,
-		rust: `
+			rust: `
 
 		`,
-		py: `
+			py: `
 		db.select('${fieldName}')
 		`,
-		go: `
+			go: `
 
 		`,
-		dotnet: `
+			csharp: `
 		db.Select('${fieldName}')
 		`,
-		java:`
+			java: `
 		driver.select("${fieldName}", rowType)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
-		<Article title={<TableTitle title="Selecting individual fields" table={table.schema.name} />}>
+		<Article
+			title={
+				<TableTitle
+					title="Selecting individual fields"
+					table={table.schema.name}
+				/>
+			}
+		>
 			<div>
 				<p>
-					Selecting fields operation is useful when you want to retrieve specific fields in a table without retrieving all the fields. To do this, you need to know the field name in the table you want to retrieve.
+					Selecting fields operation is useful when you want to
+					retrieve specific fields in a table without retrieving all
+					the fields. To do this, you need to know the field name in
+					the table you want to retrieve.
 				</p>
 			</div>
 			<Box>

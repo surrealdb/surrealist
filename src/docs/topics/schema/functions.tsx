@@ -6,12 +6,12 @@ import { useSchema } from "~/hooks/schema";
 import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsSchemaFunctions({ language, topic }: TopicProps) {
-
 	const schema = useSchema();
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		-- It is necessary to prefix the name of your function with "fn::"
 		-- This indicates that it's a custom function
 		DEFINE FUNCTION fn::greet($name: string) {
@@ -21,7 +21,7 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 		-- Returns: "Hello, BOB!"
 		RETURN fn::greet("BOB");
 		`,
-		js: `
+			js: `
 		import { Surreal } from 'surrealdb.js';
 
 		const db = new Surreal();
@@ -34,13 +34,13 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 		});
 
 		`,
-		rust: `
+			rust: `
 		//Connect to a local endpoint
 		DB.connect::<Ws>("127.0.0.1:8000").await?;
 		//Connect to a remote endpoint
 		DB.connect::<Wss>("cloud.surrealdb.com").await?;
 		`,
-		py: `
+			py: `
 		# Connect to a local endpoint
 		db = Surreal()
 		await db.connect('http://127.0.0.1:8000/rpc')
@@ -48,35 +48,39 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 		db = Surreal()
 		await db.connect('https://cloud.surrealdb.com/rpc')
 		`,
-		go: `
+			go: `
 		// Connect to a local endpoint
 		surrealdb.New("ws://localhost:8000/rpc");
 		// Connect to a remote endpoint
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
-		dotnet: `
+			csharp: `
 		await db.Connect();
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		SurrealWebSocketConnection.connect(timeout)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Functions">
 			<div>
 				<p>
-					Functions are a way to encapsulate logic in a database. To define functions you have to be a system user (namespace,database,root) They can be used to perform calculations, manipulate data, or perform other operations. In SurrealDB functions can be written just as you would in your programming language of choice.
+					Functions are a way to encapsulate logic in a database. To
+					define functions you have to be a system user
+					(namespace,database,root) They can be used to perform
+					calculations, manipulate data, or perform other operations.
+					In SurrealDB functions can be written just as you would in
+					your programming language of choice.
 				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
-				</p>
+				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

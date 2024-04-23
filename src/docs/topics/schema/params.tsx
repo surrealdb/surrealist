@@ -78,7 +78,7 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 		// Use the variable in a subsequent query
 		db.Query("SELECT * FROM person WHERE name.first = $name.first", nil);
 		`,
-			dotnet: `
+			csharp: `
 		// Assign the variable on the connection
 		await db.Set("name", new { FirstName = "Tobie", LastName = "Morgan Hitchcock" });
 

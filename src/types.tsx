@@ -1,16 +1,38 @@
 import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
 
-export type AuthMode = "none" | "root" | "namespace" | "database" | "token" | "scope" | "scope-signup";
+export type AuthMode =
+	| "none"
+	| "root"
+	| "namespace"
+	| "database"
+	| "token"
+	| "scope"
+	| "scope-signup";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
-export type ViewMode = "query" | "explorer" | "designer" | "authentication" | "functions" | "models" | "documentation";
+export type ViewMode =
+	| "query"
+	| "explorer"
+	| "designer"
+	| "authentication"
+	| "functions"
+	| "models"
+	| "documentation";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DiagramDirection = "ltr" | "rtl";
 export type ColorScheme = "light" | "dark";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
-export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "dotnet" | "java" | "php";
+export type CodeLang =
+	| "cli"
+	| "rust"
+	| "js"
+	| "go"
+	| "py"
+	| "csharp"
+	| "java"
+	| "php";
 export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
 export type ValueMode = "json" | "sql";
@@ -18,9 +40,10 @@ export type ValueMode = "json" | "sql";
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
-export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
+export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
+	Partial<T>;
 export type FeatureCondition = (flags: FeatureFlagMap) => boolean;
-export type Selectable<T extends string> = { label: string, value: T };
+export type Selectable<T extends string> = { label: string; value: T };
 
 export interface ConnectionOptions {
 	namespace: string;
@@ -183,7 +206,7 @@ export interface SchemaTable {
 	permissions: Permissions;
 	kind: Kind;
 	view?: string;
-	changefeed?: { expiry: string, store_original: boolean };
+	changefeed?: { expiry: string; store_original: boolean };
 }
 
 export interface SchemaField {
