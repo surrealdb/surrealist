@@ -150,9 +150,7 @@ export function Scaffold() {
 						</InPortal>
 					</>
 				) : (
-					<StartScreen
-						onClickSettings={settingsHandle.toggle}
-					/>
+					<StartScreen />
 				)}
 			</Flex>
 
