@@ -82,7 +82,7 @@ jobs:
                       id: 'macos-x86_64'
                       args: "--target x86_64-apple-darwin"
                     # TODO(tauri-2) ubuntu-22.04
-                    - platform: "ubuntu-20.04"
+                    - platform: "ubuntu-22.04"
                       id: 'linux'
                       args: ""
                     - platform: "windows-latest"
