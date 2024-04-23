@@ -212,7 +212,7 @@ export function EditorPanel({
 											value={kind}
 											placeholder="type"
 											onChange={value => onChange((draft) => {
-												draft.args[index][1] = value;
+												draft.args[index][1] = value.toLowerCase();
 											})}
 											styles={{
 												input: {
