@@ -33,7 +33,6 @@ export function FunctionsView() {
 		},
 		onSave: async () => {
 			const query = buildFunctionDefinition(details!);
-			console.log('query', query);
 
 			await executeQuery(query).catch(console.error);
 			await syncDatabaseSchema();

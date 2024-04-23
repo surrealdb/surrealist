@@ -97,8 +97,6 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 			})),
 		};
 
-		console.log(definition.schema.changefeed);
-
 		if (!isLimited || index === -1) {
 			schema.tables.push(definition);
 		} else {
