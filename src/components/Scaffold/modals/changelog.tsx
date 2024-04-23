@@ -21,7 +21,7 @@ export function ChangelogModal() {
 				withCloseButton
 				size="xl"
 				title={
-					<ModalTitle>Surrealist Changelogs</ModalTitle>
+					<ModalTitle>Release changelogs</ModalTitle>
 				}
 			>
 				<Stack>

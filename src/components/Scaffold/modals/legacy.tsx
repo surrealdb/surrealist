@@ -1,4 +1,4 @@
-import logoUrl from "~/assets/images/logo-tile.png";
+import logoUrl from "~/assets/images/logo.png";
 import { Anchor, Button, Group, Image, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect } from "react";
@@ -47,9 +47,6 @@ export function LegacyModal() {
 				/>
 				<Stack gap={6} align="start">
 					<SurrealistLogo c="bright" h={20} />
-					<Text>
-						Level up your SurrealDB experience
-					</Text>
 				</Stack>
 			</Group>
 

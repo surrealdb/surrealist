@@ -17,7 +17,7 @@ import { useIntent } from "~/hooks/url";
 import { HoverIcon } from "~/components/HoverIcon";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 
-const VARIABLE_PATTERN = /(?<!let\s)\$\w+/gi;
+const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
 	'auth',
 	'token',

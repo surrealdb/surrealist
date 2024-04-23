@@ -1,4 +1,4 @@
-import { ConnectionOptions, ResultMode, SurrealistConfig } from "~/types";
+import { Connection, ConnectionOptions, ResultMode, SurrealistConfig, TabQuery } from "~/types";
 import { createBaseConfig, createBaseConnection, createBaseConnectionOptions } from "./defaults";
 import { newId } from "./helpers";
 
@@ -32,6 +32,7 @@ interface LegacyEnvironment {
 interface LegacySession {
 	id: string;
 	name: string;
+	activeQueryId: number;
 	queries: LegacySessionQuery[];
 	connection: LegacyConnectionOptions;
 	pinnedTables: string[];
@@ -78,7 +79,7 @@ function migrateConnectionOptions(legacy: LegacyConnectionOptions): ConnectionOp
 		authMode: legacy.authMode,
 		namespace: legacy.namespace,
 		database: legacy.database,
-		hostname: legacy.endpoint.replace(/(ws|wss|http|https):\/\//, ""),
+		hostname: legacy.endpoint.replace(/(ws|wss|http|https):\/\//, "") || "localhost:8000",
 		username: legacy.username,
 		password: legacy.password,
 		protocol: legacy.endpoint.startsWith("ws") ? "ws" : "http",
@@ -96,23 +97,41 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 
 	if (legacy.tabs) {
 		for (const tab of legacy.tabs) {
-			config.connections.push({
+			const queries: TabQuery[] = [];
+			const idIndex = new Map<number, string>();
+
+			for (const query of tab.queries) {
+				const id = newId();
+
+				idIndex.set(query.id, id);
+
+				queries.push({
+					id,
+					query: query.text,
+					name: query.name || 'Untitled query',
+					variables: "{}",
+					valid: true,
+					resultMode: config.settings.appearance.defaultResultMode
+				});
+			}
+
+			const connection: Connection = {
 				...createBaseConnection(config.settings),
 				id: tab.id,
 				name: tab.name,
 				connection: migrateConnectionOptions(tab.connection),
 				pinnedTables: tab.pinnedTables,
 				diagramMode: tab.designerNodeMode || 'fields',
-				queries: tab.queries.map((q) => ({
-					id: newId(),
-					query: q.text,
-					name: q.name || 'Untitled query',
-					variables: "{}",
-					response: [],
-					valid: true,
-					resultMode: config.settings.appearance.defaultResultMode
-				}))
-			});
+				queries,
+			};
+
+			const activeQuery = idIndex.get(tab.activeQueryId);
+
+			if (activeQuery) {
+				connection.activeQuery = activeQuery;
+			}
+
+			config.connections.push(connection);
 		}
 	}
 

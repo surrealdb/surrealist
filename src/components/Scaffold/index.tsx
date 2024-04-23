@@ -22,7 +22,7 @@ import { Settings } from "./settings";
 import { useIsLight } from "~/hooks/theme";
 import { themeColor } from "~/util/mantine";
 import { adapter } from "~/adapter";
-import { FreshExperience } from "./fresh";
+import { StartScreen } from "./start";
 import { TableCreator } from "./modals/table";
 import { DownloadModal } from "./modals/download";
 import { ScopeSignup } from "./modals/signup";
@@ -85,7 +85,9 @@ export function Scaffold() {
 		<div
 			className={classes.root}
 			style={{
-				backgroundColor: isLight ? themeColor("slate.0") : themeColor("slate.9")
+				backgroundColor: isLight
+					? (activeConnection ? themeColor("slate.0") : "white")
+					: (activeConnection ? themeColor("slate.9") : "black")
 			}}
 		>
 			{!adapter.hasTitlebar && (
@@ -102,16 +104,16 @@ export function Scaffold() {
 				flex={1}
 				pos="relative"
 			>
-				<Sidebar
-					onToggleSettings={settingsHandle.toggle}
-					onTogglePalette={paletteHandle.toggle}
-					onToggleDownload={downloadHandle.toggle}
-				/>
-
-				<Toolbar />
-
 				{activeConnection ? (
 					<>
+						<Sidebar
+							onToggleSettings={settingsHandle.toggle}
+							onTogglePalette={paletteHandle.toggle}
+							onToggleDownload={downloadHandle.toggle}
+						/>
+
+						<Toolbar />
+
 						<Box p="sm" className={classes.wrapper}>
 							<Box w={49} />
 							<Box className={classes.content}>
@@ -148,7 +150,7 @@ export function Scaffold() {
 						</InPortal>
 					</>
 				) : (
-					<FreshExperience
+					<StartScreen
 						onClickSettings={settingsHandle.toggle}
 					/>
 				)}

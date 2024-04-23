@@ -59,7 +59,7 @@
 	transform: none !important;
 }
 
-.fresh {
+.start {
 	overflow: hidden;
 	overflow: clip;
 	z-index: 0;
@@ -74,11 +74,13 @@
 	aspect-ratio: 1;
 	background-size: contain;
 	background-repeat: no-repeat;
+	transform: scale(1.4);
 	position: fixed;
 	z-index: -1;
 }
 
 .primary-sphere {
+	transform-origin: top center;
 	width: 100vw;
 	top: 0;
 	left: 0;
@@ -91,7 +93,32 @@
 	left: 0;
 	right: 0;
 	margin-inline: auto;
-	background-position: bottom;	
+	background-position: bottom;
+	transform-origin: bottom center;
+}
+
+.start-box {
+	box-shadow: 7px 7px 25px rgba(14, 14, 14, 0.3);
+	background-color: var(--mantine-color-slate-9);
+	border-radius: var(--mantine-radius-xl);
+	transition: background-color 0.25s ease-in-out;
+	overflow: hidden;
+	cursor: pointer;
+	
+	> div {
+		background-size: cover;
+		width: 100%;
+		height: 100%;
+		transition: transform .25s ease-in-out;
+
+		&:hover {
+			transform: scale(1.05);
+		}
+	}
+
+	&:hover {
+		background-color: var(--mantine-color-slate-8);
+	}
 }
 
 .logo {
