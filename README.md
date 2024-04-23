@@ -63,37 +63,23 @@ Use the Query View to execute queries against your database. You can define vari
 
 Additionally, queries can be saved and organized in your Saved queries, while you can view a list of recent queries in the History drawer.
 
-![Query View](.github/images/views/query.png)
-
 ### Explorer view
 The Explorer View is used to browse your database and inspect individual records. When you select a table in the left panel, the table contents will be displayed in the Record Explorer. You can click on a record id to open the record inspector, in which you can edit the record contents and traverse graph relationships.
-
-![Explorer View](.github/images/views/explorer.png)
 
 ### Designer view
 The Designer View is a powerful tool you can use to define and manage your database schemas. You can create tables & edges, modify the database schema, and visualize the database tables in a graph view.
 
-![Designer View](.github/images/views/designer.png)
-
 ### Authentication view
 Use the Authentication View to manage access to the database by creating namespace logins, database logins, or scopes.
-
-![Authentication View](.github/images/views/authentication.png)
 
 ### Functions view
 Create and manage your schema level functions using the Functions view. Easily write your functions using the builtin SurrealQL editor, define their input parameters, and configure access permissions.
 
-![Functions View](.github/images/views/functions.png)
-
 ### Models view
 Use the Models View to upload SurML files to the database and list out available machine learning models.
 
-![Models View](.github/images/views/models.png)
-
 ### API Docs view
 The API Docs help you develop against your SurrealDB database faster by providing personalized API documentation in many available languages.
-
-![API Docs View](.github/images/views/api-docs.png)
 
 ### Local database serving
 Using the desktop app you can effortlessly start a local SurrealDB database directly from the interface, while following logging output from the console drawer.
