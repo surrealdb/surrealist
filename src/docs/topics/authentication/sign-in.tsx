@@ -6,22 +6,20 @@ import { useActiveConnection } from "~/hooks/connection";
 import { connectionUri } from "~/util/helpers";
 
 export function DocsAuthSignIn({ language, topic }: TopicProps) {
-
 	const { connection } = useActiveConnection();
 	const endpoint = connectionUri(connection);
-	const esc_namespace = JSON.stringify(connection.namespace);
-	const esc_database = JSON.stringify(connection.database);
 
 	const descriptions = {
 		cli: `With the SurrealDB CLI, you can only signin via system(Root, Namespace and Database) users. This example shows a command on how to signin with the username and password left blank.`,
 		_: `With SurrealDB's SDKs, you can signin both system (Root, Namespace and Database) users and scope users. The example shows how to sigin a new user based on the credentials required for access.`,
 	};
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 			surreal sql  -e ${endpoint} --ns ${connection.namespace} --db ${connection.database} --user ... --pass ...
 		`,
-		js: `
+			js: `
 		// Authenticate with a root user
 		await db.signin({
 			username: 'root',
@@ -54,7 +52,7 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 			pass: '123456',
 		});
 		`,
-		rust: `
+			rust: `
 		// Sign in a Root user
 		db.signin(Root {
 			params: Credentials {
@@ -93,7 +91,7 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 			},
 		}).await?;
 		`,
-		py: `
+			py: `
 		token = await db.signin({
 			'user': 'root',
 			'pass': 'root',
@@ -106,19 +104,21 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 			'scope': 'user',
 		})
 		`,
-		go: `
+			go: `
 		db.Signin(map[string]string{
 			"user": "root",
 			"pass": "root",
 		})
 		`,
-		dotnet: `
+			dotnet: `
 		// Sign in as root user
-		await db.SignIn(new RootAuth
+		await db.SignIn(
+			new RootAuth
 			{
 				Username = "root",
 				Password = "root"
-			});
+			}
+		);
 
 		// Sign in using namespace auth
 		await db.SignIn(
@@ -141,7 +141,7 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 			}
 		);
 
-		// Sign in as a scoped used
+		// Sign in as a scoped user
 		var authParams = new AuthParams
 		{
 			Namespace = "test",
@@ -160,26 +160,26 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 			public string? Password { get; set; }
 		}
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		driver.signIn(user, pass)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Sign In">
 			<div>
 				<p>
-					{descriptions[language as keyof typeof descriptions] ?? descriptions._}
+					{descriptions[language as keyof typeof descriptions] ??
+						descriptions._}
 				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
-				</p>
+				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

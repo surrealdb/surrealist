@@ -5,50 +5,51 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsTablesIntroduction({ language, topic }: TopicProps) {
-
 	const { connection } = useActiveConnection();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 		
 		-- Create schemafull user table.
 		DEFINE TABLE table_name SCHEMAFULL;
 		`,
-		js: `
+			js: `
 		db.create('table_name');
 		`,
-		rust: `
+			rust: `
 		db.create("table_name").await?;
 		`,
-		py: `
+			py: `
 		db.create('table_name')
 		`,
-		go: `
+			go: `
 		db.Create("table_name", map[string]interface{}{})
 		`,
-		dotnet: `
-		db.Create<TableName>("table_name");
+			dotnet: `
+		await db.Create<TableName>("table_name");
 		`,
-		java:`
+			java: `
 		// Connect to a local endpoint
 		SurrealWebSocketConnection.connect(timeout)
 		`,
-		php: `
+			php: `
 		// Connect to a local endpoint
 		$db = new SurrealDB();
 		`,
-
-	}), []);
+		}),
+		[]
+	);
 
 	return (
 		<Article title="Tables">
 			<div>
 				<p>
-					All the tables available in your database are listed in this section. You can view the schema of each table, the columns, and the data types of each column.
+					All the tables available in your database are listed in this
+					section. You can view the schema of each table, the columns,
+					and the data types of each column.
 				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
-				</p>
+				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview
