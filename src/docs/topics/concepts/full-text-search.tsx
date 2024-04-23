@@ -101,7 +101,6 @@ export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 						Reference guide
 					</a>
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

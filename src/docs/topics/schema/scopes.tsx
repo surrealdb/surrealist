@@ -90,7 +90,7 @@ export function DocsSchemaScopes({ language, topic }: TopicProps) {
 					within a scope, you must first sign in with the appropriate
 					credentials. In SDKs you can run qu
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

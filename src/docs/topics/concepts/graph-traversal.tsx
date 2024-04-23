@@ -64,7 +64,7 @@ export function DocsConceptsGraphTraversal({ language, topic }: TopicProps) {
 		<Article title="Graph Traversal">
 			<div>
 				<p>Signing up a new user</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

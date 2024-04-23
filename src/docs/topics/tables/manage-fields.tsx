@@ -43,7 +43,7 @@ export function DocsTablesManageFields({ language, topic }: TopicProps) {
 		// Connect to a local endpoint
 		surrealdb.New("ws://localhost:8000/rpc");
 		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc"); 
+		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
 		await db.Connect();
@@ -64,7 +64,7 @@ export function DocsTablesManageFields({ language, topic }: TopicProps) {
 		<Article title="Manage Fields">
 			<div>
 				<p>Signing up a new user</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

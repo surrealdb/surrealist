@@ -62,7 +62,7 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 					DEFINE FUNCTION fn::greet($name: string) {
 						RETURN "Hello, " + $name + "!";
 					}
-					
+
 					-- Returns: "Hello, BOB!"
 					RETURN fn::greet("BOB");
 				"""
@@ -91,7 +91,7 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 					In SurrealDB functions can be written just as you would in
 					your programming language of choice.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

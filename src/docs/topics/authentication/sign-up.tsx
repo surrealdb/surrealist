@@ -100,7 +100,6 @@ export function DocsAuthSignUp({ language, topic }: TopicProps) {
 					need to be passed in an SDK or Web Request, email and pass
 					in this case. The scope is called user for this example.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

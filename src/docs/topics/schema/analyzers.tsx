@@ -79,7 +79,7 @@ export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 						Full Text Search for more information.
 					</a>
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

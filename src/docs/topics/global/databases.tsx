@@ -52,7 +52,6 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 					store and retrieve data.You can specify which database to
 					use and also switch between multiple databases.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

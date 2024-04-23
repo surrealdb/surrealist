@@ -31,7 +31,6 @@ export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 					authenticated with a scope. This information includes the
 					user's name, email, and other details.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

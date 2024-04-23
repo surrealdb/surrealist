@@ -57,7 +57,6 @@ export function DocsAuthTokens({ language, topic }: TopicProps) {
 					expected yourself to persist this token, if you need to
 					retrieve it at a later moment in time.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

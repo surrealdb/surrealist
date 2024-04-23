@@ -52,7 +52,6 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 					roles, tokens, and databases that are available to the
 					namespace.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

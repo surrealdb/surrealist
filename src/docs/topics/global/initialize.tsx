@@ -55,7 +55,7 @@ export function DocsGlobalInit({ language, topic }: TopicProps) {
 			csharp: `
 			// Connect to a local endpoint
 		var db = new SurrealDbClient("http://127.0.0.1:8000");
-		
+
 		// Connect to a remote endpoint
 		var db = new SurrealDbClient("wss://cloud.surrealdb.com/rpc");
 		`,
@@ -82,7 +82,6 @@ export function DocsGlobalInit({ language, topic }: TopicProps) {
 					create a new instance of the class. Then, use the connect
 					method to connect to the database.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

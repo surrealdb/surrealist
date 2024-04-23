@@ -10,7 +10,7 @@ export function DocsTablesIntroduction({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		
+
 		-- Create schemafull user table.
 		DEFINE TABLE table_name SCHEMAFULL;
 		`,
@@ -49,7 +49,7 @@ export function DocsTablesIntroduction({ language, topic }: TopicProps) {
 					section. You can view the schema of each table, the columns,
 					and the data types of each column.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

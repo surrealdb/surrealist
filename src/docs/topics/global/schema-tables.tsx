@@ -169,7 +169,6 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 					can create, read, update, and delete data from tables. You
 					can also create indexes on tables to speed up queries.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

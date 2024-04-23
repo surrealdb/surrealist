@@ -68,7 +68,7 @@ export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
 					in securing your data. SurrealDB provides a simple way to
 					enable authentication for your database.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

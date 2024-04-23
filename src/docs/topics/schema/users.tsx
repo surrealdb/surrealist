@@ -12,7 +12,7 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		
+
 		-- Create a root user
 		DEFINE USER username ON ROOT PASSWORD '123456' ROLES OWNER;
 		`,
@@ -78,7 +78,7 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 					and assign them to Users with scopes you can manage
 					authentication and access control for your table and fields.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

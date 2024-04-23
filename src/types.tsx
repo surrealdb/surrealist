@@ -41,7 +41,7 @@ export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
-	Partial<T>;
+Partial<T>;
 export type FeatureCondition = (flags: FeatureFlagMap) => boolean;
 export type Selectable<T extends string> = { label: string; value: T };
 

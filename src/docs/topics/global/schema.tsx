@@ -72,7 +72,7 @@ export function DocsGlobalSchema({ language, topic }: TopicProps) {
 					stored in the database and the relationships between the
 					different tables in the database.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

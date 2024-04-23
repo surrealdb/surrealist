@@ -108,7 +108,7 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 					values that are used in multiple queries, or to store values
 					that are used in other parts of your application.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
+
 			</div>
 			<Box>
 				<DocsPreview

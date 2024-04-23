@@ -1,7 +1,5 @@
-import { Box } from "@mantine/core";
-import { useMemo } from "react";
-import { Article, DocsPreview } from "~/docs/components";
-import { Snippets, TopicProps } from "~/docs/types";
+import { Article } from "~/docs/components";
+import { TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
 
 export function DocsConceptsSurrealML({ language, topic }: TopicProps) {

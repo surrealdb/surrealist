@@ -67,7 +67,6 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 					namespace and database to connect to, as well as the
 					authentication details for the connection.
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview
