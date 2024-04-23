@@ -239,7 +239,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		const liveIndexes = getLiveQueries(queryStr);
 
-		if (!LQ_SUPPORTED.has(connection.connection.protocol)) {
+		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.connection.protocol)) {
 			showError({
 				title: "Live queries unsupported",
 				subtitle: "Unfortunately live queries are not supported in the active connection protocol"
