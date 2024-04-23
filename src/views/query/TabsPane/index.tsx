@@ -170,7 +170,6 @@ export function TabsPane(props: TabsPaneProps) {
 						</Sortable>
 					</Stack>
 				</ScrollArea>
-				<Spacer />
 				<Divider my="xs" />
 				<Entry
 					leftSection={<Icon path={iconStar} />}
