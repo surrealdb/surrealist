@@ -38,11 +38,8 @@ export function EditorPanel({
 	const fullName = `fn::${details.name}()`;
 
 	const addArgument = useStable(() => {
-		onChange((draft: any) => {
-			draft.arguments.push({
-				name: '',
-				kind: '',
-			});
+		onChange((draft) => {
+			draft.args.push(["", ""]);
 		});
 	});
 
@@ -196,8 +193,8 @@ export function EditorPanel({
 											value={name}
 											leftSection="$"
 											placeholder="name"
-											onChange={e => onChange((draft: any) => {
-												draft.arguments[index][0] = e.target.value;
+											onChange={e => onChange((draft) => {
+												draft.args[index][0] = e.target.value;
 											})}
 											styles={{
 												input: {
@@ -214,8 +211,8 @@ export function EditorPanel({
 											variant="unstyled"
 											value={kind}
 											placeholder="type"
-											onChange={value => onChange((draft: any) => {
-												draft.arguments[index][1] = value;
+											onChange={value => onChange((draft) => {
+												draft.args[index][1] = value;
 											})}
 											styles={{
 												input: {
@@ -227,8 +224,8 @@ export function EditorPanel({
 										/>
 										<ActionIcon
 											variant="subtle"
-											onClick={() => onChange((draft: any) => {
-												draft.arguments.splice(index, 1);
+											onClick={() => onChange((draft) => {
+												draft.args.splice(index, 1);
 											})}
 										>
 											<Icon path={iconDelete} />

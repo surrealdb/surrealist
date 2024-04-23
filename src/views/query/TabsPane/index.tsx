@@ -1,4 +1,5 @@
 import classes from "./style.module.scss";
+import clsx from "clsx";
 import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import { EditableText } from "~/components/EditableText";
 import { Icon } from "~/components/Icon";
@@ -14,8 +15,6 @@ import { Entry } from "~/components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
 import { Sortable } from "~/components/Sortable";
-import clsx from "clsx";
-import { Spacer } from "~/components/Spacer";
 import { useIntent } from "~/hooks/url";
 import { cancelLiveQueries } from "~/connection";
 
