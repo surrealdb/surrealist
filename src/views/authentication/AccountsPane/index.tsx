@@ -275,9 +275,8 @@ export function AccountsPane(props: AccountsPaneProps) {
 						<Spacer />
 						{currentUser && (
 							<Button
-								color="red"
+								color="pink.9"
 								onClick={removeUser}
-								variant="light"
 							>
 								Remove
 							</Button>

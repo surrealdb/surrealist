@@ -176,19 +176,19 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 						</Tooltip>
 					)}
 
-					<Tooltip label="Refetch from database">
-						<ActionIcon onClick={refreshRecord}>
-							<Icon path={iconRefresh} />
-						</ActionIcon>
-					</Tooltip>
-
 					<Tooltip label="Delete record">
 						<ActionIcon
 							disabled={!currentRecord.exists}
 							onClick={deleteRecord}
-							color="red"
+							color="pink.7"
 						>
 							<Icon path={iconDelete} />
+						</ActionIcon>
+					</Tooltip>
+
+					<Tooltip label="Refetch from database">
+						<ActionIcon onClick={refreshRecord}>
+							<Icon path={iconRefresh} />
 						</ActionIcon>
 					</Tooltip>
 

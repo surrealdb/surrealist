@@ -165,7 +165,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 										{
 											key: 'remove',
 											title: "Remove table",
-											color: "red",
+											color: "pink.7",
 											icon: <Icon path={iconDelete} />,
 											onClick: () => removeTable(table.schema.name)
 										}

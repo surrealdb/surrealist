@@ -142,9 +142,8 @@ export function TemplatesTab() {
 						<Spacer />
 						{details.id && (
 							<Button
-								color="red"
+								color="pink.9"
 								onClick={deleteConnection}
-								variant="light"
 								leftSection={<Icon path={iconDelete} />}
 							>
 								Remove

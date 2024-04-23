@@ -90,13 +90,13 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 						Unsaved changes
 					</Badge>
 				) : (
-					<Badge color="red" variant="light">
+					<Badge color="pink.7" variant="light">
 						Missing required fields
 					</Badge>
 				))}
 
 				<Tooltip label="Remove table">
-					<ActionIcon onClick={removeTable} color="red">
+					<ActionIcon onClick={removeTable} color="pink.7">
 						<Icon path={iconDelete} />
 					</ActionIcon>
 				</Tooltip>

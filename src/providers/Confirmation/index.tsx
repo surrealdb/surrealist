@@ -85,7 +85,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					</Button>
 					<Spacer />
 					<Button
-						color="red"
+						color="pink.9"
 						onClick={onConfirm}
 					>
 						{options?.confirmText ?? DEFAULT_CONFIRM}

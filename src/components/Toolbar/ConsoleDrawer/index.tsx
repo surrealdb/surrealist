@@ -81,7 +81,7 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 				) : (
 					<Badge
 						variant="dot"
-						color="red"
+						color="pink.9"
 					>
 						Offline
 					</Badge>

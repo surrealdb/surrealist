@@ -194,7 +194,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			{
 				key: "delete",
 				title: "Delete record",
-				color: "red",
+				color: "pink.7",
 				icon: <Icon path={iconDelete} />,
 				onClick: async () => {
 					if (!record.id) return;
@@ -258,7 +258,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 							styles={() => ({
 								input: {
 									fontFamily: "JetBrains Mono",
-									borderColor: (isFilterValid ? undefined : themeColor("red")) + " !important",
+									borderColor: (isFilterValid ? undefined : themeColor("pink.9")) + " !important",
 								},
 							})}
 						/>

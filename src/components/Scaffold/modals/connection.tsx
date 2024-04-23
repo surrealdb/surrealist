@@ -217,9 +217,8 @@ export function ConnectionEditor() {
 					<Spacer />
 					{!isCreating && (
 						<Button
-							color="red"
+							color="pink.9"
 							onClick={deleteConnection}
-							variant="light"
 							leftSection={<Icon path={iconDelete} />}
 						>
 							Remove

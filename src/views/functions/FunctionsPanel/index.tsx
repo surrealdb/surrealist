@@ -111,7 +111,7 @@ export function FunctionsPanel({
 								{
 									key: 'remove',
 									title: "Remove function",
-									color: "red",
+									color: "pink.7",
 									icon: <Icon path={iconDelete} />,
 									onClick: () => onDelete(f.name)
 								}

@@ -309,7 +309,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 									/>
 									<Tooltip label="Remove field">
 										<ActionIcon
-											color="red"
+											color="pink.9"
 											onClick={() =>
 												onChange((draft) => {
 													draft.connection.scopeFields.splice(i, 1);

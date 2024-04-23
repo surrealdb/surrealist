@@ -73,7 +73,7 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 					h={36}
 					onClick={handleToggle}
 					loading={isPending}
-					color={isServing ? "red.5" : undefined}
+					color={isServing ? "pink.7" : undefined}
 				>
 					<Icon path={isServing ? iconStop : iconPlay} size="lg" />
 				</ActionIcon>

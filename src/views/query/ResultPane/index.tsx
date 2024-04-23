@@ -102,7 +102,7 @@ export function ResultPane({
 					{resultMode == "live" ? (isLive && (
 						<Button
 							onClick={cancelQueries}
-							color="red"
+							color="pink.7"
 							variant="light"
 							size="xs"
 							leftSection={
@@ -137,7 +137,7 @@ export function ResultPane({
 						size="xs"
 						radius="xs"
 						onClick={onRunQuery}
-						color={isQueryValid ? "surreal" : "red"}
+						color={isQueryValid ? "surreal" : "pink.9"}
 						variant={isQueryValid ? "gradient" : "filled"}
 						style={{ border: "none" }}
 						rightSection={

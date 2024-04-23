@@ -79,10 +79,10 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 									role="button"
 									component="div"
 									onClick={(e) => handleRemove(e, i)}
-									color="red"
+									color="pink.7"
 									variant="subtle"
 								>
-									<Icon path={iconClose} color="red" />
+									<Icon path={iconClose} />
 								</ActionIcon>
 							</Group>
 						</Paper>

@@ -207,9 +207,8 @@ export function ScopePane() {
 						<Spacer />
 						{!isCreating && (
 							<Button
-								color="red"
+								color="pink.9"
 								onClick={removeScope}
-								variant="light"
 							>
 								Remove
 							</Button>

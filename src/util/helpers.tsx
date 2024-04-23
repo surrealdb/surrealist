@@ -78,7 +78,7 @@ export function updateTitle() {
  */
 export function showError(info: {title: ReactNode, subtitle: ReactNode}) {
 	showNotification({
-		color: "red.6",
+		color: "pink.9",
 		message: (
 			<Stack gap={0}>
 				<Text fw={600} c="bright">{info.title}</Text>

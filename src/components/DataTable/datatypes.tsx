@@ -20,7 +20,7 @@ function NullishCell(props: { value: null | undefined }) {
 function BooleanCell(props: { value: boolean }) {
 	const icon = props.value
 		? <Icon path={iconCheck} color="green" />
-		: <Icon path={iconClose} color="red" />;
+		: <Icon path={iconClose} color="pink.9" />;
 
 	return <div>{icon}</div>;
 }

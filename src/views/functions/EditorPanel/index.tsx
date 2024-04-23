@@ -139,8 +139,7 @@ export function EditorPanel({
 						<SimpleGrid cols={2} mt="md">
 							<Button
 								size="xs"
-								variant="light"
-								color="blue"
+								color="slate"
 								rightSection={<Icon path={iconDownload} />}
 								onClick={downloadBody}
 							>
@@ -148,8 +147,7 @@ export function EditorPanel({
 							</Button>
 							<Button
 								size="xs"
-								variant="light"
-								color="red"
+								color="pink.9"
 								rightSection={<Icon path={iconDelete} />}
 								onClick={removeFunction}
 							>

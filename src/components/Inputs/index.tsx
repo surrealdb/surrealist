@@ -168,7 +168,7 @@ export function PermissionInput({
 					</Tooltip>
 					<Tooltip label="Reject all access">
 						<ActionIcon
-							color="red.5"
+							color="pink.6"
 							onClick={() => onChange("NONE")}
 							variant={textValue.toUpperCase() === "NONE" ? "light" : "subtle"}
 						>
