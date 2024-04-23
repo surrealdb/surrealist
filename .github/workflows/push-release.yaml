@@ -85,4 +85,4 @@ jobs:
                 aws s3 sync --region eu-west-2 --cache-control "public, max-age=31536000, immutable" --exclude ".DS_Store" ./dist/assets s3://dev.surrealist.app/assets/
                 aws s3 cp --region eu-west-2 --cache-control "public, max-age=86400" ./dist/favicon.ico s3://dev.surrealist.app/
                 aws s3 sync --region eu-west-2 --cache-control "public, max-age=30" --exact-timestamps --delete --exclude "*" --include "*.html" ./dist/ s3://dev.surrealist.app/
-                aws s2 cp --region eu-west-2 --cache-control "public, max-age=0" ./release-assets/latest.json s3://dev.surrealist.app/
+                aws s3 cp --region eu-west-2 --cache-control "public, max-age=0" ./release-assets/latest.json s3://dev.surrealist.app/
