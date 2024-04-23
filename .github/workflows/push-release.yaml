@@ -30,7 +30,6 @@ jobs:
 
     publish-web:
         name: Publish web
-        if: ${{ github.event.release.prerelease }}
         needs:
             - version
 
