@@ -3,7 +3,7 @@ import clsx from "clsx";
 import surrealistLogo from "~/assets/images/logo.png";
 import { ScrollArea, Stack, Divider, Image, Flex, Group } from "@mantine/core";
 import { Fragment, useLayoutEffect, useMemo } from "react";
-import { isBrowser } from "~/adapter";
+import { isBrowser, isDesktop } from "~/adapter";
 import { iconDownload, iconCog, iconSearch } from "~/util/icons";
 import { NavigationIcon } from "../NavigationIcon";
 import { Spacer } from "../Spacer";
@@ -91,11 +91,12 @@ export function Sidebar({
 		<ScrollArea
 			scrollbars="y"
 			type="never"
-			pos="absolute"
+			pos="fixed"
 			component="aside"
 			top={0}
 			left={0}
 			bottom={0}
+			pt={isDesktop ? 28 : 0}
 			bg={connection ? (isLight ? "slate.0" : "slate.9") : undefined}
 			viewportRef={ref}
 			className={clsx(classes.root, shouldExpand && classes.expanded)}
