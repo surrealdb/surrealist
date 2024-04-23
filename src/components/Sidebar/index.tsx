@@ -3,7 +3,7 @@ import clsx from "clsx";
 import surrealistLogo from "~/assets/images/logo.png";
 import { ScrollArea, Stack, Divider, Image, Flex, Group } from "@mantine/core";
 import { Fragment, useLayoutEffect, useMemo } from "react";
-import { isBrowser, isDesktop } from "~/adapter";
+import { adapter, isBrowser, isDesktop } from "~/adapter";
 import { iconDownload, iconCog, iconSearch } from "~/util/icons";
 import { NavigationIcon } from "../NavigationIcon";
 import { Spacer } from "../Spacer";
@@ -86,6 +86,7 @@ export function Sidebar({
 	}, [flags]);
 
 	const shouldExpand = connection && expandable && expanded;
+	const nudgeSidebar = adapter.platform === "darwin" && isDesktop;
 
 	return (
 		<ScrollArea
@@ -96,7 +97,7 @@ export function Sidebar({
 			top={0}
 			left={0}
 			bottom={0}
-			pt={isDesktop ? 28 : 0}
+			pt={nudgeSidebar ? 28 : 0}
 			bg={connection ? (isLight ? "slate.0" : "slate.9") : undefined}
 			viewportRef={ref}
 			className={clsx(classes.root, shouldExpand && classes.expanded)}
