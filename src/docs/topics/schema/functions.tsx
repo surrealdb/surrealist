@@ -55,7 +55,18 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
-		await db.Connect();
+			await this.RawQuery(
+				"""
+					-- It is necessary to prefix the name of your function with "fn::"
+					-- This indicates that it's a custom function
+					DEFINE FUNCTION fn::greet($name: string) {
+						RETURN "Hello, " + $name + "!";
+					}
+					
+					-- Returns: "Hello, BOB!"
+					RETURN fn::greet("BOB");
+				"""
+			);
 		`,
 			java: `
 		// Connect to a local endpoint

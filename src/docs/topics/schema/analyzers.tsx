@@ -48,7 +48,11 @@ export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
-		await db.Connect();
+		await this.RawQuery(
+			"""
+				DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
+			"""
+		);
 		`,
 			java: `
 		// Connect to a local endpoint
