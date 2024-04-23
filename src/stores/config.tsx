@@ -81,7 +81,7 @@ export const useConfigStore = create<ConfigStore>()(
 		removeConnection: (connectionId) => set((state) => {
 			return {
 				connections: state.connections.filter((connection) => connection.id !== connectionId),
-				activeConnection: state.activeConnection == connectionId ? null : state.activeConnection,
+				activeConnection: state.activeConnection == connectionId ? SANDBOX : state.activeConnection,
 			};
 		}),
 
