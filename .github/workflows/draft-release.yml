@@ -53,14 +53,14 @@ jobs:
               id: extract_version
               uses: Saionaro/extract-package-version@v1.2.1
 
-    build-tauri:
-        name: Build Tauri
+    draft:
+        name: Draft release
         needs:
             - version
         permissions:
             contents: write
         strategy:
-            fail-fast: false
+            fail-fast: true
             matrix:
                 settings:
                     - platform: "macos-latest"
@@ -81,6 +81,16 @@ jobs:
         steps:
             - name: Information
               run: echo "Building Surrealist Desktop v${{ needs.version.outputs.version }} for ${{ matrix.settings.id }}"
+
+            - name: Validate unique version
+              run: |
+                TAG="surrealist-v${{ needs.version.outputs.version }}"
+                if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+                  echo "ERR: Tag ${TAG} already exists! Please bump the version."
+                  exit 1
+                else
+                  echo "OK: All clear! No such tag as ${TAG} found."
+                fi
 
             - name: Code checkout
               uses: actions/checkout@v4
@@ -129,7 +139,8 @@ jobs:
               shell: bash
               run: echo "$APPLE_API_KEY_CONTENT" >> ${{ github.workspace }}/apple-api-key.p8
 
-            - uses: tauri-apps/tauri-action@v0
+            - name: Build and draft release
+              uses: tauri-apps/tauri-action@v0
               id: build
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
