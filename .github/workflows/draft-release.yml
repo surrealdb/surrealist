@@ -41,7 +41,7 @@ jobs:
               if: ${{ !inputs.version }}
               run: |
                   v=$(pnpm pkg get version)
-                  v=${v:1:-1}-$(date +'%-m%-d')
+                  v=${v:1:-1}-${{ github.run_number }}
                   pnpm pkg set version=$v
 
             - name: Set inputted version

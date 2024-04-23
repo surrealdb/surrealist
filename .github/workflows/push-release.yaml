@@ -77,6 +77,7 @@ jobs:
               with:
                 releaseId: ${{ github.event.release.id }}
                 out-file-path: release-assets
+                token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Deploy Production
               if: ${{ !github.event.release.prerelease }}
