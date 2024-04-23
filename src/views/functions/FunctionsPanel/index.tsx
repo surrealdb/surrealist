@@ -49,7 +49,7 @@ export function FunctionsPanel({
 					radius="sm"
 					c="inherit"
 				>
-					3
+					{functions.length}
 				</Badge>
 			}
 			rightSection={
