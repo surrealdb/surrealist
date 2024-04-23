@@ -99,7 +99,7 @@ jobs:
 
             - name: Install dependencies (ubuntu only)
               # TODO(tauri-2) ubuntu-22.04
-              if: matrix.settings.platform == 'ubuntu-20.04'
+              if: matrix.settings.platform == 'ubuntu-22.04'
               # TODO(tauri-2) libwebkit2gtk-4.1-dev
               run: |
                   sudo apt-get update
