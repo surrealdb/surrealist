@@ -1,23 +1,30 @@
+function redirect(path) {
+    return {
+		statusCode: 301,
+		statusDescription: 'Moved Permanently',
+		headers: {
+			location: {
+				value: `https://dev.surrealist.app${path}`
+			}
+		},
+	};
+}
+
 function handler(event) {
 
 	let request = event.request;
 	let host = request.headers.host.value;
+	let path = request.uri.toLowerCase();
 
 	if (host !== 'dev.surrealist.app') {
-
-		return {
-			statusCode: 301,
-			statusDescription: 'Moved Permanently',
-			headers: {
-				location: {
-					value: `https://dev.surrealist.app${path}`
-				}
-			},
-		};
-
+		return redirect(path)
 	}
 
 	switch (true) {
+	    case request.uri === '/embed/new':
+	        return redirect('/mini/new');
+	    case request.uri === '/embed':
+	        return redirect('/mini');
 		case request.uri === '/mini/new':
 			request.uri = '/mini/new.html';
 			return request;
