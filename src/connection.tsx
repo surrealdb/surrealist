@@ -1,7 +1,7 @@
 import posthog from "posthog-js";
 import { surrealdbWasmEngines } from 'surrealdb.wasm';
 import { Surreal, QueryResult, AnyAuth, ScopeAuth, Token, UUID } from 'surrealdb.js';
-import { ConnectionOptions, QueryResponse } from './types';
+import { ConnectionOptions, Protocol, QueryResponse } from './types';
 import { getConnection } from './util/connection';
 import { useDatabaseStore } from './stores/database';
 import { connectionUri, newId, printLog, showError, versionUri } from './util/helpers';
@@ -24,6 +24,7 @@ export interface UserQueryOptions {
 	loader?: boolean;
 }
 
+const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss']);
 const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
 const SURREAL = new Surreal({
@@ -236,9 +237,18 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			setQueryActive(true);
 		}
 
+		const liveIndexes = getLiveQueries(queryStr);
+
+		if (!LQ_SUPPORTED.has(connection.connection.protocol)) {
+			showError({
+				title: "Live queries unsupported",
+				subtitle: "Unfortunately live queries are not supported in the active connection protocol"
+			});
+		}
+
 		const responseRaw = await SURREAL.query_raw(queryStr, variableJson) || [];
 		const response = mapResults(responseRaw);
-		const liveIds = getLiveQueries(queryStr).flatMap(idx => {
+		const liveIds = liveIndexes.flatMap(idx => {
 			const res = response[idx];
 
 			if (!res.success || !(res.result instanceof UUID)) {
