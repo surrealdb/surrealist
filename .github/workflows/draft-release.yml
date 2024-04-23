@@ -82,7 +82,7 @@ jobs:
                       id: 'macos-x86_64'
                       args: "--target x86_64-apple-darwin"
                     # TODO(tauri-2) ubuntu-22.04
-                    - platform: "ubuntu-22.04"
+                    - platform: "ubuntu-20.04"
                       id: 'linux'
                       args: ""
                     - platform: "windows-latest"
@@ -99,11 +99,11 @@ jobs:
 
             - name: Install dependencies (ubuntu only)
               # TODO(tauri-2) ubuntu-22.04
-              if: matrix.settings.platform == 'ubuntu-22.04'
+              if: matrix.settings.platform == 'ubuntu-20.04'
               # TODO(tauri-2) libwebkit2gtk-4.1-dev
               run: |
                   sudo apt-get update
-                  sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+                  sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
             - name: Setup PNPM
               uses: pnpm/action-setup@v3
