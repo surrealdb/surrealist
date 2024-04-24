@@ -957,8 +957,8 @@
 	  frac { '.' @digit+ }
 	  exp { $[eE] $[+\-]? @digit+ }
 
-	  singleString { "'" ![']+ "'" }
-	  doubleString { '"' !["]+ '"' }
+	  singleString { "'" ![']* "'" }
+	  doubleString { '"' !["]* '"' }
 
 	  // Language
 	  VariableName { "$" (@asciiLetter | @digit | "_" )+ }
