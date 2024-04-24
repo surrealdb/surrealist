@@ -2,7 +2,7 @@
 name = "surrealist"
 version = "0.0.0"
 description = "Powerful graphical SurrealDB query playground and database explorer for Browser and Desktop"
-authors = []
+authors = ["SurrealDB"]
 license = "MIT"
 repository = "https://github.com/surrealdb/surrealist"
 edition = "2021"
