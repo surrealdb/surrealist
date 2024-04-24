@@ -363,3 +363,11 @@ export function fuzzyMatch(query: string, target: string) {
 
 	return regex.test(target);
 }
+
+/**
+ * Check if the current platform is mobile
+ */
+export function isMobile() {
+	const userAgent = navigator.userAgent.toLowerCase();
+	return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+}

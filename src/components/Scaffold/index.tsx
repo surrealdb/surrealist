@@ -2,8 +2,11 @@ import classes from "./style.module.scss";
 
 import {
 	Box,
+	Button,
 	Center,
 	Flex,
+	Stack,
+	Text,
 } from "@mantine/core";
 
 import { useStable } from "~/hooks/stable";
@@ -38,6 +41,10 @@ import { LegacyModal } from "./modals/legacy";
 import { SandboxModal } from "./modals/sandbox";
 import { executeUserQuery } from "~/connection";
 import { ChangelogModal } from "./modals/changelog";
+import { SurrealistLogo } from "../SurrealistLogo";
+import { Icon } from "../Icon";
+import { iconOpen } from "~/util/icons";
+import { isMobile } from "~/util/helpers";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -96,6 +103,37 @@ export function Scaffold() {
 					className={classes.titlebar}
 				>
 					{title}
+				</Center>
+			)}
+
+			{isMobile() && (
+				<Center
+					pos="fixed"
+					inset={0}
+					bg="slate.9"
+					style={{ zIndex: 1000 }}
+				>
+					<Stack maw={250} mx="auto">
+						<SurrealistLogo />
+
+						<Text c="bright" mt="lg">
+							Surrealist is the ultimate way to visually manage your SurrealDB database
+						</Text>
+
+						<Text c="slate.3">
+							Support for Surrealist on mobile platforms is currently unavailable, however you can visit Surrealist
+							on a desktop environment to get started.
+						</Text>
+
+						<Button
+							mt="lg"
+							variant="gradient"
+							onClick={() => adapter.openUrl("https://surrealdb.com/surrealist")}
+							rightSection={<Icon path={iconOpen} />}
+						>
+							Read more about Surrealist
+						</Button>
+					</Stack>
 				</Center>
 			)}
 
