@@ -91,6 +91,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 
 	const createUser = useStable(() => {
 		setIsEditing(true);
+		setCurrentUser(null);
 		setEditingName("");
 		setEditingPassword("");
 		setEditingComment("");
