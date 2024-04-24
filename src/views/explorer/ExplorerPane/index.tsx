@@ -15,7 +15,8 @@ import { RecordsChangedEvent } from "~/util/global-events";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
 import { executeQuery } from "~/connection";
-import { validateWhere } from "~/util/surrealql";
+import { formatValue, validateWhere } from "~/util/surrealql";
+import { RecordId } from "surrealdb.js";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -188,7 +189,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				title: "Copy record id",
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
-					navigator.clipboard.writeText(record.id);
+					if (record.id instanceof RecordId) {
+						navigator.clipboard.writeText(formatValue(record.id));
+					}
 				}
 			},
 			{
