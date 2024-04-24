@@ -20,8 +20,9 @@ const surrealqlLanguage = /*@__PURE__*/LRLanguage.define({
         })
     }),
     languageData: {
-        closeBrackets: { brackets: ["[", "{", '"', "'"] },
-        indentOnInput: /^\s*[\]}]$/
+        closeBrackets: { brackets: ["[", "{", '"', "'", "("] },
+        indentOnInput: /^\s*[\]}]$/,
+        commentTokens: { line: "--" },
     }
 });
 /**
