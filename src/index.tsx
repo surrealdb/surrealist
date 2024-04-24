@@ -14,12 +14,9 @@ import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { App } from "./components/App";
-import { runUpdateChecker } from "./util/updater";
 import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
-import { useConfigStore } from "./stores/config";
 import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from './util/background';
-import { getSetting } from "./util/config";
 import { generateEditorIcons } from "./util/editor/icons";
 import { isProduction } from "./util/environment";
 import { promptChangelog } from "./util/changelogs";
@@ -55,13 +52,12 @@ import { promptChangelog } from "./util/changelogs";
 	createRoot(root).render(<App />);
 
 	// Check for updates
-	// TODO Auto updater
-	const { lastPromptedVersion } = useConfigStore.getState();
-	const updateChecker = getSetting("behavior", "updateChecker");
+	// const { lastPromptedVersion } = useConfigStore.getState();
+	// const updateChecker = getSetting("behavior", "updateChecker");
 
-	if (adapter.isUpdateCheckSupported && updateChecker) {
-		runUpdateChecker(lastPromptedVersion, false);
-	}
+	// if (adapter.isUpdateCheckSupported && updateChecker) {
+	// 	runUpdateChecker(lastPromptedVersion, false);
+	// }
 
 	// NOTE Temporary until react flow is fixed
 	document.body.addEventListener('keydown', e => e.stopPropagation());
