@@ -63,8 +63,7 @@ export type ConfigStore = SurrealistConfig & {
 	pushCommand: (command: string) => void;
 	updateViewedNews: () => void;
 	completeOnboarding: (key: string) => void;
-	resetOnboardings: () => void;
-	softReset: () => void;
+	resetOnboardings: () => void
 }
 
 export const useConfigStore = create<ConfigStore>()(
@@ -229,11 +228,6 @@ export const useConfigStore = create<ConfigStore>()(
 				...featureFlags,
 				[key]: value,
 			}
-		})),
-
-		softReset: () => set(() => ({
-			activeConnection: null,
-			activeView: "query"
 		})),
 
 		updateBehaviorSettings: (settings) => set((state) => ({

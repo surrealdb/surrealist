@@ -11,14 +11,13 @@ import { Entry } from "../../Entry";
 import { useEffect, useRef, useState } from "react";
 import { Spacer } from "../../Spacer";
 import { Icon } from "../../Icon";
-import { useClipboard } from "@mantine/hooks";
-import { useStable } from "~/hooks/stable";
-import { adapter, isDesktop } from "~/adapter";
+import { isDesktop } from "~/adapter";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { LicensesTab } from "./tabs/Licenses";
 import { FeatureCondition } from "~/types";
 import { useIntent } from "~/hooks/url";
+import { useVersionCopy } from "~/hooks/debug";
 
 interface Category {
 	id: string;
@@ -27,8 +26,6 @@ interface Category {
 	component: () => JSX.Element;
 	disabled?: FeatureCondition;
 }
-
-const VERSION = import.meta.env.VERSION;
 
 const CATEGORIES: Category[] = [
 	{
@@ -82,9 +79,9 @@ export function Settings({
 	onClose,
 	onOpen
 }: SettingsProps) {
-	const [flags, setFlags] = useFeatureFlags();
 	const isLight = useIsLight();
-	const clipboard = useClipboard({ timeout: 1000 });
+	const [flags, setFlags] = useFeatureFlags();
+	const [copyDebug, clipboard] = useVersionCopy();
 	const [activeTab, setActiveTab] = useState("behaviour");
 	const [logoClicked, setLogoClicked] = useState<Date[]>([]);
 	const tabsRef = useRef<HTMLDivElement>(null);
@@ -96,21 +93,6 @@ export function Settings({
 
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
 	const Component = activeCategory.component;
-
-	const copyDebug = useStable(async () => {
-		const debugDump = await adapter.dumpDebug();
-		const debugData = {
-			...debugDump,
-			"Version": VERSION,
-			"Flags": Object.entries(flags).map(([key, value]) => `${key}: ${value}`).join(", ")
-		};
-
-		const debugText = Object.entries(debugData).reduce((acc, [key, value]) => {
-			return `${acc}${key}: ${value}\n`;
-		}, "");
-
-		clipboard.copy(debugText);
-	});
 
 	useEffect(() => {
 		const now = new Date();
@@ -169,7 +151,7 @@ export function Settings({
 								style={{ cursor: 'pointer' }}
 								onClick={copyDebug}
 							>
-								{clipboard.copied ? "Copied to clipboard!" : `Version ${VERSION}`}
+								{clipboard.copied ? "Copied to clipboard!" : `Version ${import.meta.env.VERSION}`}
 							</Text>
 						</Stack>
 						<Stack gap="xs" ref={tabsRef}>
