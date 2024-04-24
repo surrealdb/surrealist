@@ -56,7 +56,7 @@ export default defineConfig({
 		'import.meta.env.VERSION': `"${version}"`,
 		'import.meta.env.SDB_VERSION': `"${surreal}"`,
 		'import.meta.env.POSTHOG_KEY': `"phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404"`,
-		'import.meta.env.POSTHOG_URL': `"https://eu.posthog.com"`,
+		'import.meta.env.POSTHOG_URL': `"https://eu.i.posthog.com"`,
 	},
 	optimizeDeps: {
 		exclude: ['surrealdb.wasm', 'surrealql.wasm'],
