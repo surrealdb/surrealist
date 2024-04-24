@@ -1,7 +1,7 @@
 import autoFixAnim from "~/assets/animation/autofix.json";
 import { useStable } from "~/hooks/stable";
 import { ContentPane } from "~/components/Pane";
-import { useDebounced } from "~/hooks/debounce";
+import { useDebouncedFunction } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
@@ -61,7 +61,7 @@ export function QueryPane({
 		});
 	});
 
-	const scheduleSetQuery = useDebounced(200, setQueryForced);
+	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 200);
 
 	const handleFormat = useStable(() => {
 		updateQueryTab({
@@ -104,7 +104,7 @@ export function QueryPane({
 		});
 	});
 
-	const setSelection = useDebounced(350, onSelectionChange);
+	const setSelection = useDebouncedFunction(onSelectionChange, 350);
 
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);

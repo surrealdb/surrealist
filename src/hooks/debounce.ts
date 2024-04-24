@@ -2,13 +2,13 @@ import { useEffect, useRef } from "react";
 import { useStable } from "./stable";
 
 /**
- * Execute a callback after a delay, if the callback is called again before the delay is over, the delay is reset.
+ * Similar to useDebouncedCallback, however this hook will pass arguments to the callback
  *
- * @param delay The delay in milliseconds
  * @param exec The callback to execute
+ * @param delay The delay in milliseconds
  * @returns The debounced callback
  */
-export function useDebounced<T>(delay: number, exec: (value: T) => void): (value: T) => void {
+export function useDebouncedFunction<F extends (...args: any) => any>(callback: F, delay: number): (...value: Parameters<F>) => void {
 	const task = useRef<any>(null);
 
 	useEffect(() => {
@@ -19,14 +19,14 @@ export function useDebounced<T>(delay: number, exec: (value: T) => void): (value
 		};
 	}, []);
 
-	return useStable((value) => {
+	return useStable((...value) => {
 		if (task.current) {
 			clearTimeout(task.current);
 		}
 
 		task.current = setTimeout(() => {
 			task.current = null;
-			exec(value);
+			callback(...value);
 		}, delay);
 	});
 }
