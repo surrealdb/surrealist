@@ -1,5 +1,5 @@
 import { linter } from "@codemirror/lint";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql, surrealqlLanguage } from "codemirror-surrealql";
 import { getSetting } from "../config";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
@@ -11,7 +11,6 @@ import { themeColor } from "../mantine";
 import { EditorState, Extension, SelectionRange } from "@codemirror/state";
 import { acceptWithTab, runQuery } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
-import { StandardSQL } from "@codemirror/lang-sql";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveQuery } from "../connection";
 import { tryParseParams } from "../helpers";
@@ -160,7 +159,7 @@ const TABLE_SOURCE: CompletionSource = (context) => {
  * An extension used to autocomplete table names
  */
 export const surqlTableCompletion = (): Extension => {
-	return StandardSQL.language.data.of({
+	return surrealqlLanguage.data.of({
 		autocomplete: TABLE_SOURCE
 	});
 };
@@ -189,7 +188,7 @@ const VARIABLE_SOURCE: CompletionSource = (context) => {
  * An extension used to autocomplete query variables
  */
 export const surqlVariableCompletion = (): Extension => {
-	return StandardSQL.language.data.of({
+	return surrealqlLanguage.data.of({
 		autocomplete: VARIABLE_SOURCE
 	});
 };
