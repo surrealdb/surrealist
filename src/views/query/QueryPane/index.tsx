@@ -6,7 +6,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
-import { selectionChanged, surql, surqlTableCompletion, surqlVariableCompletion } from "~/util/editor/extensions";
+import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
 import { tryParseParams } from "~/util/helpers";
@@ -16,6 +16,7 @@ import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
 import { HoverIcon } from "~/components/HoverIcon";
 import { formatQuery, validateQuery } from "~/util/surrealql";
+import { surrealql } from "codemirror-surrealql";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -167,7 +168,8 @@ export function QueryPane({
 				value={activeTab.query}
 				onChange={scheduleSetQuery}
 				extensions={[
-					surql(),
+					surrealql(),
+					surqlLinting(),
 					surqlTableCompletion(),
 					surqlVariableCompletion(),
 					selectionChanged(setSelection)

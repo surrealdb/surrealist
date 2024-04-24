@@ -1,5 +1,5 @@
 import { linter } from "@codemirror/lint";
-import { surrealql, surrealqlLanguage } from "codemirror-surrealql";
+import { surrealqlLanguage } from "codemirror-surrealql";
 import { getSetting } from "../config";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
@@ -94,47 +94,44 @@ export const inputBase = (): Extension => [
 ];
 
 /**
- * The customized SurrealQL language extension
+ * SurrealQL error linting
  */
-export const surql = (): Extension => [
-	surrealql(),
-	linter(view => {
-		const isEnabled = getSetting("behavior", "queryErrorChecker");
-		const content = view.state.doc.toString();
+export const surqlLinting = (): Extension => linter(view => {
+	const isEnabled = getSetting("behavior", "queryErrorChecker");
+	const content = view.state.doc.toString();
 
-		if (!isEnabled || !content) {
-			return [];
-		}
-
-		const message = validateQuery(content) || "";
-		const match = message.match(/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i);
-
-		if (match) {
-			const reason = match[1].trim();
-			const lineNumber = Number.parseInt(match[2]);
-			const column = Number.parseInt(match[3]);
-
-			const position = view.state.doc.line(lineNumber).from + column - 1;
-			const word = view.state.wordAt(position);
-
-			return [word ? {
-				from: word.from,
-				to: word.to,
-				message: reason,
-				severity: "error",
-				source: "SurrealQL"
-			} : {
-				from: position,
-				to: position + 1,
-				message: reason,
-				severity: "error",
-				source: "SurrealQL"
-			}];
-		}
-
+	if (!isEnabled || !content) {
 		return [];
-	})
-];
+	}
+
+	const message = validateQuery(content) || "";
+	const match = message.match(/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i);
+
+	if (match) {
+		const reason = match[1].trim();
+		const lineNumber = Number.parseInt(match[2]);
+		const column = Number.parseInt(match[3]);
+
+		const position = view.state.doc.line(lineNumber).from + column - 1;
+		const word = view.state.wordAt(position);
+
+		return [word ? {
+			from: word.from,
+			to: word.to,
+			message: reason,
+			severity: "error",
+			source: "SurrealQL"
+		} : {
+			from: position,
+			to: position + 1,
+			message: reason,
+			severity: "error",
+			source: "SurrealQL"
+		}];
+	}
+
+	return [];
+});
 
 const TABLE_SOURCE: CompletionSource = (context) => {
 	const match = context.matchBefore(/(from|update|create|delete|into) \w*/i);

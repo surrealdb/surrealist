@@ -17,7 +17,8 @@ import { SchemaFunction } from "~/types";
 import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus } from "~/util/icons";
 import { SURQL_FILTERS } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
-import { surql } from "~/util/editor/extensions";
+import { surrealql } from "codemirror-surrealql";
+import { surqlLinting } from "~/util/editor/extensions";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -85,7 +86,8 @@ export function EditorPanel({
 						draft.block = value;
 					})}
 					extensions={[
-						surql(),
+						surrealql(),
+						surqlLinting(),
 					]}
 				/>
 				<Divider orientation="vertical" />

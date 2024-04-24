@@ -10,10 +10,10 @@ import { useInterfaceStore } from "~/stores/interface";
 import { TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
-import { surql } from "~/util/editor/extensions";
 import { executeQuery } from "~/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
+import { surrealql } from "codemirror-surrealql";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	'CREATE': ["surreal.3", iconPlus],
@@ -52,7 +52,7 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 			value={contents}
 			readOnly
 			extensions={[
-				surql()
+				surrealql()
 			]}
 		/>
 	);
@@ -71,7 +71,7 @@ export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 			value={contents}
 			readOnly
 			extensions={[
-				surql()
+				surrealql()
 			]}
 		/>
 	);
@@ -163,7 +163,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 												value={format(msg.data)}
 												readOnly
 												extensions={[
-													surql()
+													surrealql()
 												]}
 											/>
 										</Accordion.Panel>
