@@ -8,7 +8,7 @@ import { useStable } from "./stable";
  * @param delay The delay in milliseconds
  * @returns The debounced callback
  */
-export function useDebouncedFunction<F extends (...args: any) => any>(callback: F, delay: number): (...value: Parameters<F>) => void {
+export function useDebouncedFunction<F extends (...args: any) => any>(callback: F, delay: number): F {
 	const task = useRef<any>(null);
 
 	useEffect(() => {
@@ -19,7 +19,7 @@ export function useDebouncedFunction<F extends (...args: any) => any>(callback: 
 		};
 	}, []);
 
-	return useStable((...value) => {
+	return useStable(((...value) => {
 		if (task.current) {
 			clearTimeout(task.current);
 		}
@@ -28,5 +28,5 @@ export function useDebouncedFunction<F extends (...args: any) => any>(callback: 
 			task.current = null;
 			callback(...value);
 		}, delay);
-	});
+	}) as F);
 }
