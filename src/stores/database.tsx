@@ -26,6 +26,7 @@ export type DatabaseStore = {
 	setIsConnected: (isConnected: boolean) => void;
 	setVersion: (version: string) => void;
 	setQueryResponse: (tab: string, response: QueryResponse[]) => void;
+	clearQueryResponse: (tab: string) => void;
 };
 
 export const useDatabaseStore = create<DatabaseStore>((set) => ({
@@ -98,6 +99,13 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 		responses: {
 			...state.responses,
 			[tab]: response
+		}
+	})),
+
+	clearQueryResponse: (tab) => set((state) => ({
+		responses: {
+			...state.responses,
+			[tab]: []
 		}
 	})),
 

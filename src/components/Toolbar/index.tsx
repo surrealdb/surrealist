@@ -26,8 +26,9 @@ import { useInterfaceStore } from "~/stores/interface";
 import { dispatchIntent } from "~/hooks/url";
 
 export function Toolbar() {
-	const { readChangelog } = useInterfaceStore.getState();
+	const { clearQueryResponse } = useDatabaseStore.getState();
 	const { updateConnection } = useConfigStore.getState();
+	const { readChangelog } = useInterfaceStore.getState();
 	const [flags] = useFeatureFlags();
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
@@ -55,6 +56,12 @@ export function Toolbar() {
 
 	const resetSandbox = useStable(() => {
 		openConnection();
+
+		if (connection) {
+			for (const query of connection.queries) {
+				clearQueryResponse(query.id);
+			}
+		}
 
 		showInfo({
 			title: "Sandbox reset",
