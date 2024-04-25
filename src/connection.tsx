@@ -10,7 +10,7 @@ import { ConnectedEvent, DisconnectedEvent } from './util/global-events';
 import { useInterfaceStore } from "./stores/interface";
 import { useConfigStore } from "./stores/config";
 import { compare } from "semver";
-import { objectify } from "radash";
+import { objectify, sleep } from "radash";
 import { getLiveQueries } from "./util/surrealql";
 
 const printMsg = (...args: any[]) => printLog("Conn", "#1cccfc", ...args);
@@ -150,11 +150,12 @@ export async function openConnection(options?: ConnectOptions) {
 /**
  * Close the active surreal connection
  */
-export function closeConnection() {
+export async function closeConnection() {
 	const status = SURREAL.status;
 
 	if (status === "connected" || status === "connecting") {
-		return SURREAL.close();
+		await SURREAL.close();
+		await sleep(100);
 	}
 }
 

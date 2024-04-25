@@ -17,6 +17,7 @@ import { ConnectionDetails } from "../../ConnectionDetails";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
+import { openConnection } from "~/connection";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -59,6 +60,7 @@ export function ConnectionEditor() {
 		}
 
 		updateTitle();
+		openConnection();
 	});
 
 	const generateName = useStable(() => {
