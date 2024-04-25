@@ -55,7 +55,7 @@ export function ScopePane() {
 			}
 
 			if (editingSignup) {
-				query += ` SIGNIN ${openSymbol + editingSignup + closeSymbol}`;
+				query += ` SIGNUP ${openSymbol + editingSignup + closeSymbol}`;
 			}
 
 			await executeQuery(query);
