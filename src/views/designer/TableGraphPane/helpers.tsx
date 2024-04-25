@@ -111,6 +111,8 @@ export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
 	return [nodes, edges];
 }
 
+type DimensionNode = { id: string, width: number, height: number };
+
 /**
  * Apply a layout to the given nodes and edges
  *
@@ -119,7 +121,7 @@ export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
  * @returns The changes to apply
  */
 export async function applyNodeLayout(
-	nodes: InternalNode[],
+	nodes: DimensionNode[],
 	edges: Edge[],
 	direction: DiagramDirection
 ): Promise<NodeChange[]> {

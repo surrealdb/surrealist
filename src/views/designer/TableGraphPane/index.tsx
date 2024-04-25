@@ -2,9 +2,9 @@ import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
-import { Background, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from "reactflow";
+import { Background, NodeChange, ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { InternalNode, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
+import { NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
 import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -61,32 +61,50 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const isLight = useIsLight();
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
-	const [nodes, setNodes, onNodesChange] = useNodesState([]);
+	const [nodes, setNodes, handleOnNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const internals = useStore(s => s.nodeInternals);
-
 	const [computing, setComputing] = useState(false);
-	const doFit = useRef(false);
 
-	useLayoutEffect(() => {
-		if (doFit.current) {
-			fitView();
-			doFit.current = false;
-		} else if (computing) {
-			const layoutNodes = [...internals.values()] as InternalNode[];
+	const doLayoutRef = useRef(false);
+	const doFitRef = useRef(false);
+
+	const onNodesChange = useStable(async (changes: NodeChange[]) => {
+		handleOnNodesChange(changes);
+
+		if (doLayoutRef.current) {
+			doLayoutRef.current = false;
+
 			const direction = activeSession.diagramDirection;
-
-			applyNodeLayout(layoutNodes, edges, direction).then(async changes => {
-				if (changes.length === 0) {
-					return;
+			const dimNodes = changes.flatMap(change => {
+				if (change.type !== "dimensions" || !change.dimensions) {
+					return [];
 				}
 
-				onNodesChange(changes);
-				setComputing(false);
-				doFit.current = true;
+				return {
+					id: change.id,
+					width: change.dimensions.width,
+					height: change.dimensions.height,
+				};
 			});
+
+			const layoutChanges = await applyNodeLayout(dimNodes, edges, direction);
+
+			setComputing(false);
+
+			if (changes.length > 0) {
+				doFitRef.current = true;
+				handleOnNodesChange(layoutChanges);
+				fitView();
+			}
 		}
-	}, [internals]);
+	});
+
+	useEffect(() => {
+		if (doFitRef.current) {
+			doFitRef.current = false;
+			fitView();
+		}
+	}, [nodes]);
 
 	const renderGraph = useStable(async () => {
 		const [nodes, edges] = buildFlowNodes(props.tables);
@@ -101,6 +119,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		setNodes(nodes);
 		setEdges(edges);
 		setComputing(true);
+
+		doLayoutRef.current = true;
 	});
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
@@ -243,7 +263,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						{
 							key: 'view',
 							icon: <Icon path={iconFullscreen} />,
-							title: 'Reset viewport',
+							title: 'Fit viewport',
 							onClick: () => fitView()
 						},
 						{
