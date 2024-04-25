@@ -63,7 +63,7 @@ export function ServingTab() {
 						label={isFileDriver ? "Storage path" : "Storage cluster address"}
 						placeholder={isFileDriver ? "/path/to/database" : "address:port"}
 						value={storage}
-						onChange={setStorage as any}
+						onChange={e => setStorage(e.target.value)}
 					/>
 				)}
 
