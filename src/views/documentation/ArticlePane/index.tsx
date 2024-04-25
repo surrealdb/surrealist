@@ -107,6 +107,11 @@ export function ArticlePane({
 			<ScrollArea
 				viewportRef={scrollRef}
 				onScrollPositionChange={onScroll}
+				viewportProps={{
+					style: {
+						paddingBottom: '50vh'
+					}
+				}}
 				style={{
 					position: "absolute",
 					inset: 12,
