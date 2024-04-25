@@ -17,6 +17,8 @@ import { useIntent } from "~/hooks/url";
 import { HoverIcon } from "~/components/HoverIcon";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { surrealql } from "codemirror-surrealql";
+import { Value } from "surrealql.wasm/v1";
+import { encodeCbor } from "surrealdb.js";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -101,7 +103,7 @@ export function QueryPane({
 		setShowVariables(true);
 		updateQueryTab({
 			id: activeTab.id,
-			variables: JSON.stringify(mergedVars, null, 4)
+			variables: Value.from_cbor(new Uint8Array(encodeCbor(mergedVars))).format(true),
 		});
 	});
 

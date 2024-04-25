@@ -9,6 +9,8 @@ import { getConnection } from "./connection";
 import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
 import { useInterfaceStore } from "~/stores/interface";
 import { getSetting } from "./config";
+import { decodeCbor } from "surrealdb.js";
+import { Value } from "surrealql.wasm/v1";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 
@@ -284,7 +286,7 @@ export function tryParseParams(paramString: string) {
 	let params: any = {};
 
 	try {
-		const parsed = JSON.parse(paramString);
+		const parsed = decodeCbor(Value.from_string(paramString).to_cbor().buffer);
 
 		if (typeof parsed !== "object" || Array.isArray(parsed)) {
 			throw new TypeError("Must be object");
