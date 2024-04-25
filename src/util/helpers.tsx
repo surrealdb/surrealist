@@ -305,7 +305,7 @@ export function tryParseParams(paramString: string) {
  * @returns The escaped value
  */
 export function tb(value: string) {
-	return `\`${value}\``;
+	return `\`${value.replaceAll('`', '\\`')}\``;
 }
 
 /**
