@@ -1,20 +1,24 @@
-import { ExportType } from "~/constants";
-import { fork } from "radash";
 import { tb } from "./helpers";
-import { executeQuerySingle } from "~/connection";
-import { SchemaInfoDB, SchemaInfoTB } from "~/types";
+import { ExportType } from "~/constants";
+import { executeQueryFirst, executeQuerySingle } from "~/connection";
+import { SchemaInfoTB } from "~/types";
+import { isEdgeTable, syncDatabaseSchema } from "./schema";
+import { useDatabaseStore } from "~/stores/database";
+import { formatValue } from "./surrealql";
 
 /**
  * Export the database schema and save it to a file
  */
 export async function createDatabaseExport(types: ExportType[]) {
-	const result = await executeQuerySingle<SchemaInfoDB>("INFO FOR DB");
+	await syncDatabaseSchema();
 
-	const dbTables = Object.entries(result.tables);
-	const dbParams = Object.values(result.params);
-	const dbAnalyzers = Object.values(result.analyzers);
-	const dbFunctions = Object.values(result.functions);
-	const dbScopes = Object.values(result.scopes);
+	const definitions = await executeQuerySingle("INFO FOR DB");
+
+	const dbTables = Object.entries(definitions.tables);
+	const dbParams = Object.values(definitions.params);
+	const dbAnalyzers = Object.values(definitions.analyzers);
+	const dbFunctions = Object.values(definitions.functions);
+	const dbScopes = Object.values(definitions.scopes);
 
 	const output: string[] = [];
 
@@ -111,20 +115,26 @@ export async function createDatabaseExport(types: ExportType[]) {
 		output.push("BEGIN TRANSACTION;");
 
 		for (const [tableName] of dbTables) {
-			const tbData = await executeQuerySingle(`SELECT * FROM ${tb(tableName)}`);
-			const tbRows = tbData[0].result as any[];
+			const tbRows = await executeQueryFirst(`SELECT * FROM ${tb(tableName)}`);
+			const info = useDatabaseStore.getState().databaseSchema.tables.find((t) => t.schema.name === tableName);
 
-			if (tbRows.length > 0) {
+			if (tbRows.length > 0 && info) {
 				pushSection(`TABLE DATA: ${tableName}`);
 
-				const [edges, records] = fork(tbRows, (row) => row.in && row.out);
+				const isEdge = isEdgeTable(info);
 
-				for (const entry of records) {
-					output.push(`UPDATE ${entry.id} CONTENT ${JSON.stringify(entry)};`);
-				}
+				for (const row of tbRows) {
+					const content = formatValue(row);
+					const id = formatValue(row.id);
 
-				for (const row of edges) {
-					output.push(`RELATE ${row.in} -> ${row.id} -> ${row.out} CONTENT ${JSON.stringify(row)};`);
+					if (isEdge) {
+						const inVal = formatValue(row.in);
+						const outVal = formatValue(row.out);
+
+						output.push(`RELATE ${inVal} -> ${id} -> ${outVal} CONTENT ${content};`);
+					} else {
+						output.push(`UPDATE ${id} CONTENT ${content};`);
+					}
 				}
 			}
 		}

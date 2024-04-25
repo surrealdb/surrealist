@@ -173,13 +173,13 @@ export async function executeQuery(query: string, params?: any) {
  */
 export async function executeQueryFirst(query: string) {
 	const results = await executeQuery(query);
+	const { success, result } = results[0];
 
-	return results.map(res => {
-		return {
-			...res,
-			result: Array.isArray(res.result) ? res.result[0] : res.result
-		};
-	});
+	if (success) {
+		return result;
+	} else {
+		throw new Error(result);
+	}
 }
 
 /**
