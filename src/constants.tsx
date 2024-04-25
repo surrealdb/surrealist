@@ -3,6 +3,7 @@ import explorerIcon from "~/assets/animation/explorer.json";
 import designerIcon from "~/assets/animation/designer.json";
 import authIcon from "~/assets/animation/auth.json";
 
+import { getConnection } from "./util/connection";
 import {
 	AuthMode,
 	CodeLang,
@@ -13,6 +14,7 @@ import {
 	Selectable,
 	ViewInfo,
 	ViewMode,
+	Orientation,
 } from "./types";
 import {
 	iconAPI,
@@ -26,7 +28,6 @@ import {
 	iconModel,
 	iconQuery,
 } from "./util/icons";
-import { getConnection } from "./util/connection";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = (typeof EXPORT_TYPES)[number];
@@ -206,4 +207,9 @@ export const SURQL_FILTERS = [
 		name: "SurrealDB Schema",
 		extensions: ["surql", "sql", "surrealql"],
 	},
+];
+
+export const ORIENTATIONS: Selectable<Orientation>[] = [
+	{ label: "Horizontal", value: "horizontal" },
+	{ label: "Vertical", value: "vertical" },
 ];

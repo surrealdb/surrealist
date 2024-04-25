@@ -1,6 +1,17 @@
 import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
 
+export type DriverType = "file" | "memory" | "tikv";
+export type ResultMode = "table" | "single" | "combined" | "live";
+export type SourceMode = "schema" | "infer";
+export type DiagramMode = "fields" | "summary" | "simple";
+export type DiagramDirection = "ltr" | "rtl";
+export type ColorScheme = "light" | "dark";
+export type Platform = "darwin" | "windows" | "linux";
+export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type ValueMode = "json" | "sql";
+export type Orientation = "horizontal" | "vertical";
+export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -9,8 +20,6 @@ export type AuthMode =
 	| "token"
 	| "scope"
 	| "scope-signup";
-export type DriverType = "file" | "memory" | "tikv";
-export type ResultMode = "table" | "single" | "combined" | "live";
 export type ViewMode =
 	| "query"
 	| "explorer"
@@ -19,11 +28,6 @@ export type ViewMode =
 	| "functions"
 	| "models"
 	| "documentation";
-export type SourceMode = "schema" | "infer";
-export type DiagramMode = "fields" | "summary" | "simple";
-export type DiagramDirection = "ltr" | "rtl";
-export type ColorScheme = "light" | "dark";
-export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type CodeLang =
 	| "cli"
 	| "rust"
@@ -33,9 +37,6 @@ export type CodeLang =
 	| "csharp"
 	| "java"
 	| "php";
-export type Platform = "darwin" | "windows" | "linux";
-export type TableType = "ANY" | "NORMAL" | "RELATION";
-export type ValueMode = "json" | "sql";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -98,6 +99,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramDirection: DiagramDirection;
 	expandSidebar: boolean;
 	valueMode: ValueMode;
+	queryOrientation: Orientation;
 }
 
 export interface SurrealistTemplateSettings {

@@ -32,6 +32,7 @@ import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/connection";
+import { useSetting } from "~/hooks/config";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -39,6 +40,7 @@ export function QueryView() {
 	const { saveQuery } = useConfigStore.getState();
 	const isLight = useIsLight();
 
+	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [showVariables, showVariablesHandle] = useBoolean();
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
@@ -108,6 +110,10 @@ export function QueryView() {
 		});
 	});
 
+	const variablesOrientation = orientation === "horizontal"
+		? "vertical"
+		: "horizontal";
+
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
 	useIntent("run-query", runQuery);
@@ -156,8 +162,8 @@ export function QueryView() {
 					/>
 				)}
 				{active && (
-					<PanelGroup direction="vertical">
-						<Panel minSize={25}>
+					<PanelGroup direction={orientation}>
+						<Panel minSize={35}>
 							{isMini ? (showVariables ? (
 								<VariablesPane
 									isValid={variablesValid}
@@ -176,8 +182,8 @@ export function QueryView() {
 									onSelectionChange={setSelection}
 								/>
 							)) : (
-								<PanelGroup direction="horizontal">
-									<Panel minSize={25}>
+								<PanelGroup direction={variablesOrientation}>
+									<Panel minSize={35}>
 										<QueryPane
 											activeTab={active}
 											setIsValid={setQueryValid}
@@ -190,7 +196,7 @@ export function QueryView() {
 									{showVariables && (
 										<>
 											<PanelDragger />
-											<Panel defaultSize={40} minSize={25}>
+											<Panel defaultSize={40} minSize={35}>
 												<VariablesPane
 													isValid={variablesValid}
 													setIsValid={setVariablesValid}
@@ -203,7 +209,7 @@ export function QueryView() {
 							)}
 						</Panel>
 						<PanelDragger />
-						<Panel minSize={25}>
+						<Panel minSize={35}>
 							<ResultPane
 								activeTab={active}
 								isQueryValid={queryValid}

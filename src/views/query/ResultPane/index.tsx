@@ -1,3 +1,4 @@
+import classes from "./style.module.scss";
 import { Box, Button, Center, Divider, Group, Pagination, Select, Stack, Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
@@ -98,7 +99,7 @@ export function ResultPane({
 			title={panelTitle}
 			icon={iconQuery}
 			rightSection={
-				<Group align="center">
+				<Group align="center" wrap="nowrap" className={classes.controls}>
 					{resultMode == "live" ? (isLive && (
 						<Button
 							onClick={cancelQueries}
@@ -112,7 +113,10 @@ export function ResultPane({
 							Stop listening
 						</Button>
 					)) : (
-						<Text c={isLight ? "slate.5" : "slate.2"}>
+						<Text
+							c={isLight ? "slate.5" : "slate.2"}
+							className={classes.results}
+						>
 							{statusText}
 						</Text>
 					)}
@@ -140,6 +144,7 @@ export function ResultPane({
 						color={isQueryValid ? "surreal" : "pink.9"}
 						variant={isQueryValid ? "gradient" : "filled"}
 						style={{ border: "none" }}
+						className={classes.run}
 						rightSection={
 							<Icon path={iconCursor} />
 						}
