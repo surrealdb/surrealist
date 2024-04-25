@@ -222,19 +222,28 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				activeTable && (
 					<Group align="center">
 						<Tooltip label="New record">
-							<ActionIcon onClick={openCreator}>
+							<ActionIcon
+								onClick={openCreator}
+								aria-label="Create new record"
+							>
 								<Icon path={iconPlus} />
 							</ActionIcon>
 						</Tooltip>
 
 						<Tooltip label="Refresh records">
-							<ActionIcon onClick={fetchRecords}>
+							<ActionIcon
+								onClick={fetchRecords}
+								aria-label="Refresh records"
+							>
 								<Icon path={iconRefresh} />
 							</ActionIcon>
 						</Tooltip>
 
 						<Tooltip label={filtering ? "Hide filter" : "Filter records"}>
-							<ActionIcon onClick={toggleFilter}>
+							<ActionIcon
+								onClick={toggleFilter}
+								aria-label={filtering ? "Hide filter" : "Show record filter"}
+							>
 								<Icon path={iconFilter} />
 							</ActionIcon>
 						</Tooltip>
@@ -315,6 +324,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 							<ActionIcon
 								onClick={previousPage}
 								disabled={page <= 1}
+								aria-label="Previous page"
 							>
 								<Icon path={iconChevronLeft} />
 							</ActionIcon>
@@ -340,6 +350,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 							<ActionIcon
 								onClick={nextPage}
 								disabled={page >= pageCount}
+								aria-label="Next page"
 							>
 								<Icon path={iconChevronRight} />
 							</ActionIcon>

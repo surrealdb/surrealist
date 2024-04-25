@@ -48,6 +48,7 @@ export function HelpAndSupport() {
 					w={36}
 					h={36}
 					onClick={openHandle.toggle}
+					aria-label="Open Help and support"
 				>
 					<Icon path={iconHelp} size="lg" />
 				</ActionIcon>
@@ -68,6 +69,7 @@ export function HelpAndSupport() {
 					top={20}
 					right={20}
 					onClick={openHandle.close}
+					aria-label="Close modal"
 				>
 					<Icon path={iconClose} />
 				</ActionIcon>

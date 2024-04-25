@@ -97,12 +97,20 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 				))}
 
 				<Tooltip label="Remove table">
-					<ActionIcon onClick={removeTable} color="pink.7">
+					<ActionIcon
+						onClick={removeTable}
+						color="pink.7"
+						aria-label="Remove table"
+					>
 						<Icon path={iconDelete} />
 					</ActionIcon>
 				</Tooltip>
 
-				<ActionIcon onClick={() => onClose(false)} disabled={handle.isChanged}>
+				<ActionIcon
+					onClick={() => onClose(false)}
+					disabled={handle.isChanged}
+					aria-label="Close designer drawer"
+				>
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>

@@ -81,6 +81,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 									onClick={(e) => handleRemove(e, i)}
 									color="pink.7"
 									variant="subtle"
+									aria-label="Remove item"
 								>
 									<Icon path={iconClose} />
 								</ActionIcon>

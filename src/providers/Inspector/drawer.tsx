@@ -170,6 +170,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 						<Tooltip label="Go back">
 							<ActionIcon
 								onClick={history.pop}
+								aria-label="Go back in history"
 							>
 								<Icon path={iconArrowLeftFat} />
 							</ActionIcon>
@@ -181,18 +182,25 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 							disabled={!currentRecord.exists}
 							onClick={deleteRecord}
 							color="pink.7"
+							aria-label="Delete record"
 						>
 							<Icon path={iconDelete} />
 						</ActionIcon>
 					</Tooltip>
 
 					<Tooltip label="Refetch from database">
-						<ActionIcon onClick={refreshRecord}>
+						<ActionIcon
+							onClick={refreshRecord}
+							aria-label="Refetch record"
+						>
 							<Icon path={iconRefresh} />
 						</ActionIcon>
 					</Tooltip>
 
-					<ActionIcon onClick={onClose}>
+					<ActionIcon
+						onClick={onClose}
+						aria-label="Close inspector drawer"
+					>
 						<Icon path={iconClose} />
 					</ActionIcon>
 				</Group>

@@ -162,6 +162,7 @@ export function PermissionInput({
 							color="green.4"
 							onClick={() => onChange("FULL")}
 							variant={textValue.toUpperCase() === "FULL" ? "light" : "subtle"}
+							aria-label="Grant full access"
 						>
 							<Icon path={iconCheck} />
 						</ActionIcon>
@@ -171,6 +172,7 @@ export function PermissionInput({
 							color="pink.6"
 							onClick={() => onChange("NONE")}
 							variant={textValue.toUpperCase() === "NONE" ? "light" : "subtle"}
+							aria-label="Reject all access"
 						>
 							<Icon path={iconCancel} />
 						</ActionIcon>
@@ -225,6 +227,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 							<ActionIcon
 								onClick={toggleTables}
 								variant="subtle"
+								aria-label="Select a table"
 							>
 								<Icon path={iconTable} />
 							</ActionIcon>

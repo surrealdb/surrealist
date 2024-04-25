@@ -126,6 +126,7 @@ export function EditorPanel({
 									{({ copied, copy }) => (
 										<ActionIcon
 											variant={copied ? 'gradient' : undefined}
+											aria-label="Copy function name"
 											onClick={copy}
 											mr="lg"
 										>
@@ -173,7 +174,10 @@ export function EditorPanel({
 								</Label>
 								<Spacer />
 								<Tooltip label="Add function argument">
-									<ActionIcon onClick={addArgument}>
+									<ActionIcon
+										onClick={addArgument}
+										aria-label="Add function argument"
+									>
 										<Icon path={iconPlus} />
 									</ActionIcon>
 								</Tooltip>
@@ -226,6 +230,7 @@ export function EditorPanel({
 										/>
 										<ActionIcon
 											variant="subtle"
+											aria-label="Remove function argument"
 											onClick={() => onChange((draft) => {
 												draft.args.splice(index, 1);
 											})}

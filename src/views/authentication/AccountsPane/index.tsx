@@ -142,7 +142,10 @@ export function AccountsPane(props: AccountsPaneProps) {
 			title={props.title}
 			rightSection={
 				<Tooltip label="New user">
-					<ActionIcon onClick={createUser}>
+					<ActionIcon
+						onClick={createUser}
+						aria-label="Create new user"
+					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>
@@ -201,6 +204,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 								<ActionIcon
 									onClick={() => updateUser(user)}
 									variant="subtle"
+									aria-label="Edit user"
 								>
 									<Icon path={iconEdit} />
 								</ActionIcon>

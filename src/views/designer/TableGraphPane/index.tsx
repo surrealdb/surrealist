@@ -196,7 +196,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			rightSection={
 				<Group wrap="nowrap">
 					<Tooltip label="New table">
-						<ActionIcon onClick={openTableCreator}>
+						<ActionIcon
+							onClick={openTableCreator}
+							aria-label="Create new table"
+						>
 							<Icon path={iconPlus} />
 						</ActionIcon>
 					</Tooltip>
@@ -207,7 +210,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					>
 						<Popover.Target>
 							<Tooltip label="Graph Options">
-								<ActionIcon>
+								<ActionIcon
+									aria-label="Expand graph options"
+								>
 									<Icon path={iconCog} />
 								</ActionIcon>
 							</Tooltip>
@@ -230,7 +235,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Popover.Dropdown>
 					</Popover>
 					<Tooltip label="Designer help">
-						<ActionIcon onClick={showHelpHandle.open}>
+						<ActionIcon
+							onClick={showHelpHandle.open}
+							aria-label="Open designer help"
+						>
 							<Icon path={iconHelp} />
 						</ActionIcon>
 					</Tooltip>

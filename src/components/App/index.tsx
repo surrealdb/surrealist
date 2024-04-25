@@ -96,7 +96,10 @@ export function App() {
 									<Text c="white">New release available</Text>
 									<Text c="gray.5">Version {update} is available</Text>
 								</Box>
-								<ActionIcon onClick={closeUpdate}>
+								<ActionIcon
+									aria-label="Close update notification"
+									onClick={closeUpdate}
+								>
 									<Icon path={iconClose} />
 								</ActionIcon>
 							</Group>

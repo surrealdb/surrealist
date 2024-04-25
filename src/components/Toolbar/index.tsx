@@ -110,6 +110,7 @@ export function Toolbar() {
 								color="slate"
 								variant="subtle"
 								onClick={resetSandbox}
+								aria-label="Reset sandbox environment"
 							>
 								<Icon path={iconReset} />
 							</ActionIcon>
@@ -120,6 +121,7 @@ export function Toolbar() {
 									<ActionIcon
 										color="slate"
 										variant="subtle"
+										aria-label="Load demo dataset"
 									>
 										<Icon path={iconFile} />
 									</ActionIcon>

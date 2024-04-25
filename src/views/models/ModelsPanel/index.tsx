@@ -49,7 +49,10 @@ export function ModelsPanel({
 			rightSection={
 				<Group>
 					<Tooltip label="Upload SurrealML Model">
-						<ActionIcon onClick={onUpload}>
+						<ActionIcon
+							onClick={onUpload}
+							aria-label="Upload SurrealML model"
+						>
 							<Icon path={iconUpload} />
 						</ActionIcon>
 					</Tooltip>

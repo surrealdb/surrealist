@@ -80,7 +80,10 @@ export function TabsPane(props: TabsPaneProps) {
 			}
 			rightSection={
 				<Tooltip label="New query">
-					<ActionIcon onClick={newTab}>
+					<ActionIcon
+						onClick={newTab}
+						aria-label="Create new query"
+					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>
@@ -146,6 +149,7 @@ export function TabsPane(props: TabsPaneProps) {
 														className={classes.queryClose}
 														onClick={(e) => removeTab(query.id, e)}
 														color={(isActive && isLight) ? "white" : undefined}
+														aria-label="Close query tab"
 													>
 														<Icon path={iconClose} size="sm" />
 													</ActionIcon>

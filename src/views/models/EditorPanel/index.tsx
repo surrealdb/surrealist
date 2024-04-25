@@ -66,6 +66,7 @@ export function EditorPanel({
 							{({ copied, copy }) => (
 								<ActionIcon
 									variant={copied ? 'gradient' : undefined}
+									aria-label="Copy function name"
 									onClick={copy}
 								>
 									<Icon path={copied ? iconCheck : iconCopy} />

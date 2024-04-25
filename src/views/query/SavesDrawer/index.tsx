@@ -86,12 +86,18 @@ export function SavesDrawer(props: SavesDrawerProps) {
 				<Spacer />
 
 				<Tooltip label="Save current query">
-					<ActionIcon onClick={props.onSaveQuery}>
+					<ActionIcon
+						onClick={props.onSaveQuery}
+						aria-label="Save current query"
+					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>
 
-				<ActionIcon onClick={props.onClose}>
+				<ActionIcon
+					onClick={props.onClose}
+					aria-label="Close saved query drawer"
+				>
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
@@ -206,6 +212,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 										variant="gradient"
 										className={classes.queryAction}
 										onClick={e => handleUseQuery(entry, e)}
+										aria-label="Open query in new tab"
 									>
 										<Icon path={iconQuery} size={0.9} />
 									</ActionIcon>

@@ -90,12 +90,18 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 				<Spacer />
 
 				<Tooltip label="Clear console">
-					<ActionIcon onClick={clearConsole}>
+					<ActionIcon
+						onClick={clearConsole}
+						aria-label="Clear console logs"
+					>
 						<Icon path={iconDelete} />
 					</ActionIcon>
 				</Tooltip>
 
-				<ActionIcon onClick={props.onClose}>
+				<ActionIcon
+					onClick={props.onClose}
+					aria-label="Close console drawer"
+				>
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>

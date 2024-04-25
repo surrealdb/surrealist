@@ -33,6 +33,7 @@ export function SandboxModal() {
 				top={16}
 				right={16}
 				onClick={openHandle.close}
+				aria-label="Close modal"
 			>
 				<Icon path={iconClose} />
 			</ActionIcon>

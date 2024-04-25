@@ -98,7 +98,10 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					</Badge>
 				)}
 
-				<ActionIcon onClick={onClose}>
+				<ActionIcon
+					onClick={onClose}
+					aria-label="Close creator drawer"
+				>
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>

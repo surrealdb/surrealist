@@ -186,6 +186,7 @@ export function Settings({
 							<ActionIcon
 								onClick={onClose}
 								size="lg"
+								aria-label="Close settings"
 							>
 								<Icon path={iconClose} />
 							</ActionIcon>

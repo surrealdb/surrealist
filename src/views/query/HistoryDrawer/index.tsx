@@ -95,6 +95,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 						variant="gradient"
 						className={classes.queryAction}
 						onClick={handleUseQuery}
+						aria-label="Open query in new tab"
 					>
 						<Icon path={iconQuery} size={0.9} />
 					</ActionIcon>
@@ -152,11 +153,18 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 
 				<Spacer />
 
-				<ActionIcon onClick={clearHistory} title="Clear history">
+				<ActionIcon
+					onClick={clearHistory}
+					title="Clear history"
+					aria-label="Clear query history"
+				>
 					<Icon path={iconDelete} />
 				</ActionIcon>
 
-				<ActionIcon onClick={props.onClose}>
+				<ActionIcon
+					onClick={props.onClose}
+					aria-label="Close history drawer"
+				>
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>

@@ -60,6 +60,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 						<ActionIcon
 							color="slate"
 							onClick={props.closeVariables}
+							aria-label="Close variables panel"
 						>
 							<Icon path={iconClose} />
 						</ActionIcon>

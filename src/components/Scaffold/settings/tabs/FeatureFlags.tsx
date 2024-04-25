@@ -30,6 +30,7 @@ export function FeatureFlagsTab() {
 							<ActionIcon
 								variant="subtle"
 								onClick={() => setFlags({ [flag]: defaults[flag] })}
+								aria-label="Reset to default value"
 							>
 								<Icon path={iconReset} />
 							</ActionIcon>

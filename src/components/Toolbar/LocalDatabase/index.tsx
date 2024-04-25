@@ -74,6 +74,7 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 					onClick={handleToggle}
 					loading={isPending}
 					color={isServing ? "pink.7" : undefined}
+					aria-label={isServing ? "Stop serving local database" : "Start serving local database"}
 				>
 					<Icon path={isServing ? iconStop : iconPlay} size="lg" />
 				</ActionIcon>
@@ -85,6 +86,7 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 						w={36}
 						h={36}
 						onClick={toggleConsole}
+						aria-label="Open serving console drawer"
 					>
 						<Icon path={iconConsole} size="lg" />
 					</ActionIcon>

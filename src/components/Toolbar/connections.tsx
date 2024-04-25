@@ -197,6 +197,7 @@ export function Connections() {
 							<ActionIcon
 								mr={7}
 								onClick={createNew}
+								aria-label="Create new connection"
 							>
 								<Icon path={iconPlus} />
 							</ActionIcon>
@@ -229,6 +230,7 @@ export function Connections() {
 												component="div"
 												className={classes.connectionOptions}
 												onClick={(e) => editConnection(con.id, e)}
+												aria-label="Edit connection"
 											>
 												<Icon path={iconEdit} />
 											</ActionIcon>

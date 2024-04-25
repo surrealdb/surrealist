@@ -54,7 +54,10 @@ export function FunctionsPanel({
 			}
 			rightSection={
 				<Tooltip label="New function">
-					<ActionIcon onClick={onCreate}>
+					<ActionIcon
+						onClick={onCreate}
+						aria-label="Create new function"
+					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>

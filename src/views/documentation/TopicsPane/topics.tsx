@@ -95,6 +95,7 @@ export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSec
 				<ActionIcon
 					size="xs"
 					variant="subtle"
+					aria-label={opened ? "Collapse section" : "Expand section"}
 				>
 					<Icon path={opened ? iconChevronDown : iconChevronUp} size="sm" />
 				</ActionIcon>

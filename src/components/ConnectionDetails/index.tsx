@@ -96,6 +96,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							<ActionIcon
 								variant="subtle"
 								onClick={showIconsHandle.toggle}
+								aria-label="Customize icon"
 							>
 								<Icon path={USER_ICONS[value.icon ?? 0]} size="lg" />
 							</ActionIcon>
@@ -107,6 +108,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 										key={i}
 										variant={value.icon === i ? "gradient" : "subtle"}
 										onClick={() => updateIcon(i)}
+										aria-label={`Select icon ${i + 1}`}
 									>
 										<Icon path={icon} />
 									</ActionIcon>
@@ -310,11 +312,13 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 									<Tooltip label="Remove field">
 										<ActionIcon
 											color="pink.9"
+											aria-label="Remove scope field"
 											onClick={() =>
 												onChange((draft) => {
 													draft.connection.scopeFields.splice(i, 1);
 												})
-											}>
+											}
+										>
 											<Icon path={iconClose} color="red" />
 										</ActionIcon>
 									</Tooltip>

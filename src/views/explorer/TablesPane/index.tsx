@@ -96,7 +96,10 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 			}
 			rightSection={
 				<Tooltip label="New table">
-					<ActionIcon onClick={openTableCreator}>
+					<ActionIcon
+						onClick={openTableCreator}
+						aria-label="Create new table"
+					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>

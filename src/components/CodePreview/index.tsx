@@ -123,6 +123,7 @@ export function CodePreview({
 								right={6}
 								onClick={copy}
 								style={{ zIndex: 1 }}
+								aria-label="Copy code to clipboard"
 							>
 								<Icon path={copied ? iconCheck : iconCopy} />
 							</ActionIcon>

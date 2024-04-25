@@ -105,7 +105,10 @@ export function ScopePane() {
 			title="Database Scopes"
 			rightSection={
 				<Tooltip label="New scope">
-					<ActionIcon onClick={createScope}>
+					<ActionIcon
+						onClick={createScope}
+						aria-label="New scope"
+					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>
@@ -144,6 +147,7 @@ export function ScopePane() {
 								<ActionIcon
 									onClick={() => editScope(scope)}
 									variant="subtle"
+									aria-label="Edit scope"
 								>
 									<Icon path={iconEdit} />
 								</ActionIcon>

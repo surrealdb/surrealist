@@ -123,6 +123,7 @@ export function QueryPane({
 							<ActionIcon
 								onClick={onSaveQuery}
 								variant="light"
+								aria-label="Save query"
 							>
 								<Icon path={iconStar} />
 							</ActionIcon>
@@ -132,6 +133,7 @@ export function QueryPane({
 							<ActionIcon
 								onClick={handleFormat}
 								variant="light"
+								aria-label="Format query"
 							>
 								<Icon path={iconText} />
 							</ActionIcon>
@@ -156,6 +158,7 @@ export function QueryPane({
 							<ActionIcon
 								onClick={toggleVariables}
 								variant="light"
+								aria-label={showVariables ? "Hide variables" : "Show variables"}
 							>
 								<Icon path={iconBraces} />
 							</ActionIcon>

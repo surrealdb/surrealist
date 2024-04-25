@@ -25,6 +25,7 @@ export function DownloadModal({ opened, onClose, onOpen }: DownloadModalProps) {
 				top={16}
 				right={16}
 				onClick={onClose}
+				aria-label="Close modal"
 			>
 				<Icon path={iconClose} />
 			</ActionIcon>

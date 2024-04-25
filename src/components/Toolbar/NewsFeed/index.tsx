@@ -111,6 +111,7 @@ export function NewsFeed() {
 							w={36}
 							h={36}
 							onClick={openHandle.toggle}
+							aria-label="Open news feed drawer"
 						>
 							<Icon path={iconNewspaper} size="lg" />
 						</ActionIcon>
@@ -135,6 +136,7 @@ export function NewsFeed() {
 					right={20}
 					onClick={openHandle.close}
 					style={{ zIndex: 1 }}
+					aria-label="Close news feed drawer"
 				>
 					<Icon path={iconClose} />
 				</ActionIcon>
