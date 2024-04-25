@@ -9,6 +9,10 @@ import { klona } from "klona";
 
 const printMsg = (...args: any[]) => printLog("Schema", "#e600a4", ...args);
 
+const emptyKV = () => ({ users: [] });
+const emptyNS = () => ({ users: [] });
+const emptyDB = () => ({ users: [], functions: [], models: [], tables: [], scopes: [] });
+
 export interface SchemaSyncOptions {
 	tables?: string[];
 }
@@ -30,11 +34,15 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 
 	printMsg("Synchronizing database schema");
 
-	const [kvInfo, nsInfo, dbInfo] = await Promise.all([
+	const [kvInfoTask, nsInfoTask, dbInfoTask] = await Promise.allSettled([
 		executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE"),
 		executeQuerySingle<SchemaInfoNS>("INFO FOR NS STRUCTURE"),
 		executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE")
 	]);
+
+	const kvInfo = kvInfoTask.status === "fulfilled" ? kvInfoTask.value : emptyKV();
+	const nsInfo = nsInfoTask.status === "fulfilled" ? nsInfoTask.value : emptyNS();
+	const dbInfo = dbInfoTask.status === "fulfilled" ? dbInfoTask.value : emptyDB();
 
 	// KV users, NS users, and DB users
 	schema.kvUsers = kvInfo.users;
