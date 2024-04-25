@@ -188,7 +188,6 @@ export function AccountsPane(props: AccountsPaneProps) {
 										<Icon
 											ml={6}
 											path={iconComment}
-											size={10}
 											style={{ flexShrink: 0 }}
 										/>
 									</div>
