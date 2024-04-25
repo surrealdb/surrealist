@@ -2,12 +2,15 @@ import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Badge, Group } from "@mantine/core";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
-import { useStable } from "~/hooks/stable";
 import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { iconBraces, iconClose } from "~/util/icons";
-import { json } from "@codemirror/lang-json";
+import { surrealql } from "codemirror-surrealql";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { surqlLinting } from "~/util/editor/extensions";
+import { useDebouncedFunction } from "~/hooks/debounce";
+import { decodeCbor } from "surrealdb.js";
+import { Value } from "surrealql.wasm/v1";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -20,10 +23,10 @@ export function VariablesPane(props: VariablesPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 	const activeTab = useActiveQuery();
 
-	const setVariables = useStable((content: string | undefined) => {
+	const setVariables = useDebouncedFunction((content: string | undefined) => {
 		try {
 			const json = content || "";
-			const parsed = JSON.parse(json);
+			const parsed = decodeCbor(Value.from_string(json).to_cbor().buffer);
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
 				throw new TypeError("Must be object");
@@ -38,7 +41,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 		} catch {
 			props.setIsValid(false);
 		}
-	});
+	}, 200);
 
 	return (
 		<ContentPane
@@ -72,7 +75,8 @@ export function VariablesPane(props: VariablesPaneProps) {
 				value={activeTab?.variables || ''}
 				onChange={setVariables}
 				extensions={[
-					json()
+					surrealql(),
+					surqlLinting(),
 				]}
 			/>
 		</ContentPane>

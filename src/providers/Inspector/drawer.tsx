@@ -14,6 +14,9 @@ import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
 import { useConfirmation } from "../Confirmation";
 import { executeQuery } from "~/connection";
+import { useDebouncedParsedObject } from "~/hooks/debounce";
+import { Value } from "surrealql.wasm/v1";
+import { encodeCbor } from "surrealdb.js";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -46,19 +49,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	const isLight = useIsLight();
 	const inputColor = currentRecord.exists ? undefined : 'var(--mantine-color-red-6)';
 
-	const isBodyValid = useMemo(() => {
-		try {
-			const parsed = JSON.parse(recordBody);
-
-			if (typeof parsed !== "object") {
-				throw new TypeError("Invalid JSON");
-			}
-
-			return true;
-		} catch {
-			return false;
-		}
-	}, [recordBody]);
+	const parsedBody = useDebouncedParsedObject(200, recordBody);
+	const isBodyValid = useMemo(() => !!parsedBody, [parsedBody]);
 
 	const saveHandle = useSaveable({
 		valid: isBodyValid,
@@ -74,17 +66,18 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	});
 
 	const fetchRecord = useStable(async (id: string) => {
-		const contentQuery = `SELECT * FROM ONLY ${id}`;
-		const inputQuery = `SELECT VALUE <-? FROM ONLY ${id}`;
-		const outputsQuery = `SELECT VALUE ->? FROM ONLY ${id}`;
+		const contentQuery = /* surql */ `SELECT * FROM ONLY <record> $id`;
+		const inputQuery = /* surql */ `SELECT VALUE <-? FROM ONLY <record> $id`;
+		const outputsQuery = /* surql */ `SELECT VALUE ->? FROM ONLY <record> $id`;
 
 		const [
 			{ result: content },
 			{ result: inputs},
 			{ result: outputs}
-		] = await executeQuery(`${contentQuery};${inputQuery};${outputsQuery}`);
+		] = await executeQuery(`${contentQuery};${inputQuery};${outputsQuery}`, { id });
 
-		const formatted = JSON.stringify(content, null, 4);
+		console.log(content);
+		const formatted = Value.from_cbor(new Uint8Array(encodeCbor(content))).format(true);
 
 		setRecordId(id);
 		setCurrentRecord({

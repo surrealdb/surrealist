@@ -9,12 +9,12 @@ import { useStable } from "~/hooks/stable";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { useTableNames } from "~/hooks/schema";
-import { tb } from "~/util/helpers";
 import { Label } from "~/components/Scaffold/settings/utilities";
-import { json } from "@codemirror/lang-json";
 import { executeQuery } from "~/connection";
-import { RecordId } from "surrealdb.js";
-import { formatValue } from "~/util/surrealql";
+import { RecordId, Table } from "surrealdb.js";
+import { useDebouncedParsedObject } from "~/hooks/debounce";
+import { surqlLinting } from "~/util/editor/extensions";
+import { surrealql } from "codemirror-surrealql";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -26,32 +26,24 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const [recordTable, setRecordTable] = useState('');
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
+
+	const parsedBody = useDebouncedParsedObject(200, recordBody);
+	const isBodyValid = useMemo(() => !!parsedBody, [parsedBody]);
 	const tables = useTableNames();
-
-	const isBodyValid = useMemo(() => {
-		try {
-			const parsed = JSON.parse(recordBody);
-
-			if (typeof parsed !== "object") {
-				throw new TypeError("Invalid JSON");
-			}
-
-			return true;
-		} catch {
-			return false;
-		}
-	}, [recordBody]);
 
 	const handleSubmit = useStable(async () => {
 		if (!isBodyValid) {
 			return;
 		}
 
-		const record = recordId
-			? formatValue(new RecordId(recordTable, recordId))
-			: tb(recordTable);
+		const id = recordId
+			? new RecordId(recordTable, recordId)
+			: new Table(recordTable);
 
-		await executeQuery(`CREATE ${record} CONTENT ${recordBody}`);
+		await executeQuery(/* surql */ `CREATE <record> $id CONTENT $content`, {
+			id,
+			content: parsedBody
+		});
 
 		onClose();
 		RecordsChangedEvent.dispatch(null);
@@ -135,7 +127,8 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 							value={recordBody}
 							onChange={setRecordBody}
 							extensions={[
-								json()
+								surrealql(),
+								surqlLinting(),
 							]}
 						/>
 					</Paper>

@@ -3,7 +3,8 @@ import classes from "../style.module.scss";
 import { SaveBox } from "~/components/SaveBox";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveableHandle } from "~/hooks/save";
-import { json } from "@codemirror/lang-json";
+import { surrealql } from "codemirror-surrealql";
+import { surqlLinting } from "~/util/editor/extensions";
 
 export interface ContentTabProps {
 	value: string;
@@ -25,7 +26,8 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 					value={value}
 					onChange={onChange}
 					extensions={[
-						json()
+						surrealql(),
+						surqlLinting(),
 					]}
 				/>
 			</Paper>

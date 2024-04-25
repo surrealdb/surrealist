@@ -1,6 +1,6 @@
 import posthog from "posthog-js";
 import { surrealdbWasmEngines } from 'surrealdb.wasm';
-import { Surreal, QueryResult, AnyAuth, ScopeAuth, Token, UUID } from 'surrealdb.js';
+import { Surreal, QueryResult, AnyAuth, ScopeAuth, Token, UUID, decodeCbor } from 'surrealdb.js';
 import { ConnectionOptions, Protocol, QueryResponse } from './types';
 import { getConnection } from './util/connection';
 import { useDatabaseStore } from './stores/database';
@@ -12,6 +12,7 @@ import { useConfigStore } from "./stores/config";
 import { compare } from "semver";
 import { objectify, sleep } from "radash";
 import { getLiveQueries } from "./util/surrealql";
+import { Value } from "surrealql.wasm/v1";
 
 const printMsg = (...args: any[]) => printLog("Conn", "#1cccfc", ...args);
 
@@ -226,7 +227,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	const { id, query, variables, name } = tabQuery;
 	const queryStr = (options?.override || query).trim();
 	const variableJson = variables
-		? JSON.parse(variables)
+		? decodeCbor(Value.from_string(variables).to_cbor().buffer)
 		: undefined;
 
 	if (query.length === 0) {
