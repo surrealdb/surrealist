@@ -159,6 +159,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			id: activeSession?.id,
 			diagramMode: mode as DiagramMode,
 		});
+
+		renderGraph();
 	});
 
 	const setDiagramDirection = useStable((mode: string) => {
@@ -166,6 +168,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			id: activeSession?.id,
 			diagramDirection: mode as DiagramDirection,
 		});
+
+		renderGraph();
 	});
 
 	useLayoutEffect(() => {
