@@ -18,6 +18,7 @@ export interface CodeEditorProps extends BoxProps {
 	extensions?: Extension[];
 	readOnly?: boolean;
 	autoFocus?: boolean;
+	onMount?: (editor: EditorView) => void;
 	onChange?: (value: string) => void;
 }
 
@@ -29,6 +30,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		className,
 		readOnly,
 		autoFocus,
+		onMount,
 		...rest
 	} = props;
 
@@ -75,6 +77,8 @@ export function CodeEditor(props: CodeEditorProps) {
 				if(editor.hasFocus) clearInterval(timer);
 			}, 50);
 		}
+
+		onMount?.(editor);
 
 		return () => {
 			editor.destroy();

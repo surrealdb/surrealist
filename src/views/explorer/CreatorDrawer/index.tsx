@@ -15,6 +15,7 @@ import { RecordId, Table } from "surrealdb.js";
 import { useDebouncedParsedObject } from "~/hooks/debounce";
 import { surqlLinting } from "~/util/editor/extensions";
 import { surrealql } from "codemirror-surrealql";
+import { EditorView } from "@codemirror/view";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -47,6 +48,10 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 
 		onClose();
 		RecordsChangedEvent.dispatch(null);
+	});
+
+	const setCursor = useStable((editor: EditorView) => {
+		editor.dispatch({selection: {anchor: 6, head: 6}});
 	});
 
 	useLayoutEffect(() => {
@@ -128,8 +133,9 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 							onChange={setRecordBody}
 							extensions={[
 								surrealql(),
-								surqlLinting(),
+								surqlLinting()
 							]}
+							onMount={setCursor}
 						/>
 					</Paper>
 				</Stack>
