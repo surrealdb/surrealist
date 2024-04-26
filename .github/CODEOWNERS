@@ -1,0 +1,8 @@
+# Default owners for the repository
+* @macjuul
+
+# API Docs
+/src/docs @Ekwuno
+
+# Lezer grammar
+/packages/lezer-surrealql @kearfy
