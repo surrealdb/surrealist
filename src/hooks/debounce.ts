@@ -40,7 +40,7 @@ export function useDebouncedParsedObject<T>(delay: number, input: string) {
 	useEffect(() => {
 		if (timeout.current) clearTimeout(timeout.current);
 		timeout.current = setTimeout(() => {
-			const parsed = decodeCbor(Value.from_string(input).to_cbor());
+			const parsed = decodeCbor(Value.from_string(input).to_cbor().buffer);
 			if (typeof parsed == 'object' && !Array.isArray(parsed) && !parsed == null) {
 				setParsed(parsed);
 			} else {

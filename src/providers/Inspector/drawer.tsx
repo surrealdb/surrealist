@@ -76,7 +76,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			{ result: outputs}
 		] = await executeQuery(`${contentQuery};${inputQuery};${outputsQuery}`, { id });
 
-		console.log(content);
 		const formatted = Value.from_cbor(new Uint8Array(encodeCbor(content))).format(true);
 
 		setRecordId(id);
