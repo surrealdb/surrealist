@@ -45,6 +45,7 @@ import { SurrealistLogo } from "../SurrealistLogo";
 import { Icon } from "../Icon";
 import { iconOpen } from "~/util/icons";
 import { isMobile } from "~/util/helpers";
+import { EmbedderModal } from "./modals/embedder";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -203,6 +204,7 @@ export function Scaffold() {
 			<LegacyModal />
 			<SandboxModal />
 			<ChangelogModal />
+			<EmbedderModal />
 
 			<CommandPaletteModal
 				opened={showPalette}

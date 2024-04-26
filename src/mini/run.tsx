@@ -9,10 +9,10 @@ import "../adapter";
 
 import { createRoot } from "react-dom/client";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
-import { MiniScaffold } from '../components/MiniScaffold';
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
 import { openConnection } from '~/connection';
+import { MiniRunScaffold } from '~/components/Scaffold/mini/run';
 
 (async () => {
 
@@ -33,9 +33,6 @@ import { openConnection } from '~/connection';
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
-	createRoot(root).render(<MiniScaffold />);
-
-	// NOTE Temporary until react flow is fixed
-	document.body.addEventListener('keydown', e => e.stopPropagation());
+	createRoot(root).render(<MiniRunScaffold />);
 
 })();

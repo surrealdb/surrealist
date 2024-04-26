@@ -6,6 +6,7 @@ const INTENT_REGISTRY = {
 	'open-news': null,
 	'open-changelog': null,
 	'open-settings': null,
+	'open-embedder': null,
 	'new-connection': null,
 	'new-table': null,
 	'toggle-serving': null,

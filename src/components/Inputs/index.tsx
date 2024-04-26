@@ -14,6 +14,7 @@ import { Compartment, EditorState, Extension } from "@codemirror/state";
 
 export interface CodeInputProps extends InputBaseProps {
 	value: string;
+	autoFocus?: boolean;
 	placeholder?: string;
 	extensions?: Extension;
 	onChange: (value: string) => void;
@@ -21,6 +22,7 @@ export interface CodeInputProps extends InputBaseProps {
 
 export function CodeInput({
 	value,
+	autoFocus,
 	extensions,
 	disabled,
 	className,
@@ -64,6 +66,13 @@ export function CodeInput({
 		});
 
 		editorRef.current = { editor, editable, fallback };
+
+		if (autoFocus) {
+			const timer = setInterval(() => {
+				editor.focus();
+				if(editor.hasFocus) clearInterval(timer);
+			}, 50);
+		}
 
 		return () => {
 			editor.destroy();
