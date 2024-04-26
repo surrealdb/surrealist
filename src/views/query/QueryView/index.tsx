@@ -131,6 +131,7 @@ export function QueryView() {
 					value={showVariables ? 'Variables' : 'Query'}
 					onChange={showVariablesHandle.toggle}
 					className={classes.switcher}
+					radius="xs"
 				/>
 			</InPortal>
 
