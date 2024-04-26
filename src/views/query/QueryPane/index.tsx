@@ -9,7 +9,7 @@ import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
 import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
-import { tryParseParams } from "~/util/helpers";
+import { showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
@@ -39,6 +39,7 @@ export interface QueryPaneProps {
 	activeTab: TabQuery;
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
+	selection: SelectionRange | undefined;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
 	onSaveQuery: () => void;
@@ -49,6 +50,7 @@ export function QueryPane({
 	activeTab,
 	showVariables,
 	setIsValid,
+	selection,
 	switchPortal,
 	setShowVariables,
 	onSaveQuery,
@@ -67,10 +69,23 @@ export function QueryPane({
 	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 200);
 
 	const handleFormat = useStable(() => {
-		updateQueryTab({
-			id : activeTab.id,
-			query: formatQuery(activeTab.query)
-		});
+		try {
+			const query = hasSelection
+				? activeTab.query.slice(0, selection.from)
+					+ formatQuery(activeTab.query.slice(selection.from, selection.to))
+					+ activeTab.query.slice(selection.to)
+				: formatQuery(activeTab.query);
+
+			updateQueryTab({
+				id : activeTab.id,
+				query
+			});
+		} catch {
+			showError({
+				title: "Failed to format",
+				subtitle: "Your query must be valid to format it"
+			});
+		}
 	});
 
 	const toggleVariables = useStable(() => {
@@ -108,6 +123,7 @@ export function QueryPane({
 	});
 
 	const setSelection = useDebouncedFunction(onSelectionChange, 350);
+	const hasSelection = selection?.empty === false;
 
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);
@@ -131,11 +147,11 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip label="Format query">
+						<Tooltip label={`Format ${hasSelection ? "selecion" : "query"}`}>
 							<ActionIcon
 								onClick={handleFormat}
 								variant="light"
-								aria-label="Format query"
+								aria-label={`Format ${hasSelection ? "selecion" : "query"}`}
 							>
 								<Icon path={iconText} />
 							</ActionIcon>

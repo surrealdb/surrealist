@@ -177,6 +177,7 @@ export function QueryView() {
 									activeTab={active}
 									setIsValid={setQueryValid}
 									switchPortal={switchPortal}
+									selection={selection}
 									showVariables={showVariables}
 									onSaveQuery={handleSaveRequest}
 									setShowVariables={showVariablesHandle.set}
@@ -189,6 +190,7 @@ export function QueryView() {
 											activeTab={active}
 											setIsValid={setQueryValid}
 											showVariables={showVariables}
+											selection={selection}
 											onSaveQuery={handleSaveRequest}
 											setShowVariables={showVariablesHandle.set}
 											onSelectionChange={setSelection}
