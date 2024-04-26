@@ -1,0 +1,25 @@
+.controls {
+	container-type: size;
+	justify-content: right;
+	width: 100%;
+}
+
+@container (width < 325px) {
+	.results {
+		display: none;
+	}
+}
+
+@container (width < 225px) {
+	.run {
+		padding-inline: 10px;
+		
+		:global(.mantine-Button-label) {
+			display: none;
+		}
+
+		:global(.mantine-Button-section) {
+			margin: 0;
+		}
+	}
+}

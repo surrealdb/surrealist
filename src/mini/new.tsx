@@ -3,14 +3,15 @@ import "../assets/styles/embed-new.scss";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { createRoot } from "react-dom/client";
-import { DATASETS } from "~/constants";
+import { DATASETS, ORIENTATIONS } from "~/constants";
+import { Orientation } from "~/types";
 
-type Theme = keyof typeof themes;
-const themes = {
-	auto: "Automatic",
-	light: "Light",
-	dark: "Dark"
-};
+// type Theme = keyof typeof themes;
+// const themes = {
+// 	auto: "Automatic",
+// 	light: "Light",
+// 	dark: "Dark"
+// };
 
 const datasets = {
 	"none": "None",
@@ -23,7 +24,8 @@ function App() {
 	const [setup, setSetup] = useState<string>(defaults.setup);
 	const [query, setQuery] = useState<string>(defaults.query);
 	const [variables, setVariables] = useState<string>(defaults.variables);
-	const [theme, setTheme] = useState<Theme>(defaults.theme);
+	// const [theme, setTheme] = useState<Theme>(defaults.theme);
+	const [orientation, setOrientation] = useState<Orientation>("vertical");
 	const [copied, onCopy] = useBoomerang(false);
 
 	const url = useMemo(() => {
@@ -33,14 +35,15 @@ function App() {
 		if (setup && setup.length > 0) search.append('setup', setup);
 		if (query && query.length > 0) search.append('query', query);
 		if (Object.keys(variables).length > 0) search.append('variables', variables);
-		if (theme !== 'auto') search.append('theme', theme);
+		if (orientation !== 'vertical') search.append('orientation', orientation);
+		// if (theme !== 'auto') search.append('theme', theme);
 
 		const url = new URL(location.toString());
 		url.pathname = url.hostname == 'localhost' ? 'mini/run.html' : 'mini';
 		url.search = search.toString();
 
 		return url.toString();
-	}, [dataset, setup, query, variables, theme]);
+	}, [dataset, setup, query, variables, orientation, /*theme*/]);
 
 	const [delayedUrl, countdown, setDelayedUrl] = useDelayedValue(url);
 	const reloadIframe = useCallback(() => {
@@ -55,7 +58,8 @@ function App() {
 			setSetup(params.setup);
 			setQuery(params.query);
 			setVariables(params.variables);
-			setTheme(params.theme);
+			setOrientation(params.orientation);
+			// setTheme(params.theme);
 		} catch(_err) {
 			(_err);
 			alert("Invalid URL pasted");
@@ -67,7 +71,7 @@ function App() {
 		setSetup("");
 		setQuery("");
 		setVariables("");
-		setTheme("auto");
+		// setTheme("auto");
 		reloadIframe();
 	}, []);
 
@@ -141,6 +145,20 @@ function App() {
 					</div>
 
 					<div className="section">
+						<label htmlFor="theme">Orientation</label>
+						<select
+							name="theme"
+							id="theme"
+							value={orientation}
+							onInput={(e) => setOrientation(e.currentTarget.value as Orientation)}
+						>
+							{ORIENTATIONS.map(({ label, value }) => (
+								<option key={value} value={value}>{label}</option>
+							))}
+						</select>
+					</div>
+
+					{/* <div className="section">
 						<label htmlFor="theme">Theme</label>
 						<select
 							name="theme"
@@ -152,7 +170,7 @@ function App() {
 								<option key={key} value={key}>{value}</option>
 							))}
 						</select>
-					</div>
+					</div> */}
 				</form>
 				<div className="preview">
 					<div className="title-button">
@@ -202,13 +220,15 @@ function processUrl(input: string) {
 		setup: setup ? setup.toString() : '',
 		query: query ? query.toString() : '',
 		variables: Object.keys(parsedVariables).length > 0 ? JSON.stringify(parsedVariables, null, 4) : '',
-		theme: Object.keys(themes).includes(theme) ? theme : 'auto'
+		orientation: url.searchParams.get('orientation') as Orientation || 'vertical',
+		// theme: Object.keys(themes).includes(theme) ? theme : 'auto'
 	} as {
 		dataset: string;
 		setup: string;
 		query: string;
 		variables: string;
-		theme: Theme;
+		orientation: Orientation;
+		// theme: Theme;
 	};
 }
 

@@ -45,6 +45,7 @@ export function createBaseSettings(): SurrealistSettings {
 			defaultDiagramDirection: "ltr",
 			expandSidebar: true,
 			valueMode: "sql",
+			queryOrientation: "vertical"
 		},
 		templates: {
 			list: []

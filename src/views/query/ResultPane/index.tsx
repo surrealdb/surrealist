@@ -1,4 +1,5 @@
-import { Box, Button, Center, Divider, Group, Pagination, Select, Stack, Text } from "@mantine/core";
+import classes from "./style.module.scss";
+import { ActionIcon, Box, Button, Center, Divider, Group, Menu, Pagination, Stack, Text, Tooltip } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
@@ -11,10 +12,11 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { QueryResponse, ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
-import { iconBroadcastOff, iconCursor, iconHelp, iconQuery } from "~/util/icons";
+import { iconBroadcastOff, iconCursor, iconQuery } from "~/util/icons";
 import { SelectionRange } from "@codemirror/state";
 import { cancelLiveQueries } from "~/connection";
 import { useDatabaseStore } from "~/stores/database";
+import { isMini } from "~/adapter";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -78,7 +80,7 @@ export function ResultPane({
 		setResultTab(1);
 	}, [responses.length]);
 
-	const modeIcon = RESULT_MODES.find(r => r.value == resultMode)?.icon ?? iconHelp;
+	const activeMode = RESULT_MODES.find(r => r.value == resultMode)!;
 	const hasSelection = selection?.empty === false;
 
 	const statusText = (showResponses
@@ -98,7 +100,7 @@ export function ResultPane({
 			title={panelTitle}
 			icon={iconQuery}
 			rightSection={
-				<Group align="center">
+				<Group align="center" wrap="nowrap" className={classes.controls}>
 					{resultMode == "live" ? (isLive && (
 						<Button
 							onClick={cancelQueries}
@@ -112,26 +114,50 @@ export function ResultPane({
 							Stop listening
 						</Button>
 					)) : (
-						<Text c={isLight ? "slate.5" : "slate.2"}>
+						<Text
+							c={isLight ? "slate.5" : "slate.2"}
+							className={classes.results}
+						>
 							{statusText}
 						</Text>
 					)}
 
-					<Select
-						data={RESULT_MODES}
-						value={resultMode}
-						onChange={setResultMode as any}
-						w={130}
-						styles={{
-							input: {
-								height: 34,
-								minHeight: 0
-							}
-						}}
-						leftSection={
-							<Icon path={modeIcon} />
-						}
-					/>
+					<Menu>
+						<Menu.Target>
+							{isMini ? (
+								<Tooltip label="Click to change mode">
+									<ActionIcon
+										aria-label={`Change result mode. Currently ${activeMode}`}
+										h={30}
+										w={30}
+									>
+										<Icon path={activeMode.icon} />
+									</ActionIcon>
+								</Tooltip>
+							) : (
+								<Button
+									size="xs"
+									radius="xs"
+									aria-label="Change result mode"
+									color="slate"
+									leftSection={<Icon path={activeMode.icon} />}
+								>
+									{activeMode.label}
+								</Button>
+							)}
+						</Menu.Target>
+						<Menu.Dropdown>
+							{RESULT_MODES.map(({ label, value, icon }) => (
+								<Menu.Item
+									key={value}
+									onClick={() => setResultMode(value)}
+									leftSection={<Icon path={icon} />}
+								>
+									{label}
+								</Menu.Item>
+							))}
+						</Menu.Dropdown>
+					</Menu>
 
 					<Button
 						size="xs"
@@ -140,6 +166,7 @@ export function ResultPane({
 						color={isQueryValid ? "surreal" : "pink.9"}
 						variant={isQueryValid ? "gradient" : "filled"}
 						style={{ border: "none" }}
+						className={classes.run}
 						rightSection={
 							<Icon path={iconCursor} />
 						}

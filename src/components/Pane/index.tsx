@@ -46,6 +46,7 @@ export function ContentPane({
 							fw={600}
 							c="bright"
 							className={classes.title}
+							style={{ flexShrink: 0 }}
 						>
 							{title}
 						</Text>
