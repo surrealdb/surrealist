@@ -17,9 +17,12 @@ import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { useUrlHandler } from "~/hooks/url";
 import { AppErrorHandler } from "./error";
+import { useConfigStore } from "~/stores/config";
+import { SANDBOX } from "~/constants";
 
 export function App() {
 	const { hideAvailableUpdate } = useInterfaceStore.getState();
+	const { setActiveConnection } = useConfigStore.getState();
 
 	const isLight = useIsLight();
 	const colorScheme = useColorScheme();
@@ -37,7 +40,7 @@ export function App() {
 	});
 
 	const handleReset = useStable(() => {
-		location.reload();
+		setActiveConnection(SANDBOX);
 	});
 
 	useUrlHandler();

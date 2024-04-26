@@ -2,7 +2,7 @@ import { Button, Divider, Group, ScrollArea, Text } from "@mantine/core";
 import { Box, Paper, Stack, Title } from "@mantine/core";
 import { FallbackProps } from "react-error-boundary";
 import { Icon } from "../Icon";
-import { iconBug, iconCheck, iconCopy, iconReset, iconWarning } from "~/util/icons";
+import { iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "~/util/icons";
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
 
@@ -36,13 +36,13 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 
 					<Group>
 						<Button
-							leftSection={<Icon path={iconReset} />}
+							leftSection={<Icon path={iconCursor} />}
 							onClick={resetErrorBoundary}
 							color="slate"
 							radius="xs"
 							size="xs"
 						>
-							Restart Surrealist
+							Resume in sandbox
 						</Button>
 						<Button
 							leftSection={<Icon path={iconBug} />}
