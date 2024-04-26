@@ -105,6 +105,24 @@ export function showError(info: {title: ReactNode, subtitle: ReactNode}) {
 }
 
 /**
+ * Display a warning notification
+ *
+ * @param title The title message
+ * @param subtitle The subtitle message
+ */
+export function showWarning(info: {title: ReactNode, subtitle: ReactNode}) {
+	showNotification({
+		color: "orange",
+		message: (
+			<Stack gap={0}>
+				<Text fw={600} c="bright">{info.title}</Text>
+				<Text>{info.subtitle}</Text>
+			</Stack>
+		),
+	});
+}
+
+/**
  * Display an informative notification
  *
  * @param title The title message

@@ -4,15 +4,15 @@ import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor } from 'surrealdb.js'
 import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from './types';
 import { getConnection } from './util/connection';
 import { useDatabaseStore } from './stores/database';
-import { connectionUri, newId, printLog, showError, versionUri } from './util/helpers';
+import { connectionUri, newId, printLog, showError, showWarning } from './util/helpers';
 import { syncDatabaseSchema } from './util/schema';
 import { ConnectedEvent, DisconnectedEvent } from './util/global-events';
 import { useInterfaceStore } from "./stores/interface";
 import { useConfigStore } from "./stores/config";
-import { compare } from "semver";
 import { objectify, sleep } from "radash";
 import { getLiveQueries } from "./util/surrealql";
 import { Value } from "surrealql.wasm/v1";
+import { queryDatabaseVersion, isUnsupported, shouldQueryDatabaseVersion } from "./util/version";
 
 const printMsg = (...args: any[]) => printLog("Conn", "#1cccfc", ...args);
 
@@ -26,7 +26,6 @@ export interface UserQueryOptions {
 }
 
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
-const MINIMUM_VERSION = import.meta.env.SDB_VERSION;
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
 const SURREAL = new Surreal({
 	engines: surrealdbWasmEngines() as any
@@ -58,39 +57,37 @@ export async function openConnection(options?: ConnectOptions) {
 
 	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
 	const rpcEndpoint = connectionUri(connection);
-	const versionEndpoint = versionUri(connection);
 
 	await closeConnection();
 
-	printMsg("Opening connection to", rpcEndpoint);
+	printMsg(`Opening connection to ${rpcEndpoint}`);
 
 	setIsConnecting(true);
 	setIsConnected(false);
 
-	if (versionEndpoint) {
-		try {
-			const versionResponse = await fetch(versionEndpoint);
-			const versionText = await versionResponse.text();
-			const version = versionText.replace(/^surrealdb-/, "").replace(/\+.+/, "");
+	if (shouldQueryDatabaseVersion(connection)) {
+		const version = await queryDatabaseVersion(connection);
 
-			if (compare(version, MINIMUM_VERSION) < 0) {
-				setIsConnecting(false);
-				setIsConnected(false);
+		if (version === null) {
+			showWarning({
+				title: "Failed to query version",
+				subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
+			});
+		} else if (isUnsupported(version)) {
+			setIsConnecting(false);
+			setIsConnected(false);
 
-				showError({
-					title: "Unsupported version",
-					subtitle: `The server is running an unsupported version of SurrealDB (${version}). Please upgrade to at least ${MINIMUM_VERSION}`
-				});
+			showError({
+				title: "Unsupported version",
+				subtitle: `The database must be version ${import.meta.env.SDB_VERSION} or higher. The current version is ${version}`
+			});
 
-				return;
-			}
-
+			return;
+		} else {
 			setVersion(version);
-
-			printMsg("Database version", version);
-		} catch(err: any) {
-			console.error("Failed to retrieve database version", err);
 		}
+
+		printMsg(`Database version ${version ?? "unknown"}`);
 	}
 
 	const isSignup = connection.authMode === "scope-signup";
