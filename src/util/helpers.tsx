@@ -228,12 +228,27 @@ export function isPermissionError(result: any) {
  * @returns The URI string
  */
 export function connectionUri(options: ConnectionOptions) {
-	const basePath = options.protocol === "mem"
-		? `${options.protocol}://`
-		: `${options.protocol}://${options.hostname}`;
+	if (options.protocol === "mem") {
+		return "mem://";
+	} else if (options.protocol === "indxdb") {
+		return `indxdb://${options.hostname}`;
+	}
 
-	const url = new URL(basePath);
-	url.pathname = url.pathname === "/" ? "/rpc" : url.pathname;
+	const url = new URL(`${options.protocol}://${options.hostname}`);
+
+	// Optionally trim existing rpc
+	if (url.pathname.endsWith("rpc")) {
+		url.pathname = url.pathname.slice(0, -3);
+	}
+
+	// Append slash if missing
+	if (!url.pathname.endsWith("/")) {
+		url.pathname += "/";
+	}
+
+	// Append rpc
+	url.pathname += "rpc";
+
 	return url.toString();
 }
 
@@ -249,9 +264,22 @@ export function versionUri(options: ConnectionOptions) {
 	}
 
 	const protocol = options.protocol.replace(/^ws/, "http");
-	const versionURI = new URL("/version", `${protocol}://${options.hostname}`);
+	const url = new URL(`${protocol}://${options.hostname}`);
 
-	return versionURI.toString();
+	// Optionally trim existing rpc
+	if (url.pathname.endsWith("rpc")) {
+		url.pathname = url.pathname.slice(0, -3);
+	}
+
+	// Append slash if missing
+	if (!url.pathname.endsWith("/")) {
+		url.pathname += "/";
+	}
+
+	// Append version
+	url.pathname += "version";
+
+	return url.toString();
 }
 
 /**
