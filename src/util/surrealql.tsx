@@ -1,4 +1,4 @@
-import { encodeCbor } from "surrealdb.js";
+import { decodeCbor, encodeCbor } from "surrealdb.js";
 import { SurrealQL, Value } from "surrealql.wasm/v1";
 
 /**
@@ -57,6 +57,16 @@ export function formatValue(value: any, json: boolean = false, pretty: boolean =
 	const parsed = Value.from_cbor(binary);
 
 	return parsed[json ? 'json' : 'format'](pretty);
+}
+
+/**
+ * Parse an SQL string back into a value structure
+ *
+ * @param value The value string
+ * @returns The parsed value structure
+ */
+export function parseValue(value: string) {
+	return decodeCbor(Value.from_string(value).to_cbor().buffer);
 }
 
 /**

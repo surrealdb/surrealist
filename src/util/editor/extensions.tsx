@@ -83,10 +83,7 @@ export const inputBase = (): Extension => [
 	closeBrackets(),
 	colorTheme(),
 	keymap.of([
-		acceptWithTab,
-		indentWithTab,
 		...closeBracketsKeymap,
-		...defaultKeymap,
 		...historyKeymap,
 	]),
 	indentUnit.of("    "),

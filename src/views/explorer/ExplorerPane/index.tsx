@@ -154,14 +154,16 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		onCreateRecord();
 	});
 
-	const openRecordQuery = (id: string, prefix: string) => {
+	const openRecordQuery = (id: RecordId, prefix: string) => {
 		setActiveView("query");
 		addQueryTab({
-			query: `${prefix} ${id}`
+			query: `${prefix} ${formatValue(id)}`
 		});
 	};
 
 	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
+		if (!(record.id instanceof RecordId)) return;
+
 		showContextMenu([
 			{
 				key: "select",
@@ -189,9 +191,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				title: "Copy record id",
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
-					if (record.id instanceof RecordId) {
-						navigator.clipboard.writeText(formatValue(record.id));
-					}
+					navigator.clipboard.writeText(formatValue(record.id));
 				}
 			},
 			{
@@ -200,10 +200,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				color: "pink.7",
 				icon: <Icon path={iconDelete} />,
 				onClick: async () => {
-					if (!record.id) return;
+					if (!(record.id instanceof RecordId)) return;
 
 					// TODO Use confirmation
-					await executeQuery(`DELETE ${record.id}`);
+					await executeQuery(`DELETE ${formatValue(record.id)}`);
 
 					fetchRecords();
 				}

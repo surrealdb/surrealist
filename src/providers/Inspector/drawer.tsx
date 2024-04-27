@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 import { useEffect, useMemo, useState } from "react";
 import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons";
-import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, Tooltip } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -16,7 +16,9 @@ import { useConfirmation } from "../Confirmation";
 import { executeQuery } from "~/connection";
 import { useDebouncedParsedObject } from "~/hooks/debounce";
 import { Value } from "surrealql.wasm/v1";
-import { encodeCbor } from "surrealdb.js";
+import { RecordId, encodeCbor } from "surrealdb.js";
+import { formatValue, parseValue } from "~/util/surrealql";
+import { CodeInput } from "~/components/Inputs";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -30,13 +32,13 @@ interface ActiveRecord {
 	isEdge: boolean;
 	exists: boolean;
 	initial: string;
-	inputs: [];
-	outputs: [];
+	inputs: RecordId[];
+	outputs: RecordId[];
 }
 
 export interface InspectorDrawerProps {
 	opened: boolean;
-	history: HistoryHandle<any>;
+	history: HistoryHandle<RecordId>;
 	onClose: () => void;
 	onRefresh: () => void;
 }
@@ -65,10 +67,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		}
 	});
 
-	const fetchRecord = useStable(async (id: string) => {
-		const contentQuery = /* surql */ `SELECT * FROM ONLY <record> $id`;
-		const inputQuery = /* surql */ `SELECT VALUE <-? FROM ONLY <record> $id`;
-		const outputsQuery = /* surql */ `SELECT VALUE ->? FROM ONLY <record> $id`;
+	const fetchRecord = useStable(async (id: RecordId) => {
+		const contentQuery = /* surql */ `SELECT * FROM ONLY $id`;
+		const inputQuery = /* surql */ `SELECT VALUE <-? FROM ONLY $id`;
+		const outputsQuery = /* surql */ `SELECT VALUE ->? FROM ONLY $id`;
 
 		const [
 			{ result: content },
@@ -78,7 +80,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 		const formatted = Value.from_cbor(new Uint8Array(encodeCbor(content))).format(true);
 
-		setRecordId(id);
+		setRecordId(formatValue(id));
 		setCurrentRecord({
 			isEdge: !!content?.in && !!content?.out,
 			exists: !!content,
@@ -107,19 +109,19 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		onRefresh();
 	});
 
-	const gotoRecord = useStable((e: any) => {
-		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
-			return;
-		}
+	const gotoRecord = useStable(() => {
+		const id = parseValue(recordId);
 
-		history.push(recordId);
+		if (id instanceof RecordId) {
+			history.push(id);
+		}
 	});
 
 	const deleteRecord = useConfirmation({
 		message: "You are about to delete this record. This action cannot be undone.",
 		confirmText: "Delete",
 		onConfirm: async () => {
-			await executeQuery(`DELETE ${history.current}`);
+			await executeQuery(`DELETE ${formatValue(history.current)}`);
 
 			history.clear();
 
@@ -198,14 +200,13 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				</Group>
 			</Group>
 
-			<TextInput
+			<CodeInput
 				mb="xs"
 				value={recordId}
 				onBlur={gotoRecord}
-				onKeyDown={gotoRecord}
+				onSubmit={gotoRecord}
 				onChange={setRecordId}
 				variant="filled"
-				onFocus={(e) => e.target.select()}
 				rightSectionWidth={76}
 				rightSection={
 					currentRecord.isEdge && (
@@ -226,6 +227,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 						fontFamily: "JetBrains Mono",
 						fontSize: 14,
 						height: 42,
+						WebkitUserSelect: "all",
+						userSelect: "all"
 					},
 				})}
 			/>
@@ -262,7 +265,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 							isLight={isLight}
 							inputs={currentRecord.inputs}
 							outputs={currentRecord.outputs}
-							onOpen={history.push}
 						/>
 					</Tabs.Panel>
 				</Tabs>

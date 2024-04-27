@@ -4,12 +4,14 @@ import { HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
 import { InspectorDrawer } from "./drawer";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { RecordId } from "surrealdb.js";
+import { parseValue } from "~/util/surrealql";
 
-type InspectFunction = (id: string) => void;
+type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;
 
 const InspectorContext = createContext<{
-	history: HistoryHandle<string>;
+	history: HistoryHandle<RecordId>;
 	inspect: InspectFunction;
 	stopInspect: StopInspectFunction;
 } | null>(null);
@@ -28,7 +30,7 @@ export function useInspector() {
 }
 
 export function InspectorProvider({ children }: PropsWithChildren) {
-	const [historyItems, setHistoryItems] = useState<string[]>([]);
+	const [historyItems, setHistoryItems] = useState<RecordId[]>([]);
 	const [isInspecting, isInspectingHandle] = useDisclosure();
 
 	const history = useHistory({
@@ -36,13 +38,21 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 		setHistory: setHistoryItems
 	});
 
-	const inspect = useStable((id: string) => {
+	const inspect = useStable((record: RecordId | string) => {
+		if (typeof record === "string") {
+			record = parseValue(record);
+
+			if (!(record instanceof RecordId)) {
+				throw new TypeError("Invalid record id");
+			}
+		}
+
 		isInspectingHandle.open();
 
 		if (isInspecting) {
-			history.push(id);
+			history.push(record);
 		} else {
-			setHistoryItems([id]);
+			setHistoryItems([record]);
 		}
 	});
 

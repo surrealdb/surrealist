@@ -2,30 +2,35 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import { surrealql } from "codemirror-surrealql";
 import { ActionIcon, Button, Group, InputBase, InputBaseProps, Popover, Stack, TextInput, Tooltip } from "@mantine/core";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { HTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { TableInfo } from "~/types";
 import { useTables } from "~/hooks/schema";
 import { iconCancel, iconCheck, iconTable } from "~/util/icons";
 import { inputBase } from "~/util/editor/extensions";
-import { EditorView, placeholder as ph } from "@codemirror/view";
+import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
 import { Compartment, EditorState, Extension } from "@codemirror/state";
+import { indentWithTab } from "@codemirror/commands";
+import { acceptWithTab } from "~/util/editor/keybinds";
 
-export interface CodeInputProps extends InputBaseProps {
+export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTMLDivElement>, 'style'|'value'|'onChange'> {
 	value: string;
 	placeholder?: string;
 	extensions?: Extension;
 	onChange: (value: string) => void;
+	onSubmit?: () => void;
 }
 
 export function CodeInput({
 	value,
 	extensions,
 	disabled,
+	multiline,
 	className,
 	placeholder,
 	onChange,
+	onSubmit,
 	...rest
 }: CodeInputProps) {
 	const ref = useRef<HTMLDivElement | null>(null);
@@ -33,13 +38,17 @@ export function CodeInput({
 		editor: EditorView;
 		editable: Compartment;
 		fallback: Compartment;
+		keymaps: Compartment;
 	}>();
 
 	useEffect(() => {
 		const editable = new Compartment();
 		const fallback = new Compartment();
+		const keymaps = new Compartment();
+
 		const editableExt = editable.of(EditorState.readOnly.of(!!disabled));
 		const fallbackExt = fallback.of(placeholder ? ph(placeholder) : []);
+		const keymapsExt = keymaps.of([]);
 
 		const changeHandler = EditorView.updateListener.of((update) => {
 			if (update.docChanged) {
@@ -55,6 +64,7 @@ export function CodeInput({
 				changeHandler,
 				editableExt,
 				fallbackExt,
+				keymapsExt,
 			]
 		});
 
@@ -63,7 +73,7 @@ export function CodeInput({
 			parent: ref.current!
 		});
 
-		editorRef.current = { editor, editable, fallback };
+		editorRef.current = { editor, editable, fallback, keymaps };
 
 		return () => {
 			editor.destroy();
@@ -108,6 +118,21 @@ export function CodeInput({
 			effects: fallback.reconfigure(fallbackExt)
 		});
 	}, [placeholder]);
+
+	useEffect(() => {
+		const { editor, keymaps } = editorRef.current!;
+		const value = keymap.of(multiline ? [acceptWithTab, indentWithTab] : [{
+			key: 'Enter',
+			run: () => {
+				onSubmit?.();
+				return true;
+			}
+		}]);
+
+		editor.dispatch({
+			effects: keymaps.reconfigure(value)
+		});
+	}, [multiline]);
 
 	return (
 		<InputBase

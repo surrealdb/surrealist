@@ -1,18 +1,17 @@
 import { Paper, Text } from "@mantine/core";
 import { ScrollArea, Group } from "@mantine/core";
+import { RecordId } from "surrealdb.js";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
 import { useIsLight } from "~/hooks/theme";
-import { OpenFn } from "~/types";
 import { iconCircle } from "~/util/icons";
 
 interface RelationsListProps {
 	name: string;
-	relations: any[];
-	onOpen: OpenFn;
+	relations: RecordId[];
 }
 
-function RelationsList({ name, relations, onOpen }: RelationsListProps) {
+function RelationsList({ name, relations }: RelationsListProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -27,8 +26,8 @@ function RelationsList({ name, relations, onOpen }: RelationsListProps) {
 				</Text>
 			)}
 
-			{relations.map((relation) => (
-				<Group key={relation} gap="xs" wrap="nowrap">
+			{relations.map((relation, i) => (
+				<Group key={i} gap="xs" wrap="nowrap">
 					<Icon path={iconCircle} size="lg" />
 					<RecordLink value={relation} />
 				</Group>
@@ -40,12 +39,11 @@ function RelationsList({ name, relations, onOpen }: RelationsListProps) {
 
 export interface RelationsTabProps {
 	isLight: boolean;
-	inputs: any[];
-	outputs: any[];
-	onOpen: OpenFn;
+	inputs: RecordId[];
+	outputs: RecordId[];
 }
 
-export function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabProps) {
+export function RelationsTab({ inputs, outputs }: RelationsTabProps) {
 	return (
 		<ScrollArea
 			flex="1 0 0"
@@ -55,13 +53,13 @@ export function RelationsTab({ isLight, inputs, outputs, onOpen }: RelationsTabP
 				Incoming relations
 			</Text>
 
-			<RelationsList name="incoming" relations={inputs} onOpen={onOpen} />
+			<RelationsList name="incoming" relations={inputs} />
 
 			<Text c="bright" size="lg" fw={600} mt="xl">
 				Outgoing relations
 			</Text>
 
-			<RelationsList name="outgoing" relations={outputs} onOpen={onOpen} />
+			<RelationsList name="outgoing" relations={outputs} />
 		</ScrollArea>
 	);
 }
