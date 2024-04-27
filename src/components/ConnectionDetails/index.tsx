@@ -73,7 +73,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 		? "Not applicable"
 		: isIndexDB
 			? "database_name"
-			: "localhost:8000";
+			: "address:port";
 
 	const isSystemMethod = SYSTEM_METHODS.has(value.connection.authMode);
 	const tokenPayload = useMemo(() => fastParseJwt(value.connection.token), [value.connection.token]);

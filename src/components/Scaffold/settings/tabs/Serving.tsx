@@ -61,7 +61,7 @@ export function ServingTab() {
 				{(driver === "file" || driver === "tikv") && (
 					<TextInput
 						label={isFileDriver ? "Storage path" : "Storage cluster address"}
-						placeholder={isFileDriver ? "/path/to/database" : "address:port"}
+						placeholder={isFileDriver ? "/path/to/storage" : "address:port"}
 						value={storage}
 						onChange={e => setStorage(e.target.value)}
 					/>
