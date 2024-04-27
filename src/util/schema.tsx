@@ -87,6 +87,11 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 		const table = dbInfo.tables.find(t => t.name === tableName)!;
 		const index = schema.tables.findIndex(t => t.schema.name === tableName);
 
+		if (!table) {
+			schema.tables.splice(index, 1);
+			continue;
+		}
+
 		const definition: TableInfo = {
 			schema: {
 				...table,
