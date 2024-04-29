@@ -16,6 +16,7 @@ import { acceptWithTab } from "~/util/editor/keybinds";
 
 export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTMLDivElement>, 'style'|'value'|'onChange'> {
 	value: string;
+	autoFocus?: boolean;
 	placeholder?: string;
 	extensions?: Extension;
 	onChange: (value: string) => void;
@@ -24,6 +25,7 @@ export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTML
 
 export function CodeInput({
 	value,
+	autoFocus,
 	extensions,
 	disabled,
 	multiline,
@@ -74,6 +76,13 @@ export function CodeInput({
 		});
 
 		editorRef.current = { editor, editable, fallback, keymaps };
+
+		if (autoFocus) {
+			const timer = setInterval(() => {
+				editor.focus();
+				if(editor.hasFocus) clearInterval(timer);
+			}, 50);
+		}
 
 		return () => {
 			editor.destroy();

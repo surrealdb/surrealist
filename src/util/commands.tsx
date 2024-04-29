@@ -354,6 +354,13 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				id: newId(),
+				name: "Open embed generator",
+				icon: iconWrench,
+				aliases: ["mini"],
+				action: intent("open-embedder")
+			},
+			{
+				id: newId(),
 				name: "Browse SurrealDB Docs",
 				icon: iconBook,
 				action: href("https://surrealdb.com/docs/")
