@@ -164,9 +164,17 @@ export async function closeConnection() {
  * Execute a query against the active connection
  */
 export async function executeQuery(query: string, params?: any) {
-	const responseRaw = await SURREAL.query_raw(query, params) || [];
+	try {
+		const responseRaw = await SURREAL.query_raw(query, params) || [];
 
-	return mapResults(responseRaw);
+		return mapResults(responseRaw);
+	} catch(err: any) {
+		return [{
+			success: false,
+			result: err.message,
+			execution_time: ''
+		}];
+	}
 }
 
 /**
@@ -239,7 +247,14 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			setQueryActive(true);
 		}
 
-		const liveIndexes = getLiveQueries(queryStr);
+		let liveIndexes: number[];
+
+		try {
+			liveIndexes = getLiveQueries(queryStr);
+		} catch(err: any) {
+			console.warn("Failed to parse live queries", err);
+			liveIndexes = [];
+		}
 
 		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.connection.protocol)) {
 			showError({
@@ -248,8 +263,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			});
 		}
 
-		const responseRaw = await SURREAL.query_raw(queryStr, variableJson) || [];
-		const response = mapResults(responseRaw);
+		const response = await executeQuery(queryStr, variableJson) || [];
 		const liveIds = liveIndexes.flatMap(idx => {
 			const res = response[idx];
 
