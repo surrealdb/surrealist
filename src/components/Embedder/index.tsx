@@ -113,7 +113,6 @@ export function Embedder({
 				src="${frameUrl}"
 				title="Surrealist Mini"
 				frameborder="0"
-				allow="clipboard-write;"
 				referrerpolicy="strict-origin-when-cross-origin">
 			</iframe>
 		`);

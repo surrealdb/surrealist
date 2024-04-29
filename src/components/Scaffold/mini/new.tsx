@@ -51,7 +51,6 @@ export function MiniNewScaffold() {
 									height="500"
 									src={url}
 									title="Surrealist Mini"
-									allow="clipboard-write;"
 									referrerPolicy="strict-origin-when-cross-origin"
 									allowTransparency
 									style={{
