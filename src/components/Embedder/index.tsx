@@ -33,13 +33,13 @@ const DATASET_OPTIONS = [
 function SectionTitle({ children, help, extra }: PropsWithChildren<{ help?: string, extra?: ReactNode }>) {
 	return (
 		<Group mb="sm" gap="xs">
-			<Text fw={600} fz="lg">
+			<Text fw={600} fz="lg" c="bright">
 				{children}
 			</Text>
 			{help && (
 				<Tooltip label={help}>
 					<Box>
-						<Icon path={iconHelp} size="sm" c="slate.2" />
+						<Icon path={iconHelp} size="sm" />
 					</Box>
 				</Tooltip>
 			)}

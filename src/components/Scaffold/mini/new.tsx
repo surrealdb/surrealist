@@ -1,10 +1,13 @@
-import { MantineProvider, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, MantineProvider, Paper, ScrollArea, SimpleGrid, Stack, Text } from "@mantine/core";
 import { MANTINE_THEME } from "~/util/mantine";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { Embedder } from "~/components/Embedder";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
+import { useDebouncedState } from "@mantine/hooks";
 
 export function MiniNewScaffold() {
+	const [url, setUrl] = useDebouncedState("", 750);
+
 	return (
 		<FeatureFlagsProvider>
 			<MantineProvider
@@ -28,11 +31,37 @@ export function MiniNewScaffold() {
 						</Text>
 					</Stack>
 					<Paper
-						maw={750}
+						maw={1500}
 						p="xl"
 						mx="auto"
 					>
-						<Embedder />
+						<SimpleGrid cols={2} spacing={52}>
+							<Embedder
+								onChange={setUrl}
+							/>
+							<Box>
+								<Text fw={600} fz="lg" mb={2} c="bright">
+									Embed Preview
+								</Text>
+								<Text c="slate.2" mb="lg">
+									The preview will automatically reload after making changes
+								</Text>
+								<iframe
+									width="100%"
+									height="500"
+									src={url}
+									title="Surrealist Mini"
+									allow="clipboard-write;"
+									referrerPolicy="strict-origin-when-cross-origin"
+									allowTransparency
+									style={{
+										border: "none",
+										borderRadius: 24,
+										backgroundColor: "black"
+									}}
+								/>
+							</Box>
+						</SimpleGrid>
 					</Paper>
 				</ScrollArea>
 			</MantineProvider>
