@@ -4,7 +4,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useInputState } from "@mantine/hooks";
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
@@ -12,10 +12,10 @@ import { useTableNames } from "~/hooks/schema";
 import { Label } from "~/components/Scaffold/settings/utilities";
 import { executeQuery } from "~/connection";
 import { RecordId, Table } from "surrealdb.js";
-import { useDebouncedParsedObject } from "~/hooks/debounce";
 import { surqlLinting } from "~/util/editor/extensions";
 import { surrealql } from "codemirror-surrealql";
 import { EditorView } from "@codemirror/view";
+import { useValueValidator } from "~/hooks/surrealql";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -27,13 +27,11 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const [recordTable, setRecordTable] = useState('');
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
-
-	const parsedBody = useDebouncedParsedObject(200, recordBody);
-	const isBodyValid = useMemo(() => !!parsedBody, [parsedBody]);
+	const [isValid, content] = useValueValidator(recordBody);
 	const tables = useTableNames();
 
 	const handleSubmit = useStable(async () => {
-		if (!isBodyValid) {
+		if (!isValid) {
 			return;
 		}
 
@@ -41,9 +39,9 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			? new RecordId(recordTable, recordId)
 			: new Table(recordTable);
 
-		await executeQuery(/* surql */ `CREATE <record> $id CONTENT $content`, {
+		await executeQuery(/* surql */ `CREATE $id CONTENT $content`, {
 			id,
-			content: parsedBody
+			content
 		});
 
 		onClose();
@@ -86,12 +84,12 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 
 				<Spacer />
 
-				{!isBodyValid && (
+				{!isValid && (
 					<Badge
 						color="red"
 						variant="light"
 					>
-						Invalid record json
+						Invalid content
 					</Badge>
 				)}
 
@@ -113,7 +111,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					/>
 					<TextInput
 						mb="xs"
-						label="Record id"
+						label="Id"
 						value={recordId}
 						onChange={setRecordId}
 						placeholder="Leave empty to generate"
@@ -142,7 +140,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			</Stack>
 
 			<Button
-				disabled={!isBodyValid}
+				disabled={!isValid}
 				variant="gradient"
 				onClick={handleSubmit}
 				rightSection={

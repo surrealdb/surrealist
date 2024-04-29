@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons";
 import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, Tooltip } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
@@ -14,11 +14,10 @@ import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
 import { useConfirmation } from "../Confirmation";
 import { executeQuery } from "~/connection";
-import { useDebouncedParsedObject } from "~/hooks/debounce";
-import { Value } from "surrealql.wasm/v1";
-import { RecordId, encodeCbor } from "surrealdb.js";
+import { RecordId } from "surrealdb.js";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeInput } from "~/components/Inputs";
+import { useValueValidator } from "~/hooks/surrealql";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -50,12 +49,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 	const isLight = useIsLight();
 	const inputColor = currentRecord.exists ? undefined : 'var(--mantine-color-red-6)';
-
-	const parsedBody = useDebouncedParsedObject(200, recordBody);
-	const isBodyValid = useMemo(() => !!parsedBody, [parsedBody]);
+	const [isValid, content] = useValueValidator(recordBody);
 
 	const saveHandle = useSaveable({
-		valid: isBodyValid,
+		valid: isValid,
 		track: {
 			recordBody
 		},
@@ -78,7 +75,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			{ result: outputs}
 		] = await executeQuery(`${contentQuery};${inputQuery};${outputsQuery}`, { id });
 
-		const formatted = Value.from_cbor(new Uint8Array(encodeCbor(content))).format(true);
+		const formatted = formatValue(content, false, true);
 
 		setRecordId(formatValue(id));
 		setCurrentRecord({
@@ -103,10 +100,13 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	});
 
 	const saveRecord = useStable(async () => {
-		await executeQuery(`UPDATE ${history.current} CONTENT ${recordBody}`);
+		await executeQuery(/* surql */ `UPDATE $id CONTENT $content`, {
+			id: history.current,
+			content
+		});
 
-		refreshRecord();
 		onRefresh();
+		onClose();
 	});
 
 	const gotoRecord = useStable(() => {
@@ -121,7 +121,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		message: "You are about to delete this record. This action cannot be undone.",
 		confirmText: "Delete",
 		onConfirm: async () => {
-			await executeQuery(`DELETE ${formatValue(history.current)}`);
+			await executeQuery(/* surql */ `DELETE ${formatValue(history.current)}`);
 
 			history.clear();
 
