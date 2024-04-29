@@ -8,16 +8,17 @@
 		"SurrealDB"
 	],
 	"scripts": {
-		"dev": "vite",
 		"build": "tsc && pnpm grammar:build && vite build",
-		"preview": "vite preview",
-		"tauri": "tauri",
-		"tauri:dev": "tauri dev",
-		"tauri:build": "tauri build",
+		"dev": "vite",
+		"grammar:build": "cd packages/lezer-surrealql && pnpm build && cd ../codemirror-surrealql && pnpm build",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"license-report": "license-report --fields name --fields licenseType --fields link --fields installedVersion --fields author > src/assets/data/license-report.json",
-		"grammar:build": "cd packages/lezer-surrealql && pnpm build && cd ../codemirror-surrealql && pnpm build"
+		"preview": "vite preview",
+		"start": "vite",
+		"tauri": "tauri",
+		"tauri:dev": "tauri dev",
+		"tauri:build": "tauri build"
 	},
 	"dependencies": {
 		"@codemirror/autocomplete": "^6.13.0",
