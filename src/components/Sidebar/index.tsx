@@ -83,7 +83,7 @@ export function Sidebar({
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, [flags]);
+	}, [flags, connection]);
 
 	const shouldExpand = connection && expandable && expanded;
 	const nudgeSidebar = adapter.platform === "darwin" && isDesktop;
