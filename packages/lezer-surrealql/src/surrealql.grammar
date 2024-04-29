@@ -216,18 +216,21 @@
   // Remove statement
 
   RemoveStatement {
-	  ( namespace IfExistsClause? Ident ) |
-	  ( database IfExistsClause? Ident ) |
-	  ( user IfExistsClause? Ident on ( root | namespace | database ) ) |
-	  ( token IfExistsClause? Ident on ( namespace | database | scope ) ) |
-	  ( event IfExistsClause? Ident on table? Ident ) |
-	  ( field IfExistsClause? Ident on table? Ident ) |
-	  ( index IfExistsClause? Ident on table? Ident ) |
-	  ( analyzer IfExistsClause? Ident ) |
-	  ( function IfExistsClause? customFunctionName ) |
-	  ( param IfExistsClause? VariableName ) |
-	  ( scope IfExistsClause? Ident ) |
-	  ( table IfExistsClause? Ident )
+	 remove
+	 (
+		( namespace IfExistsClause? Ident ) |
+		( database IfExistsClause? Ident ) |
+		( user IfExistsClause? Ident on ( root | namespace | database ) ) |
+		( token IfExistsClause? Ident on ( namespace | database | scope ) ) |
+		( event IfExistsClause? Ident on table? Ident ) |
+		( field IfExistsClause? Ident on table? Ident ) |
+		( index IfExistsClause? Ident on table? Ident ) |
+		( analyzer IfExistsClause? Ident ) |
+		( function IfExistsClause? customFunctionName ) |
+		( param IfExistsClause? VariableName ) |
+		( scope IfExistsClause? Ident ) |
+		( table IfExistsClause? Ident )
+	 )
   }
 
   // Data statements
@@ -1093,6 +1096,7 @@
 	  readonly			[@name=Keyword],
 	  relate			[@name=Keyword],
 	  relation			[@name=Keyword],
+	  remove			[@name=Keyword],
 	  return			[@name=Keyword],
 	  roles				[@name=Keyword],
 	  root				[@name=Keyword],
