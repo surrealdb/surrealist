@@ -238,7 +238,7 @@
   CreateStatement {
 	  create only?
 	  ( Ident | VariableName | Function )
-	  ( ContentClause | SetClause )?
+	  ( ContentClause | SetClause | UnsetClause )?
 	  ReturnClause?
 	  TimeoutClause?
 	  ParallelClause?
@@ -368,7 +368,8 @@
 				  ContentClause |
 				  MergeClause |
 				  PatchClause |
-				  SetClause
+				  SetClause |
+				  UnsetClause
 			  )?
 			  WhereClause?
 			  ReturnClause?
@@ -631,6 +632,10 @@
 
   SetClause {
 	  set commaSep<FieldAssignment>
+  }
+
+  UnsetClause {
+	unset commaSep<FieldAssignment>
   }
 
   IfNotExistsClause {
@@ -1129,6 +1134,7 @@
 	  transaction		[@name=Keyword],
 	  type				[@name=Keyword],
 	  unique			[@name=Keyword],
+	  unset				[@name=Keyword],
 	  update			[@name=Keyword],
 	  use				[@name=Keyword],
 	  user				[@name=Keyword],
