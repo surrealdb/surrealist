@@ -114,7 +114,6 @@ export async function openConnection(options?: ConnectOptions) {
 						const { openScopeSignup } = useInterfaceStore.getState();
 
 						if (err.message.includes("No record was returned")) {
-
 							openScopeSignup();
 						} else {
 							throw new Error("Connection failed");

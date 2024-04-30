@@ -1,10 +1,11 @@
-import { Alert, Button, Group, Modal, Stack, Table, Text } from "@mantine/core";
+import { Alert, Button, Group, Modal, PasswordInput, Stack, Table, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { openConnection } from "~/connection";
+import { HIDDEN_SCOPE_FIELDS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
@@ -70,17 +71,36 @@ export function ScopeSignup() {
 				<Table>
 					<Table.Thead>
 						<Table.Tr>
-							<Table.Th>Scope field</Table.Th>
-							<Table.Th>Value</Table.Th>
+							<Table.Th w="50%">Scope field</Table.Th>
+							<Table.Th w="50%">Value</Table.Th>
 						</Table.Tr>
 					</Table.Thead>
 					<Table.Tbody>
-						{connection.scopeFields.map((field) => (
-							<Table.Tr key={field.subject}>
-								<Table.Td c="bright">{field.subject}</Table.Td>
-								<Table.Td c="bright">{field.value}</Table.Td>
-							</Table.Tr>
-						))}
+						{connection.scopeFields.map((field) => {
+							const fieldName = field.subject.toLowerCase();
+							const ValueInput = HIDDEN_SCOPE_FIELDS.has(fieldName)
+								? PasswordInput
+								: TextInput;
+
+							return (
+								<Table.Tr key={field.subject}>
+									<Table.Td c="bright">{field.subject}</Table.Td>
+									<Table.Td c="bright">
+										<ValueInput
+											size="xs"
+											readOnly
+											variant="unstyled"
+											value={field.subject}
+											styles={{
+												input: {
+													backgroundColor: "unset"
+												}
+											}}
+										/>
+									</Table.Td>
+								</Table.Tr>
+							);
+						})}
 					</Table.Tbody>
 				</Table>
 

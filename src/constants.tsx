@@ -2,8 +2,8 @@ import queryIcon from "~/assets/animation/query.json";
 import explorerIcon from "~/assets/animation/explorer.json";
 import designerIcon from "~/assets/animation/designer.json";
 import authIcon from "~/assets/animation/auth.json";
-
 import { getConnection } from "./util/connection";
+
 import {
 	AuthMode,
 	CodeLang,
@@ -16,6 +16,7 @@ import {
 	ViewMode,
 	Orientation,
 } from "./types";
+
 import {
 	iconAPI,
 	iconAuth,
@@ -41,6 +42,7 @@ export interface ListingItem {
 export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
+export const HIDDEN_SCOPE_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
 export const DATASETS: Record<string, DataSet> = {

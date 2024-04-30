@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
 import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip, Alert, SimpleGrid, Popover } from "@mantine/core";
-import { CONNECTION_PROTOCOLS, AUTH_MODES } from "~/constants";
+import { CONNECTION_PROTOCOLS, AUTH_MODES, HIDDEN_SCOPE_FIELDS } from "~/constants";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
@@ -286,45 +286,52 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					</Text>
 				) : (
 					<Stack>
-						{value.connection.scopeFields?.map((field, i) => (
-							<Paper key={i}>
-								<Group>
-									<TextInput
-										placeholder="Field name"
-										style={{ flex: 1 }}
-										value={field.subject}
-										onChange={(e) =>
-											onChange((draft) => {
-												draft.connection.scopeFields[i].subject = e.target.value;
-											})
-										}
-									/>
-									<TextInput
-										placeholder="Value"
-										style={{ flex: 1 }}
-										value={field.value}
-										onChange={(e) =>
-											onChange((draft) => {
-												draft.connection.scopeFields[i].value = e.target.value;
-											})
-										}
-									/>
-									<Tooltip label="Remove field">
-										<ActionIcon
-											color="pink.9"
-											aria-label="Remove scope field"
-											onClick={() =>
+						{value.connection.scopeFields?.map((field, i) => {
+							const fieldName = field.subject.toLowerCase();
+							const ValueInput = HIDDEN_SCOPE_FIELDS.has(fieldName)
+								? PasswordInput
+								: TextInput;
+
+							return (
+								<Paper key={i}>
+									<Group>
+										<TextInput
+											placeholder="Field name"
+											style={{ flex: 1 }}
+											value={field.subject}
+											onChange={(e) =>
 												onChange((draft) => {
-													draft.connection.scopeFields.splice(i, 1);
+													draft.connection.scopeFields[i].subject = e.target.value;
 												})
 											}
-										>
-											<Icon path={iconClose} color="red" />
-										</ActionIcon>
-									</Tooltip>
-								</Group>
-							</Paper>
-						))}
+										/>
+										<ValueInput
+											placeholder="Value"
+											style={{ flex: 1 }}
+											value={field.value}
+											onChange={(e) =>
+												onChange((draft) => {
+													draft.connection.scopeFields[i].value = e.target.value;
+												})
+											}
+										/>
+										<Tooltip label="Remove field">
+											<ActionIcon
+												color="pink.9"
+												aria-label="Remove scope field"
+												onClick={() =>
+													onChange((draft) => {
+														draft.connection.scopeFields.splice(i, 1);
+													})
+												}
+											>
+												<Icon path={iconClose} color="red" />
+											</ActionIcon>
+										</Tooltip>
+									</Group>
+								</Paper>
+							);
+						})}
 					</Stack>
 				)}
 
