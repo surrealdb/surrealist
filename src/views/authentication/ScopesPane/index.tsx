@@ -127,15 +127,20 @@ export function ScopePane() {
 				...params
 			});
 
-			await authenticate(auth);
-
 			showInfo({
 				title: "User registered",
 				subtitle: "The user has been successfully registered"
 			});
 		} catch(err: any) {
 			console.warn('Failed to register user', err);
+
+			showError({
+				title: "Registration failed",
+				subtitle: err.message
+			});
 		} finally {
+			await authenticate(auth);
+
 			setLoading(false);
 			registerHandle.close();
 		}
