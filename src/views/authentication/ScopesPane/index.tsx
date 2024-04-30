@@ -1,6 +1,6 @@
-import { Badge, ScrollArea, Text, Tooltip } from "@mantine/core";
+import { Badge, PasswordInput, ScrollArea, Table, Text, Tooltip } from "@mantine/core";
 import { ActionIcon, Button, Center, Group, Modal, Stack, TextInput } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
+import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -10,20 +10,27 @@ import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { SchemaScope } from "~/types";
-import { showError } from "~/util/helpers";
+import { SchemaScope, ScopeField } from "~/types";
+import { extractVariables, showError } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
 import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
 import { executeQuery } from "~/connection";
 import { getStatementCount } from "~/util/surrealql";
+import { mdiAccountPlusOutline } from "@mdi/js";
+import { useImmer } from "use-immer";
+import { HIDDEN_SCOPE_FIELDS } from "~/constants";
 
 export function ScopePane() {
 	const isOnline = useIsConnected();
 	const schema = useSchema();
 
-	const [isEditing, setIsEditing] = useState(false);
+	const [isRegistring, registerHandle] = useDisclosure();
+	const [registerScope, setRegisterScope] = useState("");
+	const [registerFields, setRegisterFields] = useImmer<ScopeField[]>([]);
+
+	const [isEditing, editingHandle] = useDisclosure();
 	const [isCreating, setIsCreating] = useState(false);
 	const [editingName, setEditingName] = useInputState("");
 	const [editingSignin, setEditingSignin] = useInputState("");
@@ -32,13 +39,9 @@ export function ScopePane() {
 
 	const scopes = (schema?.scopes || []) as SchemaScope[];
 
-	const closeEditing = useStable(() => {
-		setIsEditing(false);
-	});
-
 	const saveScope = useStable(async () => {
 		try {
-			setIsEditing(false);
+			editingHandle.close();
 
 			let query = `DEFINE SCOPE ${editingName}`;
 
@@ -68,8 +71,20 @@ export function ScopePane() {
 		}
 	});
 
+	const registerUser = useStable((scope: SchemaScope) => {
+		registerHandle.open();
+		setRegisterScope(scope.name);
+
+		const fields = extractVariables(scope.signup || "").map((field) => ({
+			subject: field,
+			value: "",
+		}));
+
+		setRegisterFields(fields);
+	});
+
 	const createScope = useStable(() => {
-		setIsEditing(true);
+		editingHandle.open();
 		setIsCreating(true);
 		setEditingName("");
 		setEditingSession("");
@@ -78,7 +93,7 @@ export function ScopePane() {
 	});
 
 	const editScope = useStable((scope: SchemaScope) => {
-		setIsEditing(true);
+		editingHandle.open();
 		setIsCreating(false);
 		setEditingName(scope.name);
 		setEditingSession(scope.session || "");
@@ -90,11 +105,7 @@ export function ScopePane() {
 		await executeQuery(`REMOVE SCOPE ${editingName}`);
 		await syncDatabaseSchema();
 
-		closeModal();
-	});
-
-	const closeModal = useStable(() => {
-		setIsEditing(false);
+		editingHandle.close();
 	});
 
 	useIntent("create-scope", createScope);
@@ -143,6 +154,15 @@ export function ScopePane() {
 											? "Signup only"
 											: "No auth"}
 							</Badge>
+							<Tooltip label="Register user">
+								<ActionIcon
+									onClick={() => registerUser(scope)}
+									variant="subtle"
+									aria-label="Register user"
+								>
+									<Icon path={mdiAccountPlusOutline} />
+								</ActionIcon>
+							</Tooltip>
 							<Tooltip label="Edit scope">
 								<ActionIcon
 									onClick={() => editScope(scope)}
@@ -159,8 +179,77 @@ export function ScopePane() {
 
 			<Modal
 				size="md"
+				opened={isRegistring}
+				onClose={registerHandle.close}
+				trapFocus={false}
+				title={
+					<ModalTitle>Register user</ModalTitle>
+				}
+			>
+				<Text>
+					Please fill out the following required fields to register a new user to the scope <Text span c="bright">{registerScope}</Text>.
+				</Text>
+
+				<Table mt="md">
+					<Table.Thead>
+						<Table.Tr>
+							<Table.Th w="50%">Scope field</Table.Th>
+							<Table.Th w="50%">Value</Table.Th>
+						</Table.Tr>
+					</Table.Thead>
+					<Table.Tbody>
+						{registerFields.map((field, i) => {
+							const fieldName = field.subject.toLowerCase();
+							const ValueInput = HIDDEN_SCOPE_FIELDS.has(fieldName)
+								? PasswordInput
+								: TextInput;
+
+							return (
+								<Table.Tr key={field.subject}>
+									<Table.Td c="bright">
+										<Text fw={600}>
+											{field.subject}
+										</Text>
+									</Table.Td>
+									<Table.Td c="bright">
+										<ValueInput
+											size="xs"
+											value={field.value}
+											onChange={e =>
+												setRegisterFields((draft) => {
+													draft[i].value = e.target.value;
+												})
+											}
+										/>
+									</Table.Td>
+								</Table.Tr>
+							);
+						})}
+					</Table.Tbody>
+				</Table>
+				<Group mt="lg">
+					<Button
+						onClick={registerHandle.close}
+						variant="light"
+						color="slate"
+					>
+						Close
+					</Button>
+					<Spacer />
+					<Button
+						variant="gradient"
+						type="submit"
+						rightSection={<Icon path={mdiAccountPlusOutline} />}
+					>
+						Register
+					</Button>
+				</Group>
+			</Modal>
+
+			<Modal
+				size="md"
 				opened={isEditing}
-				onClose={closeEditing}
+				onClose={editingHandle.close}
 				trapFocus={false}
 				title={
 					<ModalTitle>{isCreating ? "Create scope" : "Update scope"}</ModalTitle>
@@ -202,7 +291,7 @@ export function ScopePane() {
 					</Stack>
 					<Group mt="lg">
 						<Button
-							onClick={closeModal}
+							onClick={editingHandle.close}
 							variant="light"
 							color="slate"
 						>

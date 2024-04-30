@@ -84,7 +84,11 @@ export function ScopeSignup() {
 
 							return (
 								<Table.Tr key={field.subject}>
-									<Table.Td c="bright">{field.subject}</Table.Td>
+									<Table.Td c="bright">
+										<Text fw={600}>
+											{field.subject}
+										</Text>
+									</Table.Td>
 									<Table.Td c="bright">
 										<ValueInput
 											size="xs"
