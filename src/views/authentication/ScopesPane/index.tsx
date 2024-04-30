@@ -149,8 +149,6 @@ export function ScopePane() {
 	useIntent("create-scope", createScope);
 
 	useIntent("register-user", ({ scope }) => {
-		if (!scope) return;
-
 		const info = schema.scopes.find((s) => s.name === scope);
 
 		if (info) {
