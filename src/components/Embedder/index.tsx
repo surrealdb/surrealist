@@ -8,7 +8,7 @@ import { surrealql } from "codemirror-surrealql";
 import { DATASETS, ORIENTATIONS } from "~/constants";
 import { CodeInput } from "../Inputs";
 import { PropsWithChildren, ReactNode, useLayoutEffect, useMemo, useState } from "react";
-import { isDevelopment } from "~/util/environment";
+import { isDevelopment, isProduction } from "~/util/environment";
 import { Icon } from "../Icon";
 import { iconHelp } from "~/util/icons";
 import { CodePreview } from "../CodePreview";
@@ -99,6 +99,11 @@ export function Embedder({
 
 		const url = new URL(location.toString());
 
+		if (isProduction && !url.hostname.endsWith("surrealist.app")) {
+			url.hostname = "surrealist.app";
+			url.port = "";
+		}
+
 		url.pathname = isDevelopment ? 'mini/run.html' : 'mini';
 		url.search = search.toString();
 
@@ -112,7 +117,7 @@ export function Embedder({
 				height="500"
 				src="${frameUrl}"
 				title="Surrealist Mini"
-				frameborder="0"
+				frameborder="0" 
 				referrerpolicy="strict-origin-when-cross-origin">
 			</iframe>
 		`);
