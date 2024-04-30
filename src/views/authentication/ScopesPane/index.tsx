@@ -7,28 +7,30 @@ import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
-import { useIsConnected } from "~/hooks/connection";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaScope, ScopeField } from "~/types";
-import { extractVariables, showError } from "~/util/helpers";
+import { extractVariables, showError, showInfo } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
 import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
-import { executeQuery } from "~/connection";
+import { authenticate, composeAuthentication, executeQuery, register } from "~/connection";
 import { getStatementCount } from "~/util/surrealql";
 import { mdiAccountPlusOutline } from "@mdi/js";
 import { useImmer } from "use-immer";
 import { HIDDEN_SCOPE_FIELDS } from "~/constants";
 
 export function ScopePane() {
+	const { connection } = useActiveConnection();
 	const isOnline = useIsConnected();
 	const schema = useSchema();
 
 	const [isRegistring, registerHandle] = useDisclosure();
 	const [registerScope, setRegisterScope] = useState("");
 	const [registerFields, setRegisterFields] = useImmer<ScopeField[]>([]);
+	const [isLoading, setLoading] = useState(false);
 
 	const [isEditing, editingHandle] = useDisclosure();
 	const [isCreating, setIsCreating] = useState(false);
@@ -71,7 +73,7 @@ export function ScopePane() {
 		}
 	});
 
-	const registerUser = useStable((scope: SchemaScope) => {
+	const openRegistration = useStable((scope: SchemaScope) => {
 		registerHandle.open();
 		setRegisterScope(scope.name);
 
@@ -106,6 +108,37 @@ export function ScopePane() {
 		await syncDatabaseSchema();
 
 		editingHandle.close();
+	});
+
+	const registerUser = useStable(async () => {
+		const auth = composeAuthentication(connection);
+		const params = registerFields.reduce((acc, field) => {
+			acc[field.subject] = field.value;
+			return acc;
+		}, {} as any);
+
+		try {
+			setLoading(true);
+
+			await register({
+				scope: registerScope,
+				namespace: connection.namespace,
+				database: connection.database,
+				...params
+			});
+
+			await authenticate(auth);
+
+			showInfo({
+				title: "User registered",
+				subtitle: "The user has been successfully registered"
+			});
+		} catch(err: any) {
+			console.warn('Failed to register user', err);
+		} finally {
+			setLoading(false);
+			registerHandle.close();
+		}
 	});
 
 	useIntent("create-scope", createScope);
@@ -156,7 +189,7 @@ export function ScopePane() {
 							</Badge>
 							<Tooltip label="Register user">
 								<ActionIcon
-									onClick={() => registerUser(scope)}
+									onClick={() => openRegistration(scope)}
 									variant="subtle"
 									aria-label="Register user"
 								>
@@ -190,60 +223,63 @@ export function ScopePane() {
 					Please fill out the following required fields to register a new user to the scope <Text span c="bright">{registerScope}</Text>.
 				</Text>
 
-				<Table mt="md">
-					<Table.Thead>
-						<Table.Tr>
-							<Table.Th w="50%">Scope field</Table.Th>
-							<Table.Th w="50%">Value</Table.Th>
-						</Table.Tr>
-					</Table.Thead>
-					<Table.Tbody>
-						{registerFields.map((field, i) => {
-							const fieldName = field.subject.toLowerCase();
-							const ValueInput = HIDDEN_SCOPE_FIELDS.has(fieldName)
-								? PasswordInput
-								: TextInput;
+				<Form onSubmit={registerUser}>
+					<Table mt="md">
+						<Table.Thead>
+							<Table.Tr>
+								<Table.Th w="50%">Scope field</Table.Th>
+								<Table.Th w="50%">Value</Table.Th>
+							</Table.Tr>
+						</Table.Thead>
+						<Table.Tbody>
+							{registerFields.map((field, i) => {
+								const fieldName = field.subject.toLowerCase();
+								const ValueInput = HIDDEN_SCOPE_FIELDS.has(fieldName)
+									? PasswordInput
+									: TextInput;
 
-							return (
-								<Table.Tr key={field.subject}>
-									<Table.Td c="bright">
-										<Text fw={600}>
-											{field.subject}
-										</Text>
-									</Table.Td>
-									<Table.Td c="bright">
-										<ValueInput
-											size="xs"
-											value={field.value}
-											onChange={e =>
-												setRegisterFields((draft) => {
-													draft[i].value = e.target.value;
-												})
-											}
-										/>
-									</Table.Td>
-								</Table.Tr>
-							);
-						})}
-					</Table.Tbody>
-				</Table>
-				<Group mt="lg">
-					<Button
-						onClick={registerHandle.close}
-						variant="light"
-						color="slate"
-					>
-						Close
-					</Button>
-					<Spacer />
-					<Button
-						variant="gradient"
-						type="submit"
-						rightSection={<Icon path={mdiAccountPlusOutline} />}
-					>
-						Register
-					</Button>
-				</Group>
+								return (
+									<Table.Tr key={field.subject}>
+										<Table.Td c="bright">
+											<Text fw={600}>
+												{field.subject}
+											</Text>
+										</Table.Td>
+										<Table.Td c="bright">
+											<ValueInput
+												size="xs"
+												value={field.value}
+												onChange={e =>
+													setRegisterFields((draft) => {
+														draft[i].value = e.target.value;
+													})
+												}
+											/>
+										</Table.Td>
+									</Table.Tr>
+								);
+							})}
+						</Table.Tbody>
+					</Table>
+					<Group mt="lg">
+						<Button
+							onClick={registerHandle.close}
+							variant="light"
+							color="slate"
+						>
+							Close
+						</Button>
+						<Spacer />
+						<Button
+							variant="gradient"
+							type="submit"
+							rightSection={<Icon path={mdiAccountPlusOutline} />}
+							loading={isLoading}
+						>
+							Register
+						</Button>
+					</Group>
+				</Form>
 			</Modal>
 
 			<Modal
