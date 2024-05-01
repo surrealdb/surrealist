@@ -22,11 +22,11 @@ const InspectorContext = createContext<{
 export function useInspector() {
 	const ctx = useContext(InspectorContext);
 
-	if (!ctx) {
-		throw new Error("useInspector must be used within an InspectorProvider");
-	}
-
-	return ctx;
+	return ctx ?? {
+		history: [],
+		inspect: () => {},
+		stopInspect: () => {}
+	};
 }
 
 export function InspectorProvider({ children }: PropsWithChildren) {

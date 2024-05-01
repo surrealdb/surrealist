@@ -153,6 +153,7 @@ export function DataTable(props: DataTableProps) {
 		<ScrollArea
 			className={classes.root}
 			scrollbars="xy"
+			{...rest}
 		>
 			<Table className={classes.table}>
 				<thead>
