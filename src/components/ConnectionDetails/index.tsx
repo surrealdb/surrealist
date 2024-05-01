@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
 import { Group, Select, TextInput, Stack, Divider, PasswordInput, Button, Modal, Paper, ActionIcon, Tooltip, Alert, SimpleGrid, Popover } from "@mantine/core";
-import { CONNECTION_PROTOCOLS, AUTH_MODES, SENSITVE_SCOPE_FIELDS } from "~/constants";
+import { CONNECTION_PROTOCOLS, AUTH_MODES, SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
@@ -288,7 +288,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					<Stack>
 						{value.connection.scopeFields?.map((field, i) => {
 							const fieldName = field.subject.toLowerCase();
-							const ValueInput = SENSITVE_SCOPE_FIELDS.has(fieldName)
+							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(fieldName)
 								? PasswordInput
 								: TextInput;
 

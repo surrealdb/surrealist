@@ -5,7 +5,7 @@ import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { openConnection } from "~/connection";
-import { SENSITVE_SCOPE_FIELDS } from "~/constants";
+import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
@@ -78,7 +78,7 @@ export function ScopeSignup() {
 					<Table.Tbody>
 						{connection.scopeFields.map((field) => {
 							const fieldName = field.subject.toLowerCase();
-							const ValueInput = SENSITVE_SCOPE_FIELDS.has(fieldName)
+							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(fieldName)
 								? PasswordInput
 								: TextInput;
 
