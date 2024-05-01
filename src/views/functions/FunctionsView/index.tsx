@@ -1,4 +1,4 @@
-import { Button, Center, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Center, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { FunctionsPanel } from "../FunctionsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { ChangeEvent, useRef, useState } from "react";
@@ -16,6 +16,9 @@ import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useViewEffect } from "~/hooks/view";
 import { executeQuery } from "~/connection";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { usePanelMinSize } from "~/hooks/panels";
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
@@ -107,52 +110,55 @@ export function FunctionsView() {
 		syncDatabaseSchema();
 	});
 
+	const [minSize, ref] = usePanelMinSize(275);
+
 	return (
 		<>
-			<Group
-				wrap="nowrap"
-				gap="var(--surrealist-divider-size)"
-				h="100%"
-				mah="100%"
-				style={{ flexShrink: 1, minHeight: 0 }}
-			>
-				<FunctionsPanel
-					active={details?.name || ''}
-					functions={functions}
-					onCreate={openCreator}
-					onDelete={removeFunction}
-					onDuplicate={duplicateFunction}
-					onSelect={editFunction}
-				/>
-				{details ? (
-					<EditorPanel
-						handle={handle}
-						details={details}
-						isCreating={isCreating}
-						onChange={setDetails as any}
-						onDelete={removeFunction}
-					/>
-				) : (
-					<Center flex={1}>
-						<Stack
-							align="center"
-							justify="center"
-						>
-							<Icon path={iconFunction} size={2.5} />
-							Select a function to view or edit
-							<Group>
-								<Button
-									variant="light"
-									leftSection={<Icon path={iconPlus} />}
-									onClick={openCreator}
+			<Box h="100%" ref={ref}>
+				<PanelGroup direction="horizontal">
+					<Panel defaultSize={minSize} minSize={minSize}>
+						<FunctionsPanel
+							active={details?.name || ''}
+							functions={functions}
+							onCreate={openCreator}
+							onDelete={removeFunction}
+							onDuplicate={duplicateFunction}
+							onSelect={editFunction}
+						/>
+					</Panel>
+					<PanelDragger />
+					<Panel minSize={minSize}>
+						{details ? (
+							<EditorPanel
+								handle={handle}
+								details={details}
+								isCreating={isCreating}
+								onChange={setDetails as any}
+								onDelete={removeFunction}
+							/>
+						) : (
+							<Center h="100%">
+								<Stack
+									align="center"
+									justify="center"
 								>
-									Create function
-								</Button>
-							</Group>
-						</Stack>
-					</Center>
-				)}
-			</Group>
+									<Icon path={iconFunction} size={2.5} />
+									Select a function to view or edit
+									<Group>
+										<Button
+											variant="light"
+											leftSection={<Icon path={iconPlus} />}
+											onClick={openCreator}
+										>
+											Create function
+										</Button>
+									</Group>
+								</Stack>
+							</Center>
+						)}
+					</Panel>
+				</PanelGroup>
+			</Box>
 
 			<Modal
 				opened={showCreator}

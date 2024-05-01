@@ -82,7 +82,6 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 		<ContentPane
 			title="Tables"
 			icon={iconList}
-			w={275}
 			style={{ flexShrink: 0 }}
 			leftSection={
 				schema.length > 0 && (

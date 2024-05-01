@@ -42,7 +42,6 @@ export function FunctionsPanel({
 		<ContentPane
 			title="Functions"
 			icon={iconList}
-			w={275}
 			style={{ flexShrink: 0 }}
 			leftSection={
 				<Badge

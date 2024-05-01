@@ -3,7 +3,7 @@ import { useState } from "react";
 import { TablesPane } from "../TablesPane";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { useDisclosure } from "@mantine/hooks";
-import { Button, Center, Group, Stack } from "@mantine/core";
+import { Box, Button, Center, Group, Stack } from "@mantine/core";
 import { DisconnectedEvent } from "~/util/global-events";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
@@ -13,6 +13,9 @@ import { iconExplorer, iconPlus } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { useViewEffect } from "~/hooks/view";
 import { syncDatabaseSchema } from "~/util/schema";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { usePanelMinSize } from "~/hooks/panels";
 
 export function ExplorerView() {
 	const { openTableCreator } = useInterfaceStore.getState();
@@ -38,44 +41,49 @@ export function ExplorerView() {
 		syncDatabaseSchema();
 	});
 
+	const [minSize, ref] = usePanelMinSize(275);
+
 	return (
 		<>
-			<Group
-				h="100%"
-				wrap="nowrap"
-				gap="var(--surrealist-divider-size)"
-			>
-				<TablesPane
-					activeTable={activeTable}
-					onTableSelect={setActiveTable}
-					onCreateRecord={openCreator}
-				/>
-				{activeTable ? (
-					<ExplorerPane
-						activeTable={activeTable}
-						onCreateRecord={openCreator}
-					/>
-				) : (
-					<Center flex={1}>
-						<Stack
-							align="center"
-							justify="center"
-						>
-							<Icon path={iconExplorer} size={2.5} />
-							Select a table to view or edit
-							<Group>
-								<Button
-									variant="light"
-									leftSection={<Icon path={iconPlus} />}
-									onClick={openTableCreator}
+			<Box h="100%" ref={ref}>
+				<PanelGroup direction="horizontal">
+					<Panel defaultSize={minSize} minSize={minSize}>
+						<TablesPane
+							activeTable={activeTable}
+							onTableSelect={setActiveTable}
+							onCreateRecord={openCreator}
+						/>
+					</Panel>
+					<PanelDragger />
+					<Panel minSize={minSize}>
+						{activeTable ? (
+							<ExplorerPane
+								activeTable={activeTable}
+								onCreateRecord={openCreator}
+							/>
+						) : (
+							<Center h="100%">
+								<Stack
+									align="center"
+									justify="center"
 								>
-									Create table
-								</Button>
-							</Group>
-						</Stack>
-					</Center>
-				)}
-			</Group>
+									<Icon path={iconExplorer} size={2.5} />
+									Select a table to view or edit
+									<Group>
+										<Button
+											variant="light"
+											leftSection={<Icon path={iconPlus} />}
+											onClick={openTableCreator}
+										>
+											Create table
+										</Button>
+									</Group>
+								</Stack>
+							</Center>
+						)}
+					</Panel>
+				</PanelGroup>
+			</Box>
 
 			{creatorTable && (
 				<CreatorDrawer

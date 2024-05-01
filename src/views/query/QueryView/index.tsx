@@ -9,7 +9,7 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { adapter, isMini } from "~/adapter";
-import { Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
+import { Box, Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Image } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
@@ -34,6 +34,7 @@ import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/connection";
 import { useSetting } from "~/hooks/config";
 import { useCompatHotkeys } from "~/hooks/hotkey";
+import { usePanelMinSize } from "~/hooks/panels";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -126,6 +127,71 @@ export function QueryView() {
 		["mod+Enter", () => runQuery()],
 	]);
 
+	const [minSize, ref] = usePanelMinSize(275);
+
+	const queryEditor = (
+		active && (
+			<PanelGroup direction={orientation}>
+				<Panel minSize={35}>
+					{isMini ? (showVariables ? (
+						<VariablesPane
+							isValid={variablesValid}
+							switchPortal={switchPortal}
+							setIsValid={setVariablesValid}
+							closeVariables={showVariablesHandle.close}
+						/>
+					) : (
+						<QueryPane
+							activeTab={active}
+							setIsValid={setQueryValid}
+							switchPortal={switchPortal}
+							selection={selection}
+							showVariables={showVariables}
+							onSaveQuery={handleSaveRequest}
+							setShowVariables={showVariablesHandle.set}
+							onSelectionChange={setSelection}
+						/>
+					)) : (
+						<PanelGroup direction={variablesOrientation}>
+							<Panel minSize={35}>
+								<QueryPane
+									activeTab={active}
+									setIsValid={setQueryValid}
+									showVariables={showVariables}
+									selection={selection}
+									onSaveQuery={handleSaveRequest}
+									setShowVariables={showVariablesHandle.set}
+									onSelectionChange={setSelection}
+								/>
+							</Panel>
+							{showVariables && (
+								<>
+									<PanelDragger />
+									<Panel defaultSize={40} minSize={35}>
+										<VariablesPane
+											isValid={variablesValid}
+											setIsValid={setVariablesValid}
+											closeVariables={showVariablesHandle.close}
+										/>
+									</Panel>
+								</>
+							)}
+						</PanelGroup>
+					)}
+				</Panel>
+				<PanelDragger />
+				<Panel minSize={35}>
+					<ResultPane
+						activeTab={active}
+						isQueryValid={queryValid}
+						selection={selection}
+						onRunQuery={runQuery}
+					/>
+				</Panel>
+			</PanelGroup>
+		)
+	);
+
 	return (
 		<Stack
 			gap="md"
@@ -141,94 +207,43 @@ export function QueryView() {
 				/>
 			</InPortal>
 
-			{isMini && !(adapter as MiniAdapter).hideTitlebar && (
-				<Group>
-					<Image
-						src={surrealistIcon}
-						style={{ pointerEvents: "none" }}
-						height={20}
-						width={20}
-					/>
-					<SurrealistLogo
-						h={16}
-						c={isLight ? "slate.9" : "white"}
-					/>
-					<Spacer />
-				</Group>
-			)}
-
-			<Group
-				flex={1}
-				wrap="nowrap"
-				gap="var(--surrealist-divider-size)"
-			>
-				{!isMini && (
-					<TabsPane
-						openHistory={showHistoryHandle.open}
-						openSaved={showSavedHandle.open}
-					/>
-				)}
-				{active && (
-					<PanelGroup direction={orientation}>
-						<Panel minSize={35}>
-							{isMini ? (showVariables ? (
-								<VariablesPane
-									isValid={variablesValid}
-									switchPortal={switchPortal}
-									setIsValid={setVariablesValid}
-									closeVariables={showVariablesHandle.close}
-								/>
-							) : (
-								<QueryPane
-									activeTab={active}
-									setIsValid={setQueryValid}
-									switchPortal={switchPortal}
-									selection={selection}
-									showVariables={showVariables}
-									onSaveQuery={handleSaveRequest}
-									setShowVariables={showVariablesHandle.set}
-									onSelectionChange={setSelection}
-								/>
-							)) : (
-								<PanelGroup direction={variablesOrientation}>
-									<Panel minSize={35}>
-										<QueryPane
-											activeTab={active}
-											setIsValid={setQueryValid}
-											showVariables={showVariables}
-											selection={selection}
-											onSaveQuery={handleSaveRequest}
-											setShowVariables={showVariablesHandle.set}
-											onSelectionChange={setSelection}
-										/>
-									</Panel>
-									{showVariables && (
-										<>
-											<PanelDragger />
-											<Panel defaultSize={40} minSize={35}>
-												<VariablesPane
-													isValid={variablesValid}
-													setIsValid={setVariablesValid}
-													closeVariables={showVariablesHandle.close}
-												/>
-											</Panel>
-										</>
-									)}
-								</PanelGroup>
-							)}
-						</Panel>
-						<PanelDragger />
-						<Panel minSize={35}>
-							<ResultPane
-								activeTab={active}
-								isQueryValid={queryValid}
-								selection={selection}
-								onRunQuery={runQuery}
+			{isMini ? (
+				<>
+					{!(adapter as MiniAdapter).hideTitlebar && (
+						<Group>
+							<Image
+								src={surrealistIcon}
+								style={{ pointerEvents: "none" }}
+								height={20}
+								width={20}
+							/>
+							<SurrealistLogo
+								h={16}
+								c={isLight ? "slate.9" : "white"}
+							/>
+							<Spacer />
+						</Group>
+					)}
+					<Box flex={1}>
+						{queryEditor}
+					</Box>
+				</>
+			) : (
+				<Box flex={1} ref={ref}>
+					<PanelGroup direction="horizontal">
+						<Panel defaultSize={minSize} minSize={minSize}>
+							<TabsPane
+								openHistory={showHistoryHandle.open}
+								openSaved={showSavedHandle.open}
 							/>
 						</Panel>
+						<PanelDragger />
+						<Panel minSize={minSize}>
+							{queryEditor}
+						</Panel>
 					</PanelGroup>
-				)}
-			</Group>
+				</Box>
+			)}
 
 			<HistoryDrawer
 				opened={showHistory}
