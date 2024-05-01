@@ -231,14 +231,18 @@ export function QueryView() {
 			) : (
 				<Box flex={1} ref={ref}>
 					<PanelGroup direction="horizontal">
-						<Panel defaultSize={minSize} minSize={minSize}>
+						<Panel
+							defaultSize={minSize}
+							minSize={minSize}
+							maxSize={35}
+						>
 							<TabsPane
 								openHistory={showHistoryHandle.open}
 								openSaved={showSavedHandle.open}
 							/>
 						</Panel>
 						<PanelDragger />
-						<Panel minSize={minSize}>
+						<Panel>
 							{queryEditor}
 						</Panel>
 					</PanelGroup>

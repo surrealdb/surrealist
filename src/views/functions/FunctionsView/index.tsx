@@ -116,7 +116,11 @@ export function FunctionsView() {
 		<>
 			<Box h="100%" ref={ref}>
 				<PanelGroup direction="horizontal">
-					<Panel defaultSize={minSize} minSize={minSize}>
+					<Panel
+						defaultSize={minSize}
+						minSize={minSize}
+						maxSize={35}
+					>
 						<FunctionsPanel
 							active={details?.name || ''}
 							functions={functions}
