@@ -382,17 +382,11 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 }
 
 function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
-	return response.map(res => {
-		return res.status == "OK" ? {
-			success: true,
-			result: res.result,
-			execution_time: res.time
-		} : {
-			success: false,
-			result: res.result,
-			execution_time: res.time
-		};
-	});
+	return response.map(res => ({
+		success: res.status == "OK",
+		result: res.result,
+		execution_time: res.time
+	}));
 }
 
 function buildScopeAuth(connection: ConnectionOptions): ScopeAuth {

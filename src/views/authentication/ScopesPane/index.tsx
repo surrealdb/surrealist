@@ -20,7 +20,7 @@ import { authenticate, composeAuthentication, executeQuery, register } from "~/c
 import { getStatementCount } from "~/util/surrealql";
 import { mdiAccountPlusOutline } from "@mdi/js";
 import { useImmer } from "use-immer";
-import { HIDDEN_SCOPE_FIELDS } from "~/constants";
+import { SENSITVE_SCOPE_FIELDS } from "~/constants";
 
 export function ScopePane() {
 	const { connection } = useActiveConnection();
@@ -247,7 +247,7 @@ export function ScopePane() {
 						<Table.Tbody>
 							{registerFields.map((field, i) => {
 								const fieldName = field.subject.toLowerCase();
-								const ValueInput = HIDDEN_SCOPE_FIELDS.has(fieldName)
+								const ValueInput = SENSITVE_SCOPE_FIELDS.has(fieldName)
 									? PasswordInput
 									: TextInput;
 
