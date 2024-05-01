@@ -1,4 +1,4 @@
-import { Button, Group, Text } from "@mantine/core";
+import { Button, ButtonProps, Group, Text } from "@mantine/core";
 import { Modal } from "@mantine/core";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -9,7 +9,9 @@ interface ConfirmOptions<T> {
 	title?: string;
 	message: string;
 	dismissText?: string;
+	dismissProps?: ButtonProps;
 	confirmText?: string;
+	confirmProps?: ButtonProps;
 	onDismiss?: () => void;
 	onConfirm: (value: T) => void;
 }
@@ -80,6 +82,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 						onClick={onDissmiss}
 						variant="light"
 						color="slate"
+						{...options?.dismissProps || {}}
 					>
 						{options?.dismissText ?? DEFAULT_DISMISS}
 					</Button>
@@ -87,6 +90,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					<Button
 						color="pink.9"
 						onClick={onConfirm}
+						{...options?.confirmProps}
 					>
 						{options?.confirmText ?? DEFAULT_CONFIRM}
 					</Button>

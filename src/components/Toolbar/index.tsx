@@ -24,6 +24,7 @@ import { useFeatureFlags } from "~/util/feature-flags";
 import { executeQuery, openConnection } from "~/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { dispatchIntent } from "~/hooks/url";
+import { useConfirmation } from "~/providers/Confirmation";
 
 export function Toolbar() {
 	const { clearQueryResponse } = useDatabaseStore.getState();
@@ -54,19 +55,20 @@ export function Toolbar() {
 		closeEditingTab();
 	});
 
-	const resetSandbox = useStable(() => {
-		openConnection();
+	const resetSandbox = useConfirmation({
+		title: "Reset sandbox environment",
+		message: "This will clear all data and query responses. Your queries will not be affected. Are you sure you want to continue?",
+		confirmText: "Reset",
+		confirmProps: { variant: "gradient" },
+		onConfirm: async () => {
+			openConnection();
 
-		if (connection) {
-			for (const query of connection.queries) {
-				clearQueryResponse(query.id);
+			if (connection) {
+				for (const query of connection.queries) {
+					clearQueryResponse(query.id);
+				}
 			}
-		}
-
-		showInfo({
-			title: "Sandbox reset",
-			subtitle: "Existing data has been dropped",
-		});
+		},
 	});
 
 	const applyDataset = useStable(async (info: DataSet) => {
