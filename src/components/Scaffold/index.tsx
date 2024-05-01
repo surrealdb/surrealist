@@ -9,7 +9,6 @@ import {
 	Text,
 } from "@mantine/core";
 
-import { useStable } from "~/hooks/stable";
 import { Toolbar } from "../Toolbar";
 import { useDisclosure } from "@mantine/hooks";
 import { ConnectionEditor } from "./modals/connection";
@@ -39,7 +38,6 @@ import { FunctionsView } from "~/views/functions/FunctionsView";
 import { ModelsView } from "~/views/models/ModelsView";
 import { LegacyModal } from "./modals/legacy";
 import { SandboxModal } from "./modals/sandbox";
-import { executeUserQuery } from "~/connection";
 import { ChangelogModal } from "./modals/changelog";
 import { SurrealistLogo } from "../SurrealistLogo";
 import { Icon } from "../Icon";
@@ -76,16 +74,8 @@ export function Scaffold() {
 
 	const viewNode = VIEW_PORTALS[activeView];
 
-	const userExecuteQuery = useStable(() => {
-		executeUserQuery({
-			loader: true
-		});
-	});
-
 	useWindowSettings();
 	useCompatHotkeys([
-		["F9", () => userExecuteQuery()],
-		["mod+Enter", () => userExecuteQuery()],
 		["mod+K", paletteHandle.open]
 	]);
 

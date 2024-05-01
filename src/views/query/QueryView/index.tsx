@@ -33,6 +33,7 @@ import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/connection";
 import { useSetting } from "~/hooks/config";
+import { useCompatHotkeys } from "~/hooks/hotkey";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -119,6 +120,11 @@ export function QueryView() {
 	useIntent("run-query", runQuery);
 	useIntent("save-query", handleSaveRequest);
 	useIntent("toggle-variables", showVariablesHandle.toggle);
+
+	useCompatHotkeys([
+		["F9", () => runQuery()],
+		["mod+Enter", () => runQuery()],
+	]);
 
 	return (
 		<Stack
