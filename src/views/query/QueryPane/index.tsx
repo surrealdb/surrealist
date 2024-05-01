@@ -5,7 +5,7 @@ import { useDebouncedFunction } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
+import { iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
 import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
@@ -158,7 +158,7 @@ export function QueryPane({
 								variant="light"
 								aria-label={showVariables ? "Hide variables" : "Show variables"}
 							>
-								<Icon path={iconBraces} />
+								<Icon path={iconDollar} />
 							</ActionIcon>
 						</Tooltip>
 					</Group>

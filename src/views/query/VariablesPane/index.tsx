@@ -4,7 +4,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
-import { iconBraces, iconClose } from "~/util/icons";
+import { iconClose, iconDollar } from "~/util/icons";
 import { surrealql } from "codemirror-surrealql";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { surqlLinting } from "~/util/editor/extensions";
@@ -46,7 +46,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 	return (
 		<ContentPane
 			title="Variables"
-			icon={iconBraces}
+			icon={iconDollar}
 			rightSection={
 				props.switchPortal ? (
 					<OutPortal node={props.switchPortal} />

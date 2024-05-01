@@ -13,12 +13,11 @@ import { useStable } from "~/hooks/stable";
 import { SchemaScope, ScopeField } from "~/types";
 import { extractVariables, showError, showInfo } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
-import { iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
+import { iconAccountPlus, iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
 import { authenticate, composeAuthentication, executeQuery, register } from "~/connection";
 import { getStatementCount } from "~/util/surrealql";
-import { mdiAccountPlusOutline } from "@mdi/js";
 import { useImmer } from "use-immer";
 import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 
@@ -206,7 +205,7 @@ export function ScopePane() {
 									variant="subtle"
 									aria-label="Register user"
 								>
-									<Icon path={mdiAccountPlusOutline} />
+									<Icon path={iconAccountPlus} />
 								</ActionIcon>
 							</Tooltip>
 							<Tooltip label="Edit scope">
@@ -286,7 +285,7 @@ export function ScopePane() {
 						<Button
 							variant="gradient"
 							type="submit"
-							rightSection={<Icon path={mdiAccountPlusOutline} />}
+							rightSection={<Icon path={iconAccountPlus} />}
 							loading={isLoading}
 						>
 							Register
