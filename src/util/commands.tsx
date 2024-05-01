@@ -7,6 +7,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
 import { featureFlags } from "./feature-flags";
+import { mdiAccountPlusOutline } from "@mdi/js";
 
 type LaunchAction = { type: "launch", handler: () => void };
 type InsertAction = { type: "insert", content: string };
@@ -91,6 +92,7 @@ export function computeCommands(): CommandCategory[] {
 
 	if (activeCon) {
 		const tables = databaseSchema?.tables || [];
+		const scopes = databaseSchema?.scopes || [];
 
 		categories.push({
 			name: 'Views',
@@ -221,7 +223,13 @@ export function computeCommands(): CommandCategory[] {
 					name: "Create scope",
 					icon: iconAccountSecure,
 					action: intent("create-scope")
-				}
+				},
+				...scopes.map(scope => ({
+					id: newId(),
+					name: `Register user in scope ${scope.name}`,
+					icon: mdiAccountPlusOutline,
+					action: intent("register-user", { scope: scope.name })
+				}))
 			]
 		}, {
 			name: "API Docs",

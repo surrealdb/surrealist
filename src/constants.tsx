@@ -42,7 +42,7 @@ export interface ListingItem {
 export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
-export const HIDDEN_SCOPE_FIELDS = new Set(["password", "pass", "secret"]);
+export const SENSITVE_SCOPE_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
 export const DATASETS: Record<string, DataSet> = {

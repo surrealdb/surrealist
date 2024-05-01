@@ -9,7 +9,7 @@ import { iconBraces, iconServer, iconStar, iconText } from "~/util/icons";
 import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
-import { showError, tryParseParams } from "~/util/helpers";
+import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
@@ -19,21 +19,6 @@ import { formatQuery, validateQuery } from "~/util/surrealql";
 import { surrealql } from "codemirror-surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { encodeCbor } from "surrealdb.js";
-
-const VARIABLE_PATTERN = /\$\w+/gi;
-const RESERVED_VARIABLES = new Set([
-	'auth',
-	'token',
-	'scope',
-	'session',
-	'before',
-	'after',
-	'value',
-	'input',
-	'this',
-	'parent',
-	'event',
-]);
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -96,14 +81,9 @@ export function QueryPane({
 		if (!activeTab) return;
 
 		const query = activeTab.query;
-		const matches = query.match(VARIABLE_PATTERN) || [];
-
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-
-		const variables = matches
-			.map((v) => v.slice(1))
-			.filter((v) => !RESERVED_VARIABLES.has(v) && !currentKeys.includes(v));
+		const variables = extractVariables(query).filter((v) => !currentKeys.includes(v));
 
 		const newVars = variables.reduce((acc, v) => {
 			acc[v] = "";

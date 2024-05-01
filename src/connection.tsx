@@ -1,7 +1,7 @@
 import posthog from "posthog-js";
 import { surrealdbWasmEngines } from 'surrealdb.wasm';
-import { Surreal, QueryResult, AnyAuth, ScopeAuth, Token, UUID, decodeCbor } from 'surrealdb.js';
-import { ConnectionOptions, Protocol, QueryResponse } from './types';
+import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor } from 'surrealdb.js';
+import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from './types';
 import { getConnection } from './util/connection';
 import { useDatabaseStore } from './stores/database';
 import { connectionUri, newId, printLog, showError, versionUri } from './util/helpers';
@@ -102,23 +102,9 @@ export async function openConnection(options?: ConnectOptions) {
 			database: connection.database,
 			prepare: async (surreal) => {
 				if (isSignup) {
-					await surreal.signup(buildScopeAuth(connection)).catch(() => {
-						throw new Error("Could not sign up");
-					});
-				} else if (typeof auth === "string") {
-					await surreal.authenticate(auth).catch(() => {
-						throw new Error("Authentication token invalid");
-					});
-				} else if (auth) {
-					await surreal.signin(auth).catch(err => {
-						const { openScopeSignup } = useInterfaceStore.getState();
-
-						if (err.message.includes("No record was returned")) {
-							openScopeSignup();
-						} else {
-							throw new Error("Connection failed");
-						}
-					});
+					register(buildScopeAuth(connection), surreal);
+				} else {
+					authenticate(auth, surreal);
 				}
 			},
 		});
@@ -156,6 +142,48 @@ export async function closeConnection() {
 	if (status === "connected" || status === "connecting") {
 		await SURREAL.close();
 		await sleep(100);
+	}
+}
+
+/**
+ * Register a new scope user
+ *
+ * @param auth The authentication details
+ * @param surreal The optional surreal instance
+ */
+export async function register(auth: ScopeAuth, surreal?: Surreal) {
+	surreal ??= SURREAL;
+
+	await surreal.signup(auth).catch(() => {
+		throw new Error("Could not sign up");
+	});
+}
+
+/**
+ * Authenticate the connection
+ *
+ * @param auth The authentication details
+ * @param surreal The optional surreal instance
+ */
+export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
+	surreal ??= SURREAL;
+
+	if (auth === undefined) {
+		await surreal.invalidate();
+	} else if (typeof auth === "string") {
+		await surreal.authenticate(auth).catch(() => {
+			throw new Error("Authentication token invalid");
+		});
+	} else if (auth) {
+		await surreal.signin(auth).catch(err => {
+			const { openScopeSignup } = useInterfaceStore.getState();
+
+			if (err.message.includes("No record was returned")) {
+				openScopeSignup();
+			} else {
+				throw new Error("Connection failed");
+			}
+		});
 	}
 }
 
@@ -322,21 +350,13 @@ export function cancelLiveQueries(tab: string) {
 	setIsLive(tab, false);
 }
 
-function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
-	return response.map(res => {
-		return res.status == "OK" ? {
-			success: true,
-			result: res.result,
-			execution_time: res.time
-		} : {
-			success: false,
-			result: res.result,
-			execution_time: res.time
-		};
-	});
-}
-
-function composeAuthentication(connection: ConnectionOptions): AnyAuth | Token | undefined {
+/**
+ * Compose authentication details for the given connection
+ *
+ * @param connection The connection options
+ * @returns The authentication details
+ */
+export function composeAuthentication(connection: ConnectionOptions): AuthDetails {
 	const { authMode, username, password, namespace, database, token } = connection;
 
 	switch (authMode) {
@@ -359,6 +379,14 @@ function composeAuthentication(connection: ConnectionOptions): AnyAuth | Token |
 			return undefined;
 		}
 	}
+}
+
+function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
+	return response.map(res => ({
+		success: res.status == "OK",
+		result: res.result,
+		execution_time: res.time
+	}));
 }
 
 function buildScopeAuth(connection: ConnectionOptions): ScopeAuth {

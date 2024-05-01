@@ -31,6 +31,7 @@ const INTENT_REGISTRY = {
 	'export-database': 'explorer',
 	'create-user': 'authentication',
 	'create-scope': 'authentication',
+	'register-user': 'authentication',
 	'docs-switch-language': 'documentation',
 } satisfies IntentMap;
 

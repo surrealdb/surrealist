@@ -1,5 +1,6 @@
 import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
+import { AnyAuth, Token } from "surrealdb.js";
 
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
@@ -45,6 +46,7 @@ export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
 Partial<T>;
 export type FeatureCondition = (flags: FeatureFlagMap) => boolean;
 export type Selectable<T extends string> = { label: string; value: T };
+export type AuthDetails = AnyAuth | Token | undefined;
 
 export interface ConnectionOptions {
 	namespace: string;

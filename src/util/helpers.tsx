@@ -13,6 +13,20 @@ import { decodeCbor } from "surrealdb.js";
 import { Value } from "surrealql.wasm/v1";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
+const VARIABLE_PATTERN = /\$\w+/gi;
+const RESERVED_VARIABLES = new Set([
+	'auth',
+	'token',
+	'scope',
+	'session',
+	'before',
+	'after',
+	'value',
+	'input',
+	'this',
+	'parent',
+	'event',
+]);
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -372,4 +386,18 @@ export function fuzzyMatch(query: string, target: string) {
 export function isMobile() {
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+}
+
+/**
+ * Extract a list of variables from the given query
+ *
+ * @param query The query to extract from
+ * @returns The list of variables
+ */
+export function extractVariables(query: string): string[] {
+	const matches = query.match(VARIABLE_PATTERN) || [];
+
+	return matches
+		.map((v) => v.slice(1))
+		.filter((v) => !RESERVED_VARIABLES.has(v));
 }
