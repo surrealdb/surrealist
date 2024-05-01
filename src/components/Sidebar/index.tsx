@@ -74,11 +74,7 @@ export function Sidebar({
 			const items = row.flatMap((id) => {
 				const info = VIEW_MODES[id];
 
-				if (!info || !info.disabled?.(flags) !== true) {
-					return [];
-				}
-
-				return [info];
+				return (!info || !info.hidden?.(flags) !== true) ? [] : [info];
 			});
 
 			return items.length > 0 ? [items] : [];
@@ -132,6 +128,7 @@ export function Sidebar({
 										icon={info.anim || info.icon}
 										withTooltip={!expandable}
 										onClick={() => setViewMode(info.id)}
+										unavailable={info.disabled?.(flags)}
 										onMouseEnter={expandedHandle.open}
 									/>
 								</Group>

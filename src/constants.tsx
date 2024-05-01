@@ -139,12 +139,15 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Models",
 		icon: iconModel,
 		desc: "Upload and manage machine learning models",
+		hidden: (flags) => flags.models_view === false,
 		disabled: (flags) => {
-			if (!flags.models_view) return true;
-			if (flags.models_view === "force") return false;
-
 			const protocol = getConnection()?.connection?.protocol;
-			return !protocol || !ML_SUPPORTED.has(protocol);
+
+			if (flags.models_view === "force" || (protocol && ML_SUPPORTED.has(protocol))) {
+				return '';
+			}
+
+			return "SurrealML is not supported";
 		},
 	},
 	documentation: {
@@ -152,7 +155,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "API Docs",
 		icon: iconAPI,
 		desc: "View the database schema and documentation",
-		disabled: (flags) => !flags.apidocs_view,
+		hidden: (flags) => !flags.apidocs_view,
 	},
 };
 

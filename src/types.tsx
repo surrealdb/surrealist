@@ -44,7 +44,7 @@ export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
 Partial<T>;
-export type FeatureCondition = (flags: FeatureFlagMap) => boolean;
+export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string> = { label: string; value: T };
 export type AuthDetails = AnyAuth | Token | undefined;
 
@@ -320,7 +320,8 @@ export interface ViewInfo {
 	icon: string;
 	anim?: any;
 	desc: string;
-	disabled?: FeatureCondition;
+	hidden?: FeatureCondition;
+	disabled?: FeatureCondition<string>;
 }
 
 export interface DataSet {
