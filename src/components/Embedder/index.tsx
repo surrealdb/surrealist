@@ -7,14 +7,14 @@ import { Text } from "@mantine/core";
 import { surrealql } from "codemirror-surrealql";
 import { DATASETS, ORIENTATIONS } from "~/constants";
 import { CodeInput } from "../Inputs";
-import { PropsWithChildren, ReactNode, useLayoutEffect, useMemo, useState } from "react";
+import { PropsWithChildren, ReactNode, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { Icon } from "../Icon";
 import { iconHelp } from "~/util/icons";
 import { CodePreview } from "../CodePreview";
 import { Spacer } from "../Spacer";
 
-const DEFAULTS: EmbedState = {
+export const DEFAULT_STATE: EmbedState = {
 	dataset: "none",
 	setup: "",
 	query: "",
@@ -62,16 +62,22 @@ export interface EmbedState {
 }
 
 export interface EmbedderProps {
-	defaults?: EmbedState;
-	onChange?: (url: string) => void;
+	value?: EmbedState;
+	onChangeURL?: (url: string) => void;
 }
 
 export function Embedder({
-	defaults,
-	onChange,
+	value,
+	onChangeURL,
 }: EmbedderProps) {
-	const [state, setState] = useImmer({...DEFAULTS, ...defaults});
+	const [state, setState] = useImmer({...DEFAULT_STATE, ...value});
 	const [mode, setMode] = useState("Embed");
+
+	useEffect(() => {
+		if (value) {
+			setState(value);
+		}
+	}, [value]);
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
@@ -124,7 +130,7 @@ export function Embedder({
 	}, [frameUrl]);
 
 	useLayoutEffect(() => {
-		onChange?.(frameUrl);
+		onChangeURL?.(frameUrl);
 	}, [frameUrl]);
 
 	return (
