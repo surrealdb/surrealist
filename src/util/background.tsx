@@ -4,6 +4,8 @@ import { useInterfaceStore } from "~/stores/interface";
 import { getSetting, watchStore } from "./config";
 import { assign } from "radash";
 import { openConnection } from "~/connection";
+import { featureFlags } from "./feature-flags";
+import { VIEW_MODES } from "~/constants";
 
 const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -64,7 +66,8 @@ export async function watchConfigStore() {
 }
 
 /**
- * Watch for connection changes and open the connection if auto connect is enabled
+ * Watch for connection changes, open the connection if auto connect is enabled,
+ * and verify the active view.
  */
 export function watchConnectionSwitch() {
 	watchStore({
@@ -73,9 +76,15 @@ export function watchConnectionSwitch() {
 		select: (state) => state.activeConnection,
 		then: (value) => {
 			const autoConnect = getSetting("behavior", "autoConnect");
+			const view = useConfigStore.getState().activeView;
+			const info = VIEW_MODES[view];
 
 			if (autoConnect && value) {
 				openConnection();
+			}
+
+			if (info?.disabled?.(featureFlags.store)) {
+				useConfigStore.getState().setActiveView("query");
 			}
 		},
 	});
