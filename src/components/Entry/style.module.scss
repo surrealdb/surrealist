@@ -5,6 +5,7 @@
 	:global(.mantine-Button-label) {
 		flex: 1;
 		color: var(--mantine-color-slate-0);
+		text-overflow: ellipsis;
 	}
 
 	:global(.mantine-Button-section) {

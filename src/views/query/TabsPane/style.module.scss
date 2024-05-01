@@ -1,3 +1,8 @@
+.scroller > div {
+	width: 100%;
+    table-layout: fixed;
+}
+
 .query {
 	cursor: pointer !important;
 

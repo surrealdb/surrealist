@@ -1,3 +1,4 @@
+import classes from "./style.module.scss";
 import { Badge, Tooltip, ActionIcon, TextInput, ScrollArea, Stack, Text } from "@mantine/core";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -69,6 +70,9 @@ export function FunctionsPanel({
 				left={12}
 				right={12}
 				bottom={12}
+				classNames={{
+					viewport: classes.scroller
+				}}
 			>
 				<Stack gap="xs" pb="md">
 					{functions.length > 0 ? (

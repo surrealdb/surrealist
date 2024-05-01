@@ -97,7 +97,12 @@ export function TabsPane(props: TabsPaneProps) {
 				bottom={12}
 				gap={0}
 			>
-				<ScrollArea flex={1}>
+				<ScrollArea
+					flex={1}
+					classNames={{
+						viewport: classes.scroller
+					}}
+				>
 					<Stack gap="xs" pb="md">
 						<Sortable
 							items={queries}

@@ -1,3 +1,4 @@
+import classes from "./style.module.scss";
 import { ActionIcon, Badge, Divider, ScrollArea, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { useStable } from "~/hooks/stable";
@@ -113,7 +114,11 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 				bottom={12}
 				gap={0}
 			>
-				<ScrollArea>
+				<ScrollArea
+					classNames={{
+						viewport: classes.scroller
+					}}
+				>
 					<Stack gap="xs" pb="md">
 						{isOnline && schema.length > 0 && (
 							<TextInput
