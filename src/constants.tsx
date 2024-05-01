@@ -143,11 +143,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		disabled: (flags) => {
 			const protocol = getConnection()?.connection?.protocol;
 
-			if (flags.models_view === "force" || (protocol && ML_SUPPORTED.has(protocol))) {
-				return '';
-			}
-
-			return "SurrealML is not supported";
+			return flags.models_view !== "force" && (!protocol || !ML_SUPPORTED.has(protocol));
 		},
 	},
 	documentation: {

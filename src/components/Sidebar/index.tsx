@@ -128,7 +128,7 @@ export function Sidebar({
 										icon={info.anim || info.icon}
 										withTooltip={!expandable}
 										onClick={() => setViewMode(info.id)}
-										unavailable={info.disabled?.(flags)}
+										disabled={info.disabled?.(flags)}
 										onMouseEnter={expandedHandle.open}
 									/>
 								</Group>

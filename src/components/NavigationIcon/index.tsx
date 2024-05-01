@@ -3,14 +3,13 @@ import clsx from "clsx";
 import { Icon } from "../Icon";
 import { Entry, EntryProps } from "../Entry";
 import { HTMLProps, ReactNode } from "react";
-import { Box, Stack, Text, Tooltip } from "@mantine/core";
+import { Box, Tooltip } from "@mantine/core";
 import { useHoverIcon } from "~/hooks/hover-icon";
 
 export interface NavigationIconProps extends EntryProps, Omit<HTMLProps<HTMLButtonElement>, 'name' | 'color' | 'size' | 'style' | 'type' | 'ref'> {
 	name: ReactNode;
 	isActive?: boolean;
 	icon: string | any;
-	unavailable?: string;
 	withTooltip?: boolean;
 	onClick: () => void;
 }
@@ -20,8 +19,6 @@ export function NavigationIcon({
 	isActive,
 	icon,
 	withTooltip,
-	unavailable,
-	disabled,
 	onClick,
 	...rest
 }: NavigationIconProps) {
@@ -52,7 +49,6 @@ export function NavigationIcon({
 					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
 					isActive={isActive}
 					onClick={onClick}
-					disabled={!!unavailable || disabled}
 					leftSection={
 						hasIcon ? (
 							<Icon path={icon} size="lg" />
@@ -62,17 +58,7 @@ export function NavigationIcon({
 					}
 					{...rest}
 				>
-					<Stack
-						align="start"
-						gap={0}
-					>
-						<Text>{name}</Text>
-						{unavailable && (
-							<Text color="red" size="xs">
-								{unavailable}
-							</Text>
-						)}
-					</Stack>
+					{name}
 				</Entry>
 			</Box>
 		</Tooltip>
