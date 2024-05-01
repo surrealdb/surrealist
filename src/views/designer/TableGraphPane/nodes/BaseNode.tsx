@@ -23,7 +23,7 @@ function Summary(props: SummaryProps) {
 		: "dimmed";
 
 	return (
-		<Group pr={4}>
+		<Group pr={4} wrap="nowrap">
 			<Icon path={props.icon} />
 			<Text c={props.isLight ? "slate.9" : "white"}>
 				{props.title}
@@ -187,12 +187,18 @@ export function BaseNode(props: BaseNodeProps) {
 				<Group
 					style={{ color: isLight ? undefined : "white" }}
 					gap="xs"
+					wrap="nowrap"
 				>
 					<Icon
 						path={icon}
 						color={isSelected ? "surreal" : isLight ? "slate.7" : "slate.2"}
 					/>
-					<Text>
+					<Text
+						style={{
+							textOverflow: 'ellipsis',
+							overflow: 'hidden'
+						}}
+					>
 						{table.schema.name}
 					</Text>
 				</Group>

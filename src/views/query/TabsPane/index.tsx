@@ -170,6 +170,8 @@ export function TabsPane(props: TabsPaneProps) {
 											withDecoration
 											style={{
 												outline: 'none',
+												textOverflow: 'ellipsis',
+												overflow: 'hidden'
 											}}
 										/>
 									</Entry>

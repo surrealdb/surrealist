@@ -191,7 +191,14 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 										)
 									}
 								>
-									{table.schema.name}
+									<Text
+										style={{
+											textOverflow: 'ellipsis',
+											overflow: 'hidden'
+										}}
+									>
+										{table.schema.name}
+									</Text>
 								</Entry>
 							);
 						})}

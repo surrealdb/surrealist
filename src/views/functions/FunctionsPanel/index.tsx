@@ -124,7 +124,14 @@ export function FunctionsPanel({
 								}
 							])}
 						>
-							{f.name}
+							<Text
+								style={{
+									textOverflow: 'ellipsis',
+									overflow: 'hidden'
+								}}
+							>
+								{f.name}
+							</Text>
 						</Entry>
 					))}
 				</Stack>

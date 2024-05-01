@@ -1,3 +1,4 @@
+import classes from "./style.module.scss";
 import { Badge, Tooltip, ActionIcon, TextInput, ScrollArea, Stack, Group } from "@mantine/core";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -65,6 +66,9 @@ export function ModelsPanel({
 				left={12}
 				right={12}
 				bottom={12}
+				classNames={{
+					viewport: classes.scroller
+				}}
 			>
 				<Stack gap="xs" pb="md">
 					{models.length > 0 ? (
@@ -98,7 +102,12 @@ export function ModelsPanel({
 							])}
 						>
 							<Stack gap={0} align="start">
-								<Text>
+								<Text
+									style={{
+										textOverflow: 'ellipsis',
+										overflow: 'hidden'
+									}}
+								>
 									{m.name}
 								</Text>
 								<Text opacity={0.6} size="sm">
