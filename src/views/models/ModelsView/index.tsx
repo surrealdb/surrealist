@@ -7,7 +7,7 @@ import { Icon } from "~/components/Icon";
 import { iconModel, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { adapter } from "~/adapter";
-import { useActiveConnection } from "~/hooks/connection";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useImmer } from "use-immer";
 import { useSchema } from "~/hooks/schema";
 import { useSaveable } from "~/hooks/save";
@@ -43,6 +43,7 @@ function composeConnection(connection: ConnectionOptions, path: string) {
 export function ModelsView() {
 	const models = useSchema()?.models ?? [];
 	const { id, connection } = useActiveConnection();
+	const isConnected = useIsConnected();
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
 	const isAvailable = ML_SUPPORTED.has(connection.protocol);
@@ -168,6 +169,7 @@ export function ModelsView() {
 								flex={1}
 								variant="gradient"
 								leftSection={<Icon path={iconUpload} />}
+								disabled={!isConnected}
 								onClick={uploadModel}
 							>
 								Upload model

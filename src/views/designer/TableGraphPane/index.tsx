@@ -49,8 +49,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const { showContextMenu } = useContextMenu();
 
 	const schema = useSchema();
-	const lastSchema = useRef('');
-	const isOnline = useIsConnected();
+	const isConnected = useIsConnected();
 	const isViewActive = useConfigStore((s) => s.activeView == "designer");
 
 	const [isComputing, setIsComputing] = useState(false);
@@ -152,7 +151,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		}
 	});
 
-	const showBox = !isComputing && (!isOnline || props.tables.length === 0);
+	const showBox = !isComputing && (!isConnected || props.tables.length === 0);
 
 	const setDiagramMode = useStable((mode: string) => {
 		updateCurrentConnection({
@@ -173,10 +172,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	useLayoutEffect(() => {
-		if (isViewActive && isOnline) {
+		if (isViewActive && isConnected) {
 			renderGraph();
+		} else if(!isConnected) {
+			setNodes([]);
+			setEdges([]);
 		}
-	}, [schema, isViewActive, isOnline, activeSession.diagramDirection]);
+	}, [schema, isViewActive, isConnected, activeSession.diagramDirection]);
 
 	useEffect(() => {
 		setNodes(curr => {
@@ -339,6 +341,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						<Button
 							variant="gradient"
 							leftSection={<Icon path={iconPlus} />}
+							disabled={!isConnected}
 							onClick={openTableCreator}
 						>
 							Create table

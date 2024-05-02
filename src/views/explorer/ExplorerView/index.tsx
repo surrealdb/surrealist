@@ -18,6 +18,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { usePanelMinSize } from "~/hooks/panels";
 import { Introduction } from "~/components/Introduction";
 import { adapter } from "~/adapter";
+import { useIsConnected } from "~/hooks/connection";
 
 export function ExplorerView() {
 	const { openTableCreator } = useInterfaceStore.getState();
@@ -26,6 +27,8 @@ export function ExplorerView() {
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [creatorTable, setCreatorTable] = useState<string>();
 
+	const isConnected = useIsConnected();
+
 	const openCreator = useStable((table?: string) => {
 		setCreatorTable(table || activeTable);
 		isCreatingHandle.open();
@@ -33,6 +36,7 @@ export function ExplorerView() {
 
 	useEventSubscription(DisconnectedEvent, () => {
 		isCreatingHandle.close();
+		setActiveTable(undefined);
 	});
 
 	useIntent("explore-table", ({ table }) => {
@@ -89,6 +93,7 @@ export function ExplorerView() {
 										flex={1}
 										variant="gradient"
 										leftSection={<Icon path={iconPlus} />}
+										disabled={!isConnected}
 										onClick={openTableCreator}
 									>
 										Create table

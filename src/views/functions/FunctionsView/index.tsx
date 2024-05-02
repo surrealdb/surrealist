@@ -21,6 +21,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { usePanelMinSize } from "~/hooks/panels";
 import { adapter } from "~/adapter";
 import { Introduction } from "~/components/Introduction";
+import { useIsConnected } from "~/hooks/connection";
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
@@ -30,6 +31,8 @@ export function FunctionsView() {
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [showCreator, showCreatorHandle] = useDisclosure();
 	const [createName, setCreateName] = useState("");
+
+	const isConnected = useIsConnected();
 
 	const handle = useSaveable({
 		valid: !!details && details.args.every(([name, kind]) => name && kind),
@@ -167,6 +170,7 @@ export function FunctionsView() {
 										flex={1}
 										variant="gradient"
 										leftSection={<Icon path={iconPlus} />}
+										disabled={!isConnected}
 										onClick={openCreator}
 									>
 										Create function

@@ -9,14 +9,13 @@ import { useEventSubscription } from "~/hooks/event";
 import { useSchema } from "~/hooks/schema";
 import { themeColor } from "~/util/mantine";
 import { iconChevronLeft, iconChevronRight, iconClose, iconCopy, iconDelete, iconFilter, iconPlus, iconQuery, iconRefresh, iconServer, iconTable, iconWrench } from "~/util/icons";
-import { tb } from "~/util/helpers";
-import { useInterfaceStore } from "~/stores/interface";
-import { RecordsChangedEvent } from "~/util/global-events";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
+import { RecordsChangedEvent } from "~/util/global-events";
 import { executeQuery } from "~/connection";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { RecordId } from "surrealdb.js";
+import { tb } from "~/util/helpers";
 
 const PAGE_SIZES = [
 	{ label: "10 Results per page", value: "10" },
@@ -26,13 +25,12 @@ const PAGE_SIZES = [
 ];
 
 export interface ExplorerPaneProps {
-	activeTable: string | undefined;
+	activeTable: string;
 	onCreateRecord: () => void;
 }
 
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
 	const { addQueryTab, setActiveView } = useConfigStore.getState();
-	const { openTableCreator } = useInterfaceStore.getState();
 	const { showContextMenu } = useContextMenu();
 
 	const schema = useSchema();
@@ -212,7 +210,6 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	});
 
 	const headers = schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
-	const hasTables = (schema?.tables?.length ?? 0) > 0;
 
 	return (
 		<ContentPane
@@ -256,137 +253,113 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 						</Text>
 					</Group>
 				)
-			}>
-			{activeTable ? (
-				<>
-					{filtering && (
-						<TextInput
-							placeholder="Enter filter clause..."
-							leftSection={<Icon path={iconFilter} />}
-							value={filter}
-							onChange={setFilter}
-							error={!isFilterValid}
-							autoFocus
-							styles={() => ({
-								input: {
-									fontFamily: "JetBrains Mono",
-									borderColor: (isFilterValid ? undefined : themeColor("pink.9")) + " !important",
-								},
-							})}
-						/>
-					)}
-					{records.length > 0 ? (
-						<ScrollArea
-							style={{
-								position: "absolute",
-								inset: 12,
-								top: filtering ? 40 : 0,
-								bottom: 54,
-								transition: "top .1s"
-							}}
-						>
-							<DataTable
-								data={records}
-								sorting={sortMode}
-								onSortingChange={setSortMode}
-								onRowContextMenu={onRecordContextMenu}
-								headers={headers}
-							/>
-						</ScrollArea>
-					) : (
-						<Center h="90%">
-							<Box ta="center">
-								<Text c="slate">
-									Table has no records
-								</Text>
-								<Button
-									mt={6}
-									variant="subtle"
-									color="surreal.5"
-									onClick={openCreator}
-								>
-									Would you like to create one?
-								</Button>
-							</Box>
-						</Center>
-					)}
-
-					<Group
-						gap="xs"
-						justify="center"
-						style={{
-							position: "absolute",
-							insetInline: 12,
-							bottom: 12
-						}}
-					>
-						<Group gap="xs">
-							<ActionIcon
-								onClick={previousPage}
-								disabled={page <= 1}
-								aria-label="Previous page"
-							>
-								<Icon path={iconChevronLeft} />
-							</ActionIcon>
-
-							<TextInput
-								value={pageText}
-								onChange={setPageText}
-								maw={36}
-								size="xs"
-								withAsterisk
-								onBlur={gotoPage}
-								onKeyDown={gotoPage}
-								styles={{
-									input: {
-										textAlign: "center",
-										paddingInline: 0,
-									},
-								}}
-							/>
-
-							<Text c="slate">of {pageCount} pages</Text>
-
-							<ActionIcon
-								onClick={nextPage}
-								disabled={page >= pageCount}
-								aria-label="Next page"
-							>
-								<Icon path={iconChevronRight} />
-							</ActionIcon>
-						</Group>
-
-						<Select
-							value={pageSize}
-							onChange={setPageSize as any}
-							data={PAGE_SIZES}
-							size="xs"
-						/>
-					</Group>
-				</>
-			) : hasTables ? (
-				<Center h="90%">
-					<Text ta="center" c="slate">
-						Select a table to view records
-					</Text>
-				</Center>
+			}
+		>
+			{filtering && (
+				<TextInput
+					placeholder="Enter filter clause..."
+					leftSection={<Icon path={iconFilter} />}
+					value={filter}
+					onChange={setFilter}
+					error={!isFilterValid}
+					autoFocus
+					styles={() => ({
+						input: {
+							fontFamily: "JetBrains Mono",
+							borderColor: (isFilterValid ? undefined : themeColor("pink.9")) + " !important",
+						},
+					})}
+				/>
+			)}
+			{records.length > 0 ? (
+				<ScrollArea
+					style={{
+						position: "absolute",
+						inset: 12,
+						top: filtering ? 40 : 0,
+						bottom: 54,
+						transition: "top .1s"
+					}}
+				>
+					<DataTable
+						data={records}
+						sorting={sortMode}
+						onSortingChange={setSortMode}
+						onRowContextMenu={onRecordContextMenu}
+						headers={headers}
+					/>
+				</ScrollArea>
 			) : (
 				<Center h="90%">
 					<Box ta="center">
 						<Text c="slate">
-							No tables defined in this database
+							This table has no records yet
 						</Text>
 						<Button
-							mt={6}
-							variant="subtle"
+							mt="xl"
+							variant="gradient"
 							color="surreal.5"
-							onClick={openTableCreator}
+							leftSection={<Icon path={iconPlus} />}
+							onClick={openCreator}
 						>
-							Would you like to create one?
+							Create record
 						</Button>
 					</Box>
 				</Center>
 			)}
+
+			<Group
+				gap="xs"
+				justify="center"
+				style={{
+					position: "absolute",
+					insetInline: 12,
+					bottom: 12
+				}}
+			>
+				<Group gap="xs">
+					<ActionIcon
+						onClick={previousPage}
+						disabled={page <= 1}
+						aria-label="Previous page"
+					>
+						<Icon path={iconChevronLeft} />
+					</ActionIcon>
+
+					<TextInput
+						value={pageText}
+						onChange={setPageText}
+						maw={36}
+						size="xs"
+						withAsterisk
+						onBlur={gotoPage}
+						onKeyDown={gotoPage}
+						styles={{
+							input: {
+								textAlign: "center",
+								paddingInline: 0,
+							},
+						}}
+					/>
+
+					<Text c="slate">of {pageCount} pages</Text>
+
+					<ActionIcon
+						onClick={nextPage}
+						disabled={page >= pageCount}
+						aria-label="Next page"
+					>
+						<Icon path={iconChevronRight} />
+					</ActionIcon>
+				</Group>
+
+				<Select
+					value={pageSize}
+					onChange={setPageSize as any}
+					data={PAGE_SIZES}
+					size="xs"
+				/>
+			</Group>
 		</ContentPane>
 	);
 }
