@@ -49,6 +49,7 @@ export function Introduction({
 							p={0}
 							value={snippet.code}
 							extensions={snippet.extensions}
+							withDedent
 						/>
 					</Paper>
 				)}

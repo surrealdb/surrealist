@@ -22,6 +22,7 @@ export interface CodePreviewProps extends PaperProps {
 	withCopy?: boolean;
 	extensions?: Extension;
 	rightSection?: ReactNode;
+	withDedent?: boolean;
 }
 
 export function CodePreview({
@@ -30,6 +31,7 @@ export function CodePreview({
 	withCopy,
 	extensions,
 	rightSection,
+	withDedent,
 	className,
 	...rest
 }: CodePreviewProps) {
@@ -38,8 +40,8 @@ export function CodePreview({
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	const code = useMemo(() => {
-		return dedent(value);
-	}, [value]);
+		return withDedent ? dedent(value) : value;
+	}, [value, withDedent]);
 
 	useEffect(() => {
 		const config = new Compartment();
