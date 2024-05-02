@@ -36,7 +36,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const connection = useActiveConnection();
-	const isOnline = useIsConnected();
+	const isConnected = useIsConnected();
 	const schema = useTables();
 
 	const { showContextMenu } = useContextMenu();
@@ -99,6 +99,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 					<ActionIcon
 						onClick={openTableCreator}
 						aria-label="Create new table"
+						disabled={!isConnected}
 					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
@@ -119,7 +120,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 					}}
 				>
 					<Stack gap="xs" pb="md">
-						{isOnline && schema.length > 0 && (
+						{isConnected && schema.length > 0 && (
 							<TextInput
 								placeholder="Search tables..."
 								leftSection={<Icon path={iconSearch} />}
@@ -130,7 +131,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 							/>
 						)}
 
-						{isOnline ? (tablesFiltered.length === 0 && (
+						{isConnected ? (tablesFiltered.length === 0 && (
 							<Text c="slate" ta="center" mt="lg">
 								{hasAccess ? "No tables found" : "Unsupported auth mode"}
 							</Text>

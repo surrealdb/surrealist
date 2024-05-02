@@ -66,6 +66,7 @@ export function Exporter() {
 				loading={isExporting}
 				disabled={!isOnline}
 				style={{ flexShrink: 0 }}
+				bg="transparent"
 			>
 				Export database
 			</Entry>

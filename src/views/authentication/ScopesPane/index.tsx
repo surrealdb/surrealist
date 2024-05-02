@@ -23,7 +23,7 @@ import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 
 export function ScopePane() {
 	const { connection } = useActiveConnection();
-	const isOnline = useIsConnected();
+	const isConnected = useIsConnected();
 	const schema = useSchema();
 
 	const [isRegistring, registerHandle] = useDisclosure();
@@ -164,6 +164,7 @@ export function ScopePane() {
 					<ActionIcon
 						onClick={createScope}
 						aria-label="New scope"
+						disabled={!isConnected}
 					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
@@ -171,7 +172,7 @@ export function ScopePane() {
 			}>
 			{scopes.length === 0 && (
 				<Center h="100%" c="slate">
-					{isOnline ? "No scopes found" : "Not connected"}
+					{isConnected ? "No scopes found" : "Not connected"}
 				</Center>
 			)}
 

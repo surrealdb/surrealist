@@ -80,6 +80,7 @@ export function Importer() {
 				loading={isImporting}
 				disabled={!isOnline}
 				style={{ flexShrink: 0 }}
+				bg="transparent"
 			>
 				Import database
 			</Entry>

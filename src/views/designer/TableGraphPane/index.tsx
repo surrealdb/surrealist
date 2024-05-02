@@ -205,6 +205,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						<ActionIcon
 							onClick={openTableCreator}
 							aria-label="Create new table"
+							disabled={!isConnected}
 						>
 							<Icon path={iconPlus} />
 						</ActionIcon>

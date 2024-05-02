@@ -9,6 +9,7 @@ import { SchemaModel } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 import { useContextMenu } from "mantine-contextmenu";
+import { useIsConnected } from "~/hooks/connection";
 
 export interface ModelsPanelProps {
 	active: string;
@@ -26,6 +27,7 @@ export function ModelsPanel({
 	onUpload,
 }: ModelsPanelProps) {
 	const isLight = useIsLight();
+	const isConnected = useIsConnected();
 	const { showContextMenu } = useContextMenu();
 
 	const [search, setSearch] = useInputState("");
@@ -53,6 +55,7 @@ export function ModelsPanel({
 						<ActionIcon
 							onClick={onUpload}
 							aria-label="Upload SurrealML model"
+							disabled={!isConnected}
 						>
 							<Icon path={iconUpload} />
 						</ActionIcon>

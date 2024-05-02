@@ -48,7 +48,7 @@ export interface AccountsPaneProps {
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
-	const isOnline = useIsConnected();
+	const isConnected = useIsConnected();
 	const isDenied = useHasSchemaAccess();
 	const schema = useSchema();
 
@@ -145,6 +145,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 					<ActionIcon
 						onClick={createUser}
 						aria-label="Create new user"
+						disabled={!isConnected}
 					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
@@ -152,7 +153,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			}>
 			{users.length === 0 && (
 				<Center h="100%" c="slate">
-					{isOnline
+					{isConnected
 						? isDenied
 							? `No ${props.title.toLocaleLowerCase()} found`
 							: "No access to this information"

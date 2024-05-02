@@ -9,6 +9,7 @@ import { SchemaFunction } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
+import { useIsConnected } from "~/hooks/connection";
 
 export interface FunctionsPanelProps {
 	active: string;
@@ -28,6 +29,7 @@ export function FunctionsPanel({
 	onCreate,
 }: FunctionsPanelProps) {
 	const isLight = useIsLight();
+	const isConnected = useIsConnected();
 	const { showContextMenu } = useContextMenu();
 
 	const [search, setSearch] = useInputState("");
@@ -57,6 +59,7 @@ export function FunctionsPanel({
 					<ActionIcon
 						onClick={onCreate}
 						aria-label="Create new function"
+						disabled={!isConnected}
 					>
 						<Icon path={iconPlus} />
 					</ActionIcon>
