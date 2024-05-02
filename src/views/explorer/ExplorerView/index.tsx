@@ -3,19 +3,21 @@ import { useState } from "react";
 import { TablesPane } from "../TablesPane";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { useDisclosure } from "@mantine/hooks";
-import { Box, Button, Center, Group, Stack } from "@mantine/core";
+import { Box, Button, Group, Text } from "@mantine/core";
 import { DisconnectedEvent } from "~/util/global-events";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { Icon } from "~/components/Icon";
-import { iconExplorer, iconPlus } from "~/util/icons";
+import { iconExplorer, iconOpen, iconPlus } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { useViewEffect } from "~/hooks/view";
 import { syncDatabaseSchema } from "~/util/schema";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { usePanelMinSize } from "~/hooks/panels";
+import { Introduction } from "~/components/Introduction";
+import { adapter } from "~/adapter";
 
 export function ExplorerView() {
 	const { openTableCreator } = useInterfaceStore.getState();
@@ -66,24 +68,39 @@ export function ExplorerView() {
 								onCreateRecord={openCreator}
 							/>
 						) : (
-							<Center h="100%">
-								<Stack
-									align="center"
-									justify="center"
-								>
-									<Icon path={iconExplorer} size={2.5} />
-									Select a table to view or edit
-									<Group>
-										<Button
-											variant="light"
-											leftSection={<Icon path={iconPlus} />}
-											onClick={openTableCreator}
-										>
-											Create table
-										</Button>
-									</Group>
-								</Stack>
-							</Center>
+							<Introduction
+								title="Explorer"
+								icon={iconExplorer}
+								snippet={`
+									-- Declare a new table
+									DEFINE TABLE person;
+									
+									-- Fetch table records
+									SELECT * FROM person;
+								`}
+							>
+								<Text>
+									The explorer view provides an easy way to browse your tables and records without writing any queries.
+								</Text>
+								<Group>
+									<Button
+										flex={1}
+										variant="gradient"
+										leftSection={<Icon path={iconPlus} />}
+										onClick={openTableCreator}
+									>
+										Create table
+									</Button>
+									<Button
+										flex={1}
+										color="slate"
+										rightSection={<Icon path={iconOpen} />}
+										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/table")}
+									>
+										Learn more
+									</Button>
+								</Group>
+							</Introduction>
 						)}
 					</Panel>
 				</PanelGroup>

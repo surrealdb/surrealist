@@ -2,7 +2,6 @@ import queryIcon from "~/assets/animation/query.json";
 import explorerIcon from "~/assets/animation/explorer.json";
 import designerIcon from "~/assets/animation/designer.json";
 import authIcon from "~/assets/animation/auth.json";
-import { getConnection } from "./util/connection";
 
 import {
 	AuthMode,
@@ -139,19 +138,14 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Models",
 		icon: iconModel,
 		desc: "Upload and manage machine learning models",
-		hidden: (flags) => flags.models_view === false,
-		disabled: (flags) => {
-			const protocol = getConnection()?.connection?.protocol;
-
-			return flags.models_view !== "force" && (!protocol || !ML_SUPPORTED.has(protocol));
-		},
+		disabled: (flags) => !flags.models_view,
 	},
 	documentation: {
 		id: "documentation",
 		name: "API Docs",
 		icon: iconAPI,
 		desc: "View the database schema and documentation",
-		hidden: (flags) => !flags.apidocs_view,
+		disabled: (flags) => !flags.apidocs_view,
 	},
 };
 

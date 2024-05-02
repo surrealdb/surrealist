@@ -320,7 +320,7 @@ export interface ViewInfo {
 	icon: string;
 	anim?: any;
 	desc: string;
-	hidden?: FeatureCondition;
+	disabled?: FeatureCondition;
 	disabled?: FeatureCondition;
 }
 

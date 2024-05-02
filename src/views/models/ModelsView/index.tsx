@@ -1,9 +1,9 @@
 import posthog from "posthog-js";
-import { Button, Center, Group, Stack, Text } from "@mantine/core";
+import { Button, Group, Stack, Text } from "@mantine/core";
 import { ModelsPanel } from "../ModelsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { Icon } from "~/components/Icon";
-import { iconModel, iconUpload } from "~/util/icons";
+import { iconModel, iconOpen, iconUpload } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { adapter } from "~/adapter";
 import { useActiveConnection } from "~/hooks/connection";
@@ -13,6 +13,8 @@ import { useSaveable } from "~/hooks/save";
 import { ConnectionOptions, SchemaModel } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
 import { useViewEffect } from "~/hooks/view";
+import { Introduction } from "~/components/Introduction";
+import { ML_SUPPORTED } from "~/constants";
 
 const SURML_FILTERS = [
 	{
@@ -38,9 +40,11 @@ function composeConnection(connection: ConnectionOptions, path: string) {
 
 export function ModelsView() {
 	const models = useSchema()?.models ?? [];
-	const { connection } = useActiveConnection();
+	const { id, connection } = useActiveConnection();
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
+	const isAvailable = ML_SUPPORTED.has(connection.protocol);
+	const isSandbox = id === "sandbox";
 
 	const handle = useSaveable({
 		track: {
@@ -103,13 +107,15 @@ export function ModelsView() {
 			wrap="nowrap"
 			gap="var(--surrealist-divider-size)"
 		>
-			<ModelsPanel
-				active={details?.name || ''}
-				models={models}
-				onSelect={editModel}
-				onDownload={downloadModel}
-				onUpload={uploadModel}
-			/>
+			{isAvailable && (
+				<ModelsPanel
+					active={details?.name || ''}
+					models={models}
+					onSelect={editModel}
+					onDownload={downloadModel}
+					onUpload={uploadModel}
+				/>
+			)}
 			{details ? (
 				<Stack
 					h="100%"
@@ -123,26 +129,39 @@ export function ModelsView() {
 					/>
 				</Stack>
 			) : (
-				<Center flex={1}>
-					<Stack
-						align="center"
-						justify="center"
-					>
-						<Icon path={iconModel} size={2.5} />
-						<Text maw={250} ta="center">
-							Press the button to upload a new SurrealML model to this database
+				<Introduction
+					title="Models"
+					icon={iconModel}
+				>
+					<Text>
+						Upload your SurrealML models directly to SurrealDB and use the power of Machine Learning within your queries.
+					</Text>
+					{!isAvailable && (
+						<Text c="pink">
+							Unfortunately ML models are not supported {isSandbox ? 'in the sandbox' : 'by your current connection'}
 						</Text>
-						<Group>
+					)}
+					<Group>
+						{isAvailable && (
 							<Button
-								variant="light"
+								flex={1}
+								variant="gradient"
 								leftSection={<Icon path={iconUpload} />}
 								onClick={uploadModel}
 							>
-								Upload SurrealML model
+								Upload model
 							</Button>
-						</Group>
-					</Stack>
-				</Center>
+						)}
+						<Button
+							flex={1}
+							color="slate"
+							rightSection={<Icon path={iconOpen} />}
+							onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealml")}
+						>
+							Learn more
+						</Button>
+					</Group>
+				</Introduction>
 			)}
 		</Group>
 	);

@@ -1,9 +1,9 @@
-import { Box, Button, Center, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { FunctionsPanel } from "../FunctionsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { ChangeEvent, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { iconChevronRight, iconFunction, iconPlus } from "~/util/icons";
+import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -19,6 +19,8 @@ import { executeQuery } from "~/connection";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { usePanelMinSize } from "~/hooks/panels";
+import { adapter } from "~/adapter";
+import { Introduction } from "~/components/Introduction";
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
@@ -141,24 +143,42 @@ export function FunctionsView() {
 								onDelete={removeFunction}
 							/>
 						) : (
-							<Center h="100%">
-								<Stack
-									align="center"
-									justify="center"
-								>
-									<Icon path={iconFunction} size={2.5} />
-									Select a function to view or edit
-									<Group>
-										<Button
-											variant="light"
-											leftSection={<Icon path={iconPlus} />}
-											onClick={openCreator}
-										>
-											Create function
-										</Button>
-									</Group>
-								</Stack>
-							</Center>
+							<Introduction
+								title="Functions"
+								icon={iconFunction}
+								snippet={`
+									-- Define your functions with ease
+									DEFINE FUNCTION fn::greet($name: string) {
+										RETURN "Hello, " + $name + "!";
+									};
+									
+									-- And invoke them from any query
+									RETURN fn::greet("Tobie");
+								`}
+							>
+								<Text>
+									Schema functions allow you to define stored procedures that can be reused throughout your queries.
+									This view allows you to effortlessly create and manage your functions.
+								</Text>
+								<Group>
+									<Button
+										flex={1}
+										variant="gradient"
+										leftSection={<Icon path={iconPlus} />}
+										onClick={openCreator}
+									>
+										Create function
+									</Button>
+									<Button
+										flex={1}
+										color="slate"
+										rightSection={<Icon path={iconOpen} />}
+										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function")}
+									>
+										Learn more
+									</Button>
+								</Group>
+							</Introduction>
 						)}
 					</Panel>
 				</PanelGroup>

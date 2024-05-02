@@ -1,3 +1,9 @@
-.root :global(.cm-editor) {
-	outline: none;
+.root {
+	:global(.cm-editor) {
+		outline: none;
+	}
+
+	:global(.cm-line) {
+		padding-left: 0;
+	}
 }

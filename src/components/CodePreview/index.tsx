@@ -1,10 +1,11 @@
 import classes from "./style.module.scss";
 import clsx from "clsx";
+import dedent from "dedent";
 import { surrealql } from "codemirror-surrealql";
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { ActionIcon, Box, CopyButton, Paper, PaperProps, Text } from "@mantine/core";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useMemo, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { colorTheme } from "~/util/editor/extensions";
 import { Icon } from "../Icon";
@@ -36,12 +37,16 @@ export function CodePreview({
 	const editorRef = useRef<EditorRef>();
 	const ref = useRef<HTMLDivElement | null>(null);
 
+	const code = useMemo(() => {
+		return dedent(value);
+	}, [value]);
+
 	useEffect(() => {
 		const config = new Compartment();
 		const configExt = config.of(extensions || surrealql());
 
 		const initialState = EditorState.create({
-			doc: value,
+			doc: code,
 			extensions: [
 				configExt,
 				colorTheme(),
@@ -68,7 +73,7 @@ export function CodePreview({
 	useEffect(() => {
 		const { editor } = editorRef.current!;
 
-		if (value == editor.state.doc.toString()) {
+		if (code == editor.state.doc.toString()) {
 			return;
 		}
 
@@ -76,12 +81,12 @@ export function CodePreview({
 			changes: {
 				from: 0,
 				to: editor.state.doc.length,
-				insert: value
+				insert: code
 			}
 		});
 
 		editor.dispatch(transaction);
-	}, [value]);
+	}, [code]);
 
 	useEffect(() => {
 		const { editor, config } = editorRef.current!;
