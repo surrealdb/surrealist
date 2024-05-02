@@ -146,15 +146,17 @@ export function FunctionsView() {
 							<Introduction
 								title="Functions"
 								icon={iconFunction}
-								snippet={`
-									-- Define your functions with ease
-									DEFINE FUNCTION fn::greet($name: string) {
-										RETURN "Hello, " + $name + "!";
-									};
-									
-									-- And invoke them from any query
-									RETURN fn::greet("Tobie");
-								`}
+								snippet={{
+									code: `
+										-- Define your functions with ease
+										DEFINE FUNCTION fn::greet($name: string) {
+											RETURN "Hello, " + $name + "!";
+										};
+										
+										-- And invoke them from any query
+										RETURN fn::greet("Tobie");
+									`
+								}}
 							>
 								<Text>
 									Schema functions allow you to define stored procedures that can be reused throughout your queries.

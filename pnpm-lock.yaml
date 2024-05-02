@@ -23,6 +23,9 @@ importers:
       '@codemirror/lang-json':
         specifier: ^6.0.1
         version: 6.0.1
+      '@codemirror/lang-python':
+        specifier: ^6.1.6
+        version: 6.1.6(@codemirror/view@6.24.1)
       '@codemirror/lang-rust':
         specifier: ^6.0.1
         version: 6.0.1
@@ -435,6 +438,9 @@ packages:
   '@codemirror/lang-json@6.0.1':
     resolution: {integrity: sha512-+T1flHdgpqDDlJZ2Lkil/rLiRy684WMLc74xUnjJH48GQdfJo/pudlTRreZmKwzP8/tGdKf83wlbAdOCzlJOGQ==}
 
+  '@codemirror/lang-python@6.1.6':
+    resolution: {integrity: sha512-ai+01WfZhWqM92UqjnvorkxosZ2aq2u28kHvr+N3gu012XqY2CThD67JPMHnGceRfXPDBmn1HnyqowdpF57bNg==}
+
   '@codemirror/lang-rust@6.0.1':
     resolution: {integrity: sha512-344EMWFBzWArHWdZn/NcgkwMvZIWUR1GEBdwG8FEp++6o6vT6KL9V7vGs2ONsKxxFUPXKI0SPcWhyYyl2zPYxQ==}
 
@@ -733,6 +739,9 @@ packages:
 
   '@lezer/lr@1.4.0':
     resolution: {integrity: sha512-Wst46p51km8gH0ZUmeNrtpRYmdlRHUpN1DQd3GFAyKANi8WVz8c2jHYTf1CVScFaCjQw1iO3ZZdqGDxQPRErTg==}
+
+  '@lezer/python@1.1.13':
+    resolution: {integrity: sha512-AdbRAtdQq94PfTNd4kqMEJhH2fqa2JdoyyqqVewY6w34w2Gi6dg2JuOtOgR21Bi0zP9r0KjSSHOUq/tP7FVT8A==}
 
   '@lezer/rust@1.0.2':
     resolution: {integrity: sha512-Lz5sIPBdF2FUXcWeCu1//ojFAZqzTQNRga0aYv6dYXqJqPfMdCAI0NzajWUd4Xijj1IKJLtjoXRPMvTKWBcqKg==}
@@ -3194,6 +3203,16 @@ snapshots:
       '@codemirror/language': 6.10.1
       '@lezer/json': 1.0.2
 
+  '@codemirror/lang-python@6.1.6(@codemirror/view@6.24.1)':
+    dependencies:
+      '@codemirror/autocomplete': 6.13.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(@lezer/common@1.2.1)
+      '@codemirror/language': 6.10.1
+      '@codemirror/state': 6.4.1
+      '@lezer/common': 1.2.1
+      '@lezer/python': 1.1.13
+    transitivePeerDependencies:
+      - '@codemirror/view'
+
   '@codemirror/lang-rust@6.0.1':
     dependencies:
       '@codemirror/language': 6.10.1
@@ -3466,6 +3485,12 @@ snapshots:
   '@lezer/lr@1.4.0':
     dependencies:
       '@lezer/common': 1.2.1
+
+  '@lezer/python@1.1.13':
+    dependencies:
+      '@lezer/common': 1.2.1
+      '@lezer/highlight': 1.2.0
+      '@lezer/lr': 1.4.0
 
   '@lezer/rust@1.0.2':
     dependencies:

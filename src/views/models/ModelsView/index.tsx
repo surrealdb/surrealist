@@ -1,4 +1,5 @@
 import posthog from "posthog-js";
+import { python } from "@codemirror/lang-python";
 import { Button, Group, Stack, Text } from "@mantine/core";
 import { ModelsPanel } from "../ModelsPanel";
 import { EditorPanel } from "../EditorPanel";
@@ -15,6 +16,7 @@ import { syncDatabaseSchema } from "~/util/schema";
 import { useViewEffect } from "~/hooks/view";
 import { Introduction } from "~/components/Introduction";
 import { ML_SUPPORTED } from "~/constants";
+import { connectionUri } from "~/util/helpers";
 
 const SURML_FILTERS = [
 	{
@@ -132,6 +134,22 @@ export function ModelsView() {
 				<Introduction
 					title="Models"
 					icon={iconModel}
+					snippet={{
+						title: "Using Python",
+						extensions: [python()],
+						code: `
+							# Upload your model directly to SurrealDB
+							SurMlFile.upload(
+								path="./model.surml",
+								url="${connectionUri(connection, 'ml/import')}",
+								chunk_size=36864,
+								namespace="${connection.namespace}",
+								database="${connection.database}",
+								username="...",
+								password="..."
+							)							
+						`
+					}}
 				>
 					<Text>
 						Upload your SurrealML models directly to SurrealDB and use the power of Machine Learning within your queries.

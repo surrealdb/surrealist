@@ -321,7 +321,6 @@ export interface ViewInfo {
 	anim?: any;
 	desc: string;
 	disabled?: FeatureCondition;
-	disabled?: FeatureCondition;
 }
 
 export interface DataSet {

@@ -71,13 +71,15 @@ export function ExplorerView() {
 							<Introduction
 								title="Explorer"
 								icon={iconExplorer}
-								snippet={`
-									-- Declare a new table
-									DEFINE TABLE person;
-									
-									-- Fetch table records
-									SELECT * FROM person;
-								`}
+								snippet={{
+									code: `
+										-- Declare a new table
+										DEFINE TABLE person;
+										
+										-- Fetch table records
+										SELECT * FROM person;
+									`
+								}}
 							>
 								<Text>
 									The explorer view provides an easy way to browse your tables and records without writing any queries.

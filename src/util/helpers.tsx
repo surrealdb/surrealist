@@ -243,9 +243,10 @@ export function isPermissionError(result: any) {
  * Convert the given connection options to a connection uri
  *
  * @param options The connection options
+ * @param path The optional path to append
  * @returns The URI string
  */
-export function connectionUri(options: ConnectionOptions) {
+export function connectionUri(options: ConnectionOptions, path?: string) {
 	if (options.protocol === "mem") {
 		return "mem://";
 	} else if (options.protocol === "indxdb") {
@@ -265,7 +266,7 @@ export function connectionUri(options: ConnectionOptions) {
 	}
 
 	// Append rpc
-	url.pathname += "rpc";
+	url.pathname += path ?? "rpc";
 
 	return url.toString();
 }

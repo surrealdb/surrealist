@@ -2,11 +2,16 @@ import { Center, Paper, Stack, Title, Text, Group } from "@mantine/core";
 import { CodePreview } from "../CodePreview";
 import { PropsWithChildren } from "react";
 import { Icon } from "../Icon";
+import { Extension } from "@codemirror/state";
 
 export interface IntroductionProps {
 	title: string;
 	icon: string;
-	snippet?: string;
+	snippet?: {
+		title?: string;
+		code?: string;
+		extensions?: Extension[];
+	};
 }
 
 export function Introduction({
@@ -30,19 +35,20 @@ export function Introduction({
 					</Group>
 					{children}
 				</Stack>
-				{snippet && (
+				{snippet?.code && (
 					<Paper
 						p="xl"
 						bg="slate.7"
 						radius={0}
 					>
 						<Text c="bright" fz={18} fw={600} mb="md">
-							Using the CLI
+							{snippet.title ?? "Example"}
 						</Text>
 						<CodePreview
 							bg="transparent"
 							p={0}
-							value={snippet}
+							value={snippet.code}
+							extensions={snippet.extensions}
 						/>
 					</Paper>
 				)}
