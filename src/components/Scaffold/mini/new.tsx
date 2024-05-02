@@ -41,7 +41,8 @@ export function MiniNewScaffold() {
 					bg="slate.9"
 					viewportProps={{
 						style: {
-							paddingBottom: 50
+							paddingBottom: 50,
+							paddingInline: 24
 						}
 					}}
 				>
