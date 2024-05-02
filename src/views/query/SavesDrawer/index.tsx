@@ -191,7 +191,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 							{
 								key: 'delete',
 								title: 'Delete query',
-								color: 'red',
+								color: 'pink.7',
 								icon: <Icon path={iconDelete} />,
 								onClick: () => handleDeleteQuery(entry),
 							}

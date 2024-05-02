@@ -5,7 +5,7 @@ import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconCircle, iconCopy, iconEdit, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconCircle, iconCopy, iconDelete, iconEdit, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
@@ -20,7 +20,7 @@ import { openConnection } from "~/connection";
 
 export function Connections() {
 	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
-	const { setActiveConnection, addConnection } = useConfigStore.getState();
+	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
 	const [isListing, isListingHandle] = useDisclosure();
@@ -241,6 +241,13 @@ export function Connections() {
 												title: "Duplicate",
 												icon: <Icon path={iconCopy} />,
 												onClick: () => duplicateConnection(con.id),
+											},
+											{
+												key: "delete",
+												title: "Delete connection",
+												color: "pink.7",
+												icon: <Icon path={iconDelete} />,
+												onClick: () => removeConnection(con.id),
 											}
 										])}
 									>

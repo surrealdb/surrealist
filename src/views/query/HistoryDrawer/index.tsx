@@ -71,7 +71,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				{
 					key: 'remove',
 					title: 'Remove query',
-					color: 'red',
+					color: '"pink.7',
 					icon: <Icon path={iconDelete} />,
 					onClick: () => handleDeleteQuery(),
 				}

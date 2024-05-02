@@ -10,7 +10,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { LiveIndicator } from "~/components/LiveIndicator";
-import { iconArrowUpRight, iconChevronRight, iconClose, iconCopy, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
+import { iconArrowUpRight, iconChevronRight, iconClose, iconCopy, iconDelete, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
@@ -131,6 +131,13 @@ export function TabsPane(props: TabsPaneProps) {
 												title: "Duplicate query",
 												icon: <Icon path={iconCopy} />,
 												onClick: () => duplicateQuery(query)
+											},
+											{
+												key: "delete",
+												title: "Delete query",
+												color: "pink.7",
+												icon: <Icon path={iconDelete} />,
+												onClick: (e) => removeTab(query.id, e)
 											}
 										])}
 										leftSection={
