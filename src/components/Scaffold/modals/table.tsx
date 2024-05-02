@@ -8,10 +8,11 @@ import { syncDatabaseSchema } from "~/util/schema";
 import { useTableNames } from "~/hooks/schema";
 import { ModalTitle } from "../../ModalTitle";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
-import { tb } from "~/util/helpers";
 import { useInterfaceStore } from "~/stores/interface";
-import { useIntent } from "~/hooks/url";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { executeQuery } from "~/connection";
+import { useConfigStore } from "~/stores/config";
+import { tb } from "~/util/helpers";
 
 export function TableCreator() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
@@ -41,6 +42,14 @@ export function TableCreator() {
 		await syncDatabaseSchema({
 			tables: [tableName]
 		});
+
+		const { activeView } = useConfigStore.getState();
+
+		if (activeView === "explorer") {
+			dispatchIntent("explore-table", {
+				table: tableName
+			});
+		}
 	});
 
 	useLayoutEffect(() => {
