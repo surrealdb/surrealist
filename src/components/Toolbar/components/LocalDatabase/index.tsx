@@ -3,7 +3,7 @@ import { ActionIcon, Tooltip } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { Icon } from "../../Icon";
+import { Icon } from "../../../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
