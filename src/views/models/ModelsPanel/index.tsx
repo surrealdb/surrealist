@@ -4,7 +4,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
-import { iconDownload, iconList, iconModel, iconSearch, iconUpload } from "~/util/icons";
+import { iconDownload, iconModel, iconSearch, iconUpload } from "~/util/icons";
 import { SchemaModel } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { Text } from "@mantine/core";
@@ -33,7 +33,7 @@ export function ModelsPanel({
 	return (
 		<ContentPane
 			title="Models"
-			icon={iconList}
+			icon={iconModel}
 			w={275}
 			style={{ flexShrink: 0 }}
 			leftSection={

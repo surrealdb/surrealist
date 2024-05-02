@@ -15,7 +15,7 @@ import { useConfigStore } from "~/stores/config";
 import { Importer } from "../Importer";
 import { Exporter } from "../Exporter";
 import { useContextMenu } from "mantine-contextmenu";
-import { iconDelete, iconList, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
+import { iconDelete, iconExplorer, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -81,7 +81,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 	return (
 		<ContentPane
 			title="Tables"
-			icon={iconList}
+			icon={iconExplorer}
 			style={{ flexShrink: 0 }}
 			leftSection={
 				schema.length > 0 && (

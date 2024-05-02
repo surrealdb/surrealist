@@ -7,7 +7,7 @@ import { CodeLang } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { CODE_LANGUAGES } from "~/constants";
 import { useIntent } from "~/hooks/url";
-import { iconAPI } from "~/util/icons";
+import { iconList } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
@@ -91,7 +91,7 @@ export function ArticlePane({
 
 	return (
 		<ContentPane
-			icon={iconAPI}
+			icon={iconList}
 			title="Documentation"
 			withTopPadding={false}
 			rightSection={

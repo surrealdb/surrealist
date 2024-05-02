@@ -4,7 +4,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
-import { iconCopy, iconDelete, iconFunction, iconList, iconPlus, iconSearch } from "~/util/icons";
+import { iconCopy, iconDelete, iconFunction, iconPlus, iconSearch } from "~/util/icons";
 import { SchemaFunction } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
@@ -41,7 +41,7 @@ export function FunctionsPanel({
 	return (
 		<ContentPane
 			title="Functions"
-			icon={iconList}
+			icon={iconFunction}
 			style={{ flexShrink: 0 }}
 			leftSection={
 				<Badge

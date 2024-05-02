@@ -1,7 +1,7 @@
 import { ScrollArea, Stack } from "@mantine/core";
 import { ContentPane } from "~/components/Pane";
 import { DocsTopic } from "~/docs/types";
-import { iconList } from "~/util/icons";
+import { iconAPI } from "~/util/icons";
 import { renderTopics } from "./topics";
 import { ScrollFader } from "~/components/ScrollFader";
 import { CodeLang } from "~/types";
@@ -31,7 +31,7 @@ export function TocPane({
 
 	return (
 		<ContentPane
-			icon={iconList}
+			icon={iconAPI}
 			title="Topics"
 			withTopPadding={false}
 			w={300}
