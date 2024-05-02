@@ -326,22 +326,22 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						pos="absolute"
 						align="center"
 						justify="center"
-						gap="lg"
+						gap="xl"
 					>
 						<Box ta="center">
 							<Text fz="xl" fw={600}>
 								No tables defined
 							</Text>
 							<Text>
-								Get started by creating a table
+								Define tables to visualize them in the table graph
 							</Text>
 						</Box>
 						<Button
-							variant="light"
-							rightSection={<Icon path={iconPlus} />}
+							variant="gradient"
+							leftSection={<Icon path={iconPlus} />}
 							onClick={openTableCreator}
 						>
-							Create a table
+							Create table
 						</Button>
 					</Stack>
 				)}

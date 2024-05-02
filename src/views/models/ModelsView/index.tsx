@@ -4,7 +4,7 @@ import { Button, Group, Stack, Text } from "@mantine/core";
 import { ModelsPanel } from "../ModelsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { Icon } from "~/components/Icon";
-import { iconModel, iconOpen, iconUpload } from "~/util/icons";
+import { iconModel, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { adapter } from "~/adapter";
 import { useActiveConnection } from "~/hooks/connection";
@@ -134,7 +134,7 @@ export function ModelsView() {
 				<Introduction
 					title="Models"
 					icon={iconModel}
-					snippet={{
+					snippet={isAvailable ? {
 						title: "Using Python",
 						extensions: [python()],
 						code: `
@@ -149,15 +149,18 @@ export function ModelsView() {
 								password="..."
 							)							
 						`
-					}}
+					} : undefined}
 				>
 					<Text>
 						Upload your SurrealML models directly to SurrealDB and use the power of Machine Learning within your queries.
 					</Text>
 					{!isAvailable && (
-						<Text c="pink">
-							Unfortunately ML models are not supported {isSandbox ? 'in the sandbox' : 'by your current connection'}
-						</Text>
+						<Group gap="sm" c="pink">
+							<Icon path={iconWarning} />
+							<Text>
+								SurrealML is not supported {isSandbox ? 'in the sandbox' : 'by your current connection'}
+							</Text>
+						</Group>
 					)}
 					<Group>
 						{isAvailable && (

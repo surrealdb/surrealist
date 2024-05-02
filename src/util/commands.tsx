@@ -1,13 +1,14 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAPI, iconAccountPlus, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconRoutes, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
+import { iconAPI, iconAccountPlus, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconClose, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconRoutes, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
 import { featureFlags } from "./feature-flags";
 import { syncDatabaseSchema } from "./schema";
+import { closeConnection } from "~/connection";
 
 type LaunchAction = { type: "launch", handler: () => void };
 type InsertAction = { type: "insert", content: string };
@@ -48,9 +49,11 @@ const intent = (intent: IntentType, payload?: IntentPayload) => ({ type: "intent
  */
 export function computeCommands(): CommandCategory[] {
 	const { activeView, connections, commandHistory, setActiveView, setActiveConnection, resetOnboardings } = useConfigStore.getState();
-	const { isServing, databaseSchema } = useDatabaseStore.getState();
+	const { isServing, databaseSchema, isConnected } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
+	const isSandbox = activeCon?.id === SANDBOX;
+	const canDisconnect = isConnected && !isSandbox;
 	const categories: CommandCategory[] = [];
 
 	categories.push({
@@ -86,7 +89,13 @@ export function computeCommands(): CommandCategory[] {
 				name: `Create new connection`,
 				icon: iconPlus,
 				action: intent("new-connection")
-			}
+			},
+			...(canDisconnect ? [{
+				id: newId(),
+				name: `Disconnect from database`,
+				icon: iconClose,
+				action: launch(closeConnection)
+			}] : [])
 		]
 	});
 
@@ -409,17 +418,13 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: "Reset tours",
 				icon: iconRoutes,
-				action: launch(() => {
-					resetOnboardings();
-				}),
+				action: launch(resetOnboardings),
 			},
 			{
 				id: newId(),
 				name: "Sync database schema",
 				icon: iconReset,
-				action: launch(() => {
-					syncDatabaseSchema();
-				})
+				action: launch(syncDatabaseSchema)
 			}
 		]
 	});
