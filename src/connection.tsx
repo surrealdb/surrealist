@@ -99,9 +99,9 @@ export async function openConnection(options?: ConnectOptions) {
 			database: connection.database,
 			prepare: async (surreal) => {
 				if (isSignup) {
-					register(buildScopeAuth(connection), surreal);
+					await register(buildScopeAuth(connection), surreal);
 				} else {
-					authenticate(auth, surreal);
+					await authenticate(auth, surreal);
 				}
 			},
 		});
