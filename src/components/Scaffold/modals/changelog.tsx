@@ -1,10 +1,11 @@
+import classes from "../style.module.scss";
+import dayjs from "dayjs";
 import { Box, Divider, Modal, Stack, TypographyStylesProvider } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ModalTitle } from "../../ModalTitle";
 import { useIntent } from "~/hooks/url";
 import { changelogs } from "~/util/changelogs";
 import { Text } from "@mantine/core";
-import dayjs from "dayjs";
 import { Fragment } from "react";
 
 export function ChangelogModal() {
@@ -34,7 +35,10 @@ export function ChangelogModal() {
 								<Text c="bright" fw={600} fz={20} mb="lg">
 									{changelog.metadata.title}
 								</Text>
-								<TypographyStylesProvider dangerouslySetInnerHTML={{ __html: changelog.content }} />
+								<TypographyStylesProvider
+									dangerouslySetInnerHTML={{ __html: changelog.content }}
+									className={classes.changelogContent}
+								/>
 							</Box>
 							{index < changelogs.length - 1 && <Divider color="slate.7" />}
 						</Fragment>
