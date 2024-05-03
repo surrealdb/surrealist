@@ -1,4 +1,4 @@
-export const environment = import.meta.env.VITE_SURREALIST_PREVIEW
+export const environment = import.meta.env.VITE_SURREALIST_PREVIEW === "true"
 	? "preview"
 	: import.meta.env.MODE === "development"
 		? "development"
