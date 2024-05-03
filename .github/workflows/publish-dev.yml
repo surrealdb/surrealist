@@ -54,7 +54,7 @@ jobs:
         run: pnpm license-report
 
       - name: Build application
-        run: VITE_SURREALIST_PREVIEW=true pnpm build
+        run: pnpm build --mode preview
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:

@@ -5,9 +5,10 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
+const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
 	plugins: [
 		react(),
 		markdown({
@@ -53,10 +54,11 @@ export default defineConfig({
 		},
 	},
 	define: {
-		'import.meta.env.VERSION': `"${version}"`,
-		'import.meta.env.SDB_VERSION': `"${surreal}"`,
-		'import.meta.env.POSTHOG_KEY': `"phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404"`,
-		'import.meta.env.POSTHOG_URL': `"https://eu.i.posthog.com"`,
+		'import.meta.env.VERSION': JSON.stringify(version),
+		'import.meta.env.SDB_VERSION': JSON.stringify(surreal),
+		'import.meta.env.POSTHOG_KEY': JSON.stringify("phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404"),
+		'import.meta.env.POSTHOG_URL': JSON.stringify("https://eu.i.posthog.com"),
+		'import.meta.env.MODE': JSON.stringify(isPreview ? "preview" : mode),
 	},
 	optimizeDeps: {
 		exclude: ['surrealdb.wasm', 'surrealql.wasm'],
@@ -65,4 +67,4 @@ export default defineConfig({
 		},
 	},
 	assetsInclude: ['**/surrealdb.wasm/dist/*.wasm', '**/surrealql.wasm/dist/*.wasm']
-});
+}));
