@@ -73,20 +73,22 @@ export async function openConnection(options?: ConnectOptions) {
 				title: "Failed to query version",
 				subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
 			});
-		} else if (isUnsupported(version)) {
-			setIsConnecting(false);
-			setIsConnected(false);
 
+			setIsConnecting(false);
+			return;
+		}
+
+		if (isUnsupported(version)) {
 			showError({
 				title: "Unsupported version",
 				subtitle: `The database must be version ${import.meta.env.SDB_VERSION} or higher. The current version is ${version}`
 			});
 
+			setIsConnecting(false);
 			return;
-		} else {
-			setVersion(version);
 		}
 
+		setVersion(version);
 		printMsg(`Database version ${version ?? "unknown"}`);
 	}
 
@@ -178,7 +180,7 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
 			if (err.message.includes("No record was returned")) {
 				openScopeSignup();
 			} else {
-				throw new Error("Connection failed");
+				throw new Error(err.message);
 			}
 		});
 	}
