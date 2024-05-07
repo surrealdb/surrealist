@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
-use tauri::api::path::config_dir;
+use tauri::Manager;
 
-pub fn get_data_directory() -> PathBuf {
-    let mut config_path = config_dir().expect("data directory should be resolvable");
+pub fn get_data_directory(app: tauri::AppHandle) -> PathBuf {
+    let mut config_path = app.path().config_dir().expect("data directory should be resolvable");
 
     config_path.push("SurrealDB");
     config_path.push("Surrealist");

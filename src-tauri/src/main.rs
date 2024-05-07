@@ -37,7 +37,7 @@ fn main() {
             window::toggle_devtools,
         ])
         .setup(|app| {
-            let window = app.get_window("main").unwrap();
+            let window = app.get_webview_window("main").unwrap();
             configure_window(window);
             Ok(())
         })

@@ -12,25 +12,6 @@
 		"app:default",
 		"resources:default",
 		"menu:default",
-		"tray:default",
-		"fs:allow-read-file",
-		"fs:allow-write-file",
-		"window:allow-set-title",
-		"window:allow-maximize",
-		"window:allow-unmaximize",
-		"window:allow-show",
-		"window:allow-set-always-on-top",
-		"window:allow-start-dragging",
-		"shell:allow-open",
-		"dialog:allow-open",
-		"dialog:allow-save",
-		"os:allow-platform",
-		"os:allow-version",
-		"os:allow-os-type",
-		"os:allow-family",
-		"os:allow-arch",
-		"os:allow-exe-extension",
-		"os:allow-locale",
-		"os:allow-hostname"
+		"tray:default"
 	]
 }

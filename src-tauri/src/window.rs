@@ -1,5 +1,5 @@
 #[allow(unused_variables)]
-pub fn configure_window(window: tauri::Window) {
+pub fn configure_window(window: tauri::WebviewWindow) {
     let _ = window.with_webview(move |webview| {
         #[cfg(target_os = "macos")]
         unsafe {
@@ -21,7 +21,7 @@ pub fn configure_window(window: tauri::Window) {
 }
 
 #[tauri::command]
-pub fn set_window_scale(window: tauri::Window, scale_factor: f64) {
+pub fn set_window_scale(window: tauri::WebviewWindow, scale_factor: f64) {
     let _ = window.with_webview(move |webview| {
         #[cfg(target_os = "linux")]
         {
@@ -45,7 +45,7 @@ pub fn set_window_scale(window: tauri::Window, scale_factor: f64) {
 }
 
 #[tauri::command]
-pub fn toggle_devtools(window: tauri::Window) {
+pub fn toggle_devtools(window: tauri::WebviewWindow) {
     if window.is_devtools_open() {
         window.close_devtools();
     } else {
