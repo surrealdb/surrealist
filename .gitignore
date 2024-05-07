@@ -6,4 +6,4 @@ dist/
 
 .DS_Store
 
-/src/generated
+/src-tauri/gen/schemas

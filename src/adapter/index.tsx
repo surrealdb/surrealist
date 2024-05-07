@@ -3,7 +3,7 @@ import { BrowserAdapter } from "./browser";
 import { DesktopAdapter } from "./desktop";
 import { MiniAdapter } from "./mini";
 
-export const adapter: SurrealistAdapter = "__TAURI__" in window
+export const adapter: SurrealistAdapter = "__TAURI_INTERNALS__" in window
 	? new DesktopAdapter()
 	: document.querySelector('meta[name=surrealist-mini]')
 		? new MiniAdapter()

@@ -10,9 +10,10 @@ publish = false
 
 [dependencies]
 tauri = { version = "2.0.0-beta", features = [ "devtools"] }
-tauri-plugin-fs = "2.0.0-beta"
-tauri-plugin-os = "2.0.0-beta"
-tauri-plugin-shell = "2.0.0-beta"
+tauri-plugin-fs = "2.0.0-beta.7"
+tauri-plugin-os = "2.0.0-beta.4"
+tauri-plugin-shell = "2.0.0-beta.4"
+tauri-plugin-dialog = "2.0.0-beta.7"
 portpicker = "0.1"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }

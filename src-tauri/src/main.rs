@@ -24,6 +24,10 @@ fn main() {
 
     // Build the Tauri instance
     let tauri = tauri::Builder::default()
+		.plugin(tauri_plugin_fs::init())
+		.plugin(tauri_plugin_os::init())
+		.plugin(tauri_plugin_shell::init())
+		.plugin(tauri_plugin_dialog::init())
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,
