@@ -1,11 +1,10 @@
-import { readBinaryFile, readTextFile, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
-import { invoke } from "@tauri-apps/api/tauri";
-import { arch, type } from "@tauri-apps/api/os";
-import { appWindow } from "@tauri-apps/api/window";
-import { open as openURL } from "@tauri-apps/api/shell";
-import { save, open } from "@tauri-apps/api/dialog";
+import { invoke } from "@tauri-apps/api/core";
 import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
+import { arch, type } from "@tauri-apps/plugin-os";
+import { open as openURL } from "@tauri-apps/plugin-shell";
+import { save, open } from "@tauri-apps/plugin-dialog";
+import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
@@ -13,6 +12,7 @@ import { useConfigStore } from "~/stores/config";
 import { watchStore } from "~/util/config";
 import { Platform } from "~/types";
 import { getHotkeyHandler } from "@mantine/hooks";
+import { getCurrent } from "@tauri-apps/api/window";
 
 const WAIT_DURATION = 1000;
 
@@ -35,7 +35,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
-				appWindow.show();
+				getCurrent().show();
 			}, 500);
 		});
 
@@ -48,7 +48,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		]));
 
 		type().then(t => {
-			this.hasTitlebar = t === "Windows_NT" || t === "Linux";
+			this.hasTitlebar = t === "windows" || t === "linux";
 		});
 	}
 
@@ -65,7 +65,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			store: useConfigStore,
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
-				appWindow.setAlwaysOnTop(pinned);
+				getCurrent().setAlwaysOnTop(pinned);
 				updateTitle();
 			},
 		});
@@ -79,20 +79,20 @@ export class DesktopAdapter implements SurrealistAdapter {
 	});
 
 	public async setWindowTitle(title: string) {
-		appWindow.setTitle(title || "Surrealist");
+		getCurrent().setTitle(title || "Surrealist");
 	}
 
 	public async loadConfig() {
 		switch (await type()) {
-			case "Windows_NT": {
+			case "windows": {
 				this.platform = "windows";
 				break;
 			}
-			case "Darwin": {
+			case "macos": {
 				this.platform = "darwin";
 				break;
 			}
-			case "Linux": {
+			case "linux": {
 				this.platform = "linux";
 				break;
 			}
@@ -170,7 +170,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		if (typeof result === "string") {
 			await writeTextFile(filePath, result);
 		} else {
-			await writeBinaryFile(filePath, await result.arrayBuffer());
+			await writeFile(filePath, new Uint8Array(await result.arrayBuffer()));
 		}
 
 		return true;
@@ -187,15 +187,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 			multiple
 		});
 
-		const urls = typeof result === "string"
-			? [result]
-			: result === null
-				? []
-				: result;
+		if (!result) {
+			return [];
+		}
 
-		const tasks = urls.map(async (url) => ({
-			name: await basename(url),
-			content: await readTextFile(url)
+		const files: { path: string; }[] = Array.isArray(result) ? result : [result];
+		const tasks = files.map(async ({ path }) => ({
+			name: await basename(path),
+			content: await readTextFile(path)
 		}));
 
 		return Promise.all(tasks);
@@ -209,18 +208,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const result = await open({
 			title,
 			filters,
-			multiple
+			multiple: true
 		});
 
-		const urls = typeof result === "string"
-			? [result]
-			: result === null
-				? []
-				: result;
+		if (!result) {
+			return [];
+		}
 
-		const tasks = urls.map(async (url) => ({
-			name: await basename(url),
-			content: new Blob([await readBinaryFile(url)])
+		const files: { path: string; }[] = Array.isArray(result) ? result : [result];
+		const tasks = files.map(async ({ path }) => ({
+			name: await basename(path),
+			content: new Blob([await readFile(path)])
 		}));
 
 		return Promise.all(tasks);
