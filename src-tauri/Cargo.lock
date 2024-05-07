@@ -2934,6 +2934,8 @@ dependencies = [
  "objc",
  "openssl",
  "portpicker",
+ "serde",
+ "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-fs",
