@@ -4,11 +4,12 @@ import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
 import { iconAPI, iconAccountPlus, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconClose, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconRoutes, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
-import { isDesktop } from "~/adapter";
+import { adapter, isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
 import { featureFlags } from "./feature-flags";
 import { syncDatabaseSchema } from "./schema";
 import { closeConnection } from "~/connection";
+import { DesktopAdapter } from "~/adapter/desktop";
 
 type LaunchAction = { type: "launch", handler: () => void };
 type InsertAction = { type: "insert", content: string };
@@ -425,7 +426,17 @@ export function computeCommands(): CommandCategory[] {
 				name: "Sync database schema",
 				icon: iconReset,
 				action: launch(syncDatabaseSchema)
-			}
+			},
+			...(isDesktop ? [
+				{
+					id: newId(),
+					name: "Toggle DevTools",
+					icon: iconWrench,
+					action: launch(() => {
+						(adapter as DesktopAdapter).toggleDevTools();
+					})
+				}
+			] : [])
 		]
 	});
 

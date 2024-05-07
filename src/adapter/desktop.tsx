@@ -226,6 +226,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return Promise.all(tasks);
 	}
 
+	public toggleDevTools() {
+		invoke("toggle_devtools");
+	}
+
 	private initDatabaseEvents() {
 		listen("database:start", () => {
 			printMsg("Received database start signal");
