@@ -7,3 +7,4 @@ dist/
 .DS_Store
 
 /src-tauri/gen/schemas
+/src-tauri/cache
