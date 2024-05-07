@@ -36,7 +36,10 @@
 			"exceptionDomain": "",
 			"frameworks": [],
 			"providerShortName": null,
-			"signingIdentity": null
+			"signingIdentity": null,
+			"dmg": {
+				"background": "res/dmg-background.png"
+			}
 		},
 		"resources": [],
 		"shortDescription": "",
