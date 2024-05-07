@@ -430,7 +430,7 @@ export function computeCommands(): CommandCategory[] {
 			...(isDesktop ? [
 				{
 					id: newId(),
-					name: "Toggle DevTools",
+					name: "Toggle developer tools",
 					icon: iconWrench,
 					action: launch(() => {
 						(adapter as DesktopAdapter).toggleDevTools();
