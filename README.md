@@ -49,7 +49,7 @@ You can [read our documentation](https://surrealdb.com/docs/surrealist) for info
 ## Using the Web App
 The quickest way to jump into Surrealist is using the web app at https://surrealist.app/
 
-The Surrealist web app provides a fully functional database management experience with support for multiple connections, an integrated sandbox environment, 
+The Surrealist web app provides a fully functional database management experience with support for multiple connections and an integrated sandbox environment.
 
 While the web app provides a full database management experience, it is recommended to download and install the desktop app for the complete Surrealist experience and gain features such as one-click database serving.
 
