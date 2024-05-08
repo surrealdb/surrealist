@@ -3352,6 +3352,7 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-os",
  "tauri-plugin-shell",
+ "url",
  "webkit2gtk",
 ]
 

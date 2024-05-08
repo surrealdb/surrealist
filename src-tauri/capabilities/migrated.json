@@ -16,6 +16,8 @@
 		"os:allow-os-type",
 		"fs:allow-read-file",
 		"fs:allow-write-file",
+		"fs:allow-read-text-file",
+		"fs:allow-write-text-file",
 		"window:allow-set-title",
 		"window:allow-maximize",
 		"window:allow-unmaximize",

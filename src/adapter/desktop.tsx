@@ -13,6 +13,7 @@ import { watchStore } from "~/util/config";
 import { Platform } from "~/types";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { getCurrent } from "@tauri-apps/api/window";
+import { getConnection } from "~/util/connection";
 
 const WAIT_DURATION = 1000;
 
@@ -50,6 +51,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		type().then(t => {
 			this.hasTitlebar = t === "windows" || t === "linux";
 		});
+
+		(window as any).onOpenRequest = () => {
+			this.processOpenRequest();
+		};
+
+		this.processOpenRequest();
 	}
 
 	public initialize() {
@@ -277,5 +284,33 @@ export class DesktopAdapter implements SurrealistAdapter {
 				subtitle: msg
 			});
 		});
+	}
+
+	private async processOpenRequest() {
+		const url: string = (window as any).__OPEN_REQUEST ?? '';
+
+		if (url.length === 0) {
+			return;
+		}
+
+		try {
+			const contents = await readTextFile(url);
+			const connection = getConnection();
+
+			if (!connection) {
+				throw new Error("No connection active");
+			}
+
+			useConfigStore.getState().addQueryTab({
+				query: contents
+			});
+		} catch(err: any) {
+			console.warn('Failed to open file', err);
+
+			showError({
+				title: "Failed to open file",
+				subtitle: err.message
+			});
+		}
 	}
 }

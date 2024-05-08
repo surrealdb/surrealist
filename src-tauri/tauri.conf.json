@@ -11,9 +11,12 @@
 	"bundle": {
 		"active": true,
 		"category": "DeveloperTool",
+		"shortDescription": "",
+		"longDescription": "",
 		"copyright": "",
 		"targets": "all",
 		"externalBin": [],
+		"resources": [],
 		"icon": [
 			"icons/32x32.png",
 			"icons/128x128.png",
@@ -21,16 +24,18 @@
 			"icons/icon.icns",
 			"icons/icon.ico"
 		],
-		"windows": {
-			"certificateThumbprint": null,
-			"digestAlgorithm": "sha256",
-			"timestampUrl": "",
-			"wix": {
-				"bannerPath": "res/wix-banner.png",
-				"dialogImagePath": "res/wix-image.png"
+		"fileAssociations": [
+			{
+				"ext": ["surql", "surrealql"],
+				"name": "SurrealQL",
+				"mimeType": "text/x-surrealql"
+			}
+		],
+		"linux": {
+			"deb": {
+				"depends": []
 			}
 		},
-		"longDescription": "",
 		"macOS": {
 			"entitlements": null,
 			"exceptionDomain": "",
@@ -41,11 +46,13 @@
 				"background": "res/dmg-background.png"
 			}
 		},
-		"resources": [],
-		"shortDescription": "",
-		"linux": {
-			"deb": {
-				"depends": []
+		"windows": {
+			"certificateThumbprint": null,
+			"digestAlgorithm": "sha256",
+			"timestampUrl": "",
+			"wix": {
+				"bannerPath": "res/wix-banner.png",
+				"dialogImagePath": "res/wix-image.png"
 			}
 		}
 	},
@@ -59,16 +66,6 @@
 	},
 	"app": {
 		"withGlobalTauri": false,
-		"windows": [
-			{
-				"label": "main",
-				"title": "Surrealist",
-				"height": 675,
-				"width": 1235,
-				"minHeight": 675,
-				"minWidth": 1235
-			}
-		],
 		"security": {
 			"csp": null
 		}
