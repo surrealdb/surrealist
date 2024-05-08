@@ -13,16 +13,17 @@ extern crate webkit2gtk;
 use std::sync::Mutex;
 
 use database::DatabaseState;
-use helpers::signal_open_request;
 use tauri::{Manager, RunEvent};
+use tauri_plugin_log::{Target, TargetKind};
 use window::configure_window;
 
 mod config;
 mod database;
 mod helpers;
 mod window;
+mod open;
 
-struct LaunchState(pub Mutex<Option<Vec<url::Url>>>);
+struct OpenFileState(pub Mutex<Vec<url::Url>>);
 
 fn main() {
     let context = tauri::generate_context!();
@@ -33,7 +34,12 @@ fn main() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
-        .manage(LaunchState(Default::default()))
+        .plugin(tauri_plugin_log::Builder::new().targets([
+            Target::new(TargetKind::Stdout),
+            // Target::new(TargetKind::LogDir { file_name: None }),
+            Target::new(TargetKind::Webview),
+        ]).build())
+        .manage(OpenFileState(Default::default()))
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,
@@ -45,6 +51,7 @@ fn main() {
             database::stop_database,
             window::set_window_scale,
             window::toggle_devtools,
+			open::get_opened_queries,
         ])
         .setup(|app| {
             #[cfg(any(windows, target_os = "linux"))]
@@ -58,7 +65,7 @@ fn main() {
                 }
 
                 if !urls.is_empty() {
-                    app.state::<LaunchState>().0.lock().unwrap().replace(urls);
+                    app.state::<OpenFileState>().0.lock().unwrap().replace(urls);
                 }
             }
 			
@@ -77,15 +84,10 @@ fn main() {
         .expect("Tauri failed to initialize");
 
     tauri.run(move |app, event| match event {
-		RunEvent::Ready => {
-			let state = app.state::<LaunchState>();
-			let urls = state.0.lock().unwrap().take();
-
-			if let Some(urls) = urls {
-				if let Some(w) = app.get_webview_window("main") {
-					signal_open_request(&w, &urls);
-				}
-			}
+		#[cfg(any(target_os = "macos", target_os = "ios"))]
+		RunEvent::Opened { urls } => {
+			*app.state::<OpenFileState>().0.lock().unwrap() = urls;
+			app.emit("open:files", ()).unwrap();
 		},
 		RunEvent::Exit => {
 			let state = app.state::<DatabaseState>();
@@ -94,15 +96,7 @@ fn main() {
 			if let Some(child) = process {
 				database::kill_surreal_process(child.id())
 			}
-		},
-		#[cfg(any(target_os = "macos", target_os = "ios"))]
-		RunEvent::Opened { urls } => {
-			if let Some(w) = app.get_webview_window("main") {
-				signal_open_request(&w, &urls);
-			}
-
-			app.state::<LaunchState>().0.lock().unwrap().replace(urls);
-		},
+		}
 		_ => (),
 	})
 }

@@ -4,6 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { save, open } from "@tauri-apps/plugin-dialog";
+import { attachConsole } from "@tauri-apps/plugin-log";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
@@ -13,11 +14,16 @@ import { watchStore } from "~/util/config";
 import { Platform } from "~/types";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { getCurrent } from "@tauri-apps/api/window";
-import { getConnection } from "~/util/connection";
 
 const WAIT_DURATION = 1000;
 
 const printMsg = (...args: any[]) => printLog("Desktop", "#9150e6", ...args);
+
+interface OpenedFile {
+	success: boolean,
+	name: string,
+	query: string
+}
 
 /**
  * Surrealist adapter for running as Wails desktop app
@@ -33,6 +39,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public constructor() {
 		this.initDatabaseEvents();
+
+		attachConsole();
 
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
@@ -52,14 +60,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 			this.hasTitlebar = t === "windows" || t === "linux";
 		});
 
-		(window as any).onOpenRequest = () => {
-			this.processOpenRequest();
-		};
-
-		this.processOpenRequest();
+		listen("open:files", () => {
+			this.queryOpenRequest();
+		});
 	}
 
 	public initialize() {
+		this.queryOpenRequest();
+
 		watchStore({
 			initial: true,
 			store: useConfigStore,
@@ -286,31 +294,27 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	private async processOpenRequest() {
-		const url: string = (window as any).__OPEN_REQUEST ?? '';
+	private async queryOpenRequest() {
+		const { addQueryTab, setActiveView } = useConfigStore.getState();
+		const queries = await invoke<OpenedFile[]>("get_opened_queries");
 
-		if (url.length === 0) {
+		if (queries.length === 0) {
 			return;
 		}
 
-		try {
-			const contents = await readTextFile(url);
-			const connection = getConnection();
+		for (const { success, name, query } of queries) {
+			if (!success) {
+				showError({
+					title: `Failed to open "${name}"`,
+					subtitle: `File exceeds maximum size limit`
+				});
 
-			if (!connection) {
-				throw new Error("No connection active");
+				continue;
 			}
 
-			useConfigStore.getState().addQueryTab({
-				query: contents
-			});
-		} catch(err: any) {
-			console.warn('Failed to open file', err);
-
-			showError({
-				title: "Failed to open file",
-				subtitle: err.message
-			});
+			addQueryTab({ name, query });
 		}
+
+		setActiveView("query");
 	}
 }
