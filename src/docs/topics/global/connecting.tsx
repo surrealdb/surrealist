@@ -49,8 +49,10 @@ export function DocsGlobalConnecting({ language, topic }: TopicProps) {
 		SurrealWebSocketConnection.connect(timeout)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->connect("http://localhost:8000", [
+			"namespace" => "test",
+			"database" => "test"
+		]);
 		`,
 		}),
 		[]

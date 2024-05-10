@@ -59,8 +59,7 @@ export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 		SurrealWebSocketConnection.connect(timeout)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->query("DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3)");
 		`,
 		}),
 		[]

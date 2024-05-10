@@ -35,8 +35,9 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 		driver.use(namespace:${esc_namespace});
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->use([
+			"namespace" => "test"
+		]);
 		`,
 		}),
 		[]

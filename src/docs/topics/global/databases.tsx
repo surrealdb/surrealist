@@ -36,8 +36,9 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 		driver.use(${esc_database});
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->use([
+			"database" => "test"
+		]);
 		`,
 		}),
 		[]

@@ -16,8 +16,7 @@ export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 		await db.Info<User>();
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$info = $db->info();
 		`,
 		}),
 		[]

@@ -35,8 +35,7 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		driver.select("${fieldName}", rowType)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->select("${fieldName}");
 		`,
 		}),
 		[]

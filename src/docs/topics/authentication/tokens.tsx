@@ -40,8 +40,7 @@ export function DocsAuthTokens({ language, topic }: TopicProps) {
 		driver.authenticate(token)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->authenticate($token);
 		`,
 		}),
 		[]

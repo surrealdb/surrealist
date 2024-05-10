@@ -34,8 +34,7 @@ export function DocsTablesIntroduction({ language, topic }: TopicProps) {
 		SurrealWebSocketConnection.connect(timeout)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->create("table_name");
 		`,
 		}),
 		[]

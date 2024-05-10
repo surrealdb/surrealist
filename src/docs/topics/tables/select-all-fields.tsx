@@ -32,8 +32,7 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 		driver.select("thing", rowType)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->select("${table.schema.name}");
 		`,
 		}),
 		[]

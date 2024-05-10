@@ -90,7 +90,7 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: "Python", value: "py" },
 	{ label: ".NET", value: "csharp" },
 	// { label: "Java", value: "java" },
-	// { label: "PHP", value: "php" }
+	{ label: "PHP", value: "php" }
 ];
 
 export const VALUE_MODES: Selectable<ValueMode>[] = [

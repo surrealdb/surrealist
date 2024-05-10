@@ -71,8 +71,12 @@ export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 		SurrealWebSocketConnection.connect(timeout)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->query('
+			DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+			DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+			DEFINE INDEX page_hostname ON page FIELDS hostname;
+			DEFINE INDEX page_date_indexed ON page FIELDS date;
+		');
 		`,
 		}),
 		[]

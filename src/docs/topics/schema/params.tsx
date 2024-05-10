@@ -92,8 +92,12 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 		driver.let(key, value)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->let("name", [
+			"firstname" => "Tobie",
+			"lastname" => "Morgan Hitchcock"
+		]);
+
+		$db->query('SELECT * FROM person WHERE name.firstname = $name.firstname');
 		`,
 		}),
 		[]

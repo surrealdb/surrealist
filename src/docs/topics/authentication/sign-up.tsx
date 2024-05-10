@@ -83,8 +83,13 @@ export function DocsAuthSignUp({ language, topic }: TopicProps) {
 		driver.signUp(namespace, database, scope, email, password)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$jwt = $db->signup([
+			"user" => "user",
+			"pass" => "password",
+			"namespace" => "test",
+			"database" => "test",
+			"scope" => "user"
+		]);
 		`,
 		}),
 		[]
