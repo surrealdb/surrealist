@@ -136,7 +136,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					id: newId(),
 					title: "Scopes",
 					component: DocsSchemaScopes,
-					excludeLanguages: ['rust', 'py', 'go','java','js','php']
+					excludeLanguages: ['rust', 'py', 'go','java','js']
 				},
 				{
 					id: newId(),
@@ -218,7 +218,8 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 							id: newId(),
 							title: "Live selecting",
 							component: DocsTablesLiveSelecting,
-							extra: { table }
+							extra: { table },
+							excludeLanguages: ['php']
 						},
 						// {
 						// 	id: newId(),
