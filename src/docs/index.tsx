@@ -239,7 +239,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 						// 	component: DocsTablesManageEvents,
 						// 	extra: { table }
 						// }
-					]
+					] satisfies DocsTopic[]
 				})),
 			]
 		},
