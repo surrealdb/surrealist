@@ -248,6 +248,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 			label={props.label}
 			value={props.value}
 			className={classes.input}
+			spellCheck={false}
 			onChange={(value) => props.onChange(value.currentTarget.value)}
 			rightSectionWidth={42}
 			rightSection={

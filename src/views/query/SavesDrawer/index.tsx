@@ -106,6 +106,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 				placeholder="Search saved queries..."
 				leftSection={<Icon path={iconSearch} />}
 				value={filterText}
+				spellCheck={false}
 				onChange={setFilterText}
 				mb="sm"
 			/>

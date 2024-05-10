@@ -232,6 +232,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 							placeholder="Enter username"
 							value={editingName}
 							onChange={setEditingName}
+							spellCheck={false}
 							disabled={!!currentUser}
 							required
 							autoFocus
@@ -242,6 +243,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 							description={currentUser ? 'Leave blank to keep the current password' : 'The password for this user'}
 							placeholder="Enter password"
 							value={editingPassword}
+							spellCheck={false}
 							onChange={setEditingPassword}
 							required={!currentUser}
 						/>

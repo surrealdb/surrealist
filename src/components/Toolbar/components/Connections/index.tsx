@@ -166,6 +166,7 @@ export function Connections() {
 					<TextInput
 						placeholder="Search..."
 						value={search}
+						spellCheck={false}
 						onChange={setSearch}
 						variant="outline"
 						color="red"

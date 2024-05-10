@@ -262,6 +262,7 @@ export function ScopePane() {
 											<ValueInput
 												size="xs"
 												value={field.value}
+												spellCheck={false}
 												onChange={e =>
 													setRegisterFields((draft) => {
 														draft[i].value = e.target.value;
@@ -307,7 +308,14 @@ export function ScopePane() {
 				<Form onSubmit={saveScope}>
 					<Stack>
 						{isCreating && (
-							<TextInput label="Enter scope name" value={editingName} onChange={setEditingName} autoFocus required />
+							<TextInput
+								label="Enter scope name"
+								value={editingName}
+								spellCheck={false}
+								onChange={setEditingName}
+								autoFocus
+								required
+							/>
 						)}
 						<CodeInput
 							label="Sign in query"

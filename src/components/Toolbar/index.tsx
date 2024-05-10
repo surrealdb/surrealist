@@ -187,6 +187,7 @@ export function Toolbar() {
 								style={{ flex: 1 }}
 								placeholder="Enter tab name"
 								value={tabName}
+								spellCheck={false}
 								onChange={(e) => setTabName(e.target.value)}
 								autoFocus
 								onFocus={(e) => e.target.select()}

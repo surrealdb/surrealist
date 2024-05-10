@@ -105,6 +105,7 @@ export function MiniNewScaffold() {
 										<Group>
 											<TextInput
 												onChange={parseUrl}
+												spellCheck={false}
 												placeholder="Paste your embed URL here"
 												flex={1}
 											/>

@@ -278,6 +278,7 @@ export function QueryView() {
 							label="Name"
 							autoFocus
 							value={saveName}
+							spellCheck={false}
 							onChange={setSaveName}
 							onFocus={ON_FOCUS_SELECT}
 						/>

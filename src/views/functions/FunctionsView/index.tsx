@@ -202,6 +202,7 @@ export function FunctionsView() {
 						<TextInput
 							placeholder="function_name"
 							value={createName}
+							spellCheck={false}
 							onChange={updateCreateName}
 							size="lg"
 							autoFocus

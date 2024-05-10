@@ -113,6 +113,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						mb="xs"
 						label="Id"
 						value={recordId}
+						spellCheck={false}
 						onChange={setRecordId}
 						placeholder="Leave empty to generate"
 					/>

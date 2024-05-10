@@ -197,6 +197,7 @@ export function EditorPanel({
 											flex={1}
 											variant="unstyled"
 											value={name}
+											spellCheck={false}
 											leftSection="$"
 											placeholder="name"
 											onChange={e => onChange((draft) => {

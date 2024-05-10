@@ -55,6 +55,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								autoFocus
 								label="Field name"
 								placeholder="field_name"
+								spellCheck={false}
 								value={field.name}
 								onChange={(e) =>
 									setData((draft) => {

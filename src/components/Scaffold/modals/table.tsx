@@ -86,7 +86,7 @@ export function TableCreator() {
 
 				<Form onSubmit={createTable}>
 					<Stack>
-						<TextInput placeholder="Enter table name" value={tableName} onChange={setTableName} autoFocus />
+						<TextInput placeholder="Enter table name" value={tableName} spellCheck={false} onChange={setTableName} autoFocus />
 						{createType === "relation" && (
 							<>
 								<MultiSelect
