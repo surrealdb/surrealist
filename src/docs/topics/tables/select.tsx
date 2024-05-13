@@ -35,7 +35,8 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		driver.select("${fieldName}", rowType)
 		`,
 			php: `
-		$db->select("${fieldName}");
+		$record = new \\Surreal\\Cbor\\Types\\StringRecordId("${fieldName}");
+		$db->select($record);
 		`,
 		}),
 		[]
