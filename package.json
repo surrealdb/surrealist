@@ -75,8 +75,8 @@
 		"semver": "^7.5.4",
 		"semver-compare": "^1.0.0",
 		"surrealdb.js": "1.0.0-beta.5",
-		"surrealdb.wasm": "1.0.0-beta.9",
-		"surrealql.wasm": "^0.1.6",
+		"surrealdb.wasm": "1.0.0-beta.10",
+		"surrealql.wasm": "^0.1.7",
 		"use-immer": "^0.9.0",
 		"vite-plugin-markdown": "^2.2.0",
 		"zustand": "^4.5.0"
