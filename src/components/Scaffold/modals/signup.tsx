@@ -95,6 +95,7 @@ export function ScopeSignup() {
 											readOnly
 											variant="unstyled"
 											value={field.subject}
+											spellCheck={false}
 											styles={{
 												input: {
 													backgroundColor: "unset"

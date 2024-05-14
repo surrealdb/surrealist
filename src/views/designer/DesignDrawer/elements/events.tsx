@@ -44,6 +44,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 								label="Event name"
 								placeholder="event_name"
 								value={event.name}
+								spellCheck={false}
 								onChange={(e) =>
 									setData((draft) => {
 										draft.events[i].name = e.target.value;

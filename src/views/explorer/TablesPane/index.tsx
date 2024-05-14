@@ -125,6 +125,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 								placeholder="Search tables..."
 								leftSection={<Icon path={iconSearch} />}
 								value={search}
+								spellCheck={false}
 								onChange={setSearch}
 								variant="unstyled"
 								autoFocus

@@ -41,6 +41,7 @@ export function ServingTab() {
 					label="Initial root user"
 					placeholder="root"
 					value={username}
+					spellCheck={false}
 					onChange={e => setUsername(e.target.value)}
 				/>
 
@@ -48,6 +49,7 @@ export function ServingTab() {
 					label="Initial root password"
 					placeholder="root"
 					value={password}
+					spellCheck={false}
 					onChange={e => setPassword(e.target.value)}
 				/>
 
@@ -55,6 +57,7 @@ export function ServingTab() {
 					label="Storage mode"
 					data={DRIVERS}
 					value={driver}
+					spellCheck={false}
 					onChange={setDriver as any}
 				/>
 
@@ -63,6 +66,7 @@ export function ServingTab() {
 						label={isFileDriver ? "Storage path" : "Storage cluster address"}
 						placeholder={isFileDriver ? "/path/to/storage" : "address:port"}
 						value={storage}
+						spellCheck={false}
 						onChange={e => setStorage(e.target.value)}
 					/>
 				)}
@@ -70,6 +74,7 @@ export function ServingTab() {
 				<TextInput
 					label="SurrealDB executable path"
 					value={executable}
+					spellCheck={false}
 					onChange={e => setExecutable(e.target.value)}
 				/>
 

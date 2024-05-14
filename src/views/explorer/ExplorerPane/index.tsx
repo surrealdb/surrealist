@@ -260,6 +260,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					placeholder="Enter filter clause..."
 					leftSection={<Icon path={iconFilter} />}
 					value={filter}
+					spellCheck={false}
 					onChange={setFilter}
 					error={!isFilterValid}
 					autoFocus
@@ -328,6 +329,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 					<TextInput
 						value={pageText}
+						spellCheck={false}
 						onChange={setPageText}
 						maw={36}
 						size="xs"

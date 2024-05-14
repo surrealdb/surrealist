@@ -44,6 +44,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								label="Index name"
 								placeholder="index_name"
 								value={index.name}
+								spellCheck={false}
 								onChange={(e) =>
 									setData((draft) => {
 										draft.indexes[i].name = e.target.value;

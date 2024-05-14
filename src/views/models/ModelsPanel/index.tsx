@@ -79,6 +79,7 @@ export function ModelsPanel({
 							placeholder="Search models..."
 							leftSection={<Icon path={iconSearch} />}
 							value={search}
+							spellCheck={false}
 							onChange={setSearch}
 							variant="unstyled"
 							autoFocus

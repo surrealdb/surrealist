@@ -182,6 +182,7 @@ export function CommandPaletteModal({
 					className={classes.paletteInput}
 					autoFocus
 					value={search}
+					spellCheck={false}
 					onChange={setSearch}
 				/>
 			</Box>

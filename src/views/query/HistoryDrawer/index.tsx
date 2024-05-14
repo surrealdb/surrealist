@@ -174,6 +174,7 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 					placeholder="Search history..."
 					leftSection={<Icon path={iconSearch} />}
 					value={filterText}
+					spellCheck={false}
 					onChange={setFilterText}
 				/>
 

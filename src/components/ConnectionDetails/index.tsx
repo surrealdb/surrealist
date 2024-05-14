@@ -149,6 +149,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					flex={1}
 					value={value.connection.hostname}
 					disabled={isMemory}
+					spellCheck={false}
 					placeholder={placeholder}
 					onChange={handleEndpointChange}
 				/>
@@ -161,6 +162,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					<TextInput
 						label="Namespace"
 						value={value.connection.namespace}
+						spellCheck={false}
 						onChange={(e) =>
 							onChange((draft) => {
 								draft.connection.namespace = e.target.value;
@@ -170,6 +172,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					<TextInput
 						label="Database"
 						value={value.connection.database}
+						spellCheck={false}
 						onChange={(e) =>
 							onChange((draft) => {
 								draft.connection.database = e.target.value;
@@ -197,6 +200,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							<TextInput
 								label="Username"
 								value={value.connection.username}
+								spellCheck={false}
 								onChange={(e) =>
 									onChange((draft) => {
 										draft.connection.username = e.target.value;
@@ -206,6 +210,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							<PasswordInput
 								label="Password"
 								value={value.connection.password}
+								spellCheck={false}
 								onChange={(e) =>
 									onChange((draft) => {
 										draft.connection.password = e.target.value;
@@ -220,6 +225,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							<TextInput
 								label="Scope"
 								value={value.connection.scope}
+								spellCheck={false}
 								onChange={(e) =>
 									onChange((draft) => {
 										draft.connection.scope = e.target.value;
@@ -237,6 +243,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							<TextInput
 								label="Token"
 								value={value.connection.token}
+								spellCheck={false}
 								onChange={(e) =>
 									onChange((draft) => {
 										draft.connection.token = e.target.value;
@@ -299,6 +306,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 											placeholder="Field name"
 											style={{ flex: 1 }}
 											value={field.subject}
+											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
 													draft.connection.scopeFields[i].subject = e.target.value;
@@ -309,6 +317,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 											placeholder="Value"
 											style={{ flex: 1 }}
 											value={field.value}
+											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
 													draft.connection.scopeFields[i].value = e.target.value;

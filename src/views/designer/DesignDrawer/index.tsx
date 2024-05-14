@@ -118,6 +118,7 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 				mb="xs"
 				readOnly
 				value={value.schema.name}
+				spellCheck={false}
 				onFocus={ON_FOCUS_SELECT}
 				rightSectionWidth={76}
 				rightSection={

@@ -13,6 +13,7 @@ export function ChangefeedElement({ data, setData }: ElementProps) {
 					<TextInput
 						label="Expiry duration"
 						placeholder="7d"
+						spellCheck={false}
 						value={data.schema.changefeed?.expiry || ""}
 						onChange={(value) =>
 							setData((draft) => {

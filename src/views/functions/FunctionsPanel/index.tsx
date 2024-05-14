@@ -82,6 +82,7 @@ export function FunctionsPanel({
 							placeholder="Search functions..."
 							leftSection={<Icon path={iconSearch} />}
 							value={search}
+							spellCheck={false}
 							onChange={setSearch}
 							variant="unstyled"
 							autoFocus
