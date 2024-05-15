@@ -81,7 +81,8 @@
 	  SleepStatement |
 	  UseStatement |
 	  NestableStatement |
-	  OptionStatement
+	  OptionStatement |
+	  RebuildStatement
   }
 
   // Transaction statements
@@ -425,6 +426,13 @@
 	option
 	Ident
 	( "=" ( true | false ) )?
+  }
+
+  RebuildStatement {
+	rebuild index
+	IfExistsClause?
+	Ident
+	OnTableClause
   }
 
   // Values
@@ -1107,6 +1115,7 @@
 	  postings_cache	[@name=Keyword],
 	  postings_order	[@name=Keyword],
 	  readonly			[@name=Keyword],
+	  rebuild			[@name=Keyword],
 	  relate			[@name=Keyword],
 	  relation			[@name=Keyword],
 	  remove			[@name=Keyword],
