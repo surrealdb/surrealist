@@ -158,7 +158,8 @@
 	  (
 		  UniqueClause |
 		  SearchAnalyzerClause |
-		  MtreeClause
+		  MtreeClause |
+		  HnswClause
 	  )
   }
 
@@ -626,20 +627,45 @@
 
   MtreeClause {
 	  mtree
-	  MtreeDimensionClause?
-	  MtreeDistClause?
-	  MtreeTypeClause?
-	  MtreeCapacityClause?
-	  DocIdsOrderClause?
-	  DocIdsCacheClause?
-	  MtreeCacheClause?
+	  IndexDimensionClause
+	  (
+		IndexDistClause |
+	    IndexTypeClause |
+	    IndexCapacityClause |
+	    DocIdsOrderClause |
+	    DocIdsCacheClause |
+	    MtreeCacheClause
+	  )*
   }
 
-  MtreeDimensionClause { dimension Int }
-  MtreeDistClause { dist ( euclidean | cosine | manhattan | minkowski ) }
-  MtreeTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
-  MtreeCapacityClause { capacity Int }
   MtreeCacheClause { mtree_cache Int }
+
+  HnswClause {
+	hnsw
+	IndexDimensionClause
+	  (
+		IndexDistClause |
+	    IndexTypeClause |
+	    IndexCapacityClause |
+	    IndexLmClause |
+	    IndexM0Clause |
+	    IndexMClause |
+	    IndexEfcClause |
+	    IndexExtendCandidatesClause |
+	    IndexKeepPrunedConnectionsClause
+	  )*
+  }
+
+  IndexDimensionClause { dimension Int }
+  IndexDistClause { ( dist | distance ) ( euclidean | cosine | manhattan | minkowski ) }
+  IndexTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
+  IndexCapacityClause { capacity Int }
+  IndexLmClause { lm Float }
+  IndexM0Clause { m0 Int }
+  IndexMClause { m Int }
+  IndexEfcClause { efc Int }
+  IndexExtendCandidatesClause { extend_candidates }
+  IndexKeepPrunedConnectionsClause { keep_pruned_connections }
 
   ContentClause {
 	  content Object
@@ -1033,176 +1059,184 @@
   @external propSource surqlHighlighting from "./highlight"
 
   @external extend { rawident } tokens from "./tokens" {
-	  analyzer			[@name=Keyword],
-	  any				[@name=Keyword],
-	  as				[@name=Keyword],
-	  asc				[@name=Keyword],
-	  assert			[@name=Keyword],
-	  at				[@name=Keyword],
-	  begin				[@name=Keyword],
-	  bm25				[@name=Keyword],
-	  break				[@name=Keyword],
-	  by				[@name=Keyword],
-	  cancel			[@name=Keyword],
-	  capacity			[@name=Keyword],
-	  changefeed		[@name=Keyword],
-	  changes			[@name=Keyword],
-	  columns			[@name=Keyword],
-	  comment			[@name=Keyword],
-	  commit			[@name=Keyword],
-	  content			[@name=Keyword],
-	  continue			[@name=Keyword],
-	  create			[@name=Keyword],
-	  database			[@name=Keyword],
-	  db				[@name=Keyword],
-	  default			[@name=Keyword],
-	  define			[@name=Keyword],
-	  delete			[@name=Keyword],
-	  desc				[@name=Keyword],
-	  dimension			[@name=Keyword],
-	  dist				[@name=Keyword],
-	  doc_ids_cache		[@name=Keyword],
-	  doc_ids_order		[@name=Keyword],
-	  doc_lengths_cache	[@name=Keyword],
-	  doc_lengths_order	[@name=Keyword],
-	  drop				[@name=Keyword],
-	  duplicate			[@name=Keyword],
-	  else				[@name=Keyword],
-	  end				[@name=Keyword],
-	  exists			[@name=Keyword],
-	  explain			[@name=Keyword],
-	  event				[@name=Keyword],
-	  fetch				[@name=Keyword],
-	  field				[@name=Keyword],
-	  fields			[@name=Keyword],
-	  flexible			[@name=Keyword],
-	  for				[@name=Keyword],
-	  from				[@name=Keyword],
-	  function			[@name=Keyword],
-	  group				[@name=Keyword],
-	  highlights		[@name=Keyword],
-	  if				[@name=Keyword],
-	  ignore			[@name=Keyword],
-	  in				[@name=Keyword],
-	  index				[@name=Keyword],
-	  info				[@name=Keyword],
-	  insert			[@name=Keyword],
-	  into				[@name=Keyword],
-	  key				[@name=Keyword],
-	  kill				[@name=Keyword],
-	  let				[@name=Keyword],
-	  limit				[@name=Keyword],
-	  live				[@name=Keyword],
-	  merge				[@name=Keyword],
-	  mtree				[@name=Keyword],
-	  mtree_cache		[@name=Keyword],
-	  namespace			[@name=Keyword],
-	  noindex			[@name=Keyword],
-	  normal			[@name=Keyword],
-	  not				[@name=Keyword],
-	  ns				[@name=Keyword],
-	  on				[@name=Keyword],
-	  only				[@name=Keyword],
-	  option			[@name=Keyword],
-	  order				[@name=Keyword],
-	  out				[@name=Keyword],
-	  parallel			[@name=Keyword],
-	  param				[@name=Keyword],
-	  passhash			[@name=Keyword],
-	  password			[@name=Keyword],
-	  patch				[@name=Keyword],
-	  permissions		[@name=Keyword],
-	  postings_cache	[@name=Keyword],
-	  postings_order	[@name=Keyword],
-	  readonly			[@name=Keyword],
-	  rebuild			[@name=Keyword],
-	  relate			[@name=Keyword],
-	  relation			[@name=Keyword],
-	  remove			[@name=Keyword],
-	  return			[@name=Keyword],
-	  roles				[@name=Keyword],
-	  root				[@name=Keyword],
-	  sc				[@name=Keyword],
-	  scope				[@name=Keyword],
-	  schemafull		[@name=Keyword],
-	  schemaless		[@name=Keyword],
-	  search			[@name=Keyword],
-	  select			[@name=Keyword],
-	  session			[@name=Keyword],
-	  set				[@name=Keyword],
-	  show				[@name=Keyword],
-	  since				[@name=Keyword],
-	  signin			[@name=Keyword],
-	  signup			[@name=Keyword],
-	  sleep				[@name=Keyword],
-	  split				[@name=Keyword],
-	  start				[@name=Keyword],
-	  structure			[@name=Keyword],
-	  tb				[@name=Keyword],
-	  table				[@name=Keyword],
-	  terms_cache		[@name=Keyword],
-	  terms_order		[@name=Keyword],
-	  then				[@name=Keyword],
-	  throw				[@name=Keyword],
-	  timeout			[@name=Keyword],
-	  to				[@name=Keyword],
-	  token				[@name=Keyword],
-	  tokenizers		[@name=Keyword],
-	  transaction		[@name=Keyword],
-	  type				[@name=Keyword],
-	  unique			[@name=Keyword],
-	  unset				[@name=Keyword],
-	  update			[@name=Keyword],
-	  use				[@name=Keyword],
-	  user				[@name=Keyword],
-	  value				[@name=Keyword],
-	  values			[@name=Keyword],
-	  when				[@name=Keyword],
-	  where				[@name=Keyword],
-	  with				[@name=Keyword],
+	  analyzer					[@name=Keyword],
+	  any						[@name=Keyword],
+	  as						[@name=Keyword],
+	  asc						[@name=Keyword],
+	  assert					[@name=Keyword],
+	  at						[@name=Keyword],
+	  begin						[@name=Keyword],
+	  bm25						[@name=Keyword],
+	  break						[@name=Keyword],
+	  by						[@name=Keyword],
+	  cancel					[@name=Keyword],
+	  capacity					[@name=Keyword],
+	  changefeed				[@name=Keyword],
+	  changes					[@name=Keyword],
+	  columns					[@name=Keyword],
+	  comment					[@name=Keyword],
+	  commit					[@name=Keyword],
+	  content					[@name=Keyword],
+	  continue					[@name=Keyword],
+	  create					[@name=Keyword],
+	  database					[@name=Keyword],
+	  db						[@name=Keyword],
+	  default					[@name=Keyword],
+	  define					[@name=Keyword],
+	  delete					[@name=Keyword],
+	  desc						[@name=Keyword],
+	  dimension					[@name=Keyword],
+	  dist						[@name=Keyword],
+	  distance					[@name=Keyword],
+	  doc_ids_cache				[@name=Keyword],
+	  doc_ids_order				[@name=Keyword],
+	  doc_lengths_cache			[@name=Keyword],
+	  doc_lengths_order			[@name=Keyword],
+	  drop						[@name=Keyword],
+	  duplicate					[@name=Keyword],
+	  efc						[@name=Keyword],
+	  else						[@name=Keyword],
+	  end						[@name=Keyword],
+	  exists					[@name=Keyword],
+	  explain					[@name=Keyword],
+	  extend_candidates			[@name=Keyword],
+	  event						[@name=Keyword],
+	  fetch						[@name=Keyword],
+	  field						[@name=Keyword],
+	  fields					[@name=Keyword],
+	  flexible					[@name=Keyword],
+	  for						[@name=Keyword],
+	  from						[@name=Keyword],
+	  function					[@name=Keyword],
+	  group						[@name=Keyword],
+	  highlights				[@name=Keyword],
+	  hnsw						[@name=Keyword],
+	  if						[@name=Keyword],
+	  ignore					[@name=Keyword],
+	  in						[@name=Keyword],
+	  index						[@name=Keyword],
+	  info						[@name=Keyword],
+	  insert					[@name=Keyword],
+	  into						[@name=Keyword],
+	  keep_pruned_connections	[@name=Keyword],
+	  key						[@name=Keyword],
+	  kill						[@name=Keyword],
+	  let						[@name=Keyword],
+	  limit						[@name=Keyword],
+	  live						[@name=Keyword],
+	  lm						[@name=Keyword],
+	  m							[@name=Keyword],
+	  m0						[@name=Keyword],
+	  merge						[@name=Keyword],
+	  mtree						[@name=Keyword],
+	  mtree_cache				[@name=Keyword],
+	  namespace					[@name=Keyword],
+	  noindex					[@name=Keyword],
+	  normal					[@name=Keyword],
+	  not						[@name=Keyword],
+	  ns						[@name=Keyword],
+	  on						[@name=Keyword],
+	  only						[@name=Keyword],
+	  option					[@name=Keyword],
+	  order						[@name=Keyword],
+	  out						[@name=Keyword],
+	  parallel					[@name=Keyword],
+	  param						[@name=Keyword],
+	  passhash					[@name=Keyword],
+	  password					[@name=Keyword],
+	  patch						[@name=Keyword],
+	  permissions				[@name=Keyword],
+	  postings_cache			[@name=Keyword],
+	  postings_order			[@name=Keyword],
+	  readonly					[@name=Keyword],
+	  rebuild					[@name=Keyword],
+	  relate					[@name=Keyword],
+	  relation					[@name=Keyword],
+	  remove					[@name=Keyword],
+	  return					[@name=Keyword],
+	  roles						[@name=Keyword],
+	  root						[@name=Keyword],
+	  sc						[@name=Keyword],
+	  scope						[@name=Keyword],
+	  schemafull				[@name=Keyword],
+	  schemaless				[@name=Keyword],
+	  search					[@name=Keyword],
+	  select					[@name=Keyword],
+	  session					[@name=Keyword],
+	  set						[@name=Keyword],
+	  show						[@name=Keyword],
+	  since						[@name=Keyword],
+	  signin					[@name=Keyword],
+	  signup					[@name=Keyword],
+	  sleep						[@name=Keyword],
+	  split						[@name=Keyword],
+	  start						[@name=Keyword],
+	  structure					[@name=Keyword],
+	  tb						[@name=Keyword],
+	  table						[@name=Keyword],
+	  terms_cache				[@name=Keyword],
+	  terms_order				[@name=Keyword],
+	  then						[@name=Keyword],
+	  throw						[@name=Keyword],
+	  timeout					[@name=Keyword],
+	  to						[@name=Keyword],
+	  token						[@name=Keyword],
+	  tokenizers				[@name=Keyword],
+	  transaction				[@name=Keyword],
+	  type						[@name=Keyword],
+	  unique					[@name=Keyword],
+	  unset						[@name=Keyword],
+	  update					[@name=Keyword],
+	  use						[@name=Keyword],
+	  user						[@name=Keyword],
+	  value						[@name=Keyword],
+	  values					[@name=Keyword],
+	  when						[@name=Keyword],
+	  where						[@name=Keyword],
+	  with						[@name=Keyword],
 
 	  // Literals
-	  after				[@name=Literal],
-	  before			[@name=Literal],
-	  diff				[@name=Literal],
-	  false				[@name=Literal],
-	  full				[@name=Literal],
-	  none				[@name=Literal],
-	  null				[@name=Literal],
-	  true				[@name=Literal],
+	  after						[@name=Literal],
+	  before					[@name=Literal],
+	  diff						[@name=Literal],
+	  false						[@name=Literal],
+	  full						[@name=Literal],
+	  none						[@name=Literal],
+	  null						[@name=Literal],
+	  true						[@name=Literal],
 
-	  f32				[@name=Literal],
-	  f64				[@name=Literal],
-	  i16				[@name=Literal],
-	  i32				[@name=Literal],
-	  i64				[@name=Literal],
+	  f32						[@name=Literal],
+	  f64						[@name=Literal],
+	  i16						[@name=Literal],
+	  i32						[@name=Literal],
+	  i64						[@name=Literal],
 
-	  euclidean			[@name=Literal],
-	  cosine			[@name=Literal],
-	  manhattan			[@name=Literal],
-	  minkowski			[@name=Literal],
+	  euclidean					[@name=Literal],
+	  cosine					[@name=Literal],
+	  manhattan					[@name=Literal],
+	  minkowski					[@name=Literal],
 
 	  nsUnit,
 	  us,
 	  µs,
 	  ms,
 
-	  selectPermissions	[@name=PermissionTarget],
-	  updatePermissions	[@name=PermissionTarget],
-	  createPermissions	[@name=PermissionTarget],
-	  deletePermissions	[@name=PermissionTarget],
+	  selectPermissions			[@name=PermissionTarget],
+	  updatePermissions			[@name=PermissionTarget],
+	  createPermissions			[@name=PermissionTarget],
+	  deletePermissions			[@name=PermissionTarget],
 
-	  jwks				[@name=TokenType],
-	  eddsa				[@name=TokenType],
-	  es256				[@name=TokenType],
-	  es384				[@name=TokenType],
-	  es512				[@name=TokenType],
-	  ps256				[@name=TokenType],
-	  ps384				[@name=TokenType],
-	  ps512				[@name=TokenType],
-	  rs256				[@name=TokenType],
-	  rs384				[@name=TokenType],
-	  rs512				[@name=TokenType],
+	  jwks						[@name=TokenType],
+	  eddsa						[@name=TokenType],
+	  es256						[@name=TokenType],
+	  es384						[@name=TokenType],
+	  es512						[@name=TokenType],
+	  ps256						[@name=TokenType],
+	  ps384						[@name=TokenType],
+	  ps512						[@name=TokenType],
+	  rs256						[@name=TokenType],
+	  rs384						[@name=TokenType],
+	  rs512						[@name=TokenType],
 
 	  // Operators
 	  and,
@@ -1224,6 +1258,6 @@
 	  intersects,
 
 	  // KNN
-	  hamming			[@name=KnnDistance],
-	  levenshtein		[@name=KnnDistance]
+	  hamming					[@name=KnnDistance],
+	  levenshtein				[@name=KnnDistance]
   }
