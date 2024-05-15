@@ -99,6 +99,11 @@ export const useConfigStore = create<ConfigStore>()(
 		setConnections: (connections) => set(() => ({ connections })),
 
 		setActiveConnection: (activeConnection) => set(({ connections }) => {
+			if (activeConnection == 'sandbox')
+				return {
+					activeConnection
+				};
+
 			const connection = connections.find(({ id }) => id == activeConnection);
 			if (!connection) return {};
 
