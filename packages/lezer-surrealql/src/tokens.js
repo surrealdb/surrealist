@@ -27,7 +27,6 @@ import {
 	desc,
 	dimension,
 	dist,
-	distance,
 	doc_ids_cache,
 	doc_ids_order,
 	doc_lengths_cache,
@@ -151,11 +150,6 @@ import {
 	i32,
 	i64,
 
-	euclidean,
-	cosine,
-	manhattan,
-	minkowski,
-
 	nsUnit,
 	us,
 	µs,
@@ -196,8 +190,14 @@ import {
 	outside,
 	intersects,
 
+	chebyshev,
+	cosine,
+	euclidean,
 	hamming,
-	levenshtein
+	jaccard,
+	manhattan,
+	minkowski,
+	pearson,
 } from "./parser.terms";
 
 const tokenMap = {
@@ -229,7 +229,6 @@ const tokenMap = {
 	desc,
 	dimension,
 	dist,
-	distance,
 	doc_ids_cache,
 	doc_ids_order,
 	doc_lengths_cache,
@@ -353,11 +352,6 @@ const tokenMap = {
 	i32,
 	i64,
 
-	euclidean,
-	cosine,
-	manhattan,
-	minkowski,
-
 	ns,
 	us,
 	µs,
@@ -391,8 +385,14 @@ const tokenMap = {
 	outside,
 	intersects,
 
+	chebyshev,
+	cosine,
+	euclidean,
 	hamming,
-	levenshtein
+	jaccard,
+	manhattan,
+	minkowski,
+	pearson,
 };
 
 const tryMapped = {

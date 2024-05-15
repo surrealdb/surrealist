@@ -629,7 +629,7 @@
 	  mtree
 	  IndexDimensionClause
 	  (
-		IndexDistClause |
+		MtreeDistClause |
 	    IndexTypeClause |
 	    IndexCapacityClause |
 	    DocIdsOrderClause |
@@ -639,12 +639,13 @@
   }
 
   MtreeCacheClause { mtree_cache Int }
+  MtreeDistClause { dist ( cosine | euclidean | manhattan ) }
 
   HnswClause {
 	hnsw
 	IndexDimensionClause
 	  (
-		IndexDistClause |
+		HnswDistClause |
 	    IndexTypeClause |
 	    IndexCapacityClause |
 	    IndexLmClause |
@@ -656,8 +657,9 @@
 	  )*
   }
 
+  HnswDistClause { dist ( chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) }
+
   IndexDimensionClause { dimension Int }
-  IndexDistClause { ( dist | distance ) ( euclidean | cosine | manhattan | minkowski ) }
   IndexTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
   IndexCapacityClause { capacity Int }
   IndexLmClause { lm Float }
@@ -971,7 +973,7 @@
 	  (
 		  "<|"
 		  Int
-		  ( "," ( hamming | levenshtein | Int ) )
+		  ( "," ( Int | chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) )
 		  "|>"
 	  )
   }
@@ -1087,7 +1089,6 @@
 	  desc						[@name=Keyword],
 	  dimension					[@name=Keyword],
 	  dist						[@name=Keyword],
-	  distance					[@name=Keyword],
 	  doc_ids_cache				[@name=Keyword],
 	  doc_ids_order				[@name=Keyword],
 	  doc_lengths_cache			[@name=Keyword],
@@ -1211,11 +1212,6 @@
 	  i32						[@name=Literal],
 	  i64						[@name=Literal],
 
-	  euclidean					[@name=Literal],
-	  cosine					[@name=Literal],
-	  manhattan					[@name=Literal],
-	  minkowski					[@name=Literal],
-
 	  nsUnit,
 	  us,
 	  µs,
@@ -1257,7 +1253,12 @@
 	  outside,
 	  intersects,
 
-	  // KNN
-	  hamming					[@name=KnnDistance],
-	  levenshtein				[@name=KnnDistance]
+	  chebyshev 				[@name=Distance],
+	  cosine					[@name=Distance],
+	  euclidean					[@name=Distance],
+	  hamming					[@name=Distance],
+	  jaccard					[@name=Distance],
+	  manhattan					[@name=Distance],
+	  minkowski					[@name=Distance],
+	  pearson					[@name=Distance]
   }

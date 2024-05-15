@@ -16,6 +16,7 @@ export const surqlHighlighting = styleTags({
 	"< >": t.angleBracket,
 	"{ }": t.brace,
 	"TypeBracketOpen TypeBracketClose": t.typeName,
+	"Distance": t.literal,
 	"Literal": t.literal,
 	"RecordIdIdent": t.className,
 	"Operator": t.operator,
