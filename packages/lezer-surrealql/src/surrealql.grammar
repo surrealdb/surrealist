@@ -971,7 +971,7 @@
 	  (
 		  "<|"
 		  Int
-		  ( "," ( hamming | levenshtein ) )
+		  ( "," ( hamming | levenshtein | Int ) )
 		  "|>"
 	  )
   }
