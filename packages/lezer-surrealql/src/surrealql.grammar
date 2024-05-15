@@ -80,7 +80,8 @@
 	  ShowStatement |
 	  SleepStatement |
 	  UseStatement |
-	  NestableStatement
+	  NestableStatement |
+	  OptionStatement
   }
 
   // Transaction statements
@@ -418,6 +419,12 @@
   UseStatement {
 	  use
 	  ( useNs | useDb | ( useNs useDb ) )
+  }
+
+  OptionStatement {
+	option
+	Ident
+	( "=" ( true | false ) )?
   }
 
   // Values
@@ -1088,6 +1095,7 @@
 	  ns				[@name=Keyword],
 	  on				[@name=Keyword],
 	  only				[@name=Keyword],
+	  option			[@name=Keyword],
 	  order				[@name=Keyword],
 	  out				[@name=Keyword],
 	  parallel			[@name=Keyword],
