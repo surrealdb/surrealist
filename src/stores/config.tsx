@@ -7,6 +7,8 @@ import { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-f
 import { schema } from "~/util/feature-flags";
 import { unique } from "radash";
 import { validateQuery } from "~/util/surrealql";
+import { isConnectionValid } from "~/util/connection";
+import { useInterfaceStore } from "./interface";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -96,7 +98,19 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setConnections: (connections) => set(() => ({ connections })),
 
-		setActiveConnection: (activeConnection) => set(() => ({ activeConnection })),
+		setActiveConnection: (activeConnection) => set(({ connections }) => {
+			const connection = connections.find(({ id }) => id == activeConnection);
+			if (!connection) return {};
+
+			if (!isConnectionValid(connection.connection)) {
+				useInterfaceStore.getState().openConnectionEditor(connection.id);
+				return {};
+			}
+
+			return {
+				activeConnection
+			};
+		}),
 
 		setActiveView: (activeView) => set(() => ({ activeView })),
 

@@ -1,6 +1,7 @@
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { ConnectionOptions } from "~/types";
+import { connectionUri } from "./helpers";
 
 /**
  * Returns the currently active connection
@@ -44,6 +45,13 @@ export function getActiveQuery() {
  */
 export function isConnectionValid(details: ConnectionOptions | undefined) {
 	if (!details) {
+		return false;
+	}
+
+	try {
+		connectionUri(details);
+	} catch(err) {
+		console.debug("Connection URL is invalid", err);
 		return false;
 	}
 

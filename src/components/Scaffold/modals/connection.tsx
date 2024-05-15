@@ -12,7 +12,7 @@ import { Connection, Template } from "~/types";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
-import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlay, iconPlus } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlay, iconPlus, iconWarning } from "~/util/icons";
 import { ConnectionDetails } from "../../ConnectionDetails";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
@@ -199,6 +199,22 @@ export function ConnectionEditor() {
 									</Stack>
 								</Menu.Dropdown>
 							</Menu>
+						</Group>
+					</Alert>
+				)}
+
+				{!isValid && (
+					<Alert mb="xl" p="xs">
+						<Group>
+							<Icon
+								ml={6}
+								path={iconWarning}
+								color="surreal.1"
+								size={1.2}
+							/>
+							<Text>
+								Some connection details are invalid
+							</Text>
 						</Group>
 					</Alert>
 				)}
