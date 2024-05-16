@@ -1,4 +1,4 @@
-import { Checkbox, Kbd } from "@mantine/core";
+import { Checkbox, Kbd, NumberInput } from "@mantine/core";
 import { adapter, isDesktop } from "~/adapter";
 import { useCheckbox } from "~/hooks/events";
 import { SettingsSection } from "../utilities";
@@ -13,6 +13,7 @@ export function BehaviourTab() {
 	const [queryErrorChecker, setQueryErrorChecker] = useSetting(CAT, "queryErrorChecker");
 	const [windowPinned, setWindowPinned] = useSetting(CAT, "windowPinned");
 	const [autoConnect, setAutoConnect] = useSetting(CAT, "autoConnect");
+	const [versionCheckTimeout, setVersionCheckTimeout] = useSetting(CAT, "versionCheckTimeout");
 
 	const updateUpdateChecker = useCheckbox(setUpdateChecker);
 	const updateTableSuggest = useCheckbox(setTableSuggest);
@@ -64,6 +65,17 @@ export function BehaviourTab() {
 					label="Validate query for errors"
 					checked={queryErrorChecker}
 					onChange={updateQueryErrorChecker}
+				/>
+
+			</SettingsSection>
+
+			<SettingsSection label="Connection">
+				<NumberInput
+					label="Version check timeout"
+					placeholder="Seconds"
+					value={versionCheckTimeout}
+					onChange={(v) => setVersionCheckTimeout(Number.parseInt(v.toString()))}
+					min={1}
 				/>
 
 			</SettingsSection>

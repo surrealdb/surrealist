@@ -33,7 +33,8 @@ export function createBaseSettings(): SurrealistSettings {
 			queryErrorChecker: true,
 			windowPinned: false,
 			autoConnect: true,
-			docsLanguage: "cli"
+			docsLanguage: "cli",
+			versionCheckTimeout: 5,
 		},
 		appearance: {
 			colorScheme: "dark",

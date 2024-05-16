@@ -25,6 +25,7 @@ export interface Command {
 	shortcut?: string | string[];
 	action: Action;
 	aliases?: string[];
+	disabled?: boolean;
 }
 
 export interface CommandCategory {
@@ -50,7 +51,7 @@ const intent = (intent: IntentType, payload?: IntentPayload) => ({ type: "intent
  */
 export function computeCommands(): CommandCategory[] {
 	const { activeView, connections, commandHistory, setActiveView, setActiveConnection, resetOnboardings } = useConfigStore.getState();
-	const { isServing, databaseSchema, isConnected } = useDatabaseStore.getState();
+	const { isServing, databaseSchema, isConnected, isConnecting } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
@@ -73,6 +74,7 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: `Open the Sandbox`,
 				icon: iconSurreal,
+				disabled: isConnecting,
 				action: launch(() => {
 					setActiveConnection(SANDBOX);
 				})
@@ -81,6 +83,7 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: `Connect to ${connection.name}`,
 				icon: iconServer,
+				disabled: isConnecting,
 				action: launch(() => {
 					setActiveConnection(connection.id);
 				})

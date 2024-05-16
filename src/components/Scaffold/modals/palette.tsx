@@ -209,6 +209,7 @@ export function CommandPaletteModal({
 												className={classes.command}
 												data-active={selected === cmd}
 												data-cmd={cmd.id}
+												disabled={cmd.disabled}
 											>
 												<Icon
 													path={cmd.icon}

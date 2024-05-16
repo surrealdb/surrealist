@@ -168,11 +168,11 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       surrealdb.js:
-        specifier: 1.0.0-beta.5
-        version: 1.0.0-beta.5
+        specifier: 1.0.0-beta.8
+        version: 1.0.0-beta.8
       surrealdb.wasm:
-        specifier: 1.0.0-beta.10
-        version: 1.0.0-beta.10(surrealdb.js@1.0.0-beta.5)
+        specifier: 1.0.0-beta.11
+        version: 1.0.0-beta.11(surrealdb.js@1.0.0-beta.8)
       surrealql.wasm:
         specifier: ^0.1.7
         version: 0.1.7
@@ -2670,13 +2670,14 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  surrealdb.js@1.0.0-beta.5:
-    resolution: {integrity: sha512-8JEHCLm/ulm4gBX9XJ/MGKofHlBw14mRAiG/1spvadQ1N51UsmDXMHD11YPACXZ2yBjJfDeYY1EdH9OW4PnrQA==}
+  surrealdb.js@1.0.0-beta.8:
+    resolution: {integrity: sha512-waIeNBbTrS+dmW1WO50CCjcWkHw6L99MJDM1LrS1nxg6paYui7Kd0IM+emIjFmyjQc51rASZDTmj4mwyQTtfGA==}
+    engines: {node: '>=18.0.0'}
 
-  surrealdb.wasm@1.0.0-beta.10:
-    resolution: {integrity: sha512-l8Wp7qHBXksjC+HXKIw1Q6VA3ByV4Jn1Agbc+hKRYOILufbbZdqwhdImReyWSOXBA1IFQBLbPh1DaAaPJS+B0w==}
+  surrealdb.wasm@1.0.0-beta.11:
+    resolution: {integrity: sha512-Rz9S99ECYJ5VA9nhfAqmDb0BmrNtGmTsPthJD8ILTFB0mO5fUrI+tX9PO11Zq/iSWdIoFyFq2+25UJZzmJMyjQ==}
     peerDependencies:
-      surrealdb.js: ^1.0.0-beta.5
+      surrealdb.js: ^1.0.0-beta.7
 
   surrealql.wasm@0.1.7:
     resolution: {integrity: sha512-jv39vjUzrjx3QMIWCrWO3cHmZUUeRWWBaPxJw3CnhxadSbXYvITU64afIlxrJbVnUGXLBKQJWSQRiFliitm+Jw==}
@@ -5537,12 +5538,13 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  surrealdb.js@1.0.0-beta.5:
+  surrealdb.js@1.0.0-beta.8:
     dependencies:
       '@icholy/duration': 5.1.0
       cbor-redux: 1.0.0
       decimal.js: 10.4.3
       isows: 1.0.4(ws@8.16.0(bufferutil@4.0.8)(utf-8-validate@6.0.3))
+      semver: 7.5.4
       uuidv7: 0.6.3
       ws: 8.16.0(bufferutil@4.0.8)(utf-8-validate@6.0.3)
       zod: 3.22.5
@@ -5550,9 +5552,9 @@ snapshots:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.3
 
-  surrealdb.wasm@1.0.0-beta.10(surrealdb.js@1.0.0-beta.5):
+  surrealdb.wasm@1.0.0-beta.11(surrealdb.js@1.0.0-beta.8):
     dependencies:
-      surrealdb.js: 1.0.0-beta.5
+      surrealdb.js: 1.0.0-beta.8
       zod: 3.22.5
 
   surrealql.wasm@0.1.7: {}

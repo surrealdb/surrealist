@@ -10,10 +10,12 @@ import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
 import { adapter } from "~/adapter";
+import { useDatabaseStore } from "~/stores/database";
 
 export function StartScreen() {
 	const { setActiveConnection } = useConfigStore.getState();
 	const { openConnectionCreator } = useInterfaceStore.getState();
+	const { isConnecting } = useDatabaseStore();
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
@@ -63,6 +65,7 @@ export function StartScreen() {
 							h={226}
 							onClick={openSandbox}
 							style={{ border: '1px solid rgba(255, 255, 255, 0.05' }}
+							disabled={isConnecting}
 						>
 							<Box style={{ backgroundImage: `url(${sandbox})` }} />
 						</UnstyledButton>
@@ -73,6 +76,7 @@ export function StartScreen() {
 							w={657}
 							h={464}
 							onClick={openCloud}
+							disabled={isConnecting}
 						>
 							<Box style={{ backgroundImage: `url(${cloud})` }} />
 						</UnstyledButton>

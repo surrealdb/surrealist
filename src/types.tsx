@@ -89,6 +89,7 @@ export interface SurrealistBehaviorSettings {
 	windowPinned: boolean;
 	autoConnect: boolean;
 	docsLanguage: CodeLang;
+	versionCheckTimeout: number;
 }
 
 export interface SurrealistAppearanceSettings {

@@ -1,6 +1,6 @@
 import posthog from "posthog-js";
 import { surrealdbWasmEngines } from 'surrealdb.wasm';
-import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor } from 'surrealdb.js';
+import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
 import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from './types';
 import { getConnection } from './util/connection';
 import { useDatabaseStore } from './stores/database';
@@ -12,7 +12,6 @@ import { useConfigStore } from "./stores/config";
 import { objectify, sleep } from "radash";
 import { getLiveQueries } from "./util/surrealql";
 import { Value } from "surrealql.wasm/v1";
-import { queryDatabaseVersion, isUnsupported, shouldQueryDatabaseVersion } from "./util/version";
 
 const printMsg = (...args: any[]) => printLog("Conn", "#1cccfc", ...args);
 
@@ -56,6 +55,7 @@ export async function openConnection(options?: ConnectOptions) {
 	}
 
 	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
+	const { settings: { behavior: { versionCheckTimeout } } } = useConfigStore.getState();
 	const rpcEndpoint = connectionUri(connection);
 
 	await closeConnection();
@@ -65,71 +65,66 @@ export async function openConnection(options?: ConnectOptions) {
 	setIsConnecting(true);
 	setIsConnected(false);
 
-	if (shouldQueryDatabaseVersion(connection)) {
-		const version = await queryDatabaseVersion(connection);
-
-		if (version === null) {
-			showWarning({
-				title: "Failed to query version",
-				subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
-			});
-
-			setIsConnecting(false);
-			return;
-		}
-
-		if (isUnsupported(version)) {
-			showError({
-				title: "Unsupported version",
-				subtitle: `The database must be version ${import.meta.env.SDB_VERSION} or higher. The current version is ${version}`
-			});
-
-			setIsConnecting(false);
-			return;
-		}
-
-		setVersion(version);
-		printMsg(`Database version ${version ?? "unknown"}`);
-	}
-
 	const isSignup = connection.authMode === "scope-signup";
 	const auth = composeAuthentication(connection);
 
-	try {
-		await SURREAL.connect(rpcEndpoint, {
-			namespace: connection.namespace,
-			database: connection.database,
-			prepare: async (surreal) => {
+	await SURREAL.connect(rpcEndpoint, {
+		versionCheckTimeout: (versionCheckTimeout ?? 5) * 1000,
+		namespace: connection.namespace,
+		database: connection.database,
+		prepare: async (surreal) => {
+			try {
 				if (isSignup) {
 					await register(buildScopeAuth(connection), surreal);
 				} else {
 					await authenticate(auth, surreal);
 				}
-			},
+			} catch {
+				throw new Error("Authentication failed");
+			}
+		},
+	})
+		.then(() => {
+			setIsConnecting(false);
+			setIsConnected(true);
+			syncDatabaseSchema();
+
+			ConnectedEvent.dispatch(null);
+
+			posthog.capture('connection_open', {
+				protocol: connection.protocol
+			});
+
+			printMsg("Connection established");
+		})
+		.catch((err) => {
+			SURREAL.close();
+
+			setIsConnecting(false);
+			setIsConnected(false);
+
+			if (err instanceof VersionRetrievalFailure)
+				return showWarning({
+					title: "Failed to query version",
+					subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
+				});
+
+			if (err instanceof UnsupportedVersion)
+				showError({
+					title: "Unsupported version",
+					subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
+				});
+
+			showError({
+				title: "Failed to connect",
+				subtitle: err.message
+			});
+		}).finally(() => {
+			SURREAL.version().then((v) => {
+				setVersion(v);
+				printMsg(`Database version ${v ?? "unknown"}`);
+			});
 		});
-
-		setIsConnecting(false);
-		setIsConnected(true);
-		syncDatabaseSchema();
-
-		ConnectedEvent.dispatch(null);
-
-		posthog.capture('connection_open', {
-			protocol: connection.protocol
-		});
-
-		printMsg("Connection established");
-	} catch(err: any) {
-		SURREAL.close();
-
-		setIsConnecting(false);
-		setIsConnected(false);
-
-		showError({
-			title: "Failed to connect",
-			subtitle: err.message
-		});
-	}
 }
 
 /**
