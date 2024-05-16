@@ -187,6 +187,34 @@ export const surqlVariableCompletion = (): Extension => {
 	});
 };
 
+const CUSTOM_FUNCTION_SOURCE: CompletionSource = (context) => {
+	const match = context.matchBefore(/fn::\w*/i);
+	const functions = useDatabaseStore.getState().databaseSchema?.functions || [];
+	const names = functions.map(fn => `fn::` + fn.name);
+
+	if (!match) {
+		return null;
+	}
+
+	return {
+		from: match.from,
+		validFor: /\w+$/,
+		options: names.map(fn => ({
+			label: fn,
+			type: "function"
+		}))
+	};
+};
+
+/**
+ * An extension used to autocomplete table names
+ */
+export const surqlCustomFunctionCompletion = (): Extension => {
+	return surrealqlLanguage.data.of({
+		autocomplete: CUSTOM_FUNCTION_SOURCE
+	});
+};
+
 /**
  * An extension that reports on selection changes
  */
