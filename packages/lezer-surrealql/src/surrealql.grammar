@@ -189,13 +189,15 @@
 	  table
 	  IfNotExistsClause?
 	  Ident
-	  drop?
-	  (schemafull | schemaless)?
-	  TableTypeClause?
-	  TableViewClause?
-	  ChangefeedClause?
-	  PermissionsForClause?
-	  CommentClause?
+	  (
+		drop |
+		(schemafull | schemaless) |
+		TableTypeClause |
+		TableViewClause |
+		ChangefeedClause |
+		PermissionsForClause |
+		CommentClause
+	  )*
   }
 
   DefineTokenStatement {
