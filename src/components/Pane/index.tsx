@@ -1,4 +1,4 @@
-import { Box, Divider, Group, Paper, PaperProps, Text } from "@mantine/core";
+import { Box, Divider, Group, LoadingOverlay, Paper, PaperProps, Text } from "@mantine/core";
 import { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
@@ -9,6 +9,7 @@ export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDi
 	title?: string;
 	icon?: string;
 	leftSection?: React.ReactNode;
+	loading?: boolean;
 	rightSection?: React.ReactNode;
 	withTopPadding?: boolean;
 }
@@ -18,6 +19,7 @@ export function ContentPane({
 	title,
 	icon,
 	leftSection,
+	loading,
 	rightSection,
 	withTopPadding,
 	...rest
@@ -29,8 +31,16 @@ export function ContentPane({
 		<Paper
 			radius="lg"
 			className={classes.root}
+			pos="relative"
 			{...rest}
 		>
+			<LoadingOverlay
+				visible={loading}
+				zIndex={1000}
+				overlayProps={{ radius: 'sm', blur: 0 }}
+				loaderProps={{ type: 'dots' }}
+			>
+			</LoadingOverlay>
 			{title !== undefined && icon !== undefined && (
 				<>
 					<Group

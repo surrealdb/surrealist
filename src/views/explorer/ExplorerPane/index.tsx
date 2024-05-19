@@ -1,28 +1,78 @@
-import { ActionIcon, Box, Button, Center, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, ComboboxData, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
+import { FocusEvent, KeyboardEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { useStable } from "~/hooks/stable";
 import { useEventSubscription } from "~/hooks/event";
+import { useStable } from "~/hooks/stable";
 import { useSchema } from "~/hooks/schema";
+import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
 import { iconChevronLeft, iconChevronRight, iconClose, iconCopy, iconDelete, iconFilter, iconPlus, iconQuery, iconRefresh, iconServer, iconTable, iconWrench } from "~/util/icons";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
-import { RecordsChangedEvent } from "~/util/global-events";
 import { executeQuery } from "~/connection";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { RecordId } from "surrealdb.js";
 import { tb } from "~/util/helpers";
+import { useQuery } from '@tanstack/react-query';
 
-const PAGE_SIZES = [
+const PAGE_SIZES: ComboboxData = [
 	{ label: "10 Results per page", value: "10" },
 	{ label: "25 Results per page", value: "25" },
 	{ label: "50 Results per page", value: "50" },
 	{ label: "100 Results per page", value: "100" },
 ];
+
+type SortMode = [string, "asc" | "desc"] | null;
+
+type FetchRecordsInput = {
+	activeTable: string;
+	page: number;
+	pageSize: number;
+	sortMode: SortMode;
+	showFilter: boolean;
+	filterClause: string;
+};
+
+const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unknown[], total: number }> => {
+	const { activeTable, page, pageSize, sortMode, showFilter, filterClause } = input;
+
+	if (!activeTable) {
+		return { records: [], total: 0 };
+	}
+
+	const isFilterValid = (!showFilter || !filterClause) || !validateWhere(filterClause);
+	if (!isFilterValid) {
+		throw new Error("Invalid filter clause");
+	}
+
+	const limitBy = pageSize;
+	const startAt = (page - 1) * pageSize;
+	const [sortCol, sortDir] = sortMode || ["id", "asc"];
+
+	let countQuery = `SELECT * FROM count((SELECT * FROM ${tb(activeTable)}`;
+	let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
+
+	if (showFilter && filterClause) {
+		countQuery += ` WHERE ${filterClause}`;
+		fetchQuery += ` WHERE ${filterClause}`;
+	}
+
+	countQuery += "))";
+	fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
+
+	if (startAt > 0) {
+		fetchQuery += ` START ${startAt}`;
+	}
+
+	const response = await executeQuery(`${countQuery};${fetchQuery}`);
+	const total = response[0].result?.[0] || 0;
+	const records = response[1].result || [];
+
+	return { records, total };
+};
 
 export interface ExplorerPaneProps {
 	activeTable: string;
@@ -35,25 +85,12 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const schema = useSchema();
 
-	const [records, setRecords] = useState<unknown[]>([]);
-	const [recordCount, setRecordCount] = useState(0);
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");
 	const [pageText, setPageText] = useInputState("1");
-	const [pageSize, setPageSize] = useState("25");
-	const [sortMode, setSortMode] = useState<[string, "asc" | "desc"] | null>(null);
+	const [pageSizeStr, setPageSizeStr] = useState("25");
+	const [sortMode, setSortMode] = useState<SortMode>(null);
 	const [page, setPage] = useState(1);
-
-	const pageCount = Math.ceil(recordCount / Number.parseInt(pageSize));
-
-	function setCurrentPage(number: number) {
-		setPageText(number.toString());
-		setPage(number);
-	}
-
-	const toggleFilter = useStable(() => {
-		setFiltering(!filtering);
-	});
 
 	const [showFilter] = useDebouncedValue(filtering, 250);
 	const [filterClause] = useDebouncedValue(filter, 500);
@@ -62,54 +99,48 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		return (!showFilter || !filter) || !validateWhere(filter);
 	}, [showFilter, filter]);
 
-	const fetchRecords = useStable(async () => {
-		if (!activeTable) {
-			setRecords([]);
-			setRecordCount(0);
-			return;
-		}
+	const pageSize = Number.parseInt(pageSizeStr);
 
-		if (!isFilterValid) {
-			return;
-		}
+	const queryInput: FetchRecordsInput = {
+		activeTable,
+		page,
+		pageSize,
+		sortMode,
+		showFilter,
+		filterClause,
+	};
 
-		const limitBy = Number.parseInt(pageSize);
-		const startAt = (page - 1) * Number.parseInt(pageSize);
-		const [sortCol, sortDir] = sortMode || ["id", "asc"];
+	const { isLoading, data, refetch } = useQuery({
+		queryKey: ['explorer', 'records', queryInput],
+		queryFn: () => fetchRecords(queryInput)
+	});
 
-		let countQuery = `SELECT * FROM count((SELECT * FROM ${tb(activeTable)}`;
-		let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
+	const refreshRecords = () => {
+		refetch();
+	};
 
-		if (showFilter && filterClause) {
-			countQuery += ` WHERE ${filterClause}`;
-			fetchQuery += ` WHERE ${filterClause}`;
-		}
+	const records: unknown[] = data?.records || [];
+	const recordCount: number = data?.total || 0;
 
-		countQuery += "))";
-		fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
+	const pageCount = Math.ceil(recordCount / pageSize);
 
-		if (startAt > 0) {
-			fetchQuery += ` START ${startAt}`;
-		}
+	const setCurrentPage = useCallback((number: number) => {
+		setPageText(number.toString());
+		setPage(number);
+	}, [setPageText, setPage]);
 
-		const response = await executeQuery(`${countQuery};${fetchQuery}`);
-		const count = response[0].result?.[0] || 0;
-		const records = response[1].result || [];
-
-		setRecords(records);
-		setRecordCount(count);
-
-		if (page > pageCount) {
-			setCurrentPage(pageCount || 1);
-		}
+	const toggleFilter = useStable(() => {
+		setFiltering(!filtering);
 	});
 
 	useEffect(() => {
-		fetchRecords();
-	}, [activeTable, pageSize, page, sortMode, showFilter, filterClause]);
+		if (page > pageCount) {
+			setCurrentPage(pageCount || 1);
+		}
+	}, [page, pageCount, setCurrentPage]);
 
 	useEventSubscription(RecordsChangedEvent, () => {
-		fetchRecords();
+		refreshRecords();
 	});
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
@@ -203,7 +234,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					// TODO Use confirmation
 					await executeQuery(`DELETE ${formatValue(record.id)}`);
 
-					fetchRecords();
+					refreshRecords();
 				}
 			},
 		])(e);
@@ -214,6 +245,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	return (
 		<ContentPane
 			title="Record Explorer"
+			loading={isLoading}
 			icon={iconTable}
 			rightSection={
 				activeTable && (
@@ -229,7 +261,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 						<Tooltip label="Refresh records">
 							<ActionIcon
-								onClick={fetchRecords}
+								onClick={refreshRecords}
 								aria-label="Refresh records"
 							>
 								<Icon path={iconRefresh} />
@@ -249,7 +281,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 						<Icon path={iconServer} mr={-6} />
 						<Text lineClamp={1}>
-							{recordCount || "no"} rows
+							{isLoading ? "loading..." : `${recordCount || "no"} rows`}
 						</Text>
 					</Group>
 				)
@@ -272,42 +304,47 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					})}
 				/>
 			)}
-			{records.length > 0 ? (
-				<ScrollArea
-					style={{
-						position: "absolute",
-						inset: 12,
-						top: filtering ? 40 : 0,
-						bottom: 54,
-						transition: "top .1s"
-					}}
-				>
-					<DataTable
-						data={records}
-						sorting={sortMode}
-						onSortingChange={setSortMode}
-						onRowContextMenu={onRecordContextMenu}
-						headers={headers}
-					/>
-				</ScrollArea>
-			) : (
-				<Center h="90%">
-					<Box ta="center">
-						<Text c="slate">
+			{isLoading ?
+				null
+				:
+				records.length > 0 ? (
+					<ScrollArea
+						style={{
+							position: "absolute",
+							inset: 12,
+							top: filtering ? 40 : 0,
+							bottom: 54,
+							transition: "top .1s"
+						}}
+					>
+						<DataTable
+							data={records}
+							sorting={sortMode}
+							onSortingChange={setSortMode}
+							onRowContextMenu={onRecordContextMenu}
+							headers={headers}
+						/>
+					</ScrollArea>
+				) : (
+					<Center h="90%">
+						<Box ta="center">
+							<Text c="slate">
 							This table has no records yet
-						</Text>
-						<Button
-							mt="xl"
-							variant="gradient"
-							color="surreal.5"
-							leftSection={<Icon path={iconPlus} />}
-							onClick={openCreator}
-						>
+							</Text>
+							<Button
+								mt="xl"
+								variant="gradient"
+								color="surreal.5"
+								leftSection={<Icon path={iconPlus} />}
+								onClick={openCreator}
+							>
 							Create record
-						</Button>
-					</Box>
-				</Center>
-			)}
+							</Button>
+						</Box>
+					</Center>
+				)
+			}
+
 
 			<Group
 				gap="xs"
@@ -356,8 +393,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				</Group>
 
 				<Select
-					value={pageSize}
-					onChange={setPageSize as any}
+					value={pageSizeStr}
+					onChange={setPageSizeStr as any}
 					data={PAGE_SIZES}
 					size="xs"
 				/>
