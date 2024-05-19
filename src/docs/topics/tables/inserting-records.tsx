@@ -38,7 +38,7 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 		};")
 		`,
 			csharp: `
-		await db.Merge<${table.schema.name}>(merge);
+		await db.Merge("${table.schema.name}", data);
 		`,
 			java: `
 		`,

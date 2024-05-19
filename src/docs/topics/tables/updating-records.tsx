@@ -55,7 +55,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		});
 		`,
 			csharp: `
-		await db.Upsert(${table.schema.name});
+		await db.Upsert("${table.schema.name}", data);
 		`,
 			java: `
 		// Connect to a local endpoint

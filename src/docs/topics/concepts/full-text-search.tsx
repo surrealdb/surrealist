@@ -56,7 +56,7 @@ export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
-		await this.RawQuery(
+		await db.RawQuery(
 			"""
 				DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
 

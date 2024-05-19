@@ -55,7 +55,7 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
-			await this.RawQuery(
+			await db.RawQuery(
 				"""
 					-- It is necessary to prefix the name of your function with "fn::"
 					-- This indicates that it's a custom function

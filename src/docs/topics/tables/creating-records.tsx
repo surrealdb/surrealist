@@ -27,7 +27,7 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 		db.Create("${table.schema.name}", map[string]interface{}{})
 		`,
 			csharp: `
-		db.Create<${table.schema.name}>("${table.schema.name}");
+		await db.Create("${table.schema.name}", data);
 		`,
 			java: `
 		driver.create(thing, data)

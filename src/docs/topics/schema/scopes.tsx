@@ -55,7 +55,7 @@ export function DocsSchemaScopes({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
-		await this.RawQuery(
+		await db.RawQuery(
 			"""
 				-- Enable scope authentication directly in SurrealDB
 				DEFINE SCOPE account SESSION 24h
