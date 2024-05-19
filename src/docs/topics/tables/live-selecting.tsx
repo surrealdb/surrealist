@@ -89,7 +89,7 @@ table_name
 		$db = new SurrealDB();
 		`,
 		}),
-		[]
+		[table.schema.name]
 	);
 
 	return (

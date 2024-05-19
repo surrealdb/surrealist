@@ -5,7 +5,7 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 import { connectionUri } from "~/util/helpers";
 
-export function DocsGlobalInit({ language, topic }: TopicProps) {
+export function DocsGlobalInit({ language }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const endpoint = connectionUri(connection);
 	const esc_endpoint = JSON.stringify(endpoint);
@@ -15,7 +15,7 @@ export function DocsGlobalInit({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			surreal sql --endpoint ${endpoint} --namespace ${connection.namespace} --database ${connection.database}
+			surreal sql --endpoint ${esc_endpoint} --namespace ${esc_namespace} --database ${esc_database}
 		`,
 			js: `
 			import { Surreal } from 'surrealdb.js';
@@ -67,7 +67,7 @@ export function DocsGlobalInit({ language, topic }: TopicProps) {
 		$db = new \\Surreal\\Surreal();
 		`,
 		}),
-		[]
+		[esc_endpoint, esc_namespace, esc_database]
 	);
 
 	return (

@@ -14,5 +14,5 @@ export function useRefreshTimer(interval: number) {
 		}, interval);
 
 		return () => clearInterval(task);
-	}, []);
+	}, [interval]);
 }

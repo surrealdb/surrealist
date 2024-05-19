@@ -25,6 +25,8 @@ interface DataTableProps extends BoxProps{
 }
 
 export function DataTable(props: DataTableProps) {
+	const { onRowContextMenu } = props;
+
 	const isLight = useIsLight();
 	const { inspect } = useInspector();
 
@@ -90,7 +92,7 @@ export function DataTable(props: DataTableProps) {
 		});
 
 		return [headerNames, values];
-	}, [data, headers, active]);
+	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
 		return keys.map(key => (
@@ -113,7 +115,7 @@ export function DataTable(props: DataTableProps) {
 				</Text>
 			</Box>
 		));
-	}, [isLight, keys, sorting]);
+	}, [keys, sorting, handleSortClick, onSortingChange]);
 
 	const recordRows = useMemo(() => {
 		return values.map((value, i) => {
@@ -134,7 +136,7 @@ export function DataTable(props: DataTableProps) {
 					key={i}
 					component="tr"
 					onClick={() => value.id && inspect(value.id)}
-					onContextMenu={(e) => props.onRowContextMenu?.(e, value)}
+					onContextMenu={(e) => onRowContextMenu?.(e, value)}
 					style={{
 						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
 					}}
@@ -143,7 +145,7 @@ export function DataTable(props: DataTableProps) {
 				</Box>
 			);
 		});
-	}, [keys, values, isLight]);
+	}, [keys, values, active, inspect, onRowContextMenu]);
 
 	if (!isRenderable(data)) {
 		return <Text c="slate">Result could not be displayed as a table.</Text>;

@@ -13,7 +13,7 @@ export function FeatureFlagsProvider({ children }: PropsWithChildren) {
 		return () => {
 			featureFlags.unsubscribe(setFeatureFlag);
 		};
-	}, [featureFlags, setFeatureFlag]);
+	}, [setFeatureFlag]);
 
 	return (
 		<FeatureFlagProvider

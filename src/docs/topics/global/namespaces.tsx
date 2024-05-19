@@ -12,7 +12,7 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			USE NS ${connection.namespace};
+			USE NS ${esc_namespace};
 		`,
 			js: `
 			await db.use({
@@ -40,7 +40,7 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[]
+		[esc_namespace, esc_database]
 	);
 
 	return (

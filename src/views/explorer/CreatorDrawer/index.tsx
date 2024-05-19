@@ -56,7 +56,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			setRecordId('');
 			setRecordBody('{\n    \n}');
 		}
-	}, [opened]);
+	}, [opened, table, setRecordTable, setRecordId, setRecordBody]);
 
 	const [width, setWidth] = useState(650);
 

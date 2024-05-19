@@ -58,7 +58,7 @@ export function TableCreator() {
 			setTableIn([]);
 			setTableOut([]);
 		}
-	}, [opened]);
+	}, [opened, setTableName]);
 
 	useIntent("new-table", openTableCreator);
 

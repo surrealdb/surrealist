@@ -102,7 +102,7 @@ export function Settings({
 			setFlags({ featureFlags: true });
 			setLogoClicked([]);
 		}
-	}, [logoClicked]);
+	}, [logoClicked, setFlags]);
 
 	useIntent("open-settings", ({ tab }) => {
 		if (tab) {

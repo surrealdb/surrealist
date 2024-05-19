@@ -41,5 +41,5 @@ export function useValueValidator(value: string, objectRoot?: boolean): [boolean
 		} catch {
 			return [false, {}];
 		}
-	}, [bodyCache]);
+	}, [bodyCache, objectRoot]);
 }

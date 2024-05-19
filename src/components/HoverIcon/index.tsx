@@ -22,7 +22,7 @@ export const HoverIcon = createPolymorphicComponent<'button', HoverIconProps>(fo
 		return {
 			'--icon-size': (getIconSize(iconSize || size) * 1.5) + 'em'
 		};
-	}, [iconSize]);
+	}, [iconSize, size]);
 
 	const {
 		ref: iconRef,

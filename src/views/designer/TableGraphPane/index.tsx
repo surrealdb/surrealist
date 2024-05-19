@@ -103,6 +103,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			doFitRef.current = false;
 			fitView();
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nodes]);
 
 	const renderGraph = useStable(async () => {
@@ -174,11 +175,16 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	useLayoutEffect(() => {
 		if (isViewActive && isConnected) {
 			renderGraph();
-		} else if(!isConnected) {
+			return;
+		}
+		if (!isConnected) {
 			setNodes([]);
 			setEdges([]);
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [schema, isViewActive, isConnected, activeSession.diagramDirection]);
+
+	const tableName = props.active?.schema.name;
 
 	useEffect(() => {
 		setNodes(curr => {
@@ -187,12 +193,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					...node,
 					data: {
 						...node.data,
-						isSelected: node.id === props.active?.schema.name
+						isSelected: node.id === tableName
 					},
 				};
 			});
 		});
-	}, [props.active]);
+	}, [tableName, setNodes]);
 
 	return (
 		<ContentPane

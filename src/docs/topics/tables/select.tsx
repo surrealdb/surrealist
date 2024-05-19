@@ -2,7 +2,6 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useActiveConnection } from "~/hooks/connection";
 import { getTable } from "~/docs/helpers";
 
 export function DocsTablesSelect({ language, topic }: TopicProps) {
@@ -11,12 +10,12 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		table.fields.find(
 			({ name }: { name: string }) => !["id", "in", "out"].includes(name)
 		)?.name ?? "table:id";
+	const tableName = topic.extra?.table?.schema?.name;
 
-	const { connection } = useActiveConnection();
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		SELECT ${fieldName} FROM ${topic.extra?.table?.schema?.name}
+		SELECT ${fieldName} FROM ${tableName}
 		`,
 			js: `
 		// Select a specific record from a table
@@ -39,7 +38,7 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		$db->select($record);
 		`,
 		}),
-		[]
+		[fieldName, tableName]
 	);
 
 	return (

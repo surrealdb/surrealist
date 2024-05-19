@@ -56,7 +56,7 @@ export function Connections() {
 			con.name.toLowerCase().includes(needle)
 			|| con.connection.hostname.toLowerCase().includes(needle)
 		);
-	}, [connections, connection, search]);
+	}, [connections, search]);
 
 	const connect = useStable(() => {
 		openConnection().catch(err => {

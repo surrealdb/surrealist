@@ -62,7 +62,7 @@ export function Sidebar({
 
 	useLayoutEffect(() => {
 		expandedHandle.set(hovered);
-	}, [hovered]);
+	}, [expandedHandle, hovered]);
 
 	const setViewMode = useStable((id: ViewMode) => {
 		updateTitle();
@@ -80,7 +80,7 @@ export function Sidebar({
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, [flags, connection]);
+	}, [flags]);
 
 	const shouldExpand = connection && mode === "expandable" && expanded;
 	const nudgeSidebar = adapter.platform === "darwin" && isDesktop;

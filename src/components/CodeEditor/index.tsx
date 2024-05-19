@@ -83,6 +83,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		return () => {
 			editor.destroy();
 		};
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {

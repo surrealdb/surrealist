@@ -4,7 +4,7 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsAuthSignUp({ language, topic }: TopicProps) {
+export function DocsAuthSignUp({ language }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const esc_namespace = JSON.stringify(connection.namespace);
 	const esc_database = JSON.stringify(connection.database);
@@ -92,7 +92,7 @@ export function DocsAuthSignUp({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[]
+		[esc_namespace, esc_database]
 	);
 
 	return (

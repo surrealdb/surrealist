@@ -12,7 +12,7 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			USE DB ${connection.database};
+			USE DB ${esc_database};
 		`,
 			js: `
 			await db.use({
@@ -41,7 +41,7 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[]
+		[esc_namespace, esc_database]
 	);
 
 	return (

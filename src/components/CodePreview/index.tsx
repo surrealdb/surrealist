@@ -70,6 +70,7 @@ export function CodePreview({
 		return () => {
 			editor.destroy();
 		};
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
