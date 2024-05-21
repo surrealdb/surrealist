@@ -50,7 +50,7 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
-		await this.RawQuery(
+		await db.RawQuery(
 			"""
 				-- Create a root user
 				DEFINE USER username ON ROOT PASSWORD '123456' ROLES OWNER;

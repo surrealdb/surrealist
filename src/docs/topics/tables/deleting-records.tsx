@@ -27,7 +27,7 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 		db.Delete("${table.schema.name}", map[string]interface{}{})
 		`,
 			csharp: `
-		db.delete<${table.schema.name}>("${table.schema.name}");
+		await db.Delete("${table.schema.name}");
 		`,
 			java: `
 		driver.delete(thing, data)

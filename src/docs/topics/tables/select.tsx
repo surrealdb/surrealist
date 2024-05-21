@@ -31,9 +31,6 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 			go: `
 
 		`,
-			csharp: `
-		db.Select('${fieldName}')
-		`,
 			java: `
 		driver.select("${fieldName}", rowType)
 		`,

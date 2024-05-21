@@ -48,7 +48,7 @@ export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 		surrealdb.New("ws://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
-		await this.RawQuery(
+		await db.RawQuery(
 			"""
 				DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
 			"""

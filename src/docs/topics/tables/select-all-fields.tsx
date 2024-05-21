@@ -4,6 +4,7 @@ import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 import { getTable } from "~/docs/helpers";
+import { pascalCase } from "~/util/casing";
 
 export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 	const table = getTable(topic);
@@ -27,7 +28,7 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 		db.Select('${table.schema.name}');
 		`,
 			csharp: `
-		db.Select('${table.schema.name}');
+		await db.Select<${pascalCase(table.schema.name)}>("${table.schema.name}");
 		`,
 			java: `
 		driver.select("thing", rowType)
