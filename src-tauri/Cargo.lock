@@ -3583,6 +3583,7 @@ name = "surrealist"
 version = "0.0.0"
 dependencies = [
  "cocoa",
+ "dirs-next",
  "log",
  "objc",
  "openssl",

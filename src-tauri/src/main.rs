@@ -13,15 +13,16 @@ extern crate webkit2gtk;
 use std::sync::Mutex;
 
 use database::DatabaseState;
+use paths::get_logs_directory;
 use tauri::{Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use window::configure_window;
 
 mod config;
 mod database;
-mod helpers;
 mod window;
 mod open;
+mod paths;
 
 struct OpenFileState(pub Mutex<Vec<url::Url>>);
 
@@ -36,8 +37,11 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_log::Builder::new().targets([
             Target::new(TargetKind::Stdout),
-            // Target::new(TargetKind::LogDir { file_name: None }),
             Target::new(TargetKind::Webview),
+            Target::new(TargetKind::Folder {
+				path: get_logs_directory(),
+				file_name: Some("surrealist".into()),
+			}),
         ]).build())
         .manage(OpenFileState(Default::default()))
         .manage(DatabaseState(Default::default()))
