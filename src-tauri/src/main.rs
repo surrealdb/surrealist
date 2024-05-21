@@ -76,12 +76,12 @@ fn main() {
                 .inner_size(1235.0, 675.0)
                 .min_inner_size(1235.0, 675.0);
 
-			#[cfg(target_os = "macos")]
-			let builder = builder
-				.title_bar_style(tauri::TitleBarStyle::Overlay)
-				.hidden_title(true);
-            
-			builder.build().expect("Failed to create window");
+            #[cfg(target_os = "macos")]
+            let builder = builder
+                .title_bar_style(tauri::TitleBarStyle::Overlay)
+                .hidden_title(true);
+
+            builder.build().expect("Failed to create window");
 
             Ok(())
         })
