@@ -3,12 +3,8 @@
     windows_subsystem = "windows"
 )]
 
-#[cfg(target_os = "macos")]
-#[macro_use]
-extern crate objc;
-
-#[cfg(target_os = "linux")]
-extern crate webkit2gtk;
+#[cfg(any(windows, target_os = "linux"))]
+use std::env;
 
 use std::sync::Mutex;
 
@@ -16,7 +12,6 @@ use database::DatabaseState;
 use paths::get_logs_directory;
 use tauri::{Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
-use window::configure_window;
 
 mod config;
 mod database;
@@ -57,7 +52,6 @@ fn main() {
             config::complete_legacy_migrate,
             database::start_database,
             database::stop_database,
-            window::set_window_scale,
             window::toggle_devtools,
             open::get_opened_queries,
         ])
@@ -73,18 +67,21 @@ fn main() {
                 }
 
                 if !urls.is_empty() {
-                    app.state::<OpenFileState>().0.lock().unwrap().replace(urls);
+                    *app.state::<OpenFileState>().0.lock().unwrap() = urls;
                 }
             }
 
-            let window = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
+            let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
                 .title("Surrealist")
                 .inner_size(1235.0, 675.0)
-                .min_inner_size(1235.0, 675.0)
-                .build()
-                .unwrap();
+                .min_inner_size(1235.0, 675.0);
 
-            configure_window(window);
+			#[cfg(target_os = "macos")]
+			let builder = builder
+				.title_bar_style(tauri::TitleBarStyle::Overlay)
+				.hidden_title(true);
+            
+			builder.build().expect("Failed to create window");
 
             Ok(())
         })

@@ -80,12 +80,11 @@ export function AppearanceTab() {
 							mt="xs"
 							mb="lg"
 							mx="sm"
-							min={50}
+							min={75}
 							max={150}
 							defaultValue={windowScale}
 							onChangeEnd={setWindowScale}
 							marks={[
-								{ value: 50, label: '50%' },
 								{ value: 75, label: '75%' },
 								{ value: 100, label: '100%' },
 								{ value: 125, label: '125%' },

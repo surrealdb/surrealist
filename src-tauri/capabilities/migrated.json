@@ -24,6 +24,7 @@
 		"window:allow-show",
 		"window:allow-set-always-on-top",
 		"window:allow-start-dragging",
+		"webview:allow-set-webview-zoom",
 		"shell:allow-open",
 		"dialog:allow-open",
 		"dialog:allow-save",

@@ -14,6 +14,7 @@ import { watchStore } from "~/util/config";
 import { Platform } from "~/types";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { getCurrent } from "@tauri-apps/api/window";
+import { getCurrent as getWebView } from "@tauri-apps/api/webview";
 
 const WAIT_DURATION = 1000;
 
@@ -72,7 +73,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			initial: true,
 			store: useConfigStore,
 			select: (s) => s.settings.appearance.windowScale,
-			then: (scale) => invoke<void>("set_window_scale", { scaleFactor: scale / 100 }),
+			then: (scale) => getWebView().setZoom(scale / 100),
 		});
 
 		watchStore({
