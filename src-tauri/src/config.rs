@@ -8,7 +8,7 @@ use crate::paths::{get_config_path, get_legacy_config_backup_path, get_legacy_co
 const DEFAULT_CONFIG: &str = "{}";
 
 fn write_config(config: &str) {
-	let config_path = get_config_path();
+    let config_path = get_config_path();
     let parent = config_path.parent().unwrap();
 
     fs::create_dir_all(parent).expect("config directory should be writable");
@@ -66,7 +66,7 @@ pub fn load_legacy_config() -> String {
 
 #[tauri::command]
 pub fn save_config(config: &str) {
-   write_config(config)
+    write_config(config)
 }
 
 #[tauri::command]

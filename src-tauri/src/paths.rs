@@ -4,7 +4,7 @@ use dirs_next::config_dir;
 
 /// The directory where the application data is stored.
 pub fn get_data_directory() -> PathBuf {
-	let mut config_path = config_dir().expect("data directory should be resolvable");
+    let mut config_path = config_dir().expect("data directory should be resolvable");
 
     config_path.push("SurrealDB");
     config_path.push("Surrealist");
@@ -35,7 +35,7 @@ pub fn get_legacy_config_backup_path() -> PathBuf {
 
 /// The path to the logs directory
 pub fn get_logs_directory() -> PathBuf {
-	let mut config_path = get_data_directory();
-	config_path.push("logs");
-	config_path
+    let mut config_path = get_data_directory();
+    config_path.push("logs");
+    config_path
 }
