@@ -150,11 +150,6 @@ import {
 	i32,
 	i64,
 
-	nsUnit,
-	us,
-	µs,
-	ms,
-
 	updatePermissions,
 	createPermissions,
 	deletePermissions,
@@ -352,11 +347,6 @@ const tokenMap = {
 	i32,
 	i64,
 
-	ns,
-	us,
-	µs,
-	ms,
-
 	jwks,
 	eddsa,
 	es256,
@@ -400,7 +390,6 @@ const tryMapped = {
 	create: [createPermissions],
 	update: [updatePermissions],
 	delete: [deletePermissions],
-	ns: [nsUnit],
 	not: [opNot],
 	in: [opIn],
 };

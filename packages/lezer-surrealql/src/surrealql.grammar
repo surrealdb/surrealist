@@ -491,7 +491,7 @@ Duration {
 
 DurationPart {
 	int ~int
-	( nsUnit | us | µs | ms | singleLetterDurationUnit )
+	durationUnit
 }
 
 // JS Functions
@@ -1022,9 +1022,9 @@ assignmentOperator[@name=Operator] {
 		"fn" functionNameSegment*
 	}
 
-singleLetterDurationUnit {"s" | "m" | "h" | "d" | "w" | "y"}
+	durationUnit { "ns" | "us" | "µs" | "ms" | "s" | "m" | "h" | "d" | "w" | "y"}
 
-	@precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName functionName exp "dec" rawident int singleLetterDurationUnit "f" singleString doubleString }
+	@precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName functionName exp "dec" rawident int durationUnit "f" singleString doubleString }
 
 	"function"
 }
@@ -1193,11 +1193,6 @@ piped<content> {
 	i16						[@name=Literal],
 	i32						[@name=Literal],
 	i64						[@name=Literal],
-
-	nsUnit,
-	us,
-	µs,
-	ms,
 
 	selectPermissions			[@name=PermissionTarget],
 	updatePermissions			[@name=PermissionTarget],
