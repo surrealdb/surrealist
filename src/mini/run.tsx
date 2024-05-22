@@ -25,14 +25,15 @@ import { MiniRunScaffold } from '~/components/Scaffold/mini/run';
 	// Initialize adapter
 	adapter.initialize();
 
-	// Immedietely connect and initialize the dataset
-	openConnection().then(() => {
-		(adapter as MiniAdapter).initializeDataset();
-	});
-
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
 	createRoot(root).render(<MiniRunScaffold />);
 
+	// Connect and initialize the dataset
+	openConnection().then(() => {
+		setTimeout(() => {
+			(adapter as MiniAdapter).initializeDataset();
+		}, 150);
+	});
 })();
