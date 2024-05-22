@@ -167,6 +167,7 @@ export function ResultPane({
 						variant={isQueryValid ? "gradient" : "filled"}
 						style={{ border: "none" }}
 						className={classes.run}
+						loading
 						rightSection={
 							<Icon path={iconCursor} />
 						}

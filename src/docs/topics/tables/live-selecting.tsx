@@ -2,12 +2,10 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useActiveConnection } from "~/hooks/connection";
 import { getTable } from "~/docs/helpers";
-import { pascalCase } from "~/util/casing";
+import { pascal } from "radash";
 
 export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
-	const { connection } = useActiveConnection();
 	const table = getTable(topic);
 
 	const snippets = useMemo<Snippets>(
@@ -57,7 +55,7 @@ table_name
 
 		`,
 			csharp: `
-		await using var liveQuery = db.ListenLive<${pascalCase(table.schema.name)}>(queryUuid);
+		await using var liveQuery = db.ListenLive<${pascal(table.schema.name)}>(queryUuid);
 
 		// Option 1
 		// Consume the live query via an IAsyncEnumerable,
@@ -78,7 +76,7 @@ table_name
 			});
 
 
-		await using var liveQuery = await db.LiveQuery<${pascalCase(table.schema.name)}>($"LIVE SELECT * FROM type::table({table});");
+		await using var liveQuery = await db.LiveQuery<${pascal(table.schema.name)}>($"LIVE SELECT * FROM type::table({table});");
 
 // Consume the live query...
 		`,

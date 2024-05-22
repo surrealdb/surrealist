@@ -2,13 +2,11 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useActiveConnection } from "~/hooks/connection";
 import { getTable } from "~/docs/helpers";
-import { pascalCase } from "~/util/casing";
+import { pascal } from "radash";
 
 export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 	const table = getTable(topic);
-	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -28,7 +26,7 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 		db.Select('${table.schema.name}');
 		`,
 			csharp: `
-		await db.Select<${pascalCase(table.schema.name)}>("${table.schema.name}");
+		await db.Select<${pascal(table.schema.name)}>("${table.schema.name}");
 		`,
 			java: `
 		driver.select("thing", rowType)
