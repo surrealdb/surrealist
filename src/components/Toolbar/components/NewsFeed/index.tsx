@@ -97,6 +97,7 @@ export function NewsFeed() {
 			posthog.capture('newsfeed_open');
 		} else {
 			readingHandle.close();
+			setUnreadIds([]);
 		}
 	}, [isOpen]);
 
