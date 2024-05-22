@@ -27,7 +27,6 @@ import { iconCheck } from "~/util/icons";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
 import { MiniAdapter } from "~/adapter/mini";
-import { useBoolean } from "~/hooks/boolean";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
@@ -35,15 +34,16 @@ import { executeUserQuery } from "~/connection";
 import { useSetting } from "~/hooks/config";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useInterfaceStore } from "~/stores/interface";
 
 const switchPortal = createHtmlPortalNode();
 
 export function QueryView() {
+	const { setShowQueryVariables, toggleQueryVariables } = useInterfaceStore.getState();
 	const { saveQuery } = useConfigStore.getState();
 	const isLight = useIsLight();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
-	const [showVariables, showVariablesHandle] = useBoolean();
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
 
@@ -54,6 +54,7 @@ export function QueryView() {
 
 	const tags = useSavedQueryTags();
 	const active = useActiveQuery();
+	const showVariables = useInterfaceStore(state => state.showQueryVariables);
 
 	const [isSaving, isSavingHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -112,6 +113,10 @@ export function QueryView() {
 		});
 	});
 
+	const closeVariables = useStable(() => {
+		setShowQueryVariables(false);
+	});
+
 	const variablesOrientation = orientation === "horizontal"
 		? "vertical"
 		: "horizontal";
@@ -120,7 +125,7 @@ export function QueryView() {
 	useIntent("open-query-history", showHistoryHandle.open);
 	useIntent("run-query", runQuery);
 	useIntent("save-query", handleSaveRequest);
-	useIntent("toggle-variables", showVariablesHandle.toggle);
+	useIntent("toggle-variables", toggleQueryVariables);
 
 	useCompatHotkeys([
 		["F9", () => runQuery()],
@@ -138,7 +143,7 @@ export function QueryView() {
 							isValid={variablesValid}
 							switchPortal={switchPortal}
 							setIsValid={setVariablesValid}
-							closeVariables={showVariablesHandle.close}
+							closeVariables={closeVariables}
 						/>
 					) : (
 						<QueryPane
@@ -148,7 +153,7 @@ export function QueryView() {
 							selection={selection}
 							showVariables={showVariables}
 							onSaveQuery={handleSaveRequest}
-							setShowVariables={showVariablesHandle.set}
+							setShowVariables={setShowQueryVariables}
 							onSelectionChange={setSelection}
 						/>
 					)) : (
@@ -160,7 +165,7 @@ export function QueryView() {
 									showVariables={showVariables}
 									selection={selection}
 									onSaveQuery={handleSaveRequest}
-									setShowVariables={showVariablesHandle.set}
+									setShowVariables={setShowQueryVariables}
 									onSelectionChange={setSelection}
 								/>
 							</Panel>
@@ -171,7 +176,7 @@ export function QueryView() {
 										<VariablesPane
 											isValid={variablesValid}
 											setIsValid={setVariablesValid}
-											closeVariables={showVariablesHandle.close}
+											closeVariables={closeVariables}
 										/>
 									</Panel>
 								</>
@@ -201,7 +206,7 @@ export function QueryView() {
 				<SegmentedControl
 					data={['Query', 'Variables']}
 					value={showVariables ? 'Variables' : 'Query'}
-					onChange={showVariablesHandle.toggle}
+					onChange={toggleQueryVariables}
 					className={classes.switcher}
 					radius="xs"
 				/>

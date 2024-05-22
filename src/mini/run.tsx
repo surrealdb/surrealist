@@ -13,6 +13,7 @@ import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
 import { openConnection } from '~/connection';
 import { MiniRunScaffold } from '~/components/Scaffold/mini/run';
+import { handleWindowMessage } from '~/util/messaging';
 
 (async () => {
 
@@ -36,4 +37,8 @@ import { MiniRunScaffold } from '~/components/Scaffold/mini/run';
 			(adapter as MiniAdapter).initializeDataset();
 		}, 150);
 	});
+
+	// Listen for window messages
+	window.addEventListener("message", handleWindowMessage, false);
+
 })();

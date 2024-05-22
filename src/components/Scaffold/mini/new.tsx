@@ -4,7 +4,7 @@ import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { DEFAULT_STATE, EmbedState, Embedder } from "~/components/Embedder";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { iconClose } from "~/util/icons";
@@ -13,6 +13,8 @@ export function MiniNewScaffold() {
 	const [url, setUrl] = useDebouncedState("", 750);
 	const [parsedState, setParsedState] = useState<EmbedState>();
 	const [showParse, showParseHandle] = useDisclosure();
+
+	const frame = useRef<HTMLIFrameElement>(null);
 
 	const parseUrl = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
 		const state = { ...DEFAULT_STATE };
@@ -28,6 +30,10 @@ export function MiniNewScaffold() {
 		setParsedState(state);
 		showParseHandle.close();
 	});
+
+	useEffect(() => {
+		(window as any).FRAME = frame.current?.contentWindow;
+	}, []);
 
 	return (
 		<FeatureFlagsProvider>
@@ -71,6 +77,7 @@ export function MiniNewScaffold() {
 										The preview will automatically reload after making changes
 									</Text>
 									<iframe
+										ref={frame}
 										width="100%"
 										height="500"
 										src={url}
