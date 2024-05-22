@@ -2,6 +2,7 @@ import { useSetting } from "~/hooks/config";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
+import { clamp } from "~/util/helpers";
 
 export function useWindowSettings() {
 	const [windowScale, setWindowScale] = useSetting("appearance", "windowScale");
@@ -9,19 +10,19 @@ export function useWindowSettings() {
 	const [windowPinned, setWindowPinned] = useSetting("behavior", "windowPinned");
 
 	const increaseWindowScale = useStable(() => {
-		setWindowScale(windowScale + 10);
+		setWindowScale(clamp(windowScale + 10, 75, 150));
 	});
 
 	const decreaseWindowScale = useStable(() => {
-		setWindowScale(windowScale - 10);
+		setWindowScale(clamp(windowScale - 10, 75, 150));
 	});
 
 	const increaseEditorScale = useStable(() => {
-		setEditorScale(editorScale + 10);
+		setEditorScale(clamp(editorScale + 10, 50, 150));
 	});
 
 	const decreaseEditorScale = useStable(() => {
-		setEditorScale(editorScale - 10);
+		setEditorScale(clamp(editorScale - 10, 50, 150));
 	});
 
 	const toggleWindowPinned = useStable(() => {

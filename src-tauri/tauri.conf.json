@@ -1,99 +1,73 @@
 {
+	"productName": "Surrealist",
+	"version": "../package.json",
+	"identifier": "com.surrealdb.surrealist",
 	"build": {
 		"beforeDevCommand": "pnpm dev",
 		"beforeBuildCommand": "pnpm build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist",
-		"withGlobalTauri": false
+		"frontendDist": "../dist",
+		"devUrl": "http://localhost:1420"
 	},
-	"package": {
-		"productName": "Surrealist",
-		"version": "../package.json"
-	},
-	"tauri": {
-		"allowlist": {
-			"window": {
-				"setTitle": true,
-				"setAlwaysOnTop": true,
-				"startDragging": true,
-				"maximize": true,
-				"unmaximize": true,
-				"show": true
-			},
-			"shell": {
-				"open": true
-			},
-			"fs": {
-				"readFile": true,
-				"writeFile": true
-			},
-			"dialog": {
-				"open": true,
-				"save": true
-			},
-			"path": {
-				"all": true
-			},
-			"os": {
-				"all": true
+	"bundle": {
+		"active": true,
+		"category": "DeveloperTool",
+		"shortDescription": "",
+		"longDescription": "",
+		"copyright": "",
+		"targets": "all",
+		"externalBin": [],
+		"resources": [],
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"fileAssociations": [
+			{
+				"ext": ["surql", "surrealql"],
+				"name": "SurrealQL",
+				"mimeType": "text/x-surrealql"
 			}
-		},
-		"bundle": {
-			"active": true,
-			"category": "DeveloperTool",
-			"copyright": "",
+		],
+		"linux": {
 			"deb": {
 				"depends": []
-			},
-			"externalBin": [],
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			],
-			"identifier": "com.surrealdb.surrealist",
-			"longDescription": "",
-			"macOS": {
-				"entitlements": null,
-				"exceptionDomain": "",
-				"frameworks": [],
-				"providerShortName": null,
-				"signingIdentity": null
-			},
-			"resources": [],
-			"shortDescription": "",
-			"targets": "all",
-			"windows": {
-				"certificateThumbprint": null,
-				"digestAlgorithm": "sha256",
-				"timestampUrl": "",
-				"wix": {
-					"bannerPath": "res/wix-banner.png",
-					"dialogImagePath": "res/wix-image.png"
-				}
 			}
 		},
-		"security": {
-			"csp": null,
-			"dangerousUseHttpScheme": true
+		"macOS": {
+			"entitlements": null,
+			"exceptionDomain": "",
+			"frameworks": [],
+			"providerShortName": null,
+			"signingIdentity": null,
+			"dmg": {
+				"background": "res/dmg-background.png"
+			}
 		},
+		"windows": {
+			"certificateThumbprint": null,
+			"digestAlgorithm": "sha256",
+			"timestampUrl": "",
+			"wix": {
+				"bannerPath": "res/wix-banner.png",
+				"dialogImagePath": "res/wix-image.png"
+			}
+		}
+	},
+	"plugins": {
 		"updater": {
-			"active": true,
-			"endpoints": [ "https://surrealist.app/latest.json" ],
-			"dialog": true,
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcyRDczRTc5RDA4RjVGOEUKUldTT1g0L1FlVDdYY2c5cE1KYmNMUDcrR05CdU9DK3E4Vk1UeGNOOE5wd2ZZb1VMNGdmVm9NMGoK"
-		},
-		"windows": [
-			{
-				"label": "main",
-				"title": "Surrealist",
-				"height": 675,
-				"width": 1235,
-				"minHeight": 675,
-				"minWidth": 1235
-			}
-		]
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcyRDczRTc5RDA4RjVGOEUKUldTT1g0L1FlVDdYY2c5cE1KYmNMUDcrR05CdU9DK3E4Vk1UeGNOOE5wd2ZZb1VMNGdmVm9NMGoK",
+			"endpoints": [
+				"https://surrealist.app/latest.json"
+			]
+		}
+	},
+	"app": {
+		"withGlobalTauri": false,
+		"security": {
+			"csp": null
+		}
 	}
 }
