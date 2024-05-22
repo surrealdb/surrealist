@@ -241,6 +241,7 @@ export interface SchemaUser {
 	name: string;
 	comment: string;
 	roles: string[];
+	passhash: string;
 }
 
 export interface SchemaScope {

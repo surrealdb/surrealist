@@ -69,7 +69,13 @@ export function AccountsPane(props: AccountsPaneProps) {
 		try {
 			setIsEditing(false);
 
-			let query = `DEFINE USER ${editingName} ON ${props.type} PASSWORD "${editingPassword}"`;
+			let query = `DEFINE USER ${editingName} ON ${props.type}`;
+
+			if (currentUser) {
+				query += ` PASSHASH ${currentUser.passhash}`;
+			} else {
+				query += ` PASSWORD "${editingPassword}"`;
+			}
 
 			if (editingRole.length > 0) {
 				query += ` ROLES ${editingRole.join(', ')}`;
