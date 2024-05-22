@@ -62,8 +62,13 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		SurrealWebSocketConnection.connect(timeout)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->update("${table.schema.name}", [
+			"name" => "Tobie",
+			"settings" => [
+				"active" => true,
+				"marketing" => true
+			]
+		]);
 		`,
 		}),
 		[]

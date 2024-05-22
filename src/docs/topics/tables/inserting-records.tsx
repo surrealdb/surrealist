@@ -43,8 +43,10 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 			java: `
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->insert("${table.schema.name}", [
+			["field" => "value"],
+			["field" => "value"]
+		]);
 		`,
 		}),
 		[]

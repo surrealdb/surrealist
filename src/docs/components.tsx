@@ -18,6 +18,7 @@ import { rust } from "@codemirror/lang-rust";
 import { javascript } from "@codemirror/lang-javascript";
 import { StreamLanguage } from "@codemirror/language";
 import { csharp } from "@codemirror/legacy-modes/mode/clike";
+import { php } from "@codemirror/lang-php";
 
 export interface ArticleProps {
 	title?: React.ReactNode;
@@ -43,6 +44,7 @@ const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
 	rust: rust(),
 	js: javascript(),
 	csharp: [StreamLanguage.define(csharp)],
+	php: php({ plain: true })
 };
 
 export interface DocsPreviewProps extends PaperProps {

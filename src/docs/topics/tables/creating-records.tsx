@@ -14,7 +14,7 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 			cli: `
 		CREATE ${table.schema.name}:demo
 		`,
-			js: ` 
+			js: `
 		db.create('${table.schema.name}');
 		`,
 			rust: `
@@ -33,8 +33,7 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 		driver.create(thing, data)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->create("${table.schema.name}")
 		`,
 		}),
 		[]

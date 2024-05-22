@@ -14,7 +14,7 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 			cli: `
 		DELETE ${table.schema.name}:demo
 		`,
-			js: ` 
+			js: `
 		db.delete('${table.schema.name}');
 		`,
 			rust: `
@@ -33,8 +33,7 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 		driver.delete(thing, data)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$db->delete("${table.schema.name}");
 		`,
 		}),
 		[]

@@ -3,7 +3,7 @@ import { Article } from "~/docs/components";
 import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
 import {
 	DotNetIcon,
-	JavaScriptIcon,
+	JavaScriptIcon, PhpIcon,
 	PythonIcon,
 	RustIcon,
 	SurrealIcon,
@@ -74,13 +74,13 @@ const LIBRARIES: Library[] = [
 	// 	color: "#007396",
 	// 	link: "https://surrealdb.com/docs/surrealdb/integration/sdks/java"
 	// },
-	// {
-	// 	id: "php",
-	// 	name: "PHP",
-	// 	icon: PhpIcon,
-	// 	color: "#777BB4",
-	// 	link: "https://github.com/surrealdb/surrealdb.php"
-	// }
+	{
+		id: "php",
+		name: "PHP",
+		icon: PhpIcon,
+		color: "#777BB4",
+		link: "https://github.com/surrealdb/surrealdb.php"
+	}
 ];
 
 export function DocsGlobalIntroduction() {

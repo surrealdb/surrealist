@@ -165,8 +165,13 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 		driver.signIn(user, pass)
 		`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
+		$jtw = $db->signin([
+			"user" => "user",
+			"pass" => "password",
+			"namespace" => "test",
+			"database" => "test",
+			"scope" => "user"
+		]);
 		`,
 		}),
 		[]
