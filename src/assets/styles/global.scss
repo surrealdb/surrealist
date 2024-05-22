@@ -40,7 +40,7 @@ input::-ms-clear {
 }
 
 .mantine-contextmenu, .mantine-Popover-dropdown, .mantine-Menu-dropdown {
-    background-color: color-mix(in srgb, var(--mantine-color-body) 65%, transparent);
+    background-color: color-mix(in srgb, var(--mantine-color-body) 75%, transparent);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 }

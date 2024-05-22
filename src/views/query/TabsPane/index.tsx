@@ -10,7 +10,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { LiveIndicator } from "~/components/LiveIndicator";
-import { iconArrowUpRight, iconChevronRight, iconClose, iconCopy, iconDelete, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
+import { iconArrowUpRight, iconChevronRight, iconClose, iconCopy, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
@@ -34,10 +34,20 @@ export function TabsPane(props: TabsPaneProps) {
 		addQueryTab();
 	});
 
-	const removeTab = useStable((id: string, e: React.MouseEvent) => {
-		e.stopPropagation();
+	const removeTab = useStable((id: string, e?: React.MouseEvent) => {
+		e?.stopPropagation();
 		removeQueryTab(id);
 		cancelLiveQueries(id);
+	});
+
+	const removeOthers = useStable((id: string, dir: number) => {
+		const index = queries.findIndex(q => q.id === id);
+
+		for (const [i, query] of queries.entries()) {
+			if (query.id !== id && (dir === 0 || (dir === -1 && i < index) || (dir === 1 && i > index))) {
+				removeTab(query.id);
+			}
+		}
 	});
 
 	const renameQuery = useStable((id: string, name: string) => {
@@ -122,22 +132,42 @@ export function TabsPane(props: TabsPaneProps) {
 										onContextMenu={showContextMenu([
 											{
 												key: "open",
-												title: "Open query",
+												title: "Open",
 												icon: <Icon path={iconArrowUpRight} />,
 												onClick: () => setActiveQueryTab(query.id)
 											},
 											{
 												key: "duplicate",
-												title: "Duplicate query",
+												title: "Duplicate",
 												icon: <Icon path={iconCopy} />,
 												onClick: () => duplicateQuery(query)
 											},
 											{
-												key: "delete",
-												title: "Delete query",
-												color: "pink.7",
-												icon: <Icon path={iconDelete} />,
-												onClick: (e) => removeTab(query.id, e)
+												key: "close-div"
+											},
+											{
+												key: "close",
+												title: "Close",
+												disabled: queries.length === 1,
+												onClick: () => removeTab(query.id)
+											},
+											{
+												key: "close-others",
+												title: "Close Others",
+												disabled: queries.length === 1,
+												onClick: () => removeOthers(query.id, 0)
+											},
+											{
+												key: "close-before",
+												title: "Close queries Before",
+												disabled: queries.length === 1 || queries.findIndex(q => q.id === query.id) === 0,
+												onClick: () => removeOthers(query.id, -1)
+											},
+											{
+												key: "close-after",
+												title: "Close queries After",
+												disabled: queries.length === 1 || queries.findIndex(q => q.id === query.id) >= queries.length - 1,
+												onClick: () => removeOthers(query.id, 1)
 											}
 										])}
 										leftSection={
