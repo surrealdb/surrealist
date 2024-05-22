@@ -47,6 +47,7 @@ export function ResultPane({
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
+	const isQuerying = useDatabaseStore((s) => s.isQueryActive);
 	const responseMap = useDatabaseStore((s) => s.responses);
 
 	const isLight = useIsLight();
@@ -167,7 +168,7 @@ export function ResultPane({
 						variant={isQueryValid ? "gradient" : "filled"}
 						style={{ border: "none" }}
 						className={classes.run}
-						loading
+						loading={isQuerying}
 						rightSection={
 							<Icon path={iconCursor} />
 						}

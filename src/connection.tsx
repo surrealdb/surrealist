@@ -21,7 +21,6 @@ export interface ConnectOptions {
 
 export interface UserQueryOptions {
 	override?: string;
-	loader?: boolean;
 }
 
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
@@ -264,9 +263,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	}
 
 	try {
-		if (options?.loader) {
-			setQueryActive(true);
-		}
+		setQueryActive(true);
 
 		let liveIndexes: number[];
 
@@ -318,9 +315,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		setQueryResponse(id, response);
 		posthog.capture('query_execute');
 	} finally {
-		if (options?.loader) {
-			setQueryActive(false);
-		}
+		setQueryActive(false);
 	}
 
 	addHistoryEntry({
