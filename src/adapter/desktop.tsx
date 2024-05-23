@@ -5,7 +5,6 @@ import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { save, open } from "@tauri-apps/plugin-dialog";
 import { attachConsole } from "@tauri-apps/plugin-log";
-import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
@@ -62,12 +61,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 			this.hasTitlebar = t === "windows" || t === "linux";
 		});
 
-		listen("open:files", () => {
+		listen("open-resource", () => {
 			this.queryOpenRequest();
-		});
-
-		onOpenUrl((urls) => {
-			console.log("deep link:", urls);
 		});
 	}
 
@@ -302,25 +297,27 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	private async queryOpenRequest() {
 		const { addQueryTab, setActiveView } = useConfigStore.getState();
-		const queries = await invoke<OpenedFile[]>("get_opened_queries");
+		const queries = await invoke<OpenedFile[]>("get_opened_resources");
+
+		console.log('CHECKING RESOURCES:', queries);
 
 		if (queries.length === 0) {
 			return;
 		}
 
-		for (const { success, name, query } of queries) {
-			if (!success) {
-				showError({
-					title: `Failed to open "${name}"`,
-					subtitle: `File exceeds maximum size limit`
-				});
+		// for (const { success, name, query } of queries) {
+		// 	if (!success) {
+		// 		showError({
+		// 			title: `Failed to open "${name}"`,
+		// 			subtitle: `File exceeds maximum size limit`
+		// 		});
 
-				continue;
-			}
+		// 		continue;
+		// 	}
 
-			addQueryTab({ name, query });
-		}
+		// 	addQueryTab({ name, query });
+		// }
 
-		setActiveView("query");
+		// setActiveView("query");
 	}
 }
