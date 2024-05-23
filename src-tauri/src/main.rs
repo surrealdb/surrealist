@@ -30,6 +30,7 @@ fn main() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(
             tauri_plugin_log::Builder::new()
                 .targets([
@@ -81,7 +82,9 @@ fn main() {
                 .title_bar_style(tauri::TitleBarStyle::Overlay)
                 .hidden_title(true);
 
-            builder.build().expect("Failed to create window");
+            let win = builder.build().expect("Failed to create window");
+
+			win.open_devtools();
 
             Ok(())
         })

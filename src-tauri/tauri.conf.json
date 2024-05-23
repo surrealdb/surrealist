@@ -62,6 +62,12 @@
 			"endpoints": [
 				"https://surrealist.app/latest.json"
 			]
+		},
+		"deep-link": {
+			"mobile": [],
+			"desktop": {
+				"schemes": ["surrealist"]
+			}
 		}
 	},
 	"app": {

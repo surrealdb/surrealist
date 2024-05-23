@@ -5,6 +5,7 @@ import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { save, open } from "@tauri-apps/plugin-dialog";
 import { attachConsole } from "@tauri-apps/plugin-log";
+import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
@@ -63,6 +64,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		listen("open:files", () => {
 			this.queryOpenRequest();
+		});
+
+		onOpenUrl((urls) => {
+			console.log("deep link:", urls);
 		});
 	}
 
