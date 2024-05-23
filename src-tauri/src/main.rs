@@ -91,6 +91,7 @@ fn main() {
             let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
                 .title("Surrealist")
                 .inner_size(1235.0, 675.0)
+				.center()
                 .min_inner_size(1235.0, 675.0);
 
             #[cfg(target_os = "macos")]
