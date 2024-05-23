@@ -23,6 +23,7 @@ export interface UserQueryOptions {
 	override?: string;
 }
 
+let iter = 0;
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
 const SURREAL = new Surreal({
@@ -46,6 +47,8 @@ SURREAL.emitter.subscribe("disconnected", () => {
  * @param options Connection options
  */
 export async function openConnection(options?: ConnectOptions) {
+	iter++;
+	const iterSelf = iter;
 	const currentConnection = getConnection();
 	const connection = options?.connection || currentConnection?.connection;
 
@@ -84,45 +87,51 @@ export async function openConnection(options?: ConnectOptions) {
 		},
 	})
 		.then(() => {
-			setIsConnecting(false);
-			setIsConnected(true);
-			syncDatabaseSchema();
+			if (iter == iterSelf) {
+				setIsConnecting(false);
+				setIsConnected(true);
+				syncDatabaseSchema();
 
-			ConnectedEvent.dispatch(null);
+				ConnectedEvent.dispatch(null);
 
-			posthog.capture('connection_open', {
-				protocol: connection.protocol
-			});
+				posthog.capture('connection_open', {
+					protocol: connection.protocol
+				});
 
-			printMsg("Connection established");
+				printMsg("Connection established");
+			}
 		})
 		.catch((err) => {
-			SURREAL.close();
+			if (iter == iterSelf) {
+				SURREAL.close();
 
-			setIsConnecting(false);
-			setIsConnected(false);
+				setIsConnecting(false);
+				setIsConnected(false);
 
-			if (err instanceof VersionRetrievalFailure)
-				return showWarning({
-					title: "Failed to query version",
-					subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
-				});
+				if (err instanceof VersionRetrievalFailure)
+					return showWarning({
+						title: "Failed to query version",
+						subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
+					});
 
-			if (err instanceof UnsupportedVersion)
+				if (err instanceof UnsupportedVersion)
+					showError({
+						title: "Unsupported version",
+						subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
+					});
+
 				showError({
-					title: "Unsupported version",
-					subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
+					title: "Failed to connect",
+					subtitle: err.message
 				});
-
-			showError({
-				title: "Failed to connect",
-				subtitle: err.message
-			});
+			}
 		}).finally(() => {
-			SURREAL.version().then((v) => {
-				setVersion(v);
-				printMsg(`Database version ${v ?? "unknown"}`);
-			});
+			if (iter == iterSelf) {
+				SURREAL.version().then((v) => {
+					setVersion(v);
+					printMsg(`Database version ${v ?? "unknown"}`);
+				});
+			}
 		});
 }
 
