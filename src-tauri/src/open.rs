@@ -24,7 +24,8 @@ pub struct FileResource {
 
 #[derive(Serialize)]
 pub struct LinkResource {
-    pub target: String,
+    pub view: String,
+    pub intent: String,
 }
 
 #[tauri::command]
@@ -55,7 +56,8 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
 			}
 			"surrealist" => {
 				OpenedResource::Link(LinkResource {
-					target: u.path().to_owned(),
+					view: u.host_str().unwrap_or_default().to_owned(),
+					intent: u.query().unwrap_or_default().to_owned(),
 				})
 			}
 			_ => {

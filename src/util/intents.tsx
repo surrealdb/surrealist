@@ -1,3 +1,4 @@
+import { dispatchIntent } from "~/hooks/url";
 import { ViewMode } from "~/types";
 
 const INTENT_REGISTRY = {
@@ -56,4 +57,20 @@ export function isIntent(type: string): type is IntentType {
  */
 export function getIntentView(type: IntentType) {
 	return INTENT_REGISTRY[type];
+}
+
+/**
+ * Process an intent URL with support for view paths
+ */
+export function handleIntentRequest(intentStr: string) {
+	const [type, ...args] = intentStr.split(':');
+
+	if (isIntent(type)) {
+		const payload = (args.join(':') || '').split(',').reduce((acc, arg) => {
+			const [key, value] = arg.split('=');
+			return { ...acc, [key]: value };
+		}, {} as any);
+
+		dispatchIntent(type, payload);
+	}
 }

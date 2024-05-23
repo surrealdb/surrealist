@@ -11,19 +11,31 @@ import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
 import { watchStore } from "~/util/config";
-import { Platform } from "~/types";
+import { Platform, ViewMode } from "~/types";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { getCurrent } from "@tauri-apps/api/window";
 import { getCurrent as getWebView } from "@tauri-apps/api/webview";
+import { handleIntentRequest } from "~/util/intents";
+import { VIEW_MODES } from "~/constants";
 
 const WAIT_DURATION = 1000;
 
 const printMsg = (...args: any[]) => printLog("Desktop", "#9150e6", ...args);
 
-interface OpenedFile {
+interface Resource {
+	File?: FileResource;
+	Link?: LinkResource;
+}
+
+interface FileResource {
 	success: boolean,
 	name: string,
 	query: string
+}
+
+interface LinkResource {
+	view: string;
+	intent: string;
 }
 
 /**
@@ -297,27 +309,46 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	private async queryOpenRequest() {
 		const { addQueryTab, setActiveView } = useConfigStore.getState();
-		const queries = await invoke<OpenedFile[]>("get_opened_resources");
+		const resources = await invoke<Resource[]>("get_opened_resources");
 
-		console.log('CHECKING RESOURCES:', queries);
-
-		if (queries.length === 0) {
+		if (resources.length === 0) {
 			return;
 		}
 
-		// for (const { success, name, query } of queries) {
-		// 	if (!success) {
-		// 		showError({
-		// 			title: `Failed to open "${name}"`,
-		// 			subtitle: `File exceeds maximum size limit`
-		// 		});
+		for (const { File, Link } of resources) {
+			if (File) {
+				const { success, name, query } = File;
 
-		// 		continue;
-		// 	}
+				if (!success) {
+					showError({
+						title: `Failed to open "${name}"`,
+						subtitle: `File exceeds maximum size limit`
+					});
 
-		// 	addQueryTab({ name, query });
-		// }
+					continue;
+				}
 
-		// setActiveView("query");
+				addQueryTab({ name, query });
+			} else if (Link) {
+				const { view, intent } = Link;
+
+				console.log('RECEIVED view =', view, 'intent =', intent);
+
+				if (view) {
+					const views = Object.keys(VIEW_MODES) as ViewMode[];
+					const target = views.find((v) => view === `/${v}`);
+
+					if (target) {
+						setActiveView(target);
+					}
+				}
+
+				if (intent) {
+					handleIntentRequest(intent);
+				}
+			}
+		}
+
+		setActiveView("query");
 	}
 }
