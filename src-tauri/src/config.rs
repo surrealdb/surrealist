@@ -14,8 +14,8 @@ fn write_config(config: &str) {
     fs::create_dir_all(parent).expect("config directory should be writable");
 
     let mut write_op = File::create(config_path).unwrap();
-
-    let pretty_config = serde_json::to_string_pretty(config).unwrap();
+    let pretty_config = jsonxf::pretty_print(config).unwrap();
+	
     write_op
         .write_all(pretty_config.as_bytes())
         .expect("config should be writable");
