@@ -46,6 +46,9 @@ export function NewsFeed() {
 			const body = await response.text();
 			const result = new DOMParser().parseFromString(body, 'text/xml');
 
+			const parseError = result.querySelector('parsererror div')?.textContent;
+			if (parseError) throw new Error(parseError);
+
 			const items = [...result.querySelectorAll('item')]
 				.filter(item =>
 					[...item.querySelectorAll('category')].some(child => child.textContent?.toLowerCase() === "surrealist")
