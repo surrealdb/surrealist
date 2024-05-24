@@ -137,7 +137,7 @@ export function QueryView() {
 	const queryEditor = (
 		active && (
 			<PanelGroup direction={orientation}>
-				<Panel minSize={35}>
+				<Panel minSize={15}>
 					{isMini ? (showVariables ? (
 						<VariablesPane
 							isValid={variablesValid}
@@ -185,7 +185,7 @@ export function QueryView() {
 					)}
 				</Panel>
 				<PanelDragger />
-				<Panel minSize={35}>
+				<Panel minSize={15}>
 					<ResultPane
 						activeTab={active}
 						isQueryValid={queryValid}
