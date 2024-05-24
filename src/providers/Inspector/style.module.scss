@@ -12,3 +12,9 @@
 .tabs :global(.mantine-Tabs-tab[data-active]) {
 	background: var(--surrealist-gradient);
 }
+
+.record-input {
+	font-family: "JetBrains Mono";
+	font-size: 14px;
+	height: 42px;
+}

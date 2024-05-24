@@ -20,6 +20,7 @@ export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTML
 	placeholder?: string;
 	extensions?: Extension;
 	onChange: (value: string) => void;
+	onMount?: (editor: EditorView) => void;
 	onSubmit?: () => void;
 }
 
@@ -32,6 +33,7 @@ export function CodeInput({
 	className,
 	placeholder,
 	onChange,
+	onMount,
 	onSubmit,
 	...rest
 }: CodeInputProps) {
@@ -83,6 +85,8 @@ export function CodeInput({
 				if(editor.hasFocus) clearInterval(timer);
 			}, 50);
 		}
+
+		onMount?.(editor);
 
 		return () => {
 			editor.destroy();

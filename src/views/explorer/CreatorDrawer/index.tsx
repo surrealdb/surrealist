@@ -1,10 +1,10 @@
-import { ActionIcon, Badge, Box, Button, Drawer, Group, Paper, ScrollArea, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Drawer, Group, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
-import { useEventListener, useInputState } from "@mantine/hooks";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useInputState } from "@mantine/hooks";
+import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
@@ -128,7 +128,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				</SimpleGrid>
 
 				<Label>Contents</Label>
-				
+
 				<Box flex={1} pos="relative">
 					<CodeEditor
 						pos="absolute"

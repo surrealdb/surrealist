@@ -102,7 +102,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 	const saveRecord = useStable(async () => {
 		const id = history.current;
-		
+
 		await executeQuery(/* surql */ `UPDATE $id CONTENT $body`, { id, body });
 
 		onRefresh();
@@ -158,7 +158,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				maxSize={900}
 				onResize={setWidth}
 			/>
-			
+
 			<Group mb="md" gap="sm">
 				<ModalTitle>
 					<Icon left path={iconSearch} size="sm" />
@@ -216,6 +216,15 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				onChange={setRecordId}
 				variant="filled"
 				rightSectionWidth={76}
+				classNames={{
+					input: classes.recordInput
+				}}
+				styles={{
+					input: {
+						color: inputColor,
+						borderColor: inputColor
+					},
+				}}
 				rightSection={
 					currentRecord.isEdge && (
 						<Paper
@@ -228,17 +237,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 						</Paper>
 					)
 				}
-				styles={() => ({
-					input: {
-						color: inputColor,
-						borderColor: inputColor,
-						fontFamily: "JetBrains Mono",
-						fontSize: 14,
-						height: 42,
-						WebkitUserSelect: "all",
-						userSelect: "all"
-					},
-				})}
 			/>
 
 			{currentRecord.exists ? (
