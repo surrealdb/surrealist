@@ -142,4 +142,9 @@ export interface SurrealistAdapter {
 	 */
 	warn(label: string, message: string): void;
 
+	/**
+	 * Log a trace message to the implemented logging system
+	 */
+	trace(label: string, message: string): void;
+
 }

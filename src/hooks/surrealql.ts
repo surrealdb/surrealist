@@ -25,9 +25,8 @@ export function useValueFormatter(): [Formatter, ValueMode] {
  *
  * @param value The value to check
  * @param objectRoot Whether the value should be an object
- * @returns Result
  */
-export function useValueValidator(value: string, objectRoot?: boolean): [boolean, any] {
+export function useValueValidator(value: string, objectRoot?: boolean): boolean {
 	const [bodyCache]= useDebouncedValue(value, 250);
 
 	return useMemo(() => {
@@ -38,9 +37,9 @@ export function useValueValidator(value: string, objectRoot?: boolean): [boolean
 				throw new Error("Invalid object root");
 			}
 
-			return [true, value];
+			return true;
 		} catch {
-			return [false, {}];
+			return false;
 		}
 	}, [bodyCache]);
 }

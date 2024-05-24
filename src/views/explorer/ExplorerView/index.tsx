@@ -113,13 +113,11 @@ export function ExplorerView() {
 				</PanelGroup>
 			</Box>
 
-			{creatorTable && (
-				<CreatorDrawer
-					opened={isCreating}
-					table={creatorTable}
-					onClose={isCreatingHandle.close}
-				/>
-			)}
+			<CreatorDrawer
+				opened={isCreating}
+				table={creatorTable || ''}
+				onClose={isCreatingHandle.close}
+			/>
 		</>
 	);
 }

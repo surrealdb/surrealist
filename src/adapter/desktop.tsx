@@ -4,7 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { save, open } from "@tauri-apps/plugin-dialog";
-import { attachConsole, info, warn } from "@tauri-apps/plugin-log";
+import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 import { showError, showInfo, updateTitle } from "~/util/helpers";
@@ -260,6 +260,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public warn(label: string, message: string) {
 		warn(label + ": " + message);
+	}
+
+	public trace(label: string, message: string) {
+		trace(label + ": " + message);
 	}
 
 	private initDatabaseEvents() {

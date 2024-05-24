@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, Drawer, Group, Paper, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Drawer, Group, Paper, ScrollArea, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -27,7 +27,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const [recordTable, setRecordTable] = useState('');
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
-	const [isValid, content] = useValueValidator(recordBody);
+	const isValid = useValueValidator(recordBody);
 	const tables = useTableNames();
 
 	const handleSubmit = useStable(async () => {
@@ -39,9 +39,12 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			? new RecordId(recordTable, recordId)
 			: new Table(recordTable);
 
-		await executeQuery(/* surql */ `CREATE $id CONTENT $content`, {
+		console.log(id);
+		console.log(recordBody);
+
+		await executeQuery(/* surql */ `CREATE $id CONTENT $recordBody`, {
 			id,
-			content
+			recordBody
 		});
 
 		onClose();
@@ -70,7 +73,9 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			styles={{
 				body: {
 					height: "100%",
+					maxHeight: "100%",
 					display: "flex",
+					flexWrap: "nowrap",
 					flexDirection: "column",
 					gap: "var(--mantine-spacing-lg)"
 				}
@@ -101,7 +106,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				</ActionIcon>
 			</Group>
 
-			<Stack flex={1} gap={6}>
+			<Stack flex={1} gap={6} style={{ flexShrink: 1, flexBasis: 0 }}>
 				<SimpleGrid cols={2}>
 					<Select
 						data={tables}
@@ -119,31 +124,29 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					/>
 				</SimpleGrid>
 
-				<Stack flex={1} gap={2}>
-					<Label>Contents</Label>
-					<Paper
-						p="xs"
-						flex={1}
-						withBorder
-					>
-						<CodeEditor
-							autoFocus
-							value={recordBody}
-							onChange={setRecordBody}
-							extensions={[
-								surrealql(),
-								surqlLinting()
-							]}
-							onMount={setCursor}
-						/>
-					</Paper>
-				</Stack>
+				<Label>Contents</Label>
+				
+				<Box flex={1} pos="relative">
+					<CodeEditor
+						pos="absolute"
+						inset={0}
+						autoFocus
+						value={recordBody}
+						onChange={setRecordBody}
+						extensions={[
+							surrealql(),
+							surqlLinting()
+						]}
+						onMount={setCursor}
+					/>
+				</Box>
 			</Stack>
 
 			<Button
 				disabled={!isValid}
 				variant="gradient"
 				onClick={handleSubmit}
+				style={{ flexShrink: 0 }}
 				rightSection={
 					<Icon path={iconPlus} />
 				}
