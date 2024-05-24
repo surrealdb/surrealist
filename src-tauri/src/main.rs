@@ -20,17 +20,17 @@ mod window;
 struct OpenResourceState(pub Mutex<Vec<url::Url>>);
 
 fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
-	let mut urls = Vec::new();
+    let mut urls = Vec::new();
 
-	for arg in args.into_iter().skip(1) {
-		if let Ok(url) = url::Url::parse(&arg) {
-			urls.push(url);
-		}
-	}
+    for arg in args.into_iter().skip(1) {
+        if let Ok(url) = url::Url::parse(&arg) {
+            urls.push(url);
+        }
+    }
 
-	if !urls.is_empty() {
-		*app.state::<OpenResourceState>().0.lock().unwrap() = urls;
-	}
+    if !urls.is_empty() {
+        *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
+    }
 }
 
 fn main() {
@@ -45,16 +45,16 @@ fn main() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_localhost::Builder::new(24454).build())
         .plugin(tauri_plugin_single_instance::init(|app, args, _| {
-			info!("Single instance intercept: {:?}", args);
+            info!("Single instance intercept: {:?}", args);
 
-			let emit_event = args.len() > 1;
+            let emit_event = args.len() > 1;
 
-			store_resources(app, args);
+            store_resources(app, args);
 
-			if emit_event {
-				app.emit("open-resource", ()).unwrap();
-			}
-		}))
+            if emit_event {
+                app.emit("open-resource", ()).unwrap();
+            }
+        }))
         .plugin(
             tauri_plugin_log::Builder::new()
                 .targets([
@@ -81,7 +81,7 @@ fn main() {
             open::get_opened_resources,
         ])
         .setup(|app| {
-			info!("Launch args: {:?}", env::args());
+            info!("Launch args: {:?}", env::args());
 
             #[cfg(any(windows, target_os = "linux"))]
             {
@@ -91,7 +91,7 @@ fn main() {
             let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
                 .title("Surrealist")
                 .inner_size(1235.0, 675.0)
-				.center()
+                .center()
                 .min_inner_size(1235.0, 675.0);
 
             #[cfg(target_os = "macos")]
@@ -109,12 +109,12 @@ fn main() {
     tauri.run(move |app, event| match event {
         #[cfg(any(target_os = "macos", target_os = "ios"))]
         RunEvent::Opened { urls } => {
-			info!("Opened resources: {:?}", urls);
-			
+            info!("Opened resources: {:?}", urls);
+
             *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
             app.emit("open-resource", ()).unwrap();
 
-			info!("Emitted open-resource event");
+            info!("Emitted open-resource event");
         }
         RunEvent::Exit => {
             let state = app.state::<DatabaseState>();
