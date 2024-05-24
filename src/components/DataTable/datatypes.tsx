@@ -6,6 +6,7 @@ import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
+import { formatValue } from "~/util/surrealql";
 
 // ----- Data Cell Types -----
 
@@ -100,8 +101,16 @@ function ObjectCell(props: { value: any }) {
 					</Text>
 				</HoverCard.Target>
 				<HoverCard.Dropdown>
-					<Text size="sm" ff="JetBrains Mono" style={{ whiteSpace: "pre" }} lineClamp={10}>
-						{JSON.stringify(props.value, null, 4)}
+					<Text
+						size="sm"
+						ff="JetBrains Mono"
+						lineClamp={10}
+						style={{
+							whiteSpace: "pre",
+							tabSize: 24
+						}}
+					>
+						{formatValue(props.value, false, true)}
 					</Text>
 				</HoverCard.Dropdown>
 			</HoverCard>
