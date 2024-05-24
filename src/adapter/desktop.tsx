@@ -303,12 +303,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 
 		listen("database:output", (event) => {
+			useDatabaseStore.getState().pushConsoleLine(event.payload as string);
+			throttleLevel++;
+
 			if (throttleLevel > 50) {
 				return;
 			}
-
-			useDatabaseStore.getState().pushConsoleLine(event.payload as string);
-			throttleLevel++;
 		});
 
 		listen("database:error", (event) => {

@@ -25,9 +25,7 @@ export interface UserQueryOptions {
 let iter = 0;
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
-const SURREAL = new Surreal({
-	engines: surrealdbWasmEngines() as any
-});
+const SURREAL = createSurreal();
 
 // Subscribe to disconnects
 SURREAL.emitter.subscribe("disconnected", () => {
@@ -379,6 +377,17 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 			return undefined;
 		}
 	}
+}
+
+/**
+ * Construct a new configured Surreal instance
+ *
+ * @returns Surreal
+ */
+export function createSurreal() {
+	return new Surreal({
+		engines: surrealdbWasmEngines() as any
+	});
 }
 
 function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {

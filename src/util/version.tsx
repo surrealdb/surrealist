@@ -1,25 +1,22 @@
 import { ConnectionOptions } from "~/types";
 import { connectionUri, versionUri } from "./helpers";
 import { compare } from "semver";
+import { createSurreal } from "~/connection";
 
 async function fetchRpcVersion(connection: ConnectionOptions) {
+	const surreal = createSurreal();
+
 	try {
-		const endpoint = connectionUri(connection);
-		const response = await fetch(endpoint, {
-			method: "POST",
-			body: JSON.stringify({ id: 1, method: "version" })
-		});
+		const rpcEndpoint = connectionUri(connection);
 
-		const json = await response.json();
-		const version = json.result as string;
+		await surreal.connect(rpcEndpoint);
 
-		if (typeof version !== "string") {
-			throw new TypeError("Invalid version response");
-		}
-
-		return version;
-	} catch {
+		return await surreal.version();
+	} catch(err: any) {
+		console.warn('Failed to retrieve database version', err);
 		return null;
+	} finally {
+		await surreal.close();
 	}
 }
 
@@ -40,7 +37,7 @@ async function fetchLegacyVersion(connection: ConnectionOptions) {
 /**
  * Should we check the given connection for a database version
  */
-export function shouldQueryDatabaseVersion(connection: ConnectionOptions) {
+export function shouldCheckVersion(connection: ConnectionOptions) {
 	return connection.protocol !== "mem" && connection.protocol !== "indxdb";
 }
 
