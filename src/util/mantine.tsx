@@ -228,6 +228,8 @@ export const MANTINE_THEME = createTheme({
 
 				return {
 					inner: {
+						paddingLeft: props.position === "right" ? theme.spacing.md : 0,
+						paddingRight: props.position === "left" ? theme.spacing.md : 0,
 						top: isVertical ? 0 : theme.spacing.md,
 						bottom: isVertical ? 0 : theme.spacing.md,
 						left: isHorizontal ? 0 : theme.spacing.md,

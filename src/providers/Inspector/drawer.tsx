@@ -18,6 +18,7 @@ import { RecordId } from "surrealdb.js";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeInput } from "~/components/Inputs";
 import { useValueValidator } from "~/hooks/surrealql";
+import { DrawerResizer } from "~/components/DrawerResizer";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -136,13 +137,15 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		}
 	}, [history.current]);
 
+	const [width, setWidth] = useState(500);
+
 	return (
 		<Drawer
 			opened={opened}
 			onClose={onClose}
 			position="right"
 			trapFocus={false}
-			size="lg"
+			size={width}
 			styles={{
 				body: {
 					height: "100%",
@@ -151,6 +154,12 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				}
 			}}
 		>
+			<DrawerResizer
+				minSize={500}
+				maxSize={900}
+				onResize={setWidth}
+			/>
+			
 			<Group mb="md" gap="sm">
 				<ModalTitle>
 					<Icon left path={iconSearch} size="sm" />

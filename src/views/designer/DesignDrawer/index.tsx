@@ -13,7 +13,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Updater } from "use-immer";
 import { TableInfo } from "~/types";
 import { syncDatabaseSchema, isEdgeTable } from "~/util/schema";
@@ -34,6 +34,7 @@ import { iconClose, iconDelete, iconWrench } from "~/util/icons";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/connection";
 import { ChangefeedElement } from "./elements/changefeed";
+import { DrawerResizer } from "~/components/DrawerResizer";
 
 const INITIAL_TABS = ["general"];
 
@@ -63,13 +64,15 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 
 	const isEdge = useMemo(() => isEdgeTable(value), [value]);
 
+	const [width, setWidth] = useState(500);
+
 	return (
 		<Drawer
 			opened={opened}
 			onClose={onClose}
 			position="right"
 			trapFocus={false}
-			size="lg"
+			size={width}
 			styles={{
 				body: {
 					height: "100%",
@@ -78,6 +81,12 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 				}
 			}}
 		>
+			<DrawerResizer
+				minSize={500}
+				maxSize={900}
+				onResize={setWidth}
+			/>
+			
 			<Group mb="md" gap="sm">
 				<ModalTitle>
 					<Icon path={iconWrench} left size="sm" />

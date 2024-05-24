@@ -3,8 +3,8 @@ import { Icon } from "~/components/Icon";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
-import { useInputState } from "@mantine/hooks";
-import { useLayoutEffect, useState } from "react";
+import { useEventListener, useInputState } from "@mantine/hooks";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
@@ -16,6 +16,7 @@ import { surqlLinting } from "~/util/editor/extensions";
 import { surrealql } from "codemirror-surrealql";
 import { EditorView } from "@codemirror/view";
 import { useValueValidator } from "~/hooks/surrealql";
+import { DrawerResizer } from "~/components/DrawerResizer";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -63,13 +64,15 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		}
 	}, [opened]);
 
+	const [width, setWidth] = useState(500);
+
 	return (
 		<Drawer
 			opened={opened}
 			onClose={onClose}
 			position="right"
 			trapFocus={false}
-			size="lg"
+			size={width}
 			styles={{
 				body: {
 					height: "100%",
@@ -81,6 +84,12 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				}
 			}}
 		>
+			<DrawerResizer
+				minSize={500}
+				maxSize={900}
+				onResize={setWidth}
+			/>
+
 			<Group gap="sm">
 				<ModalTitle>
 					<Icon left path={iconPlus} size="sm" />

@@ -1,0 +1,11 @@
+.resizer {
+	transition: background-color .1s;
+}
+
+.root {
+	cursor: ew-resize;
+
+	&:hover .resizer, &.active .resizer {
+		background-color: var(--mantine-color-surreal-6);
+	}
+}
