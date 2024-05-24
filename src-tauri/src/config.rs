@@ -17,7 +17,7 @@ fn write_config(config: &str) {
     let config_json_value: serde_json::Value = serde_json::from_str(config).unwrap();
     let mut pretty_config = serde_json::to_string_pretty(&config_json_value).unwrap();
 
-	pretty_config.push_str("\n");
+    pretty_config.push_str("\n");
 
     write_op
         .write_all(pretty_config.as_bytes())
