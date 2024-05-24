@@ -34,13 +34,6 @@ export function ContentPane({
 			pos="relative"
 			{...rest}
 		>
-			<LoadingOverlay
-				visible={loading}
-				zIndex={1000}
-				overlayProps={{ radius: 'sm', blur: 0 }}
-				loaderProps={{ type: 'dots' }}
-			>
-			</LoadingOverlay>
 			{title !== undefined && icon !== undefined && (
 				<>
 					<Group
@@ -77,6 +70,13 @@ export function ContentPane({
 				pos="relative"
 				className={classes.content}
 			>
+				<LoadingOverlay
+					visible={loading}
+					zIndex={1000}
+					overlayProps={{ radius: 'lg', opacity: 0.75, bg: 'slate.8' }}
+					loaderProps={{ type: 'dots' }}
+				/>
+
 				{children}
 			</Box>
 		</Paper>

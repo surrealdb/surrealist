@@ -43,35 +43,40 @@ const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unkno
 		return { records: [], total: 0 };
 	}
 
-	const isFilterValid = (!showFilter || !filterClause) || !validateWhere(filterClause);
-	if (!isFilterValid) {
-		throw new Error("Invalid filter clause");
+	try {
+		const isFilterValid = (!showFilter || !filterClause) || !validateWhere(filterClause);
+
+		if (!isFilterValid) {
+			throw new Error("Invalid filter clause");
+		}
+
+		const limitBy = pageSize;
+		const startAt = (page - 1) * pageSize;
+		const [sortCol, sortDir] = sortMode || ["id", "asc"];
+
+		let countQuery = `SELECT * FROM count((SELECT * FROM ${tb(activeTable)}`;
+		let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
+
+		if (showFilter && filterClause) {
+			countQuery += ` WHERE ${filterClause}`;
+			fetchQuery += ` WHERE ${filterClause}`;
+		}
+
+		countQuery += "))";
+		fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
+
+		if (startAt > 0) {
+			fetchQuery += ` START ${startAt}`;
+		}
+
+		const response = await executeQuery(`${countQuery};${fetchQuery}`);
+		const total = response[0].result?.[0] || 0;
+		const records = response[1].result || [];
+
+		return { records, total };
+	} catch (error) {
+		return { records: [], total: 0 };
 	}
-
-	const limitBy = pageSize;
-	const startAt = (page - 1) * pageSize;
-	const [sortCol, sortDir] = sortMode || ["id", "asc"];
-
-	let countQuery = `SELECT * FROM count((SELECT * FROM ${tb(activeTable)}`;
-	let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
-
-	if (showFilter && filterClause) {
-		countQuery += ` WHERE ${filterClause}`;
-		fetchQuery += ` WHERE ${filterClause}`;
-	}
-
-	countQuery += "))";
-	fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
-
-	if (startAt > 0) {
-		fetchQuery += ` START ${startAt}`;
-	}
-
-	const response = await executeQuery(`${countQuery};${fetchQuery}`);
-	const total = response[0].result?.[0] || 0;
-	const records = response[1].result || [];
-
-	return { records, total };
 };
 
 export interface ExplorerPaneProps {
@@ -344,7 +349,6 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					</Center>
 				)
 			}
-
 
 			<Group
 				gap="xs"

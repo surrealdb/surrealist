@@ -21,7 +21,7 @@ export function validateThing(thing: string): string | undefined {
 		SurrealQL.validate_thing(thing);
 		return undefined;
 	} catch(err: any) {
-		return err.message;
+		return err;
 	}
 }
 
@@ -30,10 +30,11 @@ export function validateThing(thing: string): string | undefined {
  */
 export function validateWhere(where: string): string | undefined {
 	try {
+		(window as any).SurrealQL = SurrealQL;
 		SurrealQL.validate_where(where);
 		return undefined;
 	} catch(err: any) {
-		return err.message;
+		return err;
 	}
 }
 
