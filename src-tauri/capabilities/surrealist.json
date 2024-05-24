@@ -13,6 +13,7 @@
 		"resources:default",
 		"menu:default",
 		"tray:default",
+		"deep-link:default",
 		"os:allow-os-type",
 		"fs:allow-read-file",
 		"fs:allow-write-file",
@@ -35,6 +36,7 @@
 		"os:allow-arch",
 		"os:allow-exe-extension",
 		"os:allow-locale",
-		"os:allow-hostname"
+		"os:allow-hostname",
+		"deep-link:allow-get-current"
 	]
 }

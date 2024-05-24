@@ -6,7 +6,7 @@ import { useConfigStore } from "~/stores/config";
 import { ViewMode } from "~/types";
 import { IntentEvent } from "~/util/global-events";
 import { useEventSubscription } from "./event";
-import { IntentPayload, IntentType, getIntentView, isIntent } from "~/util/intents";
+import { IntentPayload, IntentType, getIntentView, handleIntentRequest } from "~/util/intents";
 
 /**
  * Sync the active view to the URL and handle incoming intents
@@ -29,18 +29,7 @@ export function useUrlHandler() {
 		}
 
 		if (intent) {
-			const [type, ...args] = intent.split(':');
-
-			if (isIntent(type)) {
-				const payload = (args.join(':') || '').split(',').reduce((acc, arg) => {
-					const [key, value] = arg.split('=');
-					return { ...acc, [key]: value };
-				}, {} as any);
-
-				dispatchIntent(type, payload);
-			}
-
-			history.replaceState(null, document.title, location.pathname);
+			handleIntentRequest(intent);
 		}
 	}, []);
 

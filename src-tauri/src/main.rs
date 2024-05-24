@@ -3,14 +3,12 @@
     windows_subsystem = "windows"
 )]
 
-#[cfg(any(windows, target_os = "linux"))]
-use std::env;
-
-use std::sync::Mutex;
+use std::{env, sync::Mutex};
 
 use database::DatabaseState;
+use log::info;
 use paths::get_logs_directory;
-use tauri::{Manager, RunEvent};
+use tauri::{AppHandle, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 
 mod config;
@@ -19,7 +17,21 @@ mod open;
 mod paths;
 mod window;
 
-struct OpenFileState(pub Mutex<Vec<url::Url>>);
+struct OpenResourceState(pub Mutex<Vec<url::Url>>);
+
+fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
+    let mut urls = Vec::new();
+
+    for arg in args.into_iter().skip(1) {
+        if let Ok(url) = url::Url::parse(&arg) {
+            urls.push(url);
+        }
+    }
+
+    if !urls.is_empty() {
+        *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
+    }
+}
 
 fn main() {
     let context = tauri::generate_context!();
@@ -30,6 +42,19 @@ fn main() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_localhost::Builder::new(24454).build())
+        .plugin(tauri_plugin_single_instance::init(|app, args, _| {
+            info!("Single instance intercept: {:?}", args);
+
+            let emit_event = args.len() > 1;
+
+            store_resources(app, args);
+
+            if emit_event {
+                app.emit("open-resource", ()).unwrap();
+            }
+        }))
         .plugin(
             tauri_plugin_log::Builder::new()
                 .targets([
@@ -42,7 +67,7 @@ fn main() {
                 ])
                 .build(),
         )
-        .manage(OpenFileState(Default::default()))
+        .manage(OpenResourceState(Default::default()))
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,
@@ -53,27 +78,20 @@ fn main() {
             database::start_database,
             database::stop_database,
             window::toggle_devtools,
-            open::get_opened_queries,
+            open::get_opened_resources,
         ])
         .setup(|app| {
+            info!("Launch args: {:?}", env::args());
+
             #[cfg(any(windows, target_os = "linux"))]
             {
-                let mut urls = Vec::new();
-
-                for arg in env::args().skip(1) {
-                    if let Ok(url) = url::Url::parse(&arg) {
-                        urls.push(url);
-                    }
-                }
-
-                if !urls.is_empty() {
-                    *app.state::<OpenFileState>().0.lock().unwrap() = urls;
-                }
+                store_resources(app.handle(), env::args());
             }
 
             let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
                 .title("Surrealist")
                 .inner_size(1235.0, 675.0)
+                .center()
                 .min_inner_size(1235.0, 675.0);
 
             #[cfg(target_os = "macos")]
@@ -91,8 +109,12 @@ fn main() {
     tauri.run(move |app, event| match event {
         #[cfg(any(target_os = "macos", target_os = "ios"))]
         RunEvent::Opened { urls } => {
-            *app.state::<OpenFileState>().0.lock().unwrap() = urls;
-            app.emit("open:files", ()).unwrap();
+            info!("Opened resources: {:?}", urls);
+
+            *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
+            app.emit("open-resource", ()).unwrap();
+
+            info!("Emitted open-resource event");
         }
         RunEvent::Exit => {
             let state = app.state::<DatabaseState>();
