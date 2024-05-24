@@ -20,6 +20,7 @@ import { authenticate, composeAuthentication, executeQuery, register } from "~/c
 import { getStatementCount } from "~/util/surrealql";
 import { useImmer } from "use-immer";
 import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
+import { adapter } from "~/adapter";
 
 export function ScopePane() {
 	const { connection } = useActiveConnection();
@@ -131,7 +132,8 @@ export function ScopePane() {
 				subtitle: "The user has been successfully registered"
 			});
 		} catch(err: any) {
-			console.warn('Failed to register user', err);
+			adapter.warn('Auth', `Failed to register user: ${err.message}`);
+			console.error(err);
 
 			showError({
 				title: "Registration failed",

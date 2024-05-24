@@ -132,4 +132,14 @@ export interface SurrealistAdapter {
 		multiple: boolean
 	): Promise<OpenedBinaryFile[]>;
 
+	/**
+	 * Log a message to the implemented logging system
+	 */
+	log(label: string, message: string): void;
+	
+	/**
+	 * Log a warning message to the implemented logging system
+	 */
+	warn(label: string, message: string): void;
+
 }

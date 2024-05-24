@@ -4,10 +4,10 @@ import { listen } from "@tauri-apps/api/event";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { save, open } from "@tauri-apps/plugin-dialog";
-import { attachConsole } from "@tauri-apps/plugin-log";
+import { attachConsole, info, warn } from "@tauri-apps/plugin-log";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
-import { printLog, showError, showInfo, updateTitle } from "~/util/helpers";
+import { showError, showInfo, updateTitle } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
 import { watchStore } from "~/util/config";
@@ -19,8 +19,6 @@ import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
 
 const WAIT_DURATION = 1000;
-
-const printMsg = (...args: any[]) => printLog("Desktop", "#9150e6", ...args);
 
 interface Resource {
 	File?: FileResource;
@@ -256,9 +254,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 		invoke("toggle_devtools");
 	}
 
+	public log(label: string, message: string) {
+		info(label + ": " + message);
+	}
+
+	public warn(label: string, message: string) {
+		warn(label + ": " + message);
+	}
+
 	private initDatabaseEvents() {
 		listen("database:start", () => {
-			printMsg("Received database start signal");
+			this.log('Serve', "Received database start signal");
 
 			this.#startTask = setTimeout(() => {
 				useDatabaseStore.getState().confirmServing();
@@ -271,7 +277,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 
 		listen("database:stop", () => {
-			printMsg("Received database stop signal");
+			this.log('Serve', "Received database stop signal");
 
 			if (this.#startTask) {
 				clearTimeout(this.#startTask);
@@ -290,7 +296,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 
 		listen("database:error", (event) => {
-			printMsg("Received database error signal");
+			this.log('Serve', "Received database error signal");
 
 			const msg = event.payload as string;
 

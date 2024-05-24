@@ -4,10 +4,9 @@ import { objectify } from "radash";
 import { Accordion, Group } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { Updater } from "use-immer";
-import { printLog, tb } from "~/util/helpers";
+import { tb } from "~/util/helpers";
 import { Icon } from "~/components/Icon";
-
-const printMsg = (...args: any[]) => printLog("Designer", "#0cd6e8", ...args);
+import { adapter } from "~/adapter";
 
 export interface ElementProps {
 	data: TableInfo;
@@ -152,9 +151,9 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 		queries.push(query);
 	}
 
-	printMsg("Applying queries:");
+	adapter.log('Designer', "Applying queries:");
 
-	for (const query of queries) printMsg(query);
+	for (const query of queries) adapter.log('Designer', '- ' + query);
 
 	return queries.join(";\n");
 }

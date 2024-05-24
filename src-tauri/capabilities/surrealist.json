@@ -13,6 +13,7 @@
 		"resources:default",
 		"menu:default",
 		"tray:default",
+		"log:default",
 		"deep-link:default",
 		"os:allow-os-type",
 		"fs:allow-read-file",
@@ -37,6 +38,7 @@
 		"os:allow-exe-extension",
 		"os:allow-locale",
 		"os:allow-hostname",
-		"deep-link:allow-get-current"
+		"deep-link:allow-get-current",
+		"log:allow-log"
 	]
 }

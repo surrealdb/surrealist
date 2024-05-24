@@ -160,4 +160,12 @@ export class BrowserAdapter implements SurrealistAdapter {
 		});
 	}
 
+	public log(label: string, message: string) {
+		console.log(label + ": " + message);
+	}
+
+	public warn(label: string, message: string) {
+		console.warn(label + ": " + message);
+	}
+
 }

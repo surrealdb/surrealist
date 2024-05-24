@@ -2,6 +2,7 @@ import { gt } from "semver";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "./helpers";
+import { adapter } from "~/adapter";
 
 export async function runUpdateChecker(lastPromptedVersion: string | null, force: boolean) {
 	if (import.meta.env.MODE === "development") {
@@ -30,7 +31,8 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 				subtitle: "Surrealist is up-to-date!",
 			});
 		}
-	} catch (err) {
-		console.warn("Failed to check for updates", err);
+	} catch (err: any) {
+		adapter.warn('Updater', `Failed to check for updates: ${err.message}`);
+		console.error(err);
 	}
 }

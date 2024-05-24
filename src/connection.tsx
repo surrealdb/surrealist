@@ -4,7 +4,7 @@ import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor, VersionRetrievalFail
 import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from './types';
 import { getConnection } from './util/connection';
 import { useDatabaseStore } from './stores/database';
-import { connectionUri, newId, printLog, showError, showWarning } from './util/helpers';
+import { connectionUri, newId, showError, showWarning } from './util/helpers';
 import { syncDatabaseSchema } from './util/schema';
 import { ConnectedEvent, DisconnectedEvent } from './util/global-events';
 import { useInterfaceStore } from "./stores/interface";
@@ -12,8 +12,7 @@ import { useConfigStore } from "./stores/config";
 import { objectify, sleep } from "radash";
 import { getLiveQueries } from "./util/surrealql";
 import { Value } from "surrealql.wasm/v1";
-
-const printMsg = (...args: any[]) => printLog("Conn", "#1cccfc", ...args);
+import { adapter } from "./adapter";
 
 export interface ConnectOptions {
 	connection?: ConnectionOptions;
@@ -62,7 +61,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 	await closeConnection();
 
-	printMsg(`Opening connection to ${rpcEndpoint}`);
+	adapter.log('DB', `Opening connection to ${rpcEndpoint}`);
 
 	setIsConnecting(true);
 	setIsConnected(false);
@@ -98,7 +97,7 @@ export async function openConnection(options?: ConnectOptions) {
 					protocol: connection.protocol
 				});
 
-				printMsg("Connection established");
+				adapter.log('DB', `Connection established"`);
 			}
 		})
 		.catch((err) => {
@@ -129,7 +128,7 @@ export async function openConnection(options?: ConnectOptions) {
 			if (iter == iterSelf) {
 				SURREAL.version().then((v) => {
 					setVersion(v);
-					printMsg(`Database version ${v ?? "unknown"}`);
+					adapter.log('DB', `Database version ${v ?? "unknown"}`);
 				});
 			}
 		});
@@ -279,7 +278,8 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		try {
 			liveIndexes = getLiveQueries(queryStr);
 		} catch(err: any) {
-			console.warn("Failed to parse live queries", err);
+			adapter.warn('DB', `Failed to parse live queries: ${err.message}`);
+			console.error(err);
 			liveIndexes = [];
 		}
 

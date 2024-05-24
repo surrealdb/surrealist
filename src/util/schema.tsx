@@ -1,13 +1,12 @@
 import dedent from "dedent";
 import equal from 'fast-deep-equal';
 import { SchemaFunction, SchemaModel, SchemaInfoDB, SchemaInfoKV, SchemaInfoNS, SchemaInfoTB, TableInfo } from "~/types";
-import { printLog, tb } from './helpers';
+import { tb } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
 import { executeQuerySingle } from '~/connection';
 import { createDatabaseSchema } from "./defaults";
 import { klona } from "klona";
-
-const printMsg = (...args: any[]) => printLog("Schema", "#e600a4", ...args);
+import { adapter } from "~/adapter";
 
 const emptyKV = () => ({ users: [] });
 const emptyNS = () => ({ users: [] });
@@ -32,7 +31,7 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	const { databaseSchema, setDatabaseSchema } = useDatabaseStore.getState();
 	const schema = createDatabaseSchema();
 
-	printMsg("Synchronizing database schema");
+	adapter.log('Schema', "Synchronizing database schema");
 
 	const [kvInfoTask, nsInfoTask, dbInfoTask] = await Promise.allSettled([
 		executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE"),
@@ -81,7 +80,7 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	}
 
 	for (const [idx, tableName] of tableNames.entries()) {
-		printMsg("Updating table", tableName);
+		adapter.log('Schema', `Updating table ${tableName}`);
 
 		const info = tbInfoMap[idx];
 		const table = dbInfo.tables.find(t => t.name === tableName)!;
