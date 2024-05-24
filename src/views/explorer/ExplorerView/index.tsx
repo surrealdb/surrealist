@@ -121,3 +121,5 @@ export function ExplorerView() {
 		</>
 	);
 }
+
+export default ExplorerView;

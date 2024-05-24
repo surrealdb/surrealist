@@ -344,3 +344,5 @@ export function QueryView() {
 		</Stack>
 	);
 }
+
+export default QueryView;

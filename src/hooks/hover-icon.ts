@@ -1,6 +1,7 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useId } from "react";
 import { useStable } from "./stable";
-import lottie, { AnimationItem } from "lottie-web";
+import type { AnimationItem } from "lottie-web";
+import { useQuery } from "@tanstack/react-query";
 
 export interface HoverIconOptions {
 	animation: any;
@@ -15,8 +16,9 @@ export interface HoverIconOptions {
  * @param options animation options
  */
 export function useHoverIcon(options: HoverIconOptions) {
+	const [isMounted, setIsMounted] = useState(false);
 	const ref = useRef<HTMLDivElement>(null);
-	const itemRef = useRef<AnimationItem|null>(null);
+	const itemRef = useRef<AnimationItem | null>(null);
 
 	const hasEnded = useStable(() => {
 		const current = itemRef.current?.currentFrame ?? 0;
@@ -40,26 +42,42 @@ export function useHoverIcon(options: HoverIconOptions) {
 		}
 	});
 
-	useEffect(() => {
-		const item = lottie.loadAnimation({
-			container: ref.current!,
-			renderer: 'svg',
-			autoplay: false,
-			loop: false,
-			animationData: options.animation,
-			rendererSettings: {
-				className: options.className
-			}
-		});
+	const id = useId();
 
-		itemRef.current = item;
+	const { isPending } = useQuery({
+		queryKey: ["lottie", id],
+		queryFn: async () => {
+			const lottie = await import('lottie-web/build/player/lottie_light');
+
+			if (isMounted && ref.current && !ref.current.innerHTML) {
+				const item = lottie.default.loadAnimation({
+					container: ref.current,
+					renderer: 'svg',
+					autoplay: false,
+					loop: false,
+					animationData: options.animation,
+					rendererSettings: {
+						className: options.className
+					},
+				});
+
+				itemRef.current = item;
+			}
+		},
+		enabled: isMounted,
+	});
+
+	useEffect(() => {
+		setIsMounted(true);
 
 		return () => {
+			setIsMounted(false);
 			itemRef.current?.destroy();
 		};
 	}, []);
 
 	return {
+		isLoading: isPending,
 		ref,
 		onMouseEnter,
 		onMouseLeave,

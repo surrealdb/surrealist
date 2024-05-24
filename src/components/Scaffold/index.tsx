@@ -13,11 +13,7 @@ import { Toolbar } from "../Toolbar";
 import { useDisclosure } from "@mantine/hooks";
 import { ConnectionEditor } from "./modals/connection";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
-import { QueryView } from "~/views/query/QueryView";
 import { ViewMode } from "~/types";
-import { ExplorerView } from "~/views/explorer/ExplorerView";
-import { DesignerView } from "~/views/designer/DesignerView";
-import { AuthenticationView } from "~/views/authentication/AuthenticationView";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { Settings } from "./settings";
@@ -28,14 +24,11 @@ import { StartScreen } from "./start";
 import { TableCreator } from "./modals/table";
 import { DownloadModal } from "./modals/download";
 import { ScopeSignup } from "./modals/signup";
-import { DocumentationView } from "~/views/documentation/DocumentationView";
 import { Sidebar } from "../Sidebar";
 import { CommandPaletteModal } from "./modals/palette";
 import { useBoolean } from "~/hooks/boolean";
 import { useWindowSettings } from "./hooks";
 import { useCompatHotkeys } from "~/hooks/hotkey";
-import { FunctionsView } from "~/views/functions/FunctionsView";
-import { ModelsView } from "~/views/models/ModelsView";
 import { LegacyModal } from "./modals/legacy";
 import { SandboxModal } from "./modals/sandbox";
 import { ChangelogModal } from "./modals/changelog";
@@ -45,6 +38,7 @@ import { iconOpen } from "~/util/icons";
 import { isMobile } from "~/util/helpers";
 import { EmbedderModal } from "./modals/embedder";
 import { useSetting } from "~/hooks/config";
+import { Suspense, lazy } from "react";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -61,6 +55,14 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	models: createHtmlPortalNode(PORTAL_ATTRS),
 	documentation: createHtmlPortalNode(PORTAL_ATTRS),
 };
+
+const QueryView = lazy(() => import('~/views/query/QueryView'));
+const ExplorerView = lazy(() => import('~/views/explorer/ExplorerView'));
+const DesignerView = lazy(() => import('~/views/designer/DesignerView'));
+const AuthenticationView = lazy(() => import('~/views/authentication/AuthenticationView'));
+const FunctionsView = lazy(() => import('~/views/functions/FunctionsView'));
+const ModelsView = lazy(() => import('~/views/models/ModelsView'));
+const DocumentationView = lazy(() => import('~/views/documentation/DocumentationView'));
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -157,31 +159,45 @@ export function Scaffold() {
 						</Box>
 
 						<InPortal node={VIEW_PORTALS.query}>
-							<QueryView />
+							<Suspense fallback={null}>
+								<QueryView />
+							</Suspense>
 						</InPortal>
 
 						<InPortal node={VIEW_PORTALS.explorer}>
-							<ExplorerView />
+							<Suspense fallback={null}>
+								<ExplorerView />
+							</Suspense>
 						</InPortal>
 
 						<InPortal node={VIEW_PORTALS.designer}>
-							<DesignerView />
+							<Suspense fallback={null}>
+								<DesignerView />
+							</Suspense>
 						</InPortal>
 
 						<InPortal node={VIEW_PORTALS.authentication}>
-							<AuthenticationView />
+							<Suspense fallback={null}>
+								<AuthenticationView />
+							</Suspense>
 						</InPortal>
 
 						<InPortal node={VIEW_PORTALS.functions}>
-							<FunctionsView />
+							<Suspense fallback={null}>
+								<FunctionsView />
+							</Suspense>
 						</InPortal>
 
 						<InPortal node={VIEW_PORTALS.models}>
-							<ModelsView />
+							<Suspense fallback={null}>
+								<ModelsView />
+							</Suspense>
 						</InPortal>
 
 						<InPortal node={VIEW_PORTALS.documentation}>
-							<DocumentationView />
+							<Suspense fallback={null}>
+								<DocumentationView />
+							</Suspense>
 						</InPortal>
 					</>
 				) : (

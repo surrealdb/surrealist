@@ -30,6 +30,16 @@ export default defineConfig(({ mode }) => ({
 				'surrealist': '/index.html',
 				'mini-run': '/mini/run.html',
 				'mini-new': '/mini/new.html'
+			},
+			output: {
+				experimentalMinChunkSize: 5000,
+				manualChunks: {
+					react: ["react", "react-dom"],
+					codemirror: ["codemirror", "codemirror-surrealql", "@replit/codemirror-indentation-markers"],
+					posthog: ["posthog-js"],
+					mantime: ["@mantine/core"],
+					surreal: ["surrealdb.js", "surrealdb.wasm"] // TODO : surrealql.wasm
+				}
 			}
 		},
 	},

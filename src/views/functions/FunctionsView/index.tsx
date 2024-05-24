@@ -247,3 +247,5 @@ export function FunctionsView() {
 		</>
 	);
 }
+
+export default FunctionsView;
