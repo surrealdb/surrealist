@@ -64,7 +64,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		}
 	}, [opened]);
 
-	const [width, setWidth] = useState(500);
+	const [width, setWidth] = useState(650);
 
 	return (
 		<Drawer

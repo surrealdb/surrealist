@@ -137,7 +137,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		}
 	}, [history.current]);
 
-	const [width, setWidth] = useState(500);
+	const [width, setWidth] = useState(650);
 
 	return (
 		<Drawer

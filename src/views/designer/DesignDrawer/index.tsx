@@ -64,7 +64,7 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 
 	const isEdge = useMemo(() => isEdgeTable(value), [value]);
 
-	const [width, setWidth] = useState(500);
+	const [width, setWidth] = useState(650);
 
 	return (
 		<Drawer
