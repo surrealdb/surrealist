@@ -97,7 +97,7 @@ export async function openConnection(options?: ConnectOptions) {
 					protocol: connection.protocol
 				});
 
-				adapter.log('DB', `Connection established"`);
+				adapter.log('DB', "Connection established");
 			}
 		})
 		.catch((err) => {
