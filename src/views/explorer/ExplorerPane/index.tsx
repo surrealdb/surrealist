@@ -53,8 +53,7 @@ const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unkno
 		const limitBy = pageSize;
 		const startAt = (page - 1) * pageSize;
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
-
-		let countQuery = `SELECT * FROM count((SELECT * FROM ${tb(activeTable)}`;
+		let countQuery = `SELECT count() AS count FROM ${tb(activeTable)}`;
 		let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
 
 		if (showFilter && filterClause) {
@@ -62,7 +61,7 @@ const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unkno
 			fetchQuery += ` WHERE ${filterClause}`;
 		}
 
-		countQuery += "))";
+		countQuery += " GROUP ALL";
 		fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
 
 		if (startAt > 0) {
@@ -70,7 +69,7 @@ const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unkno
 		}
 
 		const response = await executeQuery(`${countQuery};${fetchQuery}`);
-		const total = response[0].result?.[0] || 0;
+		const total = response[0].result?.[0]?.count || 0;
 		const records = response[1].result || [];
 
 		return { records, total };
