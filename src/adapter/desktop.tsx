@@ -17,6 +17,7 @@ import { getCurrent } from "@tauri-apps/api/window";
 import { getCurrent as getWebView } from "@tauri-apps/api/webview";
 import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
+import { throttle } from "radash";
 
 const WAIT_DURATION = 1000;
 
@@ -267,6 +268,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	private initDatabaseEvents() {
+		let throttleLevel = 0;
+
+		setInterval(() => {
+			throttleLevel = Math.max(0, throttleLevel - 1);
+		}, 500);
+
 		listen("database:start", () => {
 			this.log('Serve', "Received database start signal");
 
@@ -296,7 +303,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 
 		listen("database:output", (event) => {
+			if (throttleLevel > 50) {
+				return;
+			}
+
 			useDatabaseStore.getState().pushConsoleLine(event.payload as string);
+			throttleLevel++;
 		});
 
 		listen("database:error", (event) => {
