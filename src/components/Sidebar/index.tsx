@@ -107,17 +107,23 @@ export function Sidebar({
 				direction="column"
 				h="100%"
 				px={16}
-				pb={18}
 			>
-				<Group wrap="nowrap" gap="lg" pt="sm">
+				<Group
+					h={64}
+					wrap="nowrap"
+					align="center"
+					gap="lg"
+					style={{ flexShrink: 0 }}
+				>
 					<Image src={surrealistLogo} w={42} />
 					<SurrealistLogo h={21} style={{ flexShrink: 0 }} />
 				</Group>
 				<Stack
 					gap="sm"
-					h="100%"
-					mt={24}
+					mt={9}
+					pb={18}
 					component="nav"
+					flex={1}
 				>
 					{connection && navigation.map((items, i) => (
 						<Fragment key={i}>

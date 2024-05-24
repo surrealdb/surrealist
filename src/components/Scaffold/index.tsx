@@ -145,7 +145,9 @@ export function Scaffold() {
 							onToggleDownload={downloadHandle.toggle}
 						/>
 
-						<Toolbar />
+						<Toolbar
+							sidebarMode={mode}
+						/>
 
 						<Box p="sm" className={classes.wrapper}>
 							<Box w={mode === "wide" ? 190 : 49} />

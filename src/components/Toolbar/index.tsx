@@ -17,7 +17,7 @@ import { ConsoleDrawer } from "./components/ConsoleDrawer";
 import { iconFile, iconReset, iconStar } from "~/util/icons";
 import { HelpAndSupport } from "./components/HelpAndSupport";
 import { DATASETS } from "~/constants";
-import { DataSet } from "~/types";
+import { DataSet, SidebarMode } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
 import { NewsFeed } from "./components/NewsFeed";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -26,7 +26,13 @@ import { useInterfaceStore } from "~/stores/interface";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
 
-export function Toolbar() {
+export interface ToolbarProps {
+	sidebarMode: SidebarMode;
+}
+
+export function Toolbar({
+	sidebarMode
+}: ToolbarProps) {
 	const { clearQueryResponse } = useDatabaseStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();
@@ -101,7 +107,7 @@ export function Toolbar() {
 				className={classes.root}
 				h={64}
 			>
-				<Box w={56} />
+				<Box w={sidebarMode === "wide" ? 197 : 56} />
 
 				<Connections />
 
