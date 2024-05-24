@@ -388,7 +388,7 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				id: newId(),
-				name: "Open version changelogs",
+				name: "View release changelogs",
 				icon: iconStar,
 				action: intent("open-changelog"),
 			},
