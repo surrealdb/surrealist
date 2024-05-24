@@ -19,6 +19,12 @@ import { useUrlHandler } from "~/hooks/url";
 import { AppErrorHandler } from "./error";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
+import {
+	QueryClient,
+	QueryClientProvider,
+} from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 export function App() {
 	const { hideAvailableUpdate } = useInterfaceStore.getState();
@@ -47,69 +53,71 @@ export function App() {
 
 	return (
 		<FeatureFlagsProvider>
-			<MantineProvider
-				withCssVariables
-				theme={MANTINE_THEME}
-				forceColorScheme={colorScheme}
-			>
-				<Notifications />
-
-				<ContextMenuProvider
-					borderRadius="md"
-					shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
-					submenuDelay={250}
+			<QueryClientProvider client={queryClient}>
+				<MantineProvider
+					withCssVariables
+					theme={MANTINE_THEME}
+					forceColorScheme={colorScheme}
 				>
-					<ConfirmationProvider>
-						<InspectorProvider>
-							<ErrorBoundary
-								FallbackComponent={AppErrorHandler}
-								onReset={handleReset}
-							>
-								<Scaffold />
-							</ErrorBoundary>
-						</InspectorProvider>
-					</ConfirmationProvider>
-				</ContextMenuProvider>
+					<Notifications />
 
-				<Transition
-					mounted={showUpdate}
-					duration={250}
-					transition="slide-up"
-					timingFunction="ease"
-				>
-					{(styles) => (
-						<Paper
-							onClick={openRelease}
-							style={{ ...styles, cursor: "pointer" }}
-							pos="fixed"
-							bg="#2f2f40"
-							bottom={20}
-							left={20}
-							p="xs"
-						>
-							<Group gap="sm">
-								<Image
-									src={surrealistIcon}
-									style={{ pointerEvents: "none" }}
-									height={32}
-									width={32}
-									mx={4}
-								/>
-								<Box miw={200}>
-									<Text c="white">New release available</Text>
-									<Text c="gray.5">Version {update} is available</Text>
-								</Box>
-								<ActionIcon
-									aria-label="Close update notification"
-									onClick={closeUpdate}
+					<ContextMenuProvider
+						borderRadius="md"
+						shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
+						submenuDelay={250}
+					>
+						<ConfirmationProvider>
+							<InspectorProvider>
+								<ErrorBoundary
+									FallbackComponent={AppErrorHandler}
+									onReset={handleReset}
 								>
-									<Icon path={iconClose} />
-								</ActionIcon>
-							</Group>
-						</Paper>
-					)}
-				</Transition>
-			</MantineProvider>
+									<Scaffold />
+								</ErrorBoundary>
+							</InspectorProvider>
+						</ConfirmationProvider>
+					</ContextMenuProvider>
+
+					<Transition
+						mounted={showUpdate}
+						duration={250}
+						transition="slide-up"
+						timingFunction="ease"
+					>
+						{(styles) => (
+							<Paper
+								onClick={openRelease}
+								style={{ ...styles, cursor: "pointer" }}
+								pos="fixed"
+								bg="#2f2f40"
+								bottom={20}
+								left={20}
+								p="xs"
+							>
+								<Group gap="sm">
+									<Image
+										src={surrealistIcon}
+										style={{ pointerEvents: "none" }}
+										height={32}
+										width={32}
+										mx={4}
+									/>
+									<Box miw={200}>
+										<Text c="white">New release available</Text>
+										<Text c="gray.5">Version {update} is available</Text>
+									</Box>
+									<ActionIcon
+										aria-label="Close update notification"
+										onClick={closeUpdate}
+									>
+										<Icon path={iconClose} />
+									</ActionIcon>
+								</Group>
+							</Paper>
+						)}
+					</Transition>
+				</MantineProvider>
+			</QueryClientProvider>
 		</FeatureFlagsProvider>
 	);
 }
