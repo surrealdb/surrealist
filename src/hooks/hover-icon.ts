@@ -48,6 +48,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 		queryKey: ["lottie", id],
 		queryFn: async () => {
 			const lottie = await import('lottie-web/build/player/lottie_light');
+			const animationData = await Promise.resolve(options.animation);
 
 			if (isMounted && ref.current && !ref.current.innerHTML) {
 				const item = lottie.default.loadAnimation({
@@ -55,7 +56,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 					renderer: 'svg',
 					autoplay: false,
 					loop: false,
-					animationData: options.animation,
+					animationData,
 					rendererSettings: {
 						className: options.className
 					},

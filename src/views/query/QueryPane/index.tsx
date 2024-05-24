@@ -1,4 +1,3 @@
-import autoFixAnim from "~/assets/animation/autofix.json";
 import { useStable } from "~/hooks/stable";
 import { ContentPane } from "~/components/Pane";
 import { useDebouncedFunction } from "~/hooks/debounce";
@@ -148,7 +147,7 @@ export function QueryPane({
 							<HoverIcon
 								color="slate"
 								onClick={inferVariables}
-								animation={autoFixAnim}
+								animation={import("~/assets/animation/autofix.json").then(x => x.default)}
 							/>
 						</Tooltip>
 
