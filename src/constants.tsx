@@ -14,6 +14,7 @@ import {
 	ViewInfo,
 	ViewMode,
 	Orientation,
+	SidebarMode,
 } from "./types";
 
 import {
@@ -96,6 +97,12 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 export const VALUE_MODES: Selectable<ValueMode>[] = [
 	{ label: "JSON", value: "json" },
 	{ label: "SurrealQL", value: "sql" },
+];
+
+export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
+	{ label: "Expandable", value: "expandable" },
+	{ label: "Compact", value: "compact" },
+	{ label: "Wide", value: "wide" },
 ];
 
 export const VIEW_MODES: Record<ViewMode, ViewInfo> = {

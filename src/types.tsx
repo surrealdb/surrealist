@@ -10,6 +10,7 @@ export type DiagramDirection = "ltr" | "rtl";
 export type ColorScheme = "light" | "dark";
 export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type SidebarMode = "expandable" | "compact" | "wide";
 export type ValueMode = "json" | "sql";
 export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
@@ -100,7 +101,7 @@ export interface SurrealistAppearanceSettings {
 	defaultResultMode: ResultMode;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
-	expandSidebar: boolean;
+	sidebarMode: SidebarMode;
 	valueMode: ValueMode;
 	queryOrientation: Orientation;
 }

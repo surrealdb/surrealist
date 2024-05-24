@@ -44,6 +44,7 @@ import { Icon } from "../Icon";
 import { iconOpen } from "~/util/icons";
 import { isMobile } from "~/util/helpers";
 import { EmbedderModal } from "./modals/embedder";
+import { useSetting } from "~/hooks/config";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -63,6 +64,8 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 
 export function Scaffold() {
 	const isLight = useIsLight();
+
+	const [mode] = useSetting("appearance", "sidebarMode");
 
 	const title = useInterfaceStore((s) => s.title);
 	const activeConnection = useConfigStore((s) => s.activeConnection);
@@ -136,6 +139,7 @@ export function Scaffold() {
 				{activeConnection ? (
 					<>
 						<Sidebar
+							mode={mode}
 							onToggleSettings={settingsHandle.toggle}
 							onTogglePalette={paletteHandle.toggle}
 							onToggleDownload={downloadHandle.toggle}
@@ -144,7 +148,7 @@ export function Scaffold() {
 						<Toolbar />
 
 						<Box p="sm" className={classes.wrapper}>
-							<Box w={49} />
+							<Box w={mode === "wide" ? 190 : 49} />
 							<Box className={classes.content}>
 								{viewNode && <OutPortal node={viewNode} />}
 							</Box>

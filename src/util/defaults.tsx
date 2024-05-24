@@ -44,7 +44,7 @@ export function createBaseSettings(): SurrealistSettings {
 			defaultResultMode: "combined",
 			defaultDiagramMode: "fields",
 			defaultDiagramDirection: "ltr",
-			expandSidebar: true,
+			sidebarMode: "expandable",
 			valueMode: "sql",
 			queryOrientation: "vertical"
 		},

@@ -2,7 +2,7 @@ import { Select, Slider, Box, Checkbox } from "@mantine/core";
 import { useCheckbox } from "~/hooks/events";
 import { isDesktop } from "~/adapter";
 import { Label, SettingsSection } from "../utilities";
-import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, VALUE_MODES, RESULT_MODES, THEMES, ORIENTATIONS } from "~/constants";
+import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, VALUE_MODES, RESULT_MODES, THEMES, ORIENTATIONS, SIDEBAR_MODES } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useFeatureFlags } from "~/util/feature-flags";
 
@@ -18,20 +18,20 @@ export function AppearanceTab() {
 	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
 	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(CAT, "defaultDiagramDirection");
-	const [expandSidebar, setExpandSidebar] = useSetting(CAT, "expandSidebar");
+	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
 
 	const updateResultWordWrap = useCheckbox(setResultWordWrap);
-	const updateExpandSidebar = useCheckbox(setExpandSidebar);
 
 	const [flags] = useFeatureFlags();
 
 	return (
 		<>
 			<SettingsSection>
-				<Checkbox
-					label="Expand sidebar on hover"
-					checked={expandSidebar}
-					onChange={updateExpandSidebar}
+				<Select
+					data={SIDEBAR_MODES}
+					label="Sidebar appearance"
+					value={sidebarMode}
+					onChange={setSidebarMode as any}
 				/>
 				{flags.themes && (
 					<Select

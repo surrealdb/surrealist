@@ -9,6 +9,10 @@
 		border-color: var(--mantine-color-slate-6);
 	}
 
+	&.wide {
+		width: 215px;
+	}
+
 	:global(.mantine-ScrollArea-viewport) > div {
 		display: unset !important;
 	}

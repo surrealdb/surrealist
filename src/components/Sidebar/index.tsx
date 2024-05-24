@@ -10,7 +10,7 @@ import { Spacer } from "../Spacer";
 import { VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { ViewMode } from "~/types";
+import { SidebarMode, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { updateTitle } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
@@ -38,12 +38,14 @@ const NAVIGATION: ViewMode[][] = [
 ];
 
 export interface SidebarProps {
+	mode: SidebarMode;
 	onToggleDownload: () => void;
 	onTogglePalette: () => void;
 	onToggleSettings: () => void;
 }
 
 export function Sidebar({
+	mode,
 	onToggleDownload,
 	onTogglePalette,
 	onToggleSettings,
@@ -51,7 +53,6 @@ export function Sidebar({
 	const { setActiveView } = useConfigStore.getState();
 
 	const [flags] = useFeatureFlags();
-	const [expandable] = useSetting("appearance", "expandSidebar");
 	const [expanded, expandedHandle] = useBoolean();
 
 	const isLight = useIsLight();
@@ -81,7 +82,7 @@ export function Sidebar({
 		});
 	}, [flags, connection]);
 
-	const shouldExpand = connection && expandable && expanded;
+	const shouldExpand = connection && mode === "expandable" && expanded;
 	const nudgeSidebar = adapter.platform === "darwin" && isDesktop;
 
 	return (
@@ -96,7 +97,11 @@ export function Sidebar({
 			pt={nudgeSidebar ? 28 : 0}
 			bg={connection ? (isLight ? "slate.0" : "slate.9") : undefined}
 			viewportRef={ref}
-			className={clsx(classes.root, shouldExpand && classes.expanded)}
+			className={clsx(
+				classes.root,
+				shouldExpand && classes.expanded,
+				mode === "wide" && classes.wide
+			)}
 		>
 			<Flex
 				direction="column"
@@ -126,7 +131,7 @@ export function Sidebar({
 										name={info.name}
 										isActive={info.id === activeView}
 										icon={info.anim || info.icon}
-										withTooltip={!expandable}
+										withTooltip={mode === "compact"}
 										onClick={() => setViewMode(info.id)}
 										onMouseEnter={expandedHandle.open}
 									/>
