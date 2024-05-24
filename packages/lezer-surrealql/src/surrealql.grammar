@@ -222,8 +222,8 @@ RemoveStatement {
 
 CreateStatement {
 	create only?
-	( Ident | VariableName | Function )
-	( ContentClause | SetClause | UnsetClause )?
+	createTarget { Ident | VariableName | Function }
+	createContent { ContentClause | SetClause | UnsetClause | () }
 	ReturnClause?
 	TimeoutClause?
 	ParallelClause?
@@ -241,16 +241,22 @@ SelectStatement {
 		Statement |
 		(
 			commaSep<Value>
-			WithClause?
-			WhereClause?
-			SplitClause?
-			GroupClause?
-			OrderClause?
-			LimitStartComboClause?
-			FetchClause?
-			TimeoutClause?
-			ParallelClause?
-			ExplainClause?
+			selectClauses1 {
+				WithClause?
+				WhereClause?
+				SplitClause?
+			}
+			selectClauses2 {
+				GroupClause?
+				OrderClause?
+				LimitStartComboClause?
+			}
+			selectClauses3 {
+				FetchClause?
+				TimeoutClause?
+				ParallelClause?
+				ExplainClause?
+			}
 		)
 	)
 }
@@ -349,17 +355,19 @@ UpdateStatement {
 		Statement |
 		(
 			commaSep<Value>
-			(
+			updateClause1 {
 				ContentClause |
 				MergeClause |
 				PatchClause |
 				SetClause |
 				UnsetClause
-			)?
-			WhereClause?
-			ReturnClause?
-			TimeoutClause?
-			ParallelClause?
+			}?
+			updateClause2 {
+				WhereClause?
+				ReturnClause?
+				TimeoutClause?
+				ParallelClause?
+			}
 		)
 	)
 }
@@ -585,16 +593,9 @@ UniqueClause {
 SearchAnalyzerClause {
 	search analyzer
 	Ident
-	Bm25Clause?
-	DocIdsOrderClause?
-	DocLenghtsOrderClause?
-	PostingsOrderClause?
-	TermsOrderClause?
-	DocIdsCacheClause?
-	DocLenghtsCacheClause?
-	PostingsCacheClause?
-	TermsCacheClause?
-	highlights?
+    (Bm25Clause | DocIdsOrderClause | DocLenghtsOrderClause | PostingsOrderClause |
+	 TermsOrderClause | DocIdsCacheClause | DocLenghtsCacheClause | PostingsCacheClause |
+	 TermsCacheClause | highlights)*
 }
 
 Bm25Clause { bm25 ( "(" Float "," Float ")")? }
@@ -914,56 +915,33 @@ Float[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "f"? }
 Decimal[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "dec" }
 
 Operator {
-	"&&" | and |
-	"||" | or |
-	"??" |
-	"?:" |
-	"="  | is |
-	"!=" | ( is opNot ) |
-	"==" |
-	"?=" |
-	"*=" |
-	"~"  |
-	"!~" |
-	"*~" |
-	"<"  |
-	"<=" |
-	">"  |
-	">=" |
-	"+"  |
-	"+=" |
-	"-"  |
-	"-=" |
-	"*"  | "×" |
-	"/"  | "÷" |
-	"**" |
-	"∋"  | contains |
-	"∌"  | containsnot |
-	"⊇"  | containsall |
-	"⊃"	 | containsany |
-	"⊅"  | containsnone |
-	"∈"	 | inside | in |
-	"∉"  | notinside | ( opNot opIn ) |
-	"⊆"  | allinside |
-	"⊂"  | anyinside |
-	"⊄"  | noneinside |
+    binaryOperator |
+	"-" | "=" | ">" | "<" |
+	and |
+	or |
+	is |
+	( is opNot ) |
+	contains |
+	containsnot |
+	containsall |
+	containsany |
+	containsnone |
+	inside | in |
+	notinside | ( opNot opIn ) |
+	allinside |
+	anyinside |
+	noneinside |
 
 	outside |
 	intersects |
 
-	"@@" | ( "@" Int "@" ) |
+	( "@" Int "@" ) |
 	(
 		"<|"
 		Int
 		( "," ( Int | chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) )
 		"|>"
 	)
-}
-
-assignmentOperator[@name=Operator] {
-"="  |
-"+=" |
-"-="
 }
 
 @tokens {
@@ -1024,9 +1002,21 @@ assignmentOperator[@name=Operator] {
 
 	durationUnit { "ns" | "us" | "µs" | "ms" | "s" | "m" | "h" | "d" | "w" | "y"}
 
-	@precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName functionName exp "dec" rawident int durationUnit "f" singleString doubleString }
+	@precedence { "function" JavaScript whitespace Comment "-" binaryOperator customFunctionName functionName exp "dec" rawident int durationUnit "f" singleString doubleString }
 
 	"function"
+
+	binaryOperator {
+		"&&" | "||" | "??" | "?:" | "!=" | "==" | "?=" | "*=" | "~" | "!~" | "*~" |
+		"<=" | ">=" | "+" | "+=" | "-=" | "*" | "×" | "/"  | "÷" | "**" |
+		$[∋∌⊇⊃⊅∈∉⊆⊂⊄] | "@@"
+    }
+
+	assignmentOperator[@name=Operator] {
+		"="  |
+		"+=" |
+		"-="
+	}
 }
 
 commaSep<content> {
