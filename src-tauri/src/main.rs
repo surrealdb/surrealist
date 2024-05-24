@@ -113,6 +113,8 @@ fn main() {
 			
             *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
             app.emit("open-resource", ()).unwrap();
+
+			info!("Emitted open-resource event");
         }
         RunEvent::Exit => {
             let state = app.state::<DatabaseState>();

@@ -34,8 +34,8 @@ interface FileResource {
 }
 
 interface LinkResource {
-	view: string;
-	intent: string;
+	host: string;
+	params: string;
 }
 
 /**
@@ -329,26 +329,30 @@ export class DesktopAdapter implements SurrealistAdapter {
 				}
 
 				addQueryTab({ name, query });
+				setActiveView("query");
 			} else if (Link) {
-				const { view, intent } = Link;
+				const { host, params } = Link;
 
-				console.log('RECEIVED view =', view, 'intent =', intent);
-
-				if (view) {
+				if (host) {
 					const views = Object.keys(VIEW_MODES) as ViewMode[];
-					const target = views.find((v) => view === `/${v}`);
+					const target = views.find((v) => host === v);
 
 					if (target) {
 						setActiveView(target);
 					}
 				}
 
-				if (intent) {
-					handleIntentRequest(intent);
+				if (params) {
+					const search = new URLSearchParams(params);
+					const intent = search.get("intent");
+
+					if (intent) {
+						setTimeout(() => {
+							handleIntentRequest(intent);
+						});
+					}
 				}
 			}
 		}
-
-		setActiveView("query");
 	}
 }
