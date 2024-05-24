@@ -47,10 +47,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	const [currentRecord, setCurrentRecord] = useState<ActiveRecord>(DEFAULT_RECORD);
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
+	const [isValid, body] = useValueValidator(recordBody);
 
 	const isLight = useIsLight();
 	const inputColor = currentRecord.exists ? undefined : 'var(--mantine-color-red-6)';
-	const isValid = useValueValidator(recordBody);
 
 	const saveHandle = useSaveable({
 		valid: isValid,
@@ -101,10 +101,9 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	});
 
 	const saveRecord = useStable(async () => {
-		await executeQuery(/* surql */ `UPDATE $id CONTENT $recordBody`, {
-			id: history.current,
-			recordBody
-		});
+		const id = history.current;
+		
+		await executeQuery(/* surql */ `UPDATE $id CONTENT $body`, { id, body });
 
 		onRefresh();
 		onClose();

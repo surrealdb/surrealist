@@ -28,7 +28,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const [recordTable, setRecordTable] = useState('');
 	const [recordId, setRecordId] = useInputState('');
 	const [recordBody, setRecordBody] = useState('');
-	const isValid = useValueValidator(recordBody);
+	const [isValid, body] = useValueValidator(recordBody);
 	const tables = useTableNames();
 
 	const handleSubmit = useStable(async () => {
@@ -40,13 +40,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			? new RecordId(recordTable, recordId)
 			: new Table(recordTable);
 
-		console.log(id);
-		console.log(recordBody);
-
-		await executeQuery(/* surql */ `CREATE $id CONTENT $recordBody`, {
-			id,
-			recordBody
-		});
+		await executeQuery(/* surql */ `CREATE $id CONTENT $body`, { id, body });
 
 		onClose();
 		RecordsChangedEvent.dispatch(null);

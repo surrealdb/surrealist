@@ -169,7 +169,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public trace(label: string, message: string) {
-		console.trace(label + ": " + message);
+		console.debug(label + ": " + message);
 	}
 
 }
