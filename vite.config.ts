@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => ({
 					react: ["react", "react-dom"],
 					codemirror: ["codemirror", "codemirror-surrealql", "@replit/codemirror-indentation-markers"],
 					posthog: ["posthog-js"],
-					mantime: ["@mantine/core"],
+					mantime: ["@mantine/core", "@mantine/hooks", "@mantine/notifications"],
 					surreal: ["surrealdb.js", "surrealdb.wasm"] // TODO : surrealql.wasm
 				}
 			}
