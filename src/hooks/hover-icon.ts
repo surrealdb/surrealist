@@ -45,6 +45,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 	const id = useId();
 
 	const { isPending } = useQuery({
+		// eslint-disable-next-line @tanstack/query/exhaustive-deps
 		queryKey: ["lottie", id],
 		queryFn: async () => {
 			const lottie = await import('lottie-web/build/player/lottie_light');
@@ -63,7 +64,11 @@ export function useHoverIcon(options: HoverIconOptions) {
 				});
 
 				itemRef.current = item;
+
+				return true;
 			}
+
+			return false;
 		},
 		enabled: isMounted,
 	});
