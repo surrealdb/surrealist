@@ -11,7 +11,7 @@
 	Ident,
 	Object,
 	Duration,
-	Number,
+	number,
 	ObjectContent,
 	statement @cut
 }
@@ -432,7 +432,7 @@ OnTableClause
 
 BaseValue {
 	String |
-	Number |
+	number |
 	true |
 	false |
 	null |
@@ -658,7 +658,7 @@ IndexDimensionClause
 	)*
 }
 
-HnswDistClause { dist ( chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) }
+HnswDistClause { dist ( chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski number ) | pearson ) }
 
 IndexDimensionClause { dimension Int }
 IndexTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
@@ -927,7 +927,8 @@ Ident {
 	tickIdent
 }
 
-Number { Int | Float | Decimal }
+number { Int | Float | Decimal }
+
 Int[@name=Number] { "-"? int }
 Float[@name=Number] { "-"? float }
 Decimal[@name=Number] { "-"? decimal }
@@ -957,7 +958,7 @@ Operator {
 	(
 		"<|"
 		Int
-		( "," ( Int | chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) )
+		( "," ( Int | chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski number ) | pearson ) )
 		"|>"
 	)
 }
