@@ -199,33 +199,33 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 		showContextMenu([
 			{
-				key: "select",
-				title: "Use in SELECT query",
-				icon: <Icon path={iconQuery} />,
-				onClick: () => openRecordQuery(record.id, 'SELECT * FROM')
-			},
-			{
-				key: "select",
-				title: "Use in UPDATE query",
-				icon: <Icon path={iconWrench} />,
-				onClick: () => openRecordQuery(record.id, 'UPDATE')
-			},
-			{
-				key: "select",
-				title: "Use in DELETE query",
-				icon: <Icon path={iconClose} />,
-				onClick: () => openRecordQuery(record.id, 'DELETE')
-			},
-			{
-				key: "divider"
-			},
-			{
 				key: "copy",
 				title: "Copy record id",
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
 					navigator.clipboard.writeText(formatValue(record.id));
 				}
+			},
+			{
+				key: "divider-1"
+			},
+			{
+				key: "select",
+				title: "Use in SELECT query",
+				onClick: () => openRecordQuery(record.id, 'SELECT * FROM')
+			},
+			{
+				key: "select",
+				title: "Use in UPDATE query",
+				onClick: () => openRecordQuery(record.id, 'UPDATE')
+			},
+			{
+				key: "select",
+				title: "Use in DELETE query",
+				onClick: () => openRecordQuery(record.id, 'DELETE')
+			},
+			{
+				key: "divider-2"
 			},
 			{
 				key: "delete",
