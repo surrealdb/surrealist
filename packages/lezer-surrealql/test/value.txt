@@ -73,6 +73,7 @@ a::b();
 fn::one::two(1, a);
 rand(3);
 count(x);
+some::versioned::function<1.2.3>(a);
 
 ==>
 
@@ -80,7 +81,8 @@ SurrealQL(
   Function(function),
   Function(function,Number,Ident),
   Function(function,Number),
-  Function(function,Ident))
+  Function(function,Ident),
+  Function(function,int,int,Ident))
 
 # Durations
 
@@ -90,3 +92,74 @@ SurrealQL(
 
 SurrealQL(Duration(DurationPart,DurationPart,DurationPart))
 
+# JavaScript functions
+
+function(123, 1d2h) {
+	const number = 123;
+	return number.toString();
+}
+
+==>
+
+SurrealQL(
+  FunctionJs(
+    Number,Duration(DurationPart,DurationPart),
+    BraceOpen,JavaScript,BraceClose
+  )
+)
+
+# Literals
+
+true;
+true
+
+==>
+
+SurrealQL(Literal,Literal)
+
+# Idiom paths
+
+$variable.ident.ident;
+record:id.*;
+ident->?;
+ident->ident;
+ident->ident<-ident<->ident;
+ident->(? AS ident, ident, ident WHERE ident AS ident);
+record:id->ident;
+SELECT ->ident FROM ident;
+123.to_string();
+{}[$variable];
+{}[ident];
+{}["string"];
+record:id[ident];
+[][0];
+[][$variable];
+[][WHERE ident = 123];
+[][? ident = 123];
+
+==>
+
+SurrealQL(
+	Variable,Ident,Ident,
+	RecordId,Any,
+	Ident,GraphTo(Any),
+	Ident,GraphTo(Ident),
+	Ident,GraphTo(Ident),GraphFrom(Ident),GraphBoth(Ident),
+	Ident,GraphTo(Alias(Any,Keyword,Ident),Ident,Alias(Filter(Ident,Keyword,Ident),Keyword,Ident)),
+	RecordId,GraphTo(Ident),
+	SelectStatement(
+		Keyword,
+		InclusivePredicate(Predicate(GraphTo(Ident))),
+		Keyword,
+		Ident
+	)
+	Number,Function(function),
+	Object,Filter(Variable),
+	Object,Filter(Ident),
+	Object,Filter(String),
+	RecordId,Filter(Ident),
+	Array,Filter(Number),
+	Array,Filter(Variable),
+	Array,Filter(Keyword,BinaryExpression(Ident,operator,Number)),
+	Array,Filter(Keyword,BinaryExpression(Ident,operator,Number))
+)
