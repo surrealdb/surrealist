@@ -21,8 +21,8 @@ Expressions {
 }
 
 Expression {
-	Statement |
-	Value
+	statement |
+	value
 }
 
 SubQuery {
@@ -38,7 +38,7 @@ Block {
 	"}"
 }
 
-Statement {
+statement[@isGroup=Statement] {
 	BeginStatement |
 	CancelStatement |
 	CommitStatement |
@@ -151,8 +151,8 @@ DefineParamStatement {
 	param
 	IfNotExistsClause?
 	VariableName
+	valueKeyword
 	value
-	Value
 }
 
 DefineScopeStatement {
@@ -188,7 +188,7 @@ DefineTokenStatement {
 	Ident
 	( on ( namespace | database | scope Ident ) )
 	TokenTypeClause
-	( value String )
+	( valueKeyword String )
 }
 
 DefineUserStatement {
@@ -234,15 +234,15 @@ CreateStatement {
 SelectStatement {
 	(select)
 	(
-		value Predicate |
+		valueKeyword Predicate |
 		commaSep<InclusivePredicate>
 	)
 	(from)
 	(only)?
 	(
-		Statement |
+		statement |
 		(
-			commaSep<Value>
+			commaSep<value>
 			selectClauses1 {
 				WithClause?
 				WhereClause?
@@ -266,9 +266,9 @@ SelectStatement {
 DeleteStatement {
 	delete only?
 	(
-		Statement |
+		statement |
 		(
-			commaSep<Value>
+			commaSep<value>
 			WhereClause?
 			ReturnClause?
 			TimeoutClause?
@@ -289,7 +289,7 @@ InsertStatement {
 			"(" commaSep<Ident> ")"
 			values
 			commaSep<(
-				"(" commaSep<Value> ")"
+				"(" commaSep<value> ")"
 			)>
 			on duplicate key update
 			commaSep<FieldAssignment>
@@ -301,12 +301,12 @@ IfElseStatement {
 	if
 	(
 		Legacy {
-			Value
+			value
 			then
 			( Block | SubQuery)
 			(
 				else if
-				Value
+				value
 				then
 				( Block | SubQuery)
 			)*
@@ -317,10 +317,10 @@ IfElseStatement {
 			end
 		} |
 		Modern {
-			Value Block
+			value Block
 			(
 				else if
-				Value Block
+				value Block
 			)*
 			(
 				else Block
@@ -354,9 +354,9 @@ InfoForStatement {
 UpdateStatement {
 	update only?
 	(
-		Statement |
+		statement |
 		(
-			commaSep<Value>
+			commaSep<value>
 			updateClause1 {
 				ContentClause |
 				MergeClause |
@@ -379,7 +379,7 @@ BreakStatement { break }
 ContinueStatement { continue }
 ForStatement { for VariableName in ( Array | VariableName | SubQuery | Block ) Block }
 ReturnStatement { return Expression }
-ThrowStatement { throw Value }
+ThrowStatement { throw value }
 
 // Live statements
 KillStatement { kill String }
@@ -387,7 +387,7 @@ LiveSelectStatement {
 	live select
 	(
 		diff |
-		value Predicate |
+		valueKeyword Predicate |
 		commaSep<InclusivePredicate>
 	)
 	from commaSep<Ident>
@@ -396,7 +396,7 @@ LiveSelectStatement {
 }
 
 // Other statements
-LetStatement { let VariableName "=" Value }
+LetStatement { let VariableName "=" value }
 ShowStatement {
 	show changes for table
 	Ident
@@ -430,7 +430,7 @@ OnTableClause
 
 // Values
 
-BaseValue {
+baseValue {
 	String |
 	prefixedString |
 	number |
@@ -451,14 +451,14 @@ BaseValue {
 	Duration
 }
 
-Value { BaseValue | BinaryExpression }
+value[@isGroup=Value] { baseValue | BinaryExpression }
 
 // Binary expressions
 
 BinaryExpression {
-	BaseValue
+	baseValue
 	Operator
-	BaseValue
+	baseValue
 }
 
 // Objects
@@ -469,7 +469,7 @@ ObjectKey {
 }
 
 ObjectProperty {
-	ObjectKey ":" Value
+	ObjectKey ":" value
 }
 
 ObjectContent {
@@ -482,7 +482,7 @@ Object {
 
 // Arrays
 
-Array { "[" commaSep<Value>? "]"}
+Array { "[" commaSep<value>? "]"}
 
 // Record Ids
 
@@ -521,7 +521,7 @@ Duration {
 
 FunctionJs {
 	function
-	"(" commaSep<Value>? ")"
+	"(" commaSep<value>? ")"
 	javascriptBlock
 }
 
@@ -533,7 +533,7 @@ FunctionJs {
 
 Function {
 	(functionName | customFunctionName | rand | count)
-	"(" commaSep<Value>? ")"
+	"(" commaSep<value>? ")"
 }
 
 // Assignment
@@ -541,7 +541,7 @@ Function {
 FieldAssignment {
 	Ident
 	assignmentOperator
-	Value
+	value
 }
 
 // Clauses
@@ -572,7 +572,7 @@ TableViewClause {
 	select
 	commaSep<InclusivePredicate>
 	from
-	commaSep<Value>
+	commaSep<value>
 	WhereClause?
 	GroupClause?
 }
@@ -693,7 +693,7 @@ IfExistsClause {
 
 ReturnClause {
 	return
-	( before | after | diff | commaSep<Value> )
+	( before | after | diff | commaSep<value> )
 }
 
 TimeoutClause {
@@ -748,7 +748,7 @@ SplitClause {
 
 WhereClause {
 	where
-	Value
+	value
 }
 
 WithClause {
@@ -769,7 +769,7 @@ TokenizersClause { tokenizers commaSep<AnalyzerTokenizers> }
 WhenThenClause {
 	(
 		when
-		Value
+		value
 	)?
 	then?
 	commaSep<(SubQuery | Block)>
@@ -787,17 +787,17 @@ ReadonlyClause {
 
 DefaultClause {
 	default
-	Value
+	value
 }
 
 ValueClause {
+	valueKeyword
 	value
-	Value
 }
 
 AssertClause {
 	assert
-	Value
+	value
 }
 
 PermissionsForClause {
@@ -850,8 +850,8 @@ AnalyzerTokenizers {
 }
 
 Predicate {
-	Value |
-	Value as Ident
+	value |
+	value as Ident
 }
 
 InclusivePredicate {
@@ -917,7 +917,7 @@ GeometryType[@name="Type"] {
 }
 
 TypeCast {
-	TypeBracketOpen Type TypeBracketClose BaseValue
+	TypeBracketOpen Type TypeBracketClose baseValue
 }
 
 Ident {
@@ -1183,7 +1183,7 @@ piped<content> {
 	update					[@name=Keyword],
 	use						[@name=Keyword],
 	user					[@name=Keyword],
-	value					[@name=Keyword],
+	valueKeyword			[@name=Keyword],
 	values					[@name=Keyword],
 	when					[@name=Keyword],
 	where					[@name=Keyword],
