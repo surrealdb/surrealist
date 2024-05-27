@@ -432,6 +432,7 @@ OnTableClause
 
 BaseValue {
 	String |
+	prefixedString |
 	number |
 	true |
 	false |
@@ -919,9 +920,6 @@ TypeCast {
 	TypeBracketOpen Type TypeBracketClose BaseValue
 }
 
-// Strings
-String { singleString | doubleString }
-
 Ident {
 	rawident |
 	tickIdent
@@ -993,8 +991,8 @@ Operator {
 	float { int (frac exp? | exp) "f"? }
 	decimal { int frac? exp? "dec" }
 
-	singleString { "'" ![']* "'" }
-	doubleString { '"' !["]* '"' }
+	String { "'" ![']* "'" | '"' !["]* '"' }
+	prefixedString[@name=String] { $[ruds] String }
 
 	// Language
 	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
@@ -1022,6 +1020,7 @@ Operator {
 
 	@precedence { Comment "-" }
 	@precedence { Comment binaryOperator }
+	@precedence { prefixedString rawident }
 	@precedence { customFunctionName functionName rawident }
 	@precedence { float decimal int rawident }
 	@precedence { DurationPart rawident }
