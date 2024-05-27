@@ -519,7 +519,7 @@ Duration {
 // JS Functions
 
 FunctionJs {
-	"function"
+	function
 	"(" commaSep<Value>? ")"
 	javascriptBlock
 }
@@ -531,8 +531,8 @@ FunctionJs {
 // Function invocation
 
 Function {
-	functionName
-	commaSep<Value>? ")"
+	(functionName | customFunctionName | rand | count)
+	"(" commaSep<Value>? ")"
 }
 
 // Assignment
@@ -1009,16 +1009,10 @@ Operator {
 		( @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")* )
 	}
 
-	functionName[@name=function] {
-		(
-		"rand" | "RAND" |
-		"count" | "COUNT" |
-		@asciiLetter+ functionNameSegment+
-		)
-		"("
-	}
-
 	functionNameSegment { "::" @asciiLetter+ }
+	functionName[@name=function] {
+		@asciiLetter+ functionNameSegment+
+	}
 	customFunctionName[@name=function] {
 		"fn" functionNameSegment*
 	}
@@ -1028,13 +1022,10 @@ Operator {
 
 	@precedence { Comment "-" }
 	@precedence { Comment binaryOperator }
-	@precedence { functionName customFunctionName rawident }
+	@precedence { customFunctionName functionName rawident }
 	@precedence { float decimal int rawident }
 	@precedence { DurationPart rawident }
 	@precedence { DurationPart int }
-
-	"function" // FIXME
-	@precedence { "function" rawident }
 
 	JavaScript { ![\\\n}]+ }
 
@@ -1112,7 +1103,6 @@ piped<content> {
 	flexible				[@name=Keyword],
 	for						[@name=Keyword],
 	from					[@name=Keyword],
-	function				[@name=Keyword],
 	group					[@name=Keyword],
 	highlights				[@name=Keyword],
 	hnsw					[@name=Keyword],
@@ -1259,5 +1249,9 @@ piped<content> {
 	jaccard					[@name=Distance],
 	manhattan				[@name=Distance],
 	minkowski				[@name=Distance],
-	pearson					[@name=Distance]
+	pearson					[@name=Distance],
+
+	function,
+	rand[@name=function],
+	count[@name=function]
 }

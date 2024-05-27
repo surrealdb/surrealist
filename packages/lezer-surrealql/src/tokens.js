@@ -48,7 +48,6 @@ import {
 	flexible,
 	_for,
 	from,
-	_function,
 	group,
 	mtree,
 	mtree_cache,
@@ -195,6 +194,11 @@ import {
 	manhattan,
 	minkowski,
 	pearson,
+
+	_function,
+	rand,
+	count,
+
 	objectOpen,
 } from "./parser.terms";
 
@@ -246,7 +250,6 @@ const tokenMap = {
 	flexible,
 	for: _for,
 	from,
-	function: _function,
 	group,
 	highlights,
 	hnsw,
@@ -386,6 +389,11 @@ const tokenMap = {
 	manhattan,
 	minkowski,
 	pearson,
+
+	// Function names
+	function: _function,
+	rand,
+	count,
 };
 
 const tryMapped = {
