@@ -991,7 +991,7 @@ Operator {
 	float { int (frac exp? | exp) "f"? }
 	decimal { int frac? exp? "dec" }
 
-	String { "'" ![']* "'" | '"' !["]* '"' }
+	String { "'" (!['\\] | "\\" _)* "'" | '"' (!["\\] | "\\" _)* '"' }
 	prefixedString[@name=String] { $[ruds] String }
 
 	// Language

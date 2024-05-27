@@ -444,10 +444,11 @@ function skipObjKey(input, off) {
 		} while (isIdentifierChar(input.peek(off)));
 		return off;
 	} else if (first === 38 /* "'" */ || first === 34 /* '"' */) {
-		for (;;) {
+		for (let escaped = false;;) {
 			let next = input.peek(++off);
 			if (next < 0) return off;
-			if (next === first) return off + 1;
+			if (next === first && !escaped) return off + 1;
+			escaped = next === 92 /* '\\' */
 		}
 	}
 }
