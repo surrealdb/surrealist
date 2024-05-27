@@ -15,7 +15,7 @@ export function Label(props: PropsWithChildren<TextProps>) {
 
 export function SettingsSection({ label, children }: PropsWithChildren<{ label?: ReactNode }>) {
 	return (
-		<Stack gap="sm">
+		<Stack gap="md">
 			{label && (
 				<Title order={2} c="bright" size={18}>
 					{label}

@@ -72,6 +72,7 @@ export interface Connection {
 	pinnedTables: string[];
 	diagramMode: DiagramMode;
 	diagramDirection: DiagramDirection;
+	diagramShowLinks: boolean;
 	queryHistory: HistoryQuery[];
 }
 
@@ -101,6 +102,7 @@ export interface SurrealistAppearanceSettings {
 	defaultResultMode: ResultMode;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
+	defaultDiagramShowLinks: boolean;
 	sidebarMode: SidebarMode;
 	valueMode: ValueMode;
 	queryOrientation: Orientation;

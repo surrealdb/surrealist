@@ -51,9 +51,18 @@
 	}
 
 	:global(.react-flow__edge > path) {
+		stroke-width: 2px;
 		stroke: white !important;
 	}
 
+	:global(.react-flow__edge-textbg) {
+		fill: var(--mantine-color-slate-5);
+	}
+}
+
+:global(.react-flow__edge).record-link path {
+	stroke: var(--mantine-color-slate-5) !important;
+	stroke-dasharray: 5;
 }
 
 :root[data-mantine-color-scheme="light"] .diagram {
