@@ -1,4 +1,4 @@
-import surrealistIcon from "~/assets/images/logo.png";
+import surrealistIcon from "~/assets/images/logo.webp";
 import { MouseEvent } from "react";
 import { Notifications } from "@mantine/notifications";
 import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";

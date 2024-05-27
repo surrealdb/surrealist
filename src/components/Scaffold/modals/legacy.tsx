@@ -1,4 +1,4 @@
-import logoUrl from "~/assets/images/logo.png";
+import logoUrl from "~/assets/images/logo.webp";
 import { Anchor, Button, Group, Image, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect } from "react";

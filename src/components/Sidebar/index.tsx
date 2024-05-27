@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import clsx from "clsx";
-import surrealistLogo from "~/assets/images/logo.png";
+import surrealistLogo from "~/assets/images/logo.webp";
 import { ScrollArea, Stack, Divider, Image, Flex, Group } from "@mantine/core";
 import { Fragment, useLayoutEffect, useMemo } from "react";
 import { adapter, isBrowser, isDesktop } from "~/adapter";
@@ -16,7 +16,6 @@ import { updateTitle } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
 import { SurrealistLogo } from "../SurrealistLogo";
 import { useConnection } from "~/hooks/connection";
-import { useSetting } from "~/hooks/config";
 import { useHover } from "@mantine/hooks";
 import { useBoolean } from "~/hooks/boolean";
 import { Shortcut } from "../Shortcut";

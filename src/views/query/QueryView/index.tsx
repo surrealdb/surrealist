@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import surrealistIcon from "~/assets/images/logo.png";
+import surrealistIcon from "~/assets/images/logo.webp";
 import posthog from "posthog-js";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";

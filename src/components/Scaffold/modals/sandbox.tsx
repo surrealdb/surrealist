@@ -1,4 +1,4 @@
-import banner from "~/assets/images/sandbox.png";
+import banner from "~/assets/images/sandbox.webp";
 import { ActionIcon, Box, Button, Image, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Icon } from "~/components/Icon";

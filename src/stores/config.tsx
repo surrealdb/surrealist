@@ -100,6 +100,11 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setActiveConnection: (activeConnection) => set(({ connections }) => {
 
+			if (activeConnection === null)
+				return {
+					activeConnection: null
+				};
+
 			if (activeConnection == 'sandbox')
 				return {
 					activeConnection

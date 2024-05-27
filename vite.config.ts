@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { ViteImageOptimizer as images } from 'vite-plugin-image-optimizer';
 import { Mode, plugin as markdown } from 'vite-plugin-markdown';
 import { defineConfig } from 'vite';
 import { readFileSync } from 'node:fs';
@@ -10,6 +11,7 @@ const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
 	plugins: [
+		images(),
 		react(),
 		markdown({
 			mode: [Mode.HTML]

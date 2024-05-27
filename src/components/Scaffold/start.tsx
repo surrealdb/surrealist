@@ -1,9 +1,9 @@
 import classes from "./style.module.scss";
-import primarySphere from "~/assets/images/primary-sphere.png";
-import secondarySphere from "~/assets/images/secondary-sphere.png";
-import connection from "~/assets/images/start/connection.png";
-import sandbox from "~/assets/images/start/sandbox.png";
-import cloud from "~/assets/images/start/cloud.png";
+import primarySphere from "~/assets/images/primary-sphere.webp";
+import secondarySphere from "~/assets/images/secondary-sphere.webp";
+import connection from "~/assets/images/start/connection.webp";
+import sandbox from "~/assets/images/start/sandbox.webp";
+import cloud from "~/assets/images/start/cloud.webp";
 import { Box, Center, Group, Stack, UnstyledButton } from "@mantine/core";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";

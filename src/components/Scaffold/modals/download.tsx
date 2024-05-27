@@ -1,4 +1,4 @@
-import banner from "~/assets/images/desktop.png";
+import banner from "~/assets/images/desktop.webp";
 import { ActionIcon, Button, Image, List, Modal, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { iconArrowUpRight, iconCircleFilled, iconClose } from "~/util/icons";
