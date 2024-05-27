@@ -76,6 +76,7 @@ export function buildFlowNodes(
 	}
 
 	const edgeItems = items.filter((item) => item.isEdge);
+	const edgeIndex = new Map<string, boolean>();
 
 	// Define all edges
 	for (const { table, from, to } of edgeItems) {
@@ -92,6 +93,9 @@ export function buildFlowNodes(
 			if (node) {
 				node.data.hasOutgoing = true;
 			}
+
+			edgeIndex.set(`${fromTable}:${table.schema.name}`, true);
+			edgeIndex.set(`${table.schema.name}:${fromTable}`, true);
 		}
 
 		for (const toTable of to) {
@@ -107,30 +111,60 @@ export function buildFlowNodes(
 			if (node) {
 				node.data.hasIncoming = true;
 			}
+
+			edgeIndex.set(`${toTable}:${table.schema.name}`, true);
+			edgeIndex.set(`${table.schema.name}:${toTable}`, true);
 		}
 	}
 
 	// Define all record links
 	if (showLinks) {
+		const linkIndex = new Map<string, Edge>();
+
 		for (const table of tables) {
 			for (const field of table.fields) {
-				if (!field.kind?.startsWith('record') || field.name == 'in' || field.name == 'out') continue;
+				if (
+					!field.kind?.startsWith('record') ||
+					field.name == 'in' ||
+					field.name == 'out'
+				) {
+					continue;
+				}
 
 				const targets = extractKindMeta(field.kind);
 
 				for (const target of targets) {
-					if (target == table.schema.name) continue;
+					if (
+						target == table.schema.name ||
+						edgeIndex.has(`${table.schema.name}:${target}`) ||
+						edgeIndex.has(`${target}:${table.schema.name}`)
+					) {
+						continue;
+					}
 
-					edges.push({
-						...EDGE_OPTIONS,
-						id: `tb-${table.schema.name}-field-${field.name}:${target}`,
-						source: table.schema.name,
-						target,
-						className: classes.recordLink,
-						label: field.name,
-						labelShowBg: false,
-						labelStyle: { fill: 'white' }
-					});
+					const existing = linkIndex.get(`${table.schema.name}:${target}`) || linkIndex.get(`${target}:${table.schema.name}`);
+
+					if (existing) {
+						existing.data.linkCount++;
+						existing.label = `${existing.data.linkCount} links`;
+					} else {
+						const edge = {
+							...EDGE_OPTIONS,
+							id: `tb-${table.schema.name}-field-${field.name}:${target}`,
+							source: table.schema.name,
+							target,
+							className: classes.recordLink,
+							label: field.name,
+							labelShowBg: false,
+							labelStyle: { fill: 'white' },
+							data: { linkCount: 1 }
+						}
+						
+						linkIndex.set(`${table.schema.name}:${target}`, edge);
+						linkIndex.set(`${target}:${table.schema.name}`, edge);
+						
+						edges.push(edge);
+					}
 				}
 			}
 		}
