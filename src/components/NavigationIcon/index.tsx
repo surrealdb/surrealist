@@ -25,6 +25,7 @@ export function NavigationIcon({
 	const hasIcon = typeof icon === 'string';
 
 	const {
+		isLoading,
 		ref,
 		onMouseEnter,
 		onMouseLeave
@@ -48,6 +49,7 @@ export function NavigationIcon({
 				<Entry
 					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
 					isActive={isActive}
+					style={{ opacity: isLoading ? 0 : 1 }}
 					onClick={onClick}
 					leftSection={
 						hasIcon ? (

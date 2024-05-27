@@ -45,3 +45,5 @@ export function DocumentationView() {
 		</>
 	);
 }
+
+export default DocumentationView;

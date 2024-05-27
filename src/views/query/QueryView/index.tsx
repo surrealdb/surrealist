@@ -234,7 +234,11 @@ export function QueryView() {
 					</Box>
 				</>
 			) : (
-				<Box flex={1} ref={ref}>
+				<Box
+					flex={1}
+					ref={ref}
+					style={{ opacity: minSize === 0 ? 0 : 1 }}
+				>
 					<PanelGroup direction="horizontal">
 						<Panel
 							defaultSize={minSize}
@@ -344,3 +348,5 @@ export function QueryView() {
 		</Stack>
 	);
 }
+
+export default QueryView;

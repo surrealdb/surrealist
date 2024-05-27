@@ -52,7 +52,10 @@ export function ExplorerView() {
 	return (
 		<>
 			<Box h="100%" ref={ref}>
-				<PanelGroup direction="horizontal">
+				<PanelGroup
+					direction="horizontal"
+					style={{ opacity: minSize === 0 ? 0 : 1 }}
+				>
 					<Panel
 						defaultSize={minSize}
 						minSize={minSize}
@@ -121,3 +124,5 @@ export function ExplorerView() {
 		</>
 	);
 }
+
+export default ExplorerView;

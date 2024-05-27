@@ -134,3 +134,5 @@ export function DesignerView(_props: DesignerViewProps) {
 		// </Splitter>
 	);
 }
+
+export default DesignerView;

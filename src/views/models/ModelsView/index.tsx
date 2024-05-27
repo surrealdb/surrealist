@@ -189,3 +189,5 @@ export function ModelsView() {
 		</Group>
 	);
 }
+
+export default ModelsView;

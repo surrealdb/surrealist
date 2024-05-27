@@ -4,7 +4,6 @@ import { DiagramDirection, TableInfo } from "~/types";
 import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, NodeChange, Position } from "reactflow";
 import { toBlob, toSvg } from "html-to-image";
-import ELK from "elkjs/lib/elk.bundled";
 
 export const NODE_TYPES = {
 	table: TableNode,
@@ -129,7 +128,8 @@ export async function applyNodeLayout(
 		return [];
 	}
 
-	const elk = new ELK();
+	const ELK = await import("elkjs/lib/elk.bundled");
+	const elk = new ELK.default();
 	const graph = {
 		id: 'root',
 		children: nodes.map(node => ({

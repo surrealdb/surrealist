@@ -55,3 +55,5 @@ export function AuthenticationView() {
 		</SimpleGrid>
 	);
 }
+
+export default AuthenticationView;

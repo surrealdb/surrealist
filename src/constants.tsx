@@ -1,8 +1,3 @@
-import queryIcon from "~/assets/animation/query.json";
-import explorerIcon from "~/assets/animation/explorer.json";
-import designerIcon from "~/assets/animation/designer.json";
-import authIcon from "~/assets/animation/auth.json";
-
 import {
 	AuthMode,
 	CodeLang,
@@ -110,28 +105,28 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
-		anim: queryIcon,
+		anim: import("~/assets/animation/query.json").then(x => x.default),
 		desc: "Execute queries against the database and inspect the results",
 	},
 	explorer: {
 		id: "explorer",
 		name: "Explorer",
 		icon: iconExplorer,
-		anim: explorerIcon,
+		anim: import("~/assets/animation/explorer.json").then(x => x.default),
 		desc: "Explore the database tables, records, and relations",
 	},
 	designer: {
 		id: "designer",
 		name: "Designer",
 		icon: iconDesigner,
-		anim: designerIcon,
+		anim: import("~/assets/animation/designer.json").then(x => x.default),
 		desc: "Define database tables and relations",
 	},
 	authentication: {
 		id: "authentication",
 		name: "Authentication",
 		icon: iconAuth,
-		anim: authIcon,
+		anim: import("~/assets/animation/auth.json").then(x => x.default),
 		desc: "Manage account details and database scopes",
 	},
 	functions: {
