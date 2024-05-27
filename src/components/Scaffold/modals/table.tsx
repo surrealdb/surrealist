@@ -58,7 +58,8 @@ export function TableCreator() {
 			setTableIn([]);
 			setTableOut([]);
 		}
-	}, [opened, setTableName]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [opened]);
 
 	useIntent("new-table", openTableCreator);
 

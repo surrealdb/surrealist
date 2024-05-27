@@ -56,7 +56,8 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			setRecordId('');
 			setRecordBody('{\n    \n}');
 		}
-	}, [opened, table, setRecordTable, setRecordId, setRecordBody]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [opened, table]);
 
 	const [width, setWidth] = useState(650);
 

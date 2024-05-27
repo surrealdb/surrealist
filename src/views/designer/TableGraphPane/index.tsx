@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Box, Button, Checkbox, Divider, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Checkbox, Divider, Group, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
 import { Background, NodeChange, ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import { ChangeEvent, ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
@@ -177,6 +177,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	useEffect(() => {
 		renderGraph();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeSession.diagramMode, activeSession.diagramDirection, activeSession.diagramShowLinks]);
 
 	useLayoutEffect(() => {

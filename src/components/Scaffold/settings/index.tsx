@@ -102,7 +102,8 @@ export function Settings({
 			setFlags({ featureFlags: true });
 			setLogoClicked([]);
 		}
-	}, [logoClicked, setFlags]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [logoClicked]);
 
 	useIntent("open-settings", ({ tab }) => {
 		if (tab) {

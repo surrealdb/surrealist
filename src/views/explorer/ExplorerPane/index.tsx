@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Button, Center, ComboboxData, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { FocusEvent, KeyboardEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -9,7 +9,7 @@ import { useStable } from "~/hooks/stable";
 import { useSchema } from "~/hooks/schema";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
-import { iconChevronLeft, iconChevronRight, iconClose, iconCopy, iconDelete, iconFilter, iconPlus, iconQuery, iconRefresh, iconServer, iconTable, iconWrench } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconCopy, iconDelete, iconFilter, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
 import { executeQuery } from "~/connection";
@@ -73,7 +73,7 @@ const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unkno
 		const records = response[1].result || [];
 
 		return { records, total };
-	} catch (error) {
+	} catch {
 		return { records: [], total: 0 };
 	}
 };
@@ -128,10 +128,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const pageCount = Math.ceil(recordCount / pageSize);
 
-	const setCurrentPage = useCallback((number: number) => {
+	const setCurrentPage = useStable((number: number) => {
 		setPageText(number.toString());
 		setPage(number);
-	}, [setPageText, setPage]);
+	});
 
 	const toggleFilter = useStable(() => {
 		setFiltering(!filtering);
@@ -141,7 +141,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		if (page > pageCount) {
 			setCurrentPage(pageCount || 1);
 		}
-	}, [page, pageCount, setCurrentPage]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [page, pageCount]);
 
 	useEventSubscription(RecordsChangedEvent, () => {
 		refreshRecords();

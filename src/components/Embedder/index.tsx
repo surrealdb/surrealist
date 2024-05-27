@@ -77,7 +77,8 @@ export function Embedder({
 		if (value) {
 			setState(value);
 		}
-	}, [value, setState]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [value]);
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
