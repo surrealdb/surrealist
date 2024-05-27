@@ -223,7 +223,7 @@ export const
   ObjectProperty = 209,
   ObjectKey = 210,
   RecordIdRange = 212,
-  FunctionJs = 214,
+  FunctionJs = 213,
   JavaScript = 216,
   Function = 217,
   functionName = 218,

@@ -513,13 +513,7 @@ RecordId {
 // Durations
 
 Duration {
-	//TODO why does it require a space between the duration parts?
 	DurationPart+
-}
-
-DurationPart {
-	int ~int
-	durationUnit
 }
 
 // JS Functions
@@ -527,7 +521,11 @@ DurationPart {
 FunctionJs {
 	"function"
 	"(" commaSep<Value>? ")"
-	"{" JavaScript? "}"
+	javascriptBlock
+}
+
+@skip {} {
+  javascriptBlock {	"{" JavaScript? "}" }
 }
 
 // Function invocation
@@ -930,9 +928,9 @@ Ident {
 }
 
 Number { Int | Float | Decimal }
-Int[@name=Number] { "-"? int ~int }
-Float[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "f"? }
-Decimal[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "dec" }
+Int[@name=Number] { "-"? int }
+Float[@name=Number] { "-"? float }
+Decimal[@name=Number] { "-"? decimal }
 
 Operator {
     binaryOperator |
@@ -991,6 +989,8 @@ Operator {
 	int { @digit+ }
 	frac { '.' @digit+ }
 	exp { $[eE] $[+\-]? @digit+ }
+	float { int (frac exp? | exp) "f"? }
+	decimal { int frac? exp? "dec" }
 
 	singleString { "'" ![']* "'" }
 	doubleString { '"' !["]* '"' }
@@ -1008,8 +1008,6 @@ Operator {
 		( @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")* )
 	}
 
-	// Functions
-	JavaScript { ![\\\n}]+ }
 	functionName[@name=function] {
 		(
 		"rand" | "RAND" |
@@ -1025,10 +1023,19 @@ Operator {
 	}
 
 	durationUnit { "ns" | "us" | "µs" | "ms" | "s" | "m" | "h" | "d" | "w" | "y"}
+	DurationPart { int " "* durationUnit }
 
-	@precedence { "function" JavaScript whitespace Comment "-" binaryOperator customFunctionName functionName exp "dec" rawident int durationUnit "f" singleString doubleString }
+	@precedence { Comment "-" }
+	@precedence { Comment binaryOperator }
+	@precedence { functionName customFunctionName rawident }
+	@precedence { float decimal int rawident }
+	@precedence { DurationPart rawident }
+	@precedence { DurationPart int }
 
-	"function"
+	"function" // FIXME
+	@precedence { "function" rawident }
+
+	JavaScript { ![\\\n}]+ }
 
 	binaryOperator {
 		"&&" | "||" | "??" | "?:" | "!=" | "==" | "?=" | "*=" | "~" | "!~" | "*~" |
