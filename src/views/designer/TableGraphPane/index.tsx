@@ -1,9 +1,9 @@
 import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Box, Button, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Checkbox, Divider, Group, Kbd, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
 import { Background, NodeChange, ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
-import { ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ChangeEvent, ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
 import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
@@ -107,7 +107,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [nodes]);
 
 	const renderGraph = useStable(async () => {
-		const [nodes, edges] = buildFlowNodes(props.tables);
+		const [nodes, edges] = buildFlowNodes(props.tables, activeSession.diagramShowLinks);
 
 		if (nodes.length === 0) {
 			setNodes([]);
@@ -159,8 +159,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			id: activeSession?.id,
 			diagramMode: mode as DiagramMode,
 		});
-
-		renderGraph();
 	});
 
 	const setDiagramDirection = useStable((mode: string) => {
@@ -168,9 +166,18 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			id: activeSession?.id,
 			diagramDirection: mode as DiagramDirection,
 		});
-
-		renderGraph();
 	});
+
+	const setDiagramShowLinks = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		updateCurrentConnection({
+			id: activeSession?.id,
+			diagramShowLinks: e.target.checked,
+		});
+	});
+
+	useEffect(() => {
+		renderGraph();
+	}, [activeSession.diagramMode, activeSession.diagramDirection, activeSession.diagramShowLinks]);
 
 	useLayoutEffect(() => {
 		if (isViewActive && isConnected) {
@@ -243,6 +250,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 									data={DESIGNER_DIRECTIONS}
 									value={activeSession.diagramDirection}
 									onChange={setDiagramDirection}
+								/>
+								<Divider color="slate.6" />
+								<Checkbox
+									label="Show record links"
+									checked={activeSession.diagramShowLinks}
+									onChange={setDiagramShowLinks}
 								/>
 							</Stack>
 						</Popover.Dropdown>

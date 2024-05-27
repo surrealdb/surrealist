@@ -45,7 +45,10 @@ function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 	});
 }
 
-export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
+export function buildFlowNodes(
+	tables: TableInfo[],
+	showLinks: boolean
+): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
 	const edges: Edge[] = [];
@@ -108,25 +111,27 @@ export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
 	}
 
 	// Define all record links
-	for (const table of tables) {
-		for (const field of table.fields) {
-			if (!field.kind?.startsWith('record') || field.name == 'in' || field.name == 'out') continue;
+	if (showLinks) {
+		for (const table of tables) {
+			for (const field of table.fields) {
+				if (!field.kind?.startsWith('record') || field.name == 'in' || field.name == 'out') continue;
 
-			const targets = extractKindMeta(field.kind);
+				const targets = extractKindMeta(field.kind);
 
-			for (const target of targets) {
-				if (target == table.schema.name) continue;
+				for (const target of targets) {
+					if (target == table.schema.name) continue;
 
-				edges.push({
-					...EDGE_OPTIONS,
-					id: `tb-${table.schema.name}-field-${field.name}:${target}`,
-					source: table.schema.name,
-					target,
-					className: classes.recordLink,
-					label: field.name,
-					labelShowBg: false,
-					labelStyle: { fill: 'white' }
-				});
+					edges.push({
+						...EDGE_OPTIONS,
+						id: `tb-${table.schema.name}-field-${field.name}:${target}`,
+						source: table.schema.name,
+						target,
+						className: classes.recordLink,
+						label: field.name,
+						labelShowBg: false,
+						labelStyle: { fill: 'white' }
+					});
+				}
 			}
 		}
 	}

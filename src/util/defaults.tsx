@@ -44,6 +44,7 @@ export function createBaseSettings(): SurrealistSettings {
 			defaultResultMode: "combined",
 			defaultDiagramMode: "fields",
 			defaultDiagramDirection: "ltr",
+			defaultDiagramShowLinks: false,
 			sidebarMode: "expandable",
 			valueMode: "sql",
 			queryOrientation: "vertical"
@@ -94,6 +95,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		queryHistory: [],
 		diagramMode: settings.appearance.defaultDiagramMode,
 		diagramDirection: settings.appearance.defaultDiagramDirection,
+		diagramShowLinks: settings.appearance.defaultDiagramShowLinks
 	};
 }
 
