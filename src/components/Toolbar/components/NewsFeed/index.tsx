@@ -189,9 +189,12 @@ export function NewsFeed() {
 										<Title fz={28} c="bright">
 											{reading.title}
 										</Title>
-										<TypographyStylesProvider mt="lg" fz={14}>
-											<div dangerouslySetInnerHTML={{ __html: reading.content }} />
-										</TypographyStylesProvider>
+										<TypographyStylesProvider
+											mt="lg"
+											fz={14}
+											className={classes.readingContent}
+											dangerouslySetInnerHTML={{ __html: reading.content }}
+										/>
 										{reading.link && (
 											<Alert
 												mt="xl"

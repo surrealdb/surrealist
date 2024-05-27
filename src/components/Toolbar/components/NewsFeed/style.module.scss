@@ -17,6 +17,19 @@
 	background-image: linear-gradient(to bottom, transparent, var(--mantine-color-body)), var(--image-url);
 }
 
+.reading-content {
+	pre {
+		white-space: pre-wrap;
+		background-color: var(--mantine-color-slate-9);
+	}
+
+	code {
+		background-color: unset !important;
+		color: var(--mantine-color-bright) !important;
+		padding: 0;
+	}
+}
+
 .back-button {
 	-webkit-backdrop-filter: blur(4px);
 	backdrop-filter: blur(4px);
