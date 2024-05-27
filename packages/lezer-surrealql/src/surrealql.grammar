@@ -12,7 +12,8 @@
 	Object,
 	Duration,
 	Number,
-	ObjectContent
+	ObjectContent,
+	statement @cut
 }
 
 Expressions {
@@ -31,8 +32,9 @@ SubQuery {
 }
 
 Block {
+	!statement
 	"{"
-	Expressions ~ident
+	Expressions
 	"}"
 }
 
@@ -428,7 +430,26 @@ OnTableClause
 
 // Values
 
-BaseValue { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast | Duration }
+BaseValue {
+	String |
+	Number |
+	true |
+	false |
+	null |
+	none |
+	VariableName |
+	Ident { rawident } |
+	Array |
+	RecordId |
+	FunctionJs |
+	Function |
+	SubQuery |
+	Block |
+	Object |
+	TypeCast |
+	Duration
+}
+
 Value { BaseValue | BinaryExpression }
 
 // Binary expressions
@@ -441,10 +462,9 @@ BinaryExpression {
 
 // Objects
 
-ObjectKey[@dynamicPrecedence=2] {
-	rawident ~ident |
-	singleString ~string |
-	doubleString ~string
+ObjectKey {
+	KeyName { rawident } |
+	String
 }
 
 ObjectProperty {
@@ -456,7 +476,7 @@ ObjectContent {
 }
 
 Object {
-	"{" ObjectContent? "}"
+	objectOpen ObjectContent? "}"
 }
 
 // Arrays
@@ -465,10 +485,10 @@ Array { "[" commaSep<Value>? "]"}
 
 // Record Ids
 
-RecordIdIdent[@dynamicPrecedence=1] {
-rawident ~ident |
-tickIdent ~ident |
-bracketIdent
+RecordIdIdent {
+	rawident |
+	tickIdent |
+	bracketIdent
 }
 
 RecordIdValue {
@@ -902,10 +922,10 @@ TypeCast {
 }
 
 // Strings
-String { singleString ~string | doubleString ~string }
+String { singleString | doubleString }
 
 Ident {
-	rawident ~ident |
+	rawident |
 	tickIdent
 }
 
@@ -942,6 +962,10 @@ Operator {
 		( "," ( Int | chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) )
 		"|>"
 	)
+}
+
+@external tokens objectToken from "./tokens" {
+	objectOpen[@name=BraceOpen]
 }
 
 @tokens {
