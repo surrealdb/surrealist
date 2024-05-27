@@ -18,9 +18,11 @@ export function AppearanceTab() {
 	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
 	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(CAT, "defaultDiagramDirection");
+	const [defaultDiagramShowLinks, setDefaultDiagramShowLinks] = useSetting(CAT, "defaultDiagramShowLinks");
 	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
 
 	const updateResultWordWrap = useCheckbox(setResultWordWrap);
+	const updateDefaultDiagramShowLinks = useCheckbox(setDefaultDiagramShowLinks);
 
 	const [flags] = useFeatureFlags();
 
@@ -130,6 +132,12 @@ export function AppearanceTab() {
 					data={DESIGNER_DIRECTIONS}
 					value={defaultDiagramDirection}
 					onChange={setDefaultDiagramDirection as any}
+				/>
+
+				<Checkbox
+					label="Show links between nodes"
+					checked={defaultDiagramShowLinks}
+					onChange={updateDefaultDiagramShowLinks}
 				/>
 			</SettingsSection>
 		</>
