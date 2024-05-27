@@ -1,7 +1,8 @@
+import classes from "./style.module.scss";
 import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { DiagramDirection, TableInfo } from "~/types";
-import { extractEdgeRecords } from "~/util/schema";
+import { extractEdgeRecords, extractKindMeta } from "~/util/schema";
 import { Edge, Node, NodeChange, Position } from "reactflow";
 import { toBlob, toSvg } from "html-to-image";
 
@@ -10,9 +11,8 @@ export const NODE_TYPES = {
 	edge: EdgeNode,
 };
 
-const EDGE_OPTIONS = {
+const EDGE_OPTIONS: Partial<Edge> = {
 	type: 'smoothstep',
-	style: { strokeWidth: 2 },
 	pathOptions: { borderRadius: 50 }
 };
 
@@ -79,7 +79,7 @@ export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
 		for (const fromTable of from) {
 			edges.push({
 				...EDGE_OPTIONS,
-				id: `${table.schema.name}-${fromTable}`,
+				id: `tb-${table.schema.name}-edge-${fromTable}`,
 				source: fromTable,
 				target: table.schema.name
 			});
@@ -94,7 +94,7 @@ export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
 		for (const toTable of to) {
 			edges.push({
 				...EDGE_OPTIONS,
-				id: `${table.schema.name}-${toTable}`,
+				id: `tb-${table.schema.name}-edge-${toTable}`,
 				source: table.schema.name,
 				target: toTable
 			});
@@ -103,6 +103,30 @@ export function buildFlowNodes(tables: TableInfo[]): [Node[], Edge[]] {
 
 			if (node) {
 				node.data.hasIncoming = true;
+			}
+		}
+	}
+
+	// Define all record links
+	for (const table of tables) {
+		for (const field of table.fields) {
+			if (!field.kind?.startsWith('record') || field.name == 'in' || field.name == 'out') continue;
+
+			const targets = extractKindMeta(field.kind);
+
+			for (const target of targets) {
+				if (target == table.schema.name) continue;
+
+				edges.push({
+					...EDGE_OPTIONS,
+					id: `tb-${table.schema.name}-field-${field.name}:${target}`,
+					source: table.schema.name,
+					target,
+					className: classes.recordLink,
+					label: field.name,
+					labelShowBg: false,
+					labelStyle: { fill: 'white' }
+				});
 			}
 		}
 	}
