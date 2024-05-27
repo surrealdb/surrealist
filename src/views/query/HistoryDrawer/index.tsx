@@ -137,7 +137,7 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 		return connection.queryHistory.filter((entry) =>
 			entry.query.toLowerCase().includes(needle)
 		).reverse();
-	}, [connection?.queryHistory, filterText]);
+	}, [connection, filterText]);
 
 	return (
 		<Drawer

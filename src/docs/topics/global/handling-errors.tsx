@@ -21,7 +21,7 @@ export function DocsGlobalHandlingErrors({ language, topic }: TopicProps) {
 				console.log(rows);
 			});
 		`,
-	}), []);
+	}), [topic.extra, schema?.tables]);
 
 	return (
 		<Article title="Handling errors">

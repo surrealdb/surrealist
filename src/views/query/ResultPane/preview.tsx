@@ -41,11 +41,11 @@ export interface CombinedJsonPreviewProps {
 }
 
 export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
-	const [format, mode] = useValueFormatter();
+	const [format] = useValueFormatter();
 
 	const contents = useMemo(() => {
 		return results.reduce((acc, cur, i) => acc + buildResult(i, cur, format), '').trim();
-	}, [results, mode]);
+	}, [results, format]);
 
 	return (
 		<CodeEditor
@@ -63,8 +63,8 @@ export interface SingleJsonPreviewProps {
 }
 
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
-	const [format, mode] = useValueFormatter();
-	const contents = useMemo(() => format(result), [result, mode]);
+	const [format] = useValueFormatter();
+	const contents = useMemo(() => format(result), [result, format]);
 
 	return (
 		<CodeEditor

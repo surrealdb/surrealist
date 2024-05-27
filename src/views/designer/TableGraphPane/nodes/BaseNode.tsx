@@ -45,9 +45,7 @@ interface FieldKindProps {
 
 function FieldKind({ kind }: FieldKindProps) {
 
-	const [kindName, tooltip] = useMemo(() => {
-		return extractType(kind);
-	}, []);
+	const [kindName, tooltip] = useMemo(() => extractType(kind), [kind]);
 
 	const value = (
 		<Text c="surreal.6" ff="mono" maw="50%">

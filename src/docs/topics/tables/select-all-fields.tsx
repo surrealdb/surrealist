@@ -35,7 +35,7 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 		$db->select("${table.schema.name}");
 		`,
 		}),
-		[]
+		[table.schema.name]
 	);
 
 	return (

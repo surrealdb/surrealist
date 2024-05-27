@@ -90,6 +90,7 @@ export function NewsFeed() {
 
 	useEffect(() => {
 		fetchFeed();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -102,6 +103,7 @@ export function NewsFeed() {
 			readingHandle.close();
 			setUnreadIds([]);
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isOpen]);
 
 	const isEmpty = items.length === 0;

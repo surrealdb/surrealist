@@ -2,7 +2,6 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useActiveConnection } from "~/hooks/connection";
 import { getTable } from "~/docs/helpers";
 
 export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
@@ -11,7 +10,6 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		table.fields.find(
 			({ name }: { name: string }) => !["id", "in", "out"].includes(name)
 		)?.name ?? "id";
-	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -71,7 +69,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[]
+		[table.schema.name, fieldName]
 	);
 
 	return (

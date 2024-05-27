@@ -31,6 +31,7 @@ export function LegacyModal() {
 
 	useEffect(() => {
 		checkLegacyConfig();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

@@ -26,7 +26,7 @@ export const Icon = ({ size, color, path, style, left, right, noStroke, ...rest 
 			marginLeft: right ? '0.5em' : undefined,
 			flexShrink: 0,
 		});
-	}, [color, left, right, size, style, theme]);
+	}, [color, left, right, size, style]);
 
 	return (
 		<Box component="svg" viewBox="0 0 24 24" role="presentation" style={svgStyle} {...rest}>

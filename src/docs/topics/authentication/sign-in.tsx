@@ -5,9 +5,12 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 import { connectionUri } from "~/util/helpers";
 
-export function DocsAuthSignIn({ language, topic }: TopicProps) {
+export function DocsAuthSignIn({ language }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const endpoint = connectionUri(connection);
+	const esc_endpoint = JSON.stringify(endpoint);
+	const esc_namespace = JSON.stringify(connection.namespace);
+	const esc_database = JSON.stringify(connection.database);
 
 	const descriptions = {
 		cli: `With the SurrealDB CLI, you can only signin via system(Root, Namespace and Database) users. This example shows a command on how to signin with the username and password left blank.`,
@@ -17,7 +20,7 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			surreal sql  -e ${endpoint} --ns ${connection.namespace} --db ${connection.database} --user ... --pass ...
+			surreal sql  -e ${esc_endpoint} --ns ${esc_namespace} --db ${esc_database} --user ... --pass ...
 		`,
 			js: `
 		// Authenticate with a root user
@@ -174,7 +177,7 @@ export function DocsAuthSignIn({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[]
+		[esc_endpoint, esc_namespace, esc_database]
 	);
 
 	return (

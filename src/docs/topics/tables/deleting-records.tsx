@@ -3,11 +3,9 @@ import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { getTable } from "~/docs/helpers";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
-	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -36,7 +34,7 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 		$db->delete("${table.schema.name}");
 		`,
 		}),
-		[]
+		[table.schema.name]
 	);
 
 	return (

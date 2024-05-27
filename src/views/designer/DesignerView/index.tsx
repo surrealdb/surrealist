@@ -103,7 +103,7 @@ export function DesignerView(_props: DesignerViewProps) {
 		if (!isOnline) {
 			isDesigningHandle.close();
 		}
-	}, [isOnline]);
+	}, [isOnline, isDesigningHandle]);
 
 	useIntent("design-table", ({ table }) => {
 		setActiveTable(table);

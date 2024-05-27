@@ -55,7 +55,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
-	}, [schema, search, connection.pinnedTables]);
+	}, [schema, search, isPinned]);
 
 	const togglePinned = useStable((table: string) => {
 		if (table && connection) {

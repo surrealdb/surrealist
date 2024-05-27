@@ -50,7 +50,7 @@ export function CommandPaletteModal({
 			setCategories(cmds);
 			setSelected(cmds[0]?.commands[0] ?? null);
 		}
-	}, [opened]);
+	}, [opened, setSearch]);
 
 	const [filtered, flattened] = useMemo(() => {
 		const filtered = categories.flatMap((cat) => {
@@ -90,7 +90,7 @@ export function CommandPaletteModal({
 		) {
 			setSelected(flattened[0]);
 		}
-	}, [flattened]);
+	}, [flattened, selected]);
 
 	const activate = (cmd: Command) => {
 		switch (cmd.action.type) {

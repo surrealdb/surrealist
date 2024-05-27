@@ -127,6 +127,7 @@ export function ConnectionEditor() {
 				draft.name = generateName();
 			});
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [details.name]);
 
 	useLayoutEffect(() => {
@@ -144,6 +145,7 @@ export function ConnectionEditor() {
 				setDetails(info || base);
 			}
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [opened]);
 
 	useIntent("new-connection", () => {

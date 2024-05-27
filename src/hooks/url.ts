@@ -31,9 +31,10 @@ export function useUrlHandler() {
 		if (intent) {
 			handleIntentRequest(intent);
 		}
-	}, []);
+	}, [activeView, setActiveView]);
 
 	// Sync initial URL to active view
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(syncViewToUrl, []);
 
 	// Sync history change to active view

@@ -1,16 +1,13 @@
 {
 	"root": true,
 	"parser": "@typescript-eslint/parser",
-	"plugins": [
-		"@typescript-eslint",
-		"unused-imports",
-		"unicorn"
-	],
+	"plugins": ["@typescript-eslint", "unused-imports", "unicorn"],
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"plugin:@typescript-eslint/recommended",
 		"plugin:unicorn/recommended",
+		"plugin:react-hooks/recommended",
 		"plugin:@tanstack/eslint-plugin-query/recommended"
 	],
 	"rules": {
@@ -29,10 +26,10 @@
 		"@typescript-eslint/ban-types": 0,
 		"@typescript-eslint/ban-ts-comment": 0,
 		"unicorn/prevent-abbreviations": 0,
-        "unicorn/catch-error-name": [ 2, { "name": "err" }],
-        "unicorn/no-null": 0,
-        "unicorn/no-array-reduce": 0,
-        "unicorn/filename-case": 0,
+		"unicorn/catch-error-name": [2, { "name": "err" }],
+		"unicorn/no-null": 0,
+		"unicorn/no-array-reduce": 0,
+		"unicorn/filename-case": 0,
 		"unicorn/prefer-ternary": 0,
 		"unicorn/no-nested-ternary": 0,
 		"unicorn/no-thenable": 0,

@@ -2,12 +2,10 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useActiveConnection } from "~/hooks/connection";
 import { getTable } from "~/docs/helpers";
 
 export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
-	const { connection } = useActiveConnection();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -36,7 +34,7 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 		$db->create("${table.schema.name}")
 		`,
 		}),
-		[]
+		[table.schema.name]
 	);
 
 	return (

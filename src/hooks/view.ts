@@ -18,5 +18,5 @@ export function useViewEffect(view: ViewMode, callback: () => void) {
 		if (activeView === view) {
 			stable();
 		}
-	}, [activeView, view]);
+	}, [activeView, view, stable]);
 }

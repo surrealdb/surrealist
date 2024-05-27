@@ -77,7 +77,7 @@ export function Embedder({
 		if (value) {
 			setState(value);
 		}
-	}, [value]);
+	}, [value, setState]);
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
@@ -131,6 +131,7 @@ export function Embedder({
 
 	useLayoutEffect(() => {
 		onChangeURL?.(frameUrl);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [frameUrl]);
 
 	return (

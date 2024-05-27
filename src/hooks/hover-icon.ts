@@ -57,7 +57,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 		return () => {
 			itemRef.current?.destroy();
 		};
-	}, []);
+	}, [options.animation, options.className]);
 
 	return {
 		ref,
