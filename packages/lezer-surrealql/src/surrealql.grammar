@@ -692,7 +692,7 @@ IfExistsClause {
 
 ReturnClause {
 	return
-	( none ~returnvalue | before | after | diff | commaSep<Value> ~returnvalue )
+	( before | after | diff | commaSep<Value> )
 }
 
 TimeoutClause {
