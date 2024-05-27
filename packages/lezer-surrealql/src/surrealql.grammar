@@ -448,7 +448,8 @@ baseValue {
 	Block |
 	Object |
 	TypeCast |
-	Duration
+	Duration |
+	Point { "(" Decimal "," Decimal ")" }
 }
 
 value[@isGroup=Value] { baseValue | BinaryExpression }
