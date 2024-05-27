@@ -14,7 +14,8 @@
 	},
 	"scripts": {
 		"build": "lezer-generator src/surrealql.grammar -o src/parser.js && rollup -c",
-		"prepack": "pnpm build"
+		"prepack": "pnpm build",
+		"test": "node test/test-surrealql.js"
 	},
 	"dependencies": {
 		"@lezer/highlight": "^1.2.0",

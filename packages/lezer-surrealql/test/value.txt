@@ -1,0 +1,92 @@
+# Numbers
+
+0;
+0.0;
+2e4f;
+2.2e4;
+4dec;
+
+==>
+
+SurrealQL(Number,Number,Number,Number,Number)
+
+# Strings
+
+"A string with \"double\" and 'single' quotes";
+'A string with "double" and \'single\' quotes';
+'A string with new \
+line';
+
+==>
+
+SurrealQL(String,String,String)
+
+# Identifiers
+
+theVar;
+theVar2;
+
+==>
+
+SurrealQL(Ident,Ident)
+
+# Binary operators
+
+1 + 2;
+a ∈ z;
+x containsnot y;
+
+==>
+
+SurrealQL(
+  BinaryExpression(Number,Operator,Number),
+  BinaryExpression(Ident,Operator,Ident),
+  BinaryExpression(Ident,Operator,Ident))
+
+# Objects
+
+{a: 10};
+{block};
+{"stringkey": 1, 'single': 2};
+
+==>
+
+SurrealQL(
+  Object(BraceOpen,ObjectContent(ObjectProperty(ObjectKey(KeyName),Colon,Number)),BraceClose),
+  Block(BraceOpen,Ident,BraceClose),
+  Object(BraceOpen,ObjectContent(
+    ObjectProperty(ObjectKey(String),Colon,Number),
+    ObjectProperty(ObjectKey(String),Colon,Number)
+  ),BraceClose))
+
+# Points
+
+(10dec, 20dec)
+
+==>
+
+SurrealQL(Point(Number,Number))
+
+# Function Calls
+
+a::b();
+fn::one::two(1, a);
+rand(3);
+count(x);
+
+==>
+
+SurrealQL(
+  Function(function),
+  Function(function,Number,Ident),
+  Function(function,Number),
+  Function(function,Ident))
+
+# Durations
+
+1s 1m 1 h
+
+==>
+
+SurrealQL(Duration(DurationPart,DurationPart,DurationPart))
+

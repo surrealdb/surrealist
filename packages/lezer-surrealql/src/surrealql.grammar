@@ -1,5 +1,5 @@
 @top SurrealQL {
-	Expressions | WhereClause
+	expressions | WhereClause
 }
 
 @precedence {
@@ -16,25 +16,25 @@
 	statement @cut
 }
 
-Expressions {
-	(Expression ";")* Expression ";"?
+expressions {
+	(expression ";")* expression ";"?
 }
 
-Expression {
+expression {
 	statement |
 	value
 }
 
 SubQuery {
 	"("
-	Expression
+	expression
 	")"
 }
 
 Block {
 	!statement
 	"{"
-	Expressions
+	expressions
 	"}"
 }
 
@@ -378,7 +378,7 @@ UpdateStatement {
 BreakStatement { break }
 ContinueStatement { continue }
 ForStatement { for VariableName in ( Array | VariableName | SubQuery | Block ) Block }
-ReturnStatement { return Expression }
+ReturnStatement { return expression }
 ThrowStatement { throw value }
 
 // Live statements
