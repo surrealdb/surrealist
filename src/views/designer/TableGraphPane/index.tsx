@@ -384,7 +384,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					<HelpTitle isLight={isLight}>Why are edges missing?</HelpTitle>
 
 					<Text mt={8} mb="xl">
-						Surrealist dermines edges by searching for correctly configured <Kbd>in</Kbd> and <Kbd>out</Kbd> fields. You
+						Surrealist only renders edges for tables with a relation type. You
 						can automatically create a new edge table by pressing the <Icon path={iconPlus} /> button on the Table Graph
 						panel. Keep in mind edges are only visible when the layout is set to Diagram.
 					</Text>
