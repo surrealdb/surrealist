@@ -4,7 +4,7 @@ import { useDebouncedFunction } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
+import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
 import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting, surqlCustomFunctionCompletion } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
@@ -144,11 +144,13 @@ export function QueryPane({
 								</Text>
 							</Stack>
 						}>
-							<HoverIcon
-								color="slate"
+							<ActionIcon
 								onClick={inferVariables}
-								animation={import("~/assets/animation/autofix.json").then(x => x.default)}
-							/>
+								variant="light"
+								aria-label="Infer variables from query"
+							>
+								<Icon path={iconAutoFix} />
+							</ActionIcon>
 						</Tooltip>
 
 						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
