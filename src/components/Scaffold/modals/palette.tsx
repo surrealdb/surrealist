@@ -50,7 +50,7 @@ export function CommandPaletteModal({
 			setCategories(cmds);
 			setSelected(cmds[0]?.commands[0] ?? null);
 		}
-	}, [opened, setSearch]);
+	}, [opened]);
 
 	const [filtered, flattened] = useMemo(() => {
 		const filtered = categories.flatMap((cat) => {
