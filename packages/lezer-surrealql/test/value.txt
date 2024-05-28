@@ -82,7 +82,7 @@ SurrealQL(
   Function(function,Number,Ident),
   Function(function,Number),
   Function(function,Ident),
-  Function(function,int,int,Ident))
+  Function(function,Version(VersionNumber),Ident))
 
 # Durations
 
@@ -104,7 +104,7 @@ function(123, 1d2h) {
 SurrealQL(
   FunctionJs(
     Number,Duration(DurationPart,DurationPart),
-    BraceOpen,JavaScript,BraceClose
+    JavaScriptBlock(BraceOpen,JavaScriptContent,BraceClose)
   )
 )
 
