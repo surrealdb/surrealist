@@ -78,11 +78,11 @@ some::versioned::function<1.2.3>(a);
 ==>
 
 SurrealQL(
-  Function(function),
-  Function(function,Number,Ident),
-  Function(function,Number),
-  Function(function,Ident),
-  Function(function,Version(VersionNumber),Ident))
+  Function(function,ArgumentList),
+  Function(function,ArgumentList(Number,Ident)),
+  Function(function,ArgumentList(Number)),
+  Function(function,ArgumentList(Ident)),
+  Function(function,Version(VersionNumber),ArgumentList(Ident)))
 
 # Durations
 
@@ -154,26 +154,21 @@ record:id[ident];
 ==>
 
 SurrealQL(
-	Variable,Ident,Ident,
-	RecordId,Any,
-	Ident,GraphTo(Any),
-	Ident,GraphTo(Ident),
-	Ident,GraphTo(Ident),GraphFrom(Ident),GraphBoth(Ident),
-	Ident,GraphTo(Alias(Any,Keyword,Ident),Ident,Alias(Filter(Ident,Keyword,Ident),Keyword,Ident)),
-	RecordId,GraphTo(Ident),
-	SelectStatement(
-		Keyword,
-		InclusivePredicate(Predicate(GraphTo(Ident))),
-		Keyword,
-		Ident
-	)
-	Number,Function(function),
-	Object,Filter(Variable),
-	Object,Filter(Ident),
-	Object,Filter(String),
-	RecordId,Filter(Ident),
-	Array,Filter(Number),
-	Array,Filter(Variable),
-	Array,Filter(Keyword,BinaryExpression(Ident,operator,Number)),
-	Array,Filter(Keyword,BinaryExpression(Ident,operator,Number))
-)
+  Path(VariableName,Subscript(Ident),Subscript(Ident)),
+  Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),Subscript(Any)),
+  Path(Ident,GraphPath(GraphRight,Any)),
+  Path(Ident,GraphPath(GraphRight,Ident)),
+  Path(Ident,GraphPath(GraphRight,Ident),GraphPath(GraphLeft,Ident),GraphPath(GraphBoth,Ident)),
+  Path(Ident,GraphPath(GraphRight,GraphPredicate(Any,Keyword,Ident),GraphPredicate(Ident),
+    GraphPredicate(Ident,WhereClause(Keyword,Ident),Keyword,Ident))),
+  Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),GraphPath(GraphRight,Ident)),
+  SelectStatement(Keyword,Predicate(Path(GraphPath(GraphRight,Ident))),Keyword,Ident),
+  Path(Number,Subscript(Ident,ArgumentList)),
+  Path(Block(BraceOpen,BraceClose),Filter("[",VariableName,"]")),
+  Path(Block(BraceOpen,BraceClose),Filter("[",Ident,"]")),
+  Path(Block(BraceOpen,BraceClose),Filter("[",String,"]")),
+  Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),Filter("[",Ident,"]")),
+  Path(Array("[","]"),Filter("[",Number,"]")),
+  Path(Array("[","]"),Filter("[",VariableName,"]")),
+  Path(Array("[","]"),Filter("[",WhereClause(Keyword,BinaryExpression(Ident,Operator,Number)),"]")),
+  Path(Array("[","]"),Filter("[",WhereClause(BinaryExpression(Ident,Operator,Number)),"]")))

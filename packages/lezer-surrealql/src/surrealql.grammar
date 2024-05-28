@@ -4,16 +4,7 @@
 
 @precedence {
 	range @left,
-	ident,
-	FunctionJs,
-	Int,
-	RecordId,
-	Ident,
-	Object,
-	Duration,
-	number,
-	ObjectContent,
-	statement @cut
+	method
 }
 
 expressions {
@@ -32,10 +23,7 @@ SubQuery {
 }
 
 Block {
-	!statement
-	"{"
-	expressions
-	"}"
+	"{" expressions? "}"
 }
 
 statement[@isGroup=Statement] {
@@ -235,7 +223,7 @@ SelectStatement {
 	(select)
 	(
 		valueKeyword Predicate |
-		commaSep<InclusivePredicate>
+		commaSep<inclusivePredicate>
 	)
 	(from)
 	(only)?
@@ -388,7 +376,7 @@ LiveSelectStatement {
 	(
 		diff |
 		valueKeyword Predicate |
-		commaSep<InclusivePredicate>
+		commaSep<inclusivePredicate>
 	)
 	from commaSep<Ident>
 	WhereClause?
@@ -452,7 +440,13 @@ baseValue {
 	Point { "(" Decimal "," Decimal ")" }
 }
 
-value[@isGroup=Value] { baseValue | BinaryExpression }
+Any { "?" }
+
+value[@isGroup=Value] {
+	baseValue |
+	BinaryExpression |
+	Path
+}
 
 // Binary expressions
 
@@ -460,6 +454,26 @@ BinaryExpression {
 	baseValue
 	Operator
 	baseValue
+}
+
+Path {
+	baseValue pathElement+ |
+	GraphPath pathElement*
+}
+
+pathElement {
+	GraphPath |
+	Subscript { "." (Ident (!method ArgumentList)? | Any { "*" }) } |
+	Filter { "[" (WhereClause | value | WhereClause { "?" value }) "]" }
+}
+
+GraphPath {
+	("<-" | "->" | "<->")
+	(Ident | Any | "(" commaSep<GraphPredicate> ")")
+}
+
+GraphPredicate {
+	(value | Any) WhereClause? (as Ident)?
 }
 
 // Objects
@@ -493,7 +507,7 @@ RecordIdIdent {
 	bracketIdent
 }
 
-RecordIdValue {
+recordIdValue {
 	RecordIdIdent |
 	Int |
 	Array |
@@ -501,15 +515,15 @@ RecordIdValue {
 }
 
 RecordIdRange {
-	( RecordIdValue !range ">"? )?
+	( recordIdValue !range ">"? )?
 	".."
-	( !range "="? RecordIdValue )?
+	( !range "="? recordIdValue )?
 }
 
 RecordId {
 	RecordIdIdent
 	":"
-	( RecordIdValue | RecordIdRange )
+	( recordIdValue | RecordIdRange )
 }
 
 // Durations
@@ -537,8 +551,10 @@ FunctionJs {
 Function {
 	(functionName | customFunctionName | rand | count)
 	Version { "<" VersionNumber ">" }?
-	"(" commaSep<value>? ")"
+	ArgumentList
 }
+
+ArgumentList { "(" commaSep<value>? ")" }
 
 // Assignment
 
@@ -574,7 +590,7 @@ TableTypeClause {
 TableViewClause {
 	as
 	select
-	commaSep<InclusivePredicate>
+	commaSep<inclusivePredicate>
 	from
 	commaSep<value>
 	WhereClause?
@@ -858,15 +874,9 @@ Predicate {
 	value as Ident
 }
 
-InclusivePredicate {
-	"*" |
-	Predicate
+inclusivePredicate {
+  Any | Predicate
 }
-
-// Idiom {
-// 	Ident
-// 	("." Ident)*
-// }
 
 // Types
 
@@ -978,6 +988,7 @@ Operator {
 	":"[@name=Colon]
 	"->"[@name=GraphRight]
 	"<-"[@name=GraphLeft]
+	"<->"[@name=GraphBoth]
 
 	// Helpers
 	whitespace { $[ \n\r\t] }
