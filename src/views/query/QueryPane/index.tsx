@@ -17,6 +17,7 @@ import { formatQuery, validateQuery } from "~/util/surrealql";
 import { surrealql } from "codemirror-surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { encodeCbor } from "surrealdb.js";
+import { useShallow } from 'zustand/react/shallow';
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -39,7 +40,9 @@ export function QueryPane({
 	onSaveQuery,
 	onSelectionChange,
 }: QueryPaneProps) {
-	const { updateQueryTab } = useConfigStore.getState();
+	const { updateQueryTab } = useConfigStore(
+		useShallow(state => ({ updateQueryTab: state.updateQueryTab }))
+	);
 
 	const setQueryForced = useStable((query: string) => {
 		setIsValid(!validateQuery(query));
