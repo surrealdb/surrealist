@@ -117,6 +117,20 @@ true
 
 SurrealQL(Literal,Literal)
 
+# Keyword names in ident position
+
+create bla set true = 1, false = 2, null = 3, none = 4
+
+==>
+
+SurrealQL(CreateStatement(
+  Keyword,Ident,
+  SetClause( Keyword,
+    FieldAssignment(Ident,Operator,Number),
+    FieldAssignment(Ident,Operator,Number),
+    FieldAssignment(Ident,Operator,Number),
+    FieldAssignment(Ident,Operator,Number))))
+
 # Idiom paths
 
 $variable.ident.ident;

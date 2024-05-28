@@ -439,7 +439,7 @@ baseValue {
 	null |
 	none |
 	VariableName |
-	Ident { rawident } |
+	Ident[@dynamicPrecedence=-1] { rawident } |
 	Array |
 	RecordId |
 	FunctionJs |
