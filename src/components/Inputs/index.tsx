@@ -249,7 +249,6 @@ export function FieldKindInput(props: FieldKindInputProps) {
 
 	return (
 		<TextInput
-			required
 			placeholder="any"
 			label={props.label}
 			value={props.value}
