@@ -108,7 +108,6 @@ export function createBaseTab(settings: SurrealistSettings, query?: string, ): T
 		valid: query ? !validateQuery(query) : true,
 		resultMode: settings.appearance.defaultResultMode,
 	};
-
 }
 
 export function createSandboxConnection(settings: SurrealistSettings): Connection {

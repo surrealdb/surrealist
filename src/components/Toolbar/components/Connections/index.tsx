@@ -17,13 +17,14 @@ import { useContextMenu } from "mantine-contextmenu";
 import { useIntent } from "~/hooks/url";
 import { USER_ICONS } from "~/util/user-icons";
 import { openConnection } from "~/connection";
+import { useCompatHotkeys } from "~/hooks/hotkey";
 
 export function Connections() {
-	const { openConnectionCreator , openConnectionEditor} = useInterfaceStore.getState();
+	const { openConnectionCreator, openConnectionEditor} = useInterfaceStore.getState();
 	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
-	const [isListing, isListingHandle] = useDisclosure();
+	const [isListing, listingHandle] = useDisclosure();
 	const [search, setSearch] = useInputState("");
 	const connections = useConnections();
 	const connection = useConnection();
@@ -33,19 +34,19 @@ export function Connections() {
 	const remoteVersion = useDatabaseStore((s) => s.version);
 
 	const createNew = useStable(() => {
-		isListingHandle.close();
+		listingHandle.close();
 		openConnectionCreator();
 	});
 
 	const activate = useStable((id: string) => {
-		isListingHandle.close();
+		listingHandle.close();
 		setActiveConnection(id);
 		updateTitle();
 	});
 
 	const editConnection = useStable((id: string, e: React.MouseEvent) => {
 		e.stopPropagation();
-		isListingHandle.close();
+		listingHandle.close();
 		openConnectionEditor(id);
 	});
 
@@ -85,8 +86,12 @@ export function Connections() {
 			setSearch(search);
 		}
 
-		isListingHandle.open();
+		listingHandle.open();
 	});
+
+	useCompatHotkeys([
+		["mod+L", listingHandle.open]
+	]);
 
 	return (
 		<>
@@ -95,7 +100,7 @@ export function Connections() {
 					<Button
 						variant="light"
 						color="slate"
-						onClick={isListingHandle.toggle}
+						onClick={listingHandle.toggle}
 						leftSection={isSandbox ? (
 							<Icon path={iconSurreal} size={1.2} noStroke />
 						) : (
@@ -147,7 +152,7 @@ export function Connections() {
 				<Button
 					variant="light"
 					color="slate"
-					onClick={isListingHandle.toggle}
+					onClick={listingHandle.toggle}
 					rightSection={
 						<Icon path={iconChevronDown} />
 					}
@@ -158,7 +163,7 @@ export function Connections() {
 
 			<Modal
 				opened={isListing}
-				onClose={isListingHandle.close}
+				onClose={listingHandle.close}
 				transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 				centered={false}
 			>
