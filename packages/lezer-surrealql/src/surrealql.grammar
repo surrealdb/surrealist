@@ -534,6 +534,7 @@ FunctionJs {
 
 Function {
 	(functionName | customFunctionName | rand | count)
+	Version { "<" VersionNumber ">" }?
 	"(" commaSep<value>? ")"
 }
 
@@ -991,6 +992,7 @@ Operator {
 	exp { $[eE] $[+\-]? @digit+ }
 	float { int (frac exp? | exp) "f"? }
 	decimal { int frac? exp? "dec" }
+	VersionNumber { @digit+ ("." @digit+ ("." @digit+)?)? }
 
 	String { "'" (!['\\] | "\\" _)* "'" | '"' (!["\\] | "\\" _)* '"' }
 	prefixedString[@name=String] { $[ruds] String }
