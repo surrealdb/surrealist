@@ -8,7 +8,7 @@
 
 ==>
 
-SurrealQL(Number,Number,Number,Number,Number)
+SurrealQL(Int,Float,Float,Float,Decimal)
 
 # Strings
 
@@ -39,7 +39,7 @@ x containsnot y;
 ==>
 
 SurrealQL(
-  BinaryExpression(Number,Operator,Number),
+  BinaryExpression(Int,Operator,Int),
   BinaryExpression(Ident,Operator,Ident),
   BinaryExpression(Ident,Operator,Ident))
 
@@ -52,11 +52,11 @@ SurrealQL(
 ==>
 
 SurrealQL(
-  Object(BraceOpen,ObjectContent(ObjectProperty(ObjectKey(KeyName),Colon,Number)),BraceClose),
+  Object(BraceOpen,ObjectContent(ObjectProperty(ObjectKey(KeyName),Colon,Int)),BraceClose),
   Block(BraceOpen,Ident,BraceClose),
   Object(BraceOpen,ObjectContent(
-    ObjectProperty(ObjectKey(String),Colon,Number),
-    ObjectProperty(ObjectKey(String),Colon,Number)
+    ObjectProperty(ObjectKey(String),Colon,Int),
+    ObjectProperty(ObjectKey(String),Colon,Int)
   ),BraceClose))
 
 # Points
@@ -65,7 +65,7 @@ SurrealQL(
 
 ==>
 
-SurrealQL(Point(Number,Number))
+SurrealQL(Point(Decimal,Decimal))
 
 # Function Calls
 
@@ -79,8 +79,8 @@ some::versioned::function<1.2.3>(a);
 
 SurrealQL(
   Function(function,ArgumentList),
-  Function(function,ArgumentList(Number,Ident)),
-  Function(function,ArgumentList(Number)),
+  Function(function,ArgumentList(Int,Ident)),
+  Function(function,ArgumentList(Int)),
   Function(function,ArgumentList(Ident)),
   Function(function,Version(VersionNumber),ArgumentList(Ident)))
 
@@ -103,7 +103,7 @@ function(123, 1d2h) {
 
 SurrealQL(
   FunctionJs(
-    Number,Duration(DurationPart,DurationPart),
+    Int,Duration(DurationPart,DurationPart),
     JavaScriptBlock(BraceOpen,JavaScriptContent,BraceClose)
   )
 )
@@ -115,7 +115,7 @@ true
 
 ==>
 
-SurrealQL(Literal,Literal)
+SurrealQL(Bool,Bool)
 
 # Keyword names in ident position
 
@@ -126,10 +126,10 @@ create bla set true = 1, false = 2, null = 3, none = 4
 SurrealQL(CreateStatement(
   Keyword,Ident,
   SetClause( Keyword,
-    FieldAssignment(Ident,Operator,Number),
-    FieldAssignment(Ident,Operator,Number),
-    FieldAssignment(Ident,Operator,Number),
-    FieldAssignment(Ident,Operator,Number))))
+    FieldAssignment(Ident,Operator,Int),
+    FieldAssignment(Ident,Operator,Int),
+    FieldAssignment(Ident,Operator,Int),
+    FieldAssignment(Ident,Operator,Int))))
 
 # Idiom paths
 
@@ -163,12 +163,12 @@ SurrealQL(
     GraphPredicate(Ident,WhereClause(Keyword,Ident),Keyword,Ident))),
   Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),GraphPath(GraphRight,Ident)),
   SelectStatement(Keyword,Predicate(Path(GraphPath(GraphRight,Ident))),Keyword,Ident),
-  Path(Number,Subscript(Ident,ArgumentList)),
+  Path(Int,Subscript(Ident,ArgumentList)),
   Path(Block(BraceOpen,BraceClose),Filter("[",VariableName,"]")),
   Path(Block(BraceOpen,BraceClose),Filter("[",Ident,"]")),
   Path(Block(BraceOpen,BraceClose),Filter("[",String,"]")),
   Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),Filter("[",Ident,"]")),
-  Path(Array("[","]"),Filter("[",Number,"]")),
+  Path(Array("[","]"),Filter("[",Int,"]")),
   Path(Array("[","]"),Filter("[",VariableName,"]")),
-  Path(Array("[","]"),Filter("[",WhereClause(Keyword,BinaryExpression(Ident,Operator,Number)),"]")),
-  Path(Array("[","]"),Filter("[",WhereClause(BinaryExpression(Ident,Operator,Number)),"]")))
+  Path(Array("[","]"),Filter("[",WhereClause(Keyword,BinaryExpression(Ident,Operator,Int)),"]")),
+  Path(Array("[","]"),Filter("[",WhereClause(BinaryExpression(Ident,Operator,Int)),"]")))

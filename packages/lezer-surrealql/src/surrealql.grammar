@@ -645,7 +645,7 @@ DocLenghtsOrderClause { doc_lengths_order Int }
 PostingsCacheClause { postings_cache Int }
 PostingsOrderClause { postings_order Int }
 TermsCacheClause { terms_cache Int }
-TermsOrderClause { terms_order Int}
+TermsOrderClause { terms_order Int }
 
 MtreeClause {
 	mtree
@@ -941,10 +941,6 @@ Ident {
 
 number { Int | Float | Decimal }
 
-Int[@name=Number] { "-"? int }
-Float[@name=Number] { "-"? float }
-Decimal[@name=Number] { "-"? decimal }
-
 Operator {
     binaryOperator |
 	"-" | "=" | ">" | "<" |
@@ -1000,11 +996,11 @@ Operator {
 	CommentSlash { "//" ![\n]* }
 
 	// Numbers
-	int { @digit+ }
+	Int { "-"? @digit+ }
 	frac { '.' @digit+ }
 	exp { $[eE] $[+\-]? @digit+ }
-	float { int (frac exp? | exp) "f"? }
-	decimal { int frac? exp? "dec" }
+	Float { "-"? @digit+ (frac exp? | exp) "f"? }
+	Decimal { "-"? @digit+ frac? exp? "dec" }
 	VersionNumber { @digit+ ("." @digit+ ("." @digit+)?)? }
 
 	String { "'" (!['\\] | "\\" _)* "'" | '"' (!["\\] | "\\" _)* '"' }
@@ -1032,15 +1028,15 @@ Operator {
 	}
 
 	durationUnit { "ns" | "us" | "µs" | "ms" | "s" | "m" | "h" | "d" | "w" | "y"}
-	DurationPart { int " "* durationUnit }
+	DurationPart { @digit+ " "* durationUnit }
 
-	@precedence { Comment "-" }
+	@precedence { Comment Int "-" }
 	@precedence { Comment binaryOperator }
 	@precedence { prefixedString rawident }
 	@precedence { customFunctionName functionName rawident }
-	@precedence { float decimal int rawident }
+	@precedence { Float Decimal Int rawident }
 	@precedence { DurationPart rawident }
-	@precedence { DurationPart int }
+	@precedence { DurationPart Int }
 
 	javaScriptContent { "\n" | ![}\n]+ "\n"? }
 
@@ -1209,11 +1205,11 @@ piped<content> {
 	after					[@name=Literal],
 	before					[@name=Literal],
 	diff					[@name=Literal],
-	false					[@name=Literal],
+	false					[@name=Bool],
 	full					[@name=Literal],
-	none					[@name=Literal],
-	null					[@name=Literal],
-	true					[@name=Literal],
+	none					[@name=None],
+	null					[@name=None],
+	true					[@name=Bool],
 
 	f32						[@name=Literal],
 	f64						[@name=Literal],
