@@ -30,7 +30,7 @@ import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 import { ModalTitle } from "../ModalTitle";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { connectionUri, fastParseJwt } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
 
@@ -41,9 +41,10 @@ const EXPIRE_WARNING = 1000 * 60 * 60 * 3;
 export interface ConnectionDetailsProps {
 	value: Connection;
 	onChange: Updater<Connection>;
+	rightSection?: ReactNode;
 }
 
-export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
+export function ConnectionDetails({ value, onChange, rightSection }: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
 
@@ -159,6 +160,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					<EditableText
 						fz={22}
 						fw={600}
+						flex={1}
 						value={value.name}
 						onChange={(value) =>
 							onChange((draft) => {
@@ -166,6 +168,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							})
 						}
 					/>
+					{rightSection}
 				</Group>
 			</Paper>
 			<Group mb="lg">

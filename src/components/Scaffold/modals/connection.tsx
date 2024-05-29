@@ -1,4 +1,4 @@
-import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack } from "@mantine/core";
+import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack, Select } from "@mantine/core";
 import { Spacer } from "../../Spacer";
 import { useImmer } from "use-immer";
 import { Icon } from "../../Icon";
@@ -39,6 +39,7 @@ export function ConnectionEditor() {
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
 	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
+	const groups = useConfigStore((s) => s.connectionGroups);
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
@@ -56,6 +57,7 @@ export function ConnectionEditor() {
 				name: details.name,
 				icon: details.icon,
 				connection: details.connection,
+				group: details.group,
 			});
 		}
 
@@ -148,6 +150,19 @@ export function ConnectionEditor() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [opened]);
 
+	const groupItems = useMemo(() => {
+		return [
+			{
+				value: "",
+				label: "No group"
+			},
+			...groups.map((group) => ({
+				value: group.id,
+				label: group.name,
+			}))
+		];
+	}, [groups]);
+
 	useIntent("new-connection", () => {
 		openConnectionCreator();
 	});
@@ -224,6 +239,15 @@ export function ConnectionEditor() {
 				<ConnectionDetails
 					value={details}
 					onChange={setDetails}
+					rightSection={
+						<Select
+							data={groupItems}
+							value={details.group || ''}
+							onChange={(group) => setDetails((draft) => {
+								draft.group = group || undefined;
+							})}
+						/>
+					}
 				/>
 
 				<Group mt="lg">
