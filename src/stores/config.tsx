@@ -87,7 +87,7 @@ export const useConfigStore = create<ConfigStore>()(
 				connectionGroups: state.connectionGroups.filter((group) => group.id !== groupId),
 				connections: state.connections.map((connection) => {
 					return connection.group === groupId
-						?  { ...connection, groupId: null }
+						?  { ...connection, group: undefined }
 						: connection;
 				}),
 			};
