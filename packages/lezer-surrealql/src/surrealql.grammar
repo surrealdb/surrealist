@@ -102,7 +102,7 @@ ParamList {
 }
 
 DefineFunctionStatement {
-	define function
+	define functionKw
 	IfNotExistsClause?
 	customFunctionName
 	ParamList
@@ -112,6 +112,8 @@ DefineFunctionStatement {
 		CommentClause
 	)*
 }
+
+functionKw[@name=Keyword] { function }
 
 DefineIndexStatement {
 	define index
@@ -195,7 +197,7 @@ RemoveStatement {
 	( field IfExistsClause? Ident on table? Ident ) |
 	( index IfExistsClause? Ident on table? Ident ) |
 	( analyzer IfExistsClause? Ident ) |
-	( function IfExistsClause? customFunctionName ) |
+	( functionKw IfExistsClause? customFunctionName ) |
 	( param IfExistsClause? VariableName ) |
 	( scope IfExistsClause? Ident ) |
 	( table IfExistsClause? Ident )
@@ -528,8 +530,8 @@ Duration {
 // JS Functions
 
 FunctionJs {
-	function
-	"(" commaSep<value>? ")"
+	FunctionName { function }
+	ArgumentList
 	JavaScriptBlock
 }
 

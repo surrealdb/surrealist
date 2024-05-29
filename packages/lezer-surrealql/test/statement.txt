@@ -19,7 +19,7 @@ RETURN fn::greet("Tobie");
 
 SurrealQL(
   DefineFunctionStatement(
-    Keyword,FunctionName,ParamList(VariableName,Colon,TypeName),
+    Keyword,Keyword,FunctionName,ParamList(VariableName,Colon,TypeName),
     Block(BraceOpen,
       ReturnStatement(Keyword,BinaryExpression(BinaryExpression(String,Operator,VariableName),Operator,String)),
       BraceClose)),
@@ -32,4 +32,4 @@ REMOVE FUNCTION fn::update_author;
 
 ==>
 
-SurrealQL(RemoveStatement(Keyword,FunctionName))
+SurrealQL(RemoveStatement(Keyword,Keyword,FunctionName))
