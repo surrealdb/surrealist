@@ -1,4 +1,5 @@
-import { Autocomplete, Button, Combobox, Modal } from "@mantine/core";
+import papaparse from "papaparse";
+import { Autocomplete, Button, Divider, Modal, Stack } from "@mantine/core";
 import { SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -17,6 +18,8 @@ import { useIntent } from "~/hooks/url";
 import { executeQuery } from "~/connection";
 import { useInputState } from "@mantine/hooks";
 import { useTableNames } from "~/hooks/schema";
+import { RecordId, Table } from "surrealdb.js";
+import { parseValue } from "~/util/surrealql";
 
 type Importer = null | 'sql' | 'csv';
 
@@ -66,14 +69,53 @@ export function Importer() {
 		try {
 			setIsImporting(true);
 
-			await executeQuery(importFile.current!.content);
+			const content = importFile.current!.content.trim();
 
-			showInfo({
-				title: "Importer",
-				subtitle: "Database was successfully imported"
-			});
+			if (importer === "csv") {
+				papaparse.parse(content, {
+					header: true,
+					dynamicTyping: true,
+					transform(value) {
+						try {
+							return parseValue(value);
+						} catch {
+							return value;
+						}
+					},
+					step(row, parser) {
+						if (row.errors.length > 0) {
+							const err = row.errors[0].message;
 
-			await syncDatabaseSchema();
+							showError({
+								title: "Import failed",
+								subtitle: "There was an error importing the CSV file: " + err,
+							});
+
+							parser.abort();
+							return;
+						}
+
+						const content = row.data as any;
+						const what = "id" in content
+							? new RecordId(table, content.id)
+							: new Table(table);
+
+						executeQuery(/* surql */ `CREATE $what CONTENT $content`, { what, content });
+					},
+					complete() {
+						syncDatabaseSchema();
+					}
+				});
+			} else {
+				await executeQuery(content);
+
+				showInfo({
+					title: "Importer",
+					subtitle: "Database was successfully imported"
+				});
+
+				await syncDatabaseSchema();
+			}
 		} catch(err: any) {
 			console.error(err);
 
@@ -141,31 +183,43 @@ export function Importer() {
 				size="sm"
 				title={<ModalTitle>Import table</ModalTitle>}
 			>
-				<Autocomplete
-					data={tables}
-					value={table}
-					onChange={setTable}
-					label="Table name"
-					required
-				/>
+				<Stack>
+					<Text>
+						This importer allows you to parse CSV data into a table.
+					</Text>
+					<Text>
+						The first row of the CSV file will be interpreted as column names. Before importing,
+						make sure these match the columns in the table you are importing to.
+					</Text>
 
-				<Text
-					mb="xl"
-					c={isLight ? "slate.7" : "slate.2"}
-				>
-					While existing data will be preserved, it may be overwritten by the imported data.
-				</Text>
+					<Text>
+						While existing data will be preserved, it may be overwritten by the imported data.
+					</Text>
 
-				<Button
-					mt="xl"
-					fullWidth
-					onClick={confirmImport}
-					loading={isImporting}
-					variant="gradient"
-				>
-					Start import
-					<Icon path={iconDownload} right />
-				</Button>
+					<Divider />
+
+					<Autocomplete
+						data={tables}
+						value={table}
+						onChange={setTable}
+						label="Table name"
+						size="sm"
+						required
+						placeholder="table_name"
+					/>
+
+					<Button
+						mt="md"
+						fullWidth
+						onClick={confirmImport}
+						loading={isImporting}
+						variant="gradient"
+						disabled={!table}
+					>
+						Start import
+						<Icon path={iconDownload} right />
+					</Button>
+				</Stack>
 			</Modal>
 		</>
 	);

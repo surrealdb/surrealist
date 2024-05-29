@@ -4,7 +4,6 @@ import { ScrollArea, Table } from "@mantine/core";
 import { MouseEvent, useMemo } from "react";
 import { renderDataCell } from "./datatypes";
 import { ColumnSort } from "~/types";
-import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { alphabetical, isObject } from "radash";
@@ -25,9 +24,6 @@ interface DataTableProps extends BoxProps{
 }
 
 export function DataTable(props: DataTableProps) {
-	const { onRowContextMenu } = props;
-
-	const isLight = useIsLight();
 	const { inspect } = useInspector();
 
 	const {
@@ -36,6 +32,7 @@ export function DataTable(props: DataTableProps) {
 		sorting,
 		headers,
 		onSortingChange,
+		onRowContextMenu,
 		className,
 		...rest
 	} = props;
