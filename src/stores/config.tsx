@@ -83,17 +83,13 @@ export const useConfigStore = create<ConfigStore>()(
 		})),
 
 		removeConnectionGroup: (groupId) => set((state) => {
-			const group = state.connectionGroups.find((group) => group.id === groupId);
-			if (!group) return {};
-
-			const index = state.connectionGroups.indexOf(group);
-
 			return {
-				connectionGroups: state.connectionGroups.toSpliced(index, 1),
-				connections: [
-					...state.connections,
-					...group.connections
-				]
+				connectionGroups: state.connectionGroups.filter((group) => group.id !== groupId),
+				connections: state.connections.map((connection) => {
+					return connection.group === groupId
+						?  { ...connection, groupId: null }
+						: connection;
+				}),
 			};
 		}),
 

@@ -21,6 +21,9 @@ import { useCompatHotkeys } from "~/hooks/hotkey";
 import { Connection } from "~/types";
 import { mdiFolderPlusOutline } from "@mdi/js";
 import { EditableText } from "~/components/EditableText";
+import { group } from "radash";
+
+const UNGROUPED = Symbol("ungrouped");
 
 interface ConnectionItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, 'style' | 'color'> {
 	connection: Connection;
@@ -71,6 +74,12 @@ function ConnectionItem({
 				</ActionIcon>
 			}
 			onContextMenu={showContextMenu([
+				{
+					key: "edit",
+					title: "Edit",
+					icon: <Icon path={iconEdit} />,
+					onClick: modify,
+				},
 				{
 					key: "duplicate",
 					title: "Duplicate",
@@ -181,8 +190,7 @@ export function Connections() {
 	const newGroup = useStable(() => {
 		addConnectionGroup({
 			id: newId(),
-			name: `Group ${groups.length + 1}`,
-			connections: []
+			name: `Group ${groups.length + 1}`
 		});
 	});
 
@@ -209,6 +217,8 @@ export function Connections() {
 	const groupsList = useMemo(() => {
 		return groups.sort((a, b) => a.name.localeCompare(b.name));
 	}, [groups]);
+
+	const grouped = group(filtered, (con) => con.group ?? UNGROUPED);
 
 	return (
 		<>
@@ -347,7 +357,7 @@ export function Connections() {
 					{groupsList.map((group) => (
 						<ConnectionList
 							key={group.id}
-							connections={group.connections}
+							connections={grouped[group.id] ?? []}
 							active={connection?.id ?? ""}
 							onClose={listingHandle.close}
 							className={classes.group}
@@ -356,7 +366,7 @@ export function Connections() {
 									<EditableText
 										value={group.name}
 										onChange={(name) => updateConnectionGroup({ id: group.id, name })}
-										c="slate.2"
+										c="bright"
 										fz="lg"
 										fw={500}
 									/>
@@ -380,11 +390,11 @@ export function Connections() {
 					))}
 
 					<ConnectionList
-						connections={connections}
+						connections={grouped[UNGROUPED] ?? []}
 						active={connection?.id ?? ""}
 						onClose={listingHandle.close}
 						title={
-							<Text c="slate.2" fz="lg" fw={500}>
+							<Text c="bright" fz="lg" fw={500}>
 								Connections
 							</Text>
 						}

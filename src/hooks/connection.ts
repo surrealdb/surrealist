@@ -15,10 +15,7 @@ export function useIsConnected() {
  * Return a list of all connections
  */
 export function useConnections() {
-	return useConfigStore((s) => [
-		...s.connections,
-		s.connectionGroups.flatMap((g) => g.connections)
-	]);
+	return useConfigStore((s) => s.connections);
 }
 
 /**

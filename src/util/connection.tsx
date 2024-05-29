@@ -3,26 +3,17 @@ import { useConfigStore } from "~/stores/config";
 import { ConnectionOptions } from "~/types";
 import { connectionUri } from "./helpers";
 
-export function getConnections() {
-	const { connections, connectionGroups } = useConfigStore.getState();
-
-	return [
-		...connections,
-		...connectionGroups.flatMap((g) => g.connections)
-	];
-}
-
 /**
  * Returns the currently active connection
  */
 export function getConnection() {
-	const { activeConnection, sandbox } = useConfigStore.getState();
+	const { connections, activeConnection, sandbox } = useConfigStore.getState();
 
 	if (activeConnection === SANDBOX) {
 		return sandbox;
 	}
 
-	return getConnections().find((con) => con.id === activeConnection);
+	return connections.find((con) => con.id === activeConnection);
 }
 
 /**
