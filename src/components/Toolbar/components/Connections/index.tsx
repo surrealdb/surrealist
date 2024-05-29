@@ -101,6 +101,7 @@ interface ConnectionListProps {
 	title: ReactNode;
 	connections: Connection[];
 	active: string;
+	className?: string;
 	onClose: () => void;
 }
 
@@ -108,6 +109,7 @@ function ConnectionList({
 	title,
 	connections,
 	active,
+	className,
 	onClose
 }: ConnectionListProps) {
 	const connectionList = useMemo(() => {
@@ -115,7 +117,7 @@ function ConnectionList({
 	}, [connections]);
 
 	return (
-		<Box>
+		<Box className={className}>
 			<Group mb={4}>
 				{title}
 			</Group>
@@ -179,7 +181,7 @@ export function Connections() {
 	const newGroup = useStable(() => {
 		addConnectionGroup({
 			id: newId(),
-			name: "New group",
+			name: `Group ${groups.length + 1}`,
 			connections: []
 		});
 	});
@@ -348,6 +350,7 @@ export function Connections() {
 							connections={group.connections}
 							active={connection?.id ?? ""}
 							onClose={listingHandle.close}
+							className={classes.group}
 							title={
 								<>
 									<EditableText
@@ -360,12 +363,12 @@ export function Connections() {
 									<Spacer />
 									<Tooltip
 										label="Remove group"
-										
 									>
 										<ActionIcon
-											className={classes.groupDelete}
+											className={classes.groupRemove}
 											aria-label="Remove group"
 											onClick={() => removeConnectionGroup(group.id)}
+											variant="subtle"
 											size="sm"
 										>
 											<Icon path={iconDelete} size="sm" />
