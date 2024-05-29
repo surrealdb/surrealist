@@ -96,7 +96,9 @@ SurrealQL(Duration(DurationPart,DurationPart,DurationPart))
 
 function(123, 1d2h) {
 	const number = 123;
-	return number.toString();
+	if (test("{")) {
+		return number.toString();
+	}
 }
 
 ==>

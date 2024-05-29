@@ -537,7 +537,10 @@ FunctionJs {
 
 @skip {} {
 	JavaScriptBlock {
-		"{" JavaScriptContent { javaScriptContent* } "}"
+		"{" JavaScriptContent { javaScriptElement* } "}"
+	}
+	javaScriptElement {
+		javaScriptContent | javaScriptBraceOpen javaScriptElement* javaScriptBraceClose
 	}
 }
 
@@ -989,7 +992,9 @@ Operator {
 	@precedence { DurationPart rawident }
 	@precedence { DurationPart Int }
 
-	javaScriptContent { "\n" | ![}\n]+ "\n"? }
+	javaScriptContent { "\n" | ![{}\n'"]+ "\n"? | String }
+	javaScriptBraceOpen { "{" }
+	javaScriptBraceClose { "}" }
 
 	binaryOperator {
 		"&&" | "||" | "??" | "?:" | "!=" | "==" | "?=" | "*=" | "~" | "!~" | "*~" |
