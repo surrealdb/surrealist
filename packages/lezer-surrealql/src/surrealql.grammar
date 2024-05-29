@@ -463,7 +463,7 @@ Path {
 
 pathElement {
 	GraphPath |
-	Subscript { "." (Ident (!method ArgumentList)? | Any { "*" }) } |
+	Subscript { "." (Ident | FunctionName { rawident !method } ArgumentList | Any { "*" }) } |
 	Filter { "[" (WhereClause | value | WhereClause { "?" value }) "]" }
 }
 
@@ -549,7 +549,7 @@ FunctionJs {
 // Function invocation
 
 Function {
-	(functionName | customFunctionName | rand | count)
+	(FunctionName | customFunctionName | rand | count)
 	Version { "<" VersionNumber ">" }?
 	ArgumentList
 }
@@ -1020,10 +1020,10 @@ Operator {
 	}
 
 	functionNameSegment { "::" @asciiLetter+ }
-	functionName[@name=function] {
+	FunctionName {
 		@asciiLetter+ functionNameSegment+
 	}
-	customFunctionName[@name=function] {
+	customFunctionName[@name=FunctionName] {
 		"fn" functionNameSegment*
 	}
 
@@ -1033,7 +1033,7 @@ Operator {
 	@precedence { Comment Int "-" }
 	@precedence { Comment binaryOperator }
 	@precedence { prefixedString rawident }
-	@precedence { customFunctionName functionName rawident }
+	@precedence { customFunctionName FunctionName rawident }
 	@precedence { Float Decimal Int rawident }
 	@precedence { DurationPart rawident }
 	@precedence { DurationPart Int }
@@ -1263,6 +1263,6 @@ piped<content> {
 	pearson					[@name=Distance],
 
 	function,
-	rand[@name=function],
-	count[@name=function]
+	rand[@name=FunctionName],
+	count[@name=FunctionName]
 }

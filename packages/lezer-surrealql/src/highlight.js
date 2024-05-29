@@ -2,7 +2,7 @@ import { styleTags, tags as t } from "@lezer/highlight"
 
 export const surqlHighlighting = styleTags({
 	"Ident": t.name,
-	"Keyword": t.keyword,
+	"Keyword function": t.keyword,
 	"String": t.string,
 	"Int Float Decimal VersionNumber Duration": t.number,
 	"Bool": t.bool,
@@ -10,7 +10,7 @@ export const surqlHighlighting = styleTags({
 	"KeyName": t.propertyName,
 	"VariableName": t.variableName,
 	"None": t.null,
-	"function": t.function(t.name),
+	"FunctionName": t.function(t.name),
 	", |": t.separator,
 	"[ ]": t.squareBracket,
 	"< >": t.angleBracket,

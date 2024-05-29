@@ -78,11 +78,11 @@ some::versioned::function<1.2.3>(a);
 ==>
 
 SurrealQL(
-  Function(function,ArgumentList),
-  Function(function,ArgumentList(Int,Ident)),
-  Function(function,ArgumentList(Int)),
-  Function(function,ArgumentList(Ident)),
-  Function(function,Version(VersionNumber),ArgumentList(Ident)))
+  Function(FunctionName,ArgumentList),
+  Function(FunctionName,ArgumentList(Int,Ident)),
+  Function(FunctionName,ArgumentList(Int)),
+  Function(FunctionName,ArgumentList(Ident)),
+  Function(FunctionName,Version(VersionNumber),ArgumentList(Ident)))
 
 # Durations
 
@@ -163,7 +163,7 @@ SurrealQL(
     GraphPredicate(Ident,WhereClause(Keyword,Ident),Keyword,Ident))),
   Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),GraphPath(GraphRight,Ident)),
   SelectStatement(Keyword,Predicate(Path(GraphPath(GraphRight,Ident))),Keyword,Ident),
-  Path(Int,Subscript(Ident,ArgumentList)),
+  Path(Int,Subscript(FunctionName,ArgumentList)),
   Path(Block(BraceOpen,BraceClose),Filter("[",VariableName,"]")),
   Path(Block(BraceOpen,BraceClose),Filter("[",Ident,"]")),
   Path(Block(BraceOpen,BraceClose),Filter("[",String,"]")),
