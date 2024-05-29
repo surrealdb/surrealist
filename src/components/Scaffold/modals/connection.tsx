@@ -18,6 +18,7 @@ import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
 import { openConnection } from "~/connection";
+import { useConfirmation } from "~/providers/Confirmation";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -75,11 +76,6 @@ export function ConnectionEditor() {
 		} while (connections.some((con) => con.name === tabName));
 
 		return tabName;
-	});
-
-	const deleteConnection = useStable(() => {
-		removeConnection(details.id);
-		closeConnectionEditor();
 	});
 
 	const applyTemplate = useStable((template: Template) => {
@@ -162,6 +158,15 @@ export function ConnectionEditor() {
 			}))
 		];
 	}, [groups]);
+
+	const remove = useConfirmation({
+		title: "Remove connection",
+		message: "Are you sure you want to remove this connection?",
+		onConfirm() {
+			removeConnection(details.id);
+			closeConnectionEditor();
+		}
+	});
 
 	useIntent("new-connection", () => {
 		openConnectionCreator();
@@ -261,8 +266,9 @@ export function ConnectionEditor() {
 					<Spacer />
 					{!isCreating && (
 						<Button
-							color="pink.9"
-							onClick={deleteConnection}
+							color="pink.7"
+							variant="light"
+							onClick={remove}
 							leftSection={<Icon path={iconDelete} />}
 						>
 							Remove
