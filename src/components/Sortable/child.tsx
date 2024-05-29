@@ -27,8 +27,6 @@ export function SortableChild<T extends SortableItem>({
 		cursor: "grab",
 	};
 
-	// NOTE - The translate property appears to cause font weight to drop for me, seems like an Edge skill issue
-
 	const childStyle: React.CSSProperties = {
 		transform: CSS.Translate.toString(transform),
 		transition,
