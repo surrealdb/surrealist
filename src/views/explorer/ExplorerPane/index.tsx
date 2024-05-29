@@ -9,7 +9,7 @@ import { useStable } from "~/hooks/stable";
 import { useSchema } from "~/hooks/schema";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
-import { iconChevronLeft, iconChevronRight, iconCopy, iconDelete, iconFilter, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconCopy, iconDelete, iconFilter, iconJSON, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
 import { executeQuery } from "~/connection";
@@ -205,6 +205,14 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
 					navigator.clipboard.writeText(formatValue(record.id));
+				}
+			},
+			{
+				key: "copy",
+				title: "Copy as JSON",
+				icon: <Icon path={iconJSON} />,
+				onClick: () => {
+					navigator.clipboard.writeText(formatValue(record, true, true));
 				}
 			},
 			{
