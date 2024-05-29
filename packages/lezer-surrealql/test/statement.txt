@@ -11,7 +11,7 @@ RETURN fn::greet("Tobie");
 
 SurrealQL(
   DefineFunctionStatement(
-    Keyword,FunctionName,ParamList(VariableName,Colon,Type(Type)),
+    Keyword,FunctionName,ParamList(VariableName,Colon,TypeName),
     Block(BraceOpen,
       ReturnStatement(Keyword,BinaryExpression(BinaryExpression(String,Operator,VariableName),Operator,String)),
       BraceClose)),

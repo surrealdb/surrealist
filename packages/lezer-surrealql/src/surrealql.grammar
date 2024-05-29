@@ -3,9 +3,10 @@
 }
 
 @precedence {
-	range @left,
-	method,
+	range @left
+	method
 	binary @left
+	union @left
 }
 
 expressions {
@@ -97,7 +98,7 @@ DefineFieldStatement {
 }
 
 ParamList {
-	"(" commaSep<VariableName ":" Type>? ")"
+	"(" commaSep<VariableName ":" type>? ")"
 }
 
 DefineFunctionStatement {
@@ -153,13 +154,13 @@ DefineTableStatement {
 	IfNotExistsClause?
 	Ident
 	(
-	drop |
-	(schemafull | schemaless) |
-	TableTypeClause |
-	TableViewClause |
-	ChangefeedClause |
-	PermissionsForClause |
-	CommentClause
+		drop |
+		(schemafull | schemaless) |
+		TableTypeClause |
+		TableViewClause |
+		ChangefeedClause |
+		PermissionsForClause |
+		CommentClause
 	)*
 }
 
@@ -788,8 +789,8 @@ WhenThenClause {
 
 TypeClause {
 	flexible?
+	typeKeyword
 	type
-	Type
 }
 
 ReadonlyClause {
@@ -871,58 +872,14 @@ inclusivePredicate {
 
 // Types
 
-Type {
-	piped<(
-		StringType |
-		NumberType |
-		AnyType |
-		BoolType |
-		BytesType |
-		DatetimeType |
-		DecimalType |
-		DurationType |
-		FloatType |
-		IntType |
-		NullType |
-		ObjectType |
-		ArrayType |
-		SetType |
-		RecordType |
-		OptionType |
-		GeometryType
-	)>
-}
-
-TypeBracketOpen { "<" }
-TypeBracketClose { ">" }
-
-StringType[@name="Type"] { "string" }
-NumberType[@name="Type"] { "number" }
-AnyType[@name="Type"] { "any" }
-BoolType[@name="Type"] { "bool" }
-BytesType[@name="Type"] { "bytes" }
-DatetimeType[@name="Type"] { "datetime" }
-DecimalType[@name="Type"] { "decimal" }
-DurationType[@name="Type"] { "duration" }
-FloatType[@name="Type"] { "float" }
-IntType[@name="Type"] { "int" }
-NullType[@name="Type"] { "null" }
-ObjectType[@name="Type"] { "object" }
-ArrayType[@name="Type"] { "array" ( TypeBracketOpen Type TypeBracketClose )? }
-SetType[@name="Type"] { "set" ( TypeBracketOpen Type TypeBracketClose )? }
-RecordType[@name="Type"] { "record" ( TypeBracketOpen piped<( rawident | Int )> TypeBracketClose )? }
-OptionType[@name="Type"] { "option" ( TypeBracketOpen Type TypeBracketClose ) }
-GeometryType[@name="Type"] {
-	"geometry"
-	(
-		TypeBracketOpen
-		( "feature" | "point" | "line" | "polygon" | "multipoint" | "multiline" | "multipolygon" | "collection" )
-		TypeBracketClose
-	)?
+type {
+    TypeName { rawident } |
+    ParameterizedType { type "<" (type | Int) ">" } |
+	UnionType { type (!union "|" type)+ }
 }
 
 TypeCast {
-	TypeBracketOpen Type TypeBracketClose baseValue
+	"<" type ">" baseValue
 }
 
 Ident {
@@ -970,8 +927,8 @@ Operator {
 	// Characters
 	"{"[@name=BraceOpen]
 	"}"[@name=BraceClose]
-	"["
-	"]"
+	"[" "]"
+	"<" ">"
 	":"[@name=Colon]
 	"->"[@name=GraphRight]
 	"<-"[@name=GraphLeft]
@@ -1180,7 +1137,7 @@ piped<content> {
 	token					[@name=Keyword],
 	tokenizers				[@name=Keyword],
 	transaction				[@name=Keyword],
-	type					[@name=Keyword],
+	typeKeyword				[@name=Keyword],
 	unique					[@name=Keyword],
 	unset					[@name=Keyword],
 	update					[@name=Keyword],
