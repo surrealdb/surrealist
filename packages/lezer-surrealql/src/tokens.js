@@ -1,3 +1,5 @@
+import {ExternalTokenizer} from "@lezer/lr";
+
 import {
 	analyzer,
 	any,
@@ -46,7 +48,6 @@ import {
 	flexible,
 	_for,
 	from,
-	_function,
 	group,
 	mtree,
 	mtree_cache,
@@ -122,13 +123,13 @@ import {
 	token,
 	tokenizers,
 	transaction,
-	type,
+	typeKeyword,
 	unique,
 	unset,
 	update,
 	use,
 	user,
-	value,
+	valueKeyword,
 	values,
 	when,
 	where,
@@ -193,6 +194,12 @@ import {
 	manhattan,
 	minkowski,
 	pearson,
+
+	_function,
+	rand,
+	count,
+
+	objectOpen,
 } from "./parser.terms";
 
 const tokenMap = {
@@ -243,7 +250,6 @@ const tokenMap = {
 	flexible,
 	for: _for,
 	from,
-	function: _function,
 	group,
 	highlights,
 	hnsw,
@@ -319,13 +325,13 @@ const tokenMap = {
 	token,
 	tokenizers,
 	transaction,
-	type,
+	type: typeKeyword,
 	unique,
 	unset,
 	update,
 	use,
 	user,
-	value,
+	value: valueKeyword,
 	values,
 	when,
 	where,
@@ -383,6 +389,11 @@ const tokenMap = {
 	manhattan,
 	minkowski,
 	pearson,
+
+	// Function names
+	function: _function,
+	rand,
+	count,
 };
 
 const tryMapped = {
@@ -401,3 +412,56 @@ export const tokens = function(t, stack) {
 
 	return tokenMap[t.toLowerCase()] ?? -1;
 }
+
+function skipSpace(input, off) {
+	for (;;) {
+		let next = input.peek(off);
+		if (next === 32 || next === 9 || next === 10 || next === 13) {
+			off++;
+		} else if (next === 35 /* '#' */ ||
+				   (next === 47 /* '/' */ || next === 45 /* '-' */) && input.peek(off + 1) === next) {
+			off++;
+			for (;;) {
+				let next = input.peek(off);
+				if (next < 0 || next === 10 || next === 13) break;
+				off++;
+			}
+		} else {
+			return off;
+		}
+	}
+}
+
+function isIdentifierChar(ch) {
+	return ch === 95 || ch >= 65 && ch <= 90 || ch >= 97 && ch <= 122 || ch >= 48 && ch <= 57;
+}
+
+function skipObjKey(input, off) {
+	let first = input.peek(off);
+	if (isIdentifierChar(first)) {
+		do {
+			off++;
+		} while (isIdentifierChar(input.peek(off)));
+		return off;
+	} else if (first === 38 /* "'" */ || first === 34 /* '"' */) {
+		for (let escaped = false;;) {
+			let next = input.peek(++off);
+			if (next < 0) return off;
+			if (next === first && !escaped) return off + 1;
+			escaped = next === 92 /* '\\' */
+		}
+	}
+}
+
+export const objectToken = new ExternalTokenizer((input, stack) => {
+	if (input.next === 123 /* '{' */) {
+		let off = skipSpace(input, 1);
+		let key = skipObjKey(input, off);
+		if (key !== null) {
+			off = skipSpace(input, key);
+			if (input.peek(off) === 58 /* ':' */) {
+				input.acceptToken(objectOpen, 1);
+			}
+		}
+	}
+});

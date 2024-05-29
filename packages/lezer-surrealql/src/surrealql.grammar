@@ -1,46 +1,49 @@
 @top SurrealQL {
-	Expressions | WhereClause
+	expressions | WhereClause
 }
 
 @precedence {
-	range @left,
-	ident,
-	FunctionJs,
-	Int,
-	RecordId,
-	Ident,
-	Object,
-	Duration,
-	Number,
-	ObjectContent
+	range @left
+	method
+	binary @left
+	union @left
 }
 
-Expressions {
-	(Expression ";")* Expression ";"?
+expressions {
+	(expression ";")* expression ";"?
 }
 
-Expression {
-	Statement |
-	Value
+expression {
+	statement |
+	value
 }
 
 SubQuery {
 	"("
-	Expression
+	expression
 	")"
 }
 
 Block {
-	"{"
-	Expressions ~ident
-	"}"
+	"{" expressions? "}"
 }
 
-Statement {
+statement[@isGroup=Statement] {
 	BeginStatement |
 	CancelStatement |
 	CommitStatement |
-	DefineStatement |
+	DefineAnalyzerStatement |
+	DefineEventStatement |
+	DefineDatabaseStatement |
+	DefineFieldStatement |
+	DefineFunctionStatement |
+	DefineIndexStatement |
+	DefineNamespaceStatement |
+	DefineParamStatement |
+	DefineScopeStatement |
+	DefineTableStatement |
+	DefineTokenStatement |
+	DefineUserStatement |
 	RemoveStatement |
 	InfoForStatement |
 	KillStatement |
@@ -73,31 +76,13 @@ CommitStatement { commit transaction? }
 
 // Define statements
 
-DefineStatement {
-	define
-	(
-		DefineAnalyzerStatement |
-		DefineDatabaseStatement |
-		DefineEventStatement |
-		DefineFieldStatement |
-		DefineFunctionStatement |
-		DefineIndexStatement |
-		DefineNamespaceStatement |
-		DefineParamStatement |
-		DefineScopeStatement |
-		DefineTableStatement |
-		DefineTokenStatement |
-		DefineUserStatement
-	)
-}
-
 // TODO implement filters
-DefineAnalyzerStatement { analyzer Ident TokenizersClause? CommentClause? }
-DefineEventStatement { event Ident OnTableClause WhenThenClause CommentClause? }
-DefineDatabaseStatement { database Ident on Ident CommentClause? }
+DefineAnalyzerStatement { define analyzer Ident TokenizersClause? CommentClause? }
+DefineEventStatement { define event Ident OnTableClause WhenThenClause CommentClause? }
+DefineDatabaseStatement { define database Ident on Ident CommentClause? }
 
 DefineFieldStatement {
-	field
+    define field
 	IfNotExistsClause?
 	Ident
 	OnTableClause
@@ -112,16 +97,15 @@ DefineFieldStatement {
 	)*
 }
 
+ParamList {
+	"(" commaSep<VariableName ":" type>? ")"
+}
+
 DefineFunctionStatement {
-	function
+	define functionKw
 	IfNotExistsClause?
 	customFunctionName
-	"("
-	(
-		VariableName ":" Type
-		( "," VariableName ":" Type )*
-	)?
-	")"
+	ParamList
 	Block
 	(
 		PermissionsBasicClause |
@@ -129,8 +113,10 @@ DefineFunctionStatement {
 	)*
 }
 
+functionKw[@name=Keyword] { function }
+
 DefineIndexStatement {
-	index
+	define index
 	IfNotExistsClause?
 	Ident
 	OnTableClause
@@ -143,18 +129,18 @@ DefineIndexStatement {
 	)
 }
 
-DefineNamespaceStatement { namespace Ident CommentClause? }
+DefineNamespaceStatement { define namespace Ident CommentClause? }
 
 DefineParamStatement {
-	param
+	define param
 	IfNotExistsClause?
 	VariableName
+	valueKeyword
 	value
-	Value
 }
 
 DefineScopeStatement {
-	scope
+	define scope
 	IfNotExistsClause?
 	Ident
 	(
@@ -166,31 +152,31 @@ DefineScopeStatement {
 }
 
 DefineTableStatement {
-	table
+	define table
 	IfNotExistsClause?
 	Ident
 	(
-	drop |
-	(schemafull | schemaless) |
-	TableTypeClause |
-	TableViewClause |
-	ChangefeedClause |
-	PermissionsForClause |
-	CommentClause
+		drop |
+		(schemafull | schemaless) |
+		TableTypeClause |
+		TableViewClause |
+		ChangefeedClause |
+		PermissionsForClause |
+		CommentClause
 	)*
 }
 
 DefineTokenStatement {
-	token
+	define token
 	IfNotExistsClause?
 	Ident
 	( on ( namespace | database | scope Ident ) )
 	TokenTypeClause
-	( value String )
+	( valueKeyword String )
 }
 
 DefineUserStatement {
-	user
+	define user
 	IfNotExistsClause?
 	Ident
 	( on ( root | namespace | database ) )
@@ -211,7 +197,7 @@ RemoveStatement {
 	( field IfExistsClause? Ident on table? Ident ) |
 	( index IfExistsClause? Ident on table? Ident ) |
 	( analyzer IfExistsClause? Ident ) |
-	( function IfExistsClause? customFunctionName ) |
+	( functionKw IfExistsClause? customFunctionName ) |
 	( param IfExistsClause? VariableName ) |
 	( scope IfExistsClause? Ident ) |
 	( table IfExistsClause? Ident )
@@ -222,8 +208,8 @@ RemoveStatement {
 
 CreateStatement {
 	create only?
-	( Ident | VariableName | Function )
-	( ContentClause | SetClause | UnsetClause )?
+	createTarget { Ident | VariableName | FunctionCall }
+	createContent { ContentClause | SetClause | UnsetClause | () }
 	ReturnClause?
 	TimeoutClause?
 	ParallelClause?
@@ -232,25 +218,31 @@ CreateStatement {
 SelectStatement {
 	(select)
 	(
-		value Predicate |
-		commaSep<InclusivePredicate>
+		valueKeyword Predicate |
+		commaSep<inclusivePredicate>
 	)
 	(from)
 	(only)?
 	(
-		Statement |
+		statement |
 		(
-			commaSep<Value>
-			WithClause?
-			WhereClause?
-			SplitClause?
-			GroupClause?
-			OrderClause?
-			LimitStartComboClause?
-			FetchClause?
-			TimeoutClause?
-			ParallelClause?
-			ExplainClause?
+			commaSep<value>
+			selectClauses1 {
+				WithClause?
+				WhereClause?
+				SplitClause?
+			}
+			selectClauses2 {
+				GroupClause?
+				OrderClause?
+				LimitStartComboClause?
+			}
+			selectClauses3 {
+				FetchClause?
+				TimeoutClause?
+				ParallelClause?
+				ExplainClause?
+			}
 		)
 	)
 }
@@ -258,9 +250,9 @@ SelectStatement {
 DeleteStatement {
 	delete only?
 	(
-		Statement |
+		statement |
 		(
-			commaSep<Value>
+			commaSep<value>
 			WhereClause?
 			ReturnClause?
 			TimeoutClause?
@@ -281,7 +273,7 @@ InsertStatement {
 			"(" commaSep<Ident> ")"
 			values
 			commaSep<(
-				"(" commaSep<Value> ")"
+				"(" commaSep<value> ")"
 			)>
 			on duplicate key update
 			commaSep<FieldAssignment>
@@ -293,12 +285,12 @@ IfElseStatement {
 	if
 	(
 		Legacy {
-			Value
+			value
 			then
 			( Block | SubQuery)
 			(
 				else if
-				Value
+				value
 				then
 				( Block | SubQuery)
 			)*
@@ -309,10 +301,10 @@ IfElseStatement {
 			end
 		} |
 		Modern {
-			Value Block
+			value Block
 			(
 				else if
-				Value Block
+				value Block
 			)*
 			(
 				else Block
@@ -321,7 +313,7 @@ IfElseStatement {
 	)
 }
 
-relateSubject { Array | Ident | Function | VariableName | RecordId }
+relateSubject { Array | Ident | FunctionCall | VariableName | RecordId }
 RelateStatement {
 	relate only?
 	relateSubject "->" relateSubject "->" relateSubject
@@ -346,20 +338,22 @@ InfoForStatement {
 UpdateStatement {
 	update only?
 	(
-		Statement |
+		statement |
 		(
-			commaSep<Value>
-			(
+			commaSep<value>
+			updateClause1 {
 				ContentClause |
 				MergeClause |
 				PatchClause |
 				SetClause |
 				UnsetClause
-			)?
-			WhereClause?
-			ReturnClause?
-			TimeoutClause?
-			ParallelClause?
+			}?
+			updateClause2 {
+				WhereClause?
+				ReturnClause?
+				TimeoutClause?
+				ParallelClause?
+			}
 		)
 	)
 }
@@ -368,8 +362,8 @@ UpdateStatement {
 BreakStatement { break }
 ContinueStatement { continue }
 ForStatement { for VariableName in ( Array | VariableName | SubQuery | Block ) Block }
-ReturnStatement { return Expression }
-ThrowStatement { throw Value }
+ReturnStatement { return expression }
+ThrowStatement { throw value }
 
 // Live statements
 KillStatement { kill String }
@@ -377,8 +371,8 @@ LiveSelectStatement {
 	live select
 	(
 		diff |
-		value Predicate |
-		commaSep<InclusivePredicate>
+		valueKeyword Predicate |
+		commaSep<inclusivePredicate>
 	)
 	from commaSep<Ident>
 	WhereClause?
@@ -386,7 +380,7 @@ LiveSelectStatement {
 }
 
 // Other statements
-LetStatement { let VariableName "=" Value }
+LetStatement { let VariableName "=" value }
 ShowStatement {
 	show changes for table
 	Ident
@@ -420,27 +414,72 @@ OnTableClause
 
 // Values
 
-BaseValue { String | Number | true | false | null | none | VariableName | rawident | Array | RecordId | FunctionJs | Function | SubQuery | Block | Object | TypeCast | Duration }
-Value { BaseValue | BinaryExpression }
+baseValue {
+	String |
+	prefixedString |
+	number |
+	true |
+	false |
+	null |
+	none |
+	VariableName |
+	Ident[@dynamicPrecedence=-1] { rawident } |
+	Array |
+	RecordId |
+	FunctionJs |
+	FunctionCall |
+	SubQuery |
+	Block |
+	Object |
+	TypeCast |
+	Duration |
+	Point { "(" Decimal "," Decimal ")" }
+}
+
+Any { "?" }
+AnyStar[@name=Any] { "*" }
+
+value[@isGroup=Value] {
+	baseValue |
+	BinaryExpression |
+	Path
+}
 
 // Binary expressions
 
 BinaryExpression {
-	BaseValue
-	Operator
-	BaseValue
+	value !binary Operator value
+}
+
+Path {
+	baseValue pathElement+ |
+	GraphPath pathElement*
+}
+
+pathElement {
+	GraphPath |
+	Subscript { "." (Ident | FunctionName { rawident !method } ArgumentList | AnyStar) } |
+	Filter { "[" (WhereClause | value | WhereClause { "?" value }) "]" }
+}
+
+GraphPath {
+	("<-" | "->" | "<->")
+	(Ident | Any | "(" commaSep<GraphPredicate> ")")
+}
+
+GraphPredicate {
+	(value | Any) WhereClause? (as Ident)?
 }
 
 // Objects
 
-ObjectKey[@dynamicPrecedence=2] {
-	rawident ~ident |
-	singleString ~string |
-	doubleString ~string
+ObjectKey {
+	KeyName { rawident } |
+	String
 }
 
 ObjectProperty {
-	ObjectKey ":" Value
+	ObjectKey ":" value
 }
 
 ObjectContent {
@@ -448,22 +487,22 @@ ObjectContent {
 }
 
 Object {
-	"{" ObjectContent? "}"
+	objectOpen ObjectContent? "}"
 }
 
 // Arrays
 
-Array { "[" commaSep<Value>? "]"}
+Array { "[" commaSep<value>? "]"}
 
 // Record Ids
 
-RecordIdIdent[@dynamicPrecedence=1] {
-rawident ~ident |
-tickIdent ~ident |
-bracketIdent
+RecordIdIdent {
+	rawident |
+	tickIdent |
+	bracketIdent
 }
 
-RecordIdValue {
+recordIdValue {
 	RecordIdIdent |
 	Int |
 	Array |
@@ -471,50 +510,56 @@ RecordIdValue {
 }
 
 RecordIdRange {
-	( RecordIdValue !range ">"? )?
+	( recordIdValue !range ">"? )?
 	".."
-	( !range "="? RecordIdValue )?
+	( !range "="? recordIdValue )?
 }
 
 RecordId {
 	RecordIdIdent
 	":"
-	( RecordIdValue | RecordIdRange )
+	( recordIdValue | RecordIdRange )
 }
 
 // Durations
 
 Duration {
-	//TODO why does it require a space between the duration parts?
 	DurationPart+
-}
-
-DurationPart {
-	int ~int
-	durationUnit
 }
 
 // JS Functions
 
 FunctionJs {
-	"function"
-	"(" commaSep<Value>? ")"
-	"{" JavaScript? "}"
+	FunctionName { function }
+	ArgumentList
+	JavaScriptBlock
+}
+
+@skip {} {
+	JavaScriptBlock {
+		"{" JavaScriptContent { javaScriptElement* } "}"
+	}
+	javaScriptElement {
+		javaScriptContent | javaScriptBraceOpen javaScriptElement* javaScriptBraceClose
+	}
 }
 
 // Function invocation
 
-Function {
-	functionName
-	commaSep<Value>? ")"
+FunctionCall {
+	(FunctionName | customFunctionName | rand | count)
+	Version { "<" VersionNumber ">" }?
+	ArgumentList
 }
+
+ArgumentList { "(" commaSep<value>? ")" }
 
 // Assignment
 
 FieldAssignment {
 	Ident
 	assignmentOperator
-	Value
+	value
 }
 
 // Clauses
@@ -543,9 +588,9 @@ TableTypeClause {
 TableViewClause {
 	as
 	select
-	commaSep<InclusivePredicate>
+	commaSep<inclusivePredicate>
 	from
-	commaSep<Value>
+	commaSep<value>
 	WhereClause?
 	GroupClause?
 }
@@ -585,16 +630,9 @@ UniqueClause {
 SearchAnalyzerClause {
 	search analyzer
 	Ident
-	Bm25Clause?
-	DocIdsOrderClause?
-	DocLenghtsOrderClause?
-	PostingsOrderClause?
-	TermsOrderClause?
-	DocIdsCacheClause?
-	DocLenghtsCacheClause?
-	PostingsCacheClause?
-	TermsCacheClause?
-	highlights?
+    (Bm25Clause | DocIdsOrderClause | DocLenghtsOrderClause | PostingsOrderClause |
+	 TermsOrderClause | DocIdsCacheClause | DocLenghtsCacheClause | PostingsCacheClause |
+	 TermsCacheClause | highlights)*
 }
 
 Bm25Clause { bm25 ( "(" Float "," Float ")")? }
@@ -605,7 +643,7 @@ DocLenghtsOrderClause { doc_lengths_order Int }
 PostingsCacheClause { postings_cache Int }
 PostingsOrderClause { postings_order Int }
 TermsCacheClause { terms_cache Int }
-TermsOrderClause { terms_order Int}
+TermsOrderClause { terms_order Int }
 
 MtreeClause {
 	mtree
@@ -639,7 +677,7 @@ IndexDimensionClause
 	)*
 }
 
-HnswDistClause { dist ( chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) }
+HnswDistClause { dist ( chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski number ) | pearson ) }
 
 IndexDimensionClause { dimension Int }
 IndexTypeClause { type ( f32 | f64 | i16 | i32 | i64 ) }
@@ -673,7 +711,7 @@ IfExistsClause {
 
 ReturnClause {
 	return
-	( none ~returnvalue | before | after | diff | commaSep<Value> ~returnvalue )
+	( before | after | diff | commaSep<value> )
 }
 
 TimeoutClause {
@@ -728,7 +766,7 @@ SplitClause {
 
 WhereClause {
 	where
-	Value
+	value
 }
 
 WithClause {
@@ -749,7 +787,7 @@ TokenizersClause { tokenizers commaSep<AnalyzerTokenizers> }
 WhenThenClause {
 	(
 		when
-		Value
+		value
 	)?
 	then?
 	commaSep<(SubQuery | Block)>
@@ -757,8 +795,8 @@ WhenThenClause {
 
 TypeClause {
 	flexible?
+	typeKeyword
 	type
-	Type
 }
 
 ReadonlyClause {
@@ -767,17 +805,17 @@ ReadonlyClause {
 
 DefaultClause {
 	default
-	Value
+	value
 }
 
 ValueClause {
+	valueKeyword
 	value
-	Value
 }
 
 AssertClause {
 	assert
-	Value
+	value
 }
 
 PermissionsForClause {
@@ -830,151 +868,77 @@ AnalyzerTokenizers {
 }
 
 Predicate {
-	Value |
-	Value as Ident
+	value |
+	value as Ident
 }
 
-InclusivePredicate {
-	"*" |
-	Predicate
+inclusivePredicate {
+  AnyStar | Predicate
 }
-
-// Idiom {
-// 	Ident
-// 	("." Ident)*
-// }
 
 // Types
 
-Type {
-	piped<(
-		StringType |
-		NumberType |
-		AnyType |
-		BoolType |
-		BytesType |
-		DatetimeType |
-		DecimalType |
-		DurationType |
-		FloatType |
-		IntType |
-		NullType |
-		ObjectType |
-		ArrayType |
-		SetType |
-		RecordType |
-		OptionType |
-		GeometryType
-	)>
-}
-
-TypeBracketOpen { "<" }
-TypeBracketClose { ">" }
-
-StringType[@name="Type"] { "string" }
-NumberType[@name="Type"] { "number" }
-AnyType[@name="Type"] { "any" }
-BoolType[@name="Type"] { "bool" }
-BytesType[@name="Type"] { "bytes" }
-DatetimeType[@name="Type"] { "datetime" }
-DecimalType[@name="Type"] { "decimal" }
-DurationType[@name="Type"] { "duration" }
-FloatType[@name="Type"] { "float" }
-IntType[@name="Type"] { "int" }
-NullType[@name="Type"] { "null" }
-ObjectType[@name="Type"] { "object" }
-ArrayType[@name="Type"] { "array" ( TypeBracketOpen Type TypeBracketClose )? }
-SetType[@name="Type"] { "set" ( TypeBracketOpen Type TypeBracketClose )? }
-RecordType[@name="Type"] { "record" ( TypeBracketOpen piped<( rawident | Int )> TypeBracketClose )? }
-OptionType[@name="Type"] { "option" ( TypeBracketOpen Type TypeBracketClose ) }
-GeometryType[@name="Type"] {
-	"geometry"
-	(
-		TypeBracketOpen
-		( "feature" | "point" | "line" | "polygon" | "multipoint" | "multiline" | "multipolygon" | "collection" )
-		TypeBracketClose
-	)?
+type {
+    TypeName { rawident } |
+    ParameterizedType { type "<" (type | Int) ">" } |
+	UnionType { type (!union "|" type)+ }
 }
 
 TypeCast {
-	TypeBracketOpen Type TypeBracketClose BaseValue
+	"<" type ">" baseValue
 }
 
-// Strings
-String { singleString ~string | doubleString ~string }
-
 Ident {
-	rawident ~ident |
+	rawident |
 	tickIdent
 }
 
-Number { Int | Float | Decimal }
-Int[@name=Number] { "-"? int ~int }
-Float[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "f"? }
-Decimal[@dynamicPrecedence=-1, @name=Number] { "-"? int ~int frac? exp? "dec" }
+number { Int | Float | Decimal }
 
 Operator {
-	"&&" | and |
-	"||" | or |
-	"??" |
-	"?:" |
-	"="  | is |
-	"!=" | ( is opNot ) |
-	"==" |
-	"?=" |
-	"*=" |
-	"~"  |
-	"!~" |
-	"*~" |
-	"<"  |
-	"<=" |
-	">"  |
-	">=" |
-	"+"  |
-	"+=" |
-	"-"  |
-	"-=" |
-	"*"  | "×" |
-	"/"  | "÷" |
-	"**" |
-	"∋"  | contains |
-	"∌"  | containsnot |
-	"⊇"  | containsall |
-	"⊃"	 | containsany |
-	"⊅"  | containsnone |
-	"∈"	 | inside | in |
-	"∉"  | notinside | ( opNot opIn ) |
-	"⊆"  | allinside |
-	"⊂"  | anyinside |
-	"⊄"  | noneinside |
+    binaryOperator |
+	"-" | "=" | ">" | "<" |
+	and |
+	or |
+	is |
+	( is opNot ) |
+	contains |
+	containsnot |
+	containsall |
+	containsany |
+	containsnone |
+	inside | in |
+	notinside | ( opNot opIn ) |
+	allinside |
+	anyinside |
+	noneinside |
 
 	outside |
 	intersects |
 
-	"@@" | ( "@" Int "@" ) |
+	( "@" Int "@" ) |
 	(
 		"<|"
 		Int
-		( "," ( Int | chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski Number ) | pearson ) )
+		( "," ( Int | chebyshev | cosine | euclidean | hamming | jaccard | manhattan | ( minkowski number ) | pearson ) )
 		"|>"
 	)
 }
 
-assignmentOperator[@name=Operator] {
-"="  |
-"+=" |
-"-="
+@external tokens objectToken from "./tokens" {
+	objectOpen[@name=BraceOpen]
 }
 
 @tokens {
 	// Characters
 	"{"[@name=BraceOpen]
 	"}"[@name=BraceClose]
-	"["
-	"]"
+	"[" "]"
+	"<" ">"
 	":"[@name=Colon]
 	"->"[@name=GraphRight]
 	"<-"[@name=GraphLeft]
+	"<->"[@name=GraphBoth]
 
 	// Helpers
 	whitespace { $[ \n\r\t] }
@@ -986,12 +950,15 @@ assignmentOperator[@name=Operator] {
 	CommentSlash { "//" ![\n]* }
 
 	// Numbers
-	int { @digit+ }
+	Int { "-"? @digit+ }
 	frac { '.' @digit+ }
 	exp { $[eE] $[+\-]? @digit+ }
+	Float { "-"? @digit+ (frac exp? | exp) "f"? }
+	Decimal { "-"? @digit+ frac? exp? "dec" }
+	VersionNumber { @digit+ ("." @digit+ ("." @digit+)?)? }
 
-	singleString { "'" ![']* "'" }
-	doubleString { '"' !["]* '"' }
+	String { "'" (!['\\] | "\\" _)* "'" | '"' (!["\\] | "\\" _)* '"' }
+	prefixedString[@name=String] { $[ruds] String }
 
 	// Language
 	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
@@ -1006,27 +973,40 @@ assignmentOperator[@name=Operator] {
 		( @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")* )
 	}
 
-	// Functions
-	JavaScript { ![\\\n}]+ }
-	functionName[@name=function] {
-		(
-		"rand" | "RAND" |
-		"count" | "COUNT" |
-		@asciiLetter+ functionNameSegment+
-		)
-		"("
+	functionNameSegment { (@asciiLetter | "_") (@asciiLetter | "_" | @digit)* }
+	FunctionName {
+		functionNameSegment ("::" functionNameSegment)+
 	}
-
-	functionNameSegment { "::" @asciiLetter+ }
-	customFunctionName[@name=function] {
-		"fn" functionNameSegment*
+	customFunctionName[@name=FunctionName] {
+		"fn" ("::" functionNameSegment)*
 	}
 
 	durationUnit { "ns" | "us" | "µs" | "ms" | "s" | "m" | "h" | "d" | "w" | "y"}
+	DurationPart { @digit+ " "* durationUnit }
 
-	@precedence { "function" JavaScript whitespace Comment "-" "/" customFunctionName functionName exp "dec" rawident int durationUnit "f" singleString doubleString }
+	@precedence { Comment Int "-" }
+	@precedence { Comment binaryOperator }
+	@precedence { prefixedString rawident }
+	@precedence { customFunctionName FunctionName rawident }
+	@precedence { Float Decimal Int rawident }
+	@precedence { DurationPart rawident }
+	@precedence { DurationPart Int }
 
-	"function"
+	javaScriptContent { "\n" | ![{}\n'"]+ "\n"? | String }
+	javaScriptBraceOpen { "{" }
+	javaScriptBraceClose { "}" }
+
+	binaryOperator {
+		"&&" | "||" | "??" | "?:" | "!=" | "==" | "?=" | "*=" | "~" | "!~" | "*~" |
+		"<=" | ">=" | "+" | "+=" | "-=" | "*" | "×" | "/"  | "÷" | "**" |
+		$[∋∌⊇⊃⊅∈∉⊆⊂⊄] | "@@"
+    }
+
+	assignmentOperator[@name=Operator] {
+		"="  |
+		"+=" |
+		"-="
+	}
 }
 
 commaSep<content> {
@@ -1090,7 +1070,6 @@ piped<content> {
 	flexible				[@name=Keyword],
 	for						[@name=Keyword],
 	from					[@name=Keyword],
-	function				[@name=Keyword],
 	group					[@name=Keyword],
 	highlights				[@name=Keyword],
 	hnsw					[@name=Keyword],
@@ -1166,13 +1145,13 @@ piped<content> {
 	token					[@name=Keyword],
 	tokenizers				[@name=Keyword],
 	transaction				[@name=Keyword],
-	type					[@name=Keyword],
+	typeKeyword				[@name=Keyword],
 	unique					[@name=Keyword],
 	unset					[@name=Keyword],
 	update					[@name=Keyword],
 	use						[@name=Keyword],
 	user					[@name=Keyword],
-	value					[@name=Keyword],
+	valueKeyword			[@name=Keyword],
 	values					[@name=Keyword],
 	when					[@name=Keyword],
 	where					[@name=Keyword],
@@ -1182,11 +1161,11 @@ piped<content> {
 	after					[@name=Literal],
 	before					[@name=Literal],
 	diff					[@name=Literal],
-	false					[@name=Literal],
+	false					[@name=Bool],
 	full					[@name=Literal],
-	none					[@name=Literal],
-	null					[@name=Literal],
-	true					[@name=Literal],
+	none					[@name=None],
+	null					[@name=None],
+	true					[@name=Bool],
 
 	f32						[@name=Literal],
 	f64						[@name=Literal],
@@ -1237,5 +1216,9 @@ piped<content> {
 	jaccard					[@name=Distance],
 	manhattan				[@name=Distance],
 	minkowski				[@name=Distance],
-	pearson					[@name=Distance]
+	pearson					[@name=Distance],
+
+	function,
+	rand[@name=FunctionName],
+	count[@name=FunctionName]
 }
