@@ -1,6 +1,6 @@
 import classes from "../../style.module.scss";
 import { ActionIcon, Box, Button, Flex, Group, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
-import { HTMLAttributes, MouseEvent, useMemo } from "react";
+import { HTMLAttributes, MouseEvent, ReactNode, useMemo } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../../../Icon";
 import { useDatabaseStore } from "~/stores/database";
@@ -20,6 +20,7 @@ import { openConnection } from "~/connection";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { Connection } from "~/types";
 import { mdiFolderPlusOutline } from "@mdi/js";
+import { EditableText } from "~/components/EditableText";
 
 interface ConnectionItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, 'style' | 'color'> {
 	connection: Connection;
@@ -96,9 +97,51 @@ function ConnectionItem({
 	);
 }
 
+interface ConnectionListProps {
+	title: ReactNode;
+	connections: Connection[];
+	active: string;
+	onClose: () => void;
+}
+
+function ConnectionList({
+	title,
+	connections,
+	active,
+	onClose
+}: ConnectionListProps) {
+	const connectionList = useMemo(() => {
+		return connections.sort((a, b) => a.name.localeCompare(b.name));
+	}, [connections]);
+
+	return (
+		<Box>
+			<Group mb={4}>
+				{title}
+			</Group>
+			{connectionList.length === 0 ? (
+				<Text c="slate" fz="sm" mt={-2}>
+					No connections
+				</Text>
+			) : (
+				<Stack gap={6} mih={10}>
+					{connectionList.map((con) => (
+						<ConnectionItem
+							key={con.id}
+							connection={con}
+							active={active}
+							onClose={onClose}
+						/>
+					))}
+				</Stack>
+			)}
+		</Box>
+	);
+}
+
 export function Connections() {
 	const { openConnectionCreator } = useInterfaceStore.getState();
-	const { setActiveConnection, addConnectionGroup } = useConfigStore.getState();
+	const { setActiveConnection, addConnectionGroup, updateConnectionGroup, removeConnectionGroup } = useConfigStore.getState();
 
 	const [isListing, listingHandle] = useDisclosure();
 	const [search, setSearch] = useInputState("");
@@ -160,6 +203,10 @@ export function Connections() {
 	useCompatHotkeys([
 		["mod+L", listingHandle.open]
 	]);
+
+	const groupsList = useMemo(() => {
+		return groups.sort((a, b) => a.name.localeCompare(b.name));
+	}, [groups]);
 
 	return (
 		<>
@@ -295,54 +342,50 @@ export function Connections() {
 						/>
 					</Box>
 
-					{groups.map((group) => (
-						<Box>
-							<Group mb={4}>
-								<Text c="slate.2" fz="lg" fw={500}>
-									{group.name}
-								</Text>
-								<Spacer />
-							</Group>
-							<Stack gap={6}>
-								{group.connections.map((con) => (
-									<ConnectionItem
-										key={con.id}
-										connection={con}
-										active={connection?.id ?? ""}
-										onClose={listingHandle.close}
+					{groupsList.map((group) => (
+						<ConnectionList
+							key={group.id}
+							connections={group.connections}
+							active={connection?.id ?? ""}
+							onClose={listingHandle.close}
+							title={
+								<>
+									<EditableText
+										value={group.name}
+										onChange={(name) => updateConnectionGroup({ id: group.id, name })}
+										c="slate.2"
+										fz="lg"
+										fw={500}
 									/>
-								))}
-							</Stack>
-						</Box>
+									<Spacer />
+									<Tooltip
+										label="Remove group"
+										
+									>
+										<ActionIcon
+											className={classes.groupDelete}
+											aria-label="Remove group"
+											onClick={() => removeConnectionGroup(group.id)}
+											size="sm"
+										>
+											<Icon path={iconDelete} size="sm" />
+										</ActionIcon>
+									</Tooltip>
+								</>
+							}
+						/>
 					))}
 
-					<Box>
-						<Group mb={4}>
+					<ConnectionList
+						connections={connections}
+						active={connection?.id ?? ""}
+						onClose={listingHandle.close}
+						title={
 							<Text c="slate.2" fz="lg" fw={500}>
 								Connections
 							</Text>
-							<Spacer />
-						</Group>
-						<Stack gap={6}>
-							{search && filtered.length === 0 ? (
-								<Text c="dimmed">
-									No results found
-								</Text>
-							) : filtered.length === 0 && (
-								<Text c="dimmed">
-									No connections configured yet
-								</Text>
-							)}
-							{filtered.map((con) => (
-								<ConnectionItem
-									key={con.id}
-									connection={con}
-									active={connection?.id ?? ""}
-									onClose={listingHandle.close}
-								/>
-							))}
-						</Stack>
-					</Box>
+						}
+					/>
 				</Stack>
 			</Modal>
 		</>
