@@ -31,7 +31,18 @@ statement[@isGroup=Statement] {
 	BeginStatement |
 	CancelStatement |
 	CommitStatement |
-	DefineStatement |
+	DefineAnalyzerStatement |
+	DefineEventStatement |
+	DefineDatabaseStatement |
+	DefineFieldStatement |
+	DefineFunctionStatement |
+	DefineIndexStatement |
+	DefineNamespaceStatement |
+	DefineParamStatement |
+	DefineScopeStatement |
+	DefineTableStatement |
+	DefineTokenStatement |
+	DefineUserStatement |
 	RemoveStatement |
 	InfoForStatement |
 	KillStatement |
@@ -64,31 +75,13 @@ CommitStatement { commit transaction? }
 
 // Define statements
 
-DefineStatement {
-	define
-	(
-		DefineAnalyzerStatement |
-		DefineDatabaseStatement |
-		DefineEventStatement |
-		DefineFieldStatement |
-		DefineFunctionStatement |
-		DefineIndexStatement |
-		DefineNamespaceStatement |
-		DefineParamStatement |
-		DefineScopeStatement |
-		DefineTableStatement |
-		DefineTokenStatement |
-		DefineUserStatement
-	)
-}
-
 // TODO implement filters
-DefineAnalyzerStatement { analyzer Ident TokenizersClause? CommentClause? }
-DefineEventStatement { event Ident OnTableClause WhenThenClause CommentClause? }
-DefineDatabaseStatement { database Ident on Ident CommentClause? }
+DefineAnalyzerStatement { define analyzer Ident TokenizersClause? CommentClause? }
+DefineEventStatement { define event Ident OnTableClause WhenThenClause CommentClause? }
+DefineDatabaseStatement { define database Ident on Ident CommentClause? }
 
 DefineFieldStatement {
-	field
+    define field
 	IfNotExistsClause?
 	Ident
 	OnTableClause
@@ -103,16 +96,15 @@ DefineFieldStatement {
 	)*
 }
 
+ParamList {
+	"(" commaSep<VariableName ":" Type>? ")"
+}
+
 DefineFunctionStatement {
-	function
+	define function
 	IfNotExistsClause?
 	customFunctionName
-	"("
-	(
-		VariableName ":" Type
-		( "," VariableName ":" Type )*
-	)?
-	")"
+	ParamList
 	Block
 	(
 		PermissionsBasicClause |
@@ -121,7 +113,7 @@ DefineFunctionStatement {
 }
 
 DefineIndexStatement {
-	index
+	define index
 	IfNotExistsClause?
 	Ident
 	OnTableClause
@@ -134,10 +126,10 @@ DefineIndexStatement {
 	)
 }
 
-DefineNamespaceStatement { namespace Ident CommentClause? }
+DefineNamespaceStatement { define namespace Ident CommentClause? }
 
 DefineParamStatement {
-	param
+	define param
 	IfNotExistsClause?
 	VariableName
 	valueKeyword
@@ -145,7 +137,7 @@ DefineParamStatement {
 }
 
 DefineScopeStatement {
-	scope
+	define scope
 	IfNotExistsClause?
 	Ident
 	(
@@ -157,7 +149,7 @@ DefineScopeStatement {
 }
 
 DefineTableStatement {
-	table
+	define table
 	IfNotExistsClause?
 	Ident
 	(
@@ -172,7 +164,7 @@ DefineTableStatement {
 }
 
 DefineTokenStatement {
-	token
+	define token
 	IfNotExistsClause?
 	Ident
 	( on ( namespace | database | scope Ident ) )
@@ -181,7 +173,7 @@ DefineTokenStatement {
 }
 
 DefineUserStatement {
-	user
+	define user
 	IfNotExistsClause?
 	Ident
 	( on ( root | namespace | database ) )
@@ -213,7 +205,7 @@ RemoveStatement {
 
 CreateStatement {
 	create only?
-	createTarget { Ident | VariableName | Function }
+	createTarget { Ident | VariableName | FunctionCall }
 	createContent { ContentClause | SetClause | UnsetClause | () }
 	ReturnClause?
 	TimeoutClause?
@@ -318,7 +310,7 @@ IfElseStatement {
 	)
 }
 
-relateSubject { Array | Ident | Function | VariableName | RecordId }
+relateSubject { Array | Ident | FunctionCall | VariableName | RecordId }
 RelateStatement {
 	relate only?
 	relateSubject "->" relateSubject "->" relateSubject
@@ -432,7 +424,7 @@ baseValue {
 	Array |
 	RecordId |
 	FunctionJs |
-	Function |
+	FunctionCall |
 	SubQuery |
 	Block |
 	Object |
@@ -547,7 +539,7 @@ FunctionJs {
 
 // Function invocation
 
-Function {
+FunctionCall {
 	(FunctionName | customFunctionName | rand | count)
 	Version { "<" VersionNumber ">" }?
 	ArgumentList
@@ -1018,12 +1010,12 @@ Operator {
 		( @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")* )
 	}
 
-	functionNameSegment { "::" @asciiLetter+ }
+	functionNameSegment { (@asciiLetter | "_") (@asciiLetter | "_" | @digit)* }
 	FunctionName {
-		@asciiLetter+ functionNameSegment+
+		functionNameSegment ("::" functionNameSegment)+
 	}
 	customFunctionName[@name=FunctionName] {
-		"fn" functionNameSegment*
+		"fn" ("::" functionNameSegment)*
 	}
 
 	durationUnit { "ns" | "us" | "µs" | "ms" | "s" | "m" | "h" | "d" | "w" | "y"}

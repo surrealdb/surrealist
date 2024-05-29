@@ -78,11 +78,11 @@ some::versioned::function<1.2.3>(a);
 ==>
 
 SurrealQL(
-  Function(FunctionName,ArgumentList),
-  Function(FunctionName,ArgumentList(Int,Ident)),
-  Function(FunctionName,ArgumentList(Int)),
-  Function(FunctionName,ArgumentList(Ident)),
-  Function(FunctionName,Version(VersionNumber),ArgumentList(Ident)))
+  FunctionCall(FunctionName,ArgumentList),
+  FunctionCall(FunctionName,ArgumentList(Int,Ident)),
+  FunctionCall(FunctionName,ArgumentList(Int)),
+  FunctionCall(FunctionName,ArgumentList(Ident)),
+  FunctionCall(FunctionName,Version(VersionNumber),ArgumentList(Ident)))
 
 # Durations
 

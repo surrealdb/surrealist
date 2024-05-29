@@ -1,0 +1,27 @@
+# Define Function
+
+DEFINE FUNCTION fn::greet($name: string) {
+	RETURN "Hello, " + $name + "!";
+};
+
+-- Returns: "Hello, Tobie!"
+RETURN fn::greet("Tobie");
+
+==>
+
+SurrealQL(
+  DefineFunctionStatement(
+    Keyword,FunctionName,ParamList(VariableName,Colon,Type(Type)),
+    Block(BraceOpen,
+      ReturnStatement(Keyword,BinaryExpression(BinaryExpression(String,Operator,VariableName),Operator,String)),
+      BraceClose)),
+  Comment,
+  ReturnStatement(Keyword,FunctionCall(FunctionName,ArgumentList(String))))
+
+# Remove Function
+
+REMOVE FUNCTION fn::update_author;
+
+==>
+
+SurrealQL(RemoveStatement(Keyword,FunctionName))
