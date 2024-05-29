@@ -200,7 +200,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 		showContextMenu([
 			{
-				key: "copy",
+				key: "copy-id",
 				title: "Copy record id",
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
@@ -208,7 +208,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				}
 			},
 			{
-				key: "copy",
+				key: "copy-json",
 				title: "Copy as JSON",
 				icon: <Icon path={iconJSON} />,
 				onClick: () => {
