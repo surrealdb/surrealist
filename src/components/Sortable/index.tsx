@@ -1,84 +1,21 @@
 import {
 	arrayMove,
-	horizontalListSortingStrategy,
-	rectSortingStrategy,
 	SortableContext,
-	sortableKeyboardCoordinates,
-	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
 import {
 	DndContext,
-	KeyboardSensor,
-	PointerSensor,
-	useSensor,
-	useSensors,
-	UniqueIdentifier,
 	DragEndEvent,
 	PointerActivationConstraint,
 	closestCorners,
 } from "@dnd-kit/core";
 
-import { restrictToHorizontalAxis, restrictToVerticalAxis, restrictToWindowEdges } from "@dnd-kit/modifiers";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { useStable } from "~/hooks/stable";
 import { ReactNode } from "react";
-
-interface SortableItem {
-	id: UniqueIdentifier;
-}
-
-interface SortableDrag<T> {
-	item: T;
-	index: number;
-	isDragging: boolean;
-	handleProps: Record<string, any>;
-}
-
-interface SortableChildProps<T> {
-	item: T;
-	disabled: boolean;
-	children: (drag: SortableDrag<T>) => React.ReactNode;
-}
-
-const DIRECTIONS = {
-	vertical: [verticalListSortingStrategy, restrictToVerticalAxis],
-	horizontal: [horizontalListSortingStrategy, restrictToHorizontalAxis],
-	grid: [rectSortingStrategy, null],
-} as const;
-
-function SortableChild<T extends SortableItem>({ item, children, disabled }: SortableChildProps<T>) {
-	const { index, isDragging, attributes, listeners, setNodeRef, transform, transition } = useSortable({
-		id: item.id,
-		disabled,
-	});
-
-	const style: React.CSSProperties = {
-		cursor: "grab",
-	};
-
-	// NOTE - The translate property appears to cause font weight to drop for me, seems like an Edge skill issue
-
-	const childStyle: React.CSSProperties = {
-		transform: CSS.Translate.toString(transform),
-		transition,
-		zIndex: isDragging ? 9999 : 0,
-	};
-
-	const drag = {
-		item,
-		index,
-		isDragging,
-		handleProps: { ...attributes, ...listeners, style },
-	};
-
-	return (
-		<div ref={setNodeRef} style={childStyle}>
-			{children(drag)}
-		</div>
-	);
-}
+import { useSortableDirection, useSortableSensors } from "./helpers";
+import { SortableDrag, SortableItem } from "./types";
+import { SortableChild } from "./child";
 
 export interface SortableProps<T> {
 	items: T[];
@@ -91,16 +28,8 @@ export interface SortableProps<T> {
 }
 
 export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
-	const [strategy, modifier] = DIRECTIONS[props.direction || "vertical"];
-
-	const sensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: props.constraint,
-		}),
-		useSensor(KeyboardSensor, {
-			coordinateGetter: sortableKeyboardCoordinates,
-		})
-	);
+	const [strategy, modifier] = useSortableDirection(props.direction);
+	const sensors = useSortableSensors(props.constraint);
 
 	const handleDragEnd = useStable((event: DragEndEvent) => {
 		const { active, over } = event;

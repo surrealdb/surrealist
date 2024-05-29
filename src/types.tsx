@@ -66,6 +66,7 @@ export interface Connection {
 	id: string;
 	name: string;
 	icon: number;
+	group?: string;
 	queries: TabQuery[];
 	activeQuery: string;
 	connection: ConnectionOptions;
@@ -81,6 +82,11 @@ export interface Template {
 	name: string;
 	icon: number;
 	values: ConnectionOptions;
+}
+
+export interface ConnectionGroup {
+	id: string;
+	name: string;
 }
 
 export interface SurrealistBehaviorSettings {
@@ -161,6 +167,7 @@ export interface SurrealistConfig {
 	configVersion: number;
 	previousVersion: string;
 	connections: Connection[];
+	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeView: ViewMode;
 	activeConnection: string | null;
