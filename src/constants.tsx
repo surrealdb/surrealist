@@ -199,12 +199,10 @@ export const DESIGNER_DIRECTIONS = [
 	{ label: "Right to left", value: "rtl" },
 ];
 
-export const SURQL_FILTERS = [
-	{
-		name: "SurrealDB Schema",
-		extensions: ["surql", "sql", "surrealql"],
-	},
-];
+export const SURQL_FILTER = {
+	name: "SurrealDB Schema",
+	extensions: ["surql", "sql", "surrealql"],
+};
 
 export const ORIENTATIONS: Selectable<Orientation>[] = [
 	{ label: "Horizontal", value: "horizontal" },

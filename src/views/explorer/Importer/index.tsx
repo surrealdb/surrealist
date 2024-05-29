@@ -1,5 +1,6 @@
-import { Button, Group, Modal, Paper } from "@mantine/core";
-import { SURQL_FILTERS } from "~/constants";
+import papaparse from "papaparse";
+import { Autocomplete, Button, Divider, Modal, Stack } from "@mantine/core";
+import { SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -8,28 +9,42 @@ import { Icon } from "../../../components/Icon";
 import { adapter } from "~/adapter";
 import { showError, showInfo } from "~/util/helpers";
 import { ModalTitle } from "../../../components/ModalTitle";
-import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
 import { syncDatabaseSchema } from "~/util/schema";
 import { OpenedTextFile } from "~/adapter/base";
-import { iconChevronRight, iconDownload, iconFile } from "~/util/icons";
+import { iconChevronRight, iconDownload } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useIntent } from "~/hooks/url";
 import { executeQuery } from "~/connection";
+import { useInputState } from "@mantine/hooks";
+import { useTableNames } from "~/hooks/schema";
+import { RecordId, Table } from "surrealdb.js";
+import { parseValue } from "~/util/surrealql";
+
+type Importer = null | 'sql' | 'csv';
 
 export function Importer() {
 	const isLight = useIsLight();
+	const tables = useTableNames();
 	const isOnline = useIsConnected();
-	const [showConfirm, showConfirmHandle] = useDisclosure();
+	const [importer, setImporter] = useState<Importer>(null);
 	const [isImporting, setIsImporting] = useState(false);
+	const [table, setTable] = useInputState("");
 
 	const importFile = useRef<OpenedTextFile | null>(null);
+
+	const closeImporter = useStable(() => {
+		setImporter(null);
+	});
 
 	const startImport = useStable(async () => {
 		try {
 			const [file] = await adapter.openTextFile(
 				'Import query file',
-				SURQL_FILTERS,
+				[SURQL_FILTER, {
+					name: "Table data (csv)",
+					extensions: ["csv"],
+				}],
 				false
 			);
 
@@ -38,7 +53,13 @@ export function Importer() {
 			}
 
 			importFile.current = file;
-			showConfirmHandle.open();
+
+			if (file.name.endsWith(".csv")) {
+				setImporter("csv");
+				setTable("");
+			} else {
+				setImporter("sql");
+			}
 		} finally {
 			setIsImporting(false);
 		}
@@ -48,14 +69,53 @@ export function Importer() {
 		try {
 			setIsImporting(true);
 
-			await executeQuery(importFile.current!.content);
+			const content = importFile.current!.content.trim();
 
-			showInfo({
-				title: "Importer",
-				subtitle: "Database was successfully imported"
-			});
+			if (importer === "csv") {
+				papaparse.parse(content, {
+					header: true,
+					dynamicTyping: true,
+					transform(value) {
+						try {
+							return parseValue(value);
+						} catch {
+							return value;
+						}
+					},
+					step(row, parser) {
+						if (row.errors.length > 0) {
+							const err = row.errors[0].message;
 
-			await syncDatabaseSchema();
+							showError({
+								title: "Import failed",
+								subtitle: "There was an error importing the CSV file: " + err,
+							});
+
+							parser.abort();
+							return;
+						}
+
+						const content = row.data as any;
+						const what = "id" in content
+							? new RecordId(table, content.id)
+							: new Table(table);
+
+						executeQuery(/* surql */ `CREATE $what CONTENT $content`, { what, content });
+					},
+					complete() {
+						syncDatabaseSchema();
+					}
+				});
+			} else {
+				await executeQuery(content);
+
+				showInfo({
+					title: "Importer",
+					subtitle: "Database was successfully imported"
+				});
+
+				await syncDatabaseSchema();
+			}
 		} catch(err: any) {
 			console.error(err);
 
@@ -65,7 +125,7 @@ export function Importer() {
 			});
 		} finally {
 			setIsImporting(false);
-			showConfirmHandle.close();
+			closeImporter();
 		}
 	});
 
@@ -82,40 +142,15 @@ export function Importer() {
 				style={{ flexShrink: 0 }}
 				bg="transparent"
 			>
-				Import database
+				Import data
 			</Entry>
 
 			<Modal
-				opened={showConfirm}
-				onClose={showConfirmHandle.close}
+				opened={importer === 'sql'}
+				onClose={closeImporter}
 				size="sm"
 				title={<ModalTitle>Import database</ModalTitle>}
 			>
-				<Paper
-					p="sm"
-					mb="md"
-					radius="md"
-					bg={isLight ? "slate.1" : "slate.7"}
-				>
-					<Group
-						gap={6}
-						justify="center"
-						wrap="nowrap"
-					>
-						<Icon
-							mt={-1}
-							path={iconFile}
-						/>
-						<Text
-							truncate
-							c={isLight ? "black" : "white"}
-							fw={600}
-						>
-							{importFile.current?.name}
-						</Text>
-					</Group>
-				</Paper>
-
 				<Text
 					mb="xl"
 					c={isLight ? "slate.7" : "slate.2"}
@@ -140,6 +175,51 @@ export function Importer() {
 					Start import
 					<Icon path={iconDownload} right />
 				</Button>
+			</Modal>
+
+			<Modal
+				opened={importer === 'csv'}
+				onClose={closeImporter}
+				size="sm"
+				title={<ModalTitle>Import table</ModalTitle>}
+			>
+				<Stack>
+					<Text>
+						This importer allows you to parse CSV data into a table.
+					</Text>
+					<Text>
+						The first row of the CSV file will be interpreted as column names. Before importing,
+						make sure these match the columns in the table you are importing to.
+					</Text>
+
+					<Text>
+						While existing data will be preserved, it may be overwritten by the imported data.
+					</Text>
+
+					<Divider />
+
+					<Autocomplete
+						data={tables}
+						value={table}
+						onChange={setTable}
+						label="Table name"
+						size="sm"
+						required
+						placeholder="table_name"
+					/>
+
+					<Button
+						mt="md"
+						fullWidth
+						onClick={confirmImport}
+						loading={isImporting}
+						variant="gradient"
+						disabled={!table}
+					>
+						Start import
+						<Icon path={iconDownload} right />
+					</Button>
+				</Stack>
 			</Modal>
 		</>
 	);
