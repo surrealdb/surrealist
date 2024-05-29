@@ -15,7 +15,7 @@ import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaFunction } from "~/types";
 import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus } from "~/util/icons";
-import { SURQL_FILTERS } from "~/constants";
+import { SURQL_FILTER } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
 import { surrealql } from "codemirror-surrealql";
 import { surqlLinting } from "~/util/editor/extensions";
@@ -48,7 +48,7 @@ export function EditorPanel({
 		adapter.saveFile(
 			`Save function`,
 			`${details.name}.surql`,
-			SURQL_FILTERS,
+			[SURQL_FILTER],
 			() => buildFunctionDefinition(details)
 		);
 	});

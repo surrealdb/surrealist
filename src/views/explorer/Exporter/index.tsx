@@ -1,5 +1,5 @@
 import { Button, Checkbox, Modal, Stack } from "@mantine/core";
-import { EXPORT_TYPES, ExportType, SURQL_FILTERS } from "~/constants";
+import { EXPORT_TYPES, ExportType, SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -35,7 +35,7 @@ export function Exporter() {
 			const success = await adapter.saveFile(
 				'Save database export',
 				'database.surql',
-				SURQL_FILTERS,
+				[SURQL_FILTER],
 				() => {
 					setIsExporting(true);
 
@@ -68,14 +68,14 @@ export function Exporter() {
 				style={{ flexShrink: 0 }}
 				bg="transparent"
 			>
-				Export database
+				Export data
 			</Entry>
 
 			<Modal
 				opened={showExporter}
 				onClose={closeExporter}
 				size="xs"
-				title={<ModalTitle>Export database</ModalTitle>}
+				title={<ModalTitle>Export data</ModalTitle>}
 			>
 				<Text
 					mb="xl"
