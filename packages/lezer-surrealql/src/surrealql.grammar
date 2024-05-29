@@ -4,7 +4,8 @@
 
 @precedence {
 	range @left,
-	method
+	method,
+	binary @left
 }
 
 expressions {
@@ -451,9 +452,7 @@ value[@isGroup=Value] {
 // Binary expressions
 
 BinaryExpression {
-	baseValue
-	Operator
-	baseValue
+	value !binary Operator value
 }
 
 Path {
