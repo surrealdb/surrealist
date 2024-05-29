@@ -236,6 +236,7 @@ export const
   Any = 234,
   GraphPredicate = 235,
   WhereClause = 236,
+  AnyStar = 239,
   DefineDatabaseStatement = 242,
   DefineFieldStatement = 243,
   IfNotExistsClause = 244,

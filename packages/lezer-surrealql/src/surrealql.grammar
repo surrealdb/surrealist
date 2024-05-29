@@ -435,6 +435,7 @@ baseValue {
 }
 
 Any { "?" }
+AnyStar[@name=Any] { "*" }
 
 value[@isGroup=Value] {
 	baseValue |
@@ -455,7 +456,7 @@ Path {
 
 pathElement {
 	GraphPath |
-	Subscript { "." (Ident | FunctionName { rawident !method } ArgumentList | Any { "*" }) } |
+	Subscript { "." (Ident | FunctionName { rawident !method } ArgumentList | AnyStar) } |
 	Filter { "[" (WhereClause | value | WhereClause { "?" value }) "]" }
 }
 
@@ -867,7 +868,7 @@ Predicate {
 }
 
 inclusivePredicate {
-  Any | Predicate
+  AnyStar | Predicate
 }
 
 // Types

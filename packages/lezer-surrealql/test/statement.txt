@@ -1,3 +1,11 @@
+# Simple Select
+
+SELECT * FROM test
+
+==>
+
+SurrealQL(SelectStatement(Keyword,Any,Keyword,Ident))
+
 # Define Function
 
 DEFINE FUNCTION fn::greet($name: string) {
