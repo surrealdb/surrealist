@@ -1,4 +1,4 @@
-import { Connection, HistoryQuery, PartialId, SavedQuery, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
+import { Connection, ConnectionGroup, HistoryQuery, PartialId, SavedQuery, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
 import { createBaseConfig, createBaseTab } from "~/util/defaults";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { newId } from "~/util/helpers";
@@ -39,6 +39,9 @@ function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
 }
 
 export type ConfigStore = SurrealistConfig & {
+	addConnectionGroup: (group: ConnectionGroup) => void;
+	removeConnectionGroup: (groupId: string) => void;
+	updateConnectionGroup: (group: PartialId<ConnectionGroup>) => void;
 	addConnection: (connection: Connection) => void;
 	removeConnection: (connectionId: string) => void;
 	updateConnection: (payload: PartialId<Connection>) => void;
@@ -69,8 +72,27 @@ export type ConfigStore = SurrealistConfig & {
 }
 
 export const useConfigStore = create<ConfigStore>()(
-	(set, get) => ({
+	(set) => ({
 		...createBaseConfig(),
+
+		addConnectionGroup: (group) => set((state) => ({
+			connectionGroups: [
+				...state.connectionGroups,
+				group
+			]
+		})),
+
+		removeConnectionGroup: (groupId) => set((state) => ({
+			connectionGroups: state.connectionGroups.filter((group) => group.id !== groupId)
+		})),
+
+		updateConnectionGroup: (group) => set((state) => ({
+			connectionGroups: state.connectionGroups.map((g) =>
+				g.id === group.id
+					? { ...g, ...group }
+					: g
+			)
+		})),
 
 		addConnection: (connection) => set((state) => ({
 			connections: [

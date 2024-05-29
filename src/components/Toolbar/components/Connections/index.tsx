@@ -1,6 +1,6 @@
 import classes from "../../style.module.scss";
-import { ActionIcon, Box, Button, Group, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
-import { useMemo } from "react";
+import { ActionIcon, Box, Button, Flex, Group, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { HTMLAttributes, MouseEvent, useMemo } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../../../Icon";
 import { useDatabaseStore } from "~/stores/database";
@@ -12,43 +12,103 @@ import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { Y_SLIDE_TRANSITION, newId, showError, updateTitle } from "~/util/helpers";
-import { Entry } from "../../../Entry";
+import { Entry, EntryProps } from "../../../Entry";
 import { useContextMenu } from "mantine-contextmenu";
 import { useIntent } from "~/hooks/url";
 import { USER_ICONS } from "~/util/user-icons";
 import { openConnection } from "~/connection";
 import { useCompatHotkeys } from "~/hooks/hotkey";
+import { Connection } from "~/types";
+import { mdiFolderPlusOutline } from "@mdi/js";
+
+interface ConnectionItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, 'style' | 'color'> {
+	connection: Connection;
+	active: string;
+	onClose: () => void;
+}
+
+function ConnectionItem({
+	connection,
+	active,
+	onClose,
+	...other
+}: ConnectionItemProps) {
+	const { showContextMenu } = useContextMenu();
+	const { openConnectionEditor} = useInterfaceStore.getState();
+	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
+	const isActive = connection.id === active;
+
+	const activate = useStable(() => {
+		setActiveConnection(connection.id);
+		updateTitle();
+		onClose();
+	});
+
+	const modify = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+		onClose();
+		openConnectionEditor(connection.id);
+	});
+
+	return (
+		<Entry
+			key={connection.id}
+			isActive={isActive}
+			className={classes.connection}
+			onClick={activate}
+			leftSection={
+				<Icon path={USER_ICONS[connection.icon ?? 0]} />
+			}
+			rightSection={
+				<ActionIcon
+					component="div"
+					className={classes.connectionOptions}
+					onClick={modify}
+					aria-label="Edit connection"
+				>
+					<Icon path={iconEdit} />
+				</ActionIcon>
+			}
+			onContextMenu={showContextMenu([
+				{
+					key: "duplicate",
+					title: "Duplicate",
+					icon: <Icon path={iconCopy} />,
+					onClick: () => addConnection({
+						...connection,
+						id: newId()
+					}),
+				},
+				{
+					key: "delete",
+					title: "Delete connection",
+					color: "pink.7",
+					icon: <Icon path={iconDelete} />,
+					onClick: () => removeConnection(connection.id),
+				}
+			])}
+			{...other}
+		>
+			<Text truncate>
+				{connection.name}
+			</Text>
+		</Entry>
+	);
+}
 
 export function Connections() {
-	const { openConnectionCreator, openConnectionEditor} = useInterfaceStore.getState();
-	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
-	const { showContextMenu } = useContextMenu();
+	const { openConnectionCreator } = useInterfaceStore.getState();
+	const { setActiveConnection, addConnectionGroup } = useConfigStore.getState();
 
 	const [isListing, listingHandle] = useDisclosure();
 	const [search, setSearch] = useInputState("");
 	const connections = useConnections();
 	const connection = useConnection();
 
+	const groups = useConfigStore((s) => s.connectionGroups);
 	const isConnected = useDatabaseStore((s) => s.isConnected);
 	const isConnecting = useDatabaseStore((s) => s.isConnecting);
 	const remoteVersion = useDatabaseStore((s) => s.version);
-
-	const createNew = useStable(() => {
-		listingHandle.close();
-		openConnectionCreator();
-	});
-
-	const activate = useStable((id: string) => {
-		listingHandle.close();
-		setActiveConnection(id);
-		updateTitle();
-	});
-
-	const editConnection = useStable((id: string, e: React.MouseEvent) => {
-		e.stopPropagation();
-		listingHandle.close();
-		openConnectionEditor(id);
-	});
 
 	const filtered = useMemo(() => {
 		const needle = search.trim().toLocaleLowerCase();
@@ -68,15 +128,23 @@ export function Connections() {
 		});
 	});
 
-	const duplicateConnection = useStable((id: string) => {
-		const con = connections.find((c) => c.id === id);
+	const newConnection = useStable(() => {
+		listingHandle.close();
+		openConnectionCreator();
+	});
 
-		if (con) {
-			addConnection({
-				...con,
-				id: newId()
-			});
-		}
+	const newGroup = useStable(() => {
+		addConnectionGroup({
+			id: newId(),
+			name: "New group",
+			connections: []
+		});
+	});
+
+	const openSandbox = useStable(() => {
+		setActiveConnection(SANDBOX);
+		updateTitle();
+		listingHandle.close();
 	});
 
 	const isSandbox = connection?.id === SANDBOX;
@@ -167,22 +235,55 @@ export function Connections() {
 				transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 				centered={false}
 			>
-				<Stack>
-					<TextInput
-						placeholder="Search..."
-						value={search}
-						spellCheck={false}
-						onChange={setSearch}
-						variant="outline"
-						color="red"
-						autoFocus
-						leftSection={
-							<Icon path={iconSearch} />
-						}
-					/>
+				<Stack gap="xl">
+					<Box>
+						<Flex gap="sm">
+							<TextInput
+								placeholder="Search..."
+								value={search}
+								spellCheck={false}
+								onChange={setSearch}
+								variant="unstyled"
+								autoFocus
+								flex={1}
+								styles={{
+									input: {
+										border: "1px solid var(--mantine-color-slate-6)"
+									}
+								}}
+								leftSection={
+									<Icon path={iconSearch} />
+								}
+							/>
+							<Menu position="right-start">
+								<Menu.Target>
+									<ActionIcon
+										aria-label="Add..."
+										size={36}
+										radius="md"
+									>
+										<Icon path={iconPlus} />
+									</ActionIcon>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Item
+										leftSection={<Icon path={iconPlus} />}
+										onClick={newConnection}
+									>
+										New Connection
+									</Menu.Item>
+									<Menu.Item
+										leftSection={<Icon path={mdiFolderPlusOutline} />}
+										onClick={newGroup}
+									>
+										New Group
+									</Menu.Item>
+								</Menu.Dropdown>
+							</Menu>
+						</Flex>
 
-					{!search && (
 						<Entry
+							mt="md"
 							isActive={isSandbox}
 							leftSection={
 								<Group gap="xs">
@@ -190,25 +291,39 @@ export function Connections() {
 									Sandbox
 								</Group>
 							}
-							onClick={() => activate(SANDBOX)}
+							onClick={openSandbox}
 						/>
-					)}
+					</Box>
+
+					{groups.map((group) => (
+						<Box>
+							<Group mb={4}>
+								<Text c="slate.2" fz="lg" fw={500}>
+									{group.name}
+								</Text>
+								<Spacer />
+							</Group>
+							<Stack gap={6}>
+								{group.connections.map((con) => (
+									<ConnectionItem
+										key={con.id}
+										connection={con}
+										active={connection?.id ?? ""}
+										onClose={listingHandle.close}
+									/>
+								))}
+							</Stack>
+						</Box>
+					))}
 
 					<Box>
 						<Group mb={4}>
-							<Text c="slate.2" fz="lg">
+							<Text c="slate.2" fz="lg" fw={500}>
 								Connections
 							</Text>
 							<Spacer />
-							<ActionIcon
-								mr={7}
-								onClick={createNew}
-								aria-label="Create new connection"
-							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
 						</Group>
-						<Stack gap="sm">
+						<Stack gap={6}>
 							{search && filtered.length === 0 ? (
 								<Text c="dimmed">
 									No results found
@@ -218,51 +333,14 @@ export function Connections() {
 									No connections configured yet
 								</Text>
 							)}
-
-							{filtered.map((con) => {
-								const isActive = connection?.id === con.id;
-
-								return (
-									<Entry
-										key={con.id}
-										isActive={isActive}
-										className={classes.connection}
-										onClick={() => activate(con.id)}
-										leftSection={
-											<Icon path={USER_ICONS[con.icon ?? 0]} />
-										}
-										rightSection={
-											<ActionIcon
-												component="div"
-												className={classes.connectionOptions}
-												onClick={(e) => editConnection(con.id, e)}
-												aria-label="Edit connection"
-											>
-												<Icon path={iconEdit} />
-											</ActionIcon>
-										}
-										onContextMenu={showContextMenu([
-											{
-												key: "duplicate",
-												title: "Duplicate",
-												icon: <Icon path={iconCopy} />,
-												onClick: () => duplicateConnection(con.id),
-											},
-											{
-												key: "delete",
-												title: "Delete connection",
-												color: "pink.7",
-												icon: <Icon path={iconDelete} />,
-												onClick: () => removeConnection(con.id),
-											}
-										])}
-									>
-										<Text truncate>
-											{con.name}
-										</Text>
-									</Entry>
-								);
-							})}
+							{filtered.map((con) => (
+								<ConnectionItem
+									key={con.id}
+									connection={con}
+									active={connection?.id ?? ""}
+									onClose={listingHandle.close}
+								/>
+							))}
 						</Stack>
 					</Box>
 				</Stack>

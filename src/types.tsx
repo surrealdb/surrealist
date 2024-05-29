@@ -83,6 +83,12 @@ export interface Template {
 	values: ConnectionOptions;
 }
 
+export interface ConnectionGroup {
+	id: string;
+	name: string;
+	connections: Connection[];
+}
+
 export interface SurrealistBehaviorSettings {
 	updateChecker: boolean;
 	tableSuggest: boolean;
@@ -161,6 +167,7 @@ export interface SurrealistConfig {
 	configVersion: number;
 	previousVersion: string;
 	connections: Connection[];
+	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeView: ViewMode;
 	activeConnection: string | null;
