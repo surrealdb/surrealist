@@ -217,7 +217,8 @@ export function Connections() {
 		return groups.sort((a, b) => a.name.localeCompare(b.name));
 	}, [groups]);
 
-	const grouped = group(filtered, (con) => con.group ?? UNGROUPED);
+	const grouped = group(filtered, (con) => con.group ?? UNGROUPED) || {};
+	const ungrouped = grouped[UNGROUPED] ?? [];
 
 	return (
 		<>
@@ -388,16 +389,18 @@ export function Connections() {
 						/>
 					))}
 
-					<ConnectionList
-						connections={grouped[UNGROUPED] ?? []}
-						active={connection?.id ?? ""}
-						onClose={listingHandle.close}
-						title={
-							<Text c="bright" fz="lg" fw={500}>
-								Connections
-							</Text>
-						}
-					/>
+					{(ungrouped.length > 0 || groups.length === 0) && (
+						<ConnectionList
+							connections={ungrouped}
+							active={connection?.id ?? ""}
+							onClose={listingHandle.close}
+							title={
+								<Text c="bright" fz="lg" fw={500}>
+									Connections
+								</Text>
+							}
+						/>
+					)}
 				</Stack>
 			</Modal>
 		</>
