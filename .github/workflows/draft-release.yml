@@ -152,6 +152,7 @@ jobs:
                   APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
                   APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
                   APPLE_API_KEY_PATH: ${{ github.workspace }}/apple-api-key.p8
+                  CI: false
               with:
                   appVersion: surrealist-v${{ needs.version.outputs.version }}
                   releaseId: surrealist-v${{ needs.version.outputs.version }}
