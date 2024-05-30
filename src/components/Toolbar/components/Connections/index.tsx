@@ -5,7 +5,7 @@ import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../../../Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconCircle, iconCopy, iconDelete, iconEdit, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconCircle, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../../../Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
@@ -19,7 +19,6 @@ import { USER_ICONS } from "~/util/user-icons";
 import { openConnection } from "~/connection";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { Connection } from "~/types";
-import { mdiFolderPlusOutline } from "@mdi/js";
 import { EditableText } from "~/components/EditableText";
 import { group } from "radash";
 
@@ -332,7 +331,7 @@ export function Connections() {
 										New Connection
 									</Menu.Item>
 									<Menu.Item
-										leftSection={<Icon path={mdiFolderPlusOutline} />}
+										leftSection={<Icon path={iconFolderPlus} />}
 										onClick={newGroup}
 									>
 										New Group
