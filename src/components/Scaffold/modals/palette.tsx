@@ -94,6 +94,12 @@ export function CommandPaletteModal({
 	}, [flattened, selected]);
 
 	const activate = (cmd: Command) => {
+		const query = search.trim();
+
+		if (query.length > 0) {
+			pushCommand(query);
+		}
+
 		switch (cmd.action.type) {
 			case "insert": {
 				setSearch(cmd.action.content);
@@ -110,12 +116,6 @@ export function CommandPaletteModal({
 				break;
 			}
 			case "launch": {
-				const query = search.trim();
-
-				if (query.length > 0) {
-					pushCommand(query);
-				}
-
 				onClose();
 				cmd.action.handler();
 				break;
