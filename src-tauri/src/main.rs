@@ -3,7 +3,7 @@
     windows_subsystem = "windows"
 )]
 
-use std::{env, sync::Mutex};
+use std::{env, path::Path, sync::Mutex};
 
 use database::DatabaseState;
 use log::info;
@@ -25,7 +25,13 @@ fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
     for arg in args.into_iter().skip(1) {
         if let Ok(url) = url::Url::parse(&arg) {
             urls.push(url);
-        }
+        } else {
+			let path = Path::new(&arg);
+
+			if let Ok(url) = url::Url::from_file_path(path) {
+				urls.push(url);
+			}
+		}
     }
 
     if !urls.is_empty() {
