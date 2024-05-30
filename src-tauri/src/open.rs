@@ -1,4 +1,4 @@
-use std::{fs, os::unix::fs::MetadataExt};
+use std::fs::read_to_string;
 
 use log::info;
 use serde::Serialize;
@@ -40,11 +40,11 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
         .map(|u| match u.scheme() {
             "file" => {
                 let path = u.to_file_path().unwrap();
-                let success = path.metadata().unwrap().size() < MAX_FILE_SIZE;
+                let success = path.metadata().unwrap().len() < MAX_FILE_SIZE;
                 let name = path.file_stem().unwrap().to_owned().into_string().unwrap();
 
                 let query = if success {
-                    fs::read_to_string(path).unwrap().trim().to_owned()
+                    read_to_string(path).unwrap().trim().to_owned()
                 } else {
                     "".to_owned()
                 };
