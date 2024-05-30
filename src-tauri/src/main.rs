@@ -23,12 +23,12 @@ fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
     let mut urls = Vec::new();
 
     for arg in args.into_iter().skip(1) {
-        if let Ok(url) = url::Url::parse(&arg) {
-            urls.push(url);
-        } else {
-			let path = Path::new(&arg);
+		let path = Path::new(&arg);
 
-			if let Ok(url) = url::Url::from_file_path(path) {
+		if let Ok(url) = url::Url::from_file_path(path) {
+			urls.push(url);
+		} else {
+			if let Ok(url) = url::Url::parse(&arg) {
 				urls.push(url);
 			}
 		}
@@ -59,6 +59,10 @@ fn main() {
 
             if emit_event {
                 app.emit("open-resource", ()).unwrap();
+				
+				if let Some((_, window)) = app.webview_windows().iter().next() {
+					window.set_focus().unwrap();
+				}
             }
         }))
         .plugin(
