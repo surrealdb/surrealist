@@ -78,6 +78,7 @@ export const EditableText = (props: EditableTextProps) => {
 			onDoubleClick={onDoubleClick}
 			contentEditable={!withDoubleClick || isEditing ? "plaintext-only" as any : "false"}
 			className={clsx(classes.root, withDecoration && classes.decorate)}
+			spellCheck={false}
 			role="textbox"
 			{...rest}
 		/>
