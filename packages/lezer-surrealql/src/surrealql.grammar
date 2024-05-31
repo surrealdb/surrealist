@@ -500,8 +500,14 @@ Array { "[" commaSep<value>? "]"}
 
 // Record Ids
 
-RecordIdIdent {
+RecordTbIdent {
 	rawident |
+	tickIdent |
+	bracketIdent
+}
+
+RecordIdIdent {
+	numberident |
 	tickIdent |
 	bracketIdent
 }
@@ -520,7 +526,7 @@ RecordIdRange {
 }
 
 RecordId {
-	RecordIdIdent
+	RecordTbIdent
 	":"
 	( recordIdValue | RecordIdRange )
 }
@@ -825,7 +831,6 @@ AssertClause {
 PermissionsForClause {
 	permissions
 	(
-		// TODO make case insensitive but not a keyword
 		none | full |
 		(
 			for
@@ -972,8 +977,9 @@ Operator {
 	bracketIdent {
 		"⟨" ![⟩]+ "⟩"
 	}
-	rawident {
-		( (@asciiLetter | "_") (@asciiLetter | @digit | "_")* ) |
+	rawident { (@asciiLetter | "_") (@asciiLetter | @digit | "_")* }
+	numberident {
+		rawident |
 		( @digit+ (@asciiLetter | "_") (@asciiLetter | @digit | "_")* )
 	}
 
@@ -995,6 +1001,7 @@ Operator {
 	@precedence { Float Decimal Int rawident }
 	@precedence { DurationPart rawident }
 	@precedence { DurationPart Int }
+	@precedence { numberident Int rawident }
 
 	javaScriptContent { "\n" | ![{}\n'"]+ "\n"? | String }
 	javaScriptBraceOpen { "{" }
