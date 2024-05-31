@@ -6,6 +6,7 @@ import { assign } from "radash";
 import { openConnection } from "~/connection";
 import { featureFlags } from "./feature-flags";
 import { VIEW_MODES } from "~/constants";
+import { useDatabaseStore } from "~/stores/database";
 
 const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -78,6 +79,8 @@ export function watchConnectionSwitch() {
 			const autoConnect = getSetting("behavior", "autoConnect");
 			const view = useConfigStore.getState().activeView;
 			const info = VIEW_MODES[view];
+
+			useDatabaseStore.getState().setIsConnecting(false);
 
 			if (autoConnect && value) {
 				openConnection();
