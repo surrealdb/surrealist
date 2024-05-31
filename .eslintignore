@@ -1,7 +1,0 @@
-.vscode
-.github
-node_modules
-src-tauri
-dist
-*.js
-src/generated
