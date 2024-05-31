@@ -26,14 +26,18 @@ export function TableCreator() {
 	const tableList = useTableNames("TABLE");
 
 	const createTable = useStable(async () => {
-		let query = `DEFINE TABLE ${tb(tableName)};`;
+		let query = `DEFINE TABLE ${tb(tableName)} TYPE `;
 
 		if (createType === "relation") {
-			const inTables = tableIn.map((t) => tb(t)).join("|");
-			const outTables = tableOut.map((t) => tb(t)).join("|");
+			const inTables = tableIn.map((t) => tb(t)).join('|');
+			const outTables = tableOut.map((t) => tb(t)).join('|');
+
+			query += `RELATION IN ${inTables} OUT ${outTables};`;
 
 			query += `DEFINE FIELD in ON ${tb(tableName)} TYPE record<${inTables}>;`;
 			query += `DEFINE FIELD out ON ${tb(tableName)} TYPE record<${outTables}>;`;
+		} else {
+			query += "NORMAL;";
 		}
 
 		closeTableCreator();
