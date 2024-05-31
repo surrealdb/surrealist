@@ -7,6 +7,7 @@ import { RecordLink } from "../RecordLink";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
 import { convert } from 'geo-coordinates-parser';
+import { GeographyLink } from "../GeographyLink";
 
 // ----- Data Cell Types -----
 
@@ -76,7 +77,7 @@ function ArrayCell(props: { value: any[] }) {
 					) : (
 						<Stack gap="sm">
 							{items.map((item, i) => (
-								<Group wrap="nowrap">
+								<Group key={i} wrap="nowrap">
 									<span style={{ opacity: 0.5 }}>#{i + 1}</span>
 									<div key={i} style={TRUNCATE_STYLE}>
 										<DataCell value={item} />
@@ -118,11 +119,11 @@ function ObjectCell(props: { value: any }) {
 	);
 }
 
-const GeometryPointCell = (props: { value: GeometryPoint }) => {
-	const [long, lat] = props.value.point;
+const GeographyPointCell = ({ value }: { value: GeometryPoint }) => {
+	const [long, lat] = value.point;
 	const converted = convert(`${lat.toNumber()} ${long.toNumber()}`);
 
-	return <StringCell value={converted.toCoordinateFormat("DMS")} />;
+	return <GeographyLink value={value} text={converted.toCoordinateFormat("DMS")} />;
 };
 
 export const DataCell = ({ value }: { value: any }) => {
@@ -151,7 +152,7 @@ export const DataCell = ({ value }: { value: any }) => {
 	}
 
 	if (value instanceof GeometryPoint) {
-		return <GeometryPointCell value={value} />;
+		return <GeographyPointCell value={value} />;
 	}
 
 	if (Array.isArray(value)) {
