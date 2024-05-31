@@ -55,7 +55,7 @@ export function computeCommands(): CommandCategory[] {
 
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
-	const canDisconnect = isConnected && !isSandbox;
+	const hasRemoteConnection = (isConnecting || isConnected) && !isSandbox;
 	const categories: CommandCategory[] = [];
 
 	categories.push({
@@ -94,7 +94,7 @@ export function computeCommands(): CommandCategory[] {
 				icon: iconPlus,
 				action: intent("new-connection")
 			},
-			...(canDisconnect ? [{
+			...(hasRemoteConnection ? [{
 				id: newId(),
 				name: `Disconnect from database`,
 				icon: iconClose,
