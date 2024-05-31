@@ -33,3 +33,15 @@ REMOVE FUNCTION fn::update_author;
 ==>
 
 SurrealQL(RemoveStatement(Keyword,Keyword,FunctionName))
+
+# Live Select targets
+
+LIVE SELECT * FROM person;
+LIVE SELECT * FROM person:tobie;
+
+==>
+
+SurrealQL(
+	LiveSelectStatement(Keyword,Keyword,Any,Keyword,Ident),
+	LiveSelectStatement(Keyword,Keyword,Any,Keyword,RecordId(RecordTbIdent,Colon,RecordIdIdent)),
+)
