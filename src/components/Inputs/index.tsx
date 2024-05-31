@@ -10,8 +10,7 @@ import { useTables } from "~/hooks/schema";
 import { iconCancel, iconCheck, iconTable } from "~/util/icons";
 import { inputBase } from "~/util/editor/extensions";
 import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
-import { Compartment, EditorState, Extension } from "@codemirror/state";
-import { indentWithTab } from "@codemirror/commands";
+import { Compartment, EditorState, Extension, Prec } from "@codemirror/state";
 import { acceptWithTab } from "~/util/editor/keybinds";
 
 export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTMLDivElement>, 'style'|'value'|'onChange'> {
@@ -135,13 +134,13 @@ export function CodeInput({
 
 	useEffect(() => {
 		const { editor, keymaps } = editorRef.current!;
-		const value = keymap.of(multiline ? [acceptWithTab, indentWithTab] : [{
+		const value = Prec.highest(keymap.of(multiline ? [acceptWithTab] : [{
 			key: 'Enter',
 			run: () => {
 				onSubmit?.();
 				return true;
 			}
-		}]);
+		}]));
 
 		editor.dispatch({
 			effects: keymaps.reconfigure(value)
@@ -192,6 +191,7 @@ export function PermissionInput({
 	return (
 		<CodeInput
 			placeholder="WHERE user = $auth.id"
+			multiline
 			value={textValue}
 			onChange={handleChange}
 			rightSectionWidth={70}

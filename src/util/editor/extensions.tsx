@@ -85,6 +85,7 @@ export const inputBase = (): Extension => [
 	keymap.of([
 		...closeBracketsKeymap,
 		...historyKeymap,
+		...defaultKeymap,
 	]),
 	indentUnit.of("    "),
 	EditorView.lineWrapping,
