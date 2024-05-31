@@ -18,6 +18,6 @@ export const surqlHighlighting = styleTags({
 	"TypeName": t.typeName,
 	"Distance": t.literal,
 	"Literal": t.literal,
-	"RecordIdIdent": t.className,
+	"RecordIdIdent RecordIdValueIdent": t.className,
 	"Operator GraphLeft GraphRight GraphBoth": t.operator,
 });

@@ -506,8 +506,14 @@ RecordIdIdent {
 	bracketIdent
 }
 
+RecordIdValueIdent {
+	idIdent |
+	tickIdent |
+	bracketIdent
+}
+
 recordIdValue {
-	RecordIdIdent |
+	RecordIdValueIdent |
 	Int |
 	Array |
 	Object
@@ -966,6 +972,9 @@ Operator {
 
 	// Language
 	VariableName { "$" (@asciiLetter | @digit | "_" )+ }
+	idIdent {
+		(@asciiLetter | @digit | "_")+
+	}
 	tickIdent {
 		"`" ![`]+ '`'
 	}
@@ -995,6 +1004,7 @@ Operator {
 	@precedence { Float Decimal Int rawident }
 	@precedence { DurationPart rawident }
 	@precedence { DurationPart Int }
+	@precedence { idIdent Int rawident }
 
 	javaScriptContent { "\n" | ![{}\n'"]+ "\n"? | String }
 	javaScriptBraceOpen { "{" }
