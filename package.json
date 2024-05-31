@@ -3,6 +3,7 @@
 	"private": true,
 	"version": "2.1.0",
 	"surreal": "1.4.2",
+	"packageManager": "^bun@1.1.0",
 	"type": "module",
 	"authors": [
 		"SurrealDB"
@@ -114,5 +115,8 @@
 		"typescript": "^5.1.6",
 		"vite": "^5.2.9",
 		"vite-plugin-image-optimizer": "^1.1.8"
-	}
+	},
+	"workspaces": [
+		"packages/*"
+	]
 }
