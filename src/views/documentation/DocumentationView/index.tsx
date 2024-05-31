@@ -1,12 +1,12 @@
 import { Group } from "@mantine/core";
-import { TocPane } from "../TopicsPane";
-import { ArticlePane } from "../ArticlePane";
 import { useMemo, useRef, useState } from "react";
-import { useSchema } from "~/hooks/schema";
 import { buildDocumentation } from "~/docs";
 import { useSetting } from "~/hooks/config";
+import { useSchema } from "~/hooks/schema";
 import { useViewEffect } from "~/hooks/view";
 import { syncDatabaseSchema } from "~/util/schema";
+import { ArticlePane } from "../ArticlePane";
+import { TocPane } from "../TopicsPane";
 
 export function DocumentationView() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
@@ -15,7 +15,10 @@ export function DocumentationView() {
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [active, setActive] = useState("");
 
-	const docs = useMemo(() => schema ? buildDocumentation(schema) : [], [schema]);
+	const docs = useMemo(
+		() => (schema ? buildDocumentation(schema) : []),
+		[schema],
+	);
 
 	useViewEffect("documentation", () => {
 		syncDatabaseSchema();
@@ -23,11 +26,7 @@ export function DocumentationView() {
 
 	return (
 		<>
-			<Group
-				h="100%"
-				wrap="nowrap"
-				gap="var(--surrealist-divider-size)"
-			>
+			<Group h="100%" wrap="nowrap" gap="var(--surrealist-divider-size)">
 				<TocPane
 					active={active}
 					docs={docs}

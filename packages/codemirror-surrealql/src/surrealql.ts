@@ -1,7 +1,14 @@
-import { parser } from "lezer-surrealql";
-import { continuedIndent, indentNodeProp, foldNodeProp, foldInside, LRLanguage, LanguageSupport } from "@codemirror/language";
+import {
+	LRLanguage,
+	LanguageSupport,
+	continuedIndent,
+	foldInside,
+	foldNodeProp,
+	indentNodeProp,
+} from "@codemirror/language";
 import { parseMixed } from "@lezer/common";
 import { parser as jsParser } from "@lezer/javascript";
+import { parser } from "lezer-surrealql";
 
 type Scope = "default" | "permission";
 
@@ -11,34 +18,36 @@ export const surrealqlLanguage = LRLanguage.define({
 		props: [
 			indentNodeProp.add({
 				Object: continuedIndent({ except: /^\s*}/ }),
-				Array: continuedIndent({ except: /^\s*]/ })
+				Array: continuedIndent({ except: /^\s*]/ }),
 			}),
 			foldNodeProp.add({
-				"Object Array": foldInside
-			})
+				"Object Array": foldInside,
+			}),
 		],
-		wrap: parseMixed(node => {
-			return node.name == "JavaScript" ? {parser: jsParser} : null;
-		})
+		wrap: parseMixed((node) => {
+			return node.name == "JavaScript" ? { parser: jsParser } : null;
+		}),
 	}),
 	languageData: {
 		closeBrackets: { brackets: ["[", "{", '"', "'", "("] },
 		indentOnInput: /^\s*[\]}]$/,
 		commentTokens: { line: "--" },
-	}
+	},
 });
 
 const defaultLanguage = surrealqlLanguage.configure({
-	top: 'SurrealQL'
+	top: "SurrealQL",
 });
 
 const permissionInputLanguage = surrealqlLanguage.configure({
-	top: 'PermissionInput'
+	top: "PermissionInput",
 });
 
 /**
  * The CodeMirror extension used to add support for the SurrealQL language
  */
-export function surrealql(scope: Scope = 'default') {
-	return new LanguageSupport(scope === 'permission' ? permissionInputLanguage : defaultLanguage);
+export function surrealql(scope: Scope = "default") {
+	return new LanguageSupport(
+		scope === "permission" ? permissionInputLanguage : defaultLanguage,
+	);
 }

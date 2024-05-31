@@ -1,9 +1,9 @@
 import { useDebouncedValue } from "@mantine/hooks";
-import { useSetting } from "./config";
-import { useStable } from "./stable";
+import { useMemo } from "react";
 import { ValueMode } from "~/types";
 import { formatValue, parseValue } from "~/util/surrealql";
-import { useMemo } from "react";
+import { useSetting } from "./config";
+import { useStable } from "./stable";
 
 export type Formatter = (value: any) => string;
 
@@ -26,7 +26,10 @@ export function useValueFormatter(): [Formatter, ValueMode] {
  * @param value The value to check
  * @param objectRoot Whether the value should be an object
  */
-export function useValueValidator(value: string, objectRoot?: boolean): [boolean, any] {
+export function useValueValidator(
+	value: string,
+	objectRoot?: boolean,
+): [boolean, any] {
 	const [bodyCache] = useDebouncedValue(value, 250);
 
 	return useMemo(() => {

@@ -2,12 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
+export function DocsGlobalSchemaTables({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -156,26 +152,22 @@ export function DocsGlobalSchemaTables({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Tables">
 			<div>
 				<p>
-					When interacting with SurrealDB, you will be working with
-					tables. Tables are the primary storage in a database. They
-					contain the data that you want to store and retrieve. You
-					can create, read, update, and delete data from tables. You
-					can also create indexes on tables to speed up queries.
+					When interacting with SurrealDB, you will be working with tables.
+					Tables are the primary storage in a database. They contain the data
+					that you want to store and retrieve. You can create, read, update, and
+					delete data from tables. You can also create indexes on tables to
+					speed up queries.
 				</p>
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Tables"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Tables" values={snippets} />
 			</Box>
 		</Article>
 	);

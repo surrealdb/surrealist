@@ -1,18 +1,18 @@
-import { Entry } from "~/components/Entry";
-import { SettingsSection } from "../utilities";
-import { useSetting } from "~/hooks/config";
-import { Icon } from "~/components/Icon";
-import { iconCheck, iconDelete, iconFile, iconPlus } from "~/util/icons";
 import { Button, Group, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { useImmer } from "use-immer";
+import { ConnectionDetails } from "~/components/ConnectionDetails";
+import { Entry } from "~/components/Entry";
+import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
+import { useSetting } from "~/hooks/config";
+import { useStable } from "~/hooks/stable";
 import { Connection, Template } from "~/types";
 import { createBaseConnectionOptions } from "~/util/defaults";
-import { Form } from "~/components/Form";
-import { Spacer } from "~/components/Spacer";
-import { useStable } from "~/hooks/stable";
 import { newId } from "~/util/helpers";
+import { iconCheck, iconDelete, iconFile, iconPlus } from "~/util/icons";
+import { SettingsSection } from "../utilities";
 
 const CAT = "templates";
 const PLACEHOLDER: Connection = {
@@ -25,8 +25,8 @@ const PLACEHOLDER: Connection = {
 	pinnedTables: [],
 	diagramMode: "fields",
 	diagramDirection: "ltr",
-	diagramShowLinks: false, 
-	queryHistory: []
+	diagramShowLinks: false,
+	queryHistory: [],
 };
 
 export function TemplatesTab() {
@@ -46,7 +46,7 @@ export function TemplatesTab() {
 			id: template.id,
 			name: template.name,
 			icon: template.icon,
-			connection: template.values
+			connection: template.values,
 		});
 	});
 
@@ -57,7 +57,7 @@ export function TemplatesTab() {
 			id: details.id,
 			name: details.name,
 			icon: details.icon,
-			values: details.connection
+			values: details.connection,
 		};
 
 		if (details.id) {
@@ -69,7 +69,7 @@ export function TemplatesTab() {
 		} else {
 			draft.push({
 				...template,
-				id: newId()
+				id: newId(),
 			});
 		}
 
@@ -92,7 +92,8 @@ export function TemplatesTab() {
 		<>
 			<SettingsSection>
 				<Text mb="xs">
-					Templates simplify the process of creating new connections by pre-filling common connection details.
+					Templates simplify the process of creating new connections by
+					pre-filling common connection details.
 				</Text>
 
 				{templates.map((template) => (
@@ -100,9 +101,7 @@ export function TemplatesTab() {
 						key={template.id}
 						variant="filled"
 						onClick={() => openEditor(template)}
-						leftSection={
-							<Icon path={iconFile} />
-						}
+						leftSection={<Icon path={iconFile} />}
 					>
 						{template.name}
 					</Entry>
@@ -111,13 +110,10 @@ export function TemplatesTab() {
 				<Entry
 					variant="subtle"
 					onClick={openCreator}
-					leftSection={
-						<Icon path={iconPlus} />
-					}
+					leftSection={<Icon path={iconPlus} />}
 				>
 					New template
 				</Entry>
-
 			</SettingsSection>
 
 			<Modal
@@ -127,10 +123,7 @@ export function TemplatesTab() {
 				size="lg"
 			>
 				<Form onSubmit={saveTemplate}>
-					<ConnectionDetails
-						value={details}
-						onChange={setDetails}
-					/>
+					<ConnectionDetails value={details} onChange={setDetails} />
 
 					<Group mt="lg">
 						<Button

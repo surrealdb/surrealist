@@ -1,7 +1,4 @@
-import {
-	arrayMove,
-	SortableContext,
-} from "@dnd-kit/sortable";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 
 import {
 	DndContext,
@@ -11,11 +8,11 @@ import {
 } from "@dnd-kit/core";
 
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
-import { useStable } from "~/hooks/stable";
 import { ReactNode } from "react";
+import { useStable } from "~/hooks/stable";
+import { SortableChild } from "./child";
 import { useSortableDirection, useSortableSensors } from "./helpers";
 import { SortableDrag, SortableItem } from "./types";
-import { SortableChild } from "./child";
 
 export interface SortableProps<T> {
 	items: T[];
@@ -55,7 +52,11 @@ export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
 		>
 			<SortableContext items={props.items} strategy={strategy}>
 				{props.items.map((item) => (
-					<SortableChild key={item.id} item={item} disabled={props.disabled ?? false}>
+					<SortableChild
+						key={item.id}
+						item={item}
+						disabled={props.disabled ?? false}
+					>
 						{props.children}
 					</SortableChild>
 				))}

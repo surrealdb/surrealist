@@ -1,4 +1,7 @@
-import { FeatureFlags, TFeatureFlags } from "@theopensource-company/feature-flags";
+import {
+	FeatureFlags,
+	TFeatureFlags,
+} from "@theopensource-company/feature-flags";
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
 import { environment } from "./environment";
 
@@ -6,19 +9,19 @@ import { environment } from "./environment";
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
 export const schema = {
 	featureFlags: {
-		options: [false, true]
+		options: [false, true],
 	},
 	models_view: {
-		options: [false, true, 'force']
+		options: [false, true, "force"],
 	},
 	apidocs_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	themes: {
-		options: [false, true]
+		options: [false, true],
 	},
 	newsfeed: {
-		options: [false, true]
+		options: [false, true],
 	},
 } as const;
 
@@ -30,17 +33,17 @@ export const featureFlags = new FeatureFlags({
 			featureFlags: true,
 			models_view: "force",
 			apidocs_view: true,
-			newsfeed: true
+			newsfeed: true,
 		},
 		preview: {
 			models_view: true,
 			apidocs_view: true,
-			newsfeed: true
+			newsfeed: true,
 		},
 		production: {
 			models_view: true,
 			apidocs_view: true,
-			newsfeed: true
+			newsfeed: true,
 		},
 	},
 	overrides: (flag) => {

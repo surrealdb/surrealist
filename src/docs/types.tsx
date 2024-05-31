@@ -30,7 +30,11 @@ export interface DocsSectionTopic extends BaseDocsTopic {
 	icon: string;
 }
 
-export type DocsTopic = DocsSectionTopic | DocsLinkTopic | DocsArticleTopic | DocsGroupTopic;
+export type DocsTopic =
+	| DocsSectionTopic
+	| DocsLinkTopic
+	| DocsArticleTopic
+	| DocsGroupTopic;
 export type Snippets = Partial<Record<CodeLang, string>>;
 
 export function isSection(topic: DocsTopic): topic is DocsSectionTopic {

@@ -1,12 +1,12 @@
+import { assign } from "radash";
 import { adapter } from "~/adapter";
+import { openConnection } from "~/connection";
+import { VIEW_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { getSetting, watchStore } from "./config";
-import { assign } from "radash";
-import { openConnection } from "~/connection";
 import { featureFlags } from "./feature-flags";
-import { VIEW_MODES } from "~/constants";
-import { useDatabaseStore } from "~/stores/database";
 
 const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -16,11 +16,11 @@ const savePreference = ({ matches }: { matches: boolean }) => {
  * Watch for browser color preference changes and save them to the store
  */
 export function watchColorPreference() {
-	const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+	const mediaQuery = window.matchMedia("(prefers-color-scheme: light)");
 
 	savePreference(mediaQuery);
 
-	mediaQuery.addEventListener('change', savePreference);
+	mediaQuery.addEventListener("change", savePreference);
 }
 
 const computeColorScheme = () => {

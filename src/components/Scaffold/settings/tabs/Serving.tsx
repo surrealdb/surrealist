@@ -1,7 +1,7 @@
-import { TextInput, NumberInput, Select } from "@mantine/core";
+import { NumberInput, Select, TextInput } from "@mantine/core";
+import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import { SettingsSection } from "../utilities";
-import { useSetting } from "~/hooks/config";
 
 const CAT = "serving";
 
@@ -28,7 +28,6 @@ export function ServingTab() {
 	return (
 		<>
 			<SettingsSection>
-
 				<NumberInput
 					label="Serving port"
 					value={port}
@@ -42,7 +41,7 @@ export function ServingTab() {
 					placeholder="root"
 					value={username}
 					spellCheck={false}
-					onChange={e => setUsername(e.target.value)}
+					onChange={(e) => setUsername(e.target.value)}
 				/>
 
 				<TextInput
@@ -50,7 +49,7 @@ export function ServingTab() {
 					placeholder="root"
 					value={password}
 					spellCheck={false}
-					onChange={e => setPassword(e.target.value)}
+					onChange={(e) => setPassword(e.target.value)}
 				/>
 
 				<Select
@@ -67,7 +66,7 @@ export function ServingTab() {
 						placeholder={isFileDriver ? "/path/to/storage" : "address:port"}
 						value={storage}
 						spellCheck={false}
-						onChange={e => setStorage(e.target.value)}
+						onChange={(e) => setStorage(e.target.value)}
 					/>
 				)}
 
@@ -75,9 +74,8 @@ export function ServingTab() {
 					label="SurrealDB executable path"
 					value={executable}
 					spellCheck={false}
-					onChange={e => setExecutable(e.target.value)}
+					onChange={(e) => setExecutable(e.target.value)}
 				/>
-
 			</SettingsSection>
 		</>
 	);

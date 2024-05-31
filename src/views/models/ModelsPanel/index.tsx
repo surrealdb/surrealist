@@ -1,15 +1,23 @@
-import classes from "./style.module.scss";
-import { Badge, Tooltip, ActionIcon, TextInput, ScrollArea, Stack, Group } from "@mantine/core";
+import {
+	ActionIcon,
+	Badge,
+	Group,
+	ScrollArea,
+	Stack,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
+import { Text } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import { useContextMenu } from "mantine-contextmenu";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { useIsLight } from "~/hooks/theme";
-import { iconDownload, iconModel, iconSearch, iconUpload } from "~/util/icons";
-import { SchemaModel } from "~/types";
-import { useInputState } from "@mantine/hooks";
-import { Text } from "@mantine/core";
-import { useContextMenu } from "mantine-contextmenu";
 import { useIsConnected } from "~/hooks/connection";
+import { useIsLight } from "~/hooks/theme";
+import { SchemaModel } from "~/types";
+import { iconDownload, iconModel, iconSearch, iconUpload } from "~/util/icons";
+import classes from "./style.module.scss";
 
 export interface ModelsPanelProps {
 	active: string;
@@ -20,9 +28,7 @@ export interface ModelsPanelProps {
 }
 
 export function ModelsPanel({
-	active,
 	models,
-	onSelect,
 	onDownload,
 	onUpload,
 }: ModelsPanelProps) {
@@ -70,7 +76,7 @@ export function ModelsPanel({
 				right={12}
 				bottom={12}
 				classNames={{
-					viewport: classes.scroller
+					viewport: classes.scroller,
 				}}
 			>
 				<Stack gap="xs" pb="md">
@@ -98,18 +104,18 @@ export function ModelsPanel({
 							leftSection={<Icon path={iconModel} />}
 							onContextMenu={showContextMenu([
 								{
-									key: 'download',
+									key: "download",
 									title: "Download model",
 									icon: <Icon path={iconDownload} />,
-									onClick: () => onDownload(m)
-								}
+									onClick: () => onDownload(m),
+								},
 							])}
 						>
 							<Stack gap={0} align="start">
 								<Text
 									style={{
-										textOverflow: 'ellipsis',
-										overflow: 'hidden'
+										textOverflow: "ellipsis",
+										overflow: "hidden",
 									}}
 								>
 									{m.name}

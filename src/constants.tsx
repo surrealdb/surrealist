@@ -2,14 +2,14 @@ import {
 	AuthMode,
 	CodeLang,
 	DataSet,
-	ValueMode,
+	Orientation,
 	Protocol,
 	ResultMode,
 	Selectable,
+	SidebarMode,
+	ValueMode,
 	ViewInfo,
 	ViewMode,
-	Orientation,
-	SidebarMode,
 } from "./types";
 
 import {
@@ -86,7 +86,7 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: "Python", value: "py" },
 	{ label: ".NET", value: "csharp" },
 	// { label: "Java", value: "java" },
-	{ label: "PHP", value: "php" }
+	{ label: "PHP", value: "php" },
 ];
 
 export const VALUE_MODES: Selectable<ValueMode>[] = [
@@ -105,28 +105,28 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
-		anim: import("~/assets/animation/query.json").then(x => x.default),
+		anim: import("~/assets/animation/query.json").then((x) => x.default),
 		desc: "Execute queries against the database and inspect the results",
 	},
 	explorer: {
 		id: "explorer",
 		name: "Explorer",
 		icon: iconExplorer,
-		anim: import("~/assets/animation/explorer.json").then(x => x.default),
+		anim: import("~/assets/animation/explorer.json").then((x) => x.default),
 		desc: "Explore the database tables, records, and relations",
 	},
 	designer: {
 		id: "designer",
 		name: "Designer",
 		icon: iconDesigner,
-		anim: import("~/assets/animation/designer.json").then(x => x.default),
+		anim: import("~/assets/animation/designer.json").then((x) => x.default),
 		desc: "Define database tables and relations",
 	},
 	authentication: {
 		id: "authentication",
 		name: "Authentication",
 		icon: iconAuth,
-		anim: import("~/assets/animation/auth.json").then(x => x.default),
+		anim: import("~/assets/animation/auth.json").then((x) => x.default),
 		desc: "Manage account details and database scopes",
 	},
 	functions: {

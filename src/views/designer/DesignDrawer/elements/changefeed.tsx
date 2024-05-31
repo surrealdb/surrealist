@@ -1,13 +1,11 @@
-import { Accordion, Stack, Checkbox, TextInput } from "@mantine/core";
-import { ElementProps, SectionTitle } from "../helpers";
+import { Accordion, Checkbox, Stack, TextInput } from "@mantine/core";
 import { iconClock } from "~/util/icons";
+import { ElementProps, SectionTitle } from "../helpers";
 
 export function ChangefeedElement({ data, setData }: ElementProps) {
 	return (
 		<Accordion.Item value="changefeed">
-			<SectionTitle icon={iconClock}>
-				Changefeed
-			</SectionTitle>
+			<SectionTitle icon={iconClock}>Changefeed</SectionTitle>
 			<Accordion.Panel>
 				<Stack>
 					<TextInput
@@ -19,7 +17,8 @@ export function ChangefeedElement({ data, setData }: ElementProps) {
 							setData((draft) => {
 								draft.schema.changefeed = {
 									expiry: value.currentTarget.value,
-									store_original: data.schema.changefeed?.store_original || false,
+									store_original:
+										data.schema.changefeed?.store_original || false,
 								};
 							})
 						}
@@ -31,7 +30,7 @@ export function ChangefeedElement({ data, setData }: ElementProps) {
 						onChange={(value) =>
 							setData((draft) => {
 								draft.schema.changefeed = {
-									expiry: data.schema.changefeed?.expiry || '7d',
+									expiry: data.schema.changefeed?.expiry || "7d",
 									store_original: value.currentTarget.checked,
 								};
 							})

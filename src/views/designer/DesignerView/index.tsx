@@ -1,20 +1,20 @@
-import { useEffect, useMemo } from "react";
-import { TableGraphPane } from "../TableGraphPane";
-import { useStable } from "~/hooks/stable";
-import { useTables } from "~/hooks/schema";
-import { useImmer } from "use-immer";
-import { useSaveable } from "~/hooks/save";
-import { buildDefinitionQueries, isSchemaValid } from "../DesignDrawer/helpers";
-import { showError } from "~/util/helpers";
-import { syncDatabaseSchema } from "~/util/schema";
-import { TableInfo } from "~/types";
-import { ReactFlowProvider } from "reactflow";
-import { useIsConnected } from "~/hooks/connection";
 import { useDisclosure } from "@mantine/hooks";
-import { DesignDrawer } from "../DesignDrawer";
+import { useEffect, useMemo } from "react";
+import { ReactFlowProvider } from "reactflow";
+import { useImmer } from "use-immer";
+import { executeQuery } from "~/connection";
+import { useIsConnected } from "~/hooks/connection";
+import { useSaveable } from "~/hooks/save";
+import { useTables } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
-import { executeQuery } from "~/connection";
+import { TableInfo } from "~/types";
+import { showError } from "~/util/helpers";
+import { syncDatabaseSchema } from "~/util/schema";
+import { DesignDrawer } from "../DesignDrawer";
+import { buildDefinitionQueries, isSchemaValid } from "../DesignDrawer/helpers";
+import { TableGraphPane } from "../TableGraphPane";
 
 const DEFAULT_DEF: TableInfo = {
 	schema: {
@@ -22,22 +22,21 @@ const DEFAULT_DEF: TableInfo = {
 		drop: false,
 		full: false,
 		kind: {
-			kind: "ANY"
+			kind: "ANY",
 		},
 		permissions: {
 			select: "",
 			create: "",
 			update: "",
-			delete: ""
-		}
+			delete: "",
+		},
 	},
 	fields: [],
 	indexes: [],
-	events: []
+	events: [],
 };
 
-export interface DesignerViewProps {
-}
+export interface DesignerViewProps {}
 
 export function DesignerView(_props: DesignerViewProps) {
 	const isOnline = useIsConnected();
@@ -53,7 +52,7 @@ export function DesignerView(_props: DesignerViewProps) {
 	const saveHandle = useSaveable({
 		valid: isValid,
 		track: {
-			data
+			data,
 		},
 		onSave({ data: previous }) {
 			if (!previous) {
@@ -63,20 +62,22 @@ export function DesignerView(_props: DesignerViewProps) {
 			const query = buildDefinitionQueries(previous, data!);
 
 			executeQuery(query)
-				.then(() => syncDatabaseSchema({
-					tables: [data.schema.name]
-				}))
+				.then(() =>
+					syncDatabaseSchema({
+						tables: [data.schema.name],
+					}),
+				)
 				.then(isDesigningHandle.close)
 				.catch((err) => {
 					showError({
 						title: "Failed to apply schema",
-						subtitle: err.message
+						subtitle: err.message,
 					});
 				});
 		},
 		onRevert({ data }) {
 			setData(data);
-		}
+		},
 	});
 
 	const setActiveTable = useStable((table: string) => {

@@ -1,26 +1,32 @@
 import { Button, Checkbox, Modal, Stack } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { useState } from "react";
+import { adapter } from "~/adapter";
+import { Entry } from "~/components/Entry";
 import { EXPORT_TYPES, ExportType, SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useState } from "react";
+import { useToggleList } from "~/hooks/toggle";
+import { useIntent } from "~/hooks/url";
+import { createDatabaseExport } from "~/util/exporter";
+import { showInfo } from "~/util/helpers";
+import { iconChevronRight, iconDownload, iconUpload } from "~/util/icons";
 import { Icon } from "../../../components/Icon";
 import { ModalTitle } from "../../../components/ModalTitle";
-import { Text } from "@mantine/core";
-import { useToggleList } from "~/hooks/toggle";
-import { adapter } from "~/adapter";
-import { createDatabaseExport } from "~/util/exporter";
-import { iconChevronRight, iconDownload, iconUpload } from "~/util/icons";
-import { showInfo } from "~/util/helpers";
-import { Entry } from "~/components/Entry";
-import { useIntent } from "~/hooks/url";
 
 export function Exporter() {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
 	const [showExporter, setShowExporter] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
-	const [exportTypes, setExportTypes] = useToggleList<ExportType>(['tables', 'analyzers', 'functions', 'params', 'scopes']);
+	const [exportTypes, setExportTypes] = useToggleList<ExportType>([
+		"tables",
+		"analyzers",
+		"functions",
+		"params",
+		"scopes",
+	]);
 
 	const openExporter = useStable(() => {
 		setShowExporter(true);
@@ -33,14 +39,14 @@ export function Exporter() {
 	const handleExport = useStable(async () => {
 		try {
 			const success = await adapter.saveFile(
-				'Save database export',
-				'database.surql',
+				"Save database export",
+				"database.surql",
 				[SURQL_FILTER],
 				() => {
 					setIsExporting(true);
 
 					return createDatabaseExport(exportTypes);
-				}
+				},
 			);
 
 			if (success) {
@@ -77,10 +83,7 @@ export function Exporter() {
 				size="xs"
 				title={<ModalTitle>Export data</ModalTitle>}
 			>
-				<Text
-					mb="xl"
-					c={isLight ? "slate.7" : "slate.2"}
-				>
+				<Text mb="xl" c={isLight ? "slate.7" : "slate.2"}>
 					Select which elements you want to include in your export.
 				</Text>
 

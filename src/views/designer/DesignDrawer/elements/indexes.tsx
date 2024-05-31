@@ -1,12 +1,11 @@
 import { Accordion, TextInput } from "@mantine/core";
+import { CodeInput } from "~/components/Inputs";
+import { useStable } from "~/hooks/stable";
+import { iconIndex } from "~/util/icons";
 import { ElementProps, SectionTitle } from "../helpers";
 import { Lister } from "../lister";
-import { useStable } from "~/hooks/stable";
-import { CodeInput } from "~/components/Inputs";
-import { iconIndex } from "~/util/icons";
 
 export function IndexesElement({ data, setData }: ElementProps) {
-
 	const addIndex = useStable(() => {
 		setData((d) => {
 			d.indexes.push({
@@ -25,9 +24,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="indexes">
-			<SectionTitle icon={iconIndex}>
-				Indexes
-			</SectionTitle>
+			<SectionTitle icon={iconIndex}>Indexes</SectionTitle>
 			<Accordion.Panel>
 				<Lister
 					value={data.indexes}

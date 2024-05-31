@@ -1,17 +1,32 @@
-import dedent from "dedent";
 import { html } from "@codemirror/lang-html";
-import { Box, Divider, Group, SegmentedControl, Select, Stack, Tooltip } from "@mantine/core";
-import { useImmer } from "use-immer";
-import { Orientation } from "~/types";
+import {
+	Box,
+	Divider,
+	Group,
+	SegmentedControl,
+	Select,
+	Stack,
+	Tooltip,
+} from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "codemirror-surrealql";
+import dedent from "dedent";
+import {
+	PropsWithChildren,
+	ReactNode,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
+import { useImmer } from "use-immer";
 import { DATASETS, ORIENTATIONS } from "~/constants";
-import { CodeInput } from "../Inputs";
-import { PropsWithChildren, ReactNode, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { Orientation } from "~/types";
 import { isDevelopment, isProduction } from "~/util/environment";
-import { Icon } from "../Icon";
 import { iconHelp } from "~/util/icons";
 import { CodePreview } from "../CodePreview";
+import { Icon } from "../Icon";
+import { CodeInput } from "../Inputs";
 import { Spacer } from "../Spacer";
 
 export const DEFAULT_STATE: EmbedState = {
@@ -19,18 +34,22 @@ export const DEFAULT_STATE: EmbedState = {
 	setup: "",
 	query: "",
 	variables: "{}",
-	orientation: "vertical"
+	orientation: "vertical",
 };
 
 const DATASET_OPTIONS = [
 	{ label: "None", value: "none" },
 	...Object.entries(DATASETS).map(([id, { name }]) => ({
 		label: name,
-		value: id
-	}))
+		value: id,
+	})),
 ];
 
-function SectionTitle({ children, help, extra }: PropsWithChildren<{ help?: string, extra?: ReactNode }>) {
+function SectionTitle({
+	children,
+	help,
+	extra,
+}: PropsWithChildren<{ help?: string; extra?: ReactNode }>) {
 	return (
 		<Group mb="sm" gap="xs">
 			<Text fw={600} fz="lg" c="bright">
@@ -66,18 +85,15 @@ export interface EmbedderProps {
 	onChangeURL?: (url: string) => void;
 }
 
-export function Embedder({
-	value,
-	onChangeURL,
-}: EmbedderProps) {
-	const [state, setState] = useImmer({...DEFAULT_STATE, ...value});
+export function Embedder({ value, onChangeURL }: EmbedderProps) {
+	const [state, setState] = useImmer({ ...DEFAULT_STATE, ...value });
 	const [mode, setMode] = useState("Embed");
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		if (value) {
 			setState(value);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [value]);
 
 	const frameUrl = useMemo(() => {
@@ -85,23 +101,23 @@ export function Embedder({
 		const { dataset, setup, query, variables, orientation } = state;
 
 		if (setup.length > 0) {
-			search.append('setup', setup);
+			search.append("setup", setup);
 		}
 
 		if (query.length > 0) {
-			search.append('query', query);
+			search.append("query", query);
 		}
 
 		if (variables !== "{}") {
-			search.append('variables', variables);
+			search.append("variables", variables);
 		}
 
 		if (dataset !== "none") {
-			search.append('dataset', dataset);
+			search.append("dataset", dataset);
 		}
 
-		if (orientation !== 'vertical') {
-			search.append('orientation', orientation);
+		if (orientation !== "vertical") {
+			search.append("orientation", orientation);
 		}
 
 		const url = new URL(location.toString());
@@ -111,7 +127,7 @@ export function Embedder({
 			url.port = "";
 		}
 
-		url.pathname = isDevelopment ? 'mini/run.html' : 'mini';
+		url.pathname = isDevelopment ? "mini/run.html" : "mini";
 		url.search = search.toString();
 
 		return url.toString();
@@ -130,18 +146,18 @@ export function Embedder({
 		`);
 	}, [frameUrl]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useLayoutEffect(() => {
 		onChangeURL?.(frameUrl);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [frameUrl]);
 
 	return (
 		<Stack gap="lg">
 			<Text>
-				This form allows you to build a sharable mini version of Surrealist pre-loaded with
-				configured values, such as queries, variables, and other settings. You can use these
-				embeds in your blog posts, documentation, or other places where you want to share
-				interactive SurrealDB queries.
+				This form allows you to build a sharable mini version of Surrealist
+				pre-loaded with configured values, such as queries, variables, and other
+				settings. You can use these embeds in your blog posts, documentation, or
+				other places where you want to share interactive SurrealDB queries.
 			</Text>
 			<Box>
 				<SectionTitle help="The query placed into the query editor">
@@ -152,14 +168,12 @@ export function Embedder({
 					autoFocus
 					value={state.query}
 					placeholder="SELECT * FROM something..."
-					onChange={e => {
-						setState(draft => {
+					onChange={(e) => {
+						setState((draft) => {
 							draft.query = e;
 						});
 					}}
-					extensions={[
-						surrealql()
-					]}
+					extensions={[surrealql()]}
 				/>
 			</Box>
 			<Box>
@@ -169,14 +183,12 @@ export function Embedder({
 				<CodeInput
 					multiline
 					value={state.variables}
-					onChange={e => {
-						setState(draft => {
+					onChange={(e) => {
+						setState((draft) => {
 							draft.variables = e;
 						});
 					}}
-					extensions={[
-						surrealql()
-					]}
+					extensions={[surrealql()]}
 				/>
 			</Box>
 			<Box>
@@ -187,14 +199,12 @@ export function Embedder({
 					multiline
 					value={state.setup}
 					placeholder="CREATE something..."
-					onChange={e => {
-						setState(draft => {
+					onChange={(e) => {
+						setState((draft) => {
 							draft.setup = e;
 						});
 					}}
-					extensions={[
-						surrealql()
-					]}
+					extensions={[surrealql()]}
 				/>
 			</Box>
 			<Box>
@@ -204,9 +214,9 @@ export function Embedder({
 				<Select
 					data={DATASET_OPTIONS}
 					value={state.dataset}
-					onChange={e => {
-						setState(draft => {
-							draft.dataset = e  || '';
+					onChange={(e) => {
+						setState((draft) => {
+							draft.dataset = e || "";
 						});
 					}}
 				/>
@@ -218,8 +228,8 @@ export function Embedder({
 				<Select
 					data={ORIENTATIONS}
 					value={state.orientation}
-					onChange={e => {
-						setState(draft => {
+					onChange={(e) => {
+						setState((draft) => {
 							draft.orientation = e as Orientation;
 						});
 					}}
@@ -227,22 +237,22 @@ export function Embedder({
 			</Box>
 			<Divider />
 			<Box>
-				<SectionTitle extra={
-					<SegmentedControl
-						data={['Embed', 'URL']}
-						value={mode}
-						onChange={setMode}
-						radius="xs"
-					/>
-				}>
+				<SectionTitle
+					extra={
+						<SegmentedControl
+							data={["Embed", "URL"]}
+							value={mode}
+							onChange={setMode}
+							radius="xs"
+						/>
+					}
+				>
 					Embed snippet
 				</SectionTitle>
 				<CodePreview
-					value={mode === 'Embed' ? snippetCode : frameUrl}
+					value={mode === "Embed" ? snippetCode : frameUrl}
 					withCopy
-					extensions={mode === 'Embed' ? [
-						html()
-					] : []}
+					extensions={mode === "Embed" ? [html()] : []}
 				/>
 			</Box>
 		</Stack>

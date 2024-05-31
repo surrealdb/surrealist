@@ -1,14 +1,14 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
-import { Snippets, TopicProps } from "~/docs/types";
 import { getTable } from "~/docs/helpers";
+import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsTablesSelect({ language, topic }: TopicProps) {
 	const table = getTable(topic);
 	const fieldName =
 		table.fields.find(
-			({ name }: { name: string }) => !["id", "in", "out"].includes(name)
+			({ name }: { name: string }) => !["id", "in", "out"].includes(name),
 		)?.name ?? "table:id";
 	const tableName = topic.extra?.table?.schema?.name;
 
@@ -38,7 +38,7 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		$db->select($record);
 		`,
 		}),
-		[fieldName, tableName]
+		[fieldName, tableName],
 	);
 
 	return (
@@ -52,10 +52,10 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		>
 			<div>
 				<p>
-					Selecting fields operation is useful when you want to
-					retrieve specific fields in a table without retrieving all
-					the fields. To do this, you need to know the field name in
-					the table you want to retrieve.
+					Selecting fields operation is useful when you want to retrieve
+					specific fields in a table without retrieving all the fields. To do
+					this, you need to know the field name in the table you want to
+					retrieve.
 				</p>
 			</div>
 			<Box>

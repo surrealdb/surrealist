@@ -12,10 +12,10 @@ export function useCompatHotkeys(hotkeys: HotkeyItem[]) {
 	useEffect(() => {
 		const handler = getHotkeyHandler(hotkeys);
 
-		document.body.addEventListener('keydown', handler);
+		document.body.addEventListener("keydown", handler);
 
 		return () => {
-			document.body.removeEventListener('keydown', handler);
+			document.body.removeEventListener("keydown", handler);
 		};
 	}, [hotkeys]);
 }

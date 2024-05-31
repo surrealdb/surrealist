@@ -1,4 +1,3 @@
-import classes from "./style.module.scss";
 import { Extension } from "@codemirror/state";
 import {
 	Badge,
@@ -8,17 +7,18 @@ import {
 	SimpleGrid,
 	Title,
 } from "@mantine/core";
+import dedent from "dedent";
+import { useMemo } from "react";
 import { CodePreview } from "~/components/CodePreview";
 import { CodeLang } from "~/types";
+import classes from "./style.module.scss";
 import { Snippets } from "./types";
-import { useMemo } from "react";
-import dedent from "dedent";
 
-import { rust } from "@codemirror/lang-rust";
 import { javascript } from "@codemirror/lang-javascript";
+import { php } from "@codemirror/lang-php";
+import { rust } from "@codemirror/lang-rust";
 import { StreamLanguage } from "@codemirror/language";
 import { csharp } from "@codemirror/legacy-modes/mode/clike";
-import { php } from "@codemirror/lang-php";
 
 export interface ArticleProps {
 	title?: React.ReactNode;
@@ -44,7 +44,7 @@ const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
 	rust: rust(),
 	js: javascript(),
 	csharp: [StreamLanguage.define(csharp)],
-	php: php({ plain: true })
+	php: php({ plain: true }),
 };
 
 export interface DocsPreviewProps extends PaperProps {

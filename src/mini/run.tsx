@@ -1,4 +1,4 @@
-import '@mantine/core/styles.layer.css';
+import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
 
 import "../assets/styles/layers.scss";
@@ -8,15 +8,18 @@ import "../assets/styles/global.scss";
 import "../adapter";
 
 import { createRoot } from "react-dom/client";
-import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
-import { adapter } from '../adapter';
-import { MiniAdapter } from '../adapter/mini';
-import { openConnection } from '~/connection';
-import { MiniRunScaffold } from '~/components/Scaffold/mini/run';
-import { handleWindowMessage } from '~/util/messaging';
+import { MiniRunScaffold } from "~/components/Scaffold/mini/run";
+import { openConnection } from "~/connection";
+import { handleWindowMessage } from "~/util/messaging";
+import { adapter } from "../adapter";
+import { MiniAdapter } from "../adapter/mini";
+import {
+	watchColorPreference,
+	watchColorScheme,
+	watchConfigStore,
+} from "../util/background";
 
 (async () => {
-
 	// Synchronize the config to the store
 	await watchConfigStore();
 
@@ -40,5 +43,4 @@ import { handleWindowMessage } from '~/util/messaging';
 
 	// Listen for window messages
 	window.addEventListener("message", handleWindowMessage, false);
-
 })();

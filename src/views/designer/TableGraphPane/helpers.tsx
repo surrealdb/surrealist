@@ -1,10 +1,10 @@
-import classes from "./style.module.scss";
-import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
-import { EdgeNode } from "./nodes/EdgeNode";
+import { toBlob, toSvg } from "html-to-image";
+import { Edge, Node, NodeChange, Position } from "reactflow";
 import { DiagramDirection, TableInfo } from "~/types";
 import { extractEdgeRecords, extractKindMeta } from "~/util/schema";
-import { Edge, Node, NodeChange, Position } from "reactflow";
-import { toBlob, toSvg } from "html-to-image";
+import { TableNode } from "~/views/designer/TableGraphPane/nodes/TableNode";
+import { EdgeNode } from "./nodes/EdgeNode";
+import classes from "./style.module.scss";
 
 export const NODE_TYPES = {
 	table: TableNode,
@@ -12,11 +12,11 @@ export const NODE_TYPES = {
 };
 
 const EDGE_OPTIONS: Partial<Edge> = {
-	type: 'smoothstep',
-	pathOptions: { borderRadius: 50 }
+	type: "smoothstep",
+	pathOptions: { borderRadius: 50 },
 };
 
-export type InternalNode = Node & { width: number, height: number };
+export type InternalNode = Node & { width: number; height: number };
 
 export interface NodeData {
 	table: TableInfo;
@@ -47,7 +47,7 @@ function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 
 export function buildFlowNodes(
 	tables: TableInfo[],
-	showLinks: boolean
+	showLinks: boolean,
 ): [Node[], Edge[]] {
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
@@ -67,7 +67,7 @@ export function buildFlowNodes(
 				table,
 				isSelected: false,
 				hasIncoming: false,
-				hasOutgoing: false
+				hasOutgoing: false,
 			},
 		};
 
@@ -85,7 +85,7 @@ export function buildFlowNodes(
 				...EDGE_OPTIONS,
 				id: `tb-${table.schema.name}-edge-${fromTable}`,
 				source: fromTable,
-				target: table.schema.name
+				target: table.schema.name,
 			});
 
 			const node = nodeIndex[fromTable];
@@ -103,7 +103,7 @@ export function buildFlowNodes(
 				...EDGE_OPTIONS,
 				id: `tb-${table.schema.name}-edge-${toTable}`,
 				source: table.schema.name,
-				target: toTable
+				target: toTable,
 			});
 
 			const node = nodeIndex[toTable];
@@ -124,9 +124,9 @@ export function buildFlowNodes(
 		for (const table of tables) {
 			for (const field of table.fields) {
 				if (
-					!field.kind?.startsWith('record') ||
-					field.name == 'in' ||
-					field.name == 'out'
+					!field.kind?.startsWith("record") ||
+					field.name == "in" ||
+					field.name == "out"
 				) {
 					continue;
 				}
@@ -142,7 +142,9 @@ export function buildFlowNodes(
 						continue;
 					}
 
-					const existing = linkIndex.get(`${table.schema.name}:${target}`) || linkIndex.get(`${target}:${table.schema.name}`);
+					const existing =
+						linkIndex.get(`${table.schema.name}:${target}`) ||
+						linkIndex.get(`${target}:${table.schema.name}`);
 
 					if (existing) {
 						existing.data.linkCount++;
@@ -155,9 +157,9 @@ export function buildFlowNodes(
 							target,
 							className: classes.recordLink,
 							label: field.name,
-							labelBgStyle: { fill: 'var(--mantine-color-slate-8' },
-							labelStyle: { fill: 'white' },
-							data: { linkCount: 1 }
+							labelBgStyle: { fill: "var(--mantine-color-slate-8" },
+							labelStyle: { fill: "white" },
+							data: { linkCount: 1 },
 						};
 
 						linkIndex.set(`${table.schema.name}:${target}`, edge);
@@ -173,7 +175,7 @@ export function buildFlowNodes(
 	return [nodes, edges];
 }
 
-type DimensionNode = { id: string, width: number, height: number };
+type DimensionNode = { id: string; width: number; height: number };
 
 /**
  * Apply a layout to the given nodes and edges
@@ -185,7 +187,7 @@ type DimensionNode = { id: string, width: number, height: number };
 export async function applyNodeLayout(
 	nodes: DimensionNode[],
 	edges: Edge[],
-	direction: DiagramDirection
+	direction: DiagramDirection,
 ): Promise<NodeChange[]> {
 	if (nodes.some((node) => !node.width || !node.height)) {
 		return [];
@@ -194,26 +196,26 @@ export async function applyNodeLayout(
 	const ELK = await import("elkjs/lib/elk.bundled");
 	const elk = new ELK.default();
 	const graph = {
-		id: 'root',
-		children: nodes.map(node => ({
+		id: "root",
+		children: nodes.map((node) => ({
 			id: node.id,
 			width: node.width,
 			height: node.height,
 		})),
-		edges: edges.map(edge => ({
+		edges: edges.map((edge) => ({
 			id: edge.id,
 			sources: [edge.source],
-			targets: [edge.target]
-		}))
+			targets: [edge.target],
+		})),
 	};
 
 	const layout = await elk.layout(graph, {
 		layoutOptions: {
-			'elk.algorithm': 'layered',
-			'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-			'elk.spacing.nodeNode': '80',
-			'elk.direction': direction == "ltr" ? 'RIGHT' : 'LEFT'
-		}
+			"elk.algorithm": "layered",
+			"elk.layered.spacing.nodeNodeBetweenLayers": "100",
+			"elk.spacing.nodeNode": "80",
+			"elk.direction": direction == "ltr" ? "RIGHT" : "LEFT",
+		},
 	});
 
 	const children = layout.children || [];
@@ -222,7 +224,7 @@ export async function applyNodeLayout(
 		return {
 			id,
 			type: "position",
-			position: { x: x!, y: y! }
+			position: { x: x!, y: y! },
 		};
 	});
 }
@@ -234,8 +236,8 @@ export async function applyNodeLayout(
  * @param type The type of output to create
  * @returns
  */
-export async function createSnapshot(el: HTMLElement, type: 'png' | 'svg') {
-	if (type == 'png') {
+export async function createSnapshot(el: HTMLElement, type: "png" | "svg") {
+	if (type == "png") {
 		return toBlob(el, { cacheBust: true });
 	} else {
 		const dataUrl = await toSvg(el, { cacheBust: true });

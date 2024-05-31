@@ -1,16 +1,41 @@
-import classes from "./style.module.scss";
-import dayjs from "dayjs";
-import posthog from "posthog-js";
-import { Alert, Anchor, Badge, Box, Button, Divider, Drawer, Flex, Image, Indicator, Loader, ScrollArea, Stack, Title, Tooltip, Transition, TypographyStylesProvider, UnstyledButton } from "@mantine/core";
+import {
+	Alert,
+	Anchor,
+	Badge,
+	Box,
+	Button,
+	Divider,
+	Drawer,
+	Flex,
+	Image,
+	Indicator,
+	Loader,
+	ScrollArea,
+	Stack,
+	Title,
+	Tooltip,
+	Transition,
+	TypographyStylesProvider,
+	UnstyledButton,
+} from "@mantine/core";
 import { Text } from "@mantine/core";
 import { ActionIcon } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import dayjs from "dayjs";
+import posthog from "posthog-js";
 import { Fragment, useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { useIntent } from "~/hooks/url";
-import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose, iconNewspaper } from "~/util/icons";
 import { useConfigStore } from "~/stores/config";
 import { useFeatureFlags } from "~/util/feature-flags";
+import {
+	iconArrowUpRight,
+	iconChevronLeft,
+	iconChevronRight,
+	iconClose,
+	iconNewspaper,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 
 interface NewsItem {
 	id: string;
@@ -34,7 +59,7 @@ export function NewsFeed() {
 	const [isReading, readingHandle] = useDisclosure();
 	const [reading, setReading] = useState<NewsItem | null>(null);
 
-	const lastViewedAt = useConfigStore(s => s.lastViewedNewsAt);
+	const lastViewedAt = useConfigStore((s) => s.lastViewedNewsAt);
 
 	useIntent("open-news", openHandle.open);
 
@@ -44,23 +69,25 @@ export function NewsFeed() {
 		try {
 			const response = await fetch(`https://surrealdb.com/feed/blog.rss`);
 			const body = await response.text();
-			const result = new DOMParser().parseFromString(body, 'text/xml');
+			const result = new DOMParser().parseFromString(body, "text/xml");
 
-			const parseError = result.querySelector('parsererror div')?.textContent;
+			const parseError = result.querySelector("parsererror div")?.textContent;
 			if (parseError) throw new Error(parseError);
 
-			const items = [...result.querySelectorAll('item')]
-				.filter(item =>
-					[...item.querySelectorAll('category')].some(child => child.textContent?.toLowerCase() === "surrealist")
+			const items = [...result.querySelectorAll("item")]
+				.filter((item) =>
+					[...item.querySelectorAll("category")].some(
+						(child) => child.textContent?.toLowerCase() === "surrealist",
+					),
 				)
-				.map(item => ({
-					id: item.querySelector('guid')?.textContent || '',
-					title: item.querySelector('title')?.textContent || '',
-					link: item.querySelector('link')?.textContent || '',
-					description: item.querySelector('description')?.textContent || '',
-					thumbnail: item.querySelector('content')?.getAttribute('url') || '',
-					content: item.querySelector('encoded')?.textContent || '',
-					published: item.querySelector('pubDate')?.textContent || ''
+				.map((item) => ({
+					id: item.querySelector("guid")?.textContent || "",
+					title: item.querySelector("title")?.textContent || "",
+					link: item.querySelector("link")?.textContent || "",
+					description: item.querySelector("description")?.textContent || "",
+					thumbnail: item.querySelector("content")?.getAttribute("url") || "",
+					content: item.querySelector("encoded")?.textContent || "",
+					published: item.querySelector("pubDate")?.textContent || "",
 				}));
 
 			setLoading(false);
@@ -69,13 +96,14 @@ export function NewsFeed() {
 			if (lastViewedAt !== null) {
 				const lastViewed = new Date(lastViewedAt);
 
-				setUnreadIds(items
-					.filter(item => new Date(item.published) > lastViewed)
-					.map(item => item.id)
+				setUnreadIds(
+					items
+						.filter((item) => new Date(item.published) > lastViewed)
+						.map((item) => item.id),
 				);
 			}
-		} catch(err: any) {
-			console.error('Failed to fetch news feed', err);
+		} catch (err: any) {
+			console.error("Failed to fetch news feed", err);
 			setLoading(false);
 		}
 	};
@@ -83,27 +111,27 @@ export function NewsFeed() {
 	const readArticle = (item: NewsItem) => {
 		setReading(item);
 		readingHandle.open();
-		posthog.capture('newsfeed_read', {
-			article: item.id
+		posthog.capture("newsfeed_read", {
+			article: item.id,
 		});
 	};
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		fetchFeed();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		if (isOpen) {
 			fetchFeed();
 			updateViewedNews();
 
-			posthog.capture('newsfeed_open');
+			posthog.capture("newsfeed_open");
 		} else {
 			readingHandle.close();
 			setUnreadIds([]);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isOpen]);
 
 	const isEmpty = items.length === 0;
@@ -130,10 +158,10 @@ export function NewsFeed() {
 				onClose={openHandle.close}
 				position="right"
 				trapFocus={false}
-				size={isReading ? 'lg' : 'md'}
+				size={isReading ? "lg" : "md"}
 				classNames={{
 					content: classes.drawerContent,
-					body: classes.drawerBody
+					body: classes.drawerBody,
 				}}
 			>
 				<ActionIcon
@@ -147,20 +175,13 @@ export function NewsFeed() {
 					<Icon path={iconClose} />
 				</ActionIcon>
 
-				<Transition
-					mounted={isReading}
-					transition="fade"
-				>
+				<Transition mounted={isReading} transition="fade">
 					{(styles) => (
-						<Box
-							pos="absolute"
-							style={styles}
-							inset={0}
-						>
+						<Box pos="absolute" style={styles} inset={0}>
 							{reading && (
 								<ScrollArea
 									pos="absolute"
-									style={{ width: 'var(--drawer-size-lg)' }}
+									style={{ width: "var(--drawer-size-lg)" }}
 									left={0}
 									bottom={0}
 									top={0}
@@ -170,7 +191,7 @@ export function NewsFeed() {
 										h={250}
 										className={classes.readingHeader}
 										__vars={{
-											'--image-url': `url("${reading.thumbnail}")`
+											"--image-url": `url("${reading.thumbnail}")`,
 										}}
 									>
 										<Button
@@ -185,9 +206,7 @@ export function NewsFeed() {
 										</Button>
 									</Box>
 									<Box p="xl" pt="xs" mt={-52}>
-										<Text c="slate">
-											{dayjs(reading.published).fromNow()}
-										</Text>
+										<Text c="slate">{dayjs(reading.published).fromNow()}</Text>
 										<Title fz={28} c="bright">
 											{reading.title}
 										</Title>
@@ -198,22 +217,14 @@ export function NewsFeed() {
 											dangerouslySetInnerHTML={{ __html: reading.content }}
 										/>
 										{reading.link && (
-											<Alert
-												mt="xl"
-												color="surreal.2"
-												py={0}
-											>
+											<Alert mt="xl" color="surreal.2" py={0}>
 												<Anchor
 													my="lg"
 													display="block"
 													underline="never"
 													href={reading.link}
 												>
-													<Text
-														c="surreal"
-														fw={600}
-														fz={14}
-													>
+													<Text c="surreal" fw={600} fz={14}>
 														Read on surrealdb.com
 														<Icon path={iconArrowUpRight} right />
 													</Text>
@@ -227,53 +238,32 @@ export function NewsFeed() {
 					)}
 				</Transition>
 
-				<Transition
-					mounted={!isReading}
-					transition="fade"
-				>
+				<Transition mounted={!isReading} transition="fade">
 					{(styles) => (
-						<Box
-							pos="absolute"
-							style={styles}
-							inset={0}
-						>
+						<Box pos="absolute" style={styles} inset={0}>
 							<Title fz={20} c="bright" m="xl">
 								Latest news
 							</Title>
 							<ScrollArea
 								pos="absolute"
-								style={{ width: 'var(--drawer-size-md)' }}
+								style={{ width: "var(--drawer-size-md)" }}
 								left={0}
 								bottom={0}
 								top={64}
 								p="lg"
 							>
 								{isLoading && isEmpty ? (
-									<Loader
-										mt={32}
-										mx="auto"
-										display="block"
-									/>
+									<Loader mt={32} mx="auto" display="block" />
 								) : isEmpty ? (
-									<Text
-										mt={68}
-										c="slate"
-										ta="center"
-									>
+									<Text mt={68} c="slate" ta="center">
 										No news items available
 									</Text>
 								) : (
 									<Stack gap="xl">
 										{items.map((item, i) => (
 											<Fragment key={i}>
-												<UnstyledButton
-													onClick={() => readArticle(item)}
-												>
-													<Image
-														src={item.thumbnail}
-														radius="lg"
-														mb="lg"
-													/>
+												<UnstyledButton onClick={() => readArticle(item)}>
+													<Image src={item.thumbnail} radius="lg" mb="lg" />
 													<Flex align="center">
 														<Text c="slate">
 															{dayjs(item.published).fromNow()}
@@ -292,13 +282,8 @@ export function NewsFeed() {
 													<Title fz={18} c="bright">
 														{item.title}
 													</Title>
-													<Text py="sm">
-														{item.description}
-													</Text>
-													<Text
-														c="surreal"
-														fw={600}
-													>
+													<Text py="sm">{item.description}</Text>
+													<Text c="surreal" fw={600}>
 														Read more
 														<Icon path={iconChevronRight} right />
 													</Text>

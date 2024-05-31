@@ -177,7 +177,7 @@ export function DocsAuthSignIn({ language }: TopicProps) {
 		]);
 		`,
 		}),
-		[esc_endpoint, esc_namespace, esc_database]
+		[esc_endpoint, esc_namespace, esc_database],
 	);
 
 	return (
@@ -189,11 +189,7 @@ export function DocsAuthSignIn({ language }: TopicProps) {
 				</p>
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Sign In"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Sign In" values={snippets} />
 			</Box>
 		</Article>
 	);

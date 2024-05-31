@@ -1,8 +1,8 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
-import { Snippets, TopicProps } from "~/docs/types";
 import { getTable } from "~/docs/helpers";
+import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
@@ -34,22 +34,17 @@ export function DocsTablesCreatingRecords({ language, topic }: TopicProps) {
 		$db->create("${table.schema.name}")
 		`,
 		}),
-		[table.schema.name]
+		[table.schema.name],
 	);
 
 	return (
 		<Article
-			title={
-				<TableTitle
-					title="Creating records"
-					table={table.schema.name}
-				/>
-			}
+			title={<TableTitle title="Creating records" table={table.schema.name} />}
 		>
 			<p>
-				Add a new record to the table<b> {table.schema.name} </b>. The
-				record will have a random record ID if not specified after the
-				table name. You can also specify the fields of the record.
+				Add a new record to the table<b> {table.schema.name} </b>. The record
+				will have a random record ID if not specified after the table name. You
+				can also specify the fields of the record.
 			</p>
 			<Box>
 				<DocsPreview

@@ -1,5 +1,5 @@
+import { create } from "zustand";
 import { DatabaseSchema, QueryResponse } from "~/types";
-import { create } from 'zustand';
 import { createDatabaseSchema } from "~/util/defaults";
 
 export type DatabaseStore = {
@@ -40,73 +40,85 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	version: "",
 	responses: {},
 
-	setQueryActive: (isQueryActive) => set(() => ({
-		isQueryActive
-	})),
+	setQueryActive: (isQueryActive) =>
+		set(() => ({
+			isQueryActive,
+		})),
 
-	clearSchema: () => set(() => ({
-		databaseSchema: createDatabaseSchema(),
-	})),
+	clearSchema: () =>
+		set(() => ({
+			databaseSchema: createDatabaseSchema(),
+		})),
 
-	prepareServe: () => set(() => ({
-		servePending: true,
-		consoleOutput: [],
-	})),
+	prepareServe: () =>
+		set(() => ({
+			servePending: true,
+			consoleOutput: [],
+		})),
 
-	confirmServing: () => set(() => ({
-		isServing: true,
-		servePending: false,
-	})),
+	confirmServing: () =>
+		set(() => ({
+			isServing: true,
+			servePending: false,
+		})),
 
-	stopServing: () => set(() => ({
-		isServing: false,
-		servePending: false,
-	})),
+	stopServing: () =>
+		set(() => ({
+			isServing: false,
+			servePending: false,
+		})),
 
-	cancelServe: () => set(() => ({
-		servePending: true,
-	})),
+	cancelServe: () =>
+		set(() => ({
+			servePending: true,
+		})),
 
-	pushConsoleLine: (line) => set((state) => ({
-		consoleOutput: [
-			...state.consoleOutput.slice(0, 249),
-			line,
-		]
-	})),
+	pushConsoleLine: (line) =>
+		set((state) => ({
+			consoleOutput: [...state.consoleOutput.slice(0, 249), line],
+		})),
 
-	clearConsole: () => set(() => ({
-		consoleOutput: [],
-	})),
+	clearConsole: () =>
+		set(() => ({
+			consoleOutput: [],
+		})),
 
-	setDatabaseSchema: (databaseSchema) => set(() => ({
-		databaseSchema
-	})),
+	setDatabaseSchema: (databaseSchema) =>
+		set(() => ({
+			databaseSchema,
+		})),
 
-	setIsConnecting: (isConnecting) => set(() => ({
-		isConnecting,
-	})),
+	setIsConnecting: (isConnecting) =>
+		set(() => ({
+			isConnecting,
+		})),
 
-	setIsConnected: (isConnected) => set((state) => ({
-		isConnected,
-		databaseSchema: isConnected ? state.databaseSchema : createDatabaseSchema(),
-	})),
+	setIsConnected: (isConnected) =>
+		set((state) => ({
+			isConnected,
+			databaseSchema: isConnected
+				? state.databaseSchema
+				: createDatabaseSchema(),
+		})),
 
-	setVersion: (version) => set(() => ({
-		version
-	})),
+	setVersion: (version) =>
+		set(() => ({
+			version,
+		})),
 
-	setQueryResponse: (tab, response) => set((state) => ({
-		responses: {
-			...state.responses,
-			[tab]: response
-		}
-	})),
+	setQueryResponse: (tab, response) =>
+		set((state) => ({
+			responses: {
+				...state.responses,
+				[tab]: response,
+			},
+		})),
 
-	clearQueryResponse: (tab) => set((state) => ({
-		responses: {
-			...state.responses,
-			[tab]: []
-		}
-	})),
-
+	clearQueryResponse: (tab) =>
+		set((state) => ({
+			responses: {
+				...state.responses,
+				[tab]: [],
+			},
+		})),
 }));

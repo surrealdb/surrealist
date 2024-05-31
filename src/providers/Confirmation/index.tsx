@@ -17,17 +17,21 @@ interface ConfirmOptions<T> {
 }
 
 const ConfirmContext = createContext<{
-	setConfirmation: (value: any, options: ConfirmOptions<any>) => void
+	setConfirmation: (value: any, options: ConfirmOptions<any>) => void;
 } | null>(null);
 
 /**
  * Returns a function which can be used to trigger a confirmation dialog
  */
-export function useConfirmation<T>(options: ConfirmOptions<T>): (value?: T) => void {
+export function useConfirmation<T>(
+	options: ConfirmOptions<T>,
+): (value?: T) => void {
 	const ctx = useContext(ConfirmContext);
 
 	if (!ctx) {
-		throw new Error("useConfirmation must be used within an ConfirmationProvider");
+		throw new Error(
+			"useConfirmation must be used within an ConfirmationProvider",
+		);
 	}
 
 	return useStable((value) => {
@@ -35,9 +39,9 @@ export function useConfirmation<T>(options: ConfirmOptions<T>): (value?: T) => v
 	});
 }
 
-const DEFAULT_TITLE = 'Are you sure?';
-const DEFAULT_DISMISS = 'Close';
-const DEFAULT_CONFIRM = 'Continue';
+const DEFAULT_TITLE = "Are you sure?";
+const DEFAULT_DISMISS = "Close";
+const DEFAULT_CONFIRM = "Continue";
 
 export function ConfirmationProvider({ children }: PropsWithChildren) {
 	const [isConfirming, setIsConfirming] = useState(false);
@@ -74,24 +78,18 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 				title={<ModalTitle>{options?.title ?? DEFAULT_TITLE}</ModalTitle>}
 				zIndex={210}
 			>
-				<Text>
-					{options?.message}
-				</Text>
+				<Text>{options?.message}</Text>
 				<Group mt="lg">
 					<Button
 						onClick={onDissmiss}
 						variant="light"
 						color="slate"
-						{...options?.dismissProps || {}}
+						{...(options?.dismissProps || {})}
 					>
 						{options?.dismissText ?? DEFAULT_DISMISS}
 					</Button>
 					<Spacer />
-					<Button
-						color="pink.9"
-						onClick={onConfirm}
-						{...options?.confirmProps}
-					>
+					<Button color="pink.9" onClick={onConfirm} {...options?.confirmProps}>
 						{options?.confirmText ?? DEFAULT_CONFIRM}
 					</Button>
 				</Group>

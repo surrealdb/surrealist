@@ -54,7 +54,7 @@ export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
@@ -62,8 +62,8 @@ export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
 			<div>
 				<h3>Table: {topic.extra?.table?.schema?.name} </h3>
 				<p>
-					Indexes are used to speed up the retrieval of records from a
-					table. They are created on columns in a table.
+					Indexes are used to speed up the retrieval of records from a table.
+					They are created on columns in a table.
 				</p>
 			</div>
 			<Box>

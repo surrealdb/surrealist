@@ -8,7 +8,10 @@ import { useStable } from "./stable";
  * @param delay The delay in milliseconds
  * @returns The debounced callback
  */
-export function useDebouncedFunction<F extends (...args: any) => any>(callback: F, delay: number): F {
+export function useDebouncedFunction<F extends (...args: any) => any>(
+	callback: F,
+	delay: number,
+): F {
 	const task = useRef<any>(null);
 
 	useEffect(() => {

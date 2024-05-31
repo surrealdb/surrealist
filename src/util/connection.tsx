@@ -50,25 +50,36 @@ export function isConnectionValid(details: ConnectionOptions | undefined) {
 
 	try {
 		connectionUri(details);
-	} catch(err) {
+	} catch (err) {
 		console.debug("Connection URL is invalid", err);
 		return false;
 	}
 
 	// Check for essential fields
-	const hasEssential = details.protocol && details.namespace && details.database && details.authMode;
+	const hasEssential =
+		details.protocol &&
+		details.namespace &&
+		details.database &&
+		details.authMode;
 
 	if (!hasEssential) {
 		return false;
 	}
 
 	// Check for hostname
-	if (details.protocol !== "mem" && details.protocol !== "indxdb" && !details.hostname) {
+	if (
+		details.protocol !== "mem" &&
+		details.protocol !== "indxdb" &&
+		!details.hostname
+	) {
 		return false;
 	}
 
 	// Check for username and password
-	const checkUserPass = details.authMode === "root" || details.authMode === "database" || details.authMode === "namespace";
+	const checkUserPass =
+		details.authMode === "root" ||
+		details.authMode === "database" ||
+		details.authMode === "namespace";
 	const hasUserPass = details.username && details.password;
 
 	if (checkUserPass && !hasUserPass) {
@@ -82,4 +93,3 @@ export function isConnectionValid(details: ConnectionOptions | undefined) {
 
 	return true;
 }
-

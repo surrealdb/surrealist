@@ -4,7 +4,6 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsTablesManageEvents({ language, topic }: TopicProps) {
-
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -55,7 +54,7 @@ export function DocsTablesManageEvents({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
@@ -63,9 +62,9 @@ export function DocsTablesManageEvents({ language, topic }: TopicProps) {
 			<div>
 				<h3>Table: {topic.extra?.table?.schema?.name}</h3>
 				<p>
-					Events can be used to trigger actions in your application
-					when any change or modification is made to data in a record.
-					This can be useful for updating a UI, sending notifications.
+					Events can be used to trigger actions in your application when any
+					change or modification is made to data in a record. This can be useful
+					for updating a UI, sending notifications.
 				</p>
 			</div>
 			<Box>

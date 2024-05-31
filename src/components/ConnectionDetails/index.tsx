@@ -1,38 +1,38 @@
-import dayjs from "dayjs";
-import { AuthMode, Connection, Protocol } from "~/types";
-import { Updater } from "use-immer";
 import {
-	Group,
-	Select,
-	TextInput,
-	Stack,
-	Divider,
-	PasswordInput,
+	ActionIcon,
+	Alert,
 	Button,
+	Divider,
+	Group,
 	Modal,
 	Paper,
-	ActionIcon,
-	Tooltip,
-	Alert,
-	SimpleGrid,
+	PasswordInput,
 	Popover,
+	Select,
+	SimpleGrid,
+	Stack,
+	TextInput,
+	Tooltip,
 } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import dayjs from "dayjs";
+import { ReactNode, useMemo } from "react";
+import { Updater } from "use-immer";
 import {
-	CONNECTION_PROTOCOLS,
 	AUTH_MODES,
+	CONNECTION_PROTOCOLS,
 	SENSITIVE_SCOPE_FIELDS,
 } from "~/constants";
+import { useStable } from "~/hooks/stable";
+import { AuthMode, Connection, Protocol } from "~/types";
+import { connectionUri, fastParseJwt } from "~/util/helpers";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
+import { USER_ICONS } from "~/util/user-icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
-import { Spacer } from "../Spacer";
-import { useStable } from "~/hooks/stable";
-import { useDisclosure } from "@mantine/hooks";
-import { Text } from "@mantine/core";
 import { ModalTitle } from "../ModalTitle";
-import { ReactNode, useMemo } from "react";
-import { connectionUri, fastParseJwt } from "~/util/helpers";
-import { USER_ICONS } from "~/util/user-icons";
+import { Spacer } from "../Spacer";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -44,7 +44,11 @@ export interface ConnectionDetailsProps {
 	rightSection?: ReactNode;
 }
 
-export function ConnectionDetails({ value, onChange, rightSection }: ConnectionDetailsProps) {
+export function ConnectionDetails({
+	value,
+	onChange,
+	rightSection,
+}: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
 
@@ -70,9 +74,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 				}
 
 				const [, protocol, hostname] = result;
-				const isValid = CONNECTION_PROTOCOLS.some(
-					(p) => p.value === protocol
-				);
+				const isValid = CONNECTION_PROTOCOLS.some((p) => p.value === protocol);
 
 				if (!isValid) {
 					return;
@@ -81,7 +83,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 				draft.connection.protocol = protocol as Protocol;
 				draft.connection.hostname = hostname;
 			});
-		}
+		},
 	);
 
 	const updateIcon = (index: number) => {
@@ -102,7 +104,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 	const isSystemMethod = SYSTEM_METHODS.has(value.connection.authMode);
 	const tokenPayload = useMemo(
 		() => fastParseJwt(value.connection.token),
-		[value.connection.token]
+		[value.connection.token],
 	);
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
 	const tokenExpireSoon =
@@ -132,10 +134,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 								onClick={showIconsHandle.toggle}
 								aria-label="Customize icon"
 							>
-								<Icon
-									path={USER_ICONS[value.icon ?? 0]}
-									size="lg"
-								/>
+								<Icon path={USER_ICONS[value.icon ?? 0]} size="lg" />
 							</ActionIcon>
 						</Popover.Target>
 						<Popover.Dropdown>
@@ -143,11 +142,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 								{USER_ICONS.map((icon, i) => (
 									<ActionIcon
 										key={i}
-										variant={
-											value.icon === i
-												? "gradient"
-												: "subtle"
-										}
+										variant={value.icon === i ? "gradient" : "subtle"}
 										onClick={() => updateIcon(i)}
 										aria-label={`Select icon ${i + 1}`}
 									>
@@ -247,8 +242,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 								spellCheck={false}
 								onChange={(e) =>
 									onChange((draft) => {
-										draft.connection.username =
-											e.target.value;
+										draft.connection.username = e.target.value;
 									})
 								}
 							/>
@@ -258,8 +252,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 								spellCheck={false}
 								onChange={(e) =>
 									onChange((draft) => {
-										draft.connection.password =
-											e.target.value;
+										draft.connection.password = e.target.value;
 									})
 								}
 							/>
@@ -302,42 +295,26 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 								}
 								styles={{
 									input: {
-										fontFamily:
-											"var(--mantine-font-family-monospace)",
+										fontFamily: "var(--mantine-font-family-monospace)",
 									},
 								}}
 							/>
 
 							{value.connection.token &&
 								(tokenPayload === null ? (
-									<Alert
-										color="red"
-										icon={<Icon path={iconWarning} />}
-									>
-										The provided token does not appear to be
-										a valid JWT
+									<Alert color="red" icon={<Icon path={iconWarning} />}>
+										The provided token does not appear to be a valid JWT
 									</Alert>
 								) : (
 									tokenExpireSoon &&
 									(tokenExpire > Date.now() ? (
 										<Text c="slate">
-											<Icon
-												path={iconWarning}
-												c="yellow"
-												size="sm"
-												left
-											/>
-											This token expires in{" "}
-											{dayjs(tokenExpire).fromNow()}
+											<Icon path={iconWarning} c="yellow" size="sm" left />
+											This token expires in {dayjs(tokenExpire).fromNow()}
 										</Text>
 									) : (
 										<Text c="slate">
-											<Icon
-												path={iconWarning}
-												c="red"
-												size="sm"
-												left
-											/>
+											<Icon path={iconWarning} c="red" size="sm" left />
 											This token has expired
 										</Text>
 									))
@@ -361,9 +338,7 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 					<Stack>
 						{value.connection.scopeFields?.map((field, i) => {
 							const fieldName = field.subject.toLowerCase();
-							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(
-								fieldName
-							)
+							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(fieldName)
 								? PasswordInput
 								: TextInput;
 
@@ -377,9 +352,8 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.connection.scopeFields[
-														i
-													].subject = e.target.value;
+													draft.connection.scopeFields[i].subject =
+														e.target.value;
 												})
 											}
 										/>
@@ -390,9 +364,8 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.connection.scopeFields[
-														i
-													].value = e.target.value;
+													draft.connection.scopeFields[i].value =
+														e.target.value;
 												})
 											}
 										/>
@@ -402,17 +375,11 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 												aria-label="Remove scope field"
 												onClick={() =>
 													onChange((draft) => {
-														draft.connection.scopeFields.splice(
-															i,
-															1
-														);
+														draft.connection.scopeFields.splice(i, 1);
 													})
 												}
 											>
-												<Icon
-													path={iconClose}
-													color="red"
-												/>
+												<Icon path={iconClose} color="red" />
 											</ActionIcon>
 										</Tooltip>
 									</Group>

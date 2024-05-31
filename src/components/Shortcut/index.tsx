@@ -1,16 +1,20 @@
-import { mdiAppleKeyboardCommand, mdiAppleKeyboardControl, mdiAppleKeyboardOption, mdiAppleKeyboardShift } from "@mdi/js";
 import { BoxProps, Group, Kbd, Text } from "@mantine/core";
+import {
+	mdiAppleKeyboardCommand,
+	mdiAppleKeyboardControl,
+	mdiAppleKeyboardOption,
+	mdiAppleKeyboardShift,
+} from "@mdi/js";
+import { capitalize } from "radash";
 import { Fragment, ReactNode, useMemo } from "react";
 import { adapter } from "~/adapter";
-import { capitalize } from "radash";
 import { Icon } from "../Icon";
 
-export interface ShortcutProps extends Omit<BoxProps, 'children'> {
+export interface ShortcutProps extends Omit<BoxProps, "children"> {
 	value: string;
 }
 
 export function Shortcut({ value, ...rest }: ShortcutProps) {
-
 	const content = useMemo(() => {
 		const isMac = adapter.platform == "darwin";
 
@@ -19,11 +23,20 @@ export function Shortcut({ value, ...rest }: ShortcutProps) {
 
 			switch (part) {
 				case "mod": {
-					code = <Icon path={isMac ? mdiAppleKeyboardCommand : mdiAppleKeyboardControl} size={0.7} />;
+					code = (
+						<Icon
+							path={isMac ? mdiAppleKeyboardCommand : mdiAppleKeyboardControl}
+							size={0.7}
+						/>
+					);
 					break;
 				}
 				case "alt": {
-					code = isMac ? <Icon path={mdiAppleKeyboardOption} size={0.7} /> : <Text>Alt</Text>;
+					code = isMac ? (
+						<Icon path={mdiAppleKeyboardOption} size={0.7} />
+					) : (
+						<Text>Alt</Text>
+					);
 					break;
 				}
 				case "ctrl": {
@@ -40,22 +53,14 @@ export function Shortcut({ value, ...rest }: ShortcutProps) {
 				}
 			}
 
-			return (
-				<Fragment key={i}>
-					{code}
-				</Fragment>
-			);
+			return <Fragment key={i}>{code}</Fragment>;
 		});
 
 		return parts;
 	}, [value]);
 
 	return (
-		<Group
-			gap={4}
-			wrap="nowrap"
-			{...rest}
-		>
+		<Group gap={4} wrap="nowrap" {...rest}>
 			{content.map((part, i) => (
 				<Fragment key={i}>
 					<Kbd p={0} px={4} miw={24} h={24} ta="center">

@@ -5,9 +5,10 @@ export function ScrollFader({ style, ...rest }: BoxProps) {
 		<Box
 			style={{
 				height: 14,
-				background: 'linear-gradient(180deg, var(--mantine-color-body) 0%, transparent 100%',
+				background:
+					"linear-gradient(180deg, var(--mantine-color-body) 0%, transparent 100%",
 				zIndex: 1,
-				...style
+				...style,
 			}}
 			{...rest}
 		/>

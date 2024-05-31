@@ -1,16 +1,30 @@
 import dedent from "dedent";
-import equal from 'fast-deep-equal';
-import { SchemaFunction, SchemaModel, SchemaInfoDB, SchemaInfoKV, SchemaInfoNS, SchemaInfoTB, TableInfo } from "~/types";
-import { tb } from './helpers';
-import { useDatabaseStore } from '~/stores/database';
-import { executeQuerySingle } from '~/connection';
-import { createDatabaseSchema } from "./defaults";
+import equal from "fast-deep-equal";
 import { klona } from "klona";
 import { adapter } from "~/adapter";
+import { executeQuerySingle } from "~/connection";
+import { useDatabaseStore } from "~/stores/database";
+import {
+	SchemaFunction,
+	SchemaInfoDB,
+	SchemaInfoKV,
+	SchemaInfoNS,
+	SchemaInfoTB,
+	SchemaModel,
+	TableInfo,
+} from "~/types";
+import { createDatabaseSchema } from "./defaults";
+import { tb } from "./helpers";
 
 const emptyKV = () => ({ users: [] });
 const emptyNS = () => ({ users: [] });
-const emptyDB = () => ({ users: [], functions: [], models: [], tables: [], scopes: [] });
+const emptyDB = () => ({
+	users: [],
+	functions: [],
+	models: [],
+	tables: [],
+	scopes: [],
+});
 
 export interface SchemaSyncOptions {
 	tables?: string[];
@@ -31,17 +45,20 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	const { databaseSchema, setDatabaseSchema } = useDatabaseStore.getState();
 	const schema = createDatabaseSchema();
 
-	adapter.log('Schema', "Synchronizing database schema");
+	adapter.log("Schema", "Synchronizing database schema");
 
 	const [kvInfoTask, nsInfoTask, dbInfoTask] = await Promise.allSettled([
 		executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE"),
 		executeQuerySingle<SchemaInfoNS>("INFO FOR NS STRUCTURE"),
-		executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE")
+		executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE"),
 	]);
 
-	const kvInfo = kvInfoTask.status === "fulfilled" ? kvInfoTask.value : emptyKV();
-	const nsInfo = nsInfoTask.status === "fulfilled" ? nsInfoTask.value : emptyNS();
-	const dbInfo = dbInfoTask.status === "fulfilled" ? dbInfoTask.value : emptyDB();
+	const kvInfo =
+		kvInfoTask.status === "fulfilled" ? kvInfoTask.value : emptyKV();
+	const nsInfo =
+		nsInfoTask.status === "fulfilled" ? nsInfoTask.value : emptyNS();
+	const dbInfo =
+		dbInfoTask.status === "fulfilled" ? dbInfoTask.value : emptyDB();
 
 	// KV users, NS users, and DB users
 	schema.kvUsers = kvInfo.users;
@@ -49,17 +66,17 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	schema.dbUsers = dbInfo.users;
 
 	// Scopes
-	schema.scopes = dbInfo.scopes.map(sc => ({
+	schema.scopes = dbInfo.scopes.map((sc) => ({
 		...sc,
 		signin: sc?.signin?.slice(1, -1),
 		signup: sc?.signup?.slice(1, -1),
 	}));
 
 	// Schema functions
-	schema.functions = dbInfo.functions.map(info => ({
+	schema.functions = dbInfo.functions.map((info) => ({
 		...info,
-		name: info.name.replaceAll('`', ''),
-		block: dedent(info.block.slice(1, -1))
+		name: info.name.replaceAll("`", ""),
+		block: dedent(info.block.slice(1, -1)),
 	}));
 
 	// Schema models
@@ -68,23 +85,27 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	// Tables
 	const isLimited = Array.isArray(options?.tables);
 	const tableNames = isLimited
-		? options!.tables as string[]
-		: dbInfo.tables.map(t => t.name);
+		? (options!.tables as string[])
+		: dbInfo.tables.map((t) => t.name);
 
-	const tbInfoMap = await Promise.all(tableNames.map((table) => {
-		return executeQuerySingle<SchemaInfoTB>(`INFO FOR TABLE ${tb(table)} STRUCTURE`);
-	}));
+	const tbInfoMap = await Promise.all(
+		tableNames.map((table) => {
+			return executeQuerySingle<SchemaInfoTB>(
+				`INFO FOR TABLE ${tb(table)} STRUCTURE`,
+			);
+		}),
+	);
 
 	if (isLimited) {
 		schema.tables = klona(databaseSchema.tables);
 	}
 
 	for (const [idx, tableName] of tableNames.entries()) {
-		adapter.log('Schema', `Updating table ${tableName}`);
+		adapter.log("Schema", `Updating table ${tableName}`);
 
 		const info = tbInfoMap[idx];
-		const table = dbInfo.tables.find(t => t.name === tableName)!;
-		const index = schema.tables.findIndex(t => t.schema.name === tableName);
+		const table = dbInfo.tables.find((t) => t.name === tableName)!;
+		const index = schema.tables.findIndex((t) => t.schema.name === tableName);
 
 		if (!table) {
 			schema.tables.splice(index, 1);
@@ -94,18 +115,25 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 		const definition: TableInfo = {
 			schema: {
 				...table,
-				changefeed: typeof table.changefeed === "object"
-					? table.changefeed
-					: typeof table.changefeed === "string" ? {
-						expiry: (table.changefeed as string).replaceAll(/CHANGEFEED|INCLUDE ORIGINAL/g, '').trim(),
-						store_original: (table.changefeed as string).includes('INCLUDE ORIGINAL'),
-					} : undefined
+				changefeed:
+					typeof table.changefeed === "object"
+						? table.changefeed
+						: typeof table.changefeed === "string"
+							? {
+									expiry: (table.changefeed as string)
+										.replaceAll(/CHANGEFEED|INCLUDE ORIGINAL/g, "")
+										.trim(),
+									store_original: (table.changefeed as string).includes(
+										"INCLUDE ORIGINAL",
+									),
+								}
+							: undefined,
 			},
 			fields: Object.values(info.fields),
 			indexes: Object.values(info.indexes),
-			events: Object.values(info.events).map(ev => ({
+			events: Object.values(info.events).map((ev) => ({
 				...ev,
-				then: ev.then.map(th => th.slice(1, -1))
+				then: ev.then.map((th) => th.slice(1, -1)),
 			})),
 		};
 
@@ -125,9 +153,12 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 /**
  * Build a function definition query
  */
-export function buildFunctionDefinition(func: SchemaFunction) : string {
+export function buildFunctionDefinition(func: SchemaFunction): string {
 	const args = func.args.map(([name, kind]) => `$${name}: ${kind}`).join(", ");
-	const block = func.block.split("\n").map((line) => `\t${line}`).join("\n");
+	const block = func.block
+		.split("\n")
+		.map((line) => `\t${line}`)
+		.join("\n");
 
 	let query = `DEFINE FUNCTION fn::${func.name}(${args}) {\n${block}\n}`;
 
@@ -145,7 +176,7 @@ export function buildFunctionDefinition(func: SchemaFunction) : string {
 /**
  * Build a model definition query
  */
-export function buildModelDefinition(func: SchemaModel) : string {
+export function buildModelDefinition(func: SchemaModel): string {
 	let query = `DEFINE MODEL ${func.name} {`;
 
 	if (func.permission) {
@@ -165,15 +196,13 @@ export function buildModelDefinition(func: SchemaModel) : string {
  * @param table The table to check
  * @returns True if the table is an edge table
  */
-export function extractEdgeRecords(table: TableInfo): [boolean, string[], string[]] {
+export function extractEdgeRecords(
+	table: TableInfo,
+): [boolean, string[], string[]] {
 	const { kind } = table.schema;
 
 	if (kind.kind === "RELATION") {
-		return [
-			kind.kind === "RELATION",
-			kind.in || [],
-			kind.out || []
-		];
+		return [kind.kind === "RELATION", kind.in || [], kind.out || []];
 	}
 
 	let hasIn = false;
@@ -203,7 +232,7 @@ export function extractEdgeRecords(table: TableInfo): [boolean, string[], string
 export function extractKindMeta(kind: string): string[] {
 	const [_, meta] = /^\w+<(.*)>$/.exec(kind) || [];
 
-	return meta?.split("|").map(m => m.trim()) || [];
+	return meta?.split("|").map((m) => m.trim()) || [];
 }
 
 /**
@@ -223,9 +252,9 @@ export function isEdgeTable(table: TableInfo) {
  * @returns A string which is the permission in SurrealQL format
  */
 export function displaySchemaPermission(permission: string | boolean) {
-	return typeof permission == 'string'
+	return typeof permission == "string"
 		? `WHERE ${permission}`
 		: permission
-			? 'FULL'
-			: 'NONE';
+			? "FULL"
+			: "NONE";
 }

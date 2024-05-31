@@ -1,26 +1,53 @@
-import { Badge, PasswordInput, ScrollArea, Table, Text, Tooltip } from "@mantine/core";
-import { ActionIcon, Button, Center, Group, Modal, Stack, TextInput } from "@mantine/core";
+import {
+	Badge,
+	PasswordInput,
+	ScrollArea,
+	Table,
+	Text,
+	Tooltip,
+} from "@mantine/core";
+import {
+	ActionIcon,
+	Button,
+	Center,
+	Group,
+	Modal,
+	Stack,
+	TextInput,
+} from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
+import { useImmer } from "use-immer";
+import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { CodeInput } from "~/components/Inputs";
 import { ModalTitle } from "~/components/ModalTitle";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
+import {
+	authenticate,
+	composeAuthentication,
+	executeQuery,
+	register,
+} from "~/connection";
+import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
 import { SchemaScope, ScopeField } from "~/types";
 import { extractVariables, showError, showInfo } from "~/util/helpers";
+import {
+	iconAccountPlus,
+	iconAccountSecure,
+	iconCheck,
+	iconEdit,
+	iconKey,
+	iconPlus,
+} from "~/util/icons";
 import { syncDatabaseSchema } from "~/util/schema";
-import { iconAccountPlus, iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
-import { useIntent } from "~/hooks/url";
-import { CodeInput } from "~/components/Inputs";
-import { authenticate, composeAuthentication, executeQuery, register } from "~/connection";
 import { getStatementCount } from "~/util/surrealql";
-import { useImmer } from "use-immer";
-import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
-import { adapter } from "~/adapter";
 
 export function ScopePane() {
 	const { connection } = useActiveConnection();
@@ -51,9 +78,8 @@ export function ScopePane() {
 				query += ` SESSION ${editingSession}`;
 			}
 
-			const [openSymbol, closeSymbol] = getStatementCount(editingSignin) > 1
-				? ["{", "}"]
-				: ["(", ")"];
+			const [openSymbol, closeSymbol] =
+				getStatementCount(editingSignin) > 1 ? ["{", "}"] : ["(", ")"];
 
 			if (editingSignin) {
 				query += ` SIGNIN ${openSymbol + editingSignin + closeSymbol}`;
@@ -68,7 +94,7 @@ export function ScopePane() {
 		} catch (err: any) {
 			showError({
 				title: "Failed to save scope",
-				subtitle: err.message
+				subtitle: err.message,
 			});
 		}
 	});
@@ -124,20 +150,20 @@ export function ScopePane() {
 				scope: registerScope,
 				namespace: connection.namespace,
 				database: connection.database,
-				...params
+				...params,
 			});
 
 			showInfo({
 				title: "User registered",
-				subtitle: "The user has been successfully registered"
+				subtitle: "The user has been successfully registered",
 			});
-		} catch(err: any) {
-			adapter.warn('Auth', `Failed to register user: ${err.message}`);
+		} catch (err: any) {
+			adapter.warn("Auth", `Failed to register user: ${err.message}`);
 			console.error(err);
 
 			showError({
 				title: "Registration failed",
-				subtitle: err.message
+				subtitle: err.message,
 			});
 		} finally {
 			await authenticate(auth);
@@ -171,27 +197,21 @@ export function ScopePane() {
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>
-			}>
+			}
+		>
 			{scopes.length === 0 && (
 				<Center h="100%" c="slate">
 					{isConnected ? "No scopes found" : "Not connected"}
 				</Center>
 			)}
 
-			<ScrollArea
-				style={{ position: "absolute", inset: 10, top: 0 }}
-			>
+			<ScrollArea style={{ position: "absolute", inset: 10, top: 0 }}>
 				<Stack gap={0}>
 					{scopes.map((scope) => (
 						<Group key={scope.name} gap="xs" w="100%" wrap="nowrap">
-							<Icon
-								color="violet.4"
-								path={iconKey}
-							/>
+							<Icon color="violet.4" path={iconKey} />
 
-							<Text>
-								{scope.name}
-							</Text>
+							<Text>{scope.name}</Text>
 							<Spacer />
 							<Badge color="slate">
 								{scope.signin && scope.signup
@@ -230,12 +250,15 @@ export function ScopePane() {
 				opened={isRegistring}
 				onClose={registerHandle.close}
 				trapFocus={false}
-				title={
-					<ModalTitle>Register user</ModalTitle>
-				}
+				title={<ModalTitle>Register user</ModalTitle>}
 			>
 				<Text>
-					Please fill out the following required fields to register a new user to the scope <Text span c="bright">{registerScope}</Text>.
+					Please fill out the following required fields to register a new user
+					to the scope{" "}
+					<Text span c="bright">
+						{registerScope}
+					</Text>
+					.
 				</Text>
 
 				<Form onSubmit={registerUser}>
@@ -256,16 +279,14 @@ export function ScopePane() {
 								return (
 									<Table.Tr key={field.subject}>
 										<Table.Td c="bright">
-											<Text fw={600}>
-												{field.subject}
-											</Text>
+											<Text fw={600}>{field.subject}</Text>
 										</Table.Td>
 										<Table.Td c="bright">
 											<ValueInput
 												size="xs"
 												value={field.value}
 												spellCheck={false}
-												onChange={e =>
+												onChange={(e) =>
 													setRegisterFields((draft) => {
 														draft[i].value = e.target.value;
 													})
@@ -304,7 +325,9 @@ export function ScopePane() {
 				onClose={editingHandle.close}
 				trapFocus={false}
 				title={
-					<ModalTitle>{isCreating ? "Create scope" : "Update scope"}</ModalTitle>
+					<ModalTitle>
+						{isCreating ? "Create scope" : "Update scope"}
+					</ModalTitle>
 				}
 			>
 				<Form onSubmit={saveScope}>
@@ -349,19 +372,12 @@ export function ScopePane() {
 						/>
 					</Stack>
 					<Group mt="lg">
-						<Button
-							onClick={editingHandle.close}
-							variant="light"
-							color="slate"
-						>
+						<Button onClick={editingHandle.close} variant="light" color="slate">
 							Close
 						</Button>
 						<Spacer />
 						{!isCreating && (
-							<Button
-								color="pink.9"
-								onClick={removeScope}
-							>
+							<Button color="pink.9" onClick={removeScope}>
 								Remove
 							</Button>
 						)}

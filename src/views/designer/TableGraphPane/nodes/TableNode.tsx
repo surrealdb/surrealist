@@ -1,6 +1,6 @@
-import { BaseNode } from "./BaseNode";
-import { NodeData } from "../helpers";
 import { iconTable } from "~/util/icons";
+import { NodeData } from "../helpers";
+import { BaseNode } from "./BaseNode";
 
 interface TableNodeProps {
 	data: NodeData;

@@ -1,20 +1,50 @@
+import {
+	CompletionSource,
+	autocompletion,
+	closeBrackets,
+	closeBracketsKeymap,
+	completionKeymap,
+	snippetCompletion,
+} from "@codemirror/autocomplete";
+import {
+	defaultKeymap,
+	history,
+	historyKeymap,
+	indentWithTab,
+} from "@codemirror/commands";
+import {
+	bracketMatching,
+	codeFolding,
+	foldGutter,
+	foldKeymap,
+	indentOnInput,
+	indentUnit,
+	syntaxHighlighting,
+} from "@codemirror/language";
 import { linter } from "@codemirror/lint";
-import { surrealqlLanguage } from "codemirror-surrealql";
-import { getSetting } from "../config";
-import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
-import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
-import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource, snippetCompletion } from "@codemirror/autocomplete";
-import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, lineNumbers, highlightActiveLineGutter, EditorView } from "@codemirror/view";
-import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit } from "@codemirror/language";
-import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import { themeColor } from "../mantine";
+import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { EditorState, Extension, SelectionRange } from "@codemirror/state";
-import { acceptWithTab, runQuery } from "./keybinds";
-import { DARK_STYLE, LIGHT_STYLE } from "./theme";
+import {
+	EditorView,
+	crosshairCursor,
+	drawSelection,
+	dropCursor,
+	highlightActiveLineGutter,
+	highlightSpecialChars,
+	keymap,
+	lineNumbers,
+	rectangularSelection,
+} from "@codemirror/view";
+import { indentationMarkers } from "@replit/codemirror-indentation-markers";
+import { surrealqlLanguage } from "codemirror-surrealql";
 import { useDatabaseStore } from "~/stores/database";
+import { getSetting } from "../config";
 import { getActiveQuery } from "../connection";
 import { tryParseParams } from "../helpers";
+import { themeColor } from "../mantine";
 import { validateQuery } from "../surrealql";
+import { acceptWithTab, runQuery } from "./keybinds";
+import { DARK_STYLE, LIGHT_STYLE } from "./theme";
 
 /**
  * The color scheme used within editors
@@ -45,15 +75,15 @@ export const editorBase = (): Extension => [
 	colorTheme(),
 	indentationMarkers({
 		colors: {
-			light: themeColor('slate'),
-			dark: themeColor('slate'),
-			activeLight: themeColor('slate'),
-			activeDark: themeColor('slate'),
-		}
+			light: themeColor("slate"),
+			dark: themeColor("slate"),
+			activeLight: themeColor("slate"),
+			activeDark: themeColor("slate"),
+		},
 	}),
 	highlightSelectionMatches({
 		highlightWordAroundCursor: true,
-		wholeWords: true
+		wholeWords: true,
 	}),
 	keymap.of([
 		runQuery,
@@ -64,7 +94,7 @@ export const editorBase = (): Extension => [
 		...searchKeymap,
 		...historyKeymap,
 		...foldKeymap,
-		...completionKeymap
+		...completionKeymap,
 	]),
 	indentUnit.of("    "),
 	EditorState.allowMultipleSelections.of(true),
@@ -82,11 +112,7 @@ export const inputBase = (): Extension => [
 	bracketMatching(),
 	closeBrackets(),
 	colorTheme(),
-	keymap.of([
-		...closeBracketsKeymap,
-		...historyKeymap,
-		...defaultKeymap,
-	]),
+	keymap.of([...closeBracketsKeymap, ...historyKeymap, ...defaultKeymap]),
 	indentUnit.of("    "),
 	EditorView.lineWrapping,
 ];
@@ -94,59 +120,66 @@ export const inputBase = (): Extension => [
 /**
  * SurrealQL error linting
  */
-export const surqlLinting = (): Extension => linter(view => {
-	const isEnabled = getSetting("behavior", "queryErrorChecker");
-	const content = view.state.doc.toString();
+export const surqlLinting = (): Extension =>
+	linter((view) => {
+		const isEnabled = getSetting("behavior", "queryErrorChecker");
+		const content = view.state.doc.toString();
 
-	if (!isEnabled || !content) {
+		if (!isEnabled || !content) {
+			return [];
+		}
+
+		const message = validateQuery(content) || "";
+		const match = message.match(
+			/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i,
+		);
+
+		if (match) {
+			const reason = match[1].trim();
+			const lineNumber = Number.parseInt(match[2]);
+			const column = Number.parseInt(match[3]);
+
+			const position = view.state.doc.line(lineNumber).from + column - 1;
+			const word = view.state.wordAt(position);
+
+			return [
+				word
+					? {
+							from: word.from,
+							to: word.to,
+							message: reason,
+							severity: "error",
+							source: "SurrealQL",
+						}
+					: {
+							from: position,
+							to: position + 1,
+							message: reason,
+							severity: "error",
+							source: "SurrealQL",
+						},
+			];
+		}
+
 		return [];
-	}
-
-	const message = validateQuery(content) || "";
-	const match = message.match(/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i);
-
-	if (match) {
-		const reason = match[1].trim();
-		const lineNumber = Number.parseInt(match[2]);
-		const column = Number.parseInt(match[3]);
-
-		const position = view.state.doc.line(lineNumber).from + column - 1;
-		const word = view.state.wordAt(position);
-
-		return [word ? {
-			from: word.from,
-			to: word.to,
-			message: reason,
-			severity: "error",
-			source: "SurrealQL"
-		} : {
-			from: position,
-			to: position + 1,
-			message: reason,
-			severity: "error",
-			source: "SurrealQL"
-		}];
-	}
-
-	return [];
-});
+	});
 
 const TABLE_SOURCE: CompletionSource = (context) => {
 	const match = context.matchBefore(/(from|update|create|delete|into) \w*/i);
 	const tables = useDatabaseStore.getState().databaseSchema?.tables || [];
-	const names = tables.map(table => table.schema.name);
+	const names = tables.map((table) => table.schema.name);
 
 	if (!match) {
 		return null;
 	}
 
 	return {
-		from: match.from + match.text.indexOf(' ') + 1,
+		from: match.from + match.text.indexOf(" ") + 1,
 		validFor: /\w+$/,
-		options: names.map(table => ({
+		options: names.map((table) => ({
 			label: table,
-			type: "class"
-		}))
+			type: "class",
+		})),
 	};
 };
 
@@ -155,7 +188,7 @@ const TABLE_SOURCE: CompletionSource = (context) => {
  */
 export const surqlTableCompletion = (): Extension => {
 	return surrealqlLanguage.data.of({
-		autocomplete: TABLE_SOURCE
+		autocomplete: TABLE_SOURCE,
 	});
 };
 
@@ -172,10 +205,10 @@ const VARIABLE_SOURCE: CompletionSource = (context) => {
 	return {
 		from: match.from,
 		validFor: /\$\w+$/,
-		options: variables.map(variable => ({
-			label: '$' + variable,
-			type: "variable"
-		}))
+		options: variables.map((variable) => ({
+			label: "$" + variable,
+			type: "variable",
+		})),
 	};
 };
 
@@ -184,14 +217,14 @@ const VARIABLE_SOURCE: CompletionSource = (context) => {
  */
 export const surqlVariableCompletion = (): Extension => {
 	return surrealqlLanguage.data.of({
-		autocomplete: VARIABLE_SOURCE
+		autocomplete: VARIABLE_SOURCE,
 	});
 };
 
 const CUSTOM_FUNCTION_SOURCE: CompletionSource = (context) => {
 	const match = context.matchBefore(/fn::\w*/i);
 	const functions = useDatabaseStore.getState().databaseSchema?.functions || [];
-	const names = functions.map(fn => `fn::${fn.name}`);
+	const names = functions.map((fn) => `fn::${fn.name}`);
 
 	if (!match) {
 		return null;
@@ -200,10 +233,12 @@ const CUSTOM_FUNCTION_SOURCE: CompletionSource = (context) => {
 	return {
 		from: match.from,
 		validFor: /\w+$/,
-		options: names.map(label => snippetCompletion(`${label}(#{1})`, {
-			label,
-			type: 'function'
-		}))
+		options: names.map((label) =>
+			snippetCompletion(`${label}(#{1})`, {
+				label,
+				type: "function",
+			}),
+		),
 	};
 };
 
@@ -212,14 +247,16 @@ const CUSTOM_FUNCTION_SOURCE: CompletionSource = (context) => {
  */
 export const surqlCustomFunctionCompletion = (): Extension => {
 	return surrealqlLanguage.data.of({
-		autocomplete: CUSTOM_FUNCTION_SOURCE
+		autocomplete: CUSTOM_FUNCTION_SOURCE,
 	});
 };
 
 /**
  * An extension that reports on selection changes
  */
-export const selectionChanged = (cb: (ranges: SelectionRange) => void): Extension => {
+export const selectionChanged = (
+	cb: (ranges: SelectionRange) => void,
+): Extension => {
 	return EditorView.updateListener.of((update) => {
 		if (update.selectionSet) {
 			cb(update.state.selection.main);

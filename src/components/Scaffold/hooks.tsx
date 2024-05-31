@@ -7,7 +7,10 @@ import { clamp } from "~/util/helpers";
 export function useWindowSettings() {
 	const [windowScale, setWindowScale] = useSetting("appearance", "windowScale");
 	const [editorScale, setEditorScale] = useSetting("appearance", "editorScale");
-	const [windowPinned, setWindowPinned] = useSetting("behavior", "windowPinned");
+	const [windowPinned, setWindowPinned] = useSetting(
+		"behavior",
+		"windowPinned",
+	);
 
 	const increaseWindowScale = useStable(() => {
 		setWindowScale(clamp(windowScale + 10, 75, 150));

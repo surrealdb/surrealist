@@ -1,9 +1,9 @@
 import { Box } from "@mantine/core";
+import { pascal } from "radash";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
-import { Snippets, TopicProps } from "~/docs/types";
 import { getTable } from "~/docs/helpers";
-import { pascal } from "radash";
+import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
 	const table = getTable(topic);
@@ -89,20 +89,18 @@ table_name
 		$db = new SurrealDB();
 		`,
 		}),
-		[table.schema.name]
+		[table.schema.name],
 	);
 
 	return (
 		<Article
-			title={
-				<TableTitle title="Live queries" table={table.schema.name} />
-			}
+			title={<TableTitle title="Live queries" table={table.schema.name} />}
 		>
 			<div>
 				<p>
-					Create realtime query notifications for changes to selected
-					records on <b>{table.schema.name}</b> and see live updates
-					in the live message view in the console.
+					Create realtime query notifications for changes to selected records on{" "}
+					<b>{table.schema.name}</b> and see live updates in the live message
+					view in the console.
 				</p>
 			</div>
 			<Box>

@@ -1,9 +1,9 @@
 import { Box } from "@mantine/core";
+import { pascal } from "radash";
 import { useMemo } from "react";
 import { Article, DocsPreview, TableTitle } from "~/docs/components";
-import { Snippets, TopicProps } from "~/docs/types";
 import { getTable } from "~/docs/helpers";
-import { pascal } from "radash";
+import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 	const table = getTable(topic);
@@ -35,24 +35,21 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 		$db->select("${table.schema.name}");
 		`,
 		}),
-		[table.schema.name]
+		[table.schema.name],
 	);
 
 	return (
 		<Article
 			title={
-				<TableTitle
-					title="Selecting all fields"
-					table={table.schema.name}
-				/>
+				<TableTitle title="Selecting all fields" table={table.schema.name} />
 			}
 		>
 			<div>
 				<p>
-					Selecting all fields in a table is a common operation when
-					you want to retrieve all the fields in a table. This
-					operation is useful when you want to retrieve all the fields
-					in a table without specifying the fields explicitly.
+					Selecting all fields in a table is a common operation when you want to
+					retrieve all the fields in a table. This operation is useful when you
+					want to retrieve all the fields in a table without specifying the
+					fields explicitly.
 				</p>
 			</div>
 			<Box>

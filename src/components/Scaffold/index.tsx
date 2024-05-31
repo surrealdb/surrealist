@@ -1,49 +1,47 @@
 import classes from "./style.module.scss";
 
-import {
-	Box,
-	Button,
-	Center,
-	Flex,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Box, Button, Center, Flex, Stack, Text } from "@mantine/core";
 
-import { Toolbar } from "../Toolbar";
 import { useDisclosure } from "@mantine/hooks";
-import { ConnectionEditor } from "./modals/connection";
-import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
-import { ViewMode } from "~/types";
+import { Suspense, lazy } from "react";
+import {
+	HtmlPortalNode,
+	InPortal,
+	OutPortal,
+	createHtmlPortalNode,
+} from "react-reverse-portal";
+import { adapter } from "~/adapter";
+import { useBoolean } from "~/hooks/boolean";
+import { useSetting } from "~/hooks/config";
+import { useCompatHotkeys } from "~/hooks/hotkey";
+import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { Settings } from "./settings";
-import { useIsLight } from "~/hooks/theme";
-import { themeColor } from "~/util/mantine";
-import { adapter } from "~/adapter";
-import { StartScreen } from "./start";
-import { TableCreator } from "./modals/table";
-import { DownloadModal } from "./modals/download";
-import { ScopeSignup } from "./modals/signup";
-import { Sidebar } from "../Sidebar";
-import { CommandPaletteModal } from "./modals/palette";
-import { useBoolean } from "~/hooks/boolean";
-import { useWindowSettings } from "./hooks";
-import { useCompatHotkeys } from "~/hooks/hotkey";
-import { LegacyModal } from "./modals/legacy";
-import { SandboxModal } from "./modals/sandbox";
-import { ChangelogModal } from "./modals/changelog";
-import { SurrealistLogo } from "../SurrealistLogo";
-import { Icon } from "../Icon";
-import { iconOpen } from "~/util/icons";
+import { ViewMode } from "~/types";
 import { isMobile } from "~/util/helpers";
+import { iconOpen } from "~/util/icons";
+import { themeColor } from "~/util/mantine";
+import { Icon } from "../Icon";
+import { Sidebar } from "../Sidebar";
+import { SurrealistLogo } from "../SurrealistLogo";
+import { Toolbar } from "../Toolbar";
+import { useWindowSettings } from "./hooks";
+import { ChangelogModal } from "./modals/changelog";
+import { ConnectionEditor } from "./modals/connection";
+import { DownloadModal } from "./modals/download";
 import { EmbedderModal } from "./modals/embedder";
-import { useSetting } from "~/hooks/config";
-import { Suspense, lazy } from "react";
+import { LegacyModal } from "./modals/legacy";
+import { CommandPaletteModal } from "./modals/palette";
+import { SandboxModal } from "./modals/sandbox";
+import { ScopeSignup } from "./modals/signup";
+import { TableCreator } from "./modals/table";
+import { Settings } from "./settings";
+import { StartScreen } from "./start";
 
 const PORTAL_ATTRS = {
 	attributes: {
-		style: "height: 100%"
-	}
+		style: "height: 100%",
+	},
 };
 
 const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
@@ -56,13 +54,17 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	documentation: createHtmlPortalNode(PORTAL_ATTRS),
 };
 
-const QueryView = lazy(() => import('~/views/query/QueryView'));
-const ExplorerView = lazy(() => import('~/views/explorer/ExplorerView'));
-const DesignerView = lazy(() => import('~/views/designer/DesignerView'));
-const AuthenticationView = lazy(() => import('~/views/authentication/AuthenticationView'));
-const FunctionsView = lazy(() => import('~/views/functions/FunctionsView'));
-const ModelsView = lazy(() => import('~/views/models/ModelsView'));
-const DocumentationView = lazy(() => import('~/views/documentation/DocumentationView'));
+const QueryView = lazy(() => import("~/views/query/QueryView"));
+const ExplorerView = lazy(() => import("~/views/explorer/ExplorerView"));
+const DesignerView = lazy(() => import("~/views/designer/DesignerView"));
+const AuthenticationView = lazy(
+	() => import("~/views/authentication/AuthenticationView"),
+);
+const FunctionsView = lazy(() => import("~/views/functions/FunctionsView"));
+const ModelsView = lazy(() => import("~/views/models/ModelsView"));
+const DocumentationView = lazy(
+	() => import("~/views/documentation/DocumentationView"),
+);
 
 export function Scaffold() {
 	const isLight = useIsLight();
@@ -80,51 +82,49 @@ export function Scaffold() {
 	const viewNode = VIEW_PORTALS[activeView];
 
 	useWindowSettings();
-	useCompatHotkeys([
-		["mod+K", paletteHandle.open]
-	]);
+	useCompatHotkeys([["mod+K", paletteHandle.open]]);
 
 	return (
 		<div
 			className={classes.root}
 			style={{
 				backgroundColor: isLight
-					? (activeConnection ? themeColor("slate.0") : "white")
-					: (activeConnection ? themeColor("slate.9") : "black")
+					? activeConnection
+						? themeColor("slate.0")
+						: "white"
+					: activeConnection
+						? themeColor("slate.9")
+						: "black",
 			}}
 		>
 			{!adapter.hasTitlebar && (
-				<Center
-					data-tauri-drag-region
-					className={classes.titlebar}
-				>
+				<Center data-tauri-drag-region className={classes.titlebar}>
 					{title}
 				</Center>
 			)}
 
 			{isMobile() && (
-				<Center
-					pos="fixed"
-					inset={0}
-					bg="slate.9"
-					style={{ zIndex: 1000 }}
-				>
+				<Center pos="fixed" inset={0} bg="slate.9" style={{ zIndex: 1000 }}>
 					<Stack maw={250} mx="auto">
 						<SurrealistLogo />
 
 						<Text c="bright" mt="lg">
-							Surrealist is the ultimate way to visually manage your SurrealDB database
+							Surrealist is the ultimate way to visually manage your SurrealDB
+							database
 						</Text>
 
 						<Text c="slate.3">
-							Support for Surrealist on mobile platforms is currently unavailable, however you can visit Surrealist
-							on a desktop environment to get started.
+							Support for Surrealist on mobile platforms is currently
+							unavailable, however you can visit Surrealist on a desktop
+							environment to get started.
 						</Text>
 
 						<Button
 							mt="lg"
 							variant="gradient"
-							onClick={() => adapter.openUrl("https://surrealdb.com/surrealist")}
+							onClick={() =>
+								adapter.openUrl("https://surrealdb.com/surrealist")
+							}
 							rightSection={<Icon path={iconOpen} />}
 						>
 							Read more about Surrealist
@@ -133,11 +133,7 @@ export function Scaffold() {
 				</Center>
 			)}
 
-			<Flex
-				direction="column"
-				flex={1}
-				pos="relative"
-			>
+			<Flex direction="column" flex={1} pos="relative">
 				{activeConnection ? (
 					<>
 						<Sidebar
@@ -147,9 +143,7 @@ export function Scaffold() {
 							onToggleDownload={downloadHandle.toggle}
 						/>
 
-						<Toolbar
-							sidebarMode={mode}
-						/>
+						<Toolbar sidebarMode={mode} />
 
 						<Box p="sm" className={classes.wrapper}>
 							<Box w={mode === "wide" ? 190 : 49} />
@@ -218,10 +212,7 @@ export function Scaffold() {
 			<ChangelogModal />
 			<EmbedderModal />
 
-			<CommandPaletteModal
-				opened={showPalette}
-				onClose={paletteHandle.close}
-			/>
+			<CommandPaletteModal opened={showPalette} onClose={paletteHandle.close} />
 
 			<Settings
 				opened={showSettings}

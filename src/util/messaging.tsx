@@ -1,10 +1,10 @@
+import { executeQuery, executeUserQuery } from "~/connection";
+import { RESULT_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
-import { getActiveQuery } from "./connection";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { ResultMode } from "~/types";
-import { RESULT_MODES } from "~/constants";
-import { executeQuery, executeUserQuery } from "~/connection";
+import { getActiveQuery } from "./connection";
 
 /**
  * Handle incoming window messages
@@ -16,9 +16,7 @@ export function handleWindowMessage(event: MessageEvent) {
 		return;
 	}
 
-	const options = (typeof data.options === "object")
-		? data.options
-		: {};
+	const options = typeof data.options === "object" ? data.options : {};
 
 	const active = getActiveQuery()!;
 	const { updateQueryTab } = useConfigStore.getState();
@@ -32,7 +30,7 @@ export function handleWindowMessage(event: MessageEvent) {
 			updateQueryTab({
 				id: active.id,
 				query: typeof query === "string" ? query : active.query,
-				variables: typeof variables === "string" ? variables : active.variables
+				variables: typeof variables === "string" ? variables : active.variables,
 			});
 
 			break;
@@ -61,7 +59,7 @@ export function handleWindowMessage(event: MessageEvent) {
 
 			updateQueryTab({
 				id: active.id,
-				resultMode: mode as ResultMode
+				resultMode: mode as ResultMode,
 			});
 			break;
 		}

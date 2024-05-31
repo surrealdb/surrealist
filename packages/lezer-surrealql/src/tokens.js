@@ -1,32 +1,65 @@
-import {ExternalTokenizer} from "@lezer/lr";
+import { ExternalTokenizer } from "@lezer/lr";
 
 import {
+	assert,
+	_break,
+	_class,
+	_continue,
+	_default,
+	_delete,
+	_else,
+	_false,
+	_for,
+	_function,
+	_if,
+	_in,
+	_let,
+	_null,
+	_return,
+	_throw,
+	_true,
+	_with,
+	// Literals
+	after,
+	allinside,
 	analyzer,
+	and,
 	any,
+	anyinside,
 	as,
 	asc,
-	assert,
+	ascii,
 	at,
+	before,
 	begin,
+	blank,
 	bm25,
-	_break,
 	by,
+	camel,
 	cancel,
 	capacity,
 	changefeed,
 	changes,
+	chebyshev,
 	columns,
 	comment,
 	commit,
+	contains,
+	containsall,
+	containsany,
+	containsnone,
+	containsnot,
 	content,
-	_continue,
+	cosine,
+	count,
 	create,
+	createPermissions,
 	database,
 	db,
-	_default,
 	define,
-	_delete,
+	deletePermissions,
 	desc,
+	diff,
 	dimension,
 	dist,
 	doc_ids_cache,
@@ -35,90 +68,123 @@ import {
 	doc_lengths_order,
 	drop,
 	duplicate,
+	eddsa,
+	edgengram,
 	efc,
-	_else,
 	end,
-	explain,
-	exists,
-	extend_candidates,
+	es256,
+	es384,
+	es512,
+	euclidean,
 	event,
+	exists,
+	explain,
+	extend_candidates,
+	f32,
+	f64,
 	fetch,
 	field,
 	fields,
 	filters,
 	flexible,
-	_for,
 	from,
+	full,
 	group,
-	mtree,
-	mtree_cache,
+	hamming,
 	highlights,
 	hnsw,
-	_if,
+	i16,
+	i32,
+	i64,
 	ignore,
-	_in,
 	index,
 	info,
 	insert,
+	inside,
+	intersects,
 	into,
+	is,
+	jaccard,
+	jwks,
 	keep_pruned_connections,
 	key,
 	kill,
-	_let,
 	limit,
 	live,
 	lm,
 	m,
 	m0,
+	manhattan,
 	merge,
+	minkowski,
+	mtree,
+	mtree_cache,
 	namespace,
+	ngram,
 	noindex,
+	none,
+	noneinside,
 	normal,
 	not,
+	notinside,
 	ns,
+	objectOpen,
 	on,
 	only,
+	opIn,
+	opNot,
 	option,
+	or,
 	order,
 	out,
+	outside,
 	parallel,
 	param,
 	passhash,
 	password,
 	patch,
+	pearson,
 	permissions,
 	postings_cache,
 	postings_order,
+	ps256,
+	ps384,
+	ps512,
+	punct,
+	rand,
 	readonly,
 	rebuild,
 	relate,
 	relation,
 	remove,
-	_return,
 	roles,
 	root,
+	rs256,
+	rs384,
+	rs512,
 	sc,
-	scope,
 	schemafull,
 	schemaless,
+	scope,
 	search,
 	select,
+	selectPermissions,
 	session,
 	set,
 	show,
-	since,
 	signin,
 	signup,
+	since,
 	sleep,
+	snowball,
 	split,
 	start,
 	structure,
-	tb,
 	table,
+	tb,
 	terms_cache,
 	terms_order,
 	then,
-	_throw,
 	timeout,
 	to,
 	token,
@@ -128,90 +194,14 @@ import {
 	unique,
 	unset,
 	update,
+	updatePermissions,
+	uppercase,
 	use,
 	user,
 	valueKeyword,
 	values,
 	when,
 	where,
-	_with,
-
-	// Literals
-	after,
-	before,
-	diff,
-	_false,
-	full,
-	none,
-	_null,
-	_true,
-
-	f32,
-	f64,
-	i16,
-	i32,
-	i64,
-
-	updatePermissions,
-	createPermissions,
-	deletePermissions,
-	selectPermissions,
-
-	jwks,
-	eddsa,
-	es256,
-	es384,
-	es512,
-	ps256,
-	ps384,
-	ps512,
-	rs256,
-	rs384,
-	rs512,
-
-	and,
-	or,
-	is,
-	opNot,
-	opIn,
-	contains,
-	containsnot,
-	containsall,
-	containsany,
-	containsnone,
-	inside,
-	notinside,
-	allinside,
-	anyinside,
-	noneinside,
-	outside,
-	intersects,
-
-	chebyshev,
-	cosine,
-	euclidean,
-	hamming,
-	jaccard,
-	manhattan,
-	minkowski,
-	pearson,
-
-	ascii,
-	edgengram,
-	ngram,
-	snowball,
-	uppercase,
-
-	blank,
-	camel,
-	_class,
-	punct,
-
-	_function,
-	rand,
-	count,
-
-	objectOpen,
 } from "./parser.terms";
 
 const tokenMap = {
@@ -429,21 +419,24 @@ const tryMapped = {
 	in: [opIn],
 };
 
-export const tokens = function(t, stack) {
+export const tokens = function (t, stack) {
 	for (const tk of tryMapped[t.toLowerCase()] ?? []) {
 		if (stack.canShift(tk)) return tk;
 	}
 
 	return tokenMap[t.toLowerCase()] ?? -1;
-}
+};
 
 function skipSpace(input, off) {
 	for (;;) {
 		let next = input.peek(off);
 		if (next === 32 || next === 9 || next === 10 || next === 13) {
 			off++;
-		} else if (next === 35 /* '#' */ ||
-				   (next === 47 /* '/' */ || next === 45 /* '-' */) && input.peek(off + 1) === next) {
+		} else if (
+			next === 35 /* '#' */ ||
+			((next === 47 /* '/' */ || next === 45) /* '-' */ &&
+				input.peek(off + 1) === next)
+		) {
 			off++;
 			for (;;) {
 				let next = input.peek(off);
@@ -457,7 +450,12 @@ function skipSpace(input, off) {
 }
 
 function isIdentifierChar(ch) {
-	return ch === 95 || ch >= 65 && ch <= 90 || ch >= 97 && ch <= 122 || ch >= 48 && ch <= 57;
+	return (
+		ch === 95 ||
+		(ch >= 65 && ch <= 90) ||
+		(ch >= 97 && ch <= 122) ||
+		(ch >= 48 && ch <= 57)
+	);
 }
 
 function skipObjKey(input, off) {
@@ -468,16 +466,16 @@ function skipObjKey(input, off) {
 		} while (isIdentifierChar(input.peek(off)));
 		return off;
 	} else if (first === 38 /* "'" */ || first === 34 /* '"' */) {
-		for (let escaped = false;;) {
+		for (let escaped = false; ; ) {
 			let next = input.peek(++off);
 			if (next < 0) return off;
 			if (next === first && !escaped) return off + 1;
-			escaped = next === 92 /* '\\' */
+			escaped = next === 92; /* '\\' */
 		}
 	}
 }
 
-export const objectToken = new ExternalTokenizer((input, stack) => {
+export const objectToken = new ExternalTokenizer((input, _stack) => {
 	if (input.next === 123 /* '{' */) {
 		let off = skipSpace(input, 1);
 		let key = skipObjKey(input, off);

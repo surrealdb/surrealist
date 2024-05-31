@@ -1,15 +1,15 @@
-import posthog from "posthog-js";
 import { ActionIcon, Tooltip } from "@mantine/core";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "../../../Icon";
-import { useDatabaseStore } from "~/stores/database";
-import { iconConsole, iconPlay, iconStop } from "~/util/icons";
-import { useSetting } from "~/hooks/config";
-import { useIntent } from "~/hooks/url";
 import { openConnection } from "~/connection";
+import { useSetting } from "~/hooks/config";
+import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
+import { useDatabaseStore } from "~/stores/database";
 import { getActiveConnection } from "~/util/connection";
+import { iconConsole, iconPlay, iconStop } from "~/util/icons";
+import { Icon } from "../../../Icon";
 
 // TODO Check if localhost
 
@@ -47,19 +47,24 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 		} else {
 			prepareServe();
 
-			adapter.startDatabase(username, password, port, driver, storage, executable).catch(() => {
-				stopServing();
-			});
+			adapter
+				.startDatabase(username, password, port, driver, storage, executable)
+				.catch(() => {
+					stopServing();
+				});
 
-			posthog.capture('serve_start');
+			posthog.capture("serve_start");
 		}
 
 		setHasStarted(true);
 	});
 
 	useEffect(() => {
-		const { connection: { hostname } } = getActiveConnection();
-		const isLocal = hostname.startsWith("localhost") || hostname.startsWith("127.0.0.1");
+		const {
+			connection: { hostname },
+		} = getActiveConnection();
+		const isLocal =
+			hostname.startsWith("localhost") || hostname.startsWith("127.0.0.1");
 
 		if (isServing && isLocal) {
 			openConnection();
@@ -78,7 +83,11 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 					onClick={handleToggle}
 					loading={isPending}
 					color={isServing ? "pink.7" : undefined}
-					aria-label={isServing ? "Stop serving local database" : "Start serving local database"}
+					aria-label={
+						isServing
+							? "Stop serving local database"
+							: "Start serving local database"
+					}
 				>
 					<Icon path={isServing ? iconStop : iconPlay} size="lg" />
 				</ActionIcon>

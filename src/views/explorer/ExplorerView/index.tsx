@@ -1,24 +1,24 @@
-import { ExplorerPane } from "../ExplorerPane";
-import { useState } from "react";
-import { TablesPane } from "../TablesPane";
-import { CreatorDrawer } from "../CreatorDrawer";
-import { useDisclosure } from "@mantine/hooks";
 import { Box, Button, Group, Text } from "@mantine/core";
-import { DisconnectedEvent } from "~/util/global-events";
+import { useDisclosure } from "@mantine/hooks";
+import { useState } from "react";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { Introduction } from "~/components/Introduction";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { useIsConnected } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
+import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
-import { Icon } from "~/components/Icon";
-import { iconExplorer, iconOpen, iconPlus } from "~/util/icons";
-import { useInterfaceStore } from "~/stores/interface";
 import { useViewEffect } from "~/hooks/view";
+import { useInterfaceStore } from "~/stores/interface";
+import { DisconnectedEvent } from "~/util/global-events";
+import { iconExplorer, iconOpen, iconPlus } from "~/util/icons";
 import { syncDatabaseSchema } from "~/util/schema";
-import { Panel, PanelGroup } from "react-resizable-panels";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { usePanelMinSize } from "~/hooks/panels";
-import { Introduction } from "~/components/Introduction";
-import { adapter } from "~/adapter";
-import { useIsConnected } from "~/hooks/connection";
+import { CreatorDrawer } from "../CreatorDrawer";
+import { ExplorerPane } from "../ExplorerPane";
+import { TablesPane } from "../TablesPane";
 
 export function ExplorerView() {
 	const { openTableCreator } = useInterfaceStore.getState();
@@ -56,11 +56,7 @@ export function ExplorerView() {
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel
-						defaultSize={minSize}
-						minSize={minSize}
-						maxSize={35}
-					>
+					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
 						<TablesPane
 							activeTable={activeTable}
 							onTableSelect={setActiveTable}
@@ -85,11 +81,12 @@ export function ExplorerView() {
 										
 										-- Fetch table records
 										SELECT * FROM person;
-									`
+									`,
 								}}
 							>
 								<Text>
-									The explorer view provides an easy way to browse your tables and records without writing any queries.
+									The explorer view provides an easy way to browse your tables
+									and records without writing any queries.
 								</Text>
 								<Group>
 									<Button
@@ -105,7 +102,11 @@ export function ExplorerView() {
 										flex={1}
 										color="slate"
 										rightSection={<Icon path={iconOpen} />}
-										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/table")}
+										onClick={() =>
+											adapter.openUrl(
+												"https://surrealdb.com/docs/surrealdb/surrealql/statements/define/table",
+											)
+										}
 									>
 										Learn more
 									</Button>
@@ -118,7 +119,7 @@ export function ExplorerView() {
 
 			<CreatorDrawer
 				opened={isCreating}
-				table={creatorTable || ''}
+				table={creatorTable || ""}
 				onClose={isCreatingHandle.close}
 			/>
 		</>

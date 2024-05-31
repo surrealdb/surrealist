@@ -1,16 +1,16 @@
-import classes from "./style.module.scss";
+import { Box, Center, Group, Stack, UnstyledButton } from "@mantine/core";
+import { adapter } from "~/adapter";
 import primarySphere from "~/assets/images/primary-sphere.webp";
 import secondarySphere from "~/assets/images/secondary-sphere.webp";
+import cloud from "~/assets/images/start/cloud.webp";
 import connection from "~/assets/images/start/connection.webp";
 import sandbox from "~/assets/images/start/sandbox.webp";
-import cloud from "~/assets/images/start/cloud.webp";
-import { Box, Center, Group, Stack, UnstyledButton } from "@mantine/core";
-import { useInterfaceStore } from "~/stores/interface";
-import { useConfigStore } from "~/stores/config";
-import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
-import { adapter } from "~/adapter";
+import { useStable } from "~/hooks/stable";
+import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
+import { useInterfaceStore } from "~/stores/interface";
+import classes from "./style.module.scss";
 
 export function StartScreen() {
 	const { setActiveConnection } = useConfigStore.getState();
@@ -26,28 +26,22 @@ export function StartScreen() {
 	});
 
 	return (
-		<Box
-			pos="absolute"
-			inset={0}
-			className={classes.start}
-		>
+		<Box pos="absolute" inset={0} className={classes.start}>
 			<div
 				className={classes.primarySphere}
 				style={{
-					backgroundImage: `url(${primarySphere})`
+					backgroundImage: `url(${primarySphere})`,
 				}}
 			/>
 
 			<div
 				className={classes.secondarySphere}
 				style={{
-					backgroundImage: `url(${secondarySphere})`
+					backgroundImage: `url(${secondarySphere})`,
 				}}
 			/>
 
-			<Center
-				h="100%"
-			>
+			<Center h="100%">
 				<Group align="stretch">
 					<Stack>
 						<UnstyledButton
@@ -55,7 +49,7 @@ export function StartScreen() {
 							w={320}
 							h={226}
 							onClick={openConnectionCreator}
-							style={{ border: '1px solid rgba(255, 255, 255, 0.05' }}
+							style={{ border: "1px solid rgba(255, 255, 255, 0.05" }}
 						>
 							<Box style={{ backgroundImage: `url(${connection})` }} />
 						</UnstyledButton>
@@ -64,7 +58,7 @@ export function StartScreen() {
 							w={320}
 							h={226}
 							onClick={openSandbox}
-							style={{ border: '1px solid rgba(255, 255, 255, 0.05' }}
+							style={{ border: "1px solid rgba(255, 255, 255, 0.05" }}
 							disabled={isConnecting}
 						>
 							<Box style={{ backgroundImage: `url(${sandbox})` }} />

@@ -92,26 +92,22 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 		]);
 		`,
 		}),
-		[esc_namespace, esc_database]
+		[esc_namespace, esc_database],
 	);
 
 	return (
 		<Article title="Sign Up">
 			<div>
 				<p>
-					When working with SurrealDB Scopes, you can let anonymous
-					users signup and create an account in your database. In a
-					scope's SIGNUP-clause, you can specify variables which later
-					need to be passed in an SDK or Web Request, email and pass
-					in this case. The scope is called user for this example.
+					When working with SurrealDB Scopes, you can let anonymous users signup
+					and create an account in your database. In a scope's SIGNUP-clause,
+					you can specify variables which later need to be passed in an SDK or
+					Web Request, email and pass in this case. The scope is called user for
+					this example.
 				</p>
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Sign Up"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Sign Up" values={snippets} />
 			</Box>
 		</Article>
 	);

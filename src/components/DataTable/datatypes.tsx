@@ -1,12 +1,12 @@
-import dayjs from "dayjs";
-import { RecordId, Decimal } from "surrealdb.js";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
+import dayjs from "dayjs";
 import { ReactNode } from "react";
+import { Decimal, RecordId } from "surrealdb.js";
 import { TRUNCATE_STYLE } from "~/util/helpers";
-import { Icon } from "../Icon";
-import { RecordLink } from "../RecordLink";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
+import { Icon } from "../Icon";
+import { RecordLink } from "../RecordLink";
 
 // ----- Data Cell Types -----
 
@@ -19,9 +19,11 @@ function NullishCell(props: { value: null | undefined }) {
 }
 
 function BooleanCell(props: { value: boolean }) {
-	const icon = props.value
-		? <Icon path={iconCheck} color="green" />
-		: <Icon path={iconClose} color="pink.9" />;
+	const icon = props.value ? (
+		<Icon path={iconCheck} color="green" />
+	) : (
+		<Icon path={iconClose} color="pink.9" />
+	);
 
 	return <div>{icon}</div>;
 }
@@ -33,7 +35,8 @@ function StringCell(props: { value: string }) {
 			style={{
 				...TRUNCATE_STYLE,
 				maxWidth: 250,
-			}}>
+			}}
+		>
 			{props.value}
 		</Text>
 	);
@@ -60,7 +63,7 @@ function DateTimeCell(props: { value: Date }) {
 }
 
 function ArrayCell(props: { value: any[] }) {
-	const items = props.value ;
+	const items = props.value;
 
 	return (
 		<div>
@@ -107,7 +110,7 @@ function ObjectCell(props: { value: any }) {
 						lineClamp={10}
 						style={{
 							whiteSpace: "pre",
-							tabSize: 24
+							tabSize: 24,
 						}}
 					>
 						{formatValue(props.value, false, true)}

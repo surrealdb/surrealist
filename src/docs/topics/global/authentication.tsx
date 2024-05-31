@@ -4,7 +4,6 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
-
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -55,18 +54,17 @@ export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
 		<Article title="Authentication">
 			<div>
 				<p>
-					Enabling authentication for your database is a critical step
-					in securing your data. SurrealDB provides a simple way to
-					enable authentication for your database.
+					Enabling authentication for your database is a critical step in
+					securing your data. SurrealDB provides a simple way to enable
+					authentication for your database.
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

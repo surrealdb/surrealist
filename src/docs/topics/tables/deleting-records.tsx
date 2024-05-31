@@ -34,24 +34,19 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 		$db->delete("${table.schema.name}");
 		`,
 		}),
-		[table.schema.name]
+		[table.schema.name],
 	);
 
 	return (
 		<Article
-			title={
-				<TableTitle
-					title="Deleting records"
-					table={table.schema.name}
-				/>
-			}
+			title={<TableTitle title="Deleting records" table={table.schema.name} />}
 		>
 			<div>
 				<p>
-					Deleting records is a common operation when you want to
-					remove records from a table. This operation is useful when
-					you want to remove records from a table and can also be
-					based on certain conditions using the Where clause.
+					Deleting records is a common operation when you want to remove records
+					from a table. This operation is useful when you want to remove records
+					from a table and can also be based on certain conditions using the
+					Where clause.
 				</p>
 			</div>
 			<Box>

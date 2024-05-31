@@ -1,14 +1,21 @@
 import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
-import { ContentPane } from "~/components/Pane";
-import { DocsArticleTopic, DocsSectionTopic, DocsTopic, isGroup, isLink, isSection } from "~/docs/types";
 import { RefObject, useMemo } from "react";
-import { ScrollFader } from "~/components/ScrollFader";
-import { CodeLang } from "~/types";
-import { useStable } from "~/hooks/stable";
-import { CODE_LANGUAGES } from "~/constants";
-import { useIntent } from "~/hooks/url";
-import { iconList } from "~/util/icons";
 import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import { ScrollFader } from "~/components/ScrollFader";
+import { CODE_LANGUAGES } from "~/constants";
+import {
+	DocsArticleTopic,
+	DocsSectionTopic,
+	DocsTopic,
+	isGroup,
+	isLink,
+	isSection,
+} from "~/docs/types";
+import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
+import { CodeLang } from "~/types";
+import { iconList } from "~/util/icons";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
@@ -27,7 +34,6 @@ export function ArticlePane({
 	onLanguageChange,
 	onChangeActiveTopic,
 }: ArticlePaneProps) {
-
 	const flattened = useMemo(() => {
 		const result: ReadableArticle[] = [];
 
@@ -66,7 +72,9 @@ export function ArticlePane({
 	}, [docs, language]);
 
 	const onScroll = useStable((position: { x: number; y: number }) => {
-		const topics = scrollRef.current?.querySelectorAll("[data-topic]") as NodeListOf<HTMLElement>;
+		const topics = scrollRef.current?.querySelectorAll(
+			"[data-topic]",
+		) as NodeListOf<HTMLElement>;
 
 		let activeTopic: HTMLElement | null = null;
 
@@ -109,8 +117,8 @@ export function ArticlePane({
 				onScrollPositionChange={onScroll}
 				viewportProps={{
 					style: {
-						paddingBottom: '50vh'
-					}
+						paddingBottom: "50vh",
+					},
 				}}
 				style={{
 					position: "absolute",
@@ -118,21 +126,15 @@ export function ArticlePane({
 					top: 0,
 					right: 0,
 					bottom: 0,
-					paddingRight: 12
+					paddingRight: 12,
 				}}
 			>
 				{flattened.map((doc, index) => {
 					if (isSection(doc)) {
 						return (
-							<Box
-								key={index}
-								mx="xl"
-								pt={48}
-								pb={10}
-								data-topic={doc.id}
-							>
+							<Box key={index} mx="xl" pt={48} pb={10} data-topic={doc.id}>
 								<Group c="bright" my="xl">
-									<Icon path={doc.icon} size={1.65}/>
+									<Icon path={doc.icon} size={1.65} />
 									<Title order={1} fz={28}>
 										{doc.title}
 									</Title>
@@ -149,14 +151,14 @@ export function ArticlePane({
 								py={42}
 								data-topic={doc.id}
 								style={{
-									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-7)" : "none"
+									borderBottom:
+										index < flattened.length - 1
+											? "1px solid var(--mantine-color-slate-7)"
+											: "none",
 								}}
 							>
 								<Box maw={1500}>
-									<Content
-										topic={doc}
-										language={language}
-									/>
+									<Content topic={doc} language={language} />
 								</Box>
 							</Box>
 						);

@@ -1,4 +1,12 @@
-import { Group, Stack, Button, Text, ActionIcon, Paper, Modal } from "@mantine/core";
+import {
+	ActionIcon,
+	Button,
+	Group,
+	Modal,
+	Paper,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -66,13 +74,9 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 						>
 							<Group gap="sm">
 								{item.name ? (
-									<Text c="bright">
-										{item.name}
-									</Text>
+									<Text c="bright">{item.name}</Text>
 								) : (
-									<Text c="dark.2">
-										Unnamed {props.name}
-									</Text>
+									<Text c="dark.2">Unnamed {props.name}</Text>
 								)}
 								<Spacer />
 								<ActionIcon
@@ -90,9 +94,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 					))}
 				</Stack>
 			) : (
-				<Text ta="center">
-					{props.missing}
-				</Text>
+				<Text ta="center">{props.missing}</Text>
 			)}
 
 			<Button
@@ -110,9 +112,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				opened={isEditing}
 				onClose={closeEditor}
 				trapFocus={false}
-				title={
-					<ModalTitle>{`Editing ${props.name}`}</ModalTitle>
-				}
+				title={<ModalTitle>{`Editing ${props.name}`}</ModalTitle>}
 			>
 				<Stack>
 					{editingData && props.children(editingData, editingIndex)}

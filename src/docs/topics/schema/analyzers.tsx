@@ -2,13 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
+export function DocsSchemaAnalyzers({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -62,30 +57,25 @@ export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 		$db->query("DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3)");
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Analyzers">
 			<div>
 				<p>
-					Analyzers are used to enable full-text search on a table
-					within your database. If you have any analzers defined for a
-					table, you can use the full-text search capabilities of
-					SurrealDB. Checkout the section on{" "}
+					Analyzers are used to enable full-text search on a table within your
+					database. If you have any analzers defined for a table, you can use
+					the full-text search capabilities of SurrealDB. Checkout the section
+					on{" "}
 					<a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
 						{" "}
 						Full Text Search for more information.
 					</a>
 				</p>
-
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Analyzers"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Analyzers" values={snippets} />
 			</Box>
 		</Article>
 	);

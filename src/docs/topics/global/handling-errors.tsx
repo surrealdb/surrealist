@@ -5,14 +5,14 @@ import { Snippets, TopicProps } from "~/docs/types";
 import { useSchema } from "~/hooks/schema";
 
 export function DocsGlobalHandlingErrors({ language, topic }: TopicProps) {
-
 	const schema = useSchema();
 
-	const snippets = useMemo<Snippets>(() => ({
-		cli: `
+	const snippets = useMemo<Snippets>(
+		() => ({
+			cli: `
 			surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
 		`,
-		js: `
+			js: `
 			// some comment
 			import { db } from './database';
 
@@ -21,17 +21,18 @@ export function DocsGlobalHandlingErrors({ language, topic }: TopicProps) {
 				console.log(rows);
 			});
 		`,
-	}), [topic.extra, schema?.tables]);
+		}),
+		[topic.extra, schema?.tables],
+	);
 
 	return (
 		<Article title="Handling errors">
 			<div>
 				<p>
-					Handling errors is an important part of any application. Here's how to handle errors in SurrealDB.
+					Handling errors is an important part of any application. Here's how to
+					handle errors in SurrealDB.
 				</p>
-				<p>
-					{topic.extra?.table?.schema?.name}
-				</p>
+				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 			<Box>
 				<DocsPreview

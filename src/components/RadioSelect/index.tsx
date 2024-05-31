@@ -16,11 +16,7 @@ export function RadioSelect(props: RadioSelectProps) {
 		>
 			<Stack mt="xs">
 				{props.data.map((item) => (
-					<Radio
-						key={item.value}
-						value={item.value}
-						label={item.label}
-					/>
+					<Radio key={item.value} value={item.value} label={item.label} />
 				))}
 			</Stack>
 		</Radio.Group>

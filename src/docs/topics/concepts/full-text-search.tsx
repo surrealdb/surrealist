@@ -2,18 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
-import { connectionUri } from "~/util/helpers";
 
-export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-	const endpoint = connectionUri(connection);
-	const esc_endpoint = JSON.stringify(endpoint);
-	const esc_namespace = JSON.stringify(connection.namespace);
-	const esc_database = JSON.stringify(connection.database);
-
+export function DocsConceptsFullTextSearch({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -79,17 +69,17 @@ export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
 		');
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Full Text Search">
 			<div>
 				<p>
-					Full Text Search enables search capabilities within your
-					database connection. This enables text matching, proximity
-					matching, proximity search, and more. In SurrealDB Full-Text
-					Search is ACID-COMPLIANT and you can access this using{" "}
+					Full Text Search enables search capabilities within your database
+					connection. This enables text matching, proximity matching, proximity
+					search, and more. In SurrealDB Full-Text Search is ACID-COMPLIANT and
+					you can access this using{" "}
 					<a href="https://surrealdb.com/docs/surrealdb/surrealql/functions/search#searchhighlight">
 						{" "}
 						Search functions

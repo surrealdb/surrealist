@@ -1,13 +1,13 @@
 import { ScrollArea, Stack } from "@mantine/core";
+import { RefObject } from "react";
 import { ContentPane } from "~/components/Pane";
+import { ScrollFader } from "~/components/ScrollFader";
 import { DocsTopic } from "~/docs/types";
+import { useSetting } from "~/hooks/config";
+import { useStable } from "~/hooks/stable";
+import { CodeLang } from "~/types";
 import { iconAPI } from "~/util/icons";
 import { renderTopics } from "./topics";
-import { ScrollFader } from "~/components/ScrollFader";
-import { CodeLang } from "~/types";
-import { RefObject } from "react";
-import { useStable } from "~/hooks/stable";
-import { useSetting } from "~/hooks/config";
 
 export interface TocPaneProps {
 	active: string;
@@ -16,11 +16,7 @@ export interface TocPaneProps {
 	scrollRef: RefObject<HTMLDivElement>;
 }
 
-export function TocPane({
-	active,
-	docs,
-	scrollRef
-}: TocPaneProps) {
+export function TocPane({ active, docs, scrollRef }: TocPaneProps) {
 	const [lang] = useSetting("behavior", "docsLanguage");
 
 	const onOpen = useStable((topic: string) => {
@@ -30,12 +26,7 @@ export function TocPane({
 	});
 
 	return (
-		<ContentPane
-			icon={iconAPI}
-			title="Topics"
-			withTopPadding={false}
-			w={300}
-		>
+		<ContentPane icon={iconAPI} title="Topics" withTopPadding={false} w={300}>
 			{/* <TextInput
 				leftSection={<Icon path={iconSearch} />}
 				placeholder="Search topics..."
@@ -52,11 +43,11 @@ export function TocPane({
 						top: 0,
 						right: 0,
 						bottom: 0,
-						paddingRight: 12
+						paddingRight: 12,
 					},
 					scrollbar: {
-						top: 8
-					}
+						top: 8,
+					},
 				}}
 			>
 				<Stack gap="xs" my="md">

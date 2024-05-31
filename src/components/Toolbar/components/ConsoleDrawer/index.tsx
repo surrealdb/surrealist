@@ -1,14 +1,28 @@
-import { useEffect, useRef, useMemo } from "react";
-import { ActionIcon, Badge, Center, Drawer, Group, Paper, ScrollArea, Text, Tooltip } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import {
+	ActionIcon,
+	Badge,
+	Center,
+	Drawer,
+	Group,
+	Paper,
+	ScrollArea,
+	Text,
+	Tooltip,
+} from "@mantine/core";
 import AnsiToHtml from "ansi-to-html";
-import { useDatabaseStore } from "~/stores/database";
+import { useEffect, useMemo, useRef } from "react";
+import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
+import { useDatabaseStore } from "~/stores/database";
 import { iconClose, iconDelete } from "~/util/icons";
 
-function ConsoleOutputEntry({ index, message, formatter }: { index: number; message: string; formatter: AnsiToHtml }) {
+function ConsoleOutputEntry({
+	index,
+	message,
+	formatter,
+}: { index: number; message: string; formatter: AnsiToHtml }) {
 	return (
 		<Text
 			key={index}
@@ -42,9 +56,10 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 					4: "#3993d4",
 				},
 			}),
-		[]
+		[],
 	);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		if (scroller.current) {
 			const { scrollTop, scrollHeight, clientHeight } = scroller.current;
@@ -62,27 +77,19 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 			position="bottom"
 			styles={{
 				content: {
-					position: 'relative'
-				}
+					position: "relative",
+				},
 			}}
 		>
 			<Group mb="md" gap="sm">
-				<ModalTitle>
-					Serving output
-				</ModalTitle>
+				<ModalTitle>Serving output</ModalTitle>
 
 				{isServing ? (
-					<Badge
-						variant="dot"
-						color="green"
-					>
+					<Badge variant="dot" color="green">
 						Online
 					</Badge>
 				) : (
-					<Badge
-						variant="dot"
-						color="pink.9"
-					>
+					<Badge variant="dot" color="pink.9">
 						Offline
 					</Badge>
 				)}
@@ -90,18 +97,12 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 				<Spacer />
 
 				<Tooltip label="Clear console">
-					<ActionIcon
-						onClick={clearConsole}
-						aria-label="Clear console logs"
-					>
+					<ActionIcon onClick={clearConsole} aria-label="Clear console logs">
 						<Icon path={iconDelete} />
 					</ActionIcon>
 				</Tooltip>
 
-				<ActionIcon
-					onClick={props.onClose}
-					aria-label="Close console drawer"
-				>
+				<ActionIcon onClick={props.onClose} aria-label="Close console drawer">
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
@@ -115,15 +116,17 @@ export function ConsoleDrawer(props: ConsoleDrawerProps) {
 			<Paper
 				mt="xs"
 				p="xs"
-				bg={isLight ? 'slate.1' : 'slate.9'}
+				bg={isLight ? "slate.1" : "slate.9"}
 				style={{ position: "absolute", inset: 12, top: 52 }}
 			>
-				<ScrollArea
-					h="100%"
-					viewportRef={scroller}
-				>
+				<ScrollArea h="100%" viewportRef={scroller}>
 					{messages.map((message, index) => (
-						<ConsoleOutputEntry key={index} index={index} message={message} formatter={convert} />
+						<ConsoleOutputEntry
+							key={index}
+							index={index}
+							message={message}
+							formatter={convert}
+						/>
 					))}
 				</ScrollArea>
 			</Paper>

@@ -1,10 +1,13 @@
 import { gt } from "semver";
+import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "./helpers";
-import { adapter } from "~/adapter";
 
-export async function runUpdateChecker(lastPromptedVersion: string | null, force: boolean) {
+export async function runUpdateChecker(
+	lastPromptedVersion: string | null,
+	force: boolean,
+) {
 	if (import.meta.env.MODE === "development") {
 		return;
 	}
@@ -13,7 +16,9 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 	const { setAvailableUpdate } = useInterfaceStore.getState();
 
 	try {
-		const response = await fetch("https://api.github.com/repos/surrealdb/surrealist/releases/latest");
+		const response = await fetch(
+			"https://api.github.com/repos/surrealdb/surrealist/releases/latest",
+		);
 		const result = await response.json();
 		const version = result.tag_name.slice(1);
 		const current = import.meta.env.VERSION;
@@ -32,7 +37,7 @@ export async function runUpdateChecker(lastPromptedVersion: string | null, force
 			});
 		}
 	} catch (err: any) {
-		adapter.warn('Updater', `Failed to check for updates: ${err.message}`);
+		adapter.warn("Updater", `Failed to check for updates: ${err.message}`);
 		console.error(err);
 	}
 }

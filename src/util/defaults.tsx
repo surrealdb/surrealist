@@ -1,4 +1,11 @@
-import { Connection, ConnectionOptions, DatabaseSchema, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
+import {
+	Connection,
+	ConnectionOptions,
+	DatabaseSchema,
+	SurrealistConfig,
+	SurrealistSettings,
+	TabQuery,
+} from "~/types";
 import { newId } from "./helpers";
 import { validateQuery } from "./surrealql";
 
@@ -13,7 +20,7 @@ export function createBaseConfig(): SurrealistConfig {
 		connections: [],
 		connectionGroups: [],
 		sandbox: createSandboxConnection(settings),
-		activeView: 'query',
+		activeView: "query",
 		activeConnection: null,
 		savedQueries: [],
 		lastPromptedVersion: null,
@@ -21,7 +28,7 @@ export function createBaseConfig(): SurrealistConfig {
 		commandHistory: [],
 		lastViewedNewsAt: null,
 		onboarding: [],
-		settings
+		settings,
 	};
 }
 
@@ -48,10 +55,10 @@ export function createBaseSettings(): SurrealistSettings {
 			defaultDiagramShowLinks: false,
 			sidebarMode: "expandable",
 			valueMode: "sql",
-			queryOrientation: "vertical"
+			queryOrientation: "vertical",
 		},
 		templates: {
-			list: []
+			list: [],
 		},
 		serving: {
 			driver: "memory",
@@ -59,8 +66,8 @@ export function createBaseSettings(): SurrealistSettings {
 			executable: "",
 			username: "root",
 			password: "root",
-			port: 8000
-		}
+			port: 8000,
+		},
 	};
 }
 
@@ -75,7 +82,7 @@ export function createBaseConnectionOptions(): ConnectionOptions {
 		authMode: "root",
 		token: "",
 		scope: "",
-		scopeFields: []
+		scopeFields: [],
 	};
 }
 
@@ -86,21 +93,26 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		id: newId(),
 		name: "",
 		icon: 0,
-		queries: [{
-			...baseTab,
-			name: "New query"
-		}],
+		queries: [
+			{
+				...baseTab,
+				name: "New query",
+			},
+		],
 		activeQuery: baseTab.id,
 		connection: createBaseConnectionOptions(),
 		pinnedTables: [],
 		queryHistory: [],
 		diagramMode: settings.appearance.defaultDiagramMode,
 		diagramDirection: settings.appearance.defaultDiagramDirection,
-		diagramShowLinks: settings.appearance.defaultDiagramShowLinks
+		diagramShowLinks: settings.appearance.defaultDiagramShowLinks,
 	};
 }
 
-export function createBaseTab(settings: SurrealistSettings, query?: string, ): TabQuery {
+export function createBaseTab(
+	settings: SurrealistSettings,
+	query?: string,
+): TabQuery {
 	return {
 		id: newId(),
 		query: query || "",
@@ -111,7 +123,9 @@ export function createBaseTab(settings: SurrealistSettings, query?: string, ): T
 	};
 }
 
-export function createSandboxConnection(settings: SurrealistSettings): Connection {
+export function createSandboxConnection(
+	settings: SurrealistSettings,
+): Connection {
 	return {
 		...createBaseConnection(settings),
 		id: "sandbox",
@@ -126,8 +140,8 @@ export function createSandboxConnection(settings: SurrealistSettings): Connectio
 			scope: "",
 			scopeFields: [],
 			password: "",
-			username: ""
-		}
+			username: "",
+		},
 	};
 }
 

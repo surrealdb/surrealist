@@ -4,7 +4,6 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsTablesManageFields({ language, topic }: TopicProps) {
-
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -55,14 +54,13 @@ export function DocsTablesManageFields({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
 		<Article title="Manage Fields">
 			<div>
 				<p>Signing up a new user</p>
-
 			</div>
 			<Box>
 				<DocsPreview

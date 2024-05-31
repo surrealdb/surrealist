@@ -1,8 +1,8 @@
-import { Center, Paper, Stack, Title, Text, Group } from "@mantine/core";
-import { CodePreview } from "../CodePreview";
-import { PropsWithChildren } from "react";
-import { Icon } from "../Icon";
 import { Extension } from "@codemirror/state";
+import { Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { PropsWithChildren } from "react";
+import { CodePreview } from "../CodePreview";
+import { Icon } from "../Icon";
 
 export interface IntroductionProps {
 	title: string;
@@ -18,29 +18,20 @@ export function Introduction({
 	title,
 	icon,
 	snippet,
-	children
+	children,
 }: PropsWithChildren<IntroductionProps>) {
 	return (
 		<Center h="100%" flex={1}>
-			<Paper
-				w={450}
-				style={{ overflow: "hidden" }}
-			>
+			<Paper w={450} style={{ overflow: "hidden" }}>
 				<Stack p="xl" gap="xl">
 					<Group>
 						<Icon path={icon} size={1.35} />
-						<Title c="bright">
-							{title}
-						</Title>
+						<Title c="bright">{title}</Title>
 					</Group>
 					{children}
 				</Stack>
 				{snippet?.code && (
-					<Paper
-						p="xl"
-						bg="slate.7"
-						radius={0}
-					>
+					<Paper p="xl" bg="slate.7" radius={0}>
 						<Text c="bright" fz={18} fw={600} mb="md">
 							{snippet.title ?? "Example"}
 						</Text>

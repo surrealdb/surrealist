@@ -1,11 +1,21 @@
-import { Box, Divider, Group, LoadingOverlay, Paper, PaperProps, Text } from "@mantine/core";
+import {
+	Box,
+	Divider,
+	Group,
+	LoadingOverlay,
+	Paper,
+	PaperProps,
+	Text,
+} from "@mantine/core";
 import { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
 
-export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDivElement>, "style"> {
+export interface ContentPaneProps
+	extends PaperProps,
+		Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
 	icon?: string;
 	leftSection?: React.ReactNode;
@@ -24,16 +34,10 @@ export function ContentPane({
 	withTopPadding,
 	...rest
 }: ContentPaneProps) {
-
 	const isLight = useIsLight();
 
 	return (
-		<Paper
-			radius="lg"
-			className={classes.root}
-			pos="relative"
-			{...rest}
-		>
+		<Paper radius="lg" className={classes.root} pos="relative" {...rest}>
 			{title !== undefined && icon !== undefined && (
 				<>
 					<Group
@@ -57,10 +61,7 @@ export function ContentPane({
 						<Spacer />
 						{rightSection}
 					</Group>
-					<Divider
-						mx="sm"
-						className={classes.divider}
-					/>
+					<Divider mx="sm" className={classes.divider} />
 				</>
 			)}
 			<Box
@@ -73,8 +74,8 @@ export function ContentPane({
 				<LoadingOverlay
 					visible={loading}
 					zIndex={1000}
-					overlayProps={{ radius: 'lg', opacity: 0.75, bg: 'slate.8' }}
-					loaderProps={{ type: 'dots' }}
+					overlayProps={{ radius: "lg", opacity: 0.75, bg: "slate.8" }}
+					loaderProps={{ type: "dots" }}
 				/>
 
 				{children}

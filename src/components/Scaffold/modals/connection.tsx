@@ -1,23 +1,41 @@
-import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack, Select } from "@mantine/core";
-import { Spacer } from "../../Spacer";
-import { useImmer } from "use-immer";
-import { Icon } from "../../Icon";
-import { isConnectionValid } from "~/util/connection";
-import { useStable } from "~/hooks/stable";
-import { Form } from "../../Form";
+import {
+	Alert,
+	Button,
+	Divider,
+	Group,
+	Menu,
+	Modal,
+	Select,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { Fragment, useLayoutEffect, useMemo } from "react";
-import { updateTitle } from "~/util/helpers";
-import { useConnections } from "~/hooks/connection";
-import { Connection, Template } from "~/types";
-import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
-import { createBaseConnection } from "~/util/defaults";
-import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlay, iconPlus, iconWarning } from "~/util/icons";
-import { ConnectionDetails } from "../../ConnectionDetails";
+import { useImmer } from "use-immer";
 import { useSetting } from "~/hooks/config";
+import { useConnections } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
-import { useDatabaseStore } from "~/stores/database";
 import { useConfirmation } from "~/providers/Confirmation";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { useInterfaceStore } from "~/stores/interface";
+import { Connection, Template } from "~/types";
+import { isConnectionValid } from "~/util/connection";
+import { createBaseConnection } from "~/util/defaults";
+import { updateTitle } from "~/util/helpers";
+import {
+	iconCheck,
+	iconChevronDown,
+	iconDelete,
+	iconFile,
+	iconPlay,
+	iconPlus,
+	iconWarning,
+} from "~/util/icons";
+import { ConnectionDetails } from "../../ConnectionDetails";
+import { Form } from "../../Form";
+import { Icon } from "../../Icon";
+import { Spacer } from "../../Spacer";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -32,8 +50,14 @@ function newConnection() {
 export function ConnectionEditor() {
 	const connections = useConnections();
 
-	const { addConnection, updateConnection, setActiveConnection, removeConnection } = useConfigStore.getState();
-	const { closeConnectionEditor, openConnectionCreator } = useInterfaceStore.getState();
+	const {
+		addConnection,
+		updateConnection,
+		setActiveConnection,
+		removeConnection,
+	} = useConfigStore.getState();
+	const { closeConnectionEditor, openConnectionCreator } =
+		useInterfaceStore.getState();
 	const { isServing } = useDatabaseStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
@@ -80,20 +104,21 @@ export function ConnectionEditor() {
 	});
 
 	const applyTemplate = useStable((template: Template) => {
-		setDetails(draft => {
+		setDetails((draft) => {
 			draft.icon = template.icon;
 			draft.connection = template.values;
 		});
 	});
 
 	const templateList = useMemo(() => {
-		const list = templates.map(info => ({
+		const list = templates.map((info) => ({
 			info,
-			icon: iconFile
+			icon: iconFile,
 		}));
 
 		if (isServing) {
-			const { username, password, port } = useConfigStore.getState().settings.serving;
+			const { username, password, port } =
+				useConfigStore.getState().settings.serving;
 
 			list.push({
 				icon: iconPlay,
@@ -111,24 +136,25 @@ export function ConnectionEditor() {
 						scopeFields: [],
 						token: "",
 						username,
-						password
-					}
-				}
+						password,
+					},
+				},
 			});
 		}
 
 		return list;
 	}, [templates, isServing]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useLayoutEffect(() => {
 		if (!details.name.trim()) {
 			setDetails((draft) => {
 				draft.name = generateName();
 			});
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [details.name]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useLayoutEffect(() => {
 		if (opened) {
 			const base = newConnection();
@@ -144,19 +170,18 @@ export function ConnectionEditor() {
 				setDetails(info || base);
 			}
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [opened]);
 
 	const groupItems = useMemo(() => {
 		return [
 			{
 				value: "",
-				label: "No group"
+				label: "No group",
 			},
 			...groups.map((group) => ({
 				value: group.id,
 				label: group.name,
-			}))
+			})),
 		];
 	}, [groups]);
 
@@ -166,7 +191,7 @@ export function ConnectionEditor() {
 		onConfirm() {
 			removeConnection(details.id);
 			closeConnectionEditor();
-		}
+		},
 	});
 
 	useIntent("new-connection", () => {
@@ -184,14 +209,10 @@ export function ConnectionEditor() {
 				{templateList.length > 0 && (
 					<Alert mb="xl" p="xs">
 						<Group>
-							<Icon
-								ml={6}
-								path={iconFile}
-								color="surreal.1"
-								size={1.2}
-							/>
+							<Icon ml={6} path={iconFile} color="surreal.1" size={1.2} />
 							<Text>
-								{isCreating ? 'Initialize' : 'Configure'} this connection with a template?
+								{isCreating ? "Initialize" : "Configure"} this connection with a
+								template?
 							</Text>
 							<Spacer />
 							<Menu>
@@ -216,7 +237,9 @@ export function ConnectionEditor() {
 												>
 													{info.name}
 												</Menu.Item>
-												{i < templateList.length - 1 && <Divider color="slate" />}
+												{i < templateList.length - 1 && (
+													<Divider color="slate" />
+												)}
 											</Fragment>
 										))}
 									</Stack>
@@ -229,15 +252,8 @@ export function ConnectionEditor() {
 				{!isValid && (
 					<Alert mb="xl" p="xs">
 						<Group>
-							<Icon
-								ml={6}
-								path={iconWarning}
-								color="surreal.1"
-								size={1.2}
-							/>
-							<Text>
-								Some connection details are invalid
-							</Text>
+							<Icon ml={6} path={iconWarning} color="surreal.1" size={1.2} />
+							<Text>Some connection details are invalid</Text>
 						</Group>
 					</Alert>
 				)}
@@ -248,20 +264,18 @@ export function ConnectionEditor() {
 					rightSection={
 						<Select
 							data={groupItems}
-							value={details.group || ''}
-							onChange={(group) => setDetails((draft) => {
-								draft.group = group || undefined;
-							})}
+							value={details.group || ""}
+							onChange={(group) =>
+								setDetails((draft) => {
+									draft.group = group || undefined;
+								})
+							}
 						/>
 					}
 				/>
 
 				<Group mt="lg">
-					<Button
-						color="slate"
-						variant="light"
-						onClick={closeConnectionEditor}
-					>
+					<Button color="slate" variant="light" onClick={closeConnectionEditor}>
 						Close
 					</Button>
 					<Spacer />

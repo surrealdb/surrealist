@@ -4,7 +4,7 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalDatabases({ language, topic }: TopicProps) {
+export function DocsGlobalDatabases({ language }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const esc_namespace = JSON.stringify(connection.namespace);
 	const esc_database = JSON.stringify(connection.database);
@@ -41,17 +41,17 @@ export function DocsGlobalDatabases({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[esc_namespace, esc_database]
+		[esc_namespace, esc_database],
 	);
 
 	return (
 		<Article title="Databases">
 			<div>
 				<p>
-					The database is the primary storage in a namespace. It
-					contains the tables, views, and indexes that are used to
-					store and retrieve data.You can specify which database to
-					use and also switch between multiple databases.
+					The database is the primary storage in a namespace. It contains the
+					tables, views, and indexes that are used to store and retrieve
+					data.You can specify which database to use and also switch between
+					multiple databases.
 				</p>
 			</div>
 			<Box>

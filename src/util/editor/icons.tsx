@@ -1,6 +1,14 @@
-import { mdiCodeBrackets, mdiFunction, mdiKeyVariant, mdiPackageVariantClosed, mdiTable, mdiText, mdiVariable } from "@mdi/js";
+import {
+	mdiCodeBrackets,
+	mdiFunction,
+	mdiKeyVariant,
+	mdiPackageVariantClosed,
+	mdiTable,
+	mdiText,
+	mdiVariable,
+} from "@mdi/js";
 
-type TypeIcon = { type: string; icon: string; color: string; }
+type TypeIcon = { type: string; icon: string; color: string };
 
 const TYPE_ICONS: TypeIcon[] = [
 	{ type: "text", icon: mdiText, color: "#6a6a7b" },
@@ -22,13 +30,15 @@ const TYPE_ICONS: TypeIcon[] = [
  * Generate and insert custom completion icon styles
  */
 export function generateEditorIcons() {
-	const definitions = TYPE_ICONS.map((info, type) => {
-		const svg = btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${info.icon}" fill="${info.color}" stroke="${info.color}" stroke-width="0.75"></path></svg>`);
+	const definitions = TYPE_ICONS.map((info, _type) => {
+		const svg = btoa(
+			`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${info.icon}" fill="${info.color}" stroke="${info.color}" stroke-width="0.75"></path></svg>`,
+		);
 
 		return `\t--surrealist-editor-icon-${info.type}: url('data:image/svg+xml;base64,${svg}')`;
 	});
 
-	const css = `:root {\n${definitions.join(';\n')}}`;
+	const css = `:root {\n${definitions.join(";\n")}}`;
 	const style = document.createElement("style");
 	const text = document.createTextNode(css);
 

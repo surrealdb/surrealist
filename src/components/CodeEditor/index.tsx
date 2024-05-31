@@ -1,12 +1,12 @@
-import classes from "./style.module.scss";
-import clsx from "clsx";
-import { Box, BoxProps } from "@mantine/core";
-import { useEffect, useRef } from "react";
-import { useSetting } from "~/hooks/config";
+import { forceLinting } from "@codemirror/lint";
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { Box, BoxProps } from "@mantine/core";
+import clsx from "clsx";
+import { useEffect, useRef } from "react";
+import { useSetting } from "~/hooks/config";
 import { editorBase } from "~/util/editor/extensions";
-import { forceLinting } from "@codemirror/lint";
+import classes from "./style.module.scss";
 
 interface EditorRef {
 	editor: EditorView;
@@ -40,6 +40,7 @@ export function CodeEditor(props: CodeEditorProps) {
 
 	const textSize = Math.floor(15 * (editorScale / 100));
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		const editable = new Compartment();
 		const editableExt = editable.of(EditorState.readOnly.of(!!readOnly));
@@ -52,12 +53,7 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		const initialState = EditorState.create({
 			doc: value,
-			extensions: [
-				editorBase(),
-				changeHandler,
-				editableExt,
-				extensions || [],
-			]
+			extensions: [editorBase(), changeHandler, editableExt, extensions || []],
 		});
 
 		const editor = new EditorView({
@@ -68,13 +64,13 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		editorRef.current = {
 			editor,
-			editable
+			editable,
 		};
 
 		if (autoFocus) {
 			const timer = setInterval(() => {
 				editor.focus();
-				if(editor.hasFocus) clearInterval(timer);
+				if (editor.hasFocus) clearInterval(timer);
 			}, 50);
 		}
 
@@ -83,7 +79,6 @@ export function CodeEditor(props: CodeEditorProps) {
 		return () => {
 			editor.destroy();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -97,11 +92,9 @@ export function CodeEditor(props: CodeEditorProps) {
 			changes: {
 				from: 0,
 				to: editor.state.doc.length,
-				insert: value
+				insert: value,
 			},
-			effects: [
-				EditorView.scrollIntoView(0)
-			]
+			effects: [EditorView.scrollIntoView(0)],
 		});
 
 		editor.dispatch(transaction);
@@ -113,7 +106,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		const editableExt = EditorState.readOnly.of(!!readOnly);
 
 		editor.dispatch({
-			effects: editable.reconfigure(editableExt)
+			effects: editable.reconfigure(editableExt),
 		});
 	}, [readOnly]);
 

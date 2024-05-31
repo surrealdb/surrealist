@@ -1,19 +1,31 @@
-import classes from "./style.module.scss";
+import { Compartment, EditorState, Extension, Prec } from "@codemirror/state";
+import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
+import {
+	ActionIcon,
+	Button,
+	Group,
+	InputBase,
+	InputBaseProps,
+	Popover,
+	Stack,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import clsx from "clsx";
 import { surrealql } from "codemirror-surrealql";
-import { ActionIcon, Button, Group, InputBase, InputBaseProps, Popover, Stack, TextInput, Tooltip } from "@mantine/core";
 import { HTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { TableInfo } from "~/types";
-import { useTables } from "~/hooks/schema";
-import { iconCancel, iconCheck, iconTable } from "~/util/icons";
 import { inputBase } from "~/util/editor/extensions";
-import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
-import { Compartment, EditorState, Extension, Prec } from "@codemirror/state";
 import { acceptWithTab } from "~/util/editor/keybinds";
+import { iconCancel, iconCheck, iconTable } from "~/util/icons";
+import classes from "./style.module.scss";
 
-export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTMLDivElement>, 'style'|'value'|'onChange'> {
+export interface CodeInputProps
+	extends InputBaseProps,
+		Omit<HTMLAttributes<HTMLDivElement>, "style" | "value" | "onChange"> {
 	value: string;
 	autoFocus?: boolean;
 	placeholder?: string;
@@ -44,6 +56,7 @@ export function CodeInput({
 		keymaps: Compartment;
 	}>();
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		const editable = new Compartment();
 		const fallback = new Compartment();
@@ -68,12 +81,12 @@ export function CodeInput({
 				editableExt,
 				fallbackExt,
 				keymapsExt,
-			]
+			],
 		});
 
 		const editor = new EditorView({
 			state: initialState,
-			parent: ref.current!
+			parent: ref.current!,
 		});
 
 		editorRef.current = { editor, editable, fallback, keymaps };
@@ -81,7 +94,7 @@ export function CodeInput({
 		if (autoFocus) {
 			const timer = setInterval(() => {
 				editor.focus();
-				if(editor.hasFocus) clearInterval(timer);
+				if (editor.hasFocus) clearInterval(timer);
 			}, 50);
 		}
 
@@ -90,7 +103,6 @@ export function CodeInput({
 		return () => {
 			editor.destroy();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -104,11 +116,9 @@ export function CodeInput({
 			changes: {
 				from: 0,
 				to: editor.state.doc.length,
-				insert: value
+				insert: value,
 			},
-			effects: [
-				EditorView.scrollIntoView(0)
-			]
+			effects: [EditorView.scrollIntoView(0)],
 		});
 
 		editor.dispatch(transaction);
@@ -119,7 +129,7 @@ export function CodeInput({
 		const editableExt = EditorState.readOnly.of(!!disabled);
 
 		editor.dispatch({
-			effects: editable.reconfigure(editableExt)
+			effects: editable.reconfigure(editableExt),
 		});
 	}, [disabled]);
 
@@ -128,24 +138,32 @@ export function CodeInput({
 		const fallbackExt = placeholder ? ph(placeholder) : [];
 
 		editor.dispatch({
-			effects: fallback.reconfigure(fallbackExt)
+			effects: fallback.reconfigure(fallbackExt),
 		});
 	}, [placeholder]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		const { editor, keymaps } = editorRef.current!;
-		const value = Prec.highest(keymap.of(multiline ? [acceptWithTab] : [{
-			key: 'Enter',
-			run: () => {
-				onSubmit?.();
-				return true;
-			}
-		}]));
+		const value = Prec.highest(
+			keymap.of(
+				multiline
+					? [acceptWithTab]
+					: [
+							{
+								key: "Enter",
+								run: () => {
+									onSubmit?.();
+									return true;
+								},
+							},
+						],
+			),
+		);
 
 		editor.dispatch({
-			effects: keymaps.reconfigure(value)
+			effects: keymaps.reconfigure(value),
 		});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [multiline]);
 
 	return (
@@ -164,7 +182,7 @@ export function PermissionInput({
 	value,
 	onChange,
 	...rest
-}: Omit<CodeInputProps, 'value'|'onChange'> & {
+}: Omit<CodeInputProps, "value" | "onChange"> & {
 	value: string | boolean;
 	onChange: (value: string | boolean) => void;
 }) {
@@ -195,7 +213,7 @@ export function PermissionInput({
 			value={textValue}
 			onChange={handleChange}
 			rightSectionWidth={70}
-			extensions={[surrealql('permission')]}
+			extensions={[surrealql("permission")]}
 			rightSection={
 				<Group gap="xs">
 					<Tooltip label="Grant full access">
@@ -258,11 +276,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 			onChange={(value) => props.onChange(value.currentTarget.value)}
 			rightSectionWidth={42}
 			rightSection={
-				<Popover
-					position="bottom"
-					opened={showTables}
-					onClose={hideTables}
-				>
+				<Popover position="bottom" opened={showTables} onClose={hideTables}>
 					<Popover.Target>
 						<Tooltip label="Select a table">
 							<ActionIcon
@@ -275,12 +289,7 @@ export function FieldKindInput(props: FieldKindInputProps) {
 						</Tooltip>
 					</Popover.Target>
 					<Popover.Dropdown p={0}>
-						<Stack
-							mah={300}
-							style={{ overflowY: 'auto' }}
-							gap="xs"
-							p="xs"
-						>
+						<Stack mah={300} style={{ overflowY: "auto" }} gap="xs" p="xs">
 							{tables.map((table) => (
 								<Button
 									key={table.schema.name}

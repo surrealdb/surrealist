@@ -1,28 +1,34 @@
-import surrealistIcon from "~/assets/images/logo.webp";
-import { MouseEvent } from "react";
-import { Notifications } from "@mantine/notifications";
-import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "../Icon";
-import { adapter } from "~/adapter";
-import { useInterfaceStore } from "~/stores/interface";
-import { Scaffold } from "../Scaffold";
-import { ErrorBoundary } from "react-error-boundary";
-import { MANTINE_THEME } from "~/util/mantine";
-import { useColorScheme, useIsLight } from "~/hooks/theme";
-import { ContextMenuProvider } from "mantine-contextmenu";
-import { InspectorProvider } from "~/providers/Inspector";
-import { iconClose } from "~/util/icons";
-import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
-import { ConfirmationProvider } from "~/providers/Confirmation";
-import { useUrlHandler } from "~/hooks/url";
-import { AppErrorHandler } from "./error";
-import { useConfigStore } from "~/stores/config";
-import { SANDBOX } from "~/constants";
 import {
-	QueryClient,
-	QueryClientProvider,
-} from '@tanstack/react-query';
+	ActionIcon,
+	Box,
+	Group,
+	Image,
+	MantineProvider,
+	Paper,
+	Text,
+	Transition,
+} from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ContextMenuProvider } from "mantine-contextmenu";
+import { MouseEvent } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { adapter } from "~/adapter";
+import surrealistIcon from "~/assets/images/logo.webp";
+import { SANDBOX } from "~/constants";
+import { useStable } from "~/hooks/stable";
+import { useColorScheme, useIsLight } from "~/hooks/theme";
+import { useUrlHandler } from "~/hooks/url";
+import { ConfirmationProvider } from "~/providers/Confirmation";
+import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
+import { InspectorProvider } from "~/providers/Inspector";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { iconClose } from "~/util/icons";
+import { MANTINE_THEME } from "~/util/mantine";
+import { Icon } from "../Icon";
+import { Scaffold } from "../Scaffold";
+import { AppErrorHandler } from "./error";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +47,9 @@ export function App() {
 	});
 
 	const openRelease = useStable(() => {
-		adapter.openUrl(`https://github.com/surrealdb/surrealist/releases/tag/v${update}`);
+		adapter.openUrl(
+			`https://github.com/surrealdb/surrealist/releases/tag/v${update}`,
+		);
 		closeUpdate();
 	});
 

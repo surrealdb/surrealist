@@ -1,29 +1,25 @@
 import { Button, Divider, Group, ScrollArea, Text } from "@mantine/core";
 import { Box, Paper, Stack, Title } from "@mantine/core";
 import { FallbackProps } from "react-error-boundary";
-import { Icon } from "../Icon";
-import { iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "~/util/icons";
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
+import {
+	iconBug,
+	iconCheck,
+	iconCopy,
+	iconCursor,
+	iconWarning,
+} from "~/util/icons";
+import { Icon } from "../Icon";
 
 export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 	const [copyDebug, clipboard] = useVersionCopy();
 
-	const message = error instanceof Error
-		? error.message
-		: error;
+	const message = error instanceof Error ? error.message : error;
 
 	return (
-		<ScrollArea
-			h="100%"
-			bg="slate.9"
-		>
-			<Paper
-				p="xl"
-				maw={800}
-				mx="auto"
-				my={75}
-			>
+		<ScrollArea h="100%" bg="slate.9">
+			<Paper p="xl" maw={800} mx="auto" my={75}>
 				<Stack gap="lg">
 					<Group c="bright">
 						<Icon path={iconWarning} size="lg" />
@@ -31,7 +27,8 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 					</Group>
 
 					<Text>
-						You can find a detailed error message below. If you believe this is a bug, please report it on our GitHub repository.
+						You can find a detailed error message below. If you believe this is
+						a bug, please report it on our GitHub repository.
 					</Text>
 
 					<Group>
@@ -46,7 +43,11 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 						</Button>
 						<Button
 							leftSection={<Icon path={iconBug} />}
-							onClick={() => adapter.openUrl('https://github.com/surrealdb/surrealist/issues')}
+							onClick={() =>
+								adapter.openUrl(
+									"https://github.com/surrealdb/surrealist/issues",
+								)
+							}
 							color="slate"
 							radius="xs"
 							size="xs"
@@ -54,13 +55,15 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 							File an issue
 						</Button>
 						<Button
-							leftSection={<Icon path={clipboard.copied ? iconCheck : iconCopy} />}
+							leftSection={
+								<Icon path={clipboard.copied ? iconCheck : iconCopy} />
+							}
 							onClick={copyDebug}
 							color="slate"
 							radius="xs"
 							size="xs"
 						>
-							{clipboard.copied ? 'Copied!' : 'Copy version information'}
+							{clipboard.copied ? "Copied!" : "Copy version information"}
 						</Button>
 					</Group>
 
@@ -68,15 +71,9 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 
 					{message && (
 						<Box>
-							<Title order={3}>
-								Message
-							</Title>
+							<Title order={3}>Message</Title>
 
-							<Text
-								mt="xs"
-								ff="mono"
-								c="slate"
-							>
+							<Text mt="xs" ff="mono" c="slate">
 								{message}
 							</Text>
 						</Box>
@@ -84,20 +81,18 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 
 					{error.cause && (
 						<Box>
-							<Title order={3}>
-								Cause
-							</Title>
+							<Title order={3}>Cause</Title>
 
 							<Box
 								mt="xs"
 								ff="mono"
 								c="slate"
 								style={{
-									whiteSpace: 'pre',
-									overflowX: 'auto',
-									maxWidth: '90vw',
-									WebkitUserSelect: 'initial',
-									userSelect: 'initial'
+									whiteSpace: "pre",
+									overflowX: "auto",
+									maxWidth: "90vw",
+									WebkitUserSelect: "initial",
+									userSelect: "initial",
 								}}
 							>
 								{error.cause}
@@ -107,20 +102,18 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 
 					{error.stack && (
 						<Box>
-							<Title order={3}>
-								Stack trace
-							</Title>
+							<Title order={3}>Stack trace</Title>
 
 							<Box
 								mt="xs"
 								ff="mono"
 								c="slate"
 								style={{
-									whiteSpace: 'pre',
-									overflowX: 'auto',
-									maxWidth: '90vw',
-									WebkitUserSelect: 'initial',
-									userSelect: 'initial'
+									whiteSpace: "pre",
+									overflowX: "auto",
+									maxWidth: "90vw",
+									WebkitUserSelect: "initial",
+									userSelect: "initial",
 								}}
 							>
 								{error.stack}

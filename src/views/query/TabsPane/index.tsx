@@ -1,22 +1,39 @@
-import classes from "./style.module.scss";
+import {
+	ActionIcon,
+	Badge,
+	Divider,
+	ScrollArea,
+	Stack,
+	Tooltip,
+} from "@mantine/core";
 import clsx from "clsx";
-import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
+import { useContextMenu } from "mantine-contextmenu";
 import { EditableText } from "~/components/EditableText";
+import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { LiveIndicator } from "~/components/LiveIndicator";
 import { ContentPane } from "~/components/Pane";
+import { Sortable } from "~/components/Sortable";
+import { cancelLiveQueries } from "~/connection";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { LiveIndicator } from "~/components/LiveIndicator";
-import { iconArrowUpRight, iconChevronRight, iconClose, iconCopy, iconHistory, iconList, iconPlus, iconQuery, iconStar } from "~/util/icons";
-import { Entry } from "~/components/Entry";
-import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
-import { Sortable } from "~/components/Sortable";
-import { useIntent } from "~/hooks/url";
-import { cancelLiveQueries } from "~/connection";
+import {
+	iconArrowUpRight,
+	iconChevronRight,
+	iconClose,
+	iconCopy,
+	iconHistory,
+	iconList,
+	iconPlus,
+	iconQuery,
+	iconStar,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -24,7 +41,13 @@ export interface TabsPaneProps {
 }
 
 export function TabsPane(props: TabsPaneProps) {
-	const { updateCurrentConnection, addQueryTab, removeQueryTab, updateQueryTab, setActiveQueryTab } = useConfigStore.getState();
+	const {
+		updateCurrentConnection,
+		addQueryTab,
+		removeQueryTab,
+		updateQueryTab,
+		setActiveQueryTab,
+	} = useConfigStore.getState();
 	const { queries, activeQuery } = useActiveConnection();
 	const { showContextMenu } = useContextMenu();
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
@@ -41,10 +64,13 @@ export function TabsPane(props: TabsPaneProps) {
 	});
 
 	const removeOthers = useStable((id: string, dir: number) => {
-		const index = queries.findIndex(q => q.id === id);
+		const index = queries.findIndex((q) => q.id === id);
 
 		for (const [i, query] of queries.entries()) {
-			if (query.id !== id && (dir === 0 || (dir === -1 && i < index) || (dir === 1 && i > index))) {
+			if (
+				query.id !== id &&
+				(dir === 0 || (dir === -1 && i < index) || (dir === 1 && i > index))
+			) {
 				removeTab(query.id);
 			}
 		}
@@ -53,13 +79,13 @@ export function TabsPane(props: TabsPaneProps) {
 	const renameQuery = useStable((id: string, name: string) => {
 		updateQueryTab({
 			id,
-			name
+			name,
 		});
 	});
 
 	const saveQueryOrder = useStable((queries: TabQuery[]) => {
 		updateCurrentConnection({
-			queries
+			queries,
 		});
 	});
 
@@ -67,11 +93,11 @@ export function TabsPane(props: TabsPaneProps) {
 		addQueryTab({
 			name: name?.replace(/ \d+$/, ""),
 			query,
-			variables
+			variables,
 		});
 	};
 
-	useIntent('new-query', addQueryTab);
+	useIntent("new-query", addQueryTab);
 
 	return (
 		<ContentPane
@@ -79,37 +105,23 @@ export function TabsPane(props: TabsPaneProps) {
 			title="Queries"
 			style={{ flexShrink: 0 }}
 			leftSection={
-				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
-					radius="sm"
-					c="inherit"
-				>
+				<Badge color={isLight ? "slate.0" : "slate.9"} radius="sm" c="inherit">
 					{queries.length}
 				</Badge>
 			}
 			rightSection={
 				<Tooltip label="New query">
-					<ActionIcon
-						onClick={newTab}
-						aria-label="Create new query"
-					>
+					<ActionIcon onClick={newTab} aria-label="Create new query">
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>
 			}
 		>
-			<Stack
-				pos="absolute"
-				top={0}
-				left={12}
-				right={12}
-				bottom={12}
-				gap={0}
-			>
+			<Stack pos="absolute" top={0} left={12} right={12} bottom={12} gap={0}>
 				<ScrollArea
 					flex={1}
 					classNames={{
-						viewport: classes.scroller
+						viewport: classes.scroller,
 					}}
 				>
 					<Stack gap="xs" pb="md">
@@ -128,51 +140,57 @@ export function TabsPane(props: TabsPaneProps) {
 										key={query.id}
 										isActive={isActive}
 										onClick={() => setActiveQueryTab(query.id)}
-										className={clsx(classes.query, isDragging && classes.queryDragging)}
+										className={clsx(
+											classes.query,
+											isDragging && classes.queryDragging,
+										)}
 										onContextMenu={showContextMenu([
 											{
 												key: "open",
 												title: "Open",
 												icon: <Icon path={iconArrowUpRight} />,
-												onClick: () => setActiveQueryTab(query.id)
+												onClick: () => setActiveQueryTab(query.id),
 											},
 											{
 												key: "duplicate",
 												title: "Duplicate",
 												icon: <Icon path={iconCopy} />,
-												onClick: () => duplicateQuery(query)
+												onClick: () => duplicateQuery(query),
 											},
 											{
-												key: "close-div"
+												key: "close-div",
 											},
 											{
 												key: "close",
 												title: "Close",
 												disabled: queries.length === 1,
-												onClick: () => removeTab(query.id)
+												onClick: () => removeTab(query.id),
 											},
 											{
 												key: "close-others",
 												title: "Close Others",
 												disabled: queries.length === 1,
-												onClick: () => removeOthers(query.id, 0)
+												onClick: () => removeOthers(query.id, 0),
 											},
 											{
 												key: "close-before",
 												title: "Close queries Before",
-												disabled: queries.length === 1 || queries.findIndex(q => q.id === query.id) === 0,
-												onClick: () => removeOthers(query.id, -1)
+												disabled:
+													queries.length === 1 ||
+													queries.findIndex((q) => q.id === query.id) === 0,
+												onClick: () => removeOthers(query.id, -1),
 											},
 											{
 												key: "close-after",
 												title: "Close queries After",
-												disabled: queries.length === 1 || queries.findIndex(q => q.id === query.id) >= queries.length - 1,
-												onClick: () => removeOthers(query.id, 1)
-											}
+												disabled:
+													queries.length === 1 ||
+													queries.findIndex((q) => q.id === query.id) >=
+														queries.length - 1,
+												onClick: () => removeOthers(query.id, 1),
+											},
 										])}
-										leftSection={
-											<Icon path={iconQuery} />
-										}
+										leftSection={<Icon path={iconQuery} />}
 										rightSection={
 											<>
 												{isLive && (
@@ -189,7 +207,7 @@ export function TabsPane(props: TabsPaneProps) {
 														variant="subtle"
 														className={classes.queryClose}
 														onClick={(e) => removeTab(query.id, e)}
-														color={(isActive && isLight) ? "white" : undefined}
+														color={isActive && isLight ? "white" : undefined}
 														aria-label="Close query tab"
 													>
 														<Icon path={iconClose} size="sm" />
@@ -200,14 +218,14 @@ export function TabsPane(props: TabsPaneProps) {
 										{...handleProps}
 									>
 										<EditableText
-											value={query.name || ''}
+											value={query.name || ""}
 											onChange={(value) => renameQuery(query.id, value)}
 											withDoubleClick
 											withDecoration
 											style={{
-												outline: 'none',
-												textOverflow: 'ellipsis',
-												overflow: 'hidden'
+												outline: "none",
+												textOverflow: "ellipsis",
+												overflow: "hidden",
 											}}
 										/>
 									</Entry>

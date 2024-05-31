@@ -1,19 +1,28 @@
 import { Checkbox, Kbd, NumberInput } from "@mantine/core";
 import { adapter, isDesktop } from "~/adapter";
+import { useSetting } from "~/hooks/config";
 import { useCheckbox } from "~/hooks/events";
 import { SettingsSection } from "../utilities";
-import { useSetting } from "~/hooks/config";
 
 const CAT = "behavior";
 
 export function BehaviourTab() {
 	const [updateChecker, setUpdateChecker] = useSetting(CAT, "updateChecker");
 	const [tableSuggest, setTableSuggest] = useSetting(CAT, "tableSuggest");
-	const [variableSuggest, setVariableSuggest] = useSetting(CAT, "variableSuggest");
-	const [queryErrorChecker, setQueryErrorChecker] = useSetting(CAT, "queryErrorChecker");
+	const [variableSuggest, setVariableSuggest] = useSetting(
+		CAT,
+		"variableSuggest",
+	);
+	const [queryErrorChecker, setQueryErrorChecker] = useSetting(
+		CAT,
+		"queryErrorChecker",
+	);
 	const [windowPinned, setWindowPinned] = useSetting(CAT, "windowPinned");
 	const [autoConnect, setAutoConnect] = useSetting(CAT, "autoConnect");
-	const [versionCheckTimeout, setVersionCheckTimeout] = useSetting(CAT, "versionCheckTimeout");
+	const [versionCheckTimeout, setVersionCheckTimeout] = useSetting(
+		CAT,
+		"versionCheckTimeout",
+	);
 
 	const updateUpdateChecker = useCheckbox(setUpdateChecker);
 	const updateTableSuggest = useCheckbox(setTableSuggest);
@@ -35,7 +44,11 @@ export function BehaviourTab() {
 
 				{isDesktop && (
 					<Checkbox
-						label={<>Always on top <Kbd size="xs">F10</Kbd></>}
+						label={
+							<>
+								Always on top <Kbd size="xs">F10</Kbd>
+							</>
+						}
 						checked={windowPinned}
 						onChange={updateWindowPinned}
 					/>
@@ -66,7 +79,6 @@ export function BehaviourTab() {
 					checked={queryErrorChecker}
 					onChange={updateQueryErrorChecker}
 				/>
-
 			</SettingsSection>
 
 			<SettingsSection label="Connection">
@@ -74,10 +86,11 @@ export function BehaviourTab() {
 					label="Version check timeout"
 					placeholder="Seconds"
 					value={versionCheckTimeout}
-					onChange={(v) => setVersionCheckTimeout(Number.parseInt(v.toString()))}
+					onChange={(v) =>
+						setVersionCheckTimeout(Number.parseInt(v.toString()))
+					}
 					min={1}
 				/>
-
 			</SettingsSection>
 		</>
 	);

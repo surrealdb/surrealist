@@ -1,15 +1,22 @@
-import classes from "./style.module.scss";
-import clsx from "clsx";
-import dedent from "dedent";
-import { surrealql } from "codemirror-surrealql";
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { ActionIcon, Box, CopyButton, Paper, PaperProps, Text } from "@mantine/core";
+import {
+	ActionIcon,
+	Box,
+	CopyButton,
+	Paper,
+	PaperProps,
+	Text,
+} from "@mantine/core";
+import clsx from "clsx";
+import { surrealql } from "codemirror-surrealql";
+import dedent from "dedent";
 import { ReactNode, useEffect, useMemo, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { colorTheme } from "~/util/editor/extensions";
-import { Icon } from "../Icon";
 import { iconCheck, iconCopy } from "~/util/icons";
+import { Icon } from "../Icon";
+import classes from "./style.module.scss";
 
 interface EditorRef {
 	editor: EditorView;
@@ -43,6 +50,7 @@ export function CodePreview({
 		return withDedent ? dedent(value) : value;
 	}, [value, withDedent]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		const config = new Compartment();
 		const configExt = config.of(extensions || surrealql());
@@ -54,23 +62,22 @@ export function CodePreview({
 				colorTheme(),
 				EditorState.readOnly.of(true),
 				EditorView.lineWrapping,
-			]
+			],
 		});
 
 		const editor = new EditorView({
 			state: initialState,
-			parent: ref.current!
+			parent: ref.current!,
 		});
 
 		editorRef.current = {
 			editor,
-			config
+			config,
 		};
 
 		return () => {
 			editor.destroy();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -84,8 +91,8 @@ export function CodePreview({
 			changes: {
 				from: 0,
 				to: editor.state.doc.length,
-				insert: code
-			}
+				insert: code,
+			},
 		});
 
 		editor.dispatch(transaction);
@@ -95,20 +102,14 @@ export function CodePreview({
 		const { editor, config } = editorRef.current!;
 
 		editor.dispatch({
-			effects: config.reconfigure(extensions || surrealql())
+			effects: config.reconfigure(extensions || surrealql()),
 		});
 	}, [extensions]);
 
 	return (
 		<>
 			{title && (
-				<Text
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					mb="sm"
-					c="bright"
-				>
+				<Text ff="mono" tt="uppercase" fw={600} mb="sm" c="bright">
 					{title}
 				</Text>
 			)}
@@ -116,7 +117,7 @@ export function CodePreview({
 				p="xs"
 				ref={ref}
 				pos="relative"
-				bg={isLight ? 'slate.1' : 'slate.9'}
+				bg={isLight ? "slate.1" : "slate.9"}
 				className={clsx(classes.root, className)}
 				fz="lg"
 				{...rest}
@@ -125,7 +126,7 @@ export function CodePreview({
 					<CopyButton value={value}>
 						{({ copied, copy }) => (
 							<ActionIcon
-								variant={copied ? 'gradient' : undefined}
+								variant={copied ? "gradient" : undefined}
 								pos="absolute"
 								top={6}
 								right={6}
@@ -137,15 +138,12 @@ export function CodePreview({
 							</ActionIcon>
 						)}
 					</CopyButton>
-				) : rightSection && (
-					<Box
-						pos="absolute"
-						top={6}
-						right={6}
-						style={{ zIndex: 1 }}
-					>
-						{rightSection}
-					</Box>
+				) : (
+					rightSection && (
+						<Box pos="absolute" top={6} right={6} style={{ zIndex: 1 }}>
+							{rightSection}
+						</Box>
+					)
 				)}
 			</Paper>
 		</>

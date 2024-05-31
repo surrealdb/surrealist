@@ -1,9 +1,9 @@
-import { Notifications } from "@mantine/notifications";
 import { Box, MantineProvider } from "@mantine/core";
-import { MANTINE_THEME } from "~/util/mantine";
+import { Notifications } from "@mantine/notifications";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
-import { QueryView } from "~/views/query/QueryView";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
+import { MANTINE_THEME } from "~/util/mantine";
+import { QueryView } from "~/views/query/QueryView";
 
 export function MiniRunScaffold() {
 	const colorScheme = useColorScheme();
@@ -22,7 +22,7 @@ export function MiniRunScaffold() {
 					h="100vh"
 					p="md"
 					style={{
-						backgroundColor: `var(--mantine-color-slate-${isLight ? 0 : 9})`
+						backgroundColor: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
 					}}
 				>
 					<QueryView />

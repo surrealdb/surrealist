@@ -1,4 +1,3 @@
-import classes from "./style.module.scss";
 import { Center, Divider, Group, Text } from "@mantine/core";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { Updater } from "use-immer";
@@ -10,6 +9,7 @@ import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
 import { SchemaModel } from "~/types";
 import { iconCheck, iconCopy, iconFunction } from "~/util/icons";
+import classes from "./style.module.scss";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -17,55 +17,30 @@ export interface EditorPanelProps {
 	onChange: Updater<SchemaModel>;
 }
 
-export function EditorPanel({
-	handle,
-	details,
-	onChange,
-}: EditorPanelProps) {
-
+export function EditorPanel({ handle, details, onChange }: EditorPanelProps) {
 	const fullName = `ml::${details.name}()`;
 
 	return (
-		<ContentPane
-			title="Function Editor"
-			icon={iconFunction}
-		>
-			<Group
-				h="100%"
-				align="stretch"
-				gap="xl"
-			>
-				<Stack
-					gap="lg"
-					mt="xs"
-					w={400}
-					style={{ flexShrink: 0 }}
-				>
+		<ContentPane title="Function Editor" icon={iconFunction}>
+			<Group h="100%" align="stretch" gap="xl">
+				<Stack gap="lg" mt="xs" w={400} style={{ flexShrink: 0 }}>
 					<Paper
 						style={{ alignItems: "center" }}
 						display="flex"
 						bg="slate.9"
 						p="lg"
 					>
-						<Text
-							fz={15}
-							c="surreal"
-							ff="mono"
-						>
+						<Text fz={15} c="surreal" ff="mono">
 							ml::
 						</Text>
-						<Text
-							fz={15}
-							c="bright"
-							ff="mono"
-						>
+						<Text fz={15} c="bright" ff="mono">
 							{details.name}()
 						</Text>
 						<Spacer />
 						<CopyButton value={fullName}>
 							{({ copied, copy }) => (
 								<ActionIcon
-									variant={copied ? 'gradient' : undefined}
+									variant={copied ? "gradient" : undefined}
 									aria-label="Copy function name"
 									onClick={copy}
 								>
@@ -78,9 +53,11 @@ export function EditorPanel({
 					<PermissionInput
 						label="Permission"
 						value={details.permission}
-						onChange={value => onChange((draft) => {
-							draft.permission = value;
-						})}
+						onChange={(value) =>
+							onChange((draft) => {
+								draft.permission = value;
+							})
+						}
 					/>
 					<Textarea
 						rows={5}
@@ -88,26 +65,24 @@ export function EditorPanel({
 						description="Optional description for this function"
 						placeholder="Enter comment..."
 						value={details.comment}
-						onChange={value => onChange((draft) => {
-							draft.comment = value.target.value;
-						})}
+						onChange={(value) =>
+							onChange((draft) => {
+								draft.comment = value.target.value;
+							})
+						}
 					/>
 					<Spacer />
 					<SaveBox
 						handle={handle}
 						inline
 						inlineProps={{
-							className: classes.saveBox
+							className: classes.saveBox,
 						}}
 					/>
 				</Stack>
-				<Divider
-					orientation="vertical"
-				/>
+				<Divider orientation="vertical" />
 				<Center flex={1}>
-					<Text c="slate">
-						TODO
-					</Text>
+					<Text c="slate">TODO</Text>
 				</Center>
 			</Group>
 		</ContentPane>

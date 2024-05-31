@@ -1,7 +1,7 @@
-import { useRef, useEffect, useState, useId } from "react";
-import { useStable } from "./stable";
-import type { AnimationItem } from "lottie-web";
 import { useQuery } from "@tanstack/react-query";
+import type { AnimationItem } from "lottie-web";
+import { useEffect, useId, useRef, useState } from "react";
+import { useStable } from "./stable";
 
 export interface HoverIconOptions {
 	animation: any;
@@ -48,18 +48,18 @@ export function useHoverIcon(options: HoverIconOptions) {
 		// eslint-disable-next-line @tanstack/query/exhaustive-deps
 		queryKey: ["lottie", id],
 		queryFn: async () => {
-			const lottie = await import('lottie-web/build/player/lottie_light');
+			const lottie = await import("lottie-web/build/player/lottie_light");
 			const animationData = await Promise.resolve(options.animation);
 
 			if (isMounted && ref.current && !ref.current.innerHTML) {
 				const item = lottie.default.loadAnimation({
 					container: ref.current,
-					renderer: 'svg',
+					renderer: "svg",
 					autoplay: false,
 					loop: false,
 					animationData,
 					rendererSettings: {
-						className: options.className
+						className: options.className,
 					},
 				});
 
@@ -73,6 +73,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 		enabled: isMounted,
 	});
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		setIsMounted(true);
 
@@ -87,6 +88,6 @@ export function useHoverIcon(options: HoverIconOptions) {
 		ref,
 		onMouseEnter,
 		onMouseLeave,
-		item: itemRef.current
+		item: itemRef.current,
 	};
 }

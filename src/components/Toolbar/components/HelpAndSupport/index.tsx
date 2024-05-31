@@ -1,4 +1,3 @@
-import classes from "./style.module.scss";
 import { Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -7,19 +6,21 @@ import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
 import { iconBook, iconBug, iconClose, iconHelp } from "~/util/icons";
+import classes from "./style.module.scss";
 
 const TILES = [
 	{
 		title: "Documentation",
 		description: "Need help? Check out our documentation for help.",
 		icon: iconBook,
-		onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist")
+		onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist"),
 	},
 	{
 		title: "Report an issue",
 		description: "Something isn't working right? Let us know and we'll fix it.",
 		icon: iconBug,
-		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
+		onClick: () =>
+			adapter.openUrl("https://github.com/surrealdb/surrealist/issues"),
 	},
 	// {
 	// 	title: "Feedback",
@@ -54,12 +55,7 @@ export function HelpAndSupport() {
 				</ActionIcon>
 			</Tooltip>
 
-			<Modal
-				opened={isOpen}
-				onClose={openHandle.close}
-				ta="center"
-				size="sm"
-			>
+			<Modal opened={isOpen} onClose={openHandle.close} ta="center" size="sm">
 				<Title fz={20} c="bright">
 					How can we help you?
 				</Title>
@@ -83,23 +79,11 @@ export function HelpAndSupport() {
 							onClick={tile.onClick}
 							p="md"
 						>
-							<Icon
-								path={tile.icon}
-								c="bright"
-								size="xl"
-								mb="sm"
-							/>
-							<Text
-								c="bright"
-								fw={600}
-								fz="lg"
-								mb={4}
-							>
+							<Icon path={tile.icon} c="bright" size="xl" mb="sm" />
+							<Text c="bright" fw={600} fz="lg" mb={4}>
 								{tile.title}
 							</Text>
-							<Text fz="sm">
-								{tile.description}
-							</Text>
+							<Text fz="sm">{tile.description}</Text>
 						</UnstyledButton>
 					))}
 				</SimpleGrid>

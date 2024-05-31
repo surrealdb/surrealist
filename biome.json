@@ -89,16 +89,7 @@
 				"useIsArray": "error",
 				"useValidTypeof": "error"
 			}
-		},
-		"ignore": [
-			"**/.vscode",
-			"**/.github",
-			"**/node_modules",
-			"**/src-tauri",
-			"**/dist",
-			"**/*.js",
-			"src/generated"
-		]
+		}
 	},
 	"overrides": [
 		{
@@ -165,5 +156,13 @@
 				}
 			}
 		}
-	]
+	],
+	"files": {
+		"ignore": [
+			"**/dist/**",
+			"src/generated/**",
+			"src-tauri/target/**",
+			"packages/lezer-surrealql/src/parser.terms.js"
+		]
+	}
 }

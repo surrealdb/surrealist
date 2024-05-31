@@ -1,4 +1,14 @@
-import { Alert, Button, Group, Modal, PasswordInput, Stack, Table, Text, TextInput } from "@mantine/core";
+import {
+	Alert,
+	Button,
+	Group,
+	Modal,
+	PasswordInput,
+	Stack,
+	Table,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -12,7 +22,8 @@ import { useInterfaceStore } from "~/stores/interface";
 import { iconWarning } from "~/util/icons";
 
 export function ScopeSignup() {
-	const { closeScopeSignup, openConnectionEditor } = useInterfaceStore.getState();
+	const { closeScopeSignup, openConnectionEditor } =
+		useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showScopeSignup);
 	const [loading, loadingHandle] = useDisclosure();
@@ -31,15 +42,18 @@ export function ScopeSignup() {
 		openConnection({
 			connection: {
 				...connection,
-				authMode: "scope-signup"
-			}
-		}).then(() => {
-			closeScopeSignup();
-		}).catch(err => {
-			setError(err.message);
-		}).finally(() => {
-			loadingHandle.close();
-		});
+				authMode: "scope-signup",
+			},
+		})
+			.then(() => {
+				closeScopeSignup();
+			})
+			.catch((err) => {
+				setError(err.message);
+			})
+			.finally(() => {
+				loadingHandle.close();
+			});
 	});
 
 	useLayoutEffect(() => {
@@ -65,7 +79,8 @@ export function ScopeSignup() {
 					</Alert>
 				)}
 				<Text>
-					The provided scope details do not match any existing user. Confirm these scope fields and press "Sign up" below to create a new user.
+					The provided scope details do not match any existing user. Confirm
+					these scope fields and press "Sign up" below to create a new user.
 				</Text>
 
 				<Table>
@@ -85,9 +100,7 @@ export function ScopeSignup() {
 							return (
 								<Table.Tr key={field.subject}>
 									<Table.Td c="bright">
-										<Text fw={600}>
-											{field.subject}
-										</Text>
+										<Text fw={600}>{field.subject}</Text>
 									</Table.Td>
 									<Table.Td c="bright">
 										<ValueInput
@@ -98,8 +111,8 @@ export function ScopeSignup() {
 											spellCheck={false}
 											styles={{
 												input: {
-													backgroundColor: "unset"
-												}
+													backgroundColor: "unset",
+												},
 											}}
 										/>
 									</Table.Td>
@@ -110,19 +123,11 @@ export function ScopeSignup() {
 				</Table>
 
 				<Group>
-					<Button
-						color="slate"
-						variant="light"
-						onClick={closeScopeSignup}
-					>
+					<Button color="slate" variant="light" onClick={closeScopeSignup}>
 						Close
 					</Button>
 					<Spacer />
-					<Button
-						color="surreal"
-						variant="light"
-						onClick={openEditor}
-					>
+					<Button color="surreal" variant="light" onClick={openEditor}>
 						Edit details
 					</Button>
 					<Button

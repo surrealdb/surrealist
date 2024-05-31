@@ -1,41 +1,45 @@
 function redirect(path) {
-    return {
+	return {
 		statusCode: 301,
-		statusDescription: 'Moved Permanently',
+		statusDescription: "Moved Permanently",
 		headers: {
 			location: {
-				value: `https://surrealist.app${path}`
-			}
+				value: `https://surrealist.app${path}`,
+			},
 		},
 	};
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: This is how cloudfront functions work
 function handler(event) {
-
 	let request = event.request;
 	let host = request.headers.host.value;
 	let path = request.uri.toLowerCase();
 
-	if (host !== 'surrealist.app') {
-		return redirect(path)
+	if (host !== "surrealist.app") {
+		return redirect(path);
 	}
 
 	switch (true) {
-	    case request.uri === '/embed/new':
-	        return redirect('/mini/new');
-	    case request.uri === '/embed':
-	        return redirect('/mini');
-		case request.uri === '/mini/new':
-			request.uri = '/mini/new.html';
+		case request.uri === "/embed/new": {
+			return redirect("/mini/new");
+		}
+		case request.uri === "/embed": {
+			return redirect("/mini");
+		}
+		case request.uri === "/mini/new": {
+			request.uri = "/mini/new.html";
 			return request;
-		case request.uri === '/mini':
-			request.uri = '/mini/run.html';
+		}
+		case request.uri === "/mini": {
+			request.uri = "/mini/run.html";
 			return request;
-		case request.uri.includes('.') === false:
-			request.uri = '/index.html';
+		}
+		case request.uri.includes(".") === false: {
+			request.uri = "/index.html";
 			return request;
+		}
 	}
 
 	return request;
-
 }

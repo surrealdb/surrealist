@@ -4,7 +4,7 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
+export function DocsGlobalNamespaces({ language }: TopicProps) {
 	const { connection } = useActiveConnection();
 	const esc_namespace = JSON.stringify(connection.namespace);
 	const esc_database = JSON.stringify(connection.database);
@@ -40,18 +40,17 @@ export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[esc_namespace, esc_database]
+		[esc_namespace, esc_database],
 	);
 
 	return (
 		<Article title="Namespaces">
 			<div>
 				<p>
-					After connecting to a SurrealDB instance, you can specify
-					the namespace to use. Namespaces are used to group related
-					data together this contains information regarding the users,
-					roles, tokens, and databases that are available to the
-					namespace.
+					After connecting to a SurrealDB instance, you can specify the
+					namespace to use. Namespaces are used to group related data together
+					this contains information regarding the users, roles, tokens, and
+					databases that are available to the namespace.
 				</p>
 			</div>
 			<Box>

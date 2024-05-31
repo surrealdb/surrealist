@@ -10,16 +10,21 @@ import "./assets/styles/global.scss";
 import "./adapter";
 
 import dayjs from "dayjs";
-import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
+import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
-import { App } from "./components/App";
-import { updateTitle } from "./util/helpers";
 import { adapter } from "./adapter";
-import { watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from './util/background';
+import { App } from "./components/App";
+import {
+	watchColorPreference,
+	watchColorScheme,
+	watchConfigStore,
+	watchConnectionSwitch,
+} from "./util/background";
+import { promptChangelog } from "./util/changelogs";
 import { generateEditorIcons } from "./util/editor/icons";
 import { isProduction } from "./util/environment";
-import { promptChangelog } from "./util/changelogs";
+import { updateTitle } from "./util/helpers";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -28,7 +33,7 @@ import { promptChangelog } from "./util/changelogs";
 	if (isProduction) {
 		posthog.init(import.meta.env.POSTHOG_KEY, {
 			api_host: import.meta.env.POSTHOG_URL,
-			autocapture: false
+			autocapture: false,
 		});
 	}
 
@@ -60,7 +65,7 @@ import { promptChangelog } from "./util/changelogs";
 	// }
 
 	// NOTE Temporary until react flow is fixed
-	document.body.addEventListener('keydown', e => e.stopPropagation());
+	document.body.addEventListener("keydown", (e) => e.stopPropagation());
 
 	// Check for new release
 	promptChangelog();

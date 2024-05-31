@@ -1,16 +1,16 @@
-import { ContentPane } from "~/components/Pane";
 import { ActionIcon, Badge, Group } from "@mantine/core";
-import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
-import { useActiveQuery } from "~/hooks/connection";
-import { useConfigStore } from "~/stores/config";
-import { iconClose, iconDollar } from "~/util/icons";
 import { surrealql } from "codemirror-surrealql";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { surqlLinting } from "~/util/editor/extensions";
-import { useDebouncedFunction } from "~/hooks/debounce";
 import { decodeCbor } from "surrealdb.js";
 import { Value } from "surrealql.wasm/v1";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import { useActiveQuery } from "~/hooks/connection";
+import { useDebouncedFunction } from "~/hooks/debounce";
+import { useConfigStore } from "~/stores/config";
+import { surqlLinting } from "~/util/editor/extensions";
+import { iconClose, iconDollar } from "~/util/icons";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -53,10 +53,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 				) : (
 					<Group gap="xs">
 						{!props.isValid && (
-							<Badge
-								color="red"
-								variant="light"
-							>
+							<Badge color="red" variant="light">
 								Invalid JSON
 							</Badge>
 						)}
@@ -72,12 +69,9 @@ export function VariablesPane(props: VariablesPaneProps) {
 			}
 		>
 			<CodeEditor
-				value={activeTab?.variables || ''}
+				value={activeTab?.variables || ""}
 				onChange={setVariables}
-				extensions={[
-					surrealql(),
-					surqlLinting(),
-				]}
+				extensions={[surrealql(), surqlLinting()]}
 			/>
 		</ContentPane>
 	);

@@ -1,6 +1,6 @@
-import { BaseNode } from "./BaseNode";
-import { NodeData } from "../helpers";
 import { iconRelation } from "~/util/icons";
+import { NodeData } from "../helpers";
+import { BaseNode } from "./BaseNode";
 
 interface EdgeNodeProps {
 	data: NodeData;

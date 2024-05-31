@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 
-export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
+export function DocsAuthAccessUserData({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -19,7 +19,7 @@ export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 		$info = $db->info();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -27,8 +27,8 @@ export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 			<div>
 				<p>
 					You can access information about a user that is currently
-					authenticated with a scope. This information includes the
-					user's name, email, and other details.
+					authenticated with a scope. This information includes the user's name,
+					email, and other details.
 				</p>
 			</div>
 			<Box>

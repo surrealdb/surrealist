@@ -1,39 +1,29 @@
-import classes from "./style.module.scss";
+import { Divider, Flex, Group, Image, ScrollArea, Stack } from "@mantine/core";
+import { useHover } from "@mantine/hooks";
 import clsx from "clsx";
-import surrealistLogo from "~/assets/images/logo.webp";
-import { ScrollArea, Stack, Divider, Image, Flex, Group } from "@mantine/core";
 import { Fragment, useLayoutEffect, useMemo } from "react";
 import { adapter, isBrowser, isDesktop } from "~/adapter";
-import { iconDownload, iconCog, iconSearch } from "~/util/icons";
-import { NavigationIcon } from "../NavigationIcon";
-import { Spacer } from "../Spacer";
+import surrealistLogo from "~/assets/images/logo.webp";
 import { VIEW_MODES } from "~/constants";
+import { useBoolean } from "~/hooks/boolean";
+import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { SidebarMode, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { updateTitle } from "~/util/helpers";
-import { useIsLight } from "~/hooks/theme";
-import { SurrealistLogo } from "../SurrealistLogo";
-import { useConnection } from "~/hooks/connection";
-import { useHover } from "@mantine/hooks";
-import { useBoolean } from "~/hooks/boolean";
+import { iconCog, iconDownload, iconSearch } from "~/util/icons";
+import { NavigationIcon } from "../NavigationIcon";
 import { Shortcut } from "../Shortcut";
+import { Spacer } from "../Spacer";
+import { SurrealistLogo } from "../SurrealistLogo";
+import classes from "./style.module.scss";
 
 const NAVIGATION: ViewMode[][] = [
-	[
-		"query",
-		"explorer",
-		"designer",
-		"authentication",
-	],
-	[
-		"functions",
-		"models",
-	],
-	[
-		"documentation",
-	],
+	["query", "explorer", "designer", "authentication"],
+	["functions", "models"],
+	["documentation"],
 ];
 
 export interface SidebarProps {
@@ -74,7 +64,7 @@ export function Sidebar({
 			const items = row.flatMap((id) => {
 				const info = VIEW_MODES[id];
 
-				return (!info || !info.disabled?.(flags) !== true) ? [] : [info];
+				return !info || !info.disabled?.(flags) !== true ? [] : [info];
 			});
 
 			return items.length > 0 ? [items] : [];
@@ -99,14 +89,10 @@ export function Sidebar({
 			className={clsx(
 				classes.root,
 				shouldExpand && classes.expanded,
-				mode === "wide" && classes.wide
+				mode === "wide" && classes.wide,
 			)}
 		>
-			<Flex
-				direction="column"
-				h="100%"
-				px={16}
-			>
+			<Flex direction="column" h="100%" px={16}>
 				<Group
 					h={64}
 					wrap="nowrap"
@@ -117,36 +103,27 @@ export function Sidebar({
 					<Image src={surrealistLogo} w={42} />
 					<SurrealistLogo h={21} style={{ flexShrink: 0 }} />
 				</Group>
-				<Stack
-					gap="sm"
-					mt={9}
-					pb={18}
-					component="nav"
-					flex={1}
-				>
-					{connection && navigation.map((items, i) => (
-						<Fragment key={i}>
-							{items.map(info => (
-								<Group
-									key={info.id}
-									gap="lg"
-									wrap="nowrap"
-								>
-									<NavigationIcon
-										name={info.name}
-										isActive={info.id === activeView}
-										icon={info.anim || info.icon}
-										withTooltip={mode === "compact"}
-										onClick={() => setViewMode(info.id)}
-										onMouseEnter={expandedHandle.open}
-									/>
-								</Group>
-							))}
-							{i < navigation.length - 1 && (
-								<Divider color={isLight ? "white" : "slate.7"} />
-							)}
-						</Fragment>
-					))}
+				<Stack gap="sm" mt={9} pb={18} component="nav" flex={1}>
+					{connection &&
+						navigation.map((items, i) => (
+							<Fragment key={i}>
+								{items.map((info) => (
+									<Group key={info.id} gap="lg" wrap="nowrap">
+										<NavigationIcon
+											name={info.name}
+											isActive={info.id === activeView}
+											icon={info.anim || info.icon}
+											withTooltip={mode === "compact"}
+											onClick={() => setViewMode(info.id)}
+											onMouseEnter={expandedHandle.open}
+										/>
+									</Group>
+								))}
+								{i < navigation.length - 1 && (
+									<Divider color={isLight ? "white" : "slate.7"} />
+								)}
+							</Fragment>
+						))}
 
 					<Spacer />
 

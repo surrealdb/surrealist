@@ -1,4 +1,4 @@
-import { LRLanguage, LanguageSupport } from '@codemirror/language';
+import { LRLanguage, LanguageSupport } from "@codemirror/language";
 
 type Scope = "default" | "permission";
 declare const surrealqlLanguage: LRLanguage;

@@ -1,22 +1,36 @@
 import classes from "./style.module.scss";
 
-import dayjs from "dayjs";
-import { ActionIcon, Divider, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import {
+	ActionIcon,
+	Divider,
+	Group,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { Box, Drawer } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import dayjs from "dayjs";
+import { useContextMenu } from "mantine-contextmenu";
+import { capitalize } from "radash";
+import { useMemo } from "react";
+import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
+import { Spacer } from "~/components/Spacer";
 import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { HistoryQuery } from "~/types";
-import { Spacer } from "~/components/Spacer";
-import { useMemo } from "react";
-import { useIsLight } from "~/hooks/theme";
-import { useContextMenu } from "mantine-contextmenu";
-import { iconClose, iconDelete, iconQuery, iconSearch, iconText } from "~/util/icons";
-import { CodePreview } from "~/components/CodePreview";
-import { capitalize } from "radash";
+import {
+	iconClose,
+	iconDelete,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "~/util/icons";
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
@@ -24,17 +38,18 @@ interface HistoryRowProps {
 }
 
 function HistoryRow({ entry, onClose }: HistoryRowProps) {
-	const { updateCurrentConnection, updateQueryTab, addQueryTab } = useConfigStore.getState();
+	const { updateCurrentConnection, updateQueryTab, addQueryTab } =
+		useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
-	const isLight = useIsLight();
+	const _isLight = useIsLight();
 	const connection = useActiveConnection();
 	const activeTab = useActiveQuery();
 
 	const handleUseQuery = useStable(() => {
 		onClose();
 		addQueryTab({
-			query: entry.query
+			query: entry.query,
 		});
 	});
 
@@ -42,13 +57,13 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 		onClose();
 		updateQueryTab({
 			id: activeTab!.id,
-			query: entry.query
+			query: entry.query,
 		});
 	});
 
 	const handleDeleteQuery = useStable(() => {
 		updateCurrentConnection({
-			queryHistory: connection.queryHistory.filter((item) => item !== entry)
+			queryHistory: connection.queryHistory.filter((item) => item !== entry),
 		});
 	});
 
@@ -57,24 +72,24 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 			className={classes.query}
 			onContextMenu={showContextMenu([
 				{
-					key: 'open',
-					title: 'Open in new tab',
+					key: "open",
+					title: "Open in new tab",
 					icon: <Icon path={iconQuery} />,
 					onClick: () => handleUseQuery(),
 				},
 				{
-					key: 'replace',
-					title: 'Open in current tab',
+					key: "replace",
+					title: "Open in current tab",
 					icon: <Icon path={iconText} />,
 					onClick: () => handleReplaceQuery(),
 				},
 				{
-					key: 'remove',
-					title: 'Remove query',
+					key: "remove",
+					title: "Remove query",
 					color: '"pink.7',
 					icon: <Icon path={iconDelete} />,
 					onClick: () => handleDeleteQuery(),
-				}
+				},
 			])}
 		>
 			<Group h={28} wrap="nowrap">
@@ -102,10 +117,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				</Tooltip>
 			</Group>
 
-			<CodePreview
-				mt="xs"
-				value={entry.query}
-			/>
+			<CodePreview mt="xs" value={entry.query} />
 
 			<Divider mt="md" color="slate.6" />
 		</Box>
@@ -125,7 +137,7 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 
 	const clearHistory = useStable(() => {
 		updateCurrentConnection({
-			queryHistory: []
+			queryHistory: [],
 		});
 	});
 
@@ -134,9 +146,9 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 
 		const needle = filterText.toLowerCase();
 
-		return connection.queryHistory.filter((entry) =>
-			entry.query.toLowerCase().includes(needle)
-		).reverse();
+		return connection.queryHistory
+			.filter((entry) => entry.query.toLowerCase().includes(needle))
+			.reverse();
 	}, [connection, filterText]);
 
 	return (
@@ -147,9 +159,7 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 			trapFocus={false}
 		>
 			<Group mb="md" gap="sm">
-				<ModalTitle>
-					Query history
-				</ModalTitle>
+				<ModalTitle>Query history</ModalTitle>
 
 				<Spacer />
 
@@ -161,10 +171,7 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 					<Icon path={iconDelete} />
 				</ActionIcon>
 
-				<ActionIcon
-					onClick={props.onClose}
-					aria-label="Close history drawer"
-				>
+				<ActionIcon onClick={props.onClose} aria-label="Close history drawer">
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
@@ -185,11 +192,7 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 				)}
 
 				{filtered.map((entry, i) => (
-					<HistoryRow
-						key={i}
-						entry={entry}
-						onClose={props.onClose}
-					/>
+					<HistoryRow key={i} entry={entry} onClose={props.onClose} />
 				))}
 			</Stack>
 		</Drawer>

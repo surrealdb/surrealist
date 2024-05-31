@@ -6,7 +6,7 @@ export function useRelativeTime() {
 
 	useEffect(() => {
 		const timer = setInterval(() => {
-			setCounter(counter => counter + 1);
+			setCounter((counter) => counter + 1);
 		}, 60_000);
 
 		return () => clearInterval(timer);

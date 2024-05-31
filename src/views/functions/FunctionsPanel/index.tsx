@@ -1,15 +1,29 @@
-import classes from "./style.module.scss";
-import { Badge, Tooltip, ActionIcon, TextInput, ScrollArea, Stack, Text } from "@mantine/core";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
-import { ContentPane } from "~/components/Pane";
-import { useIsLight } from "~/hooks/theme";
-import { iconCopy, iconDelete, iconFunction, iconPlus, iconSearch } from "~/util/icons";
-import { SchemaFunction } from "~/types";
+import {
+	ActionIcon,
+	Badge,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
+import { Entry } from "~/components/Entry";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
+import { useIsLight } from "~/hooks/theme";
+import { SchemaFunction } from "~/types";
+import {
+	iconCopy,
+	iconDelete,
+	iconFunction,
+	iconPlus,
+	iconSearch,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 
 export interface FunctionsPanelProps {
 	active: string;
@@ -46,11 +60,7 @@ export function FunctionsPanel({
 			icon={iconFunction}
 			style={{ flexShrink: 0 }}
 			leftSection={
-				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
-					radius="sm"
-					c="inherit"
-				>
+				<Badge color={isLight ? "slate.0" : "slate.9"} radius="sm" c="inherit">
 					{functions.length}
 				</Badge>
 			}
@@ -73,7 +83,7 @@ export function FunctionsPanel({
 				right={12}
 				bottom={12}
 				classNames={{
-					viewport: classes.scroller
+					viewport: classes.scroller,
 				}}
 			>
 				<Stack gap="xs" pb="md">
@@ -107,30 +117,30 @@ export function FunctionsPanel({
 							leftSection={<Icon path={iconFunction} />}
 							onContextMenu={showContextMenu([
 								{
-									key: 'open',
+									key: "open",
 									title: "Edit function",
 									icon: <Icon path={iconFunction} />,
-									onClick: () => onSelect(f.name)
+									onClick: () => onSelect(f.name),
 								},
 								{
-									key: 'duplicate',
+									key: "duplicate",
 									title: "Duplicate function",
 									icon: <Icon path={iconCopy} />,
-									onClick: () => onDuplicate(f)
+									onClick: () => onDuplicate(f),
 								},
 								{
-									key: 'remove',
+									key: "remove",
 									title: "Remove function",
 									color: "pink.7",
 									icon: <Icon path={iconDelete} />,
-									onClick: () => onDelete(f.name)
-								}
+									onClick: () => onDelete(f.name),
+								},
 							])}
 						>
 							<Text
 								style={{
-									textOverflow: 'ellipsis',
-									overflow: 'hidden'
+									textOverflow: "ellipsis",
+									overflow: "hidden",
 								}}
 							>
 								{f.name}

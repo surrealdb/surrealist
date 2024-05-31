@@ -3,17 +3,16 @@ import { PropsWithChildren, ReactNode } from "react";
 
 export function Label(props: PropsWithChildren<TextProps>) {
 	return (
-		<Text
-			style={{ color: 'var(--mantine-color-text)' }}
-			size="sm"
-			fw={500}
-		>
+		<Text style={{ color: "var(--mantine-color-text)" }} size="sm" fw={500}>
 			{props.children}
 		</Text>
 	);
 }
 
-export function SettingsSection({ label, children }: PropsWithChildren<{ label?: ReactNode }>) {
+export function SettingsSection({
+	label,
+	children,
+}: PropsWithChildren<{ label?: ReactNode }>) {
 	return (
 		<Stack gap="md">
 			{label && (

@@ -1,32 +1,32 @@
-import escape from "escape-string-regexp";
 import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import escapeRegex from "escape-string-regexp";
 import { uid } from "radash";
 import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { adapter } from "~/adapter";
-import { VIEW_MODES } from "~/constants";
-import { getConnection } from "./connection";
-import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
-import { useInterfaceStore } from "~/stores/interface";
-import { getSetting } from "./config";
 import { decodeCbor } from "surrealdb.js";
 import { Value } from "surrealql.wasm/v1";
+import { adapter } from "~/adapter";
+import { VIEW_MODES } from "~/constants";
+import { useInterfaceStore } from "~/stores/interface";
+import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
+import { getSetting } from "./config";
+import { getConnection } from "./connection";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
-	'auth',
-	'token',
-	'scope',
-	'session',
-	'before',
-	'after',
-	'value',
-	'input',
-	'this',
-	'parent',
-	'event',
+	"auth",
+	"token",
+	"scope",
+	"session",
+	"before",
+	"after",
+	"value",
+	"input",
+	"this",
+	"parent",
+	"event",
 ]);
 
 export const TRUNCATE_STYLE: CSSProperties = {
@@ -36,10 +36,10 @@ export const TRUNCATE_STYLE: CSSProperties = {
 };
 
 export const Y_SLIDE_TRANSITION = {
-	in: { opacity: 1, transform: 'translateY(0)' },
-	out: { opacity: 0, transform: 'translateY(-20px)' },
-	common: { transformOrigin: 'top' },
-	transitionProperty: 'transform, opacity',
+	in: { opacity: 1, transform: "translateY(0)" },
+	out: { opacity: 0, transform: "translateY(-20px)" },
+	common: { transformOrigin: "top" },
+	transitionProperty: "transform, opacity",
 };
 
 export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
@@ -75,13 +75,13 @@ export function updateTitle() {
 		segments.push(`${session.name} -`);
 	}
 
-	segments.push(`Surrealist ${viewInfo?.name || ''}`);
+	segments.push(`Surrealist ${viewInfo?.name || ""}`);
 
 	if (windowPinned) {
-		segments.push('(Pinned)');
+		segments.push("(Pinned)");
 	}
 
-	const title = segments.join(' ');
+	const title = segments.join(" ");
 
 	adapter.setWindowTitle(title);
 	useInterfaceStore.getState().setWindowTitle(title);
@@ -93,12 +93,14 @@ export function updateTitle() {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showError(info: {title: ReactNode, subtitle: ReactNode}) {
+export function showError(info: { title: ReactNode; subtitle: ReactNode }) {
 	showNotification({
 		color: "pink.9",
 		message: (
 			<Stack gap={0}>
-				<Text fw={600} c="bright">{info.title}</Text>
+				<Text fw={600} c="bright">
+					{info.title}
+				</Text>
 				<Text>{info.subtitle}</Text>
 			</Stack>
 		),
@@ -111,12 +113,14 @@ export function showError(info: {title: ReactNode, subtitle: ReactNode}) {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showWarning(info: {title: ReactNode, subtitle: ReactNode}) {
+export function showWarning(info: { title: ReactNode; subtitle: ReactNode }) {
 	showNotification({
 		color: "orange",
 		message: (
 			<Stack gap={0}>
-				<Text fw={600} c="bright">{info.title}</Text>
+				<Text fw={600} c="bright">
+					{info.title}
+				</Text>
 				<Text>{info.subtitle}</Text>
 			</Stack>
 		),
@@ -129,12 +133,14 @@ export function showWarning(info: {title: ReactNode, subtitle: ReactNode}) {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showInfo(info: {title: ReactNode, subtitle: ReactNode}) {
+export function showInfo(info: { title: ReactNode; subtitle: ReactNode }) {
 	showNotification({
 		color: "surreal.6",
 		message: (
 			<Stack gap={0}>
-				<Text fw={600} c="bright">{info.title}</Text>
+				<Text fw={600} c="bright">
+					{info.title}
+				</Text>
 				<Text>{info.subtitle}</Text>
 			</Stack>
 		),
@@ -216,7 +222,7 @@ export function applyOrder<T>(items: T[], order: T[]) {
  */
 export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
 	return new Promise<T>((res, rej) =>
-		setTimeout(() => cb().then(res).catch(rej), timeout)
+		setTimeout(() => cb().then(res).catch(rej), timeout),
 	);
 }
 /**
@@ -226,7 +232,10 @@ export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
  * @returns True if the result is a permission error
  */
 export function isPermissionError(result: any) {
-	return typeof result === 'string' && result.includes('Not enough permissions to perform this action');
+	return (
+		typeof result === "string" &&
+		result.includes("Not enough permissions to perform this action")
+	);
 }
 
 /**
@@ -310,9 +319,7 @@ export function clamp(value: number, min: number, max: number) {
  * @returns The file name without the extension
  */
 export function getFileName(name: string) {
-	return name.includes('.')
-		? name.slice(0, name.lastIndexOf('.'))
-		: name;
+	return name.includes(".") ? name.slice(0, name.lastIndexOf(".")) : name;
 }
 
 /**
@@ -323,7 +330,7 @@ export function getFileName(name: string) {
  * @returns True if the tab is unnamed
  */
 export function isUnnamedTab(tab: TabQuery) {
-	return !!tab.name?.startsWith('New query');
+	return !!tab.name?.startsWith("New query");
 }
 
 /**
@@ -345,7 +352,7 @@ export function tryParseParams(paramString: string) {
 
 		params = parsed;
 	} catch {
-		adapter.warn('Params', "Invalid JSON in variables");
+		adapter.warn("Params", "Invalid JSON in variables");
 	}
 
 	return params;
@@ -358,7 +365,7 @@ export function tryParseParams(paramString: string) {
  * @returns The escaped value
  */
 export function tb(value: string) {
-	return `\`${value.replaceAll('`', '\\`')}\``;
+	return `\`${value.replaceAll("`", "\\`")}\``;
 }
 
 /**
@@ -372,7 +379,7 @@ export function hashCode(value: string) {
 
 	for (let i = 0; i < value.length; i++) {
 		const code = value.codePointAt(i)!;
-		hash = ((hash << 5) - hash) + code;
+		hash = (hash << 5) - hash + code;
 		hash = hash & hash;
 	}
 
@@ -390,7 +397,7 @@ export function hashCode(value: string) {
  */
 export function fastParseJwt(token: string) {
 	try {
-		const parts = token.split('.');
+		const parts = token.split(".");
 
 		if (parts.length !== 3) {
 			return null;
@@ -411,8 +418,11 @@ export function fastParseJwt(token: string) {
  * @returns Result
  */
 export function fuzzyMatch(query: string, target: string) {
-	const pattern = query.split(' ').map(q => escape(q)).join('.*?');
-	const regex = new RegExp(pattern, 'i');
+	const pattern = query
+		.split(" ")
+		.map((q) => escapeRegex(q))
+		.join(".*?");
+	const regex = new RegExp(pattern, "i");
 
 	return regex.test(target);
 }
@@ -422,7 +432,9 @@ export function fuzzyMatch(query: string, target: string) {
  */
 export function isMobile() {
 	const userAgent = navigator.userAgent.toLowerCase();
-	return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+	return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(
+		userAgent,
+	);
 }
 
 /**

@@ -1,11 +1,11 @@
 import { useDisclosure } from "@mantine/hooks";
-import { createContext, useContext, PropsWithChildren, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useState } from "react";
+import { RecordId } from "surrealdb.js";
 import { HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
-import { InspectorDrawer } from "./drawer";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { RecordId } from "surrealdb.js";
 import { parseValue } from "~/util/surrealql";
+import { InspectorDrawer } from "./drawer";
 
 type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;
@@ -22,11 +22,13 @@ const InspectorContext = createContext<{
 export function useInspector() {
 	const ctx = useContext(InspectorContext);
 
-	return ctx ?? {
-		history: [],
-		inspect: () => {},
-		stopInspect: () => {}
-	};
+	return (
+		ctx ?? {
+			history: [],
+			inspect: () => undefined,
+			stopInspect: () => undefined,
+		}
+	);
 }
 
 export function InspectorProvider({ children }: PropsWithChildren) {
@@ -35,7 +37,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 
 	const history = useHistory({
 		history: historyItems,
-		setHistory: setHistoryItems
+		setHistory: setHistoryItems,
 	});
 
 	const inspect = useStable((record: RecordId | string) => {
@@ -65,7 +67,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 	});
 
 	return (
-		<InspectorContext.Provider value={{history, inspect, stopInspect}}>
+		<InspectorContext.Provider value={{ history, inspect, stopInspect }}>
 			{children}
 
 			<InspectorDrawer

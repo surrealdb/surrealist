@@ -5,7 +5,9 @@ import { SurrealistConfig } from "~/types";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
-export type StoreType<T> = T extends UseBoundStore<StoreApi<infer I>> ? I : never;
+export type StoreType<T> = T extends UseBoundStore<StoreApi<infer I>>
+	? I
+	: never;
 
 /**
  * Watch a store for changes and invoke the callback when the
@@ -41,6 +43,9 @@ export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
  * @param key The setting key
  * @returns Setting value
  */
-export function getSetting<C extends Category, K extends keyof Settings<C>>(category: C, key: K) {
+export function getSetting<C extends Category, K extends keyof Settings<C>>(
+	category: C,
+	key: K,
+) {
 	return useConfigStore.getState().settings[category][key];
 }

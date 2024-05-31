@@ -4,7 +4,6 @@ import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
 
 export function DocsGlobalSchema({ language, topic }: TopicProps) {
-
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -55,29 +54,23 @@ export function DocsGlobalSchema({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
 		<Article title="Schema">
 			<div>
 				<p>
-					Since you have already connected to a SurrealDB instance and
-					defined user credentials, you can now specify the schema in
-					your database. The schema contains the tables,
-					relationships, and indexes that are used to store and
-					retrieve data which define the structure of the data that is
-					stored in the database and the relationships between the
-					different tables in the database.
+					Since you have already connected to a SurrealDB instance and defined
+					user credentials, you can now specify the schema in your database. The
+					schema contains the tables, relationships, and indexes that are used
+					to store and retrieve data which define the structure of the data that
+					is stored in the database and the relationships between the different
+					tables in the database.
 				</p>
-
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Schema"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Schema" values={snippets} />
 			</Box>
 		</Article>
 	);

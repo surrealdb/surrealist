@@ -2,11 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
 
-export function DocsAuthTokens({ language, topic }: TopicProps) {
-	const schema = useSchema();
-
+export function DocsAuthTokens({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
@@ -43,18 +40,17 @@ export function DocsAuthTokens({ language, topic }: TopicProps) {
 		$db->authenticate($token);
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Tokens">
 			<div>
 				<p>
-					When signin in or up to SurrealDB, you receive a JWT token.
-					This JWT, for the time it lives, can be used to authenticate
-					future sessions to SurrealDB. As an integrator, you are
-					expected yourself to persist this token, if you need to
-					retrieve it at a later moment in time.
+					When signin in or up to SurrealDB, you receive a JWT token. This JWT,
+					for the time it lives, can be used to authenticate future sessions to
+					SurrealDB. As an integrator, you are expected yourself to persist this
+					token, if you need to retrieve it at a later moment in time.
 				</p>
 			</div>
 			<Box>

@@ -1,27 +1,27 @@
-import papaparse from "papaparse";
 import { Autocomplete, Button, Divider, Modal, Stack } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import papaparse from "papaparse";
+import { useRef, useState } from "react";
+import { RecordId, Table } from "surrealdb.js";
+import { adapter } from "~/adapter";
+import { OpenedTextFile } from "~/adapter/base";
+import { Entry } from "~/components/Entry";
+import { executeQuery } from "~/connection";
 import { SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
+import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useRef, useState } from "react";
-import { Icon } from "../../../components/Icon";
-import { adapter } from "~/adapter";
-import { showError, showInfo } from "~/util/helpers";
-import { ModalTitle } from "../../../components/ModalTitle";
-import { Text } from "@mantine/core";
-import { syncDatabaseSchema } from "~/util/schema";
-import { OpenedTextFile } from "~/adapter/base";
-import { iconChevronRight, iconDownload } from "~/util/icons";
-import { Entry } from "~/components/Entry";
 import { useIntent } from "~/hooks/url";
-import { executeQuery } from "~/connection";
-import { useInputState } from "@mantine/hooks";
-import { useTableNames } from "~/hooks/schema";
-import { RecordId, Table } from "surrealdb.js";
+import { showError, showInfo } from "~/util/helpers";
+import { iconChevronRight, iconDownload } from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
+import { Icon } from "../../../components/Icon";
+import { ModalTitle } from "../../../components/ModalTitle";
 
-type Importer = null | 'sql' | 'csv';
+type Importer = null | "sql" | "csv";
 
 export function Importer() {
 	const isLight = useIsLight();
@@ -40,12 +40,15 @@ export function Importer() {
 	const startImport = useStable(async () => {
 		try {
 			const [file] = await adapter.openTextFile(
-				'Import query file',
-				[SURQL_FILTER, {
-					name: "Table data (csv)",
-					extensions: ["csv"],
-				}],
-				false
+				"Import query file",
+				[
+					SURQL_FILTER,
+					{
+						name: "Table data (csv)",
+						extensions: ["csv"],
+					},
+				],
+				false,
 			);
 
 			if (!file) {
@@ -96,32 +99,36 @@ export function Importer() {
 						}
 
 						const content = row.data as any;
-						const what = "id" in content
-							? new RecordId(table, content.id)
-							: new Table(table);
+						const what =
+							"id" in content
+								? new RecordId(table, content.id)
+								: new Table(table);
 
-						executeQuery(/* surql */ `CREATE $what CONTENT $content`, { what, content });
+						executeQuery(/* surql */ `CREATE $what CONTENT $content`, {
+							what,
+							content,
+						});
 					},
 					complete() {
 						syncDatabaseSchema();
-					}
+					},
 				});
 			} else {
 				await executeQuery(content);
 
 				showInfo({
 					title: "Importer",
-					subtitle: "Database was successfully imported"
+					subtitle: "Database was successfully imported",
 				});
 
 				await syncDatabaseSchema();
 			}
-		} catch(err: any) {
+		} catch (err: any) {
 			console.error(err);
 
 			showError({
 				title: "Import failed",
-				subtitle: "There was an error importing the database"
+				subtitle: "There was an error importing the database",
 			});
 		} finally {
 			setIsImporting(false);
@@ -146,23 +153,18 @@ export function Importer() {
 			</Entry>
 
 			<Modal
-				opened={importer === 'sql'}
+				opened={importer === "sql"}
 				onClose={closeImporter}
 				size="sm"
 				title={<ModalTitle>Import database</ModalTitle>}
 			>
-				<Text
-					mb="xl"
-					c={isLight ? "slate.7" : "slate.2"}
-				>
+				<Text mb="xl" c={isLight ? "slate.7" : "slate.2"}>
 					Are you sure you want to import the selected file?
 				</Text>
 
-				<Text
-					mb="xl"
-					c={isLight ? "slate.7" : "slate.2"}
-				>
-					While existing data will be preserved, it may be overwritten by the imported data.
+				<Text mb="xl" c={isLight ? "slate.7" : "slate.2"}>
+					While existing data will be preserved, it may be overwritten by the
+					imported data.
 				</Text>
 
 				<Button
@@ -178,22 +180,22 @@ export function Importer() {
 			</Modal>
 
 			<Modal
-				opened={importer === 'csv'}
+				opened={importer === "csv"}
 				onClose={closeImporter}
 				size="sm"
 				title={<ModalTitle>Import table</ModalTitle>}
 			>
 				<Stack>
+					<Text>This importer allows you to parse CSV data into a table.</Text>
 					<Text>
-						This importer allows you to parse CSV data into a table.
-					</Text>
-					<Text>
-						The first row of the CSV file will be interpreted as column names. Before importing,
-						make sure these match the columns in the table you are importing to.
+						The first row of the CSV file will be interpreted as column names.
+						Before importing, make sure these match the columns in the table you
+						are importing to.
 					</Text>
 
 					<Text>
-						While existing data will be preserved, it may be overwritten by the imported data.
+						While existing data will be preserved, it may be overwritten by the
+						imported data.
 					</Text>
 
 					<Divider />

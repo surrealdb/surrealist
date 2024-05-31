@@ -1,38 +1,45 @@
-import classes from "./style.module.scss";
-import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Box, Menu } from "@mantine/core";
-import { useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { showInfo, updateTitle } from "~/util/helpers";
-import { Form } from "../Form";
-import { Icon } from "../Icon";
-import { LocalDatabase } from "./components/LocalDatabase";
-import { Spacer } from "../Spacer";
-import { adapter } from "~/adapter";
-import { useConnection } from "~/hooks/connection";
-import { useConfigStore } from "~/stores/config";
-import { useDatabaseStore } from "~/stores/database";
-import { Connections } from "./components/Connections";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Group,
+	Menu,
+	Modal,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { ConsoleDrawer } from "./components/ConsoleDrawer";
-import { iconFile, iconReset, iconStar } from "~/util/icons";
-import { HelpAndSupport } from "./components/HelpAndSupport";
-import { DATASETS } from "~/constants";
-import { DataSet, SidebarMode } from "~/types";
-import { syncDatabaseSchema } from "~/util/schema";
-import { NewsFeed } from "./components/NewsFeed";
-import { useFeatureFlags } from "~/util/feature-flags";
+import { useState } from "react";
+import { adapter } from "~/adapter";
 import { executeQuery, openConnection } from "~/connection";
-import { useInterfaceStore } from "~/stores/interface";
+import { DATASETS } from "~/constants";
+import { useConnection } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { useInterfaceStore } from "~/stores/interface";
+import { DataSet, SidebarMode } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { showInfo, updateTitle } from "~/util/helpers";
+import { iconFile, iconReset, iconStar } from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
+import { Form } from "../Form";
+import { Icon } from "../Icon";
+import { Spacer } from "../Spacer";
+import { Connections } from "./components/Connections";
+import { ConsoleDrawer } from "./components/ConsoleDrawer";
+import { HelpAndSupport } from "./components/HelpAndSupport";
+import { LocalDatabase } from "./components/LocalDatabase";
+import { NewsFeed } from "./components/NewsFeed";
+import classes from "./style.module.scss";
 
 export interface ToolbarProps {
 	sidebarMode: SidebarMode;
 }
 
-export function Toolbar({
-	sidebarMode
-}: ToolbarProps) {
+export function Toolbar({ sidebarMode }: ToolbarProps) {
 	const { clearQueryResponse } = useDatabaseStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();
@@ -63,7 +70,8 @@ export function Toolbar({
 
 	const resetSandbox = useConfirmation({
 		title: "Reset sandbox environment",
-		message: "This will clear all data and query responses. Your queries will not be affected. Are you sure you want to continue?",
+		message:
+			"This will clear all data and query responses. Your queries will not be affected. Are you sure you want to continue?",
 		confirmText: "Reset",
 		confirmProps: { variant: "gradient" },
 		onConfirm: async () => {
@@ -78,14 +86,14 @@ export function Toolbar({
 	});
 
 	const applyDataset = useStable(async (info: DataSet) => {
-		const dataset = await fetch(info.url).then(res => res.text());
+		const dataset = await fetch(info.url).then((res) => res.text());
 
 		await executeQuery(dataset);
 		await syncDatabaseSchema();
 
 		showInfo({
 			title: "Dataset loaded",
-			subtitle: `${info.name} has been applied`
+			subtitle: `${info.name} has been applied`,
 		});
 	});
 
@@ -136,14 +144,9 @@ export function Toolbar({
 								</Tooltip>
 							</Menu.Target>
 							<Menu.Dropdown miw={200}>
-								<Menu.Label>
-									Select a dataset
-								</Menu.Label>
+								<Menu.Label>Select a dataset</Menu.Label>
 								{Object.entries(DATASETS).map(([id, info]) => (
-									<Menu.Item
-										key={id}
-										onClick={() => applyDataset(info)}
-									>
+									<Menu.Item key={id} onClick={() => applyDataset(info)}>
 										{info.name}
 									</Menu.Item>
 								))}
@@ -163,30 +166,21 @@ export function Toolbar({
 						variant={hasReadChangelog ? "filled" : "gradient"}
 						style={{ border: "none" }}
 						onClick={openChangelog}
-						leftSection={
-							<Icon path={iconStar} left />
-						}
+						leftSection={<Icon path={iconStar} left />}
 					>
 						See what's new in {import.meta.env.VERSION}
 					</Button>
 				)}
 
 				{connection && adapter.isServeSupported && (
-					<LocalDatabase
-						toggleConsole={setShowConsole.toggle}
-					/>
+					<LocalDatabase toggleConsole={setShowConsole.toggle} />
 				)}
 
-				{flags.newsfeed && (
-					<NewsFeed />
-				)}
+				{flags.newsfeed && <NewsFeed />}
 
 				<HelpAndSupport />
 
-				<Modal
-					opened={!!editingTab}
-					onClose={closeEditingTab}
-				>
+				<Modal opened={!!editingTab} onClose={closeEditingTab}>
 					<Form onSubmit={saveTabName}>
 						<Group>
 							<TextInput
@@ -203,10 +197,7 @@ export function Toolbar({
 					</Form>
 				</Modal>
 
-				<ConsoleDrawer
-					opened={showConsole}
-					onClose={setShowConsole.close}
-				/>
+				<ConsoleDrawer opened={showConsole} onClose={setShowConsole.close} />
 			</Group>
 		</>
 	);

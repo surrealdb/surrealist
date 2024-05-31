@@ -2,13 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsSchemaUsers({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
+export function DocsSchemaUsers({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -66,26 +61,21 @@ export function DocsSchemaUsers({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Users">
 			<div>
 				<p>
-					Managing permissions for Users within SurrealDB can be done
-					using Scopes. Scopes are a way to group permissions together
-					and assign them to Users with scopes you can manage
-					authentication and access control for your table and fields.
+					Managing permissions for Users within SurrealDB can be done using
+					Scopes. Scopes are a way to group permissions together and assign them
+					to Users with scopes you can manage authentication and access control
+					for your table and fields.
 				</p>
-
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Users"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Users" values={snippets} />
 			</Box>
 		</Article>
 	);

@@ -1,19 +1,32 @@
 import posthog from "posthog-js";
-import { surrealdbWasmEngines } from 'surrealdb.wasm';
-import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
-import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from './types';
-import { getConnection } from './util/connection';
-import { useDatabaseStore } from './stores/database';
-import { connectionUri, newId, showError, showWarning } from './util/helpers';
-import { syncDatabaseSchema } from './util/schema';
-import { ConnectedEvent, DisconnectedEvent } from './util/global-events';
-import { useInterfaceStore } from "./stores/interface";
-import { useConfigStore } from "./stores/config";
 import { objectify, sleep } from "radash";
-import { getLiveQueries } from "./util/surrealql";
+import {
+	QueryResult,
+	ScopeAuth,
+	Surreal,
+	UUID,
+	UnsupportedVersion,
+	VersionRetrievalFailure,
+	decodeCbor,
+} from "surrealdb.js";
+import { surrealdbWasmEngines } from "surrealdb.wasm";
 import { Value } from "surrealql.wasm/v1";
 import { adapter } from "./adapter";
+import { useConfigStore } from "./stores/config";
+import { useDatabaseStore } from "./stores/database";
+import { useInterfaceStore } from "./stores/interface";
+import {
+	AuthDetails,
+	ConnectionOptions,
+	Protocol,
+	QueryResponse,
+} from "./types";
 import { getSetting } from "./util/config";
+import { getConnection } from "./util/connection";
+import { ConnectedEvent, DisconnectedEvent } from "./util/global-events";
+import { connectionUri, newId, showError, showWarning } from "./util/helpers";
+import { syncDatabaseSchema } from "./util/schema";
+import { getLiveQueries } from "./util/surrealql";
 
 export interface ConnectOptions {
 	connection?: ConnectionOptions;
@@ -24,13 +37,14 @@ export interface UserQueryOptions {
 }
 
 let openCounter = 0;
-const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
+const LQ_SUPPORTED = new Set<Protocol>(["ws", "wss", "mem", "indxdb"]);
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
 const SURREAL = createSurreal();
 
 // Subscribe to disconnects
 SURREAL.emitter.subscribe("disconnected", () => {
-	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
+	const { setIsConnected, setIsConnecting, setVersion } =
+		useDatabaseStore.getState();
 
 	setIsConnecting(false);
 	setIsConnected(false);
@@ -55,13 +69,15 @@ export async function openConnection(options?: ConnectOptions) {
 		throw new Error("No connection available");
 	}
 
-	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
-	const versionCheckTimeout = getSetting("behavior", "versionCheckTimeout") ?? 5;
+	const { setIsConnected, setIsConnecting, setVersion } =
+		useDatabaseStore.getState();
+	const versionCheckTimeout =
+		getSetting("behavior", "versionCheckTimeout") ?? 5;
 	const rpcEndpoint = connectionUri(connection);
 
 	await closeConnection();
 
-	adapter.log('DB', `Opening connection to ${rpcEndpoint}`);
+	adapter.log("DB", `Opening connection to ${rpcEndpoint}`);
 
 	setIsConnecting(true);
 	setIsConnected(false);
@@ -94,18 +110,18 @@ export async function openConnection(options?: ConnectOptions) {
 
 			ConnectedEvent.dispatch(null);
 
-			posthog.capture('connection_open', {
-				protocol: connection.protocol
+			posthog.capture("connection_open", {
+				protocol: connection.protocol,
 			});
 
-			adapter.log('DB', "Connection established");
+			adapter.log("DB", "Connection established");
 
 			SURREAL.version().then((v) => {
 				setVersion(v);
-				adapter.log('DB', `Database version ${v ?? "unknown"}`);
+				adapter.log("DB", `Database version ${v ?? "unknown"}`);
 			});
 		}
-	} catch(err: any) {
+	} catch (err: any) {
 		if (openCounter == thisOpenCounter) {
 			SURREAL.close();
 
@@ -115,18 +131,19 @@ export async function openConnection(options?: ConnectOptions) {
 			if (err instanceof VersionRetrievalFailure)
 				return showWarning({
 					title: "Failed to query version",
-					subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
+					subtitle:
+						"The database version could not be determined. Please ensure the database is running and accessible by Surrealist.",
 				});
 
 			if (err instanceof UnsupportedVersion)
 				showError({
 					title: "Unsupported version",
-					subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
+					subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`,
 				});
 
 			showError({
 				title: "Failed to connect",
-				subtitle: err.message
+				subtitle: err.message,
 			});
 		}
 	}
@@ -174,7 +191,7 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
 			throw new Error("Authentication token invalid");
 		});
 	} else if (auth) {
-		await surreal.signin(auth).catch(err => {
+		await surreal.signin(auth).catch((err) => {
 			const { openScopeSignup } = useInterfaceStore.getState();
 
 			if (err.message.includes("No record was returned")) {
@@ -191,17 +208,19 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
  */
 export async function executeQuery(query: string, params?: any) {
 	try {
-		adapter.trace('DB', `Executing query: ${query}`);
+		adapter.trace("DB", `Executing query: ${query}`);
 
-		const responseRaw = await SURREAL.query_raw(query, params) || [];
+		const responseRaw = (await SURREAL.query_raw(query, params)) || [];
 
 		return mapResults(responseRaw);
-	} catch(err: any) {
-		return [{
-			success: false,
-			result: err.message,
-			execution_time: ''
-		}];
+	} catch (err: any) {
+		return [
+			{
+				success: false,
+				result: err.message,
+				execution_time: "",
+			},
+		];
 	}
 }
 
@@ -241,20 +260,24 @@ export async function executeQuerySingle<T = any>(query: string): Promise<T> {
  * @param options Query options
  */
 export async function executeUserQuery(options?: UserQueryOptions) {
-	const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } = useInterfaceStore.getState();
-	const { setQueryActive, isConnected, setQueryResponse } = useDatabaseStore.getState();
+	const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } =
+		useInterfaceStore.getState();
+	const { setQueryActive, isConnected, setQueryResponse } =
+		useDatabaseStore.getState();
 	const { addHistoryEntry } = useConfigStore.getState();
 	const connection = getConnection();
 
 	if (!connection || !isConnected) {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the database"
+			subtitle: "You must be connected to the database",
 		});
 		return;
 	}
 
-	const tabQuery = connection.queries.find((q) => q.id === connection.activeQuery);
+	const tabQuery = connection.queries.find(
+		(q) => q.id === connection.activeQuery,
+	);
 
 	if (!tabQuery) {
 		return;
@@ -277,21 +300,25 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		try {
 			liveIndexes = getLiveQueries(queryStr);
-		} catch(err: any) {
-			adapter.warn('DB', `Failed to parse live queries: ${err.message}`);
+		} catch (err: any) {
+			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
 			console.error(err);
 			liveIndexes = [];
 		}
 
-		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.connection.protocol)) {
+		if (
+			liveIndexes.length > 0 &&
+			!LQ_SUPPORTED.has(connection.connection.protocol)
+		) {
 			showError({
 				title: "Live queries unsupported",
-				subtitle: "Unfortunately live queries are not supported in the active connection protocol"
+				subtitle:
+					"Unfortunately live queries are not supported in the active connection protocol",
 			});
 		}
 
-		const response = await executeQuery(queryStr, variableJson) || [];
-		const liveIds = liveIndexes.flatMap(idx => {
+		const response = (await executeQuery(queryStr, variableJson)) || [];
+		const liveIds = liveIndexes.flatMap((idx) => {
 			const res = response[idx];
 
 			if (!res.success || !(res.result instanceof UUID)) {
@@ -316,13 +343,13 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 					queryId: queryId.toString(),
 					action,
 					data,
-					timestamp
+					timestamp,
 				});
 			});
 		}
 
 		setQueryResponse(id, response);
-		posthog.capture('query_execute');
+		posthog.capture("query_execute");
 	} finally {
 		setQueryActive(false);
 	}
@@ -331,7 +358,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		id: newId(),
 		query: queryStr,
 		timestamp: Date.now(),
-		origin: name
+		origin: name,
 	});
 }
 
@@ -354,8 +381,11 @@ export function cancelLiveQueries(tab: string) {
  * @param connection The connection options
  * @returns The authentication details
  */
-export function composeAuthentication(connection: ConnectionOptions): AuthDetails {
-	const { authMode, username, password, namespace, database, token } = connection;
+export function composeAuthentication(
+	connection: ConnectionOptions,
+): AuthDetails {
+	const { authMode, username, password, namespace, database, token } =
+		connection;
 
 	switch (authMode) {
 		case "root": {
@@ -386,21 +416,25 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
  */
 export function createSurreal() {
 	return new Surreal({
-		engines: surrealdbWasmEngines() as any
+		engines: surrealdbWasmEngines() as any,
 	});
 }
 
 function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
-	return response.map(res => ({
+	return response.map((res) => ({
 		success: res.status == "OK",
 		result: res.result,
-		execution_time: res.time
+		execution_time: res.time,
 	}));
 }
 
 function buildScopeAuth(connection: ConnectionOptions): ScopeAuth {
 	const { namespace, database, scope, scopeFields } = connection;
-	const fields = objectify(scopeFields, f => f.subject, f => f.value);
+	const fields = objectify(
+		scopeFields,
+		(f) => f.subject,
+		(f) => f.value,
+	);
 
 	return { namespace, database, scope, ...fields };
 }

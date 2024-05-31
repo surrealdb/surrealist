@@ -2,13 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsSchemaFunctions({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
+export function DocsSchemaFunctions({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -77,28 +72,22 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Functions">
 			<div>
 				<p>
-					Functions are a way to encapsulate logic in a database. To
-					define functions you have to be a system user
-					(namespace,database,root) They can be used to perform
-					calculations, manipulate data, or perform other operations.
-					In SurrealDB functions can be written just as you would in
+					Functions are a way to encapsulate logic in a database. To define
+					functions you have to be a system user (namespace,database,root) They
+					can be used to perform calculations, manipulate data, or perform other
+					operations. In SurrealDB functions can be written just as you would in
 					your programming language of choice.
 				</p>
-
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Functions"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Functions" values={snippets} />
 			</Box>
 		</Article>
 	);

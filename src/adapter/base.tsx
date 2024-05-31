@@ -11,7 +11,6 @@ export interface OpenedBinaryFile {
 }
 
 export interface SurrealistAdapter {
-
 	/**
 	 * Returns whether local database serving is supported
 	 */
@@ -89,7 +88,7 @@ export interface SurrealistAdapter {
 		port: number,
 		localDriver: string,
 		localPath: string,
-		surrealPath: string
+		surrealPath: string,
 	): Promise<void>;
 
 	/**
@@ -111,7 +110,7 @@ export interface SurrealistAdapter {
 		title: string,
 		defaultPath: string,
 		filters: any,
-		content: () => Result<string | Blob | null>
+		content: () => Result<string | Blob | null>,
 	): Promise<boolean>;
 
 	/**
@@ -120,7 +119,7 @@ export interface SurrealistAdapter {
 	openTextFile(
 		title: string,
 		filters: any,
-		multiple: boolean
+		multiple: boolean,
 	): Promise<OpenedTextFile[]>;
 
 	/**
@@ -129,14 +128,14 @@ export interface SurrealistAdapter {
 	openBinaryFile(
 		title: string,
 		filters: any,
-		multiple: boolean
+		multiple: boolean,
 	): Promise<OpenedBinaryFile[]>;
 
 	/**
 	 * Log a message to the implemented logging system
 	 */
 	log(label: string, message: string): void;
-	
+
 	/**
 	 * Log a warning message to the implemented logging system
 	 */
@@ -146,5 +145,4 @@ export interface SurrealistAdapter {
 	 * Log a trace message to the implemented logging system
 	 */
 	trace(label: string, message: string): void;
-
 }

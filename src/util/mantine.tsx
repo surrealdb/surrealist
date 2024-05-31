@@ -1,4 +1,21 @@
-import { ActionIcon, Checkbox, Divider, Drawer, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, TagsInput, Tooltip, createTheme, rem } from "@mantine/core";
+import {
+	ActionIcon,
+	Checkbox,
+	Divider,
+	Drawer,
+	Modal,
+	Overlay,
+	Popover,
+	Radio,
+	Select,
+	Slider,
+	Switch,
+	Tabs,
+	TagsInput,
+	Tooltip,
+	createTheme,
+	rem,
+} from "@mantine/core";
 
 export const PRIMARY_COLOR = "surreal.5";
 
@@ -19,10 +36,10 @@ const ICON_SIZES: Record<string, number> = {
 export function themeColor(name: string) {
 	let value;
 
-	if (name === 'white' || name === 'black') {
+	if (name === "white" || name === "black") {
 		value = name;
-	} else if (name.includes('.')) {
-		value = name.replace('.', '-');
+	} else if (name.includes(".")) {
+		value = name.replace(".", "-");
 	} else {
 		value = `${name}-6`;
 	}
@@ -39,7 +56,7 @@ export function themeColor(name: string) {
 export function getIconSize(size: string | number | undefined): number {
 	if (size === undefined) {
 		return 1;
-	} else if (typeof size === 'number') {
+	} else if (typeof size === "number") {
 		return size;
 	} else {
 		return ICON_SIZES[size] || 1;
@@ -64,9 +81,9 @@ export const MANTINE_THEME = createTheme({
 	},
 	headings: {
 		sizes: {
-			h1: { fontSize: rem(22), fontWeight: '700' },
-			h2: { fontSize: rem(20), fontWeight: '600' },
-			h3: { fontSize: rem(18), fontWeight: '500' },
+			h1: { fontSize: rem(22), fontWeight: "700" },
+			h2: { fontSize: rem(20), fontWeight: "600" },
+			h3: { fontSize: rem(18), fontWeight: "500" },
 		},
 	},
 	spacing: {
@@ -106,35 +123,35 @@ export const MANTINE_THEME = createTheme({
 			"#39393c",
 			"#2b2b2f",
 			"#222226",
-			"#19191D"
-		]
+			"#19191D",
+		],
 	},
 	defaultGradient: {
 		from: "surreal",
 		to: "#9600FF",
-		deg: 110
+		deg: 110,
 	},
 	components: {
 		Modal: Modal.extend({
 			defaultProps: {
 				centered: true,
 				withCloseButton: false,
-				padding: 24
-			}
+				padding: 24,
+			},
 		}),
 		Overlay: Overlay.extend({
 			defaultProps: {
-				blur: 5
+				blur: 5,
 			},
 		}),
 		Popover: Popover.extend({
 			defaultProps: {
 				shadow: "0 6px 12px 2px rgba(0, 0, 0, 0.15)",
-			}
+			},
 		}),
 		Divider: Divider.extend({
 			defaultProps: {
-				color: 'var(--surrealist-divider-color)',
+				color: "var(--surrealist-divider-color)",
 				size: 1,
 			},
 		}),
@@ -142,13 +159,13 @@ export const MANTINE_THEME = createTheme({
 			defaultProps: {
 				variant: "light",
 				color: "slate",
-				radius: "xs"
-			}
+				radius: "xs",
+			},
 		}),
 		Select: Select.extend({
 			defaultProps: {
-				allowDeselect: false
-			}
+				allowDeselect: false,
+			},
 		}),
 		Radio: Radio.extend({
 			styles: {
@@ -159,8 +176,8 @@ export const MANTINE_THEME = createTheme({
 		}),
 		Slider: Slider.extend({
 			defaultProps: {
-				color: "slate.2"
-			}
+				color: "slate.2",
+			},
 		}),
 		Tabs: Tabs.extend({
 			defaultProps: {
@@ -169,15 +186,15 @@ export const MANTINE_THEME = createTheme({
 			styles: {
 				tab: {
 					fontWeight: 600,
-					minHeight: 30
+					minHeight: 30,
 				},
 			},
 		}),
 		Checkbox: Checkbox.extend({
 			defaultProps: {
 				color: "transparent",
-				radius: 5
-			}
+				radius: 5,
+			},
 		}),
 		Switch: Switch.extend({
 			styles: {
@@ -193,14 +210,14 @@ export const MANTINE_THEME = createTheme({
 				},
 				input: {
 					display: "flex",
-				}
-			}
+				},
+			},
 		}),
 		Tooltip: Tooltip.extend({
 			defaultProps: {
 				transitionProps: { transition: "pop" },
 				radius: "xs",
-				p: "sm"
+				p: "sm",
 			},
 			styles: {
 				tooltip: {
@@ -215,16 +232,22 @@ export const MANTINE_THEME = createTheme({
 		Drawer: Drawer.extend({
 			defaultProps: {
 				withCloseButton: false,
-				padding: "lg"
+				padding: "lg",
 			},
 			styles: (theme: any, props: any) => {
-				const hasTopRight = props.position === "left" || props.position === "bottom";
-				const hasBottomRight = props.position === "left" || props.position === "top";
-				const hasTopLeft = props.position === "right" || props.position === "bottom";
-				const hasBottomLeft = props.position === "right" || props.position === "top";
+				const hasTopRight =
+					props.position === "left" || props.position === "bottom";
+				const hasBottomRight =
+					props.position === "left" || props.position === "top";
+				const hasTopLeft =
+					props.position === "right" || props.position === "bottom";
+				const hasBottomLeft =
+					props.position === "right" || props.position === "top";
 
-				const isHorizontal = props.position === "left" || props.position === "right";
-				const isVertical = props.position === "top" || props.position === "bottom";
+				const isHorizontal =
+					props.position === "left" || props.position === "right";
+				const isVertical =
+					props.position === "top" || props.position === "bottom";
 
 				return {
 					inner: {
@@ -234,16 +257,16 @@ export const MANTINE_THEME = createTheme({
 						bottom: isVertical ? 0 : theme.spacing.md,
 						left: isHorizontal ? 0 : theme.spacing.md,
 						right: isHorizontal ? 0 : theme.spacing.md,
-						width: 'unset'
+						width: "unset",
 					},
 					content: {
 						borderTopRightRadius: hasTopRight ? theme.radius.lg : 0,
 						borderBottomRightRadius: hasBottomRight ? theme.radius.lg : 0,
 						borderTopLeftRadius: hasTopLeft ? theme.radius.lg : 0,
 						borderBottomLeftRadius: hasBottomLeft ? theme.radius.lg : 0,
-					}
+					},
 				};
-			}
-		})
-	}
+			},
+		}),
+	},
 });

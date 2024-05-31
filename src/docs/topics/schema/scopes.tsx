@@ -2,13 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsSchemaScopes({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
+export function DocsSchemaScopes({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -85,27 +80,21 @@ export function DocsSchemaScopes({ language, topic }: TopicProps) {
 		');
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Scopes">
 			<div>
 				<p>
-					Within SurrealDB, scopes are a way to manage access to data.
-					They are defined within the schema and can be used to
-					restrict access to certain parts of the data. To access data
-					within a scope, you must first sign in with the appropriate
-					credentials. In SDKs you can run qu
+					Within SurrealDB, scopes are a way to manage access to data. They are
+					defined within the schema and can be used to restrict access to
+					certain parts of the data. To access data within a scope, you must
+					first sign in with the appropriate credentials. In SDKs you can run qu
 				</p>
-
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Scopes"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Scopes" values={snippets} />
 			</Box>
 		</Article>
 	);

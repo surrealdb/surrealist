@@ -67,27 +67,22 @@ export function DocsGlobalInit({ language }: TopicProps) {
 		$db = new \\Surreal\\Surreal();
 		`,
 		}),
-		[esc_endpoint, esc_namespace, esc_database]
+		[esc_endpoint, esc_namespace, esc_database],
 	);
 
 	return (
 		<Article title="Initialises">
 			<div>
 				<p>
-					To initialise a connection to SurrealDB, you need to create
-					a new instance of the Surreal class and connect.This will
-					allow you to interact with the database and run queries to
-					the database. Do this by importing the Surreal class and
-					create a new instance of the class. Then, use the connect
-					method to connect to the database.
+					To initialise a connection to SurrealDB, you need to create a new
+					instance of the Surreal class and connect.This will allow you to
+					interact with the database and run queries to the database. Do this by
+					importing the Surreal class and create a new instance of the class.
+					Then, use the connect method to connect to the database.
 				</p>
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="initialise"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="initialise" values={snippets} />
 			</Box>
 		</Article>
 	);

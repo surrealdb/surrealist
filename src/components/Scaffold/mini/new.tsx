@@ -1,13 +1,27 @@
-import { ActionIcon, Box, Button, Divider, Group, MantineProvider, Modal, Paper, ScrollArea, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import { MANTINE_THEME } from "~/util/mantine";
-import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
-import { DEFAULT_STATE, EmbedState, Embedder } from "~/components/Embedder";
-import { SurrealistLogo } from "~/components/SurrealistLogo";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Divider,
+	Group,
+	MantineProvider,
+	Modal,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
-import { useStable } from "~/hooks/stable";
+import { DEFAULT_STATE, EmbedState, Embedder } from "~/components/Embedder";
 import { Icon } from "~/components/Icon";
+import { SurrealistLogo } from "~/components/SurrealistLogo";
+import { useStable } from "~/hooks/stable";
+import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { iconClose } from "~/util/icons";
+import { MANTINE_THEME } from "~/util/mantine";
 
 export function MiniNewScaffold() {
 	const [url, setUrl] = useDebouncedState("", 750);
@@ -21,11 +35,11 @@ export function MiniNewScaffold() {
 		const value = e.target.value;
 		const params = new URL(value).searchParams;
 
-		state.setup = params.get('setup') || state.setup;
-		state.query = params.get('query') || state.query;
-		state.variables = params.get('variables') || state.variables;
-		state.dataset = params.get('dataset') || state.dataset;
-		state.orientation = params.get('orientation') as any || state.orientation;
+		state.setup = params.get("setup") || state.setup;
+		state.query = params.get("query") || state.query;
+		state.variables = params.get("variables") || state.variables;
+		state.dataset = params.get("dataset") || state.dataset;
+		state.orientation = (params.get("orientation") as any) || state.orientation;
 
 		setParsedState(state);
 		showParseHandle.close();
@@ -48,8 +62,8 @@ export function MiniNewScaffold() {
 					viewportProps={{
 						style: {
 							paddingBottom: 50,
-							paddingInline: 24
-						}
+							paddingInline: 24,
+						},
 					}}
 				>
 					<Stack py={35}>
@@ -58,16 +72,9 @@ export function MiniNewScaffold() {
 							Embed generator
 						</Text>
 					</Stack>
-					<Paper
-						maw={1500}
-						p="xl"
-						mx="auto"
-					>
+					<Paper maw={1500} p="xl" mx="auto">
 						<SimpleGrid cols={2} spacing={52}>
-							<Embedder
-								value={parsedState}
-								onChangeURL={setUrl}
-							/>
+							<Embedder value={parsedState} onChangeURL={setUrl} />
 							<Stack gap="lg">
 								<Box>
 									<Text fw={600} fz="lg" mb={2} c="bright">
@@ -86,7 +93,7 @@ export function MiniNewScaffold() {
 										style={{
 											border: "none",
 											borderRadius: 24,
-											backgroundColor: "black"
+											backgroundColor: "black",
 										}}
 									/>
 								</Box>
@@ -96,7 +103,8 @@ export function MiniNewScaffold() {
 										Restore editor
 									</Text>
 									<Text c="slate.2" mb="sm">
-										Optionally paste in an existing embed URL to restore the editor
+										Optionally paste in an existing embed URL to restore the
+										editor
 									</Text>
 									<Button
 										size="sm"
@@ -105,10 +113,7 @@ export function MiniNewScaffold() {
 									>
 										Restore from URL
 									</Button>
-									<Modal
-										opened={showParse}
-										onClose={showParseHandle.close}
-									>
+									<Modal opened={showParse} onClose={showParseHandle.close}>
 										<Group>
 											<TextInput
 												onChange={parseUrl}
@@ -116,9 +121,7 @@ export function MiniNewScaffold() {
 												placeholder="Paste your embed URL here"
 												flex={1}
 											/>
-											<ActionIcon
-												onClick={showParseHandle.close}
-											>
+											<ActionIcon onClick={showParseHandle.close}>
 												<Icon path={iconClose} />
 											</ActionIcon>
 										</Group>

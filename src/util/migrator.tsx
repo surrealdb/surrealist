@@ -1,5 +1,15 @@
-import { Connection, ConnectionOptions, ResultMode, SurrealistConfig, TabQuery } from "~/types";
-import { createBaseConfig, createBaseConnection, createBaseConnectionOptions } from "./defaults";
+import {
+	Connection,
+	ConnectionOptions,
+	ResultMode,
+	SurrealistConfig,
+	TabQuery,
+} from "~/types";
+import {
+	createBaseConfig,
+	createBaseConnection,
+	createBaseConnectionOptions,
+} from "./defaults";
 import { newId } from "./helpers";
 
 type LegacyAuthMode = "none" | "root" | "namespace" | "database" | "scope";
@@ -73,13 +83,17 @@ interface LegacyConfig {
 	defaultDesignerNodeMode: LegacyDesignerNodeMode;
 }
 
-function migrateConnectionOptions(legacy: LegacyConnectionOptions): ConnectionOptions {
+function migrateConnectionOptions(
+	legacy: LegacyConnectionOptions,
+): ConnectionOptions {
 	return {
 		...createBaseConnectionOptions(),
 		authMode: legacy.authMode,
 		namespace: legacy.namespace,
 		database: legacy.database,
-		hostname: legacy.endpoint.replace(/(ws|wss|http|https):\/\//, "") || "localhost:8000",
+		hostname:
+			legacy.endpoint.replace(/(ws|wss|http|https):\/\//, "") ||
+			"localhost:8000",
 		username: legacy.username,
 		password: legacy.password,
 		protocol: legacy.endpoint.startsWith("ws") ? "ws" : "http",
@@ -108,10 +122,10 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 				queries.push({
 					id,
 					query: query.text,
-					name: query.name || 'Untitled query',
+					name: query.name || "Untitled query",
 					variables: "{}",
 					valid: true,
-					resultMode: config.settings.appearance.defaultResultMode
+					resultMode: config.settings.appearance.defaultResultMode,
 				});
 			}
 
@@ -121,7 +135,7 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 				name: tab.name,
 				connection: migrateConnectionOptions(tab.connection),
 				pinnedTables: tab.pinnedTables,
-				diagramMode: tab.designerNodeMode || 'fields',
+				diagramMode: tab.designerNodeMode || "fields",
 				queries,
 			};
 
@@ -152,8 +166,8 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 					password: "",
 					scope: "",
 					scopeFields: [],
-					...env.connection
-				})
+					...env.connection,
+				}),
 			});
 		}
 	}
@@ -162,7 +176,7 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 		for (const fav of legacy.queryFavorites) {
 			config.savedQueries.push({
 				...fav,
-				tags: []
+				tags: [],
 			});
 		}
 	}
@@ -180,8 +194,11 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 	config.settings.serving.port = legacy.surrealPort;
 	config.settings.behavior.updateChecker = legacy.updateChecker;
 	config.settings.behavior.queryErrorChecker = legacy.errorChecking;
-	config.settings.appearance.defaultDiagramMode = legacy.defaultDesignerNodeMode;
-	config.settings.appearance.defaultResultMode = migrateResultMode(legacy.resultListing);
+	config.settings.appearance.defaultDiagramMode =
+		legacy.defaultDesignerNodeMode;
+	config.settings.appearance.defaultResultMode = migrateResultMode(
+		legacy.resultListing,
+	);
 	config.settings.appearance.editorScale = legacy.fontZoomLevel * 100;
 
 	return config;

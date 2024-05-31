@@ -1,20 +1,20 @@
-import classes from "./style.module.scss";
 import { Box, BoxProps, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
-import { MouseEvent, useMemo } from "react";
-import { renderDataCell } from "./datatypes";
-import { ColumnSort } from "~/types";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "../Icon";
 import { alphabetical, isObject } from "radash";
+import { MouseEvent, useMemo } from "react";
+import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
+import { ColumnSort } from "~/types";
 import { iconChevronDown, iconChevronUp } from "~/util/icons";
+import { Icon } from "../Icon";
+import { renderDataCell } from "./datatypes";
+import classes from "./style.module.scss";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
 }
 
-interface DataTableProps extends BoxProps{
+interface DataTableProps extends BoxProps {
 	data: any;
 	active?: string | null;
 	sorting?: ColumnSort | null;
@@ -92,11 +92,8 @@ export function DataTable(props: DataTableProps) {
 	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
-		return keys.map(key => (
-			<Box
-				key={key}
-				component="th"
-			>
+		return keys.map((key) => (
+			<Box key={key} component="th">
 				<Text
 					span
 					fw={700}
@@ -108,7 +105,12 @@ export function DataTable(props: DataTableProps) {
 					}}
 				>
 					{key}
-					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? iconChevronDown : iconChevronUp} pos="absolute" />}
+					{sorting?.[0] == key && (
+						<Icon
+							path={sorting[1] == "asc" ? iconChevronDown : iconChevronUp}
+							pos="absolute"
+						/>
+					)}
 				</Text>
 			</Box>
 		));
@@ -135,7 +137,9 @@ export function DataTable(props: DataTableProps) {
 					onClick={() => value.id && inspect(value.id)}
 					onContextMenu={(e) => onRowContextMenu?.(e, value)}
 					style={{
-						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
+						backgroundColor: `${
+							isActive ? "var(--mantine-color-slate-6)" : undefined
+						} !important`,
 					}}
 				>
 					{columns}
@@ -149,11 +153,7 @@ export function DataTable(props: DataTableProps) {
 	}
 
 	return (
-		<ScrollArea
-			className={classes.root}
-			scrollbars="xy"
-			{...rest}
-		>
+		<ScrollArea className={classes.root} scrollbars="xy" {...rest}>
 			<Table className={classes.table}>
 				<thead>
 					<tr>{columnHeaders}</tr>

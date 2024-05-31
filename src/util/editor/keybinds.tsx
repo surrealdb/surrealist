@@ -6,7 +6,7 @@ import { KeyBinding } from "@codemirror/view";
  */
 export const acceptWithTab: KeyBinding = {
 	key: "Tab",
-	run: acceptCompletion
+	run: acceptCompletion,
 };
 
 /**
@@ -17,5 +17,5 @@ export const runQuery: KeyBinding = {
 	key: "Mod-Enter",
 	run: () => {
 		return true;
-	}
+	},
 };

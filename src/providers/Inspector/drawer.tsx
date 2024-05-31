@@ -1,31 +1,48 @@
-import classes from "./style.module.scss";
-import { useEffect, useState } from "react";
-import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons";
-import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, Tooltip } from "@mantine/core";
-import { useIsLight } from "~/hooks/theme";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-import { HistoryHandle } from "~/hooks/history";
-import { ModalTitle } from "~/components/ModalTitle";
+import {
+	ActionIcon,
+	Center,
+	Drawer,
+	Group,
+	Paper,
+	Tabs,
+	Text,
+	Tooltip,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { RelationsTab } from "./tabs/relations";
-import { ContentTab } from "./tabs/content";
-import { useSaveable } from "~/hooks/save";
-import { useConfirmation } from "../Confirmation";
-import { executeQuery } from "~/connection";
+import { useEffect, useState } from "react";
 import { RecordId } from "surrealdb.js";
-import { formatValue, parseValue } from "~/util/surrealql";
-import { CodeInput } from "~/components/Inputs";
-import { useValueValidator } from "~/hooks/surrealql";
 import { DrawerResizer } from "~/components/DrawerResizer";
+import { Icon } from "~/components/Icon";
+import { CodeInput } from "~/components/Inputs";
+import { ModalTitle } from "~/components/ModalTitle";
+import { Spacer } from "~/components/Spacer";
+import { executeQuery } from "~/connection";
+import { HistoryHandle } from "~/hooks/history";
+import { useSaveable } from "~/hooks/save";
+import { useStable } from "~/hooks/stable";
+import { useValueValidator } from "~/hooks/surrealql";
+import { useIsLight } from "~/hooks/theme";
+import {
+	iconArrowLeftFat,
+	iconClose,
+	iconDelete,
+	iconJSON,
+	iconRefresh,
+	iconSearch,
+	iconTransfer,
+} from "~/util/icons";
+import { formatValue, parseValue } from "~/util/surrealql";
+import { useConfirmation } from "../Confirmation";
+import classes from "./style.module.scss";
+import { ContentTab } from "./tabs/content";
+import { RelationsTab } from "./tabs/relations";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
 	exists: false,
 	initial: "",
 	inputs: [],
-	outputs: []
+	outputs: [],
 };
 
 interface ActiveRecord {
@@ -43,26 +60,34 @@ export interface InspectorDrawerProps {
 	onRefresh: () => void;
 }
 
-export function InspectorDrawer({ opened, history, onClose, onRefresh }: InspectorDrawerProps) {
-	const [currentRecord, setCurrentRecord] = useState<ActiveRecord>(DEFAULT_RECORD);
-	const [recordId, setRecordId] = useInputState('');
-	const [recordBody, setRecordBody] = useState('');
+export function InspectorDrawer({
+	opened,
+	history,
+	onClose,
+	onRefresh,
+}: InspectorDrawerProps) {
+	const [currentRecord, setCurrentRecord] =
+		useState<ActiveRecord>(DEFAULT_RECORD);
+	const [recordId, setRecordId] = useInputState("");
+	const [recordBody, setRecordBody] = useState("");
 	const [isValid, body] = useValueValidator(recordBody);
 
 	const isLight = useIsLight();
-	const inputColor = currentRecord.exists ? undefined : 'var(--mantine-color-red-6)';
+	const inputColor = currentRecord.exists
+		? undefined
+		: "var(--mantine-color-red-6)";
 
 	const saveHandle = useSaveable({
 		valid: isValid,
 		track: {
-			recordBody
+			recordBody,
 		},
 		onRevert(original) {
 			setRecordBody(original.recordBody);
 		},
 		onSave() {
 			saveRecord();
-		}
+		},
 	});
 
 	const fetchRecord = useStable(async (id: RecordId) => {
@@ -70,11 +95,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		const inputQuery = /* surql */ `SELECT VALUE <-? FROM ONLY $id`;
 		const outputsQuery = /* surql */ `SELECT VALUE ->? FROM ONLY $id`;
 
-		const [
-			{ result: content },
-			{ result: inputs},
-			{ result: outputs}
-		] = await executeQuery(`${contentQuery};${inputQuery};${outputsQuery}`, { id });
+		const [{ result: content }, { result: inputs }, { result: outputs }] =
+			await executeQuery(`${contentQuery};${inputQuery};${outputsQuery}`, {
+				id,
+			});
 
 		const formatted = formatValue(content, false, true);
 
@@ -84,7 +108,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			exists: !!content,
 			initial: formatted,
 			inputs,
-			outputs
+			outputs,
 		});
 
 		if (content) {
@@ -118,7 +142,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	});
 
 	const deleteRecord = useConfirmation({
-		message: "You are about to delete this record. This action cannot be undone.",
+		message:
+			"You are about to delete this record. This action cannot be undone.",
 		confirmText: "Delete",
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `DELETE ${formatValue(history.current)}`);
@@ -130,11 +155,11 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		},
 	});
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useEffect(() => {
 		if (history.current) {
 			fetchRecord(history.current);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [history.current]);
 
 	const [width, setWidth] = useState(650);
@@ -150,15 +175,11 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				body: {
 					height: "100%",
 					display: "flex",
-					flexDirection: "column"
-				}
+					flexDirection: "column",
+				},
 			}}
 		>
-			<DrawerResizer
-				minSize={500}
-				maxSize={900}
-				onResize={setWidth}
-			/>
+			<DrawerResizer minSize={500} maxSize={900} onResize={setWidth} />
 
 			<Group mb="md" gap="sm">
 				<ModalTitle>
@@ -171,10 +192,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				<Group align="center">
 					{history.canPop && (
 						<Tooltip label="Go back">
-							<ActionIcon
-								onClick={history.pop}
-								aria-label="Go back in history"
-							>
+							<ActionIcon onClick={history.pop} aria-label="Go back in history">
 								<Icon path={iconArrowLeftFat} />
 							</ActionIcon>
 						</Tooltip>
@@ -192,18 +210,12 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					</Tooltip>
 
 					<Tooltip label="Refetch from database">
-						<ActionIcon
-							onClick={refreshRecord}
-							aria-label="Refetch record"
-						>
+						<ActionIcon onClick={refreshRecord} aria-label="Refetch record">
 							<Icon path={iconRefresh} />
 						</ActionIcon>
 					</Tooltip>
 
-					<ActionIcon
-						onClick={onClose}
-						aria-label="Close inspector drawer"
-					>
+					<ActionIcon onClick={onClose} aria-label="Close inspector drawer">
 						<Icon path={iconClose} />
 					</ActionIcon>
 				</Group>
@@ -218,22 +230,17 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				variant="filled"
 				rightSectionWidth={76}
 				classNames={{
-					input: classes.recordInput
+					input: classes.recordInput,
 				}}
 				styles={{
 					input: {
 						color: inputColor,
-						borderColor: inputColor
+						borderColor: inputColor,
 					},
 				}}
 				rightSection={
 					currentRecord.isEdge && (
-						<Paper
-							title="This record is an edge"
-							bg="slate"
-							c="bright"
-							px="xs"
-						>
+						<Paper title="This record is an edge" bg="slate" c="bright" px="xs">
 							Edge
 						</Paper>
 					)
@@ -277,9 +284,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				</Tabs>
 			) : (
 				<Center my="xl">
-					<Text>
-						Record not found in database
-					</Text>
+					<Text>Record not found in database</Text>
 				</Center>
 			)}
 		</Drawer>

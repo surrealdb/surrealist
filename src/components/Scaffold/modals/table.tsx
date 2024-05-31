@@ -1,18 +1,26 @@
-import { Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput } from "@mantine/core";
-import { useLayoutEffect, useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "~/components/Icon";
+import {
+	Button,
+	Group,
+	Modal,
+	MultiSelect,
+	Stack,
+	Tabs,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Form } from "../../Form";
-import { syncDatabaseSchema } from "~/util/schema";
-import { useTableNames } from "~/hooks/schema";
-import { ModalTitle } from "../../ModalTitle";
-import { iconPlus, iconRelation, iconTable } from "~/util/icons";
-import { useInterfaceStore } from "~/stores/interface";
-import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useLayoutEffect, useState } from "react";
+import { Icon } from "~/components/Icon";
 import { executeQuery } from "~/connection";
+import { useTableNames } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 import { tb } from "~/util/helpers";
+import { iconPlus, iconRelation, iconTable } from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
+import { Form } from "../../Form";
+import { ModalTitle } from "../../ModalTitle";
 
 export function TableCreator() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
@@ -29,13 +37,15 @@ export function TableCreator() {
 		let query = `DEFINE TABLE ${tb(tableName)} TYPE `;
 
 		if (createType === "relation") {
-			const inTables = tableIn.map((t) => tb(t)).join('|');
-			const outTables = tableOut.map((t) => tb(t)).join('|');
+			const inTables = tableIn.map((t) => tb(t)).join("|");
+			const outTables = tableOut.map((t) => tb(t)).join("|");
 
 			query += `RELATION IN ${inTables} OUT ${outTables};`;
 
 			query += `DEFINE FIELD in ON ${tb(tableName)} TYPE record<${inTables}>;`;
-			query += `DEFINE FIELD out ON ${tb(tableName)} TYPE record<${outTables}>;`;
+			query += `DEFINE FIELD out ON ${tb(
+				tableName,
+			)} TYPE record<${outTables}>;`;
 		} else {
 			query += "NORMAL;";
 		}
@@ -44,25 +54,25 @@ export function TableCreator() {
 
 		await executeQuery(query);
 		await syncDatabaseSchema({
-			tables: [tableName]
+			tables: [tableName],
 		});
 
 		const { activeView } = useConfigStore.getState();
 
 		if (activeView === "explorer") {
 			dispatchIntent("explore-table", {
-				table: tableName
+				table: tableName,
 			});
 		}
 	});
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useLayoutEffect(() => {
 		if (opened) {
 			setTableName("");
 			setTableIn([]);
 			setTableOut([]);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [opened]);
 
 	useIntent("new-table", openTableCreator);
@@ -74,16 +84,22 @@ export function TableCreator() {
 				onClose={closeTableCreator}
 				trapFocus={false}
 				size="sm"
-				title={
-					<ModalTitle>{`Create new ${createType}`}</ModalTitle>
-				}
+				title={<ModalTitle>{`Create new ${createType}`}</ModalTitle>}
 			>
-				<Tabs mb="xl" defaultValue="table" value={createType} onChange={setCreateType as any}>
+				<Tabs
+					mb="xl"
+					defaultValue="table"
+					value={createType}
+					onChange={setCreateType as any}
+				>
 					<Tabs.List grow>
 						<Tabs.Tab value="table" rightSection={<Icon path={iconTable} />}>
 							Table
 						</Tabs.Tab>
-						<Tabs.Tab value="relation" rightSection={<Icon path={iconRelation} />}>
+						<Tabs.Tab
+							value="relation"
+							rightSection={<Icon path={iconRelation} />}
+						>
 							Relation
 						</Tabs.Tab>
 					</Tabs.List>
@@ -91,7 +107,13 @@ export function TableCreator() {
 
 				<Form onSubmit={createTable}>
 					<Stack>
-						<TextInput placeholder="Enter table name" value={tableName} spellCheck={false} onChange={setTableName} autoFocus />
+						<TextInput
+							placeholder="Enter table name"
+							value={tableName}
+							spellCheck={false}
+							onChange={setTableName}
+							autoFocus
+						/>
 						{createType === "relation" && (
 							<>
 								<MultiSelect
@@ -122,7 +144,10 @@ export function TableCreator() {
 								type="submit"
 								variant="gradient"
 								flex={1}
-								disabled={!tableName || (createType === "relation" && (!tableIn || !tableOut))}
+								disabled={
+									!tableName ||
+									(createType === "relation" && (!tableIn || !tableOut))
+								}
 								rightSection={<Icon path={iconPlus} />}
 							>
 								Create

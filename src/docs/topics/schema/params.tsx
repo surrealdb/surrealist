@@ -2,13 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/docs/components";
 import { Snippets, TopicProps } from "~/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsSchemaParams({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
+export function DocsSchemaParams({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -100,26 +95,21 @@ export function DocsSchemaParams({ language, topic }: TopicProps) {
 		$db->query('SELECT * FROM person WHERE name.firstname = $name.firstname');
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
 		<Article title="Params">
 			<div>
 				<p>
-					In your database you can define parameters that can be used
-					in your queries. These parameters can be used to store
-					values that are used in multiple queries, or to store values
-					that are used in other parts of your application.
+					In your database you can define parameters that can be used in your
+					queries. These parameters can be used to store values that are used in
+					multiple queries, or to store values that are used in other parts of
+					your application.
 				</p>
-
 			</div>
 			<Box>
-				<DocsPreview
-					language={language}
-					title="Params"
-					values={snippets}
-				/>
+				<DocsPreview language={language} title="Params" values={snippets} />
 			</Box>
 		</Article>
 	);

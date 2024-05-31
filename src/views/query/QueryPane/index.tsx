@@ -1,23 +1,35 @@
-import { useStable } from "~/hooks/stable";
+import { SelectionRange } from "@codemirror/state";
+import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { surrealql } from "codemirror-surrealql";
+import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { encodeCbor } from "surrealdb.js";
+import { Value } from "surrealql.wasm/v1";
+import { CodeEditor } from "~/components/CodeEditor";
+import { HoverIcon } from "~/components/HoverIcon";
+import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useDebouncedFunction } from "~/hooks/debounce";
-import { CodeEditor } from "~/components/CodeEditor";
-import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
-import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
-import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting, surqlCustomFunctionCompletion } from "~/util/editor/extensions";
-import { TabQuery } from "~/types";
-import { Icon } from "~/components/Icon";
-import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import { Text } from "@mantine/core";
-import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { SelectionRange } from "@codemirror/state";
+import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
-import { HoverIcon } from "~/components/HoverIcon";
+import { useConfigStore } from "~/stores/config";
+import { TabQuery } from "~/types";
+import {
+	selectionChanged,
+	surqlCustomFunctionCompletion,
+	surqlLinting,
+	surqlTableCompletion,
+	surqlVariableCompletion,
+} from "~/util/editor/extensions";
+import { extractVariables, showError, tryParseParams } from "~/util/helpers";
+import {
+	iconAutoFix,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+} from "~/util/icons";
 import { formatQuery, validateQuery } from "~/util/surrealql";
-import { surrealql } from "codemirror-surrealql";
-import { Value } from "surrealql.wasm/v1";
-import { encodeCbor } from "surrealdb.js";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -46,7 +58,7 @@ export function QueryPane({
 		setIsValid(!validateQuery(query));
 		updateQueryTab({
 			id: activeTab.id,
-			query
+			query,
 		});
 	});
 
@@ -55,19 +67,19 @@ export function QueryPane({
 	const handleFormat = useStable(() => {
 		try {
 			const query = hasSelection
-				? activeTab.query.slice(0, selection.from)
-					+ formatQuery(activeTab.query.slice(selection.from, selection.to))
-					+ activeTab.query.slice(selection.to)
+				? activeTab.query.slice(0, selection.from) +
+					formatQuery(activeTab.query.slice(selection.from, selection.to)) +
+					activeTab.query.slice(selection.to)
 				: formatQuery(activeTab.query);
 
 			updateQueryTab({
-				id : activeTab.id,
-				query
+				id: activeTab.id,
+				query,
 			});
 		} catch {
 			showError({
 				title: "Failed to format",
-				subtitle: "Your query must be valid to format it"
+				subtitle: "Your query must be valid to format it",
 			});
 		}
 	});
@@ -82,22 +94,29 @@ export function QueryPane({
 		const query = activeTab.query;
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(query).filter((v) => !currentKeys.includes(v));
+		const variables = extractVariables(query).filter(
+			(v) => !currentKeys.includes(v),
+		);
 
-		const newVars = variables.reduce((acc, v) => {
-			acc[v] = "";
-			return acc;
-		}, {} as Record<string, any>);
+		const newVars = variables.reduce(
+			(acc, v) => {
+				acc[v] = "";
+				return acc;
+			},
+			{} as Record<string, any>,
+		);
 
 		const mergedVars = {
 			...currentVars,
-			...newVars
+			...newVars,
 		};
 
 		setShowVariables(true);
 		updateQueryTab({
 			id: activeTab.id,
-			variables: Value.from_cbor(new Uint8Array(encodeCbor(mergedVars))).format(true),
+			variables: Value.from_cbor(new Uint8Array(encodeCbor(mergedVars))).format(
+				true,
+			),
 		});
 	});
 
@@ -136,14 +155,18 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip maw={175} multiline label={
-							<Stack gap={4}>
-								<Text>Infer variables from query</Text>
-								<Text c="dimmed" size="sm">
-									Automatically add missing variables.
-								</Text>
-							</Stack>
-						}>
+						<Tooltip
+							maw={175}
+							multiline
+							label={
+								<Stack gap={4}>
+									<Text>Infer variables from query</Text>
+									<Text c="dimmed" size="sm">
+										Automatically add missing variables.
+									</Text>
+								</Stack>
+							}
+						>
 							<ActionIcon
 								onClick={inferVariables}
 								variant="light"
@@ -153,7 +176,9 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
+						<Tooltip
+							label={showVariables ? "Hide variables" : "Show variables"}
+						>
 							<ActionIcon
 								onClick={toggleVariables}
 								variant="light"
@@ -175,7 +200,7 @@ export function QueryPane({
 					surqlTableCompletion(),
 					surqlVariableCompletion(),
 					surqlCustomFunctionCompletion(),
-					selectionChanged(setSelection)
+					selectionChanged(setSelection),
 				]}
 			/>
 		</ContentPane>

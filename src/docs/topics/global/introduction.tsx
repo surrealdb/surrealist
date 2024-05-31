@@ -1,20 +1,20 @@
-import classes from "../../style.module.scss";
-import { Article } from "~/docs/components";
 import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
+import clsx from "clsx";
+import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { Article } from "~/docs/components";
 import {
 	DotNetIcon,
-	JavaScriptIcon, PhpIcon,
+	JavaScriptIcon,
+	PhpIcon,
 	PythonIcon,
 	RustIcon,
 	SurrealIcon,
 } from "~/docs/icons";
-import { useActiveConnection } from "~/hooks/connection";
 import { useSetting } from "~/hooks/config";
 import { CodeLang } from "~/types";
-import clsx from "clsx";
-import { Icon } from "~/components/Icon";
 import { iconOpen } from "~/util/icons";
-import { adapter } from "~/adapter";
+import classes from "../../style.module.scss";
 
 interface Library {
 	id: CodeLang;
@@ -79,13 +79,12 @@ const LIBRARIES: Library[] = [
 		name: "PHP",
 		icon: PhpIcon,
 		color: "#777BB4",
-		link: "https://github.com/surrealdb/surrealdb.php"
-	}
+		link: "https://github.com/surrealdb/surrealdb.php",
+	},
 ];
 
 export function DocsGlobalIntroduction() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
-	const { connection } = useActiveConnection();
 
 	const active = LIBRARIES.find((lib) => lib.id === language);
 
@@ -93,34 +92,32 @@ export function DocsGlobalIntroduction() {
 		<Article>
 			<div>
 				<p>
-					SurrealDB offers a rich set of client libraries and
-					connection protocols to make it easy to integrate SurrealDB
-					into your application. This page provides documentation for
-					using these libraries and protocols within the context of
-					your database and schema. You can change the language of the
-					code examples by selecting a different language from the
-					dropdown in the top right corner of this panel.
+					SurrealDB offers a rich set of client libraries and connection
+					protocols to make it easy to integrate SurrealDB into your
+					application. This page provides documentation for using these
+					libraries and protocols within the context of your database and
+					schema. You can change the language of the code examples by selecting
+					a different language from the dropdown in the top right corner of this
+					panel.
 				</p>
 				<Title order={2} mt="xl">
 					Client libraries
 				</Title>
 				<p>
-					Client libraries provide the most streamlined way to
-					interact with SurrealDB. They handle the low-level details
-					of the connection and provide a high-level API for
-					interacting with the database. We provide client libraries
-					for a variety of languages, including Rust, JavaScript,
-					Python, and many more.
+					Client libraries provide the most streamlined way to interact with
+					SurrealDB. They handle the low-level details of the connection and
+					provide a high-level API for interacting with the database. We provide
+					client libraries for a variety of languages, including Rust,
+					JavaScript, Python, and many more.
 				</p>
 				<Title order={2} mt="xl">
 					Using the CLI
 				</Title>
 				<p>
-					When working outside of a programming environment, the
-					SurrealDB CLI provides a convenient way to interact with
-					your database. It provides a simple command-line interface
-					for executing queries, which is especially useful for
-					limited environments.
+					When working outside of a programming environment, the SurrealDB CLI
+					provides a convenient way to interact with your database. It provides
+					a simple command-line interface for executing queries, which is
+					especially useful for limited environments.
 				</p>
 				{active && (
 					<>
@@ -128,8 +125,8 @@ export function DocsGlobalIntroduction() {
 							Learn more
 						</Title>
 						<p>
-							You can learn more about the selected language by
-							visiting the official documentation.
+							You can learn more about the selected language by visiting the
+							official documentation.
 						</p>
 						<Button
 							variant="gradient"
@@ -144,14 +141,7 @@ export function DocsGlobalIntroduction() {
 				)}
 			</div>
 			<Box>
-				<Text
-					fz="lg"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					mb="sm"
-					c="bright"
-				>
+				<Text fz="lg" ff="mono" tt="uppercase" fw={600} mb="sm" c="bright">
 					Select a preview language
 				</Text>
 				<Paper radius="xl">
@@ -175,7 +165,7 @@ export function DocsGlobalIntroduction() {
 									bg="slate.9"
 									className={clsx(
 										classes.library,
-										isActive && classes.libraryActive
+										isActive && classes.libraryActive,
 									)}
 									onClick={() => setLanguage(lib.id)}
 								>

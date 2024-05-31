@@ -1,14 +1,24 @@
-import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
-import { TableInfo } from "~/types";
+import {
+	Box,
+	Divider,
+	Flex,
+	Group,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
+import { MouseEvent, useMemo, useRef } from "react";
 import { Handle, Position } from "reactflow";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { themeColor } from "~/util/mantine";
 import { useActiveConnection } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
+import { TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION, extractType } from "~/util/helpers";
-import { MouseEvent, useMemo, useRef } from "react";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
+import { themeColor } from "~/util/mantine";
 
 interface SummaryProps {
 	isLight: boolean;
@@ -18,21 +28,14 @@ interface SummaryProps {
 }
 
 function Summary(props: SummaryProps) {
-	const valueColor = props.value > 0
-		? "surreal"
-		: "dimmed";
+	const valueColor = props.value > 0 ? "surreal" : "dimmed";
 
 	return (
 		<Group pr={4} wrap="nowrap">
 			<Icon path={props.icon} />
-			<Text c={props.isLight ? "slate.9" : "white"}>
-				{props.title}
-			</Text>
+			<Text c={props.isLight ? "slate.9" : "white"}>{props.title}</Text>
 			<Spacer />
-			<Text
-				c={valueColor}
-				fw={600}
-			>
+			<Text c={valueColor} fw={600}>
 				{props.value}
 			</Text>
 		</Group>
@@ -44,7 +47,6 @@ interface FieldKindProps {
 }
 
 function FieldKind({ kind }: FieldKindProps) {
-
 	const [kindName, tooltip] = useMemo(() => extractType(kind), [kind]);
 
 	const value = (
@@ -68,11 +70,7 @@ function FieldKind({ kind }: FieldKindProps) {
 	);
 
 	return (
-		<Tooltip
-			position="top"
-			label={items}
-			openDelay={0}
-		>
+		<Tooltip position="top" label={items} openDelay={0}>
 			{value}
 		</Tooltip>
 	);
@@ -96,21 +94,19 @@ function Fields(props: FieldsProps) {
 	};
 
 	return (
-		<Box display="flex" style={{ cursor: 'pointer' }}>
+		<Box display="flex" style={{ cursor: "pointer" }}>
 			<ScrollArea
 				flex={1}
 				mah={210}
-				onScrollPositionChange={() => skipMouseUp.current = true}
+				onScrollPositionChange={() => {
+					skipMouseUp.current = true;
+				}}
 				onClickCapture={onClick}
 				onWheelCapture={ON_STOP_PROPAGATION}
 				onMouseDownCapture={ON_STOP_PROPAGATION}
 				onMouseUpCapture={ON_STOP_PROPAGATION}
 			>
-				<Stack
-					gap="xs"
-					mt={10}
-					p={0}
-				>
+				<Stack gap="xs" mt={10} p={0}>
 					{fields.map((field) => (
 						<Flex key={field.name} justify="space-between" gap="lg">
 							<Text
@@ -121,9 +117,7 @@ function Fields(props: FieldsProps) {
 								{field.name}
 							</Text>
 							{field.kind ? (
-								<FieldKind
-									kind={field.kind}
-								/>
+								<FieldKind kind={field.kind} />
 							) : (
 								<Text c="slate" title={field.kind}>
 									none
@@ -150,8 +144,10 @@ export function BaseNode(props: BaseNodeProps) {
 	const { diagramMode, diagramDirection } = useActiveConnection();
 
 	const isLight = useIsLight();
-	const isLTR = diagramDirection == 'ltr';
-	const showMore = diagramMode == 'summary' || (diagramMode == 'fields' && table.fields.length > 0);
+	const isLTR = diagramDirection == "ltr";
+	const showMore =
+		diagramMode == "summary" ||
+		(diagramMode == "fields" && table.fields.length > 0);
 
 	return (
 		<>
@@ -159,7 +155,7 @@ export function BaseNode(props: BaseNodeProps) {
 				type="target"
 				position={isLTR ? Position.Left : Position.Right}
 				style={{
-					visibility: hasIncoming ? 'visible' : 'hidden'
+					visibility: hasIncoming ? "visible" : "hidden",
 				}}
 			/>
 
@@ -167,7 +163,7 @@ export function BaseNode(props: BaseNodeProps) {
 				type="source"
 				position={isLTR ? Position.Right : Position.Left}
 				style={{
-					visibility: hasOutgoing ? 'visible' : 'hidden'
+					visibility: hasOutgoing ? "visible" : "hidden",
 				}}
 			/>
 
@@ -178,8 +174,10 @@ export function BaseNode(props: BaseNodeProps) {
 				bg={isLight ? "white" : "slate.7"}
 				shadow={`0 8px 15px var(--mantine-color-slate-${isLight ? 0 : 9}`}
 				style={{
-					border: `1px solid ${themeColor(isSelected ? 'surreal' : isLight ? 'slate.2' : 'slate.5')}`,
-					userSelect: 'none'
+					border: `1px solid ${themeColor(
+						isSelected ? "surreal" : isLight ? "slate.2" : "slate.5",
+					)}`,
+					userSelect: "none",
 				}}
 			>
 				<Group
@@ -193,8 +191,8 @@ export function BaseNode(props: BaseNodeProps) {
 					/>
 					<Text
 						style={{
-							textOverflow: 'ellipsis',
-							overflow: 'hidden'
+							textOverflow: "ellipsis",
+							overflow: "hidden",
 						}}
 					>
 						{table.schema.name}
@@ -203,16 +201,10 @@ export function BaseNode(props: BaseNodeProps) {
 
 				{showMore && (
 					<>
-						<Divider
-							color={isLight ? 'slate.2' : 'slate.6'}
-							mt="sm"
-						/>
+						<Divider color={isLight ? "slate.2" : "slate.6"} mt="sm" />
 
-						{diagramMode == 'fields' ? (
-							<Fields
-								isLight={isLight}
-								table={table}
-							/>
+						{diagramMode == "fields" ? (
+							<Fields isLight={isLight} table={table} />
 						) : (
 							<Stack gap="xs" mt={10} p={0}>
 								<Summary

@@ -1,20 +1,25 @@
-import { Stack, Select, Group, ActionIcon } from "@mantine/core";
-import { featureFlags, schema, useFeatureFlags } from "~/util/feature-flags";
-import { useMemo } from "react";
-import { Spacer } from "~/components/Spacer";
+import { ActionIcon, Group, Select, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
+import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
+import { featureFlags, schema, useFeatureFlags } from "~/util/feature-flags";
 import { iconReset } from "~/util/icons";
 
 export function FeatureFlagsTab() {
 	const [flags, setFlags] = useFeatureFlags();
-	const flagNames = useMemo(() => Object.keys(flags) as (keyof typeof flags)[], [flags]);
+	const flagNames = useMemo(
+		() => Object.keys(flags) as (keyof typeof flags)[],
+		[flags],
+	);
 	const defaults = featureFlags.initialStore;
 
 	return (
-		<Stack gap="xs" style={{ overflow: 'hidden' }}>
+		<Stack gap="xs" style={{ overflow: "hidden" }}>
 			{flagNames.map((flag) => {
-				const mapped = Object.fromEntries(schema[flag].options.map(v => [v.toString(), v]));
+				const mapped = Object.fromEntries(
+					schema[flag].options.map((v) => [v.toString(), v]),
+				);
 				const data = schema[flag].options.map((value) => value.toString());
 
 				return (
@@ -22,9 +27,7 @@ export function FeatureFlagsTab() {
 						<Text fw={600} c="bright">
 							{flag}
 						</Text>
-						<Text c="slate">
-							({typeof flags[flag]})
-						</Text>
+						<Text c="slate">({typeof flags[flag]})</Text>
 						<Spacer />
 						{defaults[flag] !== flags[flag] && (
 							<ActionIcon
@@ -38,7 +41,9 @@ export function FeatureFlagsTab() {
 						<Select
 							data={data}
 							value={flags[flag].toString()}
-							onChange={(val) => setFlags({ [flag]: val ? mapped[val] : defaults[flag] })}
+							onChange={(val) =>
+								setFlags({ [flag]: val ? mapped[val] : defaults[flag] })
+							}
 							size="xs"
 						/>
 					</Group>

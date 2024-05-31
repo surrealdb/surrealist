@@ -2,38 +2,38 @@ import { dispatchIntent } from "~/hooks/url";
 import { ViewMode } from "~/types";
 
 const INTENT_REGISTRY = {
-	'open-connections': null,
-	'open-help': null,
-	'open-news': null,
-	'open-changelog': null,
-	'open-settings': null,
-	'open-embedder': null,
-	'new-connection': null,
-	'new-table': null,
-	'toggle-serving': null,
-	'open-serving-console': null,
-	'increase-window-scale': null,
-	'decrease-window-scale': null,
-	'increase-editor-scale': null,
-	'decrease-editor-scale': null,
-	'toggle-pinned': null,
-	'download-app': null,
-	'new-query': 'query',
-	'run-query': 'query',
-	'save-query': 'query',
-	'format-query': 'query',
-	'toggle-variables': 'query',
-	'infer-variables': 'query',
-	'explore-table': 'explorer',
-	'design-table': 'designer',
-	'open-saved-queries': 'query',
-	'open-query-history': 'query',
-	'import-database': 'explorer',
-	'export-database': 'explorer',
-	'create-user': 'authentication',
-	'create-scope': 'authentication',
-	'register-user': 'authentication',
-	'docs-switch-language': 'documentation',
+	"open-connections": null,
+	"open-help": null,
+	"open-news": null,
+	"open-changelog": null,
+	"open-settings": null,
+	"open-embedder": null,
+	"new-connection": null,
+	"new-table": null,
+	"toggle-serving": null,
+	"open-serving-console": null,
+	"increase-window-scale": null,
+	"decrease-window-scale": null,
+	"increase-editor-scale": null,
+	"decrease-editor-scale": null,
+	"toggle-pinned": null,
+	"download-app": null,
+	"new-query": "query",
+	"run-query": "query",
+	"save-query": "query",
+	"format-query": "query",
+	"toggle-variables": "query",
+	"infer-variables": "query",
+	"explore-table": "explorer",
+	"design-table": "designer",
+	"open-saved-queries": "query",
+	"open-query-history": "query",
+	"import-database": "explorer",
+	"export-database": "explorer",
+	"create-user": "authentication",
+	"create-scope": "authentication",
+	"register-user": "authentication",
+	"docs-switch-language": "documentation",
 } satisfies IntentMap;
 
 export type IntentType = keyof typeof INTENT_REGISTRY;
@@ -63,11 +63,11 @@ export function getIntentView(type: IntentType) {
  * Process an intent URL with support for view paths
  */
 export function handleIntentRequest(intentStr: string) {
-	const [type, ...args] = intentStr.split(':');
+	const [type, ...args] = intentStr.split(":");
 
 	if (isIntent(type)) {
-		const payload = (args.join(':') || '').split(',').reduce((acc, arg) => {
-			const [key, value] = arg.split('=');
+		const payload = (args.join(":") || "").split(",").reduce((acc, arg) => {
+			const [key, value] = arg.split("=");
 			return { ...acc, [key]: value };
 		}, {} as any);
 

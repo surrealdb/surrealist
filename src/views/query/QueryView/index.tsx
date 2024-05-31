@@ -1,45 +1,57 @@
-import classes from "./style.module.scss";
-import surrealistIcon from "~/assets/images/logo.webp";
-import posthog from "posthog-js";
-import { QueryPane } from "../QueryPane";
-import { ResultPane } from "../ResultPane";
-import { VariablesPane } from "../VariablesPane";
-import { TabsPane } from "../TabsPane";
-import { useDisclosure, useInputState } from "@mantine/hooks";
-import { useState } from "react";
-import { HistoryDrawer } from "../HistoryDrawer";
-import { adapter, isMini } from "~/adapter";
-import { Box, Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
-import { Spacer } from "~/components/Spacer";
+import { SelectionRange } from "@codemirror/state";
+import {
+	Box,
+	Button,
+	Group,
+	Modal,
+	SegmentedControl,
+	Stack,
+	TagsInput,
+	Text,
+	TextInput,
+	Textarea,
+} from "@mantine/core";
 import { Image } from "@mantine/core";
-import { PanelGroup, Panel } from "react-resizable-panels";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { SavesDrawer } from "../SavesDrawer";
+import { useDisclosure, useInputState } from "@mantine/hooks";
+import posthog from "posthog-js";
+import { useState } from "react";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { adapter, isMini } from "~/adapter";
+import { MiniAdapter } from "~/adapter/mini";
+import surrealistIcon from "~/assets/images/logo.webp";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
-import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
-import { useStable } from "~/hooks/stable";
-import { useConfigStore } from "~/stores/config";
-import { SavedQuery } from "~/types";
 import { ModalTitle } from "~/components/ModalTitle";
-import { iconCheck } from "~/util/icons";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { Spacer } from "~/components/Spacer";
 import { SurrealistLogo } from "~/components/SurrealistLogo";
-import { useIsLight } from "~/hooks/theme";
-import { MiniAdapter } from "~/adapter/mini";
-import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { SelectionRange } from "@codemirror/state";
-import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/connection";
 import { useSetting } from "~/hooks/config";
+import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { SavedQuery } from "~/types";
+import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
+import { iconCheck } from "~/util/icons";
+import { HistoryDrawer } from "../HistoryDrawer";
+import { QueryPane } from "../QueryPane";
+import { ResultPane } from "../ResultPane";
+import { SavesDrawer } from "../SavesDrawer";
+import { TabsPane } from "../TabsPane";
+import { VariablesPane } from "../VariablesPane";
+import classes from "./style.module.scss";
 
 const switchPortal = createHtmlPortalNode();
 
 export function QueryView() {
-	const { setShowQueryVariables, toggleQueryVariables } = useInterfaceStore.getState();
+	const { setShowQueryVariables, toggleQueryVariables } =
+		useInterfaceStore.getState();
 	const { saveQuery } = useConfigStore.getState();
 	const isLight = useIsLight();
 
@@ -54,7 +66,7 @@ export function QueryView() {
 
 	const tags = useSavedQueryTags();
 	const active = useActiveQuery();
-	const showVariables = useInterfaceStore(state => state.showQueryVariables);
+	const showVariables = useInterfaceStore((state) => state.showQueryVariables);
 
 	const [isSaving, isSavingHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -95,21 +107,22 @@ export function QueryView() {
 			id: editingId || newId(),
 			name: saveName,
 			query: saveContent,
-			tags: saveTags
+			tags: saveTags,
 		});
 
 		isSavingHandle.close();
 
-		posthog.capture('query_save');
+		posthog.capture("query_save");
 	});
 
 	const runQuery = useStable(() => {
 		if (!active) return;
 
 		executeUserQuery({
-			override: selection?.empty === false
-				? active.query.slice(selection.from, selection.to)
-				: undefined
+			override:
+				selection?.empty === false
+					? active.query.slice(selection.from, selection.to)
+					: undefined,
 		});
 	});
 
@@ -117,9 +130,8 @@ export function QueryView() {
 		setShowQueryVariables(false);
 	});
 
-	const variablesOrientation = orientation === "horizontal"
-		? "vertical"
-		: "horizontal";
+	const variablesOrientation =
+		orientation === "horizontal" ? "vertical" : "horizontal";
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
@@ -134,11 +146,11 @@ export function QueryView() {
 
 	const [minSize, ref] = usePanelMinSize(275);
 
-	const queryEditor = (
-		active && (
-			<PanelGroup direction={orientation}>
-				<Panel minSize={15}>
-					{isMini ? (showVariables ? (
+	const queryEditor = active && (
+		<PanelGroup direction={orientation}>
+			<Panel minSize={15}>
+				{isMini ? (
+					showVariables ? (
 						<VariablesPane
 							isValid={variablesValid}
 							switchPortal={switchPortal}
@@ -156,56 +168,53 @@ export function QueryView() {
 							setShowVariables={setShowQueryVariables}
 							onSelectionChange={setSelection}
 						/>
-					)) : (
-						<PanelGroup direction={variablesOrientation}>
-							<Panel minSize={35}>
-								<QueryPane
-									activeTab={active}
-									setIsValid={setQueryValid}
-									showVariables={showVariables}
-									selection={selection}
-									onSaveQuery={handleSaveRequest}
-									setShowVariables={setShowQueryVariables}
-									onSelectionChange={setSelection}
-								/>
-							</Panel>
-							{showVariables && (
-								<>
-									<PanelDragger />
-									<Panel defaultSize={40} minSize={35}>
-										<VariablesPane
-											isValid={variablesValid}
-											setIsValid={setVariablesValid}
-											closeVariables={closeVariables}
-										/>
-									</Panel>
-								</>
-							)}
-						</PanelGroup>
-					)}
-				</Panel>
-				<PanelDragger />
-				<Panel minSize={15}>
-					<ResultPane
-						activeTab={active}
-						isQueryValid={queryValid}
-						selection={selection}
-						onRunQuery={runQuery}
-					/>
-				</Panel>
-			</PanelGroup>
-		)
+					)
+				) : (
+					<PanelGroup direction={variablesOrientation}>
+						<Panel minSize={35}>
+							<QueryPane
+								activeTab={active}
+								setIsValid={setQueryValid}
+								showVariables={showVariables}
+								selection={selection}
+								onSaveQuery={handleSaveRequest}
+								setShowVariables={setShowQueryVariables}
+								onSelectionChange={setSelection}
+							/>
+						</Panel>
+						{showVariables && (
+							<>
+								<PanelDragger />
+								<Panel defaultSize={40} minSize={35}>
+									<VariablesPane
+										isValid={variablesValid}
+										setIsValid={setVariablesValid}
+										closeVariables={closeVariables}
+									/>
+								</Panel>
+							</>
+						)}
+					</PanelGroup>
+				)}
+			</Panel>
+			<PanelDragger />
+			<Panel minSize={15}>
+				<ResultPane
+					activeTab={active}
+					isQueryValid={queryValid}
+					selection={selection}
+					onRunQuery={runQuery}
+				/>
+			</Panel>
+		</PanelGroup>
 	);
 
 	return (
-		<Stack
-			gap="md"
-			h="100%"
-		>
+		<Stack gap="md" h="100%">
 			<InPortal node={switchPortal}>
 				<SegmentedControl
-					data={['Query', 'Variables']}
-					value={showVariables ? 'Variables' : 'Query'}
+					data={["Query", "Variables"]}
+					value={showVariables ? "Variables" : "Query"}
 					onChange={toggleQueryVariables}
 					className={classes.switcher}
 					radius="xs"
@@ -222,46 +231,28 @@ export function QueryView() {
 								height={20}
 								width={20}
 							/>
-							<SurrealistLogo
-								h={16}
-								c={isLight ? "slate.9" : "white"}
-							/>
+							<SurrealistLogo h={16} c={isLight ? "slate.9" : "white"} />
 							<Spacer />
 						</Group>
 					)}
-					<Box flex={1}>
-						{queryEditor}
-					</Box>
+					<Box flex={1}>{queryEditor}</Box>
 				</>
 			) : (
-				<Box
-					flex={1}
-					ref={ref}
-					style={{ opacity: minSize === 0 ? 0 : 1 }}
-				>
+				<Box flex={1} ref={ref} style={{ opacity: minSize === 0 ? 0 : 1 }}>
 					<PanelGroup direction="horizontal">
-						<Panel
-							defaultSize={minSize}
-							minSize={minSize}
-							maxSize={35}
-						>
+						<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
 							<TabsPane
 								openHistory={showHistoryHandle.open}
 								openSaved={showSavedHandle.open}
 							/>
 						</Panel>
 						<PanelDragger />
-						<Panel>
-							{queryEditor}
-						</Panel>
+						<Panel>{queryEditor}</Panel>
 					</PanelGroup>
 				</Box>
 			)}
 
-			<HistoryDrawer
-				opened={showHistory}
-				onClose={showHistoryHandle.close}
-			/>
+			<HistoryDrawer opened={showHistory} onClose={showHistoryHandle.close} />
 
 			<SavesDrawer
 				opened={showSaved}
@@ -276,9 +267,7 @@ export function QueryView() {
 				onClose={isSavingHandle.close}
 				trapFocus={false}
 				title={
-					<ModalTitle>
-						{editingId ? "Edit query" : "Save query"}
-					</ModalTitle>
+					<ModalTitle>{editingId ? "Edit query" : "Save query"}</ModalTitle>
 				}
 			>
 				<Form onSubmit={handleSaveQuery}>
@@ -299,11 +288,7 @@ export function QueryView() {
 							label={
 								<Group gap={4}>
 									Labels
-									<Text
-										span
-										size="xs"
-										c="slate"
-									>
+									<Text span size="xs" c="slate">
 										(optional)
 									</Text>
 								</Group>
@@ -318,8 +303,8 @@ export function QueryView() {
 								onChange={setSaveContent}
 								styles={{
 									input: {
-										fontFamily: "JetBrains Mono"
-									}
+										fontFamily: "JetBrains Mono",
+									},
 								}}
 							/>
 						)}

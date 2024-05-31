@@ -1,5 +1,5 @@
 import { Paper, Text } from "@mantine/core";
-import { ScrollArea, Group } from "@mantine/core";
+import { Group, ScrollArea } from "@mantine/core";
 import { RecordId } from "surrealdb.js";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
@@ -15,11 +15,7 @@ function RelationsList({ name, relations }: RelationsListProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Paper
-			p="xs"
-			bg={isLight ? "slate.0" : "slate.9"}
-			mt={6}
-		>
+		<Paper p="xs" bg={isLight ? "slate.0" : "slate.9"} mt={6}>
 			{relations.length === 0 && (
 				<Text pl={6} c="dimmed">
 					No {name} relations found
@@ -36,7 +32,6 @@ function RelationsList({ name, relations }: RelationsListProps) {
 	);
 }
 
-
 export interface RelationsTabProps {
 	isLight: boolean;
 	inputs: RecordId[];
@@ -45,10 +40,7 @@ export interface RelationsTabProps {
 
 export function RelationsTab({ inputs, outputs }: RelationsTabProps) {
 	return (
-		<ScrollArea
-			flex="1 0 0"
-		>
-
+		<ScrollArea flex="1 0 0">
 			<Text c="bright" size="lg" fw={600} mt={4}>
 				Incoming relations
 			</Text>

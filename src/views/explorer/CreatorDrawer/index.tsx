@@ -1,22 +1,33 @@
-import { ActionIcon, Badge, Box, Button, Drawer, Group, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
-import { Icon } from "~/components/Icon";
-import { CodeEditor } from "~/components/CodeEditor";
-import { ModalTitle } from "~/components/ModalTitle";
-import { Spacer } from "~/components/Spacer";
-import { useInputState } from "@mantine/hooks";
-import { useLayoutEffect, useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { iconClose, iconPlus } from "~/util/icons";
-import { RecordsChangedEvent } from "~/util/global-events";
-import { useTableNames } from "~/hooks/schema";
-import { Label } from "~/components/Scaffold/settings/utilities";
-import { executeQuery } from "~/connection";
-import { RecordId, Table } from "surrealdb.js";
-import { surqlLinting } from "~/util/editor/extensions";
-import { surrealql } from "codemirror-surrealql";
 import { EditorView } from "@codemirror/view";
-import { useValueValidator } from "~/hooks/surrealql";
+import {
+	ActionIcon,
+	Badge,
+	Box,
+	Button,
+	Drawer,
+	Group,
+	Select,
+	SimpleGrid,
+	Stack,
+	TextInput,
+} from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import { surrealql } from "codemirror-surrealql";
+import { useLayoutEffect, useState } from "react";
+import { RecordId, Table } from "surrealdb.js";
+import { CodeEditor } from "~/components/CodeEditor";
 import { DrawerResizer } from "~/components/DrawerResizer";
+import { Icon } from "~/components/Icon";
+import { ModalTitle } from "~/components/ModalTitle";
+import { Label } from "~/components/Scaffold/settings/utilities";
+import { Spacer } from "~/components/Spacer";
+import { executeQuery } from "~/connection";
+import { useTableNames } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { useValueValidator } from "~/hooks/surrealql";
+import { surqlLinting } from "~/util/editor/extensions";
+import { RecordsChangedEvent } from "~/util/global-events";
+import { iconClose, iconPlus } from "~/util/icons";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -25,9 +36,9 @@ export interface CreatorDrawerProps {
 }
 
 export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
-	const [recordTable, setRecordTable] = useState('');
-	const [recordId, setRecordId] = useInputState('');
-	const [recordBody, setRecordBody] = useState('');
+	const [recordTable, setRecordTable] = useState("");
+	const [recordId, setRecordId] = useInputState("");
+	const [recordBody, setRecordBody] = useState("");
 	const [isValid, body] = useValueValidator(recordBody);
 	const tables = useTableNames();
 
@@ -47,16 +58,16 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	});
 
 	const setCursor = useStable((editor: EditorView) => {
-		editor.dispatch({selection: {anchor: 6, head: 6}});
+		editor.dispatch({ selection: { anchor: 6, head: 6 } });
 	});
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignoring
 	useLayoutEffect(() => {
 		if (opened) {
 			setRecordTable(table);
-			setRecordId('');
-			setRecordBody('{\n    \n}');
+			setRecordId("");
+			setRecordBody("{\n    \n}");
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [opened, table]);
 
 	const [width, setWidth] = useState(650);
@@ -75,15 +86,11 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					display: "flex",
 					flexWrap: "nowrap",
 					flexDirection: "column",
-					gap: "var(--mantine-spacing-lg)"
-				}
+					gap: "var(--mantine-spacing-lg)",
+				},
 			}}
 		>
-			<DrawerResizer
-				minSize={500}
-				maxSize={900}
-				onResize={setWidth}
-			/>
+			<DrawerResizer minSize={500} maxSize={900} onResize={setWidth} />
 
 			<Group gap="sm">
 				<ModalTitle>
@@ -94,18 +101,12 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				<Spacer />
 
 				{!isValid && (
-					<Badge
-						color="red"
-						variant="light"
-					>
+					<Badge color="red" variant="light">
 						Invalid content
 					</Badge>
 				)}
 
-				<ActionIcon
-					onClick={onClose}
-					aria-label="Close creator drawer"
-				>
+				<ActionIcon onClick={onClose} aria-label="Close creator drawer">
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
@@ -137,10 +138,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						autoFocus
 						value={recordBody}
 						onChange={setRecordBody}
-						extensions={[
-							surrealql(),
-							surqlLinting()
-						]}
+						extensions={[surrealql(), surqlLinting()]}
 						onMount={setCursor}
 					/>
 				</Box>
@@ -151,9 +149,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				variant="gradient"
 				onClick={handleSubmit}
 				style={{ flexShrink: 0 }}
-				rightSection={
-					<Icon path={iconPlus} />
-				}
+				rightSection={<Icon path={iconPlus} />}
 			>
 				Create record
 			</Button>
