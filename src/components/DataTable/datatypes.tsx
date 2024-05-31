@@ -1,12 +1,12 @@
 import dayjs from "dayjs";
-import { RecordId, Decimal } from "surrealdb.js";
+import { RecordId, Decimal, GeometryPoint } from "surrealdb.js";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
-import { ReactNode } from "react";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
+import { convert } from 'geo-coordinates-parser';
 
 // ----- Data Cell Types -----
 
@@ -79,7 +79,7 @@ function ArrayCell(props: { value: any[] }) {
 								<Group wrap="nowrap">
 									<span style={{ opacity: 0.5 }}>#{i + 1}</span>
 									<div key={i} style={TRUNCATE_STYLE}>
-										{renderDataCell(item)}
+										<DataCell value={item} />
 									</div>
 								</Group>
 							))}
@@ -118,7 +118,14 @@ function ObjectCell(props: { value: any }) {
 	);
 }
 
-export function renderDataCell(value: any): ReactNode {
+const GeometryPointCell = (props: { value: GeometryPoint }) => {
+	const [long, lat] = props.value.point;
+	const converted = convert(`${lat.toNumber()} ${long.toNumber()}`);
+
+	return <StringCell value={converted.toCoordinateFormat("DMS")} />;
+};
+
+export const DataCell = ({ value }: { value: any }) => {
 	if (value instanceof Date) {
 		return <DateTimeCell value={value} />;
 	}
@@ -143,6 +150,10 @@ export function renderDataCell(value: any): ReactNode {
 		return <ThingCell value={value} />;
 	}
 
+	if (value instanceof GeometryPoint) {
+		return <GeometryPointCell value={value} />;
+	}
+
 	if (Array.isArray(value)) {
 		return <ArrayCell value={value} />;
 	}
@@ -152,4 +163,4 @@ export function renderDataCell(value: any): ReactNode {
 	}
 
 	return <StringCell value={value.toString()} />;
-}
+};

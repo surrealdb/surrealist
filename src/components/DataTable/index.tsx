@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 import { Box, BoxProps, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { MouseEvent, useMemo } from "react";
-import { renderDataCell } from "./datatypes";
+import { DataCell } from "./datatypes";
 import { ColumnSort } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
@@ -121,7 +121,7 @@ export function DataTable(props: DataTableProps) {
 
 				return (
 					<Box key={j} component="td" className={classes.tableValue} h={37}>
-						{renderDataCell(cellValue)}
+						<DataCell value={cellValue} />
 					</Box>
 				);
 			});
