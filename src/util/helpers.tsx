@@ -1,3 +1,4 @@
+import escape from "escape-string-regexp";
 import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -410,7 +411,7 @@ export function fastParseJwt(token: string) {
  * @returns Result
  */
 export function fuzzyMatch(query: string, target: string) {
-	const pattern = query.split(' ').join('.*?');
+	const pattern = query.split(' ').map(q => escape(q)).join('.*?');
 	const regex = new RegExp(pattern, 'i');
 
 	return regex.test(target);

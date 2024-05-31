@@ -63,6 +63,7 @@
 		"dayjs": "^1.11.9",
 		"dedent": "^1.5.1",
 		"elkjs": "^0.9.1",
+		"escape-string-regexp": "^5.0.0",
 		"fast-deep-equal": "^3.1.3",
 		"html-to-image": "^1.11.11",
 		"immer": "^10.0.2",
