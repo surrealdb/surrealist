@@ -17,7 +17,6 @@ import { ConnectionDetails } from "../../ConnectionDetails";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
-import { openConnection } from "~/connection";
 import { useConfirmation } from "~/providers/Confirmation";
 
 function buildName(n: number) {
@@ -44,7 +43,9 @@ export function ConnectionEditor() {
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
-	const isValid = details.name && isConnectionValid(details.connection);
+	const isValid = useMemo(() => {
+		return details.name && isConnectionValid(details.connection);
+	}, [details.connection, details.name]);
 
 	const saveInfo = useStable(async () => {
 		closeConnectionEditor();
@@ -63,7 +64,7 @@ export function ConnectionEditor() {
 		}
 
 		updateTitle();
-		openConnection();
+		// openConnection();
 	});
 
 	const generateName = useStable(() => {
