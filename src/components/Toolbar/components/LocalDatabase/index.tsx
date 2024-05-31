@@ -9,6 +9,7 @@ import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
 import { openConnection } from "~/connection";
+import { getActiveConnection } from "~/util/connection";
 
 // TODO Check if localhost
 
@@ -57,7 +58,10 @@ export function LocalDatabase({ toggleConsole }: LocalDatabaseProps) {
 	});
 
 	useEffect(() => {
-		if (isServing) {
+		const { connection: { hostname } } = getActiveConnection();
+		const isLocal = hostname.startsWith("localhost") || hostname.startsWith("127.0.0.1");
+
+		if (isServing && isLocal) {
 			openConnection();
 		}
 	}, [isServing]);
