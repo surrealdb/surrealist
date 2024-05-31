@@ -265,7 +265,7 @@ export function Connections() {
 							{connection.name}
 						</Text>
 					</Button>
-					{!isConnected && (
+					{!isConnected && !isSandbox && (
 						<Button
 							variant="gradient"
 							onClick={connect}
