@@ -80,8 +80,16 @@ CommitStatement { commit transaction? }
 
 // Define statements
 
-// TODO implement filters
-DefineAnalyzerStatement { define analyzer Ident TokenizersClause? CommentClause? }
+DefineAnalyzerStatement {
+	define analyzer
+	Ident
+	(
+		TokenizersClause |
+		FiltersClause |
+		FunctionClause |
+		CommentClause
+	)*
+}
 DefineEventStatement { define event Ident OnTableClause WhenThenClause CommentClause? }
 DefineDatabaseStatement { define database Ident on Ident CommentClause? }
 
@@ -378,7 +386,7 @@ LiveSelectStatement {
 		valueKeyword Predicate |
 		commaSep<inclusivePredicate>
 	)
-	from commaSep<Ident>
+	from commaSep<( Ident | RecordId )>
 	WhereClause?
 	FetchClause?
 }
@@ -794,6 +802,16 @@ ExplainClause {
 
 TokenizersClause { tokenizers commaSep<AnalyzerTokenizers> }
 
+FiltersClause {
+	filters
+	commaSep<AnalyzerFilters>
+}
+
+FunctionClause {
+	functionKw
+	customFunctionName
+}
+
 WhenThenClause {
 	(
 		when
@@ -870,10 +888,19 @@ TokenTypeClause {
 // Support
 
 AnalyzerTokenizers {
-	"blank" |
-	"camel" |
-	"class" |
-	"punct"
+	blank |
+	camel |
+	class |
+	punct
+}
+
+AnalyzerFilters {
+	ascii |
+	lowercase |
+	uppercase |
+	( edgengram "(" Int "," Int ")" ) |
+	( ngram "(" Int "," Int ")" ) |
+	( snowball "(" Ident ")" )
 }
 
 Predicate {
@@ -1078,6 +1105,7 @@ piped<content> {
 	fetch					[@name=Keyword],
 	field					[@name=Keyword],
 	fields					[@name=Keyword],
+	filters					[@name=Keyword],
 	flexible				[@name=Keyword],
 	for						[@name=Keyword],
 	from					[@name=Keyword],
@@ -1228,6 +1256,18 @@ piped<content> {
 	manhattan				[@name=Distance],
 	minkowski				[@name=Distance],
 	pearson					[@name=Distance],
+
+	ascii					[@name=Filter],
+	edgengram				[@name=Filter],
+	lowercase				[@name=Filter],
+	ngram					[@name=Filter],
+	snowball				[@name=Filter],
+	uppercase				[@name=Filter],
+
+	blank					[@name=Tokenizer],
+	camel					[@name=Tokenizer],
+	class					[@name=Tokenizer],
+	punct					[@name=Tokenizer],
 
 	function,
 	rand[@name=FunctionName],

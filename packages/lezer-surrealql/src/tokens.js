@@ -45,6 +45,7 @@ import {
 	fetch,
 	field,
 	fields,
+	filters,
 	flexible,
 	_for,
 	from,
@@ -195,6 +196,17 @@ import {
 	minkowski,
 	pearson,
 
+	ascii,
+	edgengram,
+	ngram,
+	snowball,
+	uppercase,
+
+	blank,
+	camel,
+	_class,
+	punct,
+
 	_function,
 	rand,
 	count,
@@ -247,6 +259,7 @@ const tokenMap = {
 	fetch,
 	field,
 	fields,
+	filters,
 	flexible,
 	for: _for,
 	from,
@@ -389,6 +402,17 @@ const tokenMap = {
 	manhattan,
 	minkowski,
 	pearson,
+
+	ascii,
+	edgengram,
+	ngram,
+	snowball,
+	uppercase,
+
+	blank,
+	camel,
+	class: _class,
+	punct,
 
 	// Function names
 	function: _function,

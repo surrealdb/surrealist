@@ -158,20 +158,32 @@ record:id[ident];
 
 SurrealQL(
   Path(VariableName,Subscript(Ident),Subscript(Ident)),
-  Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),Subscript(Any)),
+  Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),Subscript(Any)),
   Path(Ident,GraphPath(GraphRight,Any)),
   Path(Ident,GraphPath(GraphRight,Ident)),
   Path(Ident,GraphPath(GraphRight,Ident),GraphPath(GraphLeft,Ident),GraphPath(GraphBoth,Ident)),
   Path(Ident,GraphPath(GraphRight,GraphPredicate(Any,Keyword,Ident),GraphPredicate(Ident),
     GraphPredicate(Ident,WhereClause(Keyword,Ident),Keyword,Ident))),
-  Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),GraphPath(GraphRight,Ident)),
+  Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),GraphPath(GraphRight,Ident)),
   SelectStatement(Keyword,Predicate(Path(GraphPath(GraphRight,Ident))),Keyword,Ident),
   Path(Int,Subscript(FunctionName,ArgumentList)),
   Path(Block(BraceOpen,BraceClose),Filter("[",VariableName,"]")),
   Path(Block(BraceOpen,BraceClose),Filter("[",Ident,"]")),
   Path(Block(BraceOpen,BraceClose),Filter("[",String,"]")),
-  Path(RecordId(RecordIdIdent,Colon,RecordIdIdent),Filter("[",Ident,"]")),
+  Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),Filter("[",Ident,"]")),
   Path(Array("[","]"),Filter("[",Int,"]")),
   Path(Array("[","]"),Filter("[",VariableName,"]")),
   Path(Array("[","]"),Filter("[",WhereClause(Keyword,BinaryExpression(Ident,Operator,Int)),"]")),
   Path(Array("[","]"),Filter("[",WhereClause(BinaryExpression(Ident,Operator,Int)),"]")))
+
+# Record ID number(ident)
+
+test:123;
+test:123ident;
+
+==>
+
+SurrealQL(
+	RecordId(RecordTbIdent,Colon,Int),
+	RecordId(RecordTbIdent,Colon,RecordIdIdent),
+)
