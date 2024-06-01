@@ -4,7 +4,8 @@ import { SaveBox } from "~/components/SaveBox";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveableHandle } from "~/hooks/save";
 import { surrealql } from "codemirror-surrealql";
-import { surqlLinting } from "~/util/editor/extensions";
+import { surqlLinting, surqlRecordLinks } from "~/util/editor/extensions";
+import { useInspector } from "..";
 
 export interface ContentTabProps {
 	value: string;
@@ -13,6 +14,8 @@ export interface ContentTabProps {
 }
 
 export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
+	const { inspect } = useInspector();
+
 	return (
 		<>
 			<Paper
@@ -28,6 +31,7 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 					extensions={[
 						surrealql(),
 						surqlLinting(),
+						surqlRecordLinks(inspect)
 					]}
 				/>
 			</Paper>
