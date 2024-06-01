@@ -58,7 +58,7 @@
 
 	:global(.cm-tooltip) {
 		overflow: hidden;
-		box-shadow: var(--mantine-shadow-sm);
+		box-shadow: var(--mantine-shadow-md);
 		border-radius: var(--mantine-radius-sm);
 		border-color: var(--mantine-color-dark-4);
 		background-color: color-mix(in srgb, var(--mantine-color-body) 75%, transparent);
@@ -66,17 +66,26 @@
 		-webkit-backdrop-filter: blur(5px);
 	}
 
-	:global(.cm-tooltip-autocomplete) ul {
-		font-family: var(--mantine-font-family-monospace) !important;
+	:global(.cm-tooltip-autocomplete) {
+		padding: var(--mantine-spacing-xs);
 
-		li[aria-selected]  {
-			background-color: rgba(255, 0, 162, 0.3);
+		ul {
+			font-family: var(--mantine-font-family-monospace) !important;
+
+			li {
+				border-radius: var(--mantine-radius-sm);
+			}
+	
+			li[aria-selected]  {
+				background-color: var(--mantine-color-slate-6);
+			}
 		}
 	}
 
 	:global(.cm-completionMatchedText) {
-		color: white;
+		// color: white;
 		text-decoration: none;
+		font-weight: 600;
 	}
 
 	$icons: (
