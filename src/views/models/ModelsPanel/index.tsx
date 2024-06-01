@@ -4,7 +4,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
-import { iconDownload, iconModel, iconSearch, iconUpload } from "~/util/icons";
+import { iconDownload, iconModuleML, iconSearch, iconUpload } from "~/util/icons";
 import { SchemaModel } from "~/types";
 import { useInputState } from "@mantine/hooks";
 import { Text } from "@mantine/core";
@@ -35,7 +35,7 @@ export function ModelsPanel({
 	return (
 		<ContentPane
 			title="Models"
-			icon={iconModel}
+			icon={iconModuleML}
 			w={275}
 			style={{ flexShrink: 0 }}
 			leftSection={
@@ -95,7 +95,7 @@ export function ModelsPanel({
 							key={i}
 							// isActive={m.name === active}
 							// onClick={() => onSelect(m.name)}
-							leftSection={<Icon path={iconModel} />}
+							leftSection={<Icon path={iconModuleML} />}
 							onContextMenu={showContextMenu([
 								{
 									key: 'download',

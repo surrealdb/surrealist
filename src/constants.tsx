@@ -21,7 +21,7 @@ import {
 	iconExplorer,
 	iconFunction,
 	iconLive,
-	iconModel,
+	iconModuleML,
 	iconQuery,
 } from "./util/icons";
 
@@ -138,7 +138,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 	models: {
 		id: "models",
 		name: "Models",
-		icon: iconModel,
+		icon: iconModuleML,
 		desc: "Upload and manage machine learning models",
 		disabled: (flags) => !flags.models_view,
 	},

@@ -4,7 +4,7 @@ import { Button, Group, Stack, Text } from "@mantine/core";
 import { ModelsPanel } from "../ModelsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { Icon } from "~/components/Icon";
-import { iconModel, iconOpen, iconUpload, iconWarning } from "~/util/icons";
+import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { adapter } from "~/adapter";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -134,7 +134,7 @@ export function ModelsView() {
 			) : (
 				<Introduction
 					title="Models"
-					icon={iconModel}
+					icon={iconModuleML}
 					snippet={isAvailable ? {
 						title: "Using Python",
 						extensions: [python()],
