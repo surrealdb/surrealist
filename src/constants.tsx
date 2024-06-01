@@ -11,6 +11,7 @@ import {
 	Orientation,
 	SidebarMode,
 	LineStyle,
+	SchemaMode,
 } from "./types";
 
 import {
@@ -213,4 +214,9 @@ export const LINE_STYLES: Selectable<LineStyle>[] = [
 	{ label: "Metro", value: "metro" },
 	{ label: "Straight", value: "straight" },
 	{ label: "Smooth", value: "smooth" },
+];
+
+export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
+	{ label: "Schemaless", value: "schemaless" },
+	{ label: "Schemafull", value: "schemafull" },
 ];

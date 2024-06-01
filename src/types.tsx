@@ -15,6 +15,7 @@ export type ValueMode = "json" | "sql";
 export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type LineStyle = "metro" | "straight" | "smooth";
+export type SchemaMode = "schemaless" | "schemafull";
 export type AuthMode =
 	| "none"
 	| "root"

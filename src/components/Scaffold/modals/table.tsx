@@ -1,4 +1,4 @@
-import { Button, Group, Modal, MultiSelect, Stack, Tabs, TextInput } from "@mantine/core";
+import { Button, Group, Modal, MultiSelect, Select, Stack, Tabs, TextInput } from "@mantine/core";
 import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -13,6 +13,8 @@ import { dispatchIntent, useIntent } from "~/hooks/url";
 import { executeQuery } from "~/connection";
 import { useConfigStore } from "~/stores/config";
 import { tb } from "~/util/helpers";
+import { SCHEMA_MODES } from "~/constants";
+import { SchemaMode } from "~/types";
 
 export function TableCreator() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
@@ -24,9 +26,10 @@ export function TableCreator() {
 	const [tableName, setTableName] = useInputState("");
 	const [tableIn, setTableIn] = useState<string[]>([]);
 	const [tableOut, setTableOut] = useState<string[]>([]);
+	const [mode, setMode] = useState<SchemaMode>('schemaless');
 
 	const createTable = useStable(async () => {
-		let query = `DEFINE TABLE ${tb(tableName)} TYPE `;
+		let query = `DEFINE TABLE ${tb(tableName)} ${mode.toUpperCase()} TYPE `;
 
 		if (createType === "relation") {
 			const inTables = tableIn.map((t) => tb(t)).join('|');
@@ -91,7 +94,13 @@ export function TableCreator() {
 
 				<Form onSubmit={createTable}>
 					<Stack>
-						<TextInput placeholder="Enter table name" value={tableName} spellCheck={false} onChange={setTableName} autoFocus />
+						<TextInput
+							placeholder="Enter table name"
+							value={tableName}
+							spellCheck={false}
+							onChange={setTableName}
+							autoFocus
+						/>
 						{createType === "relation" && (
 							<>
 								<MultiSelect
@@ -111,6 +120,11 @@ export function TableCreator() {
 								/>
 							</>
 						)}
+						<Select
+							data={SCHEMA_MODES}
+							value={mode}
+							onChange={setMode as any}
+						/>
 						<Group mt="lg">
 							<Button
 								onClick={closeTableCreator}
