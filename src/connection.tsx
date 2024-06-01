@@ -9,7 +9,7 @@ import { syncDatabaseSchema } from './util/schema';
 import { ConnectedEvent, DisconnectedEvent } from './util/global-events';
 import { useInterfaceStore } from "./stores/interface";
 import { useConfigStore } from "./stores/config";
-import { objectify, sleep } from "radash";
+import { objectify } from "radash";
 import { getLiveQueries } from "./util/surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { adapter } from "./adapter";
@@ -23,21 +23,10 @@ export interface UserQueryOptions {
 	override?: string;
 }
 
-let openCounter = 0;
+let instance = createSurreal();
+
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
-const SURREAL = createSurreal();
-
-// Subscribe to disconnects
-SURREAL.emitter.subscribe("disconnected", () => {
-	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
-
-	setIsConnecting(false);
-	setIsConnected(false);
-	setVersion("");
-
-	DisconnectedEvent.dispatch(null);
-});
 
 /**
  * Open a new connection to the data
@@ -45,9 +34,6 @@ SURREAL.emitter.subscribe("disconnected", () => {
  * @param options Connection options
  */
 export async function openConnection(options?: ConnectOptions) {
-	openCounter++;
-
-	const thisOpenCounter = openCounter;
 	const currentConnection = getConnection();
 	const connection = options?.connection || currentConnection?.connection;
 
@@ -55,11 +41,13 @@ export async function openConnection(options?: ConnectOptions) {
 		throw new Error("No connection available");
 	}
 
+	await closeConnection();
+	instance = createSurreal();
+
 	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
 	const versionCheckTimeout = getSetting("behavior", "versionCheckTimeout") ?? 5;
 	const rpcEndpoint = connectionUri(connection);
-
-	await closeConnection();
+	const thisInstance = instance;
 
 	adapter.log('DB', `Opening connection to ${rpcEndpoint}`);
 
@@ -70,7 +58,7 @@ export async function openConnection(options?: ConnectOptions) {
 	const auth = composeAuthentication(connection);
 
 	try {
-		await SURREAL.connect(rpcEndpoint, {
+		await instance.connect(rpcEndpoint, {
 			versionCheckTimeout: versionCheckTimeout * 1000,
 			namespace: connection.namespace,
 			database: connection.database,
@@ -87,7 +75,7 @@ export async function openConnection(options?: ConnectOptions) {
 			},
 		});
 
-		if (openCounter == thisOpenCounter) {
+		if (instance === thisInstance) {
 			setIsConnecting(false);
 			setIsConnected(true);
 			syncDatabaseSchema();
@@ -100,14 +88,14 @@ export async function openConnection(options?: ConnectOptions) {
 
 			adapter.log('DB', "Connection established");
 
-			SURREAL.version().then((v) => {
+			instance.version().then((v) => {
 				setVersion(v);
 				adapter.log('DB', `Database version ${v ?? "unknown"}`);
 			});
 		}
 	} catch(err: any) {
-		if (openCounter == thisOpenCounter) {
-			SURREAL.close();
+		if (instance === thisInstance) {
+			instance.close();
 
 			setIsConnecting(false);
 			setIsConnected(false);
@@ -136,11 +124,10 @@ export async function openConnection(options?: ConnectOptions) {
  * Close the active surreal connection
  */
 export async function closeConnection() {
-	const status = SURREAL.status;
+	const status = instance.status;
 
 	if (status === "connected" || status === "connecting") {
-		await SURREAL.close();
-		await sleep(100);
+		await instance.close();
 	}
 }
 
@@ -151,7 +138,7 @@ export async function closeConnection() {
  * @param surreal The optional surreal instance
  */
 export async function register(auth: ScopeAuth, surreal?: Surreal) {
-	surreal ??= SURREAL;
+	surreal ??= instance;
 
 	await surreal.signup(auth).catch(() => {
 		throw new Error("Could not sign up");
@@ -165,7 +152,7 @@ export async function register(auth: ScopeAuth, surreal?: Surreal) {
  * @param surreal The optional surreal instance
  */
 export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
-	surreal ??= SURREAL;
+	surreal ??= instance;
 
 	if (auth === undefined) {
 		await surreal.invalidate();
@@ -193,7 +180,7 @@ export async function executeQuery(query: string, params?: any) {
 	try {
 		adapter.trace('DB', `Executing query: ${query}`);
 
-		const responseRaw = await SURREAL.query_raw(query, params) || [];
+		const responseRaw = await instance.query_raw(query, params) || [];
 
 		return mapResults(responseRaw);
 	} catch(err: any) {
@@ -310,7 +297,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		const timestamp = Date.now();
 
 		for (const queryId of liveIds) {
-			SURREAL.subscribeLive(queryId, (action, data) => {
+			instance.subscribeLive(queryId, (action, data) => {
 				pushLiveQueryMessage(id, {
 					id: newId(),
 					queryId: queryId.toString(),
@@ -342,7 +329,7 @@ export function cancelLiveQueries(tab: string) {
 	const { setIsLive } = useInterfaceStore.getState();
 
 	for (const id of LIVE_QUERIES.get(tab) || []) {
-		SURREAL.kill(id);
+		instance.kill(id);
 	}
 
 	setIsLive(tab, false);
@@ -379,15 +366,23 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 	}
 }
 
-/**
- * Construct a new configured Surreal instance
- *
- * @returns Surreal
- */
-export function createSurreal() {
-	return new Surreal({
+function createSurreal() {
+	const surreal = new Surreal({
 		engines: surrealdbWasmEngines() as any
 	});
+
+	// Subscribe to disconnects
+	surreal.emitter.subscribe("disconnected", () => {
+		const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
+
+		setIsConnecting(false);
+		setIsConnected(false);
+		setVersion("");
+
+		DisconnectedEvent.dispatch(null);
+	});
+
+	return surreal;
 }
 
 function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
