@@ -56,6 +56,11 @@
 		background-color: rgba(255, 0, 162, 0.3) !important;
 	}
 
+	:global(.cm-foldPlaceholder) {
+		background-color: var(--mantine-color-slate-6);
+		border: none;
+	}
+
 	:global(.cm-tooltip) {
 		overflow: hidden;
 		box-shadow: var(--mantine-shadow-md);
