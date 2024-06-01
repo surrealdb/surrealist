@@ -178,7 +178,9 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
  */
 export async function executeQuery(query: string, params?: any) {
 	try {
-		adapter.trace('DB', `Executing query: ${query}`);
+		if (import.meta.env.MODE !== "production") {
+			adapter.trace('DB', `Executing query: ${query}`);
+		}
 
 		const responseRaw = await instance.query_raw(query, params) || [];
 
