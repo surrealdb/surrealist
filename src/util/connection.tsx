@@ -50,8 +50,7 @@ export function isConnectionValid(details: ConnectionOptions | undefined) {
 
 	try {
 		connectionUri(details);
-	} catch(err) {
-		console.debug("Connection URL is invalid", err);
+	} catch {
 		return false;
 	}
 

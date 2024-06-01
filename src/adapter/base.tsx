@@ -36,7 +36,7 @@ export interface SurrealistAdapter {
 	 * Initialize any adapter specific services. This function is invoked
 	 * after the config has been loaded.
 	 */
-	initialize(): void;
+	initialize(): Result<void>;
 
 	/**
 	 * Return debug information about the current environment of the adapter
@@ -136,7 +136,7 @@ export interface SurrealistAdapter {
 	 * Log a message to the implemented logging system
 	 */
 	log(label: string, message: string): void;
-	
+
 	/**
 	 * Log a warning message to the implemented logging system
 	 */

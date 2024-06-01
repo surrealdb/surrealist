@@ -51,8 +51,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public constructor() {
 		this.initDatabaseEvents();
 
-		attachConsole();
-
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
 				getCurrent().show();
@@ -76,7 +74,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	public initialize() {
+	public async initialize() {
+		await attachConsole();
+
 		this.queryOpenRequest();
 
 		watchStore({
