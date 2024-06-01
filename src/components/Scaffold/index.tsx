@@ -27,7 +27,7 @@ import { ScopeSignup } from "./modals/signup";
 import { Sidebar } from "../Sidebar";
 import { CommandPaletteModal } from "./modals/palette";
 import { useBoolean } from "~/hooks/boolean";
-import { useWindowSettings } from "./hooks";
+import { useModTracker, useWindowSettings } from "./hooks";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { LegacyModal } from "./modals/legacy";
 import { SandboxModal } from "./modals/sandbox";
@@ -79,6 +79,7 @@ export function Scaffold() {
 
 	const viewNode = VIEW_PORTALS[activeView];
 
+	useModTracker();
 	useWindowSettings();
 	useCompatHotkeys([
 		["mod+K", paletteHandle.open]

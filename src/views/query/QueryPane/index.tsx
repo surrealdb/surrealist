@@ -5,7 +5,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
-import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting, surqlCustomFunctionCompletion } from "~/util/editor/extensions";
+import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting, surqlCustomFunctionCompletion, surqlRecordLinks } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
@@ -17,6 +17,7 @@ import { formatQuery, validateQuery } from "~/util/surrealql";
 import { surrealql } from "codemirror-surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { encodeCbor } from "surrealdb.js";
+import { useInspector } from "~/providers/Inspector";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -40,6 +41,7 @@ export function QueryPane({
 	onSelectionChange,
 }: QueryPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
+	const { inspect } = useInspector();
 
 	const setQueryForced = useStable((query: string) => {
 		setIsValid(!validateQuery(query));
@@ -171,6 +173,7 @@ export function QueryPane({
 				extensions={[
 					surrealql(),
 					surqlLinting(),
+					surqlRecordLinks(inspect),
 					surqlTableCompletion(),
 					surqlVariableCompletion(),
 					surqlCustomFunctionCompletion(),

@@ -438,3 +438,19 @@ export function extractVariables(query: string): string[] {
 		.map((v) => v.slice(1))
 		.filter((v) => !RESERVED_VARIABLES.has(v));
 }
+
+/**
+ * Returns whether the given event considers the mod key to be pressed
+ *
+ * @param event The event to check
+ * @returns True if the mod key is pressed
+ */
+export function isModKey(event: Event) {
+	if (event instanceof KeyboardEvent)
+		return adapter.platform === "darwin" ? event.key == "Meta" : event.key == "Control";
+
+	if (event instanceof MouseEvent)
+		return adapter.platform === "darwin" ? event.metaKey : event.ctrlKey;
+
+	return false;
+}

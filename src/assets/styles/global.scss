@@ -20,6 +20,11 @@ input::-ms-clear {
     overflow: visible;
 }
 
+body.mod .cm-record-link {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 .mantine-ActionIcon-root:hover {
     --ai-hover-color: white;
 }

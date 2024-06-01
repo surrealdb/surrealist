@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { useSetting } from "~/hooks/config";
 import { useCompatHotkeys } from "~/hooks/hotkey";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
-import { clamp } from "~/util/helpers";
+import { clamp, isModKey } from "~/util/helpers";
 
 export function useWindowSettings() {
 	const [windowScale, setWindowScale] = useSetting("appearance", "windowScale");
@@ -42,4 +43,28 @@ export function useWindowSettings() {
 	useIntent("increase-editor-scale", increaseEditorScale);
 	useIntent("decrease-editor-scale", decreaseEditorScale);
 	useIntent("toggle-pinned", toggleWindowPinned);
+}
+
+export function useModTracker() {
+	useEffect(() => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (isModKey(e)) {
+				document.body.classList.add("mod");
+			}
+		};
+
+		const onKeyUp = (e: KeyboardEvent) => {
+			if (isModKey(e)) {
+				document.body.classList.remove("mod");
+			}
+		};
+
+		document.body.addEventListener("keydown", onKeyDown);
+		document.body.addEventListener("keyup", onKeyUp);
+
+		return () => {
+			document.body.removeEventListener("keydown", onKeyDown);
+			document.body.removeEventListener("keyup", onKeyUp);
+		};
+	}, []);
 }

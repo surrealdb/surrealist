@@ -4,17 +4,19 @@ import { getSetting } from "../config";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource, snippetCompletion } from "@codemirror/autocomplete";
-import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, lineNumbers, highlightActiveLineGutter, EditorView } from "@codemirror/view";
-import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit } from "@codemirror/language";
+import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, lineNumbers, highlightActiveLineGutter, EditorView, Decoration } from "@codemirror/view";
+import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit, syntaxTree } from "@codemirror/language";
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { themeColor } from "../mantine";
-import { EditorState, Extension, SelectionRange } from "@codemirror/state";
+import { EditorState, Extension, Prec, RangeSetBuilder, SelectionRange } from "@codemirror/state";
 import { acceptWithTab, runQuery } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveQuery } from "../connection";
-import { tryParseParams } from "../helpers";
+import { isModKey, tryParseParams } from "../helpers";
 import { validateQuery } from "../surrealql";
+
+type RecordLinkCallback = (link: string) => void;
 
 /**
  * The color scheme used within editors
@@ -215,6 +217,57 @@ export const surqlCustomFunctionCompletion = (): Extension => {
 		autocomplete: CUSTOM_FUNCTION_SOURCE
 	});
 };
+
+const RECORD_LINK_MARK = Decoration.mark({
+	class: "cm-record-link",
+	attributes: {
+		title: "Cmd/Ctrl + Click to open record"
+	}
+});
+
+const RECORD_LINK_DECORATOR = (view: EditorView) => {
+	const builder = new RangeSetBuilder<Decoration>();
+	const tree = syntaxTree(view.state);
+
+	tree.iterate({
+		enter(node) {
+			if (node.type.name === "RecordId") {
+				builder.add(node.from, node.to, RECORD_LINK_MARK);
+			}
+		}
+	});
+
+	return builder.finish();
+};
+
+/**
+ * An extension used to highlight record links
+ */
+export const surqlRecordLinks = (onClick: RecordLinkCallback): Extension => [
+	EditorView.decorations.of(RECORD_LINK_DECORATOR),
+	Prec.highest(EditorView.domEventHandlers({
+		mousedown: (event, view) => {
+			if (!isModKey(event))
+				return false;
+
+			const pos = view.posAtDOM(event.target as HTMLElement);
+			let token = syntaxTree(view.state).resolveInner(pos, 1);
+
+			while (token && (token.name !== "RecordId")) {
+				token = token.parent as any;
+			}
+
+			if (token) {
+				const link = view.state.sliceDoc(token.from, token.to);
+
+				if (link) {
+					onClick(link);
+					return true;
+				}
+			}
+		}
+	}))
+];
 
 /**
  * An extension that reports on selection changes

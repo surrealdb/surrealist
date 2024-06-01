@@ -14,6 +14,8 @@ import { executeQuery } from "~/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
 import { surrealql } from "codemirror-surrealql";
+import { surqlRecordLinks } from "~/util/editor/extensions";
+import { useInspector } from "~/providers/Inspector";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	'CREATE': ["surreal.3", iconPlus],
@@ -42,6 +44,7 @@ export interface CombinedJsonPreviewProps {
 
 export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 	const [format] = useValueFormatter();
+	const { inspect } = useInspector();
 
 	const contents = useMemo(() => {
 		return results.reduce((acc, cur, i) => acc + buildResult(i, cur, format), '').trim();
@@ -52,7 +55,8 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 			value={contents}
 			readOnly
 			extensions={[
-				surrealql()
+				surrealql(),
+				surqlRecordLinks(inspect)
 			]}
 		/>
 	);
@@ -64,6 +68,7 @@ export interface SingleJsonPreviewProps {
 
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 	const [format] = useValueFormatter();
+	const { inspect } = useInspector();
 	const contents = useMemo(() => format(result), [result, format]);
 
 	return (
@@ -71,7 +76,8 @@ export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 			value={contents}
 			readOnly
 			extensions={[
-				surrealql()
+				surrealql(),
+				surqlRecordLinks(inspect)
 			]}
 		/>
 	);
