@@ -11,7 +11,7 @@ const TABLE_TYPES: Selectable<TableType>[] = [
 ];
 
 export function GeneralElement({ data, setData }: ElementProps) {
-	const tables = useTableNames();
+	const tables = useTableNames('TABLE');
 
 	return (
 		<Accordion.Item value="general">
@@ -53,6 +53,7 @@ export function GeneralElement({ data, setData }: ElementProps) {
 							<MultiSelect
 								data={tables}
 								label="Incoming tables"
+								searchable
 								value={data.schema.kind.in || []}
 								onChange={(value) =>
 									setData((draft) => {
@@ -64,6 +65,7 @@ export function GeneralElement({ data, setData }: ElementProps) {
 							<MultiSelect
 								data={tables}
 								label="Outgoing tables"
+								searchable
 								value={data.schema.kind.out || []}
 								onChange={(value) =>
 									setData((draft) => {

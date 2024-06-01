@@ -18,12 +18,12 @@ export function TableCreator() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showTableCreator);
+	const tables = useTableNames("TABLE");
 
 	const [createType, setCreateType] = useState("table");
 	const [tableName, setTableName] = useInputState("");
 	const [tableIn, setTableIn] = useState<string[]>([]);
 	const [tableOut, setTableOut] = useState<string[]>([]);
-	const tableList = useTableNames("TABLE");
 
 	const createTable = useStable(async () => {
 		let query = `DEFINE TABLE ${tb(tableName)} TYPE `;
@@ -95,14 +95,16 @@ export function TableCreator() {
 						{createType === "relation" && (
 							<>
 								<MultiSelect
-									data={tableList}
+									data={tables}
+									searchable
 									placeholder="Select incoming tables"
 									value={tableIn}
 									onChange={setTableIn}
 								/>
 
 								<MultiSelect
-									data={tableList}
+									data={tables}
+									searchable
 									placeholder="Select outgoing tables"
 									value={tableOut}
 									onChange={setTableOut}
