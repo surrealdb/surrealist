@@ -1,13 +1,12 @@
 import classes from "./style.module.scss";
 import clsx from "clsx";
 import { surrealql } from "codemirror-surrealql";
-import { ActionIcon, Button, Group, InputBase, InputBaseProps, Popover, Stack, TextInput, Tooltip } from "@mantine/core";
-import { HTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
+import { ActionIcon, Autocomplete, AutocompleteProps, Group, InputBase, InputBaseProps, Tooltip } from "@mantine/core";
+import { HTMLAttributes, useEffect, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { TableInfo } from "~/types";
-import { useTables } from "~/hooks/schema";
-import { iconCancel, iconCheck, iconTable } from "~/util/icons";
+import { useKindList } from "~/hooks/schema";
+import { iconCancel, iconCheck } from "~/util/icons";
 import { inputBase } from "~/util/editor/extensions";
 import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
 import { Compartment, EditorState, Extension, Prec } from "@codemirror/state";
@@ -225,77 +224,23 @@ export function PermissionInput({
 	);
 }
 
-export interface FieldKindInputProps {
-	label: string;
+export interface FieldKindInputProps extends AutocompleteProps {
 	value: string;
 	onChange: (value: string) => void;
 }
 
-export function FieldKindInput(props: FieldKindInputProps) {
-	const [showTables, setShowTables] = useState(false);
-	const tables = useTables();
-
-	const hideTables = useStable(() => {
-		setShowTables(false);
-	});
-
-	const toggleTables = useStable(() => {
-		setShowTables((prev) => !prev);
-	});
-
-	const insert = useStable((table: TableInfo) => {
-		props.onChange(`record<${table.schema.name}>`);
-		hideTables();
-	});
+export function FieldKindInput({
+	className,
+	...rest
+}: FieldKindInputProps) {
+	const kinds = useKindList();
 
 	return (
-		<TextInput
-			placeholder="any"
-			label={props.label}
-			value={props.value}
-			className={classes.input}
+		<Autocomplete
+			data={kinds}
 			spellCheck={false}
-			onChange={(value) => props.onChange(value.currentTarget.value)}
-			rightSectionWidth={42}
-			rightSection={
-				<Popover
-					position="bottom"
-					opened={showTables}
-					onClose={hideTables}
-				>
-					<Popover.Target>
-						<Tooltip label="Select a table">
-							<ActionIcon
-								onClick={toggleTables}
-								variant="subtle"
-								aria-label="Select a table"
-							>
-								<Icon path={iconTable} />
-							</ActionIcon>
-						</Tooltip>
-					</Popover.Target>
-					<Popover.Dropdown p={0}>
-						<Stack
-							mah={300}
-							style={{ overflowY: 'auto' }}
-							gap="xs"
-							p="xs"
-						>
-							{tables.map((table) => (
-								<Button
-									key={table.schema.name}
-									style={{ flexShrink: 0 }}
-									onClick={() => insert(table)}
-									variant="light"
-									miw={150}
-								>
-									{table.schema.name}
-								</Button>
-							))}
-						</Stack>
-					</Popover.Dropdown>
-				</Popover>
-			}
+			className={clsx(classes.input, className)}
+			{...rest}
 		/>
 	);
 }
