@@ -1,8 +1,9 @@
 import { Group, Text } from "@mantine/core";
 import { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
-import { GeographyDrawer, GeographyInput } from "../GeographyDrawer";
+import { GeographyDrawer } from "../GeographyDrawer";
 import { useDisclosure } from "@mantine/hooks";
+import type { GeographyInput } from "../GeographyMap";
 
 export interface GeographyLinkProps extends ComponentPropsWithoutRef<"div"> {
 	value: GeographyInput;

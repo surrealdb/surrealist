@@ -5,69 +5,15 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { ModalTitle } from "~/components/ModalTitle";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb.js";
-import { LoadingContainer } from "../LoadingContainer";
+import { LoadingContainer } from "~/components/LoadingContainer";
+import { useInputState } from "@mantine/hooks";
+import { formatValue } from "~/util/surrealql";
+import type { GeographyInput } from "../GeographyMap";
+import { CodeEditor } from "~/components/CodeEditor";
+import { surrealql } from "codemirror-surrealql";
+import { surqlLinting } from "~/util/editor/extensions";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
-
-export type GeographyInput =
-	| GeometryPoint
-	| GeometryLine
-	| GeometryPolygon
-	| GeometryMultiPoint
-	| GeometryMultiLine
-	| GeometryMultiPolygon
-	| GeometryCollection<any>;
-
-const toGeoPoint = (data: GeometryPoint) => {
-	const [long, lat] = data.point;
-	return [long.toNumber(), lat.toNumber()] as const;
-};
-
-const toGeoJSONObject = (input: GeographyInput): any => {
-	if (input instanceof GeometryPoint) {
-		return {
-			type: "Point",
-			coordinates: toGeoPoint(input),
-		};
-	}
-	if (input instanceof GeometryLine) {
-		return {
-			type: "LineString",
-			coordinates: input.line.map(p => toGeoPoint(p)),
-		};
-	}
-	if (input instanceof GeometryPolygon) {
-		return {
-			type: "Polygon",
-			coordinates: input.polygon.map(ring => ring.line.map(p => toGeoPoint(p))),
-		};
-	}
-	if (input instanceof GeometryMultiPoint) {
-		return {
-			type: "MultiPoint",
-			coordinates: input.points.map(p => toGeoPoint(p)),
-		};
-	}
-	if (input instanceof GeometryMultiLine) {
-		return {
-			type: "MultiLineString",
-			coordinates: input.lines.map(l => l.line.map(p => toGeoPoint(p))),
-		};
-	}
-	if (input instanceof GeometryMultiPolygon) {
-		return {
-			type: "MultiPolygon",
-			coordinates: input.polygons.map(p => p.polygon.map(ring => ring.line.map(p => toGeoPoint(p)))),
-		};
-	}
-	if (input instanceof GeometryCollection) {
-		return {
-			type: "GeometryCollection",
-			geometries: input.collection.map((c: GeographyInput) => toGeoJSONObject(c)),
-		};
-	}
-};
 
 export interface InspectorDrawerProps {
 	opened: boolean;
@@ -77,8 +23,7 @@ export interface InspectorDrawerProps {
 
 export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps) => {
 	const [width, setWidth] = useState(650);
-
-	const geoJSON = toGeoJSONObject(data);
+	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
 
 	return (
 		<Drawer
@@ -120,8 +65,18 @@ export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps)
 			</Group>
 
 			<Suspense fallback={<LoadingContainer visible />}>
-				<GeographyMap data={geoJSON} />
+				<GeographyMap value={geoJSON} />
 			</Suspense>
+
+			<CodeEditor
+				h="100%"
+				value={geoJSON}
+				onChange={setGeoJSON}
+				extensions={[
+					surrealql(),
+					surqlLinting(),
+				]}
+			/>
 		</Drawer>
 	);
 };
