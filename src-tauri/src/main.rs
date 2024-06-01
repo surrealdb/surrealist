@@ -28,10 +28,8 @@ fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
 
         if let Ok(url) = url::Url::from_file_path(path) {
             urls.push(url);
-        } else {
-            if let Ok(url) = url::Url::parse(&arg) {
-                urls.push(url);
-            }
+        } else if let Ok(url) = url::Url::parse(&arg) {
+            urls.push(url);
         }
     }
 
