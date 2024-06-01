@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { RecordId, Decimal, GeometryPoint } from "surrealdb.js";
+import { RecordId, Decimal, GeometryPoint, GeometryLine, GeometryMultiPoint, GeometryMultiLine, GeometryPolygon, GeometryMultiPolygon, GeometryCollection } from "surrealdb.js";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
@@ -126,6 +126,30 @@ const GeographyPointCell = ({ value }: { value: GeometryPoint }) => {
 	return <GeographyLink value={value} text={converted.toCoordinateFormat("DMS")} />;
 };
 
+const GeographyLineStringCell = ({ value }: { value: GeometryLine }) => {
+	return <GeographyLink value={value} text="LineString" />;
+};
+
+const GeographyPolygonCell = ({ value }: { value: GeometryPolygon }) => {
+	return <GeographyLink value={value} text="Polygon" />;
+};
+
+const GeographyMultiPointCell = ({ value }: { value: GeometryMultiPoint }) => {
+	return <GeographyLink value={value} text="MultiPoint" />;
+};
+
+const GeographyMultiLineCell = ({ value }: { value: GeometryMultiLine }) => {
+	return <GeographyLink value={value} text="MultiLineString" />;
+};
+
+const GeographyMultiPolygonCell = ({ value }: { value: GeometryMultiPolygon }) => {
+	return <GeographyLink value={value} text="MultiPolygon" />;
+};
+
+const GeographyCollectionCell = ({ value }: { value: GeometryCollection<any> }) => {
+	return <GeographyLink value={value} text="GeometryCollection" />;
+};
+
 export const DataCell = ({ value }: { value: any }) => {
 	if (value instanceof Date) {
 		return <DateTimeCell value={value} />;
@@ -153,6 +177,30 @@ export const DataCell = ({ value }: { value: any }) => {
 
 	if (value instanceof GeometryPoint) {
 		return <GeographyPointCell value={value} />;
+	}
+
+	if (value instanceof GeometryLine) {
+		return <GeographyLineStringCell value={value} />;
+	}
+
+	if (value instanceof GeometryPolygon) {
+		return <GeographyPolygonCell value={value} />;
+	}
+
+	if (value instanceof GeometryMultiPoint) {
+		return <GeographyMultiPointCell value={value} />;
+	}
+
+	if (value instanceof GeometryMultiLine) {
+		return <GeographyMultiLineCell value={value} />;
+	}
+
+	if (value instanceof GeometryMultiPolygon) {
+		return <GeographyMultiPolygonCell value={value} />;
+	}
+
+	if (value instanceof GeometryCollection) {
+		return <GeographyCollectionCell value={value} />;
 	}
 
 	if (Array.isArray(value)) {

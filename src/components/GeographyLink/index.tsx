@@ -1,12 +1,11 @@
-import { GeometryPoint } from "surrealdb.js";
 import { Group, Text } from "@mantine/core";
 import { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
-import { GeographyDrawer } from "../GeographyDrawer";
+import { GeographyDrawer, GeographyInput } from "../GeographyDrawer";
 import { useDisclosure } from "@mantine/hooks";
 
 export interface GeographyLinkProps extends ComponentPropsWithoutRef<"div"> {
-	value: GeometryPoint;
+	value: GeographyInput;
 	text: string;
 }
 
