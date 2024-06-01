@@ -13,7 +13,6 @@ import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
-import { HoverIcon } from "~/components/HoverIcon";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { surrealql } from "codemirror-surrealql";
 import { Value } from "surrealql.wasm/v1";
@@ -50,7 +49,7 @@ export function QueryPane({
 		});
 	});
 
-	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 200);
+	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 50);
 
 	const handleFormat = useStable(() => {
 		try {
@@ -101,7 +100,7 @@ export function QueryPane({
 		});
 	});
 
-	const setSelection = useDebouncedFunction(onSelectionChange, 350);
+	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
 
 	useIntent("format-query", handleFormat);

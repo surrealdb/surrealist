@@ -41,7 +41,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 		} catch {
 			props.setIsValid(false);
 		}
-	}, 200);
+	}, 50);
 
 	return (
 		<ContentPane
