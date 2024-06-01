@@ -14,6 +14,7 @@ export type SidebarMode = "expandable" | "compact" | "wide";
 export type ValueMode = "json" | "sql";
 export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
+export type LineStyle = "metro" | "straight" | "smooth";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -109,6 +110,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
 	defaultDiagramShowLinks: boolean;
+	lineStyle: LineStyle;
 	sidebarMode: SidebarMode;
 	valueMode: ValueMode;
 	queryOrientation: Orientation;

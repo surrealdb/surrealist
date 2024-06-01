@@ -2,7 +2,7 @@ import { Select, Slider, Box, Checkbox } from "@mantine/core";
 import { useCheckbox } from "~/hooks/events";
 import { isDesktop } from "~/adapter";
 import { Label, SettingsSection } from "../utilities";
-import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, VALUE_MODES, RESULT_MODES, THEMES, ORIENTATIONS, SIDEBAR_MODES } from "~/constants";
+import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, VALUE_MODES, RESULT_MODES, THEMES, ORIENTATIONS, SIDEBAR_MODES, LINE_STYLES } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useFeatureFlags } from "~/util/feature-flags";
 
@@ -20,6 +20,7 @@ export function AppearanceTab() {
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(CAT, "defaultDiagramDirection");
 	const [defaultDiagramShowLinks, setDefaultDiagramShowLinks] = useSetting(CAT, "defaultDiagramShowLinks");
 	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
+	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
 
 	const updateResultWordWrap = useCheckbox(setResultWordWrap);
 	const updateDefaultDiagramShowLinks = useCheckbox(setDefaultDiagramShowLinks);
@@ -120,6 +121,13 @@ export function AppearanceTab() {
 			</SettingsSection>
 
 			<SettingsSection label="Designer view">
+				<Select
+					label="Line style"
+					data={LINE_STYLES}
+					value={lineStyle}
+					onChange={setLineStyle as any}
+				/>
+
 				<Select
 					label="Default node mode"
 					data={DESIGNER_NODE_MODES}

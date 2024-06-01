@@ -10,6 +10,7 @@ import {
 	ViewMode,
 	Orientation,
 	SidebarMode,
+	LineStyle,
 } from "./types";
 
 import {
@@ -206,4 +207,10 @@ export const SURQL_FILTER = {
 export const ORIENTATIONS: Selectable<Orientation>[] = [
 	{ label: "Horizontal", value: "horizontal" },
 	{ label: "Vertical", value: "vertical" },
+];
+
+export const LINE_STYLES: Selectable<LineStyle>[] = [
+	{ label: "Metro", value: "metro" },
+	{ label: "Straight", value: "straight" },
+	{ label: "Smooth", value: "smooth" },
 ];

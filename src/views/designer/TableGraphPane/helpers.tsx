@@ -5,15 +5,11 @@ import { DiagramDirection, TableInfo } from "~/types";
 import { extractEdgeRecords, extractKindMeta } from "~/util/schema";
 import { Edge, Node, NodeChange, Position } from "reactflow";
 import { toBlob, toSvg } from "html-to-image";
+import { getSetting } from "~/util/config";
 
 export const NODE_TYPES = {
 	table: TableNode,
 	edge: EdgeNode,
-};
-
-const EDGE_OPTIONS: Partial<Edge> = {
-	type: 'smoothstep',
-	pathOptions: { borderRadius: 50 }
 };
 
 export type InternalNode = Node & { width: number, height: number };
@@ -49,10 +45,31 @@ export function buildFlowNodes(
 	tables: TableInfo[],
 	showLinks: boolean
 ): [Node[], Edge[]] {
+	const lineStyle= getSetting("appearance", "lineStyle");
+
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
 	const edges: Edge[] = [];
 	const nodes: Node[] = [];
+
+	// Base edge options
+	const baseEdge: any = {};
+
+	switch (lineStyle) {
+		case "metro": {
+			baseEdge.type = "smoothstep";
+			baseEdge.pathOptions = { borderRadius: 50 };
+			break;
+		}
+		case "smooth": {
+			baseEdge.type = "default";
+			break;
+		}
+		case "straight": {
+			baseEdge.type = "straight";
+			break;
+		}
+	}
 
 	// Define all nodes
 	for (const { table, isEdge } of items) {
@@ -82,7 +99,7 @@ export function buildFlowNodes(
 	for (const { table, from, to } of edgeItems) {
 		for (const fromTable of from) {
 			edges.push({
-				...EDGE_OPTIONS,
+				...baseEdge,
 				id: `tb-${table.schema.name}-edge-${fromTable}`,
 				source: fromTable,
 				target: table.schema.name
@@ -100,7 +117,7 @@ export function buildFlowNodes(
 
 		for (const toTable of to) {
 			edges.push({
-				...EDGE_OPTIONS,
+				...baseEdge,
 				id: `tb-${table.schema.name}-edge-${toTable}`,
 				source: table.schema.name,
 				target: toTable
@@ -149,7 +166,7 @@ export function buildFlowNodes(
 						existing.label = `${existing.data.linkCount} links`;
 					} else {
 						const edge: Edge = {
-							...EDGE_OPTIONS,
+							...baseEdge,
 							id: `tb-${table.schema.name}-field-${field.name}:${target}`,
 							source: table.schema.name,
 							target,
