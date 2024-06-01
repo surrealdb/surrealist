@@ -14,56 +14,6 @@ export type GeographyInput =
 	| GeometryMultiPolygon
 	| GeometryCollection<any>;
 
-const toGeoPoint = (data: GeometryPoint) => {
-	const [long, lat] = data.point;
-	return [long.toNumber(), lat.toNumber()] as const;
-};
-
-const toGeoJSONObject = (input: GeographyInput): any => {
-	if (input instanceof GeometryPoint) {
-		return {
-			type: "Point",
-			coordinates: toGeoPoint(input),
-		};
-	}
-	if (input instanceof GeometryLine) {
-		return {
-			type: "LineString",
-			coordinates: input.line.map(p => toGeoPoint(p)),
-		};
-	}
-	if (input instanceof GeometryPolygon) {
-		return {
-			type: "Polygon",
-			coordinates: input.polygon.map(ring => ring.line.map(p => toGeoPoint(p))),
-		};
-	}
-	if (input instanceof GeometryMultiPoint) {
-		return {
-			type: "MultiPoint",
-			coordinates: input.points.map(p => toGeoPoint(p)),
-		};
-	}
-	if (input instanceof GeometryMultiLine) {
-		return {
-			type: "MultiLineString",
-			coordinates: input.lines.map(l => l.line.map(p => toGeoPoint(p))),
-		};
-	}
-	if (input instanceof GeometryMultiPolygon) {
-		return {
-			type: "MultiPolygon",
-			coordinates: input.polygons.map(p => p.polygon.map(ring => ring.line.map(p => toGeoPoint(p)))),
-		};
-	}
-	if (input instanceof GeometryCollection) {
-		return {
-			type: "GeometryCollection",
-			geometries: input.collection.map((c: GeographyInput) => toGeoJSONObject(c)),
-		};
-	}
-};
-
 const convertCoordsToLatLng = (point: [number, number] | [number, number, number]): LatLng => {
 	return latLng({ lat: point[1], lng: point[0] });
 };
@@ -73,8 +23,7 @@ export type GeographyMapProps = {
 };
 
 export const GeographyMap = ({ value }: GeographyMapProps) => {
-	const data = toGeoJSONObject(parseValue(value));
-	console.warn("data", data);
+	const data = parseValue(value).toJSON();
 
 	const leafletGeoJson = geoJSON(data, {
 		coordsToLatLng: convertCoordsToLatLng
