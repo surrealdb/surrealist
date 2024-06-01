@@ -152,7 +152,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 };
 
 export const EXPORT_TYPES = [
-	"records",
 	"tables",
 	"analyzers",
 	"functions",

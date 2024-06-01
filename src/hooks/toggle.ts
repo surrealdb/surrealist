@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useStable } from "./stable";
 
-export function useToggleList<T = string>(initial?: T[]): [T[], (item: T) => boolean] {
+export function useToggleList<T = string>(initial?: T[]): [T[], (item: T) => boolean, Dispatch<SetStateAction<T[]>>] {
 	const [list, setList] = useState<T[]>(initial ?? []);
 
 	const toggle = useStable((item: T) => {
@@ -16,5 +16,5 @@ export function useToggleList<T = string>(initial?: T[]): [T[], (item: T) => boo
 		return index === -1;
 	});
 
-	return [list, toggle];
+	return [list, toggle, setList];
 }

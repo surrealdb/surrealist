@@ -1,4 +1,4 @@
-import { Button, Checkbox, Modal, Stack } from "@mantine/core";
+import { Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { EXPORT_TYPES, ExportType, SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -14,13 +14,18 @@ import { iconChevronRight, iconDownload, iconUpload } from "~/util/icons";
 import { showInfo } from "~/util/helpers";
 import { Entry } from "~/components/Entry";
 import { useIntent } from "~/hooks/url";
+import { useTableNames } from "~/hooks/schema";
+import { useDisclosure } from "@mantine/hooks";
 
 export function Exporter() {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
+	const tables = useTableNames();
 	const [showExporter, setShowExporter] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
 	const [exportTypes, setExportTypes] = useToggleList<ExportType>(['tables', 'analyzers', 'functions', 'params', 'scopes']);
+	const [records, setRecord, setRecords] = useToggleList<string>([]);
+	const [comments, commentsHandle] = useDisclosure(true);
 
 	const openExporter = useStable(() => {
 		setShowExporter(true);
@@ -39,7 +44,11 @@ export function Exporter() {
 				() => {
 					setIsExporting(true);
 
-					return createDatabaseExport(exportTypes);
+					return createDatabaseExport({
+						types: exportTypes,
+						records,
+						comments,
+					});
 				}
 			);
 
@@ -52,6 +61,14 @@ export function Exporter() {
 		} finally {
 			setIsExporting(false);
 			closeExporter();
+		}
+	});
+
+	const toggleAllRecords = useStable(() => {
+		if (records.length === tables.length) {
+			setRecords([]);
+		} else {
+			setRecords(tables);
 		}
 	});
 
@@ -74,38 +91,88 @@ export function Exporter() {
 			<Modal
 				opened={showExporter}
 				onClose={closeExporter}
-				size="xs"
+				size="sm"
 				title={<ModalTitle>Export data</ModalTitle>}
 			>
-				<Text
-					mb="xl"
-					c={isLight ? "slate.7" : "slate.2"}
-				>
-					Select which elements you want to include in your export.
-				</Text>
+				<Stack gap="xl">
+					<Text c={isLight ? "slate.7" : "slate.2"}>
+						Select which elements you want to include in your export.
+					</Text>
 
-				<Stack>
-					{EXPORT_TYPES.map((type) => (
+					<Stack>
+						<Text c="bright" fw={600} fz="lg">
+							Options
+						</Text>
+
 						<Checkbox
-							key={type}
-							label={`Include ${type}`}
-							checked={exportTypes.includes(type)}
-							onChange={setExportTypes.bind(null, type)}
+							label="Include comments"
+							checked={comments}
+							onChange={commentsHandle.toggle}
 						/>
-					))}
-				</Stack>
+					</Stack>
 
-				<Button
-					mt="xl"
-					fullWidth
-					onClick={handleExport}
-					loading={isExporting}
-					disabled={exportTypes.length === 0}
-					variant="gradient"
-					rightSection={<Icon path={iconDownload} />}
-				>
-					Save export
-				</Button>
+					<Stack>
+						<Text c="bright" fw={600} fz="lg">
+							Definitions
+						</Text>
+
+						<SimpleGrid cols={2}>
+							{EXPORT_TYPES.map((type) => (
+								<Checkbox
+									key={type}
+									label={`Include ${type}`}
+									checked={exportTypes.includes(type)}
+									onChange={setExportTypes.bind(null, type)}
+								/>
+							))}
+						</SimpleGrid>
+					</Stack>
+
+					{tables.length > 0 && (
+						<Stack>
+							<Text c="bright" fw={600} fz="lg">
+								Records
+							</Text>
+							<Box>
+								<Paper
+									bg="slate.9"
+									radius="md"
+									p="sm"
+								>
+									<Checkbox
+										label="Include all records"
+										checked={records.length === tables.length}
+										onChange={toggleAllRecords}
+										indeterminate={records.length > 0 && records.length < tables.length}
+										size="xs"
+									/>
+									<Stack gap="sm" mt="xl">
+										{tables.map((table) => (
+											<Checkbox
+												key={table}
+												label={table}
+												checked={records.includes(table)}
+												onChange={setRecord.bind(null, table)}
+												size="xs"
+											/>
+										))}
+									</Stack>
+								</Paper>
+							</Box>
+						</Stack>
+					)}
+
+					<Button
+						fullWidth
+						onClick={handleExport}
+						loading={isExporting}
+						disabled={exportTypes.length === 0}
+						variant="gradient"
+						rightSection={<Icon path={iconDownload} />}
+					>
+						Save export
+					</Button>
+				</Stack>
 			</Modal>
 		</>
 	);
