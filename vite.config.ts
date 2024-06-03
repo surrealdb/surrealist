@@ -2,15 +2,13 @@ import react from '@vitejs/plugin-react';
 import legacy from "@vitejs/plugin-legacy";
 import { ViteImageOptimizer as images } from 'vite-plugin-image-optimizer';
 import { Mode, plugin as markdown } from 'vite-plugin-markdown';
-import { defineConfig } from 'vite';
-import { readFileSync } from 'node:fs';
+import { UserConfig, defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
+import { version, surreal } from './package.json';
 
-const { version, surreal } = JSON.parse(readFileSync('./package.json', 'utf8'));
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export const getDefaultConfig = ({ mode }): UserConfig => ({
 	plugins: [
 		images(),
 		react(),
@@ -85,4 +83,7 @@ export default defineConfig(({ mode }) => ({
 		},
 	},
 	assetsInclude: ['**/surrealdb.wasm/dist/*.wasm', '**/surrealql.wasm/dist/*.wasm']
-}));
+});
+
+// https://vitejs.dev/config/
+export default defineConfig(getDefaultConfig);
