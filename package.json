@@ -7,9 +7,9 @@
 	"type": "module",
 	"authors": ["SurrealDB"],
 	"scripts": {
-		"build": "tsc && pnpm grammar:build && vite build",
+		"build": "tsc && bun grammar:build && vite build",
 		"dev": "vite",
-		"grammar:build": "cd packages/lezer-surrealql && pnpm build && cd ../codemirror-surrealql && pnpm build",
+		"grammar:build": "cd packages/lezer-surrealql && bun build && cd ../codemirror-surrealql && bun build",
 		"qc": "bun quality:check",
 		"qa": "bun quality:apply",
 		"qau": "bun quality:apply:unsafe",

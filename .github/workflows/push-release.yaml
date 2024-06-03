@@ -14,15 +14,8 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Setup PNPM
-              uses: pnpm/action-setup@v3
-              with:
-                  version: 9
-
-            - name: Setup node
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
+            - name: Install Bun
+              uses: oven-sh/setup-bun@v1
 
             - name: Extract version
               id: extract_version
@@ -40,29 +33,26 @@ jobs:
 
             - name: Code checkout
               uses: actions/checkout@v4
+            
+            - name: Install Bun
+              uses: oven-sh/setup-bun@v1
 
-            - name: Setup PNPM
-              uses: pnpm/action-setup@v3
+            - name: Dependency Cache
+              uses: actions/cache@v4
               with:
-                  version: 9
-
-            - name: Setup node
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-                  cache: "pnpm"
-
-            - name: Install frontend dependencies
-              run: pnpm i --frozen-lockfile
+                  path: ~/.bun/install/cache
+                  key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+                  restore-keys: |
+                      ${{ runner.os }}-bun-
 
             - name: Generate license report
-              run: pnpm license-report
+              run: bun license-report
 
             - name: Set version
-              run: pnpm pkg set version=${{ needs.version.outputs.version }}
+              run: bun pkg set version=${{ needs.version.outputs.version }}
 
             - name: Build Website
-              run: pnpm build
+              run: bun build
               env:
                 VITE_SURREALIST_PREVIEW: "${{ github.event.release.prerelease }}"
 
