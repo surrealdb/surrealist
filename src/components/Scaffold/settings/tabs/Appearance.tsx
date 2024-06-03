@@ -122,28 +122,28 @@ export function AppearanceTab() {
 
 			<SettingsSection label="Designer view">
 				<Select
-					label="Line style"
+					label="Diagram line style"
 					data={LINE_STYLES}
 					value={lineStyle}
 					onChange={setLineStyle as any}
 				/>
 
 				<Select
-					label="Default node mode"
+					label="Node mode for new connections"
 					data={DESIGNER_NODE_MODES}
 					value={defaultDiagramMode}
 					onChange={setDefaultDiagramMode as any}
 				/>
 
 				<Select
-					label="Default layout direction"
+					label="Layout direction for new connections"
 					data={DESIGNER_DIRECTIONS}
 					value={defaultDiagramDirection}
 					onChange={setDefaultDiagramDirection as any}
 				/>
 
 				<Checkbox
-					label="Show links between nodes"
+					label="Enable show links for new connections"
 					checked={defaultDiagramShowLinks}
 					onChange={updateDefaultDiagramShowLinks}
 				/>
