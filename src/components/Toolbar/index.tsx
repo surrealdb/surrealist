@@ -25,6 +25,7 @@ import { executeQuery, openConnection } from "~/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
+import { sleep } from "radash";
 
 export interface ToolbarProps {
 	sidebarMode: SidebarMode;
@@ -44,6 +45,7 @@ export function Toolbar({
 	const connection = useConnection();
 
 	const [showConsole, setShowConsole] = useDisclosure();
+	const [isDatasetLoading, setDatasetLoading] = useState(false);
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
 
@@ -78,15 +80,22 @@ export function Toolbar({
 	});
 
 	const applyDataset = useStable(async (info: DataSet) => {
-		const dataset = await fetch(info.url).then(res => res.text());
+		setDatasetLoading(true);
 
-		await executeQuery(dataset);
-		await syncDatabaseSchema();
+		try {
+			const dataset = await fetch(info.url).then(res => res.text());
 
-		showInfo({
-			title: "Dataset loaded",
-			subtitle: `${info.name} has been applied`
-		});
+			await sleep(50);
+			await executeQuery(dataset);
+			await syncDatabaseSchema();
+
+			showInfo({
+				title: "Dataset loaded",
+				subtitle: `${info.name} has been applied`
+			});
+		} finally {
+			setDatasetLoading(false);
+		}
 	});
 
 	const openChangelog = useStable(() => {
@@ -130,6 +139,7 @@ export function Toolbar({
 										color="slate"
 										variant="subtle"
 										aria-label="Load demo dataset"
+										loading={isDatasetLoading}
 									>
 										<Icon path={iconFile} />
 									</ActionIcon>
