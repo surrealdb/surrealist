@@ -8,7 +8,7 @@ import { adapter, isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
 import { featureFlags } from "./feature-flags";
 import { syncDatabaseSchema } from "./schema";
-import { closeConnection } from "~/connection";
+import { closeConnection } from "~/screens/database/connection";
 import { DesktopAdapter } from "~/adapter/desktop";
 
 type LaunchAction = { type: "launch", handler: () => void };

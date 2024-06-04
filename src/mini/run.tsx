@@ -11,8 +11,8 @@ import { createRoot } from "react-dom/client";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
-import { openConnection } from '~/connection';
-import { MiniRunScaffold } from '~/components/Scaffold/mini/run';
+import { openConnection } from '~/screens/database/connection';
+import { MiniRunScaffold } from '~/screens/database/components/Scaffold/mini/run';
 import { handleWindowMessage } from '~/util/messaging';
 
 (async () => {

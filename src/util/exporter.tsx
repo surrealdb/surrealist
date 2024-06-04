@@ -1,6 +1,6 @@
 import { tb } from "./helpers";
 import { ExportType } from "~/constants";
-import { executeQueryFirst, executeQuerySingle } from "~/connection";
+import { executeQueryFirst, executeQuerySingle } from "~/screens/database/connection";
 import { SchemaInfoTB } from "~/types";
 import { isEdgeTable, syncDatabaseSchema } from "./schema";
 import { useDatabaseStore } from "~/stores/database";

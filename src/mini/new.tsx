@@ -5,7 +5,7 @@ import "../assets/styles/fonts.scss";
 import "../assets/styles/global.scss";
 
 import { createRoot } from "react-dom/client";
-import { MiniNewScaffold } from '../components/Scaffold/mini/new';
+import { MiniNewScaffold } from '../screens/database/components/Scaffold/mini/new';
 
 (async () => {
 	const root = document.querySelector("#root")!;

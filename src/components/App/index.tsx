@@ -6,7 +6,7 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
 import { useInterfaceStore } from "~/stores/interface";
-import { Scaffold } from "../Scaffold";
+import { Scaffold } from "../../screens/database/components/Scaffold";
 import { ErrorBoundary } from "react-error-boundary";
 import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
