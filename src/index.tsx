@@ -59,9 +59,6 @@ import { promptChangelog } from "./util/changelogs";
 	// 	runUpdateChecker(lastPromptedVersion, false);
 	// }
 
-	// NOTE Temporary until react flow is fixed
-	document.body.addEventListener('keydown', e => e.stopPropagation());
-
 	// Check for new release
 	promptChangelog();
 })();
