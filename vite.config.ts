@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import legacy from "@vitejs/plugin-legacy";
 import { ViteImageOptimizer as images } from 'vite-plugin-image-optimizer';
 import { Mode, plugin as markdown } from 'vite-plugin-markdown';
 import { defineConfig } from 'vite';
@@ -15,6 +16,11 @@ export default defineConfig(({ mode }) => ({
 		react(),
 		markdown({
 			mode: [Mode.HTML]
+		}),
+		legacy({
+			modernTargets: "since 2021-01-01, not dead",
+			modernPolyfills: true,
+			renderLegacyChunks: false,
 		})
 	],
 	clearScreen: false,
@@ -24,7 +30,7 @@ export default defineConfig(({ mode }) => ({
 		strictPort: true
 	},
 	build: {
-		target: "esnext",
+		target: "es2020",
 		minify: process.env.TAURI_DEBUG ? false : 'esbuild',
 		sourcemap: !!process.env.TAURI_DEBUG,
 		rollupOptions: {

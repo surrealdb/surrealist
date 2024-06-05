@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 
 import { Toolbar } from "../Toolbar";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { ConnectionEditor } from "./modals/connection";
 import { InPortal, OutPortal, createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
 import { ViewMode } from "~/types";
@@ -28,7 +28,6 @@ import { Sidebar } from "../Sidebar";
 import { CommandPaletteModal } from "./modals/palette";
 import { useBoolean } from "~/hooks/boolean";
 import { useModTracker, useWindowSettings } from "./hooks";
-import { useCompatHotkeys } from "~/hooks/hotkey";
 import { LegacyModal } from "./modals/legacy";
 import { SandboxModal } from "./modals/sandbox";
 import { ChangelogModal } from "./modals/changelog";
@@ -81,7 +80,7 @@ export function Scaffold() {
 
 	useModTracker();
 	useWindowSettings();
-	useCompatHotkeys([
+	useHotkeys([
 		["mod+K", paletteHandle.open]
 	]);
 

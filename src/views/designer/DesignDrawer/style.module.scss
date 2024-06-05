@@ -10,3 +10,8 @@
 .accordion-label {
 	color: var(--mantine-color-bright);
 }
+
+.title {
+	user-select: text;
+	-webkit-user-select: text;
+}

@@ -14,6 +14,13 @@ input::-ms-clear {
     display: none;
 }
 
+input,
+textarea,
+*[contenteditable] {
+	user-select: text;
+	-webkit-user-select: text;
+}
+
 /* --- Overrides --- */
 
 .__dbk__container {

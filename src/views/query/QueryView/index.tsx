@@ -5,7 +5,7 @@ import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
 import { TabsPane } from "../TabsPane";
-import { useDisclosure, useInputState } from "@mantine/hooks";
+import { useDisclosure, useHotkeys, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { adapter, isMini } from "~/adapter";
@@ -32,7 +32,6 @@ import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/connection";
 import { useSetting } from "~/hooks/config";
-import { useCompatHotkeys } from "~/hooks/hotkey";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useInterfaceStore } from "~/stores/interface";
 
@@ -127,7 +126,7 @@ export function QueryView() {
 	useIntent("save-query", handleSaveRequest);
 	useIntent("toggle-variables", toggleQueryVariables);
 
-	useCompatHotkeys([
+	useHotkeys([
 		["F9", () => runQuery()],
 		["mod+Enter", () => runQuery()],
 	]);
