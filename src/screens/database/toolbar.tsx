@@ -25,6 +25,7 @@ import { NewsFeed } from "./components/NewsFeed";
 import { openConnection, executeQuery } from "./connection";
 import { ScreenState } from "~/components/Screen";
 import { sleep } from "radash";
+import { Spacer } from "~/components/Spacer";
 
 export interface DatabaseToolbarProps {
 	state: ScreenState;
@@ -149,6 +150,8 @@ export function DatabaseToolbar({
 					</Menu>
 				</>
 			)}
+
+			<Spacer />
 
 			{showChangelog && (
 				<Button
