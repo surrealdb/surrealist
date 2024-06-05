@@ -1,5 +1,5 @@
 import { Suspense, lazy, useState } from "react";
-import { iconClose, iconTarget } from "~/util/icons";
+import { iconClose } from "~/util/icons";
 import { ActionIcon, Drawer, Group } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -12,6 +12,7 @@ import type { GeographyInput } from "../GeographyMap";
 import { CodeEditor } from "~/components/CodeEditor";
 import { surrealql } from "codemirror-surrealql";
 import { surqlLinting } from "~/util/editor/extensions";
+import { mdiMapMarker } from "@mdi/js";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -47,8 +48,8 @@ export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps)
 			/>
 
 			<Group mb="md" gap="sm">
-				<ModalTitle>
-					<Icon left path={iconTarget} size="sm" /> {/* TODO : icon map */}
+				<ModalTitle style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+					<Icon left path={mdiMapMarker} size="sm" />
 					Geography Explorer
 				</ModalTitle>
 
