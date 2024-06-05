@@ -1,6 +1,6 @@
+import { useHotkeys } from "@mantine/hooks";
 import { useEffect } from "react";
 import { useSetting } from "~/hooks/config";
-import { useCompatHotkeys } from "~/hooks/hotkey";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { clamp, isModKey } from "~/util/helpers";
@@ -30,7 +30,7 @@ export function useWindowSettings() {
 		setWindowPinned(!windowPinned);
 	});
 
-	useCompatHotkeys([
+	useHotkeys([
 		["mod+equal", increaseWindowScale],
 		["mod+minus", decreaseWindowScale],
 		["mod+shift+equal", increaseEditorScale],

@@ -19,6 +19,7 @@ import { useTableNames } from "~/hooks/schema";
 import { RecordId, Table } from "surrealdb.js";
 import { parseValue } from "~/util/surrealql";
 import { Icon } from "~/components/Icon";
+import { sleep } from "radash";
 
 type Importer = null | 'sql' | 'csv';
 
@@ -27,7 +28,7 @@ export function Importer() {
 	const tables = useTableNames();
 	const isOnline = useIsConnected();
 	const [importer, setImporter] = useState<Importer>(null);
-	const [isImporting, setIsImporting] = useState(false);
+	const [isImporting, setImporting] = useState(false);
 	const [table, setTable] = useInputState("");
 
 	const importFile = useRef<OpenedTextFile | null>(null);
@@ -60,13 +61,15 @@ export function Importer() {
 				setImporter("sql");
 			}
 		} finally {
-			setIsImporting(false);
+			setImporting(false);
 		}
 	});
 
 	const confirmImport = useStable(async () => {
 		try {
-			setIsImporting(true);
+			setImporting(true);
+
+			await sleep(50);
 
 			const content = importFile.current!.content.trim();
 
@@ -123,7 +126,7 @@ export function Importer() {
 				subtitle: "There was an error importing the database"
 			});
 		} finally {
-			setIsImporting(false);
+			setImporting(false);
 			closeImporter();
 		}
 	});

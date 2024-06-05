@@ -7,9 +7,7 @@ import {
 	Box,
 	Drawer,
 	Group,
-	Paper,
 	ScrollArea,
-	TextInput,
 	Tooltip,
 } from "@mantine/core";
 
@@ -28,9 +26,8 @@ import { EventsElement } from "./elements/events";
 import { ModalTitle } from "~/components/ModalTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
-import { themeColor } from "~/util/mantine";
-import { ON_FOCUS_SELECT, tb } from "~/util/helpers";
-import { iconClose, iconDelete, iconWrench } from "~/util/icons";
+import { tb } from "~/util/helpers";
+import { iconClose, iconDelete, iconRelation, iconTable } from "~/util/icons";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection";
 import { ChangefeedElement } from "./elements/changefeed";
@@ -88,9 +85,15 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 			/>
 
 			<Group mb="md" gap="sm">
-				<ModalTitle>
-					<Icon path={iconWrench} left size="sm" />
-					Table designer
+				<ModalTitle
+					className={classes.title}
+				>
+					<Icon
+						path={isEdge ? iconRelation : iconTable}
+						size="sm"
+						left
+					/>
+					{value.schema.name}
 				</ModalTitle>
 
 				<Spacer />
@@ -123,34 +126,6 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
-			<TextInput
-				mb="xs"
-				readOnly
-				value={value.schema.name}
-				spellCheck={false}
-				onFocus={ON_FOCUS_SELECT}
-				rightSectionWidth={76}
-				rightSection={
-					isEdge && (
-						<Paper
-							title="This table is an edge"
-							bg={isLight ? "slate.0" : "slate.6"}
-							c={isLight ? "slate.6" : "white"}
-							px="xs">
-							Edge
-						</Paper>
-					)
-				}
-				styles={{
-					input: {
-						backgroundColor: isLight ? "white" : themeColor("dark.9"),
-						color: "surreal",
-						fontFamily: "JetBrains Mono",
-						fontSize: 14,
-						height: 42,
-					}
-				}}
-			/>
 			<ScrollArea
 				mt="sm"
 				flex="1 1 0"

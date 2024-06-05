@@ -10,14 +10,13 @@ import { Spacer } from "../../../../components/Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
-import { useDisclosure, useInputState } from "@mantine/hooks";
+import { useDisclosure, useHotkeys, useInputState } from "@mantine/hooks";
 import { Y_SLIDE_TRANSITION, newId, showError, updateTitle } from "~/util/helpers";
 import { Entry, EntryProps } from "../../../../components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
 import { useIntent } from "~/hooks/url";
 import { USER_ICONS } from "~/util/user-icons";
 import { openConnection } from "~/screens/database/connection";
-import { useCompatHotkeys } from "~/hooks/hotkey";
 import { Connection } from "~/types";
 import { EditableText } from "~/components/EditableText";
 import { group } from "radash";
@@ -209,7 +208,7 @@ export function Connections() {
 		listingHandle.open();
 	});
 
-	useCompatHotkeys([
+	useHotkeys([
 		["mod+L", listingHandle.open]
 	]);
 

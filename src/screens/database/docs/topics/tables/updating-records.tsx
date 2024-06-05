@@ -21,7 +21,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		await db.update('${table.schema.name}');
 
 		// Update a record with a specific ID
-		const [person] = await db.update('${table.schema.name}: ${fieldName}', {
+		const [person] = await db.update('${table.schema.name}:${fieldName}', {
 			name: 'Tobie',
 			settings: {
 				active: true,
@@ -38,7 +38,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		db.update("${table.schema.name}");
 
 		# Update a record with a specific ID
-		person = await db.update('${table.schema.name}: ${fieldName}', {
+		person = await db.update('${table.schema.name}:${fieldName}', {
 			'name': 'Jill'
 		})
 

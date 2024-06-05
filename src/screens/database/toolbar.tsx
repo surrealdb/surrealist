@@ -17,7 +17,6 @@ import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
 import { Connections } from "./components/Connections";
 import { ConsoleDrawer } from "./components/ConsoleDrawer";
 import { HelpAndSupport } from "./components/HelpAndSupport";
@@ -25,6 +24,7 @@ import { LocalDatabase } from "./components/LocalDatabase";
 import { NewsFeed } from "./components/NewsFeed";
 import { openConnection, executeQuery } from "./connection";
 import { ScreenState } from "~/components/Screen";
+import { sleep } from "radash";
 
 export interface DatabaseToolbarProps {
 	state: ScreenState;
@@ -44,6 +44,7 @@ export function DatabaseToolbar({
 	const connection = useConnection();
 
 	const [showConsole, setShowConsole] = useDisclosure();
+	const [isDatasetLoading, setDatasetLoading] = useState(false);
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
 
@@ -78,15 +79,22 @@ export function DatabaseToolbar({
 	});
 
 	const applyDataset = useStable(async (info: DataSet) => {
-		const dataset = await fetch(info.url).then(res => res.text());
+		setDatasetLoading(true);
 
-		await executeQuery(dataset);
-		await syncDatabaseSchema();
+		try {
+			const dataset = await fetch(info.url).then(res => res.text());
 
-		showInfo({
-			title: "Dataset loaded",
-			subtitle: `${info.name} has been applied`
-		});
+			await sleep(50);
+			await executeQuery(dataset);
+			await syncDatabaseSchema();
+
+			showInfo({
+				title: "Dataset loaded",
+				subtitle: `${info.name} has been applied`
+			});
+		} finally {
+			setDatasetLoading(false);
+		}
 	});
 
 	const openChangelog = useStable(() => {
@@ -119,6 +127,7 @@ export function DatabaseToolbar({
 									color="slate"
 									variant="subtle"
 									aria-label="Load demo dataset"
+									loading={isDatasetLoading}
 								>
 									<Icon path={iconFile} />
 								</ActionIcon>
@@ -140,8 +149,6 @@ export function DatabaseToolbar({
 					</Menu>
 				</>
 			)}
-
-			<Spacer />
 
 			{showChangelog && (
 				<Button
