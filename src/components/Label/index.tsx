@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 export function Label(props: PropsWithChildren<TextProps>) {
 	return (
 		<Text
-			style={{ color: 'var(--mantine-color-text)' }}
+			style={{ ...props.style, color: 'var(--mantine-color-text)' }}
 			size="sm"
 			fw={500}
 		>

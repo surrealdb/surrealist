@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState } from "react";
 import { iconClose } from "~/util/icons";
-import { ActionIcon, Drawer, Group } from "@mantine/core";
+import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -13,6 +13,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { surrealql } from "codemirror-surrealql";
 import { surqlLinting } from "~/util/editor/extensions";
 import { mdiMapMarker } from "@mdi/js";
+import { Label } from "~/components/Label";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -65,19 +66,29 @@ export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps)
 				</Group>
 			</Group>
 
-			<Suspense fallback={<LoadingContainer visible />}>
-				<GeographyMap value={geoJSON} />
-			</Suspense>
+			<Stack flex={1} gap={6} style={{ flexShrink: 1, flexBasis: 0 }}>
+				<Box flex={1}>
+					<Suspense fallback={<LoadingContainer visible />}>
+						<GeographyMap value={geoJSON} />
+					</Suspense>
+				</Box>
 
-			<CodeEditor
-				h="100%"
-				value={geoJSON}
-				onChange={setGeoJSON}
-				extensions={[
-					surrealql(),
-					surqlLinting(),
-				]}
-			/>
+				<Label style={{ marginTop: "20px" }}>Contents</Label>
+
+				<Box flex={1} pos="relative">
+					<CodeEditor
+						pos="absolute"
+						inset={0}
+						autoFocus
+						value={geoJSON}
+						onChange={setGeoJSON}
+						extensions={[
+							surrealql(),
+							surqlLinting(),
+						]}
+					/>
+				</Box>
+			</Stack>
 		</Drawer>
 	);
 };

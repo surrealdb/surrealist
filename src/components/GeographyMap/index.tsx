@@ -44,7 +44,7 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 				justifyContent: "center",
 				alignItems: "center",
 				width: "100%",
-				height: "380px",
+				height: "100%",
 			}}
 		>
 			<MapContainer
