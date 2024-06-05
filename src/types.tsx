@@ -2,7 +2,7 @@ import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
 import { AnyAuth, Token } from "surrealdb.js";
 
-export type Screen = "start" | "database" | "cloud";
+export type Screen = "start" | "database";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type SourceMode = "schema" | "infer";

@@ -10,6 +10,7 @@ import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
 import { useDatabaseStore } from "~/stores/database";
+import { adapter } from "~/adapter";
 
 export function StartScreen() {
 	const { setActiveConnection, setActiveScreen } = useConfigStore.getState();
@@ -21,7 +22,7 @@ export function StartScreen() {
 	});
 
 	const openCloud = useStable(() => {
-		setActiveScreen("cloud");
+		adapter.openUrl("https://surrealdb.com/cloud");
 	});
 
 	return (

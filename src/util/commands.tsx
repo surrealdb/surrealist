@@ -415,14 +415,6 @@ export function computeCommands(): CommandCategory[] {
 					setActiveScreen("database");
 				})
 			},
-			{
-				id: newId(),
-				name: "Open Cloud Screen",
-				icon: iconCloud,
-				action: launch(() => {
-					setActiveScreen("cloud");
-				})
-			},
 		]
 	}, {
 		name: "Developer",

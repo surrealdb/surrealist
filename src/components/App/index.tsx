@@ -19,7 +19,6 @@ import { AppErrorHandler } from "./error";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
 import { DatabaseScreen } from "~/screens/database";
-import { CloudScreen } from "~/screens/cloud";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useModTracker, useWindowSettings } from "./hooks";
 import { Settings } from "./settings";
@@ -87,9 +86,7 @@ export function App() {
 								>
 									{screen === "start"
 										? <StartScreen />
-										: screen === "database"
-											? <DatabaseScreen />
-											: <CloudScreen />
+										: <DatabaseScreen />
 									}
 
 									<Settings />
