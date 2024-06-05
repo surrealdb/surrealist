@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { Paper } from '@mantine/core';
 import { parseValue } from "~/util/surrealql";
 import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb.js";
+import { useIsLight } from '~/hooks/theme';
 
 export type GeographyInput =
 	| GeometryPoint
@@ -31,6 +32,8 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 	const leafletCenter = leafletGeoJson.getBounds().getCenter();
 	const zoom = data.type === "Point" ? 14 : 10;
 
+	const isLight = useIsLight();
+
 	return (
 		<Paper
 			radius="md"
@@ -47,7 +50,12 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 			<MapContainer
 				zoom={zoom}
 				center={leafletCenter}
-				style={{ width: "100%", height: "inherit", borderRadius: "inherit" }}
+				style={{
+					width: "100%",
+					height: "inherit",
+					borderRadius: "inherit",
+					filter: isLight ? "none" : "invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%)",
+				}}
 				scrollWheelZoom={false}
 				attributionControl={false}
 			>
