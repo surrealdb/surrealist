@@ -8,7 +8,6 @@ import { Icon } from "~/components/Icon";
 import { PermissionInput } from "~/components/Inputs";
 import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
-import { Label } from "~/screens/database/components/Scaffold/settings/utilities";
 import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
 import { useKindList } from "~/hooks/schema";
@@ -19,6 +18,7 @@ import { SURQL_FILTER } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
 import { surrealql } from "codemirror-surrealql";
 import { surqlLinting } from "~/util/editor/extensions";
+import { Label } from "~/components/Label";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;

@@ -12,8 +12,8 @@ import { watchColorPreference, watchColorScheme, watchConfigStore } from '../uti
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
 import { openConnection } from '~/screens/database/connection';
-import { MiniRunScaffold } from '~/screens/database/components/Scaffold/mini/run';
 import { handleWindowMessage } from '~/util/messaging';
+import { MiniRunScreen } from '~/screens/mini-run';
 
 (async () => {
 
@@ -29,7 +29,7 @@ import { handleWindowMessage } from '~/util/messaging';
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
-	createRoot(root).render(<MiniRunScaffold />);
+	createRoot(root).render(<MiniRunScreen />);
 
 	// Connect and initialize the dataset
 	openConnection().then(() => {

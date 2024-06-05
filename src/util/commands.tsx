@@ -1,7 +1,7 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAPI, iconAccountPlus, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconClose, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconRoutes, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
+import { iconAPI, iconAccountPlus, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconClose, iconCloud, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconRoutes, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { adapter, isDesktop } from "~/adapter";
@@ -50,7 +50,16 @@ const intent = (intent: IntentType, payload?: IntentPayload) => ({ type: "intent
  * Compute available commands based on the current state
  */
 export function computeCommands(): CommandCategory[] {
-	const { activeView, connections, commandHistory, setActiveView, setActiveConnection, resetOnboardings } = useConfigStore.getState();
+	const {
+		activeView,
+		connections,
+		commandHistory,
+		setActiveView,
+		setActiveConnection,
+		setActiveScreen,
+		resetOnboardings
+	} = useConfigStore.getState();
+
 	const { isServing, databaseSchema, isConnected, isConnecting } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
@@ -396,8 +405,24 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: "Download Desktop App",
 				icon: iconDownload,
-				action: intent('download-app'),
-			}
+				action: intent('open-desktop-download'),
+			},
+			{
+				id: newId(),
+				name: "Open Database Screen",
+				icon: iconServer,
+				action: launch(() => {
+					setActiveScreen("database");
+				})
+			},
+			{
+				id: newId(),
+				name: "Open Cloud Screen",
+				icon: iconCloud,
+				action: launch(() => {
+					setActiveScreen("cloud");
+				})
+			},
 		]
 	}, {
 		name: "Developer",
@@ -407,7 +432,7 @@ export function computeCommands(): CommandCategory[] {
 				name: "Open start screen",
 				icon: iconChevronRight,
 				action: launch(() => {
-					setActiveConnection(null);
+					setActiveScreen("start");
 				})
 			},
 			{

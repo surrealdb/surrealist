@@ -6,7 +6,6 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { adapter } from "~/adapter";
 import { useInterfaceStore } from "~/stores/interface";
-import { Scaffold } from "../../screens/database/components/Scaffold";
 import { ErrorBoundary } from "react-error-boundary";
 import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
@@ -19,10 +18,21 @@ import { useUrlHandler } from "~/hooks/url";
 import { AppErrorHandler } from "./error";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
-import {
-	QueryClient,
-	QueryClientProvider,
-} from '@tanstack/react-query';
+import { DatabaseScreen } from "~/screens/database";
+import { CloudScreen } from "~/screens/cloud";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useModTracker, useWindowSettings } from "./hooks";
+import { Settings } from "./settings";
+import { StartScreen } from "../../screens/start";
+import { ChangelogModal } from "./modals/changelog";
+import { ConnectionModal } from "./modals/connection";
+import { DownloadModal } from "./modals/download";
+import { EmbedderModal } from "./modals/embedder";
+import { LegacyModal } from "./modals/legacy";
+import { CommandPaletteModal } from "./modals/palette";
+import { SandboxModal } from "./modals/sandbox";
+import { ScopeSignupModal } from "./modals/signup";
+import { TableCreatorModal } from "./modals/table";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +44,7 @@ export function App() {
 	const colorScheme = useColorScheme();
 	const update = useInterfaceStore((s) => s.availableUpdate);
 	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
+	const screen = useConfigStore((s) => s.activeScreen);
 
 	const closeUpdate = useStable((e?: MouseEvent) => {
 		e?.stopPropagation();
@@ -50,6 +61,8 @@ export function App() {
 	});
 
 	useUrlHandler();
+	useModTracker();
+	useWindowSettings();
 
 	return (
 		<FeatureFlagsProvider>
@@ -72,7 +85,24 @@ export function App() {
 									FallbackComponent={AppErrorHandler}
 									onReset={handleReset}
 								>
-									<Scaffold />
+									{screen === "start"
+										? <StartScreen />
+										: screen === "database"
+											? <DatabaseScreen />
+											: <CloudScreen />
+									}
+
+									<Settings />
+
+									<CommandPaletteModal />
+									<ChangelogModal />
+									<ConnectionModal />
+									<DownloadModal />
+									<EmbedderModal />
+									<LegacyModal />
+									<SandboxModal />
+									<ScopeSignupModal />
+									<TableCreatorModal />
 								</ErrorBoundary>
 							</InspectorProvider>
 						</ConfirmationProvider>

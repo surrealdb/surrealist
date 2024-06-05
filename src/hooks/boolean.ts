@@ -1,13 +1,21 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+import { useStable } from './stable';
+
+export interface BooleanHandle {
+	open: () => void;
+	close: () => void;
+	toggle: () => void;
+	set: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 export function useBoolean(
 	initialState = false,
 	callbacks?: { onOpen?: () => void; onClose?: () => void }
-) {
+): readonly [boolean, BooleanHandle] {
 	const { onOpen, onClose } = callbacks || {};
 	const [opened, setOpened] = useState(initialState);
 
-	const open = useCallback(() => {
+	const open = useStable(() => {
 		setOpened((isOpened) => {
 			if (!isOpened) {
 				onOpen?.();
@@ -15,9 +23,9 @@ export function useBoolean(
 			}
 			return isOpened;
 		});
-	}, [onOpen]);
+	});
 
-	const close = useCallback(() => {
+	const close = useStable(() => {
 		setOpened((isOpened) => {
 			if (isOpened) {
 				onClose?.();
@@ -25,11 +33,13 @@ export function useBoolean(
 			}
 			return isOpened;
 		});
-	}, [onClose]);
+	});
 
-	const toggle = useCallback(() => {
+	const toggle = useStable(() => {
 		opened ? close() : open();
-	}, [close, open, opened]);
+	});
 
-	return [opened, { open, close, toggle, set: setOpened }] as const;
+	const [handle] = useState({ open, close, toggle, set: setOpened });
+
+	return [opened, handle];
 }

@@ -2,6 +2,7 @@ import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
 import { AnyAuth, Token } from "surrealdb.js";
 
+export type Screen = "start" | "database" | "cloud";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type SourceMode = "schema" | "infer";
@@ -173,7 +174,8 @@ export interface SurrealistConfig {
 	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeView: ViewMode;
-	activeConnection: string | null;
+	activeScreen: Screen;
+	activeConnection: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;

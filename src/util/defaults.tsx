@@ -1,6 +1,7 @@
 import { Connection, ConnectionOptions, DatabaseSchema, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
 import { newId } from "./helpers";
 import { validateQuery } from "./surrealql";
+import { SANDBOX } from "~/constants";
 
 export const CONFIG_VERSION = 1;
 
@@ -13,8 +14,9 @@ export function createBaseConfig(): SurrealistConfig {
 		connections: [],
 		connectionGroups: [],
 		sandbox: createSandboxConnection(settings),
+		activeScreen: 'start',
 		activeView: 'query',
-		activeConnection: null,
+		activeConnection: SANDBOX,
 		savedQueries: [],
 		lastPromptedVersion: null,
 		featureFlags: {},

@@ -9,7 +9,6 @@ import { useStable } from "~/hooks/stable";
 import { iconClose, iconPlus } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { useTableNames } from "~/hooks/schema";
-import { Label } from "~/screens/database/components/Scaffold/settings/utilities";
 import { executeQuery } from "~/screens/database/connection";
 import { RecordId, Table } from "surrealdb.js";
 import { surqlLinting } from "~/util/editor/extensions";
@@ -17,6 +16,7 @@ import { surrealql } from "codemirror-surrealql";
 import { EditorView } from "@codemirror/view";
 import { useValueValidator } from "~/hooks/surrealql";
 import { DrawerResizer } from "~/components/DrawerResizer";
+import { Label } from "~/components/Label";
 
 export interface CreatorDrawerProps {
 	opened: boolean;
