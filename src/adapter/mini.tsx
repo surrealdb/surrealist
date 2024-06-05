@@ -3,7 +3,7 @@ import { BrowserAdapter } from "./browser";
 import { Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
-import { executeQuery } from "~/connection";
+import { executeQuery } from "~/screens/database/connection";
 
 const THEMES = new Set(['light', 'dark', 'auto']);
 

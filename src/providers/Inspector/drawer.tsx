@@ -13,7 +13,7 @@ import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
 import { useConfirmation } from "../Confirmation";
-import { executeQuery } from "~/connection";
+import { executeQuery } from "~/screens/database/connection";
 import { RecordId } from "surrealdb.js";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeInput } from "~/components/Inputs";

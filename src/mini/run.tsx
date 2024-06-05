@@ -11,9 +11,9 @@ import { createRoot } from "react-dom/client";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
-import { openConnection } from '~/connection';
-import { MiniRunScaffold } from '~/components/Scaffold/mini/run';
+import { openConnection } from '~/screens/database/connection';
 import { handleWindowMessage } from '~/util/messaging';
+import { MiniRunScreen } from '~/screens/mini-run';
 
 (async () => {
 
@@ -29,7 +29,7 @@ import { handleWindowMessage } from '~/util/messaging';
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
-	createRoot(root).render(<MiniRunScaffold />);
+	createRoot(root).render(<MiniRunScreen />);
 
 	// Connect and initialize the dataset
 	openConnection().then(() => {

@@ -3,7 +3,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { getSetting, watchStore } from "./config";
 import { assign } from "radash";
-import { openConnection } from "~/connection";
+import { openConnection } from "~/screens/database/connection";
 import { featureFlags } from "./feature-flags";
 import { VIEW_MODES } from "~/constants";
 import { useDatabaseStore } from "~/stores/database";

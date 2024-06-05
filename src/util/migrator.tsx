@@ -1,6 +1,7 @@
 import { Connection, ConnectionOptions, ResultMode, SurrealistConfig, TabQuery } from "~/types";
 import { createBaseConfig, createBaseConnection, createBaseConnectionOptions } from "./defaults";
 import { newId } from "./helpers";
+import { SANDBOX } from "~/constants";
 
 type LegacyAuthMode = "none" | "root" | "namespace" | "database" | "scope";
 type LegacyDesignerNodeMode = "fields" | "summary" | "simple";
@@ -168,7 +169,7 @@ export function migrateLegacyConfig(legacy: LegacyConfig): SurrealistConfig {
 	}
 
 	config.previousVersion = "1.11.8";
-	config.activeConnection = legacy.activeTab;
+	config.activeConnection = legacy.activeTab || SANDBOX;
 	config.settings.behavior.windowPinned = legacy.isPinned;
 	config.settings.behavior.autoConnect = legacy.autoConnect;
 	config.settings.behavior.tableSuggest = legacy.tableSuggest;

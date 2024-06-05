@@ -2,12 +2,14 @@ import { dispatchIntent } from "~/hooks/url";
 import { ViewMode } from "~/types";
 
 const INTENT_REGISTRY = {
+	'open-command-palette': null,
 	'open-connections': null,
 	'open-help': null,
 	'open-news': null,
 	'open-changelog': null,
 	'open-settings': null,
 	'open-embedder': null,
+	'open-desktop-download': null,
 	'new-connection': null,
 	'new-table': null,
 	'toggle-serving': null,
@@ -17,7 +19,6 @@ const INTENT_REGISTRY = {
 	'increase-editor-scale': null,
 	'decrease-editor-scale': null,
 	'toggle-pinned': null,
-	'download-app': null,
 	'new-query': 'query',
 	'run-query': 'query',
 	'save-query': 'query',

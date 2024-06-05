@@ -2,7 +2,7 @@
 * @macjuul
 
 # API Docs
-/src/docs @Ekwuno
+/src/screens/database/docs @Ekwuno
 
 # Lezer grammar
 /packages/lezer-surrealql @kearfy

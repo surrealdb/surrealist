@@ -1,4 +1,4 @@
-import { Connection, ConnectionGroup, HistoryQuery, PartialId, SavedQuery, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
+import { Connection, ConnectionGroup, HistoryQuery, PartialId, SavedQuery, Screen, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
 import { createBaseConfig, createBaseTab } from "~/util/defaults";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { newId } from "~/util/helpers";
@@ -47,7 +47,8 @@ export type ConfigStore = SurrealistConfig & {
 	updateConnection: (payload: PartialId<Connection>) => void;
 	updateCurrentConnection: (payload: Partial<Connection>) => void;
 	setConnections: (connections: Connection[]) => void;
-	setActiveConnection: (connectionId: string | null) => void;
+	setActiveScreen: (screen: Screen) => void;
+	setActiveConnection: (connectionId: string) => void;
 	setActiveView: (activeView: ViewMode) => void;
 	addQueryTab: (options?: NewQueryTab) => void;
 	removeQueryTab: (tabId: string) => void;
@@ -127,17 +128,15 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setConnections: (connections) => set(() => ({ connections })),
 
+		setActiveScreen: (activeScreen) => set(() => ({ activeScreen })),
+
 		setActiveConnection: (activeConnection) => set(({ connections }) => {
-
-			if (activeConnection === null)
+			if (activeConnection == 'sandbox') {
 				return {
-					activeConnection: null
+					activeConnection,
+					activeScreen: "database"
 				};
-
-			if (activeConnection == 'sandbox')
-				return {
-					activeConnection
-				};
+			}
 
 			const connection = connections.find(({ id }) => id == activeConnection);
 			if (!connection) return {};
@@ -148,7 +147,8 @@ export const useConfigStore = create<ConfigStore>()(
 			}
 
 			return {
-				activeConnection
+				activeConnection,
+				activeScreen: "database"
 			};
 		}),
 
