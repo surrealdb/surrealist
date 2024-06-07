@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Center, Divider, Group, Menu, Pagination, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Divider, Group, Menu, Pagination, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
@@ -12,7 +12,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { QueryResponse, ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
-import { iconBroadcastOff, iconCursor, iconQuery } from "~/util/icons";
+import { iconBroadcastOff, iconCursor, iconLive, iconQuery } from "~/util/icons";
 import { SelectionRange } from "@codemirror/state";
 import { cancelLiveQueries } from "~/screens/database/connection";
 import { useDatabaseStore } from "~/stores/database";
@@ -105,9 +105,10 @@ export function ResultPane({
 					{resultMode == "live" ? (isLive && (
 						<Button
 							onClick={cancelQueries}
-							color="pink.7"
+							color="pink"
 							variant="light"
 							size="xs"
+							radius="sm"
 							leftSection={
 								<Icon path={iconBroadcastOff} />
 							}
@@ -178,6 +179,24 @@ export function ResultPane({
 				</Group>
 			}
 		>
+			{isLive && resultMode !== "live" && (
+				<UnstyledButton
+					bg="slate.9"
+					mb="md"
+					p="md"
+					onClick={() => setResultMode("live")}
+					style={{
+						borderRadius: 'var(--mantine-radius-lg'
+					}}
+				>
+					<Group>
+						<Icon path={iconLive} c="slate" size="xl" />
+						<Text fw={500} c="bright">
+							Click here to open Live Mode and view incoming live messages
+						</Text>
+					</Group>
+				</UnstyledButton>
+			)}
 			{(resultMode == "live") ? (
 				<LivePreview
 					query={activeTab}
