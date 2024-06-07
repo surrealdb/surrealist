@@ -23,17 +23,10 @@ import { HelpAndSupport } from "./components/HelpAndSupport";
 import { LocalDatabase } from "./components/LocalDatabase";
 import { NewsFeed } from "./components/NewsFeed";
 import { openConnection, executeQuery } from "./connection";
-import { ScreenState } from "~/components/Screen";
 import { sleep } from "radash";
 import { Spacer } from "~/components/Spacer";
 
-export interface DatabaseToolbarProps {
-	state: ScreenState;
-}
-
-export function DatabaseToolbar({
-	state
-}: DatabaseToolbarProps) {
+export function DatabaseToolbar() {
 	const { clearQueryResponse } = useDatabaseStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();

@@ -44,11 +44,7 @@ export function DatabaseScreen() {
 				)
 			}
 			toolbar={
-				(state) => (
-					<DatabaseToolbar
-						state={state}
-					/>
-				)
+				() => <DatabaseToolbar />
 			}
 		>
 			{viewNode && <OutPortal node={viewNode} />}
