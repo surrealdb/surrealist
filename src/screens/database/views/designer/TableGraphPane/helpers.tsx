@@ -2,10 +2,11 @@ import classes from "./style.module.scss";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
 import { DiagramDirection, TableInfo } from "~/types";
-import { extractEdgeRecords, extractKindMeta } from "~/util/schema";
+import { extractEdgeRecords } from "~/util/schema";
 import { Edge, Node, NodeChange, Position } from "reactflow";
 import { toBlob, toSvg } from "html-to-image";
 import { getSetting } from "~/util/config";
+import { extractKindRecords } from "~/util/surrealql";
 
 export const NODE_TYPES = {
 	table: TableNode,
@@ -136,19 +137,15 @@ export function buildFlowNodes(
 
 	// Define all record links
 	if (showLinks) {
-		const linkIndex = new Map<string, Edge>();
+		const uniqueLinks = new Set<string>();
 
 		for (const table of tables) {
 			for (const field of table.fields) {
-				if (
-					!field.kind?.startsWith('record') ||
-					field.name == 'in' ||
-					field.name == 'out'
-				) {
+				if (!field.kind || field.name == 'id' || field.name == 'in' || field.name == 'out') {
 					continue;
 				}
 
-				const targets = extractKindMeta(field.kind);
+				const targets = extractKindRecords(field.kind);
 
 				for (const target of targets) {
 					if (
@@ -159,29 +156,28 @@ export function buildFlowNodes(
 						continue;
 					}
 
-					const existing = linkIndex.get(`${table.schema.name}:${target}`) || linkIndex.get(`${target}:${table.schema.name}`);
+					const existing = uniqueLinks.has(`${table.schema.name}:${target}`) || uniqueLinks.has(`${target}:${table.schema.name}`);
 
 					if (existing) {
-						existing.data.linkCount++;
-						existing.label = `${existing.data.linkCount} links`;
-					} else {
-						const edge: Edge = {
-							...baseEdge,
-							id: `tb-${table.schema.name}-field-${field.name}:${target}`,
-							source: table.schema.name,
-							target,
-							className: classes.recordLink,
-							label: field.name,
-							labelBgStyle: { fill: 'var(--mantine-color-slate-8' },
-							labelStyle: { fill: 'white' },
-							data: { linkCount: 1 }
-						};
-
-						linkIndex.set(`${table.schema.name}:${target}`, edge);
-						linkIndex.set(`${target}:${table.schema.name}`, edge);
-
-						edges.push(edge);
+						continue;
 					}
+
+					const edge: Edge = {
+						...baseEdge,
+						id: `tb-${table.schema.name}-field-${field.name}:${target}`,
+						source: table.schema.name,
+						target,
+						className: classes.recordLink,
+						label: field.name,
+						labelBgStyle: { fill: 'var(--mantine-color-slate-8' },
+						labelStyle: { fill: 'white' },
+						data: { linkCount: 1 }
+					};
+
+					uniqueLinks.add(`${table.schema.name}:${target}`);
+					uniqueLinks.add(`${target}:${table.schema.name}`);
+
+					edges.push(edge);
 				}
 			}
 		}

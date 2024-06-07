@@ -7,6 +7,7 @@ import { executeQuerySingle } from '~/screens/database/connection';
 import { createDatabaseSchema } from "./defaults";
 import { klona } from "klona";
 import { adapter } from "~/adapter";
+import { extractKindRecords } from "./surrealql";
 
 const emptyKV = () => ({ users: [] });
 const emptyNS = () => ({ users: [] });
@@ -182,28 +183,16 @@ export function extractEdgeRecords(table: TableInfo): [boolean, string[], string
 	let outRecords: string[] = [];
 
 	for (const f of table.fields) {
-		if (f.name == "in" && f.kind?.startsWith("record")) {
-			inRecords = extractKindMeta(f.kind);
+		if (f.name == "in" && f.kind) {
+			inRecords = extractKindRecords(f.kind);
 			hasIn = true;
-		} else if (f.name == "out" && f.kind?.startsWith("record")) {
-			outRecords = extractKindMeta(f.kind);
+		} else if (f.name == "out" && f.kind) {
+			outRecords = extractKindRecords(f.kind);
 			hasOut = true;
 		}
 	}
 
 	return [hasIn && hasOut, inRecords, outRecords];
-}
-
-/**
- * Extract the kind meta from a kind string
- *
- * @param kind The kind string
- * @returns The meta
- */
-export function extractKindMeta(kind: string): string[] {
-	const [_, meta] = /^\w+<(.*)>$/.exec(kind) || [];
-
-	return meta?.split("|").map(m => m.trim()) || [];
 }
 
 /**

@@ -97,3 +97,41 @@ export function getLiveQueries(query: string): number[] {
 export function formatQuery(query: string) {
 	return SurrealQL.format(query, true);
 }
+
+/**
+ * Extract the kind records from the given kind
+ *
+ * @param kind The kind to extract records from
+ * @returns The extracted records
+ */
+export function extractKindRecords(kind: string) {
+	try {
+		const ast = SurrealQL.parse(`DEFINE FIELD dummy ON dummy TYPE ${kind}`);
+		const root = ast[0].Define.Field.kind;
+		const records = new Set<string>();
+
+		parseKindTree(root, records);
+
+		return [...records.values()];
+	} catch {
+		return [];
+	}
+}
+
+function parseKindTree(obj: any, records: Set<string>) {
+	if (!obj) return;
+
+	if (obj.Record) {
+		for (const record of obj.Record) {
+			records.add(record);
+		}
+	} else if (Array.isArray(obj)) {
+		for (const item of obj) {
+			parseKindTree(item, records);
+		}
+	} else {
+		for (const key in obj) {
+			parseKindTree(obj[key], records);
+		}
+	}
+}
