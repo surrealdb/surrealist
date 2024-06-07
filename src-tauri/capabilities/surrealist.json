@@ -39,6 +39,7 @@
 		"os:allow-locale",
 		"os:allow-hostname",
 		"deep-link:allow-get-current",
-		"log:allow-log"
+		"log:allow-log",
+		"webview:allow-internal-toggle-devtools"
 	]
 }
