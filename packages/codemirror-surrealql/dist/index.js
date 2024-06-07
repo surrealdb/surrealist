@@ -16,7 +16,7 @@ const surrealqlLanguage = /*@__PURE__*/LRLanguage.define({
             })
         ],
         wrap: /*@__PURE__*/parseMixed(node => {
-            return node.name == "JavaScript" ? { parser: parser$1 } : null;
+            return node.name === "JavaScript" ? { parser: parser$1 } : null;
         })
     }),
     languageData: {
@@ -31,11 +31,18 @@ const defaultLanguage = /*@__PURE__*/surrealqlLanguage.configure({
 const permissionInputLanguage = /*@__PURE__*/surrealqlLanguage.configure({
     top: 'PermissionInput'
 });
+const combinedResultsLanguage = /*@__PURE__*/surrealqlLanguage.configure({
+    top: 'CombinedResults'
+});
 /**
  * The CodeMirror extension used to add support for the SurrealQL language
  */
 function surrealql(scope = 'default') {
-    return new LanguageSupport(scope === 'permission' ? permissionInputLanguage : defaultLanguage);
+    return new LanguageSupport(scope === 'permission'
+        ? permissionInputLanguage
+        : scope === 'combined-results'
+            ? combinedResultsLanguage
+            : defaultLanguage);
 }
 
 export { surrealql, surrealqlLanguage };

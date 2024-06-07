@@ -55,7 +55,7 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 			value={contents}
 			readOnly
 			extensions={[
-				surrealql(),
+				surrealql('combined-results'),
 				surqlRecordLinks(inspect)
 			]}
 		/>

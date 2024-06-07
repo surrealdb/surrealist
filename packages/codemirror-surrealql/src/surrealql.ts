@@ -3,7 +3,7 @@ import { continuedIndent, indentNodeProp, foldNodeProp, foldInside, LRLanguage, 
 import { parseMixed } from "@lezer/common";
 import { parser as jsParser } from "@lezer/javascript";
 
-type Scope = "default" | "permission";
+type Scope = "default" | "permission" | "combined-results";
 
 export const surrealqlLanguage = LRLanguage.define({
 	name: "surrealql",
@@ -18,7 +18,7 @@ export const surrealqlLanguage = LRLanguage.define({
 			})
 		],
 		wrap: parseMixed(node => {
-			return node.name == "JavaScript" ? {parser: jsParser} : null;
+			return node.name === "JavaScript" ? {parser: jsParser} : null;
 		})
 	}),
 	languageData: {
@@ -36,9 +36,19 @@ const permissionInputLanguage = surrealqlLanguage.configure({
 	top: 'PermissionInput'
 });
 
+const combinedResultsLanguage = surrealqlLanguage.configure({
+	top: 'CombinedResults'
+});
+
 /**
  * The CodeMirror extension used to add support for the SurrealQL language
  */
 export function surrealql(scope: Scope = 'default') {
-	return new LanguageSupport(scope === 'permission' ? permissionInputLanguage : defaultLanguage);
+	return new LanguageSupport(
+		scope === 'permission'
+			? permissionInputLanguage
+			: scope === 'combined-results'
+				? combinedResultsLanguage
+				: defaultLanguage
+	);
 }

@@ -6,6 +6,10 @@
 	WhereClause | none | full
 }
 
+@top CombinedResults {
+	combinedExpressions
+}
+
 @precedence {
 	range @left
 	method
@@ -15,6 +19,10 @@
 
 expressions {
 	(expression ";")* expression ";"?
+}
+
+combinedExpressions {
+	(CommentResult expression)+
 }
 
 expression {
@@ -984,6 +992,7 @@ Operator {
 	CommentHash { "#" ![\n]* }
 	CommentDash { "--" ![\n]* }
 	CommentSlash { "//" ![\n]* }
+	CommentResult[@name=Comment] { "-------- Query" ![\n]* }
 
 	// Numbers
 	Int { "-"? @digit+ }
@@ -1021,7 +1030,7 @@ Operator {
 	durationUnit { "ns" | "us" | "µs" | "ms" | "s" | "m" | "h" | "d" | "w" | "y"}
 	DurationPart { @digit+ " "* durationUnit }
 
-	@precedence { Comment Int "-" }
+	@precedence { CommentResult Comment Int "-" }
 	@precedence { Comment binaryOperator }
 	@precedence { prefixedString rawident }
 	@precedence { customFunctionName FunctionName rawident }
