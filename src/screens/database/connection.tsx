@@ -71,8 +71,8 @@ export async function openConnection(options?: ConnectOptions) {
 					} else {
 						await authenticate(auth, surreal);
 					}
-				} catch {
-					throw new Error("Authentication failed");
+				} catch(err) {
+					throw new Error(`Authentication failed: ${err}`);
 				}
 			},
 		});
