@@ -120,6 +120,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		placeholderData: keepPreviousData,
 	});
 
+	console.log(data);
+
 	const refreshRecords = () => {
 		refetch();
 	};
@@ -142,8 +144,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		if (page > pageCount) {
 			setCurrentPage(pageCount || 1);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [page, pageCount]);
+	}, [page, pageCount, setCurrentPage]);
 
 	useEventSubscription(RecordsChangedEvent, () => {
 		refreshRecords();

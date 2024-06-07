@@ -42,9 +42,10 @@ export interface ConnectionDetailsProps {
 	value: Connection;
 	onChange: Updater<Connection>;
 	rightSection?: ReactNode;
+	allFieldsOptional?: boolean;
 }
 
-export function ConnectionDetails({ value, onChange, rightSection }: ConnectionDetailsProps) {
+export function ConnectionDetails({ value, onChange, rightSection, allFieldsOptional }: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
 
@@ -109,13 +110,15 @@ export function ConnectionDetails({ value, onChange, rightSection }: ConnectionD
 		tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
 
 	const isEndpointValid = useMemo(() => {
+		if (allFieldsOptional && value.connection.hostname === '') return true;
+
 		try {
 			connectionUri(value.connection);
 			return true;
 		} catch {
 			return false;
 		}
-	}, [value.connection]);
+	}, [value.connection, allFieldsOptional]);
 
 	return (
 		<>
