@@ -209,8 +209,8 @@ importers:
         specifier: 1.0.0-beta.11
         version: 1.0.0-beta.11(surrealdb.js@1.0.0-beta.8)
       surrealql.wasm:
-        specifier: ^0.1.7
-        version: 0.1.7
+        specifier: ^0.1.8
+        version: 0.1.8
       use-immer:
         specifier: ^0.9.0
         version: 0.9.0(immer@10.1.1)(react@18.3.1)
@@ -3749,8 +3749,8 @@ packages:
     peerDependencies:
       surrealdb.js: ^1.0.0-beta.7
 
-  surrealql.wasm@0.1.7:
-    resolution: {integrity: sha512-jv39vjUzrjx3QMIWCrWO3cHmZUUeRWWBaPxJw3CnhxadSbXYvITU64afIlxrJbVnUGXLBKQJWSQRiFliitm+Jw==}
+  surrealql.wasm@0.1.8:
+    resolution: {integrity: sha512-BrwkCmDm0JHlrfYqwmPD8YzOBfpJ7J6CuGSRzvZfSeaXxMV4nYjlfQ+JEAHZM3/o32fM01lKYFWYFMjlVI7dfg==}
 
   svgo@3.3.2:
     resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
@@ -7985,7 +7985,7 @@ snapshots:
       surrealdb.js: 1.0.0-beta.8
       zod: 3.23.8
 
-  surrealql.wasm@0.1.7: {}
+  surrealql.wasm@0.1.8: {}
 
   svgo@3.3.2:
     dependencies:
