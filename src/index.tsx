@@ -48,16 +48,7 @@ import { promptChangelog } from "./util/changelogs";
 
 	// Render the app component
 	const root = document.querySelector("#root")!;
-
 	createRoot(root).render(<App />);
-
-	// Check for updates
-	// const { lastPromptedVersion } = useConfigStore.getState();
-	// const updateChecker = getSetting("behavior", "updateChecker");
-
-	// if (adapter.isUpdateCheckSupported && updateChecker) {
-	// 	runUpdateChecker(lastPromptedVersion, false);
-	// }
 
 	// Check for new release
 	promptChangelog();

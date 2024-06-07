@@ -13,7 +13,7 @@ export function AppearanceTab() {
 	const [colorScheme, setColorScheme] = useSetting(CAT, "colorScheme");
 	const [editorScale, setEditorScale] = useSetting(CAT, "editorScale");
 	const [windowScale, setWindowScale] = useSetting(CAT, "windowScale");
-	const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
+	// const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
 	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
 	const [queryOrientation, setQueryOrientation] = useSetting(CAT, "queryOrientation");
 	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
@@ -23,7 +23,7 @@ export function AppearanceTab() {
 	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
 	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
 
-	const updateResultWordWrap = useCheckbox(setResultWordWrap);
+	// const updateResultWordWrap = useCheckbox(setResultWordWrap);
 	const updateDefaultDiagramShowLinks = useCheckbox(setDefaultDiagramShowLinks);
 
 	const [flags] = useFeatureFlags();
@@ -100,11 +100,11 @@ export function AppearanceTab() {
 			</SettingsSection>
 
 			<SettingsSection label="Query view">
-				<Checkbox
+				{/* <Checkbox
 					label="Query results text wrapping"
 					checked={resultWordWrap}
 					onChange={updateResultWordWrap}
-				/>
+				/> */}
 
 				<Select
 					label="Default result view"

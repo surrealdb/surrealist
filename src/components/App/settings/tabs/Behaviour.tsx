@@ -1,5 +1,5 @@
 import { Checkbox, Kbd, NumberInput } from "@mantine/core";
-import { adapter, isDesktop } from "~/adapter";
+import { isDesktop } from "~/adapter";
 import { useCheckbox } from "~/hooks/events";
 import { SettingsSection } from "../utilities";
 import { useSetting } from "~/hooks/config";
@@ -7,7 +7,7 @@ import { useSetting } from "~/hooks/config";
 const CAT = "behavior";
 
 export function BehaviourTab() {
-	const [updateChecker, setUpdateChecker] = useSetting(CAT, "updateChecker");
+	// const [updateChecker, setUpdateChecker] = useSetting(CAT, "updateChecker");
 	const [tableSuggest, setTableSuggest] = useSetting(CAT, "tableSuggest");
 	const [variableSuggest, setVariableSuggest] = useSetting(CAT, "variableSuggest");
 	const [queryErrorChecker, setQueryErrorChecker] = useSetting(CAT, "queryErrorChecker");
@@ -15,7 +15,7 @@ export function BehaviourTab() {
 	const [autoConnect, setAutoConnect] = useSetting(CAT, "autoConnect");
 	const [versionCheckTimeout, setVersionCheckTimeout] = useSetting(CAT, "versionCheckTimeout");
 
-	const updateUpdateChecker = useCheckbox(setUpdateChecker);
+	// const updateUpdateChecker = useCheckbox(setUpdateChecker);
 	const updateTableSuggest = useCheckbox(setTableSuggest);
 	const updateVariableSuggest = useCheckbox(setVariableSuggest);
 	const updateQueryErrorChecker = useCheckbox(setQueryErrorChecker);
@@ -25,13 +25,13 @@ export function BehaviourTab() {
 	return (
 		<>
 			<SettingsSection>
-				{adapter.isUpdateCheckSupported && (
+				{/* {adapter.isUpdateCheckSupported && (
 					<Checkbox
 						label="Always check for updates"
 						checked={updateChecker}
 						onChange={updateUpdateChecker}
 					/>
-				)}
+				)} */}
 
 				{isDesktop && (
 					<Checkbox
