@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useStable } from "./stable";
 import { useLater } from "./later";
 
-type Task = unknown | Promise<unknown>;
+type Task<T = unknown> = T | Promise<T>;
 
 export interface SaveableOptions<T> {
 
@@ -23,7 +23,7 @@ export interface SaveableOptions<T> {
 	 *
 	 * @param original The original state
 	 */
-	onSave: (original: T) => Task;
+	onSave: (original: T) => Task | Task<boolean>;
 
 	/**
 	 * Called when the current state should be reverted
@@ -97,10 +97,13 @@ export function useSaveable<T extends Record<string, any>>(options: SaveableOpti
 	const save = useStable(async () => {
 		setIsSaving(true);
 
-		await options.onSave(original);
+		const result = await options.onSave(original);
 
 		setIsSaving(false);
-		setTimeout(trackValue);
+
+		if (result !== false) {
+			setTimeout(trackValue);
+		}
 	});
 
 	const revert = useStable(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TableGraphPane } from "../TableGraphPane";
 import { useStable } from "~/hooks/stable";
 import { useTables } from "~/hooks/schema";
@@ -43,6 +43,7 @@ export function DesignerView(_props: DesignerViewProps) {
 	const isOnline = useIsConnected();
 	const tables = useTables();
 
+	const [errors, setErrors] = useState<string[]>([]);
 	const [isDesigning, isDesigningHandle] = useDisclosure();
 	const [data, setData] = useImmer<TableInfo>(DEFAULT_DEF);
 
@@ -55,24 +56,40 @@ export function DesignerView(_props: DesignerViewProps) {
 		track: {
 			data
 		},
-		onSave({ data: previous }) {
+		onSave: async ({ data: previous }) => {
 			if (!previous) {
 				throw new Error("Could not determine previous state");
 			}
 
 			const query = buildDefinitionQueries(previous, data!);
 
-			executeQuery(query)
-				.then(() => syncDatabaseSchema({
-					tables: [data.schema.name]
-				}))
-				.then(isDesigningHandle.close)
-				.catch((err) => {
-					showError({
-						title: "Failed to apply schema",
-						subtitle: err.message
-					});
+			try {
+				const res = await executeQuery(query);
+				const errors = res.flatMap((r) => {
+					if (r.success) return [];
+
+					return [
+						(r.result as string).replace('There was a problem with the database: ', '')
+					];
 				});
+
+				setErrors(errors);
+
+				if (errors.length > 0) {
+					return false;
+				}
+
+				syncDatabaseSchema({
+					tables: [data.schema.name]
+				});
+
+				isDesigningHandle.close();
+			} catch(err: any) {
+				showError({
+					title: "Failed to apply schema",
+					subtitle: err.message
+				});
+			}
 		},
 		onRevert({ data }) {
 			setData(data);
@@ -127,6 +144,7 @@ export function DesignerView(_props: DesignerViewProps) {
 				opened={isDesigning}
 				onClose={closeDrawer}
 				handle={saveHandle}
+				errors={errors}
 				value={data as any}
 				onChange={setData as any}
 			/>

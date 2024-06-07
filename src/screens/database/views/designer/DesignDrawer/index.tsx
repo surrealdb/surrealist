@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	Accordion,
 	ActionIcon,
+	Alert,
 	Badge,
 	Box,
 	Drawer,
@@ -16,7 +17,6 @@ import { Updater } from "use-immer";
 import { TableInfo } from "~/types";
 import { syncDatabaseSchema, isEdgeTable } from "~/util/schema";
 import { Icon } from "~/components/Icon";
-import { useIsLight } from "~/hooks/theme";
 import { Spacer } from "~/components/Spacer";
 import { GeneralElement } from "./elements/general";
 import { PermissionsElement } from "./elements/permissions";
@@ -27,7 +27,7 @@ import { ModalTitle } from "~/components/ModalTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { tb } from "~/util/helpers";
-import { iconClose, iconDelete, iconRelation, iconTable } from "~/util/icons";
+import { iconClose, iconDelete, iconRelation, iconTable, iconWarning } from "~/util/icons";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection";
 import { ChangefeedElement } from "./elements/changefeed";
@@ -40,11 +40,20 @@ export interface SchemaDrawerProps {
 	value: TableInfo;
 	onChange: Updater<TableInfo>;
 	handle: SaveableHandle;
+	errors: string[];
 	onClose: (force?: boolean) => void;
 }
 
-export function DesignDrawer({ opened, value, onChange, handle, onClose }: SchemaDrawerProps) {
-	const isLight = useIsLight();
+export function DesignDrawer({
+	opened,
+	value,
+	onChange,
+	handle,
+	errors,
+	onClose
+}: SchemaDrawerProps) {
+	const isEdge = useMemo(() => isEdgeTable(value), [value]);
+	const [width, setWidth] = useState(650);
 
 	const removeTable = useConfirmation({
 		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
@@ -58,10 +67,6 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 			});
 		}
 	});
-
-	const isEdge = useMemo(() => isEdgeTable(value), [value]);
-
-	const [width, setWidth] = useState(650);
 
 	return (
 		<Drawer
@@ -130,6 +135,20 @@ export function DesignDrawer({ opened, value, onChange, handle, onClose }: Schem
 				mt="sm"
 				flex="1 1 0"
 			>
+				{errors.map((error, i) => (
+					<Alert
+						key={i}
+						className={classes.error}
+						icon={<Icon path={iconWarning} />}
+						color="red.5"
+						mb="xl"
+						style={{
+							whiteSpace: "pre-wrap"
+						}}
+					>
+						{error}
+					</Alert>
+				))}
 				<Accordion
 					multiple
 					defaultValue={INITIAL_TABS}

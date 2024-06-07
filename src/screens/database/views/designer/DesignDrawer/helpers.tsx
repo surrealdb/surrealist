@@ -155,7 +155,11 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 
 	for (const query of queries) adapter.log('Designer', '- ' + query);
 
-	return queries.join(";\n");
+	return [
+		'BEGIN TRANSACTION',
+		...queries,
+		'COMMIT TRANSACTION'
+	].join(';\n');
 }
 
 /**
