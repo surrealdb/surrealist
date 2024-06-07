@@ -16,7 +16,7 @@ import { executeQuery } from "~/screens/database/connection";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { RecordId } from "surrealdb.js";
 import { tb } from "~/util/helpers";
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 const PAGE_SIZES: ComboboxData = [
 	{ label: "10 Results per page", value: "10" },
@@ -116,7 +116,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const { isLoading, data, refetch } = useQuery({
 		queryKey: ['explorer', 'records', queryInput],
-		queryFn: () => fetchRecords(queryInput)
+		queryFn: () => fetchRecords(queryInput),
+		placeholderData: keepPreviousData,
 	});
 
 	const refreshRecords = () => {
