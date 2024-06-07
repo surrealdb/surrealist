@@ -156,7 +156,6 @@ export function CommandPaletteModal() {
 
 	useHotkeys([
 		["mod+k", () => {
-			console.log("mod+k");
 			openHandle.open();
 		}]
 	]);

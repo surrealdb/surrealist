@@ -120,8 +120,6 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		placeholderData: keepPreviousData,
 	});
 
-	console.log(data);
-
 	const refreshRecords = () => {
 		refetch();
 	};
