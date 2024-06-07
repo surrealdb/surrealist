@@ -20,6 +20,9 @@ export const schema = {
 	newsfeed: {
 		options: [false, true]
 	},
+	database_version_check: {
+		options: [false, true]
+	},
 } as const;
 
 export const featureFlags = new FeatureFlags({
@@ -27,17 +30,20 @@ export const featureFlags = new FeatureFlags({
 	schema,
 	defaults: {
 		development: {
+			database_version_check: false,
 			featureFlags: true,
 			models_view: "force",
 			apidocs_view: true,
 			newsfeed: true
 		},
 		preview: {
+			database_version_check: true,
 			models_view: true,
 			apidocs_view: true,
 			newsfeed: true
 		},
 		production: {
+			database_version_check: true,
 			models_view: true,
 			apidocs_view: true,
 			newsfeed: true

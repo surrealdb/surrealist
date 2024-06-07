@@ -14,6 +14,7 @@ import { getLiveQueries } from "~/util/surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { adapter } from "~/adapter";
 import { getSetting } from "~/util/config";
+import { featureFlags } from "~/util/feature-flags";
 
 export interface ConnectOptions {
 	connection?: ConnectionOptions;
@@ -45,7 +46,6 @@ export async function openConnection(options?: ConnectOptions) {
 	instance = createSurreal();
 
 	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
-	const versionCheckTimeout = getSetting("behavior", "versionCheckTimeout") ?? 5;
 	const rpcEndpoint = connectionUri(connection);
 	const thisInstance = instance;
 
@@ -59,7 +59,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 	try {
 		await instance.connect(rpcEndpoint, {
-			versionCheckTimeout: versionCheckTimeout * 1000,
+			versionCheckTimeout: getVersionTimeout(),
 			namespace: connection.namespace,
 			database: connection.database,
 			prepare: async (surreal) => {
@@ -400,4 +400,12 @@ function buildScopeAuth(connection: ConnectionOptions): ScopeAuth {
 	const fields = objectify(scopeFields, f => f.subject, f => f.value);
 
 	return { namespace, database, scope, ...fields };
+}
+
+function getVersionTimeout() {
+	const enabled = featureFlags.get('database_version_check');
+
+	return enabled
+		? (getSetting("behavior", "versionCheckTimeout") ?? 5) * 1000
+		: undefined;
 }
