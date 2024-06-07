@@ -57,12 +57,16 @@ export function Shortcut({ value, ...rest }: ShortcutProps) {
 			{...rest}
 		>
 			{content.map((part, i) => (
-				<Fragment key={i}>
-					<Kbd p={0} px={4} miw={24} h={24} ta="center">
-						{part}
-					</Kbd>
-					{i < content.length - 1 && <Text c="slate">+</Text>}
-				</Fragment>
+				<Kbd
+					key={i}
+					p={0}
+					px={4}
+					miw={24}
+					h={24}
+					ta="center"
+				>
+					{part}
+				</Kbd>
 			))}
 		</Group>
 	);
