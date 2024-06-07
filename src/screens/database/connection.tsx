@@ -56,10 +56,12 @@ export async function openConnection(options?: ConnectOptions) {
 
 	const isSignup = connection.authMode === "scope-signup";
 	const auth = composeAuthentication(connection);
+	const [versionCheck, versionCheckTimeout] = getVersionTimeout();
 
 	try {
 		await instance.connect(rpcEndpoint, {
-			versionCheckTimeout: getVersionTimeout(),
+			versionCheck,
+			versionCheckTimeout,
 			namespace: connection.namespace,
 			database: connection.database,
 			prepare: async (surreal) => {
@@ -404,8 +406,6 @@ function buildScopeAuth(connection: ConnectionOptions): ScopeAuth {
 
 function getVersionTimeout() {
 	const enabled = featureFlags.get('database_version_check');
-
-	return enabled
-		? (getSetting("behavior", "versionCheckTimeout") ?? 5) * 1000
-		: undefined;
+	const timeout = (getSetting("behavior", "versionCheckTimeout") ?? 5) * 1000;
+	return [enabled, timeout] as const;
 }
