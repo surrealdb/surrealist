@@ -2,10 +2,11 @@ import classes from "./style.module.scss";
 import { Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { mdiAppleKeyboardCommand } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { iconBook, iconBug, iconClose, iconHelp } from "~/util/icons";
 
 const TILES = [
@@ -21,12 +22,12 @@ const TILES = [
 		icon: iconBug,
 		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 	},
-	// {
-	// 	title: "Feedback",
-	// 	description: "Have a suggestion or feedback? We'd love to hear it.",
-	// 	icon: iconChat,
-	// 	onClick: () => {}
-	// },
+	{
+		title: "Shortcuts",
+		description: "Learn the keyboard shortcuts to navigate the app faster",
+		icon: mdiAppleKeyboardCommand,
+		onClick: () => dispatchIntent("open-keymap")
+	},
 	// {
 	// 	title: "Restart the tour",
 	// 	description: "Need to restart the tour? Click here to start over.",
@@ -79,9 +80,12 @@ export function HelpAndSupport() {
 						<UnstyledButton
 							key={i}
 							bg={isLight ? "slate.0" : "slate.9"}
-							className={classes.tile}
-							onClick={tile.onClick}
 							p="md"
+							className={classes.tile}
+							onClick={() => {
+								tile.onClick();
+								openHandle.close();
+							}}
 						>
 							<Icon
 								path={tile.icon}

@@ -32,6 +32,7 @@ import { CommandPaletteModal } from "./modals/palette";
 import { SandboxModal } from "./modals/sandbox";
 import { ScopeSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
+import { KeymapModal } from "./modals/hotkeys";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ export function App() {
 									<SandboxModal />
 									<ScopeSignupModal />
 									<TableCreatorModal />
+									<KeymapModal />
 								</ErrorBoundary>
 							</InspectorProvider>
 						</ConfirmationProvider>
