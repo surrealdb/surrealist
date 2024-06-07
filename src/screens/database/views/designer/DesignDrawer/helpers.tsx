@@ -27,7 +27,7 @@ export function SectionTitle({ children, icon }: { children: string, icon: strin
 }
 
 function buildPermission(type: string, value: boolean | string) {
-	return ` FOR ${type} ${value === true ? 'FULL' : value === false ? 'NONE' : value}`;
+	return ` FOR ${type} ${value === true ? 'FULL' : value === false ? 'NONE' : 'WHERE ' + value}`;
 }
 
 /**
