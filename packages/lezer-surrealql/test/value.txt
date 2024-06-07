@@ -48,6 +48,9 @@ SurrealQL(
 {a: 10};
 {block};
 {"stringkey": 1, 'single': 2};
+{};
+{ };
+123
 
 ==>
 
@@ -57,8 +60,11 @@ SurrealQL(
   Object(BraceOpen,ObjectContent(
     ObjectProperty(ObjectKey(String),Colon,Int),
     ObjectProperty(ObjectKey(String),Colon,Int)
-  ),BraceClose))
-
+  ),BraceClose),
+  Object(BraceOpen,BraceClose),
+  Object(BraceOpen,BraceClose),
+  Int
+),
 # Points
 
 (10dec, 20dec)
@@ -167,9 +173,9 @@ SurrealQL(
   Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),GraphPath(GraphRight,Ident)),
   SelectStatement(Keyword,Predicate(Path(GraphPath(GraphRight,Ident))),Keyword,Ident),
   Path(Int,Subscript(FunctionName,ArgumentList)),
-  Path(Block(BraceOpen,BraceClose),Filter("[",VariableName,"]")),
-  Path(Block(BraceOpen,BraceClose),Filter("[",Ident,"]")),
-  Path(Block(BraceOpen,BraceClose),Filter("[",String,"]")),
+  Path(Object(BraceOpen,BraceClose),Filter("[",VariableName,"]")),
+  Path(Object(BraceOpen,BraceClose),Filter("[",Ident,"]")),
+  Path(Object(BraceOpen,BraceClose),Filter("[",String,"]")),
   Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),Filter("[",Ident,"]")),
   Path(Array("[","]"),Filter("[",Int,"]")),
   Path(Array("[","]"),Filter("[",VariableName,"]")),

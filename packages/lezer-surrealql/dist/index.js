@@ -469,11 +469,17 @@ function skipObjKey(input, off) {
 const objectToken = new ExternalTokenizer((input, stack) => {
 	if (input.next === 123 /* '{' */) {
 		let off = skipSpace(input, 1);
-		let key = skipObjKey(input, off);
-		if (key !== null) {
-			off = skipSpace(input, key);
-			if (input.peek(off) === 58 /* ':' */) {
-				input.acceptToken(objectOpen, 1);
+
+		// Is this an empty object?
+		if (input.peek(off) === 125 /* '}' */) {
+			input.acceptToken(objectOpen, 1);
+		} else {
+			let key = skipObjKey(input, off);
+			if (key !== null) {
+				off = skipSpace(input, key);
+				if (input.peek(off) === 58 /* ':' */) {
+					input.acceptToken(objectOpen, 1);
+				}
 			}
 		}
 	}
