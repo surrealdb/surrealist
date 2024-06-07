@@ -5,7 +5,7 @@ import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
 import { TabsPane } from "../TabsPane";
-import { useDisclosure, useHotkeys, useInputState } from "@mantine/hooks";
+import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { adapter, isMini } from "~/adapter";
@@ -34,6 +34,7 @@ import { executeUserQuery } from "~/screens/database/connection";
 import { useSetting } from "~/hooks/config";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useInterfaceStore } from "~/stores/interface";
+import { useKeymap } from "~/hooks/keymap";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -126,7 +127,7 @@ export function QueryView() {
 	useIntent("save-query", handleSaveRequest);
 	useIntent("toggle-variables", toggleQueryVariables);
 
-	useHotkeys([
+	useKeymap([
 		["F9", () => runQuery()],
 		["mod+Enter", () => runQuery()],
 	]);

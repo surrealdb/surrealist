@@ -10,7 +10,7 @@ import { Spacer } from "../../../../components/Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
-import { useDisclosure, useHotkeys, useInputState } from "@mantine/hooks";
+import { useDisclosure, useInputState } from "@mantine/hooks";
 import { Y_SLIDE_TRANSITION, newId, showError, updateTitle } from "~/util/helpers";
 import { Entry, EntryProps } from "../../../../components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
@@ -20,6 +20,7 @@ import { openConnection } from "~/screens/database/connection";
 import { Connection } from "~/types";
 import { EditableText } from "~/components/EditableText";
 import { group } from "radash";
+import { useKeymap } from "~/hooks/keymap";
 
 const UNGROUPED = Symbol("ungrouped");
 
@@ -208,7 +209,7 @@ export function Connections() {
 		listingHandle.open();
 	});
 
-	useHotkeys([
+	useKeymap([
 		["mod+L", listingHandle.open]
 	]);
 

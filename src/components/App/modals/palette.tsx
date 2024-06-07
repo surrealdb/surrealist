@@ -18,7 +18,7 @@ import { Icon } from "~/components/Icon";
 import { iconOpen, iconServer } from "~/util/icons";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Command, CommandCategory, computeCommands } from "~/util/commands";
-import { useHotkeys, useInputState } from "@mantine/hooks";
+import { useInputState } from "@mantine/hooks";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { adapter } from "~/adapter";
@@ -26,6 +26,7 @@ import { Spacer } from "~/components/Spacer";
 import { Shortcut } from "~/components/Shortcut";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useBoolean } from "~/hooks/boolean";
+import { useKeymap } from "~/hooks/keymap";
 
 export function CommandPaletteModal() {
 	const { pushCommand } = useConfigStore.getState();
@@ -154,7 +155,7 @@ export function CommandPaletteModal() {
 
 	useIntent("open-command-palette", openHandle.open);
 
-	useHotkeys([
+	useKeymap([
 		["mod+k", () => {
 			openHandle.open();
 		}]
