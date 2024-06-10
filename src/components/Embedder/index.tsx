@@ -229,18 +229,18 @@ export function Embedder({
 			<Box>
 				<SectionTitle extra={
 					<SegmentedControl
-						data={['Mini', 'URL']}
+						data={['Iframe', 'URL']}
 						value={mode}
 						onChange={setMode}
 						radius="xs"
 					/>
 				}>
-					Mini snippet
+					Mini {mode === 'Iframe' ? 'snippet' : 'url'}
 				</SectionTitle>
 				<CodePreview
-					value={mode === 'Mini' ? snippetCode : frameUrl}
+					value={mode === 'Iframe' ? snippetCode : frameUrl}
 					withCopy
-					extensions={mode === 'Mini' ? [
+					extensions={mode === 'Iframe' ? [
 						html()
 					] : []}
 				/>
