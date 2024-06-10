@@ -16,7 +16,7 @@ export function EmbedderModal() {
 			withCloseButton
 			size="lg"
 			title={
-				<ModalTitle>Embed generator</ModalTitle>
+				<ModalTitle>Mini generator</ModalTitle>
 			}
 		>
 			<Embedder />

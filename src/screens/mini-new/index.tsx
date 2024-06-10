@@ -55,7 +55,7 @@ export function MiniNewScreen() {
 					<Stack py={35}>
 						<SurrealistLogo h={32} mx="auto" />
 						<Text ta="center" fw={600} fz="xl">
-							Embed generator
+							Mini generator
 						</Text>
 					</Stack>
 					<Paper
@@ -71,7 +71,7 @@ export function MiniNewScreen() {
 							<Stack gap="lg">
 								<Box>
 									<Text fw={600} fz="lg" mb={2} c="bright">
-										Embed Preview
+										Mini Preview
 									</Text>
 									<Text c="slate.2" mb="lg">
 										The preview will automatically reload after making changes
@@ -96,7 +96,7 @@ export function MiniNewScreen() {
 										Restore editor
 									</Text>
 									<Text c="slate.2" mb="sm">
-										Optionally paste in an existing embed URL to restore the editor
+										Optionally paste in an existing mini URL to restore the editor
 									</Text>
 									<Button
 										size="sm"
@@ -113,7 +113,7 @@ export function MiniNewScreen() {
 											<TextInput
 												onChange={parseUrl}
 												spellCheck={false}
-												placeholder="Paste your embed URL here"
+												placeholder="Paste your mini URL here"
 												flex={1}
 											/>
 											<ActionIcon

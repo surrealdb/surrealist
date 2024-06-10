@@ -124,7 +124,7 @@ export function Embedder({
 				height="500"
 				src="${frameUrl}"
 				title="Surrealist Mini"
-				frameborder="0" 
+				frameborder="0"
 				referrerpolicy="strict-origin-when-cross-origin">
 			</iframe>
 		`);
@@ -140,7 +140,7 @@ export function Embedder({
 			<Text>
 				This form allows you to build a sharable mini version of Surrealist pre-loaded with
 				configured values, such as queries, variables, and other settings. You can use these
-				embeds in your blog posts, documentation, or other places where you want to share
+				embedded mini's in your blog posts, documentation, or other places where you want to share
 				interactive SurrealDB queries.
 			</Text>
 			<Box>
@@ -180,7 +180,7 @@ export function Embedder({
 				/>
 			</Box>
 			<Box>
-				<SectionTitle help="The query executed when loading the embed. Useful for inserting pre-existing records">
+				<SectionTitle help="The query executed when loading the mini. Useful for inserting pre-existing records">
 					Setup query
 				</SectionTitle>
 				<CodeInput
@@ -198,7 +198,7 @@ export function Embedder({
 				/>
 			</Box>
 			<Box>
-				<SectionTitle help="An official SurrealDB dataset to load into the embed on load">
+				<SectionTitle help="An official SurrealDB dataset to load into the mini on load">
 					Dataset
 				</SectionTitle>
 				<Select
@@ -212,7 +212,7 @@ export function Embedder({
 				/>
 			</Box>
 			<Box>
-				<SectionTitle help="The visual orientation of the embed">
+				<SectionTitle help="The visual orientation of the mini">
 					Orientation
 				</SectionTitle>
 				<Select
@@ -229,18 +229,18 @@ export function Embedder({
 			<Box>
 				<SectionTitle extra={
 					<SegmentedControl
-						data={['Embed', 'URL']}
+						data={['Mini', 'URL']}
 						value={mode}
 						onChange={setMode}
 						radius="xs"
 					/>
 				}>
-					Embed snippet
+					Mini snippet
 				</SectionTitle>
 				<CodePreview
-					value={mode === 'Embed' ? snippetCode : frameUrl}
+					value={mode === 'Mini' ? snippetCode : frameUrl}
 					withCopy
-					extensions={mode === 'Embed' ? [
+					extensions={mode === 'Mini' ? [
 						html()
 					] : []}
 				/>

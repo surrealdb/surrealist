@@ -391,7 +391,7 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				id: newId(),
-				name: "Open embed generator",
+				name: "Open mini generator",
 				icon: iconWrench,
 				aliases: ["mini"],
 				action: intent("open-embedder")
