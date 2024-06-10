@@ -43,6 +43,10 @@ export const SENSITIVE_SCOPE_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
 export const DATASETS: Record<string, DataSet> = {
+	"surreal-deal-store": {
+		name: "Surreal Deal Store",
+		url: "https://datasets.surrealdb.com/surreal-deal-store-mini.surql",
+	},
 	"surreal-deal": {
 		name: "Surreal Deal",
 		url: "https://datasets.surrealdb.com/surreal-deal-mini-v2.surql",
