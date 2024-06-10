@@ -116,11 +116,20 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return;
 		}
 
+		// console.log(1);
+
+		// setNodes([]);
+		// setEdges([]);
+
+		// setTimeout(() => {
+		// 	console.log(2);
+
 		setNodes(nodes);
 		setEdges(edges);
 		setComputing(true);
 
 		doLayoutRef.current = true;
+		// }, 5);
 	});
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
@@ -185,6 +194,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			renderGraph();
 			return;
 		}
+
 		if (!isConnected) {
 			setNodes([]);
 			setEdges([]);

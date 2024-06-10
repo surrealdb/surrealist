@@ -101,7 +101,7 @@ export function buildFlowNodes(
 		for (const fromTable of from) {
 			edges.push({
 				...baseEdge,
-				id: `tb-${table.schema.name}-edge-${fromTable}`,
+				id: `tb-${table.schema.name}-from-edge-${fromTable}`,
 				source: fromTable,
 				target: table.schema.name
 			});
@@ -119,7 +119,7 @@ export function buildFlowNodes(
 		for (const toTable of to) {
 			edges.push({
 				...baseEdge,
-				id: `tb-${table.schema.name}-edge-${toTable}`,
+				id: `tb-${table.schema.name}-to-edge-${toTable}`,
 				source: table.schema.name,
 				target: toTable
 			});
