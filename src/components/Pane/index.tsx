@@ -1,9 +1,10 @@
-import { Box, Divider, Group, LoadingOverlay, Paper, PaperProps, Text } from "@mantine/core";
+import { Box, Divider, Group, Paper, PaperProps, Text } from "@mantine/core";
 import { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
+import { LoadingContainer } from "../LoadingContainer";
 
 export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
@@ -70,12 +71,7 @@ export function ContentPane({
 				pos="relative"
 				className={classes.content}
 			>
-				<LoadingOverlay
-					visible={loading}
-					zIndex={1000}
-					overlayProps={{ radius: 'lg', opacity: 0.75, bg: 'slate.8' }}
-					loaderProps={{ type: 'dots' }}
-				/>
+				<LoadingContainer visible={loading} />
 
 				{children}
 			</Box>
