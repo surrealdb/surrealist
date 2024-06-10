@@ -1,31 +1,30 @@
+import type { GeographyInput } from "../GeographyMap";
 import { Suspense, lazy, useState } from "react";
-import { iconClose } from "~/util/icons";
+import { iconClose, iconMarker } from "~/util/icons";
 import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { ModalTitle } from "~/components/ModalTitle";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { LoadingContainer } from "~/components/LoadingContainer";
-import { useInputState } from "@mantine/hooks";
 import { formatValue } from "~/util/surrealql";
-import type { GeographyInput } from "../GeographyMap";
-import { CodeEditor } from "~/components/CodeEditor";
 import { surrealql } from "codemirror-surrealql";
-import { surqlLinting } from "~/util/editor/extensions";
-import { mdiMapMarker } from "@mdi/js";
 import { Label } from "~/components/Label";
+import { ON_STOP_PROPAGATION } from "~/util/helpers";
+import { CodePreview } from "../CodePreview";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
-export interface InspectorDrawerProps {
+export interface GeographyDrawerProps {
 	opened: boolean;
 	data: GeographyInput;
 	onClose: () => void;
 }
 
-export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps) => {
+export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps) => {
 	const [width, setWidth] = useState(650);
-	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
+
+	const geo = formatValue(data);
 
 	return (
 		<Drawer
@@ -33,6 +32,7 @@ export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps)
 			onClose={onClose}
 			position="right"
 			trapFocus={false}
+			onClick={ON_STOP_PROPAGATION}
 			size={width}
 			styles={{
 				body: {
@@ -50,8 +50,8 @@ export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps)
 
 			<Group mb="md" gap="sm">
 				<ModalTitle style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-					<Icon left path={mdiMapMarker} size="sm" />
-					Geography Explorer
+					<Icon left path={iconMarker} size="sm" />
+					Geography explorer
 				</ModalTitle>
 
 				<Spacer />
@@ -69,22 +69,19 @@ export const GeographyDrawer = ({ opened, data, onClose }: InspectorDrawerProps)
 			<Stack flex={1} gap={6} style={{ flexShrink: 1, flexBasis: 0 }}>
 				<Box flex={1}>
 					<Suspense fallback={<LoadingContainer visible />}>
-						<GeographyMap value={geoJSON} />
+						<GeographyMap value={geo} />
 					</Suspense>
 				</Box>
 
 				<Label style={{ marginTop: "20px" }}>Contents</Label>
 
 				<Box flex={1} pos="relative">
-					<CodeEditor
+					<CodePreview
 						pos="absolute"
 						inset={0}
-						autoFocus
-						value={geoJSON}
-						onChange={setGeoJSON}
+						value={geo}
 						extensions={[
-							surrealql(),
-							surqlLinting(),
+							surrealql()
 						]}
 					/>
 				</Box>

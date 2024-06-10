@@ -22,7 +22,7 @@ const TILES = [
 		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 	},
 	{
-		title: "Shortcuts guide",
+		title: "Shortcut guide",
 		description: "Learn the keyboard shortcuts to navigate the app faster.",
 		icon: iconCommand,
 		onClick: () => dispatchIntent("open-keymap")

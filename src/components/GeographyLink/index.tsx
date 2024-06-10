@@ -4,6 +4,8 @@ import { useStable } from "~/hooks/stable";
 import { GeographyDrawer } from "../GeographyDrawer";
 import { useDisclosure } from "@mantine/hooks";
 import type { GeographyInput } from "../GeographyMap";
+import { Icon } from "../Icon";
+import { iconMarker } from "~/util/icons";
 
 export interface GeographyLinkProps extends ComponentPropsWithoutRef<"div"> {
 	value: GeographyInput;
@@ -44,9 +46,14 @@ export const GeographyLink = ({ value, text, ...rest }: GeographyLinkProps) => {
 				>
 					{text}
 				</Text>
+				<Icon path={iconMarker} right />
 			</Group>
 
-			<GeographyDrawer opened={opened} data={value} onClose={handleClose} />
+			<GeographyDrawer
+				opened={opened}
+				data={value}
+				onClose={handleClose}
+			/>
 		</>
 	);
 };

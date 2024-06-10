@@ -1,11 +1,11 @@
 import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet';
-import { LatLng, geoJSON as createGeoJSON, latLng } from "leaflet";
+import { LatLng, Map, geoJSON as createGeoJSON, latLng } from "leaflet";
 import 'leaflet/dist/leaflet.css';
 import { Overlay, Paper } from '@mantine/core';
 import { parseValue } from "~/util/surrealql";
 import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb.js";
 import { useIsLight } from '~/hooks/theme';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type GeographyInput =
 	| GeometryPoint
@@ -20,16 +20,8 @@ const convertCoordsToLatLng = (point: [number, number] | [number, number, number
 	return latLng({ lat: point[1], lng: point[0] });
 };
 
-type GeographyMapData = {
-	geoJSON: any;
-	zoom: number;
-	center: LatLng;
-};
-
-const placeholderData: GeographyMapData = {
-	geoJSON: { type: "FeatureCollection", features: [] },
-	zoom: 15,
-	center: latLng(51.515_449_578_195_174, -0.139_976_602_926_186_13)
+const PLACEHOLDER = {
+	type: "FeatureCollection", features: []
 };
 
 export type GeographyMapProps = {
@@ -38,8 +30,9 @@ export type GeographyMapProps = {
 
 export const GeographyMap = ({ value }: GeographyMapProps) => {
 	const isLight = useIsLight();
+	const ref = useRef<Map>(null);
 
-	const [data, setData] = useState(placeholderData);
+	const [data, setData] = useState<any>(PLACEHOLDER);
 	const [isError, setIsError] = useState(false);
 
 	useEffect(() => {
@@ -49,18 +42,19 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 			const leafletGeoJson = createGeoJSON(data, {
 				coordsToLatLng: convertCoordsToLatLng
 			});
-			const center = leafletGeoJson.getBounds().getCenter();
-			const zoom = data.type === "Point" ? 14 : 10;
 
 			setIsError(false);
-			setData({ geoJSON: leafletGeoJson.toGeoJSON(), zoom, center });
+			setData(leafletGeoJson.toGeoJSON());
+
+			setTimeout(() => {
+				ref.current?.fitBounds(leafletGeoJson.getBounds());
+			});
 		} catch {
 			setIsError(true);
 		}
 	}, [value]);
 
-	const isPlaceholderData = data === placeholderData;
-	const { geoJSON, zoom, center } = data;
+	const isPlaceholderData = data === PLACEHOLDER;
 
 	return (
 		<Paper
@@ -86,20 +80,19 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 			) : null}
 
 			<MapContainer
-				key={isPlaceholderData ? "placeholder" : "map"}
-				zoom={zoom}
-				center={center}
+				ref={ref}
+				zoom={15}
+				center={latLng(51.515_449_578_195_174, -0.139_976_602_926_186_13)}
+				scrollWheelZoom={false}
+				attributionControl={false}
 				style={{
 					width: "100%",
 					height: "inherit",
 					borderRadius: "inherit",
-					filter: isLight ? "none" : "invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%)",
 				}}
-				scrollWheelZoom={false}
-				attributionControl={false}
 			>
 				<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-				<GeoJSON key={isPlaceholderData ? null : value} data={geoJSON} />
+				<GeoJSON key={isPlaceholderData ? null : value} data={data} />
 			</MapContainer>
 		</Paper>
 	);
