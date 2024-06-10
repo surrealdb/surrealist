@@ -4,7 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import { Overlay, Paper } from '@mantine/core';
 import { parseValue } from "~/util/surrealql";
 import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb.js";
-import { useIsLight } from '~/hooks/theme';
 import { useEffect, useRef, useState } from 'react';
 
 export type GeographyInput =
@@ -20,6 +19,9 @@ const convertCoordsToLatLng = (point: [number, number] | [number, number, number
 	return latLng({ lat: point[1], lng: point[0] });
 };
 
+const DEFAULT_ZOOM = 15;
+const DEFAULT_CENTER = latLng(51.515_449_578_195_174, -0.139_976_602_926_186_13);
+
 const PLACEHOLDER = {
 	type: "FeatureCollection", features: []
 };
@@ -29,11 +31,11 @@ export type GeographyMapProps = {
 };
 
 export const GeographyMap = ({ value }: GeographyMapProps) => {
-	const isLight = useIsLight();
 	const ref = useRef<Map>(null);
 
 	const [data, setData] = useState<any>(PLACEHOLDER);
 	const [isError, setIsError] = useState(false);
+	const [bounds, setBounds] = useState<any>();
 
 	useEffect(() => {
 		try {
@@ -45,14 +47,15 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 
 			setIsError(false);
 			setData(leafletGeoJson.toGeoJSON());
-
-			setTimeout(() => {
-				ref.current?.fitBounds(leafletGeoJson.getBounds());
-			});
+			setBounds(leafletGeoJson.getBounds());
 		} catch {
 			setIsError(true);
 		}
 	}, [value]);
+
+	useEffect(() => {
+		ref.current?.fitBounds(bounds);
+	}, [bounds]);
 
 	const isPlaceholderData = data === PLACEHOLDER;
 
@@ -73,7 +76,7 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 				<Overlay
 					gradient="linear-gradient(145deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0) 100%)"
 					opacity={0.85}
-					style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+					style={{ display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}
 				>
 					Failed to parse value
 				</Overlay>
@@ -81,8 +84,8 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 
 			<MapContainer
 				ref={ref}
-				zoom={15}
-				center={latLng(51.515_449_578_195_174, -0.139_976_602_926_186_13)}
+				zoom={DEFAULT_ZOOM}
+				center={DEFAULT_CENTER}
 				scrollWheelZoom={false}
 				attributionControl={false}
 				style={{

@@ -11,7 +11,8 @@ import { formatValue } from "~/util/surrealql";
 import { surrealql } from "codemirror-surrealql";
 import { Label } from "~/components/Label";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { CodePreview } from "../CodePreview";
+import { useInputState } from "@mantine/hooks";
+import { CodeEditor } from "../CodeEditor";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -24,7 +25,7 @@ export interface GeographyDrawerProps {
 export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps) => {
 	const [width, setWidth] = useState(650);
 
-	const geo = formatValue(data);
+	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
 
 	return (
 		<Drawer
@@ -69,19 +70,21 @@ export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps)
 			<Stack flex={1} gap={6} style={{ flexShrink: 1, flexBasis: 0 }}>
 				<Box flex={1}>
 					<Suspense fallback={<LoadingContainer visible />}>
-						<GeographyMap value={geo} />
+						<GeographyMap value={geoJSON} />
 					</Suspense>
 				</Box>
 
 				<Label style={{ marginTop: "20px" }}>Contents</Label>
 
 				<Box flex={1} pos="relative">
-					<CodePreview
+					<CodeEditor
 						pos="absolute"
 						inset={0}
-						value={geo}
+						autoFocus
+						value={geoJSON}
+						onChange={setGeoJSON}
 						extensions={[
-							surrealql()
+							surrealql(),
 						]}
 					/>
 				</Box>
