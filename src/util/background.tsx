@@ -7,6 +7,7 @@ import { openConnection } from "~/screens/database/connection";
 import { featureFlags } from "./feature-flags";
 import { VIEW_MODES } from "~/constants";
 import { useDatabaseStore } from "~/stores/database";
+import { compare } from "semver";
 
 const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -57,6 +58,11 @@ export function watchColorScheme() {
 export async function watchConfigStore() {
 	const config = await adapter.loadConfig();
 	const merged = assign(useConfigStore.getState(), config);
+
+	// TODO Temporary fix
+	if (compare(import.meta.env.VERSION, merged.previousVersion) > 0) {
+		merged.activeScreen = 'database';
+	}
 
 	useConfigStore.setState(merged);
 
