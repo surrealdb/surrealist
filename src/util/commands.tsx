@@ -1,7 +1,7 @@
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "./connection";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { iconAPI, iconAccountPlus, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconClose, iconCog, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconRoutes, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
+import { iconAPI, iconAccountPlus, iconAccountSecure, iconAuth, iconAutoFix, iconBalance, iconBook, iconBraces, iconChevronRight, iconClose, iconCog, iconCommand, iconConsole, iconDownload, iconEye, iconFlag, iconFolderSecure, iconHelp, iconHistory, iconMagnifyMinus, iconMagnifyPlus, iconNewspaper, iconPin, iconPlay, iconPlus, iconRefresh, iconReset, iconRoutes, iconSearch, iconServer, iconServerSecure, iconStar, iconStarPlus, iconStop, iconSurreal, iconText, iconTextBoxMinus, iconTextBoxPlus, iconUpload, iconWrench } from "./icons";
 import { newId } from "./helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { adapter, isDesktop } from "~/adapter";
@@ -10,7 +10,6 @@ import { featureFlags } from "./feature-flags";
 import { syncDatabaseSchema } from "./schema";
 import { closeConnection } from "~/screens/database/connection";
 import { DesktopAdapter } from "~/adapter/desktop";
-import { mdiAppleKeyboardCommand } from "@mdi/js";
 
 type LaunchAction = { type: "launch", handler: () => void };
 type InsertAction = { type: "insert", content: string };
@@ -380,7 +379,7 @@ export function computeCommands(): CommandCategory[] {
 			{
 				id: newId(),
 				name: "Open Keyboard Shortcuts",
-				icon: mdiAppleKeyboardCommand,
+				icon: iconCommand,
 				action: intent("open-keymap")
 			},
 			{

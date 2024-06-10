@@ -1,9 +1,10 @@
-import { mdiAppleKeyboardCommand, mdiAppleKeyboardControl, mdiAppleKeyboardOption, mdiAppleKeyboardShift } from "@mdi/js";
+import { mdiAppleKeyboardControl, mdiAppleKeyboardOption, mdiAppleKeyboardShift } from "@mdi/js";
 import { BoxProps, Group, Kbd, Text } from "@mantine/core";
 import { Fragment, ReactNode, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { capitalize } from "radash";
 import { Icon } from "../Icon";
+import { iconCommand } from "~/util/icons";
 
 export interface ShortcutProps extends Omit<BoxProps, 'children'> {
 	value: string;
@@ -19,7 +20,7 @@ export function Shortcut({ value, ...rest }: ShortcutProps) {
 
 			switch (part) {
 				case "mod": {
-					code = <Icon path={isMac ? mdiAppleKeyboardCommand : mdiAppleKeyboardControl} size={0.7} />;
+					code = <Icon path={isMac ? iconCommand : mdiAppleKeyboardControl} size={0.7} />;
 					break;
 				}
 				case "alt": {

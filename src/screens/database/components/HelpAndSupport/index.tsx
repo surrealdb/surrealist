@@ -2,12 +2,11 @@ import classes from "./style.module.scss";
 import { Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { mdiAppleKeyboardCommand } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent, useIntent } from "~/hooks/url";
-import { iconBook, iconBug, iconClose, iconHelp } from "~/util/icons";
+import { iconBook, iconBug, iconClose, iconCommand, iconDiscord, iconHelp } from "~/util/icons";
 
 const TILES = [
 	{
@@ -23,17 +22,17 @@ const TILES = [
 		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 	},
 	{
-		title: "Shortcuts",
-		description: "Learn the keyboard shortcuts to navigate the app faster",
-		icon: mdiAppleKeyboardCommand,
+		title: "Shortcuts guide",
+		description: "Learn the keyboard shortcuts to navigate the app faster.",
+		icon: iconCommand,
 		onClick: () => dispatchIntent("open-keymap")
 	},
-	// {
-	// 	title: "Restart the tour",
-	// 	description: "Need to restart the tour? Click here to start over.",
-	// 	icon: iconRoutes,
-	// 	onClick: () => {}
-	// }
+	{
+		title: "Discord",
+		description: "Connect with other users and get help from the community.",
+		icon: iconDiscord,
+		onClick: () => adapter.openUrl("https://discord.gg/dc4JNWrrMc")
+	},
 ];
 
 export function HelpAndSupport() {
