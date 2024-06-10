@@ -7,19 +7,21 @@ import { useConnection } from "~/hooks/connection";
 import { SANDBOX } from "~/constants";
 import { useOnboarding } from "~/hooks/onboarding";
 import { useBoolean } from "~/hooks/boolean";
+import { useConfigStore } from "~/stores/config";
 
 export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [completed, complete] = useOnboarding('sandbox');
+	const screen = useConfigStore((state) => state.activeScreen);
 	const connection = useConnection();
 
 	useEffect(() => {
-		if (connection?.id === SANDBOX && !completed) {
+		if (connection?.id === SANDBOX && screen === "database" && !completed) {
 			openHandle.open();
 			complete();
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [connection]);
+	}, [connection, screen]);
 
 	return (
 		<Modal
