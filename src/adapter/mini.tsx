@@ -4,6 +4,8 @@ import { Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
 import { executeQuery } from "~/screens/database/connection";
+import { parseValue } from "~/util/surrealql";
+import { Value } from "surrealql.wasm/v1";
 
 const THEMES = new Set(['light', 'dark', 'auto']);
 
@@ -41,12 +43,9 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Initial variables
 		if (variables) {
-			const vars = decodeURIComponent(variables);
-
 			try {
-				const parsed = JSON.parse(vars);
-
-				mainTab.variables = JSON.stringify(parsed, null, 4);
+				const parsed = Value.from_string(variables);
+				mainTab.variables = parsed.format(true);
 			} catch {
 				showError({
 					title: 'Startup error',
