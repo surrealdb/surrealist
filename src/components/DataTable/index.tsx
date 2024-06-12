@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Box, BoxProps, Text } from "@mantine/core";
+import { Box, BoxProps, Group, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { MouseEvent, useMemo } from "react";
 import { DataCell } from "./datatypes";
@@ -8,7 +8,7 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "../Icon";
 import { alphabetical, isObject } from "radash";
 import { useInspector } from "~/providers/Inspector";
-import { iconChevronDown, iconChevronUp } from "~/util/icons";
+import { iconChevronDown, iconChevronUp, iconWarning } from "~/util/icons";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
@@ -51,12 +51,19 @@ export function DataTable(props: DataTableProps) {
 		}
 	});
 
-	const [keys, values] = useMemo(() => {
+	const [keys, values, truncated] = useMemo(() => {
 		const keys: string[] = headers || [];
 		const values: any[] = [];
 
+		let truncated = false;
+
 		if (isRenderable(data)) {
 			for (const datum of data) {
+				if (values.length >= 100) {
+					truncated = true;
+					break;
+				}
+
 				const row: any = {};
 
 				for (const [key, value] of Object.entries(datum)) {
@@ -88,7 +95,7 @@ export function DataTable(props: DataTableProps) {
 			}
 		});
 
-		return [headerNames, values];
+		return [headerNames, values, truncated];
 	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
@@ -160,6 +167,12 @@ export function DataTable(props: DataTableProps) {
 				</thead>
 				<tbody>{recordRows}</tbody>
 			</Table>
+			{truncated && (
+				<Group mt="md" mb="xl" c="red">
+					<Icon path={iconWarning}/>
+					The rows have been truncated to 100 for performance reasons
+				</Group>
+			)}
 		</ScrollArea>
 	);
 }
