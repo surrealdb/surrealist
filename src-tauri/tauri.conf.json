@@ -14,7 +14,13 @@
 		"shortDescription": "",
 		"longDescription": "",
 		"copyright": "",
-		"targets": "all",
+		"targets": [
+			"nsis",
+			"dmg",
+			"appimage",
+			"deb",
+			"rpm"
+		],
 		"externalBin": [],
 		"resources": [],
 		"icon": [
