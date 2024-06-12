@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useBoolean } from "~/hooks/boolean";
 import { ModalTitle } from "~/components/ModalTitle";
 import { CodeEditor } from "~/components/CodeEditor";
+// @ts-ignore
 import { parser } from "lezer-surrealql";
-import { highlightCode, tagHighlighter, tags } from "@lezer/highlight";
+import { highlightCode, tagHighlighter } from "@lezer/highlight";
 import { surrealql } from "codemirror-surrealql";
 import { DARK_STYLE } from "~/util/editor/theme";
 
@@ -36,7 +37,7 @@ export function Render({ value }: { value: string }) {
 
 	return (
 		<div dangerouslySetInnerHTML={{ __html: rendered.innerHTML }} style={{ whiteSpace: 'pre-wrap', userSelect: 'all', background: 'black', fontFamily: "SF Mono", padding: '18px 24px', fontSize: '14px' }} />
-	)
+	);
 }
 
 export function HighlightToolModal() {
