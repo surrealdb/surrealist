@@ -54,12 +54,14 @@ export function CodePreview({
 				colorTheme(),
 				EditorState.readOnly.of(true),
 				EditorView.lineWrapping,
-			]
+				EditorView.editable.of(false),
+			],
+
 		});
 
 		const editor = new EditorView({
 			state: initialState,
-			parent: ref.current!
+			parent: ref.current!,
 		});
 
 		editorRef.current = {

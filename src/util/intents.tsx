@@ -20,6 +20,7 @@ const INTENT_REGISTRY = {
 	'increase-editor-scale': null,
 	'decrease-editor-scale': null,
 	'toggle-pinned': null,
+	'highlight-tool': null,
 	'new-query': 'query',
 	'run-query': 'query',
 	'save-query': 'query',

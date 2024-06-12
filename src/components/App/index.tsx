@@ -33,6 +33,7 @@ import { SandboxModal } from "./modals/sandbox";
 import { ScopeSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { KeymapModal } from "./modals/hotkeys";
+import { HighlightToolModal } from "./modals/highlight-tool";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +103,7 @@ export function App() {
 									<ScopeSignupModal />
 									<TableCreatorModal />
 									<KeymapModal />
+									<HighlightToolModal />
 								</ErrorBoundary>
 							</InspectorProvider>
 						</ConfirmationProvider>

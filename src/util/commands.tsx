@@ -462,7 +462,15 @@ export function computeCommands(): CommandCategory[] {
 						(adapter as DesktopAdapter).toggleDevTools();
 					})
 				}
-			] : [])
+			] : []),
+			...(featureFlags.store.highlight_tool ? [
+				{
+					id: newId(),
+					name: "Highlight Tool",
+					icon: iconWrench,
+					action: intent("highlight-tool"),
+				}
+			]: []),
 		]
 	});
 
