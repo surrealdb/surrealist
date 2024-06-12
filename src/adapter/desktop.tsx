@@ -19,6 +19,7 @@ import { getCurrent as getWebView } from "@tauri-apps/api/webview";
 import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
 import { useInterfaceStore } from "~/stores/interface";
+import { adapter } from ".";
 
 const WAIT_DURATION = 1000;
 
@@ -276,6 +277,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const result = await check();
 
 		if (result && (force || result.version !== lastPromptedVersion)) {
+			adapter.log("Updater", `New version available: ${result.version}`);
+
 			setAvailableUpdate(result);
 			setLastPromptedVersion(result.version);
 		}
