@@ -26,6 +26,9 @@ export const schema = {
 	highlight_tool: {
 		options: [false, true],
 	},
+	changelog: {
+		options: ['auto', 'read', 'unread'],
+	},
 } as const;
 
 export const featureFlags = new FeatureFlags({

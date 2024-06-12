@@ -146,13 +146,13 @@ export function DatabaseToolbar() {
 
 			<Spacer />
 
-			{showChangelog && (
+			{(flags.changelog === 'auto' ? showChangelog : true) && (
 				<Button
 					h={34}
 					size="xs"
 					radius="xs"
 					color="slate"
-					variant={hasReadChangelog ? "filled" : "gradient"}
+					variant={(flags.changelog === 'auto' ? hasReadChangelog : flags.changelog === 'read') ? "filled" : "gradient"}
 					style={{ border: "none" }}
 					onClick={openChangelog}
 					leftSection={
