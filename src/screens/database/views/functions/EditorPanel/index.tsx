@@ -253,7 +253,7 @@ export function EditorPanel({
 								label="Comment"
 								description="Optional description for this function"
 								placeholder="Enter comment..."
-								value={details.comment}
+								value={details.comment || ''}
 								onChange={value => onChange((draft) => {
 									draft.comment = value.target.value;
 								})}
