@@ -45,7 +45,7 @@ export function FunctionsView() {
 			await executeQuery(query).catch(console.error);
 			await syncDatabaseSchema();
 
-			editFunction(details!.name);
+			isCreatingHandle.close();
 		},
 		onRevert({ details }) {
 			setDetails(details);
