@@ -1,5 +1,5 @@
 import papaparse from "papaparse";
-import { Autocomplete, Button, Divider, Modal, ModalTitle, Stack } from "@mantine/core";
+import { Autocomplete, Button, Divider, Modal, Stack } from "@mantine/core";
 import { SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -20,6 +20,7 @@ import { RecordId, Table } from "surrealdb.js";
 import { parseValue } from "~/util/surrealql";
 import { Icon } from "~/components/Icon";
 import { sleep } from "radash";
+import { ModalTitle } from "~/components/ModalTitle";
 
 type Importer = null | 'sql' | 'csv';
 
