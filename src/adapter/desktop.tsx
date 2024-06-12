@@ -75,6 +75,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
+
+		listen("tauri://focus", () => {
+			this.checkForUpdates();
+		});
 	}
 
 	public async initialize() {
@@ -273,6 +277,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public async checkForUpdates(force?: boolean) {
 		const { lastPromptedVersion, setLastPromptedVersion } = useConfigStore.getState();
 		const { setAvailableUpdate } = useInterfaceStore.getState();
+
+		adapter.log("Updater", "Checking for updates");
 
 		const result = await check();
 
