@@ -27,7 +27,7 @@ export const schema = {
 		options: [false, true],
 	},
 	changelog: {
-		options: ['auto', 'read', 'unread'],
+		options: ['auto', 'hidden', 'read', 'unread'],
 	},
 } as const;
 

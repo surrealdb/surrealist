@@ -146,7 +146,7 @@ export function DatabaseToolbar() {
 
 			<Spacer />
 
-			{(flags.changelog === 'auto' ? showChangelog : true) && (
+			{(flags.changelog === 'auto' ? showChangelog : flags.changelog !== 'hidden') && (
 				<Button
 					h={34}
 					size="xs"
