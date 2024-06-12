@@ -43,7 +43,7 @@
 		"log:allow-log",
 		"webview:allow-internal-toggle-devtools",
 		"updater:allow-check",
-		"updater:allow-download",
+		"updater:allow-download-and-install",
 		"process:allow-restart"
 	]
 }
