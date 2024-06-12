@@ -61,6 +61,7 @@
 		"clsx": "^2.1.0",
 		"codemirror": "^6.0.1",
 		"codemirror-surrealql": "workspace:codemirror-surrealql",
+		"lezer-surrealql": "workspace:lezer-surrealql",
 		"dagre": "^0.8.5",
 		"dayjs": "^1.11.9",
 		"dedent": "^1.5.1",

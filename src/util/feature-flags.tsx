@@ -23,6 +23,12 @@ export const schema = {
 	database_version_check: {
 		options: [false, true]
 	},
+	highlight_tool: {
+		options: [false, true],
+	},
+	changelog: {
+		options: ['auto', 'read', 'unread'],
+	},
 } as const;
 
 export const featureFlags = new FeatureFlags({
@@ -34,7 +40,8 @@ export const featureFlags = new FeatureFlags({
 			featureFlags: true,
 			models_view: "force",
 			apidocs_view: true,
-			newsfeed: true
+			newsfeed: true,
+			highlight_tool: true,
 		},
 		preview: {
 			database_version_check: true,

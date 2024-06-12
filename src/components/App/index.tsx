@@ -29,6 +29,7 @@ import { TableCreatorModal } from "./modals/table";
 import { KeymapModal } from "./modals/hotkeys";
 import { UpdaterDialog } from "./modals/updater";
 import { isDesktop } from "~/adapter";
+import { HighlightToolModal } from "./modals/highlight-tool";
 
 const queryClient = new QueryClient();
 
@@ -85,6 +86,7 @@ export function App() {
 									<ScopeSignupModal />
 									<TableCreatorModal />
 									<KeymapModal />
+                  <HighlightToolModal />
 
 									{isDesktop && (
 										<UpdaterDialog />
