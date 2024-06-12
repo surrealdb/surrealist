@@ -454,3 +454,19 @@ export function isModKey(event: Event) {
 
 	return false;
 }
+
+/**
+ * Slugify the given string for use in URLs and file names
+ *
+ * @param text The text to slugify
+ * @returns The slugified text
+ */
+export function slugify(text: string) {
+	return text
+		.normalize('NFD').replaceAll(/[\u0300-\u036F]/g, '')
+		.toLowerCase()
+		.replaceAll(/\s+/g, '-')
+		.replaceAll(/[^\da-z-]/g, '')
+		.replaceAll(/-+/g, '-')
+		.replaceAll(/^-+|-+$/g, '');
+}

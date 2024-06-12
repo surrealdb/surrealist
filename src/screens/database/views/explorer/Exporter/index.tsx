@@ -1,6 +1,6 @@
 import { Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { EXPORT_TYPES, ExportType, SURQL_FILTER } from "~/constants";
-import { useIsConnected } from "~/hooks/connection";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useState } from "react";
@@ -9,18 +9,21 @@ import { useToggleList } from "~/hooks/toggle";
 import { adapter } from "~/adapter";
 import { createDatabaseExport } from "~/util/exporter";
 import { iconChevronRight, iconDownload, iconUpload } from "~/util/icons";
-import { showInfo } from "~/util/helpers";
+import { showInfo, slugify } from "~/util/helpers";
 import { Entry } from "~/components/Entry";
 import { useIntent } from "~/hooks/url";
 import { useTableNames } from "~/hooks/schema";
 import { useDisclosure } from "@mantine/hooks";
 import { Icon } from "~/components/Icon";
 import { ModalTitle } from "~/components/ModalTitle";
+import dayjs from "dayjs";
 
 export function Exporter() {
 	const isLight = useIsLight();
 	const isOnline = useIsConnected();
 	const tables = useTableNames();
+	const connection = useActiveConnection();
+
 	const [showExporter, setShowExporter] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
 	const [exportTypes, setExportTypes] = useToggleList<ExportType>(['tables', 'analyzers', 'functions', 'params', 'scopes']);
@@ -35,11 +38,13 @@ export function Exporter() {
 		setShowExporter(false);
 	});
 
+	const fileName = `${slugify(connection.name)}-${dayjs().format('YYYY-MM-DD')}.surql`;
+
 	const handleExport = useStable(async () => {
 		try {
 			const success = await adapter.saveFile(
 				'Save database export',
-				'database.surql',
+				fileName,
 				[SURQL_FILTER],
 				() => {
 					setIsExporting(true);
