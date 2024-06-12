@@ -140,12 +140,12 @@ const TABLE_SOURCE: CompletionSource = (context) => {
 	const tables = useDatabaseStore.getState().databaseSchema?.tables || [];
 	const names = tables.map(table => table.schema.name);
 
-	if (!match) {
+	if (!context.explicit && !match) {
 		return null;
 	}
 
 	return {
-		from: match.from + match.text.indexOf(' ') + 1,
+		from: match ? match!.from + match!.text.indexOf(' ') + 1 : context.pos,
 		validFor: /\w+$/,
 		options: names.map(table => ({
 			label: table,
@@ -167,14 +167,14 @@ const VARIABLE_SOURCE: CompletionSource = (context) => {
 	const match = context.matchBefore(/\$\w*/i);
 	const query = getActiveQuery();
 
-	if (!match || !query) {
+	if (!query || (!context.explicit && !match)) {
 		return null;
 	}
 
 	const variables = Object.keys(tryParseParams(query.variables));
 
 	return {
-		from: match.from,
+		from: match ? match.from : context.pos,
 		validFor: /\$\w+$/,
 		options: variables.map(variable => ({
 			label: '$' + variable,
@@ -197,12 +197,12 @@ const CUSTOM_FUNCTION_SOURCE: CompletionSource = (context) => {
 	const functions = useDatabaseStore.getState().databaseSchema?.functions || [];
 	const names = functions.map(fn => `fn::${fn.name}`);
 
-	if (!match) {
+	if (!context.explicit && !match) {
 		return null;
 	}
 
 	return {
-		from: match.from,
+		from: match ? match.from : context.pos,
 		validFor: /\w+$/,
 		options: names.map(label => snippetCompletion(`${label}(#{1})`, {
 			label,
