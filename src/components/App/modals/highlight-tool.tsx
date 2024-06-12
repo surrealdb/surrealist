@@ -9,6 +9,7 @@ import { parser } from "lezer-surrealql";
 import { highlightCode, tagHighlighter } from "@lezer/highlight";
 import { surrealql } from "codemirror-surrealql";
 import { DARK_STYLE } from "~/util/editor/theme";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 
 const classHighlighter = tagHighlighter(DARK_STYLE.specs.map(a => ({...a, class: a.color})));
@@ -43,6 +44,7 @@ export function Render({ value }: { value: string }) {
 export function HighlightToolModal() {
 	const [value, onChange] = useState("");
 	const [isOpen, openedHandle] = useBoolean();
+	const [_, setFeatureFlags] = useFeatureFlags();
 
 	useEffect(() => {
 		if (!isOpen) {
@@ -50,7 +52,12 @@ export function HighlightToolModal() {
 		}
 	}, [isOpen]);
 
-	useIntent("highlight-tool", openedHandle.open);
+	useIntent("highlight-tool", () => {
+		openedHandle.open();
+		setFeatureFlags({
+			highlight_tool: true,
+		});
+	});
 
 	return (
 		<>
