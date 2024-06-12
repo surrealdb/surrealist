@@ -15,6 +15,7 @@
 		"tray:default",
 		"log:default",
 		"deep-link:default",
+		"updater:default",
 		"os:allow-os-type",
 		"fs:allow-read-file",
 		"fs:allow-write-file",
@@ -40,6 +41,9 @@
 		"os:allow-hostname",
 		"deep-link:allow-get-current",
 		"log:allow-log",
-		"webview:allow-internal-toggle-devtools"
+		"webview:allow-internal-toggle-devtools",
+		"updater:allow-check",
+		"updater:allow-download",
+		"process:allow-restart"
 	]
 }

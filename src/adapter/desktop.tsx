@@ -3,6 +3,7 @@ import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
+import { check } from "@tauri-apps/plugin-updater";
 import { save, open } from "@tauri-apps/plugin-dialog";
 import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
@@ -17,6 +18,7 @@ import { getCurrent } from "@tauri-apps/api/window";
 import { getCurrent as getWebView } from "@tauri-apps/api/webview";
 import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
+import { useInterfaceStore } from "~/stores/interface";
 
 const WAIT_DURATION = 1000;
 
@@ -78,6 +80,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		await attachConsole();
 
 		this.queryOpenRequest();
+		this.checkForUpdate();
 
 		watchStore({
 			initial: true,
@@ -374,6 +377,16 @@ export class DesktopAdapter implements SurrealistAdapter {
 					}
 				}
 			}
+		}
+	}
+
+	private async checkForUpdate() {
+		const { setAvailableUpdate } = useInterfaceStore.getState();
+
+		const result = await check();
+
+		if (result) {
+			setAvailableUpdate(result);
 		}
 	}
 }
