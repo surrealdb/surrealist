@@ -13,9 +13,11 @@ import { useDatabaseStore } from "~/stores/database";
 import { adapter } from "~/adapter";
 
 export function StartScreen() {
-	const { setActiveConnection, setActiveScreen } = useConfigStore.getState();
+	const { setActiveConnection } = useConfigStore.getState();
 	const { openConnectionCreator } = useInterfaceStore.getState();
-	const { isConnecting } = useDatabaseStore();
+
+	const isConnecting = useDatabaseStore(s => s.isConnecting);
+	const title = useInterfaceStore((s) => s.title);
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
@@ -31,6 +33,15 @@ export function StartScreen() {
 			inset={0}
 			className={classes.start}
 		>
+			{!adapter.hasTitlebar && (
+				<Center
+					data-tauri-drag-region
+					className={classes.titlebar}
+				>
+					{title}
+				</Center>
+			)}
+
 			<div
 				className={classes.primarySphere}
 				style={{
