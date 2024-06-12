@@ -80,7 +80,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		await attachConsole();
 
 		this.queryOpenRequest();
-		this.checkForUpdate();
+		this.checkForUpdates();
 
 		watchStore({
 			initial: true,
@@ -269,6 +269,18 @@ export class DesktopAdapter implements SurrealistAdapter {
 		trace(label + ": " + message);
 	}
 
+	public async checkForUpdates(force?: boolean) {
+		const { lastPromptedVersion, setLastPromptedVersion } = useConfigStore.getState();
+		const { setAvailableUpdate } = useInterfaceStore.getState();
+
+		const result = await check();
+
+		if (result && (force || result.version !== lastPromptedVersion)) {
+			setAvailableUpdate(result);
+			setLastPromptedVersion(result.version);
+		}
+	}
+
 	private initDatabaseEvents() {
 		let throttleLevel = 0;
 
@@ -377,16 +389,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 					}
 				}
 			}
-		}
-	}
-
-	private async checkForUpdate() {
-		const { setAvailableUpdate } = useInterfaceStore.getState();
-
-		const result = await check();
-
-		if (result) {
-			setAvailableUpdate(result);
 		}
 	}
 }
