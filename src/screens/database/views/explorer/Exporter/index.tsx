@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Modal, ModalTitle, Paper, SimpleGrid, Stack } from "@mantine/core";
+import { Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { EXPORT_TYPES, ExportType, SURQL_FILTER } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -15,6 +15,7 @@ import { useIntent } from "~/hooks/url";
 import { useTableNames } from "~/hooks/schema";
 import { useDisclosure } from "@mantine/hooks";
 import { Icon } from "~/components/Icon";
+import { ModalTitle } from "~/components/ModalTitle";
 
 export function Exporter() {
 	const isLight = useIsLight();
