@@ -3,6 +3,7 @@ import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
+import { check } from "@tauri-apps/plugin-updater";
 import { save, open } from "@tauri-apps/plugin-dialog";
 import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
@@ -17,6 +18,8 @@ import { getCurrent } from "@tauri-apps/api/window";
 import { getCurrent as getWebView } from "@tauri-apps/api/webview";
 import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
+import { useInterfaceStore } from "~/stores/interface";
+import { adapter } from ".";
 
 const WAIT_DURATION = 1000;
 
@@ -72,12 +75,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 		listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
+
+		listen("tauri://focus", () => {
+			this.checkForUpdates();
+		});
 	}
 
 	public async initialize() {
 		await attachConsole();
 
 		this.queryOpenRequest();
+		this.checkForUpdates();
 
 		watchStore({
 			initial: true,
@@ -264,6 +272,22 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public trace(label: string, message: string) {
 		trace(label + ": " + message);
+	}
+
+	public async checkForUpdates(force?: boolean) {
+		const { lastPromptedVersion, setLastPromptedVersion } = useConfigStore.getState();
+		const { setAvailableUpdate } = useInterfaceStore.getState();
+
+		adapter.log("Updater", "Checking for updates");
+
+		const result = await check();
+
+		if (result && (force || result.version !== lastPromptedVersion)) {
+			adapter.log("Updater", `New version available: ${result.version}`);
+
+			setAvailableUpdate(result);
+			setLastPromptedVersion(result.version);
+		}
 	}
 
 	private initDatabaseEvents() {

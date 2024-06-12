@@ -421,6 +421,16 @@ export function computeCommands(): CommandCategory[] {
 					setActiveScreen("database");
 				})
 			},
+			...(isDesktop ? [
+				{
+					id: newId(),
+					name: "Check for updates",
+					icon: iconDownload,
+					action: launch(() => {
+						(adapter as DesktopAdapter).checkForUpdates(true);
+					})
+				}
+			] : [])
 		]
 	}, {
 		name: "Developer",

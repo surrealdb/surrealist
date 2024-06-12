@@ -1,17 +1,11 @@
-import surrealistIcon from "~/assets/images/logo.webp";
-import { MouseEvent } from "react";
 import { Notifications } from "@mantine/notifications";
-import { ActionIcon, Box, Group, Image, MantineProvider, Paper, Text, Transition } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
-import { Icon } from "../Icon";
-import { adapter } from "~/adapter";
-import { useInterfaceStore } from "~/stores/interface";
 import { ErrorBoundary } from "react-error-boundary";
 import { MANTINE_THEME } from "~/util/mantine";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import { InspectorProvider } from "~/providers/Inspector";
-import { iconClose } from "~/util/icons";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { useUrlHandler } from "~/hooks/url";
@@ -33,29 +27,18 @@ import { SandboxModal } from "./modals/sandbox";
 import { ScopeSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { KeymapModal } from "./modals/hotkeys";
+import { UpdaterDialog } from "./modals/updater";
+import { isDesktop } from "~/adapter";
 import { HighlightToolModal } from "./modals/highlight-tool";
 
 const queryClient = new QueryClient();
 
 export function App() {
-	const { hideAvailableUpdate } = useInterfaceStore.getState();
 	const { setActiveConnection } = useConfigStore.getState();
 
 	const isLight = useIsLight();
 	const colorScheme = useColorScheme();
-	const update = useInterfaceStore((s) => s.availableUpdate);
-	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
 	const screen = useConfigStore((s) => s.activeScreen);
-
-	const closeUpdate = useStable((e?: MouseEvent) => {
-		e?.stopPropagation();
-		hideAvailableUpdate();
-	});
-
-	const openRelease = useStable(() => {
-		adapter.openUrl(`https://github.com/surrealdb/surrealist/releases/tag/v${update}`);
-		closeUpdate();
-	});
 
 	const handleReset = useStable(() => {
 		setActiveConnection(SANDBOX);
@@ -103,50 +86,15 @@ export function App() {
 									<ScopeSignupModal />
 									<TableCreatorModal />
 									<KeymapModal />
-									<HighlightToolModal />
+                  <HighlightToolModal />
+
+									{isDesktop && (
+										<UpdaterDialog />
+									)}
 								</ErrorBoundary>
 							</InspectorProvider>
 						</ConfirmationProvider>
 					</ContextMenuProvider>
-
-					<Transition
-						mounted={showUpdate}
-						duration={250}
-						transition="slide-up"
-						timingFunction="ease"
-					>
-						{(styles) => (
-							<Paper
-								onClick={openRelease}
-								style={{ ...styles, cursor: "pointer" }}
-								pos="fixed"
-								bg="#2f2f40"
-								bottom={20}
-								left={20}
-								p="xs"
-							>
-								<Group gap="sm">
-									<Image
-										src={surrealistIcon}
-										style={{ pointerEvents: "none" }}
-										height={32}
-										width={32}
-										mx={4}
-									/>
-									<Box miw={200}>
-										<Text c="white">New release available</Text>
-										<Text c="gray.5">Version {update} is available</Text>
-									</Box>
-									<ActionIcon
-										aria-label="Close update notification"
-										onClick={closeUpdate}
-									>
-										<Icon path={iconClose} />
-									</ActionIcon>
-								</Group>
-							</Paper>
-						)}
-					</Transition>
 				</MantineProvider>
 			</QueryClientProvider>
 		</FeatureFlagsProvider>
