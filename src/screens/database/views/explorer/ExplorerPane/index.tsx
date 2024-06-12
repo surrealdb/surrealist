@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Button, Center, ComboboxData, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
+import { FocusEvent, KeyboardEvent, MouseEvent, useLayoutEffect, useMemo, useState } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -138,11 +138,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		setFiltering(!filtering);
 	});
 
-	useEffect(() => {
-		if (page > pageCount) {
-			setCurrentPage(pageCount || 1);
-		}
-	}, [page, pageCount, setCurrentPage]);
+	useLayoutEffect(() => {
+		setCurrentPage(1);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [activeTable]);
 
 	useEventSubscription(RecordsChangedEvent, () => {
 		refreshRecords();
