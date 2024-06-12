@@ -253,7 +253,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		])(e);
 	});
 
-	const headers = schema?.tables?.find((t) => t.schema.name === activeTable)?.fields?.map((f) => f.name) || [];
+	const headers = schema?.tables
+		?.find((t) => t.schema.name === activeTable)?.fields
+		?.filter((f) => !f.name.includes('[*]') && !f.name.includes('.'))
+		?.map((f) => f.name) || [];
 
 	return (
 		<ContentPane
