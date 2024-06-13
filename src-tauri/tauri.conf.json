@@ -56,9 +56,10 @@
 			"certificateThumbprint": null,
 			"digestAlgorithm": "sha256",
 			"timestampUrl": "",
-			"wix": {
-				"bannerPath": "res/wix-banner.png",
-				"dialogImagePath": "res/wix-image.png"
+			"nsis": {
+				"headerImage": "res/nsis-header.bmp",
+				"installerIcon": "res/nsis-icon.ico",
+				"sidebarImage": "res/nsis-sidebar.bmp"
 			}
 		}
 	},
