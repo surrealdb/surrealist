@@ -26,6 +26,9 @@ export const schema = {
 	highlight_tool: {
 		options: [false, true],
 	},
+	surreal_compat: {
+		options: ['v1', 'v2'],
+	},
 	changelog: {
 		options: ['auto', 'hidden', 'read', 'unread'],
 	},
@@ -42,18 +45,21 @@ export const featureFlags = new FeatureFlags({
 			apidocs_view: true,
 			newsfeed: true,
 			highlight_tool: true,
+			surreal_compat: 'v1'
 		},
 		preview: {
 			database_version_check: true,
 			models_view: true,
 			apidocs_view: true,
-			newsfeed: true
+			newsfeed: true,
+			surreal_compat: 'v1'
 		},
 		production: {
 			database_version_check: true,
 			models_view: true,
 			apidocs_view: true,
-			newsfeed: true
+			newsfeed: true,
+			surreal_compat: 'v1'
 		},
 	},
 	overrides: (flag) => {

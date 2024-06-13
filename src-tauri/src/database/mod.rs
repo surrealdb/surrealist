@@ -5,6 +5,7 @@ use std::{
     thread,
     time::Instant,
 };
+use log::info;
 use tauri::Manager;
 
 mod shell;
@@ -22,6 +23,7 @@ pub fn start_database(
     driver: &str,
     storage: &str,
     executable: &str,
+    v2_compat: bool,
 ) -> Result<(), String> {
     let mut process = state.0.lock().unwrap();
     let start_at = Instant::now();
@@ -34,7 +36,11 @@ pub fn start_database(
         return Ok(());
     }
 
-    let child_result = start_surreal_process(username, password, port, driver, storage, executable);
+	info!("Serving database with username: {}, password: {}, port: {}, driver: {}, storage: {}, executable: {}, v2_compat: {}", username, password, port, driver, storage, executable, v2_compat);
+
+    let child_result = start_surreal_process(
+        username, password, port, driver, storage, executable, v2_compat,
+    );
     let mut child_proc = match child_result {
         Ok(child) => child,
         Err(err) => {
@@ -138,6 +144,7 @@ pub fn start_surreal_process(
     driver: &str,
     storage: &str,
     executable: &str,
+    v2_compat: bool,
 ) -> Result<Child, String> {
     let bind_addr = format!("0.0.0.0:{}", port);
     let path = if executable.is_empty() {
@@ -145,10 +152,18 @@ pub fn start_surreal_process(
     } else {
         executable
     };
-    let mut args = vec![
-        path, "start", "--auth", "--bind", &bind_addr, "--user", username, "--pass", password,
-        "--log", "debug",
-    ];
+
+    let mut args = if v2_compat {
+        vec![
+            path, "start", "--bind", &bind_addr, "--user", username, "--pass", password, "--log",
+            "debug",
+        ]
+    } else {
+        vec![
+            path, "start", "--auth", "--bind", &bind_addr, "--user", username, "--pass", password,
+            "--log", "debug",
+        ]
+    };
 
     let file_uri = format!("file://{}", storage);
     let tikv_uri = format!("tikv://{}", storage);

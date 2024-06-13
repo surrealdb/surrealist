@@ -20,6 +20,7 @@ import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
 import { useInterfaceStore } from "~/stores/interface";
 import { adapter } from ".";
+import { featureFlags } from "~/util/feature-flags";
 
 const WAIT_DURATION = 1000;
 
@@ -172,6 +173,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			driver: localDriver,
 			storage: localPath,
 			executable: surrealPath,
+			v2Compat: featureFlags.get('surreal_compat') === 'v2'
 		});
 	}
 
