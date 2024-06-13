@@ -88,7 +88,10 @@ export function Settings() {
 
 	useEffect(() => {
 		const now = new Date();
-		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 2000));
+
+		const SECOND = 1000;
+		const MINUTE = 60 * SECOND;
+		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 5 * MINUTE));
 
 		if (valid.length >= 5) {
 			setFlags({ featureFlags: true });
