@@ -37,9 +37,19 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
         .lock()
         .unwrap()
         .iter()
-        .map(|u| match u.scheme() {
+        .filter_map(|u| match u.scheme() {
             "file" => {
                 let path = u.to_file_path().unwrap();
+                let ext = path
+                    .extension()
+                    .unwrap_or_default()
+                    .to_str()
+                    .unwrap_or_default();
+
+                if ext != "surql" && ext != "surrealql" {
+                    return None;
+                }
+
                 let success = path.metadata().unwrap().len() < MAX_FILE_SIZE;
                 let name = path.file_stem().unwrap().to_owned().into_string().unwrap();
 
@@ -49,17 +59,17 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
                     "".to_owned()
                 };
 
-                OpenedResource::File(FileResource {
+                Some(OpenedResource::File(FileResource {
                     success,
                     name,
                     query,
-                })
+                }))
             }
-            "surrealist" => OpenedResource::Link(LinkResource {
+            "surrealist" => Some(OpenedResource::Link(LinkResource {
                 host: u.host_str().unwrap_or_default().to_owned(),
                 params: u.query().unwrap_or_default().to_owned(),
-            }),
-            _ => OpenedResource::Unknown,
+            })),
+            _ => Some(OpenedResource::Unknown),
         })
         .collect()
 }

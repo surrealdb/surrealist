@@ -1,3 +1,4 @@
+use log::info;
 use std::{
     io::{BufRead, BufReader},
     process::{Child, Command, Stdio},
@@ -5,7 +6,6 @@ use std::{
     thread,
     time::Instant,
 };
-use log::info;
 use tauri::Manager;
 
 mod shell;
@@ -36,7 +36,7 @@ pub fn start_database(
         return Ok(());
     }
 
-	info!("Serving database with username: {}, password: {}, port: {}, driver: {}, storage: {}, executable: {}, v2_compat: {}", username, password, port, driver, storage, executable, v2_compat);
+    info!("Serving database with username: {}, password: {}, port: {}, driver: {}, storage: {}, executable: {}, v2_compat: {}", username, password, port, driver, storage, executable, v2_compat);
 
     let child_result = start_surreal_process(
         username, password, port, driver, storage, executable, v2_compat,
