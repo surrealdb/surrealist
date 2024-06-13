@@ -59,7 +59,7 @@ const CATEGORIES: Category[] = [
 		name: "Feature Flags",
 		icon: iconFlag,
 		component: FeatureFlagsTab,
-		disabled: (flags) => !flags.featureFlags
+		disabled: (flags) => !flags.feature_flags
 	},
 	{
 		id: "licenses",
@@ -91,7 +91,7 @@ export function Settings() {
 		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 2000));
 
 		if (valid.length >= 5) {
-			setFlags({ featureFlags: true });
+			setFlags({ feature_flags: true });
 			setLogoClicked([]);
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps

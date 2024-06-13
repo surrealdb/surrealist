@@ -5,7 +5,7 @@ import { environment } from "./environment";
 // How to manage feature flag schema:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
 export const schema = {
-	featureFlags: {
+	feature_flags: {
 		options: [false, true]
 	},
 	models_view: {
@@ -37,7 +37,7 @@ export const featureFlags = new FeatureFlags({
 	defaults: {
 		development: {
 			database_version_check: false,
-			featureFlags: true,
+			feature_flags: true,
 			models_view: "force",
 			apidocs_view: true,
 			newsfeed: true,
