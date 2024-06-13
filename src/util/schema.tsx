@@ -50,7 +50,7 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	schema.dbUsers = dbInfo.users;
 
 	// Scopes
-	schema.scopes = dbInfo.scopes.map(sc => ({
+	schema.scopes = (dbInfo.scopes || []).map(sc => ({
 		...sc,
 		signin: sc?.signin?.slice(1, -1),
 		signup: sc?.signup?.slice(1, -1),

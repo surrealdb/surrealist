@@ -28,7 +28,7 @@ export async function createDatabaseExport({
 	const dbParams = Object.values(definitions.params);
 	const dbAnalyzers = Object.values(definitions.analyzers);
 	const dbFunctions = Object.values(definitions.functions);
-	const dbScopes = Object.values(definitions.scopes);
+	const dbScopes = Object.values(definitions.scopes || {});
 
 	const output: string[] = [];
 
