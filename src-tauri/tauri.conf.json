@@ -19,7 +19,8 @@
 			"dmg",
 			"appimage",
 			"deb",
-			"rpm"
+			"rpm",
+			"updater"
 		],
 		"externalBin": [],
 		"resources": [],
