@@ -46,8 +46,11 @@ export function useTables(mode: TableMode = "ALL") {
 		return [];
 	}
 
+	if (mode == "ALL") {
+		return schema.tables;
+	}
+
 	return schema.tables.filter((t) => {
-		if (mode == "ALL") return true;
 		if (mode == "TABLE") return !isEdgeTable(t);
 		if (mode == "EDGE") return isEdgeTable(t);
 		return false;
