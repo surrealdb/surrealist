@@ -99,7 +99,7 @@
 	},
 	"devDependencies": {
 		"@tanstack/eslint-plugin-query": "^5.35.6",
-		"@tauri-apps/cli": "2.0.0-beta.16",
+		"@tauri-apps/cli": "2.0.0-beta.20",
 		"@types/leaflet": "^1.9.12",
 		"@types/node": "^20.4.9",
 		"@types/papaparse": "^5.3.14",

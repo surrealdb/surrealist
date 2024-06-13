@@ -57,9 +57,10 @@
 			"digestAlgorithm": "sha256",
 			"timestampUrl": "",
 			"nsis": {
+				"installerIcon": "icons/icon.ico",
 				"headerImage": "res/nsis-header.bmp",
-				"installerIcon": "res/nsis-icon.ico",
-				"sidebarImage": "res/nsis-sidebar.bmp"
+				"sidebarImage": "res/nsis-sidebar.bmp",
+				"template": "res/installer.nsi"
 			}
 		}
 	},
