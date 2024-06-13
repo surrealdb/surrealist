@@ -6,7 +6,7 @@ import { ServingTab } from "./tabs/Serving";
 import { AppearanceTab } from "./tabs/Appearance";
 import { TemplatesTab } from "./tabs/Templates";
 import { useIsLight } from "~/hooks/theme";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { isDesktop } from "~/adapter";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
@@ -71,11 +71,10 @@ const CATEGORIES: Category[] = [
 
 export function Settings() {
 	const isLight = useIsLight();
-	const [open, openHandle] = useBoolean();
 	const [flags, setFlags] = useFeatureFlags();
+	const [open, openHandle] = useBoolean();
 	const [copyDebug, clipboard] = useVersionCopy();
 	const [activeTab, setActiveTab] = useState("behaviour");
-	const [logoClicked, setLogoClicked] = useState<Date[]>([]);
 	const tabsRef = useRef<HTMLDivElement>(null);
 
 	const categories = CATEGORIES.map((c) => ({
@@ -86,16 +85,6 @@ export function Settings() {
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
 	const Component = activeCategory.component;
 
-	useEffect(() => {
-		const now = new Date();
-		const valid = logoClicked.filter((d) => d.getTime() > (now.getTime() - 2000));
-
-		if (valid.length >= 5) {
-			setFlags({ feature_flags: true });
-			setLogoClicked([]);
-		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [logoClicked]);
 
 	useIntent("open-settings", ({ tab }) => {
 		if (tab) {
@@ -104,6 +93,10 @@ export function Settings() {
 			setTimeout(() => {
 				tabsRef.current?.querySelector<HTMLElement>(`[data-tab="${tab}"]`)?.focus();
 			}, 250);
+
+			if (tab === "feature-flags") {
+				setFlags({ feature_flags: true });
+			}
 		}
 
 		openHandle.open();
@@ -131,7 +124,7 @@ export function Settings() {
 						bg={isLight ? "slate.0" : "slate.9"}
 					>
 						<Stack pt="sm" pb="xl" gap="xs">
-							<Center onClick={() => setLogoClicked([...logoClicked, new Date()].slice(0, 5))}>
+							<Center>
 								<SurrealistLogo
 									h={26}
 									c="bright"
