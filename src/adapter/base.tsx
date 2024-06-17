@@ -41,7 +41,7 @@ export interface SurrealistAdapter {
 	/**
 	 * Return debug information about the current environment of the adapter
 	 */
-	dumpDebug(): Result<object>;
+	dumpDebug(): object;
 
 	/**
 	 * Set the window title

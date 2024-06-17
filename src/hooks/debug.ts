@@ -8,9 +8,8 @@ export function useVersionCopy() {
 	const clipboard = useClipboard({ timeout: 1000 });
 
 	const copy = useStable(async () => {
-		const debugDump = await adapter.dumpDebug();
 		const debugData = {
-			...debugDump,
+			...adapter.dumpDebug(),
 			"Version": import.meta.env.VERSION,
 			"Flags": Object.entries(flags).map(([key, value]) => `${key}: ${value}`).join(", ")
 		};

@@ -85,7 +85,6 @@ export function Settings() {
 	const activeCategory = categories.find((c) => c.id === activeTab)!;
 	const Component = activeCategory.component;
 
-
 	useIntent("open-settings", ({ tab }) => {
 		if (tab) {
 			setActiveTab(tab);
@@ -134,7 +133,7 @@ export function Settings() {
 								ta="center"
 								c={clipboard.copied ? "surreal.6" : "slate"}
 								size="xs"
-								style={{ cursor: 'pointer' }}
+								className={classes.version}
 								onClick={copyDebug}
 							>
 								{clipboard.copied ? "Copied to clipboard!" : `Version ${import.meta.env.VERSION}`}

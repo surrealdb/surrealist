@@ -25,7 +25,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		}
 	}
 
-	public dumpDebug = async () => ({
+	public dumpDebug = () => ({
 		"Platform": "Web",
 		"Navigator": navigator.userAgent,
 	});

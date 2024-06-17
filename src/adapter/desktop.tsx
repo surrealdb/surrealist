@@ -51,6 +51,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public platform: Platform = "windows";
 
 	#startTask: any;
+	#arch: string = '';
+	#system: string = '';
 
 	public constructor() {
 		this.initDatabaseEvents();
@@ -104,12 +106,15 @@ export class DesktopAdapter implements SurrealistAdapter {
 				updateTitle();
 			},
 		});
+
+		this.#arch = await arch();
+		this.#system = await type();
 	}
 
 	public dumpDebug = async () => ({
 		"Platform": "Desktop",
-		"OS": await type(),
-		"Architecture": await arch(),
+		"OS": this.#system,
+		"Architecture": this.#arch,
 		"WebView": navigator.userAgent,
 	});
 
