@@ -11,38 +11,38 @@ const surrealqlLanguage = language.LRLanguage.define({
         props: [
             language.indentNodeProp.add({
                 Object: language.continuedIndent({ except: /^\s*}/ }),
-                Array: language.continuedIndent({ except: /^\s*]/ })
+                Array: language.continuedIndent({ except: /^\s*]/ }),
             }),
             language.foldNodeProp.add({
-                "Object Array": language.foldInside
-            })
+                "Object Array CombinedResult": language.foldInside,
+            }),
         ],
-        wrap: common.parseMixed(node => {
+        wrap: common.parseMixed((node) => {
             return node.name === "JavaScript" ? { parser: javascript.parser } : null;
-        })
+        }),
     }),
     languageData: {
         closeBrackets: { brackets: ["[", "{", '"', "'", "("] },
         indentOnInput: /^\s*[\]}]$/,
         commentTokens: { line: "--" },
-    }
+    },
 });
 const defaultLanguage = surrealqlLanguage.configure({
-    top: 'SurrealQL'
+    top: "SurrealQL",
 });
 const permissionInputLanguage = surrealqlLanguage.configure({
-    top: 'PermissionInput'
+    top: "PermissionInput",
 });
 const combinedResultsLanguage = surrealqlLanguage.configure({
-    top: 'CombinedResults'
+    top: "CombinedResults",
 });
 /**
  * The CodeMirror extension used to add support for the SurrealQL language
  */
-function surrealql(scope = 'default') {
-    return new language.LanguageSupport(scope === 'permission'
+function surrealql(scope = "default") {
+    return new language.LanguageSupport(scope === "permission"
         ? permissionInputLanguage
-        : scope === 'combined-results'
+        : scope === "combined-results"
             ? combinedResultsLanguage
             : defaultLanguage);
 }

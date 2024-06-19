@@ -9,38 +9,38 @@ const surrealqlLanguage = /*@__PURE__*/LRLanguage.define({
         props: [
             /*@__PURE__*/indentNodeProp.add({
                 Object: /*@__PURE__*/continuedIndent({ except: /^\s*}/ }),
-                Array: /*@__PURE__*/continuedIndent({ except: /^\s*]/ })
+                Array: /*@__PURE__*/continuedIndent({ except: /^\s*]/ }),
             }),
             /*@__PURE__*/foldNodeProp.add({
-                "Object Array": foldInside
-            })
+                "Object Array CombinedResult": foldInside,
+            }),
         ],
-        wrap: /*@__PURE__*/parseMixed(node => {
+        wrap: /*@__PURE__*/parseMixed((node) => {
             return node.name === "JavaScript" ? { parser: parser$1 } : null;
-        })
+        }),
     }),
     languageData: {
         closeBrackets: { brackets: ["[", "{", '"', "'", "("] },
         indentOnInput: /^\s*[\]}]$/,
         commentTokens: { line: "--" },
-    }
+    },
 });
 const defaultLanguage = /*@__PURE__*/surrealqlLanguage.configure({
-    top: 'SurrealQL'
+    top: "SurrealQL",
 });
 const permissionInputLanguage = /*@__PURE__*/surrealqlLanguage.configure({
-    top: 'PermissionInput'
+    top: "PermissionInput",
 });
 const combinedResultsLanguage = /*@__PURE__*/surrealqlLanguage.configure({
-    top: 'CombinedResults'
+    top: "CombinedResults",
 });
 /**
  * The CodeMirror extension used to add support for the SurrealQL language
  */
-function surrealql(scope = 'default') {
-    return new LanguageSupport(scope === 'permission'
+function surrealql(scope = "default") {
+    return new LanguageSupport(scope === "permission"
         ? permissionInputLanguage
-        : scope === 'combined-results'
+        : scope === "combined-results"
             ? combinedResultsLanguage
             : defaultLanguage);
 }

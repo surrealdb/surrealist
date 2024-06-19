@@ -86,7 +86,7 @@ export function App() {
 									<ScopeSignupModal />
 									<TableCreatorModal />
 									<KeymapModal />
-                  <HighlightToolModal />
+									<HighlightToolModal />
 
 									{isDesktop && (
 										<UpdaterDialog />

@@ -22,7 +22,7 @@ expressions {
 }
 
 combinedExpressions {
-	(CommentResult expression)+
+	CombinedResult { CommentResult expression CommentResultClose {} }+
 }
 
 expression {
@@ -992,7 +992,7 @@ Operator {
 	CommentHash { "#" ![\n]* }
 	CommentDash { "--" ![\n]* }
 	CommentSlash { "//" ![\n]* }
-	CommentResult[@name=Comment] { "-------- Query" ![\n]* }
+	CommentResult[@name=Comment,closedBy=CommentResultClose] { "-------- Query" ![\n]* }
 
 	// Numbers
 	Int { "-"? @digit+ }
