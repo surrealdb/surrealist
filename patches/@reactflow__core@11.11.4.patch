@@ -1,0 +1,80 @@
+diff --git a/dist/esm/index.js b/dist/esm/index.js
+index ba556d74b0f7991cfdf590675b54a52306ac82d1..977b1cf2b02f7fbd0eb4fe687521b452b4773ee7 100644
+--- a/dist/esm/index.js
++++ b/dist/esm/index.js
+@@ -727,7 +727,7 @@ const getRectOfNodes = (nodes, nodeOrigin = [0, 0]) => {
+     console.warn('[DEPRECATED] `getRectOfNodes` is deprecated. Instead use `getNodesBounds` https://reactflow.dev/api-reference/utils/get-nodes-bounds.');
+     return getNodesBounds(nodes, nodeOrigin);
+ };
+-const getNodesInside = (nodeInternals, rect, [tx, ty, tScale] = [0, 0, 1], partially = false, 
++const getNodesInside = (nodeInternals, rect, [tx, ty, tScale] = [0, 0, 1], partially = false,
+ // set excludeNonSelectableNodes if you want to pay attention to the nodes "selectable" attribute
+ excludeNonSelectableNodes = false, nodeOrigin = [0, 0]) => {
+     const paneRect = {
+@@ -1370,7 +1370,7 @@ var useKeyPress = (keyCode = null, options = { actInsideInputWithModifier: true
+                 const keyOrCode = useKeyOrCode(event.code, keysToWatch);
+                 pressedKeys.current.add(event[keyOrCode]);
+                 if (isMatchingKey(keyCodes, pressedKeys.current, false)) {
+-                    event.preventDefault();
++                    // event.preventDefault();
+                     setKeyPressed(true);
+                 }
+             };
+@@ -2003,7 +2003,7 @@ const ZoomPane = ({ onMove, onMoveStart, onMoveEnd, onPaneContextMenu, zoomOnScr
+                         deltaX = event.deltaY * deltaNormalize;
+                         deltaY = 0;
+                     }
+-                    d3Zoom.translateBy(d3Selection, -(deltaX / currentZoom) * panOnScrollSpeed, -(deltaY / currentZoom) * panOnScrollSpeed, 
++                    d3Zoom.translateBy(d3Selection, -(deltaX / currentZoom) * panOnScrollSpeed, -(deltaY / currentZoom) * panOnScrollSpeed,
+                     // @ts-ignore
+                     { internal: true });
+                     const nextViewport = eventToFlowTransform(d3Selection.property('__zoom'));
+@@ -3565,7 +3565,7 @@ const markerSelector = ({ defaultColor, rfId }) => (s) => {
+ // when they do have markers with the same ids. To prevent this the user can pass a unique id to the react flow wrapper
+ // that we can then use for creating our unique marker ids
+ const MarkerDefinitions = ({ defaultColor, rfId }) => {
+-    const markers = useStore(useCallback(markerSelector({ defaultColor, rfId }), [defaultColor, rfId]), 
++    const markers = useStore(useCallback(markerSelector({ defaultColor, rfId }), [defaultColor, rfId]),
+     // the id includes all marker options, so we just need to look at that part of the marker
+     (a, b) => !(a.length !== b.length || a.some((m, i) => m.id !== b[i].id)));
+     return (React.createElement("defs", null, markers.map((marker) => (React.createElement(Marker, { id: marker.id, key: marker.id, type: marker.type, color: marker.color, width: marker.width, height: marker.height, markerUnits: marker.markerUnits, strokeWidth: marker.strokeWidth, orient: marker.orient })))));
+diff --git a/dist/esm/index.mjs b/dist/esm/index.mjs
+index ba556d74b0f7991cfdf590675b54a52306ac82d1..977b1cf2b02f7fbd0eb4fe687521b452b4773ee7 100644
+--- a/dist/esm/index.mjs
++++ b/dist/esm/index.mjs
+@@ -727,7 +727,7 @@ const getRectOfNodes = (nodes, nodeOrigin = [0, 0]) => {
+     console.warn('[DEPRECATED] `getRectOfNodes` is deprecated. Instead use `getNodesBounds` https://reactflow.dev/api-reference/utils/get-nodes-bounds.');
+     return getNodesBounds(nodes, nodeOrigin);
+ };
+-const getNodesInside = (nodeInternals, rect, [tx, ty, tScale] = [0, 0, 1], partially = false, 
++const getNodesInside = (nodeInternals, rect, [tx, ty, tScale] = [0, 0, 1], partially = false,
+ // set excludeNonSelectableNodes if you want to pay attention to the nodes "selectable" attribute
+ excludeNonSelectableNodes = false, nodeOrigin = [0, 0]) => {
+     const paneRect = {
+@@ -1370,7 +1370,7 @@ var useKeyPress = (keyCode = null, options = { actInsideInputWithModifier: true
+                 const keyOrCode = useKeyOrCode(event.code, keysToWatch);
+                 pressedKeys.current.add(event[keyOrCode]);
+                 if (isMatchingKey(keyCodes, pressedKeys.current, false)) {
+-                    event.preventDefault();
++                    // event.preventDefault();
+                     setKeyPressed(true);
+                 }
+             };
+@@ -2003,7 +2003,7 @@ const ZoomPane = ({ onMove, onMoveStart, onMoveEnd, onPaneContextMenu, zoomOnScr
+                         deltaX = event.deltaY * deltaNormalize;
+                         deltaY = 0;
+                     }
+-                    d3Zoom.translateBy(d3Selection, -(deltaX / currentZoom) * panOnScrollSpeed, -(deltaY / currentZoom) * panOnScrollSpeed, 
++                    d3Zoom.translateBy(d3Selection, -(deltaX / currentZoom) * panOnScrollSpeed, -(deltaY / currentZoom) * panOnScrollSpeed,
+                     // @ts-ignore
+                     { internal: true });
+                     const nextViewport = eventToFlowTransform(d3Selection.property('__zoom'));
+@@ -3565,7 +3565,7 @@ const markerSelector = ({ defaultColor, rfId }) => (s) => {
+ // when they do have markers with the same ids. To prevent this the user can pass a unique id to the react flow wrapper
+ // that we can then use for creating our unique marker ids
+ const MarkerDefinitions = ({ defaultColor, rfId }) => {
+-    const markers = useStore(useCallback(markerSelector({ defaultColor, rfId }), [defaultColor, rfId]), 
++    const markers = useStore(useCallback(markerSelector({ defaultColor, rfId }), [defaultColor, rfId]),
+     // the id includes all marker options, so we just need to look at that part of the marker
+     (a, b) => !(a.length !== b.length || a.some((m, i) => m.id !== b[i].id)));
+     return (React.createElement("defs", null, markers.map((marker) => (React.createElement(Marker, { id: marker.id, key: marker.id, type: marker.type, color: marker.color, width: marker.width, height: marker.height, markerUnits: marker.markerUnits, strokeWidth: marker.strokeWidth, orient: marker.orient })))));
