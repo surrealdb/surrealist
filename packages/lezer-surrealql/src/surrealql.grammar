@@ -573,12 +573,16 @@ FunctionJs {
 // Function invocation
 
 FunctionCall {
-	(FunctionName | customFunctionName | rand | count)
-	Version { "<" VersionNumber ">" }?
-	ArgumentList
+	( count ArgumentListCount ) |
+	(
+	   (FunctionName | customFunctionName | rand)
+    	Version { "<" VersionNumber ">" }?
+    	ArgumentList
+	)
 }
 
 ArgumentList { "(" commaSep<value>? ")" }
+ArgumentListCount { "(" ( commaSep<value>? | statement ) ")" }
 
 // Assignment
 
