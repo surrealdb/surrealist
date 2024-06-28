@@ -1,6 +1,26 @@
-import { ActionIcon, Box, Button, Center, ComboboxData, Divider, Group, ScrollArea, Select, Text, TextInput, Tooltip } from "@mantine/core";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Center,
+	ComboboxData,
+	Divider,
+	Group,
+	ScrollArea,
+	Select,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { FocusEvent, KeyboardEvent, MouseEvent, useLayoutEffect, useMemo, useState } from "react";
+import {
+	FocusEvent,
+	KeyboardEvent,
+	MouseEvent,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -9,14 +29,24 @@ import { useStable } from "~/hooks/stable";
 import { useSchema } from "~/hooks/schema";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
-import { iconChevronLeft, iconChevronRight, iconCopy, iconDelete, iconFilter, iconJSON, iconPlus, iconRefresh, iconServer, iconTable } from "~/util/icons";
+import {
+	iconChevronLeft,
+	iconChevronRight,
+	iconCopy,
+	iconDelete,
+	iconFilter,
+	iconJSON,
+	iconPlus,
+	iconRefresh,
+	iconServer,
+	iconTable,
+} from "~/util/icons";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
 import { executeQuery } from "~/screens/database/connection";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { RecordId } from "surrealdb.js";
-import { tb } from "~/util/helpers";
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 const PAGE_SIZES: ComboboxData = [
 	{ label: "10 Results per page", value: "10" },
@@ -36,15 +66,19 @@ type FetchRecordsInput = {
 	filterClause: string;
 };
 
-const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unknown[], total: number }> => {
-	const { activeTable, page, pageSize, sortMode, showFilter, filterClause } = input;
+const fetchRecords = async (
+	input: FetchRecordsInput,
+): Promise<{ records: unknown[]; total: number }> => {
+	const { activeTable, page, pageSize, sortMode, showFilter, filterClause } =
+        input;
 
 	if (!activeTable) {
 		return { records: [], total: 0 };
 	}
 
 	try {
-		const isFilterValid = (!showFilter || !filterClause) || !validateWhere(filterClause);
+		const isFilterValid =
+            !showFilter || !filterClause || !validateWhere(filterClause);
 
 		if (!isFilterValid) {
 			throw new Error("Invalid filter clause");
@@ -53,8 +87,8 @@ const fetchRecords = async (input: FetchRecordsInput) : Promise<{ records: unkno
 		const limitBy = pageSize;
 		const startAt = (page - 1) * pageSize;
 		const [sortCol, sortDir] = sortMode || ["id", "asc"];
-		let countQuery = `SELECT count() AS count FROM ${tb(activeTable)}`;
-		let fetchQuery = `SELECT * FROM ${tb(activeTable)}`;
+		let countQuery = `SELECT count() AS count FROM ${activeTable}`;
+		let fetchQuery = `SELECT * FROM ${activeTable}`;
 
 		if (showFilter && filterClause) {
 			countQuery += ` WHERE ${filterClause}`;
@@ -83,7 +117,10 @@ export interface ExplorerPaneProps {
 	onCreateRecord: () => void;
 }
 
-export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
+export function ExplorerPane({
+	activeTable,
+	onCreateRecord,
+}: ExplorerPaneProps) {
 	const { addQueryTab, setActiveView } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
@@ -100,7 +137,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const [filterClause] = useDebouncedValue(filter, 500);
 
 	const isFilterValid = useMemo(() => {
-		return (!showFilter || !filter) || !validateWhere(filter);
+		return !showFilter || !filter || !validateWhere(filter);
 	}, [showFilter, filter]);
 
 	const pageSize = Number.parseInt(pageSizeStr);
@@ -115,7 +152,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	};
 
 	const { isLoading, data, refetch } = useQuery({
-		queryKey: ['explorer', 'records', queryInput],
+		queryKey: ["explorer", "records", queryInput],
 		queryFn: () => fetchRecords(queryInput),
 		placeholderData: keepPreviousData,
 	});
@@ -140,7 +177,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	useLayoutEffect(() => {
 		setCurrentPage(1);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeTable]);
 
 	useEventSubscription(RecordsChangedEvent, () => {
@@ -190,7 +227,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const openRecordQuery = (id: RecordId, prefix: string) => {
 		setActiveView("query");
 		addQueryTab({
-			query: `${prefix} ${formatValue(id)}`
+			query: `${prefix} ${formatValue(id)}`,
 		});
 	};
 
@@ -204,36 +241,38 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
 					navigator.clipboard.writeText(formatValue(record.id));
-				}
+				},
 			},
 			{
 				key: "copy-json",
 				title: "Copy as JSON",
 				icon: <Icon path={iconJSON} />,
 				onClick: () => {
-					navigator.clipboard.writeText(formatValue(record, true, true));
-				}
+					navigator.clipboard.writeText(
+						formatValue(record, true, true),
+					);
+				},
 			},
 			{
-				key: "divider-1"
+				key: "divider-1",
 			},
 			{
 				key: "select",
 				title: "Use in SELECT query",
-				onClick: () => openRecordQuery(record.id, 'SELECT * FROM')
+				onClick: () => openRecordQuery(record.id, "SELECT * FROM"),
 			},
 			{
 				key: "select",
 				title: "Use in UPDATE query",
-				onClick: () => openRecordQuery(record.id, 'UPDATE')
+				onClick: () => openRecordQuery(record.id, "UPDATE"),
 			},
 			{
 				key: "select",
 				title: "Use in DELETE query",
-				onClick: () => openRecordQuery(record.id, 'DELETE')
+				onClick: () => openRecordQuery(record.id, "DELETE"),
 			},
 			{
-				key: "divider-2"
+				key: "divider-2",
 			},
 			{
 				key: "delete",
@@ -247,15 +286,18 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					await executeQuery(`DELETE ${formatValue(record.id)}`);
 
 					refreshRecords();
-				}
+				},
 			},
 		])(e);
 	});
 
-	const headers = schema?.tables
-		?.find((t) => t.schema.name === activeTable)?.fields
-		?.filter((f) => !f.name.includes('[*]') && !f.name.includes('.'))
-		?.map((f) => f.name) || [];
+	const headers =
+        schema?.tables
+        	?.find((t) => t.schema.name === activeTable)
+        	?.fields?.filter(
+        		(f) => !f.name.includes("[*]") && !f.name.includes("."),
+        	)
+        	?.map((f) => f.name) || [];
 
 	return (
 		<ContentPane
@@ -283,10 +325,16 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip label={filtering ? "Hide filter" : "Filter records"}>
+						<Tooltip
+							label={filtering ? "Hide filter" : "Filter records"}
+						>
 							<ActionIcon
 								onClick={toggleFilter}
-								aria-label={filtering ? "Hide filter" : "Show record filter"}
+								aria-label={
+									filtering
+										? "Hide filter"
+										: "Show record filter"
+								}
 							>
 								<Icon path={iconFilter} />
 							</ActionIcon>
@@ -296,7 +344,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 						<Icon path={iconServer} mr={-6} />
 						<Text lineClamp={1}>
-							{isLoading ? "loading..." : `${recordCount || "no"} rows`}
+							{isLoading
+								? "loading..."
+								: `${recordCount || "no"} rows`}
 						</Text>
 					</Group>
 				)
@@ -314,51 +364,48 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					styles={() => ({
 						input: {
 							fontFamily: "JetBrains Mono",
-							borderColor: (isFilterValid ? undefined : themeColor("pink.9")) + " !important",
+							borderColor:
+                                (isFilterValid
+                                	? undefined
+                                	: themeColor("pink.9")) + " !important",
 						},
 					})}
 				/>
 			)}
-			{isLoading ?
-				null
-				:
-				records.length > 0 ? (
-					<ScrollArea
-						style={{
-							position: "absolute",
-							inset: 12,
-							top: filtering ? 40 : 0,
-							bottom: 54,
-							transition: "top .1s"
-						}}
-					>
-						<DataTable
-							data={records}
-							sorting={sortMode}
-							onSortingChange={setSortMode}
-							onRowContextMenu={onRecordContextMenu}
-							headers={headers}
-						/>
-					</ScrollArea>
-				) : (
-					<Center h="90%">
-						<Box ta="center">
-							<Text c="slate">
-							This table has no records yet
-							</Text>
-							<Button
-								mt="xl"
-								variant="gradient"
-								color="surreal.5"
-								leftSection={<Icon path={iconPlus} />}
-								onClick={openCreator}
-							>
-							Create record
-							</Button>
-						</Box>
-					</Center>
-				)
-			}
+			{isLoading ? null : records.length > 0 ? (
+				<ScrollArea
+					style={{
+						position: "absolute",
+						inset: 12,
+						top: filtering ? 40 : 0,
+						bottom: 54,
+						transition: "top .1s",
+					}}
+				>
+					<DataTable
+						data={records}
+						sorting={sortMode}
+						onSortingChange={setSortMode}
+						onRowContextMenu={onRecordContextMenu}
+						headers={headers}
+					/>
+				</ScrollArea>
+			) : (
+				<Center h="90%">
+					<Box ta="center">
+						<Text c="slate">This table has no records yet</Text>
+						<Button
+							mt="xl"
+							variant="gradient"
+							color="surreal.5"
+							leftSection={<Icon path={iconPlus} />}
+							onClick={openCreator}
+						>
+                            Create record
+						</Button>
+					</Box>
+				</Center>
+			)}
 
 			<Group
 				gap="xs"
@@ -366,7 +413,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				style={{
 					position: "absolute",
 					insetInline: 12,
-					bottom: 12
+					bottom: 12,
 				}}
 			>
 				<Group gap="xs">
