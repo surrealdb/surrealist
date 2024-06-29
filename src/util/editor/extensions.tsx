@@ -1,7 +1,7 @@
 import { linter } from "@codemirror/lint";
-import { surrealqlLanguage } from "codemirror-surrealql";
 import { getSetting } from "../config";
-import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
+import { surrealqlLanguage } from "codemirror-surrealql";
+import { defaultKeymap, history, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource, snippetCompletion } from "@codemirror/autocomplete";
 import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, lineNumbers, highlightActiveLineGutter, EditorView, Decoration } from "@codemirror/view";
@@ -9,7 +9,7 @@ import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKey
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { themeColor } from "../mantine";
 import { EditorState, Extension, Prec, RangeSetBuilder, SelectionRange } from "@codemirror/state";
-import { acceptWithTab, runQuery } from "./keybinds";
+import { acceptWithTab, customHistoryKeymap, runQuery } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveQuery } from "../connection";
@@ -66,7 +66,7 @@ export const editorBase = (): Extension => [
 		...closeBracketsKeymap,
 		...defaultKeymap,
 		...searchKeymap,
-		...historyKeymap,
+		...customHistoryKeymap,
 		...foldKeymap,
 		...completionKeymap
 	]),
@@ -88,7 +88,7 @@ export const inputBase = (): Extension => [
 	colorTheme(),
 	keymap.of([
 		...closeBracketsKeymap,
-		...historyKeymap,
+		...customHistoryKeymap,
 		...defaultKeymap,
 	]),
 	indentUnit.of("    "),
