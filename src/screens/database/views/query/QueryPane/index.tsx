@@ -127,11 +127,11 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip label={`Format ${hasSelection ? "selecion" : "query"}`}>
+						<Tooltip label={`Format ${hasSelection ? "selection" : "query"}`}>
 							<ActionIcon
 								onClick={handleFormat}
 								variant="light"
-								aria-label={`Format ${hasSelection ? "selecion" : "query"}`}
+								aria-label={`Format ${hasSelection ? "selection" : "query"}`}
 							>
 								<Icon path={iconText} />
 							</ActionIcon>
