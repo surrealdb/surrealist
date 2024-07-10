@@ -200,7 +200,7 @@ const CUSTOM_FUNCTION_SOURCE: CompletionSource = (context) => {
 
 	return {
 		from: match ? match.from : context.pos,
-		validFor: /\w+$/,
+		validFor: /[\w:]+$/,
 		options: names.map(label => snippetCompletion(`${label}(#{1})`, {
 			label,
 			type: 'function'
