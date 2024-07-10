@@ -92,6 +92,7 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 			continue;
 		}
 
+		// TODO Clean up in 2.0
 		const definition: TableInfo = {
 			schema: {
 				...table,

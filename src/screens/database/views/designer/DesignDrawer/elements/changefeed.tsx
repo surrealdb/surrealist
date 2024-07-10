@@ -1,4 +1,4 @@
-import { Accordion, Stack, Checkbox, TextInput } from "@mantine/core";
+import { Accordion, Stack, TextInput } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
 import { iconClock } from "~/util/icons";
 
@@ -24,7 +24,7 @@ export function ChangefeedElement({ data, setData }: ElementProps) {
 							})
 						}
 					/>
-					<Checkbox
+					{/* <Checkbox
 						label="Store original"
 						placeholder="7d"
 						checked={data.schema.changefeed?.store_original || false}
@@ -36,7 +36,7 @@ export function ChangefeedElement({ data, setData }: ElementProps) {
 								};
 							})
 						}
-					/>
+					/> */}
 				</Stack>
 			</Accordion.Panel>
 		</Accordion.Item>
