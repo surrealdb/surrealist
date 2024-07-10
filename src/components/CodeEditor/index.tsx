@@ -7,10 +7,12 @@ import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { editorBase } from "~/util/editor/extensions";
 import { forceLinting } from "@codemirror/lint";
+import { history } from "@codemirror/commands";
 
 interface EditorRef {
 	editor: EditorView;
 	editable: Compartment;
+	history: Compartment;
 }
 
 export interface CodeEditorProps extends BoxProps {
@@ -18,6 +20,7 @@ export interface CodeEditorProps extends BoxProps {
 	extensions?: Extension[];
 	readOnly?: boolean;
 	autoFocus?: boolean;
+	historyKey?: string;
 	onMount?: (editor: EditorView) => void;
 	onChange?: (value: string) => void;
 }
@@ -30,6 +33,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		className,
 		readOnly,
 		autoFocus,
+		historyKey,
 		onMount,
 		...rest
 	} = props;
@@ -42,7 +46,9 @@ export function CodeEditor(props: CodeEditorProps) {
 
 	useEffect(() => {
 		const editable = new Compartment();
+		const history = new Compartment();
 		const editableExt = editable.of(EditorState.readOnly.of(!!readOnly));
+		const historyExt = history.of(newHistory());
 
 		const changeHandler = EditorView.updateListener.of((update) => {
 			if (update.docChanged) {
@@ -54,6 +60,7 @@ export function CodeEditor(props: CodeEditorProps) {
 			doc: value,
 			extensions: [
 				editorBase(),
+				historyExt,
 				changeHandler,
 				editableExt,
 				extensions || [],
@@ -68,7 +75,8 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		editorRef.current = {
 			editor,
-			editable
+			editable,
+			history
 		};
 
 		if (autoFocus) {
@@ -117,6 +125,18 @@ export function CodeEditor(props: CodeEditorProps) {
 		});
 	}, [readOnly]);
 
+	useEffect(() => {
+		const { editor, history } = editorRef.current!;
+
+		editor.dispatch({
+			effects: [history.reconfigure([])],
+		});
+
+		editor.dispatch({
+			effects: [history.reconfigure([newHistory()])],
+		});
+	}, [historyKey]);
+
 	return (
 		<Box
 			ref={ref}
@@ -126,3 +146,5 @@ export function CodeEditor(props: CodeEditorProps) {
 		/>
 	);
 }
+
+const newHistory = () => history({ newGroupDelay: 250 });

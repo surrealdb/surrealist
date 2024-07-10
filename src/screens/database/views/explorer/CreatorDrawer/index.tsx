@@ -14,13 +14,13 @@ import { executeQuery } from "~/screens/database/connection";
 import { RecordId, StringRecordId, Table } from "surrealdb.js";
 import { surqlLinting } from "~/util/editor/extensions";
 import { surrealql } from "codemirror-surrealql";
-import { EditorView } from "@codemirror/view";
 import { useValueValidator } from "~/hooks/surrealql";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Label } from "~/components/Label";
 import { extractEdgeRecords } from "~/util/schema";
 import { CodeInput } from "~/components/Inputs";
 import { QueryResponse } from "~/types";
+import { EditorView } from "@codemirror/view";
 
 type EdgeInfo = [boolean, string[], string[]];
 
@@ -88,8 +88,8 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		}
 	});
 
-	const setCursor = useStable((editor: EditorView) => {
-		editor.dispatch({selection: {anchor: 6, head: 6}});
+	const setCursor = useStable((view: EditorView) => {
+		view.dispatch({selection: {anchor: 6, head: 6}});
 	});
 
 	useLayoutEffect(() => {

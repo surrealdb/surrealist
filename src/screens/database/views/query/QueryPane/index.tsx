@@ -173,6 +173,7 @@ export function QueryPane({
 			<CodeEditor
 				value={activeTab.query}
 				onChange={scheduleSetQuery}
+				historyKey={activeTab.id}
 				extensions={[
 					surrealql(),
 					surqlLinting(),

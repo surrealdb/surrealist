@@ -44,9 +44,6 @@ export const editorBase = (): Extension => [
 	rectangularSelection(),
 	crosshairCursor(),
 	colorTheme(),
-	history({
-		newGroupDelay: 250
-	}),
 	indentationMarkers({
 		colors: {
 			light: themeColor('slate'),
