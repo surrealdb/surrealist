@@ -1,10 +1,23 @@
+import 'leaflet/dist/leaflet.css';
+
 import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet';
 import { LatLng, Map, geoJSON as createGeoJSON, latLng } from "leaflet";
-import 'leaflet/dist/leaflet.css';
 import { Overlay, Paper } from '@mantine/core';
 import { parseValue } from "~/util/surrealql";
 import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb.js";
 import { useEffect, useRef, useState } from 'react';
+
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIcon2 from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete (window.L.Icon.Default.prototype as any)._getIconUrl;
+
+window.L.Icon.Default.mergeOptions({
+	iconRetinaUrl: markerIcon2,
+	iconUrl: markerIcon,
+	shadowUrl: markerShadow
+});
 
 export type GeographyInput =
 	| GeometryPoint
