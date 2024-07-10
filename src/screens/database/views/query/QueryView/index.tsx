@@ -9,7 +9,7 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { adapter, isMini } from "~/adapter";
-import { Box, Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput, Textarea } from "@mantine/core";
+import { Box, Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { Image } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
@@ -35,6 +35,8 @@ import { useSetting } from "~/hooks/config";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useInterfaceStore } from "~/stores/interface";
 import { useKeymap } from "~/hooks/keymap";
+import { CodeInput } from "~/components/Inputs";
+import { surrealql } from "codemirror-surrealql";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -282,7 +284,7 @@ export function QueryView() {
 				trapFocus={false}
 				title={
 					<ModalTitle>
-						{editingId ? "Edit query" : "Save query"}
+						{editingId ? "Edit saved query" : "Save query"}
 					</ModalTitle>
 				}
 			>
@@ -316,16 +318,15 @@ export function QueryView() {
 						/>
 
 						{editingId && (
-							<Textarea
+							<CodeInput
 								label="Query"
-								rows={6}
 								value={saveContent}
 								onChange={setSaveContent}
-								styles={{
-									input: {
-										fontFamily: "JetBrains Mono"
-									}
-								}}
+								multiline
+								placeholder="SELECT * FROM something..."
+								extensions={[
+									surrealql()
+								]}
 							/>
 						)}
 
