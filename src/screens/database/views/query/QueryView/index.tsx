@@ -62,6 +62,8 @@ export function QueryView() {
 	const [saveContent, setSaveContent] = useInputState("");
 	const [saveTags, setSaveTags] = useInputState<string[]>([]);
 
+	const squareCards = adapter instanceof MiniAdapter && adapter.hideBorder;
+
 	const handleSaveRequest = useStable(async () => {
 		if (!active) {
 			return;
@@ -144,6 +146,7 @@ export function QueryView() {
 							switchPortal={switchPortal}
 							setIsValid={setVariablesValid}
 							closeVariables={closeVariables}
+							square={squareCards}
 						/>
 					) : (
 						<QueryPane
@@ -155,6 +158,7 @@ export function QueryView() {
 							onSaveQuery={handleSaveRequest}
 							setShowVariables={setShowQueryVariables}
 							onSelectionChange={setSelection}
+							square={squareCards}
 						/>
 					)) : (
 						<PanelGroup direction={variablesOrientation}>
@@ -191,6 +195,7 @@ export function QueryView() {
 						isQueryValid={queryValid}
 						selection={selection}
 						onRunQuery={runQuery}
+						square={squareCards}
 					/>
 				</Panel>
 			</PanelGroup>

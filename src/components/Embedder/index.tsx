@@ -1,6 +1,6 @@
 import dedent from "dedent";
 import { html } from "@codemirror/lang-html";
-import { Box, Divider, Group, SegmentedControl, Select, Stack, Tooltip } from "@mantine/core";
+import { Box, Checkbox, Divider, Group, SegmentedControl, Select, Stack, Tooltip } from "@mantine/core";
 import { useImmer } from "use-immer";
 import { Orientation } from "~/types";
 import { Text } from "@mantine/core";
@@ -19,7 +19,8 @@ export const DEFAULT_STATE: EmbedState = {
 	setup: "",
 	query: "",
 	variables: "{}",
-	orientation: "vertical"
+	orientation: "vertical",
+	transparent: false,
 };
 
 const DATASET_OPTIONS = [
@@ -59,6 +60,7 @@ export interface EmbedState {
 	query: string;
 	variables: string;
 	orientation: Orientation;
+	transparent?: boolean;
 }
 
 export interface EmbedderProps {
@@ -82,7 +84,7 @@ export function Embedder({
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
-		const { dataset, setup, query, variables, orientation } = state;
+		const { dataset, setup, query, variables, orientation, transparent } = state;
 
 		if (setup.length > 0) {
 			search.append('setup', setup);
@@ -102,6 +104,10 @@ export function Embedder({
 
 		if (orientation !== 'vertical') {
 			search.append('orientation', orientation);
+		}
+
+		if (transparent) {
+			search.append('transparent', "true");
 		}
 
 		const url = new URL(location.toString());
@@ -125,6 +131,7 @@ export function Embedder({
 				src="${frameUrl}"
 				title="Surrealist Mini"
 				frameborder="0"
+				allowTransparency="true"
 				referrerpolicy="strict-origin-when-cross-origin">
 			</iframe>
 		`);
@@ -221,6 +228,20 @@ export function Embedder({
 					onChange={e => {
 						setState(draft => {
 							draft.orientation = e as Orientation;
+						});
+					}}
+				/>
+			</Box>
+			<Box>
+				<SectionTitle help="Miscellaneous options for the mini">
+					Options
+				</SectionTitle>
+				<Checkbox
+					label="Transparent"
+					checked={state.transparent}
+					onChange={e => {
+						setState(draft => {
+							draft.transparent = e.target.checked;
 						});
 					}}
 				/>

@@ -24,6 +24,7 @@ export interface QueryPaneProps {
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
+	square?: boolean;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
 	onSaveQuery: () => void;
@@ -37,6 +38,7 @@ export function QueryPane({
 	selection,
 	switchPortal,
 	setShowVariables,
+	square,
 	onSaveQuery,
 	onSelectionChange,
 }: QueryPaneProps) {
@@ -112,6 +114,7 @@ export function QueryPane({
 		<ContentPane
 			title="Query"
 			icon={iconServer}
+			radius={square ? 0 : undefined}
 			rightSection={
 				switchPortal ? (
 					<OutPortal node={switchPortal} />

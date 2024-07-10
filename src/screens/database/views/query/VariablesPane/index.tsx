@@ -15,6 +15,7 @@ import { Value } from "surrealql.wasm/v1";
 export interface VariablesPaneProps {
 	isValid: boolean;
 	switchPortal?: HtmlPortalNode<any>;
+	square?: boolean;
 	setIsValid: (isValid: boolean) => void;
 	closeVariables: () => void;
 }
@@ -47,6 +48,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 		<ContentPane
 			title="Variables"
 			icon={iconDollar}
+			radius={props.square ? 0 : undefined}
 			rightSection={
 				props.switchPortal ? (
 					<OutPortal node={props.switchPortal} />

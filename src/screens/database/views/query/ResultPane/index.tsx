@@ -35,6 +35,7 @@ export interface ResultPaneProps {
 	activeTab: TabQuery;
 	isQueryValid: boolean;
 	selection: SelectionRange | undefined;
+	square?: boolean;
 	onRunQuery: () => void;
 }
 
@@ -42,6 +43,7 @@ export function ResultPane({
 	activeTab,
 	isQueryValid,
 	selection,
+	square,
 	onRunQuery,
 }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
@@ -100,6 +102,7 @@ export function ResultPane({
 		<ContentPane
 			title={panelTitle}
 			icon={iconQuery}
+			radius={square ? 0 : undefined}
 			rightSection={
 				<Group align="center" wrap="nowrap" className={classes.controls}>
 					{resultMode == "live" ? (isLive && (

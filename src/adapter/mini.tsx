@@ -10,7 +10,9 @@ const THEMES = new Set(['light', 'dark', 'auto']);
 
 export class MiniAdapter extends BrowserAdapter {
 
+	public transparent = false;
 	public hideTitlebar = false;
+	public hideBorder = false;
 
 	#datasetQuery: string | undefined;
 	#setupQuery: string | undefined;
@@ -27,12 +29,26 @@ export class MiniAdapter extends BrowserAdapter {
 			setup,
 			theme,
 			compact,
+			borderless,
+			transparent,
 			orientation,
 		} = Object.fromEntries(params.entries());
 
 		// Hide titlebar
 		if (compact !== undefined) {
 			this.hideTitlebar = true;
+		}
+
+		// Borderless
+		if (borderless !== undefined) {
+			this.hideTitlebar = true;
+			this.hideBorder = true;
+		}
+
+		// Transparent background
+		if (transparent !== undefined) {
+			this.transparent = true;
+			document.body.style.backgroundColor = 'transparent';
 		}
 
 		// Initial query
