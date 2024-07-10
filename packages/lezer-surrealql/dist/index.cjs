@@ -413,17 +413,17 @@ const tokenMap = {
 	count,
 };
 
-const tryMapped = {
-	select: [selectPermissions],
-	create: [createPermissions],
-	update: [updatePermissions],
-	delete: [deletePermissions],
-	not: [opNot],
-	in: [opIn],
-};
+const tryMapped = new Map([
+	["select", [selectPermissions]],
+	["create", [createPermissions]],
+	["update", [updatePermissions]],
+	["delete", [deletePermissions]],
+	["not", [opNot]],
+	["in", [opIn]],
+]);
 
 const tokens = function(t, stack) {
-	for (const tk of tryMapped[t.toLowerCase()] ?? []) {
+	for (const tk of tryMapped.get(t.toLowerCase()) ?? []) {
 		if (stack.canShift(tk)) return tk;
 	}
 
