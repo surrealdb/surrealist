@@ -1,5 +1,4 @@
 import posthog from "posthog-js";
-import { surrealdbWasmEngines } from 'surrealdb.wasm';
 import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
 import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from '~/types';
 import { useDatabaseStore } from '~/stores/database';
@@ -24,7 +23,7 @@ export interface UserQueryOptions {
 	override?: string;
 }
 
-let instance = createSurreal();
+let instance = new Surreal();
 
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
 const LIVE_QUERIES = new Map<string, Set<UUID>>();
@@ -43,7 +42,7 @@ export async function openConnection(options?: ConnectOptions) {
 	}
 
 	await closeConnection();
-	instance = createSurreal();
+	instance = await createSurreal();
 
 	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
 	const rpcEndpoint = connectionUri(connection);
@@ -370,7 +369,9 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 	}
 }
 
-function createSurreal() {
+async  function createSurreal() {
+	const { surrealdbWasmEngines } = await import("surrealdb.wasm");
+
 	const surreal = new Surreal({
 		engines: surrealdbWasmEngines() as any
 	});
