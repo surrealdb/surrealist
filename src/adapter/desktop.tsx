@@ -51,10 +51,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public platform: Platform = "windows";
 
 	#startTask: any;
-	#arch: string = '';
-	#system: string = '';
+	#arch: string = arch();
+	#system: string = type();
 
 	public constructor() {
+		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
+
 		this.initDatabaseEvents();
 
 		document.addEventListener("DOMContentLoaded", () => {
@@ -70,10 +72,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 		document.body.addEventListener("keydown", getHotkeyHandler([
 			["mod+alt+i", () => invoke("toggle_devtools")]
 		]));
-
-		type().then(t => {
-			this.hasTitlebar = t === "windows" || t === "linux";
-		});
 
 		listen("open-resource", () => {
 			this.queryOpenRequest();
@@ -106,9 +104,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 				updateTitle();
 			},
 		});
-
-		this.#arch = await arch();
-		this.#system = await type();
 	}
 
 	public dumpDebug = async () => ({

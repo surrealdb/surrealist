@@ -19,9 +19,9 @@
 			"dmg",
 			"appimage",
 			"deb",
-			"rpm",
-			"updater"
+			"rpm"
 		],
+		"createUpdaterArtifacts": true,
 		"externalBin": [],
 		"resources": [],
 		"icon": [

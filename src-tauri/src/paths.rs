@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use dirs_next::config_dir;
+use dirs::config_dir;
 
 /// The directory where the application data is stored.
 pub fn get_data_directory() -> PathBuf {
