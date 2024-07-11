@@ -162,3 +162,4 @@ jobs:
                   releaseBody: ${{ inputs.summary }}
                   releaseDraft: true
                   prerelease: ${{ inputs.prerelease }}
+                  args: --verbose
