@@ -8,7 +8,7 @@ import { syncDatabaseSchema } from '~/util/schema';
 import { ConnectedEvent, DisconnectedEvent } from '~/util/global-events';
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
-import { objectify } from "radash";
+import { objectify, sleep } from "radash";
 import { getLiveQueries } from "~/util/surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { adapter } from "~/adapter";
@@ -370,6 +370,8 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 }
 
 async  function createSurreal() {
+	await sleep(5000);
+
 	const { surrealdbWasmEngines } = await import("surrealdb.wasm");
 
 	const surreal = new Surreal({
