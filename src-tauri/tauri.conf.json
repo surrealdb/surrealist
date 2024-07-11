@@ -21,7 +21,7 @@
 			"deb",
 			"rpm"
 		],
-		"createUpdaterArtifacts": true,
+		"createUpdaterArtifacts": "v1Compatible",
 		"externalBin": [],
 		"resources": [],
 		"icon": [
