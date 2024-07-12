@@ -224,8 +224,8 @@ importers:
         specifier: 1.0.0-beta.14
         version: 1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       surrealdb.wasm:
-        specifier: 1.0.0-beta.13
-        version: 1.0.0-beta.13(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
+        specifier: 1.0.0-beta.14
+        version: 1.0.0-beta.14(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
       surrealql.wasm:
         specifier: ^0.1.8
         version: 0.1.8
@@ -3730,8 +3730,8 @@ packages:
       tslib: ^2.6.3
       typescript: ^5.0.0
 
-  surrealdb.wasm@1.0.0-beta.13:
-    resolution: {integrity: sha512-I++fMnAHHSKjQfDTR9CkL2fvf1v95XkOC2tSODmNKbSOuL7XwS80r8MXgHrf8Isp0te3ANQBlSEGansdbdXkqw==}
+  surrealdb.wasm@1.0.0-beta.14:
+    resolution: {integrity: sha512-T75jVft0TaoWnql4d72vpy4M/WFTVgv8ijG/prQtISpS/C8ZN9rFAzmCBgxCjhUplR6VHrriucqXeJFtQGRwWw==}
     peerDependencies:
       surrealdb.js: ^1.0.0-beta.11
 
@@ -7951,7 +7951,7 @@ snapshots:
     transitivePeerDependencies:
       - ws
 
-  surrealdb.wasm@1.0.0-beta.13(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))):
+  surrealdb.wasm@1.0.0-beta.14(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))):
     dependencies:
       surrealdb.js: 1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
 
