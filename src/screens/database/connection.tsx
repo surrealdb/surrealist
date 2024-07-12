@@ -1,6 +1,6 @@
 import posthog from "posthog-js";
 import { surrealdbWasmEngines } from 'surrealdb.wasm';
-import { Surreal, QueryResult, ScopeAuth, UUID, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
+import { Surreal, QueryResult, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
 import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from '~/types';
 import { useDatabaseStore } from '~/stores/database';
 import { getConnection } from '~/util/connection';
@@ -27,7 +27,7 @@ export interface UserQueryOptions {
 let instance = createSurreal();
 
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
-const LIVE_QUERIES = new Map<string, Set<UUID>>();
+const LIVE_QUERIES = new Map<string, Set<Uuid>>();
 
 /**
  * Open a new connection to the data
@@ -285,7 +285,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		const liveIds = liveIndexes.flatMap(idx => {
 			const res = response[idx];
 
-			if (!res.success || !(res.result instanceof UUID)) {
+			if (!res.success || !(res.result instanceof Uuid)) {
 				return [];
 			}
 

@@ -26,7 +26,7 @@ export type GeographyInput =
 	| GeometryMultiPoint
 	| GeometryMultiLine
 	| GeometryMultiPolygon
-	| GeometryCollection<any>;
+	| GeometryCollection;
 
 const convertCoordsToLatLng = (point: [number, number] | [number, number, number]): LatLng => {
 	return latLng({ lat: point[1], lng: point[0] });

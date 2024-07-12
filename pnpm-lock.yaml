@@ -221,11 +221,11 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       surrealdb.js:
-        specifier: 1.0.0-beta.9
-        version: 1.0.0-beta.9
+        specifier: 1.0.0-beta.14
+        version: 1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       surrealdb.wasm:
-        specifier: 1.0.0-beta.11
-        version: 1.0.0-beta.11(surrealdb.js@1.0.0-beta.9)
+        specifier: 1.0.0-beta.13
+        version: 1.0.0-beta.13(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
       surrealql.wasm:
         specifier: ^0.1.8
         version: 0.1.8
@@ -998,12 +998,6 @@ packages:
   '@codemirror/view@6.28.1':
     resolution: {integrity: sha512-BUWr+zCJpMkA/u69HlJmR+YkV4yPpM81HeMkOMZuwFa8iM5uJdEPKAs1icIRZKkKmy0Ub1x9/G3PQLTXdpBxrQ==}
 
-  '@deno/shim-deno-test@0.4.0':
-    resolution: {integrity: sha512-oYWcD7CpERZy/TXMTM9Tgh1HD/POHlbY9WpzmAk+5H8DohcxG415Qws8yLGlim3EaKBT2v3lJv01x4G0BosnaQ==}
-
-  '@deno/shim-deno@0.16.1':
-    resolution: {integrity: sha512-s9v0kzF5bm/o9TgdwvsraHx6QNllYrXXmKzgOG2lh4LFXnVMr2gpjK/c/ve6EflQn1MqImcWmVD8HAv5ahuuZQ==}
-
   '@dnd-kit/accessibility@3.1.0':
     resolution: {integrity: sha512-ea7IkhKvlJUv9iSHJOnxinBcoOI3ppGnnL+VDJ75O45Nss6HtZd8IdN8touXPDtASfeI2T2LImb8VOZcL47wjQ==}
     peerDependencies:
@@ -1224,9 +1218,6 @@ packages:
   '@humanwhocodes/object-schema@2.0.3':
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     deprecated: Use @eslint/object-schema instead
-
-  '@icholy/duration@5.1.0':
-    resolution: {integrity: sha512-I/zdjC6qYdwWJ2H1/PZbI3g58pPIiI/eOe5XDTtQ/v36d0ogcvAylqwOIWj/teY1rBnIMzUyWfX7PMm9I67WWg==}
 
   '@img/sharp-darwin-arm64@0.33.4':
     resolution: {integrity: sha512-p0suNqXufJs9t3RqLBO6vvrgr5OhgbWp76s5gTRvdmxmuv9E1rcaqGUsl3l4mKVmXPkTkTErXediAui4x+8PSA==}
@@ -2146,9 +2137,6 @@ packages:
   caniuse-lite@1.0.30001636:
     resolution: {integrity: sha512-bMg2vmr8XBsbL6Lr0UHXy/21m84FTxDLWn2FSqMd5PrlbMxwJlQnC2YWYxVgp66PZE+BBNF2jYQUBKCo1FDeZg==}
 
-  cbor-redux@1.0.0:
-    resolution: {integrity: sha512-nqCD/Yu2FON0XgZYdUNsMx1Tc08MOY3noh9bO2MvkjlyLZyqIVWjuz6A0mDrPJncdOfacokFUtF7zlzzP5oK5A==}
-
   chainsaw@0.0.9:
     resolution: {integrity: sha512-nG8PYH+/4xB+8zkV4G844EtfvZ5tTiLFoX3dZ4nhF4t3OCKIb9UvaFyNmeZO2zOSmRWzBoTD+napN6hiL+EgcA==}
 
@@ -2348,9 +2336,6 @@ packages:
   decamelize@4.0.0:
     resolution: {integrity: sha512-9iE1PgSik9HeIIw2JO94IidnE3eBoQrFJ3w7sFuzSX4DpmZ3v5sZpUiV5Swcf6mQEF+Y0ru8Neo+p+nyh2J+hQ==}
     engines: {node: '>=10'}
-
-  decimal.js@10.4.3:
-    resolution: {integrity: sha512-VBBaLc1MgL5XpzgIP7ny5Z6Nx3UrRkIViUkPUdtl9aya5amy3De1gsUUSB1g3+3sExYNjCAsAznmukyxCb1GRA==}
 
   decompress-response@6.0.0:
     resolution: {integrity: sha512-aW35yZM6Bb/4oJlZncMH2LCoZtJXTRxES17vE3hoRiowU2kWHaJKFkSBDnDR+cm9J+9QhXmREyIfv0pji9ejCQ==}
@@ -3738,14 +3723,17 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  surrealdb.js@1.0.0-beta.9:
-    resolution: {integrity: sha512-EPodlWRWwfK91qtKHJ246Rljpvl7eB0egHwhthRa/wsxMoEVqUyIqmMSjmweKOGGKxm35NhivYbJh+5LnqI/nA==}
+  surrealdb.js@1.0.0-beta.14:
+    resolution: {integrity: sha512-s9/P2a1amJbOxdc8jvQiTksaILI3eJWDr+cYIOLpcsNWtc1bkELyHO9c1L3F2A4s3t58soZTaY1kqvMXuLAg5Q==}
     engines: {node: '>=18.0.0'}
-
-  surrealdb.wasm@1.0.0-beta.11:
-    resolution: {integrity: sha512-Rz9S99ECYJ5VA9nhfAqmDb0BmrNtGmTsPthJD8ILTFB0mO5fUrI+tX9PO11Zq/iSWdIoFyFq2+25UJZzmJMyjQ==}
     peerDependencies:
-      surrealdb.js: ^1.0.0-beta.7
+      tslib: ^2.6.3
+      typescript: ^5.0.0
+
+  surrealdb.wasm@1.0.0-beta.13:
+    resolution: {integrity: sha512-I++fMnAHHSKjQfDTR9CkL2fvf1v95XkOC2tSODmNKbSOuL7XwS80r8MXgHrf8Isp0te3ANQBlSEGansdbdXkqw==}
+    peerDependencies:
+      surrealdb.js: ^1.0.0-beta.11
 
   surrealql.wasm@0.1.8:
     resolution: {integrity: sha512-BrwkCmDm0JHlrfYqwmPD8YzOBfpJ7J6CuGSRzvZfSeaXxMV4nYjlfQ+JEAHZM3/o32fM01lKYFWYFMjlVI7dfg==}
@@ -3951,8 +3939,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  uuidv7@0.6.3:
-    resolution: {integrity: sha512-zV3eW2NlXTsun/aJ7AixxZjH/byQcH/r3J99MI0dDEkU2cJIBJxhEWUHDTpOaLPRNhebPZoeHuykYREkI9HafA==}
+  uuidv7@1.0.1:
+    resolution: {integrity: sha512-2noB909GbI352dKfASOY6VHHl59KvevZ1FF8gCAXCwDyrt2kkZhuFbczF9udqTfeejiRYEmO4wzUZ0WhVP+IUA==}
     hasBin: true
 
   validate-npm-package-license@3.0.4:
@@ -4079,9 +4067,6 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zustand@4.5.2:
     resolution: {integrity: sha512-2cN1tPkDVkwCy5ickKrI7vijSjPksFRfqS6237NzT0vqSsztTNnQdHw9mmN7uBdk3gceVXU0a+21jFzFzAc9+g==}
@@ -5000,13 +4985,6 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@deno/shim-deno-test@0.4.0': {}
-
-  '@deno/shim-deno@0.16.1':
-    dependencies:
-      '@deno/shim-deno-test': 0.4.0
-      which: 2.0.2
-
   '@dnd-kit/accessibility@3.1.0(react@18.3.1)':
     dependencies:
       react: 18.3.1
@@ -5172,8 +5150,6 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/object-schema@2.0.3': {}
-
-  '@icholy/duration@5.1.0': {}
 
   '@img/sharp-darwin-arm64@0.33.4':
     optionalDependencies:
@@ -6213,10 +6189,6 @@ snapshots:
 
   caniuse-lite@1.0.30001636: {}
 
-  cbor-redux@1.0.0:
-    dependencies:
-      '@deno/shim-deno': 0.16.1
-
   chainsaw@0.0.9:
     dependencies:
       traverse: 0.3.9
@@ -6436,8 +6408,6 @@ snapshots:
       ms: 2.1.2
 
   decamelize@4.0.0: {}
-
-  decimal.js@10.4.3: {}
 
   decompress-response@6.0.0:
     dependencies:
@@ -7969,24 +7939,21 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  surrealdb.js@1.0.0-beta.9:
+  surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
     dependencies:
-      '@icholy/duration': 5.1.0
-      cbor-redux: 1.0.0
-      decimal.js: 10.4.3
       isows: 1.0.4(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
-      semver: 7.6.2
-      uuidv7: 0.6.3
-      ws: 8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)
-      zod: 3.23.8
+      tslib: 2.6.3
+      typescript: 5.5.2
+      uuidv7: 1.0.1
     optionalDependencies:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.4
+    transitivePeerDependencies:
+      - ws
 
-  surrealdb.wasm@1.0.0-beta.11(surrealdb.js@1.0.0-beta.9):
+  surrealdb.wasm@1.0.0-beta.13(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))):
     dependencies:
-      surrealdb.js: 1.0.0-beta.9
-      zod: 3.23.8
+      surrealdb.js: 1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
 
   surrealql.wasm@0.1.8: {}
 
@@ -8183,7 +8150,7 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  uuidv7@0.6.3: {}
+  uuidv7@1.0.1: {}
 
   validate-npm-package-license@3.0.4:
     dependencies:
@@ -8297,8 +8264,6 @@ snapshots:
       yargs-parser: 20.2.4
 
   yocto-queue@0.1.0: {}
-
-  zod@3.23.8: {}
 
   zustand@4.5.2(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1):
     dependencies:

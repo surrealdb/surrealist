@@ -121,7 +121,7 @@ function ObjectCell(props: { value: any }) {
 
 const GeographyPointCell = ({ value }: { value: GeometryPoint }) => {
 	const [long, lat] = value.point;
-	const converted = convert(`${lat.toNumber()} ${long.toNumber()}`);
+	const converted = convert(`${lat} ${long}`);
 
 	return <GeographyLink value={value} text={converted.toCoordinateFormat("DMS")} />;
 };
@@ -146,7 +146,7 @@ const GeographyMultiPolygonCell = ({ value }: { value: GeometryMultiPolygon }) =
 	return <GeographyLink value={value} text="MultiPolygon" />;
 };
 
-const GeographyCollectionCell = ({ value }: { value: GeometryCollection<any> }) => {
+const GeographyCollectionCell = ({ value }: { value: GeometryCollection }) => {
 	return <GeographyLink value={value} text="GeometryCollection" />;
 };
 
@@ -164,7 +164,7 @@ export const DataCell = ({ value }: { value: any }) => {
 	}
 
 	if (value instanceof Decimal) {
-		return <NumberCell value={value.toNumber()} />;
+		return <NumberCell value={Number(value.toString())} />;
 	}
 
 	if (typeof value === "number") {
