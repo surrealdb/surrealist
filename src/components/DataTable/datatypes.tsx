@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { RecordId, Decimal, GeometryPoint, GeometryLine, GeometryMultiPoint, GeometryMultiLine, GeometryPolygon, GeometryMultiPolygon, GeometryCollection } from "surrealdb.js";
+import { RecordId, Decimal, GeometryPoint, GeometryLine, GeometryMultiPoint, GeometryMultiLine, GeometryPolygon, GeometryMultiPolygon, GeometryCollection, Uuid } from "surrealdb.js";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";
@@ -42,6 +42,14 @@ function StringCell(props: { value: string }) {
 
 function NumberCell(props: { value: number }) {
 	return <Text>{props.value.toLocaleString()}</Text>;
+}
+
+function UuidCell(props: { value: Uuid }) {
+	return (
+		<Text ff="monospace" c="bright">
+			{props.value.toString()}
+		</Text>
+	);
 }
 
 function ThingCell(props: { value: RecordId }) {
@@ -119,36 +127,36 @@ function ObjectCell(props: { value: any }) {
 	);
 }
 
-const GeographyPointCell = ({ value }: { value: GeometryPoint }) => {
+function GeographyPointCell({ value }: { value: GeometryPoint; }) {
 	const [long, lat] = value.point;
 	const converted = convert(`${lat} ${long}`);
 
 	return <GeographyLink value={value} text={converted.toCoordinateFormat("DMS")} />;
-};
+}
 
-const GeographyLineStringCell = ({ value }: { value: GeometryLine }) => {
+function GeographyLineStringCell({ value }: { value: GeometryLine; }) {
 	return <GeographyLink value={value} text="LineString" />;
-};
+}
 
-const GeographyPolygonCell = ({ value }: { value: GeometryPolygon }) => {
+function GeographyPolygonCell({ value }: { value: GeometryPolygon; }) {
 	return <GeographyLink value={value} text="Polygon" />;
-};
+}
 
-const GeographyMultiPointCell = ({ value }: { value: GeometryMultiPoint }) => {
+function GeographyMultiPointCell({ value }: { value: GeometryMultiPoint; }) {
 	return <GeographyLink value={value} text="MultiPoint" />;
-};
+}
 
-const GeographyMultiLineCell = ({ value }: { value: GeometryMultiLine }) => {
+function GeographyMultiLineCell({ value }: { value: GeometryMultiLine; }) {
 	return <GeographyLink value={value} text="MultiLineString" />;
-};
+}
 
-const GeographyMultiPolygonCell = ({ value }: { value: GeometryMultiPolygon }) => {
+function GeographyMultiPolygonCell({ value }: { value: GeometryMultiPolygon; }) {
 	return <GeographyLink value={value} text="MultiPolygon" />;
-};
+}
 
-const GeographyCollectionCell = ({ value }: { value: GeometryCollection }) => {
+function GeographyCollectionCell({ value }: { value: GeometryCollection; }) {
 	return <GeographyLink value={value} text="GeometryCollection" />;
-};
+}
 
 export const DataCell = ({ value }: { value: any }) => {
 	if (value instanceof Date) {
@@ -169,6 +177,10 @@ export const DataCell = ({ value }: { value: any }) => {
 
 	if (typeof value === "number") {
 		return <NumberCell value={value} />;
+	}
+
+	if (value instanceof Uuid) {
+		return <UuidCell value={value} />;
 	}
 
 	if (value instanceof RecordId) {
