@@ -5,20 +5,37 @@ import { Mode, plugin as markdown } from 'vite-plugin-markdown';
 import { UserConfig, defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { version, surreal } from './package.json';
+import { compression } from 'vite-plugin-compression2';
 
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 
+export const getDefaultPlugins = () => [
+	images(),
+	react(),
+	markdown({
+		mode: [Mode.HTML]
+	}),
+	legacy({
+		modernTargets: "since 2021-01-01, not dead",
+		modernPolyfills: true,
+		renderLegacyChunks: false,
+	})
+];
+
 export const getDefaultConfig = ({ mode }): UserConfig => ({
 	plugins: [
-		images(),
-		react(),
-		markdown({
-			mode: [Mode.HTML]
+		...getDefaultPlugins(),
+		compression({
+			threshold: 100,
+			deleteOriginalAssets: false,
+			include: /\.(wasm)$/,
+			algorithm: "gzip",
 		}),
-		legacy({
-			modernTargets: "since 2021-01-01, not dead",
-			modernPolyfills: true,
-			renderLegacyChunks: false,
+		compression({
+			threshold: 100,
+			deleteOriginalAssets: false,
+			include: /\.(wasm)$/,
+			algorithm: "brotliCompress",
 		})
 	],
 	clearScreen: false,

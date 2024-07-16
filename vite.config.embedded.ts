@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { compression } from 'vite-plugin-compression2';
-import { getDefaultConfig } from './vite.config';
+import { getDefaultConfig, getDefaultPlugins } from './vite.config';
 
 // https://vitejs.dev/config/
 export default defineConfig((config) => {
@@ -9,7 +9,7 @@ export default defineConfig((config) => {
 	return {
 		...defaultConfig,
 		plugins: [
-			...defaultConfig.plugins || [],
+			...getDefaultPlugins(),
 			compression({
 				threshold: 100,
 				deleteOriginalAssets: true,
