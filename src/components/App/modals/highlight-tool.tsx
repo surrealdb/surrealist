@@ -1,6 +1,6 @@
-import { Divider, Modal, Stack } from "@mantine/core";
+import { Button, Divider, Modal, Stack } from "@mantine/core";
 import { useIntent } from "~/hooks/url";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useBoolean } from "~/hooks/boolean";
 import { ModalTitle } from "~/components/ModalTitle";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -10,6 +10,7 @@ import { highlightCode, tagHighlighter } from "@lezer/highlight";
 import { surrealql } from "codemirror-surrealql";
 import { DARK_STYLE } from "~/util/editor/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { formatQuery } from "~/util/surrealql";
 
 
 const classHighlighter = tagHighlighter(DARK_STYLE.specs.map(a => ({...a, class: a.color})));
@@ -46,6 +47,10 @@ export function HighlightToolModal() {
 	const [isOpen, openedHandle] = useBoolean();
 	const [_, setFeatureFlags] = useFeatureFlags();
 
+	const format = useCallback(() => {
+		onChange(formatQuery(value));
+	}, [onChange, value]);
+
 	useEffect(() => {
 		if (!isOpen) {
 			onChange('');
@@ -77,6 +82,7 @@ export function HighlightToolModal() {
 						extensions={[surrealql()]}
 						autoFocus
 					/>
+					<Button onClick={format}>Format</Button>
 					<Divider />
 					<Render value={value} />
 				</Stack>
