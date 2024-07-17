@@ -4,7 +4,10 @@ import { getDefaultConfig, getDefaultPlugins } from './vite.config';
 
 // https://vitejs.dev/config/
 export default defineConfig((config) => {
-	const defaultConfig = getDefaultConfig(config);
+	const defaultConfig = getDefaultConfig({
+		...config,
+		noCompression: true,
+	});
 
 	return {
 		...defaultConfig,

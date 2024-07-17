@@ -22,14 +22,16 @@ export const getDefaultPlugins = () => [
 	})
 ];
 
-export const getDefaultConfig = ({ mode }): UserConfig => ({
+export const getDefaultConfig = ({ mode, noCompression }): UserConfig & { noCompression?: boolean } => ({
 	plugins: [
 		...getDefaultPlugins(),
-		compression({
-			deleteOriginalAssets: true,
-			include: /\.(wasm)$/,
-			filename: (id) => id,
-		}),
+		...(noCompression ? [] : [
+			compression({
+				deleteOriginalAssets: true,
+				include: /\.(wasm)$/,
+				filename: (id) => id,
+			})
+		]),
 	],
 	clearScreen: false,
 	envPrefix: ['VITE_', 'TAURI_'],
