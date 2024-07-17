@@ -221,11 +221,11 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       surrealdb.js:
-        specifier: 1.0.0-beta.14
-        version: 1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
+        specifier: 1.0.0-beta.15
+        version: 1.0.0-beta.15(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       surrealdb.wasm:
         specifier: 1.0.0-beta.14
-        version: 1.0.0-beta.14(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
+        version: 1.0.0-beta.14(surrealdb.js@1.0.0-beta.15(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
       surrealql.wasm:
         specifier: ^0.1.8
         version: 0.1.8
@@ -3735,8 +3735,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  surrealdb.js@1.0.0-beta.14:
-    resolution: {integrity: sha512-s9/P2a1amJbOxdc8jvQiTksaILI3eJWDr+cYIOLpcsNWtc1bkELyHO9c1L3F2A4s3t58soZTaY1kqvMXuLAg5Q==}
+  surrealdb.js@1.0.0-beta.15:
+    resolution: {integrity: sha512-mPuGMR2PEKqrNoeg5n8z0QemzMnaleB9jyTzU39lWopkMrC5jjt62hFJosbHRPRTn+A+Xpdq1JxdVZBm1wdnzw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       tslib: ^2.6.3
@@ -7962,7 +7962,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
+  surrealdb.js@1.0.0-beta.15(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
     dependencies:
       isows: 1.0.4(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       tslib: 2.6.3
@@ -7974,9 +7974,9 @@ snapshots:
     transitivePeerDependencies:
       - ws
 
-  surrealdb.wasm@1.0.0-beta.14(surrealdb.js@1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))):
+  surrealdb.wasm@1.0.0-beta.14(surrealdb.js@1.0.0-beta.15(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))):
     dependencies:
-      surrealdb.js: 1.0.0-beta.14(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
+      surrealdb.js: 1.0.0-beta.15(tslib@2.6.3)(typescript@5.5.2)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
 
   surrealql.wasm@0.1.8: {}
 
