@@ -95,7 +95,7 @@
         "rss-parser": "^3.13.0",
         "semver": "^7.5.4",
         "semver-compare": "^1.0.0",
-        "surrealdb.js": "1.0.0-beta.16",
+        "surrealdb.js": "1.0.0-beta.18",
         "surrealdb.wasm": "1.0.0-beta.15",
         "surrealql.wasm": "^0.1.8",
         "use-immer": "^0.9.0",
