@@ -9,8 +9,10 @@
     ],
     "scripts": {
         "build": "tsc && pnpm grammar:build && vite build",
+        "build:build": "tsc && pnpm grammar:build && vite build -c vite.config.build.ts",
         "build:embedded": "tsc && pnpm grammar:build && vite build -c vite.config.embedded.ts",
         "dev": "vite",
+        "dev:desktop": "vite -c vite.config.desktop.ts",
         "grammar:build": "cd packages/lezer-surrealql && pnpm build && cd ../codemirror-surrealql && pnpm build",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",

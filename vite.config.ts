@@ -22,7 +22,7 @@ export const getDefaultPlugins = () => [
 	})
 ];
 
-export const getDefaultConfig = ({ mode, noCompression }): UserConfig & { noCompression?: boolean } => ({
+export const getDefaultConfig = ({ mode, noCompression }: { mode?: string; noCompression?: boolean }): UserConfig => ({
 	plugins: [
 		...getDefaultPlugins(),
 		...(noCompression ? [] : [
