@@ -26,17 +26,10 @@ export const getDefaultConfig = ({ mode }): UserConfig => ({
 	plugins: [
 		...getDefaultPlugins(),
 		compression({
-			threshold: 100,
-			deleteOriginalAssets: false,
+			deleteOriginalAssets: true,
 			include: /\.(wasm)$/,
-			algorithm: "gzip",
+			filename: (id) => id,
 		}),
-		compression({
-			threshold: 100,
-			deleteOriginalAssets: false,
-			include: /\.(wasm)$/,
-			algorithm: "brotliCompress",
-		})
 	],
 	clearScreen: false,
 	envPrefix: ['VITE_', 'TAURI_'],
