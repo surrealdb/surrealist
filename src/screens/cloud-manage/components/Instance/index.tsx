@@ -155,22 +155,18 @@ export function Instance({
 				>
 					Settings...
 				</Menu.Item>
-				<Menu.Item
+				<Menu.Divider />
+				{/* <Menu.Item
 					onClick={handleDeactivate}
 				>
 					{inactive ? "Activate" : "Deactivate"} instance
+				</Menu.Item> */}
+				<Menu.Item
+					onClick={handleDelete}
+					color="red"
+				>
+					Delete instance
 				</Menu.Item>
-				{isDevelopment && (
-					<>
-						<Menu.Divider />
-						<Menu.Item
-							onClick={handleDelete}
-							color="red"
-						>
-							Delete instance
-						</Menu.Item>
-					</>
-				)}
 			</Menu.Dropdown>
 		</Menu>
 	);
