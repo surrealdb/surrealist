@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 import surrealistUrl from "~/assets/images/surrealist.webp";
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { Image, MantineProvider, Stack, Text } from "@mantine/core";
+import { Button, Image, MantineProvider, Stack, Text } from "@mantine/core";
 import { MANTINE_THEME } from "~/util/mantine";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { isDevelopment } from "~/util/environment";
@@ -89,9 +89,14 @@ export function CloudCallbackScreen() {
 						Redirecting...
 					</Text>
 				) : result === "error" ? (
-					<Text fz="lg" c="red">
-						{error ?? "Authentication could not be completed"}
-					</Text>
+					<>
+						<Text fz="lg" c="red">
+							{error ?? "Authentication could not be completed"}
+						</Text>
+						<Button onClick={() => { location.href = REDIRECT_ENDPOINT; }}>
+							Continue to Surrealist
+						</Button>
+					</>
 				) : (
 					<>
 						<Text fz="lg">
