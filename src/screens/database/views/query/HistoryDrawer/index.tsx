@@ -5,7 +5,7 @@ import { ActionIcon, Divider, Group, Stack, Text, TextInput, Tooltip } from "@ma
 import { Box, Drawer } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -105,6 +105,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 			<CodePreview
 				mt="xs"
 				value={entry.query}
+				withWrapping
 			/>
 
 			<Divider mt="md" color="slate.6" />
@@ -147,9 +148,9 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 			trapFocus={false}
 		>
 			<Group mb="md" gap="sm">
-				<ModalTitle>
+				<PrimaryTitle>
 					Query history
-				</ModalTitle>
+				</PrimaryTitle>
 
 				<Spacer />
 

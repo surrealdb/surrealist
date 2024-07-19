@@ -1,0 +1,167 @@
+:root {
+    --surrealist-divider-size: 6px;
+    --surrealist-gradient: linear-gradient(110deg, var(--mantine-color-surreal-filled) 0%, #9600FF 100%);
+}
+
+:root[data-mantine-color-scheme="light"] {
+    --surrealist-divider-color: var(--mantine-color-slate-0);
+    --surrealist-glow: 0 3px 15px rgba(186, 0, 171, 0.5);
+    --mantine-color-body: var(--mantine-color-white);   
+}
+
+:root[data-mantine-color-scheme="dark"] {
+    --surrealist-divider-color: var(--mantine-color-slate-9);
+    --surrealist-glow: 0 5px 20px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
+    --mantine-color-body: var(--mantine-color-slate-8);
+}
+
+.__dbk__container {
+    overflow: visible;
+}
+
+body.mod .cm-record-link {
+	text-decoration: underline;
+	text-decoration-color: #0084ff;
+	cursor: pointer;
+}
+
+.mantine-ActionIcon-root:hover {
+    --ai-hover-color: white;
+}
+
+.mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
+    font-size: 0.65rem !important;
+}
+
+.mantine-contextmenu {
+    padding: var(--mantine-spacing-xs);
+}
+
+.mantine-contextmenu-item-button {
+    border-radius: var(--mantine-radius-xs);
+}
+
+.mantine-contextmenu-divider {
+    margin-block: var(--mantine-spacing-xs);
+}
+
+.mantine-contextmenu, .mantine-Popover-dropdown, .mantine-Menu-dropdown, .mantine-HoverCard-dropdown {
+    background-color: color-mix(in srgb, var(--mantine-color-body) 87.5%, transparent);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.mantine-Button-root:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])) {
+	background-color: transparent;
+}
+
+.mantine-Menu-itemSection {
+	color: var(--mantine-color-slate-2);
+}
+
+.mantine-Menu-item {
+	border-radius: var(--mantine-radius-xs);
+	transition: all 0.05s;
+
+	&:hover {
+		background-color: var(--mantine-color-slate-6);
+		color: var(--mantine-color-bright);
+
+		.mantine-Menu-itemSection {
+			color: var(--mantine-color-bright);
+		}
+	}
+}
+
+.mantine-Tabs-list {
+    background-color: var(--mantine-color-slate-9);
+    border-radius: var(--mantine-radius-md);
+}
+
+.mantine-Tabs-tab {
+    &:hover {
+        background-color: unset;
+        color: var(--mantine-color-bright);
+    }
+    
+    &[data-active] {
+        background: var(--surrealist-gradient);
+        background-origin: border-box;
+    }
+}
+
+// .mantine-Tabs-tab[data-active] {
+//     border-color: unset;
+//     border-image-slice: 1;
+//     border-image-source: var(--surrealist-gradient);
+// }
+
+.mantine-Checkbox-root {
+
+    .mantine-Checkbox-input {
+        background-color: var(--mantine-color-body);
+    }
+
+    &[data-checked] .mantine-Checkbox-input {
+        background: var(--surrealist-gradient);
+        background-origin: border-box;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+}
+
+.mantine-Radio-root {
+    
+    &[data-checked] .mantine-Radio-radio {
+        background: var(--surrealist-gradient);
+        background-origin: border-box;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+}
+
+.mantine-Input-input {
+    transition: all .2s;
+    background-color: var(--mantine-color-body);
+    
+    &:not(:focus-within):not([data-variant="unstyled"]) {
+        border-color: var(--mantine-color-slate-6);
+
+        @include light {
+            border-color: var(--mantine-color-slate-1);
+        }
+    }
+
+    &:hover,  &:focus-within {
+        background-color: var(--mantine-color-slate-7);
+
+        @include light {
+            background-color: var(--mantine-color-slate-0);
+        }
+    }
+}
+
+.mantine-Select-option:hover {
+    background-color: rgba(255, 255, 255, 0.075);
+
+    @include light {
+        background-color: rgba(0, 0, 0, 0.075);
+    }
+}
+
+.mantine-Slider-bar {
+    background: var(--surrealist-gradient);
+}
+
+.mantine-Slider-mark {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: transparent;
+}
+
+.mantine-InputWrapper-required {
+    color: var(--mantine-color-surreal-6);
+    color: var(--mantine-color-surreal-6);
+}
+
+.mantine-InputWrapper-description {
+    font-size: var(--mantine-font-size-xs);
+}

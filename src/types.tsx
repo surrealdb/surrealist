@@ -17,6 +17,11 @@ export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type LineStyle = "metro" | "straight" | "smooth";
 export type SchemaMode = "schemaless" | "schemafull";
+export type UrlTarget = "internal" | "external";
+export type DatabaseListMode = "list" | "grid";
+export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
+export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type AuthLevel = "root" | "namespace" | "database";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -24,8 +29,10 @@ export type AuthMode =
 	| "database"
 	| "token"
 	| "scope"
-	| "scope-signup";
+	| "scope-signup"
+	| "cloud";
 export type ViewMode =
+	| "cloud"
 	| "query"
 	| "explorer"
 	| "designer"
@@ -33,6 +40,10 @@ export type ViewMode =
 	| "functions"
 	| "models"
 	| "documentation";
+export type CloudPage =
+	// | "overview"
+	| "instances"
+	| "members";
 export type CodeLang =
 	| "cli"
 	| "rust"
@@ -50,19 +61,23 @@ export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
 Partial<T>;
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string> = { label: string; value: T };
+export type Selection<T extends string> = Selectable<T>[];
+export type Listable<T extends string> = Selectable<T> & { icon: string };
+export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
 
-export interface ConnectionOptions {
-	namespace: string;
-	database: string;
+export interface Authentication {
+	mode: AuthMode;
 	protocol: Protocol;
 	hostname: string;
 	username: string;
 	password: string;
-	authMode: AuthMode;
+	namespace: string;
+	database: string;
 	token: string;
 	scope: string;
 	scopeFields: ScopeField[];
+	cloudInstance?: string;
 }
 
 export interface Connection {
@@ -72,19 +87,22 @@ export interface Connection {
 	group?: string;
 	queries: TabQuery[];
 	activeQuery: string;
-	connection: ConnectionOptions;
+	authentication: Authentication;
 	pinnedTables: string[];
 	diagramMode: DiagramMode;
 	diagramDirection: DiagramDirection;
 	diagramShowLinks: boolean;
 	queryHistory: HistoryQuery[];
+	lastNamespace: string;
+	lastDatabase: string;
 }
 
 export interface Template {
 	id: string;
 	name: string;
 	icon: number;
-	values: ConnectionOptions;
+	values: Authentication;
+	group?: string;
 }
 
 export interface ConnectionGroup {
@@ -98,9 +116,9 @@ export interface SurrealistBehaviorSettings {
 	variableSuggest: boolean;
 	queryErrorChecker: boolean;
 	windowPinned: boolean;
-	autoConnect: boolean;
 	docsLanguage: CodeLang;
 	versionCheckTimeout: number;
+	reconnectInterval: number;
 }
 
 export interface SurrealistAppearanceSettings {
@@ -129,6 +147,13 @@ export interface SurrealistServingSettings {
 	username: string;
 	password: string;
 	port: number;
+}
+
+export interface SurrealistCloudSettings {
+	databaseListMode: DatabaseListMode;
+	urlApiBase: string;
+	urlApiMgmtBase: string;
+	urlAuthBase: string;
 }
 
 export interface QueryResponse {
@@ -165,6 +190,7 @@ export interface SurrealistSettings {
 	appearance: SurrealistAppearanceSettings;
 	templates: SurrealistTemplateSettings;
 	serving: SurrealistServingSettings;
+	cloud: SurrealistCloudSettings;
 }
 
 export interface SurrealistConfig {
@@ -176,6 +202,8 @@ export interface SurrealistConfig {
 	activeView: ViewMode;
 	activeScreen: Screen;
 	activeConnection: string;
+	activeCloudPage: CloudPage;
+	activeCloudOrg: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
@@ -325,7 +353,7 @@ export interface Analyzer {
 }
 
 export interface SurrealOptions {
-	connection: ConnectionOptions;
+	connection: Authentication;
 	onConnect?: (version: string) => void;
 	onDisconnect?: (code: number, reason: string) => void;
 	onError?: (error: string) => void;
@@ -340,7 +368,57 @@ export interface ViewInfo {
 	disabled?: FeatureCondition;
 }
 
+export interface CloudPageInfo {
+	id: CloudPage;
+	name: string;
+	icon: string;
+	disabled?: FeatureCondition;
+}
+
 export interface DataSet {
 	name: string;
 	url: string;
+}
+
+export interface CloudProfile {
+	username: string;
+	default_org: string;
+	name: string;
+	picture?: string;
+}
+
+export interface CloudInstance {
+	id: string;
+	name: string;
+	host: string;
+	region: string;
+	state: InstanceState;
+	type: CloudInstanceType;
+}
+
+export interface CloudInstanceType {
+	slug: string;
+	description: string;
+	cpu: number;
+	memory: number;
+	storage: number;
+}
+
+export interface CloudRegion {
+	slug: string;
+	description: string;
+}
+
+export interface CloudPlan {
+	id: string,
+	name: string,
+	description: string,
+	regions: string[],
+	instance_types: CloudInstanceType[]
+}
+
+export interface CloudOrganization {
+	id: string;
+	name: string;
+	plan: CloudPlan;
 }

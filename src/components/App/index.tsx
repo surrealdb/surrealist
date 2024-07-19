@@ -21,7 +21,6 @@ import { ChangelogModal } from "./modals/changelog";
 import { ConnectionModal } from "./modals/connection";
 import { DownloadModal } from "./modals/download";
 import { EmbedderModal } from "./modals/embedder";
-import { LegacyModal } from "./modals/legacy";
 import { CommandPaletteModal } from "./modals/palette";
 import { SandboxModal } from "./modals/sandbox";
 import { ScopeSignupModal } from "./modals/signup";
@@ -31,6 +30,7 @@ import { UpdaterDialog } from "./modals/updater";
 import { isDesktop } from "~/adapter";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { ModalsProvider } from "@mantine/modals";
+import { ConsoleDrawer } from "./modals/console";
 
 const queryClient = new QueryClient();
 
@@ -83,12 +83,12 @@ export function App() {
 										<ConnectionModal />
 										<DownloadModal />
 										<EmbedderModal />
-										<LegacyModal />
 										<SandboxModal />
 										<ScopeSignupModal />
 										<TableCreatorModal />
 										<KeymapModal />
 										<HighlightToolModal />
+										<ConsoleDrawer />
 
 										{isDesktop && (
 											<UpdaterDialog />

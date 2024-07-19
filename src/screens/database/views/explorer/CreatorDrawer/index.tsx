@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 import { ActionIcon, Alert, Badge, Box, Button, Drawer, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CodeEditor } from "~/components/CodeEditor";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
@@ -132,10 +132,10 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			/>
 
 			<Group gap="sm">
-				<ModalTitle>
+				<PrimaryTitle>
 					<Icon left path={iconPlus} size="sm" />
 					Record creator
-				</ModalTitle>
+				</PrimaryTitle>
 
 				<Spacer />
 

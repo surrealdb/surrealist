@@ -2,11 +2,13 @@ import { DatabaseSchema, QueryResponse } from "~/types";
 import { create } from 'zustand';
 import { createDatabaseSchema } from "~/util/defaults";
 
+export type State = "disconnected" | "connecting" | "retrying" | "connected";
+
 export type DatabaseStore = {
 	isServing: boolean;
 	servePending: boolean;
-	isConnecting: boolean;
-	isConnected: boolean;
+	currentState: State;
+	latestError: string;
 	isQueryActive: boolean;
 	consoleOutput: string[];
 	databaseSchema: DatabaseSchema;
@@ -22,8 +24,8 @@ export type DatabaseStore = {
 	pushConsoleLine: (line: string) => void;
 	clearConsole: () => void;
 	setDatabaseSchema: (databaseSchema: DatabaseSchema) => void;
-	setIsConnecting: (isConnecting: boolean) => void;
-	setIsConnected: (isConnected: boolean) => void;
+	setCurrentState: (currentState: State) => void;
+	setLatestError: (latestError: string) => void;
 	setVersion: (version: string) => void;
 	setQueryResponse: (tab: string, response: QueryResponse[]) => void;
 	clearQueryResponse: (tab: string) => void;
@@ -32,8 +34,8 @@ export type DatabaseStore = {
 export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	isServing: false,
 	servePending: false,
-	isConnecting: false,
-	isConnected: false,
+	currentState: "disconnected",
+	latestError: "",
 	isQueryActive: false,
 	consoleOutput: [],
 	databaseSchema: createDatabaseSchema(),
@@ -82,13 +84,12 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 		databaseSchema
 	})),
 
-	setIsConnecting: (isConnecting) => set(() => ({
-		isConnecting,
+	setCurrentState: (currentState) => set(() => ({
+		currentState
 	})),
 
-	setIsConnected: (isConnected) => set((state) => ({
-		isConnected,
-		databaseSchema: isConnected ? state.databaseSchema : createDatabaseSchema(),
+	setLatestError: (latestError) => set(() => ({
+		latestError
 	})),
 
 	setVersion: (version) => set(() => ({

@@ -2,11 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import { Snippets, TopicProps } from "~/screens/database/docs/types";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsTablesIntroduction({ language, topic }: TopicProps) {
-	const { connection } = useActiveConnection();
-
+export function DocsTablesIntroduction({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `

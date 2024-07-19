@@ -15,7 +15,7 @@ import { useIntent } from "~/hooks/url";
 import { useTableNames } from "~/hooks/schema";
 import { useDisclosure } from "@mantine/hooks";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import dayjs from "dayjs";
 
 export function Exporter() {
@@ -97,7 +97,7 @@ export function Exporter() {
 				opened={showExporter}
 				onClose={closeExporter}
 				size="sm"
-				title={<ModalTitle>Export data</ModalTitle>}
+				title={<PrimaryTitle>Export data</PrimaryTitle>}
 			>
 				<Stack gap="xl">
 					<Text c={isLight ? "slate.7" : "slate.2"}>

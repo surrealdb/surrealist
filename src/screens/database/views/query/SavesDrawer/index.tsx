@@ -6,7 +6,7 @@ import { Drawer, Group, ActionIcon } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -81,7 +81,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 			trapFocus={false}
 		>
 			<Group mb="md">
-				<ModalTitle>Saved queries</ModalTitle>
+				<PrimaryTitle>Saved queries</PrimaryTitle>
 
 				<Spacer />
 
@@ -223,6 +223,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 						<Accordion.Panel p={0} px={4}>
 							<CodePreview
 								value={entry.query}
+								withWrapping
 							/>
 							{entry.tags.length > 0 && (
 								<Group mt="sm" gap="xs">

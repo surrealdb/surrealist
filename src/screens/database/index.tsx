@@ -1,14 +1,29 @@
-import { Screen } from "~/components/Screen";
+import classes from "./style.module.scss";
+import surrealistUrl from "~/assets/images/surrealist.webp";
+import clsx from "clsx";
+import { ViewMode } from "~/types";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { ViewMode } from "~/types";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useLayoutEffect } from "react";
 import { useConfigStore } from "~/stores/config";
+import { CloudContent } from "~/screens/cloud-manage/content";
+import { Center, Stack, Button, Flex, ScrollArea, Group, Box, Text, Image } from "@mantine/core";
+import { useDebouncedCallback, useHover, useThrottledCallback, useTimeout } from "@mantine/hooks";
+import { adapter, isDesktop } from "~/adapter";
+import { useBoolean } from "~/hooks/boolean";
+import { useSetting } from "~/hooks/config";
+import { useIsLight } from "~/hooks/theme";
+import { useInterfaceStore } from "~/stores/interface";
+import { isMobile } from "~/util/helpers";
+import { iconOpen } from "~/util/icons";
+import { themeColor } from "~/util/mantine";
+import { Icon } from "~/components/Icon";
+import { useStable } from "~/hooks/stable";
 
 const PORTAL_ATTRS = {
 	attributes: {
-		style: "height: 100%"
+		style: "height: 100%; display: flex; flex-direction: column;"
 	}
 };
 
@@ -20,6 +35,7 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	functions: createHtmlPortalNode(PORTAL_ATTRS),
 	models: createHtmlPortalNode(PORTAL_ATTRS),
 	documentation: createHtmlPortalNode(PORTAL_ATTRS),
+	cloud: createHtmlPortalNode(PORTAL_ATTRS),
 };
 
 const QueryView = lazy(() => import('./views/query/QueryView'));
@@ -31,65 +47,179 @@ const ModelsView = lazy(() => import('./views/models/ModelsView'));
 const DocumentationView = lazy(() => import('./views/documentation/DocumentationView'));
 
 export function DatabaseScreen() {
+	const isLight = useIsLight();
+
+	const activeConnection = useConfigStore((s) => s.activeConnection);
+	const title = useInterfaceStore((s) => s.title);
+
+	const [mode] = useSetting("appearance", "sidebarMode");
+	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
+
+	const canHover = mode === "expandable" && canHoverSidebar;
+	const customTitlebar = adapter.platform === "darwin" && isDesktop;
+
 	const viewMode = useConfigStore(s => s.activeView);
 	const viewNode = VIEW_PORTALS[viewMode];
 
 	return (
-		<Screen
-			sidebar={
-				(state) => (
-					<DatabaseSidebar
-						state={state}
-					/>
-				)
-			}
-			toolbar={
-				() => <DatabaseToolbar />
-			}
+		<div
+			className={classes.root}
+			style={{
+				backgroundColor: isLight
+					? (activeConnection ? themeColor("slate.0") : "white")
+					: (activeConnection ? themeColor("slate.9") : "black")
+			}}
 		>
-			{viewNode && <OutPortal node={viewNode} />}
+			{customTitlebar && (
+				<Flex
+					data-tauri-drag-region
+					className={classes.titlebar}
+					justify="center"
+					align="end"
+				>
+					{title}
+				</Flex>
+			)}
 
-			<InPortal node={VIEW_PORTALS.query}>
-				<Suspense fallback={null}>
-					<QueryView />
-				</Suspense>
-			</InPortal>
+			{isMobile() && (
+				<Center
+					pos="fixed"
+					inset={0}
+					bg="slate.9"
+					style={{ zIndex: 1000 }}
+				>
+					<Stack maw={250} mx="auto">
+						<Image src={surrealistUrl} />
 
-			<InPortal node={VIEW_PORTALS.explorer}>
-				<Suspense fallback={null}>
-					<ExplorerView />
-				</Suspense>
-			</InPortal>
+						<Text c="bright" mt="lg">
+							Surrealist is the ultimate way to visually manage your SurrealDB database
+						</Text>
 
-			<InPortal node={VIEW_PORTALS.designer}>
-				<Suspense fallback={null}>
-					<DesignerView />
-				</Suspense>
-			</InPortal>
+						<Text c="slate.3">
+							Support for Surrealist on mobile platforms is currently unavailable, however you can visit Surrealist
+							on a desktop environment to get started.
+						</Text>
 
-			<InPortal node={VIEW_PORTALS.authentication}>
-				<Suspense fallback={null}>
-					<AuthenticationView />
-				</Suspense>
-			</InPortal>
+						<Button
+							mt="lg"
+							variant="gradient"
+							onClick={() => adapter.openUrl("https://surrealdb.com/surrealist")}
+							rightSection={<Icon path={iconOpen} />}
+						>
+							Read more about Surrealist
+						</Button>
+					</Stack>
+				</Center>
+			)}
 
-			<InPortal node={VIEW_PORTALS.functions}>
-				<Suspense fallback={null}>
-					<FunctionsView />
-				</Suspense>
-			</InPortal>
+			<Flex
+				direction="column"
+				flex={1}
+				pos="relative"
+			>
+				<ScrollArea
+					scrollbars="y"
+					type="never"
+					pos="fixed"
+					component="aside"
+					top={0}
+					left={0}
+					bottom={0}
+					bg={isLight ? "slate.0" : "slate.9"}
+					onMouseEnter={hoverSidebarHandle.open}
+					className={clsx(
+						classes.sidebar,
+						canHover && classes.sidebarExpandable,
+						mode === "wide" && classes.sidebarWide
+					)}
+				>
+					<Flex
+						pt={customTitlebar ? 38 : 22}
+						direction="column"
+						h="100%"
+						px={16}
+					>
+						<DatabaseSidebar
+							sidebarMode={mode}
+							onNavigate={hoverSidebarHandle.close}
+							onItemHover={hoverSidebarHandle.open}
+						/>
+					</Flex>
+				</ScrollArea>
 
-			<InPortal node={VIEW_PORTALS.models}>
-				<Suspense fallback={null}>
-					<ModelsView />
-				</Suspense>
-			</InPortal>
+				<Box
+					m="lg"
+					mt={customTitlebar ? "sm" : "lg"}
+					ml={25 + (mode === "wide" ? 190 : 49)}
+					className={classes.wrapper}
+				>
+					{viewMode !== "cloud" && (
+						<Group
+							gap="md"
+							pos="relative"
+							align="center"
+							wrap="nowrap"
+							className={classes.toolbar}
+						>
+							<DatabaseToolbar />
+						</Group>
+					)}
+					<Stack
+						flex={1}
+						pos="relative"
+					>
+						{viewNode && <OutPortal node={viewNode} />}
 
-			<InPortal node={VIEW_PORTALS.documentation}>
-				<Suspense fallback={null}>
-					<DocumentationView />
-				</Suspense>
-			</InPortal>
-		</Screen>
+						<InPortal node={VIEW_PORTALS.cloud}>
+							<Suspense fallback={null}>
+								<CloudContent />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.query}>
+							<Suspense fallback={null}>
+								<QueryView />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.explorer}>
+							<Suspense fallback={null}>
+								<ExplorerView />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.designer}>
+							<Suspense fallback={null}>
+								<DesignerView />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.authentication}>
+							<Suspense fallback={null}>
+								<AuthenticationView />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.functions}>
+							<Suspense fallback={null}>
+								<FunctionsView />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.models}>
+							<Suspense fallback={null}>
+								<ModelsView />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.documentation}>
+							<Suspense fallback={null}>
+								<DocumentationView />
+							</Suspense>
+						</InPortal>
+					</Stack>
+				</Box>
+			</Flex>
+		</div>
 	);
 }

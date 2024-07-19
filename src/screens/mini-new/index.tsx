@@ -1,8 +1,8 @@
-import { ActionIcon, Box, Button, Divider, Group, MantineProvider, Modal, Paper, ScrollArea, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
+import surrealistUrl from "~/assets/images/surrealist.webp";
+import { ActionIcon, Box, Button, Divider, Group, Image, MantineProvider, Modal, Paper, ScrollArea, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { MANTINE_THEME } from "~/util/mantine";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { DEFAULT_STATE, EmbedState, Embedder } from "~/components/Embedder";
-import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
@@ -54,7 +54,7 @@ export function MiniNewScreen() {
 					}}
 				>
 					<Stack py={35}>
-						<SurrealistLogo h={32} mx="auto" />
+						<Image src={surrealistUrl} h={32} mx="auto" />
 						<Text ta="center" fw={600} fz="xl">
 							Mini generator
 						</Text>

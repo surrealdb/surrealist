@@ -1,4 +1,4 @@
-import { Connection, ConnectionGroup, HistoryQuery, PartialId, SavedQuery, Screen, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
+import { CloudPage, Connection, ConnectionGroup, HistoryQuery, PartialId, SavedQuery, Screen, SurrealistAppearanceSettings, SurrealistBehaviorSettings, SurrealistCloudSettings, SurrealistConfig, SurrealistServingSettings, SurrealistTemplateSettings, TabQuery, ViewMode } from "~/types";
 import { createBaseConfig, createBaseTab } from "~/util/defaults";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { newId } from "~/util/helpers";
@@ -50,6 +50,8 @@ export type ConfigStore = SurrealistConfig & {
 	setActiveScreen: (screen: Screen) => void;
 	setActiveConnection: (connectionId: string) => void;
 	setActiveView: (activeView: ViewMode) => void;
+	setActiveCloudPage: (activePage: CloudPage) => void;
+	setActiveCloudOrg: (activeOrg: string) => void;
 	addQueryTab: (options?: NewQueryTab) => void;
 	removeQueryTab: (tabId: string) => void;
 	updateQueryTab: (payload: PartialId<TabQuery>) => void;
@@ -64,6 +66,7 @@ export type ConfigStore = SurrealistConfig & {
 	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
 	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
 	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
+	updateCloudSettings: (settings: Partial<SurrealistCloudSettings>) => void;
 	setFeatureFlag: <T extends FeatureFlag<typeof schema>>(key: T, value: FeatureFlagOption<typeof schema, T>) => void;
 	setPreviousVersion: (previousVersion: string) => void;
 	pushCommand: (command: string) => void;
@@ -141,7 +144,7 @@ export const useConfigStore = create<ConfigStore>()(
 			const connection = connections.find(({ id }) => id == activeConnection);
 			if (!connection) return {};
 
-			if (!isConnectionValid(connection.connection)) {
+			if (!isConnectionValid(connection.authentication)) {
 				useInterfaceStore.getState().openConnectionEditor(connection.id);
 				return {};
 			}
@@ -153,6 +156,10 @@ export const useConfigStore = create<ConfigStore>()(
 		}),
 
 		setActiveView: (activeView) => set(() => ({ activeView })),
+
+		setActiveCloudPage: (activeCloudPage) => set(() => ({ activeCloudPage })),
+
+		setActiveCloudOrg: (activeCloudOrg) => set(() => ({ activeCloudOrg })),
 
 		addQueryTab: (options) => set((state) => updateConnection(state, (connection) => {
 			const tabId = newId();
@@ -319,6 +326,16 @@ export const useConfigStore = create<ConfigStore>()(
 				...state.settings,
 				serving: {
 					...state.settings.serving,
+					...settings,
+				}
+			}
+		})),
+
+		updateCloudSettings: (settings) => set((state) => ({
+			settings: {
+				...state.settings,
+				cloud: {
+					...state.settings.cloud,
 					...settings,
 				}
 			}

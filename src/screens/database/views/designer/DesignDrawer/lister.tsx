@@ -1,7 +1,7 @@
 import { Group, Stack, Button, Text, ActionIcon, Paper, Modal } from "@mantine/core";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useLater } from "~/hooks/later";
 import { useStable } from "~/hooks/stable";
@@ -111,7 +111,7 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 				onClose={closeEditor}
 				trapFocus={false}
 				title={
-					<ModalTitle>{`Editing ${props.name}`}</ModalTitle>
+					<PrimaryTitle>{`Editing ${props.name}`}</PrimaryTitle>
 				}
 			>
 				<Stack>

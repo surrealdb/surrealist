@@ -1,9 +1,9 @@
-import { Connection, ConnectionOptions, DatabaseSchema, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
+import { CloudInstance, Connection, Authentication, DatabaseSchema, SurrealistConfig, SurrealistSettings, TabQuery } from "~/types";
 import { newId } from "./helpers";
 import { validateQuery } from "./surrealql";
 import { SANDBOX } from "~/constants";
 
-export const CONFIG_VERSION = 1;
+export const CONFIG_VERSION = 2;
 
 export function createBaseConfig(): SurrealistConfig {
 	const settings = createBaseSettings();
@@ -17,6 +17,8 @@ export function createBaseConfig(): SurrealistConfig {
 		activeScreen: 'start',
 		activeView: 'query',
 		activeConnection: SANDBOX,
+		activeCloudPage: 'instances',
+		activeCloudOrg: '',
 		savedQueries: [],
 		lastPromptedVersion: null,
 		featureFlags: {},
@@ -35,9 +37,9 @@ export function createBaseSettings(): SurrealistSettings {
 			variableSuggest: true,
 			queryErrorChecker: true,
 			windowPinned: false,
-			autoConnect: true,
 			docsLanguage: "cli",
 			versionCheckTimeout: 5,
+			reconnectInterval: 3,
 		},
 		appearance: {
 			colorScheme: "dark",
@@ -63,22 +65,28 @@ export function createBaseSettings(): SurrealistSettings {
 			username: "root",
 			password: "root",
 			port: 8000
+		},
+		cloud: {
+			databaseListMode: "grid",
+			urlAuthBase: "https://surrealdb.us.auth0.com",
+			urlApiBase: "https://api.staging.surrealdb.cloud/api/v1",
+			urlApiMgmtBase: "https://api.staging.surrealdb.cloud/management/v1",
 		}
 	};
 }
 
-export function createBaseConnectionOptions(): ConnectionOptions {
+export function createBaseAuthentication(): Authentication {
 	return {
 		protocol: "ws",
 		hostname: "",
-		namespace: "",
-		database: "",
 		username: "",
 		password: "",
-		authMode: "root",
+		mode: "root",
+		database: "",
+		namespace: "",
 		token: "",
 		scope: "",
-		scopeFields: []
+		scopeFields: [],
 	};
 }
 
@@ -94,9 +102,11 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 			name: "New query"
 		}],
 		activeQuery: baseTab.id,
-		connection: createBaseConnectionOptions(),
+		authentication: createBaseAuthentication(),
 		pinnedTables: [],
 		queryHistory: [],
+		lastNamespace: "",
+		lastDatabase: "",
 		diagramMode: settings.appearance.defaultDiagramMode,
 		diagramDirection: settings.appearance.defaultDiagramDirection,
 		diagramShowLinks: settings.appearance.defaultDiagramShowLinks
@@ -115,21 +125,18 @@ export function createBaseTab(settings: SurrealistSettings, query?: string, ): T
 }
 
 export function createSandboxConnection(settings: SurrealistSettings): Connection {
+	const base = createBaseConnection(settings);
+
 	return {
-		...createBaseConnection(settings),
+		...base,
 		id: "sandbox",
 		name: "Sandbox",
-		connection: {
+		lastNamespace: "sandbox",
+		lastDatabase: "sandbox",
+		authentication: {
+			...base.authentication,
 			protocol: "mem",
-			hostname: "",
-			namespace: "sandbox",
-			database: "sandbox",
-			authMode: "none",
-			token: "",
-			scope: "",
-			scopeFields: [],
-			password: "",
-			username: ""
+			mode: "none"
 		}
 	};
 }
@@ -143,5 +150,22 @@ export function createDatabaseSchema(): DatabaseSchema {
 		functions: [],
 		models: [],
 		tables: [],
+	};
+}
+
+export function createCloudInstance(): CloudInstance {
+	return {
+		id: "",
+		host: "",
+		name: "",
+		region: "",
+		state: "inactive",
+		type: {
+			slug: "",
+			description: "",
+			cpu: 0,
+			memory: 0,
+			storage: 0
+		}
 	};
 }

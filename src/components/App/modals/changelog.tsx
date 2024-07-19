@@ -6,7 +6,7 @@ import { changelogs } from "~/util/changelogs";
 import { Text } from "@mantine/core";
 import { Fragment } from "react";
 import { useBoolean } from "~/hooks/boolean";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 export function ChangelogModal() {
 	const [isOpen, openedHandle] = useBoolean();
@@ -22,7 +22,7 @@ export function ChangelogModal() {
 				withCloseButton
 				size="xl"
 				title={
-					<ModalTitle>Release changelogs</ModalTitle>
+					<PrimaryTitle>Release changelogs</PrimaryTitle>
 				}
 			>
 				<Stack>

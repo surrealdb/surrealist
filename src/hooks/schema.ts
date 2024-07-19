@@ -72,7 +72,7 @@ export function useTableNames(mode: TableMode = "ALL") {
  */
 export function useHasSchemaAccess() {
 	const connection = useConnection();
-	const authMode = connection?.connection?.authMode || "none";
+	const authMode = connection?.authentication?.mode || "none";
 
 	return connection?.id == SANDBOX || authMode != "none" && authMode != "scope";
 }

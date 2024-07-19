@@ -1,6 +1,6 @@
-import { FeatureFlags, TFeatureFlags } from "@theopensource-company/feature-flags";
+import { FeatureFlags, FeatureFlagSchema, TFeatureFlags } from "@theopensource-company/feature-flags";
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
-import { environment } from "./environment";
+import { environment, isProduction } from "./environment";
 
 // How to manage feature flag schema:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
@@ -29,10 +29,14 @@ export const schema = {
 	surreal_compat: {
 		options: ['v1', 'v2'],
 	},
+	cloud_endpoints: {
+		options: [false, true],
+		readonly: isProduction,
+	},
 	changelog: {
 		options: ['auto', 'hidden', 'read', 'unread'],
 	},
-} as const;
+} satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
 	environment,
@@ -45,21 +49,24 @@ export const featureFlags = new FeatureFlags({
 			apidocs_view: true,
 			newsfeed: true,
 			highlight_tool: true,
-			surreal_compat: 'v1'
+			surreal_compat: 'v1',
+			cloud_endpoints: true
 		},
 		preview: {
 			database_version_check: true,
 			models_view: true,
 			apidocs_view: true,
 			newsfeed: true,
-			surreal_compat: 'v1'
+			surreal_compat: 'v1',
+			cloud_endpoints: false
 		},
 		production: {
 			database_version_check: true,
 			models_view: true,
 			apidocs_view: true,
 			newsfeed: true,
-			surreal_compat: 'v1'
+			surreal_compat: 'v1',
+			cloud_endpoints: true
 		},
 	},
 	overrides: (flag) => {

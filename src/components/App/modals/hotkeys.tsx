@@ -1,7 +1,7 @@
 import { Box, Group, Modal, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { useIntent } from "~/hooks/url";
 import { useBoolean } from "~/hooks/boolean";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Shortcut } from "~/components/Shortcut";
 import { isDesktop } from "~/adapter";
 
@@ -35,7 +35,7 @@ export function KeymapModal() {
 				withCloseButton
 				size="xl"
 				title={
-					<ModalTitle>Keyboard Shortcuts</ModalTitle>
+					<PrimaryTitle>Keyboard Shortcuts</PrimaryTitle>
 				}
 			>
 				<Stack gap="xl">
@@ -59,6 +59,7 @@ export function KeymapModal() {
 								{isDesktop && (
 									<Key keys="F10" description="Toggle window pinned" />
 								)}
+								<Key keys="mod ," description="Open the settings dialog" />
 							</SimpleGrid>
 						</Paper>
 					</Box>

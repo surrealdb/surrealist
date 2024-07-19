@@ -72,3 +72,19 @@ export function useEventSubscription<T>(bus: EventBus<T>, callback: EventFn<T>) 
 		};
 	});
 }
+
+/**
+ * Create an event subscription which can be manually cleaned up. This function is
+ * intended for non-component code which needs to subscribe to events.
+ *
+ * @param bus The event bus to subscribe to
+ * @param callback The callback to invoke when an event is dispatched
+ * @returns Unsubscribe function
+ */
+export function createEventSubscription<T>(bus: EventBus<T>, callback: EventFn<T>): () => void {
+	bus.listeners.add(callback);
+
+	return () => {
+		bus.listeners.delete(callback);
+	};
+}

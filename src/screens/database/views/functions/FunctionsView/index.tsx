@@ -6,7 +6,7 @@ import { Icon } from "~/components/Icon";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Form } from "~/components/Form";
 import { SchemaFunction } from "~/types";
 import { useImmer } from "use-immer";
@@ -216,7 +216,7 @@ export function FunctionsView() {
 				opened={showCreator}
 				onClose={showCreatorHandle.close}
 				title={
-					<ModalTitle>Create new function</ModalTitle>
+					<PrimaryTitle>Create new function</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={createFunction}>

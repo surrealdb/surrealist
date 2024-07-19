@@ -1,10 +1,13 @@
+import flagIE from "flag-icons/flags/4x3/ie.svg";
+import flagUS from "flag-icons/flags/4x3/us.svg";
+import { mdiAccount } from "@mdi/js";
+
 import {
 	AuthMode,
 	CodeLang,
 	DataSet,
 	ValueMode,
 	Protocol,
-	ResultMode,
 	Selectable,
 	ViewInfo,
 	ViewMode,
@@ -12,11 +15,16 @@ import {
 	SidebarMode,
 	LineStyle,
 	SchemaMode,
+	CloudPage,
+	Listable,
+	ResultMode,
+	CloudPageInfo,
 } from "./types";
 
 import {
 	iconAPI,
 	iconAuth,
+	iconCloud,
 	iconCombined,
 	iconDataTable,
 	iconDesigner,
@@ -25,16 +33,11 @@ import {
 	iconLive,
 	iconModuleML,
 	iconQuery,
+	iconServer,
 } from "./util/icons";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = (typeof EXPORT_TYPES)[number];
-
-export interface ListingItem {
-	label: string;
-	value: ResultMode;
-	icon: string;
-}
 
 export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
@@ -59,7 +62,7 @@ export const THEMES = [
 	{ label: "Dark", value: "dark" },
 ];
 
-export const RESULT_MODES: ListingItem[] = [
+export const RESULT_MODES: Listable<ResultMode>[] = [
 	{ label: "Combined", value: "combined", icon: iconCombined },
 	{ label: "Individual", value: "single", icon: iconQuery },
 	{ label: "Table", value: "table", icon: iconDataTable },
@@ -107,6 +110,12 @@ export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 ];
 
 export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
+	cloud: {
+		id: "cloud",
+		name: "Surreal Cloud",
+		icon: iconCloud,
+		desc: "Manage your Surreal Cloud environment",
+	},
 	query: {
 		id: "query",
 		name: "Query",
@@ -156,6 +165,24 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		desc: "View the database schema and documentation",
 		disabled: (flags) => !flags.apidocs_view,
 	},
+};
+
+export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
+	// overview: {
+	// 	id: "overview",
+	// 	name: "Overview",
+	// 	icon: mdiHomeOutline,
+	// },
+	instances: {
+		id: "instances",
+		name: "Instances",
+		icon: iconServer,
+	},
+	members: {
+		id: "members",
+		name: "Members",
+		icon: mdiAccount,
+	}
 };
 
 export const EXPORT_TYPES = [
@@ -225,3 +252,8 @@ export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
 	{ label: "Schemaless", value: "schemaless" },
 	{ label: "Schemafull", value: "schemafull" },
 ];
+
+export const REGION_FLAGS: Record<string, string> = {
+	'aws-euw1': flagIE,
+	'aws-use1': flagUS,
+};

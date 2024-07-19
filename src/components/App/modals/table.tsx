@@ -1,4 +1,4 @@
-import { Button, Group, Modal, ModalTitle, MultiSelect, Select, Stack, Tabs, TextInput } from "@mantine/core";
+import { Button, Group, Modal, MultiSelect, Select, Stack, Tabs, TextInput } from "@mantine/core";
 import { useLayoutEffect, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
@@ -14,6 +14,7 @@ import { tb } from "~/util/helpers";
 import { SCHEMA_MODES } from "~/constants";
 import { SchemaMode } from "~/types";
 import { Form } from "~/components/Form";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 export function TableCreatorModal() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
@@ -77,7 +78,7 @@ export function TableCreatorModal() {
 				trapFocus={false}
 				size="sm"
 				title={
-					<ModalTitle>{`Create new ${createType}`}</ModalTitle>
+					<PrimaryTitle>{`Create new ${createType}`}</PrimaryTitle>
 				}
 			>
 				<Tabs mb="xl" defaultValue="table" value={createType} onChange={setCreateType as any}>

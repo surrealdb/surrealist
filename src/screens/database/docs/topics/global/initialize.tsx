@@ -6,11 +6,11 @@ import { useActiveConnection } from "~/hooks/connection";
 import { connectionUri } from "~/util/helpers";
 
 export function DocsGlobalInit({ language }: TopicProps) {
-	const { connection } = useActiveConnection();
-	const endpoint = connectionUri(connection);
+	const { authentication } = useActiveConnection();
+	const endpoint = connectionUri(authentication);
 	const esc_endpoint = JSON.stringify(endpoint);
-	const esc_namespace = JSON.stringify(connection.namespace);
-	const esc_database = JSON.stringify(connection.database);
+	const esc_namespace = JSON.stringify(authentication.namespace);
+	const esc_database = JSON.stringify(authentication.database);
 
 	const snippets = useMemo<Snippets>(
 		() => ({

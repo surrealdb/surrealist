@@ -26,10 +26,10 @@ function handler(event) {
 	    case request.uri === '/embed':
 	        return redirect('/mini');
 		case request.uri === '/mini/new':
-			request.uri = '/mini/new.html';
+			request.uri = '/mini/new/index.html';
 			return request;
 		case request.uri === '/mini':
-			request.uri = '/mini/run.html';
+			request.uri = '/mini/run/index.html';
 			return request;
 		case request.uri.includes('.') === false:
 			request.uri = '/index.html';

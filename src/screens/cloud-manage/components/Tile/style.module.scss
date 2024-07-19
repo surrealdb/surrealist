@@ -1,0 +1,17 @@
+.root {
+	border: 1px solid transparent;
+	border-radius: var(--mantine-radius-md);
+
+	&[data-active] {
+		border-color: var(--mantine-color-surreal-6);
+	}
+
+	&:focus-visible {
+		outline: none;
+		border-color: var(--mantine-color-slate-3);
+
+		&[data-active] {
+			border-color: var(--mantine-color-surreal-3);
+		}
+	}
+}

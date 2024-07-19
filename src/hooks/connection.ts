@@ -8,7 +8,14 @@ import { useDatabaseStore } from "~/stores/database";
  * Returns whether Surrealist is connected to a database
  */
 export function useIsConnected() {
-	return useDatabaseStore((s) => s.isConnected);
+	return useDatabaseStore((s) => s.currentState === "connected");
+}
+
+/**
+ * Returns whether Surrealist is connecting to a database
+ */
+export function useIsConnecting() {
+	return useDatabaseStore((s) => s.currentState === "connecting" || s.currentState === "retrying");
 }
 
 /**

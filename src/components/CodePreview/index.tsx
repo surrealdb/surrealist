@@ -15,12 +15,14 @@ interface EditorRef {
 	editor: EditorView;
 	config: Compartment;
 	theme: Compartment;
+	wrap: Compartment;
 }
 
 export interface CodePreviewProps extends PaperProps {
 	value: string;
 	title?: string;
 	withCopy?: boolean;
+	withWrapping?: boolean;
 	extensions?: Extension;
 	rightSection?: ReactNode;
 	withDedent?: boolean;
@@ -30,6 +32,7 @@ export function CodePreview({
 	value,
 	title,
 	withCopy,
+	withWrapping,
 	extensions,
 	rightSection,
 	withDedent,
@@ -47,15 +50,18 @@ export function CodePreview({
 	useEffect(() => {
 		const config = new Compartment();
 		const theme = new Compartment();
+		const wrap = new Compartment();
 		const configExt = config.of(extensions || surrealql());
+		const wrapExt = wrap.of(withWrapping ? EditorView.lineWrapping : []);
 
 		const initialState = EditorState.create({
 			doc: code,
 			extensions: [
 				configExt,
 				theme.of(colorTheme(isLight)),
+				wrapExt,
+				colorTheme(),
 				EditorState.readOnly.of(true),
-				EditorView.lineWrapping,
 				EditorView.editable.of(false),
 			],
 
@@ -70,6 +76,7 @@ export function CodePreview({
 			editor,
 			config,
 			theme,
+			wrap
 		};
 
 		return () => {
@@ -112,6 +119,16 @@ export function CodePreview({
 		});
 	}, [isLight]);
 
+	useEffect(() => {
+		const { editor, wrap } = editorRef.current!;
+
+		editor.dispatch({
+			effects: wrap.reconfigure(withWrapping ? EditorView.lineWrapping : [])
+		});
+	}, [withWrapping]);
+
+	const rightPadding = withCopy && !rightSection && !withWrapping;
+
 	return (
 		<>
 			{title && (
@@ -132,6 +149,7 @@ export function CodePreview({
 				bg={isLight ? 'slate.1' : 'slate.9'}
 				className={clsx(classes.root, className)}
 				fz="lg"
+				pr={rightPadding ? 40 : 0}
 				{...rest}
 			>
 				{withCopy ? (

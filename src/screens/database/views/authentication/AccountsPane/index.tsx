@@ -19,7 +19,7 @@ import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { useIsConnected } from "~/hooks/connection";
@@ -225,9 +225,9 @@ export function AccountsPane(props: AccountsPaneProps) {
 				onClose={closeSaving}
 				trapFocus={false}
 				title={
-					<ModalTitle>
+					<PrimaryTitle>
 						{currentUser ? "Edit user" : "Create user"}
-					</ModalTitle>
+					</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={saveAccount}>

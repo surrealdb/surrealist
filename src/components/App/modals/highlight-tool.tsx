@@ -2,7 +2,7 @@ import { Button, Divider, Modal, Stack } from "@mantine/core";
 import { useIntent } from "~/hooks/url";
 import { useCallback, useEffect, useState } from "react";
 import { useBoolean } from "~/hooks/boolean";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CodeEditor } from "~/components/CodeEditor";
 // @ts-ignore
 import { parser } from "lezer-surrealql";
@@ -72,7 +72,7 @@ export function HighlightToolModal() {
 				trapFocus={false}
 				withCloseButton
 				size="xl"
-				title={<ModalTitle>Highlight Tool</ModalTitle>}
+				title={<PrimaryTitle>Highlight Tool</PrimaryTitle>}
 			>
 				<Stack>
 					<CodeEditor

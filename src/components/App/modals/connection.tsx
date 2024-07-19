@@ -1,15 +1,14 @@
-import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack, Select } from "@mantine/core";
+import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack } from "@mantine/core";
 import { useImmer } from "use-immer";
 import { isConnectionValid } from "~/util/connection";
 import { useStable } from "~/hooks/stable";
 import { Fragment, useLayoutEffect, useMemo } from "react";
-import { updateTitle } from "~/util/helpers";
 import { useConnections } from "~/hooks/connection";
 import { Connection, Template } from "~/types";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
-import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlay, iconPlus, iconWarning } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlay, iconPlus } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
@@ -39,13 +38,12 @@ export function ConnectionModal() {
 	const opened = useInterfaceStore((s) => s.showConnectionEditor);
 	const editingId = useInterfaceStore((s) => s.editingConnectionId);
 	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
-	const groups = useConfigStore((s) => s.connectionGroups);
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
 	const isValid = useMemo(() => {
-		return details.name && isConnectionValid(details.connection);
-	}, [details.connection, details.name]);
+		return details.name && isConnectionValid(details.authentication);
+	}, [details.authentication, details.name]);
 
 	const saveInfo = useStable(async () => {
 		closeConnectionEditor();
@@ -58,13 +56,10 @@ export function ConnectionModal() {
 				id: editingId,
 				name: details.name,
 				icon: details.icon,
-				connection: details.connection,
+				authentication: details.authentication,
 				group: details.group,
 			});
 		}
-
-		updateTitle();
-		// openConnection();
 	});
 
 	const generateName = useStable(() => {
@@ -82,7 +77,8 @@ export function ConnectionModal() {
 	const applyTemplate = useStable((template: Template) => {
 		setDetails(draft => {
 			draft.icon = template.icon;
-			draft.connection = template.values;
+			draft.group = template.group;
+			draft.authentication = template.values;
 		});
 	});
 
@@ -102,7 +98,7 @@ export function ConnectionModal() {
 					name: "Local database",
 					icon: 0,
 					values: {
-						authMode: "root",
+						mode: "root",
 						database: "",
 						namespace: "",
 						protocol: "ws",
@@ -147,19 +143,6 @@ export function ConnectionModal() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [opened]);
 
-	const groupItems = useMemo(() => {
-		return [
-			{
-				value: "",
-				label: "No group"
-			},
-			...groups.map((group) => ({
-				value: group.id,
-				label: group.name,
-			}))
-		];
-	}, [groups]);
-
 	const remove = useConfirmation({
 		title: "Remove connection",
 		message: "Are you sure you want to remove this connection?",
@@ -178,7 +161,7 @@ export function ConnectionModal() {
 			opened={opened}
 			onClose={closeConnectionEditor}
 			trapFocus={false}
-			size="lg"
+			size={520}
 		>
 			<Form onSubmit={saveInfo}>
 				{templateList.length > 0 && (
@@ -191,26 +174,29 @@ export function ConnectionModal() {
 								size={1.2}
 							/>
 							<Text>
-								{isCreating ? 'Initialize' : 'Configure'} this connection with a template?
+								Apply a connection template?
 							</Text>
 							<Spacer />
-							<Menu>
+							<Menu
+								position="bottom-start"
+								transitionProps={{
+									transition: "scale-y"
+								}}
+							>
 								<Menu.Target>
 									<Button
 										color="slate"
 										variant="light"
 										rightSection={<Icon path={iconChevronDown} />}
 									>
-										Select template
+										Apply template
 									</Button>
 								</Menu.Target>
-
 								<Menu.Dropdown>
 									<Stack gap={4}>
-										{templateList.map(({ info, icon }, i) => (
+										{templateList.map(({ info }, i) => (
 											<Fragment key={info.id}>
 												<Menu.Item
-													leftSection={<Icon path={icon} mr="xs" />}
 													onClick={() => applyTemplate(info)}
 													miw={175}
 												>
@@ -226,37 +212,12 @@ export function ConnectionModal() {
 					</Alert>
 				)}
 
-				{!isValid && (
-					<Alert mb="xl" p="xs">
-						<Group>
-							<Icon
-								ml={6}
-								path={iconWarning}
-								color="surreal.1"
-								size={1.2}
-							/>
-							<Text>
-								Some connection details are invalid
-							</Text>
-						</Group>
-					</Alert>
-				)}
-
 				<ConnectionDetails
 					value={details}
 					onChange={setDetails}
-					rightSection={
-						<Select
-							data={groupItems}
-							value={details.group || ''}
-							onChange={(group) => setDetails((draft) => {
-								draft.group = group || undefined;
-							})}
-						/>
-					}
 				/>
 
-				<Group mt="lg">
+				<Group mt="xl">
 					<Button
 						color="slate"
 						variant="light"

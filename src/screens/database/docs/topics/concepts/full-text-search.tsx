@@ -2,18 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import { Snippets, TopicProps } from "~/screens/database/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
-import { connectionUri } from "~/util/helpers";
 
-export function DocsConceptsFullTextSearch({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-	const endpoint = connectionUri(connection);
-	const esc_endpoint = JSON.stringify(endpoint);
-	const esc_namespace = JSON.stringify(connection.namespace);
-	const esc_database = JSON.stringify(connection.database);
-
+export function DocsConceptsFullTextSearch({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `

@@ -1,0 +1,60 @@
+.help-tile {
+	aspect-ratio: 1;
+	text-align: center;
+	border-radius: var(--mantine-radius-lg);
+	background-origin: border-box !important;
+	border: 1px solid transparent;
+
+	&:hover {
+		background-image: var(--surrealist-gradient) !important;
+		box-shadow: 0 6px 25px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
+		border-color: rgba(255, 255, 255, 0.3);
+		color: white !important;
+	}
+}
+
+.drawer-content {
+	transition-property: all !important;
+	overflow: hidden;
+	overflow: clip;
+}
+
+.drawer-body {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+}
+
+.reading-header {
+	background-position: center;
+	background-size: cover;
+	background-image: linear-gradient(to bottom, transparent, var(--mantine-color-body)), var(--image-url);
+}
+
+.reading-content {
+	pre {
+		white-space: pre-wrap;
+		background-color: var(--mantine-color-slate-9);
+	}
+
+	code {
+		background-color: unset !important;
+		color: var(--mantine-color-bright) !important;
+		padding: 0;
+	}
+
+	a {
+		color: white;
+	}
+}
+
+.back-button {
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	z-index: 10;
+	border-radius: var(--mantine-radius-lg);
+	background-color: rgba(0, 0, 0, 0.35);
+	background-clip: padding-box;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}

@@ -1,13 +1,11 @@
 import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { showInfo, updateTitle } from "~/util/helpers";
-import { adapter } from "~/adapter";
-import { useConnection } from "~/hooks/connection";
+import { showInfo } from "~/util/helpers";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
-import { useDisclosure } from "@mantine/hooks";
-import { iconFile, iconReset, iconStar } from "~/util/icons";
+import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
 import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
@@ -17,14 +15,13 @@ import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { Connections } from "./components/Connections";
-import { ConsoleDrawer } from "./components/ConsoleDrawer";
-import { HelpAndSupport } from "./components/HelpAndSupport";
-import { LocalDatabase } from "./components/LocalDatabase";
-import { NewsFeed } from "./components/NewsFeed";
 import { openConnection, executeQuery } from "./connection";
 import { sleep } from "radash";
 import { Spacer } from "~/components/Spacer";
+import { ActionBar } from "~/components/ActionBar";
+import { ConnectionList } from "./components/ConnectionList";
+import { DatabaseList } from "./components/DatabaseList";
+import { NamespaceList } from "./components/NamespaceList";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse } = useDatabaseStore.getState();
@@ -34,10 +31,9 @@ export function DatabaseToolbar() {
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
-	const isConnected = useDatabaseStore((s) => s.isConnected);
+	const isConnected = useIsConnected();
 	const connection = useConnection();
 
-	const [showConsole, setShowConsole] = useDisclosure();
 	const [isDatasetLoading, setDatasetLoading] = useState(false);
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
@@ -52,7 +48,6 @@ export function DatabaseToolbar() {
 			name: tabName,
 		});
 
-		updateTitle();
 		closeEditingTab();
 	});
 
@@ -100,7 +95,29 @@ export function DatabaseToolbar() {
 
 	return (
 		<>
-			<Connections />
+			<ConnectionList />
+
+			{!isSandbox && (
+				<>
+					<Icon
+						path={iconChevronRight}
+						size="xl"
+						color="slate.6"
+						mx={-8}
+					/>
+
+					<NamespaceList />
+
+					<Icon
+						path={iconChevronRight}
+						size="xl"
+						color="slate.6"
+						mx={-8}
+					/>
+
+					<DatabaseList />
+				</>
+			)}
 
 			{isConnected && isSandbox && (
 				<>
@@ -114,7 +131,11 @@ export function DatabaseToolbar() {
 							<Icon path={iconReset} />
 						</ActionIcon>
 					</Tooltip>
-					<Menu withArrow>
+					<Menu
+						transitionProps={{
+							transition: "scale-y"
+						}}
+					>
 						<Menu.Target>
 							<Tooltip label="Load demo dataset">
 								<ActionIcon
@@ -163,17 +184,7 @@ export function DatabaseToolbar() {
 				</Button>
 			)}
 
-			{connection && adapter.isServeSupported && (
-				<LocalDatabase
-					toggleConsole={setShowConsole.toggle}
-				/>
-			)}
-
-			{flags.newsfeed && (
-				<NewsFeed />
-			)}
-
-			<HelpAndSupport />
+			<ActionBar />
 
 			<Modal
 				opened={!!editingTab}
@@ -194,11 +205,6 @@ export function DatabaseToolbar() {
 					</Group>
 				</Form>
 			</Modal>
-
-			<ConsoleDrawer
-				opened={showConsole}
-				onClose={setShowConsole.close}
-			/>
 		</>
 	);
 }

@@ -5,9 +5,9 @@ import { Snippets, TopicProps } from "~/screens/database/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
 export function DocsAuthSignUp({ language }: TopicProps) {
-	const { connection } = useActiveConnection();
-	const esc_namespace = JSON.stringify(connection.namespace);
-	const esc_database = JSON.stringify(connection.database);
+	const { authentication } = useActiveConnection();
+	const esc_namespace = JSON.stringify(authentication.namespace);
+	const esc_database = JSON.stringify(authentication.database);
 
 	const snippets = useMemo<Snippets>(
 		() => ({

@@ -1,9 +1,9 @@
 import posthog from "posthog-js";
 import { surrealdbWasmEngines } from 'surrealdb.wasm';
 import { Surreal, QueryResult, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
-import { AuthDetails, ConnectionOptions, Protocol, QueryResponse } from '~/types';
-import { useDatabaseStore } from '~/stores/database';
-import { getConnection } from '~/util/connection';
+import { AuthDetails, Authentication, Connection, Protocol, QueryResponse } from '~/types';
+import { State, useDatabaseStore } from '~/stores/database';
+import { getAuthDB, getAuthNS, getConnection } from '~/util/connection';
 import { connectionUri, newId, showError, showWarning } from '~/util/helpers';
 import { syncDatabaseSchema } from '~/util/schema';
 import { ConnectedEvent, DisconnectedEvent } from '~/util/global-events';
@@ -15,9 +15,13 @@ import { Value } from "surrealql.wasm/v1";
 import { adapter } from "~/adapter";
 import { getSetting } from "~/util/config";
 import { featureFlags } from "~/util/feature-flags";
+import { fetchAPI } from "../cloud-manage/api";
+import { useCloudStore } from "~/stores/cloud";
+import { SANDBOX } from "~/constants";
 
 export interface ConnectOptions {
-	connection?: ConnectionOptions;
+	connection?: Connection;
+	isRetry?: boolean;
 }
 
 export interface UserQueryOptions {
@@ -25,6 +29,9 @@ export interface UserQueryOptions {
 }
 
 let instance = createSurreal();
+let hasFailed = false;
+let forceClose = false;
+let retryTask: any;
 
 const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
 const LIVE_QUERIES = new Map<string, Set<Uuid>>();
@@ -36,38 +43,79 @@ const LIVE_QUERIES = new Map<string, Set<Uuid>>();
  */
 export async function openConnection(options?: ConnectOptions) {
 	const currentConnection = getConnection();
-	const connection = options?.connection || currentConnection?.connection;
+	const connection = options?.connection || currentConnection;
 
 	if (!connection) {
 		throw new Error("No connection available");
 	}
 
-	await closeConnection();
-	instance = createSurreal();
+	await closeConnection("connecting");
 
-	const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
-	const rpcEndpoint = connectionUri(connection);
+	instance = createSurreal();
+	forceClose = false;
+
+	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
+	const reconnectInterval = getReconnectInterval();
+	const rpcEndpoint = connectionUri(connection.authentication);
+	const isRetry = hasFailed && options?.isRetry;
 	const thisInstance = instance;
 
 	adapter.log('DB', `Opening connection to ${rpcEndpoint}`);
 
-	setIsConnecting(true);
-	setIsConnected(false);
+	setCurrentState(isRetry ? "retrying" : "connecting");
 
-	const isSignup = connection.authMode === "scope-signup";
-	const auth = composeAuthentication(connection);
-	const [versionCheck, versionCheckTimeout] = getVersionTimeout();
+	if (retryTask) {
+		clearTimeout(retryTask);
+	}
+
+	const retryConnection = () => {
+		const { currentState } = useDatabaseStore.getState();
+
+		if (currentState === "connected") {
+			setCurrentState("disconnected");
+			setVersion("");
+
+			DisconnectedEvent.dispatch(null);
+		}
+
+		if (forceClose) return;
+
+		retryTask = setTimeout(() => {
+			openConnection({
+				connection,
+				isRetry: true
+			});
+		}, reconnectInterval);
+	};
+
+	instance.emitter.subscribe("disconnected", retryConnection);
 
 	try {
+		const isSignup = connection.authentication.mode === "scope-signup";
+		const [versionCheck, versionCheckTimeout] = getVersionTimeout();
+
+		if (connection.authentication.mode === "cloud") {
+			const { authState } = useCloudStore.getState();
+
+			if (authState === "loading") {
+				retryConnection();
+				return;
+			} else if(authState === "unauthenticated") {
+				throw new Error("Not authenticated with Surreal Cloud");
+			}
+		}
+		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
+		const database = getAuthDB(connection.authentication) || connection.lastDatabase;
+
 		await instance.connect(rpcEndpoint, {
 			versionCheck,
 			versionCheckTimeout,
-			namespace: connection.namespace,
-			database: connection.database,
 			prepare: async (surreal) => {
 				try {
+					const auth = await composeAuthentication(connection.authentication);
+
 					if (isSignup) {
-						await register(buildScopeAuth(connection), surreal);
+						await register(buildScopeAuth(connection.authentication), surreal);
 					} else {
 						await authenticate(auth, surreal);
 					}
@@ -78,14 +126,13 @@ export async function openConnection(options?: ConnectOptions) {
 		});
 
 		if (instance === thisInstance) {
-			setIsConnecting(false);
-			setIsConnected(true);
-			syncDatabaseSchema();
+			setCurrentState("connected");
+			setLatestError("");
 
 			ConnectedEvent.dispatch(null);
 
 			posthog.capture('connection_open', {
-				protocol: connection.protocol
+				protocol: connection.authentication.protocol
 			});
 
 			adapter.log('DB', "Connection established");
@@ -94,41 +141,63 @@ export async function openConnection(options?: ConnectOptions) {
 				setVersion(v);
 				adapter.log('DB', `Database version ${v ?? "unknown"}`);
 			});
+
+			hasFailed = false;
+
+			if (connection.id === SANDBOX) {
+				await instance.use({
+					namespace: "sandbox",
+					database: "sandbox"
+				});
+			} else {
+				await activateDatabase(namespace, database);
+			}
 		}
 	} catch(err: any) {
 		if (instance === thisInstance) {
 			instance.close();
 
-			setIsConnecting(false);
-			setIsConnected(false);
+			setLatestError(err.message);
 
-			if (err instanceof VersionRetrievalFailure)
-				return showWarning({
-					title: "Failed to query version",
-					subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
-				});
+			if (!hasFailed) {
+				if (err instanceof VersionRetrievalFailure) {
+					showWarning({
+						title: "Failed to query version",
+						subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
+					});
+				} else if (err instanceof UnsupportedVersion) {
+					showError({
+						title: "Unsupported version",
+						subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
+					});
+				} else {
+					showError({
+						title: "Connection failed",
+						subtitle: err.message
+					});
+				}
+			}
 
-			if (err instanceof UnsupportedVersion)
-				showError({
-					title: "Unsupported version",
-					subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
-				});
-
-			showError({
-				title: "Failed to connect",
-				subtitle: err.message
-			});
+			hasFailed = true;
 		}
 	}
 }
 
 /**
  * Close the active surreal connection
+ *
+ * @param state The state to set after closing
  */
-export async function closeConnection() {
+export async function closeConnection(state?: State) {
 	const status = instance.status;
 
 	if (status === "connected" || status === "connecting") {
+		const { setCurrentState, setVersion } = useDatabaseStore.getState();
+
+		forceClose = true;
+		setCurrentState(state ?? "disconnected");
+		setVersion("");
+
 		await instance.close();
 	}
 }
@@ -233,11 +302,11 @@ export async function executeQuerySingle<T = any>(query: string): Promise<T> {
  */
 export async function executeUserQuery(options?: UserQueryOptions) {
 	const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } = useInterfaceStore.getState();
-	const { setQueryActive, isConnected, setQueryResponse } = useDatabaseStore.getState();
+	const { setQueryActive, currentState, setQueryResponse } = useDatabaseStore.getState();
 	const { addHistoryEntry } = useConfigStore.getState();
 	const connection = getConnection();
 
-	if (!connection || !isConnected) {
+	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
 			subtitle: "You must be connected to the database"
@@ -274,7 +343,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			liveIndexes = [];
 		}
 
-		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.connection.protocol)) {
+		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.authentication.protocol)) {
 			showError({
 				title: "Live queries unsupported",
 				subtitle: "Unfortunately live queries are not supported in the active connection protocol"
@@ -340,13 +409,67 @@ export function cancelLiveQueries(tab: string) {
 }
 
 /**
+ * Activate the given database within the specified namespace
+ */
+export async function activateDatabase(namespace: string, database: string) {
+	const { updateCurrentConnection } = useConfigStore.getState();
+
+	// Select a namespace only
+	if (namespace) {
+		const result = await executeQuerySingle("INFO FOR KV");
+		const namespaces = Object.keys(result?.namespaces ?? {});
+		const oldNamespace = getConnection()?.lastNamespace;
+
+		if (namespaces.includes(namespace)) {
+			updateCurrentConnection({
+				lastNamespace: namespace,
+				lastDatabase: database
+			});
+
+			await instance.use({ namespace });
+
+			// TODO We must reconnect to unset the database, this needs fixing in surrealdb
+			if (!database && oldNamespace !== namespace) {
+				await openConnection();
+			}
+		} else {
+			updateCurrentConnection({
+				lastNamespace: "",
+				lastDatabase: ""
+			});
+
+			return;
+		}
+	}
+
+	// Select a database
+	if (namespace && database) {
+		const result = await executeQuerySingle("INFO FOR NS");
+		const databases = Object.keys(result?.databases ?? {});
+
+		if (databases.includes(database)) {
+			updateCurrentConnection({
+				lastDatabase: database
+			});
+
+			await instance.use({ database });
+			await syncDatabaseSchema();
+		} else {
+			updateCurrentConnection({
+				lastDatabase: ""
+			});
+		}
+	}
+}
+
+/**
  * Compose authentication details for the given connection
  *
  * @param connection The connection options
  * @returns The authentication details
  */
-export function composeAuthentication(connection: ConnectionOptions): AuthDetails {
-	const { authMode, username, password, namespace, database, token } = connection;
+export async function composeAuthentication(connection: Authentication): Promise<AuthDetails> {
+	const { mode: authMode, username, password, namespace, database, token, cloudInstance } = connection;
 
 	switch (authMode) {
 		case "root": {
@@ -364,6 +487,21 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 		case "token": {
 			return token;
 		}
+		case "cloud": {
+			if (!cloudInstance) {
+				return undefined;
+			}
+
+			try {
+				const response = await fetchAPI<{ token: string }>(`/instances/${cloudInstance}/auth`);
+
+				return response.token;
+			} catch(err: any) {
+				throw new Error("Failed to authenticate with cloud instance", {
+					cause: err
+				});
+			}
+		}
 		default: {
 			return undefined;
 		}
@@ -371,24 +509,11 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 }
 
 function createSurreal() {
-	const surreal = new Surreal({
+	return new Surreal({
 		engines: surrealdbWasmEngines({
 			capabilities: true,
 		})
 	});
-
-	// Subscribe to disconnects
-	surreal.emitter.subscribe("disconnected", () => {
-		const { setIsConnected, setIsConnecting, setVersion } = useDatabaseStore.getState();
-
-		setIsConnecting(false);
-		setIsConnected(false);
-		setVersion("");
-
-		DisconnectedEvent.dispatch(null);
-	});
-
-	return surreal;
 }
 
 function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
@@ -399,7 +524,7 @@ function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
 	}));
 }
 
-function buildScopeAuth(connection: ConnectionOptions): ScopeAuth {
+function buildScopeAuth(connection: Authentication): ScopeAuth {
 	const { namespace, database, scope, scopeFields } = connection;
 	const fields = objectify(scopeFields, f => f.subject, f => f.value);
 
@@ -410,4 +535,8 @@ function getVersionTimeout() {
 	const enabled = featureFlags.get('database_version_check');
 	const timeout = (getSetting("behavior", "versionCheckTimeout") ?? 5) * 1000;
 	return [enabled, timeout] as const;
+}
+
+function getReconnectInterval() {
+	return (getSetting("behavior", "reconnectInterval") ?? 3) * 1000;
 }

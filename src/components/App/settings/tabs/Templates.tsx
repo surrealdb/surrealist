@@ -8,7 +8,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { useImmer } from "use-immer";
 import { Connection, Template } from "~/types";
-import { createBaseConnectionOptions } from "~/util/defaults";
+import { createBaseAuthentication } from "~/util/defaults";
 import { Form } from "~/components/Form";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
@@ -21,7 +21,9 @@ const PLACEHOLDER: Connection = {
 	icon: 0,
 	queries: [],
 	activeQuery: "",
-	connection: createBaseConnectionOptions(),
+	lastDatabase: "",
+	lastNamespace: "",
+	authentication: createBaseAuthentication(),
 	pinnedTables: [],
 	diagramMode: "fields",
 	diagramDirection: "ltr",
@@ -46,7 +48,8 @@ export function TemplatesTab() {
 			id: template.id,
 			name: template.name,
 			icon: template.icon,
-			connection: template.values
+			authentication: template.values,
+			group: template.group
 		});
 	});
 
@@ -57,7 +60,8 @@ export function TemplatesTab() {
 			id: details.id,
 			name: details.name,
 			icon: details.icon,
-			values: details.connection
+			group: details.group || undefined,
+			values: details.authentication
 		};
 
 		if (details.id) {

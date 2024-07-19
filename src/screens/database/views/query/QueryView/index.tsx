@@ -1,5 +1,6 @@
 import classes from "./style.module.scss";
 import surrealistIcon from "~/assets/images/logo.webp";
+import surrealistUrl from "~/assets/images/surrealist.webp";
 import posthog from "posthog-js";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -22,9 +23,8 @@ import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { SavedQuery } from "~/types";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { iconCheck } from "~/util/icons";
-import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useIsLight } from "~/hooks/theme";
 import { MiniAdapter } from "~/adapter/mini";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
@@ -224,14 +224,14 @@ export function QueryView() {
 					{!(adapter as MiniAdapter).hideTitlebar && (
 						<Group>
 							<Image
-								src={surrealistIcon}
+								src={surrealistUrl}
 								style={{ pointerEvents: "none" }}
 								height={20}
 								width={20}
 							/>
-							<SurrealistLogo
+							<Image
 								h={16}
-								c={isLight ? "slate.9" : "white"}
+								src={surrealistIcon}
 							/>
 							<Spacer />
 						</Group>
@@ -283,9 +283,9 @@ export function QueryView() {
 				onClose={isSavingHandle.close}
 				trapFocus={false}
 				title={
-					<ModalTitle>
+					<PrimaryTitle>
 						{editingId ? "Edit saved query" : "Save query"}
-					</ModalTitle>
+					</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={handleSaveQuery}>

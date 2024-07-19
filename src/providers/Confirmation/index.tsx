@@ -1,7 +1,7 @@
 import { Button, ButtonProps, Group, Text } from "@mantine/core";
 import { Modal } from "@mantine/core";
 import { PropsWithChildren, ReactNode, createContext, useContext, useState } from "react";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 
@@ -71,13 +71,13 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 			<Modal
 				opened={isConfirming}
 				onClose={onDissmiss}
-				title={<ModalTitle>{options?.title ?? DEFAULT_TITLE}</ModalTitle>}
+				title={<PrimaryTitle>{options?.title ?? DEFAULT_TITLE}</PrimaryTitle>}
 				zIndex={210}
 			>
-				<Text>
+				<Text fz="lg">
 					{options?.message}
 				</Text>
-				<Group mt="lg">
+				<Group mt="xl">
 					<Button
 						onClick={onDissmiss}
 						variant="light"
@@ -88,7 +88,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					</Button>
 					<Spacer />
 					<Button
-						color="pink.9"
+						color="red"
 						onClick={onConfirm}
 						{...options?.confirmProps}
 					>

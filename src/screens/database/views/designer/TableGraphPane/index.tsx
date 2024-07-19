@@ -9,7 +9,7 @@ import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useActiveConnection } from "~/hooks/connection";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { RadioSelect } from "~/components/RadioSelect";
@@ -387,7 +387,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				trapFocus={false}
 				size="lg"
 				withCloseButton
-				title={<ModalTitle>Using the Table Graph</ModalTitle>}
+				title={<PrimaryTitle>Using the Table Graph</PrimaryTitle>}
 			>
 				<Text c={isLight ? "slate.7" : "slate.2"}>
 					<HelpTitle isLight={isLight}>How do I use the table graph?</HelpTitle>

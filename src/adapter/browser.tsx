@@ -1,10 +1,12 @@
-import { Platform } from "~/types";
+import { Platform, UrlTarget } from "~/types";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
  * Surrealist adapter for running as web app
  */
 export class BrowserAdapter implements SurrealistAdapter {
+
+	public id = "browser";
 
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
@@ -70,8 +72,8 @@ export class BrowserAdapter implements SurrealistAdapter {
 		throw new Error("Not supported");
 	}
 
-	public async openUrl(url: string) {
-		window.open(url, '_blank');
+	public async openUrl(url: string, target?: UrlTarget) {
+		window.open(url, target === 'internal' ? '_self' : '_blank');
 	}
 
 	public async saveFile(
@@ -170,6 +172,10 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	public trace(label: string, message: string) {
 		console.debug(label + ": " + message);
+	}
+
+	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
+		return fetch(url, options);
 	}
 
 }

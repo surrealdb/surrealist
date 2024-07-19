@@ -4,7 +4,7 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -23,7 +23,7 @@ import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { adapter } from "~/adapter";
 
 export function ScopePane() {
-	const { connection } = useActiveConnection();
+	const { authentication } = useActiveConnection();
 	const isConnected = useIsConnected();
 	const schema = useSchema();
 
@@ -111,7 +111,7 @@ export function ScopePane() {
 	});
 
 	const registerUser = useStable(async () => {
-		const auth = composeAuthentication(connection);
+		const auth = await composeAuthentication(authentication);
 		const params = registerFields.reduce((acc, field) => {
 			acc[field.subject] = field.value;
 			return acc;
@@ -122,8 +122,8 @@ export function ScopePane() {
 
 			await register({
 				scope: registerScope,
-				namespace: connection.namespace,
-				database: connection.database,
+				namespace: authentication.namespace,
+				database: authentication.database,
 				...params
 			});
 
@@ -231,7 +231,7 @@ export function ScopePane() {
 				onClose={registerHandle.close}
 				trapFocus={false}
 				title={
-					<ModalTitle>Register user</ModalTitle>
+					<PrimaryTitle>Register user</PrimaryTitle>
 				}
 			>
 				<Text>
@@ -304,7 +304,7 @@ export function ScopePane() {
 				onClose={editingHandle.close}
 				trapFocus={false}
 				title={
-					<ModalTitle>{isCreating ? "Create scope" : "Update scope"}</ModalTitle>
+					<PrimaryTitle>{isCreating ? "Create scope" : "Update scope"}</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={saveScope}>

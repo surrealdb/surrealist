@@ -1,4 +1,4 @@
-import { Platform } from "~/types";
+import { Platform, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
 	name: string;
@@ -11,6 +11,11 @@ export interface OpenedBinaryFile {
 }
 
 export interface SurrealistAdapter {
+
+	/**
+	 * Identifier for this adapter
+	 */
+	id: string;
 
 	/**
 	 * Returns whether local database serving is supported
@@ -101,8 +106,9 @@ export interface SurrealistAdapter {
 	 * Open the given URL in the default browser
 	 *
 	 * @param url The URL to open
+	 * @param target The target to open the URL in
 	 */
-	openUrl(url: string): Promise<void>;
+	openUrl(url: string, target?: UrlTarget): Promise<void>;
 
 	/**
 	 * Save a file locally
@@ -146,5 +152,13 @@ export interface SurrealistAdapter {
 	 * Log a trace message to the implemented logging system
 	 */
 	trace(label: string, message: string): void;
+
+	/**
+	 * Perform a native HTTP request
+	 *
+	 * @param url The URL to fetch
+	 * @param options The fetch options
+	 */
+	fetch(url: string, options?: RequestInit): Promise<Response>;
 
 }

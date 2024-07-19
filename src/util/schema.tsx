@@ -23,9 +23,9 @@ export interface SchemaSyncOptions {
  * @param options Sync options
  */
 export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
-	const { isConnected } = useDatabaseStore.getState();
+	const { currentState } = useDatabaseStore.getState();
 
-	if (!isConnected) {
+	if (currentState !== "connected") {
 		return;
 	}
 

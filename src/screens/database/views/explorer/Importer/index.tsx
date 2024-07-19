@@ -20,7 +20,7 @@ import { RecordId, Table } from "surrealdb.js";
 import { parseValue } from "~/util/surrealql";
 import { Icon } from "~/components/Icon";
 import { sleep } from "radash";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 type Importer = null | 'sql' | 'csv';
 
@@ -152,7 +152,7 @@ export function Importer() {
 				opened={importer === 'sql'}
 				onClose={closeImporter}
 				size="sm"
-				title={<ModalTitle>Import database</ModalTitle>}
+				title={<PrimaryTitle>Import database</PrimaryTitle>}
 			>
 				<Text
 					mb="xl"
@@ -184,7 +184,7 @@ export function Importer() {
 				opened={importer === 'csv'}
 				onClose={closeImporter}
 				size="sm"
-				title={<ModalTitle>Import table</ModalTitle>}
+				title={<PrimaryTitle>Import table</PrimaryTitle>}
 			>
 				<Stack>
 					<Text>

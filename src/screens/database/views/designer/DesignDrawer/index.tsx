@@ -23,7 +23,7 @@ import { PermissionsElement } from "./elements/permissions";
 import { FieldsElement } from "./elements/fields";
 import { IndexesElement } from "./elements/indexes";
 import { EventsElement } from "./elements/events";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { tb } from "~/util/helpers";
@@ -90,7 +90,7 @@ export function DesignDrawer({
 			/>
 
 			<Group mb="md" gap="sm">
-				<ModalTitle
+				<PrimaryTitle
 					className={classes.title}
 				>
 					<Icon
@@ -99,7 +99,7 @@ export function DesignDrawer({
 						left
 					/>
 					{value.schema.name}
-				</ModalTitle>
+				</PrimaryTitle>
 
 				<Spacer />
 

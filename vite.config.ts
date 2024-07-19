@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import legacy from "@vitejs/plugin-legacy";
-import { ViteImageOptimizer as images } from 'vite-plugin-image-optimizer';
 import { Mode, plugin as markdown } from 'vite-plugin-markdown';
+import { ViteImageOptimizer as images } from 'vite-plugin-image-optimizer';
 import { UserConfig, defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { version, surreal } from './package.json';
@@ -42,10 +42,14 @@ export const getDefaultConfig = ({ mode }: { mode?: string }): UserConfig => ({
 		minify: process.env.TAURI_DEBUG ? false : 'esbuild',
 		sourcemap: !!process.env.TAURI_DEBUG,
 		rollupOptions: {
-			input: {
+			input: (process.env.TAURI_ENV_PLATFORM || mode === "development") ? {
 				'surrealist': '/index.html',
-				'mini-run': '/mini/run.html',
-				'mini-new': '/mini/new.html'
+			} : {
+				'surrealist': '/index.html',
+				'mini-run': '/mini/run/index.html',
+				'mini-new': '/mini/new/index.html',
+				'cloud-manage': '/cloud/manage/index.html',
+				'cloud-callback': '/cloud/callback/index.html',
 			},
 			output: {
 				experimentalMinChunkSize: 5000,

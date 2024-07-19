@@ -1,24 +1,17 @@
 import classes from "./style.module.scss";
-import { Extension } from "@codemirror/state";
+
 import {
 	Badge,
 	Box,
 	Group,
-	PaperProps,
 	SimpleGrid,
 	Title,
 } from "@mantine/core";
-import { CodePreview } from "~/components/CodePreview";
-import { CodeLang } from "~/types";
-import { Snippets } from "./types";
-import { useMemo } from "react";
-import dedent from "dedent";
 
-import { rust } from "@codemirror/lang-rust";
-import { javascript } from "@codemirror/lang-javascript";
-import { StreamLanguage } from "@codemirror/language";
-import { csharp } from "@codemirror/legacy-modes/mode/clike";
-import { php } from "@codemirror/lang-php";
+export {
+	CodeSnippet as DocsPreview,
+	type CodeSnippetProps as DocsPreviewProps,
+} from "~/components/CodeSnippet";
 
 export interface ArticleProps {
 	title?: React.ReactNode;
@@ -37,35 +30,6 @@ export function Article({ title, children }: ArticleProps) {
 				{children}
 			</SimpleGrid>
 		</Box>
-	);
-}
-
-const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
-	rust: rust(),
-	js: javascript(),
-	csharp: [StreamLanguage.define(csharp)],
-	php: php({ plain: true })
-};
-
-export interface DocsPreviewProps extends PaperProps {
-	title: string;
-	values: Snippets;
-	language: CodeLang;
-}
-
-export function DocsPreview({ title, values, language }: DocsPreviewProps) {
-	const snippet = useMemo(() => {
-		const value = values[language];
-		return value ? dedent(value) : undefined;
-	}, [values, language]);
-
-	return (
-		<CodePreview
-			title={title}
-			value={snippet || "No example available for this language"}
-			extensions={snippet ? EXTENSIONS[language] : undefined}
-			withCopy
-		/>
 	);
 }
 

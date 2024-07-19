@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
-import primarySphere from "~/assets/images/primary-sphere.webp";
-import secondarySphere from "~/assets/images/secondary-sphere.webp";
+import startGlow from "~/assets/images/start-glow.webp";
 import connection from "~/assets/images/start/connection.webp";
 import sandbox from "~/assets/images/start/sandbox.webp";
 import cloud from "~/assets/images/start/cloud.webp";
@@ -9,22 +8,21 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
-import { useDatabaseStore } from "~/stores/database";
 import { adapter } from "~/adapter";
+import { themeColor } from "~/util/mantine";
+import clsx from "clsx";
 
 export function StartScreen() {
-	const { setActiveConnection } = useConfigStore.getState();
+	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
 	const { openConnectionCreator } = useInterfaceStore.getState();
-
-	const isConnecting = useDatabaseStore(s => s.isConnecting);
-	const title = useInterfaceStore((s) => s.title);
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
 	});
 
 	const openCloud = useStable(() => {
-		adapter.openUrl("https://surrealdb.com/cloud");
+		setActiveScreen("database");
+		setActiveView("cloud");
 	});
 
 	return (
@@ -32,41 +30,32 @@ export function StartScreen() {
 			pos="absolute"
 			inset={0}
 			className={classes.start}
+			style={{
+				backgroundColor: themeColor("slate.9")
+			}}
 		>
 			{!adapter.hasTitlebar && (
-				<Center
+				<Box
 					data-tauri-drag-region
 					className={classes.titlebar}
-				>
-					{title}
-				</Center>
+				/>
 			)}
 
 			<div
-				className={classes.primarySphere}
+				className={classes.glow}
 				style={{
-					backgroundImage: `url(${primarySphere})`
+					backgroundImage: `url(${startGlow})`
 				}}
 			/>
 
-			<div
-				className={classes.secondarySphere}
-				style={{
-					backgroundImage: `url(${secondarySphere})`
-				}}
-			/>
-
-			<Center
-				h="100%"
-			>
-				<Group align="stretch">
+			<Center h="100%">
+				<Group align="stretch" wrap="nowrap">
 					<Stack>
 						<UnstyledButton
 							className={classes.startBox}
 							w={320}
 							h={226}
 							onClick={openConnectionCreator}
-							style={{ border: '1px solid rgba(255, 255, 255, 0.05' }}
 						>
 							<Box style={{ backgroundImage: `url(${connection})` }} />
 						</UnstyledButton>
@@ -75,19 +64,16 @@ export function StartScreen() {
 							w={320}
 							h={226}
 							onClick={openSandbox}
-							style={{ border: '1px solid rgba(255, 255, 255, 0.05' }}
-							disabled={isConnecting}
 						>
 							<Box style={{ backgroundImage: `url(${sandbox})` }} />
 						</UnstyledButton>
 					</Stack>
 					<Box>
 						<UnstyledButton
-							className={classes.startBox}
+							className={clsx(classes.startBox, classes.cloudBox)}
 							w={657}
 							h={464}
 							onClick={openCloud}
-							disabled={isConnecting}
 						>
 							<Box style={{ backgroundImage: `url(${cloud})` }} />
 						</UnstyledButton>

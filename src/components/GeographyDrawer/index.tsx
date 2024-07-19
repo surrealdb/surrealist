@@ -4,7 +4,7 @@ import { iconClose, iconMarker } from "~/util/icons";
 import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { formatValue } from "~/util/surrealql";
@@ -50,10 +50,10 @@ export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps)
 			/>
 
 			<Group mb="md" gap="sm">
-				<ModalTitle style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+				<PrimaryTitle style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
 					<Icon left path={iconMarker} size="sm" />
 					Geography explorer
-				</ModalTitle>
+				</PrimaryTitle>
 
 				<Spacer />
 

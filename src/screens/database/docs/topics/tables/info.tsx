@@ -1,16 +1,10 @@
 import { Group, Paper, Text } from "@mantine/core";
 import { Article } from "~/screens/database/docs/components";
 import { TopicProps } from "~/screens/database/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 import { Icon } from "~/components/Icon";
 import { iconTable } from "~/util/icons";
 
 export function DocsTablesInfo({ topic }: TopicProps) {
-
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
 	return (
 		<Article>
 			<Paper

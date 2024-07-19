@@ -1,3 +1,4 @@
+import compare from "semver-compare";
 import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
@@ -6,10 +7,15 @@ import { assign, debounce } from "radash";
 import { openConnection } from "~/screens/database/connection";
 import { featureFlags } from "./feature-flags";
 import { VIEW_MODES } from "~/constants";
-import { useDatabaseStore } from "~/stores/database";
 import { CONFIG_VERSION } from "./defaults";
 import { SurrealistConfig } from "~/types";
 import { showDowngradeWarningModal } from "./downgrade";
+import { IntentEvent } from "./global-events";
+import { createEventSubscription } from "~/hooks/event";
+import { CODE_RES_KEY, STATE_RES_KEY } from "./storage";
+import { checkSessionExpiry, verifyAuthentication, refreshAccess } from "~/screens/cloud-manage/auth";
+import { applyMigrations } from "./migrator";
+import { updateTitle } from "./helpers";
 
 const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -59,7 +65,8 @@ export function watchColorScheme() {
  */
 export async function watchConfigStore() {
 	const loadedConfig = await adapter.loadConfig();
-	const config = assign<SurrealistConfig>(useConfigStore.getState(), loadedConfig);
+	const migrateConfig = applyMigrations(loadedConfig);
+	const config = assign<SurrealistConfig>(useConfigStore.getState(), migrateConfig);
 	const compatible = config.configVersion <= CONFIG_VERSION;
 
 	// Handle incompatible config versions
@@ -77,6 +84,8 @@ export async function watchConfigStore() {
 	}, (state) => {
 		adapter.saveConfig(state);
 	}));
+	
+	setTimeout(updateTitle);
 }
 
 /**
@@ -89,13 +98,10 @@ export function watchConnectionSwitch() {
 		store: useConfigStore,
 		select: (state) => state.activeConnection,
 		then: (value) => {
-			const autoConnect = getSetting("behavior", "autoConnect");
 			const view = useConfigStore.getState().activeView;
 			const info = VIEW_MODES[view];
 
-			useDatabaseStore.getState().setIsConnecting(false);
-
-			if (autoConnect && value) {
+			if (value) {
 				openConnection();
 			}
 
@@ -104,4 +110,43 @@ export function watchConnectionSwitch() {
 			}
 		},
 	});
+}
+
+/**
+ * Watch for cloud authentication changes
+ */
+export function watchCloudAuthentication() {
+	const responseCode = sessionStorage.getItem(CODE_RES_KEY);
+	const responseState = sessionStorage.getItem(STATE_RES_KEY);
+
+	// Check for configured redirect response, otherwise
+	// attempt to refresh the currently active session
+	if (responseCode && responseState) {
+		sessionStorage.removeItem(CODE_RES_KEY);
+		sessionStorage.removeItem(STATE_RES_KEY);
+
+		verifyAuthentication(responseCode, responseState);
+	} else {
+		refreshAccess();
+	}
+
+	// Listen for triggered responses
+	createEventSubscription(IntentEvent, ({ type, payload }) => {
+		if (type !== "cloud-callback") return;
+
+		const { code, state } = payload as any;
+
+		if (!code || !state) {
+			adapter.warn("Cloud", "Invalid cloud callback payload");
+			return;
+		}
+
+		verifyAuthentication(code, state);
+	});
+
+	// Automatically refresh the session before it expires
+	setInterval(() => {
+		checkSessionExpiry();
+	}, 1000 * 60 * 3);
+
 }

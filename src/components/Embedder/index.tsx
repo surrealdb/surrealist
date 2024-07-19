@@ -261,6 +261,7 @@ export function Embedder({
 				<CodePreview
 					value={mode === 'Iframe' ? snippetCode : frameUrl}
 					withCopy
+					withWrapping
 					extensions={mode === 'Iframe' ? [
 						html()
 					] : []}

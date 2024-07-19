@@ -1,52 +1,84 @@
 import posthog from "posthog-js";
 import { useDidUpdate, useWindowEvent } from "@mantine/hooks";
-import { useCallback, useEffect } from "react";
-import { VIEW_MODES } from "~/constants";
+import { useEffect, useMemo } from "react";
+import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
-import { ViewMode } from "~/types";
+import { CloudPage, ViewMode } from "~/types";
 import { IntentEvent } from "~/util/global-events";
 import { useEventSubscription } from "./event";
 import { IntentPayload, IntentType, getIntentView, handleIntentRequest } from "~/util/intents";
+import { sift } from "radash";
+import { useStable } from "./stable";
+
+const VIEWS = Object.keys(VIEW_MODES);
+const CLOUDS = Object.keys(CLOUD_PAGES);
 
 /**
  * Sync the active view to the URL and handle incoming intents
  */
 export function useUrlHandler() {
-	const { setActiveView } = useConfigStore.getState();
+	const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
 	const activeView = useConfigStore((s) => s.activeView);
+	const cloudPage = useConfigStore((s) => s.activeCloudPage);
 
-	const syncViewToUrl = useCallback(() => {
-		const url = location.pathname.toLowerCase();
-		const params = new URLSearchParams(location.search);
-		const intent = params.get('intent');
-		const views = Object.keys(VIEW_MODES) as ViewMode[];
-		const target = views.find((v) => url === `/${v}`);
+	// The expected URL path based on the current state
+	const actualPath = useMemo(() => {
+		let urlPath = `/${activeView}`;
 
-		if (target) {
-			setActiveView(target);
-		} else {
-			history.replaceState(null, document.title, `/${activeView}`);
+		if (activeView === "cloud") {
+			urlPath += `/${cloudPage}`;
 		}
+
+		return urlPath;
+	}, [activeView, cloudPage]);
+
+	// Apply state based on the current URL path
+	const applyState = useStable(() => {
+		const [view, ...other] = sift(location.pathname.toLowerCase().split('/'));
+		const params = new URLSearchParams(location.search);
+
+		let repair = false;
+
+		if (isViewMode(view)) {
+			setActiveView(view);
+
+			if (view === "cloud") {
+				if (isCloudPage(other[0])) {
+					setActiveCloudPage(other[0]);
+				} else {
+					repair = true;
+				}
+			}
+		} else {
+			repair = true;
+		}
+
+		if (repair) {
+			console.log('repairing');
+			history.replaceState(null, document.title, actualPath);
+		}
+
+		const intent = params.get('intent');
 
 		if (intent) {
 			handleIntentRequest(intent);
 		}
-	}, [activeView, setActiveView]);
+	});
 
 	// Sync initial URL to active view
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	useEffect(syncViewToUrl, []);
+	useEffect(applyState, []);
 
 	// Sync history change to active view
-	useWindowEvent('popstate', syncViewToUrl);
+	useWindowEvent('popstate', applyState);
 
 	// Sync active view to URL
 	useDidUpdate(() => {
-		if (location.pathname !== `/${activeView}`) {
-			history.pushState(null, document.title, `/${activeView}`);
+		if (location.pathname !== actualPath) {
+			history.pushState(null, document.title, actualPath);
 			posthog.capture('$pageview');
 		}
-	}, [activeView]);
+	}, [actualPath]);
 }
 
 /**
@@ -78,4 +110,12 @@ export function dispatchIntent(intent: IntentType, payload?: IntentPayload) {
 	}
 
 	IntentEvent.dispatch({ type: intent, payload });
+}
+
+function isViewMode(value: any): value is ViewMode {
+	return value && VIEWS.includes(value);
+}
+
+function isCloudPage(value: any): value is CloudPage {
+	return value && CLOUDS.includes(value);
 }

@@ -7,7 +7,7 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { HistoryHandle } from "~/hooks/history";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useInputState } from "@mantine/hooks";
 import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
@@ -161,10 +161,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			/>
 
 			<Group mb="md" gap="sm">
-				<ModalTitle>
+				<PrimaryTitle>
 					<Icon left path={iconSearch} size="sm" />
 					Record inspector
-				</ModalTitle>
+				</PrimaryTitle>
 
 				<Spacer />
 

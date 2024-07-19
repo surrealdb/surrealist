@@ -7,7 +7,7 @@ import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { adapter } from "~/adapter";
 import { VIEW_MODES } from "~/constants";
 import { getConnection } from "./connection";
-import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
+import { Authentication, TabQuery, ViewMode } from "~/types";
 import { useInterfaceStore } from "~/stores/interface";
 import { getSetting } from "./config";
 import { decodeCbor } from "surrealdb.js";
@@ -71,11 +71,15 @@ export function updateTitle() {
 	const session = getConnection();
 	const segments: string[] = [];
 
-	if (session) {
-		segments.push(`${session.name} -`);
-	}
+	if (activeView === "cloud") {
+		segments.push("Surreal Cloud - Surrealist");
+	} else {
+		if (session) {
+			segments.push(`${session.name} -`);
+		}
 
-	segments.push(`Surrealist ${viewInfo?.name || ""}`);
+		segments.push(`Surrealist ${viewInfo?.name || ""}`);
+	}
 
 	if (windowPinned) {
 		segments.push("(Pinned)");
@@ -245,7 +249,7 @@ export function isPermissionError(result: any) {
  * @param path The optional path to append
  * @returns The URI string
  */
-export function connectionUri(options: ConnectionOptions, path?: string) {
+export function connectionUri(options: Authentication, path?: string) {
 	if (options.protocol === "mem") {
 		return "mem://";
 	} else if (options.protocol === "indxdb") {
@@ -276,7 +280,7 @@ export function connectionUri(options: ConnectionOptions, path?: string) {
  * @param options The connection options
  * @returns The URI string
  */
-export function versionUri(options: ConnectionOptions) {
+export function versionUri(options: Authentication) {
 	if (options.protocol === "mem" || options.protocol === "indxdb") {
 		return undefined;
 	}

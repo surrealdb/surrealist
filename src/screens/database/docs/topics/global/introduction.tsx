@@ -1,6 +1,3 @@
-import classes from "../../style.module.scss";
-import { Article } from "~/screens/database/docs/components";
-import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
 import {
 	DotNetIcon,
 	JavaScriptIcon, PhpIcon,
@@ -8,7 +5,10 @@ import {
 	RustIcon,
 	SurrealIcon,
 } from "~/screens/database/docs/icons";
-import { useActiveConnection } from "~/hooks/connection";
+
+import classes from "../../style.module.scss";
+import { Article } from "~/screens/database/docs/components";
+import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
 import { useSetting } from "~/hooks/config";
 import { CodeLang } from "~/types";
 import clsx from "clsx";
@@ -85,8 +85,6 @@ const LIBRARIES: Library[] = [
 
 export function DocsGlobalIntroduction() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
-	const { connection } = useActiveConnection();
-
 	const active = LIBRARIES.find((lib) => lib.id === language);
 
 	return (
