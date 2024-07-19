@@ -15,6 +15,7 @@ const REDIRECT_ENDPOINT = isDevelopment
 
 export function CloudCallbackScreen() {
 	const [result, setResult] = useState<Result>("redirect");
+	const [error, setError] = useState<string | undefined>(undefined);
 	const codeRef = useRef("");
 	const stateRef = useRef("");
 
@@ -30,10 +31,19 @@ export function CloudCallbackScreen() {
 
 		const code = params.get("code");
 		const state = params.get("state");
+		const error = params.get("error");
+		const error_description = params.get("error_description");
+
+		// An error occurred
+		if (error || error_description) {
+			setResult("error");
+			setError(`An error occurred: ${error_description} (${error})`);
+			return;
+		}
 
 		// Required parameters are missing
 		if (!code || !state) {
-			location.href = "https://surrealist.app";
+			location.href = REDIRECT_ENDPOINT;
 			return;
 		}
 
@@ -80,7 +90,7 @@ export function CloudCallbackScreen() {
 					</Text>
 				) : result === "error" ? (
 					<Text fz="lg" c="red">
-						Authentication could not be completed
+						{error ?? "Authentication could not be completed"}
 					</Text>
 				) : (
 					<>
