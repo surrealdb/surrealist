@@ -10,7 +10,6 @@ import { fetchAPI } from "../../api";
 import { showError, showInfo } from "~/util/helpers";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
-import { isDevelopment } from "~/util/environment";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 
@@ -121,7 +120,6 @@ export function Instance({
 		onConfirm: async () => {
 			try {
 				await fetchAPI(`/instances/${value.id}`, {
-					management: true,
 					method: "DELETE"
 				});
 
