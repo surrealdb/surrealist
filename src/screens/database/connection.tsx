@@ -372,7 +372,9 @@ export function composeAuthentication(connection: ConnectionOptions): AuthDetail
 
 function createSurreal() {
 	const surreal = new Surreal({
-		engines: surrealdbWasmEngines() as any
+		engines: surrealdbWasmEngines({
+			capabilities: true,
+		})
 	});
 
 	// Subscribe to disconnects
