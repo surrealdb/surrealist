@@ -50,7 +50,7 @@ export function DatabaseList() {
 		refetch();
 
 		creatorHandle.close();
-		openHandle.open();
+		openDatabase(databaseName);
 	});
 
 	return (

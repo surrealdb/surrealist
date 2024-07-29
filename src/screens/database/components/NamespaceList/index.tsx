@@ -49,7 +49,7 @@ export function NamespaceList() {
 		refetch();
 
 		creatorHandle.close();
-		openHandle.open();
+		openNamespace(namespaceName);
 	});
 
 	return (
