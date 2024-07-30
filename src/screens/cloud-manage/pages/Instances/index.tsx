@@ -59,6 +59,8 @@ export function InstancesPage() {
 			const { connections, settings, addConnection, setActiveConnection, setActiveView } = useConfigStore.getState();
 			const existing = connections.find((conn) => conn.authentication.cloudInstance === db.id);
 
+			setActiveView("query");
+
 			if (existing) {
 				setActiveConnection(existing.id);
 			} else {
@@ -78,7 +80,6 @@ export function InstancesPage() {
 				});
 
 				setActiveConnection(base.id);
-				setActiveView("query");
 			}
 		} else if (method === "sdk") {
 			sdkConnectHandle.open();
