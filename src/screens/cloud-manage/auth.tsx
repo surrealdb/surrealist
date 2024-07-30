@@ -143,8 +143,6 @@ export async function refreshAccess() {
 
 		const result = await response.json();
 
-		throw new Error("Test error");
-
 		if (!result || result.error) {
 			throw new Error(`Invalid authentication response: ${result.error}`);
 		}
