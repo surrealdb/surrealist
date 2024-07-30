@@ -22,6 +22,8 @@ import { ActionBar } from "~/components/ActionBar";
 import { ConnectionList } from "./components/ConnectionList";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { openCloudAuthentication } from "../cloud-manage/auth";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse } = useDatabaseStore.getState();
@@ -31,6 +33,7 @@ export function DatabaseToolbar() {
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
+	const isAuthed = useIsAuthenticated();
 	const isConnected = useIsConnected();
 	const connection = useConnection();
 
@@ -98,6 +101,17 @@ export function DatabaseToolbar() {
 	return (
 		<>
 			<ConnectionList />
+
+			{!isConnected && !isAuthed && connection?.authentication?.mode === "cloud" && (
+				<Button
+					color="orange"
+					variant="light"
+					size="xs"
+					onClick={openCloudAuthentication}
+				>
+					Sign in to Surreal Cloud
+				</Button>
+			)}
 
 			{showNS && (
 				<>

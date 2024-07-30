@@ -7,12 +7,11 @@ import { CloudPage } from "~/types";
 import { InstancesPage } from "./pages/Instances";
 import { MembersPage } from "./pages/Members";
 import { useCloudStore } from "~/stores/cloud";
-import { iconOpen } from "~/util/icons";
+import { iconChevronRight, iconOpen } from "~/util/icons";
 import { Box, Button, Group, Image, Stack, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { openCloudAuthentication } from "./auth";
-import { mdiAccountOutline } from "@mdi/js";
 import { CloudToolbar } from "./toolbar";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
@@ -61,11 +60,11 @@ export function CloudContent() {
 						w={164}
 						color="slate"
 						variant={state === "loading" ? "filled" : "gradient"}
-						leftSection={<Icon path={mdiAccountOutline} />}
+						rightSection={<Icon path={iconChevronRight} />}
 						onClick={openCloudAuthentication}
 						loading={state === "loading"}
 					>
-						Sign in
+						Continue
 					</Button>
 					<Button
 						w={164}

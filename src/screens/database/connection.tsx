@@ -101,7 +101,7 @@ export async function openConnection(options?: ConnectOptions) {
 				retryConnection();
 				return;
 			} else if(authState === "unauthenticated") {
-				throw new Error("Not authenticated with Surreal Cloud");
+				throw new CloudError("Not authenticated with Surreal Cloud");
 			}
 		}
 		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
@@ -170,7 +170,7 @@ export async function openConnection(options?: ConnectOptions) {
 						title: "Unsupported version",
 						subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
 					});
-				} else {
+				} else if (!(err instanceof CloudError)) {
 					showError({
 						title: "Connection failed",
 						subtitle: err.message
@@ -537,4 +537,10 @@ function getVersionTimeout() {
 
 function getReconnectInterval() {
 	return (getSetting("behavior", "reconnectInterval") ?? 3) * 1000;
+}
+
+class CloudError extends Error {
+	public constructor(message: string) {
+		super(message);
+	}
 }

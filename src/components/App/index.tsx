@@ -31,6 +31,7 @@ import { isDesktop } from "~/adapter";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { ModalsProvider } from "@mantine/modals";
 import { ConsoleDrawer } from "./modals/console";
+import { CloudExpiredDialog } from "./modals/cloud-expired";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +90,7 @@ export function App() {
 										<KeymapModal />
 										<HighlightToolModal />
 										<ConsoleDrawer />
+										<CloudExpiredDialog />
 
 										{isDesktop && (
 											<UpdaterDialog />

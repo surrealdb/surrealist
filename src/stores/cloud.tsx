@@ -21,11 +21,13 @@ export type CloudStore = {
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
+	sessionExpired: boolean;
 
 	setLoading: () => void;
 	setSessionToken: (token: string) => void;
 	setAccountProfile: (profile: CloudProfile) => void;
 	setCloudValues: (values: CloudValues) => void;
+	setSessionExpired: (expired: boolean) => void;
 	clearSession: () => void;
 };
 
@@ -36,6 +38,7 @@ export const useCloudStore = create<CloudStore>((set) => ({
 	instanceTypes: [],
 	regions: [],
 	organizations: [],
+	sessionExpired: false,
 
 	setLoading: () => set({ authState: "loading" }),
 
@@ -59,6 +62,10 @@ export const useCloudStore = create<CloudStore>((set) => ({
 		authState: "unauthenticated",
 		sessionToken: "",
 		profile: EMPTY_PROFILE,
+	}),
+
+	setSessionExpired: (expired) => set({
+		sessionExpired: expired,
 	}),
 
 

@@ -113,8 +113,9 @@ export async function verifyAuthentication(code: string, state: string) {
  * Refresh the current access token
  */
 export async function refreshAccess() {
+	const { setLoading, setSessionExpired } = useCloudStore.getState();
+
 	try {
-		const { setLoading } = useCloudStore.getState();
 		const baseUrl = getSetting("cloud", "urlAuthBase");
 		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
 
@@ -142,6 +143,8 @@ export async function refreshAccess() {
 
 		const result = await response.json();
 
+		throw new Error("Test error");
+
 		if (!result || result.error) {
 			throw new Error(`Invalid authentication response: ${result.error}`);
 		}
@@ -153,10 +156,7 @@ export async function refreshAccess() {
 		console.error("Failed to refresh access token", err);
 
 		invalidateSession();
-		showError({
-			title: "Authentication expired",
-			subtitle: "Please re-authenticate to Surreal Cloud"
-		});
+		setSessionExpired(true);
 	}
 }
 

@@ -1,3 +1,5 @@
+import cloudLogo from "~/assets/images/cloud-icon.svg";
+
 import {
 	Group,
 	Select,
@@ -14,6 +16,7 @@ import {
 	Popover,
 	Box,
 	Divider,
+	Image,
 } from "@mantine/core";
 
 import {
@@ -25,7 +28,7 @@ import {
 import dayjs from "dayjs";
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
-import { iconClose, iconCloud, iconPlus, iconWarning } from "~/util/icons";
+import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -214,13 +217,27 @@ export function ConnectionDetails({
 
 				{isCloud && (
 					<>
-						<Alert
-							color="surreal.3"
-							icon={<Icon path={iconCloud} />}
-							title="This connection is managed by Surreal Cloud"
+						<Paper
+							bg="slate.9"
+							radius="md"
+							p="lg"
 						>
-							Some details cannot be managed manually
-						</Alert>
+							<Group>
+								<Image
+									src={cloudLogo}
+									alt="Surreal Cloud"
+									w={48}
+								/>
+								<Box>
+									<Text fw={600} c="bright">
+										This connection is managed by Surreal Cloud
+									</Text>
+									<Text mt={4}>
+										Some details cannot be modified manually
+									</Text>
+								</Box>
+							</Group>
+						</Paper>
 
 						<Divider
 							mx={-32}

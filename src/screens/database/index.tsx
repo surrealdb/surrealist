@@ -5,11 +5,10 @@ import { ViewMode } from "~/types";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { Suspense, lazy, useLayoutEffect } from "react";
+import { Suspense, lazy } from "react";
 import { useConfigStore } from "~/stores/config";
 import { CloudContent } from "~/screens/cloud-manage/content";
 import { Center, Stack, Button, Flex, ScrollArea, Group, Box, Text, Image } from "@mantine/core";
-import { useDebouncedCallback, useHover, useThrottledCallback, useTimeout } from "@mantine/hooks";
 import { adapter, isDesktop } from "~/adapter";
 import { useBoolean } from "~/hooks/boolean";
 import { useSetting } from "~/hooks/config";
@@ -19,7 +18,6 @@ import { isMobile } from "~/util/helpers";
 import { iconOpen } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { Icon } from "~/components/Icon";
-import { useStable } from "~/hooks/stable";
 
 const PORTAL_ATTRS = {
 	attributes: {
