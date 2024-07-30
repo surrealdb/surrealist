@@ -134,7 +134,6 @@ export function TemplatesTab() {
 					<ConnectionDetails
 						value={details}
 						onChange={setDetails}
-						allFieldsOptional
 					/>
 
 					<Group mt="lg">

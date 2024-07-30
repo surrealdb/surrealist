@@ -5,7 +5,7 @@ import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../../../../components/Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconClose, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconList, iconPlus, iconReset, iconSearch, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconClose, iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconList, iconPlus, iconReset, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../../../../components/Spacer";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
@@ -102,6 +102,15 @@ function Item({
 			<Text truncate>
 				{connection.name}
 			</Text>
+			{connection.authentication.mode === "cloud" && (
+				<Flex
+					c={isActive ? "white" : "slate.3"}
+					ml="xs"
+				>
+					| Surreal Cloud
+					<Icon path={iconCloud} size="sm" right />
+				</Flex>
+			)}
 		</Entry>
 	);
 }

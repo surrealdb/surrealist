@@ -25,7 +25,7 @@ import {
 import dayjs from "dayjs";
 import { AuthMode, Connection, Protocol } from "~/types";
 import { Updater } from "use-immer";
-import { iconClose, iconPlus, iconWarning } from "~/util/icons";
+import { iconClose, iconCloud, iconPlus, iconWarning } from "~/util/icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
@@ -66,7 +66,6 @@ function Subheader({
 export interface ConnectionDetailsProps {
 	value: Connection;
 	onChange: Updater<Connection>;
-	allFieldsOptional?: boolean;
 }
 
 export function ConnectionDetails({
@@ -136,6 +135,12 @@ export function ConnectionDetails({
 		() => fastParseJwt(value.authentication.token),
 		[value.authentication.token]
 	);
+
+	const protocols = useMemo(() => {
+		return isCloud
+			? CONNECTION_PROTOCOLS.filter((p) => p.remote)
+			: CONNECTION_PROTOCOLS;
+	}, [isCloud]);
 
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
 	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
@@ -207,6 +212,25 @@ export function ConnectionDetails({
 					/>
 				</Group>
 
+				{isCloud && (
+					<>
+						<Alert
+							color="surreal.3"
+							icon={<Icon path={iconCloud} />}
+							title="This connection is managed by Surreal Cloud"
+						>
+							Some details cannot be managed manually
+						</Alert>
+
+						<Divider
+							mx={-32}
+							mb={6}
+							mt={12}
+							color="slate.7"
+						/>
+					</>
+				)}
+
 				<Subheader
 					title="Connection"
 					subtitle="Database address and connection protocol"
@@ -214,9 +238,8 @@ export function ConnectionDetails({
 
 				<Group>
 					<Select
-						data={CONNECTION_PROTOCOLS}
+						data={protocols}
 						maw={110}
-						disabled={isCloud}
 						value={value.authentication.protocol}
 						onChange={(value) =>
 							onChange((draft) => {
@@ -247,172 +270,170 @@ export function ConnectionDetails({
 					color="slate.7"
 				/>
 
-				<Subheader
-					title="Authentication"
-					subtitle="Database access credentials"
-				/>
-
-				{isCloud ? (
-					<Text>
-						This connection is using cloud authentication and cannot be managed manually.
-					</Text>
-				) : (
-					<Stack gap="sm">
-						<Select
-							label="Method"
-							value={value.authentication.mode}
-							data={AUTH_MODES}
-							onChange={(value) =>
-								onChange((draft) => {
-									draft.authentication.mode = value as AuthMode;
-								})
-							}
+				{!isCloud && (
+					<>
+						<Subheader
+							title="Authentication"
+							subtitle="Database access credentials"
 						/>
 
-						{isSystemMethod && (
-							<SimpleGrid cols={2}>
-								<TextInput
-									label="Username"
-									value={value.authentication.username}
-									spellCheck={false}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.authentication.username =
-												e.target.value;
-										})
-									}
-								/>
-								<PasswordInput
-									label="Password"
-									value={value.authentication.password}
-									spellCheck={false}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.authentication.password =
-												e.target.value;
-										})
-									}
-								/>
-							</SimpleGrid>
-						)}
+						<Stack gap="sm">
+							<Select
+								label="Method"
+								value={value.authentication.mode}
+								data={AUTH_MODES}
+								onChange={(value) =>
+									onChange((draft) => {
+										draft.authentication.mode = value as AuthMode;
+									})
+								}
+							/>
 
-						{(showNamespace || showDatabase) && (
-							<SimpleGrid cols={2}>
-								{showNamespace && (
+							{isSystemMethod && (
+								<SimpleGrid cols={2}>
 									<TextInput
-										label="Namespace"
-										value={value.authentication.namespace}
+										label="Username"
+										value={value.authentication.username}
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.namespace = e.target.value;
+												draft.authentication.username =
+													e.target.value;
 											})
 										}
 									/>
-								)}
-
-								{showDatabase && (
-									<TextInput
-										label="Database"
-										value={value.authentication.database}
+									<PasswordInput
+										label="Password"
+										value={value.authentication.password}
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.database = e.target.value;
+												draft.authentication.password =
+													e.target.value;
 											})
 										}
 									/>
-								)}
-							</SimpleGrid>
-						)}
+								</SimpleGrid>
+							)}
 
-						{value.authentication.mode === "scope" && (
-							<Group wrap="nowrap">
-								<TextInput
-									flex={1}
-									label="Scope"
-									value={value.authentication.scope}
-									spellCheck={false}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.authentication.scope = e.target.value;
-										})
-									}
-								/>
-								<Button
-									mt={19}
-									color="blue"
-									variant="light"
-									onClick={editingScopeHandle.open}
-								>
-									Edit scope data
-								</Button>
-							</Group>
-						)}
+							{(showNamespace || showDatabase) && (
+								<SimpleGrid cols={2}>
+									{showNamespace && (
+										<TextInput
+											label="Namespace"
+											value={value.authentication.namespace}
+											spellCheck={false}
+											onChange={(e) =>
+												onChange((draft) => {
+													draft.authentication.namespace = e.target.value;
+												})
+											}
+										/>
+									)}
 
-						{value.authentication.mode === "token" && (
-							<>
-								<TextInput
-									label="Token"
-									value={value.authentication.token}
-									spellCheck={false}
-									onChange={(e) =>
-										onChange((draft) => {
-											draft.authentication.token = e.target.value;
-										})
-									}
-									styles={{
-										input: {
-											fontFamily:
-												"var(--mantine-font-family-monospace)",
-										},
-									}}
-								/>
+									{showDatabase && (
+										<TextInput
+											label="Database"
+											value={value.authentication.database}
+											spellCheck={false}
+											onChange={(e) =>
+												onChange((draft) => {
+													draft.authentication.database = e.target.value;
+												})
+											}
+										/>
+									)}
+								</SimpleGrid>
+							)}
 
-								{value.authentication.token && (tokenPayload === null ? (
-									<Alert
-										color="red"
-										icon={<Icon path={iconWarning} />}
+							{value.authentication.mode === "scope" && (
+								<Group wrap="nowrap">
+									<TextInput
+										flex={1}
+										label="Scope"
+										value={value.authentication.scope}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.scope = e.target.value;
+											})
+										}
+									/>
+									<Button
+										mt={19}
+										color="blue"
+										variant="light"
+										onClick={editingScopeHandle.open}
 									>
-										The provided token does not appear to be
-										a valid JWT
-									</Alert>
-								) : (
-									tokenExpireSoon &&
-									(tokenExpire > Date.now() ? (
-										<Text c="slate">
-											<Icon
-												path={iconWarning}
-												c="yellow"
-												size="sm"
-												left
-											/>
-											This token expires in{" "}
-											{dayjs(tokenExpire).fromNow()}
-										</Text>
-									) : (
-										<Text c="slate">
-											<Icon
-												path={iconWarning}
-												c="red"
-												size="sm"
-												left
-											/>
-											This token has expired
-										</Text>
-									))
-								))}
-							</>
-						)}
-					</Stack>
-				)}
+										Edit scope data
+									</Button>
+								</Group>
+							)}
 
-				<Divider
-					mx={-32}
-					mb={6}
-					mt={12}
-					color="slate.7"
-				/>
+							{value.authentication.mode === "token" && (
+								<>
+									<TextInput
+										label="Token"
+										value={value.authentication.token}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.token = e.target.value;
+											})
+										}
+										styles={{
+											input: {
+												fontFamily:
+													"var(--mantine-font-family-monospace)",
+											},
+										}}
+									/>
+
+									{value.authentication.token && (tokenPayload === null ? (
+										<Alert
+											color="red"
+											icon={<Icon path={iconWarning} />}
+										>
+											The provided token does not appear to be
+											a valid JWT
+										</Alert>
+									) : (
+										tokenExpireSoon &&
+										(tokenExpire > Date.now() ? (
+											<Text c="slate">
+												<Icon
+													path={iconWarning}
+													c="yellow"
+													size="sm"
+													left
+												/>
+												This token expires in{" "}
+												{dayjs(tokenExpire).fromNow()}
+											</Text>
+										) : (
+											<Text c="slate">
+												<Icon
+													path={iconWarning}
+													c="red"
+													size="sm"
+													left
+												/>
+												This token has expired
+											</Text>
+										))
+									))}
+								</>
+							)}
+						</Stack>
+
+						<Divider
+							mx={-32}
+							mb={6}
+							mt={12}
+							color="slate.7"
+						/>
+					</>
+				)}
 
 				<Subheader
 					title="Configuration"

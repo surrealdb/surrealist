@@ -38,6 +38,7 @@ import {
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = (typeof EXPORT_TYPES)[number];
+export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
 
 export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
@@ -69,13 +70,13 @@ export const RESULT_MODES: Listable<ResultMode>[] = [
 	{ label: "Live", value: "live", icon: iconLive },
 ];
 
-export const CONNECTION_PROTOCOLS: Selectable<Protocol>[] = [
-	{ label: "HTTP", value: "http" },
-	{ label: "HTTPS", value: "https" },
-	{ label: "WS", value: "ws" },
-	{ label: "WSS", value: "wss" },
-	{ label: "Memory", value: "mem" },
-	{ label: "IndexedDB", value: "indxdb" },
+export const CONNECTION_PROTOCOLS: ProtocolOption[] = [
+	{ label: "HTTP", value: "http", remote: true },
+	{ label: "HTTPS", value: "https", remote: true },
+	{ label: "WS", value: "ws", remote: true },
+	{ label: "WSS", value: "wss", remote: true },
+	{ label: "Memory", value: "mem", remote: false },
+	{ label: "IndexedDB", value: "indxdb", remote: false },
 ];
 
 export const AUTH_MODES: Selectable<AuthMode>[] = [
