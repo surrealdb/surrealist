@@ -165,7 +165,7 @@ export async function refreshAccess() {
  */
 export async function acquireSession(accessToken: string) {
 	try {
-		const { setSessionToken } = useCloudStore.getState();
+		const { setSessionToken, setSessionExpired } = useCloudStore.getState();
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
@@ -179,6 +179,8 @@ export async function acquireSession(accessToken: string) {
 
 		adapter.log("Cloud", `Session acquired`);
 		CloudAuthEvent.dispatch(null);
+
+		setSessionExpired(false);
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
 
