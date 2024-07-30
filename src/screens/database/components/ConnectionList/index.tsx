@@ -84,6 +84,8 @@ function Item({
 					icon: <Icon path={iconCopy} />,
 					onClick: () => addConnection({
 						...connection,
+						lastNamespace: "",
+						lastDatabase: "",
 						id: newId()
 					}),
 				},
@@ -249,7 +251,12 @@ export function ConnectionList() {
 									/>
 								}
 							>
-								<Text truncate fw={600} maw={200}>
+								<Text
+									truncate
+									fw={600}
+									maw={200}
+									c="bright"
+								>
 									{connection.name}
 								</Text>
 							</Button>

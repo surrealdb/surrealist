@@ -10,7 +10,7 @@ import { ConnectedEvent, DisconnectedEvent } from '~/util/global-events';
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { objectify } from "radash";
-import { getLiveQueries } from "~/util/surrealql";
+import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { adapter } from "~/adapter";
 import { getSetting } from "~/util/config";
@@ -417,7 +417,7 @@ export async function activateDatabase(namespace: string, database: string) {
 	// Select a namespace only
 	if (namespace) {
 		const result = await executeQuerySingle("INFO FOR KV");
-		const namespaces = Object.keys(result?.namespaces ?? {});
+		const namespaces = Object.keys(result?.namespaces ?? {}).map(ns => parseIdent(ns));
 		const oldNamespace = getConnection()?.lastNamespace;
 
 		if (namespaces.includes(namespace)) {
@@ -426,12 +426,10 @@ export async function activateDatabase(namespace: string, database: string) {
 				lastDatabase: database
 			});
 
-			await instance.use({ namespace });
-
-			// TODO We must reconnect to unset the database, this needs fixing in surrealdb
-			if (!database && oldNamespace !== namespace) {
-				await openConnection();
-			}
+			await instance.use({
+				namespace,
+				database: null
+			});
 		} else {
 			updateCurrentConnection({
 				lastNamespace: "",
@@ -445,7 +443,7 @@ export async function activateDatabase(namespace: string, database: string) {
 	// Select a database
 	if (namespace && database) {
 		const result = await executeQuerySingle("INFO FOR NS");
-		const databases = Object.keys(result?.databases ?? {});
+		const databases = Object.keys(result?.databases ?? {}).map(db => parseIdent(db));
 
 		if (databases.includes(database)) {
 			updateCurrentConnection({

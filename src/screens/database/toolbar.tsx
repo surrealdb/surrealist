@@ -92,26 +92,32 @@ export function DatabaseToolbar() {
 	});
 
 	const isSandbox = connection?.id === "sandbox";
+	const showNS = !isSandbox && isConnected;
+	const showDB = showNS && connection?.lastNamespace;
 
 	return (
 		<>
 			<ConnectionList />
 
-			{!isSandbox && (
+			{showNS && (
 				<>
 					<Icon
 						path={iconChevronRight}
 						size="xl"
-						color="slate.6"
+						color="slate.5"
 						mx={-8}
 					/>
 
 					<NamespaceList />
+				</>
+			)}
 
+			{showDB && (
+				<>
 					<Icon
 						path={iconChevronRight}
 						size="xl"
-						color="slate.6"
+						color="slate.5"
 						mx={-8}
 					/>
 

@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Divider, Group, Menu, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
@@ -13,7 +13,8 @@ import { Form } from "~/components/Form";
 import { useInputState } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
 import { mdiFolderOutline } from "@mdi/js";
-import { tb } from "~/util/helpers";
+import { escapeIdent } from "~/util/surrealql";
+import { LearnMore } from "~/components/LearnMore";
 
 export function NamespaceList() {
 	const [opened, openHandle] = useBoolean();
@@ -30,8 +31,11 @@ export function NamespaceList() {
 	});
 
 	const openNamespace = (ns: string) => {
-		activateDatabase(ns, "");
-		openHandle.set(false);
+		if (connection.lastNamespace !== ns) {
+			activateDatabase(ns, "");
+		}
+
+		openHandle.close();
 	};
 
 	const [showCreator, creatorHandle] = useBoolean();
@@ -44,7 +48,7 @@ export function NamespaceList() {
 	});
 
 	const createNamespace = useStable(async () => {
-		await executeQuery(`DEFINE NAMESPACE ${tb(namespaceName)}`);
+		await executeQuery(`DEFINE NAMESPACE ${escapeIdent(namespaceName)}`);
 
 		refetch();
 
@@ -58,30 +62,38 @@ export function NamespaceList() {
 				opened={opened}
 				onChange={openHandle.set}
 				trigger="click"
-				position="bottom-start"
+				position="bottom"
 				transitionProps={{
 					transition: "scale-y"
 				}}
 			>
 				<Menu.Target>
 					<Button
-						pl="sm"
-						variant="subtle"
+						px="sm"
+						variant={connection.lastNamespace ? "subtle" : "light"}
 						color="slate"
-						disabled={!connected}
 						leftSection={
 							<Icon
 								path={mdiFolderOutline}
 							/>
 						}
 					>
-						<Text truncate fw={600} maw={200}>
+						<Text
+							truncate
+							fw={600}
+							maw={200}
+							c="bright"
+						>
 							{connection.lastNamespace || "Select namespace"}
 						</Text>
 					</Button>
 				</Menu.Target>
 				<Menu.Dropdown w={250}>
-					<Stack flex={1} p="md">
+					<Stack
+						flex={1}
+						p="sm"
+						gap="sm"
+					>
 						<Group>
 							<Text
 								flex={1}
@@ -100,20 +112,23 @@ export function NamespaceList() {
 							</ActionIcon>
 						</Group>
 						<Divider color="slate.6" />
-						{data.length === 0 ? (
-							<Text c="slate">
-								No namespaces defined
-							</Text>
-						) : data.map((db) => (
-							<Entry
-								key={db}
-								onClick={() => openNamespace(db)}
-								isActive={db === connection.lastNamespace}
-								h={28}
-							>
-								{db}
-							</Entry>
-						))}
+						<ScrollArea.Autosize mah={250}>
+							{data.length === 0 ? (
+								<Text c="slate">
+									No namespaces defined
+								</Text>
+							) : data.map((ns) => (
+								<Entry
+									key={ns}
+									onClick={() => openNamespace(ns)}
+									isActive={ns === connection.lastNamespace}
+									radius="xs"
+									h={28}
+								>
+									{ns}
+								</Entry>
+							))}
+						</ScrollArea.Autosize>
 					</Stack>
 				</Menu.Dropdown>
 			</Menu>
@@ -122,13 +137,16 @@ export function NamespaceList() {
 				opened={showCreator}
 				onClose={creatorHandle.close}
 				trapFocus={false}
-				size="sm"
+				size="md"
 				title={
 					<PrimaryTitle>Create new namespace</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={createNamespace}>
 					<Stack>
+						<Text>
+							Namespaces represent a layer of separation for each organisation, department, or development team.
+						</Text>
 						<TextInput
 							placeholder="Enter namespace name"
 							value={namespaceName}
@@ -136,6 +154,12 @@ export function NamespaceList() {
 							spellCheck={false}
 							autoFocus
 						/>
+						<LearnMore
+							href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/namespace"
+							mb="xl"
+						>
+							Learn more about namespaces
+						</LearnMore>
 						<Group mt="lg">
 							<Button
 								onClick={creatorHandle.close}

@@ -10,7 +10,7 @@ import { getConnection } from "./connection";
 import { Authentication, TabQuery, ViewMode } from "~/types";
 import { useInterfaceStore } from "~/stores/interface";
 import { getSetting } from "./config";
-import { decodeCbor } from "surrealdb.js";
+import { decodeCbor, escape_ident } from "surrealdb.js";
 import { Value } from "surrealql.wasm/v1";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
@@ -369,9 +369,10 @@ export function tryParseParams(paramString: string) {
  *
  * @param value The value to escape
  * @returns The escaped value
+ * @deprecated Use `escapeIdent` from surrealql.tsx instead
  */
 export function tb(value: string) {
-	return `\`${value.replaceAll("`", "\\`")}\``;
+	return escape_ident(value);
 }
 
 /**

@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Divider, Group, Menu, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
@@ -13,7 +13,8 @@ import { Form } from "~/components/Form";
 import { useInputState } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
 import { mdiDatabaseOutline } from "@mdi/js";
-import { tb } from "~/util/helpers";
+import { escapeIdent, parseIdent } from "~/util/surrealql";
+import { LearnMore } from "~/components/LearnMore";
 
 export function DatabaseList() {
 	const [opened, openHandle] = useBoolean();
@@ -31,8 +32,11 @@ export function DatabaseList() {
 	});
 
 	const openDatabase = (db: string) => {
-		activateDatabase(namespace, db);
-		openHandle.set(false);
+		if (connection.lastDatabase !== db) {
+			activateDatabase(namespace, db);
+		}
+
+		openHandle.close();
 	};
 
 	const [showCreator, creatorHandle] = useBoolean();
@@ -45,7 +49,7 @@ export function DatabaseList() {
 	});
 
 	const createDatabase = useStable(async () => {
-		await executeQuery(`DEFINE DATABASE ${tb(databaseName)}`);
+		await executeQuery(`DEFINE DATABASE ${escapeIdent(databaseName)}`);
 
 		refetch();
 
@@ -59,30 +63,34 @@ export function DatabaseList() {
 				opened={opened}
 				onChange={openHandle.set}
 				trigger="click"
-				position="bottom-start"
+				position="bottom"
 				transitionProps={{
 					transition: "scale-y"
 				}}
 			>
 				<Menu.Target>
 					<Button
-						pl="sm"
-						variant="subtle"
+						px="sm"
+						variant={connection.lastDatabase ? "subtle" : "light"}
 						color="slate"
-						disabled={!connected || !connection.lastNamespace}
 						leftSection={
 							<Icon
 								path={mdiDatabaseOutline}
 							/>
 						}
 					>
-						<Text truncate fw={600} maw={200}>
+						<Text
+							truncate
+							fw={600}
+							maw={200}
+							c="bright"
+						>
 							{connection.lastDatabase || "Select database"}
 						</Text>
 					</Button>
 				</Menu.Target>
 				<Menu.Dropdown w={250}>
-					<Stack flex={1} p="md">
+					<Stack flex={1} p="sm">
 						<Group>
 							<Text
 								flex={1}
@@ -101,20 +109,23 @@ export function DatabaseList() {
 							</ActionIcon>
 						</Group>
 						<Divider color="slate.6" />
-						{data.length === 0 ? (
-							<Text c="slate">
-								No databases defined
-							</Text>
-						) : data.map((db) => (
-							<Entry
-								key={db}
-								onClick={() => openDatabase(db)}
-								isActive={db === connection.lastDatabase}
-								h={28}
-							>
-								{db}
-							</Entry>
-						))}
+						<ScrollArea.Autosize mah={250}>
+							{data.length === 0 ? (
+								<Text c="slate">
+									No databases defined
+								</Text>
+							) : data.map((db) => (
+								<Entry
+									key={db}
+									onClick={() => openDatabase(db)}
+									isActive={db === connection.lastDatabase}
+									radius="xs"
+									h={28}
+								>
+									{parseIdent(db)}
+								</Entry>
+							))}
+						</ScrollArea.Autosize>
 					</Stack>
 				</Menu.Dropdown>
 			</Menu>
@@ -123,13 +134,16 @@ export function DatabaseList() {
 				opened={showCreator}
 				onClose={creatorHandle.close}
 				trapFocus={false}
-				size="sm"
+				size="md"
 				title={
 					<PrimaryTitle>Create new database</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={createDatabase}>
 					<Stack>
+						<Text>
+							Databases represent isolated containers within a namespace encompassing schemas, tables, and records.
+						</Text>
 						<TextInput
 							placeholder="Enter database name"
 							value={databaseName}
@@ -137,6 +151,12 @@ export function DatabaseList() {
 							spellCheck={false}
 							autoFocus
 						/>
+						<LearnMore
+							href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/database"
+							mb="xl"
+						>
+							Learn more about databases
+						</LearnMore>
 						<Group mt="lg">
 							<Button
 								onClick={creatorHandle.close}
