@@ -2,7 +2,7 @@ import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu } from "@man
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { showInfo } from "~/util/helpers";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useIsConnecting } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
@@ -35,6 +35,7 @@ export function DatabaseToolbar() {
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const isAuthed = useIsAuthenticated();
 	const isConnected = useIsConnected();
+	const isConnecting = useIsConnecting();
 	const connection = useConnection();
 
 	const [isDatasetLoading, setDatasetLoading] = useState(false);
@@ -102,7 +103,7 @@ export function DatabaseToolbar() {
 		<>
 			<ConnectionList />
 
-			{!isConnected && !isAuthed && connection?.authentication?.mode === "cloud" && (
+			{!isConnected && !isConnecting && !isAuthed && connection?.authentication?.mode === "cloud" && (
 				<Button
 					color="orange"
 					variant="light"
