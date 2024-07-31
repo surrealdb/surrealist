@@ -21,6 +21,7 @@ import { surqlLinting } from "~/util/editor/extensions";
 import { Label } from "~/components/Label";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { useEffect } from "react";
+import { showError } from "~/util/helpers";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -60,10 +61,12 @@ export function EditorPanel({
 	});
 
 	const formatFunction = useStable(() => {
-		console.info('formatting');
 		const isFunctionBlockInvalid = validateQuery(details.block);
 		if (isFunctionBlockInvalid) {
-			console.error(`Unable to format function: ${isFunctionBlockInvalid}`);
+			showError({
+				title: "Failed to format",
+				subtitle: "Your function must be valid to format it"
+			});
 		} else {
 			const formattedFunctionBlock = formatQuery(details.block);
 			onChange((draft) => {
