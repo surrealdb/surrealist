@@ -13,12 +13,14 @@ import { SaveableHandle } from "~/hooks/save";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaFunction } from "~/types";
-import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus } from "~/util/icons";
+import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus, iconText } from "~/util/icons";
 import { SURQL_FILTER } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
 import { surrealql } from "codemirror-surrealql";
 import { surqlLinting } from "~/util/editor/extensions";
 import { Label } from "~/components/Label";
+import { formatQuery, validateQuery } from "~/util/surrealql";
+import { useEffect } from "react";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -57,6 +59,25 @@ export function EditorPanel({
 		onDelete(details.name);
 	});
 
+	const formatFunction = useStable(() => {
+		console.info('formatting');
+		const isFunctionBlockInvalid = validateQuery(details.block);
+		if (isFunctionBlockInvalid) {
+			console.error(`Unable to format function: ${isFunctionBlockInvalid}`);
+		} else {
+			const formattedFunctionBlock = formatQuery(details.block);
+			onChange((draft) => {
+				draft.block = formattedFunctionBlock;
+			});
+		}
+	});
+
+	// Not sure if this is something we want to do, or if this is how we're supposed to do it
+	// This doesn't end up looking great since the function comes in not formatted, and then quickly gets formatted
+	useEffect(() => {
+		formatFunction();
+	});
+
 	return (
 		<ContentPane
 			title="Function Editor"
@@ -71,6 +92,16 @@ export function EditorPanel({
 					</Badge>
 				)
 			}
+			rightSection={(
+				<Tooltip label="Format function">
+					<ActionIcon
+						onClick={formatFunction}
+						aria-label="Format function"
+					>
+						<Icon path={iconText} />
+					</ActionIcon>
+				</Tooltip>
+			)}
 		>
 			<Group
 				h="100%"
