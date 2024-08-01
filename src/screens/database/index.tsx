@@ -8,16 +8,20 @@ import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react
 import { Suspense, lazy } from "react";
 import { useConfigStore } from "~/stores/config";
 import { CloudContent } from "~/screens/cloud-manage/content";
-import { Center, Stack, Button, Flex, ScrollArea, Group, Box, Text, Image } from "@mantine/core";
+import { Center, Stack, Button, Flex, ScrollArea, Group, Box, Text, Image, Paper, Alert } from "@mantine/core";
 import { adapter, isDesktop } from "~/adapter";
 import { useBoolean } from "~/hooks/boolean";
 import { useSetting } from "~/hooks/config";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import { isMobile } from "~/util/helpers";
-import { iconOpen } from "~/util/icons";
+import { iconOpen, iconWarning } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { Icon } from "~/components/Icon";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { VIEW_MODES } from "~/constants";
+import { SelectDatabase } from "./components/SelectDatabase";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -46,8 +50,8 @@ const DocumentationView = lazy(() => import('./views/documentation/Documentation
 
 export function DatabaseScreen() {
 	const isLight = useIsLight();
-
-	const activeConnection = useConfigStore((s) => s.activeConnection);
+	const isConnected = useIsConnected();
+	const connection = useActiveConnection();
 	const title = useInterfaceStore((s) => s.title);
 
 	const [mode] = useSetting("appearance", "sidebarMode");
@@ -58,14 +62,17 @@ export function DatabaseScreen() {
 
 	const viewMode = useConfigStore(s => s.activeView);
 	const viewNode = VIEW_PORTALS[viewMode];
+	const viewInfo = VIEW_MODES[viewMode];
+
+	const requireDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
 
 	return (
 		<div
 			className={classes.root}
 			style={{
 				backgroundColor: isLight
-					? (activeConnection ? themeColor("slate.0") : "white")
-					: (activeConnection ? themeColor("slate.9") : "black")
+					? (connection ? themeColor("slate.0") : "white")
+					: (connection ? themeColor("slate.9") : "black")
 			}}
 		>
 			{customTitlebar && (
@@ -166,7 +173,37 @@ export function DatabaseScreen() {
 						flex={1}
 						pos="relative"
 					>
-						{viewNode && <OutPortal node={viewNode} />}
+						{requireDatabase ? (
+							<Center flex={1}>
+								<Paper
+									radius="md"
+									p="xl"
+									w={500}
+								>
+									<PrimaryTitle>
+										Before you continue...
+									</PrimaryTitle>
+									<Text mt="md">
+										Please select a namespace and database before accessing the {viewInfo?.name} view.
+										You can use the buttons below to choose an existing namespace and database, or create new ones.
+									</Text>
+									<SelectDatabase
+										mt="xl"
+									/>
+									{!isConnected && (
+										<Alert
+											mt="xl"
+											color="orange"
+											icon={<Icon path={iconWarning} />}
+										>
+											You must be connected before selecting a namespace and database
+										</Alert>
+									)}
+								</Paper>
+							</Center>
+						) : (
+							viewNode && <OutPortal node={viewNode} />
+						)}
 
 						<InPortal node={VIEW_PORTALS.cloud}>
 							<Suspense fallback={null}>

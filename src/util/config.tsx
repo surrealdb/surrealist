@@ -17,7 +17,7 @@ export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
 	initial?: boolean;
 	store: S;
 	select: (slice: StoreType<S>) => T;
-	then: (value: T) => void;
+	then: (value: T, prev?: T) => void;
 }) {
 	const { store, select, then, initial } = options;
 
@@ -29,7 +29,7 @@ export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
 		const value = select(state);
 
 		if (!isEqual(value, select(prev))) {
-			then(value);
+			then(value, select(prev));
 		}
 	});
 }

@@ -73,6 +73,8 @@ export function DatabaseSidebar({
 	const { cloud } = VIEW_MODES;
 
 	function renderNavigation(info: ViewInfo) {
+		const isAvailable = info.require !== "database" || connection?.lastDatabase;
+
 		return (
 			<NavigationIcon
 				name={info.name}
@@ -81,6 +83,9 @@ export function DatabaseSidebar({
 				withTooltip={sidebarMode === "compact"}
 				onClick={() => setViewMode(info.id)}
 				onMouseEnter={onItemHover}
+				style={{
+					opacity: isAvailable ? 1 : 0.5
+				}}
 			/>
 		);
 	}

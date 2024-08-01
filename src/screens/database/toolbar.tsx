@@ -2,7 +2,7 @@ import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu } from "@man
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { showInfo } from "~/util/helpers";
-import { useConnection, useIsConnected, useIsConnecting } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
@@ -22,8 +22,8 @@ import { ActionBar } from "~/components/ActionBar";
 import { ConnectionList } from "./components/ConnectionList";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
-import { useIsAuthenticated } from "~/hooks/cloud";
 import { openCloudAuthentication } from "../cloud-manage/auth";
+import { useCloudStore } from "~/stores/cloud";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse } = useDatabaseStore.getState();
@@ -33,9 +33,8 @@ export function DatabaseToolbar() {
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
-	const isAuthed = useIsAuthenticated();
+	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
-	const isConnecting = useIsConnecting();
 	const connection = useConnection();
 
 	const [isDatasetLoading, setDatasetLoading] = useState(false);
@@ -103,7 +102,7 @@ export function DatabaseToolbar() {
 		<>
 			<ConnectionList />
 
-			{!isConnected && !isConnecting && !isAuthed && connection?.authentication?.mode === "cloud" && (
+			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (
 				<Button
 					color="orange"
 					variant="light"

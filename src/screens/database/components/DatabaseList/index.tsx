@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Button, ButtonProps, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
@@ -16,7 +16,13 @@ import { mdiDatabaseOutline } from "@mdi/js";
 import { escapeIdent, parseIdent } from "~/util/surrealql";
 import { LearnMore } from "~/components/LearnMore";
 
-export function DatabaseList() {
+export interface DatabaseListProps {
+	buttonProps?: ButtonProps;
+}
+
+export function DatabaseList({
+	buttonProps
+}: DatabaseListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
@@ -78,12 +84,13 @@ export function DatabaseList() {
 								path={mdiDatabaseOutline}
 							/>
 						}
+						{...buttonProps}
 					>
 						<Text
 							truncate
 							fw={600}
 							maw={200}
-							c="bright"
+							c={buttonProps?.disabled ? undefined : "bright"}
 						>
 							{connection.lastDatabase || "Select database"}
 						</Text>

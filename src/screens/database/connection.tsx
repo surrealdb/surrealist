@@ -413,12 +413,15 @@ export function cancelLiveQueries(tab: string) {
  */
 export async function activateDatabase(namespace: string, database: string) {
 	const { updateCurrentConnection } = useConfigStore.getState();
+	const { clearSchema } = useDatabaseStore.getState();
+
+	// Clear the previous database schema
+	clearSchema();
 
 	// Select a namespace only
 	if (namespace) {
 		const result = await executeQuerySingle("INFO FOR KV");
 		const namespaces = Object.keys(result?.namespaces ?? {}).map(ns => parseIdent(ns));
-		const oldNamespace = getConnection()?.lastNamespace;
 
 		if (namespaces.includes(namespace)) {
 			updateCurrentConnection({

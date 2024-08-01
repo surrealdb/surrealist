@@ -130,6 +130,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconExplorer,
 		anim: import("~/assets/animation/explorer.json").then(x => x.default),
 		desc: "Explore the database tables, records, and relations",
+		require: "database",
 	},
 	designer: {
 		id: "designer",
@@ -137,6 +138,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconDesigner,
 		anim: import("~/assets/animation/designer.json").then(x => x.default),
 		desc: "Define database tables and relations",
+		require: "database",
 	},
 	authentication: {
 		id: "authentication",
@@ -151,6 +153,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Functions",
 		icon: iconFunction,
 		desc: "Create and update schema level functions",
+		require: "database",
 	},
 	models: {
 		id: "models",
@@ -158,6 +161,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconModuleML,
 		desc: "Upload and manage machine learning models",
 		disabled: (flags) => !flags.models_view,
+		require: "database",
 	},
 	documentation: {
 		id: "documentation",
@@ -165,6 +169,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconAPI,
 		desc: "View the database schema and documentation",
 		disabled: (flags) => !flags.apidocs_view,
+		require: "database",
 	},
 };
 

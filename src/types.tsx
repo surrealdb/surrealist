@@ -2,6 +2,7 @@ import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
 import { AnyAuth, Token } from "surrealdb.js";
 
+export type ViewRequirement = 'database';
 export type Screen = "start" | "database";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
@@ -365,6 +366,7 @@ export interface ViewInfo {
 	icon: string;
 	anim?: any;
 	desc: string;
+	require?: ViewRequirement;
 	disabled?: FeatureCondition;
 }
 

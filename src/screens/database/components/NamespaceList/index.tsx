@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Button, ButtonProps, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
@@ -16,7 +16,13 @@ import { mdiFolderOutline } from "@mdi/js";
 import { escapeIdent } from "~/util/surrealql";
 import { LearnMore } from "~/components/LearnMore";
 
-export function NamespaceList() {
+export interface NamespaceListProps {
+	buttonProps?: ButtonProps;
+}
+
+export function NamespaceList({
+	buttonProps
+}: NamespaceListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
@@ -77,12 +83,13 @@ export function NamespaceList() {
 								path={mdiFolderOutline}
 							/>
 						}
+						{...buttonProps}
 					>
 						<Text
 							truncate
 							fw={600}
 							maw={200}
-							c="bright"
+							c={buttonProps?.disabled ? undefined : "bright"}
 						>
 							{connection.lastNamespace || "Select namespace"}
 						</Text>
