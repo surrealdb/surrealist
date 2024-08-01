@@ -13,6 +13,7 @@ export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDi
 	loading?: boolean;
 	rightSection?: React.ReactNode;
 	withTopPadding?: boolean;
+	disabled?: boolean;
 }
 
 export function ContentPane({
@@ -23,6 +24,7 @@ export function ContentPane({
 	loading,
 	rightSection,
 	withTopPadding,
+	disabled,
 	...rest
 }: ContentPaneProps) {
 
@@ -33,6 +35,8 @@ export function ContentPane({
 			radius="lg"
 			className={classes.root}
 			pos="relative"
+			opacity={disabled ? 0.5 : 1}
+			style={{ pointerEvents: disabled ? "none" : undefined }}
 			{...rest}
 		>
 			{title !== undefined && icon !== undefined && (

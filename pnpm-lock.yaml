@@ -301,7 +301,7 @@ importers:
         version: 5.3.1(@types/node@20.14.7)(sass@1.77.6)(terser@5.31.2)
       vite-plugin-compression2:
         specifier: ^1.1.2
-        version: 1.1.2(rollup@2.79.1)
+        version: 1.1.2(rollup@4.18.1)
       vite-plugin-image-optimizer:
         specifier: ^1.1.8
         version: 1.1.8(vite@5.3.1(@types/node@20.14.7)(sass@1.77.6)(terser@5.31.2))
@@ -5210,13 +5210,13 @@ snapshots:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  '@rollup/pluginutils@5.1.0(rollup@2.79.1)':
+  '@rollup/pluginutils@5.1.0(rollup@4.18.1)':
     dependencies:
       '@types/estree': 1.0.5
       estree-walker: 2.0.2
       picomatch: 2.3.1
     optionalDependencies:
-      rollup: 2.79.1
+      rollup: 4.18.1
 
   '@rollup/rollup-android-arm-eabi@4.18.1':
     optional: true
@@ -7470,9 +7470,9 @@ snapshots:
 
   visit-values@2.0.0: {}
 
-  vite-plugin-compression2@1.1.2(rollup@2.79.1):
+  vite-plugin-compression2@1.1.2(rollup@4.18.1):
     dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@2.79.1)
+      '@rollup/pluginutils': 5.1.0(rollup@4.18.1)
     transitivePeerDependencies:
       - rollup
 

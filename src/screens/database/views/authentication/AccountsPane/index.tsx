@@ -22,7 +22,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
-import { useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useHasSchemaAccess, useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { DatabaseSchema, SchemaUser } from "~/types";
@@ -48,6 +48,13 @@ export interface AccountsPaneProps {
 }
 
 export function AccountsPane(props: AccountsPaneProps) {
+	const connection = useConnection();
+	const requires = props.type === "NAMESPACE" && !connection?.lastNamespace
+		? "namespace"
+		: props.type === "DATABASE" && !connection?.lastDatabase
+			? "database"
+			: undefined;
+
 	const isConnected = useIsConnected();
 	const isDenied = useHasSchemaAccess();
 	const schema = useSchema();
@@ -146,6 +153,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 		<ContentPane
 			icon={props.icon}
 			title={props.title}
+			disabled={!!requires}
 			rightSection={
 				<Tooltip label="New user">
 					<ActionIcon
@@ -156,13 +164,16 @@ export function AccountsPane(props: AccountsPaneProps) {
 						<Icon path={iconPlus} />
 					</ActionIcon>
 				</Tooltip>
-			}>
+			}
+		>
 			{users.length === 0 && (
 				<Center h="100%" c="slate">
 					{isConnected
-						? isDenied
-							? `No ${props.title.toLocaleLowerCase()} found`
-							: "No access to this information"
+						? requires
+							? `No ${requires} selected`
+							: isDenied
+								? `No ${props.title.toLocaleLowerCase()} found`
+								: "No access to this information"
 						: "Not connected"
 					}
 				</Center>

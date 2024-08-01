@@ -7,7 +7,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaScope, ScopeField } from "~/types";
@@ -24,6 +24,7 @@ import { adapter } from "~/adapter";
 
 export function ScopePane() {
 	const { authentication } = useActiveConnection();
+	const connection = useConnection();
 	const isConnected = useIsConnected();
 	const schema = useSchema();
 
@@ -161,6 +162,7 @@ export function ScopePane() {
 		<ContentPane
 			icon={iconAccountSecure}
 			title="Database Scopes"
+			disabled={!connection?.lastDatabase}
 			rightSection={
 				<Tooltip label="New scope">
 					<ActionIcon
@@ -174,7 +176,7 @@ export function ScopePane() {
 			}>
 			{scopes.length === 0 && (
 				<Center h="100%" c="slate">
-					{isConnected ? "No scopes found" : "Not connected"}
+					{isConnected ? !connection?.lastDatabase ? "No database selected" : "No scopes found" : "Not connected"}
 				</Center>
 			)}
 
