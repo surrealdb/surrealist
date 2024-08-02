@@ -25,7 +25,7 @@ export const surrealqlLanguage = LRLanguage.define({
 			}),
 		],
 		wrap: parseMixed((node) => {
-			return node.name === "JavaScript" ? { parser: jsParser } : null;
+			return node.name === "JavaScriptContent" ? { parser: jsParser } : null;
 		}),
 	}),
 	languageData: {

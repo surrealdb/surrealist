@@ -16,7 +16,7 @@ const surrealqlLanguage = /*@__PURE__*/LRLanguage.define({
             }),
         ],
         wrap: /*@__PURE__*/parseMixed((node) => {
-            return node.name === "JavaScript" ? { parser: parser$1 } : null;
+            return node.name === "JavaScriptContent" ? { parser: parser$1 } : null;
         }),
     }),
     languageData: {
