@@ -1,6 +1,4 @@
-.help-tile {
-	aspect-ratio: 1;
-	text-align: center;
+.help-tile, .help-row {
 	border-radius: var(--mantine-radius-lg);
 	background-origin: border-box !important;
 	border: 1px solid transparent;
@@ -11,6 +9,15 @@
 		border-color: rgba(255, 255, 255, 0.3);
 		color: white !important;
 	}
+}
+
+.help-tile {
+	text-align: center;
+	aspect-ratio: 1;
+}
+
+.help-row {
+	height: 118px;
 }
 
 .drawer-content {

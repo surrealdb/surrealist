@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { Paper, Stack, Group, Menu, ActionIcon, Text, Badge, ThemeIcon, Button, Table, MantineColor } from "@mantine/core";
-import { iconDotsVertical, iconMarker, iconChevronDown, iconAPI, iconConsole } from "~/util/icons";
+import { iconDotsVertical, iconMarker, iconChevronDown, iconAPI, iconConsole, iconSurreal } from "~/util/icons";
 import { mdiMemory, mdiPower } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Icon } from "~/components/Icon";
@@ -88,31 +88,6 @@ export function Instance({
 	const regions = useCloudStore(s => s.regions);
 	const regionName = regions.find(r => r.slug === value.region)?.description ?? value.region;
 
-	const handleDeactivate = useConfirmation({
-		message: "You are about to deactivate this instance. While your data will be preserved, you will not be able to connect to it until it is reactivated.",
-		confirmText: "Deactivate",
-		title: "Deactivate instance",
-		onConfirm: async () => {
-			try {
-				await fetchAPI(`/instances/${value.id}`, {
-					method: "DELETE"
-				});
-
-				showInfo({
-					title: "Instance deactivated",
-					subtitle: `"${value.name}" has been successfully deactivated`
-				});
-			} catch (err: any) {
-				showError({
-					title: "Failed to deactivate instance",
-					subtitle: err.message
-				});
-			} finally {
-				onDelete();
-			}
-		},
-	});
-
 	const handleDelete = useConfirmation({
 		message: "You are about to delete this instance. This will cause all associated resources to be destroyed",
 		confirmText: "Delete",
@@ -125,7 +100,11 @@ export function Instance({
 
 				showInfo({
 					title: "Instance deleted",
-					subtitle: `"${value.name}" has been successfully deleted`
+					subtitle: (
+						<>
+							<Text span c="bright">{value.name}</Text> has been deleted
+						</>
+					)
 				});
 			} catch (err: any) {
 				showError({
@@ -232,13 +211,18 @@ export function Instance({
 			>
 				{value.type.slug}
 			</Info>
-
+			<Info
+				db={value}
+				icon={iconMarker}
+			>
+				{regionName}
+			</Info>
 			<Group>
 				<Info
 					db={value}
-					icon={iconMarker}
+					icon={iconSurreal}
 				>
-					{regionName}
+					SurrealDB 2.0
 				</Info>
 				<Spacer />
 				{inactive ? (
@@ -273,7 +257,7 @@ export function Instance({
 				{regionName}
 			</Table.Td>
 			<Table.Td>
-				{value.state}
+				SurrealDB 2.0
 			</Table.Td>
 			<Table.Td>
 				<Group wrap="nowrap">

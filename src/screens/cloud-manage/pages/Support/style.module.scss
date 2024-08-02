@@ -27,8 +27,7 @@
 
 .stepper {
 	:global(.mantine-Stepper-separator) {
-		background-color: var(--mantine-color-slate-7);
-		border-radius: 5px;
+		background-color: var(--mantine-color-slate-6);
 
 		&[data-active] {
 			background-color: var(--mantine-color-slate-5);
@@ -36,10 +35,10 @@
 	}
 
 	:global(.mantine-Stepper-stepIcon) {
+		border: 1px solid rgba(255, 255, 255, 0.3);
 		background-origin: border-box;
 		
 		&[data-completed], &[data-progress] {
-			border: 1px solid rgba(255, 255, 255, 0.3);
 			background-image: var(--surrealist-gradient);
 			color: var(--mantine-color-bright);
 		}

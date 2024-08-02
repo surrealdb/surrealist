@@ -1,3 +1,4 @@
+import posthog from "posthog-js";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -36,10 +37,22 @@ export async function fetchAPI<T = unknown>(path: string, options?: APIRequestIn
 	});
 
 	if (!response.ok) {
+		const error = new ApiError(response);
+
+		posthog.capture('cloud_api_error', {
+			status: response.status,
+			endpoint: path,
+			message: await error.errorMessage()
+		});
+
 		throw new ApiError(response);
 	}
 
-	return await response.json();
+	if (response.headers.get("Content-Type")?.startsWith("application/json")) {
+		return await response.json();
+	}
+
+	return {} as T;
 }
 
 /**
@@ -83,6 +96,14 @@ export class ApiError extends Error {
 
 	public isJson() {
 		return this.response.headers.get("Content-Type")?.startsWith("application/json") ?? false;
+	}
+
+	public async errorMessage() {
+		if (!this.isJson()) return "";
+
+		const { message } = await this.response.json();
+
+		return message;
 	}
 
 }

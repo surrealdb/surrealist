@@ -42,9 +42,13 @@ export type ViewMode =
 	| "models"
 	| "documentation";
 export type CloudPage =
-	// | "overview"
 	| "instances"
-	| "members";
+	| "members"
+	| "data"
+	| "audits"
+	| "billing"
+	| "support"
+	| "settings"
 export type CodeLang =
 	| "cli"
 	| "rust"

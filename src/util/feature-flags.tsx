@@ -36,6 +36,9 @@ export const schema = {
 	changelog: {
 		options: ['auto', 'hidden', 'read', 'unread'],
 	},
+	cloud_support: {
+		options: [false, true],
+	}
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -50,7 +53,8 @@ export const featureFlags = new FeatureFlags({
 			newsfeed: true,
 			highlight_tool: true,
 			surreal_compat: 'v1',
-			cloud_endpoints: true
+			cloud_endpoints: true,
+			cloud_support: true,
 		},
 		preview: {
 			database_version_check: true,

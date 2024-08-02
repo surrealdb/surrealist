@@ -1,6 +1,6 @@
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
-import { mdiAccount } from "@mdi/js";
+import { mdiAccountOutline, mdiCreditCardOutline, mdiPackageVariantClosed, mdiProgressClock } from "@mdi/js";
 
 import {
 	AuthMode,
@@ -24,7 +24,9 @@ import {
 import {
 	iconAPI,
 	iconAuth,
+	iconChat,
 	iconCloud,
+	iconCog,
 	iconCombined,
 	iconDataTable,
 	iconDesigner,
@@ -174,11 +176,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 };
 
 export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
-	// overview: {
-	// 	id: "overview",
-	// 	name: "Overview",
-	// 	icon: mdiHomeOutline,
-	// },
 	instances: {
 		id: "instances",
 		name: "Instances",
@@ -187,7 +184,33 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	members: {
 		id: "members",
 		name: "Members",
-		icon: mdiAccount,
+		icon: mdiAccountOutline,
+	},
+	data: {
+		id: "data",
+		name: "Data Containers",
+		icon: mdiPackageVariantClosed
+	},
+	audits: {
+		id: "audits",
+		name: "Audit Log",
+		icon: mdiProgressClock,
+	},
+	billing: {
+		id: "billing",
+		name: "Billing",
+		icon: mdiCreditCardOutline,
+	},
+	support: {
+		id: "support",
+		name: "Support Chat",
+		icon: iconChat,
+		disabled: (flags) => !flags.cloud_support,
+	},
+	settings: {
+		id: "settings",
+		name: "Settings",
+		icon: iconCog,
 	}
 };
 

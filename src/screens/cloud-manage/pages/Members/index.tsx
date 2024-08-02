@@ -1,10 +1,18 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Group, Menu, ScrollArea, SegmentedControl, Stack, Table, Text, Tooltip } from "@mantine/core";
-import { CloudPage } from "../../components/Page";
-import { iconDotsVertical, iconPlus } from "~/util/icons";
+import { ActionIcon, Box, Button, Group, Indicator, Menu, ScrollArea, SegmentedControl, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { iconCheck, iconDotsVertical, iconPlus, iconSearch, iconTune } from "~/util/icons";
 import { Icon } from "~/components/Icon";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useCloudStore } from "~/stores/cloud";
+import { Spacer } from "~/components/Spacer";
+import { InviteModal } from "./modals/invite";
+import { useDisclosure } from "@mantine/hooks";
+
+interface Filter {
+	type: string;
+	value: string;
+	label: string;
+}
 
 type ListType = "members" | "invites";
 
@@ -19,29 +27,49 @@ function Label({ text, value}: { text: string, value: number }){
 
 export function MembersPage() {
 	const account = useCloudStore(s => s.profile);
+	const [filter, setFilter] = useState<Filter|null>(null);
+
+	const [showInvite, inviteHandle] = useDisclosure();
 
 	const [listType, setListType] = useState<ListType>("members");
+
+	const filterTypes = useMemo(() => {
+		return [
+			{
+				title: "Roles",
+				options: [
+					{ type: "role", value: "admin", label: "Admin" },
+					{ type: "role", value: "editor", label: "Editor" },
+					{ type: "role", value: "reporter", label: "Reporter" }
+				]
+			},
+			{
+				title: "Status",
+				options: [
+					{ type: "status", value: "enabled", label: "Enabled" },
+					{ type: "status", value: "disabled", label: "Disabled" }
+				]
+			}
+		];
+	}, []);
 
 	const members = useMemo(() => [account], [account]);
 
 	return (
-		<CloudPage title="Members">
+		<>
 			<Group
-				mt="lg"
 				gap="lg"
 				mb="xs"
 			>
-				<Tooltip label="This functionality is not yet available">
-					<Button
-						variant="gradient"
-						leftSection={<Icon path={iconPlus} />}
-						radius="sm"
-						size="xs"
-						disabled
-					>
-						Invite member
-					</Button>
-				</Tooltip>
+				<Button
+					variant="gradient"
+					leftSection={<Icon path={iconPlus} />}
+					radius="sm"
+					size="xs"
+					onClick={inviteHandle.open}
+				>
+					Invite members
+				</Button>
 				<SegmentedControl
 					value={listType}
 					onChange={setListType as any}
@@ -50,6 +78,57 @@ export function MembersPage() {
 						{ value: "members", label: <Label text="Members" value={1} /> },
 						{ value: "invites", label: <Label text="Invitations" value={0} /> },
 					]}
+				/>
+				<Spacer />
+				<Menu>
+					<Menu.Target>
+						<Tooltip label="Filter members">
+							<Indicator
+								disabled={!filter}
+								color="blue"
+								size={7}
+							>
+								<ActionIcon
+									variant="subtle"
+									color="slate"
+									disabled={members.length === 0}
+								>
+									<Icon path={iconTune} />
+								</ActionIcon>
+							</Indicator>
+						</Tooltip>
+					</Menu.Target>
+					<Menu.Dropdown miw={150}>
+						{filterTypes.map(type => (
+							<Fragment key={type.title}>
+								<Menu.Label>
+									{type.title}
+								</Menu.Label>
+								{type.options.map((option) => {
+									const isActive = filter?.value === option.value;
+
+									return (
+										<Menu.Item
+											key={option.value}
+											onClick={() => setFilter(isActive ? null : option)}
+											rightSection={isActive && <Icon path={iconCheck} />}
+										>
+											{option.label}
+										</Menu.Item>
+									);
+								})}
+							</Fragment>
+						))}
+					</Menu.Dropdown>
+				</Menu>
+				<TextInput
+					value={""}
+					onChange={() => {}}
+					placeholder="Search members"
+					leftSection={<Icon path={iconSearch} size="sm" />}
+					radius="sm"
+					size="xs"
+					miw={250}
 				/>
 			</Group>
 			<Box
@@ -162,7 +241,12 @@ export function MembersPage() {
 						</Stack>
 					)}
 				</ScrollArea>
+
+				<InviteModal
+					opened={showInvite}
+					onClose={inviteHandle.close}
+				/>
 			</Box>
-		</CloudPage>
+		</>
 	);
 }

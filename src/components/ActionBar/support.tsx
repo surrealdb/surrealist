@@ -1,45 +1,139 @@
 import classes from "./style.module.scss";
-import { Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
+import { Box, Group, Stack, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { mdiChatOutline, mdiTicket } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { iconBook, iconBug, iconClose, iconCommand, iconDiscord, iconHelp } from "~/util/icons";
 
-const TILES = [
-	{
-		title: "Documentation",
-		description: "Need help? Check out our documentation for help.",
-		icon: iconBook,
-		onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist")
-	},
-	{
-		title: "Report an issue",
-		description: "Something isn't working right? Let us know and we'll fix it.",
-		icon: iconBug,
-		onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
-	},
-	{
-		title: "Shortcut guide",
-		description: "Learn the keyboard shortcuts to navigate the app faster.",
-		icon: iconCommand,
-		onClick: () => dispatchIntent("open-keymap")
-	},
-	{
-		title: "Discord",
-		description: "Connect with other users and get help from the community.",
-		icon: iconDiscord,
-		onClick: () => adapter.openUrl("https://discord.gg/dc4JNWrrMc")
-	},
-];
+interface Topic {
+	title: string;
+	description: string;
+	icon: string;
+	onClick: () => void;
+}
+
+const SUPPORT_CHAT: Topic = {
+	title: "Support Chat",
+	description: "Talk to our Surreal Chatbot for help on queries, Surrealist, and more.",
+	icon: mdiChatOutline,
+	onClick: () => {}
+};
+
+const SUBMIT_TICKET: Topic = {
+	title: "Submit a Ticket",
+	description: "Open a ticket with our support team for help with your account or issues.",
+	icon: mdiTicket,
+	onClick: () => {}
+};
+
+const DOCUMENTATION: Topic = {
+	title: "Documentation",
+	description: "Need help? Check out our documentation for help.",
+	icon: iconBook,
+	onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist")
+};
+
+const ISSUE_REPORT: Topic = {
+	title: "Report an issue",
+	description: "Something isn't working right? Let us know and we'll fix it.",
+	icon: iconBug,
+	onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
+};
+
+const SHORTCUTS: Topic = {
+	title: "Shortcut guide",
+	description: "Learn the keyboard shortcuts to navigate the app faster.",
+	icon: iconCommand,
+	onClick: () => dispatchIntent("open-keymap")
+};
+
+const DISCORD: Topic = {
+	title: "Discord",
+	description: "Connect with other users and get help from the community.",
+	icon: iconDiscord,
+	onClick: () => adapter.openUrl("https://discord.gg/dc4JNWrrMc")
+};
 
 export function HelpAndSupport() {
 	const [isOpen, openHandle] = useDisclosure();
+	const isAuthed = useIsAuthenticated();
 	const isLight = useIsLight();
 
 	useIntent("open-help", openHandle.open);
+
+	function renderRow(tile: Topic) {
+		return (
+			<UnstyledButton
+				p="md"
+				bg={isLight ? "slate.0" : "slate.9"}
+				className={classes.helpRow}
+				onClick={() => {
+					tile.onClick();
+					openHandle.close();
+				}}
+			>
+				<Group wrap="nowrap">
+					<Icon
+						path={tile.icon}
+						c="bright"
+						size="xl"
+						mb="sm"
+						mx="sm"
+					/>
+					<Box>
+						<Text
+							c="bright"
+							fw={600}
+							fz="lg"
+							mb={4}
+						>
+							{tile.title}
+						</Text>
+						<Text fz="sm">
+							{tile.description}
+						</Text>
+					</Box>
+				</Group>
+			</UnstyledButton>
+		);
+	}
+
+	function renderTile(tile: Topic) {
+		return (
+			<UnstyledButton
+				bg={isLight ? "slate.0" : "slate.9"}
+				p="md"
+				className={classes.helpTile}
+				onClick={() => {
+					tile.onClick();
+					openHandle.close();
+				}}
+			>
+				<Icon
+					path={tile.icon}
+					c="bright"
+					size="xl"
+					mb="sm"
+				/>
+				<Text
+					c="bright"
+					fw={600}
+					fz="lg"
+					mb={4}
+				>
+					{tile.title}
+				</Text>
+				<Text fz="sm">
+					{tile.description}
+				</Text>
+			</UnstyledButton>
+		);
+	}
 
 	return (
 		<>
@@ -76,38 +170,16 @@ export function HelpAndSupport() {
 					<Icon path={iconClose} />
 				</ActionIcon>
 
-				<SimpleGrid cols={2} mt="xl">
-					{TILES.map((tile, i) => (
-						<UnstyledButton
-							key={i}
-							bg={isLight ? "slate.0" : "slate.9"}
-							p="md"
-							className={classes.helpTile}
-							onClick={() => {
-								tile.onClick();
-								openHandle.close();
-							}}
-						>
-							<Icon
-								path={tile.icon}
-								c="bright"
-								size="xl"
-								mb="sm"
-							/>
-							<Text
-								c="bright"
-								fw={600}
-								fz="lg"
-								mb={4}
-							>
-								{tile.title}
-							</Text>
-							<Text fz="sm">
-								{tile.description}
-							</Text>
-						</UnstyledButton>
-					))}
-				</SimpleGrid>
+				<Stack mt="xl">
+					{isAuthed && renderRow(SUBMIT_TICKET)}
+
+					<SimpleGrid cols={2}>
+						{renderTile(DOCUMENTATION)}
+						{renderTile(ISSUE_REPORT)}
+						{renderTile(SHORTCUTS)}
+						{renderTile(DISCORD)}
+					</SimpleGrid>
+				</Stack>
 			</Modal>
 		</>
 	);

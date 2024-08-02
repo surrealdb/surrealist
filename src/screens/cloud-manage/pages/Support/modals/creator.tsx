@@ -1,5 +1,5 @@
 import classes from "../style.module.scss";
-import { ActionIcon, Box, Button, Center, Divider, Grid, Group, Image, Loader, Modal, Paper, ScrollArea, Select, SimpleGrid, Stack, Stepper, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { Box, Button, Center, Divider, Group, Image, Loader, Modal, ScrollArea, Select, SimpleGrid, Stack, Stepper, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -8,20 +8,17 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
-import { iconCheck, iconChevronLeft, iconChevronRight, iconHelp, iconPlus, iconSurreal } from "~/util/icons";
+import { iconCheck, iconChevronLeft, iconChevronRight, iconPlus, iconSurreal } from "~/util/icons";
 import { Tile } from "../../../components/Tile";
 import { useStable } from "~/hooks/stable";
 import { ApiError, fetchAPI } from "../../../api";
-import { showError, showInfo } from "~/util/helpers";
+import { showError } from "~/util/helpers";
 import { CloudInstance } from "~/types";
-import { mdiMinus } from "@mdi/js";
-
-const MAX_REPLICAS = 5;
 
 interface CreationStepperProps {
 	onClose: () => void;
 	onProvision: () => void;
-	onComplete: (info?: CloudInstance) => void;
+	onComplete: () => void;
 }
 
 function CreationStepper({
@@ -37,7 +34,6 @@ function CreationStepper({
 	const regions = useAvailableRegions();
 
 	const [name, setName] = useInputState("");
-	const [replicas, setReplicas] = useState(0);
 	const [org, setOrg] = useState<string>(current?.id || "");
 	const [instance, setInstance] = useState<string>("");
 	const [region, setRegion] = useState<string>("");
@@ -67,7 +63,7 @@ function CreationStepper({
 		onProvision();
 
 		try {
-			const result = await fetchAPI<CloudInstance>("/instances", {
+			const { host } = await fetchAPI<CloudInstance>("/instances", {
 				method: "POST",
 				body: JSON.stringify({
 					name,
@@ -81,10 +77,10 @@ function CreationStepper({
 
 			const task = setInterval(async () => {
 				try {
-					await fetch(`https://${result.host}/health`);
+					await fetch(`https://${host}/health`);
 
 					clearInterval(task);
-					onComplete(result);
+					onComplete();
 				} catch {
 					// Ignore and continue
 				}
@@ -106,7 +102,6 @@ function CreationStepper({
 				title: "Failed to provision database",
 				subtitle
 			});
-
 			onComplete();
 		}
 	});
@@ -116,14 +111,14 @@ function CreationStepper({
 	});
 
 	const nextStep = useStable(() => {
-		if (step === 3) {
+		if (step === 2) {
 			provisionInstance();
 		}
 
 		setStep(step + 1);
 	});
 
-	const willCreate = step === 3;
+	const willCreate = step === 2;
 
 	return (
 		<>
@@ -143,59 +138,23 @@ function CreationStepper({
 							Create an instance
 						</PrimaryTitle>
 
-						<Grid mt="xl">
-							<Grid.Col span={4}>
-								<Text>Organization</Text>
-							</Grid.Col>
-							<Grid.Col span={8}>
-								<Select
-									placeholder="Organization"
-									data={orgList}
-									value={org}
-									onChange={setOrg as any}
-								/>
-							</Grid.Col>
-							<Grid.Col span={4}>
-								<Text>Instance name</Text>
-							</Grid.Col>
-							<Grid.Col span={8}>
-								<TextInput
-									placeholder="Instance name"
-									value={name}
-									onChange={setName}
-									autoFocus
-								/>
-							</Grid.Col>
-							<Grid.Col span={4}>
-								<Group gap="xs">
-									<Text>Replicas</Text>
-									<Tooltip label="Explanation todo">
-										<div>
-											<Icon path={iconHelp} size="sm" />
-										</div>
-									</Tooltip>
-								</Group>
-							</Grid.Col>
-							<Grid.Col span={8}>
-								<Group>
-									<ActionIcon
-										disabled={replicas === 0}
-										onClick={() => setReplicas(replicas - 1)}
-									>
-										<Icon path={mdiMinus} />
-									</ActionIcon>
-									<Text c="bright" fw={500}>
-										{replicas} Replicas
-									</Text>
-									<ActionIcon
-										disabled={replicas >= MAX_REPLICAS}
-										onClick={() => setReplicas(replicas + 1)}
-									>
-										<Icon path={iconPlus} />
-									</ActionIcon>
-								</Group>
-							</Grid.Col>
-						</Grid>
+						<Text mb="lg">
+							Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dignissimos officia voluptate architecto aliquam expedita? Aspernatur, repudiandae neque? Quam consequatur delectus reprehenderit ex a sunt, explicabo maiores nulla dolorem vel distinctio.
+						</Text>
+
+						<TextInput
+							label="Instance name"
+							value={name}
+							onChange={setName}
+							autoFocus
+						/>
+
+						<Select
+							label="Organization"
+							data={orgList}
+							value={org}
+							onChange={setOrg as any}
+						/>
 					</Stack>
 				</Stepper.Step>
 				<Stepper.Step aria-label="Instance preset">
@@ -301,53 +260,6 @@ function CreationStepper({
 						</ScrollArea>
 					</Stack>
 				</Stepper.Step>
-				<Stepper.Step aria-label="Confirm">
-					<Stack>
-						<PrimaryTitle>
-							Confirm your details
-						</PrimaryTitle>
-
-						<Text>
-							Please confim your instance details and press <Text span c="bright">Create</Text> once
-							you are ready to provision your instance.
-						</Text>
-
-						<Table my="xl">
-							<Table.Tbody>
-								<Table.Tr>
-									<Table.Td>Name</Table.Td>
-									<Table.Td c="bright">{name}</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td>Preset</Table.Td>
-									<Table.Td c="bright">{instance}</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td>Region</Table.Td>
-									<Table.Td c="bright">{region}</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td>Replicas</Table.Td>
-									<Table.Td c="bright">{replicas}</Table.Td>
-								</Table.Tr>
-							</Table.Tbody>
-						</Table>
-
-						<Paper
-							bg="slate.9"
-							p="md"
-						>
-							<Text>Estimated costs</Text>
-							<Text
-								fz={18}
-								fw={500}
-								c="bright"
-							>
-								$3.50<Text span c="slate.2">/mo</Text>
-							</Text>
-						</Paper>
-					</Stack>
-				</Stepper.Step>
 				<Stepper.Completed>
 					<Stack
 						mt={84}
@@ -393,7 +305,7 @@ function CreationStepper({
 				</Stepper.Completed>
 			</Stepper>
 
-			{step < 4 && (
+			{step < 3 && (
 				<SimpleGrid cols={2} mt="xl">
 					{step === 0 ? (
 						<Button
@@ -451,21 +363,10 @@ export function CreationModal({
 		setProvisioning(true);
 	});
 
-	const handleComplete = useStable((instance?: CloudInstance) => {
+	const handleComplete = useStable(() => {
 		setProvisioning(false);
 		onClose();
 		onRefresh();
-
-		if (instance) {
-			showInfo({
-				title: "Instance created",
-				subtitle: (
-					<>
-						<Text span c="bright">{instance.name}</Text> has been created
-					</>
-				)
-			});
-		}
 	});
 
 	return (
@@ -473,7 +374,7 @@ export function CreationModal({
 			opened={opened}
 			onClose={handleClose}
 			trapFocus={false}
-			size={525}
+			size="md"
 		>
 			<CreationStepper
 				onClose={handleClose}

@@ -3,7 +3,6 @@ import { ActionIcon, Box, Button, Group, Indicator, Menu, ScrollArea, SimpleGrid
 import { iconCheck, iconPlus, iconSearch, iconTune } from "~/util/icons";
 import { mdiViewGrid, mdiViewSequential } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
-import { CloudPage } from "../../components/Page";
 import { Icon } from "~/components/Icon";
 import { Fragment, useMemo, useState } from "react";
 import { useDebouncedValue, useDisclosure, useInputState } from "@mantine/hooks";
@@ -22,6 +21,7 @@ import { ConnectCliModal } from "./modals/connect-cli";
 import { createBaseConnection, createCloudInstance } from "~/util/defaults";
 import { ConnectSdkModal } from "./modals/connect-sdk";
 import { SettingsModal } from "./modals/settings";
+import { sleep } from "radash";
 
 interface Filter {
 	type: string;
@@ -40,12 +40,16 @@ export function InstancesPage() {
 	const instanceTypes = useAvailableInstanceTypes();
 	const activeOrg = useConfigStore((state) => state.activeCloudOrg);
 
-	const { data, refetch } = useQuery({
+	const { data, isPending, refetch } = useQuery({
 		queryKey: ["cloud", "databases", activeOrg],
-		initialData: [],
 		refetchInterval: 15_000,
-		queryFn: () => fetchAPI<CloudInstance[]>(`/organizations/${activeOrg}/instances`),
+		queryFn: async () => {
+			await sleep(1000);
+			return fetchAPI<CloudInstance[]>(`/organizations/${activeOrg}/instances`);
+		},
 	});
+
+	const instances = useMemo(() => data || [], [data]);
 
 	const [selectedInstance, setSelectedInstance] = useState(createCloudInstance());
 	const [showSdkConnect, sdkConnectHandle] = useDisclosure();
@@ -122,7 +126,7 @@ export function InstancesPage() {
 	}, [instanceTypes, regions]);
 
 	const instanceList = useMemo(() => {
-		return data
+		return instances
 			.filter((db) => {
 				if (!filter) return true;
 
@@ -151,16 +155,15 @@ export function InstancesPage() {
 
 				return a.name.localeCompare(b.name);
 			});
-	}, [data, filter, searchQuery]);
+	}, [instances, filter, searchQuery]);
 
 	const [mode, setMode] = useSetting("cloud", "databaseListMode");
 
 	const isEmpty = instanceList.length === 0;
 
 	return (
-		<CloudPage title="Instances">
+		<>
 			<Group
-				mt="lg"
 				gap="lg"
 				mb="xs"
 			>
@@ -173,15 +176,7 @@ export function InstancesPage() {
 				>
 					Create instance
 				</Button>
-				<TextInput
-					value={search}
-					onChange={setSearch}
-					placeholder="Search instances"
-					leftSection={<Icon path={iconSearch} size="sm" />}
-					radius="sm"
-					size="xs"
-					miw={250}
-				/>
+				<Spacer />
 				<Menu>
 					<Menu.Target>
 						<Tooltip label="Filter instances">
@@ -193,7 +188,7 @@ export function InstancesPage() {
 								<ActionIcon
 									variant="subtle"
 									color="slate"
-									disabled={data.length === 0}
+									disabled={instances.length === 0}
 								>
 									<Icon path={iconTune} />
 								</ActionIcon>
@@ -223,7 +218,15 @@ export function InstancesPage() {
 						))}
 					</Menu.Dropdown>
 				</Menu>
-				<Spacer />
+				<TextInput
+					value={search}
+					onChange={setSearch}
+					placeholder="Search instances"
+					leftSection={<Icon path={iconSearch} size="sm" />}
+					radius="sm"
+					size="xs"
+					miw={250}
+				/>
 				<ActionIcon.Group>
 					<ActionIcon
 						c={mode === "grid" ? "bright" : "slate.3"}
@@ -239,24 +242,34 @@ export function InstancesPage() {
 					</ActionIcon>
 				</ActionIcon.Group>
 			</Group>
-			{(isEmpty && data.length === 0) ? (
+			{(isEmpty && instances.length === 0) ? (
 				<Stack
 					mt={150}
 					align="center"
 					gap="xs"
 				>
-					<Text
-						fz="lg"
-						c="bright"
-						fw={500}
-					>
-						This organization has no instances yet!
-					</Text>
-					<Text
-						c="slate"
-					>
-						Get started by creating a new instance
-					</Text>
+					{isPending ? (
+						<Text
+							c="slate"
+						>
+							Fetching instances...
+						</Text>
+					) : (
+						<>
+							<Text
+								fz="lg"
+								c="bright"
+								fw={500}
+							>
+								This organization has no instances yet!
+							</Text>
+							<Text
+								c="slate"
+							>
+								Get started by creating a new instance
+							</Text>
+						</>
+					)}
 				</Stack>
 			) : isEmpty ? (
 				<Box
@@ -300,7 +313,7 @@ export function InstancesPage() {
 										<Table.Th>Name</Table.Th>
 										<Table.Th>Instance</Table.Th>
 										<Table.Th>Region</Table.Th>
-										<Table.Th>Status</Table.Th>
+										<Table.Th>Version</Table.Th>
 										<Table.Th w={0}>Actions</Table.Th>
 									</Table.Tr>
 								</Table.Thead>
@@ -346,6 +359,6 @@ export function InstancesPage() {
 				onClose={settingsHandle.close}
 				onRefetch={refetch}
 			/>
-		</CloudPage>
+		</>
 	);
 }

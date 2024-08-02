@@ -13,11 +13,20 @@ import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { openCloudAuthentication } from "./auth";
 import { CloudToolbar } from "./toolbar";
+import { CloudSidebar } from "./sidebar";
+import { PlaceholderPage } from "./pages/Placeholder";
+import { SettingsPage } from "./pages/Settings";
+import { BillingPage } from "./pages/Billing";
+import { SupportPage } from "./pages/Support";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
-	// overview: OverviewPage,
 	instances: InstancesPage,
-	members: MembersPage
+	members: MembersPage,
+	audits: PlaceholderPage,
+	data: PlaceholderPage,
+	billing: BillingPage,
+	support: SupportPage,
+	settings: SettingsPage,
 };
 
 export function CloudContent() {
@@ -35,7 +44,17 @@ export function CloudContent() {
 			>
 				<CloudToolbar />
 			</Group>
-			{Content && <Content />}
+			<Group
+				flex={1}
+				align="stretch"
+				mt="lg"
+				gap="xl"
+			>
+				<CloudSidebar />
+				<Stack flex={1}>
+					{Content && <Content />}
+				</Stack>
+			</Group>
 		</>
 	) : (
 		<>
