@@ -7,7 +7,7 @@ import { DatabaseToolbar } from "./toolbar";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Suspense, lazy } from "react";
 import { useConfigStore } from "~/stores/config";
-import { CloudContent } from "~/screens/cloud-manage/content";
+import { CloudView } from "~/screens/cloud-manage/view";
 import { Center, Stack, Button, Flex, ScrollArea, Group, Box, Text, Image, Paper, Alert } from "@mantine/core";
 import { adapter, isDesktop } from "~/adapter";
 import { useBoolean } from "~/hooks/boolean";
@@ -207,7 +207,7 @@ export function DatabaseScreen() {
 
 						<InPortal node={VIEW_PORTALS.cloud}>
 							<Suspense fallback={null}>
-								<CloudContent />
+								<CloudView />
 							</Suspense>
 						</InPortal>
 

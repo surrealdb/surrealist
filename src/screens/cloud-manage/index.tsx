@@ -3,7 +3,7 @@ import { MantineProvider, Stack } from "@mantine/core";
 import { useColorScheme, useIsLight } from "~/hooks/theme";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { MANTINE_THEME } from "~/util/mantine";
-import { CloudContent } from "./content";
+import { CloudView } from "./view";
 
 export function CloudManageScreen() {
 	const colorScheme = useColorScheme();
@@ -25,7 +25,7 @@ export function CloudManageScreen() {
 						backgroundColor: `var(--mantine-color-slate-${isLight ? 0 : 9})`
 					}}
 				>
-					<CloudContent />
+					<CloudView />
 				</Stack>
 			</MantineProvider>
 		</FeatureFlagsProvider>

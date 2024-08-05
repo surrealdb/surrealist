@@ -29,7 +29,7 @@ const PAGE_VIEWS: Record<CloudPage, FC> = {
 	settings: SettingsPage,
 };
 
-export function CloudContent() {
+export function CloudView() {
 	const page = useConfigStore(s => s.activeCloudPage);
 	const state = useCloudStore(s => s.authState);
 	const Content = PAGE_VIEWS[page];

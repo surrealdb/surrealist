@@ -125,7 +125,6 @@ export function CloudSidebar() {
 
 			<Stack
 				gap="sm"
-				mt="xl"
 				flex={1}
 			>
 				{navigation.map((items, i) => (
