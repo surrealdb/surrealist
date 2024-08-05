@@ -7,7 +7,7 @@ import { Icon } from "~/components/Icon";
 import { iconChevronDown, iconCheck } from "~/util/icons";
 import { Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
-import { CloudPage } from "~/types";
+import { CloudPage, CloudPageInfo } from "~/types";
 import { Fragment, useMemo } from "react";
 import { useFeatureFlags } from "~/util/feature-flags";
 
@@ -22,7 +22,6 @@ const NAVIGATION: CloudPage[][] = [
 	],
 	[
 		"billing",
-		"support",
 		"settings",
 	],
 ];
@@ -47,12 +46,28 @@ export function CloudSidebar() {
 		});
 	}, [flags]);
 
+	const { support } = CLOUD_PAGES;
+
+	function renderNavigation(info: CloudPageInfo) {
+		return (
+			<Entry
+				key={info.id}
+				isActive={activePage === info.id}
+				leftSection={<Icon path={info.icon} />}
+				onClick={() => setActiveCloudPage(info.id)}
+			>
+				{info.name}
+			</Entry>
+		);
+	}
+
 	const orgName = organizations.find((org) => org.id === activeOrg)?.name || "Unknown";
 
 	return (
 		<Paper
 			w={250}
 			bg="slate.8"
+			component={Stack}
 			p="md"
 		>
 			<Menu
@@ -105,24 +120,22 @@ export function CloudSidebar() {
 			<Stack
 				gap="sm"
 				mt="xl"
+				flex={1}
 			>
 				{navigation.map((items, i) => (
 					<Fragment key={i}>
-						{items.map(info => (
-							<Entry
-								key={info.id}
-								isActive={activePage === info.id}
-								leftSection={<Icon path={info.icon} />}
-								onClick={() => setActiveCloudPage(info.id)}
-							>
-								{info.name}
-							</Entry>
-						))}
+						{items.map(info => renderNavigation(info))}
 						{i < navigation.length - 1 && (
 							<Divider color="slate.6" />
 						)}
 					</Fragment>
 				))}
+
+				<Spacer />
+
+				<Divider color="slate.6" />
+
+				{renderNavigation(support)}
 			</Stack>
 		</Paper>
 	);
