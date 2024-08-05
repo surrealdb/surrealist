@@ -14,9 +14,9 @@ import { useCloudStore } from "~/stores/cloud";
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 
 const BADGE_INFO = {
-	creating: ["blue", "Creating..."],
-	updating: ["blue", "Updating..."],
-	deleting: ["red", "Deleting..."],
+	creating: ["blue", "Creating"],
+	updating: ["blue", "Updating"],
+	deleting: ["red", "Deleting"],
 	inactive: ["red.4", "Inactive"]
 } satisfies Partial<Record<InstanceState, [MantineColor, string]>>;
 
