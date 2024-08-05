@@ -30,6 +30,7 @@ import { KeymapModal } from "./modals/hotkeys";
 import { UpdaterDialog } from "./modals/updater";
 import { isDesktop } from "~/adapter";
 import { HighlightToolModal } from "./modals/highlight-tool";
+import { ModalsProvider } from "@mantine/modals";
 
 const queryClient = new QueryClient();
 
@@ -58,43 +59,45 @@ export function App() {
 				>
 					<Notifications />
 
-					<ContextMenuProvider
-						borderRadius="md"
-						shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
-						submenuDelay={250}
-					>
-						<ConfirmationProvider>
-							<InspectorProvider>
-								<ErrorBoundary
-									FallbackComponent={AppErrorHandler}
-									onReset={handleReset}
-								>
-									{screen === "start"
-										? <StartScreen />
-										: <DatabaseScreen />
-									}
+					<ModalsProvider>
+						<ContextMenuProvider
+							borderRadius="md"
+							shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
+							submenuDelay={250}
+						>
+							<ConfirmationProvider>
+								<InspectorProvider>
+									<ErrorBoundary
+										FallbackComponent={AppErrorHandler}
+										onReset={handleReset}
+									>
+										{screen === "start"
+											? <StartScreen />
+											: <DatabaseScreen />
+										}
 
-									<Settings />
+										<Settings />
 
-									<CommandPaletteModal />
-									<ChangelogModal />
-									<ConnectionModal />
-									<DownloadModal />
-									<EmbedderModal />
-									<LegacyModal />
-									<SandboxModal />
-									<ScopeSignupModal />
-									<TableCreatorModal />
-									<KeymapModal />
-									<HighlightToolModal />
+										<CommandPaletteModal />
+										<ChangelogModal />
+										<ConnectionModal />
+										<DownloadModal />
+										<EmbedderModal />
+										<LegacyModal />
+										<SandboxModal />
+										<ScopeSignupModal />
+										<TableCreatorModal />
+										<KeymapModal />
+										<HighlightToolModal />
 
-									{isDesktop && (
-										<UpdaterDialog />
-									)}
-								</ErrorBoundary>
-							</InspectorProvider>
-						</ConfirmationProvider>
-					</ContextMenuProvider>
+										{isDesktop && (
+											<UpdaterDialog />
+										)}
+									</ErrorBoundary>
+								</InspectorProvider>
+							</ConfirmationProvider>
+						</ContextMenuProvider>
+					</ModalsProvider>
 				</MantineProvider>
 			</QueryClientProvider>
 		</FeatureFlagsProvider>

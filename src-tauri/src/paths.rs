@@ -19,6 +19,14 @@ pub fn get_config_path() -> PathBuf {
     config_path
 }
 
+/// The path to a backup configuration file
+pub fn get_config_backup_path(version: u32) -> PathBuf {
+    let mut config_path = get_data_directory();
+    config_path.push("backups");
+    config_path.push(format!("config-version-{}.json", version));
+    config_path
+}
+
 /// The path to the legacy configuration file (Surrealist 1.x)
 pub fn get_legacy_config_path() -> PathBuf {
     let mut config_path = config_dir().expect("config directory should be resolvable");

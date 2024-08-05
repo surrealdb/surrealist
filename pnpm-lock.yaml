@@ -76,6 +76,9 @@ importers:
       '@mantine/hooks':
         specifier: ^7.6.2
         version: 7.10.2(react@18.3.1)
+      '@mantine/modals':
+        specifier: ^7.12.0
+        version: 7.12.0(@mantine/core@7.10.2(@mantine/hooks@7.10.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.10.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mantine/notifications':
         specifier: ^7.6.2
         version: 7.10.2(@mantine/core@7.10.2(@mantine/hooks@7.10.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.10.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -310,7 +313,7 @@ importers:
         version: 5.3.1(@types/node@20.14.7)(sass@1.77.6)(terser@5.31.1)
       vite-plugin-compression2:
         specifier: ^1.1.2
-        version: 1.1.2(rollup@4.18.0)
+        version: 1.1.2(rollup@2.79.1)
       vite-plugin-image-optimizer:
         specifier: ^1.1.8
         version: 1.1.8(vite@5.3.1(@types/node@20.14.7)(sass@1.77.6)(terser@5.31.1))
@@ -1404,6 +1407,14 @@ packages:
     resolution: {integrity: sha512-3m4flbR2yv3Bl21pHl5BKOOnqrInp/gVD72rozLeu/jzIZqQy8yFRTY2bUWCebPwNem//OD1rCORsBXNXvq31g==}
     peerDependencies:
       react: ^18.2.0
+
+  '@mantine/modals@7.12.0':
+    resolution: {integrity: sha512-CXt2nUK0VuWc+cwC1flCeH5FnQYjA8iQfGgZ37wSFv2qxzJFQ61QlRJjdgIG7T+DccUHjqXKkjYohLxXE36EQQ==}
+    peerDependencies:
+      '@mantine/core': 7.12.0
+      '@mantine/hooks': 7.12.0
+      react: ^18.2.0
+      react-dom: ^18.2.0
 
   '@mantine/notifications@7.10.2':
     resolution: {integrity: sha512-wX6qNBvpV7iqlH98AkGuS9plq02yYhTG7bkzP3Y7jd7o2ognLPoN83YeIaxzuZ/qVnWrwZrOHOx87Ox2e9Qyxw==}
@@ -5340,6 +5351,13 @@ snapshots:
     dependencies:
       react: 18.3.1
 
+  '@mantine/modals@7.12.0(@mantine/core@7.10.2(@mantine/hooks@7.10.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.10.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@mantine/core': 7.10.2(@mantine/hooks@7.10.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mantine/hooks': 7.10.2(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   '@mantine/notifications@7.10.2(@mantine/core@7.10.2(@mantine/hooks@7.10.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.10.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@mantine/core': 7.10.2(@mantine/hooks@7.10.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -5495,13 +5513,13 @@ snapshots:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  '@rollup/pluginutils@5.1.0(rollup@4.18.0)':
+  '@rollup/pluginutils@5.1.0(rollup@2.79.1)':
     dependencies:
       '@types/estree': 1.0.5
       estree-walker: 2.0.2
       picomatch: 2.3.1
     optionalDependencies:
-      rollup: 4.18.0
+      rollup: 2.79.1
 
   '@rollup/rollup-android-arm-eabi@4.18.0':
     optional: true
@@ -8182,9 +8200,9 @@ snapshots:
 
   visit-values@2.0.0: {}
 
-  vite-plugin-compression2@1.1.2(rollup@4.18.0):
+  vite-plugin-compression2@1.1.2(rollup@2.79.1):
     dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@4.18.0)
+      '@rollup/pluginutils': 5.1.0(rollup@2.79.1)
     transitivePeerDependencies:
       - rollup
 

@@ -2,12 +2,14 @@ import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { getSetting, watchStore } from "./config";
-import { assign } from "radash";
+import { assign, debounce } from "radash";
 import { openConnection } from "~/screens/database/connection";
 import { featureFlags } from "./feature-flags";
 import { VIEW_MODES } from "~/constants";
 import { useDatabaseStore } from "~/stores/database";
-import { compare } from "semver";
+import { CONFIG_VERSION } from "./defaults";
+import { SurrealistConfig } from "~/types";
+import { showDowngradeWarningModal } from "./downgrade";
 
 const savePreference = ({ matches }: { matches: boolean }) => {
 	useInterfaceStore.getState().setColorPreference(matches ? "light" : "dark");
@@ -56,20 +58,25 @@ export function watchColorScheme() {
  * Watch for changes to the store and save the config to the adapter
  */
 export async function watchConfigStore() {
-	const config = await adapter.loadConfig();
-	const merged = assign(useConfigStore.getState(), config);
+	const loadedConfig = await adapter.loadConfig();
+	const config = assign<SurrealistConfig>(useConfigStore.getState(), loadedConfig);
+	const compatible = config.configVersion <= CONFIG_VERSION;
 
-	// TODO Temporary fix
-	if (compare(import.meta.env.VERSION, merged.previousVersion) > 0) {
-		merged.activeScreen = 'database';
+	// Handle incompatible config versions
+	if (!compatible) {
+		setTimeout(showDowngradeWarningModal, 250);
+		return;
 	}
 
-	useConfigStore.setState(merged);
+	// Update the internal config state
+	useConfigStore.setState(config);
 
-	// TODO include a ~300ms debounce
-	useConfigStore.subscribe((state) => {
+	// Sync the config with the adapter
+	useConfigStore.subscribe(debounce({
+		delay: 250
+	}, (state) => {
 		adapter.saveConfig(state);
-	});
+	}));
 }
 
 /**

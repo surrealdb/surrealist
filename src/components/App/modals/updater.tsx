@@ -6,8 +6,15 @@ import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconClose, iconDownload } from "~/util/icons";
+import { useConfirmation } from "~/providers/Confirmation";
+import { invoke } from "@tauri-apps/api/core";
+import { useConfigStore } from "~/stores/config";
 
 type Phase = 'idle' | 'downloading' | 'error';
+
+function extractMajor(version: string) {
+	return Number.parseInt(version.split(".")[0] ?? 0);
+}
 
 export function UpdaterDialog() {
 	const { hideAvailableUpdate } = useInterfaceStore.getState();
@@ -18,6 +25,10 @@ export function UpdaterDialog() {
 	const [packageTotal, setPackageTotal] = useState(0);
 	const [packageProgress, setPackageProgress] = useState(0);
 
+	const currentMajor = extractMajor(import.meta.env.VERSION);
+	const latestMajor = extractMajor(update?.version || "0.0.0");
+	const isDangerous = latestMajor > currentMajor;
+
 	const hideUpdate = useStable((e: MouseEvent) => {
 		e.stopPropagation();
 		hideAvailableUpdate();
@@ -25,6 +36,15 @@ export function UpdaterDialog() {
 
 	const installUpdate = useStable(async () => {
 		if (!update || phase !== 'idle') return;
+
+		if (isDangerous) {
+			const config = useConfigStore.getState();
+
+			await invoke("backup_config", {
+				config: JSON.stringify(config),
+				version: config.configVersion
+			});
+		}
 
 		setPhase('downloading');
 		setPackageProgress(0);
@@ -42,6 +62,23 @@ export function UpdaterDialog() {
 		} catch(err: any) {
 			console.error(err);
 			setPhase('error');
+		}
+	});
+
+	const promptUpdate = useConfirmation({
+		title: "New major release",
+		message: "The update you are about to install is a new major version of Surrealist. Are you sure you want to proceed?",
+		confirmText: "Install update",
+		confirmProps: { variant: "gradient" },
+		dismissText: "Don't update now",
+		onConfirm: () => installUpdate()
+	});
+
+	const handleClick = useStable(() => {
+		if (isDangerous) {
+			promptUpdate();
+		} else {
+			installUpdate();
 		}
 	});
 
@@ -67,7 +104,7 @@ export function UpdaterDialog() {
 			classNames={{
 				root: classes.updateDialog
 			}}
-			onClick={installUpdate}
+			onClick={handleClick}
 		>
 			<ActionIcon
 				onClick={hideUpdate}

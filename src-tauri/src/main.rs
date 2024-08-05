@@ -90,9 +90,12 @@ fn main() {
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,
-            config::load_legacy_config,
             config::save_config,
+			config::backup_config,
+			config::has_config_backup,
+			config::restore_config_backup,
             config::has_legacy_config,
+            config::load_legacy_config,
             config::complete_legacy_migrate,
             database::start_database,
             database::stop_database,
