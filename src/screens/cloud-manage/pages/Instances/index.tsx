@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Group, Indicator, Menu, ScrollArea, SimpleGrid, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { iconCheck, iconPlus, iconSearch, iconTune } from "~/util/icons";
+import { ActionIcon, Box, Button, Center, Group, Indicator, Loader, Menu, Paper, ScrollArea, SimpleGrid, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { iconCheck, iconOpen, iconPlus, iconSearch, iconTune } from "~/util/icons";
 import { mdiViewGrid, mdiViewSequential } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Icon } from "~/components/Icon";
@@ -21,7 +21,8 @@ import { ConnectCliModal } from "./modals/connect-cli";
 import { createBaseConnection, createCloudInstance } from "~/util/defaults";
 import { ConnectSdkModal } from "./modals/connect-sdk";
 import { SettingsModal } from "./modals/settings";
-import { sleep } from "radash";
+import { useCloudStore } from "~/stores/cloud";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 interface Filter {
 	type: string;
@@ -39,12 +40,13 @@ export function InstancesPage() {
 	const regions = useAvailableRegions();
 	const instanceTypes = useAvailableInstanceTypes();
 	const activeOrg = useConfigStore((state) => state.activeCloudOrg);
+	const authState = useCloudStore((state) => state.authState);
 
 	const { data, isPending, refetch } = useQuery({
 		queryKey: ["cloud", "databases", activeOrg],
 		refetchInterval: 15_000,
+		enabled: authState === "authenticated",
 		queryFn: async () => {
-			await sleep(1000);
 			return fetchAPI<CloudInstance[]>(`/organizations/${activeOrg}/instances`);
 		},
 	});
@@ -159,118 +161,137 @@ export function InstancesPage() {
 
 	const [mode, setMode] = useSetting("cloud", "databaseListMode");
 
+	const isFresh = instances.length === 0;
 	const isEmpty = instanceList.length === 0;
 
 	return (
 		<>
-			<Group
-				gap="lg"
-				mb="xs"
-			>
-				<Button
-					variant="gradient"
-					leftSection={<Icon path={iconPlus} />}
-					onClick={manageCreator.open}
-					radius="sm"
-					size="xs"
+			{(!isPending && !isFresh) && (
+				<Group
+					gap="lg"
+					mb="xs"
 				>
-					Create instance
-				</Button>
-				<Spacer />
-				<Menu>
-					<Menu.Target>
-						<Tooltip label="Filter instances">
-							<Indicator
-								disabled={!filter}
-								color="blue"
-								size={7}
-							>
-								<ActionIcon
-									variant="subtle"
-									color="slate"
-									disabled={instances.length === 0}
+					<Button
+						variant="gradient"
+						leftSection={<Icon path={iconPlus} />}
+						onClick={manageCreator.open}
+						radius="sm"
+						size="xs"
+					>
+						Create instance
+					</Button>
+					<Spacer />
+					<Menu>
+						<Menu.Target>
+							<Tooltip label="Filter instances">
+								<Indicator
+									disabled={!filter}
+									color="blue"
+									size={7}
 								>
-									<Icon path={iconTune} />
-								</ActionIcon>
-							</Indicator>
-						</Tooltip>
-					</Menu.Target>
-					<Menu.Dropdown miw={150}>
-						{filterTypes.map(type => (
-							<Fragment key={type.title}>
-								<Menu.Label>
-									{type.title}
-								</Menu.Label>
-								{type.options.map((option) => {
-									const isActive = filter?.value === option.value;
+									<ActionIcon
+										variant="subtle"
+										color="slate"
+										disabled={instances.length === 0}
+									>
+										<Icon path={iconTune} />
+									</ActionIcon>
+								</Indicator>
+							</Tooltip>
+						</Menu.Target>
+						<Menu.Dropdown miw={150}>
+							{filterTypes.map(type => (
+								<Fragment key={type.title}>
+									<Menu.Label>
+										{type.title}
+									</Menu.Label>
+									{type.options.map((option) => {
+										const isActive = filter?.value === option.value;
 
-									return (
-										<Menu.Item
-											key={option.value}
-											onClick={() => setFilter(isActive ? null : option)}
-											rightSection={isActive && <Icon path={iconCheck} />}
-										>
-											{option.label}
-										</Menu.Item>
-									);
-								})}
-							</Fragment>
-						))}
-					</Menu.Dropdown>
-				</Menu>
-				<TextInput
-					value={search}
-					onChange={setSearch}
-					placeholder="Search instances"
-					leftSection={<Icon path={iconSearch} size="sm" />}
-					radius="sm"
-					size="xs"
-					miw={250}
-				/>
-				<ActionIcon.Group>
-					<ActionIcon
-						c={mode === "grid" ? "bright" : "slate.3"}
-						onClick={() => setMode("grid")}
-					>
-						<Icon path={mdiViewGrid} />
-					</ActionIcon>
-					<ActionIcon
-						c={mode === "list" ? "bright" : "slate.3"}
-						onClick={() => setMode("list")}
-					>
-						<Icon path={mdiViewSequential} />
-					</ActionIcon>
-				</ActionIcon.Group>
-			</Group>
-			{(isEmpty && instances.length === 0) ? (
-				<Stack
-					mt={150}
-					align="center"
-					gap="xs"
-				>
-					{isPending ? (
-						<Text
-							c="slate"
+										return (
+											<Menu.Item
+												key={option.value}
+												onClick={() => setFilter(isActive ? null : option)}
+												rightSection={isActive && <Icon path={iconCheck} />}
+											>
+												{option.label}
+											</Menu.Item>
+										);
+									})}
+								</Fragment>
+							))}
+						</Menu.Dropdown>
+					</Menu>
+					<TextInput
+						value={search}
+						onChange={setSearch}
+						placeholder="Search instances"
+						leftSection={<Icon path={iconSearch} size="sm" />}
+						radius="sm"
+						size="xs"
+						miw={250}
+					/>
+					<ActionIcon.Group>
+						<ActionIcon
+							c={mode === "grid" ? "bright" : "slate.3"}
+							onClick={() => setMode("grid")}
 						>
-							Fetching instances...
-						</Text>
+							<Icon path={mdiViewGrid} />
+						</ActionIcon>
+						<ActionIcon
+							c={mode === "list" ? "bright" : "slate.3"}
+							onClick={() => setMode("list")}
+						>
+							<Icon path={mdiViewSequential} />
+						</ActionIcon>
+					</ActionIcon.Group>
+				</Group>
+			)}
+			{(isEmpty && instances.length === 0) ? (
+				<Center flex={1}>
+					{isPending ? (
+						<Loader />
 					) : (
-						<>
+						<Paper
+							radius="md"
+							p="xl"
+							w={500}
+						>
+							<PrimaryTitle>
+								Create your first instance
+							</PrimaryTitle>
 							<Text
-								fz="lg"
-								c="bright"
-								fw={500}
+								c="slate.2"
+								mt="xl"
 							>
-								This organization has no instances yet!
+								This organization does not have any instances yet. Create your first instance to get started with Surreal Cloud.
 							</Text>
-							<Text
-								c="slate"
-							>
-								Get started by creating a new instance
-							</Text>
-						</>
+							<Group>
+								<Button
+									mt="xl"
+									color="slate"
+									rightSection={<Icon path={iconOpen} />}
+									onClick={manageCreator.open}
+									radius="sm"
+									size="xs"
+								>
+									Learn more
+								</Button>
+								<Spacer />
+								<Button
+									mt="xl"
+									variant="gradient"
+									leftSection={<Icon path={iconPlus} />}
+									onClick={manageCreator.open}
+									radius="sm"
+									size="xs"
+								>
+									Create instance
+								</Button>
+							</Group>
+						</Paper>
 					)}
-				</Stack>
+				</Center>
 			) : isEmpty ? (
 				<Box
 					mt={150}

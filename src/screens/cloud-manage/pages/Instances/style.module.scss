@@ -85,3 +85,19 @@
 		border: 1px solid rgba(255, 255, 255, 0.3);
 	}
 }
+
+.first-instance {
+	transition: background-color 0.3s;
+
+	svg {
+		transition: color 0.3s;
+	}
+
+	&:hover {
+		background-color: var(--mantine-color-slate-7) !important;
+
+		svg {
+			color: var(--mantine-color-bright) !important;
+		}
+	}
+}

@@ -34,7 +34,9 @@ export function CloudContent() {
 	const state = useCloudStore(s => s.authState);
 	const Content = PAGE_VIEWS[page];
 
-	return state === "authenticated" ? (
+	const showCloud = state === "authenticated" || state === "loading";
+
+	return showCloud ? (
 		<>
 			<Group
 				gap="md"
@@ -78,10 +80,9 @@ export function CloudContent() {
 					<Button
 						w={164}
 						color="slate"
-						variant={state === "loading" ? "filled" : "gradient"}
+						variant="gradient"
 						rightSection={<Icon path={iconChevronRight} />}
 						onClick={openCloudAuthentication}
-						loading={state === "loading"}
 					>
 						Continue
 					</Button>

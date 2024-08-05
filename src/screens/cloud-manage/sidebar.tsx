@@ -1,4 +1,4 @@
-import { Avatar, Divider, Group, Menu, Paper, Stack } from "@mantine/core";
+import { Avatar, Divider, Group, Menu, Paper, Skeleton, Stack } from "@mantine/core";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { CLOUD_PAGES } from "~/constants";
@@ -30,6 +30,7 @@ export function CloudSidebar() {
 	const { setActiveCloudPage, setActiveCloudOrg } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
+	const state = useCloudStore(s => s.authState);
 	const activePage = useConfigStore((s) => s.activeCloudPage);
 	const activeOrg = useConfigStore((s) => s.activeCloudOrg);
 	const organizations = useCloudStore((s) => s.organizations);
@@ -46,18 +47,21 @@ export function CloudSidebar() {
 		});
 	}, [flags]);
 
+	const isLoading = state === "loading";
 	const { support } = CLOUD_PAGES;
 
 	function renderNavigation(info: CloudPageInfo) {
 		return (
-			<Entry
-				key={info.id}
-				isActive={activePage === info.id}
-				leftSection={<Icon path={info.icon} />}
-				onClick={() => setActiveCloudPage(info.id)}
-			>
-				{info.name}
-			</Entry>
+			<Skeleton visible={isLoading}>
+				<Entry
+					key={info.id}
+					isActive={activePage === info.id}
+					leftSection={<Icon path={info.icon} />}
+					onClick={() => setActiveCloudPage(info.id)}
+				>
+					{info.name}
+				</Entry>
+			</Skeleton>
 		);
 	}
 
@@ -77,27 +81,29 @@ export function CloudSidebar() {
 				}}
 			>
 				<Menu.Target>
-					<Paper
-						withBorder
-						p="xs"
-					>
-						<Group
-							style={{
-								cursor: "pointer"
-							}}
+					<Skeleton visible={isLoading}>
+						<Paper
+							withBorder
+							p="xs"
 						>
-							<Avatar
-								name={orgName}
-								radius="xs"
-								size="sm"
-							/>
-							<Text c="bright" fw={600}>
-								{orgName}
-							</Text>
-							<Spacer />
-							<Icon path={iconChevronDown} />
-						</Group>
-					</Paper>
+							<Group
+								style={{
+									cursor: "pointer"
+								}}
+							>
+								<Avatar
+									name={orgName}
+									radius="xs"
+									size="sm"
+								/>
+								<Text c="bright" fw={600}>
+									{orgName}
+								</Text>
+								<Spacer />
+								<Icon path={iconChevronDown} />
+							</Group>
+						</Paper>
+					</Skeleton>
 				</Menu.Target>
 				<Menu.Dropdown w={226}>
 					{organizations.map((org) => (
@@ -124,7 +130,11 @@ export function CloudSidebar() {
 			>
 				{navigation.map((items, i) => (
 					<Fragment key={i}>
-						{items.map(info => renderNavigation(info))}
+						{items.map(info => (
+							<Fragment key={info.id}>
+								{renderNavigation(info)}
+							</Fragment>
+						))}
 						{i < navigation.length - 1 && (
 							<Divider color="slate.6" />
 						)}
