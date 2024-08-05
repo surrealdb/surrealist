@@ -9,10 +9,11 @@ import { getSetting } from "~/util/config";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+const HOSTNAME = location.host === "localhost" ? "privatesurrealist.netlify.app" : location.host;
 
 const CALLBACK_ENDPOINT = isDevelopment
 	? "http://localhost:1420/cloud/callback/index.html"
-	: `https://${location.host}/cloud/callback`;
+	: `https://${HOSTNAME}/cloud/callback`;
 
 interface PKCE {
 	verifier: string;
