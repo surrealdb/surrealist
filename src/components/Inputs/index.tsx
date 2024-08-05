@@ -1,8 +1,8 @@
 import classes from "./style.module.scss";
 import clsx from "clsx";
 import { surrealql } from "codemirror-surrealql";
-import { ActionIcon, Autocomplete, AutocompleteProps, Group, InputBase, InputBaseProps, Tooltip } from "@mantine/core";
-import { HTMLAttributes, useEffect, useMemo, useRef } from "react";
+import { ActionIcon, Autocomplete, AutocompleteProps, Group, InputBase, InputBaseProps, Pill, PillsInput, PillsInputProps, Tooltip } from "@mantine/core";
+import { HTMLAttributes, KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
@@ -12,6 +12,7 @@ import { colorTheme, inputBase } from "~/util/editor/extensions";
 import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
 import { Compartment, EditorState, Extension, Prec } from "@codemirror/state";
 import { acceptWithTab } from "~/util/editor/keybinds";
+import { useInputState } from "@mantine/hooks";
 
 export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTMLDivElement>, 'style'|'value'|'onChange'> {
 	value: string;
@@ -261,5 +262,67 @@ export function FieldKindInput({
 			className={clsx(classes.input, className)}
 			{...rest}
 		/>
+	);
+}
+
+export interface EmailInputProps extends Omit<PillsInputProps, 'value' | 'onChange'> {
+	value: string[];
+	onChange: (value: string[]) => void;
+}
+
+export function EmailInput({
+	value,
+	onChange,
+	autoFocus,
+	...other
+}: EmailInputProps) {
+	const [draft, setDraft] = useInputState("");
+	const isValid = !draft || draft.includes('@');
+
+	const handleSubmit = useStable(() => {
+		if (!draft || !isValid) return;
+
+		if (!value.includes(draft)) {
+			onChange([...value, draft]);
+		}
+
+		setDraft("");
+	});
+
+	const handleKey = useStable((e: KeyboardEvent) => {
+		if ((e.code === "Enter" || e.code == "Space") && draft) {
+			handleSubmit();
+			e.preventDefault();
+		} else if (e.code === "Backspace" && !draft && value.length > 0) {
+			onChange?.(value!.slice(0, -1));
+		}
+	});
+
+	return (
+		<PillsInput
+			{...other}
+			error={!isValid}
+		>
+			<Pill.Group mih={22}>
+				{value.map((email, i) => (
+					<Pill
+						key={i}
+						withRemoveButton
+						onRemove={() => onChange?.(value!.filter((_, j) => i !== j))}
+						bg="slate"
+					>
+						{email}
+					</Pill>
+				))}
+				<PillsInput.Field
+					placeholder="Enter email addresses..."
+					autoFocus={autoFocus}
+					value={draft}
+					onChange={setDraft}
+					onBlur={handleSubmit}
+					onKeyDown={handleKey}
+				/>
+			</Pill.Group>
+		</PillsInput>
 	);
 }
