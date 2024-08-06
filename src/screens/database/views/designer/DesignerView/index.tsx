@@ -9,12 +9,18 @@ import { showError } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
 import { TableInfo } from "~/types";
 import { ReactFlowProvider } from "reactflow";
-import { useIsConnected } from "~/hooks/connection";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useDisclosure } from "@mantine/hooks";
 import { DesignDrawer } from "../DesignDrawer";
 import { useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
 import { executeQuery } from "~/screens/database/connection";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { Box } from "@mantine/core";
+import { TablesPane } from "~/screens/database/components/TablesPane";
+import { usePanelMinSize } from "~/hooks/panels";
+import { iconDesigner } from "~/util/icons";
 
 const DEFAULT_DEF: TableInfo = {
 	schema: {
@@ -46,6 +52,8 @@ export function DesignerView(_props: DesignerViewProps) {
 	const [errors, setErrors] = useState<string[]>([]);
 	const [isDesigning, isDesigningHandle] = useDisclosure();
 	const [data, setData] = useImmer<TableInfo>(DEFAULT_DEF);
+
+	const { designerTableList } = useActiveConnection();
 
 	const isValid = useMemo(() => {
 		return data ? isSchemaValid(data) : true;
@@ -130,15 +138,43 @@ export function DesignerView(_props: DesignerViewProps) {
 		syncDatabaseSchema();
 	});
 
+	const [minSize, ref] = usePanelMinSize(275);
+
 	return (
 		<>
-			<ReactFlowProvider>
-				<TableGraphPane
-					tables={tables}
-					active={isDesigning ? data : null}
-					setActiveTable={setActiveTable}
-				/>
-			</ReactFlowProvider>
+			<Box h="100%" ref={ref}>
+				<PanelGroup
+					direction="horizontal"
+					style={{ opacity: minSize === 0 ? 0 : 1 }}
+				>
+					{designerTableList && (
+						<>
+							<Panel
+								defaultSize={minSize}
+								minSize={minSize}
+								maxSize={35}
+								id="tables"
+								order={1}
+							>
+								<TablesPane
+									icon={iconDesigner}
+									onTableSelect={setActiveTable}
+								/>
+							</Panel>
+							<PanelDragger />
+						</>
+					)}
+					<Panel minSize={minSize} order={2}>
+						<ReactFlowProvider>
+							<TableGraphPane
+								tables={tables}
+								active={isDesigning ? data : null}
+								setActiveTable={setActiveTable}
+							/>
+						</ReactFlowProvider>
+					</Panel>
+				</PanelGroup>
+			</Box>
 
 			<DesignDrawer
 				opened={isDesigning}

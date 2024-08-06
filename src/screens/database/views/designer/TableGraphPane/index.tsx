@@ -20,7 +20,7 @@ import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
 import { useBoolean } from "~/hooks/boolean";
-import { iconAPI, iconCog, iconDesigner, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh } from "~/util/icons";
+import { iconAPI, iconChevronLeft, iconChevronRight, iconCog, iconDesigner, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
 
@@ -50,6 +50,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const schema = useSchema();
 	const isConnected = useIsConnected();
+	const connection = useActiveConnection();
 	const isViewActive = useConfigStore((s) => s.activeView == "designer");
 
 	const [isComputing, setIsComputing] = useState(false);
@@ -161,6 +162,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		}
 	});
 
+	const toggleTableList = useStable(() => {
+		updateCurrentConnection({
+			designerTableList: !connection.designerTableList,
+		});
+	});
+
 	const showBox = !isComputing && (!isConnected || props.tables.length === 0);
 
 	const setDiagramMode = useStable((mode: string) => {
@@ -223,6 +230,19 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			title="Table Graph"
 			icon={iconDesigner}
 			style={{ overflow: 'hidden' }}
+			leftSection={
+				<Tooltip label="Toggle table list">
+					<ActionIcon
+						bg="slate.9"
+						mr="sm"
+						onClick={toggleTableList}
+						aria-label="Toggle table list"
+						variant="transparent"
+					>
+						<Icon path={connection.designerTableList ? iconChevronLeft : iconChevronRight} />
+					</ActionIcon>
+				</Tooltip>
+			}
 			rightSection={
 				<Group wrap="nowrap">
 					<Tooltip label="New table">
@@ -280,7 +300,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</ActionIcon>
 					</Tooltip>
 				</Group>
-			}>
+			}
+		>
 			<div style={{ position: "relative", width: "100%", height: "100%" }}>
 				<ReactFlow
 					ref={ref}

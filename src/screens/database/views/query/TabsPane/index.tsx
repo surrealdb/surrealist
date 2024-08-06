@@ -78,7 +78,7 @@ export function TabsPane(props: TabsPaneProps) {
 			icon={iconList}
 			title="Queries"
 			style={{ flexShrink: 0 }}
-			leftSection={
+			infoSection={
 				<Badge
 					color={isLight ? "slate.0" : "slate.9"}
 					radius="sm"

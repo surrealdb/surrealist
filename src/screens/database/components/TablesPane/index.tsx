@@ -12,10 +12,8 @@ import { sort } from "radash";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
 import { useConfigStore } from "~/stores/config";
-import { Importer } from "../Importer";
-import { Exporter } from "../Exporter";
-import { useContextMenu } from "mantine-contextmenu";
-import { iconDelete, iconExplorer, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
+import { ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
+import { iconDelete, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -23,12 +21,20 @@ import { tb } from "~/util/helpers";
 import { executeQuery } from "~/screens/database/connection";
 
 export interface TablesPaneProps {
-	activeTable: string | undefined;
+	icon?: string;
+	activeTable?: string | undefined;
 	onTableSelect: (table: string) => void;
-	onCreateRecord: (table: string) => void;
+	onTableContextMenu?: (table: string) => ContextMenuItemOptions[];
+	extraSection?: React.ReactNode;
 }
 
-export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: TablesPaneProps) {
+export function TablesPane({
+	icon,
+	activeTable,
+	onTableSelect,
+	onTableContextMenu,
+	extraSection,
+}: TablesPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
 
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
@@ -41,21 +47,17 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 
 	const { showContextMenu } = useContextMenu();
 
-	const isPinned = useStable((table: string) => {
-		return connection.pinnedTables.includes(table);
-	});
-
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();
 		const tables = search ? schema.filter((table) => table.schema.name.toLowerCase().includes(needle)) : schema;
 
 		return sort(tables, (table) => {
 			const [isEdge] = extractEdgeRecords(table);
-			const pinned = isPinned(table.schema.name);
+			const pinned = connection.pinnedTables.includes(table.schema.name);
 
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
-	}, [schema, search, isPinned]);
+	}, [connection.pinnedTables, schema, search]);
 
 	const togglePinned = useStable((table: string) => {
 		if (table && connection) {
@@ -81,9 +83,9 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 	return (
 		<ContentPane
 			title="Tables"
-			icon={iconExplorer}
+			icon={icon}
 			style={{ flexShrink: 0 }}
-			leftSection={
+			infoSection={
 				schema.length > 0 && (
 					<Badge
 						color={isLight ? "slate.0" : "slate.9"}
@@ -155,15 +157,9 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 									onContextMenu={showContextMenu([
 										{
 											key: 'open',
-											title: "View table records",
+											title: "Open table",
 											icon: <Icon path={iconTable} />,
 											onClick: () => onTableSelect(table.schema.name)
-										},
-										{
-											key: 'new',
-											title: "Create new record",
-											icon: <Icon path={iconPlus} />,
-											onClick: () => onCreateRecord(table.schema.name)
 										},
 										{
 											key: 'pin',
@@ -171,6 +167,7 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
 											onClick: () => togglePinned(table.schema.name)
 										},
+										...onTableContextMenu?.(table.schema.name) || [],
 										{
 											key: 'remove',
 											title: "Remove table",
@@ -205,10 +202,13 @@ export function TablesPane({ activeTable, onTableSelect, onCreateRecord }: Table
 						})}
 					</Stack>
 				</ScrollArea>
-				<Spacer />
-				<Divider mb="xs" />
-				<Exporter />
-				<Importer />
+				{extraSection && (
+					<>
+						<Spacer />
+						<Divider mb="xs" />
+						{extraSection}
+					</>
+				)}
 			</Stack>
 		</ContentPane>
 	);

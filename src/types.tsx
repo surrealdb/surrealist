@@ -97,6 +97,7 @@ export interface Connection {
 	diagramMode: DiagramMode;
 	diagramDirection: DiagramDirection;
 	diagramShowLinks: boolean;
+	designerTableList: boolean;
 	queryHistory: HistoryQuery[];
 	lastNamespace: string;
 	lastDatabase: string;

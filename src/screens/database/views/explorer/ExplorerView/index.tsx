@@ -1,6 +1,5 @@
 import { ExplorerPane } from "../ExplorerPane";
 import { useState } from "react";
-import { TablesPane } from "../TablesPane";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { useDisclosure } from "@mantine/hooks";
 import { Box, Button, Group, Text } from "@mantine/core";
@@ -19,6 +18,9 @@ import { usePanelMinSize } from "~/hooks/panels";
 import { Introduction } from "~/components/Introduction";
 import { adapter } from "~/adapter";
 import { useIsConnected } from "~/hooks/connection";
+import { TablesPane } from "~/screens/database/components/TablesPane";
+import { Exporter } from "../Exporter";
+import { Importer } from "../Importer";
 
 export function ExplorerView() {
 	const { openTableCreator } = useInterfaceStore.getState();
@@ -33,6 +35,15 @@ export function ExplorerView() {
 		setCreatorTable(table || activeTable);
 		isCreatingHandle.open();
 	});
+
+	const buildContextMenu = useStable((table: string) => [
+		{
+			key: 'new',
+			title: "Create new record",
+			icon: <Icon path={iconPlus} />,
+			onClick: () => openCreator(table)
+		},
+	]);
 
 	useEventSubscription(DisconnectedEvent, () => {
 		isCreatingHandle.close();
@@ -62,9 +73,16 @@ export function ExplorerView() {
 						maxSize={35}
 					>
 						<TablesPane
+							icon={iconExplorer}
 							activeTable={activeTable}
 							onTableSelect={setActiveTable}
-							onCreateRecord={openCreator}
+							onTableContextMenu={buildContextMenu}
+							extraSection={
+								<>
+									<Exporter />
+									<Importer />
+								</>
+							}
 						/>
 					</Panel>
 					<PanelDragger />

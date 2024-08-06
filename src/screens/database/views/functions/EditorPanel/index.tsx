@@ -78,7 +78,7 @@ export function EditorPanel({
 		<ContentPane
 			title="Function Editor"
 			icon={iconJSON}
-			leftSection={
+			infoSection={
 				isCreating && (
 					<Badge
 						ml="xs"

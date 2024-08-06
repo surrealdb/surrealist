@@ -10,8 +10,9 @@ export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDi
 	title?: string;
 	icon?: string;
 	leftSection?: React.ReactNode;
-	loading?: boolean;
+	infoSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
+	loading?: boolean;
 	withTopPadding?: boolean;
 	disabled?: boolean;
 }
@@ -21,8 +22,9 @@ export function ContentPane({
 	title,
 	icon,
 	leftSection,
-	loading,
+	infoSection,
 	rightSection,
+	loading,
 	withTopPadding,
 	disabled,
 	...rest
@@ -39,7 +41,7 @@ export function ContentPane({
 			style={{ pointerEvents: disabled ? "none" : undefined }}
 			{...rest}
 		>
-			{title !== undefined && icon !== undefined && (
+			{(title || icon || leftSection || rightSection || infoSection) && (
 				<>
 					<Group
 						px="sm"
@@ -49,6 +51,7 @@ export function ContentPane({
 						wrap="nowrap"
 						className={classes.header}
 					>
+						{leftSection}
 						{icon && <Icon path={icon} c={isLight ? "slate.4" : "slate.3"} />}
 						<Text
 							fw={600}
@@ -58,7 +61,7 @@ export function ContentPane({
 						>
 							{title}
 						</Text>
-						{leftSection}
+						{infoSection}
 						<Spacer />
 						{rightSection}
 					</Group>

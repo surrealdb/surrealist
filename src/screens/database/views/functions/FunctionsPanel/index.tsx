@@ -45,7 +45,7 @@ export function FunctionsPanel({
 			title="Functions"
 			icon={iconFunction}
 			style={{ flexShrink: 0 }}
-			leftSection={
+			infoSection={
 				<Badge
 					color={isLight ? "slate.0" : "slate.9"}
 					radius="sm"

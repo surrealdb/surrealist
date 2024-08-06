@@ -111,6 +111,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		queryHistory: [],
 		lastNamespace: "",
 		lastDatabase: "",
+		designerTableList: true,
 		diagramMode: settings.appearance.defaultDiagramMode,
 		diagramDirection: settings.appearance.defaultDiagramDirection,
 		diagramShowLinks: settings.appearance.defaultDiagramShowLinks
