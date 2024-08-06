@@ -1,9 +1,12 @@
 use std::{
     fs::{self, copy, File},
-    io::{Read, Write}, path::PathBuf,
+    io::{Read, Write},
+    path::PathBuf,
 };
 
-use crate::paths::{get_config_backup_path, get_config_path, get_legacy_config_backup_path, get_legacy_config_path};
+use crate::paths::{
+    get_config_backup_path, get_config_path, get_legacy_config_backup_path, get_legacy_config_path,
+};
 
 const DEFAULT_CONFIG: &str = "{}";
 
@@ -52,27 +55,27 @@ pub fn save_config(config: &str) {
 
 #[tauri::command]
 pub fn backup_config(config: &str, version: u32) {
-	write_config(config, get_config_backup_path(version));
+    write_config(config, get_config_backup_path(version));
 }
 
 #[tauri::command]
 pub fn has_config_backup(version: u32) -> bool {
-	get_config_backup_path(version).exists()
+    get_config_backup_path(version).exists()
 }
 
 #[tauri::command]
 pub fn restore_config_backup(version: u32) -> Result<(), String> {
-	let backup_path = get_config_backup_path(version);
-	let config_path = get_config_path();
+    let backup_path = get_config_backup_path(version);
+    let config_path = get_config_path();
 
-	if !backup_path.exists() {
-		return Err("Backup does not exist".into());
-	}
+    if !backup_path.exists() {
+        return Err("Backup does not exist".into());
+    }
 
-	match copy(backup_path, config_path) {
-		Ok(_) => Ok(()),
-		Err(_) => Err("Failed to restore config backup".into()),
-	}
+    match copy(backup_path, config_path) {
+        Ok(_) => Ok(()),
+        Err(_) => Err("Failed to restore config backup".into()),
+    }
 }
 
 #[deprecated]
