@@ -40,27 +40,33 @@ export async function showDowngradeWarningModal() {
 					Your config file was updated by a newer version of Surrealist and is incompatible with this version.
 				</Text>
 				{hasBackup ? (
-					<Alert
-						mt="xl"
-						color="blue"
-					>
-						<Text>
+					<>
+						<Alert
+							mt="xl"
+							color="blue"
+							title="Note"
+						>
 							A backup of your previous configuration file was found. You can restore it by clicking the button below.
 							Note that this will discard any changes you made since the last update.
-						</Text>
+						</Alert>
 						<Button
 							style={{ outline: "none" }}
 							onClick={restoreBackup}
+							fullWidth
 							color="blue"
 							mt="md"
 						>
 							Restore backup
 						</Button>
-					</Alert>
+					</>
 				) : (
-					<Text c="red" mt="xl">
+					<Alert
+						mt="xl"
+						color="red"
+						title="Note"
+					>
 						Please reset your configuration file or update your version of Surrealist to continue.
-					</Text>
+					</Alert>
 				)}
 			</Box>
 		)

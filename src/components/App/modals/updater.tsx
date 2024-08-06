@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { ActionIcon, Box, Dialog, Group, Text } from "@mantine/core";
+import { ActionIcon, Alert, Box, Dialog, Group, Text } from "@mantine/core";
 import { MouseEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
@@ -66,12 +66,29 @@ export function UpdaterDialog() {
 	});
 
 	const promptUpdate = useConfirmation({
-		title: "New major release",
-		message: "The update you are about to install is a new major version of Surrealist. Are you sure you want to proceed?",
-		confirmText: "Install update",
+		title: "New major version",
+		message: (
+			<>
+				The update you are about to install is a new major version of Surrealist. Are you sure you want to proceed?
+				<Alert
+					mt="xl"
+					color="orange"
+					title="Warning"
+				>
+					An upgrade could result in incompatibility with older versions of SurrealDB.
+				</Alert>
+			</>
+		),
+		confirmText: (
+			<Group gap="xs">
+				Install update
+				<Icon path={iconDownload} />
+			</Group>
+		),
 		confirmProps: { variant: "gradient" },
 		dismissText: "Don't update now",
-		onConfirm: () => installUpdate()
+		onConfirm: () => installUpdate(),
+		onDismiss: () => hideAvailableUpdate(),
 	});
 
 	const handleClick = useStable(() => {

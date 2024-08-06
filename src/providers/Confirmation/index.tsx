@@ -1,16 +1,16 @@
 import { Button, ButtonProps, Group, Text } from "@mantine/core";
 import { Modal } from "@mantine/core";
-import { PropsWithChildren, createContext, useContext, useState } from "react";
+import { PropsWithChildren, ReactNode, createContext, useContext, useState } from "react";
 import { ModalTitle } from "~/components/ModalTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 
 interface ConfirmOptions<T> {
-	title?: string;
-	message: string;
-	dismissText?: string;
+	title?: ReactNode;
+	message: ReactNode;
+	dismissText?: ReactNode;
 	dismissProps?: ButtonProps;
-	confirmText?: string;
+	confirmText?: ReactNode;
 	confirmProps?: ButtonProps;
 	onDismiss?: () => void;
 	onConfirm: (value: T) => void;
