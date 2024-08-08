@@ -1,11 +1,14 @@
 import classes from "./style.module.scss";
-import { PanelResizeHandle } from "react-resizable-panels";
+import { PanelResizeHandle, PanelResizeHandleProps } from "react-resizable-panels";
 
 /**
  * Specialized version of PanelResizeHandle with styling applied
  */
-export function PanelDragger() {
+export function PanelDragger(props: PanelResizeHandleProps) {
 	return (
-		<PanelResizeHandle className={classes.dragger} />
+		<PanelResizeHandle
+			className={classes.dragger}
+			{...props}
+		/>
 	);
 }

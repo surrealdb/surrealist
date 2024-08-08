@@ -1,6 +1,6 @@
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
-import { mdiAccountOutline, mdiCreditCardOutline, mdiPackageVariantClosed, mdiProgressClock } from "@mdi/js";
+import { mdiAccountOutline, mdiCreditCardOutline, mdiGraphql, mdiPackageVariantClosed, mdiProgressClock } from "@mdi/js";
 
 import {
 	AuthMode,
@@ -47,6 +47,7 @@ export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
 export const SENSITIVE_SCOPE_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
+export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
 export const DATASETS: Record<string, DataSet> = {
 	"surreal-deal-store": {
@@ -118,6 +119,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Surreal Cloud",
 		icon: iconCloud,
 		desc: "Manage your Surreal Cloud environment",
+		disabled: (flags) => !flags.cloud_view,
 	},
 	query: {
 		id: "query",
@@ -125,6 +127,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconQuery,
 		anim: import("~/assets/animation/query.json").then(x => x.default),
 		desc: "Execute queries against the database and inspect the results",
+		disabled: (flags) => !flags.query_view,
 	},
 	explorer: {
 		id: "explorer",
@@ -133,6 +136,15 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		anim: import("~/assets/animation/explorer.json").then(x => x.default),
 		desc: "Explore the database tables, records, and relations",
 		require: "database",
+		disabled: (flags) => !flags.explorer_view,
+	},
+	graphql: {
+		id: "graphql",
+		name: "GraphQL",
+		icon: mdiGraphql,
+		desc: "Execute GraphQL queries against the database",
+		require: "database",
+		disabled: (flags) => !flags.graphql_view,
 	},
 	designer: {
 		id: "designer",
@@ -141,6 +153,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		anim: import("~/assets/animation/designer.json").then(x => x.default),
 		desc: "Define database tables and relations",
 		require: "database",
+		disabled: (flags) => !flags.designer_view,
 	},
 	authentication: {
 		id: "authentication",
@@ -148,7 +161,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconAuth,
 		anim: import("~/assets/animation/auth.json").then(x => x.default),
 		desc: "Manage account details and database scopes",
-		disabled: (flags) => flags.surreal_compat === "v2",
+		disabled: (flags) => !flags.designer_view || flags.surreal_compat === "v2",
 	},
 	functions: {
 		id: "functions",
@@ -156,22 +169,23 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconFunction,
 		desc: "Create and update schema level functions",
 		require: "database",
+		disabled: (flags) => !flags.functions_view,
 	},
 	models: {
 		id: "models",
 		name: "Models",
 		icon: iconModuleML,
 		desc: "Upload and manage machine learning models",
-		disabled: (flags) => !flags.models_view,
 		require: "database",
+		disabled: (flags) => !flags.models_view,
 	},
 	documentation: {
 		id: "documentation",
 		name: "API Docs",
 		icon: iconAPI,
 		desc: "View the database schema and documentation",
-		disabled: (flags) => !flags.apidocs_view,
 		require: "database",
+		disabled: (flags) => !flags.apidocs_view,
 	},
 };
 
@@ -205,7 +219,7 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 		id: "support",
 		name: "Support Chat",
 		icon: iconChat,
-		disabled: (flags) => !flags.cloud_support,
+		disabled: () => true
 	},
 	settings: {
 		id: "settings",

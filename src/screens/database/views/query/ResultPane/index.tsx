@@ -14,7 +14,7 @@ import { QueryResponse, ResultMode, TabQuery } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { iconBroadcastOff, iconCursor, iconLive, iconQuery } from "~/util/icons";
 import { SelectionRange } from "@codemirror/state";
-import { cancelLiveQueries } from "~/screens/database/connection";
+import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { isMini } from "~/adapter";
 
@@ -50,7 +50,7 @@ export function ResultPane({
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isQuerying = useDatabaseStore((s) => s.isQueryActive);
-	const responseMap = useDatabaseStore((s) => s.responses);
+	const responseMap = useDatabaseStore((s) => s.queryResponses);
 
 	const isLight = useIsLight();
 	const [resultTab, setResultTab] = useState<number>(1);
@@ -237,7 +237,7 @@ export function ResultPane({
 							mx="auto"
 							size="lg"
 						/>
-						Execute a query to view the results here
+						Execute a SurrealQL query to view the results here
 					</Stack>
 				</Center>
 			)}

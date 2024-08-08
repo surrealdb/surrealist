@@ -492,11 +492,11 @@ const objectToken = new lr.ExternalTokenizer((input, stack) => {
 const surqlHighlighting = highlight.styleTags({
 	"Ident": highlight.tags.name,
 	"Keyword function": highlight.tags.keyword,
+	"ObjectKey!": highlight.tags.propertyName,
 	"String": highlight.tags.string,
 	"Int Float Decimal VersionNumber Duration": highlight.tags.number,
 	"Bool": highlight.tags.bool,
 	"Comment": highlight.tags.lineComment,
-	"KeyName": highlight.tags.propertyName,
 	"VariableName": highlight.tags.variableName,
 	"None": highlight.tags.null,
 	"FunctionName": highlight.tags.function(highlight.tags.name),

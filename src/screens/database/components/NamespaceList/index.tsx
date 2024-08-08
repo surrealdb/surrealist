@@ -3,7 +3,7 @@ import { iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
-import { activateDatabase, executeQuery } from "../../connection";
+import { activateDatabase, executeQuery } from "../../connection/connection";
 import { useBoolean } from "~/hooks/boolean";
 import { fetchNamespaceList } from "~/util/databases";
 import { useQuery } from "@tanstack/react-query";

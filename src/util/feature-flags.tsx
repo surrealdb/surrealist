@@ -8,11 +8,32 @@ export const schema = {
 	feature_flags: {
 		options: [false, true]
 	},
+	query_view: {
+		options: [false, true]
+	},
+	explorer_view: {
+		options: [false, true]
+	},
+	graphql_view: {
+		options: [false, true]
+	},
+	designer_view: {
+		options: [false, true]
+	},
+	auth_view: {
+		options: [false, true]
+	},
+	functions_view: {
+		options: [false, true]
+	},
 	models_view: {
 		options: [false, true, 'force']
 	},
 	apidocs_view: {
 		options: [false, true]
+	},
+	cloud_view: {
+		options: [false, true],
 	},
 	themes: {
 		options: [false, true]
@@ -35,9 +56,6 @@ export const schema = {
 	},
 	changelog: {
 		options: ['auto', 'hidden', 'read', 'unread'],
-	},
-	cloud_support: {
-		options: [false, true],
 	}
 } satisfies FeatureFlagSchema;
 
@@ -46,31 +64,49 @@ export const featureFlags = new FeatureFlags({
 	schema,
 	defaults: {
 		development: {
-			database_version_check: false,
 			feature_flags: true,
+			query_view: true,
+			explorer_view: true,
+			graphql_view: true,
+			designer_view: true,
+			auth_view: true,
+			functions_view: true,
 			models_view: "force",
 			apidocs_view: true,
+			cloud_view: true,
 			newsfeed: true,
 			highlight_tool: true,
 			surreal_compat: 'v1',
 			cloud_endpoints: true,
-			cloud_support: true,
 		},
 		preview: {
-			database_version_check: true,
+			query_view: true,
+			explorer_view: true,
+			graphql_view: true,
+			designer_view: true,
+			auth_view: true,
+			functions_view: true,
 			models_view: true,
 			apidocs_view: true,
-			newsfeed: true,
-			surreal_compat: 'v1',
-			cloud_endpoints: false
-		},
-		production: {
+			cloud_view: true,
 			database_version_check: true,
-			models_view: true,
-			apidocs_view: true,
 			newsfeed: true,
 			surreal_compat: 'v1',
 			cloud_endpoints: true
+		},
+		production: {
+			query_view: true,
+			explorer_view: true,
+			graphql_view: true,
+			designer_view: true,
+			auth_view: true,
+			functions_view: true,
+			models_view: true,
+			apidocs_view: true,
+			cloud_view: true,
+			database_version_check: true,
+			newsfeed: true,
+			surreal_compat: 'v1'
 		},
 	},
 	overrides: (flag) => {

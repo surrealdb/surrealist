@@ -12,7 +12,7 @@ import { createRoot } from "react-dom/client";
 import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
-import { openConnection } from '~/screens/database/connection';
+import { openConnection } from '~/screens/database/connection/connection';
 import { handleWindowMessage } from '~/util/messaging';
 import { MiniRunScreen } from '~/screens/mini-run';
 

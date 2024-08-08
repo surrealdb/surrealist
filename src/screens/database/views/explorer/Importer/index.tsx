@@ -13,7 +13,7 @@ import { OpenedTextFile } from "~/adapter/base";
 import { iconChevronRight, iconDownload } from "~/util/icons";
 import { Entry } from "~/components/Entry";
 import { useIntent } from "~/hooks/url";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { useInputState } from "@mantine/hooks";
 import { useTableNames } from "~/hooks/schema";
 import { RecordId, Table } from "surrealdb.js";

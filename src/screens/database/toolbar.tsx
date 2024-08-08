@@ -15,7 +15,7 @@ import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { openConnection, executeQuery } from "./connection";
+import { openConnection, executeQuery } from "./connection/connection";
 import { sleep } from "radash";
 import { Spacer } from "~/components/Spacer";
 import { ActionBar } from "~/components/ActionBar";
@@ -26,7 +26,7 @@ import { openCloudAuthentication } from "../cloud-manage/auth";
 import { useCloudStore } from "~/stores/cloud";
 
 export function DatabaseToolbar() {
-	const { clearQueryResponse } = useDatabaseStore.getState();
+	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();
 	const [flags] = useFeatureFlags();
@@ -66,6 +66,8 @@ export function DatabaseToolbar() {
 				for (const query of connection.queries) {
 					clearQueryResponse(query.id);
 				}
+
+				clearGraphqlResponse(connection.id);
 			}
 		},
 	});

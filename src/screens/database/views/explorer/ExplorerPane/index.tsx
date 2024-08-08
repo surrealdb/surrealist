@@ -43,7 +43,7 @@ import {
 } from "~/util/icons";
 import { useContextMenu } from "mantine-contextmenu";
 import { useConfigStore } from "~/stores/config";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { RecordId } from "surrealdb.js";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";

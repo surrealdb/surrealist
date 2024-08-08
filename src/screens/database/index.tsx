@@ -32,6 +32,7 @@ const PORTAL_ATTRS = {
 const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	query: createHtmlPortalNode(PORTAL_ATTRS),
 	explorer: createHtmlPortalNode(PORTAL_ATTRS),
+	graphql: createHtmlPortalNode(PORTAL_ATTRS),
 	designer: createHtmlPortalNode(PORTAL_ATTRS),
 	authentication: createHtmlPortalNode(PORTAL_ATTRS),
 	functions: createHtmlPortalNode(PORTAL_ATTRS),
@@ -42,6 +43,7 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 
 const QueryView = lazy(() => import('./views/query/QueryView'));
 const ExplorerView = lazy(() => import('./views/explorer/ExplorerView'));
+const GraphqlView = lazy(() => import('./views/graphql/GraphqlView'));
 const DesignerView = lazy(() => import('./views/designer/DesignerView'));
 const AuthenticationView = lazy(() => import('./views/authentication/AuthenticationView'));
 const FunctionsView = lazy(() => import('./views/functions/FunctionsView'));
@@ -220,6 +222,12 @@ export function DatabaseScreen() {
 						<InPortal node={VIEW_PORTALS.explorer}>
 							<Suspense fallback={null}>
 								<ExplorerView />
+							</Suspense>
+						</InPortal>
+
+						<InPortal node={VIEW_PORTALS.graphql}>
+							<Suspense fallback={null}>
+								<GraphqlView />
 							</Suspense>
 						</InPortal>
 

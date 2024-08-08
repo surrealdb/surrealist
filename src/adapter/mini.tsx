@@ -3,7 +3,7 @@ import { BrowserAdapter } from "./browser";
 import { Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { Value } from "surrealql.wasm/v1";
 
 const THEMES = new Set(['light', 'dark', 'auto']);

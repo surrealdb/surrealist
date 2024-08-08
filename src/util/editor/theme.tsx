@@ -20,6 +20,7 @@ export const DARK_STYLE = HighlightStyle.define([
 	{ tag: t.typeName, color: "#ffde00" },
 	{ tag: t.literal, color: "#9d2fff" },
 	{ tag: t.className, color: "#0084ff" },
+	{ tag: t.atom, color: "#1cc1ff" },
 ], { themeType: 'dark' });
 
 /**
@@ -41,4 +42,5 @@ export const LIGHT_STYLE = HighlightStyle.define([
 	{ tag: t.typeName, color: "#ffc845" },
 	{ tag: t.literal, color: "#9d2fff" },
 	{ tag: t.className, color: "#0084ff" },
+	{ tag: t.atom, color: "#1cc1ff" },
 ], { themeType: 'light' });

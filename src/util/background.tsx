@@ -1,10 +1,9 @@
-import compare from "semver-compare";
 import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { getSetting, watchStore } from "./config";
 import { assign, debounce } from "radash";
-import { openConnection } from "~/screens/database/connection";
+import { openConnection } from "~/screens/database/connection/connection";
 import { featureFlags } from "./feature-flags";
 import { VIEW_MODES } from "~/constants";
 import { CONFIG_VERSION } from "./defaults";
@@ -84,7 +83,7 @@ export async function watchConfigStore() {
 	}, (state) => {
 		adapter.saveConfig(state);
 	}));
-	
+
 	setTimeout(updateTitle);
 }
 

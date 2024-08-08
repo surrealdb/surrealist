@@ -488,11 +488,11 @@ const objectToken = new ExternalTokenizer((input, stack) => {
 const surqlHighlighting = styleTags({
 	"Ident": tags.name,
 	"Keyword function": tags.keyword,
+	"ObjectKey!": tags.propertyName,
 	"String": tags.string,
 	"Int Float Decimal VersionNumber Duration": tags.number,
 	"Bool": tags.bool,
 	"Comment": tags.lineComment,
-	"KeyName": tags.propertyName,
 	"VariableName": tags.variableName,
 	"None": tags.null,
 	"FunctionName": tags.function(tags.name),

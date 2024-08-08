@@ -36,6 +36,7 @@ export type ViewMode =
 	| "cloud"
 	| "query"
 	| "explorer"
+	| "graphql"
 	| "designer"
 	| "authentication"
 	| "functions"
@@ -62,8 +63,7 @@ export type CodeLang =
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
-export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
-Partial<T>;
+export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string> = { label: string; value: T };
 export type Selection<T extends string> = Selectable<T>[];
@@ -90,17 +90,19 @@ export interface Connection {
 	name: string;
 	icon: number;
 	group?: string;
+	lastNamespace: string;
+	lastDatabase: string;
 	queries: TabQuery[];
 	activeQuery: string;
+	queryHistory: HistoryQuery[];
 	authentication: Authentication;
 	pinnedTables: string[];
 	diagramMode: DiagramMode;
 	diagramDirection: DiagramDirection;
 	diagramShowLinks: boolean;
 	designerTableList: boolean;
-	queryHistory: HistoryQuery[];
-	lastNamespace: string;
-	lastDatabase: string;
+	graphqlQuery: string;
+	graphqlVariables: string;
 }
 
 export interface Template {

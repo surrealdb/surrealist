@@ -16,7 +16,7 @@ import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
 import { Sortable } from "~/components/Sortable";
 import { useIntent } from "~/hooks/url";
-import { cancelLiveQueries } from "~/screens/database/connection";
+import { cancelLiveQueries } from "~/screens/database/connection/connection";
 
 export interface TabsPaneProps {
 	openHistory: () => void;

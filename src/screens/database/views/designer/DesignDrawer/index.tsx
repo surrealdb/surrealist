@@ -29,7 +29,7 @@ import { SaveableHandle } from "~/hooks/save";
 import { tb } from "~/util/helpers";
 import { iconClose, iconDelete, iconRelation, iconTable, iconWarning } from "~/util/icons";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { ChangefeedElement } from "./elements/changefeed";
 import { DrawerResizer } from "~/components/DrawerResizer";
 

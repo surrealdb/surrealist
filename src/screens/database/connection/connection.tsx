@@ -1,5 +1,4 @@
 import posthog from "posthog-js";
-import { surrealdbWasmEngines } from 'surrealdb.wasm';
 import { Surreal, QueryResult, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
 import { AuthDetails, Authentication, Connection, Protocol, QueryResponse } from '~/types';
 import { State, useDatabaseStore } from '~/stores/database';
@@ -15,9 +14,11 @@ import { Value } from "surrealql.wasm/v1";
 import { adapter } from "~/adapter";
 import { getSetting } from "~/util/config";
 import { featureFlags } from "~/util/feature-flags";
-import { fetchAPI } from "../cloud-manage/api";
+import { fetchAPI } from "../../cloud-manage/api";
 import { useCloudStore } from "~/stores/cloud";
 import { SANDBOX } from "~/constants";
+import { CloudError } from "~/util/errors";
+import { createSurreal } from "./surreal";
 
 export interface ConnectOptions {
 	connection?: Connection;
@@ -26,6 +27,11 @@ export interface ConnectOptions {
 
 export interface UserQueryOptions {
 	override?: string;
+}
+
+export interface GraphqlResponse {
+	success: boolean;
+	result: any;
 }
 
 let instance = createSurreal();
@@ -249,10 +255,6 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
  */
 export async function executeQuery(query: string, params?: any) {
 	try {
-		if (import.meta.env.MODE !== "production") {
-			adapter.trace('DB', `Executing query: ${query}`);
-		}
-
 		const responseRaw = await instance.query_raw(query, params) || [];
 
 		return mapResults(responseRaw);
@@ -396,6 +398,41 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 }
 
 /**
+ * Execute a GraphQL query against the active connection
+ */
+export async function executeGraphql(query: string, params?: Record<string, any>, operation?: string): Promise<GraphqlResponse> {
+	const { currentState } = useDatabaseStore.getState();
+	const connection = getConnection();
+
+	if (!connection || currentState !== "connected") {
+		showError({
+			title: "Failed to execute",
+			subtitle: "You must be connected to the database"
+		});
+
+		throw new Error("Not connected");
+	}
+
+	try {
+		const { result, error } = await instance.graphql({
+			query,
+			variables: params,
+			operationName: operation
+		});
+
+		return {
+			success: !!result,
+			result: result || error
+		};
+	} catch(err: any) {
+		return {
+			success: false,
+			result: err.message
+		};
+	}
+}
+
+/**
  * Cancel the active live queries for the given query ID
  */
 export function cancelLiveQueries(tab: string) {
@@ -509,13 +546,6 @@ export async function composeAuthentication(connection: Authentication): Promise
 	}
 }
 
-function createSurreal() {
-	return new Surreal({
-		engines: surrealdbWasmEngines({
-			capabilities: true,
-		})
-	});
-}
 
 function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
 	return response.map(res => ({
@@ -540,10 +570,4 @@ function getVersionTimeout() {
 
 function getReconnectInterval() {
 	return (getSetting("behavior", "reconnectInterval") ?? 3) * 1000;
-}
-
-class CloudError extends Error {
-	public constructor(message: string) {
-		super(message);
-	}
 }

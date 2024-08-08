@@ -26,6 +26,7 @@ export type InterfaceStore = {
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
 	showQueryVariables: boolean;
+	showGraphqlVariables: boolean;
 
 	setWindowTitle: (title: string) => void;
 	setColorPreference: (preference: ColorScheme) => void;
@@ -45,7 +46,9 @@ export type InterfaceStore = {
 	showChangelog: () => void;
 	readChangelog: () => void;
 	setShowQueryVariables: (show: boolean) => void;
+	setShowGraphqlVariables: (show: boolean) => void;
 	toggleQueryVariables: () => void;
+	toggleGraphqlVariables: () => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
@@ -64,6 +67,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	showChangelogAlert: false,
 	hasReadChangelog: false,
 	showQueryVariables: false,
+	showGraphqlVariables: false,
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
@@ -164,6 +168,14 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	toggleQueryVariables: () => set((state) => ({
 		showQueryVariables: !state.showQueryVariables,
+	})),
+
+	setShowGraphqlVariables: (show) => set(() => ({
+		showGraphqlVariables: show,
+	})),
+
+	toggleGraphqlVariables: () => set((state) => ({
+		showGraphqlVariables: !state.showGraphqlVariables,
 	})),
 
 }));

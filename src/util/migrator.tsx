@@ -15,6 +15,9 @@ export function applyMigrations(config: any): SurrealistConfig {
 			con.lastNamespace = con.connection.namespace;
 			con.lastDatabase = con.connection.database;
 
+			con.graphqlQuery = "";
+			con.graphqlVariables = "";
+
 			if (con.connection.authMode === "root" || con.connection.authMode === "namespace") {
 				con.authentication.namespace = "";
 			}

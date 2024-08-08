@@ -4,7 +4,7 @@ import { useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { openConnection } from "~/screens/database/connection";
+import { openConnection } from "~/screens/database/connection/connection";
 import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";

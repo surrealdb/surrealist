@@ -14,7 +14,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { DesignDrawer } from "../DesignDrawer";
 import { useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { Box } from "@mantine/core";

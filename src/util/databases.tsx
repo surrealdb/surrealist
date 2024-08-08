@@ -1,4 +1,4 @@
-import { executeQuery, executeQuerySingle } from "~/screens/database/connection";
+import { executeQuery, executeQuerySingle } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnection, getAuthNS, getAuthDB } from "./connection";
 import { escapeIdent, parseIdent } from "./surrealql";

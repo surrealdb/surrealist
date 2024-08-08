@@ -10,7 +10,7 @@ import { useStable } from "~/hooks/stable";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { useTableNames, useTables } from "~/hooks/schema";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { RecordId, StringRecordId, Table } from "surrealdb.js";
 import { surqlLinting } from "~/util/editor/extensions";
 import { surrealql } from "codemirror-surrealql";
@@ -20,7 +20,7 @@ import { Label } from "~/components/Label";
 import { extractEdgeRecords } from "~/util/schema";
 import { CodeInput } from "~/components/Inputs";
 import { QueryResponse } from "~/types";
-import { EditorView } from "@codemirror/view";
+import { EditorView, lineNumbers } from "@codemirror/view";
 
 type EdgeInfo = [boolean, string[], string[]];
 
@@ -242,7 +242,8 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						onChange={setRecordBody}
 						extensions={[
 							surrealql(),
-							surqlLinting()
+							surqlLinting(),
+							lineNumbers(),
 						]}
 						onMount={setCursor}
 					/>

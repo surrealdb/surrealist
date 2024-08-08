@@ -21,6 +21,7 @@ import { surqlLinting } from "~/util/editor/extensions";
 import { Label } from "~/components/Label";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { showError } from "~/util/helpers";
+import { lineNumbers } from "@codemirror/view";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -115,6 +116,7 @@ export function EditorPanel({
 					extensions={[
 						surrealql(),
 						surqlLinting(),
+						lineNumbers(),
 					]}
 				/>
 				<Divider orientation="vertical" />

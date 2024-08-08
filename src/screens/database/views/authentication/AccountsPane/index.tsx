@@ -30,7 +30,7 @@ import { showError } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
 import { iconCheck, iconComment, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },

@@ -16,7 +16,7 @@ import { syncDatabaseSchema } from "~/util/schema";
 import { iconAccountPlus, iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
-import { authenticate, composeAuthentication, executeQuery, register } from "~/screens/database/connection";
+import { authenticate, composeAuthentication, executeQuery, register } from "~/screens/database/connection/connection";
 import { getStatementCount } from "~/util/surrealql";
 import { useImmer } from "use-immer";
 import { SENSITIVE_SCOPE_FIELDS } from "~/constants";

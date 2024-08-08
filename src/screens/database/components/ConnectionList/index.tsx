@@ -20,7 +20,7 @@ import { Connection } from "~/types";
 import { EditableText } from "~/components/EditableText";
 import { group } from "radash";
 import { useKeymap } from "~/hooks/keymap";
-import { closeConnection, openConnection } from "../../connection";
+import { closeConnection, openConnection } from "../../connection/connection";
 
 const UNGROUPED = Symbol("ungrouped");
 

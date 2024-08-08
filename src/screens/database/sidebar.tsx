@@ -19,10 +19,11 @@ const NAVIGATION: ViewMode[][] = [
 	[
 		"query",
 		"explorer",
-		"designer",
-		"authentication",
+		"graphql",
 	],
 	[
+		"designer",
+		"authentication",
 		"functions",
 		"models",
 	],

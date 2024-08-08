@@ -25,12 +25,11 @@ import { useConfigStore } from "~/stores/config";
 import { SavedQuery } from "~/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { iconCheck } from "~/util/icons";
-import { useIsLight } from "~/hooks/theme";
 import { MiniAdapter } from "~/adapter/mini";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
-import { executeUserQuery } from "~/screens/database/connection";
+import { executeUserQuery } from "~/screens/database/connection/connection";
 import { useSetting } from "~/hooks/config";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useInterfaceStore } from "~/stores/interface";
@@ -43,7 +42,6 @@ const switchPortal = createHtmlPortalNode();
 export function QueryView() {
 	const { setShowQueryVariables, toggleQueryVariables } = useInterfaceStore.getState();
 	const { saveQuery } = useConfigStore.getState();
-	const isLight = useIsLight();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [variablesValid, setVariablesValid] = useState(true);
@@ -57,6 +55,7 @@ export function QueryView() {
 	const tags = useSavedQueryTags();
 	const active = useActiveQuery();
 	const showVariables = useInterfaceStore(state => state.showQueryVariables);
+	const activeView = useConfigStore(state => state.activeView);
 
 	const [isSaving, isSavingHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -108,7 +107,7 @@ export function QueryView() {
 	});
 
 	const runQuery = useStable(() => {
-		if (!active) return;
+		if (!active || activeView !== "query") return;
 
 		executeUserQuery({
 			override: selection?.empty === false

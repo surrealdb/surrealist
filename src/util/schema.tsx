@@ -3,7 +3,7 @@ import equal from 'fast-deep-equal';
 import { SchemaFunction, SchemaModel, SchemaInfoDB, SchemaInfoKV, SchemaInfoNS, SchemaInfoTB, TableInfo } from "~/types";
 import { tb } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
-import { executeQuerySingle } from '~/screens/database/connection';
+import { executeQuerySingle } from '~/screens/database/connection/connection';
 import { createDatabaseSchema } from "./defaults";
 import { klona } from "klona";
 import { adapter } from "~/adapter";

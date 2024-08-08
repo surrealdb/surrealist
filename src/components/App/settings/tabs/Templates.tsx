@@ -8,43 +8,38 @@ import { useDisclosure } from "@mantine/hooks";
 import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { useImmer } from "use-immer";
 import { Connection, Template } from "~/types";
-import { createBaseAuthentication } from "~/util/defaults";
+import { createBaseConnection } from "~/util/defaults";
 import { Form } from "~/components/Form";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { newId } from "~/util/helpers";
+import { useConfigStore } from "~/stores/config";
 
 const CAT = "templates";
-const PLACEHOLDER: Connection = {
-	id: "",
-	name: "New template",
-	icon: 0,
-	queries: [],
-	activeQuery: "",
-	lastDatabase: "",
-	lastNamespace: "",
-	authentication: createBaseAuthentication(),
-	pinnedTables: [],
-	diagramMode: "fields",
-	diagramDirection: "ltr",
-	diagramShowLinks: false,
-	queryHistory: []
-};
+
+function createPlaceholder() {
+	const settings = useConfigStore.getState().settings;
+
+	return {
+		...createBaseConnection(settings),
+		name: "New template",
+	};
+}
 
 export function TemplatesTab() {
 	const [templates, setTemplates] = useSetting(CAT, "list");
-	const [details, setDetails] = useImmer<Connection>(PLACEHOLDER);
+	const [details, setDetails] = useImmer<Connection>(createPlaceholder());
 	const [showEditor, showEditorHandle] = useDisclosure();
 
 	const openCreator = useStable(() => {
 		showEditorHandle.open();
-		setDetails(PLACEHOLDER);
+		setDetails(createPlaceholder());
 	});
 
 	const openEditor = useStable((template: Template) => {
 		showEditorHandle.open();
 		setDetails({
-			...PLACEHOLDER,
+			...createPlaceholder(),
 			id: template.id,
 			name: template.name,
 			icon: template.icon,

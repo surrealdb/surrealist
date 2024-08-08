@@ -15,7 +15,7 @@ import { useSaveable } from "~/hooks/save";
 import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useViewEffect } from "~/hooks/view";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { usePanelMinSize } from "~/hooks/panels";

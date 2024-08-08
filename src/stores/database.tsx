@@ -1,6 +1,8 @@
 import { DatabaseSchema, QueryResponse } from "~/types";
 import { create } from 'zustand';
 import { createDatabaseSchema } from "~/util/defaults";
+import { omit } from "radash";
+import { GraphqlResponse } from "~/screens/database/connection/connection";
 
 export type State = "disconnected" | "connecting" | "retrying" | "connected";
 
@@ -13,7 +15,8 @@ export type DatabaseStore = {
 	consoleOutput: string[];
 	databaseSchema: DatabaseSchema;
 	version: string;
-	responses: Record<string, QueryResponse[]>;
+	queryResponses: Record<string, QueryResponse[]>;
+	graphqlResponse: Record<string, GraphqlResponse>;
 
 	setQueryActive: (isQueryActive: boolean) => void;
 	clearSchema: () => void;
@@ -29,6 +32,8 @@ export type DatabaseStore = {
 	setVersion: (version: string) => void;
 	setQueryResponse: (tab: string, response: QueryResponse[]) => void;
 	clearQueryResponse: (tab: string) => void;
+	setGraphqlResponse: (connection: string, response: GraphqlResponse) => void;
+	clearGraphqlResponse: (connection: string) => void;
 };
 
 export const useDatabaseStore = create<DatabaseStore>((set) => ({
@@ -40,7 +45,8 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	consoleOutput: [],
 	databaseSchema: createDatabaseSchema(),
 	version: "",
-	responses: {},
+	queryResponses: {},
+	graphqlResponse: {},
 
 	setQueryActive: (isQueryActive) => set(() => ({
 		isQueryActive
@@ -97,17 +103,25 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	})),
 
 	setQueryResponse: (tab, response) => set((state) => ({
-		responses: {
-			...state.responses,
+		queryResponses: {
+			...state.queryResponses,
 			[tab]: response
 		}
 	})),
 
 	clearQueryResponse: (tab) => set((state) => ({
-		responses: {
-			...state.responses,
-			[tab]: []
+		queryResponses: omit(state.queryResponses, [tab])
+	})),
+
+	setGraphqlResponse: (connection, response) => set((state) => ({
+		graphqlResponse: {
+			...state.graphqlResponse,
+			[connection]: response
 		}
+	})),
+
+	clearGraphqlResponse: (connection) => set((state) => ({
+		graphqlResponse: omit(state.graphqlResponse, [connection])
 	})),
 
 }));

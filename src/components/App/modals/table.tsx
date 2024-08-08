@@ -8,7 +8,7 @@ import { useTableNames } from "~/hooks/schema";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { dispatchIntent, useIntent } from "~/hooks/url";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { tb } from "~/util/helpers";
 import { SCHEMA_MODES } from "~/constants";

@@ -4,7 +4,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { ResultMode } from "~/types";
 import { RESULT_MODES } from "~/constants";
-import { executeQuery, executeUserQuery } from "~/screens/database/connection";
+import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
 
 /**
  * Handle incoming window messages

@@ -18,7 +18,7 @@ import { Entry } from "~/components/Entry";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfirmation } from "~/providers/Confirmation";
 import { tb } from "~/util/helpers";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 
 export interface TablesPaneProps {
 	icon?: string;

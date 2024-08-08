@@ -10,7 +10,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
 import { surrealql } from "codemirror-surrealql";

@@ -7,7 +7,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
 import { dispatchIntent, useIntent } from "~/hooks/url";
-import { openConnection } from "~/screens/database/connection";
+import { openConnection } from "~/screens/database/connection/connection";
 import { getActiveConnection } from "~/util/connection";
 import { Icon } from "../Icon";
 

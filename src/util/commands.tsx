@@ -8,7 +8,7 @@ import { adapter, isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
 import { featureFlags } from "./feature-flags";
 import { syncDatabaseSchema } from "./schema";
-import { closeConnection, openConnection } from "~/screens/database/connection";
+import { closeConnection, openConnection } from "~/screens/database/connection/connection";
 import { DesktopAdapter } from "~/adapter/desktop";
 
 type LaunchAction = { type: "launch", handler: () => void };
@@ -120,6 +120,8 @@ export function computeCommands(): CommandCategory[] {
 		const tables = databaseSchema?.tables || [];
 		const scopes = databaseSchema?.scopes || [];
 
+		console.log(activeView);
+
 		categories.push({
 			name: 'Views',
 			commands: Object.values(VIEW_MODES).flatMap(view => view.disabled?.(featureFlags.store) ? [] : [{
@@ -223,6 +225,35 @@ export function computeCommands(): CommandCategory[] {
 					action: intent("export-database")
 				}
 			]
+		}, {
+			name: 'GraphQL',
+			commands: activeView === "graphql" ? [
+				{
+					id: newId(),
+					name: "Run query",
+					icon: iconPlay,
+					shortcut: ["F9", "mod enter"],
+					action: intent("run-graphql-query")
+				},
+				{
+					id: newId(),
+					name: "Format query",
+					icon: iconText,
+					action: intent("format-graphql-query")
+				},
+				{
+					id: newId(),
+					name: "Toggle variables panel",
+					icon: iconBraces,
+					action: intent("toggle-graphql-variables")
+				},
+				{
+					id: newId(),
+					name: "Infer variables from query",
+					icon: iconAutoFix,
+					action: intent("infer-graphql-variables")
+				}
+			] : []
 		}, {
 			name: "Authentication",
 			commands: [
