@@ -98,7 +98,7 @@ export function BillingPage() {
 							mx="auto"
 						>
 							<BillingPlan
-								name="Starter plan"
+								name="Start"
 								audience="beginners"
 								features={[
 									"Some feature",
@@ -121,7 +121,7 @@ export function BillingPage() {
 								}
 							/>
 							<BillingPlan
-								name="Pro plan"
+								name="Grow"
 								audience="professionals"
 								features={[
 									"Spicy feature",
@@ -145,12 +145,12 @@ export function BillingPage() {
 										variant="gradient"
 										size="xs"
 									>
-										Upgrade to pro
+										Upgrade to grow
 									</Button>
 								}
 							/>
 							<BillingPlan
-								name="Enterprise plan"
+								name="Scale"
 								audience="large organizations"
 								features={[
 									"Unbelievable feature",

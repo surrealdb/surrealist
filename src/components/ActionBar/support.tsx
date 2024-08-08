@@ -1,8 +1,7 @@
 import classes from "./style.module.scss";
-import { Box, Group, Stack, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
+import { Box, Group, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { mdiChatOutline, mdiTicket } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsAuthenticated } from "~/hooks/cloud";
@@ -17,19 +16,12 @@ interface Topic {
 	onClick: () => void;
 }
 
-const SUPPORT_CHAT: Topic = {
-	title: "Support Chat",
-	description: "Talk to our Surreal Chatbot for help on queries, Surrealist, and more.",
-	icon: mdiChatOutline,
-	onClick: () => {}
-};
-
-const SUBMIT_TICKET: Topic = {
-	title: "Submit a Ticket",
-	description: "Open a ticket with our support team for help with your account or issues.",
-	icon: mdiTicket,
-	onClick: () => {}
-};
+// const SUPPORT_CHAT: Topic = {
+// 	title: "Support Chat",
+// 	description: "Talk to our Surreal Chatbot for help on queries, Surrealist, and more.",
+// 	icon: mdiChatOutline,
+// 	onClick: () => {}
+// };
 
 const DOCUMENTATION: Topic = {
 	title: "Documentation",
@@ -170,16 +162,12 @@ export function HelpAndSupport() {
 					<Icon path={iconClose} />
 				</ActionIcon>
 
-				<Stack mt="xl">
-					{isAuthed && renderRow(SUBMIT_TICKET)}
-
-					<SimpleGrid cols={2}>
-						{renderTile(DOCUMENTATION)}
-						{renderTile(ISSUE_REPORT)}
-						{renderTile(SHORTCUTS)}
-						{renderTile(DISCORD)}
-					</SimpleGrid>
-				</Stack>
+				<SimpleGrid cols={2} mt="xl">
+					{renderTile(DOCUMENTATION)}
+					{renderTile(ISSUE_REPORT)}
+					{renderTile(SHORTCUTS)}
+					{renderTile(DISCORD)}
+				</SimpleGrid>
 			</Modal>
 		</>
 	);

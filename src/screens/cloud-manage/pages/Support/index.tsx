@@ -1,156 +1,134 @@
-import { Button, Flex, Group, Paper, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { useMutation } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { Form } from "~/components/Form";
+import classes from "./style.module.scss";
+import { BoxProps, Button, Select, Text, Textarea, TextInput, UnstyledButton } from "@mantine/core";
+import { Center, Divider, Group, Paper, SimpleGrid, Stack } from "@mantine/core";
+import { mdiEmailOutline } from "@mdi/js";
 import { Icon } from "~/components/Icon";
-import { useStable } from "~/hooks/stable";
-import { iconCursor } from "~/util/icons";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { iconBook, iconCursor, iconDiscord, iconStar } from "~/util/icons";
 
-const endpoint = "https://api-prod.scoutos.com/v1/apps/execute";
-const appId = "dddef4a4-3fd7-48d1-bbd3-60a0d597e2f2";
-const apiKey = import.meta.env.VITE_SCOUT_API_KEY;
-
-type Message = {
-	content: string;
-	sender: "user" | "bot";
+interface SupportTileProps extends BoxProps {
+	icon: string;
+	title: string;
+	onClick?: () => void;
 }
 
-type Request = {
-	input: string;
-	conversation: Message[];
+function SupportTile({
+	icon,
+	title,
+	onClick,
+	...props
+}: SupportTileProps) {
+	return (
+		<UnstyledButton>
+			<Paper
+				withBorder
+				style={{ aspectRatio: 1 }}
+				className={classes.tile}
+				onClick={onClick}
+				{...props}
+			>
+				<Stack justify="center" align="center" h="100%">
+					<Icon path={icon} size="xl" c="bright" />
+					<Text>
+						{title}
+					</Text>
+				</Stack>
+			</Paper>
+		</UnstyledButton>
+	);
 }
 
 export function SupportPage() {
-	const inputRef = useRef<HTMLInputElement>(null);
-	const [threadId, setThreadId] = useState<string | undefined>(undefined);
-	const [input, setInput] = useState("");
-	const [conversation, setConversation] = useState<Message[]>([]);
-	const { mutateAsync: sendRequest, isPending, status } = useMutation({
-		mutationKey: ["cloud", "support", "message"],
-		async mutationFn(inputs: Request) {
-			const res = await fetch(endpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": `Bearer ${apiKey}`,
-				},
-				body: JSON.stringify({
-					id: appId,
-					thread_id: threadId,
-					inputs,
-				}),
-			}).then(res => res.json());
-
-			console.log(res);
-
-			const output = res?.outputs?.output?.output;
-			if (!output) return "Failed to send message";
-			setThreadId(res.thread_id);
-			return output;
-		}
-	});
-
-	const sendMessage = useStable(() => {
-		setConversation((c) => [
-			...c,
-			{
-				content: input,
-				sender: "user",
-			},
-		]);
-
-		sendRequest({ input, conversation }).then((res) => {
-			setConversation((c) => [
-				...c,
-				{
-					content: res,
-					sender: "bot",
-				},
-			]);
-		});
-
-		setInput("");
-		inputRef.current?.focus();
-	});
-
 	return (
-		<Stack
-			gap="xl"
-			h="100%"
+		<Center
+			flex={1}
 		>
-			<Stack
-				flex={1}
-				pos="relative"
+			<Paper
+				p="xl"
+				bg="transparent"
+				w={850}
+				component={Stack}
 			>
-				<ScrollArea pos="absolute" inset={0}>
-					{conversation.map((message, i) => (
-						<Flex
-							justify={message.sender === "user" ? "end" : "start"}
-							key={i}
-						>
-							<Paper
-								px="lg"
-								py="sm"
-								radius="xl"
-								bg={message.sender === "user" ? "slate" : "blue"}
-								maw="80%"
-							>
-								<Text size="lg" c="white">
-									{message.content}
-								</Text>
-							</Paper>
-						</Flex>
-					))}
-					{status == "pending" && (
-						<Flex>
-							<Paper
-								px="lg"
-								py="sm"
-								radius="xl"
-								bg="blue"
-								maw="80%"
-							>
-								<Text size="lg" c="white">
-									Typing...
-								</Text>
-							</Paper>
-						</Flex>
-					)}
-				</ScrollArea>
-			</Stack>
-			<Stack pb={2}>
-				<Form onSubmit={sendMessage}>
-					<Group>
-						<TextInput
-							ref={inputRef}
-							size="lg"
-							style={{
-								flexGrow: 1
-							}}
-							placeholder="How can we help you today?"
-							value={input}
-							onChange={(e) => setInput(e.target.value)}
+				<Group
+					gap={35}
+					flex={1}
+					align="stretch"
+				>
+					<Stack flex={1}>
+						<Group>
+							<Icon path={iconStar} />
+							<PrimaryTitle>
+								Looking for help?
+							</PrimaryTitle>
+						</Group>
+						<Text>
+							Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis quas debitis vero corrupti hic alias, odio consequatur, exercitationem distinctio fuga eaque! Tenetur atque magnam ipsa inventore earum suscipit illo quidem.
+						</Text>
+						<SimpleGrid cols={3} mt="md">
+							<SupportTile
+								icon={iconDiscord}
+								title="Community"
+							/>
+							<SupportTile
+								icon={iconBook}
+								title="Documentation"
+							/>
+							<SupportTile
+								icon={mdiEmailOutline}
+								title="Account help"
+							/>
+						</SimpleGrid>
+					</Stack>
+					<Divider
+						orientation="vertical"
+						color="slate.6"
+					/>
+					<Stack flex={1}>
+						<Group>
+							<Icon path={mdiEmailOutline} />
+							<PrimaryTitle>
+								Submit a ticket
+							</PrimaryTitle>
+						</Group>
+						<Text>
+							Submit a ticket to get help with your account, billing, database, or any other issue experienced with Surreal Cloud. We aim to respond within 2-3 business days.
+						</Text>
+						<Text>
+							Before we get started, please select the scope of your ticket.
+						</Text>
+						<Select
+							value="account"
+							data={[
+								{ value: "account", label: "Account" },
+								{ value: "billing", label: "Billing" },
+								{ value: "database", label: "Database" },
+								{ value: "other", label: "Other" },
+							]}
 						/>
-						<Button
-							size="lg"
-							px="xl"
-							rightSection={
-								<Icon
-									path={iconCursor}
-									size="md"
-								/>
-							}
-							type="submit"
-							disabled={status == 'pending'}
-						>
-							Send
-						</Button>
-					</Group>
-				</Form>
-				<Text opacity={40}>
-					You are currently chatting with a bot. To send your message to a human, simply ask.
-				</Text>
-			</Stack>
-		</Stack>
+						<Text>
+							Please provide a clear subject and detailed message to help us understand your issue.
+						</Text>
+						<TextInput
+							placeholder="Subject"
+						/>
+						<Textarea
+							rows={10}
+							placeholder="Message"
+						/>
+						<Group>
+							<Spacer />
+							<Button
+								variant="gradient"
+								size="xs"
+								rightSection={<Icon path={iconCursor} />}
+							>
+								Submit ticket
+							</Button>
+						</Group>
+					</Stack>
+				</Group>
+			</Paper>
+		</Center>
 	);
 }

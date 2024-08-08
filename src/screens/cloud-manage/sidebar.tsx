@@ -14,14 +14,15 @@ import { useFeatureFlags } from "~/util/feature-flags";
 const NAVIGATION: CloudPage[][] = [
 	[
 		"instances",
-		"data",
+		// "data",
 	],
 	[
 		"members",
-		"audits",
+		// "audits",
 	],
 	[
 		"billing",
+		"support",
 		"settings",
 	],
 ];
@@ -48,7 +49,6 @@ export function CloudSidebar() {
 	}, [flags]);
 
 	const isLoading = state === "loading";
-	const { support } = CLOUD_PAGES;
 
 	function renderNavigation(info: CloudPageInfo) {
 		return (
@@ -139,12 +139,6 @@ export function CloudSidebar() {
 						)}
 					</Fragment>
 				))}
-
-				<Spacer />
-
-				<Divider color="slate.6" />
-
-				{renderNavigation(support)}
 			</Stack>
 		</Paper>
 	);

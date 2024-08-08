@@ -1,6 +1,6 @@
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
-import { mdiAccountOutline, mdiCreditCardOutline, mdiGraphql, mdiPackageVariantClosed, mdiProgressClock } from "@mdi/js";
+import { mdiAccountOutline, mdiCreditCardOutline, mdiEmailOutline, mdiGraphql, mdiPackageVariantClosed, mdiProgressClock } from "@mdi/js";
 
 import {
 	AuthMode,
@@ -24,7 +24,6 @@ import {
 import {
 	iconAPI,
 	iconAuth,
-	iconChat,
 	iconCloud,
 	iconCog,
 	iconCombined,
@@ -217,9 +216,8 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	},
 	support: {
 		id: "support",
-		name: "Support Chat",
-		icon: iconChat,
-		disabled: () => true
+		name: "Support",
+		icon: mdiEmailOutline
 	},
 	settings: {
 		id: "settings",
