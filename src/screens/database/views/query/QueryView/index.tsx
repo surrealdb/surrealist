@@ -7,7 +7,7 @@ import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
 import { TabsPane } from "../TabsPane";
 import { useDisclosure, useInputState } from "@mantine/hooks";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { adapter, isMini } from "~/adapter";
 import { Box, Button, Group, Modal, SegmentedControl, Stack, TagsInput, Text, TextInput } from "@mantine/core";
@@ -38,6 +38,10 @@ import { CodeInput } from "~/components/Inputs";
 import { surrealql } from "codemirror-surrealql";
 
 const switchPortal = createHtmlPortalNode();
+
+const QueryPaneLazy = memo(QueryPane);
+const VariablesPaneLazy = memo(VariablesPane);
+const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
 	const { setShowQueryVariables, toggleQueryVariables } = useInterfaceStore.getState();
@@ -142,7 +146,7 @@ export function QueryView() {
 			<PanelGroup direction={orientation}>
 				<Panel minSize={15}>
 					{isMini ? (showVariables ? (
-						<VariablesPane
+						<VariablesPaneLazy
 							isValid={variablesValid}
 							switchPortal={switchPortal}
 							setIsValid={setVariablesValid}
@@ -150,7 +154,7 @@ export function QueryView() {
 							square={squareCards}
 						/>
 					) : (
-						<QueryPane
+						<QueryPaneLazy
 							activeTab={active}
 							setIsValid={setQueryValid}
 							switchPortal={switchPortal}
@@ -164,7 +168,7 @@ export function QueryView() {
 					)) : (
 						<PanelGroup direction={variablesOrientation}>
 							<Panel minSize={35}>
-								<QueryPane
+								<QueryPaneLazy
 									activeTab={active}
 									setIsValid={setQueryValid}
 									showVariables={showVariables}
@@ -178,7 +182,7 @@ export function QueryView() {
 								<>
 									<PanelDragger />
 									<Panel defaultSize={40} minSize={35}>
-										<VariablesPane
+										<VariablesPaneLazy
 											isValid={variablesValid}
 											setIsValid={setVariablesValid}
 											closeVariables={closeVariables}
@@ -191,7 +195,7 @@ export function QueryView() {
 				</Panel>
 				<PanelDragger />
 				<Panel minSize={15}>
-					<ResultPane
+					<ResultPaneLazy
 						activeTab={active}
 						isQueryValid={queryValid}
 						selection={selection}

@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
@@ -23,6 +23,10 @@ import { GQL_SUPPORTED } from "~/constants";
 import { adapter } from "~/adapter";
 import { parseValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
+
+const QueryPaneLazy = memo(QueryPane);
+const VariablesPaneLazy = memo(VariablesPane);
+const ResultPaneLazy = memo(ResultPane);
 
 export function GraphqlView() {
 	const { setShowGraphqlVariables, toggleGraphqlVariables } = useInterfaceStore.getState();
@@ -78,7 +82,7 @@ export function GraphqlView() {
 				<Panel minSize={15}>
 					<PanelGroup direction="vertical">
 						<Panel minSize={35}>
-							<QueryPane
+							<QueryPaneLazy
 								setIsValid={setQueryValid}
 								isValid={queryValid}
 								showVariables={showVariables}
@@ -89,7 +93,7 @@ export function GraphqlView() {
 							<>
 								<PanelDragger />
 								<Panel defaultSize={40} minSize={35}>
-									<VariablesPane
+									<VariablesPaneLazy
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
 										closeVariables={closeVariables}
@@ -126,7 +130,7 @@ export function GraphqlView() {
 					</Center>
 				</PanelDragger>
 				<Panel minSize={15}>
-					<ResultPane />
+					<ResultPaneLazy />
 				</Panel>
 			</PanelGroup>
 		</Stack>

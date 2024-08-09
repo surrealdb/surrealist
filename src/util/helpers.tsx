@@ -5,11 +5,7 @@ import { showNotification } from "@mantine/notifications";
 import { uid } from "radash";
 import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { adapter } from "~/adapter";
-import { VIEW_MODES } from "~/constants";
-import { getConnection } from "./connection";
-import { Authentication, TabQuery, ViewMode } from "~/types";
-import { useInterfaceStore } from "~/stores/interface";
-import { getSetting } from "./config";
+import { Authentication, TabQuery } from "~/types";
 import { decodeCbor, escape_ident } from "surrealdb.js";
 import { Value } from "surrealql.wasm/v1";
 
@@ -58,38 +54,6 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
 		window.getSelection()?.addRange(range);
 	}
 };
-
-/**
- * Update the title of the window
- */
-export function updateTitle() {
-	const { pathname } = window.location;
-
-	const windowPinned = getSetting("behavior", "windowPinned");
-	const activeView = pathname.split("/")[1] as ViewMode;
-	const viewInfo = VIEW_MODES[activeView];
-	const session = getConnection();
-	const segments: string[] = [];
-
-	if (activeView === "cloud") {
-		segments.push("Surreal Cloud - Surrealist");
-	} else {
-		if (session) {
-			segments.push(`${session.name} -`);
-		}
-
-		segments.push(`Surrealist ${viewInfo?.name || ""}`);
-	}
-
-	if (windowPinned) {
-		segments.push("(Pinned)");
-	}
-
-	const title = segments.join(" ");
-
-	adapter.setWindowTitle(title);
-	useInterfaceStore.getState().setWindowTitle(title);
-}
 
 /**
  * Display an error notification

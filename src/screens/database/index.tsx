@@ -5,7 +5,7 @@ import { ViewMode } from "~/types";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useLayoutEffect, useState } from "react";
 import { useConfigStore } from "~/stores/config";
 import { CloudView } from "~/screens/cloud-manage/view";
 import { Center, Stack, Button, Flex, ScrollArea, Group, Box, Text, Image, Paper, Alert } from "@mantine/core";
@@ -65,6 +65,18 @@ export function DatabaseScreen() {
 	const viewMode = useConfigStore(s => s.activeView);
 	const viewNode = VIEW_PORTALS[viewMode];
 	const viewInfo = VIEW_MODES[viewMode];
+
+	const [loaded, setLoaded] = useState<ViewMode[]>([]);
+
+	useLayoutEffect(() => {
+		setLoaded((prev) => {
+			if (!prev.includes(viewMode)) {
+				return [...prev, viewMode];
+			}
+
+			return prev;
+		});
+	}, [viewMode]);
 
 	const requireDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
 
@@ -207,59 +219,77 @@ export function DatabaseScreen() {
 							viewNode && <OutPortal node={viewNode} />
 						)}
 
-						<InPortal node={VIEW_PORTALS.cloud}>
-							<Suspense fallback={null}>
-								<CloudView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("cloud") && (
+							<InPortal node={VIEW_PORTALS.cloud}>
+								<Suspense fallback={null}>
+									<CloudView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.query}>
-							<Suspense fallback={null}>
-								<QueryView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("query") && (
+							<InPortal node={VIEW_PORTALS.query}>
+								<Suspense fallback={null}>
+									<QueryView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.explorer}>
-							<Suspense fallback={null}>
-								<ExplorerView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("explorer") && (
+							<InPortal node={VIEW_PORTALS.explorer}>
+								<Suspense fallback={null}>
+									<ExplorerView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.graphql}>
-							<Suspense fallback={null}>
-								<GraphqlView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("graphql") && (
+							<InPortal node={VIEW_PORTALS.graphql}>
+								<Suspense fallback={null}>
+									<GraphqlView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.designer}>
-							<Suspense fallback={null}>
-								<DesignerView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("designer") && (
+							<InPortal node={VIEW_PORTALS.designer}>
+								<Suspense fallback={null}>
+									<DesignerView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.authentication}>
-							<Suspense fallback={null}>
-								<AuthenticationView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("authentication") && (
+							<InPortal node={VIEW_PORTALS.authentication}>
+								<Suspense fallback={null}>
+									<AuthenticationView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.functions}>
-							<Suspense fallback={null}>
-								<FunctionsView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("functions") && (
+							<InPortal node={VIEW_PORTALS.functions}>
+								<Suspense fallback={null}>
+									<FunctionsView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.models}>
-							<Suspense fallback={null}>
-								<ModelsView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("models") && (
+							<InPortal node={VIEW_PORTALS.models}>
+								<Suspense fallback={null}>
+									<ModelsView />
+								</Suspense>
+							</InPortal>
+						)}
 
-						<InPortal node={VIEW_PORTALS.documentation}>
-							<Suspense fallback={null}>
-								<DocumentationView />
-							</Suspense>
-						</InPortal>
+						{loaded.includes("documentation") && (
+							<InPortal node={VIEW_PORTALS.documentation}>
+								<Suspense fallback={null}>
+									<DocumentationView />
+								</Suspense>
+							</InPortal>
+						)}
 					</Stack>
 				</Box>
 			</Flex>

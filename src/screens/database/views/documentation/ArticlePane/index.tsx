@@ -27,7 +27,6 @@ export function ArticlePane({
 	onLanguageChange,
 	onChangeActiveTopic,
 }: ArticlePaneProps) {
-
 	const flattened = useMemo(() => {
 		const result: ReadableArticle[] = [];
 

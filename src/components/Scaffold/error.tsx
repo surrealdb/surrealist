@@ -6,7 +6,7 @@ import { iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "~/util/ic
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
 
-export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
+export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 	const [copyDebug, clipboard] = useVersionCopy();
 
 	const message = error instanceof Error
@@ -42,7 +42,7 @@ export function AppErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 							radius="xs"
 							size="xs"
 						>
-							Resume in sandbox
+							Reload Surrealist
 						</Button>
 						<Button
 							leftSection={<Icon path={iconBug} />}

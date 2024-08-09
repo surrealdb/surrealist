@@ -1,5 +1,5 @@
 import { ExplorerPane } from "../ExplorerPane";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { useDisclosure } from "@mantine/hooks";
 import { Box, Button, Group, Text } from "@mantine/core";
@@ -21,6 +21,9 @@ import { useIsConnected } from "~/hooks/connection";
 import { TablesPane } from "~/screens/database/components/TablesPane";
 import { Exporter } from "../Exporter";
 import { Importer } from "../Importer";
+
+const TablesPaneLazy = memo(TablesPane);
+const ExplorerPaneLazy = memo(ExplorerPane);
 
 export function ExplorerView() {
 	const { openTableCreator } = useInterfaceStore.getState();
@@ -72,7 +75,7 @@ export function ExplorerView() {
 						minSize={minSize}
 						maxSize={35}
 					>
-						<TablesPane
+						<TablesPaneLazy
 							icon={iconExplorer}
 							activeTable={activeTable}
 							onTableSelect={setActiveTable}
@@ -88,7 +91,7 @@ export function ExplorerView() {
 					<PanelDragger />
 					<Panel minSize={minSize}>
 						{activeTable ? (
-							<ExplorerPane
+							<ExplorerPaneLazy
 								activeTable={activeTable}
 								onCreateRecord={openCreator}
 							/>

@@ -1,7 +1,7 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { FunctionsPanel } from "../FunctionsPanel";
 import { EditorPanel } from "../EditorPanel";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, memo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
@@ -24,6 +24,9 @@ import { Introduction } from "~/components/Introduction";
 import { useIsConnected } from "~/hooks/connection";
 import { showError } from "~/util/helpers";
 import { formatQuery, validateQuery } from "~/util/surrealql";
+
+const FunctionsPanelLazy = memo(FunctionsPanel);
+const EditorPanelLazy = memo(EditorPanel);
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
@@ -148,7 +151,7 @@ export function FunctionsView() {
 						minSize={minSize}
 						maxSize={35}
 					>
-						<FunctionsPanel
+						<FunctionsPanelLazy
 							active={details?.name || ''}
 							functions={functions}
 							onCreate={openCreator}
@@ -160,7 +163,7 @@ export function FunctionsView() {
 					<PanelDragger />
 					<Panel minSize={minSize}>
 						{details ? (
-							<EditorPanel
+							<EditorPanelLazy
 								handle={handle}
 								details={details}
 								isCreating={isCreating}

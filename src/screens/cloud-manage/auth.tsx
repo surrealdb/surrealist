@@ -219,26 +219,26 @@ export function checkSessionExpiry() {
 		return;
 	}
 
-	// // Decode the JWT
-	// const parts = sessionToken.split('.');
+	// Decode the JWT
+	const parts = sessionToken.split('.');
 
-	// if (parts.length !== 3) {
-	// 	throw new Error('Invalid JWT token');
-	// }
+	if (parts.length !== 3) {
+		throw new Error('Invalid JWT token');
+	}
 
-	// // Extract the payload
-	// // Check if the token is going to expire in the next 5 minutes
-	// const expriry = JSON.parse(atob(parts[1])).exp;
+	// Extract the payload
+	// Check if the token is going to expire in the next 5 minutes
+	const expriry = JSON.parse(atob(parts[1])).exp;
 
-	// if (!expriry) {
-	// 	return;
-	// }
+	if (!expriry) {
+		return;
+	}
 
-	// const now = Date.now() / 1000;
+	const now = Date.now() / 1000;
 
-	// if (expriry - now < 300) {
-	// 	refreshSession();
-	// }
+	if (expriry - now < 300) {
+		refreshAccess();
+	}
 }
 
 function randomString(n: number): string {

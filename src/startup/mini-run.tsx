@@ -9,23 +9,20 @@ import "../assets/styles/override.scss";
 import "../adapter";
 
 import { createRoot } from "react-dom/client";
-import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
 import { openConnection } from '~/screens/database/connection/connection';
 import { handleWindowMessage } from '~/util/messaging';
 import { MiniRunScreen } from '~/screens/mini-run';
+import { startConfigSync } from '~/util/config';
 
 (async () => {
 
 	// Synchronize the config to the store
-	await watchConfigStore();
-
-	watchColorScheme();
-	watchColorPreference();
+	await startConfigSync();
 
 	// Initialize adapter
-	adapter.initialize();
+	await adapter.initialize();
 
 	// Render the app component
 	const root = document.querySelector("#root")!;

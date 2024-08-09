@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { TableGraphPane } from "../TableGraphPane";
 import { useStable } from "~/hooks/stable";
 import { useTables } from "~/hooks/schema";
@@ -41,6 +41,8 @@ const DEFAULT_DEF: TableInfo = {
 	indexes: [],
 	events: []
 };
+
+const TableGraphPaneLazy = memo(TableGraphPane);
 
 export interface DesignerViewProps {
 }
@@ -166,7 +168,7 @@ export function DesignerView(_props: DesignerViewProps) {
 					)}
 					<Panel minSize={minSize} order={2}>
 						<ReactFlowProvider>
-							<TableGraphPane
+							<TableGraphPaneLazy
 								tables={tables}
 								active={isDesigning ? data : null}
 								setActiveTable={setActiveTable}

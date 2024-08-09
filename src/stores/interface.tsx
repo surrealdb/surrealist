@@ -1,6 +1,6 @@
-import { ColorScheme } from "~/types";
 import { create } from "zustand";
 import { Update } from "@tauri-apps/plugin-updater";
+import { ColorScheme } from "~/types";
 
 interface LiveMessage {
 	id: string;
@@ -12,7 +12,6 @@ interface LiveMessage {
 
 export type InterfaceStore = {
 	title: string;
-	colorPreference: ColorScheme;
 	colorScheme: ColorScheme;
 	availableUpdate: null | Update;
 	showAvailableUpdate: boolean;
@@ -29,8 +28,7 @@ export type InterfaceStore = {
 	showGraphqlVariables: boolean;
 
 	setWindowTitle: (title: string) => void;
-	setColorPreference: (preference: ColorScheme) => void;
-	setColorScheme: (scheme: ColorScheme) => void;
+	setColorScheme: (colorScheme: ColorScheme) => void;
 	setAvailableUpdate: (update: Update) => void;
 	hideAvailableUpdate: () => void;
 	openConnectionCreator: () => void;
@@ -53,7 +51,6 @@ export type InterfaceStore = {
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	title: "",
-	colorPreference: "dark",
 	colorScheme: "dark",
 	availableUpdate: null,
 	showAvailableUpdate: false,
@@ -71,12 +68,8 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
-	setColorPreference: (themePreference) => set(() => ({
-		colorPreference: themePreference
-	})),
-
 	setColorScheme: (colorScheme) => set(() => ({
-		colorScheme,
+		colorScheme
 	})),
 
 	setAvailableUpdate: (availableUpdate) => set(() => ({

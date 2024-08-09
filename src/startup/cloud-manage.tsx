@@ -8,29 +8,35 @@ import "../assets/styles/override.scss";
 
 import "../adapter";
 
+import dayjs from "dayjs";
+import posthog from 'posthog-js';
+import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
-import { watchColorPreference, watchColorScheme, watchConfigStore } from '../util/background';
 import { adapter } from '../adapter';
 import { CloudManageScreen } from '~/screens/cloud-manage';
-import { updateTitle } from '~/util/helpers';
+import { isProduction } from "../util/environment";
+import { startConfigSync } from '~/util/config';
 
 (async () => {
+	dayjs.extend(relativeTime);
+
+	// Initialize posthog
+	if (isProduction) {
+		posthog.init(import.meta.env.POSTHOG_KEY, {
+			api_host: import.meta.env.POSTHOG_URL,
+			autocapture: false
+		});
+	}
 
 	// Synchronize the config to the store
-	await watchConfigStore();
-
-	watchColorScheme();
-	watchColorPreference();
+	await startConfigSync();
 
 	// Initialize adapter
-	adapter.initialize();
+	await adapter.initialize();
 
 	// Render the app component
 	const root = document.querySelector("#root")!;
 
 	createRoot(root).render(<CloudManageScreen />);
-
-	// Update the title
-	updateTitle();
 
 })();

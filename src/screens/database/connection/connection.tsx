@@ -1,6 +1,6 @@
 import posthog from "posthog-js";
-import { Surreal, QueryResult, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
-import { AuthDetails, Authentication, Connection, Protocol, QueryResponse } from '~/types';
+import { Surreal, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
+import { AuthDetails, Connection, Protocol } from '~/types';
 import { State, useDatabaseStore } from '~/stores/database';
 import { getAuthDB, getAuthNS, getConnection } from '~/util/connection';
 import { connectionUri, newId, showError, showWarning } from '~/util/helpers';
@@ -8,17 +8,14 @@ import { syncDatabaseSchema } from '~/util/schema';
 import { ConnectedEvent, DisconnectedEvent } from '~/util/global-events';
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
-import { objectify } from "radash";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { Value } from "surrealql.wasm/v1";
 import { adapter } from "~/adapter";
-import { getSetting } from "~/util/config";
-import { featureFlags } from "~/util/feature-flags";
-import { fetchAPI } from "../../cloud-manage/api";
 import { useCloudStore } from "~/stores/cloud";
 import { SANDBOX } from "~/constants";
 import { CloudError } from "~/util/errors";
-import { createSurreal } from "./surreal";
+import { createPlaceholder, createSurreal } from "./surreal";
+import { buildScopeAuth, composeAuthentication, getReconnectInterval, getVersionTimeout, mapResults } from "./helpers";
 
 export interface ConnectOptions {
 	connection?: Connection;
@@ -34,7 +31,7 @@ export interface GraphqlResponse {
 	result: any;
 }
 
-let instance = createSurreal();
+let instance = createPlaceholder();
 let hasFailed = false;
 let forceClose = false;
 let retryTask: any;
@@ -55,20 +52,20 @@ export async function openConnection(options?: ConnectOptions) {
 		throw new Error("No connection available");
 	}
 
-	await closeConnection("connecting");
+	const isRetry = hasFailed && options?.isRetry;
+	const newState = isRetry ? "retrying" : "connecting";
 
-	instance = createSurreal();
+	await closeConnection(newState);
+
+	instance = await createSurreal();
 	forceClose = false;
 
 	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
 	const reconnectInterval = getReconnectInterval();
 	const rpcEndpoint = connectionUri(connection.authentication);
-	const isRetry = hasFailed && options?.isRetry;
 	const thisInstance = instance;
 
 	adapter.log('DB', `Opening connection to ${rpcEndpoint}`);
-
-	setCurrentState(isRetry ? "retrying" : "connecting");
 
 	if (retryTask) {
 		clearTimeout(retryTask);
@@ -190,22 +187,28 @@ export async function openConnection(options?: ConnectOptions) {
 }
 
 /**
+ * Returns whether the connection is considered active
+ */
+export function isConnected() {
+	return instance.status === "connected" || instance.status === "connecting";
+}
+
+/**
  * Close the active surreal connection
  *
  * @param state The state to set after closing
  */
 export async function closeConnection(state?: State) {
+	const { setCurrentState, setVersion } = useDatabaseStore.getState();
 	const status = instance.status;
 
 	if (status === "connected" || status === "connecting") {
-		const { setCurrentState, setVersion } = useDatabaseStore.getState();
-
 		forceClose = true;
-		setCurrentState(state ?? "disconnected");
-		setVersion("");
-
 		await instance.close();
 	}
+
+	setCurrentState(state ?? "disconnected");
+	setVersion("");
 }
 
 /**
@@ -498,76 +501,4 @@ export async function activateDatabase(namespace: string, database: string) {
 			});
 		}
 	}
-}
-
-/**
- * Compose authentication details for the given connection
- *
- * @param connection The connection options
- * @returns The authentication details
- */
-export async function composeAuthentication(connection: Authentication): Promise<AuthDetails> {
-	const { mode: authMode, username, password, namespace, database, token, cloudInstance } = connection;
-
-	switch (authMode) {
-		case "root": {
-			return { username, password };
-		}
-		case "namespace": {
-			return { namespace, username, password };
-		}
-		case "database": {
-			return { namespace, database, username, password };
-		}
-		case "scope": {
-			return buildScopeAuth(connection);
-		}
-		case "token": {
-			return token;
-		}
-		case "cloud": {
-			if (!cloudInstance) {
-				return undefined;
-			}
-
-			try {
-				const response = await fetchAPI<{ token: string }>(`/instances/${cloudInstance}/auth`);
-
-				return response.token;
-			} catch(err: any) {
-				throw new Error("Failed to authenticate with cloud instance", {
-					cause: err
-				});
-			}
-		}
-		default: {
-			return undefined;
-		}
-	}
-}
-
-
-function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
-	return response.map(res => ({
-		success: res.status == "OK",
-		result: res.result,
-		execution_time: res.time
-	}));
-}
-
-function buildScopeAuth(connection: Authentication): ScopeAuth {
-	const { namespace, database, scope, scopeFields } = connection;
-	const fields = objectify(scopeFields, f => f.subject, f => f.value);
-
-	return { namespace, database, scope, ...fields };
-}
-
-function getVersionTimeout() {
-	const enabled = featureFlags.get('database_version_check');
-	const timeout = (getSetting("behavior", "versionCheckTimeout") ?? 5) * 1000;
-	return [enabled, timeout] as const;
-}
-
-function getReconnectInterval() {
-	return (getSetting("behavior", "reconnectInterval") ?? 3) * 1000;
 }

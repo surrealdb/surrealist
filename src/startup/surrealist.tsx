@@ -15,12 +15,11 @@ import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { App } from "../components/App";
-import { updateTitle } from "../util/helpers";
 import { adapter } from "../adapter";
-import { watchCloudAuthentication, watchColorPreference, watchColorScheme, watchConfigStore, watchConnectionSwitch } from '../util/background';
 import { generateEditorIcons } from "../util/editor/icons";
 import { isProduction } from "../util/environment";
 import { promptChangelog } from "../util/changelogs";
+import { startConfigSync } from "~/util/config";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -34,16 +33,10 @@ import { promptChangelog } from "../util/changelogs";
 	}
 
 	// Synchronize the config to the store
-	await watchConfigStore();
-
-	updateTitle();
-	watchColorScheme();
-	watchColorPreference();
-	watchConnectionSwitch();
-	watchCloudAuthentication();
+	await startConfigSync();
 
 	// Initialize adapter
-	adapter.initialize();
+	await adapter.initialize();
 
 	// Generate editor icons
 	generateEditorIcons();
