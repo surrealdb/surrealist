@@ -18,6 +18,7 @@ import { PlaceholderPage } from "./pages/Placeholder";
 import { SettingsPage } from "./pages/Settings";
 import { BillingPage } from "./pages/Billing";
 import { SupportPage } from "./pages/Support";
+import { StatusAlert } from "./components/StatusAlert";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
 	instances: InstancesPage,
@@ -54,6 +55,10 @@ export function CloudView() {
 			>
 				<CloudSidebar />
 				<Stack flex={1}>
+					<StatusAlert
+						alert={null}
+						onDismiss={undefined}
+					/>
 					{Content && <Content />}
 				</Stack>
 			</Group>
