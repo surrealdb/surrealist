@@ -87,7 +87,7 @@ export function DesignDrawer({
 		>
 			<DrawerResizer
 				minSize={500}
-				maxSize={900}
+				maxSize={1500}
 				onResize={setWidth}
 			/>
 

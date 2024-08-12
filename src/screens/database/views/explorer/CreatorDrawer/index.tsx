@@ -127,7 +127,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		>
 			<DrawerResizer
 				minSize={500}
-				maxSize={900}
+				maxSize={1500}
 				onResize={setWidth}
 			/>
 

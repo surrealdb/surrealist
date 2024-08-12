@@ -156,7 +156,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		>
 			<DrawerResizer
 				minSize={500}
-				maxSize={900}
+				maxSize={1500}
 				onResize={setWidth}
 			/>
 

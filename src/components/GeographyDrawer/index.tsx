@@ -45,7 +45,7 @@ export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps)
 		>
 			<DrawerResizer
 				minSize={500}
-				maxSize={900}
+				maxSize={1500}
 				onResize={setWidth}
 			/>
 
