@@ -8,14 +8,15 @@ import {
 	Box,
 	Drawer,
 	Group,
+	Paper,
 	ScrollArea,
 	Tooltip,
 } from "@mantine/core";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Updater } from "use-immer";
 import { TableInfo } from "~/types";
-import { syncDatabaseSchema, isEdgeTable } from "~/util/schema";
+import { syncDatabaseSchema } from "~/util/schema";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { GeneralElement } from "./elements/general";
@@ -27,7 +28,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { SaveableHandle } from "~/hooks/save";
 import { tb } from "~/util/helpers";
-import { iconClose, iconDelete, iconRelation, iconTable, iconWarning } from "~/util/icons";
+import { iconClose, iconDelete, iconDesigner, iconRelation, iconTable, iconWarning } from "~/util/icons";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { ChangefeedElement } from "./elements/changefeed";
@@ -52,7 +53,6 @@ export function DesignDrawer({
 	errors,
 	onClose
 }: SchemaDrawerProps) {
-	const isEdge = useMemo(() => isEdgeTable(value), [value]);
 	const [width, setWidth] = useState(650);
 
 	const removeTable = useConfirmation({
@@ -67,6 +67,8 @@ export function DesignDrawer({
 			});
 		}
 	});
+
+	const isEdge = value.schema.kind.kind === "RELATION";
 
 	return (
 		<Drawer
@@ -90,15 +92,9 @@ export function DesignDrawer({
 			/>
 
 			<Group mb="md" gap="sm">
-				<PrimaryTitle
-					className={classes.title}
-				>
-					<Icon
-						path={isEdge ? iconRelation : iconTable}
-						size="sm"
-						left
-					/>
-					{value.schema.name}
+				<PrimaryTitle>
+					<Icon left path={iconDesigner} size="sm" />
+					Table designer
 				</PrimaryTitle>
 
 				<Spacer />
@@ -131,6 +127,18 @@ export function DesignDrawer({
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
+			<Paper
+				withBorder
+				bg="slate.9"
+				p="sm"
+				ff="monospace"
+				mb="md"
+			>
+				<Group gap="sm">
+					<Icon path={isEdge ? iconRelation : iconTable} />
+					{value.schema.name}
+				</Group>
+			</Paper>
 			<ScrollArea
 				mt="sm"
 				flex="1 1 0"

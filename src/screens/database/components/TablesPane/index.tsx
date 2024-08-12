@@ -155,19 +155,13 @@ export function TablesPane({
 									isActive={isActive}
 									onClick={() => onTableSelect(table.schema.name)}
 									onContextMenu={showContextMenu([
-										{
-											key: 'open',
-											title: "Open table",
-											icon: <Icon path={iconTable} />,
-											onClick: () => onTableSelect(table.schema.name)
-										},
+										...onTableContextMenu?.(table.schema.name) || [],
 										{
 											key: 'pin',
 											title: isPinned ? "Unpin table" : "Pin table",
 											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
 											onClick: () => togglePinned(table.schema.name)
 										},
-										...onTableContextMenu?.(table.schema.name) || [],
 										{
 											key: 'remove',
 											title: "Remove table",

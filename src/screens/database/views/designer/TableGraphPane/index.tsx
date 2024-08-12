@@ -38,7 +38,7 @@ function HelpTitle({ isLight, children }: HelpTitleProps) {
 }
 
 export interface TableGraphPaneProps {
-	active: TableInfo | null;
+	active: string | null;
 	tables: TableInfo[];
 	setActiveTable: (table: string) => void;
 }
@@ -209,8 +209,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [schema, isViewActive, isConnected, activeSession.diagramDirection]);
 
-	const tableName = props.active?.schema.name;
-
 	useEffect(() => {
 		setNodes(curr => {
 			return curr.map(node => {
@@ -218,12 +216,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					...node,
 					data: {
 						...node.data,
-						isSelected: node.id === tableName
+						isSelected: node.id === props.active
 					},
 				};
 			});
 		});
-	}, [tableName, setNodes]);
+	}, [setNodes, props.active]);
 
 	return (
 		<ContentPane

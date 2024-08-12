@@ -18,6 +18,18 @@ import { ConsoleDrawer } from "./modals/console";
 import { CloudExpiredDialog } from "./modals/cloud-expired";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
+import { InspectorProvider } from "~/providers/Inspector";
+import { DesignerProvider } from "~/providers/Designer";
+
+function Surrealist() {
+	return (
+		<InspectorProvider>
+			<DesignerProvider>
+				<DatabaseScreen />
+			</DesignerProvider>
+		</InspectorProvider>
+	);
+}
 
 export function App() {
 	const screen = useConfigStore((s) => s.activeScreen);
@@ -28,7 +40,7 @@ export function App() {
 
 			{screen === "start"
 				? <StartScreen />
-				: <DatabaseScreen />
+				: <Surrealist />
 			}
 
 			<Settings />
