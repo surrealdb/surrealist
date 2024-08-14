@@ -1,5 +1,5 @@
 import classes from "../style.module.scss";
-import { ActionIcon, Box, Button, Center, Divider, Grid, Group, Image, Loader, Modal, Paper, ScrollArea, Select, SimpleGrid, Stack, Stepper, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { Box, Button, Center, Divider, Grid, Group, Image, Loader, Modal, Paper, ScrollArea, Select, SimpleGrid, Stack, Stepper, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -14,9 +14,6 @@ import { useStable } from "~/hooks/stable";
 import { ApiError, fetchAPI } from "../../../api";
 import { showError, showInfo } from "~/util/helpers";
 import { CloudInstance } from "~/types";
-import { mdiMinus } from "@mdi/js";
-
-const MAX_REPLICAS = 5;
 
 interface CreationStepperProps {
 	onClose: () => void;
@@ -37,7 +34,7 @@ function CreationStepper({
 	const regions = useAvailableRegions();
 
 	const [name, setName] = useInputState("");
-	const [replicas, setReplicas] = useState(0);
+	const [replicas, setReplicas] = useState("1");
 	const [org, setOrg] = useState<string>(current?.id || "");
 	const [instance, setInstance] = useState<string>("");
 	const [region, setRegion] = useState<string>("");
@@ -53,11 +50,11 @@ function CreationStepper({
 		}
 
 		if (step === 1) {
-			return instance.length > 0;
+			return region.length > 0;
 		}
 
 		if (step === 2) {
-			return region.length > 0;
+			return instance.length > 0;
 		}
 
 		return true;
@@ -128,7 +125,7 @@ function CreationStepper({
 	return (
 		<>
 			<Stepper
-				h={450}
+				h={500}
 				active={step}
 				iconSize={28}
 				size="xs"
@@ -166,36 +163,46 @@ function CreationStepper({
 									autoFocus
 								/>
 							</Grid.Col>
-							<Grid.Col span={4}>
-								<Group gap="xs">
-									<Text>Replicas</Text>
-									<Tooltip label="Explanation todo">
-										<div>
-											<Icon path={iconHelp} size="sm" />
-										</div>
-									</Tooltip>
-								</Group>
-							</Grid.Col>
-							<Grid.Col span={8}>
-								<Group>
-									<ActionIcon
-										disabled={replicas === 0}
-										onClick={() => setReplicas(replicas - 1)}
-									>
-										<Icon path={mdiMinus} />
-									</ActionIcon>
-									<Text c="bright" fw={500}>
-										{replicas} Replicas
-									</Text>
-									<ActionIcon
-										disabled={replicas >= MAX_REPLICAS}
-										onClick={() => setReplicas(replicas + 1)}
-									>
-										<Icon path={iconPlus} />
-									</ActionIcon>
-								</Group>
-							</Grid.Col>
 						</Grid>
+					</Stack>
+				</Stepper.Step>
+				<Stepper.Step aria-label="Region">
+					<Stack>
+						<PrimaryTitle>
+							Select a region
+						</PrimaryTitle>
+
+						<Text mb="lg">
+							Regions define the physical location of your instance. Choosing a region close to your users can improve performance.
+						</Text>
+
+						<ScrollArea h={300}>
+							<Stack>
+								{regions.map(type => (
+									<Tile
+										key={type.slug}
+										isActive={type.slug === region}
+										onClick={() => setRegion(type.slug)}
+									>
+										<Group gap="xl" pl="xs">
+											<Image
+												src={REGION_FLAGS[type.slug]}
+												w={24}
+											/>
+											<Box>
+												<Text
+													c="bright"
+													fw={500}
+													fz="lg"
+												>
+													{type.description}
+												</Text>
+											</Box>
+										</Group>
+									</Tile>
+								))}
+							</Stack>
+						</ScrollArea>
 					</Stack>
 				</Stepper.Step>
 				<Stepper.Step aria-label="Instance preset">
@@ -262,88 +269,71 @@ function CreationStepper({
 						</ScrollArea>
 					</Stack>
 				</Stepper.Step>
-				<Stepper.Step aria-label="Region">
-					<Stack>
-						<PrimaryTitle>
-							Select a region
-						</PrimaryTitle>
-
-						<Text mb="lg">
-							Regions define the physical location of your instance. Choosing a region close to your users can improve performance.
-						</Text>
-
-						<ScrollArea h={300}>
-							<Stack>
-								{regions.map(type => (
-									<Tile
-										key={type.slug}
-										isActive={type.slug === region}
-										onClick={() => setRegion(type.slug)}
-									>
-										<Group gap="xl" pl="xs">
-											<Image
-												src={REGION_FLAGS[type.slug]}
-												w={24}
-											/>
-											<Box>
-												<Text
-													c="bright"
-													fw={500}
-													fz="lg"
-												>
-													{type.description}
-												</Text>
-											</Box>
-										</Group>
-									</Tile>
-								))}
-							</Stack>
-						</ScrollArea>
-					</Stack>
-				</Stepper.Step>
 				<Stepper.Step aria-label="Confirm">
 					<Stack>
 						<PrimaryTitle>
-							Confirm your details
+							Finalize your instance
 						</PrimaryTitle>
 
 						<Text>
-							Please confim your instance details and press <Text span c="bright">Create</Text> once
+							Your new instance is nearly ready! Please choose how many compute units you would
+							like to use, confirm your entered details, and press <Text span c="bright">Create</Text> once
 							you are ready to provision your instance.
 						</Text>
 
-						<Table my="xl">
-							<Table.Tbody>
-								<Table.Tr>
-									<Table.Td>Name</Table.Td>
-									<Table.Td c="bright">{name}</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td>Preset</Table.Td>
-									<Table.Td c="bright">{instance}</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td>Region</Table.Td>
-									<Table.Td c="bright">{region}</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td>Replicas</Table.Td>
-									<Table.Td c="bright">{replicas}</Table.Td>
-								</Table.Tr>
-							</Table.Tbody>
-						</Table>
+						<Select
+							my="xl"
+							label={
+								<Group gap="xs">
+									Compute units
+									<Tooltip label="Explanation todo">
+										<div>
+											<Icon path={iconHelp} size="sm" />
+										</div>
+									</Tooltip>
+								</Group>
+							}
+							data={[
+								{ value: '1', label: "1 unit" },
+								{ value: '2', label: "2 units" },
+								{ value: '3', label: "3 units" },
+								{ value: '4', label: "4 units" },
+								{ value: '5', label: "5 units" }
+							]}
+							value={replicas}
+							onChange={setReplicas as any}
+						/>
 
 						<Paper
 							bg="slate.9"
 							p="md"
 						>
+							<PrimaryTitle>
+								Instance details
+							</PrimaryTitle>
+							<Table my="xl">
+								<Table.Tbody>
+									<Table.Tr>
+										<Table.Td>Name</Table.Td>
+										<Table.Td c="bright">{name}</Table.Td>
+									</Table.Tr>
+									<Table.Tr>
+										<Table.Td>Preset</Table.Td>
+										<Table.Td c="bright">{instance}</Table.Td>
+									</Table.Tr>
+									<Table.Tr>
+										<Table.Td>Region</Table.Td>
+										<Table.Td c="bright">{region}</Table.Td>
+									</Table.Tr>
+								</Table.Tbody>
+							</Table>
 							<Text>Estimated costs</Text>
 							<Text
 								fz={18}
 								fw={500}
 								c="bright"
 							>
-								$3.50<Text span c="slate.2">/mo</Text>
+								${(3.5 * Number.parseInt(replicas)).toFixed(2)}<Text span c="slate.2">/mo</Text>
 							</Text>
 						</Paper>
 					</Stack>

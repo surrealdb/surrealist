@@ -182,7 +182,9 @@ export async function acquireSession(accessToken: string) {
 
 		setSessionExpired(false);
 
-		dispatchOnboarding();
+		if (!localStorage.getItem("surrealist:onboarded")) {
+			dispatchOnboarding();
+		}
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
 

@@ -112,6 +112,7 @@ function StartingModal() {
 					rightSection={<Icon path={iconChevronRight} />}
 					onClick={() => {
 						closeAllModals();
+						localStorage.setItem("surrealist:onboarded", "true");
 					}}
 				>
 					Get started
