@@ -6,6 +6,7 @@ import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { isDevelopment } from "~/util/environment";
 import { fetchAPI, updateCloudInformation } from "./api";
 import { getSetting } from "~/util/config";
+import { dispatchOnboarding } from "./onboarding";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -180,6 +181,8 @@ export async function acquireSession(accessToken: string) {
 		CloudAuthEvent.dispatch(null);
 
 		setSessionExpired(false);
+
+		dispatchOnboarding();
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
 
