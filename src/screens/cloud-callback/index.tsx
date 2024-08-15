@@ -10,8 +10,8 @@ import { isDevelopment } from "~/util/environment";
 type Result = "redirect" | "launch" | "error";
 
 const REDIRECT_ENDPOINT = isDevelopment
-	? "http://localhost:1420/cloud"
-	: `https://${location.host}/cloud`;
+	? "http://localhost:1420"
+	: `https://${location.host}`;
 
 export function CloudCallbackScreen() {
 	const [result, setResult] = useState<Result>("redirect");

@@ -60,7 +60,6 @@ export function useConfigRouting() {
 		}
 
 		if (repair) {
-			console.log('repairing');
 			history.replaceState(null, document.title, actualPath);
 		}
 
