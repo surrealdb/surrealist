@@ -1,13 +1,13 @@
 import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { showInfo, updateTitle } from "~/util/helpers";
+import { showError, showInfo, updateTitle } from "~/util/helpers";
 import { adapter } from "~/adapter";
 import { useConnection } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useDisclosure } from "@mantine/hooks";
-import { iconFile, iconReset, iconStar } from "~/util/icons";
+import { iconFile, iconRefresh, iconReset, iconStar } from "~/util/icons";
 import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
@@ -28,7 +28,7 @@ import { Spacer } from "~/components/Spacer";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse } = useDatabaseStore.getState();
-	const { updateConnection } = useConfigStore.getState();
+	const { updateConnection, setActiveConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();
 	const [flags] = useFeatureFlags();
 
@@ -70,6 +70,14 @@ export function DatabaseToolbar() {
 				}
 			}
 		},
+	});
+
+	const refreshConnection = useStable(async () => {
+		if(!connection) {
+			return;
+		}
+
+		setActiveConnection(connection.id);
 	});
 
 	const applyDataset = useStable(async (info: DataSet) => {
@@ -142,6 +150,20 @@ export function DatabaseToolbar() {
 						</Menu.Dropdown>
 					</Menu>
 				</>
+			)}
+
+			{isConnected && !isSandbox && (
+				<Tooltip label="Refresh connection">
+					<ActionIcon
+						onClick={refreshConnection}
+						color="slate"
+						variant="subtle"
+						aria-label="Refresh connection"
+						loading={isDatasetLoading}
+					>
+						<Icon path={iconRefresh} />
+					</ActionIcon>
+				</Tooltip>
 			)}
 
 			<Spacer />

@@ -20,7 +20,6 @@ import { surrealql } from "codemirror-surrealql";
 import { surqlLinting } from "~/util/editor/extensions";
 import { Label } from "~/components/Label";
 import { formatQuery, validateQuery } from "~/util/surrealql";
-import { useEffect } from "react";
 import { showError } from "~/util/helpers";
 
 export interface EditorPanelProps {
@@ -73,12 +72,6 @@ export function EditorPanel({
 				draft.block = formattedFunctionBlock;
 			});
 		}
-	});
-
-	// Not sure if this is something we want to do, or if this is how we're supposed to do it
-	// This doesn't end up looking great since the function comes in not formatted, and then quickly gets formatted
-	useEffect(() => {
-		formatFunction();
 	});
 
 	return (
