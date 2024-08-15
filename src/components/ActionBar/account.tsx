@@ -1,7 +1,6 @@
-import { ActionIcon, Avatar, Box, Button, Group, Loader, Menu, Modal, Stack, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
+import { Avatar, Box, Button, Group, Loader, Menu, Modal, Stack, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
 import { Icon } from "../Icon";
 import { invalidateSession } from "~/screens/cloud-manage/auth";
-import { iconCloud } from "~/util/icons";
 import { useCloudStore } from "~/stores/cloud";
 import { Text } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
@@ -98,15 +97,17 @@ export function CloudAccount() {
 
 	if (state === "unauthenticated") {
 		return (
-			<Tooltip label="Surreal Cloud">
-				<ActionIcon
-					w={36}
-					h={36}
-					variant="subtle"
+			<Tooltip
+				label="Sign in to Surreal Cloud"
+			>
+				<Avatar
+					radius="md"
+					size={36}
 					onClick={openCloud}
-				>
-					<Icon path={iconCloud} size="lg" />
-				</ActionIcon>
+					renderRoot={(props) => (
+						<UnstyledButton {...props} />
+					)}
+				/>
 			</Tooltip>
 		);
 	}

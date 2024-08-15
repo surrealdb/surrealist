@@ -135,7 +135,7 @@ export function DatabaseSidebar({
 
 				<Spacer />
 
-				{renderNavigation(cloud)}
+				{!cloud.disabled?.(flags) && renderNavigation(cloud)}
 
 				<NavigationIcon
 					name={
