@@ -1,14 +1,12 @@
 import { useLayoutEffect } from "react";
 import { VIEW_MODES } from "~/constants";
 import { useConnection } from "~/hooks/connection";
-import { isConnected, openConnection } from "~/screens/database/connection/connection";
+import { openConnection } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { featureFlags } from "~/util/feature-flags";
 
 /**
  * Watch for connection changes and open the connection
- *
- * TODO deprecated
  */
 export function useConnectionSwitch() {
 	const connection = useConnection();
@@ -20,7 +18,7 @@ export function useConnectionSwitch() {
 		const dbScreen = activeScreen === "database";
 		const dbView = activeView !== "cloud";
 
-		if (connection?.id && dbScreen && dbView && !isConnected()) {
+		if (connection?.id && dbScreen && dbView) {
 			openConnection();
 		}
 
