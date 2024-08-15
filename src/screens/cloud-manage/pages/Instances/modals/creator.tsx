@@ -1,29 +1,29 @@
 import classes from "../style.module.scss";
-import { Box, Button, Center, Divider, Grid, Group, Image, Loader, Modal, Paper, ScrollArea, Select, SimpleGrid, Stack, Stepper, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Grid, Group, Image, Loader, Modal, Paper, Progress, ScrollArea, Select, SimpleGrid, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
-import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
+import { useAvailableInstanceTypes, useAvailableInstanceVersions, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
-import { iconCheck, iconChevronLeft, iconChevronRight, iconHelp, iconPlus, iconSurreal } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconClose, iconHelp, iconModel, iconPlus, iconQuery, iconSurreal } from "~/util/icons";
 import { Tile } from "../../../components/Tile";
 import { useStable } from "~/hooks/stable";
-import { ApiError, fetchAPI } from "../../../api";
+import { fetchAPI } from "../../../api";
 import { showError, showInfo } from "~/util/helpers";
 import { CloudInstance } from "~/types";
+import { mdiFloppy } from "@mdi/js";
+import { isEmpty, range } from "radash";
+import { Form } from "~/components/Form";
 
 interface CreationStepperProps {
 	onClose: () => void;
-	onProvision: () => void;
 	onComplete: (info?: CloudInstance) => void;
 }
 
 function CreationStepper({
 	onClose,
-	onProvision,
 	onComplete,
 }: CreationStepperProps) {
 	const [step, setStep] = useState(0);
@@ -31,19 +31,33 @@ function CreationStepper({
 	const current = useOrganization();
 	const organizations = useCloudStore(s => s.organizations);
 	const instanceTypes = useAvailableInstanceTypes();
+	const versions = useAvailableInstanceVersions();
 	const regions = useAvailableRegions();
 
 	const [name, setName] = useInputState("");
-	const [replicas, setReplicas] = useState("1");
+	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
+	const [units, setUnits] = useState(1);
 	const [org, setOrg] = useState<string>(current?.id || "");
 	const [instance, setInstance] = useState<string>("");
 	const [region, setRegion] = useState<string>("");
 
+	// Selectable organization list
 	const orgList = organizations.map(org => ({
 		value: org.id,
 		label: org.name
 	}));
 
+	// Active instance type information
+	const instanceInfo = useMemo(() => {
+		return instanceTypes.find(t => t.slug === instance);
+	}, [instance, instanceTypes]);
+
+	// Is the current instance type limited (no compute units)
+	const isLimited = useMemo(() => {
+		return isEmpty(instanceInfo?.compute_units);
+	}, [instanceInfo]);
+
+	// Whether the user can continue to the next step
 	const canContinue = useMemo(() => {
 		if (step === 0) {
 			return name.length > 0 && org.length > 0;
@@ -60,9 +74,8 @@ function CreationStepper({
 		return true;
 	}, [step, name, org, instance, region]);
 
+	// Provision the instance
 	const provisionInstance = useStable(async () => {
-		onProvision();
-
 		try {
 			const result = await fetchAPI<CloudInstance>("/instances", {
 				method: "POST",
@@ -71,10 +84,14 @@ function CreationStepper({
 					org,
 					region,
 					specs: {
-						slug: instance
+						slug: instance,
+						version: version,
+						compute_units: isLimited ? undefined : units
 					}
 				})
 			});
+
+			console.log("Provisioned instance:", result);
 
 			const task = setInterval(async () => {
 				try {
@@ -87,26 +104,42 @@ function CreationStepper({
 				}
 			}, 3000);
 		} catch (err: any) {
-			let subtitle = err.message;
-
 			console.log('Failed to provision database:', [...err.response.headers.entries()]);
-
-			if (err instanceof ApiError && err.isJson()) {
-				const { message } = await err.response.json();
-
-				if (message) {
-					subtitle = message;
-				}
-			}
 
 			showError({
 				title: "Failed to provision database",
-				subtitle
+				subtitle: "Please try again later"
 			});
 
 			onComplete();
 		}
 	});
+
+	// Compute unit options
+	const computeUnits = useMemo(() => {
+		if (!instanceInfo?.compute_units) {
+			return [];
+		}
+
+		const options = range(
+			instanceInfo.compute_units.min ?? 1,
+			instanceInfo.compute_units.max ?? 5,
+			(i) => ({
+				value: i.toString(),
+				label: `${i} unit${i === 1 ? "" : "s"}`
+			})
+		);
+
+		return [...options];
+	}, [instanceInfo?.compute_units]);
+
+	const updateInstance = (value: string) => {
+		const info = instanceTypes.find(t => t.slug === value);
+		const minUnits = info?.compute_units?.min ?? 1;
+
+		setInstance(value);
+		setUnits(minUnits);
+	};
 
 	const previousStep = useStable(() => {
 		setStep(step - 1);
@@ -121,26 +154,53 @@ function CreationStepper({
 	});
 
 	const willCreate = step === 3;
+	const estimatedCost = (isLimited ? 0 : (3.5 * units)).toFixed(2);
 
 	return (
 		<>
-			<Stepper
-				h={500}
-				active={step}
-				iconSize={28}
-				size="xs"
-				contentPadding="xl"
-				className={classes.stepper}
-				allowNextStepsSelect={false}
-				completedIcon={<Icon path={iconCheck} />}
-			>
-				<Stepper.Step aria-label="Details">
+			{step < 4 && (
+				<Progress
+					value={step / 3 * 100}
+					transitionDuration={200}
+					radius="xl"
+					bg="slate.9"
+					styles={{
+						section: {
+							background: "var(--surrealist-gradient)"
+						}
+					}}
+					mb="xl"
+				/>
+			)}
+
+			<Form onSubmit={nextStep}>
+				{step === 0 && (
 					<Stack>
 						<PrimaryTitle>
-							Create an instance
+							Instance details
 						</PrimaryTitle>
 
-						<Grid mt="xl">
+						<Text mb="lg">
+							Please enter a name for your new instance, and select the organization you would like to create it under.
+						</Text>
+
+						<Grid
+							mb="xl"
+							styles={{
+								col: { alignContent: "center" }
+							}}
+						>
+							<Grid.Col span={4}>
+								<Text>Instance name</Text>
+							</Grid.Col>
+							<Grid.Col span={8}>
+								<TextInput
+									placeholder="Instance name"
+									value={name}
+									onChange={setName}
+									autoFocus
+								/>
+							</Grid.Col>
 							<Grid.Col span={4}>
 								<Text>Organization</Text>
 							</Grid.Col>
@@ -153,20 +213,20 @@ function CreationStepper({
 								/>
 							</Grid.Col>
 							<Grid.Col span={4}>
-								<Text>Instance name</Text>
+								<Text>Version</Text>
 							</Grid.Col>
 							<Grid.Col span={8}>
-								<TextInput
-									placeholder="Instance name"
-									value={name}
-									onChange={setName}
-									autoFocus
+								<Select
+									data={versions}
+									value={version}
+									onChange={setVersion as any}
 								/>
 							</Grid.Col>
 						</Grid>
 					</Stack>
-				</Stepper.Step>
-				<Stepper.Step aria-label="Region">
+				)}
+
+				{step === 1 && (
 					<Stack>
 						<PrimaryTitle>
 							Select a region
@@ -176,7 +236,7 @@ function CreationStepper({
 							Regions define the physical location of your instance. Choosing a region close to your users can improve performance.
 						</Text>
 
-						<ScrollArea h={300}>
+						<ScrollArea mah={300}>
 							<Stack>
 								{regions.map(type => (
 									<Tile
@@ -204,8 +264,9 @@ function CreationStepper({
 							</Stack>
 						</ScrollArea>
 					</Stack>
-				</Stepper.Step>
-				<Stepper.Step aria-label="Instance preset">
+				)}
+
+				{step === 2 && (
 					<Stack>
 						<PrimaryTitle>
 							Select an instance preset
@@ -215,96 +276,118 @@ function CreationStepper({
 							Instance presets define the resources allocated to your cloud instance. Choose a preset that best fits your needs.
 						</Text>
 
-						<ScrollArea h={300}>
+						<ScrollArea mah={300}>
 							<Stack>
 								{instanceTypes.map(type => (
 									<Tile
 										key={type.slug}
 										isActive={type.slug === instance}
-										onClick={() => setInstance(type.slug)}
+										onClick={() => updateInstance(type.slug)}
 									>
-										<Text
-											c="bright"
-											fw={600}
-											fz="lg"
-										>
-											{type.slug}
-										</Text>
-										<Text
-											c="slate.3"
-											fz="sm"
-										>
-											{type.description}
-										</Text>
-										<Divider color="slate.7" my="sm" />
-										<SimpleGrid cols={3}>
-											<Box>
-												<Label>
-													vCPU
-												</Label>
-												<Text c="slate.0" fw={500}>
-													{type.cpu}
+										<Group wrap="nowrap">
+											<Box flex={1}>
+												<Text
+													c="bright"
+													fw={600}
+													fz="lg"
+												>
+													{type.slug}
+												</Text>
+												<Text
+													c="slate.3"
+												>
+													{type.description}
 												</Text>
 											</Box>
 											<Box>
-												<Label>
-													Memory
-												</Label>
-												<Text c="slate.0" fw={500}>
-													{type.memory}MB
-												</Text>
+												<Table>
+													<Table.Tbody>
+														<Table.Tr>
+															<Table.Td>
+																<Group>
+																	<Icon path={iconQuery} />
+																	vCPU
+																</Group>
+															</Table.Td>
+															<Table.Td c="bright" miw={75} ta="right">
+																{type.cpu}
+															</Table.Td>
+														</Table.Tr>
+														<Table.Tr>
+															<Table.Td>
+																<Group>
+																	<Icon path={iconModel} />
+																	Memory
+																</Group>
+															</Table.Td>
+															<Table.Td c="bright" miw={75} ta="right">
+																{type.memory} MB
+															</Table.Td>
+														</Table.Tr>
+														<Table.Tr>
+															<Table.Td>
+																<Group>
+																	<Icon path={mdiFloppy} />
+																	Storage limit
+																</Group>
+															</Table.Td>
+															<Table.Td c="bright" miw={75} ta="right">
+																{type.storage} GB
+															</Table.Td>
+														</Table.Tr>
+													</Table.Tbody>
+												</Table>
 											</Box>
-											<Box>
-												<Label>
-													Storage limit
-												</Label>
-												<Text c="slate.0" fw={500}>
-													{type.storage}GB
-												</Text>
-											</Box>
-										</SimpleGrid>
+										</Group>
 									</Tile>
 								))}
 							</Stack>
 						</ScrollArea>
 					</Stack>
-				</Stepper.Step>
-				<Stepper.Step aria-label="Confirm">
+				)}
+
+				{step === 3 && (
 					<Stack>
 						<PrimaryTitle>
 							Finalize your instance
 						</PrimaryTitle>
 
-						<Text>
-							Your new instance is nearly ready! Please choose how many compute units you would
-							like to use, confirm your entered details, and press <Text span c="bright">Create</Text> once
-							you are ready to provision your instance.
-						</Text>
+						{isLimited ? (
+							<Text>
+								Your free instance is nearly ready! Please
+								confirm your entered details, and press <Text span c="bright">Create</Text> once
+								you are ready to provision your instance. Keep in mind that you can
+								only create one free instance.
+							</Text>
+						) : (
+							<Text>
+								Your new instance is nearly ready! Please choose how many compute units you would like to use,
+								confirm your entered details, and press <Text span c="bright">Create</Text> once
+								you are ready to provision your instance.
+							</Text>
+						)}
 
-						<Select
-							my="xl"
-							label={
-								<Group gap="xs">
-									Compute units
-									<Tooltip label="Explanation todo">
-										<div>
-											<Icon path={iconHelp} size="sm" />
-										</div>
-									</Tooltip>
-								</Group>
-							}
-							data={[
-								{ value: '1', label: "1 unit" },
-								{ value: '2', label: "2 units" },
-								{ value: '3', label: "3 units" },
-								{ value: '4', label: "4 units" },
-								{ value: '5', label: "5 units" }
-							]}
-							value={replicas}
-							onChange={setReplicas as any}
-						/>
+						{!isLimited && (
+							<Select
+								mt="xl"
+								label={
+									<Group gap="xs">
+										Compute units
+										<Tooltip label="Explanation todo">
+											<div>
+												<Icon path={iconHelp} size="sm" />
+											</div>
+										</Tooltip>
+									</Group>
+								}
+								data={computeUnits}
+								value={units.toString()}
+								onChange={(v) => v && setUnits(Number.parseInt(v))}
+							/>
+						)}
 
 						<Paper
+							mt="xl"
 							bg="slate.9"
 							p="md"
 						>
@@ -325,6 +408,16 @@ function CreationStepper({
 										<Table.Td>Region</Table.Td>
 										<Table.Td c="bright">{region}</Table.Td>
 									</Table.Tr>
+									<Table.Tr>
+										<Table.Td>Version</Table.Td>
+										<Table.Td c="bright">{version}</Table.Td>
+									</Table.Tr>
+									{!isLimited && (
+										<Table.Tr>
+											<Table.Td>Compute units</Table.Td>
+											<Table.Td c="bright">{units}</Table.Td>
+										</Table.Tr>
+									)}
 								</Table.Tbody>
 							</Table>
 							<Text>Estimated costs</Text>
@@ -333,17 +426,27 @@ function CreationStepper({
 								fw={500}
 								c="bright"
 							>
-								${(3.5 * Number.parseInt(replicas)).toFixed(2)}<Text span c="slate.2">/mo</Text>
+								${estimatedCost}<Text span c="slate.2">/mo</Text>
 							</Text>
 						</Paper>
 					</Stack>
-				</Stepper.Step>
-				<Stepper.Completed>
+				)}
+
+				{step === 4 && (
 					<Stack
-						mt={84}
-						gap={0}
+						my={68}
+						gap={2}
 						align="center"
 					>
+						<ActionIcon
+							variant="subtle"
+							pos="absolute"
+							top={20}
+							right={20}
+							onClick={onClose}
+						>
+							<Icon path={iconClose} />
+						</ActionIcon>
 						<Center
 							className={classes.provisionBox}
 							pos="relative"
@@ -371,49 +474,48 @@ function CreationStepper({
 							fz="xl"
 							mt={36}
 						>
-							Provisioning your database
+							We are provisioning your instance
 						</Text>
 						<Text
-							c="slate"
+							c="slate.3"
 							fz="lg"
 						>
-							Working...
+							Hang tight, this should only take a few moments...
 						</Text>
 					</Stack>
-				</Stepper.Completed>
-			</Stepper>
+				)}
 
-			{step < 4 && (
-				<SimpleGrid cols={2} mt="xl">
-					{step === 0 ? (
+				{step < 4 && (
+					<SimpleGrid cols={2} mt="xl">
+						{step === 0 ? (
+							<Button
+								onClick={onClose}
+								color="slate"
+								variant="light"
+							>
+								Close
+							</Button>
+						) : (
+							<Button
+								color="slate"
+								variant="light"
+								onClick={previousStep}
+								leftSection={<Icon path={iconChevronLeft} />}
+							>
+								Previous
+							</Button>
+						)}
 						<Button
-							onClick={onClose}
-							color="slate"
-							variant="light"
+							type="submit"
+							variant="gradient"
+							disabled={!canContinue}
+							rightSection={<Icon path={willCreate ? iconPlus : iconChevronRight} />}
 						>
-							Close
+							{willCreate ? "Create" : "Continue"}
 						</Button>
-					) : (
-						<Button
-							color="slate"
-							variant="light"
-							onClick={previousStep}
-							leftSection={<Icon path={iconChevronLeft} />}
-						>
-							Previous
-						</Button>
-					)}
-					<Button
-						type="submit"
-						variant="gradient"
-						onClick={nextStep}
-						disabled={!canContinue}
-						rightSection={<Icon path={willCreate ? iconPlus : iconChevronRight} />}
-					>
-						{willCreate ? "Create" : "Continue"}
-					</Button>
-				</SimpleGrid>
-			)}
+					</SimpleGrid>
+				)}
+			</Form>
 		</>
 	);
 }
@@ -429,20 +531,11 @@ export function CreationModal({
 	onClose,
 	onRefresh,
 }: CreationModalProps) {
-	const [provisioning, setProvisioning] = useState(false);
-
 	const handleClose = useStable(() => {
-		if (!provisioning) {
-			onClose();
-		}
-	});
-
-	const handleProvision = useStable(() => {
-		setProvisioning(true);
+		onClose();
 	});
 
 	const handleComplete = useStable((instance?: CloudInstance) => {
-		setProvisioning(false);
 		onClose();
 		onRefresh();
 
@@ -467,7 +560,6 @@ export function CreationModal({
 		>
 			<CreationStepper
 				onClose={handleClose}
-				onProvision={handleProvision}
 				onComplete={handleComplete}
 			/>
 		</Modal>

@@ -4,6 +4,7 @@ import { AuthState, CloudInstanceType, CloudOrganization, CloudProfile, CloudReg
 interface CloudValues {
 	profile: CloudProfile;
 	instanceTypes: CloudInstanceType[];
+	instanceVersions: string[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
 }
@@ -19,6 +20,7 @@ export type CloudStore = {
 	sessionToken: string;
 	profile: CloudProfile;
 	instanceTypes: CloudInstanceType[];
+	instanceVersions: string[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
 	sessionExpired: boolean;
@@ -36,6 +38,7 @@ export const useCloudStore = create<CloudStore>((set) => ({
 	sessionToken: "",
 	profile: EMPTY_PROFILE,
 	instanceTypes: [],
+	instanceVersions: [],
 	regions: [],
 	organizations: [],
 	sessionExpired: false,
@@ -50,10 +53,11 @@ export const useCloudStore = create<CloudStore>((set) => ({
 		profile,
 	}),
 
-	setCloudValues: ({profile, instanceTypes, regions, organizations}) => set({
+	setCloudValues: ({profile, instanceTypes, instanceVersions, regions, organizations}) => set({
 		authState: "authenticated",
 		profile,
 		instanceTypes,
+		instanceVersions,
 		regions,
 		organizations,
 	}),

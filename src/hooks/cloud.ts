@@ -46,6 +46,13 @@ export function useAvailableInstanceTypes() {
 }
 
 /**
+ * Lists out the available instance versions
+ */
+export function useAvailableInstanceVersions() {
+	return useCloudStore(s => s.instanceVersions);
+}
+
+/**
  * Automatically set up the cloud authentication flow
  */
 export function useCloudAuthentication() {

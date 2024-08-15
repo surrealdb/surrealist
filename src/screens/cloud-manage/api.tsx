@@ -60,9 +60,10 @@ export async function updateCloudInformation() {
 	const { setCloudValues } = useCloudStore.getState();
 	const { activeCloudOrg, setActiveCloudOrg } = useConfigStore.getState();
 
-	const [profile, instanceTypes, regions] = await Promise.all([
+	const [profile, instanceTypes, instanceVersions, regions] = await Promise.all([
 		fetchAPI<CloudProfile>("/user/profile"),
 		fetchAPI<CloudInstanceType[]>("/instancetypes"),
+		fetchAPI<string[]>("/instanceversions"),
 		fetchAPI<CloudRegion[]>("/regions"),
 	]);
 
@@ -71,6 +72,7 @@ export async function updateCloudInformation() {
 	setCloudValues({
 		profile,
 		instanceTypes,
+		instanceVersions,
 		regions,
 		organizations: [organization]
 	});

@@ -222,7 +222,7 @@ export function Instance({
 					db={value}
 					icon={iconSurreal}
 				>
-					SurrealDB 2.0
+					SurrealDB {value.version}
 				</Info>
 				<Spacer />
 				{inactive ? (

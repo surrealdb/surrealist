@@ -401,6 +401,7 @@ export interface CloudInstance {
 	name: string;
 	host: string;
 	region: string;
+	version: string;
 	state: InstanceState;
 	type: CloudInstanceType;
 }
@@ -411,6 +412,10 @@ export interface CloudInstanceType {
 	cpu: number;
 	memory: number;
 	storage: number;
+	compute_units: {
+		min?: number;
+		max?: number;
+	};
 }
 
 export interface CloudRegion {
