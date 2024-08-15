@@ -5,10 +5,6 @@ import { SANDBOX } from "~/constants";
 
 export const CONFIG_VERSION = 2;
 
-export const CLOUD_AUTH_BASE = "https://surrealdb.us.auth0.com";
-export const CLOUD_API_BASE = "https://api.staging.surrealdb.cloud/api/v1";
-export const CLOUD_API_MGMT_BASE = "https://api.staging.surrealdb.cloud/management/v1";
-
 export function createBaseConfig(): SurrealistConfig {
 	const settings = createBaseSettings();
 
@@ -72,9 +68,9 @@ export function createBaseSettings(): SurrealistSettings {
 		},
 		cloud: {
 			databaseListMode: "grid",
-			urlAuthBase: CLOUD_AUTH_BASE,
-			urlApiBase: CLOUD_API_BASE,
-			urlApiMgmtBase: CLOUD_API_MGMT_BASE,
+			urlAuthBase: "",
+			urlApiBase: "",
+			urlApiMgmtBase: "",
 		}
 	};
 }

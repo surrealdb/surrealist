@@ -1,11 +1,8 @@
-import { ActionIcon, Select, TextInput } from "@mantine/core";
+import { Select, TextInput } from "@mantine/core";
 import { SettingsSection } from "../utilities";
 import { useSetting } from "~/hooks/config";
 import { DatabaseListMode, Selection } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { CLOUD_API_BASE, CLOUD_API_MGMT_BASE, CLOUD_AUTH_BASE } from "~/util/defaults";
-import { Icon } from "~/components/Icon";
-import { iconReset } from "~/util/icons";
 
 const CAT = "cloud";
 
@@ -36,8 +33,8 @@ export function CloudTab() {
 
 			</SettingsSection>
 
-			{cloud_endpoints && (
-				<SettingsSection label="Endpoints">
+			{cloud_endpoints === "custom" && (
+				<SettingsSection label="Custom endpoints">
 
 					<TextInput
 						w="100%"
@@ -45,13 +42,6 @@ export function CloudTab() {
 						value={urlAuthBase}
 						spellCheck={false}
 						onChange={e => setUrlAuthBase(e.target.value)}
-						rightSection={
-							<ActionIcon
-								onClick={() => setUrlAuthBase(CLOUD_AUTH_BASE)}
-							>
-								<Icon path={iconReset} />
-							</ActionIcon>
-						}
 					/>
 
 					<TextInput
@@ -60,13 +50,6 @@ export function CloudTab() {
 						value={urlApiAuthBase}
 						spellCheck={false}
 						onChange={e => setUrlApiAuthBase(e.target.value)}
-						rightSection={
-							<ActionIcon
-								onClick={() => setUrlApiAuthBase(CLOUD_API_BASE)}
-							>
-								<Icon path={iconReset} />
-							</ActionIcon>
-						}
 					/>
 
 					<TextInput
@@ -75,13 +58,6 @@ export function CloudTab() {
 						value={urlApiMgmtBase}
 						spellCheck={false}
 						onChange={e => setUrlApiMgmtBase(e.target.value)}
-						rightSection={
-							<ActionIcon
-								onClick={() => setUrlApiMgmtBase(CLOUD_API_MGMT_BASE)}
-							>
-								<Icon path={iconReset} />
-							</ActionIcon>
-						}
 					/>
 
 				</SettingsSection>

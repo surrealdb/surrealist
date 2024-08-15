@@ -5,8 +5,8 @@ import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { isDevelopment } from "~/util/environment";
 import { fetchAPI, updateCloudInformation } from "./api";
-import { getSetting } from "~/util/config";
 import { dispatchOnboarding } from "./onboarding";
+import { getCloudEndpoints } from "./endpoints";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -25,7 +25,8 @@ interface PKCE {
  * Open the cloud authentication page
  */
 export async function openCloudAuthentication() {
-	const baseUrl = getSetting("cloud", "urlAuthBase");
+	const { authBase } = getCloudEndpoints();
+
 	const state = adapter.id + randomString(50);
 	const pkce = await newPKCE();
 
@@ -44,7 +45,7 @@ export async function openCloudAuthentication() {
 		audience: 'https://surrealdb.us.auth0.com/api/v2/',
 	});
 
-	adapter.openUrl(`${baseUrl}/authorize?${params.toString()}`, "internal");
+	adapter.openUrl(`${authBase}/authorize?${params.toString()}`, "internal");
 }
 
 /**
@@ -57,7 +58,7 @@ export async function openCloudAuthentication() {
 export async function verifyAuthentication(code: string, state: string) {
 	try {
 		const { setLoading } = useCloudStore.getState();
-		const baseUrl = getSetting("cloud", "urlAuthBase");
+		const { authBase } = getCloudEndpoints();
 
 		adapter.log("Cloud", "Verifying authentication details");
 
@@ -77,7 +78,7 @@ export async function verifyAuthentication(code: string, state: string) {
 
 		setLoading();
 
-		const response = await adapter.fetch(`${baseUrl}/oauth/token`, {
+		const response = await adapter.fetch(`${authBase}/oauth/token`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -116,9 +117,9 @@ export async function verifyAuthentication(code: string, state: string) {
  */
 export async function refreshAccess() {
 	const { setLoading, setSessionExpired } = useCloudStore.getState();
+	const { authBase } = getCloudEndpoints();
 
 	try {
-		const baseUrl = getSetting("cloud", "urlAuthBase");
 		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
 
 		adapter.log("Cloud", "Refreshing cloud access token");
@@ -130,7 +131,7 @@ export async function refreshAccess() {
 
 		setLoading();
 
-		const response = await adapter.fetch(`${baseUrl}/oauth/token`, {
+		const response = await adapter.fetch(`${authBase}/oauth/token`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

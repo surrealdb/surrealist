@@ -51,7 +51,7 @@ export const schema = {
 		options: ['v1', 'v2'],
 	},
 	cloud_endpoints: {
-		options: [false, true],
+		options: ['production', 'custom'],
 		readonly: isProduction,
 	},
 	changelog: {
@@ -76,8 +76,6 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			newsfeed: true,
 			highlight_tool: true,
-			surreal_compat: 'v1',
-			cloud_endpoints: true,
 		},
 		preview: {
 			query_view: true,
@@ -91,8 +89,6 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			database_version_check: true,
 			newsfeed: true,
-			surreal_compat: 'v1',
-			cloud_endpoints: true
 		},
 		production: {
 			query_view: true,
@@ -106,7 +102,6 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			database_version_check: true,
 			newsfeed: true,
-			surreal_compat: 'v1'
 		},
 	},
 	overrides: (flag) => {

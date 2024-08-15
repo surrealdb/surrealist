@@ -3,7 +3,7 @@ import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { CloudProfile, CloudInstanceType, CloudRegion, CloudOrganization } from "~/types";
-import { getSetting } from "~/util/config";
+import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
 	management?: boolean;
@@ -15,11 +15,9 @@ export interface APIRequestInit extends RequestInit {
  */
 export async function fetchAPI<T = unknown>(path: string, options?: APIRequestInit | undefined): Promise<T> {
 	const { sessionToken } = useCloudStore.getState();
+	const { apiBase, mgmtBase } = getCloudEndpoints();
 
-	const baseUrl = options?.management
-		? getSetting("cloud", "urlApiMgmtBase")
-		: getSetting("cloud", "urlApiBase");
-
+	const baseUrl = options?.management ? mgmtBase : apiBase;
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json'
 	};
