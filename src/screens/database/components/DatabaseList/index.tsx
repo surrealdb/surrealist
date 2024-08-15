@@ -1,5 +1,6 @@
+import classes from "./style.module.scss";
 import { ActionIcon, Button, ButtonProps, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { iconPlus } from "~/util/icons";
+import { iconClose, iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -13,8 +14,67 @@ import { Form } from "~/components/Form";
 import { useInputState } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
 import { mdiDatabaseOutline } from "@mdi/js";
-import { escapeIdent, parseIdent } from "~/util/surrealql";
+import { escapeIdent } from "~/util/surrealql";
 import { LearnMore } from "~/components/LearnMore";
+import { useConfirmation } from "~/providers/Confirmation";
+import { SyntheticEvent } from "react";
+
+export interface DatabaseProps {
+	value: string;
+	isActive: boolean;
+	onOpen: (ns: string) => void;
+	onRemove: () => void;
+}
+
+function Database({
+	value,
+	isActive,
+	onOpen,
+	onRemove,
+}: DatabaseProps) {
+	const { lastNamespace } = useActiveConnection();
+
+	const open = useStable(() => onOpen(value));
+
+	const remove = useConfirmation({
+		title: "Remove database",
+		message: `Are you sure you want to remove the database "${value}"?`,
+		confirmText: "Remove",
+		onConfirm() {
+			executeQuery(/* surql */ `REMOVE DATABASE ${escapeIdent(value)}`);
+			activateDatabase(lastNamespace, "");
+		},
+	});
+
+	const requestRemove = useStable((e: SyntheticEvent) => {
+		e.stopPropagation();
+		remove();
+		onRemove();
+	});
+
+	return (
+		<Entry
+			h={34}
+			radius="xs"
+			onClick={open}
+			isActive={isActive}
+			className={classes.database}
+			rightSection={
+				<ActionIcon
+					component="div"
+					className={classes.databaseOptions}
+					onClick={requestRemove}
+					aria-label="Remove database"
+					size="xs"
+				>
+					<Icon path={iconClose} size="sm" />
+				</ActionIcon>
+			}
+		>
+			{value}
+		</Entry>
+	);
+}
 
 export interface DatabaseListProps {
 	buttonProps?: ButtonProps;
@@ -122,15 +182,13 @@ export function DatabaseList({
 									No databases defined
 								</Text>
 							) : data.map((db) => (
-								<Entry
+								<Database
 									key={db}
-									onClick={() => openDatabase(db)}
+									value={db}
 									isActive={db === connection.lastDatabase}
-									radius="xs"
-									h={28}
-								>
-									{parseIdent(db)}
-								</Entry>
+									onOpen={() => openDatabase(db)}
+									onRemove={openHandle.close}
+								/>
 							))}
 						</ScrollArea.Autosize>
 					</Stack>

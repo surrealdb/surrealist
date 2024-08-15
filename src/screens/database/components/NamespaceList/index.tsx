@@ -1,5 +1,6 @@
+import classes from "./style.module.scss";
 import { ActionIcon, Button, ButtonProps, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { iconPlus } from "~/util/icons";
+import { iconClose, iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -15,6 +16,64 @@ import { useStable } from "~/hooks/stable";
 import { mdiFolderOutline } from "@mdi/js";
 import { escapeIdent } from "~/util/surrealql";
 import { LearnMore } from "~/components/LearnMore";
+import { SyntheticEvent } from "react";
+import { useConfirmation } from "~/providers/Confirmation";
+
+export interface NamespaceProps {
+	value: string;
+	isActive: boolean;
+	onOpen: (ns: string) => void;
+	onRemove: () => void;
+}
+
+function Namespace({
+	value,
+	isActive,
+	onOpen,
+	onRemove,
+}: NamespaceProps) {
+
+	const open = useStable(() => onOpen(value));
+
+	const remove = useConfirmation({
+		title: "Remove namespace",
+		message: `Are you sure you want to remove the namespace "${value}"?`,
+		confirmText: "Remove",
+		onConfirm() {
+			executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
+			activateDatabase("", "");
+		},
+	});
+
+	const requestRemove = useStable((e: SyntheticEvent) => {
+		e.stopPropagation();
+		remove();
+		onRemove();
+	});
+
+	return (
+		<Entry
+			h={34}
+			radius="xs"
+			onClick={open}
+			isActive={isActive}
+			className={classes.namespace}
+			rightSection={
+				<ActionIcon
+					component="div"
+					className={classes.namespaceOptions}
+					onClick={requestRemove}
+					aria-label="Remove namespace"
+					size="xs"
+				>
+					<Icon path={iconClose} size="sm" />
+				</ActionIcon>
+			}
+		>
+			{value}
+		</Entry>
+	);
+}
 
 export interface NamespaceListProps {
 	buttonProps?: ButtonProps;
@@ -125,15 +184,13 @@ export function NamespaceList({
 									No namespaces defined
 								</Text>
 							) : data.map((ns) => (
-								<Entry
+								<Namespace
 									key={ns}
-									onClick={() => openNamespace(ns)}
+									value={ns}
 									isActive={ns === connection.lastNamespace}
-									radius="xs"
-									h={28}
-								>
-									{ns}
-								</Entry>
+									onOpen={openNamespace}
+									onRemove={openHandle.close}
+								/>
 							))}
 						</ScrollArea.Autosize>
 					</Stack>
