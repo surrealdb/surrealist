@@ -64,6 +64,7 @@ function Item({
 			rightSection={
 				<ActionIcon
 					component="div"
+					variant="transparent"
 					className={classes.connectionOptions}
 					onClick={modify}
 					aria-label="Edit connection"

@@ -32,6 +32,7 @@ function Namespace({
 	onOpen,
 	onRemove,
 }: NamespaceProps) {
+	const { lastNamespace } = useActiveConnection();
 
 	const open = useStable(() => onOpen(value));
 
@@ -41,7 +42,10 @@ function Namespace({
 		confirmText: "Remove",
 		onConfirm() {
 			executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
-			activateDatabase("", "");
+
+			if (value == lastNamespace) {
+				activateDatabase("", "");
+			}
 		},
 	});
 
@@ -53,7 +57,8 @@ function Namespace({
 
 	return (
 		<Entry
-			h={34}
+			py={5}
+			h="unset"
 			radius="xs"
 			onClick={open}
 			isActive={isActive}
@@ -61,6 +66,7 @@ function Namespace({
 			rightSection={
 				<ActionIcon
 					component="div"
+					variant="transparent"
 					className={classes.namespaceOptions}
 					onClick={requestRemove}
 					aria-label="Remove namespace"
@@ -183,15 +189,19 @@ export function NamespaceList({
 								<Text c="slate">
 									No namespaces defined
 								</Text>
-							) : data.map((ns) => (
-								<Namespace
-									key={ns}
-									value={ns}
-									isActive={ns === connection.lastNamespace}
-									onOpen={openNamespace}
-									onRemove={openHandle.close}
-								/>
-							))}
+							) : (
+								<Stack gap="xs">
+									{data.map((ns) => (
+										<Namespace
+											key={ns}
+											value={ns}
+											isActive={ns === connection.lastNamespace}
+											onOpen={openNamespace}
+											onRemove={openHandle.close}
+										/>
+									))}
+								</Stack>
+							)}
 						</ScrollArea.Autosize>
 					</Stack>
 				</Menu.Dropdown>

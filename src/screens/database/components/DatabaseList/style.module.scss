@@ -1,7 +1,7 @@
 .database-options {
-	display: none;
+	visibility: hidden;
 }
 
 .database:hover .database-options {
-	display: flex;
+	visibility: visible;
 }

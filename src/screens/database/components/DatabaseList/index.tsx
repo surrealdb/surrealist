@@ -32,7 +32,7 @@ function Database({
 	onOpen,
 	onRemove,
 }: DatabaseProps) {
-	const { lastNamespace } = useActiveConnection();
+	const { lastNamespace, lastDatabase } = useActiveConnection();
 
 	const open = useStable(() => onOpen(value));
 
@@ -42,7 +42,10 @@ function Database({
 		confirmText: "Remove",
 		onConfirm() {
 			executeQuery(/* surql */ `REMOVE DATABASE ${escapeIdent(value)}`);
-			activateDatabase(lastNamespace, "");
+
+			if (lastDatabase === value) {
+				activateDatabase(lastNamespace, "");
+			}
 		},
 	});
 
@@ -54,7 +57,8 @@ function Database({
 
 	return (
 		<Entry
-			h={34}
+			py={5}
+			h="unset"
 			radius="xs"
 			onClick={open}
 			isActive={isActive}
@@ -62,6 +66,7 @@ function Database({
 			rightSection={
 				<ActionIcon
 					component="div"
+					variant="transparent"
 					className={classes.databaseOptions}
 					onClick={requestRemove}
 					aria-label="Remove database"
@@ -181,15 +186,19 @@ export function DatabaseList({
 								<Text c="slate">
 									No databases defined
 								</Text>
-							) : data.map((db) => (
-								<Database
-									key={db}
-									value={db}
-									isActive={db === connection.lastDatabase}
-									onOpen={() => openDatabase(db)}
-									onRemove={openHandle.close}
-								/>
-							))}
+							) : (
+								<Stack gap="xs">
+									{data.map((db) => (
+										<Database
+											key={db}
+											value={db}
+											isActive={db === connection.lastDatabase}
+											onOpen={() => openDatabase(db)}
+											onRemove={openHandle.close}
+										/>
+									))}
+								</Stack>
+							)}
 						</ScrollArea.Autosize>
 					</Stack>
 				</Menu.Dropdown>

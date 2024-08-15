@@ -469,6 +469,13 @@ export async function activateDatabase(namespace: string, database: string) {
 
 			return;
 		}
+	} else {
+		updateCurrentConnection({
+			lastNamespace: "",
+			lastDatabase: ""
+		});
+
+		return;
 	}
 
 	// Select a database

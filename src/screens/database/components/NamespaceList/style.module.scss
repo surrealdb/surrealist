@@ -1,7 +1,7 @@
 .namespace-options {
-	display: none;
+	visibility: hidden;
 }
 
 .namespace:hover .namespace-options {
-	display: flex;
+	visibility: visible;
 }
