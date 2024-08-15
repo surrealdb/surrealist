@@ -2,7 +2,7 @@ import posthog from "posthog-js";
 import { Surreal, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
 import { AuthDetails, Connection, Protocol } from '~/types';
 import { State, useDatabaseStore } from '~/stores/database';
-import { getAuthDB, getAuthNS, getConnection } from '~/util/connection';
+import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from '~/util/connection';
 import { connectionUri, newId, showError, showWarning } from '~/util/helpers';
 import { syncDatabaseSchema } from '~/util/schema';
 import { ConnectedEvent, DisconnectedEvent } from '~/util/global-events';
@@ -61,7 +61,6 @@ export async function openConnection(options?: ConnectOptions) {
 	forceClose = false;
 
 	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
-	const reconnectInterval = getReconnectInterval();
 	const rpcEndpoint = connectionUri(connection.authentication);
 	const thisInstance = instance;
 
@@ -69,29 +68,18 @@ export async function openConnection(options?: ConnectOptions) {
 
 	if (retryTask) {
 		clearTimeout(retryTask);
+		retryTask = undefined;
 	}
 
-	const retryConnection = () => {
-		const { currentState } = useDatabaseStore.getState();
+	instance.emitter.subscribe("disconnected", () => {
+		DisconnectedEvent.dispatch(null);
+		setCurrentState(forceClose ? "disconnected" : "retrying");
+		setVersion("");
 
-		if (currentState === "connected") {
-			setCurrentState("disconnected");
-			setVersion("");
-
-			DisconnectedEvent.dispatch(null);
+		if (!forceClose) {
+			scheduleReconnect();
 		}
-
-		if (forceClose) return;
-
-		retryTask = setTimeout(() => {
-			openConnection({
-				connection,
-				isRetry: true
-			});
-		}, reconnectInterval);
-	};
-
-	instance.emitter.subscribe("disconnected", retryConnection);
+	});
 
 	try {
 		const isSignup = connection.authentication.mode === "scope-signup";
@@ -101,7 +89,7 @@ export async function openConnection(options?: ConnectOptions) {
 			const { authState } = useCloudStore.getState();
 
 			if (authState === "loading") {
-				retryConnection();
+				scheduleReconnect(1000);
 				return;
 			} else if(authState === "unauthenticated") {
 				throw new CloudError("Not authenticated with Surreal Cloud");
@@ -501,4 +489,20 @@ export async function activateDatabase(namespace: string, database: string) {
 			});
 		}
 	}
+}
+
+function scheduleReconnect(timeout?: number) {
+	const reconnectInterval = getReconnectInterval();
+	const delay = timeout ?? reconnectInterval;
+
+	retryTask = setTimeout(() => {
+		const { currentState } = useDatabaseStore.getState();
+
+		if (currentState !== "connected") {
+			openConnection({
+				connection: getActiveConnection(),
+				isRetry: true
+			});
+		}
+	}, delay);
 }
