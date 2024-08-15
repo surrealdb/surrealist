@@ -1,22 +1,9 @@
-import {
-	Box,
-	Button,
-	Group,
-	Modal,
-	Stack,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { FunctionsPanel } from "../FunctionsPanel";
 import { EditorPanel } from "../EditorPanel";
 import { ChangeEvent, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
-import {
-	iconChevronRight,
-	iconFunction,
-	iconOpen,
-	iconPlus,
-} from "~/util/icons";
+import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { ModalTitle } from "~/components/ModalTitle";
@@ -52,7 +39,7 @@ export function FunctionsView() {
 	const handle = useSaveable({
 		valid: !!details && details.args.every(([name, kind]) => name && kind),
 		track: {
-			details,
+			details
 		},
 		onSave: async () => {
 			const query = buildFunctionDefinition(details!);
@@ -69,8 +56,8 @@ export function FunctionsView() {
 
 	const updateCreateName = useStable((e: ChangeEvent<HTMLInputElement>) => {
 		const name = e.target.value
-			.replaceAll(/\s/g, "_")
-			.replaceAll(/[^\w:]/g, "")
+			.replaceAll(/\s/g, '_')
+			.replaceAll(/[^\w:]/g, '')
 			.toLocaleLowerCase();
 
 		setCreateName(name);
@@ -116,9 +103,9 @@ export function FunctionsView() {
 				args: [],
 				comment: "",
 				block: "",
-				permissions: true,
+				permissions: true
 			}),
-			name: createName,
+			name: createName
 		});
 
 		duplicationRef.current = null;
@@ -132,8 +119,7 @@ export function FunctionsView() {
 	});
 
 	const removeFunction = useConfirmation({
-		message:
-			"You are about to remove this function. This action cannot be undone.",
+		message: "You are about to remove this function. This action cannot be undone.",
 		confirmText: "Remove",
 		onConfirm: async (name: string) => {
 			await executeQuery(`REMOVE FUNCTION fn::${name}`);
@@ -157,9 +143,13 @@ export function FunctionsView() {
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
+					<Panel
+						defaultSize={minSize}
+						minSize={minSize}
+						maxSize={35}
+					>
 						<FunctionsPanel
-							active={details?.name || ""}
+							active={details?.name || ''}
 							functions={functions}
 							onCreate={openCreator}
 							onDelete={removeFunction}
@@ -190,15 +180,12 @@ export function FunctionsView() {
 
 										-- And invoke them from any query
 										RETURN fn::greet("Tobie");
-									`,
+									`
 								}}
 							>
 								<Text>
-									Schema functions allow you to define stored
-									procedures that can be reused throughout
-									your queries. This view allows you to
-									effortlessly create and manage your
-									functions.
+									Schema functions allow you to define stored procedures that can be reused throughout your queries.
+									This view allows you to effortlessly create and manage your functions.
 								</Text>
 								<Group>
 									<Button
@@ -214,11 +201,7 @@ export function FunctionsView() {
 										flex={1}
 										color="slate"
 										rightSection={<Icon path={iconOpen} />}
-										onClick={() =>
-											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function"
-											)
-										}
+										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function")}
 									>
 										Learn more
 									</Button>
@@ -232,7 +215,9 @@ export function FunctionsView() {
 			<Modal
 				opened={showCreator}
 				onClose={showCreatorHandle.close}
-				title={<ModalTitle>Create new function</ModalTitle>}
+				title={
+					<ModalTitle>Create new function</ModalTitle>
+				}
 			>
 				<Form onSubmit={createFunction}>
 					<Stack>
@@ -248,16 +233,15 @@ export function FunctionsView() {
 									ff="mono"
 									fz="xl"
 									c="surreal"
-									style={{ transform: "translate(4px, 1px)" }}
+									style={{ transform: 'translate(4px, 1px)' }}
 								>
 									fn::
 								</Text>
 							}
 							styles={{
 								input: {
-									fontFamily:
-										"var(--mantine-font-family-monospace)",
-								},
+									fontFamily: 'var(--mantine-font-family-monospace)'
+								}
 							}}
 						/>
 						<Group mt="lg">

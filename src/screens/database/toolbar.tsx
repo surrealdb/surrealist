@@ -28,7 +28,7 @@ import { Spacer } from "~/components/Spacer";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse } = useDatabaseStore.getState();
-	const { updateConnection, setActiveConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();
 	const [flags] = useFeatureFlags();
 

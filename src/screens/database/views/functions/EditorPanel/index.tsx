@@ -1,18 +1,5 @@
 import classes from "./style.module.scss";
-import {
-	Autocomplete,
-	Badge,
-	Box,
-	Button,
-	Divider,
-	Flex,
-	Group,
-	ScrollArea,
-	SimpleGrid,
-	Text,
-	TextInput,
-	Tooltip,
-} from "@mantine/core";
+import { Autocomplete, Badge, Box, Button, Divider, Flex, Group, ScrollArea, SimpleGrid, Text, TextInput, Tooltip } from "@mantine/core";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { Updater } from "use-immer";
 import { adapter } from "~/adapter";
@@ -26,15 +13,7 @@ import { SaveableHandle } from "~/hooks/save";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaFunction } from "~/types";
-import {
-	iconCheck,
-	iconCopy,
-	iconDelete,
-	iconDownload,
-	iconJSON,
-	iconPlus,
-	iconText,
-} from "~/util/icons";
+import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus, iconText } from "~/util/icons";
 import { SURQL_FILTER } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
 import { surrealql } from "codemirror-surrealql";
@@ -101,12 +80,15 @@ export function EditorPanel({
 			icon={iconJSON}
 			leftSection={
 				isCreating && (
-					<Badge ml="xs" variant="light">
+					<Badge
+						ml="xs"
+						variant="light"
+					>
 						Creating
 					</Badge>
 				)
 			}
-			rightSection={
+			rightSection={(
 				<Tooltip label="Format function">
 					<ActionIcon
 						onClick={formatFunction}
@@ -115,32 +97,53 @@ export function EditorPanel({
 						<Icon path={iconText} />
 					</ActionIcon>
 				</Tooltip>
-			}
+			)}
 		>
-			<Group h="100%" align="stretch" gap="md">
+			<Group
+				h="100%"
+				align="stretch"
+				gap="md"
+			>
 				<CodeEditor
 					flex={1}
 					h="100%"
 					value={details.block}
 					autoFocus
-					onChange={(value) =>
-						onChange((draft: any) => {
-							draft.block = value;
-						})
-					}
-					extensions={[surrealql(), surqlLinting()]}
+					onChange={value => onChange((draft: any) => {
+						draft.block = value;
+					})}
+					extensions={[
+						surrealql(),
+						surqlLinting(),
+					]}
 				/>
 				<Divider orientation="vertical" />
-				<Flex w={300} h="100%" direction="column">
+				<Flex
+					w={300}
+					h="100%"
+					direction="column"
+				>
 					<Box>
 						<Paper bg="slate.9">
 							<Flex align="center">
-								<ScrollArea scrollbars="x" type="scroll" p="lg">
+								<ScrollArea
+									scrollbars="x"
+									type="scroll"
+									p="lg"
+								>
 									<Flex>
-										<Text fz={15} c="surreal" ff="mono">
+										<Text
+											fz={15}
+											c="surreal"
+											ff="mono"
+										>
 											fn::
 										</Text>
-										<Text fz={15} c="bright" ff="mono">
+										<Text
+											fz={15}
+											c="bright"
+											ff="mono"
+										>
 											{details.name}()
 										</Text>
 									</Flex>
@@ -149,20 +152,12 @@ export function EditorPanel({
 								<CopyButton value={fullName}>
 									{({ copied, copy }) => (
 										<ActionIcon
-											variant={
-												copied ? "gradient" : undefined
-											}
+											variant={copied ? 'gradient' : undefined}
 											aria-label="Copy function name"
 											onClick={copy}
 											mr="lg"
 										>
-											<Icon
-												path={
-													copied
-														? iconCheck
-														: iconCopy
-												}
-											/>
+											<Icon path={copied ? iconCheck : iconCopy} />
 										</ActionIcon>
 									)}
 								</CopyButton>
@@ -195,9 +190,15 @@ export function EditorPanel({
 						type="scroll"
 						className={classes.metadataScroll}
 					>
-						<Stack w={300} h="100%" gap="lg">
+						<Stack
+							w={300}
+							h="100%"
+							gap="lg"
+						>
 							<Group>
-								<Label>Arguments</Label>
+								<Label>
+									Arguments
+								</Label>
 								<Spacer />
 								<Tooltip label="Add function argument">
 									<ActionIcon
@@ -210,10 +211,15 @@ export function EditorPanel({
 							</Group>
 							<Stack gap="xs" mt="xs">
 								{details.args.length === 0 && (
-									<Text c="slate">No arguments defined</Text>
+									<Text c="slate">
+										No arguments defined
+									</Text>
 								)}
 								{details.args.map(([name, kind], index) => (
-									<Group key={index} gap="xs">
+									<Group
+										key={index}
+										gap="xs"
+									>
 										<TextInput
 											flex={1}
 											variant="unstyled"
@@ -221,21 +227,16 @@ export function EditorPanel({
 											spellCheck={false}
 											leftSection="$"
 											placeholder="name"
-											onChange={(e) =>
-												onChange((draft) => {
-													draft.args[index][0] =
-														e.target.value;
-												})
-											}
+											onChange={e => onChange((draft) => {
+												draft.args[index][0] = e.target.value;
+											})}
 											styles={{
 												input: {
-													backgroundColor:
-														"var(--mantine-color-slate-9)",
-													fontFamily:
-														"var(--mantine-font-family-monospace)",
+													backgroundColor: 'var(--mantine-color-slate-9)',
+													fontFamily: 'var(--mantine-font-family-monospace)',
 													paddingLeft: 24,
 													paddingRight: 12,
-												},
+												}
 											}}
 										/>
 										<Autocomplete
@@ -244,30 +245,23 @@ export function EditorPanel({
 											variant="unstyled"
 											value={kind}
 											placeholder="type"
-											onChange={(value) =>
-												onChange((draft) => {
-													draft.args[index][1] =
-														value.toLowerCase();
-												})
-											}
+											onChange={value => onChange((draft) => {
+												draft.args[index][1] = value.toLowerCase();
+											})}
 											styles={{
 												input: {
-													backgroundColor:
-														"var(--mantine-color-slate-9)",
-													fontFamily:
-														"var(--mantine-font-family-monospace)",
+													backgroundColor: 'var(--mantine-color-slate-9)',
+													fontFamily: 'var(--mantine-font-family-monospace)',
 													paddingInline: 12,
-												},
+												}
 											}}
 										/>
 										<ActionIcon
 											variant="subtle"
 											aria-label="Remove function argument"
-											onClick={() =>
-												onChange((draft) => {
-													draft.args.splice(index, 1);
-												})
-											}
+											onClick={() => onChange((draft) => {
+												draft.args.splice(index, 1);
+											})}
 										>
 											<Icon path={iconDelete} />
 										</ActionIcon>
@@ -277,23 +271,19 @@ export function EditorPanel({
 							<PermissionInput
 								label="Permission"
 								value={details.permissions}
-								onChange={(value) =>
-									onChange((draft) => {
-										draft.permissions = value;
-									})
-								}
+								onChange={value => onChange((draft) => {
+									draft.permissions = value;
+								})}
 							/>
 							<Textarea
 								rows={5}
 								label="Comment"
 								description="Optional description for this function"
 								placeholder="Enter comment..."
-								value={details.comment || ""}
-								onChange={(value) =>
-									onChange((draft) => {
-										draft.comment = value.target.value;
-									})
-								}
+								value={details.comment || ''}
+								onChange={value => onChange((draft) => {
+									draft.comment = value.target.value;
+								})}
 							/>
 							<Spacer />
 							{isCreating ? (
@@ -310,7 +300,7 @@ export function EditorPanel({
 									handle={handle}
 									inline
 									inlineProps={{
-										className: classes.saveBox,
+										className: classes.saveBox
 									}}
 								/>
 							)}
