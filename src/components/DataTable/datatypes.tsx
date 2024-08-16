@@ -1,3 +1,4 @@
+import classes from "./style.module.scss";
 import dayjs from "dayjs";
 import { RecordId, Decimal, GeometryPoint, GeometryLine, GeometryMultiPoint, GeometryMultiLine, GeometryPolygon, GeometryMultiPolygon, GeometryCollection, Uuid } from "surrealdb.js";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
@@ -69,31 +70,37 @@ function DateTimeCell(props: { value: Date }) {
 }
 
 function ArrayCell(props: { value: any[] }) {
-	const items = props.value ;
+	const items = props.value;
+	const preview = items.slice(0, 10);
 
 	return (
 		<div>
-			<HoverCard shadow="xl" withArrow>
+			<HoverCard
+				shadow="xl"
+				withArrow
+				position="bottom-start"
+			>
 				<HoverCard.Target>
 					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Array({props.value.length})
 					</Text>
 				</HoverCard.Target>
 				<HoverCard.Dropdown>
-					{items.length > 15 ? (
-						<Text size="sm">Too large to preview</Text>
-					) : (
-						<Stack gap="sm">
-							{items.map((item, i) => (
-								<Group key={i} wrap="nowrap">
-									<span style={{ opacity: 0.5 }}>#{i + 1}</span>
-									<div key={i} style={TRUNCATE_STYLE}>
-										<DataCell value={item} />
-									</div>
-								</Group>
-							))}
-						</Stack>
-					)}
+					<Stack gap="sm">
+						{preview.map((item, i) => (
+							<Group key={i} wrap="nowrap">
+								<span style={{ opacity: 0.5 }}>#{i + 1}</span>
+								<div key={i} style={TRUNCATE_STYLE}>
+									<DataCell value={item} />
+								</div>
+							</Group>
+						))}
+						{items.length > 10 && (
+							<Text size="sm" c="bright">
+								And {items.length - 10} more...
+							</Text>
+						)}
+					</Stack>
 				</HoverCard.Dropdown>
 			</HoverCard>
 		</div>
@@ -103,7 +110,12 @@ function ArrayCell(props: { value: any[] }) {
 function ObjectCell(props: { value: any }) {
 	return (
 		<div>
-			<HoverCard width={280} shadow="md" withArrow>
+			<HoverCard
+				width={280}
+				shadow="md"
+				withArrow
+				position="bottom-start"
+			>
 				<HoverCard.Target>
 					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Object({Object.keys(props.value).length})
@@ -114,10 +126,7 @@ function ObjectCell(props: { value: any }) {
 						size="sm"
 						ff="JetBrains Mono"
 						lineClamp={10}
-						style={{
-							whiteSpace: "pre",
-							tabSize: 24
-						}}
+						className={classes.sourceCode}
 					>
 						{formatValue(props.value, false, true)}
 					</Text>
