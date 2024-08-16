@@ -1,7 +1,7 @@
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { VIEW_MODES } from "~/constants";
 import { useConnection } from "~/hooks/connection";
-import { openConnection } from "~/screens/database/connection/connection";
+import { getOpenConnection, openConnection } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { featureFlags } from "~/util/feature-flags";
 
@@ -13,17 +13,25 @@ export function useConnectionSwitch() {
 	const activeScreen = useConfigStore(s => s.activeScreen);
 	const activeView = useConfigStore(s => s.activeView);
 
-	useLayoutEffect(() => {
+	useEffect(() => {
+		const open = getOpenConnection();
 		const info = VIEW_MODES[activeView];
 		const dbScreen = activeScreen === "database";
 		const dbView = activeView !== "cloud";
+		const dbDiff = connection?.id !== open?.id;
 
-		if (connection?.id && dbScreen && dbView) {
+		// Open connection if
+		// - a connection is selected
+		// - we are on the database screen
+		// - we are not on the cloud view
+		// - the connection is different from the currently open connection
+		if (connection?.id && dbScreen && dbView && dbDiff) {
 			openConnection();
 		}
 
+		// Switch to query view if the active view is disabled
 		if (info?.disabled?.(featureFlags.store)) {
 			useConfigStore.getState().setActiveView("query");
 		}
-	}, [activeScreen, activeView, connection?.id]);
+	}, [activeScreen, activeView, connection, connection?.id]);
 }

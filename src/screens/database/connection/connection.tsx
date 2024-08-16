@@ -31,6 +31,7 @@ export interface GraphqlResponse {
 	result: any;
 }
 
+let openedConnection: Connection;
 let instance = createPlaceholder();
 let hasFailed = false;
 let forceClose = false;
@@ -58,6 +59,7 @@ export async function openConnection(options?: ConnectOptions) {
 	await closeConnection(newState);
 
 	instance = await createSurreal();
+	openedConnection = connection;
 	forceClose = false;
 
 	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
@@ -496,6 +498,13 @@ export async function activateDatabase(namespace: string, database: string) {
 			});
 		}
 	}
+}
+
+/**
+ * The connection instance currently in use
+ */
+export function getOpenConnection() {
+	return openedConnection;
 }
 
 function scheduleReconnect(timeout?: number) {
