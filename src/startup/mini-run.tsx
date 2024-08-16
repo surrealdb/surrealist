@@ -8,6 +8,8 @@ import "../assets/styles/override.scss";
 
 import "../adapter";
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { adapter } from '../adapter';
 import { MiniAdapter } from '../adapter/mini';
@@ -17,6 +19,7 @@ import { MiniRunScreen } from '~/screens/mini-run';
 import { startConfigSync } from '~/util/config';
 
 (async () => {
+	dayjs.extend(relativeTime);
 
 	// Synchronize the config to the store
 	await startConfigSync();
