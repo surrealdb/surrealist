@@ -3,7 +3,7 @@ import logoImg from "~/assets/images/cloud-logo.svg";
 import splashImg from "~/assets/images/cloud-splash.webp";
 import { FC } from "react";
 import { useConfigStore } from "~/stores/config";
-import { CloudPage } from "~/types";
+import { CloudAlert, CloudPage } from "~/types";
 import { InstancesPage } from "./pages/Instances";
 import { MembersPage } from "./pages/Members";
 import { useCloudStore } from "~/stores/cloud";
@@ -19,6 +19,8 @@ import { SettingsPage } from "./pages/Settings";
 import { BillingPage } from "./pages/Billing";
 import { SupportPage } from "./pages/Support";
 import { StatusAlert } from "./components/StatusAlert";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAPI } from "./api";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
 	instances: InstancesPage,
@@ -36,6 +38,13 @@ export function CloudView() {
 	const Content = PAGE_VIEWS[page];
 
 	const showCloud = state === "authenticated" || state === "loading";
+
+	const alertQuery = useQuery({
+		queryKey: ["cloud", "message"],
+		refetchInterval: 15_000,
+		enabled: state === "authenticated",
+		queryFn:  () => fetchAPI<CloudAlert>(`/message`)
+	});
 
 	return showCloud ? (
 		<>
@@ -55,10 +64,9 @@ export function CloudView() {
 			>
 				<CloudSidebar />
 				<Stack flex={1}>
-					<StatusAlert
-						alert={null}
-						onDismiss={undefined}
-					/>
+					{alertQuery.data && (
+						<StatusAlert alert={alertQuery.data} />
+					)}
 					{Content && <Content />}
 				</Stack>
 			</Group>

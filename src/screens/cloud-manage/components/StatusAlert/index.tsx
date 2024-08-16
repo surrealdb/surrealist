@@ -2,47 +2,32 @@ import { Alert } from "@mantine/core";
 import { mdiCloseCircleOutline } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
+import { AlertLevel, CloudAlert } from "~/types";
 import { iconHelp, iconWarning } from "~/util/icons";
 
-export type AlertLevel = "info" | "warning" | "important";
-
-export interface Alert {
-	level: AlertLevel;
-	message: string;
-	dismissable: boolean;
-}
+type LevelInfoMap = Record<AlertLevel, [string, string, string, string]>;
 
 const INFO_MAP = {
-	none: [null, "", ""],
 	info: [iconHelp, "blue.3", "blue.5",  "Info"],
 	warning: [iconWarning, "orange.4", "orange.6", "Warning"],
 	important: [mdiCloseCircleOutline, "red.5", "red.6", "Important"],
-};
+} satisfies LevelInfoMap;
 
 export interface StatusAlertProps {
-	alert: Alert | null;
-	onDismiss?: () => void;
+	alert: CloudAlert;
 }
 
 export function StatusAlert({
 	alert,
-	onDismiss,
 }: StatusAlertProps) {
 	const isLight = useIsLight();
-
-	if (!alert) {
-		return null;
-	}
-
-	const [icon, colorDark, colorLight, title] = INFO_MAP[alert.level];
+	const [icon, colorDark, colorLight, title] = INFO_MAP[alert.message_type];
 
 	return (
 		<Alert
 			color={isLight ? colorLight : colorDark}
 			title={title}
 			icon={<Icon path={icon} />}
-			withCloseButton={alert.dismissable}
-			onClose={onDismiss}
 			mb="xs"
 		>
 			{alert.message}

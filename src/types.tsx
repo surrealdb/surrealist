@@ -4,6 +4,7 @@ import { AnyAuth, Token } from "surrealdb.js";
 
 export type ViewRequirement = 'database';
 export type Screen = "start" | "database";
+export type AlertLevel = "info" | "warning" | "important";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type SourceMode = "schema" | "infer";
@@ -435,4 +436,10 @@ export interface CloudOrganization {
 	id: string;
 	name: string;
 	plan: CloudPlan;
+}
+
+export interface CloudAlert {
+	message: string;
+	message_type: AlertLevel;
+	timestamp: string;
 }
