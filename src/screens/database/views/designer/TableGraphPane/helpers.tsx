@@ -8,12 +8,16 @@ import { toBlob, toSvg } from "html-to-image";
 import { getSetting } from "~/util/config";
 import { extractKindRecords } from "~/util/surrealql";
 
+type EdgeWarning = { type: "edge", table: string, foreign: string, direction: "in" | "out" };
+type LinkWarning = { type: "link", table: string, foreign: string, field: string };
+
 export const NODE_TYPES = {
 	table: TableNode,
 	edge: EdgeNode,
 };
 
 export type InternalNode = Node & { width: number, height: number };
+export type GraphWarning = EdgeWarning | LinkWarning;
 
 export interface NodeData {
 	table: TableInfo;
@@ -45,7 +49,7 @@ function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 export function buildFlowNodes(
 	tables: TableInfo[],
 	showLinks: boolean
-): [Node[], Edge[]] {
+): [Node[], Edge[], GraphWarning[]] {
 	const lineStyle= getSetting("appearance", "lineStyle");
 
 	const items = normalizeTables(tables);
@@ -95,10 +99,21 @@ export function buildFlowNodes(
 
 	const edgeItems = items.filter((item) => item.isEdge);
 	const edgeIndex = new Map<string, boolean>();
+	const warnings: GraphWarning[] = [];
 
 	// Define all edges
 	for (const { table, from, to } of edgeItems) {
 		for (const fromTable of from) {
+			if (!nodeIndex[fromTable]) {
+				warnings.push({
+					type: "edge",
+					table: table.schema.name,
+					foreign: fromTable,
+					direction: "in"
+				});
+				continue;
+			}
+
 			edges.push({
 				...baseEdge,
 				id: `tb-${table.schema.name}-from-edge-${fromTable}`,
@@ -117,6 +132,16 @@ export function buildFlowNodes(
 		}
 
 		for (const toTable of to) {
+			if (!nodeIndex[toTable]) {
+				warnings.push({
+					type: "edge",
+					table: table.schema.name,
+					foreign: toTable,
+					direction: "out"
+				});
+				continue;
+			}
+
 			edges.push({
 				...baseEdge,
 				id: `tb-${table.schema.name}-to-edge-${toTable}`,
@@ -156,6 +181,16 @@ export function buildFlowNodes(
 						continue;
 					}
 
+					if (!nodeIndex[target]) {
+						warnings.push({
+							type: "link",
+							table: table.schema.name,
+							foreign: target,
+							field: field.name
+						});
+						continue;
+					}
+
 					const existing = uniqueLinks.has(`${table.schema.name}:${target}`) || uniqueLinks.has(`${target}:${table.schema.name}`);
 
 					if (existing) {
@@ -183,7 +218,7 @@ export function buildFlowNodes(
 		}
 	}
 
-	return [nodes, edges];
+	return [nodes, edges, warnings];
 }
 
 type DimensionNode = { id: string, width: number, height: number };

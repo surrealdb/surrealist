@@ -1,10 +1,10 @@
 import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Box, Button, Checkbox, Divider, Group, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Checkbox, Divider, Group, HoverCard, Loader, Modal, Popover, Stack, Text, Tooltip } from "@mantine/core";
 import { Background, NodeChange, ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import { ChangeEvent, ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
+import { GraphWarning, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
 import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -20,22 +20,10 @@ import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
 import { useBoolean } from "~/hooks/boolean";
-import { iconAPI, iconChevronLeft, iconChevronRight, iconCog, iconDesigner, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh } from "~/util/icons";
+import { iconAPI, iconChevronLeft, iconChevronRight, iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
-
-interface HelpTitleProps {
-	isLight: boolean;
-	children: React.ReactNode;
-}
-
-function HelpTitle({ isLight, children }: HelpTitleProps) {
-	return (
-		<Title order={2} size={14} c={isLight ? "slate.9" : "white"} fw={600}>
-			{children}
-		</Title>
-	);
-}
+import { GraphWarningLine, HelpTitle } from "./components";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -61,6 +49,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const isLight = useIsLight();
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
+	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
 	const [nodes, setNodes, handleOnNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [computing, setComputing] = useState(false);
@@ -108,7 +97,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [nodes]);
 
 	const renderGraph = useStable(async () => {
-		const [nodes, edges] = buildFlowNodes(props.tables, activeSession.diagramShowLinks);
+		const [nodes, edges, warnings] = buildFlowNodes(props.tables, activeSession.diagramShowLinks);
+
+		setWarnings(warnings);
 
 		if (nodes.length === 0) {
 			setNodes([]);
@@ -117,20 +108,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return;
 		}
 
-		// console.log(1);
-
-		// setNodes([]);
-		// setEdges([]);
-
-		// setTimeout(() => {
-		// 	console.log(2);
-
 		setNodes(nodes);
 		setEdges(edges);
 		setComputing(true);
 
 		doLayoutRef.current = true;
-		// }, 5);
 	});
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
@@ -226,7 +208,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	return (
 		<ContentPane
 			title="Table Graph"
-			icon={iconDesigner}
+			icon={iconRelation}
 			style={{ overflow: 'hidden' }}
 			leftSection={
 				<Tooltip label="Toggle table list">
@@ -243,6 +225,29 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			}
 			rightSection={
 				<Group wrap="nowrap">
+					{warnings.length > 0 && (
+						<HoverCard position="bottom-end">
+							<HoverCard.Target>
+								<Badge
+									variant="light"
+									color="orange"
+									h={26}
+								>
+									Encountered {warnings.length} warnings
+								</Badge>
+							</HoverCard.Target>
+							<HoverCard.Dropdown>
+								<Stack>
+									{warnings.map((warning, i) => (
+										<GraphWarningLine
+											key={i}
+											warning={warning}
+										/>
+									))}
+								</Stack>
+							</HoverCard.Dropdown>
+						</HoverCard>
+					)}
 					<Tooltip label="New table">
 						<ActionIcon
 							onClick={openTableCreator}

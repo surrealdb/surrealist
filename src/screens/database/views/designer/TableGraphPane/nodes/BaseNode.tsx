@@ -7,8 +7,9 @@ import { themeColor } from "~/util/mantine";
 import { useActiveConnection } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { ON_STOP_PROPAGATION, extractType } from "~/util/helpers";
-import { MouseEvent, useMemo, useRef } from "react";
+import { MouseEvent, ReactNode, useMemo, useRef } from "react";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
+import { extractKindRecords } from "~/util/surrealql";
 
 interface SummaryProps {
 	isLight: boolean;
@@ -78,14 +79,41 @@ function FieldKind({ kind }: FieldKindProps) {
 	);
 }
 
+interface FieldProps {
+	isLight: boolean;
+	name: string;
+	value: ReactNode
+}
+
+function Field({
+	isLight,
+	name,
+	value
+}: FieldProps) {
+	return (
+		<Flex
+			key={name}
+			justify="space-between"
+			gap="xl"
+		>
+			<Text
+				title={name}
+				c={isLight ? undefined : "white"}
+			>
+				{name}
+			</Text>
+			{value}
+		</Flex>
+	);
+}
+
 interface FieldsProps {
 	isLight: boolean;
 	table: TableInfo;
 }
 
 function Fields(props: FieldsProps) {
-	const fields = props.table.fields;
-
+	const fields = props.table.fields.filter(f => f.name !== "in" && f.name !== "out" && f.name !== "id");
 	const skipMouseUp = useRef(false);
 
 	const onClick = (e: MouseEvent<HTMLElement>) => {
@@ -112,15 +140,11 @@ function Fields(props: FieldsProps) {
 					p={0}
 				>
 					{fields.map((field) => (
-						<Flex key={field.name} justify="space-between" gap="lg">
-							<Text
-								truncate
-								title={field.name}
-								c={props.isLight ? undefined : "white"}
-							>
-								{field.name}
-							</Text>
-							{field.kind ? (
+						<Field
+							key={field.name}
+							isLight={props.isLight}
+							name={field.name}
+							value={field.kind ? (
 								<FieldKind
 									kind={field.kind}
 								/>
@@ -129,7 +153,7 @@ function Fields(props: FieldsProps) {
 									none
 								</Text>
 							)}
-						</Flex>
+						/>
 					))}
 				</Stack>
 			</ScrollArea>
@@ -143,15 +167,25 @@ interface BaseNodeProps {
 	isSelected: boolean;
 	hasIncoming: boolean;
 	hasOutgoing: boolean;
+	isEdge?: boolean;
 }
 
-export function BaseNode(props: BaseNodeProps) {
-	const { table, isSelected, hasIncoming, hasOutgoing, icon } = props;
+export function BaseNode({
+	icon,
+	table,
+	isSelected,
+	hasIncoming,
+	hasOutgoing,
+	isEdge,
+}: BaseNodeProps) {
 	const { diagramMode, diagramDirection } = useActiveConnection();
 
 	const isLight = useIsLight();
 	const isLTR = diagramDirection == 'ltr';
 	const showMore = diagramMode == 'summary' || (diagramMode == 'fields' && table.fields.length > 0);
+
+	const inField = table.fields.find(f => f.name === 'in');
+	const outField = table.fields.find(f => f.name === 'out');
 
 	return (
 		<>
@@ -200,6 +234,39 @@ export function BaseNode(props: BaseNodeProps) {
 						{table.schema.name}
 					</Text>
 				</Group>
+
+				{isEdge && inField && outField && (
+					<>
+						<Divider
+							color={isLight ? 'slate.2' : 'slate.6'}
+							my="sm"
+						/>
+						<Stack
+							gap="xs"
+							mt={10}
+							p={0}
+						>
+							<Field
+								isLight={isLight}
+								name="in"
+								value={
+									<Text ta="right">
+										{extractKindRecords(inField.kind ?? "").join(", ")}
+									</Text>
+								}
+							/>
+							<Field
+								isLight={isLight}
+								name="out"
+								value={
+									<Text ta="right">
+										{extractKindRecords(outField.kind ?? "").join(", ")}
+									</Text>
+								}
+							/>
+						</Stack>
+					</>
+				)}
 
 				{showMore && (
 					<>

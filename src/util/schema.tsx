@@ -7,7 +7,6 @@ import { executeQuerySingle } from '~/screens/database/connection/connection';
 import { createDatabaseSchema } from "./defaults";
 import { klona } from "klona";
 import { adapter } from "~/adapter";
-import { extractKindRecords } from "./surrealql";
 
 const emptyKV = () => ({ users: [] });
 const emptyNS = () => ({ users: [] });
@@ -170,30 +169,11 @@ export function buildModelDefinition(func: SchemaModel) : string {
 export function extractEdgeRecords(table: TableInfo): [boolean, string[], string[]] {
 	const { kind } = table.schema;
 
-	if (kind.kind === "RELATION") {
-		return [
-			kind.kind === "RELATION",
-			kind.in || [],
-			kind.out || []
-		];
-	}
-
-	let hasIn = false;
-	let hasOut = false;
-	let inRecords: string[] = [];
-	let outRecords: string[] = [];
-
-	for (const f of table.fields) {
-		if (f.name == "in" && f.kind) {
-			inRecords = extractKindRecords(f.kind);
-			hasIn = true;
-		} else if (f.name == "out" && f.kind) {
-			outRecords = extractKindRecords(f.kind);
-			hasOut = true;
-		}
-	}
-
-	return [hasIn && hasOut, inRecords, outRecords];
+	return [
+		kind.kind === "RELATION",
+		kind.in || [],
+		kind.out || []
+	];
 }
 
 /**

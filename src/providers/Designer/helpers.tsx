@@ -63,11 +63,11 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 		query += ` TYPE ${tableType}`;
 
 		if (tableType === "RELATION" && current.schema.kind.in) {
-			query += ` IN ${current.schema.kind.in.map(name => tb(name)).join(", ")}`;
+			query += ` IN ${current.schema.kind.in.map(name => tb(name)).join("|")}`;
 		}
 
 		if (tableType === "RELATION" && current.schema.kind.out) {
-			query += ` OUT ${current.schema.kind.out.map(name => tb(name)).join(", ")}`;
+			query += ` OUT ${current.schema.kind.out.map(name => tb(name)).join("|")}`;
 		}
 
 		if (current.schema.view) {

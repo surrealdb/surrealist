@@ -113,7 +113,8 @@ export function extractKindRecords(kind: string) {
 		parseKindTree(root, records);
 
 		return [...records.values()];
-	} catch {
+	} catch (err: any) {
+		console.error(err);
 		return [];
 	}
 }
@@ -125,13 +126,13 @@ function parseKindTree(obj: any, records: Set<string>) {
 		for (const record of obj.Record) {
 			records.add(record);
 		}
-	} else if (Array.isArray(obj)) {
-		for (const item of obj) {
-			parseKindTree(item, records);
-		}
-	} else {
-		for (const key in obj) {
-			parseKindTree(obj[key], records);
+	} else if (obj.Array) {
+		parseKindTree(obj.Array[0], records);
+	} else if (obj.Set) {
+		parseKindTree(obj.Array[0], records);
+	} else if (obj.Either) {
+		for (const either of obj.Either) {
+			parseKindTree(either, records);
 		}
 	}
 }
