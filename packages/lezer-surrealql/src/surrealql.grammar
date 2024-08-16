@@ -790,7 +790,7 @@ OrderClause {
 
 SplitClause {
 	split
-	at?
+	on?
 	Ident
 }
 
