@@ -4,7 +4,6 @@ import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
-import { LoadingContainer } from "../LoadingContainer";
 
 export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
@@ -12,7 +11,6 @@ export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDi
 	leftSection?: React.ReactNode;
 	infoSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
-	loading?: boolean;
 	withTopPadding?: boolean;
 	disabled?: boolean;
 }
@@ -24,7 +22,6 @@ export function ContentPane({
 	leftSection,
 	infoSection,
 	rightSection,
-	loading,
 	withTopPadding,
 	disabled,
 	...rest
@@ -78,8 +75,6 @@ export function ContentPane({
 				pos="relative"
 				className={classes.content}
 			>
-				<LoadingContainer visible={loading} />
-
 				{children}
 			</Box>
 		</Paper>
