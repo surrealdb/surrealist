@@ -1,4 +1,4 @@
-import { Group, Title } from "@mantine/core";
+import { Group } from "@mantine/core";
 import { iconRelation, iconBraces } from "~/util/icons";
 import { GraphWarning } from "./helpers";
 import { Icon } from "~/components/Icon";
@@ -25,18 +25,5 @@ export function GraphWarningLine({
 				Field "<Text c="bright" span>{warning.field}</Text>" on <Text c="bright" span>{warning.table}</Text> references invalid table <Text c="bright" span>{warning.foreign}</Text>
 			</Text>
 		</Group>
-	);
-}
-
-export interface HelpTitleProps {
-	isLight: boolean;
-	children: React.ReactNode;
-}
-
-export function HelpTitle({ isLight, children }: HelpTitleProps) {
-	return (
-		<Title order={2} size={14} c={isLight ? "slate.9" : "white"} fw={600}>
-			{children}
-		</Title>
 	);
 }

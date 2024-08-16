@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Badge, Box, Button, Checkbox, Divider, Group, HoverCard, Loader, Modal, Popover, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Anchor, Badge, Box, Button, Checkbox, Divider, Group, HoverCard, Loader, Popover, Stack, Text, Tooltip } from "@mantine/core";
 import { Background, NodeChange, ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import { ChangeEvent, ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GraphWarning, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
@@ -9,7 +9,6 @@ import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useActiveConnection } from "~/hooks/connection";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { RadioSelect } from "~/components/RadioSelect";
@@ -19,11 +18,10 @@ import { useConfigStore } from "~/stores/config";
 import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
-import { useBoolean } from "~/hooks/boolean";
 import { iconAPI, iconChevronLeft, iconChevronRight, iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
-import { GraphWarningLine, HelpTitle } from "./components";
+import { GraphWarningLine } from "./components";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -43,7 +41,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const [isComputing, setIsComputing] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
-	const [showHelp, showHelpHandle] = useBoolean();
 	const ref = useRef<ElementRef<"div">>(null);
 	const activeSession = useActiveConnection();
 	const isLight = useIsLight();
@@ -295,12 +292,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Popover.Dropdown>
 					</Popover>
 					<Tooltip label="Designer help">
-						<ActionIcon
-							onClick={showHelpHandle.open}
-							aria-label="Open designer help"
-						>
-							<Icon path={iconHelp} />
-						</ActionIcon>
+						<Anchor href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+							<ActionIcon aria-label="Open designer help">
+								<Icon path={iconHelp} />
+							</ActionIcon>
+						</Anchor>
 					</Tooltip>
 				</Group>
 			}
@@ -404,47 +400,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Stack>
 				)}
 			</div>
-
-			<Modal
-				opened={showHelp}
-				onClose={showHelpHandle.close}
-				trapFocus={false}
-				size="lg"
-				withCloseButton
-				title={<PrimaryTitle>Using the Table Graph</PrimaryTitle>}
-			>
-				<Text c={isLight ? "slate.7" : "slate.2"}>
-					<HelpTitle isLight={isLight}>How do I use the table graph?</HelpTitle>
-
-					<Text mt={8} mb="xl">
-						The table graph will automatically render based on the tables in your database. You can click on a table to
-						view its details and modify it's schema. Changes made to the schema will be reflected in the graph.
-					</Text>
-
-					<HelpTitle isLight={isLight}>Can I change how tables are displayed?</HelpTitle>
-
-					<Text mt={8} mb="xl">
-						Press the <Icon path={iconCog} size="sm" /> button in the top right corner to open the graph options. Inside you
-						can change the table layout and table appearance. These settings are saved per session, however you can configure
-						default values in the Surrealist settings.
-					</Text>
-
-					<HelpTitle isLight={isLight}>Why are edges missing?</HelpTitle>
-
-					<Text mt={8} mb="xl">
-						Surrealist only renders edges for tables with a relation type. You
-						can automatically create a new edge table by pressing the <Icon path={iconPlus} /> button on the Table Graph
-						panel. Keep in mind edges are only visible when the layout is set to Diagram.
-					</Text>
-
-					<HelpTitle isLight={isLight}>Can I save the graph as an image?</HelpTitle>
-
-					<Text mt={8}>
-						Press the save snapshot button in the options dropdown to save the current graph as a PNG
-						image. This snapshot will use your current theme, position, and scale.
-					</Text>
-				</Text>
-			</Modal>
 		</ContentPane>
 	);
 }
