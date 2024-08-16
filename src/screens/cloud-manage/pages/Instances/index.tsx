@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Center, Group, Indicator, Loader, Menu, Paper, ScrollArea, SimpleGrid, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Anchor, Box, Button, Center, Group, Indicator, Loader, Menu, Paper, ScrollArea, SimpleGrid, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { iconCheck, iconOpen, iconPlus, iconSearch, iconTune } from "~/util/icons";
 import { mdiViewGrid, mdiViewSequential } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
@@ -267,16 +267,17 @@ export function InstancesPage() {
 								This organization does not have any instances yet. Create your first instance to get started with Surreal Cloud.
 							</Text>
 							<Group>
-								<Button
-									mt="xl"
-									color="slate"
-									rightSection={<Icon path={iconOpen} />}
-									onClick={manageCreator.open}
-									radius="sm"
-									size="xs"
-								>
-									Learn more
-								</Button>
+								<Anchor href="https://surrealdb.com/docs/cloud">
+									<Button
+										mt="xl"
+										color="slate"
+										rightSection={<Icon path={iconOpen} />}
+										radius="sm"
+										size="xs"
+									>
+										Learn more
+									</Button>
+								</Anchor>
 								<Spacer />
 								<Button
 									mt="xl"
