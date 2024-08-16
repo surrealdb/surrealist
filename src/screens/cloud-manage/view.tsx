@@ -42,6 +42,7 @@ export function CloudView() {
 	const alertQuery = useQuery({
 		queryKey: ["cloud", "message"],
 		refetchInterval: 15_000,
+		retry: false,
 		enabled: state === "authenticated",
 		queryFn:  () => fetchAPI<CloudAlert>(`/message`)
 	});
