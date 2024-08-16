@@ -70,6 +70,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 		}
 
 		setData(schema);
+		setErrors([]);
 		saveHandle.track();
 		designingHandle.open();
 	});
