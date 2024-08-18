@@ -21,10 +21,8 @@ type RecordLinkCallback = (link: string) => void;
 /**
  * The color scheme used within editors
  */
-export const colorTheme = () => [
-	syntaxHighlighting(DARK_STYLE, { fallback: true }),
-	syntaxHighlighting(LIGHT_STYLE, { fallback: true }),
-];
+export const colorTheme = (isLight?: boolean) =>
+	syntaxHighlighting(isLight ? LIGHT_STYLE : DARK_STYLE, { fallback: true });
 
 /**
  * Shared base configuration for all dedicated editors
@@ -43,7 +41,6 @@ export const editorBase = (): Extension => [
 	autocompletion(),
 	rectangularSelection(),
 	crosshairCursor(),
-	colorTheme(),
 	indentationMarkers({
 		colors: {
 			light: themeColor('slate'),
@@ -82,7 +79,6 @@ export const inputBase = (): Extension => [
 	indentOnInput(),
 	bracketMatching(),
 	closeBrackets(),
-	colorTheme(),
 	keymap.of([
 		...closeBracketsKeymap,
 		...customHistoryKeymap,

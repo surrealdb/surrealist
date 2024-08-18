@@ -51,7 +51,6 @@ export function CodePreview({
 			doc: code,
 			extensions: [
 				configExt,
-				colorTheme(),
 				EditorState.readOnly.of(true),
 				EditorView.lineWrapping,
 				EditorView.editable.of(false),
