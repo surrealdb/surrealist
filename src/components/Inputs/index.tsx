@@ -80,7 +80,13 @@ export function CodeInput({
 			parent: ref.current!,
 		});
 
-		editorRef.current = { editor, editable, fallback, keymaps, theme };
+		editorRef.current = {
+			editor,
+			editable,
+			fallback,
+			keymaps,
+			theme,
+		};
 
 		if (autoFocus) {
 			const timer = setInterval(() => {
