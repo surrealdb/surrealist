@@ -14,6 +14,7 @@ import { iconCheck, iconCopy } from "~/util/icons";
 interface EditorRef {
 	editor: EditorView;
 	config: Compartment;
+	theme: Compartment;
 }
 
 export interface CodePreviewProps extends PaperProps {
@@ -45,12 +46,14 @@ export function CodePreview({
 
 	useEffect(() => {
 		const config = new Compartment();
+		const theme = new Compartment();
 		const configExt = config.of(extensions || surrealql());
 
 		const initialState = EditorState.create({
 			doc: code,
 			extensions: [
 				configExt,
+				theme.of(colorTheme(isLight)),
 				EditorState.readOnly.of(true),
 				EditorView.lineWrapping,
 				EditorView.editable.of(false),
@@ -65,7 +68,8 @@ export function CodePreview({
 
 		editorRef.current = {
 			editor,
-			config
+			config,
+			theme,
 		};
 
 		return () => {
@@ -99,6 +103,14 @@ export function CodePreview({
 			effects: config.reconfigure(extensions || surrealql())
 		});
 	}, [extensions]);
+
+	useEffect(() => {
+		const { editor, theme } = editorRef.current!;
+
+		editor.dispatch({
+			effects: theme.reconfigure(colorTheme(isLight))
+		});
+	}, [isLight]);
 
 	return (
 		<>
