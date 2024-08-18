@@ -3,12 +3,12 @@ import clsx from "clsx";
 import { Box, BoxProps } from "@mantine/core";
 import { useEffect, useRef } from "react";
 import { useSetting } from "~/hooks/config";
+import { useIsLight } from "~/hooks/theme";
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { colorTheme, editorBase } from "~/util/editor/extensions";
 import { forceLinting } from "@codemirror/lint";
 import { history } from "@codemirror/commands";
-import { useIsLight } from "~/hooks/theme";
 
 interface EditorRef {
 	editor: EditorView;
@@ -40,10 +40,10 @@ export function CodeEditor(props: CodeEditorProps) {
 		...rest
 	} = props;
 
+	const isLight = useIsLight();
 	const ref = useRef<HTMLDivElement | null>(null);
 	const editorRef = useRef<EditorRef>();
 	const [editorScale] = useSetting("appearance", "editorScale");
-	const isLight = useIsLight();
 
 	const textSize = Math.floor(15 * (editorScale / 100));
 
