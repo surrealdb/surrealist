@@ -22,6 +22,8 @@ import { usePanelMinSize } from "~/hooks/panels";
 import { adapter } from "~/adapter";
 import { Introduction } from "~/components/Introduction";
 import { useIsConnected } from "~/hooks/connection";
+import { showError } from "~/util/helpers";
+import { formatQuery, validateQuery } from "~/util/surrealql";
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
@@ -69,7 +71,24 @@ export function FunctionsView() {
 
 	const editFunction = useStable((name: string) => {
 		isCreatingHandle.close();
-		setDetails(functions.find((f) => f.name === name) || null);
+		const selectedFunction = functions.find((f) => f.name === name) || null;
+		if (!selectedFunction) {
+			showError({
+				title: "Function not found",
+				subtitle: "The selected function was not found",
+			});
+			return;
+		}
+		const isFunctionBlockInvalid = validateQuery(selectedFunction.block);
+		if (isFunctionBlockInvalid) {
+			showError({
+				title: "Failed to format",
+				subtitle: "Your function must be valid to format it",
+			});
+			return;
+		}
+		const formattedFunctionBlock = formatQuery(selectedFunction.block);
+		setDetails({ ...selectedFunction, block: formattedFunctionBlock });
 		handle.track();
 	});
 
@@ -158,7 +177,7 @@ export function FunctionsView() {
 										DEFINE FUNCTION fn::greet($name: string) {
 											RETURN "Hello, " + $name + "!";
 										};
-										
+
 										-- And invoke them from any query
 										RETURN fn::greet("Tobie");
 									`

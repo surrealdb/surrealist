@@ -13,12 +13,14 @@ import { SaveableHandle } from "~/hooks/save";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaFunction } from "~/types";
-import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus } from "~/util/icons";
+import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus, iconText } from "~/util/icons";
 import { SURQL_FILTER } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
 import { surrealql } from "codemirror-surrealql";
 import { surqlLinting } from "~/util/editor/extensions";
 import { Label } from "~/components/Label";
+import { formatQuery, validateQuery } from "~/util/surrealql";
+import { showError } from "~/util/helpers";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -57,6 +59,21 @@ export function EditorPanel({
 		onDelete(details.name);
 	});
 
+	const formatFunction = useStable(() => {
+		const isFunctionBlockInvalid = validateQuery(details.block);
+		if (isFunctionBlockInvalid) {
+			showError({
+				title: "Failed to format",
+				subtitle: "Your function must be valid to format it",
+			});
+			return;
+		}
+		const formattedFunctionBlock = formatQuery(details.block);
+		onChange((draft) => {
+			draft.block = formattedFunctionBlock;
+		});
+	});
+
 	return (
 		<ContentPane
 			title="Function Editor"
@@ -71,6 +88,16 @@ export function EditorPanel({
 					</Badge>
 				)
 			}
+			rightSection={(
+				<Tooltip label="Format function">
+					<ActionIcon
+						onClick={formatFunction}
+						aria-label="Format function"
+					>
+						<Icon path={iconText} />
+					</ActionIcon>
+				</Tooltip>
+			)}
 		>
 			<Group
 				h="100%"
