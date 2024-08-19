@@ -3,9 +3,10 @@ import clsx from "clsx";
 import { Box, BoxProps } from "@mantine/core";
 import { useEffect, useRef } from "react";
 import { useSetting } from "~/hooks/config";
+import { useIsLight } from "~/hooks/theme";
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { editorBase } from "~/util/editor/extensions";
+import { colorTheme, editorBase } from "~/util/editor/extensions";
 import { forceLinting } from "@codemirror/lint";
 import { history } from "@codemirror/commands";
 
@@ -13,6 +14,7 @@ interface EditorRef {
 	editor: EditorView;
 	editable: Compartment;
 	history: Compartment;
+	theme: Compartment;
 }
 
 export interface CodeEditorProps extends BoxProps {
@@ -38,6 +40,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		...rest
 	} = props;
 
+	const isLight = useIsLight();
 	const ref = useRef<HTMLDivElement | null>(null);
 	const editorRef = useRef<EditorRef>();
 	const [editorScale] = useSetting("appearance", "editorScale");
@@ -47,6 +50,7 @@ export function CodeEditor(props: CodeEditorProps) {
 	useEffect(() => {
 		const editable = new Compartment();
 		const history = new Compartment();
+		const theme = new Compartment();
 		const editableExt = editable.of(EditorState.readOnly.of(!!readOnly));
 		const historyExt = history.of(newHistory());
 
@@ -60,6 +64,7 @@ export function CodeEditor(props: CodeEditorProps) {
 			doc: value,
 			extensions: [
 				editorBase(),
+				theme.of(colorTheme(isLight)),
 				historyExt,
 				changeHandler,
 				editableExt,
@@ -76,7 +81,8 @@ export function CodeEditor(props: CodeEditorProps) {
 		editorRef.current = {
 			editor,
 			editable,
-			history
+			history,
+			theme
 		};
 
 		if (autoFocus) {
@@ -136,6 +142,14 @@ export function CodeEditor(props: CodeEditorProps) {
 			effects: [history.reconfigure([newHistory()])],
 		});
 	}, [historyKey]);
+
+	useEffect(() => {
+		const { editor, theme } = editorRef.current!;
+
+		editor.dispatch({
+			effects: theme.reconfigure(colorTheme(isLight))
+		});
+	}, [isLight]);
 
 	return (
 		<Box

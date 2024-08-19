@@ -4,10 +4,11 @@ import { surrealql } from "codemirror-surrealql";
 import { ActionIcon, Autocomplete, AutocompleteProps, Group, InputBase, InputBaseProps, Tooltip } from "@mantine/core";
 import { HTMLAttributes, useEffect, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";
+import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { useKindList } from "~/hooks/schema";
 import { iconCancel, iconCheck } from "~/util/icons";
-import { inputBase } from "~/util/editor/extensions";
+import { colorTheme, inputBase } from "~/util/editor/extensions";
 import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
 import { Compartment, EditorState, Extension, Prec } from "@codemirror/state";
 import { acceptWithTab } from "~/util/editor/keybinds";
@@ -35,18 +36,21 @@ export function CodeInput({
 	onSubmit,
 	...rest
 }: CodeInputProps) {
+	const isLight = useIsLight();
 	const ref = useRef<HTMLDivElement | null>(null);
 	const editorRef = useRef<{
 		editor: EditorView;
 		editable: Compartment;
 		fallback: Compartment;
 		keymaps: Compartment;
+		theme: Compartment;
 	}>();
 
 	useEffect(() => {
 		const editable = new Compartment();
 		const fallback = new Compartment();
 		const keymaps = new Compartment();
+		const theme = new Compartment();
 
 		const editableExt = editable.of(EditorState.readOnly.of(!!disabled));
 		const fallbackExt = fallback.of(placeholder ? ph(placeholder) : []);
@@ -62,6 +66,7 @@ export function CodeInput({
 			doc: value,
 			extensions: [
 				inputBase(),
+				colorTheme(isLight),
 				extensions || surrealql(),
 				changeHandler,
 				editableExt,
@@ -72,10 +77,16 @@ export function CodeInput({
 
 		const editor = new EditorView({
 			state: initialState,
-			parent: ref.current!
+			parent: ref.current!,
 		});
 
-		editorRef.current = { editor, editable, fallback, keymaps };
+		editorRef.current = {
+			editor,
+			editable,
+			fallback,
+			keymaps,
+			theme,
+		};
 
 		if (autoFocus) {
 			const timer = setInterval(() => {
@@ -146,6 +157,14 @@ export function CodeInput({
 		});
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [multiline]);
+
+	useEffect(() => {
+		const { editor, theme } = editorRef.current!;
+
+		editor.dispatch({
+			effects: theme.reconfigure(colorTheme(isLight))
+		});
+	}, [isLight]);
 
 	return (
 		<InputBase
