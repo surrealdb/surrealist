@@ -30,10 +30,10 @@ const DEFAULT_DEF: TableInfo = {
 			kind: "ANY"
 		},
 		permissions: {
-			select: "",
-			create: "",
-			update: "",
-			delete: ""
+			select: true,
+			create: true,
+			update: true,
+			delete: true
 		}
 	},
 	fields: [],
