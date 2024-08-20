@@ -27,7 +27,7 @@ function CreationStepper({
 	onClose,
 	onComplete,
 }: CreationStepperProps) {
-	const [step, setStep] = useState(4);
+	const [step, setStep] = useState(0);
 	const isLight = useIsLight();
 
 	const current = useOrganization();
