@@ -67,8 +67,9 @@
 	transition-property: transform, opacity, background-color !important;
 	cursor: pointer;
 
-	&:hover {
-		background-color: var(--mantine-color-slate-8);
+	@include light {
+		background-color: white;
+		border-color: var(--mantine-color-slate-2);
 	}
 }
 
