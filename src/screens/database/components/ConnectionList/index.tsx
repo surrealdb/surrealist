@@ -21,6 +21,7 @@ import { EditableText } from "~/components/EditableText";
 import { group } from "radash";
 import { useKeymap } from "~/hooks/keymap";
 import { closeConnection, openConnection } from "../../connection/connection";
+import { useIsLight } from "~/hooks/theme";
 
 const UNGROUPED = Symbol("ungrouped");
 
@@ -40,6 +41,7 @@ function Item({
 	const { openConnectionEditor} = useInterfaceStore.getState();
 	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
 	const isActive = connection.id === active;
+	const isLight = useIsLight();
 
 	const activate = useStable(() => {
 		setActiveConnection(connection.id);
@@ -105,7 +107,7 @@ function Item({
 			</Text>
 			{connection.authentication.mode === "cloud" && (
 				<Flex
-					c={isActive ? "white" : "slate.3"}
+					opacity={isActive ? 1 : 0.5}
 					ml="xs"
 				>
 					| Surreal Cloud
@@ -388,14 +390,15 @@ export function ConnectionList() {
 
 						<Entry
 							isActive={isSandbox}
-							leftSection={
-								<Group gap="xs">
-									<Icon path={iconSurreal} size={1.2} noStroke />
-									Sandbox
-								</Group>
-							}
 							onClick={openSandbox}
-						/>
+							leftSection={
+								<Icon path={iconSurreal} size={1.2} noStroke />
+							}
+						>
+							<Text>
+								Sandbox
+							</Text>
+						</Entry>
 					</Box>
 
 					{groupsList.map((group) => (
