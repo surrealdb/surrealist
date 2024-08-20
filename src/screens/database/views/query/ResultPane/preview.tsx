@@ -7,9 +7,9 @@ import { Icon } from "~/components/Icon";
 import { CodeEditor } from "~/components/CodeEditor";
 import { useRelativeTime } from "~/hooks/time";
 import { useInterfaceStore } from "~/stores/interface";
-import { TabQuery } from "~/types";
+import { LiveMessage, TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
+import { iconBroadcastOff, iconBroadcastOn, iconClose, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
@@ -21,7 +21,12 @@ const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	'CREATE': ["surreal.3", iconPlus],
 	'UPDATE': ["orange", iconHammer],
 	'DELETE': ["red", iconDelete],
+	'CLOSE': ["slate", iconClose],
 };
+
+function hasBody(msg: LiveMessage) {
+	return msg.data !== undefined && msg.data !== "killed";
+}
 
 function buildResult(index: number, {result, execution_time}: any, format: Formatter) {
 	const header = `\n\n-------- Query ${index + 1 + (execution_time ? ` (${execution_time})` : '')} --------\n\n`;
@@ -138,7 +143,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 									>
 										<Group>
 											<Badge
-												py="xs"
+												h={28}
 												color={color}
 												variant="light"
 												leftSection={
@@ -163,7 +168,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 											</Stack>
 										</Group>
 									</Accordion.Control>
-									{msg.data !== undefined && (
+									{hasBody(msg) && (
 										<Accordion.Panel>
 											<CodeEditor
 												value={format(msg.data)}

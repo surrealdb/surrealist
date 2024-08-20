@@ -368,6 +368,14 @@ export interface SurrealOptions {
 	onError?: (error: string) => void;
 }
 
+export interface LiveMessage {
+	id: string;
+	action: string;
+	queryId: string;
+	timestamp: number;
+	data: any;
+}
+
 export interface ViewInfo {
 	id: ViewMode;
 	name: string;

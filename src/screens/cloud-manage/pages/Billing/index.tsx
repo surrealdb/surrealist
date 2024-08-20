@@ -8,6 +8,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { mdiAccountOutline, mdiCreditCardOutline } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Label } from "~/components/Label";
+import { useIsLight } from "~/hooks/theme";
 
 interface BillingPlanProps {
 	name: string;
@@ -63,6 +64,8 @@ function BillingPlan({
 }
 
 export function BillingPage() {
+	const isLight = useIsLight();
+
 	return (
 		<Box
 			flex={1}
@@ -115,9 +118,13 @@ export function BillingPage() {
 									</Text>
 								}
 								action={
-									<Text c="bright">
-										You are automatically enrolled in this plan
-									</Text>
+									<Button
+										disabled
+										variant="gradient"
+										size="xs"
+									>
+										You are on this plan
+									</Button>
 								}
 							/>
 							<BillingPlan
@@ -137,7 +144,7 @@ export function BillingPage() {
 										fw={500}
 										c="bright"
 									>
-										$10<Text span c="slate.2">/mo</Text>
+										$10<Text span c={isLight ? "slate.6" : "slate.3"}>/mo</Text>
 									</Text>
 								}
 								action={
@@ -200,14 +207,12 @@ export function BillingPage() {
 									<Spacer />
 									<Button
 										color="slate"
+										variant="light"
 									>
 										Update
 									</Button>
 								</Group>
-								<Divider
-									color="slate.7"
-									my="md"
-								/>
+								<Divider my="md" />
 								<Stack mt="md">
 									<Box>
 										<Label>Card information</Label>
@@ -235,14 +240,12 @@ export function BillingPage() {
 									<Spacer />
 									<Button
 										color="slate"
+										variant="light"
 									>
 										Update
 									</Button>
 								</Group>
-								<Divider
-									color="slate.7"
-									my="md"
-								/>
+								<Divider my="md" />
 								<Stack>
 									<Box>
 										<Label>Name</Label>

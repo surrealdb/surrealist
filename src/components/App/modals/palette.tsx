@@ -193,7 +193,7 @@ export function CommandPaletteModal() {
 				/>
 			</Box>
 
-			<Divider color="slate.6" my="lg" />
+			<Divider my="lg" />
 
 			<Box h={350} pb={0}>
 				<ScrollArea viewportRef={ref} scrollbars="y" h="100%">

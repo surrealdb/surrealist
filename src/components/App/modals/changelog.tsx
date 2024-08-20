@@ -40,7 +40,7 @@ export function ChangelogModal() {
 									className={classes.changelogContent}
 								/>
 							</Box>
-							{index < changelogs.length - 1 && <Divider color="slate.7" />}
+							{index < changelogs.length - 1 && <Divider />}
 						</Fragment>
 					))}
 				</Stack>

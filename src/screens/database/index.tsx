@@ -1,5 +1,4 @@
 import classes from "./style.module.scss";
-import surrealistUrl from "~/assets/images/surrealist.webp";
 import clsx from "clsx";
 import { ViewMode } from "~/types";
 import { DatabaseSidebar } from "./sidebar";
@@ -22,6 +21,7 @@ import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { VIEW_MODES } from "~/constants";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useLogoUrl } from "~/hooks/brand";
 
 const PORTAL_ATTRS = {
 	attributes: {
@@ -52,6 +52,7 @@ const DocumentationView = lazy(() => import('./views/documentation/Documentation
 
 export function DatabaseScreen() {
 	const isLight = useIsLight();
+	const logoUrl = useLogoUrl();
 	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
 	const title = useInterfaceStore((s) => s.title);
@@ -104,17 +105,17 @@ export function DatabaseScreen() {
 				<Center
 					pos="fixed"
 					inset={0}
-					bg="slate.9"
+					bg={isLight ? "slate.0" : "slate.9"}
 					style={{ zIndex: 1000 }}
 				>
-					<Stack maw={250} mx="auto">
-						<Image src={surrealistUrl} />
+					<Stack maw={285} mx="auto">
+						<Image src={logoUrl} />
 
-						<Text c="bright" mt="lg">
+						<Text fz="xl" mt="lg">
 							Surrealist is the ultimate way to visually manage your SurrealDB database
 						</Text>
 
-						<Text c="slate.3">
+						<Text>
 							Support for Surrealist on mobile platforms is currently unavailable, however you can visit Surrealist
 							on a desktop environment to get started.
 						</Text>

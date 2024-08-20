@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core";
+import { Anchor, Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import { Snippets, TopicProps } from "~/screens/database/docs/types";
@@ -68,10 +68,10 @@ export function DocsSchemaAnalyzers({ language }: TopicProps) {
 					within your database. If you have any analzers defined for a
 					table, you can use the full-text search capabilities of
 					SurrealDB. Checkout the section on{" "}
-					<a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
+					<Anchor href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
 						{" "}
 						Full Text Search for more information.
-					</a>
+					</Anchor>
 				</p>
 
 			</div>

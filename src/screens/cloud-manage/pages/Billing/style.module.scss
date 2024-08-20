@@ -7,6 +7,10 @@
 	border-radius: 100%;
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	background-origin: border-box;
+
+	* {
+		color: white
+	};
 }
 
 .scrollArea :global(.mantine-ScrollArea-viewport) > div {
@@ -18,11 +22,9 @@
 	user-select: text;
 
 	th {
-		background-color: var(--mantine-color-slate-9);
 		color: var(--mantine-color-bright);
 		text-align: start;
 		position: sticky;
-		// z-index: 1;
 		top: 0;
 	}
 
@@ -35,7 +37,11 @@
 	}
 
 	tbody tr:nth-child(odd) {
-		background-color: var(--mantine-color-slate-8);
+		background-color: rgba(255, 255, 255, 0.05);
+
+		@include light {
+			background-color: rgba(0, 0, 0, 0.025);
+		}
 	}
 
 }

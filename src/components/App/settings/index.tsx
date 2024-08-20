@@ -1,5 +1,4 @@
 import classes from "./style.module.scss";
-import surrealistUrl from "~/assets/images/surrealist.webp";
 
 import { iconBalance, iconClose, iconCloud, iconEye, iconFlag, iconPlay, iconServer, iconWrench } from "~/util/icons";
 import { ActionIcon, Box, Center, Group, Image, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
@@ -22,6 +21,7 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeymap } from "~/hooks/keymap";
+import { useLogoUrl } from "~/hooks/brand";
 
 interface Category {
 	id: string;
@@ -80,6 +80,7 @@ const CATEGORIES: Category[] = [
 
 export function Settings() {
 	const isLight = useIsLight();
+	const logoUrl = useLogoUrl();
 	const [flags, setFlags] = useFeatureFlags();
 	const [open, openHandle] = useBoolean();
 	const [copyDebug, clipboard] = useVersionCopy();
@@ -141,7 +142,7 @@ export function Settings() {
 							<Center>
 								<Image
 									h={26}
-									src={surrealistUrl}
+									src={logoUrl}
 								/>
 							</Center>
 							<Text

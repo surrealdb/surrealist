@@ -40,6 +40,7 @@ import { useMemo } from "react";
 import { fastParseJwt } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
 import { useConfigStore } from "~/stores/config";
+import { useIsLight } from "~/hooks/theme";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -77,6 +78,7 @@ export function ConnectionDetails({
 }: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
+	const isLight = useIsLight();
 
 	const addScopeField = useStable(() => {
 		onChange((draft) => {
@@ -218,7 +220,7 @@ export function ConnectionDetails({
 				{isCloud && (
 					<>
 						<Paper
-							bg="slate.9"
+							bg={isLight ? "slate.0" : "slate.9"}
 							radius="md"
 							p="lg"
 						>
@@ -243,7 +245,6 @@ export function ConnectionDetails({
 							mx={-32}
 							mb={6}
 							mt={12}
-							color="slate.7"
 						/>
 					</>
 				)}
@@ -284,7 +285,6 @@ export function ConnectionDetails({
 					mx={-32}
 					mb={6}
 					mt={12}
-					color="slate.7"
 				/>
 
 				{!isCloud && (
@@ -447,7 +447,6 @@ export function ConnectionDetails({
 							mx={-32}
 							mb={6}
 							mt={12}
-							color="slate.7"
 						/>
 					</>
 				)}

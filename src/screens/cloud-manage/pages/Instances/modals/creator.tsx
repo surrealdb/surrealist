@@ -16,6 +16,7 @@ import { CloudInstance } from "~/types";
 import { mdiFloppy } from "@mdi/js";
 import { isEmpty, range } from "radash";
 import { Form } from "~/components/Form";
+import { useIsLight } from "~/hooks/theme";
 
 interface CreationStepperProps {
 	onClose: () => void;
@@ -26,7 +27,8 @@ function CreationStepper({
 	onClose,
 	onComplete,
 }: CreationStepperProps) {
-	const [step, setStep] = useState(0);
+	const [step, setStep] = useState(4);
+	const isLight = useIsLight();
 
 	const current = useOrganization();
 	const organizations = useCloudStore(s => s.organizations);
@@ -163,13 +165,12 @@ function CreationStepper({
 					value={step / 3 * 100}
 					transitionDuration={200}
 					radius="xl"
-					bg="slate.9"
+					mb="xl"
 					styles={{
 						section: {
 							background: "var(--surrealist-gradient)"
 						}
 					}}
-					mb="xl"
 				/>
 			)}
 
@@ -293,9 +294,7 @@ function CreationStepper({
 												>
 													{type.slug}
 												</Text>
-												<Text
-													c="slate.3"
-												>
+												<Text>
 													{type.description}
 												</Text>
 											</Box>
@@ -388,7 +387,7 @@ function CreationStepper({
 
 						<Paper
 							mt="xl"
-							bg="slate.9"
+							bg={isLight ? "slate.0" : "slate.9"}
 							p="md"
 						>
 							<PrimaryTitle>
@@ -426,7 +425,7 @@ function CreationStepper({
 								fw={500}
 								c="bright"
 							>
-								${estimatedCost}<Text span c="slate.2">/mo</Text>
+								${estimatedCost}<Text span c={isLight ? "slate.6" : "slate.3"}>/mo</Text>
 							</Text>
 						</Paper>
 					</Stack>
@@ -452,7 +451,6 @@ function CreationStepper({
 							pos="relative"
 							w={128}
 							h={128}
-							bg="slate.9"
 						>
 							<Loader
 								className={classes.provisionLoader}
@@ -465,7 +463,10 @@ function CreationStepper({
 								viewBox="0 0 24 24"
 								className={classes.provisionIcon}
 							>
-								<path d={iconSurreal} fill="white" />
+								<path
+									d={iconSurreal}
+									fill={isLight ? "black" : "white"}
+								/>
 							</svg>
 						</Center>
 						<Text

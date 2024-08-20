@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Flex, Group, Indicator, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Divider, Flex, Group, Indicator, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { HTMLAttributes, MouseEvent, ReactNode, useMemo } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../../../../components/Icon";
@@ -353,11 +353,6 @@ export function ConnectionList() {
 								variant="unstyled"
 								autoFocus
 								flex={1}
-								styles={{
-									input: {
-										border: "1px solid var(--mantine-color-slate-6)"
-									}
-								}}
 								leftSection={
 									<Icon path={iconSearch} />
 								}
@@ -389,8 +384,9 @@ export function ConnectionList() {
 							</Menu>
 						</Flex>
 
+						<Divider my="lg" />
+
 						<Entry
-							mt="md"
 							isActive={isSandbox}
 							leftSection={
 								<Group gap="xs">

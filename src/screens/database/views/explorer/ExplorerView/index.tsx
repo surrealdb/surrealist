@@ -22,11 +22,13 @@ import { TablesPane } from "~/screens/database/components/TablesPane";
 import { Exporter } from "../Exporter";
 import { Importer } from "../Importer";
 import { useDesigner } from "~/providers/Designer";
+import { useIsLight } from "~/hooks/theme";
 
 const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
 
 export function ExplorerView() {
+	const isLight = useIsLight();
 	const { openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
 
@@ -139,6 +141,7 @@ export function ExplorerView() {
 									<Button
 										flex={1}
 										color="slate"
+										variant="light"
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/table")}
 									>

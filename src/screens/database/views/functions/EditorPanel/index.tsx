@@ -22,6 +22,7 @@ import { Label } from "~/components/Label";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { showError } from "~/util/helpers";
 import { lineNumbers } from "@codemirror/view";
+import { useIsLight } from "~/hooks/theme";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -39,6 +40,7 @@ export function EditorPanel({
 	onDelete,
 }: EditorPanelProps) {
 	const kinds = useKindList();
+	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
 
 	const addArgument = useStable(() => {
@@ -74,6 +76,10 @@ export function EditorPanel({
 			draft.block = formattedFunctionBlock;
 		});
 	});
+
+	const argColor = isLight
+		? 'var(--mantine-color-slate-0)'
+		: 'var(--mantine-color-slate-9)';
 
 	return (
 		<ContentPane
@@ -126,7 +132,7 @@ export function EditorPanel({
 					direction="column"
 				>
 					<Box>
-						<Paper bg="slate.9">
+						<Paper bg={isLight ? "slate.0" : "slate.9"}>
 							<Flex align="center">
 								<ScrollArea
 									scrollbars="x"
@@ -170,6 +176,7 @@ export function EditorPanel({
 								size="xs"
 								radius="xs"
 								color="slate"
+								variant="light"
 								rightSection={<Icon path={iconDownload} />}
 								onClick={downloadBody}
 							>
@@ -178,7 +185,7 @@ export function EditorPanel({
 							<Button
 								size="xs"
 								radius="xs"
-								color="pink.9"
+								color="pink.8"
 								rightSection={<Icon path={iconDelete} />}
 								onClick={removeFunction}
 							>
@@ -197,79 +204,81 @@ export function EditorPanel({
 							h="100%"
 							gap="lg"
 						>
-							<Group>
-								<Label>
-									Arguments
-								</Label>
-								<Spacer />
-								<Tooltip label="Add function argument">
-									<ActionIcon
-										onClick={addArgument}
-										aria-label="Add function argument"
-									>
-										<Icon path={iconPlus} />
-									</ActionIcon>
-								</Tooltip>
-							</Group>
-							<Stack gap="xs" mt="xs">
-								{details.args.length === 0 && (
-									<Text c="slate">
-										No arguments defined
-									</Text>
-								)}
-								{details.args.map(([name, kind], index) => (
-									<Group
-										key={index}
-										gap="xs"
-									>
-										<TextInput
-											flex={1}
-											variant="unstyled"
-											value={name}
-											spellCheck={false}
-											leftSection="$"
-											placeholder="name"
-											onChange={e => onChange((draft) => {
-												draft.args[index][0] = e.target.value;
-											})}
-											styles={{
-												input: {
-													backgroundColor: 'var(--mantine-color-slate-9)',
-													fontFamily: 'var(--mantine-font-family-monospace)',
-													paddingLeft: 24,
-													paddingRight: 12,
-												}
-											}}
-										/>
-										<Autocomplete
-											flex={1}
-											data={kinds}
-											variant="unstyled"
-											value={kind}
-											placeholder="type"
-											onChange={value => onChange((draft) => {
-												draft.args[index][1] = value.toLowerCase();
-											})}
-											styles={{
-												input: {
-													backgroundColor: 'var(--mantine-color-slate-9)',
-													fontFamily: 'var(--mantine-font-family-monospace)',
-													paddingInline: 12,
-												}
-											}}
-										/>
+							<Box>
+								<Group>
+									<Label>
+										Arguments
+									</Label>
+									<Spacer />
+									<Tooltip label="Add function argument">
 										<ActionIcon
-											variant="subtle"
-											aria-label="Remove function argument"
-											onClick={() => onChange((draft) => {
-												draft.args.splice(index, 1);
-											})}
+											onClick={addArgument}
+											aria-label="Add function argument"
 										>
-											<Icon path={iconDelete} />
+											<Icon path={iconPlus} />
 										</ActionIcon>
-									</Group>
-								))}
-							</Stack>
+									</Tooltip>
+								</Group>
+								<Stack gap="xs" mt="xs">
+									{details.args.length === 0 && (
+										<Text c="slate">
+											No arguments defined
+										</Text>
+									)}
+									{details.args.map(([name, kind], index) => (
+										<Group
+											key={index}
+											gap="xs"
+										>
+											<TextInput
+												flex={1}
+												variant="unstyled"
+												value={name}
+												spellCheck={false}
+												leftSection="$"
+												placeholder="name"
+												onChange={e => onChange((draft) => {
+													draft.args[index][0] = e.target.value;
+												})}
+												styles={{
+													input: {
+														backgroundColor: argColor,
+														fontFamily: 'var(--mantine-font-family-monospace)',
+														paddingLeft: 24,
+														paddingRight: 12,
+													}
+												}}
+											/>
+											<Autocomplete
+												flex={1}
+												data={kinds}
+												variant="unstyled"
+												value={kind}
+												placeholder="type"
+												onChange={value => onChange((draft) => {
+													draft.args[index][1] = value.toLowerCase();
+												})}
+												styles={{
+													input: {
+														backgroundColor: argColor,
+														fontFamily: 'var(--mantine-font-family-monospace)',
+														paddingInline: 12,
+													}
+												}}
+											/>
+											<ActionIcon
+												variant="transparent"
+												aria-label="Remove function argument"
+												onClick={() => onChange((draft) => {
+													draft.args.splice(index, 1);
+												})}
+											>
+												<Icon path={iconDelete} />
+											</ActionIcon>
+										</Group>
+									))}
+								</Stack>
+							</Box>
 							<PermissionInput
 								label="Permission"
 								value={details.permissions}

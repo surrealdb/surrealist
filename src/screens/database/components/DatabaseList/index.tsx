@@ -155,7 +155,6 @@ export function DatabaseList({
 							truncate
 							fw={600}
 							maw={200}
-							c={buttonProps?.disabled ? undefined : "bright"}
 						>
 							{connection.lastDatabase || "Select database"}
 						</Text>
@@ -180,7 +179,7 @@ export function DatabaseList({
 								<Icon path={iconPlus} />
 							</ActionIcon>
 						</Group>
-						<Divider color="slate.6" />
+						<Divider />
 						<ScrollArea.Autosize mah={250}>
 							{data.length === 0 ? (
 								<Text c="slate">

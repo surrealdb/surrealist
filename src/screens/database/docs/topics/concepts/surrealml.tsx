@@ -1,6 +1,7 @@
 import { Article } from "~/screens/database/docs/components";
 import { TopicProps } from "~/screens/database/docs/types";
 import { useSchema } from "~/hooks/schema";
+import { Anchor } from "@mantine/core";
 
 export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
 
@@ -12,10 +13,10 @@ export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
 				<p>
 				SurrealML is an engine that seeks to do one thing, and one thing well: store and execute trained ML models. SurrealML does not intrude on the training frameworks that are already out there, instead works with them to ease the storage, loading, and execution of models. Someone using SurrealML will be able to train their model in a chosen framework in Python, save their model, and load and execute the model in either Python or Rust.
 
-				You can use SurrealML within your database connection to store and execute trained ML models using <a href="https://surrealdb.com/docs/surrealdb/surrealql/functions/ml">Machine learning functions</a>.
+				You can use SurrealML within your database connection to store and execute trained ML models using <Anchor href="https://surrealdb.com/docs/surrealdb/surrealql/functions/ml">Machine learning functions</Anchor>.
 
 
-				Learn more about <a href="https://surrealdb.com/docs/surrealdb/surrealml">SurrealML in the documentation</a>
+				Learn more about <Anchor href="https://surrealdb.com/docs/surrealdb/surrealml">SurrealML in the documentation</Anchor>
 
 
 				</p>

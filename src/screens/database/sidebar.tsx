@@ -1,5 +1,4 @@
-import logoUrl from "~/assets/images/logo.webp";
-import surrealistUrl from "~/assets/images/surrealist.webp";
+import iconUrl from "~/assets/images/icon.webp";
 import { Stack, Divider, Image, Group, Flex } from "@mantine/core";
 import { Fragment, useMemo } from "react";
 import { iconCog, iconSearch } from "~/util/icons";
@@ -14,6 +13,7 @@ import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { dispatchIntent } from "~/hooks/url";
+import { useLogoUrl } from "~/hooks/brand";
 
 const NAVIGATION: ViewMode[][] = [
 	[
@@ -46,6 +46,7 @@ export function DatabaseSidebar({
 	const { setActiveView } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
+	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
 	const connection = useConnection();
 	const activeView = useConfigStore((s) => s.activeView);
@@ -99,11 +100,11 @@ export function DatabaseSidebar({
 				style={{ flexShrink: 0 }}
 			>
 				<Image
-					src={logoUrl}
+					src={iconUrl}
 					w={42}
 				/>
 				<Image
-					src={surrealistUrl}
+					src={logoUrl}
 					style={{ flexShrink: 0 }}
 					w={118}
 					ml={14}
@@ -128,7 +129,7 @@ export function DatabaseSidebar({
 							</Group>
 						))}
 						{i < navigation.length - 1 && (
-							<Divider color={isLight ? "white" : "slate.7"} />
+							<Divider color={isLight ? "slate.2" : "slate.7"} />
 						)}
 					</Fragment>
 				))}

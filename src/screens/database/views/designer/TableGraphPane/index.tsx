@@ -210,11 +210,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			leftSection={
 				<Tooltip label="Toggle table list">
 					<ActionIcon
-						bg="slate.9"
 						mr="sm"
+						color="slate"
+						variant="light"
 						onClick={toggleTableList}
 						aria-label="Toggle table list"
-						variant="transparent"
 					>
 						<Icon path={connection.designerTableList ? iconChevronLeft : iconChevronRight} />
 					</ActionIcon>
@@ -282,7 +282,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 									value={activeSession.diagramDirection}
 									onChange={setDiagramDirection}
 								/>
-								<Divider color="slate.6" />
+								<Divider />
 								<Checkbox
 									label="Show record links"
 									checked={activeSession.diagramShowLinks}

@@ -146,7 +146,7 @@ export function CodePreview({
 				p="xs"
 				ref={ref}
 				pos="relative"
-				bg={isLight ? 'slate.1' : 'slate.9'}
+				bg={isLight ? 'slate.0' : 'slate.9'}
 				className={clsx(classes.root, className)}
 				fz="lg"
 				pr={rightPadding ? 40 : 0}

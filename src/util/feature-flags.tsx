@@ -76,6 +76,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			newsfeed: true,
 			highlight_tool: true,
+			themes: true,
 		},
 		preview: {
 			query_view: true,
@@ -89,6 +90,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			database_version_check: true,
 			newsfeed: true,
+			themes: true,
 		},
 		production: {
 			query_view: true,
@@ -102,6 +104,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			database_version_check: true,
 			newsfeed: true,
+			themes: true,
 		},
 	},
 	overrides: (flag) => {

@@ -5,6 +5,10 @@
 .accordion-item {
 	background-color: var(--mantine-color-slate-7);
 	border: none;
+
+	@include light {
+		background-color: var(--mantine-color-slate-0);
+	}
 }
 
 .accordion-label {

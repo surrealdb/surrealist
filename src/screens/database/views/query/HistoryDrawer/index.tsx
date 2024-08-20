@@ -12,7 +12,6 @@ import { useConfigStore } from "~/stores/config";
 import { HistoryQuery } from "~/types";
 import { Spacer } from "~/components/Spacer";
 import { useMemo } from "react";
-import { useIsLight } from "~/hooks/theme";
 import { useContextMenu } from "mantine-contextmenu";
 import { iconClose, iconDelete, iconQuery, iconSearch, iconText } from "~/util/icons";
 import { CodePreview } from "~/components/CodePreview";
@@ -27,7 +26,6 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 	const { updateCurrentConnection, updateQueryTab, addQueryTab } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
-	const isLight = useIsLight();
 	const connection = useActiveConnection();
 	const activeTab = useActiveQuery();
 
@@ -108,7 +106,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				withWrapping
 			/>
 
-			<Divider mt="md" color="slate.6" />
+			<Divider mt="md" />
 		</Box>
 	);
 }

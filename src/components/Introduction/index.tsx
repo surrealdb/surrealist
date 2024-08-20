@@ -3,6 +3,7 @@ import { CodePreview } from "../CodePreview";
 import { PropsWithChildren, ReactNode } from "react";
 import { Icon } from "../Icon";
 import { Extension } from "@codemirror/state";
+import { useIsLight } from "~/hooks/theme";
 
 export interface IntroductionProps {
 	title: string;
@@ -22,6 +23,8 @@ export function Introduction({
 	snippet,
 	children
 }: PropsWithChildren<IntroductionProps>) {
+	const isLight = useIsLight();
+
 	return (
 		<Center h="100%" flex={1}>
 			<Paper
@@ -42,9 +45,12 @@ export function Introduction({
 				{snippet?.code && (
 					<Paper
 						p="xl"
-						bg="slate.7"
+						bg={isLight ? "white" : "slate.7"}
 						radius={0}
 						shadow="none"
+						style={{
+							borderTop: isLight ? "1px solid var(--mantine-color-slate-1)" : undefined
+						}}
 					>
 						<Text c="bright" fz={18} fw={600} mb="md">
 							{snippet.title ?? "Example"}

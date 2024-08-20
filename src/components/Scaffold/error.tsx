@@ -5,9 +5,11 @@ import { Icon } from "../Icon";
 import { iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "~/util/icons";
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
+import { useIsLight } from "~/hooks/theme";
 
 export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 	const [copyDebug, clipboard] = useVersionCopy();
+	const isLight = useIsLight();
 
 	const message = error instanceof Error
 		? error.message
@@ -16,7 +18,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 	return (
 		<ScrollArea
 			h="100%"
-			bg="slate.9"
+			bg={isLight ? "slate.0" : "slate.9"}
 		>
 			<Paper
 				p="xl"
@@ -38,6 +40,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Button
 							leftSection={<Icon path={iconCursor} />}
 							onClick={resetErrorBoundary}
+							variant="light"
 							color="slate"
 							radius="xs"
 							size="xs"
@@ -47,6 +50,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Button
 							leftSection={<Icon path={iconBug} />}
 							onClick={() => adapter.openUrl('https://github.com/surrealdb/surrealist/issues')}
+							variant="light"
 							color="slate"
 							radius="xs"
 							size="xs"
@@ -56,6 +60,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Button
 							leftSection={<Icon path={clipboard.copied ? iconCheck : iconCopy} />}
 							onClick={copyDebug}
+							variant="light"
 							color="slate"
 							radius="xs"
 							size="xs"

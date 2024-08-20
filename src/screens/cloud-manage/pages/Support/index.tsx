@@ -82,7 +82,6 @@ export function SupportPage() {
 					</Stack>
 					<Divider
 						orientation="vertical"
-						color="slate.6"
 					/>
 					<Stack flex={1}>
 						<Group>

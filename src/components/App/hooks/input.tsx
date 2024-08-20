@@ -6,22 +6,24 @@ import { isModKey } from "~/util/helpers";
  */
 export function useModKeyTracker() {
 	useEffect(() => {
-		const onKeyDown = (e: KeyboardEvent) => {
+		const onKeyDown = (e: Event) => {
 			if (isModKey(e)) {
 				document.body.classList.add("mod");
 			}
 		};
 
-		const onKeyUp = (e: KeyboardEvent) => {
+		const onKeyUp = (e: Event) => {
 			if (isModKey(e)) {
 				document.body.classList.remove("mod");
 			}
 		};
 
+		document.body.addEventListener("blur", onKeyDown);
 		document.body.addEventListener("keydown", onKeyDown);
 		document.body.addEventListener("keyup", onKeyUp);
 
 		return () => {
+			document.body.removeEventListener("blur", onKeyDown);
 			document.body.removeEventListener("keydown", onKeyDown);
 			document.body.removeEventListener("keyup", onKeyUp);
 		};

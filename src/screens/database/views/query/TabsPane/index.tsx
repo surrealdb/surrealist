@@ -178,6 +178,7 @@ export function TabsPane(props: TabsPaneProps) {
 												{isLive && (
 													<LiveIndicator
 														className={classes.queryLive}
+														color={isActive ? "white" : "red"}
 														mr={-4}
 													/>
 												)}

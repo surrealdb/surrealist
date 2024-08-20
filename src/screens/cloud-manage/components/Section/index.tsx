@@ -1,4 +1,4 @@
-import { Box, Divider, Stack, Text } from "@mantine/core";
+import { Box, Stack, Text } from "@mantine/core";
 import { PropsWithChildren } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 
@@ -20,14 +20,10 @@ export function Section({
 				{title}
 			</PrimaryTitle>
 			{description && (
-				<Text
-					fz="lg"
-					c="slate.2"
-				>
+				<Text fz="lg">
 					{description}
 				</Text>
 			)}
-			<Divider color="slate.7" mt="xs" />
 			<Stack py="xl" maw={withMaxWidth ? 500 : undefined}>
 				{children}
 			</Stack>

@@ -1,16 +1,19 @@
+import clsx from "clsx";
 import classes from "./style.module.scss";
 import startGlow from "~/assets/images/start-glow.webp";
-import connection from "~/assets/images/start/connection.webp";
-import sandbox from "~/assets/images/start/sandbox.webp";
-import cloud from "~/assets/images/start/cloud.webp";
+import connectionDarkUrl from "~/assets/images/dark/start-connection.webp";
+import connectionLightUrl from "~/assets/images/light/start-connection.webp";
+import sandboxDarkUrl from "~/assets/images/dark/start-sandbox.webp";
+import sandboxLightUrl from "~/assets/images/light/start-sandbox.webp";
+import cloudDarkUrl from "~/assets/images/dark/start-cloud.webp";
+import cloudLightUrl from "~/assets/images/light/start-cloud.webp";
 import { Box, Center, Group, Stack, UnstyledButton } from "@mantine/core";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
 import { adapter } from "~/adapter";
-import { themeColor } from "~/util/mantine";
-import clsx from "clsx";
+import { useThemeImage } from "~/hooks/theme";
 
 export function StartScreen() {
 	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
@@ -25,14 +28,26 @@ export function StartScreen() {
 		setActiveView("cloud");
 	});
 
+	const connectionUrl = useThemeImage({
+		light: connectionLightUrl,
+		dark: connectionDarkUrl
+	});
+
+	const sandboxUrl = useThemeImage({
+		light: sandboxLightUrl,
+		dark: sandboxDarkUrl
+	});
+
+	const cloudUrl = useThemeImage({
+		light: cloudLightUrl,
+		dark: cloudDarkUrl
+	});
+
 	return (
 		<Box
 			pos="absolute"
 			inset={0}
 			className={classes.start}
-			style={{
-				backgroundColor: themeColor("slate.9")
-			}}
 		>
 			{!adapter.hasTitlebar && (
 				<Box
@@ -57,7 +72,7 @@ export function StartScreen() {
 							h={226}
 							onClick={openConnectionCreator}
 						>
-							<Box style={{ backgroundImage: `url(${connection})` }} />
+							<Box style={{ backgroundImage: `url(${connectionUrl})` }} />
 						</UnstyledButton>
 						<UnstyledButton
 							className={classes.startBox}
@@ -65,7 +80,7 @@ export function StartScreen() {
 							h={226}
 							onClick={openSandbox}
 						>
-							<Box style={{ backgroundImage: `url(${sandbox})` }} />
+							<Box style={{ backgroundImage: `url(${sandboxUrl})` }} />
 						</UnstyledButton>
 					</Stack>
 					<Box>
@@ -75,7 +90,7 @@ export function StartScreen() {
 							h={464}
 							onClick={openCloud}
 						>
-							<Box style={{ backgroundImage: `url(${cloud})` }} />
+							<Box style={{ backgroundImage: `url(${cloudUrl})` }} />
 						</UnstyledButton>
 					</Box>
 				</Group>

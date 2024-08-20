@@ -29,7 +29,11 @@
 
 	&-expandable:hover {
 		width: 230px;
-		border-color: var(--mantine-color-slate-6);
+		border-color: var(--mantine-color-slate-7);
+
+		@include light {
+			border-color: var(--mantine-color-slate-1);
+		}
 	}
 
 	&-wide {

@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Center, Loader, Stack, Textarea, TextInput } from "@mantine/core";
+import { Avatar, Box, Button, Center, Divider, Loader, Stack, Textarea, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useOrganization } from "~/hooks/cloud";
 import { Section } from "../../components/Section";
@@ -57,6 +57,7 @@ export function SettingsPage() {
 					/>
 				</Box>
 			</Section>
+			<Divider />
 			<Section
 				title="Danger zone"
 			>

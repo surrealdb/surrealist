@@ -5,9 +5,12 @@
 
 	&:hover {
 		background-image: var(--surrealist-gradient) !important;
-		box-shadow: 0 6px 25px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
+		box-shadow: var(--surrealist-glow);
 		border-color: rgba(255, 255, 255, 0.3);
-		color: white !important;
+		
+		* {
+			color: white !important;
+		}
 	}
 }
 
@@ -43,6 +46,10 @@
 	pre {
 		white-space: pre-wrap;
 		background-color: var(--mantine-color-slate-9);
+
+		@include light {
+			background-color: var(--mantine-color-slate-0);
+		}
 	}
 
 	code {
@@ -52,7 +59,7 @@
 	}
 
 	a {
-		color: white;
+		color: var(--mantine-color-surreal-5);
 	}
 }
 

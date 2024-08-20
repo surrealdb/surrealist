@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core";
+import { Anchor, Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import { Snippets, TopicProps } from "~/screens/database/docs/types";
@@ -80,20 +80,20 @@ export function DocsConceptsFullTextSearch({ language }: TopicProps) {
 					database connection. This enables text matching, proximity
 					matching, proximity search, and more. In SurrealDB Full-Text
 					Search is ACID-COMPLIANT and you can access this using{" "}
-					<a href="https://surrealdb.com/docs/surrealdb/surrealql/functions/search#searchhighlight">
+					<Anchor href="https://surrealdb.com/docs/surrealdb/surrealql/functions/search#searchhighlight">
 						{" "}
 						Search functions
-					</a>
+					</Anchor>
 					,{" "}
-					<a href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/indexes/">
+					<Anchor href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/indexes/">
 						{" "}
 						Indexes
-					</a>
+					</Anchor>
 					. To learn more checkout this{" "}
-					<a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
+					<Anchor href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
 						{" "}
 						Reference guide
-					</a>
+					</Anchor>
 				</p>
 			</div>
 			<Box>

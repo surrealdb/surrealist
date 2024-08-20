@@ -202,7 +202,7 @@ export function ConnectionModal() {
 												>
 													{info.name}
 												</Menu.Item>
-												{i < templateList.length - 1 && <Divider color="slate" />}
+												{i < templateList.length - 1 && <Divider />}
 											</Fragment>
 										))}
 									</Stack>

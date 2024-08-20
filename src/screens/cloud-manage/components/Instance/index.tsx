@@ -1,10 +1,9 @@
 import classes from "./style.module.scss";
-import { Paper, Stack, Group, Menu, ActionIcon, Text, Badge, ThemeIcon, Button, Table, MantineColor } from "@mantine/core";
-import { iconDotsVertical, iconMarker, iconChevronDown, iconAPI, iconConsole, iconSurreal } from "~/util/icons";
-import { mdiMemory, mdiPower } from "@mdi/js";
+import { Paper, Stack, Group, Menu, ActionIcon, Text, Badge, Button, Table, MantineColor } from "@mantine/core";
+import { iconDotsVertical, iconMarker, iconChevronDown, iconAPI, iconConsole } from "~/util/icons";
+import { mdiMemory, mdiPower, mdiTagOutline } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Icon } from "~/components/Icon";
-import { PropsWithChildren } from "react";
 import { CloudInstance, InstanceState } from "~/types";
 import { fetchAPI } from "../../api";
 import { showError, showInfo } from "~/util/helpers";
@@ -43,29 +42,6 @@ function StateBadge({
 		>
 			{text}
 		</Badge>
-	);
-}
-
-interface Info {
-	db: CloudInstance;
-	icon: string;
-}
-
-function Info({
-	db,
-	icon,
-	children
-}: PropsWithChildren<Info>) {
-	return (
-		<Group gap="sm">
-			<ThemeIcon
-				color={db.state === "inactive" ? "slate" : "pink"}
-				variant="light"
-			>
-				<Icon path={icon} c={db.state === "inactive" ? "slate.2" : "pink.2"} />
-			</ThemeIcon>
-			{children}
-		</Group>
 	);
 }
 
@@ -158,8 +134,9 @@ export function Instance({
 			<Menu.Target>
 				<Button
 					size="xs"
-					color="slate"
 					radius="sm"
+					color="slate"
+					variant="light"
 					rightSection={<Icon path={iconChevronDown} />}
 					disabled={value.state !== "ready"}
 				>
@@ -192,10 +169,10 @@ export function Instance({
 	return type === "card" ? (
 		<Paper
 			p="xl"
-			bg="slate.8"
 			shadow="md"
 			component={Stack}
 			className={classes.root}
+			gap="sm"
 		>
 			<Group>
 				<Text c="bright" fw={600} fz="xl">
@@ -205,25 +182,25 @@ export function Instance({
 				<Spacer />
 				{actionList}
 			</Group>
-			<Info
-				db={value}
-				icon={mdiMemory}
-			>
-				{value.type.slug}
-			</Info>
-			<Info
-				db={value}
-				icon={iconMarker}
-			>
-				{regionName}
-			</Info>
+			<Group gap="sm" h={32}>
+				<Icon path={mdiMemory} c="surreal" noStroke />
+				<Text c="bright">
+					{value.type.slug}
+				</Text>
+			</Group>
+			<Group gap="sm" h={32}>
+				<Icon path={iconMarker} c="surreal" />
+				<Text c="bright">
+					{regionName}
+				</Text>
+			</Group>
 			<Group>
-				<Info
-					db={value}
-					icon={iconSurreal}
-				>
-					SurrealDB {value.version}
-				</Info>
+				<Group gap="sm" h={32}>
+					<Icon path={mdiTagOutline} c="surreal" noStroke />
+					<Text c="bright">
+						SurrealDB {value.version}
+					</Text>
+				</Group>
 				<Spacer />
 				{inactive ? (
 					<Button

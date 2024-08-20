@@ -41,3 +41,12 @@ export function useThemePreference(): ColorScheme {
 
 	return actualScheme;
 }
+
+/**
+ * Returns the image URL for the current theme
+ */
+export function useThemeImage(src: { light: string; dark: string }) {
+	const isLight = useIsLight();
+
+	return src[isLight ? "light" : "dark"];
+}

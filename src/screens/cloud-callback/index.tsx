@@ -1,11 +1,11 @@
 import classes from "./style.module.scss";
-import surrealistUrl from "~/assets/images/surrealist.webp";
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Button, Image, MantineProvider, Stack, Text } from "@mantine/core";
 import { MANTINE_THEME } from "~/util/mantine";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { isDevelopment } from "~/util/environment";
+import { useLogoUrl } from "~/hooks/brand";
 
 type Result = "redirect" | "launch" | "error";
 
@@ -16,6 +16,7 @@ const REDIRECT_ENDPOINT = isDevelopment
 export function CloudCallbackScreen() {
 	const [result, setResult] = useState<Result>("redirect");
 	const [error, setError] = useState<string | undefined>(undefined);
+	const logoUrl = useLogoUrl();
 	const codeRef = useRef("");
 	const stateRef = useRef("");
 
@@ -81,7 +82,7 @@ export function CloudCallbackScreen() {
 				gap="xl"
 			>
 				<Image
-					src={surrealistUrl}
+					src={logoUrl}
 					w={175}
 				/>
 				{result === "redirect" ? (

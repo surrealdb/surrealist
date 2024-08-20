@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
-import surrealistIcon from "~/assets/images/logo.webp";
-import surrealistUrl from "~/assets/images/surrealist.webp";
+import surrealistIcon from "~/assets/images/icon.webp";
 import posthog from "posthog-js";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -36,6 +35,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useKeymap } from "~/hooks/keymap";
 import { CodeInput } from "~/components/Inputs";
 import { surrealql } from "codemirror-surrealql";
+import { useLogoUrl } from "~/hooks/brand";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -46,6 +46,7 @@ const ResultPaneLazy = memo(ResultPane);
 export function QueryView() {
 	const { setShowQueryVariables, toggleQueryVariables } = useInterfaceStore.getState();
 	const { saveQuery } = useConfigStore.getState();
+	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [variablesValid, setVariablesValid] = useState(true);
@@ -227,7 +228,7 @@ export function QueryView() {
 					{!(adapter as MiniAdapter).hideTitlebar && (
 						<Group>
 							<Image
-								src={surrealistUrl}
+								src={logoUrl}
 								style={{ pointerEvents: "none" }}
 								height={20}
 								width={20}

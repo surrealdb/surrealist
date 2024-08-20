@@ -6,6 +6,11 @@
 	align-items: center;
 	justify-content: flex-end;
 	flex-direction: column;
+	background-color: var(--mantine-color-slate-9);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
 }
 
 .titlebar {
@@ -71,6 +76,15 @@
 
 	&:hover {
 		background-color: var(--mantine-color-slate-7);
+	}
+
+	@include light {
+		background-color: var(--mantine-color-white);
+		box-shadow: 7px 7px 25px rgba(25, 27, 66, 0.15);
+
+		&:hover {
+			background-color: var(--mantine-color-slate-0);
+		}
 	}
 }
 

@@ -9,6 +9,7 @@ import { CODE_LANGUAGES } from "~/constants";
 import { useIntent } from "~/hooks/url";
 import { iconList } from "~/util/icons";
 import { Icon } from "~/components/Icon";
+import { useIsLight } from "~/hooks/theme";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
@@ -27,6 +28,8 @@ export function ArticlePane({
 	onLanguageChange,
 	onChangeActiveTopic,
 }: ArticlePaneProps) {
+	const isLight = useIsLight();
+
 	const flattened = useMemo(() => {
 		const result: ReadableArticle[] = [];
 
@@ -88,6 +91,10 @@ export function ArticlePane({
 		onLanguageChange(lang as CodeLang);
 	});
 
+	const border = isLight
+		? "1px solid var(--mantine-color-slate-1)"
+		: "1px solid var(--mantine-color-slate-7)";
+
 	return (
 		<ContentPane
 			icon={iconList}
@@ -148,7 +155,7 @@ export function ArticlePane({
 								py={42}
 								data-topic={doc.id}
 								style={{
-									borderBottom: index < flattened.length - 1 ? "1px solid var(--mantine-color-slate-7)" : "none"
+									borderBottom: index < flattened.length - 1 ? border : "none"
 								}}
 							>
 								<Box maw={1500}>

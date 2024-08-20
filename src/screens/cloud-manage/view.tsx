@@ -1,6 +1,7 @@
 import classes from "./style.module.scss";
-import logoImg from "~/assets/images/cloud-logo.svg";
-import splashImg from "~/assets/images/cloud-splash.webp";
+import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
+import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
+import splashUrl from "~/assets/images/cloud-splash.webp";
 import { FC } from "react";
 import { useConfigStore } from "~/stores/config";
 import { CloudAlert, CloudPage } from "~/types";
@@ -21,6 +22,7 @@ import { SupportPage } from "./pages/Support";
 import { StatusAlert } from "./components/StatusAlert";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAPI } from "./api";
+import { useThemeImage } from "~/hooks/theme";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
 	instances: InstancesPage,
@@ -45,6 +47,11 @@ export function CloudView() {
 		retry: false,
 		enabled: state === "authenticated",
 		queryFn:  () => fetchAPI<CloudAlert>(`/message`)
+	});
+
+	const logoUrl = useThemeImage({
+		light: logoLightUrl,
+		dark: logoDarkUrl
 	});
 
 	return showCloud ? (
@@ -83,7 +90,7 @@ export function CloudView() {
 				pb={175}
 			>
 				<Image
-					src={logoImg}
+					src={logoUrl}
 					alt="Surreal Cloud"
 					w={500}
 				/>
@@ -103,6 +110,7 @@ export function CloudView() {
 					<Button
 						w={164}
 						color="slate"
+						variant="light"
 						rightSection={<Icon path={iconOpen} />}
 						onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
 					>
@@ -112,7 +120,7 @@ export function CloudView() {
 			</Stack>
 			<Box
 				pos="absolute"
-				bottom={-15}
+				bottom={-16}
 				left={0}
 				right={0}
 				h={333}
@@ -124,7 +132,7 @@ export function CloudView() {
 				}}
 			>
 				<Image
-					src={splashImg}
+					src={splashUrl}
 					alt="Surreal Cloud"
 					h="100%"
 					className={classes.splashImage}

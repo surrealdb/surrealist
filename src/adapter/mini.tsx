@@ -5,6 +5,7 @@ import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/ut
 import { showError } from "~/util/helpers";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { Value } from "surrealql.wasm/v1";
+import { MantineColorScheme } from "@mantine/core";
 
 const THEMES = new Set(['light', 'dark', 'auto']);
 
@@ -89,11 +90,15 @@ export class MiniAdapter extends BrowserAdapter {
 		}
 
 		// Interface theme
-		if (theme && !THEMES.has(theme)) {
-			showError({
-				title: 'Startup error',
-				subtitle: 'Theme not recognised'
-			});
+		if (theme) {
+			if (THEMES.has(theme)) {
+				settings.appearance.colorScheme = theme as MantineColorScheme;
+			} else {
+				showError({
+					title: 'Startup error',
+					subtitle: 'Theme not recognised'
+				});
+			}
 		}
 
 		// Orientation

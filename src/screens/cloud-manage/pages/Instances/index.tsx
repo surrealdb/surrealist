@@ -260,10 +260,7 @@ export function InstancesPage() {
 							<PrimaryTitle>
 								Create your first instance
 							</PrimaryTitle>
-							<Text
-								c="slate.2"
-								mt="xl"
-							>
+							<Text mt="xl">
 								This organization does not have any instances yet. Create your first instance to get started with Surreal Cloud.
 							</Text>
 							<Group>
@@ -271,6 +268,7 @@ export function InstancesPage() {
 									<Button
 										mt="xl"
 										color="slate"
+										variant="light"
 										rightSection={<Icon path={iconOpen} />}
 										radius="sm"
 										size="xs"

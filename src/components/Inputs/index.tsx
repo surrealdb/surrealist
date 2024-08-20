@@ -278,6 +278,7 @@ export function EmailInput({
 }: EmailInputProps) {
 	const [draft, setDraft] = useInputState("");
 	const isValid = !draft || draft.includes('@');
+	const isLight = useIsLight();
 
 	const handleSubmit = useStable(() => {
 		if (!draft || !isValid) return;
@@ -309,7 +310,7 @@ export function EmailInput({
 						key={i}
 						withRemoveButton
 						onRemove={() => onChange?.(value!.filter((_, j) => i !== j))}
-						bg="slate"
+						bg={isLight ? "slate.1" : "slate.9"}
 					>
 						{email}
 					</Pill>

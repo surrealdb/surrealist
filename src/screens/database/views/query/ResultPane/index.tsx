@@ -144,6 +144,7 @@ export function ResultPane({
 									size="xs"
 									radius="xs"
 									aria-label="Change result mode"
+									variant="light"
 									color="slate"
 									leftSection={<Icon path={activeMode.icon} />}
 								>
@@ -167,12 +168,12 @@ export function ResultPane({
 					<Button
 						size="xs"
 						radius="xs"
-						onClick={onRunQuery}
-						color={isQueryValid ? "surreal" : "pink.9"}
-						variant={isQueryValid ? "gradient" : "filled"}
+						color="slate"
+						variant={isQueryValid ? "gradient" : "light"}
 						style={{ border: "none" }}
 						className={classes.run}
 						loading={isQuerying}
+						onClick={onRunQuery}
 						rightSection={
 							<Icon path={iconCursor} />
 						}
@@ -184,7 +185,7 @@ export function ResultPane({
 		>
 			{isLive && resultMode !== "live" && (
 				<UnstyledButton
-					bg="slate.9"
+					bg={isLight ? "slate.0" : "slate.9"}
 					mb="md"
 					p="md"
 					onClick={() => setResultMode("live")}

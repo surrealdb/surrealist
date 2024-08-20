@@ -36,7 +36,7 @@ export function Scaffold({ children }: PropsWithChildren) {
 							<ConfirmationProvider>
 								<ErrorBoundary
 									FallbackComponent={ScaffoldErrorHandler}
-									onReset={location.reload}
+									onReset={() => location.reload()}
 								>
 									{children}
 								</ErrorBoundary>

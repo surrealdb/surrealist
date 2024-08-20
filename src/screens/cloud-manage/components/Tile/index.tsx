@@ -18,7 +18,6 @@ export const Tile = createPolymorphicComponent<'button', TileProps>(
 		<Paper
 			p="md"
 			ref={ref}
-			bg="slate.9"
 			renderRoot={(props) => <UnstyledButton {...props} />}
 			className={clsx(classes.root, className)}
 			mod={{ active: isActive }}

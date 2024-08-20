@@ -209,8 +209,8 @@ export function BaseNode({
 				p="md"
 				w={250}
 				title={`Click to edit ${table.schema.name}`}
-				bg={isLight ? "white" : "slate.7"}
-				shadow={`0 8px 15px var(--mantine-color-slate-${isLight ? 0 : 9}`}
+				bg={isLight ? "slate.0" : "slate.7"}
+				shadow={`0 8px 15px rgba(30, 0, 80, ${isLight ? 0.025 : 0.05})`}
 				style={{
 					border: `1px solid ${themeColor(isSelected ? 'surreal' : isLight ? 'slate.2' : 'slate.5')}`,
 					userSelect: 'none'

@@ -33,6 +33,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { ChangefeedElement } from "./elements/changefeed";
 import { DrawerResizer } from "~/components/DrawerResizer";
+import { useIsLight } from "~/hooks/theme";
 
 const INITIAL_TABS = ["general"];
 
@@ -53,6 +54,7 @@ export function DesignDrawer({
 	errors,
 	onClose
 }: SchemaDrawerProps) {
+	const isLight = useIsLight();
 	const [width, setWidth] = useState(650);
 
 	const removeTable = useConfirmation({
@@ -129,7 +131,7 @@ export function DesignDrawer({
 			</Group>
 			<Paper
 				withBorder
-				bg="slate.9"
+				bg={isLight ? "white" : "slate.9"}
 				p="sm"
 				ff="monospace"
 				mb="md"

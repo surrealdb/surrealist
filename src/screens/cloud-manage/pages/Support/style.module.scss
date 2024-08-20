@@ -3,5 +3,9 @@
 
 	&:hover {
 		background-color: var(--mantine-color-slate-7);
+
+		@include light {
+			background-color: var(--mantine-color-slate-1);
+		}
 	}
 }

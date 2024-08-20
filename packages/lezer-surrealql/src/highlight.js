@@ -19,5 +19,5 @@ export const surqlHighlighting = styleTags({
 	"Distance Filter Tokenizer": t.literal,
 	"Literal": t.literal,
 	"RecordTbIdent RecordIdIdent": t.className,
-	"Operator GraphLeft GraphRight GraphBoth": t.operator,
+	"Operator! GraphLeft GraphRight GraphBoth": t.operator,
 });

@@ -23,6 +23,7 @@ import { GQL_SUPPORTED } from "~/constants";
 import { adapter } from "~/adapter";
 import { parseValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
+import { useIsLight } from "~/hooks/theme";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
@@ -35,6 +36,7 @@ export function GraphqlView() {
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
 
+	const isLight = useIsLight();
 	const connection = useActiveConnection();
 	const showVariables = useInterfaceStore(state => state.showGraphqlVariables);
 	const activeView = useConfigStore(state => state.activeView);
@@ -110,7 +112,7 @@ export function GraphqlView() {
 					>
 						<Paper
 							className={classes.sendCircle}
-							bg="slate.9"
+							bg={isLight ? "slate.0" : "slate.9"}
 							pos="absolute"
 							radius={100}
 							p="xs"
@@ -150,6 +152,7 @@ export function GraphqlView() {
 			</Group>
 			<Button
 				color="slate"
+				variant="light"
 				rightSection={<Icon path={iconOpen} />}
 				onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
 			>

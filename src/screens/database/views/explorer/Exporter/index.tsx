@@ -100,8 +100,8 @@ export function Exporter() {
 				title={<PrimaryTitle>Export data</PrimaryTitle>}
 			>
 				<Stack gap="xl">
-					<Text c={isLight ? "slate.7" : "slate.2"}>
-						Select which elements you want to include in your export.
+					<Text>
+						Select which schema resources and table records you want to include in your export.
 					</Text>
 
 					<Stack>
@@ -140,7 +140,7 @@ export function Exporter() {
 							</Text>
 							<Box>
 								<Paper
-									bg="slate.9"
+									bg={isLight ? "slate.0" : "slate.9"}
 									radius="md"
 									p="sm"
 								>

@@ -9,7 +9,6 @@ export function DocsTablesInfo({ topic }: TopicProps) {
 		<Article>
 			<Paper
 				mt="lg"
-				bg="slate.9"
 				p="md"
 			>
 				<Group c="bright">

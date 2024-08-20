@@ -7,7 +7,6 @@ import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, C
 import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLineGutter, EditorView, Decoration, GutterMarker, ViewPlugin } from "@codemirror/view";
 import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit, syntaxTree } from "@codemirror/language";
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import { themeColor } from "../mantine";
 import { EditorState, Extension, Prec, RangeSetBuilder, SelectionRange, StateEffect, StateField } from "@codemirror/state";
 import { acceptWithTab, customHistoryKeymap, runQuery } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
@@ -44,10 +43,10 @@ export const editorBase = (): Extension => [
 	crosshairCursor(),
 	indentationMarkers({
 		colors: {
-			light: themeColor('slate'),
-			dark: themeColor('slate'),
-			activeLight: themeColor('slate'),
-			activeDark: themeColor('slate'),
+			light: 'var(--surrealist-indent-color)',
+			dark: 'var(--surrealist-indent-color)',
+			activeLight: 'var(--surrealist-indent-active-color)',
+			activeDark: 'var(--surrealist-indent-active-color)',
 		}
 	}),
 	highlightSelectionMatches({

@@ -1,12 +1,11 @@
-import { Group, Stack, Button, Text, ActionIcon, Paper, Modal } from "@mantine/core";
+import { Group, Stack, Button, Text, ActionIcon, Modal, Box } from "@mantine/core";
 import { ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { useLater } from "~/hooks/later";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { iconClose, iconPlus } from "~/util/icons";
+import { iconCircle, iconClose, iconPlus } from "~/util/icons";
 
 export interface ListerProps<T> {
 	name: string;
@@ -18,9 +17,9 @@ export interface ListerProps<T> {
 }
 
 export function Lister<T extends { name: string }>(props: ListerProps<T>) {
-	const isLight = useIsLight();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editingIndex, setEditingIndex] = useState(-1);
+	const isLight = useIsLight();
 
 	const openEditor = useStable((index: number) => {
 		setEditingIndex(index);
@@ -52,43 +51,46 @@ export function Lister<T extends { name: string }>(props: ListerProps<T>) {
 	return (
 		<>
 			{props.value.length > 0 ? (
-				<Stack gap={6}>
+				<Box>
 					{props.value.map((item, i) => (
-						<Paper
+						<Button
 							key={i}
-							p="xs"
-							pl="md"
-							bg={isLight ? "slate.0" : "slate.8"}
-							pos="relative"
-							radius="md"
-							style={{ border: 0, cursor: "pointer" }}
+							px="xs"
+							fullWidth
+							color="slate"
+							variant="subtle"
 							onClick={() => openEditor(i)}
-						>
-							<Group gap="sm">
-								{item.name ? (
-									<Text c="bright">
-										{item.name}
-									</Text>
-								) : (
-									<Text c="dark.2">
-										Unnamed {props.name}
-									</Text>
-								)}
-								<Spacer />
+							styles={{
+								label: { flex: 1 }
+							}}
+							leftSection={
+								<Icon path={iconCircle} c="slate.4" />
+							}
+							rightSection={
 								<ActionIcon
 									role="button"
 									component="div"
 									onClick={(e) => handleRemove(e, i)}
-									color="pink.7"
-									variant="subtle"
+									color="pink.9"
+									variant="transparent"
 									aria-label="Remove item"
 								>
 									<Icon path={iconClose} />
 								</ActionIcon>
-							</Group>
-						</Paper>
+							}
+						>
+							{item.name ? (
+								<Text c="bright" fw={500} ff="monospace">
+									{item.name}
+								</Text>
+							) : (
+								<Text c="slate.3" fw={500} ff="monospace">
+									Unnamed {props.name}
+								</Text>
+							)}
+						</Button>
 					))}
-				</Stack>
+				</Box>
 			) : (
 				<Text ta="center">
 					{props.missing}

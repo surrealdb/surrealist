@@ -85,6 +85,7 @@ function TermsModal() {
 			<Group>
 				<Button
 					color="slate"
+					variant="light"
 					onClick={() => {
 						closeAllModals();
 						invalidateSession();

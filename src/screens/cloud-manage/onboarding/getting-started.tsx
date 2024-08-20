@@ -1,10 +1,12 @@
-import cloudLogo from "~/assets/images/cloud-logo.svg";
+import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
+import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
 import { Anchor, Button, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { openModal, closeAllModals } from "@mantine/modals";
 import { Spacer } from "~/components/Spacer";
 import { Icon } from "~/components/Icon";
 import { iconBook, iconChat, iconChevronRight, iconOpen } from "~/util/icons";
 import { mdiVideoOutline } from "@mdi/js";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
 
 export function openStartingModal() {
 	openModal({
@@ -16,10 +18,17 @@ export function openStartingModal() {
 }
 
 function StartingModal() {
+	const isLight = useIsLight();
+
+	const logoUrl = useThemeImage({
+		light: logoLightUrl,
+		dark: logoDarkUrl
+	});
+
 	return (
 		<Stack gap="xl">
 			<Image
-				src={cloudLogo}
+				src={logoUrl}
 				mx="auto"
 				my={28}
 				w={400}
@@ -33,11 +42,11 @@ function StartingModal() {
 					underline="never"
 				>
 					<Paper
-						withBorder
 						px="md"
 						py="xl"
-						bg="slate.9"
 						radius="md"
+						bg={isLight ? "slate.0" : "slate.9"}
+						withBorder
 					>
 						<Group>
 							<Icon path={mdiVideoOutline} />
@@ -58,11 +67,11 @@ function StartingModal() {
 					underline="never"
 				>
 					<Paper
-						withBorder
 						px="md"
 						py="xl"
-						bg="slate.9"
 						radius="md"
+						bg={isLight ? "slate.0" : "slate.9"}
+						withBorder
 					>
 						<Group>
 							<Icon path={iconBook} />
@@ -83,11 +92,11 @@ function StartingModal() {
 					underline="never"
 				>
 					<Paper
-						withBorder
 						px="md"
 						py="xl"
-						bg="slate.9"
 						radius="md"
+						bg={isLight ? "slate.0" : "slate.9"}
+						withBorder
 					>
 						<Group>
 							<Icon path={iconChat} />

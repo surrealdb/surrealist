@@ -3,7 +3,6 @@
 	user-select: text;
 
 	th {
-		background-color: var(--mantine-color-slate-9);
 		color: var(--mantine-color-bright);
 		text-align: start;
 		position: sticky;
@@ -20,36 +19,13 @@
 	}
 
 	tbody tr:nth-child(odd) {
-		background-color: var(--mantine-color-slate-8);
-	}
+		background-color: rgba(255, 255, 255, 0.05);
 
-}
-
-.stepper {
-	:global(.mantine-Stepper-separator) {
-		background-color: var(--mantine-color-slate-7);
-		border-radius: 5px;
-
-		&[data-active] {
-			background-color: var(--mantine-color-slate-5);
+		@include light {
+			background-color: rgba(0, 0, 0, 0.025);
 		}
 	}
 
-	:global(.mantine-Stepper-stepIcon) {
-		background-origin: border-box;
-		
-		&[data-completed], &[data-progress] {
-			border: 1px solid rgba(255, 255, 255, 0.3);
-			background-image: var(--surrealist-gradient);
-			color: var(--mantine-color-bright);
-		}
-	}
-
-	:global(.mantine-Stepper-stepLabel) {
-		font-weight: 600;
-		color: var(--mantine-color-bright);
-		font-size: var(--mantine-font-size-sm);
-	}
 }
 
 .provision-box {
@@ -77,6 +53,11 @@
 	:global(.mantine-SegmentedControl-label) {
 		background-color: unset;
 		font-size: var(--mantine-font-size-md);
+		transition-duration: .15s !important;
+		
+		&[data-active] {
+			color: white;
+		}
 	}
 	
 	:global(.mantine-SegmentedControl-indicator) {

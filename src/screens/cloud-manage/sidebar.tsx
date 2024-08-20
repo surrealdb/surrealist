@@ -70,7 +70,6 @@ export function CloudSidebar() {
 	return (
 		<Paper
 			w={250}
-			bg="slate.8"
 			component={Stack}
 			p="md"
 		>
@@ -117,7 +116,7 @@ export function CloudSidebar() {
 						</Menu.Item>
 					))}
 					<Menu.Divider />
-					<Text p="sm" c="slate.2">
+					<Text p="sm">
 						The ability to create organizations is not available during the alpha.
 					</Text>
 				</Menu.Dropdown>
@@ -135,7 +134,7 @@ export function CloudSidebar() {
 							</Fragment>
 						))}
 						{i < navigation.length - 1 && (
-							<Divider color="slate.6" />
+							<Divider />
 						)}
 					</Fragment>
 				))}
