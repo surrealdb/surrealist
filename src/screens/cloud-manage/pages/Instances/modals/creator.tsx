@@ -1,7 +1,7 @@
 import classes from "../style.module.scss";
 import { ActionIcon, Box, Button, Center, Grid, Group, Image, Loader, Modal, Paper, Progress, ScrollArea, Select, SimpleGrid, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
@@ -28,6 +28,7 @@ function CreationStepper({
 	onComplete,
 }: CreationStepperProps) {
 	const [step, setStep] = useState(0);
+	const taskRef = useRef<any>(null);
 	const isLight = useIsLight();
 
 	const current = useOrganization();
@@ -97,14 +98,18 @@ function CreationStepper({
 
 			const task = setInterval(async () => {
 				try {
-					await fetch(`https://${result.host}/health`);
+					const instance = await fetchAPI<CloudInstance>(`/instances/${result.id}`);
 
-					clearInterval(task);
-					onComplete(result);
+					if (instance.state === "ready") {
+						clearInterval(task);
+						onComplete(result);
+					}
 				} catch {
 					// Ignore and continue
 				}
-			}, 3000);
+			}, 1500);
+
+			taskRef.current = task;
 		} catch (err: any) {
 			console.log('Failed to provision database:', [...err.response.headers.entries()]);
 
@@ -154,6 +159,14 @@ function CreationStepper({
 
 		setStep(step + 1);
 	});
+
+	useEffect(() => {
+		return () => {
+			if (taskRef.current) {
+				clearInterval(taskRef.current);
+			}
+		};
+	}, []);
 
 	const willCreate = step === 3;
 	const estimatedCost = (isLimited ? 0 : (3.5 * units)).toFixed(2);

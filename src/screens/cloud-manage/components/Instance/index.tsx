@@ -75,10 +75,10 @@ export function Instance({
 				});
 
 				showInfo({
-					title: "Instance deleted",
+					title: "Deleting instance",
 					subtitle: (
 						<>
-							<Text span c="bright">{value.name}</Text> has been deleted
+							<Text span c="bright">{value.name}</Text> is being deleted
 						</>
 					)
 				});
