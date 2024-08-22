@@ -1,8 +1,7 @@
-import { Avatar, Box, Button, Center, Divider, Loader, Stack, Textarea, TextInput } from "@mantine/core";
+import { Center, Loader, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useOrganization } from "~/hooks/cloud";
 import { Section } from "../../components/Section";
-import { Label } from "~/components/Label";
 import { useCloudStore } from "~/stores/cloud";
 import { useLayoutEffect } from "react";
 
@@ -34,9 +33,10 @@ export function SettingsPage() {
 					label="Name"
 					value={name}
 					onChange={setName}
+					disabled
 				/>
 
-				<Textarea
+				{/* <Textarea
 					label="Description"
 					value={desc}
 					onChange={setDesc}
@@ -55,9 +55,9 @@ export function SettingsPage() {
 						size="xl"
 						mt={2}
 					/>
-				</Box>
+				</Box> */}
 			</Section>
-			<Divider />
+			{/* <Divider />
 			<Section
 				title="Danger zone"
 			>
@@ -70,7 +70,7 @@ export function SettingsPage() {
 						Request organization deletion
 					</Button>
 				</Box>
-			</Section>
+			</Section> */}
 		</Stack>
 	);
 }

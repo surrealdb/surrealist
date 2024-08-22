@@ -15,6 +15,10 @@
 	:global(.mantine-SegmentedControl-control)::before {
 		content: none;
 	}
+
+	:global(.mantine-SegmentedControl-indicator) {
+		box-shadow: none;
+	}
 }
 
 .table {
