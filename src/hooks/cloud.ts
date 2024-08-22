@@ -1,6 +1,6 @@
 import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
-import { verifyAuthentication, refreshAccess, checkSessionExpiry } from "~/screens/cloud-manage/auth";
+import { verifyAuthentication, refreshAccess, checkSessionExpiry } from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";

@@ -6,7 +6,7 @@ import { Icon } from "~/components/Icon";
 import { iconClose } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { MouseEvent } from "react";
-import { openCloudAuthentication } from "~/screens/cloud-manage/auth";
+import { openCloudAuthentication } from "~/screens/cloud-manage/api/auth";
 
 export function CloudExpiredDialog() {
 	const { setSessionExpired } = useCloudStore.getState();

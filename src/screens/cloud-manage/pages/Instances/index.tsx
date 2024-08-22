@@ -15,7 +15,7 @@ import { useConfigStore } from "~/stores/config";
 import { fetchAPI } from "../../api";
 import { CreationModal } from "./modals/creator";
 import { useBoolean } from "~/hooks/boolean";
-import { useAvailableInstanceTypes, useAvailableRegions } from "~/hooks/cloud";
+import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { ConnectCliModal } from "./modals/connect-cli";
 import { createBaseConnection, createCloudInstance } from "~/util/defaults";
@@ -38,16 +38,16 @@ export function InstancesPage() {
 	const [showCreator, manageCreator] = useBoolean();
 
 	const regions = useAvailableRegions();
+	const organization = useOrganization();
 	const instanceTypes = useAvailableInstanceTypes();
-	const activeOrg = useConfigStore((state) => state.activeCloudOrg);
 	const authState = useCloudStore((state) => state.authState);
 
 	const { data, isPending, refetch } = useQuery({
-		queryKey: ["cloud", "databases", activeOrg],
+		queryKey: ["cloud", "databases", organization?.id],
 		refetchInterval: 15_000,
 		enabled: authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudInstance[]>(`/organizations/${activeOrg}/instances`);
+			return fetchAPI<CloudInstance[]>(`/organizations/${organization?.id}/instances`);
 		},
 	});
 

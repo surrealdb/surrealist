@@ -1,10 +1,10 @@
 import { Box, Stack, Text } from "@mantine/core";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 export interface SectionProps {
-	title: string;
-	description?: string;
+	title: ReactNode;
+	description?: ReactNode;
 	withMaxWidth?: boolean;
 }
 

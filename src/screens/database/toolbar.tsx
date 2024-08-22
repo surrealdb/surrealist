@@ -22,7 +22,7 @@ import { ActionBar } from "~/components/ActionBar";
 import { ConnectionList } from "./components/ConnectionList";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
-import { openCloudAuthentication } from "../cloud-manage/auth";
+import { openCloudAuthentication } from "../cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 
 export function DatabaseToolbar() {

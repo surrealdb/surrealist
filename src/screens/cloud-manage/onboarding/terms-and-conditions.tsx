@@ -1,7 +1,7 @@
 import { Button, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
 import { openModal, closeAllModals } from "@mantine/modals";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { invalidateSession } from "../auth";
+import { invalidateSession } from "../api/auth";
 import { Spacer } from "~/components/Spacer";
 import dedent from "dedent";
 import { useState } from "react";

@@ -421,6 +421,7 @@ export interface CloudInstanceType {
 	cpu: number;
 	memory: number;
 	storage: number;
+	price_hour: number;
 	compute_units: {
 		min?: number;
 		max?: number;
@@ -443,11 +444,29 @@ export interface CloudPlan {
 export interface CloudOrganization {
 	id: string;
 	name: string;
+	billing_info: boolean;
+	payment_info: boolean;
 	plan: CloudPlan;
+	available_plans: CloudPlan[];
 }
 
 export interface CloudAlert {
 	message: string;
 	message_type: AlertLevel;
 	timestamp: string;
+}
+
+export interface CloudBilling {
+	Name: string;
+	Email: string;
+	AddressLine1: string;
+	AddressLine2: string;
+	City: string;
+	Zipcode: string;
+	State: string;
+	Country: string;
+	LegalName: string;
+	LegalNumber: string;
+	TaxIdentificationNumber: string;
+	Phone: string;
 }

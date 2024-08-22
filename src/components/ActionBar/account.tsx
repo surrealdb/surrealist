@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Group, Loader, Menu, Modal, Stack, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
 import { Icon } from "../Icon";
-import { invalidateSession } from "~/screens/cloud-manage/auth";
+import { invalidateSession } from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { Text } from "@mantine/core";
 import { useStable } from "~/hooks/stable";

@@ -4,8 +4,8 @@ import { useCloudStore } from "~/stores/cloud";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { isDevelopment } from "~/util/environment";
-import { fetchAPI, updateCloudInformation } from "./api";
-import { dispatchOnboarding } from "./onboarding";
+import { fetchAPI, updateCloudInformation } from ".";
+import { dispatchOnboarding } from "../onboarding";
 import { getCloudEndpoints } from "./endpoints";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;

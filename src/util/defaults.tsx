@@ -170,6 +170,7 @@ export function createCloudInstance(): CloudInstance {
 			cpu: 0,
 			memory: 0,
 			storage: 0,
+			price_hour: 0,
 			compute_units: {}
 		}
 	};

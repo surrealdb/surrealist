@@ -12,7 +12,7 @@ import { iconChevronRight, iconOpen } from "~/util/icons";
 import { Box, Button, Group, Image, Stack, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
-import { openCloudAuthentication } from "./auth";
+import { openCloudAuthentication } from "./api/auth";
 import { CloudToolbar } from "./toolbar";
 import { CloudSidebar } from "./sidebar";
 import { PlaceholderPage } from "./pages/Placeholder";
@@ -54,6 +54,8 @@ export function CloudView() {
 		dark: logoDarkUrl
 	});
 
+	const hasAlert = alertQuery.data && Object.keys(alertQuery.data).length > 0;
+
 	return showCloud ? (
 		<>
 			<Group
@@ -72,7 +74,7 @@ export function CloudView() {
 			>
 				<CloudSidebar />
 				<Stack flex={1}>
-					{alertQuery.data && (
+					{hasAlert && (
 						<StatusAlert alert={alertQuery.data} />
 					)}
 					{Content && <Content />}

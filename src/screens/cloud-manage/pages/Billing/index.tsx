@@ -1,70 +1,73 @@
 import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Center, Divider, Group, List, Paper, ScrollArea, SimpleGrid, Stack, Table, Text } from "@mantine/core";
+import { ActionIcon, Box, Button, Divider, Group, List, Paper, ScrollArea, SimpleGrid, Skeleton, Stack, Table, Text } from "@mantine/core";
 import { Section } from "../../components/Section";
 import { Icon } from "~/components/Icon";
 import { iconCheck, iconDotsVertical } from "~/util/icons";
 import { ReactNode } from "react";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { mdiAccountOutline, mdiCreditCardOutline } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Label } from "~/components/Label";
+import { useOrganization } from "~/hooks/cloud";
+import { openBillingModal } from "../../modals/billing";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
+import { useCloudBilling } from "../../hooks/billing";
 
 interface BillingPlanProps {
 	name: string;
-	pricing: ReactNode;
+	description: string;
 	features: string[];
-	action: ReactNode;
-	audience: string;
+	action?: ReactNode;
 }
 
 function BillingPlan({
 	name,
-	pricing,
+	description,
 	features,
 	action,
 }: BillingPlanProps) {
+	const isLight = useIsLight();
+
 	return (
-		<Box>
-			<Paper
-				withBorder
-				p="xl"
-			>
-				<Stack h="100%" gap="xl">
-					<Box>
-						<Text fz="xl">
-							{name}
-						</Text>
-						{pricing}
-					</Box>
-					<List
-						className={classes.featureList}
-						icon={
-							<Center
-								className={classes.featureIcon}
-								w={18}
-								h={18}
-							>
-								<Icon path={iconCheck} c="bright" size="sm" />
-							</Center>
-						}
-					>
-						{features.map((feature, i) => (
-							<List.Item key={i}>
-								{feature}
-							</List.Item>
-						))}
-					</List>
-					<Spacer />
-					{action}
-				</Stack>
-			</Paper>
-		</Box>
+		<Paper
+			withBorder
+			p="xl"
+			w={400}
+			style={{ flexShrink: 0 }}
+		>
+			<Stack h="100%" gap="xl">
+				<Box>
+					<PrimaryTitle>
+						{name}
+					</PrimaryTitle>
+					<Text c={isLight ? "slate.7" : "slate.2"}>
+						{description}
+					</Text>
+				</Box>
+				<List
+					className={classes.featureList}
+					icon={
+						<Icon
+							path={iconCheck}
+							color="surreal.5"
+						/>
+					}
+				>
+					{features.map((feature, i) => (
+						<List.Item key={i} c="bright">
+							{feature}
+						</List.Item>
+					))}
+				</List>
+				{action}
+			</Stack>
+		</Paper>
 	);
 }
 
 export function BillingPage() {
-	const isLight = useIsLight();
+	const organization = useOrganization();
+	const billingQuery = useCloudBilling(organization?.id);
 
 	return (
 		<Box
@@ -82,109 +85,41 @@ export function BillingPage() {
 				}}
 			>
 				<Stack>
-					<Box>
-						<PrimaryTitle ta="center">
-							Surreal Cloud Pricing Plans
-						</PrimaryTitle>
-						<Text ta="center" fz="lg">
-							Choose a plan that fits your organization's needs
-						</Text>
-					</Box>
-					<ScrollArea
-						scrollbars="x"
+					{/* <Section
+						title={
+							<Group>
+								Choose your plan
+								<Badge variant="light">
+									Coming soon
+								</Badge>
+							</Group>
+						}
+						description="Pick a plan that suits your organization's needs"
 					>
-						<SimpleGrid
-							my="xl"
-							spacing="xl"
-							cols={3}
-							w={900}
-							mx="auto"
+						<ScrollArea
+							scrollbars="x"
 						>
-							<BillingPlan
-								name="Start"
-								audience="beginners"
-								features={[
-									"Some feature",
-									"Another feature",
-									"Exciting feature",
-								]}
-								pricing={
-									<Text
-										fz={28}
-										fw={500}
-										c="bright"
-									>
-										Free
-									</Text>
-								}
-								action={
-									<Button
-										disabled
-										variant="gradient"
-										size="xs"
-									>
-										You are on this plan
-									</Button>
-								}
-							/>
-							<BillingPlan
-								name="Grow"
-								audience="professionals"
-								features={[
-									"Spicy feature",
-									"Premium feature",
-									"Enticing feature",
-									"Thrilling feature",
-									"Suprising feature",
-									"Awesome feature",
-								]}
-								pricing={
-									<Text
-										fz={28}
-										fw={500}
-										c="bright"
-									>
-										$10<Text span c={isLight ? "slate.6" : "slate.3"}>/mo</Text>
-									</Text>
-								}
-								action={
-									<Button
-										variant="gradient"
-										size="xs"
-									>
-										Upgrade to grow
-									</Button>
-								}
-							/>
-							<BillingPlan
-								name="Scale"
-								audience="large organizations"
-								features={[
-									"Unbelievable feature",
-									"Cheerful feature",
-									"Exceptional feature",
-									"Best feature",
-								]}
-								pricing={
-									<Text
-										fz={28}
-										fw={500}
-										c="bright"
-									>
-										Contact us
-									</Text>
-								}
-								action={
-									<Button
-										variant="gradient"
-										size="xs"
-									>
-										Contact us
-									</Button>
-								}
-							/>
-						</SimpleGrid>
-					</ScrollArea>
+							<Group wrap="nowrap">
+								{organization?.available_plans?.map((plan) => (
+									<BillingPlan
+										key={plan.id}
+										name={plan.name}
+										description={plan.description}
+										features={[]}
+										pricing={null}
+										action={
+											<Button
+												variant="gradient"
+												size="xs"
+											>
+												Select plan
+											</Button>
+										}
+									/>
+								))}
+							</Group>
+						</ScrollArea>
+					</Section> */}
 
 					<Section
 						title="Billing Information"
@@ -216,11 +151,23 @@ export function BillingPage() {
 								<Stack mt="md">
 									<Box>
 										<Label>Card information</Label>
-										<Text c="bright" fw={500}>Mastercard ending in 4952</Text>
+										<Skeleton visible={billingQuery.isPending}>
+											{organization?.payment_info ? (
+												<Text c="bright" fw={500}>Mastercard ending in 4952</Text>
+											) : (
+												<Text c="slate.4" fw={500}>Not provided yet</Text>
+											)}
+										</Skeleton>
 									</Box>
 									<Box>
 										<Label>Name on card</Label>
-										<Text c="bright" fw={500}>Tobie Morgan Hitchcock</Text>
+										<Skeleton visible={billingQuery.isPending}>
+											{organization?.payment_info ? (
+												<Text c="bright" fw={500}>Tobie Morgan Hitchcock</Text>
+											) : (
+												<Text c="slate.4" fw={500}>Not provided yet</Text>
+											)}
+										</Skeleton>
 									</Box>
 								</Stack>
 							</Paper>
@@ -241,6 +188,7 @@ export function BillingPage() {
 									<Button
 										color="slate"
 										variant="light"
+										onClick={openBillingModal}
 									>
 										Update
 									</Button>
@@ -249,11 +197,23 @@ export function BillingPage() {
 								<Stack>
 									<Box>
 										<Label>Name</Label>
-										<Text c="bright" fw={500}>Tobie Morgan Hitchcock</Text>
+										<Skeleton visible={billingQuery.isPending}>
+											{organization?.billing_info ? (
+												<Text c="bright" fw={500}>Tobie Morgan Hitchcock</Text>
+											) : (
+												<Text c="slate.4" fw={500}>Not provided yet</Text>
+											)}
+										</Skeleton>
 									</Box>
 									<Box>
 										<Label>Email</Label>
-										<Text c="bright" fw={500}>tobie@surrealdb.com</Text>
+										<Skeleton visible={billingQuery.isPending}>
+											{organization?.billing_info ? (
+												<Text c="bright" fw={500}>tobie@surrealdb.com</Text>
+											) : (
+												<Text c="slate.4" fw={500}>Not provided yet</Text>
+											)}
+										</Skeleton>
 									</Box>
 								</Stack>
 							</Paper>
