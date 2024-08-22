@@ -94,6 +94,7 @@ CommitStatement { commit transaction? }
 
 DefineAnalyzerStatement {
 	define analyzer
+	(IfNotExistsClause | overwrite)?
 	Ident
 	(
 		TokenizersClause |
@@ -102,12 +103,26 @@ DefineAnalyzerStatement {
 		CommentClause
 	)*
 }
-DefineEventStatement { define event Ident OnTableClause WhenThenClause CommentClause? }
-DefineDatabaseStatement { define database Ident on Ident CommentClause? }
+
+DefineEventStatement {
+	define event
+	(IfNotExistsClause | overwrite)?
+	Ident
+	OnTableClause
+	WhenThenClause
+	CommentClause?
+}
+
+DefineDatabaseStatement {
+	define database
+	(IfNotExistsClause | overwrite)?
+	Ident on Ident
+	CommentClause?
+}
 
 DefineFieldStatement {
     define field
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	Ident
 	OnTableClause
 	(
@@ -127,7 +142,7 @@ ParamList {
 
 DefineFunctionStatement {
 	define functionKw
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	customFunctionName
 	ParamList
 	("->" type)?
@@ -142,7 +157,7 @@ functionKw[@name=Keyword] { function }
 
 DefineIndexStatement {
 	define index
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	Ident
 	OnTableClause
 	FieldsColumnsClause
@@ -154,11 +169,16 @@ DefineIndexStatement {
 	)
 }
 
-DefineNamespaceStatement { define namespace Ident CommentClause? }
+DefineNamespaceStatement {
+	define namespace
+	(IfNotExistsClause | overwrite)?
+	Ident
+	CommentClause?
+}
 
 DefineParamStatement {
 	define param
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	VariableName
 	valueKeyword
 	value
@@ -166,7 +186,7 @@ DefineParamStatement {
 
 DefineScopeStatement {
 	define scope
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	Ident
 	(
 		SessionClause |
@@ -178,7 +198,7 @@ DefineScopeStatement {
 
 DefineTableStatement {
 	define table
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	Ident
 	(
 		drop |
@@ -193,7 +213,7 @@ DefineTableStatement {
 
 DefineTokenStatement {
 	define token
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	Ident
 	( on ( namespace | database | scope Ident ) )
 	TokenTypeClause
@@ -202,7 +222,7 @@ DefineTokenStatement {
 
 DefineUserStatement {
 	define user
-	IfNotExistsClause?
+	(IfNotExistsClause | overwrite)?
 	Ident
 	( on ( root | namespace | database ) )
 	( ( password | passhash ) String )
@@ -266,6 +286,7 @@ SelectStatement {
 				FetchClause?
 				TimeoutClause?
 				ParallelClause?
+				TempfilesClause?
 				ExplainClause?
 			}
 		)
@@ -289,6 +310,7 @@ DeleteStatement {
 InsertStatement {
 	insert
 	ignore?
+	relation?
 	into
 	Ident
 	(
@@ -759,6 +781,10 @@ ParallelClause {
 	parallel
 }
 
+TempfilesClause {
+	tempfiles
+}
+
 FetchClause {
 	fetch
 	commaSep<Ident>
@@ -1169,6 +1195,7 @@ piped<content> {
 	option					[@name=Keyword],
 	order					[@name=Keyword],
 	out						[@name=Keyword],
+	overwrite				[@name=Keyword],
 	parallel				[@name=Keyword],
 	param					[@name=Keyword],
 	passhash				[@name=Keyword],
@@ -1203,6 +1230,7 @@ piped<content> {
 	structure				[@name=Keyword],
 	tb						[@name=Keyword],
 	table					[@name=Keyword],
+	tempfiles				[@name=Keyword],
 	terms_cache				[@name=Keyword],
 	terms_order				[@name=Keyword],
 	then					[@name=Keyword],
