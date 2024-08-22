@@ -12,6 +12,7 @@ import { useImmer } from "use-immer";
 import { Spacer } from "~/components/Spacer";
 import { useState } from "react";
 import { fetchAPI } from "../api";
+import { useQueryClient } from "@tanstack/react-query";
 
 export async function openBillingModal() {
 	return new Promise<void>((resolve) => {
@@ -62,6 +63,7 @@ function BillingForm({
 }: BillingFormProps) {
 	const [data, setData] = useImmer(details);
 	const [isLoading, setLoading] = useState(false);
+	const queryClient = useQueryClient();
 
 	const handleClose = useStable(() => {
 		closeModal("billing");
@@ -77,6 +79,10 @@ function BillingForm({
 			});
 
 			handleClose();
+
+			queryClient.invalidateQueries({
+				queryKey: ["cloud", "billing", organization.id]
+			});
 		} finally {
 			setLoading(false);
 		}

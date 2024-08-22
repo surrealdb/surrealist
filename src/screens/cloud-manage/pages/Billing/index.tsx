@@ -199,7 +199,9 @@ export function BillingPage() {
 										<Label>Name</Label>
 										<Skeleton visible={billingQuery.isPending}>
 											{organization?.billing_info ? (
-												<Text c="bright" fw={500}>Tobie Morgan Hitchcock</Text>
+												<Text c="bright" fw={500}>
+													{billingQuery.data?.Name}
+												</Text>
 											) : (
 												<Text c="slate.4" fw={500}>Not provided yet</Text>
 											)}
@@ -209,7 +211,9 @@ export function BillingPage() {
 										<Label>Email</Label>
 										<Skeleton visible={billingQuery.isPending}>
 											{organization?.billing_info ? (
-												<Text c="bright" fw={500}>tobie@surrealdb.com</Text>
+												<Text c="bright" fw={500}>
+													{billingQuery.data?.Email}
+												</Text>
 											) : (
 												<Text c="slate.4" fw={500}>Not provided yet</Text>
 											)}
