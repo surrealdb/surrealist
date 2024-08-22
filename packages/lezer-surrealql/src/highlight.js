@@ -15,9 +15,9 @@ export const surqlHighlighting = styleTags({
 	"[ ]": t.squareBracket,
 	"< >": t.angleBracket,
 	"BraceOpen BraceClose": t.brace,
+	"Closure/Pipe": t.bracket,
 	"TypeName": t.typeName,
-	"Distance Filter Tokenizer": t.literal,
-	"Literal": t.literal,
+	"Distance Filter Tokenizer Literal": t.literal,
 	"RecordTbIdent RecordIdIdent": t.className,
-	"Operator! GraphLeft GraphRight GraphBoth": t.operator,
+	"Operator! ArrowLeft ArrowRight ArrowBoth": t.operator,
 });

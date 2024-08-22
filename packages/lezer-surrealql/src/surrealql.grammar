@@ -40,6 +40,10 @@ Block {
 	"{" expressions? "}"
 }
 
+Closure {
+	"|" commaSep<VariableName ":" safeType>? "|" ("->" type)? Block
+}
+
 statement[@isGroup=Statement] {
 	BeginStatement |
 	CancelStatement |
@@ -450,6 +454,7 @@ baseValue {
 	FunctionCall |
 	SubQuery |
 	Block |
+	Closure |
 	Object |
 	TypeCast |
 	Duration |
@@ -926,10 +931,18 @@ inclusivePredicate {
 
 // Types
 
-type {
+singleType {
     TypeName { rawident } |
-    ParameterizedType { type "<" (type | Int) ">" } |
-	UnionType { type (!union "|" type)+ }
+    ParameterizedType { singleType "<" (type | Int) ">" }
+}
+
+type {
+    singleType |
+    UnionType { type (!union "|" type)+ }
+}
+
+safeType {
+  singleType | "<" type ">"
 }
 
 TypeCast {
@@ -984,9 +997,10 @@ Operator {
 	"[" "]"
 	"<" ">"
 	":"[@name=Colon]
-	"->"[@name=GraphRight]
-	"<-"[@name=GraphLeft]
-	"<->"[@name=GraphBoth]
+	"->"[@name=ArrowRight]
+	"<-"[@name=ArrowLeft]
+	"<->"[@name=ArrowBoth]
+	"|"[@name=Pipe]
 
 	// Helpers
 	whitespace { $[ \n\r\t] }
