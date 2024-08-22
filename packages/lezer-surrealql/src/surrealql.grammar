@@ -130,6 +130,7 @@ DefineFunctionStatement {
 	IfNotExistsClause?
 	customFunctionName
 	ParamList
+	("->" type)?
 	Block
 	(
 		PermissionsBasicClause |
