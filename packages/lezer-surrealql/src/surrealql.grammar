@@ -478,7 +478,7 @@ Path {
 
 pathElement {
 	GraphPath |
-	Subscript { "." (Ident | FunctionName { rawident !method } ArgumentList | AnyStar) } |
+	Subscript { "." (Ident | FunctionName { rawident !method } ArgumentList | AnyStar | "{" commaSep<Predicate> "}") } |
 	Filter { "[" (WhereClause | value | WhereClause { "?" value }) "]" }
 }
 
