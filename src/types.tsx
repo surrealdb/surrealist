@@ -466,7 +466,6 @@ export interface CloudBilling {
 	State: string;
 	Country: string;
 	LegalName: string;
-	LegalNumber: string;
 	TaxIdentificationNumber: string;
 	Phone: string;
 }

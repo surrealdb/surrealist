@@ -91,71 +91,46 @@ function BillingForm({
 	return (
 		<Form onSubmit={handleSubmit}>
 			<Stack>
-				<Text
-					fz="lg"
-					fw={500}
-					c="bright"
-				>
-					Personal details
-				</Text>
-				<SimpleGrid cols={2}>
-					<TextInput
-						label="Full Name"
-						required
-						value={data.Name}
-						onChange={(e) => setData((d) => {
-							d.Name = e.target.value;
-						})}
-					/>
-					<TextInput
-						label="Legal Name"
-						required
-						value={data.LegalName}
-						onChange={(e) => setData((d) => {
-							d.LegalName = e.target.value;
-						})}
-					/>
-				</SimpleGrid>
 				<TextInput
-					label="Email"
+					label="Full Name"
 					required
-					value={data.Email}
+					value={data.Name}
 					onChange={(e) => setData((d) => {
-						d.Email = e.target.value;
+						d.Name = e.target.value;
 					})}
 				/>
 				<TextInput
-					label="Phone Number"
-					required
-					value={data.Phone}
+					label="Company Name"
+					value={data.LegalName}
 					onChange={(e) => setData((d) => {
-						d.Phone = e.target.value;
+						d.LegalName = e.target.value;
 					})}
 				/>
 				<SimpleGrid cols={2}>
 					<TextInput
-						label="Tax Identification Number"
-						value={data.TaxIdentificationNumber}
+						label="Email"
+						required
+						value={data.Email}
 						onChange={(e) => setData((d) => {
-							d.TaxIdentificationNumber = e.target.value;
+							d.Email = e.target.value;
 						})}
 					/>
 					<TextInput
-						label="Legal Number"
-						value={data.LegalNumber}
+						label="Phone Number"
+						required
+						value={data.Phone}
 						onChange={(e) => setData((d) => {
-							d.LegalNumber = e.target.value;
+							d.Phone = e.target.value;
 						})}
 					/>
 				</SimpleGrid>
-				<Text
-					mt="xl"
-					fz="lg"
-					fw={500}
-					c="bright"
-				>
-					Billing address
-				</Text>
+				<TextInput
+					label="Tax Identification Number"
+					value={data.TaxIdentificationNumber}
+					onChange={(e) => setData((d) => {
+						d.TaxIdentificationNumber = e.target.value;
+					})}
+				/>
 				<SimpleGrid cols={2}>
 					<TextInput
 						label="Country"
@@ -166,7 +141,7 @@ function BillingForm({
 						})}
 					/>
 					<TextInput
-						label="State"
+						label="State / Region"
 						required
 						value={data.State}
 						onChange={(e) => setData((d) => {
@@ -223,7 +198,7 @@ function BillingForm({
 						variant="gradient"
 						loading={isLoading}
 					>
-						Save information
+						Save details
 					</Button>
 				</Group>
 			</Stack>
