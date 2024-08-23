@@ -41,25 +41,15 @@ Block {
 }
 
 Closure {
-	"|" commaSep<VariableName ":" safeType>? "|" ("->" type)? Block
+	ParamList { "|" commaSep<VariableName ":" safeType>? "|" } ("->" type)? Block
 }
 
 statement[@isGroup=Statement] {
 	BeginStatement |
 	CancelStatement |
 	CommitStatement |
-	DefineAnalyzerStatement |
-	DefineEventStatement |
-	DefineDatabaseStatement |
-	DefineFieldStatement |
-	DefineFunctionStatement |
-	DefineIndexStatement |
-	DefineNamespaceStatement |
-	DefineParamStatement |
-	DefineScopeStatement |
-	DefineTableStatement |
-	DefineTokenStatement |
-	DefineUserStatement |
+	DefineStatement |
+	AlterStatement |
 	RemoveStatement |
 	InfoForStatement |
 	KillStatement |
@@ -81,7 +71,8 @@ statement[@isGroup=Statement] {
 	IfElseStatement |
 	LetStatement |
 	RelateStatement |
-	UpdateStatement
+	UpdateStatement |
+	UpsertStatement
 }
 
 // Transaction statements
@@ -92,8 +83,25 @@ CommitStatement { commit transaction? }
 
 // Define statements
 
-DefineAnalyzerStatement {
-	define analyzer
+DefineStatement {
+	define
+	(
+	( namespace defineNamespaceOptions ) |
+	( database defineDatabaseOptions ) |
+	( user defineUserOptions ) |
+	( token defineTokenOptions ) |
+	( event defineEventOptions ) |
+	( field defineFieldOptions ) |
+	( index defineIndexOptions ) |
+	( analyzer defineAnalyzerOptions ) |
+	( functionKw defineFunctionOptions ) |
+	( param defineParamOptions ) |
+	( scope defineScopeOptions ) |
+	( table defineTableOptions )
+	)
+}
+
+defineAnalyzerOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	(
@@ -104,8 +112,7 @@ DefineAnalyzerStatement {
 	)*
 }
 
-DefineEventStatement {
-	define event
+defineEventOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	OnTableClause
@@ -113,15 +120,13 @@ DefineEventStatement {
 	CommentClause?
 }
 
-DefineDatabaseStatement {
-	define database
+defineDatabaseOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident on Ident
 	CommentClause?
 }
 
-DefineFieldStatement {
-    define field
+defineFieldOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	OnTableClause
@@ -136,15 +141,10 @@ DefineFieldStatement {
 	)*
 }
 
-ParamList {
-	"(" commaSep<VariableName ":" type>? ")"
-}
-
-DefineFunctionStatement {
-	define functionKw
+defineFunctionOptions {
 	(IfNotExistsClause | overwrite)?
 	customFunctionName
-	ParamList
+	ParamList { "(" commaSep<VariableName ":" type>? ")" }
 	("->" type)?
 	Block
 	(
@@ -155,8 +155,7 @@ DefineFunctionStatement {
 
 functionKw[@name=Keyword] { function }
 
-DefineIndexStatement {
-	define index
+defineIndexOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	OnTableClause
@@ -169,23 +168,20 @@ DefineIndexStatement {
 	)
 }
 
-DefineNamespaceStatement {
-	define namespace
+defineNamespaceOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	CommentClause?
 }
 
-DefineParamStatement {
-	define param
+defineParamOptions {
 	(IfNotExistsClause | overwrite)?
 	VariableName
 	valueKeyword
 	value
 }
 
-DefineScopeStatement {
-	define scope
+defineScopeOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	(
@@ -196,8 +192,7 @@ DefineScopeStatement {
 	)*
 }
 
-DefineTableStatement {
-	define table
+defineTableOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	(
@@ -211,8 +206,7 @@ DefineTableStatement {
 	)*
 }
 
-DefineTokenStatement {
-	define token
+defineTokenOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	( on ( namespace | database | scope Ident ) )
@@ -220,13 +214,32 @@ DefineTokenStatement {
 	( valueKeyword String )
 }
 
-DefineUserStatement {
-	define user
+defineUserOptions {
 	(IfNotExistsClause | overwrite)?
 	Ident
 	( on ( root | namespace | database ) )
 	( ( password | passhash ) String )
 	( roles commaSep<Ident> )
+}
+
+// Alter statement
+
+AlterStatement {
+	alter
+	(
+	( table alterTableOptions )
+	)
+}
+
+alterTableOptions {
+	IfNotExistsClause?
+	Ident
+	(
+		drop |
+		(schemafull | schemaless) |
+		PermissionsForClause |
+		CommentClause
+	)*
 }
 
 // Remove statement
@@ -384,6 +397,29 @@ InfoForStatement {
 
 UpdateStatement {
 	update only?
+	(
+		statement |
+		(
+			commaSep<value>
+			updateClause1 {
+				ContentClause |
+				MergeClause |
+				PatchClause |
+				SetClause |
+				UnsetClause
+			}?
+			updateClause2 {
+				WhereClause?
+				ReturnClause?
+				TimeoutClause?
+				ParallelClause?
+			}
+		)
+	)
+}
+
+UpsertStatement {
+	upsert only?
 	(
 		statement |
 		(
@@ -1115,6 +1151,7 @@ piped<content> {
 @external propSource surqlHighlighting from "./highlight"
 
 @external extend { rawident } tokens from "./tokens" {
+	alter					[@name=Keyword],
 	analyzer				[@name=Keyword],
 	any						[@name=Keyword],
 	as						[@name=Keyword],
@@ -1152,10 +1189,10 @@ piped<content> {
 	efc						[@name=Keyword],
 	else					[@name=Keyword],
 	end						[@name=Keyword],
+	event					[@name=Keyword],
 	exists					[@name=Keyword],
 	explain					[@name=Keyword],
 	extend_candidates		[@name=Keyword],
-	event					[@name=Keyword],
 	fetch					[@name=Keyword],
 	field					[@name=Keyword],
 	fields					[@name=Keyword],
@@ -1213,23 +1250,23 @@ piped<content> {
 	roles					[@name=Keyword],
 	root					[@name=Keyword],
 	sc						[@name=Keyword],
-	scope					[@name=Keyword],
 	schemafull				[@name=Keyword],
 	schemaless				[@name=Keyword],
+	scope					[@name=Keyword],
 	search					[@name=Keyword],
 	select					[@name=Keyword],
 	session					[@name=Keyword],
 	set						[@name=Keyword],
 	show					[@name=Keyword],
-	since					[@name=Keyword],
 	signin					[@name=Keyword],
 	signup					[@name=Keyword],
+	since					[@name=Keyword],
 	sleep					[@name=Keyword],
 	split					[@name=Keyword],
 	start					[@name=Keyword],
 	structure				[@name=Keyword],
-	tb						[@name=Keyword],
 	table					[@name=Keyword],
+	tb						[@name=Keyword],
 	tempfiles				[@name=Keyword],
 	terms_cache				[@name=Keyword],
 	terms_order				[@name=Keyword],
@@ -1244,6 +1281,7 @@ piped<content> {
 	unique					[@name=Keyword],
 	unset					[@name=Keyword],
 	update					[@name=Keyword],
+	upsert					[@name=Keyword],
 	use						[@name=Keyword],
 	user					[@name=Keyword],
 	valueKeyword			[@name=Keyword],
@@ -1268,41 +1306,41 @@ piped<content> {
 	i32						[@name=Literal],
 	i64						[@name=Literal],
 
-	selectPermissions			[@name=PermissionTarget],
-	updatePermissions			[@name=PermissionTarget],
-	createPermissions			[@name=PermissionTarget],
-	deletePermissions			[@name=PermissionTarget],
+	createPermissions		[@name=PermissionTarget],
+	deletePermissions		[@name=PermissionTarget],
+	selectPermissions		[@name=PermissionTarget],
+	updatePermissions		[@name=PermissionTarget],
 
-	jwks						[@name=TokenType],
-	eddsa						[@name=TokenType],
-	es256						[@name=TokenType],
-	es384						[@name=TokenType],
-	es512						[@name=TokenType],
-	ps256						[@name=TokenType],
-	ps384						[@name=TokenType],
-	ps512						[@name=TokenType],
-	rs256						[@name=TokenType],
-	rs384						[@name=TokenType],
-	rs512						[@name=TokenType],
+	jwks					[@name=TokenType],
+	eddsa					[@name=TokenType],
+	es256					[@name=TokenType],
+	es384					[@name=TokenType],
+	es512					[@name=TokenType],
+	ps256					[@name=TokenType],
+	ps384					[@name=TokenType],
+	ps512					[@name=TokenType],
+	rs256					[@name=TokenType],
+	rs384					[@name=TokenType],
+	rs512					[@name=TokenType],
 
 	// Operators
+	allinside,
 	and,
-	or,
-	is,
-	opNot,
-	opIn,
+	anyinside,
 	contains,
-	containsnot,
 	containsall,
 	containsany,
 	containsnone,
+	containsnot,
 	inside,
-	notinside,
-	allinside,
-	anyinside,
-	noneinside,
-	outside,
 	intersects,
+	is,
+	noneinside,
+	notinside,
+	opIn,
+	opNot,
+	or,
+	outside,
 
 	chebyshev 				[@name=Distance],
 	cosine					[@name=Distance],
@@ -1326,6 +1364,6 @@ piped<content> {
 	punct					[@name=Tokenizer],
 
 	function,
-	rand[@name=FunctionName],
-	count[@name=FunctionName]
+	rand					[@name=FunctionName],
+	count					[@name=FunctionName]
 }
