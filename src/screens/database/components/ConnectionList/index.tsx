@@ -227,7 +227,7 @@ export function ConnectionList() {
 		disconnected: ["Disconnected", "red", false],
 		retrying: ["Retrying...", "red", true],
 		connecting: ["Connecting...", "yellow.6", true],
-		connected: [remoteVersion, "green", false]
+		connected: [`SurrealDB ${remoteVersion}`, "green", false]
 	} as const;
 
 	const [statusText, color, pulse] = statusInfo[currentState];

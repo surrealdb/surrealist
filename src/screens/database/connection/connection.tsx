@@ -131,8 +131,10 @@ export async function openConnection(options?: ConnectOptions) {
 			adapter.log('DB', "Connection established");
 
 			instance.version().then((v) => {
-				setVersion(v);
-				adapter.log('DB', `Database version ${v ?? "unknown"}`);
+				const version = v.replace(/^surrealdb-/, "");
+
+				setVersion(version);
+				adapter.log('DB', `Database version ${version ?? "unknown"}`);
 			});
 
 			hasFailed = false;

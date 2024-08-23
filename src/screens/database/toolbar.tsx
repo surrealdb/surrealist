@@ -1,4 +1,5 @@
-import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu } from "@mantine/core";
+import compare from "semver-compare";
+import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu, Badge, HoverCard, Text } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { showInfo } from "~/util/helpers";
@@ -34,6 +35,7 @@ export function DatabaseToolbar() {
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const authState = useCloudStore((s) => s.authState);
+	const remoteVersion = useDatabaseStore((s) => s.version);
 	const isConnected = useIsConnected();
 	const connection = useConnection();
 
@@ -96,6 +98,7 @@ export function DatabaseToolbar() {
 		readChangelog();
 	});
 
+	const isSupported = !remoteVersion || compare(remoteVersion, import.meta.env.SDB_VERSION) > 0;
 	const isSandbox = connection?.id === "sandbox";
 	const showNS = !isSandbox && isConnected;
 	const showDB = showNS && connection?.lastNamespace;
@@ -185,6 +188,28 @@ export function DatabaseToolbar() {
 						</Menu.Dropdown>
 					</Menu>
 				</>
+			)}
+
+			{!isSupported && (
+				<HoverCard>
+					<HoverCard.Target>
+						<Badge
+							variant="light"
+							color="orange"
+							h={28}
+						>
+							Unsupported database version
+						</Badge>
+					</HoverCard.Target>
+					<HoverCard.Dropdown>
+						<Text>
+							We recommend using at least <Text span c="bright">SurrealDB {import.meta.env.SDB_VERSION}</Text>
+						</Text>
+						<Text>
+							The current version is <Text span c="bright">SurrealDB {remoteVersion}</Text>
+						</Text>
+					</HoverCard.Dropdown>
+				</HoverCard>
 			)}
 
 			<Spacer />
