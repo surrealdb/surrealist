@@ -805,7 +805,7 @@ IfExistsClause {
 
 ReturnClause {
 	return
-	( before | after | diff | commaSep<value> )
+	( before | after | diff | commaSep<inclusivePredicate> )
 }
 
 TimeoutClause {
