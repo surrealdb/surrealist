@@ -22,7 +22,7 @@ expressions {
 }
 
 combinedExpressions {
-	CombinedResult { CommentResult expression CommentResultClose {} }+
+	CombinedResult { CommentResult expression CommentResultClose { "" } }+
 }
 
 expression {

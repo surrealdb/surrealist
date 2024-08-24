@@ -1,5 +1,5 @@
-import { parser } from 'lezer-surrealql';
 import { LRLanguage, indentNodeProp, continuedIndent, foldNodeProp, foldInside, LanguageSupport } from '@codemirror/language';
+import { parser } from 'lezer-surrealql';
 import { parseMixed } from '@lezer/common';
 import { parser as parser$1 } from '@lezer/javascript';
 
@@ -25,24 +25,20 @@ const surrealqlLanguage = /*@__PURE__*/LRLanguage.define({
         commentTokens: { line: "--" },
     },
 });
-const defaultLanguage = /*@__PURE__*/surrealqlLanguage.configure({
-    top: "SurrealQL",
-});
-const permissionInputLanguage = /*@__PURE__*/surrealqlLanguage.configure({
-    top: "PermissionInput",
-});
-const combinedResultsLanguage = /*@__PURE__*/surrealqlLanguage.configure({
-    top: "CombinedResults",
-});
+const languageMap = /*@__PURE__*/new Map([
+    ["default", /*@__PURE__*/surrealqlLanguage.configure({ top: "SurrealQL" })],
+    ["permission", /*@__PURE__*/surrealqlLanguage.configure({ top: "PermissionInput" })],
+    ["combined-results", /*@__PURE__*/surrealqlLanguage.configure({ top: "CombinedResults" })],
+]);
 /**
  * The CodeMirror extension used to add support for the SurrealQL language
  */
 function surrealql(scope = "default") {
-    return new LanguageSupport(scope === "permission"
-        ? permissionInputLanguage
-        : scope === "combined-results"
-            ? combinedResultsLanguage
-            : defaultLanguage);
+    const language = languageMap.get(scope);
+    if (!language) {
+        throw new Error(`Unknown language scope: ${scope}`);
+    }
+    return new LanguageSupport(language);
 }
 
 export { surrealql, surrealqlLanguage };

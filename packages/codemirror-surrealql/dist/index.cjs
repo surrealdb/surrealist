@@ -1,7 +1,7 @@
 'use strict';
 
-var lezerSurrealql = require('lezer-surrealql');
 var language = require('@codemirror/language');
+var lezerSurrealql = require('lezer-surrealql');
 var common = require('@lezer/common');
 var javascript = require('@lezer/javascript');
 
@@ -27,24 +27,20 @@ const surrealqlLanguage = language.LRLanguage.define({
         commentTokens: { line: "--" },
     },
 });
-const defaultLanguage = surrealqlLanguage.configure({
-    top: "SurrealQL",
-});
-const permissionInputLanguage = surrealqlLanguage.configure({
-    top: "PermissionInput",
-});
-const combinedResultsLanguage = surrealqlLanguage.configure({
-    top: "CombinedResults",
-});
+const languageMap = new Map([
+    ["default", surrealqlLanguage.configure({ top: "SurrealQL" })],
+    ["permission", surrealqlLanguage.configure({ top: "PermissionInput" })],
+    ["combined-results", surrealqlLanguage.configure({ top: "CombinedResults" })],
+]);
 /**
  * The CodeMirror extension used to add support for the SurrealQL language
  */
 function surrealql(scope = "default") {
-    return new language.LanguageSupport(scope === "permission"
-        ? permissionInputLanguage
-        : scope === "combined-results"
-            ? combinedResultsLanguage
-            : defaultLanguage);
+    const language$1 = languageMap.get(scope);
+    if (!language$1) {
+        throw new Error(`Unknown language scope: ${scope}`);
+    }
+    return new language.LanguageSupport(language$1);
 }
 
 exports.surrealql = surrealql;
