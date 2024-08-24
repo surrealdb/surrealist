@@ -542,7 +542,15 @@ Path {
 
 pathElement {
 	GraphPath |
-	Subscript { "." (Ident | FunctionName { rawident !method } ArgumentList | AnyStar | "{" commaSep<Predicate> "}") } |
+	Subscript {
+		"."
+		(
+			Ident |
+			FunctionName { rawident !method } ArgumentList |
+			AnyStar |
+			Destructure
+		)
+	} |
 	Filter { "[" (WhereClause | value | WhereClause { "?" value }) "]" }
 }
 
@@ -553,6 +561,10 @@ GraphPath {
 
 GraphPredicate {
 	(value | Any) WhereClause? (as Ident)?
+}
+
+Destructure {
+	"{" commaSep<((Ident ":")? Ident pathElement?)> "}"
 }
 
 // Objects
