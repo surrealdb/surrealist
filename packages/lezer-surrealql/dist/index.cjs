@@ -482,15 +482,26 @@ const objectToken = new lr.ExternalTokenizer((input, _stack) => {
 	if (input.next === 123 /* '{' */) {
 		let off = skipSpace(input, 1);
 
-		// Is this an empty object?
-		if (input.peek(off) === 125 /* '}' */) {
-			input.acceptToken(objectOpen, 1);
-		} else {
-			let key = skipObjKey(input, off);
-			if (key !== null) {
-				off = skipSpace(input, key);
-				if (input.peek(off) === 58 /* ':' */) {
-					input.acceptToken(objectOpen, 1);
+		switch (input.peek(off)) {
+			// Do we directly encounter another opening bracket?
+			case 123: {
+				// By not accepting the token, we indicate that the outer bracket is a block
+				break;
+			}
+
+			// Is this an empty object?
+			case 125: {
+				input.acceptToken(objectOpen, 1);
+				break;
+			}
+
+			default: {
+				let key = skipObjKey(input, off);
+				if (key !== null) {
+					off = skipSpace(input, key);
+					if (input.peek(off) === 58 /* ':' */) {
+						input.acceptToken(objectOpen, 1);
+					}
 				}
 			}
 		}
