@@ -20,10 +20,10 @@ export function FieldsElement({ data, setData }: ElementProps) {
 				value: "",
 				default: "",
 				permissions: {
-					create: "FULL",
-					select: "FULL",
-					update: "FULL",
-					delete: "FULL",
+					create: true,
+					select: true,
+					update: true,
+					delete: true,
 				},
 			});
 		});
