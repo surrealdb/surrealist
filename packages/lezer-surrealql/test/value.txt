@@ -41,7 +41,8 @@ x containsnot y;
 SurrealQL(
   BinaryExpression(Int,Operator,Int),
   BinaryExpression(Ident,Operator,Ident),
-  BinaryExpression(Ident,Operator,Ident))
+  BinaryExpression(Ident,Operator,Ident)
+)
 
 # Objects
 
@@ -64,7 +65,8 @@ SurrealQL(
   Object(BraceOpen,BraceClose),
   Object(BraceOpen,BraceClose),
   Int
-),
+)
+
 # Points
 
 (10dec, 20dec)
@@ -88,7 +90,8 @@ SurrealQL(
   FunctionCall(FunctionName,ArgumentList(Int,Ident)),
   FunctionCall(FunctionName,ArgumentList(Int)),
   FunctionCall(FunctionName,ArgumentList(Ident)),
-  FunctionCall(FunctionName,Version(VersionNumber),ArgumentList(Ident)))
+  FunctionCall(FunctionName,Version("<",VersionNumber,">"),ArgumentList(Ident))
+)
 
 # Durations
 
@@ -165,13 +168,13 @@ record:id[ident];
 SurrealQL(
   Path(VariableName,Subscript(Ident),Subscript(Ident)),
   Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),Subscript(Any)),
-  Path(Ident,GraphPath(GraphRight,Any)),
-  Path(Ident,GraphPath(GraphRight,Ident)),
-  Path(Ident,GraphPath(GraphRight,Ident),GraphPath(GraphLeft,Ident),GraphPath(GraphBoth,Ident)),
-  Path(Ident,GraphPath(GraphRight,GraphPredicate(Any,Keyword,Ident),GraphPredicate(Ident),
+  Path(Ident,GraphPath(ArrowRight,Any)),
+  Path(Ident,GraphPath(ArrowRight,Ident)),
+  Path(Ident,GraphPath(ArrowRight,Ident),GraphPath(ArrowLeft,Ident),GraphPath(ArrowBoth,Ident)),
+  Path(Ident,GraphPath(ArrowRight,GraphPredicate(Any,Keyword,Ident),GraphPredicate(Ident),
     GraphPredicate(Ident,WhereClause(Keyword,Ident),Keyword,Ident))),
-  Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),GraphPath(GraphRight,Ident)),
-  SelectStatement(Keyword,Predicate(Path(GraphPath(GraphRight,Ident))),Keyword,Ident),
+  Path(RecordId(RecordTbIdent,Colon,RecordIdIdent),GraphPath(ArrowRight,Ident)),
+  SelectStatement(Keyword,Predicate(Path(GraphPath(ArrowRight,Ident))),Keyword,Ident),
   Path(Int,Subscript(FunctionName,ArgumentList)),
   Path(Object(BraceOpen,BraceClose),Filter("[",VariableName,"]")),
   Path(Object(BraceOpen,BraceClose),Filter("[",Ident,"]")),
@@ -192,4 +195,34 @@ test:123ident;
 SurrealQL(
 	RecordId(RecordTbIdent,Colon,Int),
 	RecordId(RecordTbIdent,Colon,RecordIdIdent),
+)
+
+# Casting
+
+<string> test;
+<string|number> test;
+<"test"> test;
+<"test"|number> test;
+<"a"|"b"> test;
+<["test"]> test;
+<["test"|number]> test;
+<{ "a": string }> test;
+<{ "a": "test"|number }> test;
+<{ "a": "test"|[number] }|number> test;
+<{ "a": string } | { "b": [record<hello>] | "test" }> test;
+
+==>
+
+SurrealQL(
+	TypeCast("<",TypeName,">",Ident),
+	TypeCast("<",UnionType(TypeName,Pipe,TypeName),">",Ident),
+	TypeCast("<",LiteralType(String),">",Ident),
+	TypeCast("<",UnionType(LiteralType(String),Pipe,TypeName),">",Ident),
+	TypeCast("<",UnionType(LiteralType(String),Pipe,LiteralType(String)),">",Ident),
+	TypeCast("<",LiteralType(ArrayType("[",LiteralType(String),"]")),">",Ident),
+	TypeCast("<",LiteralType(ArrayType("[",UnionType(LiteralType(String),Pipe,TypeName),"]")),">",Ident),
+	TypeCast("<",LiteralType(ObjectType(BraceOpen,ObjectTypeContent(ObjectTypeProperty(ObjectKey(String),Colon,TypeName)),BraceClose)),">",Ident),
+	TypeCast("<",LiteralType(ObjectType(BraceOpen,ObjectTypeContent(ObjectTypeProperty(ObjectKey(String),Colon,UnionType(LiteralType(String),Pipe,TypeName))),BraceClose)),">",Ident),
+	TypeCast("<",UnionType(LiteralType(ObjectType(BraceOpen,ObjectTypeContent(ObjectTypeProperty(ObjectKey(String),Colon,UnionType(LiteralType(String),Pipe,LiteralType(ArrayType("[",TypeName,"]"))))),BraceClose)),Pipe,TypeName),">",Ident),
+	TypeCast("<",UnionType(LiteralType(ObjectType(BraceOpen,ObjectTypeContent(ObjectTypeProperty(ObjectKey(String),Colon,TypeName)),BraceClose)),Pipe,LiteralType(ObjectType(BraceOpen,ObjectTypeContent(ObjectTypeProperty(ObjectKey(String),Colon,UnionType(LiteralType(ArrayType("[",ParameterizedType(TypeName,"<",TypeName,">"),"]")),Pipe,LiteralType(String)))),BraceClose))),">",Ident)
 )

@@ -15,6 +15,7 @@
 	method
 	binary @left
 	union @left
+	filter
 }
 
 expressions {
@@ -551,7 +552,7 @@ pathElement {
 			Destructure
 		)
 	} |
-	Filter { "[" (WhereClause | value | WhereClause { "?" value }) "]" }
+	Filter { !filter "[" (WhereClause | value | WhereClause { "?" value } ) "]" }
 }
 
 GraphPath {
@@ -626,7 +627,7 @@ RecordId {
 // Durations
 
 Duration {
-	DurationPart+
+	DurationPart+ 
 }
 
 // JS Functions
@@ -658,7 +659,7 @@ FunctionCall {
 }
 
 ArgumentList { "(" commaSep<value>? ")" }
-ArgumentListCount { "(" ( commaSep<value>? | statement ) ")" }
+ArgumentListCount[@name=ArgumentList] { "(" ( commaSep<value>? | statement ) ")" }
 
 // Assignment
 
@@ -1006,9 +1007,17 @@ inclusivePredicate {
 
 // Types
 
+literalType {
+	String |
+	ArrayType { "[" type "]" } |
+	ObjectType { objectOpen ObjectTypeContent? "}" }
+	// TODO support number and duration types
+}
+
 singleType {
     TypeName { rawident } |
-    ParameterizedType { singleType "<" (type | Int) ">" }
+    ParameterizedType { singleType "<" (type | Int) ">" } |
+    LiteralType { literalType }
 }
 
 type {
@@ -1018,6 +1027,14 @@ type {
 
 safeType {
   singleType | "<" type ">"
+}
+
+ObjectTypeContent {
+	commaSep<ObjectTypeProperty>
+}
+
+ObjectTypeProperty {
+	ObjectKey ":" type
 }
 
 TypeCast {
