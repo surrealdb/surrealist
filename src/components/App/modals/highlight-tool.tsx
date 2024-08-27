@@ -5,9 +5,9 @@ import { useBoolean } from "~/hooks/boolean";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CodeEditor } from "~/components/CodeEditor";
 // @ts-ignore
-import { parser } from "lezer-surrealql";
+import { parser } from "@surrealdb/lezer";
 import { highlightCode, tagHighlighter } from "@lezer/highlight";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { DARK_STYLE } from "~/util/editor/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { formatQuery } from "~/util/surrealql";

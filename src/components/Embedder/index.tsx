@@ -4,7 +4,7 @@ import { Box, Checkbox, Divider, Group, MantineColorScheme, SegmentedControl, Se
 import { useImmer } from "use-immer";
 import { ColorScheme, Orientation } from "~/types";
 import { Text } from "@mantine/core";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { DATASETS, ORIENTATIONS, THEMES } from "~/constants";
 import { CodeInput } from "../Inputs";
 import { PropsWithChildren, ReactNode, useEffect, useLayoutEffect, useMemo, useState } from "react";

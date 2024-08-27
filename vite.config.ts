@@ -55,8 +55,8 @@ export const getDefaultConfig = ({ mode }: { mode?: string }): UserConfig => ({
 				experimentalMinChunkSize: 5000,
 				manualChunks: {
 					react: ["react", "react-dom"],
-					codemirror: ["codemirror", "codemirror-surrealql", "@replit/codemirror-indentation-markers"],
 					posthog: ["posthog-js"],
+					codemirror: ["codemirror", "@surrealdb/codemirror", "@surrealdb/lezer", "@replit/codemirror-indentation-markers"],
 					mantime: ["@mantine/core", "@mantine/hooks", "@mantine/notifications"],
 					surreal: ["surrealdb.js", "surrealdb.wasm"] // TODO : surrealql.wasm
 				}

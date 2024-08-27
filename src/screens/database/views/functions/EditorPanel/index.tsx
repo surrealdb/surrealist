@@ -16,7 +16,7 @@ import { SchemaFunction } from "~/types";
 import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus, iconText } from "~/util/icons";
 import { SURQL_FILTER } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { surqlLinting } from "~/util/editor/extensions";
 import { Label } from "~/components/Label";
 import { formatQuery, validateQuery } from "~/util/surrealql";

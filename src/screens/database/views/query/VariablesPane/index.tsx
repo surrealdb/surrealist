@@ -5,7 +5,7 @@ import { Icon } from "~/components/Icon";
 import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { surqlLinting } from "~/util/editor/extensions";
 import { useDebouncedFunction } from "~/hooks/debounce";

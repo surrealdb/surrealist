@@ -14,7 +14,7 @@ import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { useInspector } from "~/providers/Inspector";
 import { lineNumbers } from "@codemirror/view";
 

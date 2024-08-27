@@ -34,7 +34,7 @@ import { usePanelMinSize } from "~/hooks/panels";
 import { useInterfaceStore } from "~/stores/interface";
 import { useKeymap } from "~/hooks/keymap";
 import { CodeInput } from "~/components/Inputs";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { useLogoUrl } from "~/hooks/brand";
 
 const switchPortal = createHtmlPortalNode();

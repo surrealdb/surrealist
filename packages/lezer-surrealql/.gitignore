@@ -1,7 +1,0 @@
-/node_modules/
-
-!/dist
-
-# Enable when moving to separate repo
-#/src/parser.*
-#/dist

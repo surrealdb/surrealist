@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import clsx from "clsx";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { ActionIcon, Autocomplete, AutocompleteProps, Group, InputBase, InputBaseProps, Pill, PillsInput, PillsInputProps, Tooltip } from "@mantine/core";
 import { HTMLAttributes, KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";

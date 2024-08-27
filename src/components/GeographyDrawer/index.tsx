@@ -8,7 +8,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { formatValue } from "~/util/surrealql";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { Label } from "~/components/Label";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { useInputState } from "@mantine/hooks";

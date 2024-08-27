@@ -13,7 +13,7 @@ import { iconBroadcastOff, iconBroadcastOn, iconClose, iconCopy, iconDelete, ico
 import { executeQuery } from "~/screens/database/connection/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { surqlRecordLinks } from "~/util/editor/extensions";
 import { useInspector } from "~/providers/Inspector";
 

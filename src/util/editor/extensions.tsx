@@ -1,6 +1,6 @@
 import { linter } from "@codemirror/lint";
 import { getSetting } from "../config";
-import { surrealqlLanguage } from "codemirror-surrealql";
+import { surrealqlLanguage } from "@surrealdb/codemirror";
 import { defaultKeymap, history, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource, snippetCompletion } from "@codemirror/autocomplete";

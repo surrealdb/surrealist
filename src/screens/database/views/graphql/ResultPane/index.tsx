@@ -5,7 +5,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { iconQuery } from "~/util/icons";
 import { Center, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 
 export function ResultPane() {
 	const connection = useActiveConnection();

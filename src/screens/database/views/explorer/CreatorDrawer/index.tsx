@@ -13,7 +13,7 @@ import { useTableNames, useTables } from "~/hooks/schema";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { RecordId, StringRecordId, Table } from "surrealdb.js";
 import { surqlLinting } from "~/util/editor/extensions";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { useValueValidator } from "~/hooks/surrealql";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Label } from "~/components/Label";
