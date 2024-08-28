@@ -6,8 +6,8 @@ import { uid } from "radash";
 import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { adapter } from "~/adapter";
 import { Authentication, TabQuery } from "~/types";
-import { decodeCbor, escape_ident } from "surrealdb.js";
-import { Value } from "surrealql.wasm/v1";
+import { decodeCbor, escape_ident } from "surrealdb";
+import { Value } from "@surrealdb/ql-wasm";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 const VARIABLE_PATTERN = /\$\w+/gi;

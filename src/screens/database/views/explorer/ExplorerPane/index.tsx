@@ -48,7 +48,7 @@ import { useConfigStore } from "~/stores/config";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
-import { RecordId } from "surrealdb.js";
+import { RecordId } from "surrealdb";
 import { LoadingContainer } from "~/components/LoadingContainer";
 
 const PAGE_SIZES: ComboboxData = [

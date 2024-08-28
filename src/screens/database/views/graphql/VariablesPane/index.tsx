@@ -9,8 +9,8 @@ import { surrealql } from "@surrealdb/codemirror";
 import { surqlLinting } from "~/util/editor/extensions";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { lineNumbers } from "@codemirror/view";
-import { decodeCbor } from "surrealdb.js";
-import { Value } from "surrealql.wasm/v1";
+import { decodeCbor } from "surrealdb";
+import { Value } from "@surrealdb/ql-wasm";
 
 export interface VariablesPaneProps {
 	isValid: boolean;

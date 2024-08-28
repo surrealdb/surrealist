@@ -58,7 +58,7 @@ export const getDefaultConfig = ({ mode }: { mode?: string }): UserConfig => ({
 					posthog: ["posthog-js"],
 					codemirror: ["codemirror", "@surrealdb/codemirror", "@surrealdb/lezer", "@replit/codemirror-indentation-markers"],
 					mantime: ["@mantine/core", "@mantine/hooks", "@mantine/notifications"],
-					surreal: ["surrealdb.js", "surrealdb.wasm"] // TODO : surrealql.wasm
+					surreal: ["surrealdb", "@surrealdb/wasm", "@surrealdb/ql-wasm"]
 				}
 			}
 		},
@@ -91,12 +91,12 @@ export const getDefaultConfig = ({ mode }: { mode?: string }): UserConfig => ({
 		'import.meta.env.MODE': JSON.stringify(isPreview ? "preview" : mode),
 	},
 	optimizeDeps: {
-		exclude: ['surrealdb.wasm', 'surrealql.wasm'],
+		exclude: ['@surrealdb/wasm', '@surrealdb/ql-wasm'],
 		esbuildOptions: {
 			target: 'esnext',
 		},
 	},
-	assetsInclude: ['**/surrealdb.wasm/dist/*.wasm', '**/surrealql.wasm/dist/*.wasm']
+	assetsInclude: ['**/@surrealdb/wasm/dist/*.wasm', '**/@surrealdb/ql-wasm/dist/*.wasm']
 });
 
 // https://vitejs.dev/config/

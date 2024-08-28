@@ -1,5 +1,5 @@
-import { decodeCbor, encodeCbor, escape_ident } from "surrealdb.js";
-import { SurrealQL, Value } from "surrealql.wasm/v1";
+import { decodeCbor, encodeCbor, escape_ident } from "surrealdb";
+import { SurrealQL, Value } from "@surrealdb/ql-wasm";
 
 /**
  * Validate a query and return an error message if invalid

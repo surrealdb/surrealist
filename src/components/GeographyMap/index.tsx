@@ -4,7 +4,7 @@ import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet';
 import { LatLng, Map, geoJSON as createGeoJSON, latLng } from "leaflet";
 import { Overlay, Paper } from '@mantine/core';
 import { parseValue } from "~/util/surrealql";
-import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb.js";
+import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb";
 import { useEffect, useRef, useState } from 'react';
 
 import markerIcon from "leaflet/dist/images/marker-icon.png";

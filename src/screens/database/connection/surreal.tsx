@@ -1,4 +1,4 @@
-import Surreal from "surrealdb.js";
+import Surreal from "surrealdb";
 
 interface GraphqlQuery {
 	query: string;
@@ -43,11 +43,11 @@ export function createPlaceholder() {
  * Create a new configured Surreal instance
  */
 export async function createSurreal() {
-	const { surrealdbWasmEngines } = await import("surrealdb.wasm");
+	const { surrealdbWasmEngines } = await import("@surrealdb/wasm");
 
 	return new CustomSurreal({
 		engines: surrealdbWasmEngines({
 			capabilities: true,
-		})
+		}) as any
 	});
 }

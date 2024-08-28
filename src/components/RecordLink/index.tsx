@@ -1,4 +1,4 @@
-import { RecordId } from "surrealdb.js";
+import { RecordId } from "surrealdb";
 import { Group, Text } from "@mantine/core";
 import { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";

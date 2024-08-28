@@ -1,6 +1,6 @@
 import { Paper, Text } from "@mantine/core";
 import { ScrollArea, Group } from "@mantine/core";
-import { RecordId } from "surrealdb.js";
+import { RecordId } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
 import { useIsLight } from "~/hooks/theme";

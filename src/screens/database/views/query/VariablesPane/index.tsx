@@ -9,8 +9,8 @@ import { surrealql } from "@surrealdb/codemirror";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { surqlLinting } from "~/util/editor/extensions";
 import { useDebouncedFunction } from "~/hooks/debounce";
-import { decodeCbor } from "surrealdb.js";
-import { Value } from "surrealql.wasm/v1";
+import { decodeCbor } from "surrealdb";
+import { Value } from "@surrealdb/ql-wasm";
 import { lineNumbers } from "@codemirror/view";
 
 export interface VariablesPaneProps {

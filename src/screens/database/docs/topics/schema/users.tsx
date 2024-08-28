@@ -12,11 +12,11 @@ export function DocsSchemaUsers({ language }: TopicProps) {
 		DEFINE USER username ON ROOT PASSWORD '123456' ROLES OWNER;
 		`,
 			js: `
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 
 		const db = new Surreal();
 
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 		const db = new Surreal();
 		await db.connect('<the actual address of the connection>/rpc', {
 			namespace: '<the actual ns of the connection>',

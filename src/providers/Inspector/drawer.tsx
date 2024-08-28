@@ -14,7 +14,7 @@ import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
 import { useConfirmation } from "../Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
-import { RecordId } from "surrealdb.js";
+import { RecordId } from "surrealdb";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeInput } from "~/components/Inputs";
 import { useValueValidator } from "~/hooks/surrealql";

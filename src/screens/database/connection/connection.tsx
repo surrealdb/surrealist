@@ -1,5 +1,5 @@
 import posthog from "posthog-js";
-import { Surreal, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb.js';
+import { Surreal, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb';
 import { AuthDetails, Connection, Protocol } from '~/types';
 import { State, useDatabaseStore } from '~/stores/database';
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from '~/util/connection';
@@ -9,7 +9,7 @@ import { ConnectedEvent, DisconnectedEvent } from '~/util/global-events';
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
-import { Value } from "surrealql.wasm/v1";
+import { Value } from "@surrealdb/ql-wasm";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { SANDBOX } from "~/constants";

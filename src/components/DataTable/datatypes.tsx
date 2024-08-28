@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import dayjs from "dayjs";
-import { RecordId, Decimal, GeometryPoint, GeometryLine, GeometryMultiPoint, GeometryMultiLine, GeometryPolygon, GeometryMultiPolygon, GeometryCollection, Uuid } from "surrealdb.js";
+import { RecordId, Decimal, GeometryPoint, GeometryLine, GeometryMultiPoint, GeometryMultiLine, GeometryPolygon, GeometryMultiPolygon, GeometryCollection, Uuid } from "surrealdb";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { Icon } from "../Icon";

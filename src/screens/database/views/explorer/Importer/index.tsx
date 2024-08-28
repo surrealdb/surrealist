@@ -16,7 +16,7 @@ import { useIntent } from "~/hooks/url";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useInputState } from "@mantine/hooks";
 import { useTableNames } from "~/hooks/schema";
-import { RecordId, Table } from "surrealdb.js";
+import { RecordId, Table } from "surrealdb";
 import { parseValue } from "~/util/surrealql";
 import { Icon } from "~/components/Icon";
 import { sleep } from "radash";

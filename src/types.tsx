@@ -1,6 +1,6 @@
 import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
-import { AnyAuth, Token } from "surrealdb.js";
+import { AnyAuth, Token } from "surrealdb";
 
 export type ViewRequirement = 'database';
 export type Screen = "start" | "database";

@@ -4,7 +4,7 @@ import { Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
 import { executeQuery } from "~/screens/database/connection/connection";
-import { Value } from "surrealql.wasm/v1";
+import { Value } from "@surrealdb/ql-wasm";
 import { MantineColorScheme } from "@mantine/core";
 
 const THEMES = new Set(['light', 'dark', 'auto']);

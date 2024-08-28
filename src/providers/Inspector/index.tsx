@@ -4,7 +4,7 @@ import { HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
 import { InspectorDrawer } from "./drawer";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { RecordId } from "surrealdb.js";
+import { RecordId } from "surrealdb";
 import { parseValue } from "~/util/surrealql";
 
 type InspectFunction = (record: RecordId | string) => void;

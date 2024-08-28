@@ -17,11 +17,11 @@ export function DocsSchemaScopes({ language }: TopicProps) {
 		);
 		`,
 			js: `
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 
 		const db = new Surreal();
 
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 		const db = new Surreal();
 		await db.connect('<the actual address of the connection>/rpc', {
 			namespace: '<the actual ns of the connection>',
