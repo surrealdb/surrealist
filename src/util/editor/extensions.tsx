@@ -4,7 +4,7 @@ import { surrealqlLanguage } from "@surrealdb/codemirror";
 import { defaultKeymap, history, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource, snippetCompletion } from "@codemirror/autocomplete";
-import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLineGutter, EditorView, Decoration, GutterMarker, ViewPlugin } from "@codemirror/view";
+import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLineGutter, EditorView, Decoration, ViewPlugin } from "@codemirror/view";
 import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit, syntaxTree } from "@codemirror/language";
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { EditorState, Extension, Prec, RangeSetBuilder, SelectionRange, StateEffect, StateField } from "@codemirror/state";
@@ -14,8 +14,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { getActiveQuery } from "../connection";
 import { isModKey, tryParseParams } from "../helpers";
 import { validateQuery } from "../surrealql";
-import { DefinitionNode, DocumentNode, parse } from "graphql";
-import { mdiMenuRight } from "@mdi/js";
+import { DocumentNode, parse } from "graphql";
 
 type RecordLinkCallback = (link: string) => void;
 
@@ -273,33 +272,6 @@ export const selectionChanged = (cb: (ranges: SelectionRange) => void): Extensio
 			cb(update.state.selection.main);
 		}
 	});
-};
-
-const SVG_NS = "http://www.w3.org/2000/svg";
-
-const GraphqlRunMarker = class extends GutterMarker {
-
-	public definition?: DefinitionNode;
-
-	public constructor(definition?: DefinitionNode) {
-		super();
-		this.definition = definition;
-	}
-
-	public toDOM() {
-		const svg = document.createElementNS(SVG_NS, "svg");
-		const path = document.createElementNS(SVG_NS, "path");
-
-		svg.setAttribute("viewBox", "0 0 24 24");
-		svg.setAttribute("style", "width: 24px; height: 24px; fill: currentColor; stroke: currentColor; stroke-width: 1; cursor: pointer");
-
-		path.setAttribute("d", mdiMenuRight);
-
-		svg.append(path);
-
-		return svg;
-	}
-
 };
 
 const graphqlAstEffect = StateEffect.define<DocumentNode | undefined>();
