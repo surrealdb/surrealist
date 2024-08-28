@@ -98,7 +98,7 @@ export function DatabaseToolbar() {
 		readChangelog();
 	});
 
-	const isSupported = !remoteVersion || compare(remoteVersion, import.meta.env.SDB_VERSION) > 0;
+	const isSupported = !remoteVersion || compare(remoteVersion, import.meta.env.SDB_VERSION) >= 0;
 	const isSandbox = connection?.id === "sandbox";
 	const showNS = !isSandbox && isConnected;
 	const showDB = showNS && connection?.lastNamespace;
