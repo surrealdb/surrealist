@@ -7,21 +7,21 @@ import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
 import { iconChevronDown, iconClose, iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconList, iconPlus, iconReset, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../../../../components/Spacer";
-import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
 import { Entry, EntryProps } from "../../../../components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
-import { useIntent } from "~/hooks/url";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { USER_ICONS } from "~/util/user-icons";
 import { Connection } from "~/types";
 import { EditableText } from "~/components/EditableText";
 import { group } from "radash";
 import { useKeymap } from "~/hooks/keymap";
 import { closeConnection, openConnection } from "../../connection/connection";
-import { useIsLight } from "~/hooks/theme";
+import { isDesktop } from "~/adapter";
+import { mdiHomePlusOutline } from "@mdi/js";
 
 const UNGROUPED = Symbol("ungrouped");
 
@@ -38,10 +38,8 @@ function Item({
 	...other
 }: ItemProps) {
 	const { showContextMenu } = useContextMenu();
-	const { openConnectionEditor} = useInterfaceStore.getState();
 	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
 	const isActive = connection.id === active;
-	const isLight = useIsLight();
 
 	const activate = useStable(() => {
 		setActiveConnection(connection.id);
@@ -51,7 +49,9 @@ function Item({
 	const modify = useStable((e: MouseEvent) => {
 		e.stopPropagation();
 		onClose();
-		openConnectionEditor(connection.id);
+		dispatchIntent("edit-connection", {
+			id: connection.id
+		});
 	});
 
 	return (
@@ -163,7 +163,6 @@ function ItemList({
 }
 
 export function ConnectionList() {
-	const { openConnectionCreator, openConnectionEditor } = useInterfaceStore.getState();
 	const { setActiveConnection, addConnectionGroup, updateConnectionGroup, removeConnectionGroup } = useConfigStore.getState();
 
 	const [isListing, listingHandle] = useDisclosure();
@@ -187,7 +186,31 @@ export function ConnectionList() {
 
 	const newConnection = useStable(() => {
 		listingHandle.close();
-		openConnectionCreator();
+		dispatchIntent("new-connection");
+	});
+
+	const newLocalhost = useStable(() => {
+		const { username, password, port } = useConfigStore.getState().settings.serving;
+
+		const template = JSON.stringify({
+			name: "Local database",
+			icon: 0,
+			values: {
+				mode: "root",
+				database: "",
+				namespace: "",
+				protocol: "ws",
+				hostname: `localhost:${port}`,
+				scope: "",
+				scopeFields: [],
+				token: "",
+				username,
+				password
+			}
+		});
+
+		dispatchIntent("new-connection", { template });
+		listingHandle.close();
 	});
 
 	const newGroup = useStable(() => {
@@ -200,6 +223,10 @@ export function ConnectionList() {
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
 		listingHandle.close();
+	});
+
+	const openEditor = useStable((con: Connection) => {
+		dispatchIntent("edit-connection", { id: con.id });
 	});
 
 	const isSandbox = connection?.id === SANDBOX;
@@ -291,7 +318,7 @@ export function ConnectionList() {
 								<>
 									<Menu.Item
 										leftSection={<Icon path={iconEdit} />}
-										onClick={() => openConnectionEditor(connection.id)}
+										onClick={() => openEditor(connection)}
 									>
 										Edit connection
 									</Menu.Item>
@@ -374,13 +401,21 @@ export function ConnectionList() {
 										leftSection={<Icon path={iconPlus} />}
 										onClick={newConnection}
 									>
-										New Connection
+										New connection
 									</Menu.Item>
+									{isDesktop && (
+										<Menu.Item
+											leftSection={<Icon path={mdiHomePlusOutline} noStroke />}
+											onClick={newLocalhost}
+										>
+											New local connection
+										</Menu.Item>
+									)}
 									<Menu.Item
 										leftSection={<Icon path={iconFolderPlus} />}
 										onClick={newGroup}
 									>
-										New Group
+										New group
 									</Menu.Item>
 								</Menu.Dropdown>
 							</Menu>

@@ -14,6 +14,7 @@ const INTENT_REGISTRY = {
 	'new-connection': null,
 	'new-table': null,
 	'toggle-serving': null,
+	'edit-connection': null,
 	'open-serving-console': null,
 	'increase-window-scale': null,
 	'decrease-window-scale': null,
