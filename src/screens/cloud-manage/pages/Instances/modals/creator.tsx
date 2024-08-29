@@ -175,7 +175,7 @@ function CreationStepper({
 		<>
 			{step < 4 && (
 				<Progress
-					value={step / 3 * 100}
+					value={(step + 1) / 4 * 100}
 					transitionDuration={200}
 					radius="xl"
 					mb="xl"
