@@ -309,6 +309,7 @@ export interface SchemaFunction {
 	args: [string, string][];
 	permissions: boolean | string;
 	comment: string;
+	returns: string;
 }
 
 export interface SchemaModel {

@@ -106,7 +106,8 @@ export function FunctionsView() {
 				args: [],
 				comment: "",
 				block: "",
-				permissions: true
+				permissions: true,
+				returns: ""
 			}),
 			name: createName
 		});

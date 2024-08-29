@@ -1,16 +1,15 @@
 import classes from "./style.module.scss";
-import { Autocomplete, Badge, Box, Button, Divider, Flex, Group, ScrollArea, SimpleGrid, Text, TextInput, Tooltip } from "@mantine/core";
+import { Badge, Box, Button, Divider, Flex, Group, ScrollArea, SimpleGrid, Text, TextInput, Tooltip } from "@mantine/core";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { Updater } from "use-immer";
 import { adapter } from "~/adapter";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
-import { PermissionInput } from "~/components/Inputs";
+import { FieldKindInput, PermissionInput } from "~/components/Inputs";
 import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
-import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaFunction } from "~/types";
 import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus, iconText } from "~/util/icons";
@@ -23,6 +22,7 @@ import { formatQuery, validateQuery } from "~/util/surrealql";
 import { showError } from "~/util/helpers";
 import { lineNumbers } from "@codemirror/view";
 import { useIsLight } from "~/hooks/theme";
+import { useMinimumVersion } from "~/hooks/connection";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -39,9 +39,10 @@ export function EditorPanel({
 	onChange,
 	onDelete,
 }: EditorPanelProps) {
-	const kinds = useKindList();
 	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
+
+	const [hasReturns] = useMinimumVersion("2.0.0");
 
 	const addArgument = useStable(() => {
 		onChange((draft) => {
@@ -249,11 +250,10 @@ export function EditorPanel({
 													}
 												}}
 											/>
-											<Autocomplete
-												flex={1}
-												data={kinds}
-												variant="unstyled"
+											<FieldKindInput
 												value={kind}
+												flex={1}
+												variant="unstyled"
 												placeholder="type"
 												onChange={value => onChange((draft) => {
 													draft.args[index][1] = value.toLowerCase();
@@ -261,8 +261,8 @@ export function EditorPanel({
 												styles={{
 													input: {
 														backgroundColor: argColor,
-														fontFamily: 'var(--mantine-font-family-monospace)',
 														paddingInline: 12,
+														color: isLight ? "#8d6bff" : "#a79fff"
 													}
 												}}
 											/>
@@ -279,6 +279,20 @@ export function EditorPanel({
 									))}
 								</Stack>
 							</Box>
+							<FieldKindInput
+								label="Return type"
+								placeholder="type"
+								disabled={!hasReturns}
+								value={details.returns}
+								onChange={value => onChange((draft) => {
+									draft.returns = value;
+								})}
+								styles={{
+									input: {
+										color: isLight ? "#8d6bff" : "#a79fff"
+									}
+								}}
+							/>
 							<PermissionInput
 								label="Permission"
 								value={details.permissions}

@@ -130,7 +130,13 @@ export function buildFunctionDefinition(func: SchemaFunction) : string {
 	const args = func.args.map(([name, kind]) => `$${name}: ${kind}`).join(", ");
 	const block = func.block.split("\n").map((line) => `\t${line}`).join("\n");
 
-	let query = `DEFINE FUNCTION fn::${func.name}(${args}) {\n${block}\n}`;
+	let query = `DEFINE FUNCTION fn::${func.name}(${args})`;
+
+	if (func.returns) {
+		query += ` -> ${func.returns}`;
+	}
+
+	query += ` {\n${block}\n}`;
 
 	if (func.permissions) {
 		query += ` PERMISSIONS ${displaySchemaPermission(func.permissions)}`;
