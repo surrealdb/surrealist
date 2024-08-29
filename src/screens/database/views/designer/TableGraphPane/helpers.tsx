@@ -54,7 +54,9 @@ export function buildFlowNodes(
 	const nodes: Node[] = [];
 
 	// Base edge options
-	const baseEdge: any = {};
+	const baseEdge: any = {
+		deletable: false,
+	};
 
 	switch (lineStyle) {
 		case "metro": {
@@ -87,6 +89,7 @@ export function buildFlowNodes(
 				hasIncoming: false,
 				hasOutgoing: false
 			},
+			deletable: false,
 		};
 
 		nodes.push(node);
