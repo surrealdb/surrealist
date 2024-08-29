@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Box, Button, Divider, Flex, Group, Indicator, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
-import { HTMLAttributes, MouseEvent, ReactNode, useMemo } from "react";
+import { HTMLAttributes, MouseEvent, ReactNode, useMemo, useState } from "react";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../../../../components/Icon";
 import { useDatabaseStore } from "~/stores/database";
@@ -165,6 +165,7 @@ function ItemList({
 export function ConnectionList() {
 	const { setActiveConnection, addConnectionGroup, updateConnectionGroup, removeConnectionGroup } = useConfigStore.getState();
 
+	const [isDropped, setIsDropped] = useState(false);
 	const [isListing, listingHandle] = useDisclosure();
 	const [search, setSearch] = useInputState("");
 	const connections = useConnections();
@@ -229,6 +230,11 @@ export function ConnectionList() {
 		dispatchIntent("edit-connection", { id: con.id });
 	});
 
+	const openListing = useStable(() => {
+		listingHandle.open();
+		setIsDropped(false);
+	});
+
 	const isSandbox = connection?.id === SANDBOX;
 
 	useIntent("open-connections", ({ search }) => {
@@ -264,8 +270,9 @@ export function ConnectionList() {
 			{connection ? (
 				<Group gap="xs">
 					<Menu
+						opened={isDropped}
+						onChange={setIsDropped}
 						trigger="hover"
-						openDelay={350}
 						position="bottom-start"
 						transitionProps={{
 							transition: "scale-y"
@@ -275,7 +282,7 @@ export function ConnectionList() {
 							<Button
 								variant="subtle"
 								color="slate"
-								onClick={listingHandle.toggle}
+								onClick={openListing}
 								leftSection={isSandbox ? (
 									<Icon path={iconSurreal} size={1.2} noStroke />
 								) : (
@@ -312,7 +319,7 @@ export function ConnectionList() {
 								leftSection={<Icon path={iconList} />}
 								onClick={listingHandle.toggle}
 							>
-								List connections...
+								Change connection...
 							</Menu.Item>
 							{!isSandbox && (
 								<>
