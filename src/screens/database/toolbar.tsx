@@ -188,7 +188,7 @@ export function DatabaseToolbar() {
 				</>
 			)}
 
-			{!isSupported && (
+			{(isConnected && !isSupported) && (
 				<HoverCard>
 					<HoverCard.Target>
 						<Badge
