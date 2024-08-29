@@ -1,11 +1,11 @@
 import classes from "./style.module.scss";
-import { BoxProps, Button, Select, Text, Textarea, TextInput, UnstyledButton } from "@mantine/core";
-import { Center, Divider, Group, Paper, SimpleGrid, Stack } from "@mantine/core";
+import { BoxProps, Text, UnstyledButton } from "@mantine/core";
+import { Center, Group, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { mdiEmailOutline } from "@mdi/js";
+import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
-import { iconBook, iconCursor, iconDiscord, iconStar } from "~/util/icons";
+import { iconBook, iconChat, iconDiscord } from "~/util/icons";
 
 interface SupportTileProps extends BoxProps {
 	icon: string;
@@ -20,12 +20,13 @@ function SupportTile({
 	...props
 }: SupportTileProps) {
 	return (
-		<UnstyledButton>
+		<UnstyledButton
+			onClick={onClick}
+		>
 			<Paper
 				withBorder
 				style={{ aspectRatio: 1 }}
 				className={classes.tile}
-				onClick={onClick}
 				{...props}
 			>
 				<Stack justify="center" align="center" h="100%">
@@ -47,7 +48,6 @@ export function SupportPage() {
 			<Paper
 				p="xl"
 				bg="transparent"
-				w={850}
 				component={Stack}
 			>
 				<Group
@@ -55,35 +55,39 @@ export function SupportPage() {
 					flex={1}
 					align="stretch"
 				>
-					<Stack flex={1}>
+					<Stack flex={1} w={420}>
 						<Group>
-							<Icon path={iconStar} />
+							<Icon path={mdiEmailOutline} />
 							<PrimaryTitle>
 								Looking for help?
 							</PrimaryTitle>
 						</Group>
 						<Text>
-							Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis quas debitis vero corrupti hic alias, odio consequatur, exercitationem distinctio fuga eaque! Tenetur atque magnam ipsa inventore earum suscipit illo quidem.
+							Running into issues with your cloud account, billing, or instances? We're here to help!
+							Choose one of the following community support channels for help, or to get in touch with our team.
 						</Text>
 						<SimpleGrid cols={3} mt="md">
 							<SupportTile
 								icon={iconDiscord}
-								title="Community"
+								title="Discord"
+								onClick={() => adapter.openUrl("https://discord.gg/dc4JNWrrMc")}
 							/>
 							<SupportTile
 								icon={iconBook}
 								title="Documentation"
+								onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
 							/>
 							<SupportTile
-								icon={mdiEmailOutline}
-								title="Account help"
+								icon={iconChat}
+								title="Discourse"
+								onClick={() => adapter.openUrl("https://surrealdb.com/community/forums")}
 							/>
 						</SimpleGrid>
 					</Stack>
-					<Divider
+					{/* <Divider
 						orientation="vertical"
 					/>
-					<Stack flex={1}>
+					<Stack flex={1} w={420}>
 						<Group>
 							<Icon path={mdiEmailOutline} />
 							<PrimaryTitle>
@@ -125,7 +129,7 @@ export function SupportPage() {
 								Submit ticket
 							</Button>
 						</Group>
-					</Stack>
+					</Stack> */}
 				</Group>
 			</Paper>
 		</Center>
