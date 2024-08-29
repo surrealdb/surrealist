@@ -1,4 +1,4 @@
-import { Button, Group, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
+import { Button, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
 import { mdiAccountOutline } from "@mdi/js";
 import { Form } from "~/components/Form";
@@ -13,6 +13,8 @@ import { Spacer } from "~/components/Spacer";
 import { useState } from "react";
 import { fetchAPI } from "../api";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCloudStore } from "~/stores/cloud";
+import { shake } from "radash";
 
 export async function openBillingModal() {
 	return new Promise<void>((resolve) => {
@@ -65,6 +67,12 @@ function BillingForm({
 	const [isLoading, setLoading] = useState(false);
 	const queryClient = useQueryClient();
 
+	const countryList = useCloudStore((state) => state.billingCountries)
+		.map((country) => ({
+			value: country.code,
+			label: country.name
+		}));
+
 	const handleClose = useStable(() => {
 		closeModal("billing");
 	});
@@ -75,7 +83,7 @@ function BillingForm({
 		try {
 			await fetchAPI(`/organizations/${organization.id}/billing`, {
 				method: "PUT",
-				body: JSON.stringify(data)
+				body: JSON.stringify(shake(data, e => !e))
 			});
 
 			handleClose();
@@ -132,12 +140,14 @@ function BillingForm({
 					})}
 				/>
 				<SimpleGrid cols={2}>
-					<TextInput
+					<Select
 						label="Country"
 						required
+						searchable
+						data={countryList}
 						value={data.Country}
-						onChange={(e) => setData((d) => {
-							d.Country = e.target.value;
+						onChange={(v) => setData((d) => {
+							d.Country = v as string;
 						})}
 					/>
 					<TextInput

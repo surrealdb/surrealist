@@ -469,3 +469,8 @@ export interface CloudBilling {
 	TaxIdentificationNumber: string;
 	Phone: string;
 }
+
+export interface CloudBillingCountry {
+	name: string;
+	code: string;
+}

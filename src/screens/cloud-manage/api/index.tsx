@@ -2,7 +2,7 @@ import posthog from "posthog-js";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import { CloudProfile, CloudInstanceType, CloudRegion, CloudOrganization } from "~/types";
+import { CloudProfile, CloudInstanceType, CloudRegion, CloudOrganization, CloudBillingCountry } from "~/types";
 import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
@@ -60,11 +60,18 @@ export async function updateCloudInformation() {
 	const { setCloudValues } = useCloudStore.getState();
 	const { activeCloudOrg, setActiveCloudOrg } = useConfigStore.getState();
 
-	const [profile, instanceTypes, instanceVersions, regions] = await Promise.all([
+	const [
+		profile,
+		instanceTypes,
+		instanceVersions,
+		regions,
+		billingCountries
+	] = await Promise.all([
 		fetchAPI<CloudProfile>("/user/profile"),
 		fetchAPI<CloudInstanceType[]>("/instancetypes"),
 		fetchAPI<string[]>("/instanceversions"),
 		fetchAPI<CloudRegion[]>("/regions"),
+		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
 	]);
 
 	const organization = await fetchAPI<CloudOrganization>(`/organizations/${profile.default_org}`);
@@ -74,7 +81,8 @@ export async function updateCloudInformation() {
 		instanceTypes,
 		instanceVersions,
 		regions,
-		organizations: [organization]
+		organizations: [organization],
+		billingCountries,
 	});
 
 	if (activeCloudOrg === "") {

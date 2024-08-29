@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AuthState, CloudInstanceType, CloudOrganization, CloudProfile, CloudRegion } from "~/types";
+import { AuthState, CloudBillingCountry, CloudInstanceType, CloudOrganization, CloudProfile, CloudRegion } from "~/types";
 
 interface CloudValues {
 	profile: CloudProfile;
@@ -7,6 +7,7 @@ interface CloudValues {
 	instanceVersions: string[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
+	billingCountries: CloudBillingCountry[]
 }
 
 export const EMPTY_PROFILE: CloudProfile = {
@@ -23,6 +24,7 @@ export type CloudStore = {
 	instanceVersions: string[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
+	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
 
 	setLoading: () => void;
@@ -41,6 +43,7 @@ export const useCloudStore = create<CloudStore>((set) => ({
 	instanceVersions: [],
 	regions: [],
 	organizations: [],
+	billingCountries: [],
 	sessionExpired: false,
 
 	setLoading: () => set({ authState: "loading" }),
@@ -53,13 +56,9 @@ export const useCloudStore = create<CloudStore>((set) => ({
 		profile,
 	}),
 
-	setCloudValues: ({profile, instanceTypes, instanceVersions, regions, organizations}) => set({
+	setCloudValues: (values) => set({
 		authState: "authenticated",
-		profile,
-		instanceTypes,
-		instanceVersions,
-		regions,
-		organizations,
+		...values
 	}),
 
 	clearSession: () => set({
