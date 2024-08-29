@@ -471,6 +471,14 @@ export interface CloudBilling {
 	Phone: string;
 }
 
+export interface CloudPayment {
+	payment_info: boolean;
+	info?: {
+		card_last4?: string;
+		card_brand?: string;
+	}
+}
+
 export interface CloudBillingCountry {
 	name: string;
 	code: string;

@@ -3,7 +3,7 @@ import { ActionIcon, Box, Button, Divider, Group, List, Paper, ScrollArea, Simpl
 import { Section } from "../../components/Section";
 import { Icon } from "~/components/Icon";
 import { iconCheck, iconDotsVertical } from "~/util/icons";
-import { ReactNode } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { mdiAccountOutline, mdiCreditCardOutline } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Label } from "~/components/Label";
@@ -12,6 +12,13 @@ import { openBillingModal } from "../../modals/billing";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudBilling } from "../../hooks/billing";
+import { useCloudPayments } from "../../hooks/payments";
+import { useStable } from "~/hooks/stable";
+import { fetchAPI } from "../../api";
+import { adapter } from "~/adapter";
+import { useWindowEvent } from "@mantine/hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { capitalize } from "radash";
 
 interface BillingPlanProps {
 	name: string;
@@ -68,6 +75,40 @@ function BillingPlan({
 export function BillingPage() {
 	const organization = useOrganization();
 	const billingQuery = useCloudBilling(organization?.id);
+	const paymentQuery = useCloudPayments(organization?.id);
+	const queryClient = useQueryClient();
+
+	const [requesting, setRequesting] = useState(false);
+	const hasRequested = useRef(false);
+
+	const requestPaymentUrl = useStable(async () => {
+		setRequesting(true);
+		hasRequested.current = true;
+
+		try {
+			const url = await fetchAPI<string>(`/organizations/${organization?.id}/payment/url`);
+
+			adapter.openUrl(url);
+		} finally {
+			setRequesting(false);
+		}
+	});
+
+	useWindowEvent("focus", async () => {
+		if (!organization || !hasRequested.current) return;
+
+		await fetchAPI(`/organizations/${organization?.id}/payment`, {
+			method: "PUT"
+		});
+
+		queryClient.invalidateQueries({
+			queryKey: ["cloud", "payments", organization.id]
+		});
+	});
+
+	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
+	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
+	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
 
 	return (
 		<Box
@@ -137,12 +178,14 @@ export function BillingPage() {
 										fw={600}
 										c="bright"
 									>
-										Payment Method
+										Payment Details
 									</Text>
 									<Spacer />
 									<Button
 										color="slate"
 										variant="light"
+										loading={requesting}
+										onClick={requestPaymentUrl}
 									>
 										Update
 									</Button>
@@ -150,20 +193,22 @@ export function BillingPage() {
 								<Divider my="md" />
 								<Stack mt="md">
 									<Box>
-										<Label>Card information</Label>
-										<Skeleton visible={billingQuery.isPending}>
+										<Label>Payment method</Label>
+										<Skeleton visible={paymentQuery.isPending}>
 											{organization?.payment_info ? (
-												<Text c="bright" fw={500}>Mastercard ending in 4952</Text>
+												<Text c="bright" fw={500}>Credit Card</Text>
 											) : (
 												<Text c="slate.4" fw={500}>Not provided yet</Text>
 											)}
 										</Skeleton>
 									</Box>
 									<Box>
-										<Label>Name on card</Label>
-										<Skeleton visible={billingQuery.isPending}>
+										<Label>Card information</Label>
+										<Skeleton visible={paymentQuery.isPending}>
 											{organization?.payment_info ? (
-												<Text c="bright" fw={500}>Tobie Morgan Hitchcock</Text>
+												<Text c="bright" fw={500}>
+													{cardDescription}
+												</Text>
 											) : (
 												<Text c="slate.4" fw={500}>Not provided yet</Text>
 											)}
