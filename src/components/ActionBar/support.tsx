@@ -1,5 +1,5 @@
 import classes from "./style.module.scss";
-import { Box, Group, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
+import { Box, Group, Stack, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { adapter } from "~/adapter";
@@ -7,7 +7,8 @@ import { Icon } from "~/components/Icon";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent, useIntent } from "~/hooks/url";
-import { iconBook, iconBug, iconClose, iconCommand, iconDiscord, iconHelp } from "~/util/icons";
+import { useConfigStore } from "~/stores/config";
+import { iconBook, iconBug, iconClose, iconCloud, iconCommand, iconDiscord, iconHelp } from "~/util/icons";
 
 interface Topic {
 	title: string;
@@ -49,6 +50,18 @@ const DISCORD: Topic = {
 	description: "Connect with other users and get help from the community.",
 	icon: iconDiscord,
 	onClick: () => adapter.openUrl("https://discord.gg/dc4JNWrrMc")
+};
+
+const CLOUD: Topic = {
+	title: "Cloud Support",
+	description: "Visit the Cloud Support page for help with your cloud account.",
+	icon: iconCloud,
+	onClick: () => {
+		const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
+
+		setActiveView("cloud");
+		setActiveCloudPage("support");
+	}
 };
 
 export function HelpAndSupport() {
@@ -162,12 +175,16 @@ export function HelpAndSupport() {
 					<Icon path={iconClose} />
 				</ActionIcon>
 
-				<SimpleGrid cols={2} mt="xl">
-					{renderTile(DOCUMENTATION)}
-					{renderTile(ISSUE_REPORT)}
-					{renderTile(SHORTCUTS)}
-					{renderTile(DISCORD)}
-				</SimpleGrid>
+				<Stack>
+					<SimpleGrid cols={2} mt="xl">
+						{renderTile(DOCUMENTATION)}
+						{renderTile(ISSUE_REPORT)}
+						{renderTile(SHORTCUTS)}
+						{renderTile(DISCORD)}
+					</SimpleGrid>
+
+					{isAuthed && renderRow(CLOUD)}
+				</Stack>
 			</Modal>
 		</>
 	);
