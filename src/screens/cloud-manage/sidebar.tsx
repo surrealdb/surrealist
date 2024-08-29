@@ -117,7 +117,7 @@ export function CloudSidebar() {
 					))}
 					<Menu.Divider />
 					<Text p="sm">
-						The ability to create organizations is not available during the alpha.
+						The ability to create organizations is not currently available.
 					</Text>
 				</Menu.Dropdown>
 			</Menu>
