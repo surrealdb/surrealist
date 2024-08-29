@@ -10,6 +10,7 @@ import { isSchemaValid, buildDefinitionQueries } from "./helpers";
 import { useImmer } from "use-immer";
 import { TableInfo } from "~/types";
 import { useTables } from "~/hooks/schema";
+import { useMinimumVersion } from "~/hooks/connection";
 
 type DesignFunction = (table: string) => void;
 type StopDesignFunction = () => void;
@@ -61,6 +62,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 	const [isDesigning, designingHandle] = useDisclosure();
 	const [errors, setErrors] = useState<string[]>([]);
 	const [data, setData] = useImmer<TableInfo>(DEFAULT_DEF);
+	const [useOverwrite] = useMinimumVersion("2.0.0");
 
 	const design = useStable((table: string) => {
 		const schema = tables.find((t) => t.schema.name === table);
@@ -97,7 +99,11 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 				throw new Error("Could not determine previous state");
 			}
 
-			const query = buildDefinitionQueries(previous, data!);
+			const query = buildDefinitionQueries({
+				previous: previous,
+				current: data!,
+				useOverwrite
+			});
 
 			try {
 				const res = await executeQuery(query);

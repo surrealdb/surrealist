@@ -30,14 +30,16 @@ function buildPermission(type: string, value: boolean | string) {
 	return ` FOR ${type} ${value === true ? 'FULL' : value === false ? 'NONE' : 'WHERE ' + value}`;
 }
 
+export interface BuildOptions {
+	previous: TableInfo;
+	current: TableInfo;
+	useOverwrite?: boolean;
+}
+
 /**
  * Build the queries to update the entire table schema
- *
- * @param previous Previous state
- * @param current Current state
- * @returns The queries to execute
  */
-export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) {
+export function buildDefinitionQueries({ previous, current, useOverwrite }: BuildOptions) {
 	const queries: string[] = [];
 	const name = current.schema.name;
 
@@ -48,7 +50,13 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 	if (!equals(previous.schema, current.schema)) {
 		const tableType = current.schema.kind.kind;
 
-		let query = `DEFINE TABLE ${tb(current.schema.name)}`;
+		let query = `DEFINE TABLE`;
+
+		if (useOverwrite) {
+			query += " OVERWRITE";
+		}
+
+		query += ` ${tb(current.schema.name)}`;
 
 		if (current.schema.drop) {
 			query += " DROP";
@@ -98,7 +106,13 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 	}
 
 	for (const field of current.fields) {
-		let query = `DEFINE FIELD ${field.name} ON TABLE ${tb(name)}`;
+		let query = `DEFINE FIELD`;
+
+		if (useOverwrite) {
+			query += " OVERWRITE";
+		}
+
+		query += ` ${field.name} ON TABLE ${tb(name)}`;
 
 		if (field.flex) {
 			query += " FLEXIBLE";
@@ -136,7 +150,15 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 	}
 
 	for (const index of current.indexes) {
-		queries.push(`DEFINE INDEX ${index.name} ON TABLE ${tb(name)} FIELDS ${index.cols} ${index.index}`);
+		let query = `DEFINE INDEX`;
+
+		if (useOverwrite) {
+			query += " OVERWRITE";
+		}
+
+		query += ` ${index.name} ON TABLE ${tb(name)} FIELDS ${index.cols} ${index.index}`;
+
+		queries.push(query);
 	}
 
 	for (const event of previous.events) {
@@ -146,7 +168,13 @@ export function buildDefinitionQueries(previous: TableInfo, current: TableInfo) 
 	}
 
 	for (const event of current.events) {
-		const query = `DEFINE EVENT ${event.name} ON TABLE ${tb(name)} WHEN ${event.when} THEN ${event.then.map(th => `{${th}}`).join(", ")}`;
+		let query = `DEFINE EVENT`;
+
+		if (useOverwrite) {
+			query += " OVERWRITE";
+		}
+
+		query += ` ${event.name} ON TABLE ${tb(name)} WHEN ${event.when} THEN ${event.then.map(th => `{${th}}`).join(", ")}`;
 
 		queries.push(query);
 	}
