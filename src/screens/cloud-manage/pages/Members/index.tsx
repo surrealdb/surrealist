@@ -68,15 +68,18 @@ export function MembersPage() {
 						gap="lg"
 						mb="xs"
 					>
-						<Button
-							variant="gradient"
-							leftSection={<Icon path={iconPlus} />}
-							radius="sm"
-							size="xs"
-							onClick={inviteHandle.open}
-						>
-							Invite members
-						</Button>
+						<Tooltip label="Unavailable for Starter plan">
+							<Button
+								variant="gradient"
+								leftSection={<Icon path={iconPlus} />}
+								radius="sm"
+								size="xs"
+								onClick={inviteHandle.open}
+								disabled
+							>
+								Invite members
+							</Button>
+						</Tooltip>
 						<SegmentedControl
 							value={listType}
 							onChange={setListType as any}
