@@ -55,10 +55,11 @@ export async function openConnection(options?: ConnectOptions) {
 
 	const isRetry = hasFailed && options?.isRetry;
 	const newState = isRetry ? "retrying" : "connecting";
+	const surreal = await createSurreal();
 
 	await closeConnection(newState);
 
-	instance = await createSurreal();
+	instance = surreal;
 	openedConnection = connection;
 	forceClose = false;
 
@@ -75,8 +76,11 @@ export async function openConnection(options?: ConnectOptions) {
 
 	instance.emitter.subscribe("disconnected", () => {
 		DisconnectedEvent.dispatch(null);
-		setCurrentState(forceClose ? "disconnected" : "retrying");
-		setVersion("");
+
+		if (instance === thisInstance) {
+			setCurrentState(forceClose ? "disconnected" : "retrying");
+			setVersion("");
+		}
 
 		if (!forceClose) {
 			scheduleReconnect();
@@ -196,7 +200,7 @@ export async function closeConnection(state?: State) {
 
 	if (status === "connected" || status === "connecting") {
 		forceClose = true;
-		await instance.close();
+		instance.close();
 	}
 
 	setCurrentState(state ?? "disconnected");
