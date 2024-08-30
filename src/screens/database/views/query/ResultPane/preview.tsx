@@ -16,6 +16,7 @@ import { useRefreshTimer } from "~/hooks/timer";
 import { surrealql } from "@surrealdb/codemirror";
 import { surqlRecordLinks } from "~/util/editor/extensions";
 import { useInspector } from "~/providers/Inspector";
+import { tryit } from "radash";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	'CREATE': ["surreal.3", iconPlus],
@@ -28,10 +29,16 @@ function hasBody(msg: LiveMessage) {
 	return msg.data !== undefined && msg.data !== "killed";
 }
 
-function buildResult(index: number, {result, execution_time}: any, format: Formatter) {
+function attemptFormat(format: Formatter, data: any) {
+	const [err, res] = tryit(format)(data);
+
+	return err ? `"Error: ${err.message}"` : res;
+}
+
+function buildCombinedResult(index: number, {result, execution_time}: any, format: Formatter) {
 	const header = `\n\n-------- Query ${index + 1 + (execution_time ? ` (${execution_time})` : '')} --------\n\n`;
 
-	return header + format(result);
+	return header + attemptFormat(format, result);
 }
 
 function killQuery(id: string) {
@@ -52,7 +59,7 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 	const { inspect } = useInspector();
 
 	const contents = useMemo(() => {
-		return results.reduce((acc, cur, i) => acc + buildResult(i, cur, format), '').trim();
+		return results.reduce((acc, cur, i) => acc + buildCombinedResult(i, cur, format), '').trim();
 	}, [results, format]);
 
 	return (
@@ -74,7 +81,7 @@ export interface SingleJsonPreviewProps {
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 	const [format] = useValueFormatter();
 	const { inspect } = useInspector();
-	const contents = useMemo(() => format(result), [result, format]);
+	const contents = useMemo(() => attemptFormat(format, result), [result, format]);
 
 	return (
 		<CodeEditor
@@ -171,7 +178,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 									{hasBody(msg) && (
 										<Accordion.Panel>
 											<CodeEditor
-												value={format(msg.data)}
+												value={attemptFormat(format, msg.data)}
 												readOnly
 												extensions={[
 													surrealql()
