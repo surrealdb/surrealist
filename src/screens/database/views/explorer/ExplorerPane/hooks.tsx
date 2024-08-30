@@ -29,7 +29,6 @@ export function useRecordQuery(input: RecordQueryInput) {
 
 				const limitBy = pageSize;
 				const startAt = (currentPage - 1) * pageSize;
-				const [sortCol, sortDir] = sortMode || ["id", "asc"];
 
 				let fetchQuery = `SELECT * FROM ${activeTable}`;
 
@@ -37,13 +36,22 @@ export function useRecordQuery(input: RecordQueryInput) {
 					fetchQuery += ` WHERE ${filter}`;
 				}
 
-				fetchQuery += ` ORDER BY ${sortCol} ${sortDir} LIMIT ${limitBy}`;
+				if (sortMode) {
+					fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
+				}
+
+				fetchQuery += ` LIMIT ${limitBy}`;
 
 				if (startAt > 0) {
 					fetchQuery += ` START ${startAt}`;
 				}
 
+				console.log('Executing', fetchQuery);
+
 				const records = await executeQueryFirst(fetchQuery) || [];
+
+				console.log('Done');
+
 				const headers = schema?.tables
 					?.find((t) => t.schema.name === activeTable)
 					?.fields?.filter(
