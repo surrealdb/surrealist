@@ -5,15 +5,10 @@ import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useDatabaseStore } from "~/stores/database";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
-import { useSetting } from "~/hooks/config";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { openConnection } from "~/screens/database/connection/connection";
 import { getActiveConnection } from "~/util/connection";
 import { Icon } from "../Icon";
-
-// TODO Check if localhost
-
-const CAT = "serving";
 
 export function DatabaseServing() {
 	const [hasStarted, setHasStarted] = useState(false);
@@ -23,13 +18,6 @@ export function DatabaseServing() {
 	const stopServing = useDatabaseStore((s) => s.stopServing);
 	const isServing = useDatabaseStore((s) => s.isServing);
 	const isPending = useDatabaseStore((s) => s.servePending);
-
-	const [driver] = useSetting(CAT, "driver");
-	const [storage] = useSetting(CAT, "storage");
-	const [username] = useSetting(CAT, "username");
-	const [password] = useSetting(CAT, "password");
-	const [executable] = useSetting(CAT, "executable");
-	const [port] = useSetting(CAT, "port");
 
 	const handleToggle = useStable(() => {
 		if (isPending) {
@@ -43,7 +31,7 @@ export function DatabaseServing() {
 		} else {
 			prepareServe();
 
-			adapter.startDatabase(username, password, port, driver, storage, executable).catch(() => {
+			adapter.startDatabase().catch(() => {
 				stopServing();
 			});
 

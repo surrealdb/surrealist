@@ -160,22 +160,28 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return invoke<void>("complete_legacy_migrate");
 	}
 
-	public async startDatabase(
-		username: string,
-		password: string,
-		port: number,
-		localDriver: string,
-		localPath: string,
-		surrealPath: string
-	) {
+	public async startDatabase() {
+		const {
+			username,
+			password,
+			port,
+			driver,
+			storage,
+			executable,
+			logLevel
+		} = useConfigStore.getState().settings.serving;
+
+		const legacyCompat = featureFlags.get('surreal_compat') === 'v1';
+
 		return invoke<void>("start_database", {
-			username: username,
-			password: password,
-			port: port,
-			driver: localDriver,
-			storage: localPath,
-			executable: surrealPath,
-			v2Compat: featureFlags.get('surreal_compat') === 'v2'
+			username,
+			password,
+			port,
+			driver,
+			storage,
+			executable,
+			logLevel,
+			legacyCompat
 		});
 	}
 

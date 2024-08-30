@@ -6,6 +6,7 @@ export type ViewRequirement = 'database';
 export type Screen = "start" | "database";
 export type AlertLevel = "info" | "warning" | "important";
 export type DriverType = "file" | "memory" | "tikv";
+export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
@@ -151,6 +152,7 @@ export interface SurrealistTemplateSettings {
 
 export interface SurrealistServingSettings {
 	driver: DriverType;
+	logLevel: LogLevel;
 	storage: string;
 	executable: string;
 	username: string;

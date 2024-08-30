@@ -60,6 +60,7 @@ export function createBaseSettings(): SurrealistSettings {
 		},
 		serving: {
 			driver: "memory",
+			logLevel: "info",
 			storage: "",
 			executable: "",
 			username: "root",
