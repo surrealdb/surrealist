@@ -5,7 +5,7 @@ import { useConnection, useConnections } from "~/hooks/connection";
 import { Icon } from "../../../../components/Icon";
 import { useDatabaseStore } from "~/stores/database";
 import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconClose, iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconList, iconPlus, iconReset, iconSearch, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconClose, iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconList, iconPlus, iconReset, iconSearch, iconSurreal } from "~/util/icons";
 import { Spacer } from "../../../../components/Spacer";
 import { useConfigStore } from "~/stores/config";
 import { SANDBOX } from "~/constants";
@@ -21,7 +21,6 @@ import { group } from "radash";
 import { useKeymap } from "~/hooks/keymap";
 import { closeConnection, openConnection } from "../../connection/connection";
 import { isDesktop } from "~/adapter";
-import { mdiHomePlusOutline } from "@mdi/js";
 
 const UNGROUPED = Symbol("ungrouped");
 
@@ -412,7 +411,7 @@ export function ConnectionList() {
 									</Menu.Item>
 									{isDesktop && (
 										<Menu.Item
-											leftSection={<Icon path={mdiHomePlusOutline} noStroke />}
+											leftSection={<Icon path={iconHomePlus} noStroke />}
 											onClick={newLocalhost}
 										>
 											New local connection
