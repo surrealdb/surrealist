@@ -93,6 +93,7 @@ export const featureFlags = new FeatureFlags({
 			apidocs_view: true,
 			cloud_view: true,
 			database_version_check: true,
+			changelog: "hidden",
 			newsfeed: true,
 			themes: true,
 		},
