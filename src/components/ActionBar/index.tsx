@@ -20,7 +20,7 @@ export function ActionBar() {
 
 			<HelpAndSupport />
 
-			{flags.cloud_view && (
+			{flags.cloud_view && flags.cloud_access && (
 				<CloudAccount />
 			)}
 		</>
