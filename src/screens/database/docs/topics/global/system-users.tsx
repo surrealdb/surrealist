@@ -11,11 +11,11 @@ export function DocsGlobalSystemUsers({ language, topic }: TopicProps) {
 			surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
 		`,
 			js: `
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 
 		const db = new Surreal();
 
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 		const db = new Surreal();
 		await db.connect('<the actual address of the connection>/rpc', {
 			namespace: '<the actual ns of the connection>',

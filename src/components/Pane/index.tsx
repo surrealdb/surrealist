@@ -4,15 +4,15 @@ import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
-import { LoadingContainer } from "../LoadingContainer";
 
 export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
 	icon?: string;
 	leftSection?: React.ReactNode;
-	loading?: boolean;
+	infoSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
 	withTopPadding?: boolean;
+	disabled?: boolean;
 }
 
 export function ContentPane({
@@ -20,9 +20,10 @@ export function ContentPane({
 	title,
 	icon,
 	leftSection,
-	loading,
+	infoSection,
 	rightSection,
 	withTopPadding,
+	disabled,
 	...rest
 }: ContentPaneProps) {
 
@@ -33,9 +34,11 @@ export function ContentPane({
 			radius="lg"
 			className={classes.root}
 			pos="relative"
+			opacity={disabled ? 0.5 : 1}
+			style={{ pointerEvents: disabled ? "none" : undefined }}
 			{...rest}
 		>
-			{title !== undefined && icon !== undefined && (
+			{(title || icon || leftSection || rightSection || infoSection) && (
 				<>
 					<Group
 						px="sm"
@@ -45,6 +48,7 @@ export function ContentPane({
 						wrap="nowrap"
 						className={classes.header}
 					>
+						{leftSection}
 						{icon && <Icon path={icon} c={isLight ? "slate.4" : "slate.3"} />}
 						<Text
 							fw={600}
@@ -54,7 +58,7 @@ export function ContentPane({
 						>
 							{title}
 						</Text>
-						{leftSection}
+						{infoSection}
 						<Spacer />
 						{rightSection}
 					</Group>
@@ -71,8 +75,6 @@ export function ContentPane({
 				pos="relative"
 				className={classes.content}
 			>
-				<LoadingContainer visible={loading} />
-
 				{children}
 			</Box>
 		</Paper>

@@ -1,4 +1,4 @@
-import { ActionIcon, Checkbox, Divider, Drawer, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, TagsInput, Tooltip, createTheme, rem } from "@mantine/core";
+import { ActionIcon, Checkbox, Drawer, Indicator, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, TagsInput, TextInput, Tooltip, createTheme, rem } from "@mantine/core";
 
 export const PRIMARY_COLOR = "surreal.5";
 
@@ -97,9 +97,9 @@ export const MANTINE_THEME = createTheme({
 			"#b3006f",
 		],
 		slate: [
-			"#f1f1f3",
-			"#d6d6dc",
-			"#bbbbc4",
+			"#f5f5f7",
+			"#e7e7ed",
+			"#dcdce4",
 			"#9f9fac",
 			"#848495",
 			"#6a6a7b",
@@ -124,19 +124,14 @@ export const MANTINE_THEME = createTheme({
 		}),
 		Overlay: Overlay.extend({
 			defaultProps: {
-				blur: 5
+				blur: 5,
+				bg: "#06060d99"
 			},
 		}),
 		Popover: Popover.extend({
 			defaultProps: {
 				shadow: "0 6px 12px 2px rgba(0, 0, 0, 0.15)",
 			}
-		}),
-		Divider: Divider.extend({
-			defaultProps: {
-				color: 'var(--surrealist-divider-color)',
-				size: 1,
-			},
 		}),
 		ActionIcon: ActionIcon.extend({
 			defaultProps: {
@@ -186,6 +181,13 @@ export const MANTINE_THEME = createTheme({
 				},
 			},
 		}),
+		Indicator: Indicator.extend({
+			styles: {
+				root: {
+					zIndex: 0
+				},
+			},
+		}),
 		TagsInput: TagsInput.extend({
 			styles: {
 				pill: {
@@ -194,6 +196,11 @@ export const MANTINE_THEME = createTheme({
 				input: {
 					display: "flex",
 				}
+			}
+		}),
+		TextInput: TextInput.extend({
+			defaultProps: {
+				spellCheck: false
 			}
 		}),
 		Tooltip: Tooltip.extend({

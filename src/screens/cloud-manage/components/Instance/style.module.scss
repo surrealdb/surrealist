@@ -1,0 +1,8 @@
+.copy-host {
+	transition: opacity 0.15s;
+	opacity: 0;
+
+	.root:hover &, .root:focus-within & {
+		opacity: 1;
+	}
+}

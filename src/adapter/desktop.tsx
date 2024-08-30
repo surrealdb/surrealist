@@ -1,3 +1,4 @@
+import { fetch } from "@tauri-apps/plugin-http";
 import { invoke } from "@tauri-apps/api/core";
 import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
@@ -8,7 +9,7 @@ import { save, open } from "@tauri-apps/plugin-dialog";
 import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
-import { showError, showInfo, updateTitle } from "~/util/helpers";
+import { showError, showInfo } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
 import { watchStore } from "~/util/config";
@@ -44,6 +45,8 @@ interface LinkResource {
  * Surrealist adapter for running as Wails desktop app
  */
 export class DesktopAdapter implements SurrealistAdapter {
+
+	public id = "desktop";
 
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
@@ -101,7 +104,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
 				getCurrent().setAlwaysOnTop(pinned);
-				updateTitle();
 			},
 		});
 	}
@@ -274,6 +276,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public trace(label: string, message: string) {
 		trace(label + ": " + message);
+	}
+
+	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
+		return fetch(url, options);
 	}
 
 	public async checkForUpdates(force?: boolean) {

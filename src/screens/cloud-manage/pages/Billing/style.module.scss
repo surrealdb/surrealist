@@ -1,0 +1,47 @@
+.feature-list li:not(:last-child) {
+	margin-bottom: var(--mantine-spacing-sm);
+}
+
+.feature-icon {
+	background-image: var(--surrealist-gradient);
+	border-radius: 100%;
+	// border: 1px solid rgba(255, 255, 255, 0.3);
+	// background-origin: border-box;
+
+	* {
+		color: white
+	};
+}
+
+.scrollArea :global(.mantine-ScrollArea-viewport) > div {
+	display: block !important;
+}
+
+.table {
+	-webkit-user-select: text;
+	user-select: text;
+
+	th {
+		color: var(--mantine-color-bright);
+		text-align: start;
+		position: sticky;
+		top: 0;
+	}
+
+	thead tr {
+		border: none;
+	}
+
+	tbody tr {
+		border: none;
+	}
+
+	tbody tr:nth-child(odd) {
+		background-color: rgba(255, 255, 255, 0.05);
+
+		@include light {
+			background-color: rgba(0, 0, 0, 0.025);
+		}
+	}
+
+}

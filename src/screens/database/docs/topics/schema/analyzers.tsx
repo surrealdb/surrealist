@@ -1,25 +1,20 @@
-import { Box } from "@mantine/core";
+import { Anchor, Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import { Snippets, TopicProps } from "~/screens/database/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
+export function DocsSchemaAnalyzers({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
 		DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
 		`,
 			js: `
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 
 		const db = new Surreal();
 
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 		const db = new Surreal();
 		await db.connect('<the actual address of the connection>/rpc', {
 			namespace: '<the actual ns of the connection>',
@@ -73,10 +68,10 @@ export function DocsSchemaAnalyzers({ language, topic }: TopicProps) {
 					within your database. If you have any analzers defined for a
 					table, you can use the full-text search capabilities of
 					SurrealDB. Checkout the section on{" "}
-					<a href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
+					<Anchor href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
 						{" "}
 						Full Text Search for more information.
-					</a>
+					</Anchor>
 				</p>
 
 			</div>

@@ -8,7 +8,7 @@ import { adapter, isDesktop } from "~/adapter";
 import { IntentPayload, IntentType } from "./intents";
 import { featureFlags } from "./feature-flags";
 import { syncDatabaseSchema } from "./schema";
-import { closeConnection } from "~/screens/database/connection";
+import { closeConnection, openConnection } from "~/screens/database/connection/connection";
 import { DesktopAdapter } from "~/adapter/desktop";
 
 type LaunchAction = { type: "launch", handler: () => void };
@@ -60,11 +60,11 @@ export function computeCommands(): CommandCategory[] {
 		resetOnboardings
 	} = useConfigStore.getState();
 
-	const { isServing, databaseSchema, isConnected, isConnecting } = useDatabaseStore.getState();
+	const { isServing, currentState, databaseSchema } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
-	const hasRemoteConnection = (isConnecting || isConnected) && !isSandbox;
+	const canDisconnect = currentState !== "disconnected" && !isSandbox;
 	const categories: CommandCategory[] = [];
 
 	categories.push({
@@ -83,7 +83,6 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: `Open the Sandbox`,
 				icon: iconSurreal,
-				disabled: isConnecting,
 				action: launch(() => {
 					setActiveConnection(SANDBOX);
 				})
@@ -92,7 +91,6 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: `Connect to ${connection.name}`,
 				icon: iconServer,
-				disabled: isConnecting,
 				action: launch(() => {
 					setActiveConnection(connection.id);
 				})
@@ -103,7 +101,13 @@ export function computeCommands(): CommandCategory[] {
 				icon: iconPlus,
 				action: intent("new-connection")
 			},
-			...(hasRemoteConnection ? [{
+			{
+				id: newId(),
+				name: `Reconnect to database`,
+				icon: iconRefresh,
+				action: launch(openConnection)
+			},
+			...(canDisconnect ? [{
 				id: newId(),
 				name: `Disconnect from database`,
 				icon: iconClose,
@@ -116,11 +120,13 @@ export function computeCommands(): CommandCategory[] {
 		const tables = databaseSchema?.tables || [];
 		const scopes = databaseSchema?.scopes || [];
 
+		console.log(activeView);
+
 		categories.push({
 			name: 'Views',
 			commands: Object.values(VIEW_MODES).flatMap(view => view.disabled?.(featureFlags.store) ? [] : [{
 				id: newId(),
-				name: `Open ${view.name} view`,
+				name: `Open ${view.name} View`,
 				icon: view.icon,
 				action: launch(() => {
 					setActiveView(view.id);
@@ -219,6 +225,35 @@ export function computeCommands(): CommandCategory[] {
 					action: intent("export-database")
 				}
 			]
+		}, {
+			name: 'GraphQL',
+			commands: activeView === "graphql" ? [
+				{
+					id: newId(),
+					name: "Run query",
+					icon: iconPlay,
+					shortcut: ["F9", "mod enter"],
+					action: intent("run-graphql-query")
+				},
+				{
+					id: newId(),
+					name: "Format query",
+					icon: iconText,
+					action: intent("format-graphql-query")
+				},
+				{
+					id: newId(),
+					name: "Toggle variables panel",
+					icon: iconBraces,
+					action: intent("toggle-graphql-variables")
+				},
+				{
+					id: newId(),
+					name: "Infer variables from query",
+					icon: iconAutoFix,
+					action: intent("infer-graphql-variables")
+				}
+			] : []
 		}, {
 			name: "Authentication",
 			commands: [
@@ -368,6 +403,7 @@ export function computeCommands(): CommandCategory[] {
 				id: newId(),
 				name: "Open Settings",
 				icon: iconCog,
+				shortcut: ["mod", ","],
 				action: intent("open-settings")
 			},
 			{

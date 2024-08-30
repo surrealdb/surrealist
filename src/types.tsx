@@ -1,8 +1,10 @@
 import { MantineColorScheme } from "@mantine/core";
 import { FeatureFlagMap } from "./util/feature-flags";
-import { AnyAuth, Token } from "surrealdb.js";
+import { AnyAuth, Token } from "surrealdb";
 
+export type ViewRequirement = 'database';
 export type Screen = "start" | "database";
+export type AlertLevel = "info" | "warning" | "important";
 export type DriverType = "file" | "memory" | "tikv";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type SourceMode = "schema" | "infer";
@@ -17,6 +19,11 @@ export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type LineStyle = "metro" | "straight" | "smooth";
 export type SchemaMode = "schemaless" | "schemafull";
+export type UrlTarget = "internal" | "external";
+export type DatabaseListMode = "list" | "grid";
+export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
+export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type AuthLevel = "root" | "namespace" | "database";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -24,15 +31,26 @@ export type AuthMode =
 	| "database"
 	| "token"
 	| "scope"
-	| "scope-signup";
+	| "scope-signup"
+	| "cloud";
 export type ViewMode =
+	| "cloud"
 	| "query"
 	| "explorer"
+	| "graphql"
 	| "designer"
 	| "authentication"
 	| "functions"
 	| "models"
 	| "documentation";
+export type CloudPage =
+	| "instances"
+	| "members"
+	| "data"
+	| "audits"
+	| "billing"
+	| "support"
+	| "settings"
 export type CodeLang =
 	| "cli"
 	| "rust"
@@ -46,23 +64,26 @@ export type CodeLang =
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
-export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
-Partial<T>;
+export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string> = { label: string; value: T };
+export type Selection<T extends string> = Selectable<T>[];
+export type Listable<T extends string> = Selectable<T> & { icon: string };
+export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
 
-export interface ConnectionOptions {
-	namespace: string;
-	database: string;
+export interface Authentication {
+	mode: AuthMode;
 	protocol: Protocol;
 	hostname: string;
 	username: string;
 	password: string;
-	authMode: AuthMode;
+	namespace: string;
+	database: string;
 	token: string;
 	scope: string;
 	scopeFields: ScopeField[];
+	cloudInstance?: string;
 }
 
 export interface Connection {
@@ -70,21 +91,27 @@ export interface Connection {
 	name: string;
 	icon: number;
 	group?: string;
+	lastNamespace: string;
+	lastDatabase: string;
 	queries: TabQuery[];
 	activeQuery: string;
-	connection: ConnectionOptions;
+	queryHistory: HistoryQuery[];
+	authentication: Authentication;
 	pinnedTables: string[];
 	diagramMode: DiagramMode;
 	diagramDirection: DiagramDirection;
 	diagramShowLinks: boolean;
-	queryHistory: HistoryQuery[];
+	designerTableList: boolean;
+	graphqlQuery: string;
+	graphqlVariables: string;
 }
 
 export interface Template {
 	id: string;
 	name: string;
 	icon: number;
-	values: ConnectionOptions;
+	values: Authentication;
+	group?: string;
 }
 
 export interface ConnectionGroup {
@@ -98,9 +125,9 @@ export interface SurrealistBehaviorSettings {
 	variableSuggest: boolean;
 	queryErrorChecker: boolean;
 	windowPinned: boolean;
-	autoConnect: boolean;
 	docsLanguage: CodeLang;
 	versionCheckTimeout: number;
+	reconnectInterval: number;
 }
 
 export interface SurrealistAppearanceSettings {
@@ -129,6 +156,13 @@ export interface SurrealistServingSettings {
 	username: string;
 	password: string;
 	port: number;
+}
+
+export interface SurrealistCloudSettings {
+	databaseListMode: DatabaseListMode;
+	urlApiBase: string;
+	urlApiMgmtBase: string;
+	urlAuthBase: string;
 }
 
 export interface QueryResponse {
@@ -165,6 +199,7 @@ export interface SurrealistSettings {
 	appearance: SurrealistAppearanceSettings;
 	templates: SurrealistTemplateSettings;
 	serving: SurrealistServingSettings;
+	cloud: SurrealistCloudSettings;
 }
 
 export interface SurrealistConfig {
@@ -176,6 +211,8 @@ export interface SurrealistConfig {
 	activeView: ViewMode;
 	activeScreen: Screen;
 	activeConnection: string;
+	activeCloudPage: CloudPage;
+	activeCloudOrg: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
@@ -272,6 +309,7 @@ export interface SchemaFunction {
 	args: [string, string][];
 	permissions: boolean | string;
 	comment: string;
+	returns: string;
 }
 
 export interface SchemaModel {
@@ -325,10 +363,18 @@ export interface Analyzer {
 }
 
 export interface SurrealOptions {
-	connection: ConnectionOptions;
+	connection: Authentication;
 	onConnect?: (version: string) => void;
 	onDisconnect?: (code: number, reason: string) => void;
 	onError?: (error: string) => void;
+}
+
+export interface LiveMessage {
+	id: string;
+	action: string;
+	queryId: string;
+	timestamp: number;
+	data: any;
 }
 
 export interface ViewInfo {
@@ -337,10 +383,103 @@ export interface ViewInfo {
 	icon: string;
 	anim?: any;
 	desc: string;
+	require?: ViewRequirement;
+	disabled?: FeatureCondition;
+}
+
+export interface CloudPageInfo {
+	id: CloudPage;
+	name: string;
+	icon: string;
 	disabled?: FeatureCondition;
 }
 
 export interface DataSet {
 	name: string;
 	url: string;
+}
+
+export interface CloudProfile {
+	username: string;
+	default_org: string;
+	name: string;
+	picture?: string;
+}
+
+export interface CloudInstance {
+	id: string;
+	name: string;
+	host: string;
+	region: string;
+	version: string;
+	state: InstanceState;
+	type: CloudInstanceType;
+}
+
+export interface CloudInstanceType {
+	slug: string;
+	description: string;
+	cpu: number;
+	memory: number;
+	storage: number;
+	price_hour: number;
+	compute_units: {
+		min?: number;
+		max?: number;
+	};
+}
+
+export interface CloudRegion {
+	slug: string;
+	description: string;
+}
+
+export interface CloudPlan {
+	id: string,
+	name: string,
+	description: string,
+	regions: string[],
+	instance_types: CloudInstanceType[]
+}
+
+export interface CloudOrganization {
+	id: string;
+	name: string;
+	billing_info: boolean;
+	payment_info: boolean;
+	plan: CloudPlan;
+	available_plans: CloudPlan[];
+}
+
+export interface CloudAlert {
+	message: string;
+	message_type: AlertLevel;
+	timestamp: string;
+}
+
+export interface CloudBilling {
+	Name: string;
+	Email: string;
+	AddressLine1: string;
+	AddressLine2: string;
+	City: string;
+	Zipcode: string;
+	State: string;
+	Country: string;
+	LegalName: string;
+	TaxIdentificationNumber: string;
+	Phone: string;
+}
+
+export interface CloudPayment {
+	payment_info: boolean;
+	info?: {
+		card_last4?: string;
+		card_brand?: string;
+	}
+}
+
+export interface CloudBillingCountry {
+	name: string;
+	code: string;
 }

@@ -1,11 +1,11 @@
 import dedent from "dedent";
 import { html } from "@codemirror/lang-html";
-import { Box, Checkbox, Divider, Group, SegmentedControl, Select, Stack, Tooltip } from "@mantine/core";
+import { Box, Checkbox, Divider, Group, MantineColorScheme, SegmentedControl, Select, Stack, Tooltip } from "@mantine/core";
 import { useImmer } from "use-immer";
-import { Orientation } from "~/types";
+import { ColorScheme, Orientation } from "~/types";
 import { Text } from "@mantine/core";
-import { surrealql } from "codemirror-surrealql";
-import { DATASETS, ORIENTATIONS } from "~/constants";
+import { surrealql } from "@surrealdb/codemirror";
+import { DATASETS, ORIENTATIONS, THEMES } from "~/constants";
 import { CodeInput } from "../Inputs";
 import { PropsWithChildren, ReactNode, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { isDevelopment, isProduction } from "~/util/environment";
@@ -18,6 +18,7 @@ export const DEFAULT_STATE: EmbedState = {
 	dataset: "none",
 	setup: "",
 	query: "",
+	theme: "dark",
 	variables: "{}",
 	orientation: "vertical",
 	transparent: false,
@@ -59,6 +60,7 @@ export interface EmbedState {
 	setup: string;
 	query: string;
 	variables: string;
+	theme: MantineColorScheme;
 	orientation: Orientation;
 	transparent?: boolean;
 }
@@ -84,7 +86,7 @@ export function Embedder({
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
-		const { dataset, setup, query, variables, orientation, transparent } = state;
+		const { dataset, setup, query, variables, orientation, theme, transparent } = state;
 
 		if (setup.length > 0) {
 			search.append('setup', setup);
@@ -106,6 +108,10 @@ export function Embedder({
 			search.append('orientation', orientation);
 		}
 
+		if (theme !== 'dark') {
+			search.append('theme', theme);
+		}
+
 		if (transparent) {
 			search.append('transparent', "true");
 		}
@@ -117,7 +123,7 @@ export function Embedder({
 			url.port = "";
 		}
 
-		url.pathname = isDevelopment ? 'mini/run.html' : 'mini';
+		url.pathname = isDevelopment ? 'mini/run/index.html' : 'mini';
 		url.search = search.toString();
 
 		return url.toString();
@@ -233,6 +239,20 @@ export function Embedder({
 				/>
 			</Box>
 			<Box>
+				<SectionTitle help="The color scheme used by the mini">
+					Color scheme
+				</SectionTitle>
+				<Select
+					data={THEMES}
+					value={state.theme}
+					onChange={e => {
+						setState(draft => {
+							draft.theme = e as ColorScheme;
+						});
+					}}
+				/>
+			</Box>
+			<Box>
 				<SectionTitle help="Miscellaneous options for the mini">
 					Options
 				</SectionTitle>
@@ -261,6 +281,7 @@ export function Embedder({
 				<CodePreview
 					value={mode === 'Iframe' ? snippetCode : frameUrl}
 					withCopy
+					withWrapping
 					extensions={mode === 'Iframe' ? [
 						html()
 					] : []}

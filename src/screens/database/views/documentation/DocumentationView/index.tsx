@@ -1,12 +1,15 @@
 import { Group } from "@mantine/core";
 import { TocPane } from "../TopicsPane";
 import { ArticlePane } from "../ArticlePane";
-import { useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { useSchema } from "~/hooks/schema";
 import { buildDocumentation } from "~/screens/database/docs";
 import { useSetting } from "~/hooks/config";
 import { useViewEffect } from "~/hooks/view";
 import { syncDatabaseSchema } from "~/util/schema";
+
+const ArticlePaneLazy = memo(ArticlePane);
+const TocPaneLazy = memo(TocPane);
 
 export function DocumentationView() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
@@ -28,13 +31,13 @@ export function DocumentationView() {
 				wrap="nowrap"
 				gap="var(--surrealist-divider-size)"
 			>
-				<TocPane
+				<TocPaneLazy
 					active={active}
 					docs={docs}
 					language={language}
 					scrollRef={scrollRef}
 				/>
-				<ArticlePane
+				<ArticlePaneLazy
 					docs={docs}
 					language={language}
 					scrollRef={scrollRef}

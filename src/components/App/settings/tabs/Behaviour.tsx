@@ -3,6 +3,7 @@ import { isDesktop } from "~/adapter";
 import { useCheckbox } from "~/hooks/events";
 import { SettingsSection } from "../utilities";
 import { useSetting } from "~/hooks/config";
+import { useStable } from "~/hooks/stable";
 
 const CAT = "behavior";
 
@@ -12,7 +13,7 @@ export function BehaviourTab() {
 	const [variableSuggest, setVariableSuggest] = useSetting(CAT, "variableSuggest");
 	const [queryErrorChecker, setQueryErrorChecker] = useSetting(CAT, "queryErrorChecker");
 	const [windowPinned, setWindowPinned] = useSetting(CAT, "windowPinned");
-	const [autoConnect, setAutoConnect] = useSetting(CAT, "autoConnect");
+	const [reconnectInterval, setReconnectInterval] = useSetting(CAT, "reconnectInterval");
 	const [versionCheckTimeout, setVersionCheckTimeout] = useSetting(CAT, "versionCheckTimeout");
 
 	// const updateUpdateChecker = useCheckbox(setUpdateChecker);
@@ -20,33 +21,28 @@ export function BehaviourTab() {
 	const updateVariableSuggest = useCheckbox(setVariableSuggest);
 	const updateQueryErrorChecker = useCheckbox(setQueryErrorChecker);
 	const updateWindowPinned = useCheckbox(setWindowPinned);
-	const updateAutoConnect = useCheckbox(setAutoConnect);
+
+	const updateVersionCheckTimeout = useStable((v: string | number) => setVersionCheckTimeout(+v));
+	const updateReconnectInterval = useStable((v: string | number) => setReconnectInterval(+v));
 
 	return (
 		<>
-			<SettingsSection>
-				{/* {adapter.isUpdateCheckSupported && (
-					<Checkbox
-						label="Always check for updates"
-						checked={updateChecker}
-						onChange={updateUpdateChecker}
-					/>
-				)} */}
-
-				{isDesktop && (
+			{isDesktop && (
+				<SettingsSection>
+					{/* {adapter.isUpdateCheckSupported && (
+						<Checkbox
+							label="Always check for updates"
+							checked={updateChecker}
+							onChange={updateUpdateChecker}
+						/>
+					)} */}
 					<Checkbox
 						label={<>Always on top <Kbd size="xs">F10</Kbd></>}
 						checked={windowPinned}
 						onChange={updateWindowPinned}
 					/>
-				)}
-
-				<Checkbox
-					label="Automatically connect to the database"
-					checked={autoConnect}
-					onChange={updateAutoConnect}
-				/>
-			</SettingsSection>
+				</SettingsSection>
+			)}
 
 			<SettingsSection label="Query view">
 				<Checkbox
@@ -74,10 +70,17 @@ export function BehaviourTab() {
 					label="Version check timeout"
 					placeholder="Seconds"
 					value={versionCheckTimeout}
-					onChange={(v) => setVersionCheckTimeout(Number.parseInt(v.toString()))}
+					onChange={updateVersionCheckTimeout}
 					min={1}
 				/>
 
+				<NumberInput
+					label="Reconnect interval"
+					placeholder="Seconds"
+					value={reconnectInterval}
+					onChange={updateReconnectInterval}
+					min={1}
+				/>
 			</SettingsSection>
 		</>
 	);

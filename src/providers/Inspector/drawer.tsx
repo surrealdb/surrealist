@@ -7,14 +7,14 @@ import { useStable } from "~/hooks/stable";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { HistoryHandle } from "~/hooks/history";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useInputState } from "@mantine/hooks";
 import { RelationsTab } from "./tabs/relations";
 import { ContentTab } from "./tabs/content";
 import { useSaveable } from "~/hooks/save";
 import { useConfirmation } from "../Confirmation";
-import { executeQuery } from "~/screens/database/connection";
-import { RecordId } from "surrealdb.js";
+import { executeQuery } from "~/screens/database/connection/connection";
+import { RecordId } from "surrealdb";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeInput } from "~/components/Inputs";
 import { useValueValidator } from "~/hooks/surrealql";
@@ -156,15 +156,15 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		>
 			<DrawerResizer
 				minSize={500}
-				maxSize={900}
+				maxSize={1500}
 				onResize={setWidth}
 			/>
 
 			<Group mb="md" gap="sm">
-				<ModalTitle>
+				<PrimaryTitle>
 					<Icon left path={iconSearch} size="sm" />
 					Record inspector
-				</ModalTitle>
+				</PrimaryTitle>
 
 				<Spacer />
 

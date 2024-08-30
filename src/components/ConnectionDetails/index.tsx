@@ -1,12 +1,10 @@
-import dayjs from "dayjs";
-import { AuthMode, Connection, Protocol } from "~/types";
-import { Updater } from "use-immer";
+import cloudLogo from "~/assets/images/cloud-icon.svg";
+
 import {
 	Group,
 	Select,
 	TextInput,
 	Stack,
-	Divider,
 	PasswordInput,
 	Button,
 	Modal,
@@ -16,12 +14,20 @@ import {
 	Alert,
 	SimpleGrid,
 	Popover,
+	Box,
+	Divider,
+	Image,
 } from "@mantine/core";
+
 import {
 	CONNECTION_PROTOCOLS,
 	AUTH_MODES,
 	SENSITIVE_SCOPE_FIELDS,
 } from "~/constants";
+
+import dayjs from "dayjs";
+import { AuthMode, Connection, Protocol } from "~/types";
+import { Updater } from "use-immer";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
@@ -29,29 +35,54 @@ import { Spacer } from "../Spacer";
 import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
 import { Text } from "@mantine/core";
-import { ModalTitle } from "../ModalTitle";
-import { ReactNode, useMemo } from "react";
-import { connectionUri, fastParseJwt } from "~/util/helpers";
+import { PrimaryTitle } from "../PrimaryTitle";
+import { useMemo } from "react";
+import { fastParseJwt } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
+import { useConfigStore } from "~/stores/config";
+import { useIsLight } from "~/hooks/theme";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
 const EXPIRE_WARNING = 1000 * 60 * 60 * 3;
 
+interface SubheaderProps {
+	title: string;
+	subtitle: string;
+}
+
+function Subheader({
+	title,
+	subtitle
+}: SubheaderProps) {
+	return (
+		<Box>
+			<Text c="bright" fz="lg" fw={500}>
+				{title}
+			</Text>
+			<Text c="slate.3" fz="sm" mt={-2}>
+				{subtitle}
+			</Text>
+		</Box>
+	);
+}
+
 export interface ConnectionDetailsProps {
 	value: Connection;
 	onChange: Updater<Connection>;
-	rightSection?: ReactNode;
-	allFieldsOptional?: boolean;
 }
 
-export function ConnectionDetails({ value, onChange, rightSection, allFieldsOptional }: ConnectionDetailsProps) {
+export function ConnectionDetails({
+	value,
+	onChange,
+}: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
+	const isLight = useIsLight();
 
 	const addScopeField = useStable(() => {
 		onChange((draft) => {
-			draft.connection.scopeFields.push({
+			draft.authentication.scopeFields.push({
 				subject: "",
 				value: "",
 			});
@@ -64,7 +95,7 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 				const content = e.target.value;
 				const result = content.match(ENDPOINT_PATTERN);
 
-				draft.connection.hostname = content;
+				draft.authentication.hostname = content;
 
 				if (result === null) {
 					return;
@@ -79,8 +110,8 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 					return;
 				}
 
-				draft.connection.protocol = protocol as Protocol;
-				draft.connection.hostname = hostname;
+				draft.authentication.protocol = protocol as Protocol;
+				draft.authentication.hostname = hostname;
 			});
 		}
 	);
@@ -91,8 +122,9 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 		});
 	};
 
-	const isMemory = value.connection.protocol === "mem";
-	const isIndexDB = value.connection.protocol === "indxdb";
+	const isMemory = value.authentication.protocol === "mem";
+	const isIndexDB = value.authentication.protocol === "indxdb";
+	const isCloud = value.authentication.mode === "cloud";
 
 	const placeholder = isMemory
 		? "Not applicable"
@@ -100,30 +132,42 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 			? "database_name"
 			: "address:port";
 
-	const isSystemMethod = SYSTEM_METHODS.has(value.connection.authMode);
+	const isSystemMethod = SYSTEM_METHODS.has(value.authentication.mode);
+	const showDatabase = value.authentication.mode === "database" || value.authentication.mode === "scope";
+	const showNamespace = showDatabase || value.authentication.mode === "namespace";
+
 	const tokenPayload = useMemo(
-		() => fastParseJwt(value.connection.token),
-		[value.connection.token]
+		() => fastParseJwt(value.authentication.token),
+		[value.authentication.token]
 	);
+
+	const protocols = useMemo(() => {
+		return isCloud
+			? CONNECTION_PROTOCOLS.filter((p) => p.remote)
+			: CONNECTION_PROTOCOLS;
+	}, [isCloud]);
+
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
-	const tokenExpireSoon =
-		tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
+	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
 
-	const isEndpointValid = useMemo(() => {
-		if (allFieldsOptional && value.connection.hostname === '') return true;
-
-		try {
-			connectionUri(value.connection);
-			return true;
-		} catch {
-			return false;
-		}
-	}, [value.connection, allFieldsOptional]);
+	const groups = useConfigStore((s) => s.connectionGroups);
+	const groupItems = useMemo(() => {
+		return [
+			{
+				value: "",
+				label: "No group"
+			},
+			...groups.map((group) => ({
+				value: group.id,
+				label: group.name,
+			}))
+		];
+	}, [groups]);
 
 	return (
 		<>
-			<Paper mb="xl" flex={1}>
-				<Group>
+			<Stack flex={1}>
+				<Group mb="xs">
 					<Popover
 						opened={showIcons}
 						onClose={showIconsHandle.close}
@@ -171,198 +215,270 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 							})
 						}
 					/>
-					{rightSection}
 				</Group>
-			</Paper>
-			<Group mb="lg">
-				<Select
-					data={CONNECTION_PROTOCOLS}
-					maw={110}
-					value={value.connection.protocol}
-					onChange={(value) =>
-						onChange((draft) => {
-							const proto = value as Protocol;
 
-							draft.connection.protocol = proto;
+				{isCloud && (
+					<>
+						<Paper
+							bg={isLight ? "slate.0" : "slate.9"}
+							radius="md"
+							p="lg"
+						>
+							<Group>
+								<Image
+									src={cloudLogo}
+									alt="Surreal Cloud"
+									w={48}
+								/>
+								<Box>
+									<Text fw={600} c="bright">
+										This connection is managed by Surreal Cloud
+									</Text>
+									<Text mt={4}>
+										Some details cannot be modified manually
+									</Text>
+								</Box>
+							</Group>
+						</Paper>
 
-							if (value === "mem" || value === "indxdb") {
-								draft.connection.authMode = "none";
-							}
-						})
-					}
+						<Divider
+							mx={-32}
+							mb={6}
+							mt={12}
+						/>
+					</>
+				)}
+
+				<Subheader
+					title="Connection"
+					subtitle="Database address and connection protocol"
 				/>
-				<TextInput
-					flex={1}
-					value={value.connection.hostname}
-					disabled={isMemory}
-					spellCheck={false}
-					placeholder={placeholder}
-					onChange={handleEndpointChange}
-					error={isEndpointValid ? undefined : true}
-				/>
-			</Group>
-			<Group gap="lg" align="start">
-				<Stack gap="xs" flex={1}>
-					<Text fz="xl" c="slate">
-						Database
-					</Text>
-					<TextInput
-						label="Namespace"
-						value={value.connection.namespace}
-						spellCheck={false}
-						onChange={(e) =>
-							onChange((draft) => {
-								draft.connection.namespace = e.target.value;
-							})
-						}
-					/>
-					<TextInput
-						label="Database"
-						value={value.connection.database}
-						spellCheck={false}
-						onChange={(e) =>
-							onChange((draft) => {
-								draft.connection.database = e.target.value;
-							})
-						}
-					/>
-				</Stack>
-				<Divider orientation="vertical" />
-				<Stack gap="xs" flex={1}>
-					<Text fz="xl" c="slate">
-						Authentication
-					</Text>
+
+				<Group>
 					<Select
-						label="Method"
-						value={value.connection.authMode}
-						data={AUTH_MODES}
+						data={protocols}
+						maw={110}
+						value={value.authentication.protocol}
 						onChange={(value) =>
 							onChange((draft) => {
-								draft.connection.authMode = value as AuthMode;
+								const proto = value as Protocol;
+
+								draft.authentication.protocol = proto;
+
+								if (value === "mem" || value === "indxdb") {
+									draft.authentication.mode = "none";
+								}
 							})
 						}
 					/>
-					{isSystemMethod && (
-						<>
-							<TextInput
-								label="Username"
-								value={value.connection.username}
-								spellCheck={false}
-								onChange={(e) =>
-									onChange((draft) => {
-										draft.connection.username =
-											e.target.value;
-									})
-								}
-							/>
-							<PasswordInput
-								label="Password"
-								value={value.connection.password}
-								spellCheck={false}
-								onChange={(e) =>
-									onChange((draft) => {
-										draft.connection.password =
-											e.target.value;
-									})
-								}
-							/>
-						</>
-					)}
+					<TextInput
+						flex={1}
+						name="hostname"
+						value={value.authentication.hostname}
+						disabled={isMemory || isCloud}
+						placeholder={placeholder}
+						onChange={handleEndpointChange}
+					/>
+				</Group>
 
-					{value.connection.authMode === "scope" && (
-						<>
-							<TextInput
-								label="Scope"
-								value={value.connection.scope}
-								spellCheck={false}
-								onChange={(e) =>
-									onChange((draft) => {
-										draft.connection.scope = e.target.value;
-									})
-								}
-							/>
-							<Button
-								mt={21}
-								color="blue"
-								variant="outline"
-								onClick={editingScopeHandle.open}
-							>
-								Edit scope data
-							</Button>
-						</>
-					)}
+				<Divider
+					mx={-32}
+					mb={6}
+					mt={12}
+				/>
 
-					{value.connection.authMode === "token" && (
-						<>
-							<TextInput
-								label="Token"
-								value={value.connection.token}
-								spellCheck={false}
-								onChange={(e) =>
+				{!isCloud && (
+					<>
+						<Subheader
+							title="Authentication"
+							subtitle="Database access credentials"
+						/>
+
+						<Stack gap="sm">
+							<Select
+								label="Method"
+								value={value.authentication.mode}
+								data={AUTH_MODES}
+								onChange={(value) =>
 									onChange((draft) => {
-										draft.connection.token = e.target.value;
+										draft.authentication.mode = value as AuthMode;
 									})
 								}
-								styles={{
-									input: {
-										fontFamily:
-											"var(--mantine-font-family-monospace)",
-									},
-								}}
 							/>
 
-							{value.connection.token &&
-								(tokenPayload === null ? (
-									<Alert
-										color="red"
-										icon={<Icon path={iconWarning} />}
+							{isSystemMethod && (
+								<SimpleGrid cols={2}>
+									<TextInput
+										label="Username"
+										value={value.authentication.username}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.username =
+													e.target.value;
+											})
+										}
+									/>
+									<PasswordInput
+										label="Password"
+										value={value.authentication.password}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.password =
+													e.target.value;
+											})
+										}
+									/>
+								</SimpleGrid>
+							)}
+
+							{(showNamespace || showDatabase) && (
+								<SimpleGrid cols={2}>
+									{showNamespace && (
+										<TextInput
+											label="Namespace"
+											value={value.authentication.namespace}
+											spellCheck={false}
+											onChange={(e) =>
+												onChange((draft) => {
+													draft.authentication.namespace = e.target.value;
+												})
+											}
+										/>
+									)}
+
+									{showDatabase && (
+										<TextInput
+											label="Database"
+											value={value.authentication.database}
+											spellCheck={false}
+											onChange={(e) =>
+												onChange((draft) => {
+													draft.authentication.database = e.target.value;
+												})
+											}
+										/>
+									)}
+								</SimpleGrid>
+							)}
+
+							{value.authentication.mode === "scope" && (
+								<Group wrap="nowrap">
+									<TextInput
+										flex={1}
+										label="Scope"
+										value={value.authentication.scope}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.scope = e.target.value;
+											})
+										}
+									/>
+									<Button
+										mt={19}
+										color="blue"
+										variant="light"
+										onClick={editingScopeHandle.open}
 									>
-										The provided token does not appear to be
-										a valid JWT
-									</Alert>
-								) : (
-									tokenExpireSoon &&
-									(tokenExpire > Date.now() ? (
-										<Text c="slate">
-											<Icon
-												path={iconWarning}
-												c="yellow"
-												size="sm"
-												left
-											/>
-											This token expires in{" "}
-											{dayjs(tokenExpire).fromNow()}
-										</Text>
+										Edit scope data
+									</Button>
+								</Group>
+							)}
+
+							{value.authentication.mode === "token" && (
+								<>
+									<TextInput
+										label="Token"
+										value={value.authentication.token}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.token = e.target.value;
+											})
+										}
+										styles={{
+											input: {
+												fontFamily:
+													"var(--mantine-font-family-monospace)",
+											},
+										}}
+									/>
+
+									{value.authentication.token && (tokenPayload === null ? (
+										<Alert
+											color="red"
+											icon={<Icon path={iconWarning} />}
+										>
+											The provided token does not appear to be
+											a valid JWT
+										</Alert>
 									) : (
-										<Text c="slate">
-											<Icon
-												path={iconWarning}
-												c="red"
-												size="sm"
-												left
-											/>
-											This token has expired
-										</Text>
-									))
-								))}
-						</>
-					)}
-				</Stack>
-			</Group>
+										tokenExpireSoon &&
+										(tokenExpire > Date.now() ? (
+											<Text c="slate">
+												<Icon
+													path={iconWarning}
+													c="yellow"
+													size="sm"
+													left
+												/>
+												This token expires in{" "}
+												{dayjs(tokenExpire).fromNow()}
+											</Text>
+										) : (
+											<Text c="slate">
+												<Icon
+													path={iconWarning}
+													c="red"
+													size="sm"
+													left
+												/>
+												This token has expired
+											</Text>
+										))
+									))}
+								</>
+							)}
+						</Stack>
+
+						<Divider
+							mx={-32}
+							mb={6}
+							mt={12}
+						/>
+					</>
+				)}
+
+				<Subheader
+					title="Configuration"
+					subtitle="Further configuration options"
+				/>
+
+				<Select
+					label="Group"
+					data={groupItems}
+					value={value.group || ''}
+					onChange={(group) => onChange((draft) => {
+						draft.group = group || undefined;
+					})}
+				/>
+			</Stack>
 
 			<Modal
 				opened={editingScope}
 				onClose={editingScopeHandle.close}
 				size={560}
-				title={<ModalTitle>Scope data editor</ModalTitle>}
+				title={<PrimaryTitle>Scope data editor</PrimaryTitle>}
 			>
-				{value.connection.scopeFields?.length === 0 ? (
+				{value.authentication.scopeFields?.length === 0 ? (
 					<Text c="gray" fs="italic">
 						Press "Add field" to define scope fields
 					</Text>
 				) : (
 					<Stack>
-						{value.connection.scopeFields?.map((field, i) => {
+						{value.authentication.scopeFields?.map((field, i) => {
 							const fieldName = field.subject.toLowerCase();
 							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(
 								fieldName
@@ -380,7 +496,7 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.connection.scopeFields[
+													draft.authentication.scopeFields[
 														i
 													].subject = e.target.value;
 												})
@@ -393,7 +509,7 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.connection.scopeFields[
+													draft.authentication.scopeFields[
 														i
 													].value = e.target.value;
 												})
@@ -405,7 +521,7 @@ export function ConnectionDetails({ value, onChange, rightSection, allFieldsOpti
 												aria-label="Remove scope field"
 												onClick={() =>
 													onChange((draft) => {
-														draft.connection.scopeFields.splice(
+														draft.authentication.scopeFields.splice(
 															i,
 															1
 														);

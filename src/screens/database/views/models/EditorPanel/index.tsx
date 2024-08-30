@@ -44,7 +44,6 @@ export function EditorPanel({
 					<Paper
 						style={{ alignItems: "center" }}
 						display="flex"
-						bg="slate.9"
 						p="lg"
 					>
 						<Text

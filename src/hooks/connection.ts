@@ -1,3 +1,4 @@
+import compare from "semver-compare";
 import { unique } from "radash";
 import { useMemo } from "react";
 import { SANDBOX } from "~/constants";
@@ -8,7 +9,14 @@ import { useDatabaseStore } from "~/stores/database";
  * Returns whether Surrealist is connected to a database
  */
 export function useIsConnected() {
-	return useDatabaseStore((s) => s.isConnected);
+	return useDatabaseStore((s) => s.currentState === "connected");
+}
+
+/**
+ * Returns whether Surrealist is connecting to a database
+ */
+export function useIsConnecting() {
+	return useDatabaseStore((s) => s.currentState === "connecting" || s.currentState === "retrying");
 }
 
 /**
@@ -68,4 +76,14 @@ export function useSavedQueryTags() {
 	return useMemo(() => {
 		return unique(queries.flatMap((q) => q.tags));
 	}, [queries]);
+}
+
+/**
+ * Returns whether the current database version is at least the minimum version
+ */
+export function useMinimumVersion(minimum: string) {
+	const version = useDatabaseStore((s) => s.version);
+	const isGreater = !!version && compare(version, minimum) >= 0;
+
+	return [isGreater, version] as const;
 }

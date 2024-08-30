@@ -1,0 +1,21 @@
+.save-box > button {
+	flex: 1;
+}
+
+.accordion-item {
+	background-color: var(--mantine-color-slate-7);
+	border: none;
+
+	@include light {
+		background-color: var(--mantine-color-slate-0);
+	}
+}
+
+.accordion-label {
+	color: var(--mantine-color-bright);
+}
+
+.title {
+	user-select: text;
+	-webkit-user-select: text;
+}

@@ -4,10 +4,10 @@ import { Article, DocsPreview } from "~/screens/database/docs/components";
 import { Snippets, TopicProps } from "~/screens/database/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsGlobalNamespaces({ language, topic }: TopicProps) {
-	const { connection } = useActiveConnection();
-	const esc_namespace = JSON.stringify(connection.namespace);
-	const esc_database = JSON.stringify(connection.database);
+export function DocsGlobalNamespaces({ language }: TopicProps) {
+	const { authentication } = useActiveConnection();
+	const esc_namespace = JSON.stringify(authentication.namespace);
+	const esc_database = JSON.stringify(authentication.database);
 
 	const snippets = useMemo<Snippets>(
 		() => ({

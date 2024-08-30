@@ -5,6 +5,10 @@ import { useIsConnected } from "~/hooks/connection";
 import { iconAuth, iconFolderSecure, iconServerSecure } from "~/util/icons";
 import { useViewEffect } from "~/hooks/view";
 import { syncDatabaseSchema } from "~/util/schema";
+import { memo } from "react";
+
+const AccountsPaneLazy = memo(AccountsPane);
+const ScopePaneLazy = memo(ScopePane);
 
 export function AuthenticationView() {
 	const isOnline = useIsConnected();
@@ -25,7 +29,7 @@ export function AuthenticationView() {
 				gridAutoRows: '1fr'
 			}}
 		>
-			<AccountsPane
+			<AccountsPaneLazy
 				isOnline={isOnline}
 				title="Root Users"
 				icon={iconAuth}
@@ -34,7 +38,7 @@ export function AuthenticationView() {
 				type="ROOT"
 			/>
 
-			<AccountsPane
+			<AccountsPaneLazy
 				isOnline={isOnline}
 				title="Namespace Users"
 				icon={iconFolderSecure}
@@ -43,7 +47,7 @@ export function AuthenticationView() {
 				type="NAMESPACE"
 			/>
 
-			<AccountsPane
+			<AccountsPaneLazy
 				isOnline={isOnline}
 				title="Database Users"
 				icon={iconServerSecure}
@@ -51,7 +55,7 @@ export function AuthenticationView() {
 				field="dbUsers"
 				type="DATABASE"
 			/>
-			<ScopePane />
+			<ScopePaneLazy />
 		</SimpleGrid>
 	);
 }

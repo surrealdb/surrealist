@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 import { ActionIcon, Alert, Badge, Box, Button, Drawer, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CodeEditor } from "~/components/CodeEditor";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
@@ -10,17 +10,17 @@ import { useStable } from "~/hooks/stable";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { useTableNames, useTables } from "~/hooks/schema";
-import { executeQuery } from "~/screens/database/connection";
-import { RecordId, StringRecordId, Table } from "surrealdb.js";
+import { executeQuery } from "~/screens/database/connection/connection";
+import { RecordId, StringRecordId, Table } from "surrealdb";
 import { surqlLinting } from "~/util/editor/extensions";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { useValueValidator } from "~/hooks/surrealql";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Label } from "~/components/Label";
 import { extractEdgeRecords } from "~/util/schema";
 import { CodeInput } from "~/components/Inputs";
 import { QueryResponse } from "~/types";
-import { EditorView } from "@codemirror/view";
+import { EditorView, lineNumbers } from "@codemirror/view";
 
 type EdgeInfo = [boolean, string[], string[]];
 
@@ -127,15 +127,15 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		>
 			<DrawerResizer
 				minSize={500}
-				maxSize={900}
+				maxSize={1500}
 				onResize={setWidth}
 			/>
 
 			<Group gap="sm">
-				<ModalTitle>
+				<PrimaryTitle>
 					<Icon left path={iconPlus} size="sm" />
 					Record creator
-				</ModalTitle>
+				</PrimaryTitle>
 
 				<Spacer />
 
@@ -242,7 +242,8 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						onChange={setRecordBody}
 						extensions={[
 							surrealql(),
-							surqlLinting()
+							surqlLinting(),
+							lineNumbers(),
 						]}
 						onMount={setCursor}
 					/>

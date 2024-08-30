@@ -1,9 +1,10 @@
 import { Box, Group, Modal, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { useIntent } from "~/hooks/url";
 import { useBoolean } from "~/hooks/boolean";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Shortcut } from "~/components/Shortcut";
 import { isDesktop } from "~/adapter";
+import { useIsLight } from "~/hooks/theme";
 
 interface KeyProps {
 	keys: string;
@@ -23,6 +24,7 @@ function Key({ keys, description }: KeyProps) {
 
 export function KeymapModal() {
 	const [isOpen, openedHandle] = useBoolean();
+	const isLight = useIsLight();
 
 	useIntent("open-keymap", openedHandle.open);
 
@@ -35,7 +37,7 @@ export function KeymapModal() {
 				withCloseButton
 				size="xl"
 				title={
-					<ModalTitle>Keyboard Shortcuts</ModalTitle>
+					<PrimaryTitle>Keyboard Shortcuts</PrimaryTitle>
 				}
 			>
 				<Stack gap="xl">
@@ -44,7 +46,7 @@ export function KeymapModal() {
 							Global shortcuts
 						</Text>
 
-						<Paper bg="slate.9" p="xl">
+						<Paper bg={isLight ? "slate.0" : "slate.9"} p="xl">
 							<SimpleGrid cols={2}>
 								<Key keys="mod k" description="Open the command palette" />
 								<Key keys="mod l" description="View the connections list" />
@@ -59,6 +61,7 @@ export function KeymapModal() {
 								{isDesktop && (
 									<Key keys="F10" description="Toggle window pinned" />
 								)}
+								<Key keys="mod ," description="Open the settings dialog" />
 							</SimpleGrid>
 						</Paper>
 					</Box>
@@ -67,7 +70,7 @@ export function KeymapModal() {
 							Query view shortcuts
 						</Text>
 
-						<Paper bg="slate.9" p="xl">
+						<Paper bg={isLight ? "slate.0" : "slate.9"} p="xl">
 							<SimpleGrid cols={2}>
 								<Key keys="F9" description="Execute current query" />
 							</SimpleGrid>
@@ -78,7 +81,7 @@ export function KeymapModal() {
 							Editor shortcuts
 						</Text>
 
-						<Paper bg="slate.9" p="xl">
+						<Paper bg={isLight ? "slate.0" : "slate.9"} p="xl">
 							<SimpleGrid cols={2}>
 								<Key keys="mod f" description="Search for text occurrences" />
 								<Key keys="ctrl alt [" description="Fold everything" />

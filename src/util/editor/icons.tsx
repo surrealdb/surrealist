@@ -1,21 +1,11 @@
-import { mdiFunction, mdiTable, mdiVariable } from "@mdi/js";
+import { iconFunction, iconTable, iconVariable } from "../icons";
 
 type TypeIcon = { type: string; icon: string; color: string; }
 
 const TYPE_ICONS: TypeIcon[] = [
-	{ type: "variable", icon: mdiVariable, color: "#ffde00" },	// Params
-	{ type: "function", icon: mdiFunction, color: "#ff9b67" },	// Functions
-	{ type: "class", icon: mdiTable, color: "#FF00A0" },		// Tables
-
-	// { type: "text", icon: mdiText, color: "#F59F00" },
-	// { type: "type", icon: mdiCodeBrackets, color: "#F59F00" },
-	// { type: "keyword", icon: mdiKeyVariant, color: "#F59F00" },
-	// { type: "constant", icon: mdiPackageVariantClosed, color: "#F59F00" },
-	// { type: "enum", icon: mdiPackageVariantClosed, color: "#F59F00" },
-	// { type: "interface", icon: mdiPackageVariantClosed, color: "#F59F00" },
-	// { type: "method", icon: mdiPackageVariantClosed, color: "#F59F00" },
-	// { type: "namespace", icon: mdiPackageVariantClosed, color: "#F59F00" },
-	// { type: "property", icon: mdiPackageVariantClosed, color: "#F59F00" },
+	{ type: "variable", icon: iconVariable, color: "#ffde00" },	// Params
+	{ type: "function", icon: iconFunction, color: "#ff9b67" },	// Functions
+	{ type: "class", icon: iconTable, color: "#FF00A0" },		// Tables
 ];
 
 /**

@@ -1,20 +1,20 @@
 import { linter } from "@codemirror/lint";
 import { getSetting } from "../config";
-import { surrealqlLanguage } from "codemirror-surrealql";
+import { surrealqlLanguage } from "@surrealdb/codemirror";
 import { defaultKeymap, history, indentWithTab } from "@codemirror/commands";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap, CompletionSource, snippetCompletion } from "@codemirror/autocomplete";
-import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, lineNumbers, highlightActiveLineGutter, EditorView, Decoration } from "@codemirror/view";
+import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLineGutter, EditorView, Decoration, ViewPlugin } from "@codemirror/view";
 import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit, syntaxTree } from "@codemirror/language";
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import { themeColor } from "../mantine";
-import { EditorState, Extension, Prec, RangeSetBuilder, SelectionRange } from "@codemirror/state";
+import { EditorState, Extension, Prec, RangeSetBuilder, SelectionRange, StateEffect, StateField } from "@codemirror/state";
 import { acceptWithTab, customHistoryKeymap, runQuery } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveQuery } from "../connection";
 import { isModKey, tryParseParams } from "../helpers";
 import { validateQuery } from "../surrealql";
+import { DocumentNode, parse } from "graphql";
 
 type RecordLinkCallback = (link: string) => void;
 
@@ -28,7 +28,6 @@ export const colorTheme = (isLight?: boolean) =>
  * Shared base configuration for all dedicated editors
  */
 export const editorBase = (): Extension => [
-	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),
 	codeFolding(),
@@ -43,10 +42,10 @@ export const editorBase = (): Extension => [
 	crosshairCursor(),
 	indentationMarkers({
 		colors: {
-			light: themeColor('slate'),
-			dark: themeColor('slate'),
-			activeLight: themeColor('slate'),
-			activeDark: themeColor('slate'),
+			light: 'var(--surrealist-indent-color)',
+			dark: 'var(--surrealist-indent-color)',
+			activeLight: 'var(--surrealist-indent-active-color)',
+			activeDark: 'var(--surrealist-indent-active-color)',
 		}
 	}),
 	highlightSelectionMatches({
@@ -274,3 +273,102 @@ export const selectionChanged = (cb: (ranges: SelectionRange) => void): Extensio
 		}
 	});
 };
+
+const graphqlAstEffect = StateEffect.define<DocumentNode | undefined>();
+
+/**
+ * A state field tracking the current GraphQL AST
+ */
+export const graphqlAstField = StateField.define<DocumentNode | undefined>({
+	create() {
+		return undefined;
+	},
+	update(set, tr) {
+		for (const e of tr.effects) {
+			if (e.is(graphqlAstEffect)) {
+				return e.value;
+			}
+		}
+
+		return set;
+	}
+});
+
+// /**
+//  * A state field tracking the executable gutter markers
+//  */
+// export const graphqlMarkersField = StateField.define<RangeSet<GutterMarker>>({
+// 	create() {
+// 		return RangeSet.empty;
+// 	},
+// 	update(set, tr) {
+// 		for (const e of tr.effects) {
+// 			if (e.is(graphqlAstEffect)) {
+// 				if (e.value) {
+// 					const markers = new RangeSetBuilder<GutterMarker>();
+
+// 					for (const def of e.value.definitions) {
+// 						if (def.loc) {
+// 							markers.add(def.loc.start, def.loc.end, new GraphqlRunMarker(def));
+// 						}
+// 					}
+
+// 					return markers.finish();
+// 				} else {
+// 					return RangeSet.empty;
+// 				}
+// 			}
+// 		}
+
+// 		return set;
+// 	}
+// });
+
+function dispatchAst(view: EditorView) {
+	const query = view.state.doc.toString();
+
+	try {
+		const parsed = parse(query);
+
+		view.dispatch({
+			effects: graphqlAstEffect.of(parsed)
+		});
+	} catch {
+		view.dispatch({
+			effects: graphqlAstEffect.of(undefined)
+		});
+	}
+}
+
+/**
+ * Continuously parse the GraphQL query and save the AST in the state
+ */
+export const graphqlParser = (): Extension => [
+	ViewPlugin.fromClass(class {
+		public constructor(view: EditorView) {
+			setTimeout(() => dispatchAst(view));
+		}
+	}),
+	EditorView.updateListener.of((update) => {
+		if (update.docChanged) {
+			dispatchAst(update.view);
+		}
+	})
+];
+
+// /**
+//  * Add query run indicator to gutter
+//  */
+// export const graphqlRunning = (onRun: (name: string) => void): Extension => [
+// 	graphqlMarkersField,
+// 	gutter({
+// 		class: "cm-runGutter",
+// 		markers: v => v.state.field(graphqlMarkersField),
+// 		initialSpacer: () => new GraphqlRunMarker(),
+// 		domEventHandlers: {
+// 			mousedown(view, line) {
+// 				view.mark
+// 			}
+// 		}
+// 	})
+// ];

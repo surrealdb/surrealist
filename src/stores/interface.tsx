@@ -1,24 +1,12 @@
-import { ColorScheme } from "~/types";
 import { create } from "zustand";
 import { Update } from "@tauri-apps/plugin-updater";
-
-interface LiveMessage {
-	id: string;
-	action: string;
-	queryId: string;
-	timestamp: number;
-	data: any;
-}
+import { ColorScheme, LiveMessage } from "~/types";
 
 export type InterfaceStore = {
 	title: string;
-	colorPreference: ColorScheme;
 	colorScheme: ColorScheme;
 	availableUpdate: null | Update;
 	showAvailableUpdate: boolean;
-	showConnectionEditor: boolean;
-	isCreatingConnection: boolean;
-	editingConnectionId: string;
 	showTableCreator: boolean;
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
@@ -26,15 +14,12 @@ export type InterfaceStore = {
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
 	showQueryVariables: boolean;
+	showGraphqlVariables: boolean;
 
 	setWindowTitle: (title: string) => void;
-	setColorPreference: (preference: ColorScheme) => void;
-	setColorScheme: (scheme: ColorScheme) => void;
+	setColorScheme: (colorScheme: ColorScheme) => void;
 	setAvailableUpdate: (update: Update) => void;
 	hideAvailableUpdate: () => void;
-	openConnectionCreator: () => void;
-	openConnectionEditor: (editingId: string) => void;
-	closeConnectionEditor: () => void;
 	setIsLive: (id: string, live: boolean) => void;
 	openTableCreator: () => void;
 	closeTableCreator: () => void;
@@ -45,12 +30,13 @@ export type InterfaceStore = {
 	showChangelog: () => void;
 	readChangelog: () => void;
 	setShowQueryVariables: (show: boolean) => void;
+	setShowGraphqlVariables: (show: boolean) => void;
 	toggleQueryVariables: () => void;
+	toggleGraphqlVariables: () => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	title: "",
-	colorPreference: "dark",
 	colorScheme: "dark",
 	availableUpdate: null,
 	showAvailableUpdate: false,
@@ -64,15 +50,12 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	showChangelogAlert: false,
 	hasReadChangelog: false,
 	showQueryVariables: false,
+	showGraphqlVariables: false,
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
-	setColorPreference: (themePreference) => set(() => ({
-		colorPreference: themePreference
-	})),
-
 	setColorScheme: (colorScheme) => set(() => ({
-		colorScheme,
+		colorScheme
 	})),
 
 	setAvailableUpdate: (availableUpdate) => set(() => ({
@@ -82,22 +65,6 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	hideAvailableUpdate: () => set(() => ({
 		showAvailableUpdate: false,
-	})),
-
-	openConnectionCreator: () => set(() => ({
-		editingConnectionId: "",
-		showConnectionEditor: true,
-		isCreatingConnection: true,
-	})),
-
-	openConnectionEditor: (editingId) => set(() => ({
-		editingConnectionId: editingId,
-		showConnectionEditor: true,
-		isCreatingConnection: false,
-	})),
-
-	closeConnectionEditor: () => set(() => ({
-		showConnectionEditor: false,
 	})),
 
 	openTableCreator: () => set(() => ({
@@ -164,6 +131,14 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	toggleQueryVariables: () => set((state) => ({
 		showQueryVariables: !state.showQueryVariables,
+	})),
+
+	setShowGraphqlVariables: (show) => set(() => ({
+		showGraphqlVariables: show,
+	})),
+
+	toggleGraphqlVariables: () => set((state) => ({
+		showGraphqlVariables: !state.showGraphqlVariables,
 	})),
 
 }));

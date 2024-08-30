@@ -1,0 +1,34 @@
+.page-switcher {
+	background-color: unset;
+	padding: 0;
+
+	:global(.mantine-SegmentedControl-label) {
+		background-color: unset;
+		padding-inline: var(--mantine-spacing-lg);
+		height: 32px;
+		display: flex;
+		align-items: center;
+	}
+
+	:global(.mantine-SegmentedControl-control)::before {
+		content: none;
+	}
+}
+
+.splash-image {
+	animation: splash-image 1s cubic-bezier(0.505, 0.160, 0.390, 0.825);
+	animation-delay: .1s;
+	animation-fill-mode: forwards;
+	opacity: 0;
+}
+
+@keyframes splash-image {
+	0% {
+		opacity: 0;
+		transform: translate(0, 25px);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+}

@@ -20,3 +20,13 @@ export const RecordsChangedEvent = createEventBus();
  * Invoked when an interface intent is dispatched
  */
 export const IntentEvent = createEventBus<Intent<IntentType>>();
+
+/**
+ * Invoked when the cloud account has been authenticated
+ */
+export const CloudAuthEvent = createEventBus();
+
+/**
+ * Invoked when the cloud account has expired
+ */
+export const CloudExpiredEvent = createEventBus();

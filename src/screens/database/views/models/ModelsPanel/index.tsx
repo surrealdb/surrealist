@@ -38,7 +38,7 @@ export function ModelsPanel({
 			icon={iconModuleML}
 			w={275}
 			style={{ flexShrink: 0 }}
-			leftSection={
+			infoSection={
 				models.length > 0 && (
 					<Badge
 						color={isLight ? "slate.0" : "slate.9"}

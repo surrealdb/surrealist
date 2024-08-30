@@ -45,23 +45,20 @@
 
 		:global(.mantine-Button-label) {
 			flex: 1;
-			color: var(--mantine-color-slate-7);
+			color: black;
 		}
 
 		:global(.mantine-Button-section) {
-			color: var(--mantine-color-slate-3);
+			color: var(--mantine-color-slate-5);
 		}
 
 		&:hover {
 			background-color: var(--mantine-color-slate-1);
-	
-			:global(.mantine-Button-section) {
-				color: var(--mantine-color-slate-9);
-			}
 		}
 
 		&.active {
-			box-shadow: 0 12px 15px -10px rgba(75, 75, 75, 0.3);
+			box-shadow: 0 12px 15px -10px rgba(40, 48, 182, 0.15);
+			border: none;
 
 			:global(.mantine-Button-label) {
 				color: var(--mantine-color-white);

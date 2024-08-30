@@ -2,13 +2,8 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import { Snippets, TopicProps } from "~/screens/database/docs/types";
-import { useSchema } from "~/hooks/schema";
-import { useActiveConnection } from "~/hooks/connection";
 
-export function DocsSchemaFunctions({ language, topic }: TopicProps) {
-	const schema = useSchema();
-	const { connection } = useActiveConnection();
-
+export function DocsSchemaFunctions({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -22,11 +17,11 @@ export function DocsSchemaFunctions({ language, topic }: TopicProps) {
 		RETURN fn::greet("BOB");
 		`,
 			js: `
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 
 		const db = new Surreal();
 
-		import { Surreal } from 'surrealdb.js';
+		import { Surreal } from 'surrealdb';
 		const db = new Surreal();
 		await db.connect('<the actual address of the connection>/rpc', {
 			namespace: '<the actual ns of the connection>',

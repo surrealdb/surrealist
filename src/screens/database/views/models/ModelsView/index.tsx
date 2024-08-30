@@ -11,7 +11,7 @@ import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useImmer } from "use-immer";
 import { useSchema } from "~/hooks/schema";
 import { useSaveable } from "~/hooks/save";
-import { ConnectionOptions, SchemaModel } from "~/types";
+import { Authentication, SchemaModel } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
 import { useViewEffect } from "~/hooks/view";
 import { Introduction } from "~/components/Introduction";
@@ -25,7 +25,7 @@ const SURML_FILTERS = [
 	},
 ];
 
-function composeConnection(connection: ConnectionOptions, path: string) {
+function composeConnection(connection: Authentication, path: string) {
 	const isSecure = connection.protocol === "https" || connection.protocol === "wss";
 	const endpoint = new URL(path, `${isSecure ? "https" : "http"}://${connection.hostname}`).toString();
 
@@ -42,11 +42,11 @@ function composeConnection(connection: ConnectionOptions, path: string) {
 
 export function ModelsView() {
 	const models = useSchema()?.models ?? [];
-	const { id, connection } = useActiveConnection();
+	const { id, authentication } = useActiveConnection();
 	const isConnected = useIsConnected();
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
-	const isAvailable = ML_SUPPORTED.has(connection.protocol);
+	const isAvailable = ML_SUPPORTED.has(authentication.protocol);
 	const isSandbox = id === "sandbox";
 
 	const handle = useSaveable({
@@ -68,7 +68,7 @@ export function ModelsView() {
 
 	const uploadModel = useStable(async () => {
 		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
-		const { endpoint, headers } = composeConnection(connection, '/ml/import');
+		const { endpoint, headers } = composeConnection(authentication, '/ml/import');
 
 		for (const file of files) {
 			await fetch(endpoint, {
@@ -87,7 +87,7 @@ export function ModelsView() {
 		// TODO Replace with version field when definition work properly
 		const [, name, version] = /^(\w+)<(.+)>$/.exec(model.name) || [];
 
-		const { endpoint, headers } = composeConnection(connection, `/ml/export/${name}/${version}`);
+		const { endpoint, headers } = composeConnection(authentication, `/ml/export/${name}/${version}`);
 
 		await adapter.saveFile(
 			"Save SurrealML model",
@@ -142,10 +142,10 @@ export function ModelsView() {
 							# Upload your model directly to SurrealDB
 							SurMlFile.upload(
 								path="./model.surml",
-								url="${connectionUri(connection, 'ml/import')}",
+								url="${connectionUri(authentication, 'ml/import')}",
 								chunk_size=36864,
-								namespace="${connection.namespace}",
-								database="${connection.database}",
+								namespace="${authentication.namespace}",
+								database="${authentication.database}",
 								username="...",
 								password="..."
 							)							
@@ -178,6 +178,7 @@ export function ModelsView() {
 						<Button
 							flex={1}
 							color="slate"
+							variant="light"
 							rightSection={<Icon path={iconOpen} />}
 							onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealml")}
 						>

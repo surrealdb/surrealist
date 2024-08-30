@@ -1,6 +1,8 @@
 import { FC } from "react";
 import { CodeLang } from "~/types";
 
+export type { Snippets } from "~/types";
+
 interface BaseDocsTopic {
 	id: string;
 	title: string;
@@ -31,7 +33,6 @@ export interface DocsSectionTopic extends BaseDocsTopic {
 }
 
 export type DocsTopic = DocsSectionTopic | DocsLinkTopic | DocsArticleTopic | DocsGroupTopic;
-export type Snippets = Partial<Record<CodeLang, string>>;
 
 export function isSection(topic: DocsTopic): topic is DocsSectionTopic {
 	return (topic as DocsSectionTopic).topics !== undefined;

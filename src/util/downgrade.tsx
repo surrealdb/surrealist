@@ -3,9 +3,9 @@ import { openModal } from "@mantine/modals";
 import { invoke } from "@tauri-apps/api/core";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
-import { ModalTitle } from "~/components/ModalTitle";
 import { CONFIG_VERSION } from "./defaults";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 async function hasConfigBackup() {
 	if (!(adapter instanceof DesktopAdapter)) {
@@ -32,7 +32,7 @@ export async function showDowngradeWarningModal() {
 		closeOnClickOutside: false,
 		closeOnEscape: false,
 		title: (
-			<ModalTitle>Incompatible configuration</ModalTitle>
+			<PrimaryTitle>Incompatible configuration</PrimaryTitle>
 		),
 		children: (
 			<Box>

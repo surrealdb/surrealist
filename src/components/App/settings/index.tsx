@@ -1,8 +1,10 @@
 import classes from "./style.module.scss";
-import { iconBalance, iconClose, iconEye, iconFlag, iconPlay, iconServer, iconWrench } from "~/util/icons";
-import { ActionIcon, Box, Center, Group, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
+
+import { iconBalance, iconClose, iconCloud, iconEye, iconFlag, iconPlay, iconServer, iconWrench } from "~/util/icons";
+import { ActionIcon, Box, Center, Group, Image, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import { BehaviourTab } from "./tabs/Behaviour";
 import { ServingTab } from "./tabs/Serving";
+import { CloudTab } from "./tabs/Cloud";
 import { AppearanceTab } from "./tabs/Appearance";
 import { TemplatesTab } from "./tabs/Templates";
 import { useIsLight } from "~/hooks/theme";
@@ -17,8 +19,9 @@ import { useVersionCopy } from "~/hooks/debug";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { SurrealistLogo } from "~/components/SurrealistLogo";
 import { useBoolean } from "~/hooks/boolean";
+import { useKeymap } from "~/hooks/keymap";
+import { useLogoUrl } from "~/hooks/brand";
 
 interface Category {
 	id: string;
@@ -55,6 +58,12 @@ const CATEGORIES: Category[] = [
 		disabled: () => !isDesktop
 	},
 	{
+		id: "cloud",
+		name: "Surreal Cloud",
+		icon: iconCloud,
+		component: CloudTab,
+	},
+	{
 		id: "feature-flags",
 		name: "Feature Flags",
 		icon: iconFlag,
@@ -71,6 +80,7 @@ const CATEGORIES: Category[] = [
 
 export function Settings() {
 	const isLight = useIsLight();
+	const logoUrl = useLogoUrl();
 	const [flags, setFlags] = useFeatureFlags();
 	const [open, openHandle] = useBoolean();
 	const [copyDebug, clipboard] = useVersionCopy();
@@ -101,6 +111,12 @@ export function Settings() {
 		openHandle.open();
 	});
 
+	useKeymap([
+		["mod+,", () => {
+			openHandle.open();
+		}]
+	]);
+
 	return (
 		<>
 			<Modal
@@ -124,9 +140,9 @@ export function Settings() {
 					>
 						<Stack pt="sm" pb="xl" gap="xs">
 							<Center>
-								<SurrealistLogo
+								<Image
 									h={26}
-									c="bright"
+									src={logoUrl}
 								/>
 							</Center>
 							<Text

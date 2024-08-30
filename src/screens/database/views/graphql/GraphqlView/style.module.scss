@@ -1,0 +1,18 @@
+.send-circle, .send-circle * {
+	cursor: pointer !important;
+	z-index: 1;
+}
+
+.send-button {
+	background-origin: border-box;
+	transition: all .1s;
+
+	:global(.mantine-ActionIcon-loader) {
+		background-color: transparent;
+	}
+}
+
+.send-button-valid {
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 6px 25px -4px rgba(186, 0, 171, 0.5), 0 3px 15px rgba(186, 0, 171, 0.25);
+}

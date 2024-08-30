@@ -14,6 +14,7 @@ export function EdgeNode({ data }: EdgeNodeProps) {
 			isSelected={data.isSelected}
 			hasIncoming
 			hasOutgoing
+			isEdge
 		/>
 	);
 }

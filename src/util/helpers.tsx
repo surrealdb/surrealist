@@ -5,13 +5,9 @@ import { showNotification } from "@mantine/notifications";
 import { uid } from "radash";
 import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { adapter } from "~/adapter";
-import { VIEW_MODES } from "~/constants";
-import { getConnection } from "./connection";
-import { ConnectionOptions, TabQuery, ViewMode } from "~/types";
-import { useInterfaceStore } from "~/stores/interface";
-import { getSetting } from "./config";
-import { decodeCbor } from "surrealdb.js";
-import { Value } from "surrealql.wasm/v1";
+import { Authentication, TabQuery } from "~/types";
+import { decodeCbor, escape_ident } from "surrealdb";
+import { Value } from "@surrealdb/ql-wasm";
 
 const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 const VARIABLE_PATTERN = /\$\w+/gi;
@@ -58,34 +54,6 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
 		window.getSelection()?.addRange(range);
 	}
 };
-
-/**
- * Update the title of the window
- */
-export function updateTitle() {
-	const { pathname } = window.location;
-
-	const windowPinned = getSetting("behavior", "windowPinned");
-	const activeView = pathname.split("/")[1] as ViewMode;
-	const viewInfo = VIEW_MODES[activeView];
-	const session = getConnection();
-	const segments: string[] = [];
-
-	if (session) {
-		segments.push(`${session.name} -`);
-	}
-
-	segments.push(`Surrealist ${viewInfo?.name || ""}`);
-
-	if (windowPinned) {
-		segments.push("(Pinned)");
-	}
-
-	const title = segments.join(" ");
-
-	adapter.setWindowTitle(title);
-	useInterfaceStore.getState().setWindowTitle(title);
-}
 
 /**
  * Display an error notification
@@ -245,7 +213,7 @@ export function isPermissionError(result: any) {
  * @param path The optional path to append
  * @returns The URI string
  */
-export function connectionUri(options: ConnectionOptions, path?: string) {
+export function connectionUri(options: Authentication, path?: string) {
 	if (options.protocol === "mem") {
 		return "mem://";
 	} else if (options.protocol === "indxdb") {
@@ -276,7 +244,7 @@ export function connectionUri(options: ConnectionOptions, path?: string) {
  * @param options The connection options
  * @returns The URI string
  */
-export function versionUri(options: ConnectionOptions) {
+export function versionUri(options: Authentication) {
 	if (options.protocol === "mem" || options.protocol === "indxdb") {
 		return undefined;
 	}
@@ -365,9 +333,10 @@ export function tryParseParams(paramString: string) {
  *
  * @param value The value to escape
  * @returns The escaped value
+ * @deprecated Use `escapeIdent` from surrealql.tsx instead
  */
 export function tb(value: string) {
-	return `\`${value.replaceAll("`", "\\`")}\``;
+	return escape_ident(value);
 }
 
 /**

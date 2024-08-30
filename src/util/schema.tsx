@@ -3,11 +3,10 @@ import equal from 'fast-deep-equal';
 import { SchemaFunction, SchemaModel, SchemaInfoDB, SchemaInfoKV, SchemaInfoNS, SchemaInfoTB, TableInfo } from "~/types";
 import { tb } from './helpers';
 import { useDatabaseStore } from '~/stores/database';
-import { executeQuerySingle } from '~/screens/database/connection';
+import { executeQuerySingle } from '~/screens/database/connection/connection';
 import { createDatabaseSchema } from "./defaults";
 import { klona } from "klona";
 import { adapter } from "~/adapter";
-import { extractKindRecords } from "./surrealql";
 
 const emptyKV = () => ({ users: [] });
 const emptyNS = () => ({ users: [] });
@@ -23,9 +22,9 @@ export interface SchemaSyncOptions {
  * @param options Sync options
  */
 export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
-	const { isConnected } = useDatabaseStore.getState();
+	const { currentState } = useDatabaseStore.getState();
 
-	if (!isConnected) {
+	if (currentState !== "connected") {
 		return;
 	}
 
@@ -131,7 +130,13 @@ export function buildFunctionDefinition(func: SchemaFunction) : string {
 	const args = func.args.map(([name, kind]) => `$${name}: ${kind}`).join(", ");
 	const block = func.block.split("\n").map((line) => `\t${line}`).join("\n");
 
-	let query = `DEFINE FUNCTION fn::${func.name}(${args}) {\n${block}\n}`;
+	let query = `DEFINE FUNCTION fn::${func.name}(${args})`;
+
+	if (func.returns) {
+		query += ` -> ${func.returns}`;
+	}
+
+	query += ` {\n${block}\n}`;
 
 	if (func.permissions) {
 		query += ` PERMISSIONS ${displaySchemaPermission(func.permissions)}`;
@@ -170,30 +175,11 @@ export function buildModelDefinition(func: SchemaModel) : string {
 export function extractEdgeRecords(table: TableInfo): [boolean, string[], string[]] {
 	const { kind } = table.schema;
 
-	if (kind.kind === "RELATION") {
-		return [
-			kind.kind === "RELATION",
-			kind.in || [],
-			kind.out || []
-		];
-	}
-
-	let hasIn = false;
-	let hasOut = false;
-	let inRecords: string[] = [];
-	let outRecords: string[] = [];
-
-	for (const f of table.fields) {
-		if (f.name == "in" && f.kind) {
-			inRecords = extractKindRecords(f.kind);
-			hasIn = true;
-		} else if (f.name == "out" && f.kind) {
-			outRecords = extractKindRecords(f.kind);
-			hasOut = true;
-		}
-	}
-
-	return [hasIn && hasOut, inRecords, outRecords];
+	return [
+		kind.kind === "RELATION",
+		kind.in || [],
+		kind.out || []
+	];
 }
 
 /**

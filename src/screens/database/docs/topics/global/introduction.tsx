@@ -1,6 +1,3 @@
-import classes from "../../style.module.scss";
-import { Article } from "~/screens/database/docs/components";
-import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
 import {
 	DotNetIcon,
 	JavaScriptIcon, PhpIcon,
@@ -8,19 +5,22 @@ import {
 	RustIcon,
 	SurrealIcon,
 } from "~/screens/database/docs/icons";
-import { useActiveConnection } from "~/hooks/connection";
+
+import clsx from "clsx";
+import classes from "../../style.module.scss";
+import { Article } from "~/screens/database/docs/components";
+import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
 import { useSetting } from "~/hooks/config";
 import { CodeLang } from "~/types";
-import clsx from "clsx";
 import { Icon } from "~/components/Icon";
 import { iconOpen } from "~/util/icons";
 import { adapter } from "~/adapter";
+import { useIsLight } from "~/hooks/theme";
 
 interface Library {
 	id: CodeLang;
 	name: string;
 	icon: React.FC<{ active?: boolean }>;
-	color: string;
 	link: string;
 }
 
@@ -29,21 +29,18 @@ const LIBRARIES: Library[] = [
 		id: "cli",
 		name: "CLI",
 		icon: SurrealIcon,
-		color: "#FF00A0",
 		link: "https://surrealdb.com/docs/surrealdb/cli",
 	},
 	{
 		id: "rust",
 		name: "Rust",
 		icon: RustIcon,
-		color: "#f46624",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/rust",
 	},
 	{
 		id: "js",
 		name: "JavaScript",
 		icon: JavaScriptIcon,
-		color: "#F7DF1E",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/javascript",
 	},
 	// {
@@ -57,14 +54,12 @@ const LIBRARIES: Library[] = [
 		id: "py",
 		name: "Python",
 		icon: PythonIcon,
-		color: "#3776AB",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/python",
 	},
 	{
 		id: "csharp",
 		name: ".NET",
 		icon: DotNetIcon,
-		color: "#512BD4",
 		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/dotnet",
 	},
 	// {
@@ -78,16 +73,14 @@ const LIBRARIES: Library[] = [
 		id: "php",
 		name: "PHP",
 		icon: PhpIcon,
-		color: "#777BB4",
 		link: "https://github.com/surrealdb/surrealdb.php"
 	}
 ];
 
 export function DocsGlobalIntroduction() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
-	const { connection } = useActiveConnection();
-
 	const active = LIBRARIES.find((lib) => lib.id === language);
+	const isLight = useIsLight();
 
 	return (
 		<Article>
@@ -172,7 +165,7 @@ export function DocsGlobalIntroduction() {
 								<Paper
 									key={lib.name}
 									radius="xl"
-									bg="slate.9"
+									bg={isLight ? "slate.0" : "slate.9"}
 									className={clsx(
 										classes.library,
 										isActive && classes.libraryActive

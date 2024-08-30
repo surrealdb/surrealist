@@ -1,30 +1,49 @@
+import clsx from "clsx";
 import classes from "./style.module.scss";
-import primarySphere from "~/assets/images/primary-sphere.webp";
-import secondarySphere from "~/assets/images/secondary-sphere.webp";
-import connection from "~/assets/images/start/connection.webp";
-import sandbox from "~/assets/images/start/sandbox.webp";
-import cloud from "~/assets/images/start/cloud.webp";
+import startGlow from "~/assets/images/start-glow.webp";
+import connectionDarkUrl from "~/assets/images/dark/start-connection.webp";
+import connectionLightUrl from "~/assets/images/light/start-connection.webp";
+import sandboxDarkUrl from "~/assets/images/dark/start-sandbox.webp";
+import sandboxLightUrl from "~/assets/images/light/start-sandbox.webp";
+import cloudDarkUrl from "~/assets/images/dark/start-cloud.webp";
+import cloudLightUrl from "~/assets/images/light/start-cloud.webp";
 import { Box, Center, Group, Stack, UnstyledButton } from "@mantine/core";
-import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
-import { useDatabaseStore } from "~/stores/database";
 import { adapter } from "~/adapter";
+import { useThemeImage } from "~/hooks/theme";
+import { dispatchIntent } from "~/hooks/url";
 
 export function StartScreen() {
-	const { setActiveConnection } = useConfigStore.getState();
-	const { openConnectionCreator } = useInterfaceStore.getState();
-
-	const isConnecting = useDatabaseStore(s => s.isConnecting);
-	const title = useInterfaceStore((s) => s.title);
+	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
 	});
 
+	const openConnectionCreator = useStable(() => {
+		dispatchIntent("new-connection");
+	});
+
 	const openCloud = useStable(() => {
-		adapter.openUrl("https://surrealdb.com/cloud");
+		setActiveScreen("database");
+		setActiveView("cloud");
+	});
+
+	const connectionUrl = useThemeImage({
+		light: connectionLightUrl,
+		dark: connectionDarkUrl
+	});
+
+	const sandboxUrl = useThemeImage({
+		light: sandboxLightUrl,
+		dark: sandboxDarkUrl
+	});
+
+	const cloudUrl = useThemeImage({
+		light: cloudLightUrl,
+		dark: cloudDarkUrl
 	});
 
 	return (
@@ -34,62 +53,47 @@ export function StartScreen() {
 			className={classes.start}
 		>
 			{!adapter.hasTitlebar && (
-				<Center
+				<Box
 					data-tauri-drag-region
 					className={classes.titlebar}
-				>
-					{title}
-				</Center>
+				/>
 			)}
 
 			<div
-				className={classes.primarySphere}
+				className={classes.glow}
 				style={{
-					backgroundImage: `url(${primarySphere})`
+					backgroundImage: `url(${startGlow})`
 				}}
 			/>
 
-			<div
-				className={classes.secondarySphere}
-				style={{
-					backgroundImage: `url(${secondarySphere})`
-				}}
-			/>
-
-			<Center
-				h="100%"
-			>
-				<Group align="stretch">
+			<Center h="100%">
+				<Group align="stretch" wrap="nowrap">
 					<Stack>
 						<UnstyledButton
 							className={classes.startBox}
 							w={320}
 							h={226}
 							onClick={openConnectionCreator}
-							style={{ border: '1px solid rgba(255, 255, 255, 0.05' }}
 						>
-							<Box style={{ backgroundImage: `url(${connection})` }} />
+							<Box style={{ backgroundImage: `url(${connectionUrl})` }} />
 						</UnstyledButton>
 						<UnstyledButton
 							className={classes.startBox}
 							w={320}
 							h={226}
 							onClick={openSandbox}
-							style={{ border: '1px solid rgba(255, 255, 255, 0.05' }}
-							disabled={isConnecting}
 						>
-							<Box style={{ backgroundImage: `url(${sandbox})` }} />
+							<Box style={{ backgroundImage: `url(${sandboxUrl})` }} />
 						</UnstyledButton>
 					</Stack>
 					<Box>
 						<UnstyledButton
-							className={classes.startBox}
+							className={clsx(classes.startBox, classes.cloudBox)}
 							w={657}
 							h={464}
 							onClick={openCloud}
-							disabled={isConnecting}
 						>
-							<Box style={{ backgroundImage: `url(${cloud})` }} />
+							<Box style={{ backgroundImage: `url(${cloudUrl})` }} />
 						</UnstyledButton>
 					</Box>
 				</Group>

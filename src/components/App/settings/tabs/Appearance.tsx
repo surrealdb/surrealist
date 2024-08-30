@@ -31,20 +31,20 @@ export function AppearanceTab() {
 	return (
 		<>
 			<SettingsSection>
+				{flags.themes && (
+					<Select
+						label="Color scheme"
+						data={THEMES}
+						value={colorScheme}
+						onChange={setColorScheme as any}
+					/>
+				)}
 				<Select
 					data={SIDEBAR_MODES}
 					label="Sidebar appearance"
 					value={sidebarMode}
 					onChange={setSidebarMode as any}
 				/>
-				{flags.themes && (
-					<Select
-						label="Theme"
-						data={THEMES}
-						value={colorScheme}
-						onChange={setColorScheme as any}
-					/>
-				)}
 				<Select
 					label="Value formatting mode"
 					data={VALUE_MODES}

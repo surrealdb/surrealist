@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import legacy from "@vitejs/plugin-legacy";
-import { ViteImageOptimizer as images } from 'vite-plugin-image-optimizer';
 import { Mode, plugin as markdown } from 'vite-plugin-markdown';
+import { ViteImageOptimizer as images } from 'vite-plugin-image-optimizer';
 import { UserConfig, defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { version, surreal } from './package.json';
@@ -42,19 +42,23 @@ export const getDefaultConfig = ({ mode }: { mode?: string }): UserConfig => ({
 		minify: process.env.TAURI_DEBUG ? false : 'esbuild',
 		sourcemap: !!process.env.TAURI_DEBUG,
 		rollupOptions: {
-			input: {
+			input: (process.env.TAURI_ENV_PLATFORM || mode === "development") ? {
 				'surrealist': '/index.html',
-				'mini-run': '/mini/run.html',
-				'mini-new': '/mini/new.html'
+			} : {
+				'surrealist': '/index.html',
+				'mini-run': '/mini/run/index.html',
+				'mini-new': '/mini/new/index.html',
+				'cloud-manage': '/cloud/manage/index.html',
+				'cloud-callback': '/cloud/callback/index.html',
 			},
 			output: {
 				experimentalMinChunkSize: 5000,
 				manualChunks: {
 					react: ["react", "react-dom"],
-					codemirror: ["codemirror", "codemirror-surrealql", "@replit/codemirror-indentation-markers"],
 					posthog: ["posthog-js"],
+					codemirror: ["codemirror", "@surrealdb/codemirror", "@surrealdb/lezer", "@replit/codemirror-indentation-markers"],
 					mantime: ["@mantine/core", "@mantine/hooks", "@mantine/notifications"],
-					surreal: ["surrealdb.js", "surrealdb.wasm"] // TODO : surrealql.wasm
+					surreal: ["surrealdb", "@surrealdb/wasm", "@surrealdb/ql-wasm"]
 				}
 			}
 		},
@@ -87,12 +91,12 @@ export const getDefaultConfig = ({ mode }: { mode?: string }): UserConfig => ({
 		'import.meta.env.MODE': JSON.stringify(isPreview ? "preview" : mode),
 	},
 	optimizeDeps: {
-		exclude: ['surrealdb.wasm', 'surrealql.wasm'],
+		exclude: ['@surrealdb/wasm', '@surrealdb/ql-wasm'],
 		esbuildOptions: {
 			target: 'esnext',
 		},
 	},
-	assetsInclude: ['**/surrealdb.wasm/dist/*.wasm', '**/surrealql.wasm/dist/*.wasm']
+	assetsInclude: ['**/@surrealdb/wasm/dist/*.wasm', '**/@surrealdb/ql-wasm/dist/*.wasm']
 });
 
 // https://vitejs.dev/config/

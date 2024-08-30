@@ -2,26 +2,26 @@ import { Alert, Button, Group, Modal, PasswordInput, Stack, Table, Text, TextInp
 import { useDisclosure } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { openConnection } from "~/screens/database/connection";
+import { openConnection } from "~/screens/database/connection/connection";
 import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconWarning } from "~/util/icons";
+import { dispatchIntent } from "~/hooks/url";
 
 export function ScopeSignupModal() {
-	const { closeScopeSignup, openConnectionEditor } = useInterfaceStore.getState();
+	const { closeScopeSignup } = useInterfaceStore.getState();
 
-	const opened = useInterfaceStore((s) => s.showScopeSignup);
-	const [loading, loadingHandle] = useDisclosure();
 	const [error, setError] = useState("");
-
-	const { id, connection } = useActiveConnection();
+	const [loading, loadingHandle] = useDisclosure();
+	const opened = useInterfaceStore((s) => s.showScopeSignup);
+	const connection = useActiveConnection();
 
 	const openEditor = useStable(() => {
-		openConnectionEditor(id);
+		dispatchIntent("edit-connection", { id: connection.id });
 		closeScopeSignup();
 	});
 
@@ -31,7 +31,10 @@ export function ScopeSignupModal() {
 		openConnection({
 			connection: {
 				...connection,
-				authMode: "scope-signup"
+				authentication: {
+					...connection.authentication,
+					mode: "scope-signup"
+				}
 			}
 		}).then(() => {
 			closeScopeSignup();
@@ -52,7 +55,7 @@ export function ScopeSignupModal() {
 		<Modal
 			opened={opened}
 			onClose={closeScopeSignup}
-			title={<ModalTitle>Sign up to scope</ModalTitle>}
+			title={<PrimaryTitle>Sign up to scope</PrimaryTitle>}
 		>
 			<Stack>
 				{error && (
@@ -76,7 +79,7 @@ export function ScopeSignupModal() {
 						</Table.Tr>
 					</Table.Thead>
 					<Table.Tbody>
-						{connection.scopeFields.map((field) => {
+						{connection.authentication.scopeFields.map((field) => {
 							const fieldName = field.subject.toLowerCase();
 							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(fieldName)
 								? PasswordInput

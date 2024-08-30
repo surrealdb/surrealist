@@ -4,10 +4,10 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/connection";
 import { useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { SchemaScope, ScopeField } from "~/types";
@@ -16,14 +16,16 @@ import { syncDatabaseSchema } from "~/util/schema";
 import { iconAccountPlus, iconAccountSecure, iconCheck, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { CodeInput } from "~/components/Inputs";
-import { authenticate, composeAuthentication, executeQuery, register } from "~/screens/database/connection";
+import { authenticate, executeQuery, register } from "~/screens/database/connection/connection";
 import { getStatementCount } from "~/util/surrealql";
 import { useImmer } from "use-immer";
 import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { adapter } from "~/adapter";
+import { composeAuthentication } from "~/screens/database/connection/helpers";
 
 export function ScopePane() {
-	const { connection } = useActiveConnection();
+	const { authentication } = useActiveConnection();
+	const connection = useConnection();
 	const isConnected = useIsConnected();
 	const schema = useSchema();
 
@@ -111,7 +113,7 @@ export function ScopePane() {
 	});
 
 	const registerUser = useStable(async () => {
-		const auth = composeAuthentication(connection);
+		const auth = await composeAuthentication(authentication);
 		const params = registerFields.reduce((acc, field) => {
 			acc[field.subject] = field.value;
 			return acc;
@@ -122,8 +124,8 @@ export function ScopePane() {
 
 			await register({
 				scope: registerScope,
-				namespace: connection.namespace,
-				database: connection.database,
+				namespace: authentication.namespace,
+				database: authentication.database,
 				...params
 			});
 
@@ -161,6 +163,7 @@ export function ScopePane() {
 		<ContentPane
 			icon={iconAccountSecure}
 			title="Database Scopes"
+			disabled={!connection?.lastDatabase}
 			rightSection={
 				<Tooltip label="New scope">
 					<ActionIcon
@@ -174,7 +177,7 @@ export function ScopePane() {
 			}>
 			{scopes.length === 0 && (
 				<Center h="100%" c="slate">
-					{isConnected ? "No scopes found" : "Not connected"}
+					{isConnected ? !connection?.lastDatabase ? "No database selected" : "No scopes found" : "Not connected"}
 				</Center>
 			)}
 
@@ -231,7 +234,7 @@ export function ScopePane() {
 				onClose={registerHandle.close}
 				trapFocus={false}
 				title={
-					<ModalTitle>Register user</ModalTitle>
+					<PrimaryTitle>Register user</PrimaryTitle>
 				}
 			>
 				<Text>
@@ -304,7 +307,7 @@ export function ScopePane() {
 				onClose={editingHandle.close}
 				trapFocus={false}
 				title={
-					<ModalTitle>{isCreating ? "Create scope" : "Update scope"}</ModalTitle>
+					<PrimaryTitle>{isCreating ? "Create scope" : "Update scope"}</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={saveScope}>

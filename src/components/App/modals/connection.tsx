@@ -1,23 +1,21 @@
-import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack, Select } from "@mantine/core";
+import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack } from "@mantine/core";
 import { useImmer } from "use-immer";
 import { isConnectionValid } from "~/util/connection";
 import { useStable } from "~/hooks/stable";
-import { Fragment, useLayoutEffect, useMemo } from "react";
-import { updateTitle } from "~/util/helpers";
+import { Fragment, useLayoutEffect, useMemo, useState } from "react";
 import { useConnections } from "~/hooks/connection";
 import { Connection, Template } from "~/types";
 import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
 import { createBaseConnection } from "~/util/defaults";
-import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlay, iconPlus, iconWarning } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
 import { useSetting } from "~/hooks/config";
 import { useIntent } from "~/hooks/url";
-import { useDatabaseStore } from "~/stores/database";
 import { useConfirmation } from "~/providers/Confirmation";
 import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { useDisclosure } from "@mantine/hooks";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -31,24 +29,20 @@ function newConnection() {
 
 export function ConnectionModal() {
 	const connections = useConnections();
-
 	const { addConnection, updateConnection, setActiveConnection, removeConnection } = useConfigStore.getState();
-	const { closeConnectionEditor, openConnectionCreator } = useInterfaceStore.getState();
-	const { isServing } = useDatabaseStore.getState();
 
-	const opened = useInterfaceStore((s) => s.showConnectionEditor);
-	const editingId = useInterfaceStore((s) => s.editingConnectionId);
-	const isCreating = useInterfaceStore((s) => s.isCreatingConnection);
-	const groups = useConfigStore((s) => s.connectionGroups);
+	const [opened, openedHandle] = useDisclosure();
+	const [editingId, setEditingId] = useState("");
+	const [isCreating, setIsCreating] = useState(false);
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
 	const isValid = useMemo(() => {
-		return details.name && isConnectionValid(details.connection);
-	}, [details.connection, details.name]);
+		return details.name && isConnectionValid(details.authentication);
+	}, [details.authentication, details.name]);
 
 	const saveInfo = useStable(async () => {
-		closeConnectionEditor();
+		openedHandle.close();
 
 		if (isCreating) {
 			addConnection(details);
@@ -58,13 +52,10 @@ export function ConnectionModal() {
 				id: editingId,
 				name: details.name,
 				icon: details.icon,
-				connection: details.connection,
+				authentication: details.authentication,
 				group: details.group,
 			});
 		}
-
-		updateTitle();
-		// openConnection();
 	});
 
 	const generateName = useStable(() => {
@@ -81,44 +72,12 @@ export function ConnectionModal() {
 
 	const applyTemplate = useStable((template: Template) => {
 		setDetails(draft => {
+			draft.name = template.name;
 			draft.icon = template.icon;
-			draft.connection = template.values;
+			draft.group = template.group;
+			draft.authentication = template.values;
 		});
 	});
-
-	const templateList = useMemo(() => {
-		const list = templates.map(info => ({
-			info,
-			icon: iconFile
-		}));
-
-		if (isServing) {
-			const { username, password, port } = useConfigStore.getState().settings.serving;
-
-			list.push({
-				icon: iconPlay,
-				info: {
-					id: "serving",
-					name: "Local database",
-					icon: 0,
-					values: {
-						authMode: "root",
-						database: "",
-						namespace: "",
-						protocol: "ws",
-						hostname: `localhost:${port}`,
-						scope: "",
-						scopeFields: [],
-						token: "",
-						username,
-						password
-					}
-				}
-			});
-		}
-
-		return list;
-	}, [templates, isServing]);
 
 	useLayoutEffect(() => {
 		if (!details.name.trim()) {
@@ -129,59 +88,51 @@ export function ConnectionModal() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [details.name]);
 
-	useLayoutEffect(() => {
-		if (opened) {
-			const base = newConnection();
-
-			if (isCreating) {
-				setDetails({
-					...base,
-					name: generateName(),
-				});
-			} else {
-				const info = connections.find((con) => con.id === editingId);
-
-				setDetails(info || base);
-			}
-		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [opened]);
-
-	const groupItems = useMemo(() => {
-		return [
-			{
-				value: "",
-				label: "No group"
-			},
-			...groups.map((group) => ({
-				value: group.id,
-				label: group.name,
-			}))
-		];
-	}, [groups]);
-
 	const remove = useConfirmation({
 		title: "Remove connection",
 		message: "Are you sure you want to remove this connection?",
 		onConfirm() {
 			removeConnection(details.id);
-			closeConnectionEditor();
+			openedHandle.close();
 		}
 	});
 
-	useIntent("new-connection", () => {
-		openConnectionCreator();
+	useIntent("new-connection", ({ template }) => {
+		const base = newConnection();
+
+		setIsCreating(true);
+		setEditingId("");
+		openedHandle.open();
+
+		if (typeof template === "string") {
+			applyTemplate(JSON.parse(template) as Template);
+		} else {
+			setDetails({
+				...base,
+				name: generateName(),
+			});
+		}
+	});
+
+	useIntent("edit-connection", ({ id }) => {
+		const base = newConnection();
+		const info = connections.find((con) => con.id === editingId);
+
+		setIsCreating(false);
+		setEditingId(id);
+		setDetails(info || base);
+		openedHandle.open();
 	});
 
 	return (
 		<Modal
 			opened={opened}
-			onClose={closeConnectionEditor}
+			onClose={openedHandle.close}
 			trapFocus={false}
-			size="lg"
+			size={520}
 		>
 			<Form onSubmit={saveInfo}>
-				{templateList.length > 0 && (
+				{templates.length > 0 && (
 					<Alert mb="xl" p="xs">
 						<Group>
 							<Icon
@@ -191,32 +142,35 @@ export function ConnectionModal() {
 								size={1.2}
 							/>
 							<Text>
-								{isCreating ? 'Initialize' : 'Configure'} this connection with a template?
+								Apply a connection template?
 							</Text>
 							<Spacer />
-							<Menu>
+							<Menu
+								position="bottom-start"
+								transitionProps={{
+									transition: "scale-y"
+								}}
+							>
 								<Menu.Target>
 									<Button
 										color="slate"
 										variant="light"
 										rightSection={<Icon path={iconChevronDown} />}
 									>
-										Select template
+										Apply template
 									</Button>
 								</Menu.Target>
-
 								<Menu.Dropdown>
 									<Stack gap={4}>
-										{templateList.map(({ info, icon }, i) => (
+										{templates.map((info, i) => (
 											<Fragment key={info.id}>
 												<Menu.Item
-													leftSection={<Icon path={icon} mr="xs" />}
 													onClick={() => applyTemplate(info)}
 													miw={175}
 												>
 													{info.name}
 												</Menu.Item>
-												{i < templateList.length - 1 && <Divider color="slate" />}
+												{i < templates.length - 1 && <Divider />}
 											</Fragment>
 										))}
 									</Stack>
@@ -226,41 +180,16 @@ export function ConnectionModal() {
 					</Alert>
 				)}
 
-				{!isValid && (
-					<Alert mb="xl" p="xs">
-						<Group>
-							<Icon
-								ml={6}
-								path={iconWarning}
-								color="surreal.1"
-								size={1.2}
-							/>
-							<Text>
-								Some connection details are invalid
-							</Text>
-						</Group>
-					</Alert>
-				)}
-
 				<ConnectionDetails
 					value={details}
 					onChange={setDetails}
-					rightSection={
-						<Select
-							data={groupItems}
-							value={details.group || ''}
-							onChange={(group) => setDetails((draft) => {
-								draft.group = group || undefined;
-							})}
-						/>
-					}
 				/>
 
-				<Group mt="lg">
+				<Group mt="xl">
 					<Button
 						color="slate"
 						variant="light"
-						onClick={closeConnectionEditor}
+						onClick={openedHandle.close}
 					>
 						Close
 					</Button>

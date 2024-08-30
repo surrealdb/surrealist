@@ -13,11 +13,10 @@ import { Text } from "@mantine/core";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
-import { formatQuery, validateQuery } from "~/util/surrealql";
-import { surrealql } from "codemirror-surrealql";
-import { Value } from "surrealql.wasm/v1";
-import { encodeCbor } from "surrealdb.js";
+import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { useInspector } from "~/providers/Inspector";
+import { lineNumbers } from "@codemirror/view";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -100,7 +99,7 @@ export function QueryPane({
 		setShowVariables(true);
 		updateQueryTab({
 			id: activeTab.id,
-			variables: Value.from_cbor(new Uint8Array(encodeCbor(mergedVars))).format(true),
+			variables: formatValue(mergedVars, false, true),
 		});
 	});
 
@@ -181,7 +180,8 @@ export function QueryPane({
 					surqlTableCompletion(),
 					surqlVariableCompletion(),
 					surqlCustomFunctionCompletion(),
-					selectionChanged(setSelection)
+					selectionChanged(setSelection),
+					lineNumbers(),
 				]}
 			/>
 		</ContentPane>

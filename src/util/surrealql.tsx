@@ -1,5 +1,5 @@
-import { decodeCbor, encodeCbor } from "surrealdb.js";
-import { SurrealQL, Value } from "surrealql.wasm/v1";
+import { decodeCbor, encodeCbor, escape_ident } from "surrealdb";
+import { SurrealQL, Value } from "@surrealdb/ql-wasm";
 
 /**
  * Validate a query and return an error message if invalid
@@ -113,7 +113,8 @@ export function extractKindRecords(kind: string) {
 		parseKindTree(root, records);
 
 		return [...records.values()];
-	} catch {
+	} catch (err: any) {
+		console.error(err);
 		return [];
 	}
 }
@@ -125,13 +126,55 @@ function parseKindTree(obj: any, records: Set<string>) {
 		for (const record of obj.Record) {
 			records.add(record);
 		}
-	} else if (Array.isArray(obj)) {
-		for (const item of obj) {
-			parseKindTree(item, records);
-		}
-	} else {
-		for (const key in obj) {
-			parseKindTree(obj[key], records);
+	} else if (obj.Array) {
+		parseKindTree(obj.Array[0], records);
+	} else if (obj.Set) {
+		parseKindTree(obj.Array[0], records);
+	} else if (obj.Either) {
+		for (const either of obj.Either) {
+			parseKindTree(either, records);
 		}
 	}
+}
+
+/**
+ * Escape an ident string when required
+ *
+ * @param ident The raw string
+ * @returns Optionally escaped ident
+ */
+export function escapeIdent(ident: string) {
+	return escape_ident(ident);
+}
+
+/**
+ * Parse an indent and strip any escape characters
+ *
+ * @param ident The raw ident string
+ * @returns The parsed ident
+ */
+export function parseIdent(ident: string) {
+	const first = ident.at(0);
+	const last = ident.at(-1);
+
+	if (first === "`" && last === "`") {
+		return ident.slice(1, -1).replaceAll("\\`", "`");
+	}
+
+	if (first === '⟨' && last === '⟩') {
+		return ident.slice(1, -1).replaceAll('\\⟩', '⟩');
+	}
+
+	return ident;
+}
+
+/**
+ * Compare two idents for equality, ignoring any escape characters
+ *
+ * @param a The first ident
+ * @param b The second ident
+ * @returns Whether the idents are equal
+ */
+export function compareIdents(a: string, b: string) {
+	return parseIdent(a) === parseIdent(b);
 }

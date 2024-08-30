@@ -1,15 +1,14 @@
 import classes from "./style.module.scss";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Box, Button, Checkbox, Divider, Group, Loader, Modal, Popover, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Anchor, Badge, Box, Button, Checkbox, Divider, Group, HoverCard, Loader, Popover, Stack, Text, Tooltip } from "@mantine/core";
 import { Background, NodeChange, ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
 import { ChangeEvent, ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
+import { GraphWarning, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
 import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIsConnected } from "~/hooks/connection";
-import { ModalTitle } from "~/components/ModalTitle";
 import { useActiveConnection } from "~/hooks/connection";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { RadioSelect } from "~/components/RadioSelect";
@@ -19,26 +18,13 @@ import { useConfigStore } from "~/stores/config";
 import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
 import { useContextMenu } from "mantine-contextmenu";
-import { useBoolean } from "~/hooks/boolean";
-import { iconAPI, iconCog, iconDesigner, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh } from "~/util/icons";
+import { iconAPI, iconChevronLeft, iconChevronRight, iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation } from "~/util/icons";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
-
-interface HelpTitleProps {
-	isLight: boolean;
-	children: React.ReactNode;
-}
-
-function HelpTitle({ isLight, children }: HelpTitleProps) {
-	return (
-		<Title order={2} size={14} c={isLight ? "slate.9" : "white"} fw={600}>
-			{children}
-		</Title>
-	);
-}
+import { GraphWarningLine } from "./components";
 
 export interface TableGraphPaneProps {
-	active: TableInfo | null;
+	active: string | null;
 	tables: TableInfo[];
 	setActiveTable: (table: string) => void;
 }
@@ -50,16 +36,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const schema = useSchema();
 	const isConnected = useIsConnected();
+	const connection = useActiveConnection();
 	const isViewActive = useConfigStore((s) => s.activeView == "designer");
 
 	const [isComputing, setIsComputing] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
-	const [showHelp, showHelpHandle] = useBoolean();
 	const ref = useRef<ElementRef<"div">>(null);
 	const activeSession = useActiveConnection();
 	const isLight = useIsLight();
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
+	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
 	const [nodes, setNodes, handleOnNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const [computing, setComputing] = useState(false);
@@ -107,7 +94,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [nodes]);
 
 	const renderGraph = useStable(async () => {
-		const [nodes, edges] = buildFlowNodes(props.tables, activeSession.diagramShowLinks);
+		const [nodes, edges, warnings] = buildFlowNodes(props.tables, activeSession.diagramShowLinks);
+
+		setWarnings(warnings);
 
 		if (nodes.length === 0) {
 			setNodes([]);
@@ -116,20 +105,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return;
 		}
 
-		// console.log(1);
-
-		// setNodes([]);
-		// setEdges([]);
-
-		// setTimeout(() => {
-		// 	console.log(2);
-
 		setNodes(nodes);
 		setEdges(edges);
 		setComputing(true);
 
 		doLayoutRef.current = true;
-		// }, 5);
 	});
 
 	const saveImage = useStable(async (type: 'png' | 'svg') => {
@@ -159,6 +139,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				subtitle: "Snapshot saved to disk"
 			});
 		}
+	});
+
+	const toggleTableList = useStable(() => {
+		updateCurrentConnection({
+			designerTableList: !connection.designerTableList,
+		});
 	});
 
 	const showBox = !isComputing && (!isConnected || props.tables.length === 0);
@@ -202,8 +188,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [schema, isViewActive, isConnected, activeSession.diagramDirection]);
 
-	const tableName = props.active?.schema.name;
-
 	useEffect(() => {
 		setNodes(curr => {
 			return curr.map(node => {
@@ -211,20 +195,56 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					...node,
 					data: {
 						...node.data,
-						isSelected: node.id === tableName
+						isSelected: node.id === props.active
 					},
 				};
 			});
 		});
-	}, [tableName, setNodes]);
+	}, [setNodes, props.active]);
 
 	return (
 		<ContentPane
 			title="Table Graph"
-			icon={iconDesigner}
+			icon={iconRelation}
 			style={{ overflow: 'hidden' }}
+			leftSection={
+				<Tooltip label="Toggle table list">
+					<ActionIcon
+						mr="sm"
+						color="slate"
+						variant="light"
+						onClick={toggleTableList}
+						aria-label="Toggle table list"
+					>
+						<Icon path={connection.designerTableList ? iconChevronLeft : iconChevronRight} />
+					</ActionIcon>
+				</Tooltip>
+			}
 			rightSection={
 				<Group wrap="nowrap">
+					{warnings.length > 0 && (
+						<HoverCard position="bottom-end">
+							<HoverCard.Target>
+								<Badge
+									variant="light"
+									color="orange"
+									h={26}
+								>
+									Encountered {warnings.length} warnings
+								</Badge>
+							</HoverCard.Target>
+							<HoverCard.Dropdown>
+								<Stack>
+									{warnings.map((warning, i) => (
+										<GraphWarningLine
+											key={i}
+											warning={warning}
+										/>
+									))}
+								</Stack>
+							</HoverCard.Dropdown>
+						</HoverCard>
+					)}
 					<Tooltip label="New table">
 						<ActionIcon
 							onClick={openTableCreator}
@@ -262,7 +282,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 									value={activeSession.diagramDirection}
 									onChange={setDiagramDirection}
 								/>
-								<Divider color="slate.6" />
+								<Divider />
 								<Checkbox
 									label="Show record links"
 									checked={activeSession.diagramShowLinks}
@@ -272,15 +292,15 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Popover.Dropdown>
 					</Popover>
 					<Tooltip label="Designer help">
-						<ActionIcon
-							onClick={showHelpHandle.open}
-							aria-label="Open designer help"
-						>
-							<Icon path={iconHelp} />
-						</ActionIcon>
+						<Anchor href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+							<ActionIcon aria-label="Open designer help">
+								<Icon path={iconHelp} />
+							</ActionIcon>
+						</Anchor>
 					</Tooltip>
 				</Group>
-			}>
+			}
+		>
 			<div style={{ position: "relative", width: "100%", height: "100%" }}>
 				<ReactFlow
 					ref={ref}
@@ -380,47 +400,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Stack>
 				)}
 			</div>
-
-			<Modal
-				opened={showHelp}
-				onClose={showHelpHandle.close}
-				trapFocus={false}
-				size="lg"
-				withCloseButton
-				title={<ModalTitle>Using the Table Graph</ModalTitle>}
-			>
-				<Text c={isLight ? "slate.7" : "slate.2"}>
-					<HelpTitle isLight={isLight}>How do I use the table graph?</HelpTitle>
-
-					<Text mt={8} mb="xl">
-						The table graph will automatically render based on the tables in your database. You can click on a table to
-						view its details and modify it's schema. Changes made to the schema will be reflected in the graph.
-					</Text>
-
-					<HelpTitle isLight={isLight}>Can I change how tables are displayed?</HelpTitle>
-
-					<Text mt={8} mb="xl">
-						Press the <Icon path={iconCog} size="sm" /> button in the top right corner to open the graph options. Inside you
-						can change the table layout and table appearance. These settings are saved per session, however you can configure
-						default values in the Surrealist settings.
-					</Text>
-
-					<HelpTitle isLight={isLight}>Why are edges missing?</HelpTitle>
-
-					<Text mt={8} mb="xl">
-						Surrealist only renders edges for tables with a relation type. You
-						can automatically create a new edge table by pressing the <Icon path={iconPlus} /> button on the Table Graph
-						panel. Keep in mind edges are only visible when the layout is set to Diagram.
-					</Text>
-
-					<HelpTitle isLight={isLight}>Can I save the graph as an image?</HelpTitle>
-
-					<Text mt={8}>
-						Press the save snapshot button in the options dropdown to save the current graph as a PNG
-						image. This snapshot will use your current theme, position, and scale.
-					</Text>
-				</Text>
-			</Modal>
 		</ContentPane>
 	);
 }

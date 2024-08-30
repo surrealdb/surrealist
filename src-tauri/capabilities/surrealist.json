@@ -16,6 +16,7 @@
 		"log:default",
 		"deep-link:default",
 		"updater:default",
+		"http:default",
 		"os:allow-os-type",
 		"fs:allow-read-file",
 		"fs:allow-write-file",
@@ -44,6 +45,13 @@
 		"webview:allow-internal-toggle-devtools",
 		"updater:allow-check",
 		"updater:allow-download-and-install",
-		"process:allow-restart"
+		"process:allow-restart",
+		{
+			"identifier": "http:allow-fetch",
+			"allow": [
+				"https://surrealdb.us.auth0.com/*",
+				"https://api.staging.surrealdb.cloud/api/*"
+			]
+		}
 	]
 }

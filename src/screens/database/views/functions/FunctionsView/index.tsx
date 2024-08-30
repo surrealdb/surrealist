@@ -1,12 +1,12 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { FunctionsPanel } from "../FunctionsPanel";
 import { EditorPanel } from "../EditorPanel";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, memo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { useStable } from "~/hooks/stable";
 import { useDisclosure } from "@mantine/hooks";
-import { ModalTitle } from "~/components/ModalTitle";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Form } from "~/components/Form";
 import { SchemaFunction } from "~/types";
 import { useImmer } from "use-immer";
@@ -15,7 +15,7 @@ import { useSaveable } from "~/hooks/save";
 import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useViewEffect } from "~/hooks/view";
-import { executeQuery } from "~/screens/database/connection";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { usePanelMinSize } from "~/hooks/panels";
@@ -24,6 +24,9 @@ import { Introduction } from "~/components/Introduction";
 import { useIsConnected } from "~/hooks/connection";
 import { showError } from "~/util/helpers";
 import { formatQuery, validateQuery } from "~/util/surrealql";
+
+const FunctionsPanelLazy = memo(FunctionsPanel);
+const EditorPanelLazy = memo(EditorPanel);
 
 export function FunctionsView() {
 	const functions = useSchema()?.functions ?? [];
@@ -103,7 +106,8 @@ export function FunctionsView() {
 				args: [],
 				comment: "",
 				block: "",
-				permissions: true
+				permissions: true,
+				returns: ""
 			}),
 			name: createName
 		});
@@ -148,7 +152,7 @@ export function FunctionsView() {
 						minSize={minSize}
 						maxSize={35}
 					>
-						<FunctionsPanel
+						<FunctionsPanelLazy
 							active={details?.name || ''}
 							functions={functions}
 							onCreate={openCreator}
@@ -160,7 +164,7 @@ export function FunctionsView() {
 					<PanelDragger />
 					<Panel minSize={minSize}>
 						{details ? (
-							<EditorPanel
+							<EditorPanelLazy
 								handle={handle}
 								details={details}
 								isCreating={isCreating}
@@ -200,6 +204,7 @@ export function FunctionsView() {
 									<Button
 										flex={1}
 										color="slate"
+										variant="light"
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function")}
 									>
@@ -216,7 +221,7 @@ export function FunctionsView() {
 				opened={showCreator}
 				onClose={showCreatorHandle.close}
 				title={
-					<ModalTitle>Create new function</ModalTitle>
+					<PrimaryTitle>Create new function</PrimaryTitle>
 				}
 			>
 				<Form onSubmit={createFunction}>

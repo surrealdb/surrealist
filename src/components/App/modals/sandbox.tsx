@@ -12,16 +12,17 @@ import { useConfigStore } from "~/stores/config";
 export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [completed, complete] = useOnboarding('sandbox');
+	const view = useConfigStore((state) => state.activeView);
 	const screen = useConfigStore((state) => state.activeScreen);
 	const connection = useConnection();
 
 	useEffect(() => {
-		if (connection?.id === SANDBOX && screen === "database" && !completed) {
+		if (connection?.id === SANDBOX && screen === "database" && view !== "cloud" && !completed) {
 			openHandle.open();
 			complete();
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [connection, screen]);
+	}, [connection, screen, view]);
 
 	return (
 		<Modal

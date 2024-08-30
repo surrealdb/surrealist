@@ -22,6 +22,7 @@
 .library-active {
 	background: var(--surrealist-gradient) !important;
 	box-shadow: var(--surrealist-glow);
+	color: white;
 
 	svg * {
 		fill: white !important;

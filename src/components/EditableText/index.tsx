@@ -7,6 +7,7 @@ import clsx from "clsx";
 
 export interface EditableTextProps extends TextProps, Omit<HTMLAttributes<HTMLDivElement>, 'onChange' | 'style' | 'color'> {
 	value: string;
+	disabled?: boolean;
 	withDoubleClick?: boolean;
 	withDecoration?: boolean;
 	onChange: (value: string) => void;
@@ -56,6 +57,8 @@ export const EditableText = (props: EditableTextProps) => {
 	});
 
 	const onDoubleClick = useStable((e: React.MouseEvent<HTMLDivElement>) => {
+		if (props.disabled) return;
+
 		if (withDoubleClick) {
 			setIsEditing(true);
 			doFocus();

@@ -1,13 +1,11 @@
-import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu } from "@mantine/core";
+import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu, Badge, HoverCard, Text } from "@mantine/core";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { showInfo, updateTitle } from "~/util/helpers";
-import { adapter } from "~/adapter";
-import { useConnection } from "~/hooks/connection";
+import { showInfo } from "~/util/helpers";
+import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
-import { useDisclosure } from "@mantine/hooks";
-import { iconFile, iconReset, iconStar } from "~/util/icons";
+import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
 import { DATASETS } from "~/constants";
 import { DataSet } from "~/types";
 import { syncDatabaseSchema } from "~/util/schema";
@@ -17,27 +15,28 @@ import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { Connections } from "./components/Connections";
-import { ConsoleDrawer } from "./components/ConsoleDrawer";
-import { HelpAndSupport } from "./components/HelpAndSupport";
-import { LocalDatabase } from "./components/LocalDatabase";
-import { NewsFeed } from "./components/NewsFeed";
-import { openConnection, executeQuery } from "./connection";
+import { openConnection, executeQuery } from "./connection/connection";
 import { sleep } from "radash";
 import { Spacer } from "~/components/Spacer";
+import { ActionBar } from "~/components/ActionBar";
+import { ConnectionList } from "./components/ConnectionList";
+import { DatabaseList } from "./components/DatabaseList";
+import { NamespaceList } from "./components/NamespaceList";
+import { openCloudAuthentication } from "../cloud-manage/api/auth";
+import { useCloudStore } from "~/stores/cloud";
 
 export function DatabaseToolbar() {
-	const { clearQueryResponse } = useDatabaseStore.getState();
+	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();
 	const [flags] = useFeatureFlags();
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
-	const isConnected = useDatabaseStore((s) => s.isConnected);
+	const authState = useCloudStore((s) => s.authState);
+	const isConnected = useIsConnected();
 	const connection = useConnection();
 
-	const [showConsole, setShowConsole] = useDisclosure();
 	const [isDatasetLoading, setDatasetLoading] = useState(false);
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
@@ -52,7 +51,6 @@ export function DatabaseToolbar() {
 			name: tabName,
 		});
 
-		updateTitle();
 		closeEditingTab();
 	});
 
@@ -68,6 +66,8 @@ export function DatabaseToolbar() {
 				for (const query of connection.queries) {
 					clearQueryResponse(query.id);
 				}
+
+				clearGraphqlResponse(connection.id);
 			}
 		},
 	});
@@ -96,11 +96,51 @@ export function DatabaseToolbar() {
 		readChangelog();
 	});
 
+	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
 	const isSandbox = connection?.id === "sandbox";
+	const showNS = !isSandbox && isConnected;
+	const showDB = showNS && connection?.lastNamespace;
 
 	return (
 		<>
-			<Connections />
+			<ConnectionList />
+
+			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (
+				<Button
+					color="orange"
+					variant="light"
+					size="xs"
+					onClick={openCloudAuthentication}
+				>
+					Sign in to Surreal Cloud
+				</Button>
+			)}
+
+			{showNS && (
+				<>
+					<Icon
+						path={iconChevronRight}
+						size="xl"
+						color="slate.5"
+						mx={-8}
+					/>
+
+					<NamespaceList />
+				</>
+			)}
+
+			{showDB && (
+				<>
+					<Icon
+						path={iconChevronRight}
+						size="xl"
+						color="slate.5"
+						mx={-8}
+					/>
+
+					<DatabaseList />
+				</>
+			)}
 
 			{isConnected && isSandbox && (
 				<>
@@ -114,7 +154,11 @@ export function DatabaseToolbar() {
 							<Icon path={iconReset} />
 						</ActionIcon>
 					</Tooltip>
-					<Menu withArrow>
+					<Menu
+						transitionProps={{
+							transition: "scale-y"
+						}}
+					>
 						<Menu.Target>
 							<Tooltip label="Load demo dataset">
 								<ActionIcon
@@ -144,6 +188,28 @@ export function DatabaseToolbar() {
 				</>
 			)}
 
+			{(isConnected && !isSupported) && (
+				<HoverCard>
+					<HoverCard.Target>
+						<Badge
+							variant="light"
+							color="orange"
+							h={28}
+						>
+							Unsupported database version
+						</Badge>
+					</HoverCard.Target>
+					<HoverCard.Dropdown>
+						<Text>
+							We recommend using at least <Text span c="bright">SurrealDB {import.meta.env.SDB_VERSION}</Text>
+						</Text>
+						<Text>
+							The current version is <Text span c="bright">SurrealDB {version}</Text>
+						</Text>
+					</HoverCard.Dropdown>
+				</HoverCard>
+			)}
+
 			<Spacer />
 
 			{(flags.changelog === 'auto' ? showChangelog : flags.changelog !== 'hidden') && (
@@ -163,17 +229,7 @@ export function DatabaseToolbar() {
 				</Button>
 			)}
 
-			{connection && adapter.isServeSupported && (
-				<LocalDatabase
-					toggleConsole={setShowConsole.toggle}
-				/>
-			)}
-
-			{flags.newsfeed && (
-				<NewsFeed />
-			)}
-
-			<HelpAndSupport />
+			<ActionBar />
 
 			<Modal
 				opened={!!editingTab}
@@ -194,11 +250,6 @@ export function DatabaseToolbar() {
 					</Group>
 				</Form>
 			</Modal>
-
-			<ConsoleDrawer
-				opened={showConsole}
-				onClose={setShowConsole.close}
-			/>
 		</>
 	);
 }

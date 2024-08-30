@@ -3,9 +3,10 @@ import classes from "../style.module.scss";
 import { SaveBox } from "~/components/SaveBox";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveableHandle } from "~/hooks/save";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { surqlLinting, surqlRecordLinks } from "~/util/editor/extensions";
 import { useInspector } from "..";
+import { lineNumbers } from "@codemirror/view";
 
 export interface ContentTabProps {
 	value: string;
@@ -31,7 +32,8 @@ export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 					extensions={[
 						surrealql(),
 						surqlLinting(),
-						surqlRecordLinks(inspect)
+						surqlRecordLinks(inspect),
+						lineNumbers(),
 					]}
 				/>
 			</Paper>

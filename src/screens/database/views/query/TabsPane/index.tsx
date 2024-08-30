@@ -16,7 +16,7 @@ import { useContextMenu } from "mantine-contextmenu";
 import { TabQuery } from "~/types";
 import { Sortable } from "~/components/Sortable";
 import { useIntent } from "~/hooks/url";
-import { cancelLiveQueries } from "~/screens/database/connection";
+import { cancelLiveQueries } from "~/screens/database/connection/connection";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -78,7 +78,7 @@ export function TabsPane(props: TabsPaneProps) {
 			icon={iconList}
 			title="Queries"
 			style={{ flexShrink: 0 }}
-			leftSection={
+			infoSection={
 				<Badge
 					color={isLight ? "slate.0" : "slate.9"}
 					radius="sm"
@@ -178,6 +178,7 @@ export function TabsPane(props: TabsPaneProps) {
 												{isLive && (
 													<LiveIndicator
 														className={classes.queryLive}
+														color={isActive ? "white" : "red"}
 														mr={-4}
 													/>
 												)}

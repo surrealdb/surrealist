@@ -1,10 +1,12 @@
+import flagIE from "flag-icons/flags/4x3/ie.svg";
+import flagUS from "flag-icons/flags/4x3/us.svg";
+
 import {
 	AuthMode,
 	CodeLang,
 	DataSet,
 	ValueMode,
 	Protocol,
-	ResultMode,
 	Selectable,
 	ViewInfo,
 	ViewMode,
@@ -12,35 +14,44 @@ import {
 	SidebarMode,
 	LineStyle,
 	SchemaMode,
+	CloudPage,
+	Listable,
+	ResultMode,
+	CloudPageInfo,
 } from "./types";
 
 import {
+	iconAccount,
 	iconAPI,
 	iconAuth,
+	iconCloud,
+	iconCog,
 	iconCombined,
+	iconCreditCard,
 	iconDataTable,
 	iconDesigner,
+	iconEmail,
 	iconExplorer,
 	iconFunction,
+	iconGraphql,
 	iconLive,
 	iconModuleML,
+	iconPackageClosed,
+	iconProgressClock,
 	iconQuery,
+	iconServer,
 } from "./util/icons";
 
 export type StructureTab = "graph" | "builder";
 export type ExportType = (typeof EXPORT_TYPES)[number];
-
-export interface ListingItem {
-	label: string;
-	value: ResultMode;
-	icon: string;
-}
+export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
 
 export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
 export const SENSITIVE_SCOPE_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
+export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
 export const DATASETS: Record<string, DataSet> = {
 	"surreal-deal-store": {
@@ -59,20 +70,20 @@ export const THEMES = [
 	{ label: "Dark", value: "dark" },
 ];
 
-export const RESULT_MODES: ListingItem[] = [
+export const RESULT_MODES: Listable<ResultMode>[] = [
 	{ label: "Combined", value: "combined", icon: iconCombined },
 	{ label: "Individual", value: "single", icon: iconQuery },
 	{ label: "Table", value: "table", icon: iconDataTable },
 	{ label: "Live", value: "live", icon: iconLive },
 ];
 
-export const CONNECTION_PROTOCOLS: Selectable<Protocol>[] = [
-	{ label: "HTTP", value: "http" },
-	{ label: "HTTPS", value: "https" },
-	{ label: "WS", value: "ws" },
-	{ label: "WSS", value: "wss" },
-	{ label: "Memory", value: "mem" },
-	{ label: "IndexedDB", value: "indxdb" },
+export const CONNECTION_PROTOCOLS: ProtocolOption[] = [
+	{ label: "HTTP", value: "http", remote: true },
+	{ label: "HTTPS", value: "https", remote: true },
+	{ label: "WS", value: "ws", remote: true },
+	{ label: "WSS", value: "wss", remote: true },
+	{ label: "Memory", value: "mem", remote: false },
+	{ label: "IndexedDB", value: "indxdb", remote: false },
 ];
 
 export const AUTH_MODES: Selectable<AuthMode>[] = [
@@ -107,12 +118,20 @@ export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 ];
 
 export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
+	cloud: {
+		id: "cloud",
+		name: "Surreal Cloud",
+		icon: iconCloud,
+		desc: "Manage your Surreal Cloud environment",
+		disabled: (flags) => !flags.cloud_view,
+	},
 	query: {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
 		anim: import("~/assets/animation/query.json").then(x => x.default),
 		desc: "Execute queries against the database and inspect the results",
+		disabled: (flags) => !flags.query_view,
 	},
 	explorer: {
 		id: "explorer",
@@ -120,6 +139,16 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconExplorer,
 		anim: import("~/assets/animation/explorer.json").then(x => x.default),
 		desc: "Explore the database tables, records, and relations",
+		require: "database",
+		disabled: (flags) => !flags.explorer_view,
+	},
+	graphql: {
+		id: "graphql",
+		name: "GraphQL",
+		icon: iconGraphql,
+		desc: "Execute GraphQL queries against the database",
+		require: "database",
+		disabled: (flags) => !flags.graphql_view,
 	},
 	designer: {
 		id: "designer",
@@ -127,6 +156,8 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconDesigner,
 		anim: import("~/assets/animation/designer.json").then(x => x.default),
 		desc: "Define database tables and relations",
+		require: "database",
+		disabled: (flags) => !flags.designer_view,
 	},
 	authentication: {
 		id: "authentication",
@@ -134,19 +165,22 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconAuth,
 		anim: import("~/assets/animation/auth.json").then(x => x.default),
 		desc: "Manage account details and database scopes",
-		disabled: (flags) => flags.surreal_compat === "v2",
+		disabled: (flags) => !flags.designer_view || flags.surreal_compat === "v2",
 	},
 	functions: {
 		id: "functions",
 		name: "Functions",
 		icon: iconFunction,
 		desc: "Create and update schema level functions",
+		require: "database",
+		disabled: (flags) => !flags.functions_view,
 	},
 	models: {
 		id: "models",
 		name: "Models",
 		icon: iconModuleML,
 		desc: "Upload and manage machine learning models",
+		require: "database",
 		disabled: (flags) => !flags.models_view,
 	},
 	documentation: {
@@ -154,8 +188,47 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "API Docs",
 		icon: iconAPI,
 		desc: "View the database schema and documentation",
+		require: "database",
 		disabled: (flags) => !flags.apidocs_view,
 	},
+};
+
+export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
+	instances: {
+		id: "instances",
+		name: "Instances",
+		icon: iconServer,
+	},
+	members: {
+		id: "members",
+		name: "Members",
+		icon: iconAccount,
+	},
+	data: {
+		id: "data",
+		name: "Data Containers",
+		icon: iconPackageClosed
+	},
+	audits: {
+		id: "audits",
+		name: "Audit Log",
+		icon: iconProgressClock,
+	},
+	billing: {
+		id: "billing",
+		name: "Billing",
+		icon: iconCreditCard,
+	},
+	support: {
+		id: "support",
+		name: "Support",
+		icon: iconEmail
+	},
+	settings: {
+		id: "settings",
+		name: "Settings",
+		icon: iconCog,
+	}
 };
 
 export const EXPORT_TYPES = [
@@ -225,3 +298,8 @@ export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
 	{ label: "Schemaless", value: "schemaless" },
 	{ label: "Schemafull", value: "schemafull" },
 ];
+
+export const REGION_FLAGS: Record<string, string> = {
+	'aws-euw1': flagIE,
+	'aws-use1': flagUS,
+};

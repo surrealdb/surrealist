@@ -5,12 +5,13 @@ import { Icon } from "~/components/Icon";
 import { useActiveQuery } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { surqlLinting } from "~/util/editor/extensions";
 import { useDebouncedFunction } from "~/hooks/debounce";
-import { decodeCbor } from "surrealdb.js";
-import { Value } from "surrealql.wasm/v1";
+import { decodeCbor } from "surrealdb";
+import { Value } from "@surrealdb/ql-wasm";
+import { lineNumbers } from "@codemirror/view";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -59,7 +60,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 								color="red"
 								variant="light"
 							>
-								Invalid JSON
+								Invalid syntax
 							</Badge>
 						)}
 						<ActionIcon
@@ -79,6 +80,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 				extensions={[
 					surrealql(),
 					surqlLinting(),
+					lineNumbers(),
 				]}
 			/>
 		</ContentPane>

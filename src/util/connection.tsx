@@ -1,7 +1,7 @@
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
-import { ConnectionOptions } from "~/types";
-import { connectionUri } from "./helpers";
+import { Authentication, AuthLevel } from "~/types";
+import { connectionUri, fastParseJwt } from "./helpers";
 
 /**
  * Returns the currently active connection
@@ -39,46 +39,117 @@ export function getActiveQuery() {
 }
 
 /**
+ * Returns the authentication level of the given mode
+ */
+export function getAuthLevel(auth: Authentication): AuthLevel {
+	if (auth.mode === "cloud") {
+		return "root";
+	}
+
+	if (getAuthDB(auth)) {
+		return "database";
+	}
+
+	if (getAuthNS(auth)) {
+		return "namespace";
+	}
+
+	return "root";
+}
+
+/**
+ * Extract the database from the given authentication
+ */
+export function getAuthDB(auth: Authentication) {
+	if (auth.mode === "token") {
+		const payload = fastParseJwt(auth.token);
+
+		if (!payload || !payload.DB) {
+			return null;
+		}
+
+		return payload.DB;
+	}
+
+	if (auth.mode === "database" || auth.mode === "scope" || auth.mode === "scope-signup") {
+		return auth.database;
+	}
+
+
+	return null;
+}
+
+/**
+ * Extract the namespace from the given authentication
+ */
+export function getAuthNS(auth: Authentication) {
+	if (auth.mode === "token") {
+		const payload = fastParseJwt(auth.token);
+
+		if (!payload || !payload.NS) {
+			return null;
+		}
+
+		return payload.NS;
+	}
+
+	if (auth.mode === "namespace" || getAuthDB(auth)) {
+		return auth.namespace;
+	}
+
+	return null;
+}
+
+/**
  * Returns whether the given connection is valid
  *
  * TODO Replace with validation
  */
-export function isConnectionValid(details: ConnectionOptions | undefined) {
-	if (!details) {
+export function isConnectionValid(auth: Authentication | undefined) {
+	if (!auth) {
 		return false;
 	}
 
 	try {
-		connectionUri(details);
+		connectionUri(auth);
 	} catch {
 		return false;
 	}
 
 	// Check for essential fields
-	const hasEssential = details.protocol && details.namespace && details.database && details.authMode;
+	const hasEssential = auth.protocol && auth.mode;
 
 	if (!hasEssential) {
 		return false;
 	}
 
 	// Check for hostname
-	if (details.protocol !== "mem" && details.protocol !== "indxdb" && !details.hostname) {
+	if (auth.protocol !== "mem" && auth.protocol !== "indxdb" && !auth.hostname) {
 		return false;
 	}
 
 	// Check for username and password
-	const checkUserPass = details.authMode === "root" || details.authMode === "database" || details.authMode === "namespace";
-	const hasUserPass = details.username && details.password;
+	const checkUserPass = auth.mode === "root" || auth.mode === "database" || auth.mode === "namespace";
+	const hasUserPass = auth.username && auth.password;
 
 	if (checkUserPass && !hasUserPass) {
 		return false;
 	}
 
+	// Check for namespace
+	if (auth.mode === "namespace" && !auth.namespace) {
+		return false;
+	}
+
+	// Check for database
+	if (auth.mode === "database" && (!auth.namespace || !auth.database)) {
+		return false;
+	}
+
 	// Check for token
-	if (details.authMode === "token" && !details.token) {
+	if (auth.mode === "token" && !auth.token) {
 		return false;
 	}
 
 	return true;
 }
-

@@ -1,0 +1,26 @@
+diff --git a/language/printer.js b/language/printer.js
+index eed3b7cf24d74d744c860ad9cb8e546ed6f4afd7..702034d15b817b6612ec983f6c3a86b40100a4fa 100644
+--- a/language/printer.js
++++ b/language/printer.js
+@@ -332,7 +332,7 @@ function wrap(start, maybeString, end = '') {
+ }
+ 
+ function indent(str) {
+-  return wrap('  ', str.replace(/\n/g, '\n  '));
++  return wrap('    ', str.replace(/\n/g, '\n    '));
+ }
+ 
+ function hasMultilineItems(maybeArray) {
+diff --git a/language/printer.mjs b/language/printer.mjs
+index cffc2bf05b7440abe0f6cb92163092666127f182..7056520e41e2fc56d129adf903a27b6f36a6e123 100644
+--- a/language/printer.mjs
++++ b/language/printer.mjs
+@@ -320,7 +320,7 @@ function wrap(start, maybeString, end = '') {
+ }
+ 
+ function indent(str) {
+-  return wrap('  ', str.replace(/\n/g, '\n  '));
++  return wrap('    ', str.replace(/\n/g, '\n    '));
+ }
+ 
+ function hasMultilineItems(maybeArray) {

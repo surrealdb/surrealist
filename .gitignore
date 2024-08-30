@@ -3,6 +3,7 @@ dist/
 .idea/
 
 .hintrc
+.env
 
 .DS_Store
 

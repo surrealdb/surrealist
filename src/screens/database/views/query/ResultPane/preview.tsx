@@ -7,26 +7,38 @@ import { Icon } from "~/components/Icon";
 import { CodeEditor } from "~/components/CodeEditor";
 import { useRelativeTime } from "~/hooks/time";
 import { useInterfaceStore } from "~/stores/interface";
-import { TabQuery } from "~/types";
+import { LiveMessage, TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconBroadcastOff, iconBroadcastOn, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
-import { executeQuery } from "~/screens/database/connection";
+import { iconBroadcastOff, iconBroadcastOn, iconClose, iconCopy, iconDelete, iconHammer, iconHelp, iconPlus } from "~/util/icons";
+import { executeQuery } from "~/screens/database/connection/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
-import { surrealql } from "codemirror-surrealql";
+import { surrealql } from "@surrealdb/codemirror";
 import { surqlRecordLinks } from "~/util/editor/extensions";
 import { useInspector } from "~/providers/Inspector";
+import { tryit } from "radash";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	'CREATE': ["surreal.3", iconPlus],
 	'UPDATE': ["orange", iconHammer],
 	'DELETE': ["red", iconDelete],
+	'CLOSE': ["slate", iconClose],
 };
 
-function buildResult(index: number, {result, execution_time}: any, format: Formatter) {
+function hasBody(msg: LiveMessage) {
+	return msg.data !== undefined && msg.data !== "killed";
+}
+
+function attemptFormat(format: Formatter, data: any) {
+	const [err, res] = tryit(format)(data);
+
+	return err ? `"Error: ${err.message}"` : res;
+}
+
+function buildCombinedResult(index: number, {result, execution_time}: any, format: Formatter) {
 	const header = `\n\n-------- Query ${index + 1 + (execution_time ? ` (${execution_time})` : '')} --------\n\n`;
 
-	return header + format(result);
+	return header + attemptFormat(format, result);
 }
 
 function killQuery(id: string) {
@@ -47,7 +59,7 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 	const { inspect } = useInspector();
 
 	const contents = useMemo(() => {
-		return results.reduce((acc, cur, i) => acc + buildResult(i, cur, format), '').trim();
+		return results.reduce((acc, cur, i) => acc + buildCombinedResult(i, cur, format), '').trim();
 	}, [results, format]);
 
 	return (
@@ -69,7 +81,7 @@ export interface SingleJsonPreviewProps {
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 	const [format] = useValueFormatter();
 	const { inspect } = useInspector();
-	const contents = useMemo(() => format(result), [result, format]);
+	const contents = useMemo(() => attemptFormat(format, result), [result, format]);
 
 	return (
 		<CodeEditor
@@ -138,7 +150,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 									>
 										<Group>
 											<Badge
-												py="xs"
+												h={28}
 												color={color}
 												variant="light"
 												leftSection={
@@ -163,10 +175,10 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 											</Stack>
 										</Group>
 									</Accordion.Control>
-									{msg.data !== undefined && (
+									{hasBody(msg) && (
 										<Accordion.Panel>
 											<CodeEditor
-												value={format(msg.data)}
+												value={attemptFormat(format, msg.data)}
 												readOnly
 												extensions={[
 													surrealql()

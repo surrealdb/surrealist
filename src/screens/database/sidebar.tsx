@@ -1,31 +1,29 @@
-import surrealistLogo from "~/assets/images/logo.webp";
-import { Stack, Divider, Image, Group } from "@mantine/core";
+import iconUrl from "~/assets/images/icon.webp";
+import { Stack, Divider, Image, Group, Flex } from "@mantine/core";
 import { Fragment, useMemo } from "react";
-import { isBrowser } from "~/adapter";
-import { iconDownload, iconCog, iconSearch } from "~/util/icons";
+import { iconCog, iconSearch } from "~/util/icons";
 import { VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { ViewMode } from "~/types";
+import { SidebarMode, ViewInfo, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { updateTitle } from "~/util/helpers";
 import { useIsLight } from "~/hooks/theme";
 import { useConnection } from "~/hooks/connection";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
-import { SurrealistLogo } from "~/components/SurrealistLogo";
-import { ScreenState } from "~/components/Screen";
 import { dispatchIntent } from "~/hooks/url";
+import { useLogoUrl } from "~/hooks/brand";
 
 const NAVIGATION: ViewMode[][] = [
 	[
 		"query",
 		"explorer",
-		"designer",
-		"authentication",
+		"graphql",
 	],
 	[
+		"designer",
+		"authentication",
 		"functions",
 		"models",
 	],
@@ -35,23 +33,27 @@ const NAVIGATION: ViewMode[][] = [
 ];
 
 export interface SidebarProps {
-	state: ScreenState;
+	sidebarMode: SidebarMode;
+	onNavigate: () => void;
+	onItemHover: () => void;
 }
 
 export function DatabaseSidebar({
-	state
+	sidebarMode,
+	onNavigate,
+	onItemHover,
 }: SidebarProps) {
 	const { setActiveView } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
+	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
 	const connection = useConnection();
 	const activeView = useConfigStore((s) => s.activeView);
 
 	const setViewMode = useStable((id: ViewMode) => {
-		updateTitle();
 		setActiveView(id);
-		state.sidebarHandle.close();
+		onNavigate();
 	});
 
 	const navigation = useMemo(() => {
@@ -66,25 +68,51 @@ export function DatabaseSidebar({
 		});
 	}, [flags]);
 
+
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
-	const openDownload = useStable(() => dispatchIntent("open-desktop-download"));
+
+	const { cloud } = VIEW_MODES;
+
+	function renderNavigation(info: ViewInfo) {
+		const isAvailable = info.require !== "database" || connection?.lastDatabase;
+
+		return (
+			<NavigationIcon
+				name={info.name}
+				isActive={info.id === activeView}
+				icon={info.anim || info.icon}
+				withTooltip={sidebarMode === "compact"}
+				onClick={() => setViewMode(info.id)}
+				onMouseEnter={onItemHover}
+				style={{
+					opacity: isAvailable ? 1 : 0.5
+				}}
+			/>
+		);
+	}
 
 	return (
 		<>
-			<Group
-				h={64}
+			<Flex
 				wrap="nowrap"
 				align="center"
-				gap="lg"
 				style={{ flexShrink: 0 }}
 			>
-				<Image src={surrealistLogo} w={42} />
-				<SurrealistLogo h={21} style={{ flexShrink: 0 }} />
-			</Group>
+				<Image
+					src={iconUrl}
+					w={42}
+				/>
+				<Image
+					src={logoUrl}
+					style={{ flexShrink: 0 }}
+					w={118}
+					ml={14}
+				/>
+			</Flex>
 			<Stack
 				gap="sm"
-				mt={9}
+				mt={22}
 				pb={18}
 				component="nav"
 				flex={1}
@@ -97,31 +125,18 @@ export function DatabaseSidebar({
 								gap="lg"
 								wrap="nowrap"
 							>
-								<NavigationIcon
-									name={info.name}
-									isActive={info.id === activeView}
-									icon={info.anim || info.icon}
-									withTooltip={state.sidebarMode === "compact"}
-									onClick={() => setViewMode(info.id)}
-									onMouseEnter={state.sidebarHandle.open}
-								/>
+								{renderNavigation(info)}
 							</Group>
 						))}
 						{i < navigation.length - 1 && (
-							<Divider color={isLight ? "white" : "slate.7"} />
+							<Divider color={isLight ? "slate.2" : "slate.7"} />
 						)}
 					</Fragment>
 				))}
 
 				<Spacer />
 
-				{isBrowser && (
-					<NavigationIcon
-						name="Download App"
-						icon={iconDownload}
-						onClick={openDownload}
-					/>
-				)}
+				{!cloud.disabled?.(flags) && renderNavigation(cloud)}
 
 				<NavigationIcon
 					name={
@@ -132,12 +147,14 @@ export function DatabaseSidebar({
 					}
 					icon={iconSearch}
 					onClick={openCommands}
+					onMouseEnter={onItemHover}
 				/>
 
 				<NavigationIcon
 					name="Settings"
 					icon={iconCog}
 					onClick={openSettings}
+					onMouseEnter={onItemHover}
 				/>
 			</Stack>
 		</>

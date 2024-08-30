@@ -5,7 +5,7 @@
 	&::before {
 		content: "";
 		inset: 0;
-		background-color: white;
+		background-color: var(--ring-color);
 		position: absolute;
 		border-radius: 100%;
 		animation: live-pulse 1.4s infinite;
