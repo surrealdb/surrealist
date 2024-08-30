@@ -173,6 +173,17 @@ body.mod .cm-record-link:hover {
     font-size: var(--mantine-font-size-xs);
 }
 
+.mantine-InputWrapper-label {
+	font-size: var(--mantine-font-size-md);
+	color: var(--mantine-color-slate-1);
+	font-weight: 900px;
+	margin-bottom: 2px;
+
+	@include light {
+		color: var(--mantine-color-slate-7);
+	}
+}
+
 .mantine-Alert-wrapper {
 	align-items: center;
 }
