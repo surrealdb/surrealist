@@ -5,7 +5,6 @@ import { useCloudStore } from "~/stores/cloud";
 import { Text } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { mdiAccountOutline, mdiExitToApp } from "@mdi/js";
 import { PrimaryTitle } from "../PrimaryTitle";
 import { Form } from "../Form";
 import { useBoolean } from "~/hooks/boolean";
@@ -14,6 +13,7 @@ import { fetchAPI } from "~/screens/cloud-manage/api";
 import { showError } from "~/util/helpers";
 import { CloudProfile } from "~/types";
 import { useState } from "react";
+import { iconAccount, iconExitToAp } from "~/util/icons";
 
 interface AccountFormProps {
 	onClose(): void;
@@ -146,13 +146,13 @@ export function CloudAccount() {
 					</Box>
 					<Menu.Divider />
 					<Menu.Item
-						leftSection={<Icon path={mdiAccountOutline} />}
+						leftSection={<Icon path={iconAccount} />}
 						onClick={settingsModal.open}
 					>
 						Account
 					</Menu.Item>
 					<Menu.Item
-						leftSection={<Icon path={mdiExitToApp} />}
+						leftSection={<Icon path={iconExitToAp} />}
 						onClick={invalidateSession}
 					>
 						Sign out

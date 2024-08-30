@@ -12,12 +12,11 @@ import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { useKeymap } from "~/hooks/keymap";
 import { Icon } from "~/components/Icon";
-import { iconCursor, iconOpen, iconWarning } from "~/util/icons";
+import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { useDatabaseStore } from "~/stores/database";
 import { executeGraphql } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { Introduction } from "~/components/Introduction";
-import { mdiGraphql } from "@mdi/js";
 import { Text } from "@mantine/core";
 import { GQL_SUPPORTED } from "~/constants";
 import { adapter } from "~/adapter";
@@ -139,7 +138,7 @@ export function GraphqlView() {
 	) : (
 		<Introduction
 			title="GraphQL"
-			icon={mdiGraphql}
+			icon={iconGraphql}
 		>
 			<Text>
 				The GraphQL view provides a fully interactive environment for executing GraphQL queries against your database.

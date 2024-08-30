@@ -1,6 +1,5 @@
 import { Button, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
-import { mdiAccountOutline } from "@mdi/js";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -15,6 +14,7 @@ import { fetchAPI } from "../api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
 import { shake } from "radash";
+import { iconAccount } from "~/util/icons";
 
 export async function openBillingModal() {
 	return new Promise<void>((resolve) => {
@@ -25,7 +25,7 @@ export async function openBillingModal() {
 			title: (
 				<Group>
 					<Icon
-						path={mdiAccountOutline}
+						path={iconAccount}
 						size="xl"
 					/>
 					<PrimaryTitle>Billing Details</PrimaryTitle>

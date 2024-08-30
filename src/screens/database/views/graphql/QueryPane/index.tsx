@@ -4,11 +4,10 @@ import { useDebouncedFunction } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Badge, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconDollar, iconText } from "~/util/icons";
+import { iconAutoFix, iconDollar, iconGraphql, iconText } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
-import { mdiGraphql } from "@mdi/js";
 import { graphql } from 'cm6-graphql';
 import { useActiveConnection } from "~/hooks/connection";
 import { parse, print } from "graphql";
@@ -108,7 +107,7 @@ export function QueryPane({
 	return (
 		<ContentPane
 			title="GraphQL"
-			icon={mdiGraphql}
+			icon={iconGraphql}
 			rightSection={
 				<Group gap="sm">
 					{!isValid && (

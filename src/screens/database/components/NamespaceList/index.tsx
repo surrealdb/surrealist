@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Button, ButtonProps, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { iconClose, iconPlus } from "~/util/icons";
+import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { Entry } from "~/components/Entry";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -13,7 +13,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Form } from "~/components/Form";
 import { useInputState } from "@mantine/hooks";
 import { useStable } from "~/hooks/stable";
-import { mdiFolderOutline } from "@mdi/js";
 import { escapeIdent } from "~/util/surrealql";
 import { LearnMore } from "~/components/LearnMore";
 import { SyntheticEvent } from "react";
@@ -145,7 +144,7 @@ export function NamespaceList({
 						color="slate"
 						leftSection={
 							<Icon
-								path={mdiFolderOutline}
+								path={iconNamespace}
 							/>
 						}
 						{...buttonProps}

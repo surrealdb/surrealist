@@ -1,11 +1,10 @@
 import classes from "./style.module.scss";
 import { BoxProps, Text, UnstyledButton } from "@mantine/core";
 import { Center, Group, Paper, SimpleGrid, Stack } from "@mantine/core";
-import { mdiEmailOutline } from "@mdi/js";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { iconBook, iconChat, iconDiscord } from "~/util/icons";
+import { iconBook, iconChat, iconDiscord, iconEmail } from "~/util/icons";
 
 interface SupportTileProps extends BoxProps {
 	icon: string;
@@ -57,7 +56,7 @@ export function SupportPage() {
 				>
 					<Stack flex={1} w={420}>
 						<Group>
-							<Icon path={mdiEmailOutline} />
+							<Icon path={iconEmail} />
 							<PrimaryTitle>
 								Looking for help?
 							</PrimaryTitle>
@@ -89,7 +88,7 @@ export function SupportPage() {
 					/>
 					<Stack flex={1} w={420}>
 						<Group>
-							<Icon path={mdiEmailOutline} />
+							<Icon path={iconEmail} />
 							<PrimaryTitle>
 								Submit a ticket
 							</PrimaryTitle>

@@ -1,16 +1,15 @@
 import { Alert } from "@mantine/core";
-import { mdiCloseCircleOutline } from "@mdi/js";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { AlertLevel, CloudAlert } from "~/types";
-import { iconHelp, iconWarning } from "~/util/icons";
+import { iconErrorCircle, iconHelp, iconWarning } from "~/util/icons";
 
 type LevelInfoMap = Record<AlertLevel, [string, string, string, string]>;
 
 const INFO_MAP = {
 	info: [iconHelp, "blue.3", "blue.5",  "Info"],
 	warning: [iconWarning, "orange.4", "orange.6", "Warning"],
-	important: [mdiCloseCircleOutline, "red.5", "red.6", "Important"],
+	important: [iconErrorCircle, "red.5", "red.6", "Important"],
 } satisfies LevelInfoMap;
 
 export interface StatusAlertProps {

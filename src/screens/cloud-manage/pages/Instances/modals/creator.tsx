@@ -7,13 +7,12 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceTypes, useAvailableInstanceVersions, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
-import { iconChevronLeft, iconChevronRight, iconClose, iconHelp, iconModel, iconPlus, iconQuery, iconSurreal } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconClose, iconFloppy, iconHelp, iconMemory, iconPlus, iconQuery, iconSurreal } from "~/util/icons";
 import { Tile } from "../../../components/Tile";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "../../../api";
 import { showError, showInfo } from "~/util/helpers";
 import { CloudInstance } from "~/types";
-import { mdiFloppy } from "@mdi/js";
 import { isEmpty, range } from "radash";
 import { Form } from "~/components/Form";
 import { useIsLight } from "~/hooks/theme";
@@ -328,7 +327,7 @@ function CreationStepper({
 														<Table.Tr>
 															<Table.Td>
 																<Group>
-																	<Icon path={iconModel} />
+																	<Icon path={iconMemory} />
 																	Memory
 																</Group>
 															</Table.Td>
@@ -339,7 +338,7 @@ function CreationStepper({
 														<Table.Tr>
 															<Table.Td>
 																<Group>
-																	<Icon path={mdiFloppy} />
+																	<Icon path={iconFloppy} />
 																	Storage limit
 																</Group>
 															</Table.Td>

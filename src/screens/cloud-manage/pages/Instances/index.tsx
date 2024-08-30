@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 import { ActionIcon, Anchor, Box, Button, Center, Group, Indicator, Loader, Menu, Paper, ScrollArea, SimpleGrid, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { iconCheck, iconOpen, iconPlus, iconSearch, iconTune } from "~/util/icons";
-import { mdiViewGrid, mdiViewSequential } from "@mdi/js";
+import { iconCheck, iconOpen, iconPlus, iconSearch, iconTune, iconViewGrid, iconViewList } from "~/util/icons";
 import { Spacer } from "~/components/Spacer";
 import { Icon } from "~/components/Icon";
 import { Fragment, useMemo, useState } from "react";
@@ -236,13 +235,13 @@ export function InstancesPage() {
 							c={mode === "grid" ? "bright" : "slate.3"}
 							onClick={() => setMode("grid")}
 						>
-							<Icon path={mdiViewGrid} />
+							<Icon path={iconViewGrid} />
 						</ActionIcon>
 						<ActionIcon
 							c={mode === "list" ? "bright" : "slate.3"}
 							onClick={() => setMode("list")}
 						>
-							<Icon path={mdiViewSequential} />
+							<Icon path={iconViewList} />
 						</ActionIcon>
 					</ActionIcon.Group>
 				</Group>

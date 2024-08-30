@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 import { Paper, Stack, Group, Menu, ActionIcon, Text, Badge, Button, Table, MantineColor } from "@mantine/core";
-import { iconDotsVertical, iconMarker, iconChevronDown, iconAPI, iconConsole } from "~/util/icons";
-import { mdiMemory, mdiPower, mdiTagOutline } from "@mdi/js";
+import { iconDotsVertical, iconMarker, iconChevronDown, iconAPI, iconConsole, iconMemory, iconTag, iconPower } from "~/util/icons";
 import { Spacer } from "~/components/Spacer";
 import { Icon } from "~/components/Icon";
 import { CloudInstance, InstanceState } from "~/types";
@@ -183,7 +182,7 @@ export function Instance({
 				{actionList}
 			</Group>
 			<Group gap="sm" h={32}>
-				<Icon path={mdiMemory} c="surreal" noStroke />
+				<Icon path={iconMemory} c="surreal" />
 				<Text c="bright">
 					{value.type.slug}
 				</Text>
@@ -196,7 +195,7 @@ export function Instance({
 			</Group>
 			<Group>
 				<Group gap="sm" h={32}>
-					<Icon path={mdiTagOutline} c="surreal" noStroke />
+					<Icon path={iconTag} c="surreal" />
 					<Text c="bright">
 						SurrealDB {value.version}
 					</Text>
@@ -207,7 +206,7 @@ export function Instance({
 						size="xs"
 						color="slate"
 						radius="sm"
-						rightSection={<Icon path={mdiPower} />}
+						rightSection={<Icon path={iconPower} />}
 						disabled
 					>
 						Enable database

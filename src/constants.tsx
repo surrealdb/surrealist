@@ -1,6 +1,5 @@
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
-import { mdiAccountOutline, mdiCreditCardOutline, mdiEmailOutline, mdiGraphql, mdiPackageVariantClosed, mdiProgressClock } from "@mdi/js";
 
 import {
 	AuthMode,
@@ -22,17 +21,23 @@ import {
 } from "./types";
 
 import {
+	iconAccount,
 	iconAPI,
 	iconAuth,
 	iconCloud,
 	iconCog,
 	iconCombined,
+	iconCreditCard,
 	iconDataTable,
 	iconDesigner,
+	iconEmail,
 	iconExplorer,
 	iconFunction,
+	iconGraphql,
 	iconLive,
 	iconModuleML,
+	iconPackageClosed,
+	iconProgressClock,
 	iconQuery,
 	iconServer,
 } from "./util/icons";
@@ -140,7 +145,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 	graphql: {
 		id: "graphql",
 		name: "GraphQL",
-		icon: mdiGraphql,
+		icon: iconGraphql,
 		desc: "Execute GraphQL queries against the database",
 		require: "database",
 		disabled: (flags) => !flags.graphql_view,
@@ -197,27 +202,27 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	members: {
 		id: "members",
 		name: "Members",
-		icon: mdiAccountOutline,
+		icon: iconAccount,
 	},
 	data: {
 		id: "data",
 		name: "Data Containers",
-		icon: mdiPackageVariantClosed
+		icon: iconPackageClosed
 	},
 	audits: {
 		id: "audits",
 		name: "Audit Log",
-		icon: mdiProgressClock,
+		icon: iconProgressClock,
 	},
 	billing: {
 		id: "billing",
 		name: "Billing",
-		icon: mdiCreditCardOutline,
+		icon: iconCreditCard,
 	},
 	support: {
 		id: "support",
 		name: "Support",
-		icon: mdiEmailOutline
+		icon: iconEmail
 	},
 	settings: {
 		id: "settings",

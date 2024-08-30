@@ -4,8 +4,7 @@ import { Anchor, Button, Group, Image, Paper, Stack, Text } from "@mantine/core"
 import { openModal, closeAllModals } from "@mantine/modals";
 import { Spacer } from "~/components/Spacer";
 import { Icon } from "~/components/Icon";
-import { iconBook, iconChat, iconChevronRight, iconOpen } from "~/util/icons";
-import { mdiVideoOutline } from "@mdi/js";
+import { iconBook, iconChat, iconChevronRight, iconOpen, iconVideo } from "~/util/icons";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 
 export function openStartingModal() {
@@ -49,7 +48,7 @@ function StartingModal() {
 						withBorder
 					>
 						<Group>
-							<Icon path={mdiVideoOutline} />
+							<Icon path={iconVideo} />
 							<Text
 								c="bright"
 								fz="lg"

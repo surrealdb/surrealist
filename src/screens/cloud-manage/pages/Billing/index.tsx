@@ -2,9 +2,8 @@ import classes from "./style.module.scss";
 import { ActionIcon, Box, Button, Divider, Group, List, Paper, ScrollArea, SimpleGrid, Skeleton, Stack, Table, Text } from "@mantine/core";
 import { Section } from "../../components/Section";
 import { Icon } from "~/components/Icon";
-import { iconCheck, iconDotsVertical } from "~/util/icons";
+import { iconAccount, iconCheck, iconCreditCard, iconDotsVertical } from "~/util/icons";
 import { ReactNode, useRef, useState } from "react";
-import { mdiAccountOutline, mdiCreditCardOutline } from "@mdi/js";
 import { Spacer } from "~/components/Spacer";
 import { Label } from "~/components/Label";
 import { useOrganization } from "~/hooks/cloud";
@@ -170,7 +169,7 @@ export function BillingPage() {
 							<Paper p="md">
 								<Group>
 									<Icon
-										path={mdiCreditCardOutline}
+										path={iconCreditCard}
 										size="xl"
 									/>
 									<Text
@@ -219,7 +218,7 @@ export function BillingPage() {
 							<Paper p="md">
 								<Group>
 									<Icon
-										path={mdiAccountOutline}
+										path={iconAccount}
 										size="xl"
 									/>
 									<Text
