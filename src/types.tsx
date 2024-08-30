@@ -158,6 +158,7 @@ export interface SurrealistServingSettings {
 	username: string;
 	password: string;
 	port: number;
+	historySize: number;
 }
 
 export interface SurrealistCloudSettings {

@@ -24,7 +24,7 @@ export type DatabaseStore = {
 	confirmServing: () => void;
 	stopServing: () => void;
 	cancelServe: () => void;
-	pushConsoleLine: (line: string) => void;
+	pushConsoleLine: (line: string, max: number) => void;
 	clearConsole: () => void;
 	setDatabaseSchema: (databaseSchema: DatabaseSchema) => void;
 	setCurrentState: (currentState: State) => void;
@@ -75,11 +75,11 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 		servePending: true,
 	})),
 
-	pushConsoleLine: (line) => set((state) => ({
+	pushConsoleLine: (line, max) => set((state) => ({
 		consoleOutput: [
-			...state.consoleOutput.slice(0, 249),
-			line,
-		]
+			...state.consoleOutput,
+			line
+		].slice(-max)
 	})),
 
 	clearConsole: () => set(() => ({

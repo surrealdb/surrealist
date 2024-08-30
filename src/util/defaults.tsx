@@ -65,7 +65,8 @@ export function createBaseSettings(): SurrealistSettings {
 			executable: "",
 			username: "root",
 			password: "root",
-			port: 8000
+			port: 8000,
+			historySize: 250
 		},
 		cloud: {
 			databaseListMode: "grid",

@@ -28,12 +28,17 @@ export function ServingTab() {
 	const [password, setPassword] = useSetting(CAT, "password");
 	const [executable, setExecutable] = useSetting(CAT, "executable");
 	const [logLevel, setLogLevel] = useSetting(CAT, "logLevel");
+	const [historySize, setHistorySize] = useSetting(CAT, "historySize");
 	const [port, setPort] = useSetting(CAT, "port");
 
 	const isFileDriver = driver === "file";
 
 	const updatePort = useStable((value: string | number) => {
 		setPort(value as number);
+	});
+
+	const updateHistorySize = useStable((value: string | number) => {
+		setHistorySize(value as number);
 	});
 
 	return (
@@ -47,12 +52,24 @@ export function ServingTab() {
 					max={65_535}
 				/>
 
-				<Select
-					label="Log level"
-					data={LOG_LEVELS}
-					value={logLevel}
-					onChange={setLogLevel as any}
-				/>
+				<SimpleGrid cols={2}>
+					<Select
+						w="unset"
+						label="Log level"
+						data={LOG_LEVELS}
+						value={logLevel}
+						onChange={setLogLevel as any}
+					/>
+
+					<NumberInput
+						w="unset"
+						label="Console history size"
+						value={historySize}
+						onChange={updateHistorySize}
+						min={1}
+						max={10_000}
+					/>
+				</SimpleGrid>
 
 				<TextInput
 					w="unset"

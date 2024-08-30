@@ -12,7 +12,7 @@ import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 import { showError, showInfo } from "~/util/helpers";
 import { useDatabaseStore } from "~/stores/database";
 import { useConfigStore } from "~/stores/config";
-import { watchStore } from "~/util/config";
+import { getSetting, watchStore } from "~/util/config";
 import { Platform, ViewMode } from "~/types";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { getCurrent } from "@tauri-apps/api/window";
@@ -344,7 +344,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 				return;
 			}
 
-			useDatabaseStore.getState().pushConsoleLine(event.payload as string);
+			const historySize = getSetting("serving", "historySize");
+
+			useDatabaseStore.getState().pushConsoleLine(event.payload as string, historySize);
 			throttleLevel++;
 		});
 
