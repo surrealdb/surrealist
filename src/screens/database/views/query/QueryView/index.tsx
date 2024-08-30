@@ -31,7 +31,6 @@ import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/screens/database/connection/connection";
 import { useSetting } from "~/hooks/config";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useInterfaceStore } from "~/stores/interface";
 import { useKeymap } from "~/hooks/keymap";
 import { CodeInput } from "~/components/Inputs";
 import { surrealql } from "@surrealdb/codemirror";
@@ -44,8 +43,7 @@ const VariablesPaneLazy = memo(VariablesPane);
 const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
-	const { setShowQueryVariables, toggleQueryVariables } = useInterfaceStore.getState();
-	const { saveQuery } = useConfigStore.getState();
+	const { saveQuery, updateQueryTab } = useConfigStore.getState();
 	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
@@ -59,7 +57,6 @@ export function QueryView() {
 
 	const tags = useSavedQueryTags();
 	const active = useActiveQuery();
-	const showVariables = useInterfaceStore(state => state.showQueryVariables);
 	const activeView = useConfigStore(state => state.activeView);
 
 	const [isSaving, isSavingHandle] = useDisclosure();
@@ -121,8 +118,19 @@ export function QueryView() {
 		});
 	});
 
+	const showVariables = !!active?.showVariables;
+
+	const setShowVariables = useStable((showVariables: boolean) => {
+		if (!active) return;
+
+		updateQueryTab({
+			id: active?.id,
+			showVariables
+		});
+	});
+
 	const closeVariables = useStable(() => {
-		setShowQueryVariables(false);
+		setShowVariables(false);
 	});
 
 	const variablesOrientation = orientation === "horizontal"
@@ -133,7 +141,7 @@ export function QueryView() {
 	useIntent("open-query-history", showHistoryHandle.open);
 	useIntent("run-query", runQuery);
 	useIntent("save-query", handleSaveRequest);
-	useIntent("toggle-variables", toggleQueryVariables);
+	useIntent("toggle-variables", () => setShowVariables(!showVariables));
 
 	useKeymap([
 		["F9", () => runQuery()],
@@ -162,7 +170,7 @@ export function QueryView() {
 							selection={selection}
 							showVariables={showVariables}
 							onSaveQuery={handleSaveRequest}
-							setShowVariables={setShowQueryVariables}
+							setShowVariables={setShowVariables}
 							onSelectionChange={setSelection}
 							square={squareCards}
 						/>
@@ -175,7 +183,7 @@ export function QueryView() {
 									showVariables={showVariables}
 									selection={selection}
 									onSaveQuery={handleSaveRequest}
-									setShowVariables={setShowQueryVariables}
+									setShowVariables={setShowVariables}
 									onSelectionChange={setSelection}
 								/>
 							</Panel>
@@ -217,7 +225,7 @@ export function QueryView() {
 				<SegmentedControl
 					data={['Query', 'Variables']}
 					value={showVariables ? 'Variables' : 'Query'}
-					onChange={toggleQueryVariables}
+					onChange={() => setShowVariables(!showVariables)}
 					className={classes.switcher}
 					radius="xs"
 				/>

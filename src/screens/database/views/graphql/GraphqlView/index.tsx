@@ -9,7 +9,6 @@ import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { useInterfaceStore } from "~/stores/interface";
 import { useKeymap } from "~/hooks/keymap";
 import { Icon } from "~/components/Icon";
 import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
@@ -29,7 +28,7 @@ const VariablesPaneLazy = memo(VariablesPane);
 const ResultPaneLazy = memo(ResultPane);
 
 export function GraphqlView() {
-	const { setShowGraphqlVariables, toggleGraphqlVariables } = useInterfaceStore.getState();
+	const { updateCurrentConnection } = useConfigStore.getState();
 	const { setGraphqlResponse } = useDatabaseStore.getState();
 
 	const [variablesValid, setVariablesValid] = useState(true);
@@ -37,7 +36,6 @@ export function GraphqlView() {
 
 	const isLight = useIsLight();
 	const connection = useActiveConnection();
-	const showVariables = useInterfaceStore(state => state.showGraphqlVariables);
 	const activeView = useConfigStore(state => state.activeView);
 
 	const isAvailable = GQL_SUPPORTED.has(connection.authentication.protocol);
@@ -60,14 +58,22 @@ export function GraphqlView() {
 		}
 	});
 
+	const showVariables = connection.graphqlShowVariables;
+
+	const setShowVariables = useStable((graphqlShowVariables: boolean) => {
+		updateCurrentConnection({
+			graphqlShowVariables
+		});
+	});
+
 	const closeVariables = useStable(() => {
-		setShowGraphqlVariables(false);
+		setShowVariables(false);
 	});
 
 	const isValid = queryValid && variablesValid;
 
 	useIntent("run-graphql-query", runQuery);
-	useIntent("toggle-graphql-variables", toggleGraphqlVariables);
+	useIntent("toggle-graphql-variables", () => setShowVariables(!showVariables));
 
 	useKeymap([
 		["F9", () => runQuery()],
@@ -87,7 +93,7 @@ export function GraphqlView() {
 								setIsValid={setQueryValid}
 								isValid={queryValid}
 								showVariables={showVariables}
-								setShowVariables={setShowGraphqlVariables}
+								setShowVariables={setShowVariables}
 							/>
 						</Panel>
 						{showVariables && (

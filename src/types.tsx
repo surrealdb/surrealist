@@ -105,6 +105,7 @@ export interface Connection {
 	designerTableList: boolean;
 	graphqlQuery: string;
 	graphqlVariables: string;
+	graphqlShowVariables: boolean;
 }
 
 export interface Template {
@@ -181,6 +182,7 @@ export interface TabQuery {
 	variables: string;
 	valid: boolean;
 	resultMode: ResultMode;
+	showVariables: boolean;
 }
 
 export interface HistoryQuery {

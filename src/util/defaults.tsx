@@ -114,7 +114,8 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		diagramDirection: settings.appearance.defaultDiagramDirection,
 		diagramShowLinks: settings.appearance.defaultDiagramShowLinks,
 		graphqlQuery: "",
-		graphqlVariables: ""
+		graphqlVariables: "",
+		graphqlShowVariables: false
 	};
 }
 
@@ -126,6 +127,7 @@ export function createBaseTab(settings: SurrealistSettings, query?: string, ): T
 		variables: "{}",
 		valid: query ? !validateQuery(query) : true,
 		resultMode: settings.appearance.defaultResultMode,
+		showVariables: false,
 	};
 }
 

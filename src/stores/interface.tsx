@@ -13,8 +13,6 @@ export type InterfaceStore = {
 	showScopeSignup: boolean;
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
-	showQueryVariables: boolean;
-	showGraphqlVariables: boolean;
 
 	setWindowTitle: (title: string) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
@@ -29,10 +27,6 @@ export type InterfaceStore = {
 	closeScopeSignup: () => void;
 	showChangelog: () => void;
 	readChangelog: () => void;
-	setShowQueryVariables: (show: boolean) => void;
-	setShowGraphqlVariables: (show: boolean) => void;
-	toggleQueryVariables: () => void;
-	toggleGraphqlVariables: () => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
@@ -123,22 +117,6 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	readChangelog: () => set(() => ({
 		hasReadChangelog: true,
-	})),
-
-	setShowQueryVariables: (show) => set(() => ({
-		showQueryVariables: show,
-	})),
-
-	toggleQueryVariables: () => set((state) => ({
-		showQueryVariables: !state.showQueryVariables,
-	})),
-
-	setShowGraphqlVariables: (show) => set(() => ({
-		showGraphqlVariables: show,
-	})),
-
-	toggleGraphqlVariables: () => set((state) => ({
-		showGraphqlVariables: !state.showGraphqlVariables,
 	})),
 
 }));
