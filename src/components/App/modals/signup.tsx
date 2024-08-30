@@ -10,18 +10,18 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconWarning } from "~/util/icons";
+import { dispatchIntent } from "~/hooks/url";
 
 export function ScopeSignupModal() {
-	const { closeScopeSignup, openConnectionEditor } = useInterfaceStore.getState();
+	const { closeScopeSignup } = useInterfaceStore.getState();
 
-	const opened = useInterfaceStore((s) => s.showScopeSignup);
-	const [loading, loadingHandle] = useDisclosure();
 	const [error, setError] = useState("");
-
+	const [loading, loadingHandle] = useDisclosure();
+	const opened = useInterfaceStore((s) => s.showScopeSignup);
 	const connection = useActiveConnection();
 
 	const openEditor = useStable(() => {
-		openConnectionEditor(connection.id);
+		dispatchIntent("edit-connection", { id: connection.id });
 		closeScopeSignup();
 	});
 

@@ -8,19 +8,22 @@ import sandboxLightUrl from "~/assets/images/light/start-sandbox.webp";
 import cloudDarkUrl from "~/assets/images/dark/start-cloud.webp";
 import cloudLightUrl from "~/assets/images/light/start-cloud.webp";
 import { Box, Center, Group, Stack, UnstyledButton } from "@mantine/core";
-import { useInterfaceStore } from "~/stores/interface";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
 import { adapter } from "~/adapter";
 import { useThemeImage } from "~/hooks/theme";
+import { dispatchIntent } from "~/hooks/url";
 
 export function StartScreen() {
 	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
-	const { openConnectionCreator } = useInterfaceStore.getState();
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
+	});
+
+	const openConnectionCreator = useStable(() => {
+		dispatchIntent("new-connection");
 	});
 
 	const openCloud = useStable(() => {

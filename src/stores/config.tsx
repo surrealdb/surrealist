@@ -8,7 +8,7 @@ import { schema } from "~/util/feature-flags";
 import { unique } from "radash";
 import { validateQuery } from "~/util/surrealql";
 import { isConnectionValid } from "~/util/connection";
-import { useInterfaceStore } from "./interface";
+import { dispatchIntent } from "~/hooks/url";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -145,7 +145,7 @@ export const useConfigStore = create<ConfigStore>()(
 			if (!connection) return {};
 
 			if (!isConnectionValid(connection.authentication)) {
-				useInterfaceStore.getState().openConnectionEditor(connection.id);
+				dispatchIntent("edit-connection", { id: connection.id });
 				return {};
 			}
 

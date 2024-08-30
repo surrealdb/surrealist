@@ -19,6 +19,7 @@ export type InterfaceStore = {
 	setWindowTitle: (title: string) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
 	setAvailableUpdate: (update: Update) => void;
+	hideAvailableUpdate: () => void;
 	setIsLive: (id: string, live: boolean) => void;
 	openTableCreator: () => void;
 	closeTableCreator: () => void;
