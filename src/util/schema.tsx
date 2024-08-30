@@ -59,7 +59,9 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 	schema.functions = dbInfo.functions.map(info => ({
 		...info,
 		name: info.name.replaceAll('`', ''),
-		block: dedent(info.block.slice(1, -1))
+		block: dedent(info.block.slice(1, -1)),
+		comment: info.comment || "",
+		returns: info.returns || "",
 	}));
 
 	// Schema models

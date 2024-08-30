@@ -74,7 +74,9 @@ export function FunctionsView() {
 
 	const editFunction = useStable((name: string) => {
 		isCreatingHandle.close();
+
 		const selectedFunction = functions.find((f) => f.name === name) || null;
+
 		if (!selectedFunction) {
 			showError({
 				title: "Function not found",
@@ -82,7 +84,9 @@ export function FunctionsView() {
 			});
 			return;
 		}
+
 		const isFunctionBlockInvalid = validateQuery(selectedFunction.block);
+
 		if (isFunctionBlockInvalid) {
 			showError({
 				title: "Failed to format",
@@ -90,8 +94,12 @@ export function FunctionsView() {
 			});
 			return;
 		}
-		const formattedFunctionBlock = formatQuery(selectedFunction.block);
-		setDetails({ ...selectedFunction, block: formattedFunctionBlock });
+
+		setDetails({
+			...selectedFunction,
+			block: formatQuery(selectedFunction.block)
+		});
+
 		handle.track();
 	});
 
