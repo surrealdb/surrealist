@@ -54,6 +54,9 @@ export const schema = {
 		options: ['production', 'custom'],
 		readonly: isProduction,
 	},
+	cloud_access: {
+		options: [false, true],
+	},
 	changelog: {
 		options: ['auto', 'hidden', 'read', 'unread'],
 	}
@@ -76,6 +79,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			newsfeed: true,
 			highlight_tool: true,
+			cloud_access: true,
 			themes: true,
 		},
 		preview: {

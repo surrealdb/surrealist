@@ -8,7 +8,7 @@ import { CloudAlert, CloudPage } from "~/types";
 import { InstancesPage } from "./pages/Instances";
 import { MembersPage } from "./pages/Members";
 import { useCloudStore } from "~/stores/cloud";
-import { iconChevronRight, iconOpen } from "~/util/icons";
+import { iconChevronRight, iconCursor, iconOpen } from "~/util/icons";
 import { Box, Button, Group, Image, Stack, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -23,6 +23,7 @@ import { StatusAlert } from "./components/StatusAlert";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAPI } from "./api";
 import { useThemeImage } from "~/hooks/theme";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
 	instances: InstancesPage,
@@ -35,6 +36,8 @@ const PAGE_VIEWS: Record<CloudPage, FC> = {
 };
 
 export function CloudView() {
+	const [{ cloud_access }] = useFeatureFlags();
+
 	const page = useConfigStore(s => s.activeCloudPage);
 	const state = useCloudStore(s => s.authState);
 	const Content = PAGE_VIEWS[page];
@@ -99,26 +102,42 @@ export function CloudView() {
 				<Text w={500} fz="lg" ta="center">
 					Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Elevate your business to unparalleled levels of scale and resilience. Focus on building tomorrow's applications. Let us take care of the rest.
 				</Text>
-				<Group>
+				{cloud_access ? (
+					<Group>
+						<Button
+							w={164}
+							color="slate"
+							variant="gradient"
+							rightSection={<Icon path={iconChevronRight} />}
+							onClick={openCloudAuthentication}
+						>
+							Continue
+						</Button>
+						<Button
+							w={164}
+							color="slate"
+							variant="light"
+							rightSection={<Icon path={iconOpen} />}
+							onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
+						>
+							Learn more
+						</Button>
+					</Group>
+				) : (
 					<Button
-						w={164}
+						w={264}
 						color="slate"
 						variant="gradient"
-						rightSection={<Icon path={iconChevronRight} />}
-						onClick={openCloudAuthentication}
+						rightSection={<Icon path={iconCursor} />}
+						onClick={() => adapter.openUrl("https://surrealdb.com/signup")}
+						style={{
+							border: "1px solid rgba(255, 255, 255, 0.3)",
+							backgroundOrigin: "border-box",
+						}}
 					>
-						Continue
+						Join the waitlist
 					</Button>
-					<Button
-						w={164}
-						color="slate"
-						variant="light"
-						rightSection={<Icon path={iconOpen} />}
-						onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
-					>
-						Learn more
-					</Button>
-				</Group>
+				)}
 			</Stack>
 			<Box
 				pos="absolute"
