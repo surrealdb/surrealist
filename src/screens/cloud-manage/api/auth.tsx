@@ -3,14 +3,14 @@ import { showError } from "~/util/helpers";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
-import { isDevelopment } from "~/util/environment";
+import { isDevelopment, isPreview } from "~/util/environment";
 import { fetchAPI, updateCloudInformation } from ".";
 import { dispatchOnboarding } from "../onboarding";
 import { getCloudEndpoints } from "./endpoints";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-const HOSTNAME = location.host === "localhost" ? "privatesurrealist.netlify.app" : location.host;
+const HOSTNAME = isPreview ? "beta.surrealist.app" : "surrealist.app";
 
 const CALLBACK_ENDPOINT = isDevelopment
 	? "http://localhost:1420/cloud/callback/index.html"
