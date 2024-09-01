@@ -138,9 +138,27 @@ function ObjectCell(props: { value: any }) {
 
 function GeographyPointCell({ value }: { value: GeometryPoint; }) {
 	const [long, lat] = value.point;
-	const converted = convert(`${lat} ${long}`);
-
-	return <GeographyLink value={value} text={converted.toCoordinateFormat("DMS")} />;
+	try {
+		const converted = convert(`${lat} ${long}`);
+		return (
+			<GeographyLink
+				value={value}
+				text={converted.toCoordinateFormat("DMS")}
+			/>
+		);
+	} catch (err) {
+		console.error(err);
+		return (
+			<GeographyLink
+				value={value}
+				text={
+					lat == 0 && long == 0
+						? "0° N, 0° E (Null Island)"
+						: `(${lat}, ${long})`
+				}
+			/>
+		);
+	}
 }
 
 function GeographyLineStringCell({ value }: { value: GeometryLine; }) {
