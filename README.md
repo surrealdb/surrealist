@@ -66,6 +66,9 @@ Additionally, queries can be saved and organized in your Saved queries, while yo
 ### Explorer view
 The Explorer View is used to browse your database and inspect individual records. When you select a table in the left panel, the table contents will be displayed in the Record Explorer. You can click on a record id to open the record inspector, in which you can edit the record contents and traverse graph relationships.
 
+### GraphQL view
+The GraphQL View allows you to interact with your database using GraphQL queries. Using the integrated GraphQL editor, you can write queries and mutations, and view results directly in the interface.
+
 ### Designer view
 The Designer View is a powerful tool you can use to define and manage your database schemas. You can create tables & edges, modify the database schema, and visualize the database tables in a graph view.
 
