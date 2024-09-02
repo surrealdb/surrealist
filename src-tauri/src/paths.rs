@@ -5,9 +5,15 @@ use dirs::config_dir;
 /// The directory where the application data is stored.
 pub fn get_data_directory() -> PathBuf {
     let mut config_path = config_dir().expect("data directory should be resolvable");
+    let is_preview = env!("VITE_SURREALIST_PREVIEW") == "true";
 
     config_path.push("SurrealDB");
-    config_path.push("Surrealist");
+
+    if is_preview {
+        config_path.push("SurrealistPreview");
+    } else {
+        config_path.push("Surrealist");
+    }
 
     config_path
 }
