@@ -55,6 +55,8 @@ jobs:
 
       - name: Build application
         run: pnpm build --mode preview
+        env:
+          VITE_CLOUD_CLIENT_ID: "${{ secrets.VITE_CLOUD_CLIENT_ID }}"
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
