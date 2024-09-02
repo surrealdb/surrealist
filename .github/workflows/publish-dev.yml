@@ -14,11 +14,11 @@ jobs:
       version: ${{ steps.extract_version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
 
       - name: Extract version
         id: extract_version
-        uses: Saionaro/extract-package-version@v1.2.1
+        uses: Saionaro/extract-package-version@v1.3.0
 
   build-web:
     name: Build Web

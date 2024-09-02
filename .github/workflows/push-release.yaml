@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
 
+env:
+  CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
+  CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
+
 jobs:
     version:
         name: Extract version
@@ -26,7 +30,7 @@ jobs:
 
             - name: Extract version
               id: extract_version
-              uses: Saionaro/extract-package-version@v1.2.1
+              uses: Saionaro/extract-package-version@v1.3.0
 
     publish:
         name: Publish
@@ -61,10 +65,25 @@ jobs:
             - name: Set version
               run: pnpm pkg set version=${{ needs.version.outputs.version }}
 
+            - name: Configure variables
+              run: |
+                if [ "${{ github.event.release.prerelease }}" == "true" ]; then
+                  echo "CALLBACK_URL=${{ env.CALLBACK_URL_BETA }}" >> $GITHUB_ENV
+                else
+                  echo "CALLBACK_URL=${{ env.CALLBACK_URL_STABLE }}" >> $GITHUB_ENV
+                fi
+
+            - name: Debug environment
+              run: |
+                echo "Update URL: ${{ env.UPDATE_URL }}"
+                echo "Callback URL: ${{ env.CALLBACK_URL }}"
+
             - name: Build Website
               run: pnpm build
               env:
                 VITE_SURREALIST_PREVIEW: "${{ github.event.release.prerelease }}"
+                VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
+                VITE_CLOUD_CALLBACK_URL: "${{ env.CALLBACK_URL }}"
 
             - name: Configure AWS Credentials
               uses: aws-actions/configure-aws-credentials@v4
