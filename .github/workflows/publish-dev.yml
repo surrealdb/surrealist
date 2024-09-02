@@ -54,8 +54,9 @@ jobs:
         run: pnpm license-report
 
       - name: Build application
-        run: pnpm build --mode preview
+        run: pnpm build
         env:
+          VITE_SURREALIST_PREVIEW: "true"
           VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
           VITE_CLOUD_CALLBACK_URL: "https://dev.surrealist.app/cloud/callback"
 
