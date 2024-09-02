@@ -23,7 +23,7 @@ pub fn start_database(
     driver: &str,
     storage: &str,
     executable: &str,
-	log_level: &str,
+    log_level: &str,
     legacy_compat: bool,
 ) -> Result<(), String> {
     let mut process = state.0.lock().unwrap();
@@ -40,7 +40,14 @@ pub fn start_database(
     info!("Serving database");
 
     let child_result = start_surreal_process(
-        username, password, port, driver, storage, executable, log_level, legacy_compat,
+        username,
+        password,
+        port,
+        driver,
+        storage,
+        executable,
+        log_level,
+        legacy_compat,
     );
 
     let mut child_proc = match child_result {
@@ -146,7 +153,7 @@ pub fn start_surreal_process(
     driver: &str,
     storage: &str,
     executable: &str,
-	log_level: &str,
+    log_level: &str,
     legacy_compat: bool,
 ) -> Result<Child, String> {
     let bind_addr = format!("0.0.0.0:{}", port);
@@ -156,13 +163,14 @@ pub fn start_surreal_process(
         executable
     };
 
-	let mut args =  vec![
-		path, "start", "--bind", &bind_addr, "--user", username, "--pass", password, "--log", log_level,
-	];
+    let mut args = vec![
+        path, "start", "--bind", &bind_addr, "--user", username, "--pass", password, "--log",
+        log_level,
+    ];
 
-	if legacy_compat {
-		args.push("--auth")
-	}
+    if legacy_compat {
+        args.push("--auth")
+    }
 
     let file_uri = format!("file://{}", storage);
     let tikv_uri = format!("tikv://{}", storage);
