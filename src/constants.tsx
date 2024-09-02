@@ -165,7 +165,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		icon: iconAuth,
 		anim: import("~/assets/animation/auth.json").then(x => x.default),
 		desc: "Manage account details and database scopes",
-		disabled: (flags) => !flags.designer_view || flags.surreal_compat === "v2",
+		disabled: (flags) => !flags.designer_view,
 	},
 	functions: {
 		id: "functions",

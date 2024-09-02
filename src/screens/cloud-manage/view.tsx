@@ -8,7 +8,7 @@ import { CloudAlert, CloudPage } from "~/types";
 import { InstancesPage } from "./pages/Instances";
 import { MembersPage } from "./pages/Members";
 import { useCloudStore } from "~/stores/cloud";
-import { iconChevronRight, iconCursor, iconOpen } from "~/util/icons";
+import { iconChevronRight, iconOpen } from "~/util/icons";
 import { Box, Button, Group, Image, Stack, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -128,7 +128,7 @@ export function CloudView() {
 						w={264}
 						color="slate"
 						variant="gradient"
-						rightSection={<Icon path={iconCursor} />}
+						rightSection={<Icon path={iconChevronRight} />}
 						onClick={() => adapter.openUrl("https://surrealdb.com/signup")}
 						style={{
 							border: "1px solid rgba(255, 255, 255, 0.3)",

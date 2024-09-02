@@ -171,7 +171,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			logLevel
 		} = useConfigStore.getState().settings.serving;
 
-		const legacyCompat = featureFlags.get('surreal_compat') === 'v1';
+		const legacyCompat = featureFlags.get('legacy_serve');
 
 		return invoke<void>("start_database", {
 			username,

@@ -47,8 +47,8 @@ export const schema = {
 	highlight_tool: {
 		options: [false, true],
 	},
-	surreal_compat: {
-		options: ['v1', 'v2'],
+	legacy_serve: {
+		options: [false, true],
 	},
 	cloud_endpoints: {
 		options: ['production', 'custom'],
