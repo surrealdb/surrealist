@@ -89,11 +89,11 @@ importers:
         specifier: ^6.5.0
         version: 6.5.3(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.33.0)
       '@surrealdb/codemirror':
-        specifier: 1.0.0-beta.4
-        version: 1.0.0-beta.4
+        specifier: 1.0.0-beta.5
+        version: 1.0.0-beta.5
       '@surrealdb/lezer':
-        specifier: 1.0.0-beta.4
-        version: 1.0.0-beta.4
+        specifier: 1.0.0-beta.5
+        version: 1.0.0-beta.5
       '@surrealdb/ql-wasm':
         specifier: 0.2.0-beta.2
         version: 0.2.0-beta.2
@@ -1600,11 +1600,11 @@ packages:
     resolution: {integrity: sha512-TV7t8GKYaJWsn00tFDqBw8+Uqmr8A0fRU1tvTQhyZzGv0sJCGRQL3JGMI3ucuKo3XIZdUP+Lx7/gh2t3lewy7g==}
     engines: {node: '>=14.16'}
 
-  '@surrealdb/codemirror@1.0.0-beta.4':
-    resolution: {integrity: sha512-mnnhskeYdLpY8D/Nw9EUauj1OcLjI6r2cYXCVqfaKeW0XQaDBkY6ZwYtd5aLE6OBR+iMiYLBi75MOnLB3+h6Bg==}
+  '@surrealdb/codemirror@1.0.0-beta.5':
+    resolution: {integrity: sha512-PLJZK9n17bq+BQFG72q8MEFhR9jA7CRtw6Pq3WIj1YpejAaB+sqPJLvJv2YFI0szYPbwOgGtTMZbUM/oJ6g3rQ==}
 
-  '@surrealdb/lezer@1.0.0-beta.4':
-    resolution: {integrity: sha512-jWAPfB+Stx/vs6LawlXTpkoA4NUdqX4wDn+ER3wHbaxQJn/yzk7dq1xeU++QbWYU/qqqgxeMkAz+bxO2RhkG2w==}
+  '@surrealdb/lezer@1.0.0-beta.5':
+    resolution: {integrity: sha512-sz9ZmLwtYVtOsyY7B2bZJk8z/OWLkSoWmZxKz0uqaAnr4ccqV9uesKuu3/fPRsxgOc5ZzeOUlMnxbPJfeMtgLA==}
 
   '@surrealdb/ql-wasm@0.2.0-beta.2':
     resolution: {integrity: sha512-Iw/UNMyCXTF9wywiNHY4Xt+zKnBwGitCYOL6H/zRow+BqKIxeOeaSJ0pm9SU9lWIsoJEQZ/OwM3+CmqsSFYs8A==}
@@ -5026,14 +5026,14 @@ snapshots:
 
   '@sindresorhus/is@5.6.0': {}
 
-  '@surrealdb/codemirror@1.0.0-beta.4':
+  '@surrealdb/codemirror@1.0.0-beta.5':
     dependencies:
       '@codemirror/language': 6.10.2
       '@lezer/common': 1.2.1
       '@lezer/javascript': 1.4.17
-      '@surrealdb/lezer': 1.0.0-beta.4
+      '@surrealdb/lezer': 1.0.0-beta.5
 
-  '@surrealdb/lezer@1.0.0-beta.4':
+  '@surrealdb/lezer@1.0.0-beta.5':
     dependencies:
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
