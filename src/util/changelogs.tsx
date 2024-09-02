@@ -1,4 +1,4 @@
-import compare from "semver-compare";
+import { compareVersions } from "compare-versions";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 
@@ -13,14 +13,14 @@ export const changelogs = Object.entries(CHANGELOGS).map(([path, value]: any) =>
 		content: value.html
 	};
 }).sort((a, b) => {
-	return compare(b.version, a.version);
+	return compareVersions(b.version, a.version);
 });
 
 export function promptChangelog() {
 	const { previousVersion, setPreviousVersion } = useConfigStore.getState();
 	const { showChangelog } = useInterfaceStore.getState();
 
-	if (compare(import.meta.env.VERSION, previousVersion) > 0) {
+	if (compareVersions(import.meta.env.VERSION, previousVersion) > 0) {
 		setPreviousVersion(import.meta.env.VERSION);
 		showChangelog();
 	}

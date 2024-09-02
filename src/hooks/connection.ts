@@ -1,4 +1,4 @@
-import compare from "semver-compare";
+import { compareVersions } from "compare-versions";
 import { unique } from "radash";
 import { useMemo } from "react";
 import { SANDBOX } from "~/constants";
@@ -83,7 +83,7 @@ export function useSavedQueryTags() {
  */
 export function useMinimumVersion(minimum: string) {
 	const version = useDatabaseStore((s) => s.version);
-	const isGreater = !!version && compare(version, minimum) >= 0;
+	const isGreater = !!version && compareVersions(version, minimum) >= 0;
 
 	return [isGreater, version] as const;
 }
