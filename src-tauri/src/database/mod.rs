@@ -39,7 +39,7 @@ pub fn start_database(
 
     info!("Serving database");
 
-    let child_result = start_surreal_process(
+    let child_result = start_surreal_process(ServeOptions {
         username,
         password,
         port,
@@ -48,7 +48,7 @@ pub fn start_database(
         executable,
         log_level,
         legacy_compat,
-    );
+    });
 
     let mut child_proc = match child_result {
         Ok(child) => child,
@@ -143,39 +143,49 @@ pub fn kill_surreal_process(id: u32) {
         .expect("surreal process should be killed");
 }
 
+pub struct ServeOptions<'s> {
+    username: &'s str,
+    password: &'s str,
+    port: u32,
+    driver: &'s str,
+    storage: &'s str,
+    executable: &'s str,
+    log_level: &'s str,
+    legacy_compat: bool,
+}
+
 ///
 /// Start a new SurrealDB process and return the child process
 ///
-pub fn start_surreal_process(
-    username: &str,
-    password: &str,
-    port: u32,
-    driver: &str,
-    storage: &str,
-    executable: &str,
-    log_level: &str,
-    legacy_compat: bool,
-) -> Result<Child, String> {
-    let bind_addr = format!("0.0.0.0:{}", port);
-    let path = if executable.is_empty() {
+pub fn start_surreal_process(options: ServeOptions) -> Result<Child, String> {
+    let bind_addr = format!("0.0.0.0:{}", options.port);
+    let path = if options.executable.is_empty() {
         "surreal"
     } else {
-        executable
+        options.executable
     };
 
     let mut args = vec![
-        path, "start", "--bind", &bind_addr, "--user", username, "--pass", password, "--log",
-        log_level,
+        path,
+        "start",
+        "--bind",
+        &bind_addr,
+        "--user",
+        options.username,
+        "--pass",
+        options.password,
+        "--log",
+        options.log_level,
     ];
 
-    if legacy_compat {
+    if options.legacy_compat {
         args.push("--auth")
     }
 
-    let file_uri = format!("file://{}", storage);
-    let tikv_uri = format!("tikv://{}", storage);
+    let file_uri = format!("file://{}", options.storage);
+    let tikv_uri = format!("tikv://{}", options.storage);
 
-    match driver {
+    match options.driver {
         "memory" => args.push("memory"),
         "file" => args.push(file_uri.as_str()),
         "tikv" => args.push(tikv_uri.as_str()),
