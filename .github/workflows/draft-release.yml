@@ -147,7 +147,7 @@ jobs:
                   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
                   VITE_SURREALIST_PREVIEW: "${{ inputs.prerelease }}"
                   VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
-                  VITE_CLOUD_CALLBACK_URL: "${{ inputs.prerelease == 'true' && 'https://beta.surrealist.app/auth/callback' || 'https://surrealist.app/auth/callback' }}"
+                  VITE_CLOUD_CALLBACK_URL: "${{ inputs.prerelease == 'true' && 'https://beta.surrealist.app/cloud/callback' || 'https://surrealist.app/cloud/callback' }}"
                   APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
                   APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
                   APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}

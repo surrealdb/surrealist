@@ -57,7 +57,7 @@ jobs:
         run: pnpm build --mode preview
         env:
           VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
-          VITE_CLOUD_CALLBACK_URL: "https://dev.surrealist.app/auth/callback"
+          VITE_CLOUD_CALLBACK_URL: "https://dev.surrealist.app/cloud/callback"
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
