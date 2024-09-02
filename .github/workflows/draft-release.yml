@@ -146,7 +146,7 @@ jobs:
                   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
                   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
                   VITE_SURREALIST_PREVIEW: "${{ inputs.prerelease }}"
-                  VITE_CLOUD_CLIENT_ID: "${{ secrets.VITE_CLOUD_CLIENT_ID }}"
+                  VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
                   APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
                   APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
                   APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
