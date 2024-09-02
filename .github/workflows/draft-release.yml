@@ -8,14 +8,16 @@ on:
         type: boolean
         description: "Is this a pre-release? If not, this will be considered the latest release"
         default: true
-      summary:
-        required: true
-        type: string
-        description: "Include a short summary of this release which will be shown to people when they are prompted to update."
       version:
         required: false
         type: string
         description: "Optionally input a custom version. If not, the version string will automatically be generated based on the version in package.json"
+
+env:
+  UPDATE_URL_STABLE: "https://surrealist.app/latest.json"
+  UPDATE_URL_BETA: "https://beta.surrealist.app/latest.json"
+  CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
+  CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
 
 jobs:
     version:
@@ -37,13 +39,6 @@ jobs:
               with:
                   node-version: 20
 
-            - name: Adjust pre-release version
-              if: ${{ !inputs.version && inputs.prerelease }}
-              run: |
-                  v=$(pnpm pkg get version)
-                  v=${v:1:-1}-${{ github.run_number }}
-                  pnpm pkg set version=$v
-
             - name: Set inputted version
               if: ${{ inputs.version }}
               run: |
@@ -63,7 +58,7 @@ jobs:
 
             - name: Extract version
               id: extract_version
-              uses: Saionaro/extract-package-version@v1.2.1
+              uses: Saionaro/extract-package-version@v1.3.0
 
     draft:
         name: Draft release
@@ -122,6 +117,9 @@ jobs:
               with:
                   workspaces: "./src-tauri -> target"
 
+            - name: Setup jq
+              uses: dcarbone/install-jq-action@v2
+
             - name: Install frontend dependencies
               run: pnpm i --frozen-lockfile
 
@@ -137,6 +135,28 @@ jobs:
                   APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
               shell: bash
               run: echo "$APPLE_API_KEY_CONTENT" >> ${{ github.workspace }}/apple-api-key.p8
+            
+            - name: Configure variables
+              shell: bash
+              run: |
+                if [ "${{ inputs.prerelease }}" == "true" ]; then
+                  echo "UPDATE_URL=${{ env.UPDATE_URL_BETA }}" >> $GITHUB_ENV
+                  echo "CALLBACK_URL=${{ env.CALLBACK_URL_BETA }}" >> $GITHUB_ENV
+                else
+                  echo "UPDATE_URL=${{ env.UPDATE_URL_STABLE }}" >> $GITHUB_ENV
+                  echo "CALLBACK_URL=${{ env.CALLBACK_URL_STABLE }}" >> $GITHUB_ENV
+                fi
+
+            - name: Debug environment
+              run: |
+                echo "Update URL: ${{ env.UPDATE_URL }}"
+                echo "Callback URL: ${{ env.CALLBACK_URL }}"
+
+            - name: Configure update endpoint
+              shell: bash
+              run: |
+                jq '.plugins.updater.endpoints[0] = "${{ env.UPDATE_URL }}"' ./src-tauri/tauri.conf.json > ./src-tauri/tauri.conf.temp
+                mv -f ./src-tauri/tauri.conf.temp ./src-tauri/tauri.conf.json
 
             - name: Build and draft release
               uses: tauri-apps/tauri-action@v0
@@ -147,7 +167,7 @@ jobs:
                   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
                   VITE_SURREALIST_PREVIEW: "${{ inputs.prerelease }}"
                   VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
-                  VITE_CLOUD_CALLBACK_URL: "${{ inputs.prerelease == 'true' && 'https://beta.surrealist.app/cloud/callback' || 'https://surrealist.app/cloud/callback' }}"
+                  VITE_CLOUD_CALLBACK_URL: "${{ env.CALLBACK_URL }}"
                   APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
                   APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
                   APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
@@ -161,6 +181,6 @@ jobs:
                   tagName: surrealist-v${{ needs.version.outputs.version }}
                   args: "${{ matrix.settings.args }}"
                   releaseName: 'Surrealist v${{ needs.version.outputs.version }}'
-                  releaseBody: ${{ inputs.summary }}
+                  releaseBody: Surrealist update v${{ needs.version.outputs.version }}
                   releaseDraft: true
                   prerelease: ${{ inputs.prerelease }}
