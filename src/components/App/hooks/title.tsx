@@ -6,6 +6,10 @@ import { useConnection } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 
+const NAME = import.meta.env.VITE_SURREALIST_PREVIEW === "true"
+	? "Surrealist Preview"
+	: "Surrealist";
+
 /**
  * Synchronize the title of the window with the current view
  */
@@ -19,13 +23,13 @@ export function useTitleSync() {
 		const segments: string[] = [];
 
 		if (activeView === "cloud") {
-			segments.push("Surreal Cloud - Surrealist");
+			segments.push(`Surreal Cloud - ${NAME}`);
 		} else {
 			if (connection?.name) {
 				segments.push(`${connection.name} -`);
 			}
 
-			segments.push(`Surrealist ${viewInfo?.name || ""}`);
+			segments.push(`${NAME} ${viewInfo?.name || ""}`);
 		}
 
 		if (pinned) {
