@@ -1,7 +1,6 @@
 import { useConfigStore } from "~/stores/config";
 import { getActiveQuery } from "./connection";
 import { useDatabaseStore } from "~/stores/database";
-import { useInterfaceStore } from "~/stores/interface";
 import { ResultMode } from "~/types";
 import { RESULT_MODES } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
@@ -23,7 +22,6 @@ export function handleWindowMessage(event: MessageEvent) {
 	const active = getActiveQuery()!;
 	const { updateQueryTab } = useConfigStore.getState();
 	const { clearQueryResponse } = useDatabaseStore.getState();
-	const { setShowQueryVariables } = useInterfaceStore.getState();
 
 	switch (data.action) {
 		case "set_editor": {
@@ -48,7 +46,10 @@ export function handleWindowMessage(event: MessageEvent) {
 				return;
 			}
 
-			setShowQueryVariables(mode === "variables");
+			updateQueryTab({
+				id: active.id,
+				showVariables: mode === "variables"
+			});
 			break;
 		}
 		case "set_result_mode": {
