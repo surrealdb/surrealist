@@ -36,7 +36,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 
 	const renderField = useStable((field: SchemaField) => (
 		<Flex>
-			<Text>{field.name}</Text>
+			{field.name}
 			{field.kind && (
 				<>
 					<Text c="slate" mr="xs">:</Text>
