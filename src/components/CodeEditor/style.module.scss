@@ -48,17 +48,17 @@
 		background-color: rgba(71, 154, 255, 0.4) !important;
 	}
 
-	:global(.cm-selectionMatch), :global(.cm-searchMatch) {
-		background-color: var(--mantine-color-slate-7) !important;
-		border-radius: 6px;
-
-		@include light {
-			background-color: var(--mantine-color-slate-0) !important;
-		}
+	:global(.cm-selectionMatch) {
+		background-color: transparent !important;
 	}
 
-	:global(.cm-searchMatch-selected) {
-		background-color: rgba(255, 0, 162, 0.3) !important;
+	:global(.cm-searchMatch) {
+		background-color: var(--mantine-color-surreal-6) !important;
+		border-radius: 6px;
+
+		* {
+			color: white;
+		}
 	}
 
 	:global(.cm-foldPlaceholder) {
@@ -113,6 +113,69 @@
 	:global(.cm-completionMatchedText) {
 		text-decoration: none;
 		font-weight: 600;
+	}
+
+	:global(.cm-panels) {
+		z-index: 1;
+		background-color: var(--mantine-body-color);
+		border-color: var(--mantine-color-slate-7);
+
+		label {
+			display: inline-flex;
+			align-items: center;
+			color: var(--mantine-color-bright);
+		}
+
+		button {
+			color: var(--mantine-color-bright);
+			background-image: unset !important;
+			background-color: var(--mantine-color-body);
+			border-radius: var(--mantine-radius-xs);
+			border-color: var(--mantine-color-slate-6);
+
+			&:active {
+				background-color: var(--mantine-color-slate-6) !important;
+			}
+		}
+
+		input {
+			background-color: var(--mantine-color-slate-6);
+			border-radius: var(--mantine-radius-xs);
+			color: var(--mantine-color-bright);
+			border: none;
+			outline: none;
+		}
+
+		input[type="checkbox"] {
+			accent-color: var(--mantine-color-surreal-7);
+		}
+
+		button:focus-visible,
+		input:focus-visible {
+			outline: 2px solid var(--mantine-primary-color-filled);
+			outline-offset: calc(0.125rem* var(--mantine-scale));
+			border-radius: var(--mantine-radius-xs);
+		}
+
+		@include light {
+			border-color: var(--mantine-color-slate-2);
+
+			button {
+				border-color: var(--mantine-color-slate-2);
+	
+				&:active {
+					background-color: var(--mantine-color-slate-2) !important;
+				}
+			}
+	
+			input {
+				background-color: var(--mantine-color-slate-1);
+			}
+		}
+	}
+
+	:global(.cm-gotoLine) input {
+		margin-left: var(--mantine-spacing-xs);
 	}
 
 	$icons: (
