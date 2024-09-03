@@ -1,14 +1,13 @@
-import { Accordion, TextInput, Checkbox } from "@mantine/core";
+import classes from "../style.module.scss";
+import { Accordion, TextInput, Checkbox, Text, Flex } from "@mantine/core";
 import { ElementProps, SectionTitle } from "../helpers";
 import { Lister } from "../lister";
 import { useStable } from "~/hooks/stable";
-import { useTableNames } from "~/hooks/schema";
 import { CodeInput, FieldKindInput, PermissionInput } from "~/components/Inputs";
 import { iconJSON } from "~/util/icons";
+import { SchemaField } from "~/types";
 
 export function FieldsElement({ data, setData }: ElementProps) {
-	const tableList = useTableNames();
-
 	const addField = useStable(() => {
 		setData((d) => {
 			d.fields.push({
@@ -35,6 +34,18 @@ export function FieldsElement({ data, setData }: ElementProps) {
 		});
 	});
 
+	const renderField = useStable((field: SchemaField) => (
+		<Flex>
+			<Text>{field.name}</Text>
+			{field.kind && (
+				<>
+					<Text c="slate" mr="xs">:</Text>
+					<Text className={classes.kind}>{field.kind}</Text>
+				</>
+			)}
+		</Flex>
+	));
+
 	return (
 		<Accordion.Item value="fields">
 			<SectionTitle icon={iconJSON}>
@@ -47,6 +58,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 					name="field"
 					onCreate={addField}
 					onRemove={removeField}
+					display={renderField}
 				>
 					{(field, i) => (
 						<>
