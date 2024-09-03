@@ -404,6 +404,11 @@ export interface DataSet {
 	url: string;
 }
 
+export interface CloudSignin {
+	token: string;
+	terms_accepted_at?: string;
+}
+
 export interface CloudProfile {
 	username: string;
 	default_org: string;
