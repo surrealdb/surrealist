@@ -4,7 +4,7 @@ function redirect(path, host) {
 		statusDescription: 'Moved Permanently',
 		headers: {
 			location: {
-				value: `https://surrealist.app${path}`
+				value: `https://beta.surrealist.app${path}`
 			}
 		},
 	};
@@ -15,7 +15,7 @@ function handler(event) {
 	let host = request.headers.host.value;
 	let path = request.uri.toLowerCase();
 
-	if (host !== 'surrealist.app') {
+	if (host !== 'beta.surrealist.app') {
 		return redirect(path)
 	}
 
