@@ -223,6 +223,7 @@ export interface SurrealistConfig {
 	lastViewedNewsAt: number | null;
 	settings: SurrealistSettings;
 	featureFlags: Partial<FeatureFlagMap>;
+	openDesignerPanels: string[];
 	commandHistory: string[];
 	onboarding: string[];
 }

@@ -34,8 +34,7 @@ import { executeQuery } from "~/screens/database/connection/connection";
 import { ChangefeedElement } from "./elements/changefeed";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { useIsLight } from "~/hooks/theme";
-
-const INITIAL_TABS = ["general"];
+import { useConfigStore } from "~/stores/config";
 
 export interface SchemaDrawerProps {
 	opened: boolean;
@@ -54,8 +53,11 @@ export function DesignDrawer({
 	errors,
 	onClose
 }: SchemaDrawerProps) {
+	const { setOpenDesignerPanels } = useConfigStore.getState();
+
 	const isLight = useIsLight();
 	const [width, setWidth] = useState(650);
+	const openDesignerPanels = useConfigStore(s => s.openDesignerPanels);
 
 	const removeTable = useConfirmation({
 		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
@@ -161,7 +163,8 @@ export function DesignDrawer({
 				))}
 				<Accordion
 					multiple
-					defaultValue={INITIAL_TABS}
+					value={openDesignerPanels}
+					onChange={setOpenDesignerPanels}
 					variant="separated"
 					classNames={{
 						item: classes.accordionItem,

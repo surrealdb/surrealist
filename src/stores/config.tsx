@@ -72,7 +72,8 @@ export type ConfigStore = SurrealistConfig & {
 	pushCommand: (command: string) => void;
 	updateViewedNews: () => void;
 	completeOnboarding: (key: string) => void;
-	resetOnboardings: () => void
+	resetOnboardings: () => void;
+	setOpenDesignerPanels: (openDesignerPanels: string[]) => void;
 }
 
 export const useConfigStore = create<ConfigStore>()(
@@ -374,6 +375,10 @@ export const useConfigStore = create<ConfigStore>()(
 
 		resetOnboardings: () => set(() => ({
 			onboarding: []
+		})),
+
+		setOpenDesignerPanels: (openDesignerPanels) => set(() => ({
+			openDesignerPanels
 		})),
 
 	})

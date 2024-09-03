@@ -24,6 +24,7 @@ export function createBaseConfig(): SurrealistConfig {
 		featureFlags: {},
 		commandHistory: [],
 		lastViewedNewsAt: null,
+		openDesignerPanels: ["general"],
 		onboarding: [],
 		settings
 	};
