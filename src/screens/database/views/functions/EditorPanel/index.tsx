@@ -262,8 +262,7 @@ export function EditorPanel({
 												styles={{
 													input: {
 														backgroundColor: argColor,
-														paddingInline: 12,
-														color: isLight ? "#8d6bff" : "#a79fff"
+														paddingInline: 12
 													}
 												}}
 											/>

@@ -259,7 +259,7 @@ export function FieldKindInput({
 		<Autocomplete
 			data={kinds}
 			spellCheck={false}
-			className={clsx(classes.input, className)}
+			className={clsx(classes.input, classes.kindInput, className)}
 			{...rest}
 		/>
 	);

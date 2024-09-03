@@ -9,6 +9,10 @@
 	}
 }
 
+.kind-input input {
+	color: var(--surrealist-kind-color);
+}
+
 .code-input {
 
 	:global(.cm-editor) {
