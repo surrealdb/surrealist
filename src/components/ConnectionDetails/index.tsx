@@ -282,7 +282,6 @@ export function ConnectionDetails({
 				</Group>
 
 				<Divider
-					mx={-32}
 					mb={6}
 					mt={12}
 				/>
@@ -444,7 +443,6 @@ export function ConnectionDetails({
 						</Stack>
 
 						<Divider
-							mx={-32}
 							mb={6}
 							mt={12}
 						/>
