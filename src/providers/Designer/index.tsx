@@ -11,6 +11,7 @@ import { useImmer } from "use-immer";
 import { TableInfo } from "~/types";
 import { useTables } from "~/hooks/schema";
 import { useMinimumVersion } from "~/hooks/connection";
+import { SDB_2_0_0 } from "~/util/versions";
 
 type DesignFunction = (table: string) => void;
 type StopDesignFunction = () => void;
@@ -62,7 +63,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 	const [isDesigning, designingHandle] = useDisclosure();
 	const [errors, setErrors] = useState<string[]>([]);
 	const [data, setData] = useImmer<TableInfo>(DEFAULT_DEF);
-	const [useOverwrite] = useMinimumVersion("2.0.0");
+	const [useOverwrite] = useMinimumVersion(SDB_2_0_0);
 
 	const design = useStable((table: string) => {
 		const schema = tables.find((t) => t.schema.name === table);

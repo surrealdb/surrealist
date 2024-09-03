@@ -23,6 +23,7 @@ import { showError } from "~/util/helpers";
 import { lineNumbers } from "@codemirror/view";
 import { useIsLight } from "~/hooks/theme";
 import { useMinimumVersion } from "~/hooks/connection";
+import { SDB_2_0_0 } from "~/util/versions";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -42,7 +43,7 @@ export function EditorPanel({
 	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
 
-	const [hasReturns] = useMinimumVersion("2.0.0");
+	const [hasReturns] = useMinimumVersion(SDB_2_0_0);
 
 	const addArgument = useStable(() => {
 		onChange((draft) => {
