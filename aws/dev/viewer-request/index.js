@@ -1,5 +1,5 @@
-function redirect(path) {
-    return {
+function redirect(path, host) {
+	return {
 		statusCode: 301,
 		statusDescription: 'Moved Permanently',
 		headers: {
@@ -11,7 +11,6 @@ function redirect(path) {
 }
 
 function handler(event) {
-
 	let request = event.request;
 	let host = request.headers.host.value;
 	let path = request.uri.toLowerCase();
@@ -21,19 +20,30 @@ function handler(event) {
 	}
 
 	switch (true) {
-	    case request.uri === '/embed/new':
-	        return redirect('/mini/new');
-	    case request.uri === '/embed':
-	        return redirect('/mini');
+
+		// Redirects
+		case request.uri === '/embed/new':
+			return redirect('/mini/new');
+
+		case request.uri === '/embed':
+			return redirect('/mini');
+
+		// Rewrites
 		case request.uri === '/mini/new':
-			request.uri = '/mini/new.html';
-			return request;
+			request.uri = '/mini/new/index.html';
+			break;
+
 		case request.uri === '/mini':
-			request.uri = '/mini/run.html';
-			return request;
+			request.uri = '/mini/run/index.html';
+			break;
+
+		case request.uri === '/cloud/callback':
+			request.uri = '/cloud/callback/index.html';
+			break;
+
 		case request.uri.includes('.') === false:
 			request.uri = '/index.html';
-			return request;
+			break;
 	}
 
 	return request;
