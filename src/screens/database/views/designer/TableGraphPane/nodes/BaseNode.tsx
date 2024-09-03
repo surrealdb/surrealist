@@ -6,8 +6,8 @@ import { Spacer } from "~/components/Spacer";
 import { themeColor } from "~/util/mantine";
 import { useActiveConnection } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
-import { ON_STOP_PROPAGATION, extractType } from "~/util/helpers";
-import { MouseEvent, ReactNode, useMemo, useRef } from "react";
+import { ON_STOP_PROPAGATION, simplifyKind } from "~/util/helpers";
+import { MouseEvent, ReactNode, useRef } from "react";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { extractKindRecords } from "~/util/surrealql";
 
@@ -46,33 +46,27 @@ interface FieldKindProps {
 
 function FieldKind({ kind }: FieldKindProps) {
 
-	const [kindName, tooltip] = useMemo(() => extractType(kind), [kind]);
+	const simpleKind = simplifyKind(kind);
 
 	const value = (
 		<Text c="surreal.6" ff="mono" maw="50%">
-			{kindName}
+			{simpleKind}
 		</Text>
 	);
 
-	if (tooltip.length === 0) {
+	if (kind === simpleKind) {
 		return value;
 	}
-
-	const items = (
-		<Box>
-			{tooltip.map((type) => (
-				<Text key={type} fw={500}>
-					{type}
-				</Text>
-			))}
-		</Box>
-	);
 
 	return (
 		<Tooltip
 			position="top"
-			label={items}
 			openDelay={0}
+			label={
+				<Text fw={500} ff="monospace">
+					{kind}
+				</Text>
+			}
 		>
 			{value}
 		</Tooltip>

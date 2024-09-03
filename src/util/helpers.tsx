@@ -9,7 +9,6 @@ import { Authentication, TabQuery } from "~/types";
 import { decodeCbor, escape_ident } from "surrealdb";
 import { Value } from "@surrealdb/ql-wasm";
 
-const FIELD_KIND_PATTERN = /^(\w+)<?(.*?)>?$/;
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
 	"auth",
@@ -126,33 +125,19 @@ export function mod(n: number, m: number) {
 }
 
 /**
- * Extracts items out of the syntax `prefix(item1, item2, item3)`
+ * Simplify the given field kind
  *
- * @param value The input string
- * @param prefix The prefix to trim
- * @returns The list of items
- * @deprecated Use `extractType` instead
+ * @param value The input kind string
+ * @returns The simplified kind
  */
-export function extractTypeList(input: string, prefix: string) {
-	return input
-		.replace(`${prefix}<`, "")
-		.replace(">", "")
-		.split("|")
-		.map((t) => t.trim());
-}
+export function simplifyKind(kind: string) {
+	const bracket = kind.indexOf("<");
 
-/**
- * Extracts the kind and items out of a field kind
- *
- * @param value The input string
- * @returns The sanitized kind and items list
- */
-export function extractType(input: string): [string, string[]] {
-	const [, kind, items] = FIELD_KIND_PATTERN.exec(input) || [];
+	if (bracket === -1) {
+		return kind;
+	}
 
-	return items.trim().length > 0
-		? [kind, items.split("|").map((t) => t.trim())]
-		: [kind, []];
+	return kind.slice(0, bracket);
 }
 
 /**
