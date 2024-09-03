@@ -5,8 +5,9 @@ import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { isDevelopment } from "~/util/environment";
 import { fetchAPI, updateCloudInformation } from ".";
-import { dispatchOnboarding } from "../onboarding";
 import { getCloudEndpoints } from "./endpoints";
+import { CloudSignin } from "~/types";
+import { openTermsModal } from "../onboarding/terms-and-conditions";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -168,7 +169,7 @@ export async function acquireSession(accessToken: string) {
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
-		const result = await fetchAPI<any>("/signin", {
+		const result = await fetchAPI<CloudSignin>("/signin", {
 			method: 'POST',
 			body: JSON.stringify(accessToken)
 		});
@@ -181,8 +182,8 @@ export async function acquireSession(accessToken: string) {
 
 		setSessionExpired(false);
 
-		if (!localStorage.getItem("surrealist:onboarded")) {
-			dispatchOnboarding();
+		if (!result.terms_accepted_at || true) {
+			openTermsModal();
 		}
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);

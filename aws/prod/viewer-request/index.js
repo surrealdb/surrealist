@@ -1,39 +1,49 @@
-function redirect(path) {
-    return {
+function redirect(path, host) {
+	return {
 		statusCode: 301,
 		statusDescription: 'Moved Permanently',
 		headers: {
 			location: {
-				value: `https://surrealist.app${path}`
+				value: `https://${host || "surrealist.app"}${path}`
 			}
 		},
 	};
 }
 
 function handler(event) {
-
 	let request = event.request;
 	let host = request.headers.host.value;
 	let path = request.uri.toLowerCase();
 
-	if (host !== 'surrealist.app') {
+	if (host !== 'surrealist.app' && host !== 'beta.surrealist.app') {
 		return redirect(path)
 	}
 
 	switch (true) {
-	    case request.uri === '/embed/new':
-	        return redirect('/mini/new');
-	    case request.uri === '/embed':
-	        return redirect('/mini');
+
+		// Redirects
+		case request.uri === '/embed/new':
+			return redirect('/mini/new', host);
+
+		case request.uri === '/embed':
+			return redirect('/mini', host);
+
+		// Rewrites
 		case request.uri === '/mini/new':
 			request.uri = '/mini/new/index.html';
-			return request;
+			break;
+
 		case request.uri === '/mini':
 			request.uri = '/mini/run/index.html';
-			return request;
+			break;
+
+		case request.uri === '/cloud/callback':
+			request.uri = '/cloud/callback/index.html';
+			break;
+
 		case request.uri.includes('.') === false:
 			request.uri = '/index.html';
-			return request;
+			break;
 	}
 
 	return request;
