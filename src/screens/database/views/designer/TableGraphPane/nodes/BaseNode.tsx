@@ -1,3 +1,4 @@
+import classes from "../style.module.scss";
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
 import { TableInfo } from "~/types";
 import { Handle, Position } from "reactflow";
@@ -49,7 +50,12 @@ function FieldKind({ kind }: FieldKindProps) {
 	const simpleKind = simplifyKind(kind);
 
 	const value = (
-		<Text c="surreal.6" ff="mono" maw="50%">
+		<Text
+			c="surreal.6"
+			ff="mono"
+			maw="50%"
+			truncate
+		>
 			{simpleKind}
 		</Text>
 	);
@@ -93,6 +99,7 @@ function Field({
 			<Text
 				title={name}
 				c={isLight ? undefined : "white"}
+				truncate
 			>
 				{name}
 			</Text>
@@ -127,6 +134,7 @@ function Fields(props: FieldsProps) {
 				onWheelCapture={ON_STOP_PROPAGATION}
 				onMouseDownCapture={ON_STOP_PROPAGATION}
 				onMouseUpCapture={ON_STOP_PROPAGATION}
+				className={classes.fieldsScroll}
 			>
 				<Stack
 					gap="xs"
