@@ -17,7 +17,7 @@ import { iconDelete, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, ic
 import { Entry } from "~/components/Entry";
 import { useInterfaceStore } from "~/stores/interface";
 import { useConfirmation } from "~/providers/Confirmation";
-import { tb } from "~/util/helpers";
+import { fuzzyMatch, tb } from "~/util/helpers";
 import { executeQuery } from "~/screens/database/connection/connection";
 
 export interface TablesPaneProps {
@@ -49,7 +49,7 @@ export function TablesPane({
 
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();
-		const tables = search ? schema.filter((table) => table.schema.name.toLowerCase().includes(needle)) : schema;
+		const tables = search ? schema.filter((table) => fuzzyMatch(needle, table.schema.name)) : schema;
 
 		return sort(tables, (table) => {
 			const [isEdge] = extractEdgeRecords(table);
