@@ -11,17 +11,6 @@ export const acceptWithTab: KeyBinding = {
 };
 
 /**
- * Dummy keybind used to run a query, handled by
- * the global keybind handler
- */
-export const runQuery: KeyBinding = {
-	key: "Mod-Enter",
-	run: () => {
-		return true;
-	}
-};
-
-/**
  * Fill all fields in the current GraphQL query type
  */
 export const fillGraphqlFields: KeyBinding = {

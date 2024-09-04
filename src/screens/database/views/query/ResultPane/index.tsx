@@ -17,6 +17,8 @@ import { SelectionRange } from "@codemirror/state";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { isMini } from "~/adapter";
+import { EditorView } from "@codemirror/view";
+import { executeEditorQuery } from "~/editor/commands";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -35,16 +37,16 @@ export interface ResultPaneProps {
 	activeTab: TabQuery;
 	isQueryValid: boolean;
 	selection: SelectionRange | undefined;
+	editor: EditorView | null;
 	square?: boolean;
-	onRunQuery: () => void;
 }
 
 export function ResultPane({
 	activeTab,
 	isQueryValid,
 	selection,
+	editor,
 	square,
-	onRunQuery,
 }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
@@ -70,6 +72,12 @@ export function ResultPane({
 
 	const cancelQueries = useStable(() => {
 		cancelLiveQueries(activeTab.id);
+	});
+
+	const runQuery = useStable(() => {
+		if (editor) {
+			executeEditorQuery(editor);
+		}
 	});
 
 	const setResultMode = (mode: ResultMode) => {
@@ -173,7 +181,7 @@ export function ResultPane({
 						style={{ border: "none" }}
 						className={classes.run}
 						loading={isQuerying}
-						onClick={onRunQuery}
+						onClick={runQuery}
 						rightSection={
 							<Icon path={iconCursor} />
 						}

@@ -11,35 +11,38 @@ import { Text } from "@mantine/core";
 import { graphql, updateSchema } from 'cm6-graphql';
 import { useActiveConnection } from "~/hooks/connection";
 import { GraphQLSchema, parse, print } from "graphql";
-import { EditorView, lineNumbers } from "@codemirror/view";
+import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { formatValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
-import { useEffect, useState } from "react";
-import { graphqlFillFields, graphqlParser } from "~/editor";
+import { useEffect } from "react";
+import { graphqlFillFields, graphqlParser, runGraphqlQueryKeymap } from "~/editor";
+import { Prec } from "@codemirror/state";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
 	isValid: boolean;
 	isEnabled: boolean;
+	editor: EditorView | null;
 	schema: GraphQLSchema | null;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
 	onIntrospectSchema: () => Promise<void>;
+	onEditorMount: (editor: EditorView) => void;
 }
 
 export function QueryPane({
 	showVariables,
 	isValid,
 	isEnabled,
+	editor,
 	schema,
 	setIsValid,
 	setShowVariables,
 	onIntrospectSchema,
+	onEditorMount,
 }: QueryPaneProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const connection = useActiveConnection();
-
-	const [editor, setEditor] = useState<EditorView | null>(null);
 
 	const setQueryForced = useStable((query: string) => {
 		try {
@@ -196,7 +199,7 @@ export function QueryPane({
 				<CodeEditor
 					value={connection.graphqlQuery}
 					onChange={scheduleSetQuery}
-					onMount={setEditor}
+					onMount={onEditorMount}
 					extensions={[
 						graphql(undefined, {
 							onFillAllFields: (view, schema, query, cursor, token) => {
@@ -206,6 +209,7 @@ export function QueryPane({
 						graphqlParser(),
 						graphqlFillFields(),
 						lineNumbers(),
+						Prec.high(keymap.of(runGraphqlQueryKeymap)),
 					]}
 				/>
 			) : (

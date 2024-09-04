@@ -415,21 +415,9 @@ export async function checkGraphqlSupport() {
 }
 
 /**
- * Execute a GraphQL query against the active connection
+ * Send a raw GraphQL request to the active connection
  */
-export async function executeGraphql(query: string, params?: Record<string, any>, operation?: string): Promise<GraphqlResponse> {
-	const { currentState } = useDatabaseStore.getState();
-	const connection = getConnection();
-
-	if (!connection || currentState !== "connected") {
-		showError({
-			title: "Failed to execute",
-			subtitle: "You must be connected to the database"
-		});
-
-		throw new Error("Not connected");
-	}
-
+export async function sendGraphqlRequest(query: string, params?: Record<string, any>, operation?: string) {
 	try {
 		const { result, error } = await instance.graphql({
 			query,
@@ -446,6 +434,39 @@ export async function executeGraphql(query: string, params?: Record<string, any>
 			success: false,
 			result: err.message
 		};
+	}
+}
+
+/**
+ * Execute a GraphQL query against the active connection
+ */
+export async function executeGraphql(query: string, params?: Record<string, any>, operation?: string) {
+	const { currentState, setGraphqlQueryActive, setGraphqlResponse } = useDatabaseStore.getState();
+	const connection = getConnection();
+
+	if (!connection || currentState !== "connected") {
+		showError({
+			title: "Failed to execute",
+			subtitle: "You must be connected to the database"
+		});
+
+		throw new Error("Not connected");
+	}
+
+	setGraphqlQueryActive(true);
+
+	try {
+		const response = await sendGraphqlRequest(query, params, operation);
+
+		setGraphqlResponse(connection.id, response);
+		posthog.capture('graphql_query_execute');
+	} catch(err: any) {
+		return {
+			success: false,
+			result: err.message
+		};
+	} finally {
+		setGraphqlQueryActive(false);
 	}
 }
 
