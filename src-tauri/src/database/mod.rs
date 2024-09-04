@@ -205,6 +205,7 @@ pub fn start_surreal_process(options: ServeOptions) -> Result<Child, String> {
         .args(&shell_cmd[1..])
         .stdout(Stdio::null())
         .stderr(Stdio::piped())
+		.env("SURREAL_EXPERIMENTAL_GRAPHQL", "true")
         .spawn()
         .expect("surreal process should be spawned");
 
