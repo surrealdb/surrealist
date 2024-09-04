@@ -94,7 +94,7 @@
         "react-reverse-portal": "^2.1.1",
         "reactflow": "^11.10.4",
         "rss-parser": "^3.13.0",
-        "surrealdb": "1.0.0-beta.20",
+        "surrealdb": "1.0.0-beta.21",
         "use-immer": "^0.9.0",
         "zustand": "^4.5.0"
     },

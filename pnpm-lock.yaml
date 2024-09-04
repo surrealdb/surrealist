@@ -99,7 +99,7 @@ importers:
         version: 0.2.0-beta.2
       '@surrealdb/wasm':
         specifier: 1.0.0-beta.18
-        version: 1.0.0-beta.18(surrealdb@1.0.0-beta.20(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
+        version: 1.0.0-beta.18(surrealdb@1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
       '@tanstack/react-query':
         specifier: ^5.37.1
         version: 5.52.2(react@18.3.1)
@@ -227,8 +227,8 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0
       surrealdb:
-        specifier: 1.0.0-beta.20
-        version: 1.0.0-beta.20(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
+        specifier: 1.0.0-beta.21
+        version: 1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       use-immer:
         specifier: ^0.9.0
         version: 0.9.0(immer@10.1.1)(react@18.3.1)
@@ -3285,8 +3285,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  surrealdb@1.0.0-beta.20:
-    resolution: {integrity: sha512-oNvj8DxXOh28YHzDFKzrQnnLyhHG8GI/EQRpMEDysp8/O5u/m7tumav4P9eo91JpojBQ6onNeA6KD7Ugy9evrg==}
+  surrealdb@1.0.0-beta.21:
+    resolution: {integrity: sha512-JOWQguxTDFiVVhVCE3P7gxmxcn+rDPEEqydbin3q8JOBJkv36taLD2L8Yhal0RZmyDB+eb8QRSNyEXJkIAaTIA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       tslib: ^2.6.3
@@ -3452,8 +3452,8 @@ packages:
     resolution: {integrity: sha512-xu9GQDeFp+eZ6LnCywXN/zBancWvOpUMzgjLPSjy4BRHSmTelvn2E0DG0o1sTiw5hkCKBHo8rwSKncfRfv2EEQ==}
     engines: {node: '>=6.14.2'}
 
-  uuidv7@1.0.1:
-    resolution: {integrity: sha512-2noB909GbI352dKfASOY6VHHl59KvevZ1FF8gCAXCwDyrt2kkZhuFbczF9udqTfeejiRYEmO4wzUZ0WhVP+IUA==}
+  uuidv7@1.0.2:
+    resolution: {integrity: sha512-8JQkH4ooXnm1JCIhqTMbtmdnYEn6oKukBxHn1Ic9878jMkL7daTI7anTExfY18VRCX7tcdn5quzvCb6EWrR8PA==}
     hasBin: true
 
   validate-npm-package-license@3.0.4:
@@ -5031,9 +5031,9 @@ snapshots:
 
   '@surrealdb/ql-wasm@0.2.0-beta.2': {}
 
-  '@surrealdb/wasm@1.0.0-beta.18(surrealdb@1.0.0-beta.20(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))':
+  '@surrealdb/wasm@1.0.0-beta.18(surrealdb@1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))':
     dependencies:
-      surrealdb: 1.0.0-beta.20(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
+      surrealdb: 1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
 
   '@szmarczak/http-timer@5.0.1':
     dependencies:
@@ -6868,12 +6868,12 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  surrealdb@1.0.0-beta.20(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
+  surrealdb@1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
     dependencies:
       isows: 1.0.4(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       tslib: 2.7.0
       typescript: 5.5.4
-      uuidv7: 1.0.1
+      uuidv7: 1.0.2
     optionalDependencies:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.4
@@ -7011,7 +7011,7 @@ snapshots:
       node-gyp-build: 4.8.2
     optional: true
 
-  uuidv7@1.0.1: {}
+  uuidv7@1.0.2: {}
 
   validate-npm-package-license@3.0.4:
     dependencies:
