@@ -14,9 +14,9 @@ import { executeQuery } from "~/screens/database/connection/connection";
 import { Formatter, useValueFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
 import { surrealql } from "@surrealdb/codemirror";
-import { surqlRecordLinks } from "~/util/editor/extensions";
 import { useInspector } from "~/providers/Inspector";
 import { tryit } from "radash";
+import { surqlRecordLinks } from "~/editor";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	'CREATE': ["surreal.3", iconPlus],

@@ -6,11 +6,11 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
 import { surrealql } from "@surrealdb/codemirror";
-import { surqlLinting } from "~/util/editor/extensions";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { lineNumbers } from "@codemirror/view";
 import { decodeCbor } from "surrealdb";
 import { Value } from "@surrealdb/ql-wasm";
+import { surqlLinting } from "~/editor";
 
 export interface VariablesPaneProps {
 	isValid: boolean;

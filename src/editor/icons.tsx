@@ -1,4 +1,4 @@
-import { iconFunction, iconTable, iconVariable } from "../icons";
+import { iconFunction, iconTable, iconVariable } from "../util/icons";
 
 type TypeIcon = { type: string; icon: string; color: string; }
 

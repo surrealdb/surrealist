@@ -11,11 +11,11 @@ import { Text } from "@mantine/core";
 import { graphql, updateSchema } from 'cm6-graphql';
 import { useActiveConnection } from "~/hooks/connection";
 import { GraphQLSchema, parse, print } from "graphql";
-import { graphqlFillFields, graphqlParser } from "~/util/editor/extensions";
 import { EditorView, lineNumbers } from "@codemirror/view";
 import { formatValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
 import { useEffect, useState } from "react";
+import { graphqlFillFields, graphqlParser } from "~/editor";
 
 export interface QueryPaneProps {
 	showVariables: boolean;

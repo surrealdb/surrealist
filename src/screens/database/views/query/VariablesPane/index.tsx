@@ -7,11 +7,11 @@ import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
 import { surrealql } from "@surrealdb/codemirror";
 import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { surqlLinting } from "~/util/editor/extensions";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { decodeCbor } from "surrealdb";
 import { Value } from "@surrealdb/ql-wasm";
 import { lineNumbers } from "@codemirror/view";
+import { surqlLinting } from "~/editor";
 
 export interface VariablesPaneProps {
 	isValid: boolean;

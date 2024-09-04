@@ -1,3 +1,4 @@
+import { runQuery, selectionChanged, surqlCustomFunctionCompletion, surqlLinting, surqlRecordLinks, surqlTableCompletion, surqlVariableCompletion } from "~/editor";
 import { useStable } from "~/hooks/stable";
 import { ContentPane } from "~/components/Pane";
 import { useDebouncedFunction } from "~/hooks/debounce";
@@ -5,7 +6,6 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
 import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
-import { selectionChanged, surqlTableCompletion, surqlVariableCompletion, surqlLinting, surqlCustomFunctionCompletion, surqlRecordLinks } from "~/util/editor/extensions";
 import { TabQuery } from "~/types";
 import { Icon } from "~/components/Icon";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
@@ -16,7 +16,7 @@ import { useIntent } from "~/hooks/url";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
 import { surrealql } from "@surrealdb/codemirror";
 import { useInspector } from "~/providers/Inspector";
-import { lineNumbers } from "@codemirror/view";
+import { keymap, lineNumbers } from "@codemirror/view";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -182,6 +182,9 @@ export function QueryPane({
 					surqlCustomFunctionCompletion(),
 					selectionChanged(setSelection),
 					lineNumbers(),
+					keymap.of([
+						runQuery
+					])
 				]}
 			/>
 		</ContentPane>

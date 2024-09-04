@@ -7,9 +7,9 @@ import { EditorView } from "@codemirror/view";
 import { ActionIcon, Box, CopyButton, Paper, PaperProps, Text } from "@mantine/core";
 import { ReactNode, useEffect, useMemo, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { colorTheme } from "~/util/editor/extensions";
 import { Icon } from "../Icon";
 import { iconCheck, iconCopy } from "~/util/icons";
+import { colorTheme } from "~/editor";
 
 interface EditorRef {
 	editor: EditorView;
@@ -60,7 +60,6 @@ export function CodePreview({
 				configExt,
 				theme.of(colorTheme(isLight)),
 				wrapExt,
-				colorTheme(),
 				EditorState.readOnly.of(true),
 				EditorView.editable.of(false),
 			],

@@ -16,7 +16,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { App } from "../components/App";
 import { adapter } from "../adapter";
-import { generateEditorIcons } from "../util/editor/icons";
+import { generateEditorIcons } from "../editor/icons";
 import { isProduction } from "../util/environment";
 import { promptChangelog } from "../util/changelogs";
 import { startConfigSync } from "~/util/config";

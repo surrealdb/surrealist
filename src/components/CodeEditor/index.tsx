@@ -6,9 +6,9 @@ import { useSetting } from "~/hooks/config";
 import { useIsLight } from "~/hooks/theme";
 import { Compartment, EditorState, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { colorTheme, editorBase } from "~/util/editor/extensions";
 import { forceLinting } from "@codemirror/lint";
 import { history } from "@codemirror/commands";
+import { editorBase, colorTheme } from "~/editor";
 
 interface EditorRef {
 	editor: EditorView;

@@ -12,7 +12,6 @@ import { RecordsChangedEvent } from "~/util/global-events";
 import { useTableNames, useTables } from "~/hooks/schema";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { RecordId, StringRecordId, Table } from "surrealdb";
-import { surqlLinting } from "~/util/editor/extensions";
 import { surrealql } from "@surrealdb/codemirror";
 import { useValueValidator } from "~/hooks/surrealql";
 import { DrawerResizer } from "~/components/DrawerResizer";
@@ -21,6 +20,7 @@ import { extractEdgeRecords } from "~/util/schema";
 import { CodeInput } from "~/components/Inputs";
 import { QueryResponse } from "~/types";
 import { EditorView, lineNumbers } from "@codemirror/view";
+import { surqlLinting } from "~/editor";
 
 type EdgeInfo = [boolean, string[], string[]];
 
