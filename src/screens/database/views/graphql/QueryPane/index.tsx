@@ -11,7 +11,7 @@ import { Text } from "@mantine/core";
 import { graphql, updateSchema } from 'cm6-graphql';
 import { useActiveConnection } from "~/hooks/connection";
 import { GraphQLSchema, parse, print } from "graphql";
-import { graphqlParser } from "~/util/editor/extensions";
+import { graphqlFillFields, graphqlParser } from "~/util/editor/extensions";
 import { EditorView, lineNumbers } from "@codemirror/view";
 import { formatValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
@@ -198,8 +198,13 @@ export function QueryPane({
 					onChange={scheduleSetQuery}
 					onMount={setEditor}
 					extensions={[
-						graphql(),
+						graphql(undefined, {
+							onFillAllFields: (view, schema, query, cursor, token) => {
+								// TODO
+							}
+						}),
 						graphqlParser(),
+						graphqlFillFields(),
 						lineNumbers(),
 					]}
 				/>

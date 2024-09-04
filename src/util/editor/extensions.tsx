@@ -8,13 +8,14 @@ import { keymap, highlightSpecialChars, drawSelection, dropCursor, rectangularSe
 import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, codeFolding, indentUnit, syntaxTree } from "@codemirror/language";
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { EditorState, Extension, Prec, RangeSetBuilder, SelectionRange, StateEffect, StateField } from "@codemirror/state";
-import { acceptWithTab, customHistoryKeymap, runQuery } from "./keybinds";
+import { acceptWithTab, customHistoryKeymap, fillFields, runQuery } from "./keybinds";
 import { DARK_STYLE, LIGHT_STYLE } from "./theme";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveQuery } from "../connection";
 import { isModKey, tryParseParams } from "../helpers";
 import { validateQuery } from "../surrealql";
 import { DocumentNode, parse } from "graphql";
+import { fillAllFieldsCommands, graphqlLanguage } from "cm6-graphql";
 
 type RecordLinkCallback = (link: string) => void;
 
@@ -294,36 +295,6 @@ export const graphqlAstField = StateField.define<DocumentNode | undefined>({
 	}
 });
 
-// /**
-//  * A state field tracking the executable gutter markers
-//  */
-// export const graphqlMarkersField = StateField.define<RangeSet<GutterMarker>>({
-// 	create() {
-// 		return RangeSet.empty;
-// 	},
-// 	update(set, tr) {
-// 		for (const e of tr.effects) {
-// 			if (e.is(graphqlAstEffect)) {
-// 				if (e.value) {
-// 					const markers = new RangeSetBuilder<GutterMarker>();
-
-// 					for (const def of e.value.definitions) {
-// 						if (def.loc) {
-// 							markers.add(def.loc.start, def.loc.end, new GraphqlRunMarker(def));
-// 						}
-// 					}
-
-// 					return markers.finish();
-// 				} else {
-// 					return RangeSet.empty;
-// 				}
-// 			}
-// 		}
-
-// 		return set;
-// 	}
-// });
-
 function dispatchAst(view: EditorView) {
 	const query = view.state.doc.toString();
 
@@ -356,19 +327,33 @@ export const graphqlParser = (): Extension => [
 	})
 ];
 
-// /**
-//  * Add query run indicator to gutter
-//  */
-// export const graphqlRunning = (onRun: (name: string) => void): Extension => [
-// 	graphqlMarkersField,
-// 	gutter({
-// 		class: "cm-runGutter",
-// 		markers: v => v.state.field(graphqlMarkersField),
-// 		initialSpacer: () => new GraphqlRunMarker(),
-// 		domEventHandlers: {
-// 			mousedown(view, line) {
-// 				view.mark
-// 			}
-// 		}
-// 	})
-// ];
+const FILL_FIELDS_SOURCE: CompletionSource = (context) => {
+	const previous = syntaxTree(context.state).resolveInner(context.pos, -1);
+
+	if (previous.name !== 'SelectionSet' || previous.parent?.name !== 'Field') {
+		return null;
+	}
+
+	return {
+		from: context.pos,
+		options: [
+			{
+				boost: 10_000,
+				label: 'Fill all fields',
+				apply: fillAllFieldsCommands
+			}
+		]
+	};
+};
+
+/**
+ * Automatically fill in all fields in a GraphQL query
+ */
+export const graphqlFillFields = (): Extension => [
+	Prec.highest(keymap.of([
+		fillFields
+	])),
+	graphqlLanguage.data.of({
+		autocomplete: FILL_FIELDS_SOURCE
+	})
+];

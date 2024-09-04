@@ -1,6 +1,7 @@
 import { acceptCompletion } from "@codemirror/autocomplete";
 import { undo, redo, undoSelection, redoSelection } from "@codemirror/commands";
 import { KeyBinding } from "@codemirror/view";
+import { fillAllFieldsCommands } from "cm6-graphql";
 
 /**
  * A keybind used to accept a completion
@@ -19,6 +20,14 @@ export const runQuery: KeyBinding = {
 	run: () => {
 		return true;
 	}
+};
+
+/**
+ * Fill all fields in a GraphQL query
+ */
+export const fillFields: KeyBinding = {
+	key: "Alt-Space",
+	run: fillAllFieldsCommands
 };
 
 export const customHistoryKeymap: readonly KeyBinding[] = [

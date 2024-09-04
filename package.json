@@ -66,7 +66,7 @@
         "@theopensource-company/feature-flags": "^0.4.6",
         "ansi-to-html": "^0.7.2",
         "clsx": "^2.1.0",
-        "cm6-graphql": "^0.0.15",
+        "cm6-graphql": "^0.1.1",
         "codemirror": "^6.0.1",
         "compare-versions": "^6.1.1",
         "dayjs": "^1.11.9",
