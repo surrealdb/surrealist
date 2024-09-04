@@ -396,6 +396,24 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	});
 }
 
+function isGraphqlSupportedError(err: string) {
+	return err.includes("Method not found")
+		|| err.includes("A GraphQL request was made, but GraphQL is not supported by the context");
+}
+
+/**
+ * Check whether the active connection supports GraphQL
+ */
+export async function checkGraphqlSupport() {
+	try {
+		const res = await instance.graphql({});
+
+		return !!res.error && !isGraphqlSupportedError(res.error.message);
+	} catch(err: any) {
+		return !isGraphqlSupportedError(err.message);
+	}
+}
+
 /**
  * Execute a GraphQL query against the active connection
  */

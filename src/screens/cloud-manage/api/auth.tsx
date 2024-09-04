@@ -182,7 +182,7 @@ export async function acquireSession(accessToken: string) {
 
 		setSessionExpired(false);
 
-		if (!result.terms_accepted_at || true) {
+		if (!result.terms_accepted_at) {
 			openTermsModal();
 		}
 	} catch (err: any) {

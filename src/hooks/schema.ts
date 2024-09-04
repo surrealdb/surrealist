@@ -20,6 +20,7 @@ const BASE_KINDS = [
 	'point',
 	'string',
 	'uuid',
+	'function',
 	'geometry<>',
 	'option<>',
 	'set<>',
