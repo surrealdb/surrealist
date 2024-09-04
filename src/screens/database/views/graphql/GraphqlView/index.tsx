@@ -3,17 +3,17 @@ import clsx from "clsx";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useActiveConnection } from "~/hooks/connection";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useKeymap } from "~/hooks/keymap";
 import { Icon } from "~/components/Icon";
 import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { useDatabaseStore } from "~/stores/database";
-import { executeGraphql } from "~/screens/database/connection/connection";
+import { checkGraphqlSupport, executeGraphql } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { Introduction } from "~/components/Introduction";
 import { Text } from "@mantine/core";
@@ -31,10 +31,12 @@ export function GraphqlView() {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { setGraphqlResponse } = useDatabaseStore.getState();
 
+	const [isEnabled, setEnabled] = useState(false);
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
 
 	const isLight = useIsLight();
+	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
 	const activeView = useConfigStore(state => state.activeView);
 
@@ -70,7 +72,17 @@ export function GraphqlView() {
 		setShowVariables(false);
 	});
 
-	const isValid = queryValid && variablesValid;
+	const isValid = queryValid && variablesValid && isEnabled;
+
+	useEffect(() => {
+		if (isConnected) {
+			checkGraphqlSupport().then(supported => {
+				setEnabled(supported);
+			});
+		} else {
+			setEnabled(true);
+		}
+	}, [connection.id, isConnected]);
 
 	useIntent("run-graphql-query", runQuery);
 	useIntent("toggle-graphql-variables", () => setShowVariables(!showVariables));
@@ -91,6 +103,7 @@ export function GraphqlView() {
 						<Panel minSize={35}>
 							<QueryPaneLazy
 								setIsValid={setQueryValid}
+								isEnabled={isEnabled}
 								isValid={queryValid}
 								showVariables={showVariables}
 								setShowVariables={setShowVariables}

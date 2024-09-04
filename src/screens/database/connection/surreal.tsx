@@ -1,7 +1,7 @@
 import Surreal from "surrealdb";
 
 interface GraphqlQuery {
-	query: string;
+	query?: string;
 	variables?: Record<string, any>;
 	operationName?: string;
 }
@@ -23,11 +23,7 @@ class CustomSurreal extends Surreal {
 		if (query.variables) req.variables = query.variables;
 		if (query.operationName) req.operationName = query.operationName;
 
-		console.log(req);
-
-		const res = await this.rpc("graphql", [req, { pretty: true }]);
-
-		return res;
+		return this.rpc("graphql", [req, { pretty: true }]);
 	}
 
 }

@@ -1,4 +1,4 @@
-import { ActionIcon, Checkbox, Drawer, Indicator, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, TagsInput, TextInput, Tooltip, createTheme, rem } from "@mantine/core";
+import { ActionIcon, Alert, Checkbox, Drawer, Indicator, Modal, Overlay, Popover, Radio, Select, Slider, Switch, Tabs, TagsInput, TextInput, Tooltip, createTheme, rem } from "@mantine/core";
 
 export const PRIMARY_COLOR = "surreal.5";
 
@@ -201,6 +201,16 @@ export const MANTINE_THEME = createTheme({
 		TextInput: TextInput.extend({
 			defaultProps: {
 				spellCheck: false
+			}
+		}),
+		Alert: Alert.extend({
+			styles: {
+				title: {
+					fontSize: "var(--mantine-font-size-md)"
+				},
+				message: {
+					fontSize: "var(--mantine-font-size-md)"
+				}
 			}
 		}),
 		Tooltip: Tooltip.extend({

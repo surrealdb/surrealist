@@ -2,9 +2,9 @@ import { useStable } from "~/hooks/stable";
 import { ContentPane } from "~/components/Pane";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
-import { ActionIcon, Badge, Group, Stack, Tooltip } from "@mantine/core";
+import { ActionIcon, Alert, Anchor, Badge, Button, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconDollar, iconGraphql, iconText } from "~/util/icons";
+import { iconAutoFix, iconDollar, iconGraphql, iconOpen, iconText } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
@@ -19,6 +19,7 @@ import { useIntent } from "~/hooks/url";
 export interface QueryPaneProps {
 	showVariables: boolean;
 	isValid: boolean;
+	isEnabled: boolean;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
 }
@@ -26,6 +27,7 @@ export interface QueryPaneProps {
 export function QueryPane({
 	showVariables,
 	isValid,
+	isEnabled,
 	setIsValid,
 	setShowVariables,
 }: QueryPaneProps) {
@@ -158,15 +160,41 @@ export function QueryPane({
 				</Group>
 			}
 		>
-			<CodeEditor
-				value={connection.graphqlQuery}
-				onChange={scheduleSetQuery}
-				extensions={[
-					graphql(),
-					graphqlParser(),
-					lineNumbers(),
-				]}
-			/>
+			{isEnabled ? (
+				<CodeEditor
+					value={connection.graphqlQuery}
+					onChange={scheduleSetQuery}
+					extensions={[
+						graphql(),
+						graphqlParser(),
+						lineNumbers(),
+					]}
+				/>
+			) : (
+				<Alert
+					color="red.3"
+					icon={<Icon path={iconGraphql} />}
+					title="GraphQL is not enabled on the remote instance"
+				>
+					<Stack>
+						Visit the SurrealDB documentation to learn how to enable GraphQL on your instance
+						<Anchor
+							href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist"
+							underline="never"
+						>
+							<Button
+								color="slate"
+								variant="light"
+								rightSection={<Icon path={iconOpen} />}
+								radius="sm"
+								size="xs"
+							>
+								Learn more
+							</Button>
+						</Anchor>
+					</Stack>
+				</Alert>
+			)}
 		</ContentPane>
 	);
 }
