@@ -123,11 +123,6 @@ export async function openConnection(options?: ConnectOptions) {
 		});
 
 		if (instance === thisInstance) {
-			setCurrentState("connected");
-			setLatestError("");
-
-			ConnectedEvent.dispatch(null);
-
 			posthog.capture('connection_open', {
 				protocol: connection.authentication.protocol
 			});
@@ -151,6 +146,11 @@ export async function openConnection(options?: ConnectOptions) {
 			} else {
 				await activateDatabase(namespace, database);
 			}
+
+			setCurrentState("connected");
+			setLatestError("");
+
+			ConnectedEvent.dispatch(null);
 		}
 	} catch(err: any) {
 		if (instance === thisInstance) {

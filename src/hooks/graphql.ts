@@ -1,5 +1,4 @@
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from "graphql";
-import { sleep } from "radash";
 import { useState } from "react";
 import { executeGraphql } from "~/screens/database/connection/connection";
 import { useStable } from "./stable";
@@ -13,10 +12,6 @@ export function useGraphqlIntrospection() {
 
 	const introspectSchema = useStable(async () => {
 		try {
-			// We must wait for the NS/DB to be selected before
-			// starting the introspection process.
-			await sleep(500);
-
 			const query = getIntrospectionQuery();
 			const response = await executeGraphql(query, {});
 
