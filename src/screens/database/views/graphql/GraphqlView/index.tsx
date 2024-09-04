@@ -115,6 +115,7 @@ export function GraphqlView() {
 								schema={schema}
 								showVariables={showVariables}
 								setShowVariables={setShowVariables}
+								onIntrospectSchema={introspectSchema}
 							/>
 						</Panel>
 						{showVariables && (

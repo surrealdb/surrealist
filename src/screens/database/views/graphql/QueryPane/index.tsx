@@ -4,9 +4,9 @@ import { useDebouncedFunction } from "~/hooks/debounce";
 import { CodeEditor } from "~/components/CodeEditor";
 import { ActionIcon, Alert, Anchor, Badge, Button, Group, Stack, Tooltip } from "@mantine/core";
 import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconDollar, iconGraphql, iconOpen, iconText } from "~/util/icons";
+import { iconAutoFix, iconDollar, iconGraphql, iconOpen, iconRefresh, iconText } from "~/util/icons";
 import { Icon } from "~/components/Icon";
-import { showError, tryParseParams } from "~/util/helpers";
+import { showError, showInfo, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
 import { graphql, updateSchema } from 'cm6-graphql';
 import { useActiveConnection } from "~/hooks/connection";
@@ -24,6 +24,7 @@ export interface QueryPaneProps {
 	schema: GraphQLSchema | null;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
+	onIntrospectSchema: () => Promise<void>;
 }
 
 export function QueryPane({
@@ -33,6 +34,7 @@ export function QueryPane({
 	schema,
 	setIsValid,
 	setShowVariables,
+	onIntrospectSchema,
 }: QueryPaneProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const connection = useActiveConnection();
@@ -52,6 +54,15 @@ export function QueryPane({
 	});
 
 	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 50);
+
+	const handleIntrospect = useStable(async () => {
+		await onIntrospectSchema();
+
+		showInfo({
+			title: "GraphQL",
+			subtitle: "Schema successfully updated"
+		});
+	});
 
 	const handleFormat = useStable(() => {
 		try {
@@ -131,6 +142,16 @@ export function QueryPane({
 							Invalid query
 						</Badge>
 					)}
+
+					<Tooltip label="Refetch schema">
+						<ActionIcon
+							onClick={handleIntrospect}
+							variant="light"
+							aria-label="Refetch schema"
+						>
+							<Icon path={iconRefresh} />
+						</ActionIcon>
+					</Tooltip>
 
 					<Tooltip label="Format query">
 						<ActionIcon
