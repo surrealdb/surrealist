@@ -15,7 +15,7 @@ import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { formatValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
 import { useEffect } from "react";
-import { graphqlFillFields, graphqlParser, runGraphqlQueryKeymap } from "~/editor";
+import { graphqlParser, graphqlSuggestions, handleFillFields, runGraphqlQueryKeymap } from "~/editor";
 import { Prec } from "@codemirror/state";
 
 export interface QueryPaneProps {
@@ -202,14 +202,15 @@ export function QueryPane({
 					onMount={onEditorMount}
 					extensions={[
 						graphql(undefined, {
-							onFillAllFields: (view, schema, query, cursor, token) => {
-								// TODO
-							}
+							onFillAllFields: handleFillFields
 						}),
 						graphqlParser(),
-						graphqlFillFields(),
+						// graphqlFillFields(),
 						lineNumbers(),
-						Prec.high(keymap.of(runGraphqlQueryKeymap)),
+						Prec.high(keymap.of([
+							...runGraphqlQueryKeymap,
+							...graphqlSuggestions,
+						])),
 					]}
 				/>
 			) : (

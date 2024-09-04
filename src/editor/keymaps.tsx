@@ -1,6 +1,6 @@
 import { undo, redo, undoSelection, redoSelection } from "@codemirror/commands";
 import { KeyBinding } from "@codemirror/view";
-import { executeEditorQuery, executeGraphqlEditorQuery } from "./commands";
+import { executeEditorQuery, executeGraphqlEditorQuery, suggestCompletions } from "./commands";
 
 /**
  * A custom variant of the history keymap that uses
@@ -28,4 +28,12 @@ export const runQueryKeymap: readonly KeyBinding[] = [
 export const runGraphqlQueryKeymap: readonly KeyBinding[] = [
 	{ key: "Mod-Enter", run: executeGraphqlEditorQuery },
 	{ key: "F9", run: executeGraphqlEditorQuery }
+];
+
+/**
+ * A keymap used to suggest GraphQL completions
+ */
+export const graphqlSuggestions: readonly KeyBinding[] = [
+	{ key: "Enter", run: suggestCompletions },
+	{ key: "Shift-(", run: suggestCompletions }
 ];

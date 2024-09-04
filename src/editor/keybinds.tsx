@@ -1,4 +1,4 @@
-import { acceptCompletion, startCompletion } from "@codemirror/autocomplete";
+import { acceptCompletion } from "@codemirror/autocomplete";
 import { KeyBinding } from "@codemirror/view";
 import { fillAllFieldsCommands } from "cm6-graphql";
 
@@ -16,15 +16,4 @@ export const acceptWithTab: KeyBinding = {
 export const fillGraphqlFields: KeyBinding = {
 	key: "Alt-Space",
 	run: fillAllFieldsCommands
-};
-
-/**
- * Suggest GraphQL fields at the start of each line
- */
-export const suggestGraphqlFields: KeyBinding = {
-	key: "Enter",
-	run: (view) => {
-		setTimeout(() => startCompletion(view));
-		return false;
-	}
 };

@@ -2,9 +2,12 @@ import { CompletionSource } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
 import { StateEffect, StateField, Extension, Prec } from "@codemirror/state";
 import { EditorView, ViewPlugin, keymap } from "@codemirror/view";
-import { fillAllFieldsCommands, graphqlLanguage } from "cm6-graphql";
-import { DocumentNode, parse } from "graphql";
-import { fillGraphqlFields, suggestGraphqlFields } from "./keybinds";
+import { fillAllFieldsCommands, graphqlLanguage, Position } from "cm6-graphql";
+import { DocumentNode, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, parse } from "graphql";
+import { fillGraphqlFields } from "./keybinds";
+import { graphqlSuggestions } from "./keymaps";
+
+type NodeType = GraphQLNonNull<GraphQLList<GraphQLNonNull<GraphQLObjectType>>>;
 
 const documentEffect = StateEffect.define<DocumentNode | undefined>();
 
@@ -27,7 +30,7 @@ function dispatchAst(view: EditorView) {
 	const query = view.state.doc.toString();
 
 	try {
-		const parsed = parse(query);
+		const parsed = parse(query.replaceAll(/{\s*}/g, ''));
 
 		view.dispatch({
 			effects: documentEffect.of(parsed)
@@ -97,9 +100,16 @@ const FILL_FIELDS_SOURCE: CompletionSource = (context) => {
 export const graphqlFillFields = (): Extension => [
 	Prec.highest(keymap.of([
 		fillGraphqlFields,
-		suggestGraphqlFields
+		...graphqlSuggestions,
 	])),
 	graphqlLanguage.data.of({
 		autocomplete: FILL_FIELDS_SOURCE
 	}),
 ];
+
+/**
+ * Insert all fields into the current GraphQL query
+ */
+export function handleFillFields(_view: EditorView, _schema: GraphQLSchema, _query: string, _cursor: Position) {
+	// TODO Implement this
+}

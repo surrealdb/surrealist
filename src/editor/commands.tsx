@@ -1,3 +1,4 @@
+import { startCompletion } from "@codemirror/autocomplete";
 import { Command, EditorView } from "@codemirror/view";
 import { executeGraphql, executeUserQuery } from "~/screens/database/connection/connection";
 import { getActiveConnection } from "~/util/connection";
@@ -30,4 +31,12 @@ export const executeGraphqlEditorQuery: Command = () => {
 	executeGraphql(connection.graphqlQuery, params);
 
 	return true;
+};
+
+/**
+ * Suggest completions at the start of each line
+ */
+export const suggestCompletions: Command = (view: EditorView) => {
+	setTimeout(() => startCompletion(view));
+	return false;
 };
