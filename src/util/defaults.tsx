@@ -115,7 +115,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		diagramDirection: settings.appearance.defaultDiagramDirection,
 		diagramShowLinks: settings.appearance.defaultDiagramShowLinks,
 		graphqlQuery: "",
-		graphqlVariables: "",
+		graphqlVariables: "{}",
 		graphqlShowVariables: false
 	};
 }

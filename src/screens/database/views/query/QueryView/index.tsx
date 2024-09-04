@@ -28,13 +28,13 @@ import { MiniAdapter } from "~/adapter/mini";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { SelectionRange } from "@codemirror/state";
 import { useIntent } from "~/hooks/url";
-import { executeUserQuery } from "~/screens/database/connection/connection";
 import { useSetting } from "~/hooks/config";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useKeymap } from "~/hooks/keymap";
 import { CodeInput } from "~/components/Inputs";
 import { surrealql } from "@surrealdb/codemirror";
 import { useLogoUrl } from "~/hooks/brand";
+import { executeUserQuery } from "~/screens/database/connection/connection";
+import { EditorView } from "@codemirror/view";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -47,6 +47,7 @@ export function QueryView() {
 	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
+	const [editor, setEditor] = useState<EditorView | null>(null);
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
 
@@ -57,7 +58,6 @@ export function QueryView() {
 
 	const tags = useSavedQueryTags();
 	const active = useActiveQuery();
-	const activeView = useConfigStore(state => state.activeView);
 
 	const [isSaving, isSavingHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -108,16 +108,6 @@ export function QueryView() {
 		posthog.capture('query_save');
 	});
 
-	const runQuery = useStable(() => {
-		if (!active || activeView !== "query") return;
-
-		executeUserQuery({
-			override: selection?.empty === false
-				? active.query.slice(selection.from, selection.to)
-				: undefined
-		});
-	});
-
 	const showVariables = !!active?.showVariables;
 
 	const setShowVariables = useStable((showVariables: boolean) => {
@@ -139,14 +129,9 @@ export function QueryView() {
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
-	useIntent("run-query", runQuery);
+	useIntent("run-query", executeUserQuery);
 	useIntent("save-query", handleSaveRequest);
 	useIntent("toggle-variables", () => setShowVariables(!showVariables));
-
-	useKeymap([
-		["F9", () => runQuery()],
-		["mod+Enter", () => runQuery()],
-	]);
 
 	const [minSize, ref] = usePanelMinSize(275);
 
@@ -164,6 +149,7 @@ export function QueryView() {
 						/>
 					) : (
 						<QueryPaneLazy
+							square={squareCards}
 							activeTab={active}
 							setIsValid={setQueryValid}
 							switchPortal={switchPortal}
@@ -172,7 +158,7 @@ export function QueryView() {
 							onSaveQuery={handleSaveRequest}
 							setShowVariables={setShowVariables}
 							onSelectionChange={setSelection}
-							square={squareCards}
+							onEditorMounted={setEditor}
 						/>
 					)) : (
 						<PanelGroup direction={variablesOrientation}>
@@ -185,6 +171,7 @@ export function QueryView() {
 									onSaveQuery={handleSaveRequest}
 									setShowVariables={setShowVariables}
 									onSelectionChange={setSelection}
+									onEditorMounted={setEditor}
 								/>
 							</Panel>
 							{showVariables && (
@@ -208,7 +195,7 @@ export function QueryView() {
 						activeTab={active}
 						isQueryValid={queryValid}
 						selection={selection}
-						onRunQuery={runQuery}
+						editor={editor}
 						square={squareCards}
 					/>
 				</Panel>

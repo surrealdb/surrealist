@@ -10,7 +10,7 @@ import { ViewMode } from "~/types";
  * @param view The view to listen for
  * @param callback The function to invoke
  */
-export function useViewEffect(view: ViewMode, callback: () => void) {
+export function useViewEffect(view: ViewMode, callback: () => void, deps: any[] = []) {
 	const activeView = useConfigStore(s => s.activeView);
 	const stable = useStable(callback);
 
@@ -18,5 +18,6 @@ export function useViewEffect(view: ViewMode, callback: () => void) {
 		if (activeView === view) {
 			stable();
 		}
-	}, [activeView, view, stable]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [activeView, view, stable, ...deps]);
 }

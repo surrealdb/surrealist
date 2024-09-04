@@ -8,10 +8,9 @@ import { useIsLight } from "~/hooks/theme";
 import { useStable } from "~/hooks/stable";
 import { useKindList } from "~/hooks/schema";
 import { iconCancel, iconCheck } from "~/util/icons";
-import { colorTheme, inputBase } from "~/util/editor/extensions";
 import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
 import { Compartment, EditorState, Extension, Prec } from "@codemirror/state";
-import { acceptWithTab } from "~/util/editor/keybinds";
+import { acceptWithTab, inputBase, colorTheme } from "~/editor";
 import { useInputState } from "@mantine/hooks";
 
 export interface CodeInputProps extends InputBaseProps, Omit<HTMLAttributes<HTMLDivElement>, 'style'|'value'|'onChange'> {

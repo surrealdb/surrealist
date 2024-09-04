@@ -71,7 +71,6 @@
 	}
 
 	:global(.cm-tooltip) {
-		overflow: hidden;
 		box-shadow: var(--mantine-shadow-md);
 		border-radius: var(--mantine-radius-sm);
 		border-color: var(--mantine-color-dark-4);
@@ -204,12 +203,20 @@
 		opacity: 1;
 	}
 
+	:global(.cm-completionDetail) {
+		color: var(--surrealist-kind-color);
+	}
+
 	:global(.cm-tooltip-autocomplete) ul li[aria-selected] :global(.cm-completionIcon)::after {
 		filter: brightness(0) saturate(100%) invert(1);
 
 		@include light {
 			filter: brightness(0) saturate(100%);
 		}
+	}
+
+	:global(.cm-completionIcon[aria-hidden]) {
+		display: none;
 	}
 
 	:global(.cm-diagnosticText) {

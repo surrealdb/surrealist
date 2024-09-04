@@ -1,19 +1,16 @@
+// @ts-ignore
+import { parser } from "@surrealdb/lezer";
 import { Button, Divider, Modal, Stack } from "@mantine/core";
 import { useIntent } from "~/hooks/url";
 import { useCallback, useEffect, useState } from "react";
 import { useBoolean } from "~/hooks/boolean";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CodeEditor } from "~/components/CodeEditor";
-// @ts-ignore
-import { parser } from "@surrealdb/lezer";
-import { highlightCode, tagHighlighter } from "@lezer/highlight";
+import { highlightCode } from "@lezer/highlight";
 import { surrealql } from "@surrealdb/codemirror";
-import { DARK_STYLE } from "~/util/editor/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { formatQuery } from "~/util/surrealql";
-
-
-const classHighlighter = tagHighlighter(DARK_STYLE.specs.map(a => ({...a, class: a.color})));
+import { CLASS_HIGHLIGHTER } from "~/editor";
 
 export function Render({ value }: { value: string }) {
 	const rendered = document.createElement('div');
@@ -35,7 +32,7 @@ export function Render({ value }: { value: string }) {
 		emit("\n");
 	}
 
-	highlightCode(value, parser.parse(value), classHighlighter, emit, emitBreak);
+	highlightCode(value, parser.parse(value), CLASS_HIGHLIGHTER, emit, emitBreak);
 
 	return (
 		<div dangerouslySetInnerHTML={{ __html: rendered.innerHTML }} style={{ whiteSpace: 'pre-wrap', userSelect: 'all', background: 'black', fontFamily: "SF Mono", padding: '18px 24px', fontSize: '14px' }} />

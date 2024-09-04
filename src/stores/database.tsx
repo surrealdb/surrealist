@@ -12,6 +12,7 @@ export type DatabaseStore = {
 	currentState: State;
 	latestError: string;
 	isQueryActive: boolean;
+	isGraphqlQueryActive: boolean;
 	consoleOutput: string[];
 	databaseSchema: DatabaseSchema;
 	version: string;
@@ -19,6 +20,7 @@ export type DatabaseStore = {
 	graphqlResponse: Record<string, GraphqlResponse>;
 
 	setQueryActive: (isQueryActive: boolean) => void;
+	setGraphqlQueryActive: (isQueryActive: boolean) => void;
 	clearSchema: () => void;
 	prepareServe: () => void;
 	confirmServing: () => void;
@@ -42,6 +44,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	currentState: "disconnected",
 	latestError: "",
 	isQueryActive: false,
+	isGraphqlQueryActive: false,
 	consoleOutput: [],
 	databaseSchema: createDatabaseSchema(),
 	version: "",
@@ -50,6 +53,10 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 
 	setQueryActive: (isQueryActive) => set(() => ({
 		isQueryActive
+	})),
+
+	setGraphqlQueryActive: (isGraphqlQueryActive) => set(() => ({
+		isGraphqlQueryActive
 	})),
 
 	clearSchema: () => set(() => ({

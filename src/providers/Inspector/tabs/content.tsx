@@ -4,9 +4,9 @@ import { SaveBox } from "~/components/SaveBox";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveableHandle } from "~/hooks/save";
 import { surrealql } from "@surrealdb/codemirror";
-import { surqlLinting, surqlRecordLinks } from "~/util/editor/extensions";
 import { useInspector } from "..";
 import { lineNumbers } from "@codemirror/view";
+import { surqlLinting, surqlRecordLinks } from "~/editor";
 
 export interface ContentTabProps {
 	value: string;

@@ -1,10 +1,15 @@
-import { HighlightStyle } from "@codemirror/language";
-import { tags as t } from "@lezer/highlight";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { tags as t, tagHighlighter } from "@lezer/highlight";
 
 /**
- * The dark syntax highlighting style
+ * The official Surrealist editor color scheme
  */
-export const DARK_STYLE = HighlightStyle.define([
+export const colorTheme = (isLight?: boolean) => syntaxHighlighting(
+	isLight ? LIGHT_STYLE : DARK_STYLE,
+	{ fallback: true }
+);
+
+const DARK_STYLE = HighlightStyle.define([
 	{ tag: t.string, color: "#00ff6e" },
 	{ tag: t.comment, color: "#737e98" },
 	{ tag: t.propertyName, color: "#e06c75" },
@@ -16,10 +21,7 @@ export const DARK_STYLE = HighlightStyle.define([
 	{ tag: [t.function(t.name), t.number], color: "#ff9b67" },
 ], { themeType: 'dark' });
 
-/**
- * The light syntax highlighting style
- */
-export const LIGHT_STYLE = HighlightStyle.define([
+const LIGHT_STYLE = HighlightStyle.define([
 	{ tag: t.operator, color: "#7f73ff" },
 	{ tag: t.string, color: "#00a547" },
 	{ tag: t.comment, color: "#737e98" },
@@ -31,3 +33,8 @@ export const LIGHT_STYLE = HighlightStyle.define([
 	{ tag: [t.typeName, t.null, t.bool, t.literal], color: "#8d6bff" },
 	{ tag: [t.function(t.name), t.number], color: "#e36d00" },
 ], { themeType: 'light' });
+
+/**
+ * A class-based highlighter using the Surrealist editor color scheme
+ */
+export const CLASS_HIGHLIGHTER = tagHighlighter(DARK_STYLE.specs.map(a => ({...a, class: a.color})));

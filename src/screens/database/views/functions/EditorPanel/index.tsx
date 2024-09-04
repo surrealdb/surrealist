@@ -16,7 +16,6 @@ import { iconCheck, iconCopy, iconDelete, iconDownload, iconJSON, iconPlus, icon
 import { SURQL_FILTER } from "~/constants";
 import { buildFunctionDefinition } from "~/util/schema";
 import { surrealql } from "@surrealdb/codemirror";
-import { surqlLinting } from "~/util/editor/extensions";
 import { Label } from "~/components/Label";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { showError } from "~/util/helpers";
@@ -24,6 +23,7 @@ import { lineNumbers } from "@codemirror/view";
 import { useIsLight } from "~/hooks/theme";
 import { useMinimumVersion } from "~/hooks/connection";
 import { SDB_2_0_0 } from "~/util/versions";
+import { surqlLinting } from "~/editor";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;

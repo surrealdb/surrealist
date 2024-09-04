@@ -3,25 +3,27 @@ import clsx from "clsx";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { useKeymap } from "~/hooks/keymap";
 import { Icon } from "~/components/Icon";
 import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
-import { useDatabaseStore } from "~/stores/database";
-import { checkGraphqlSupport, executeGraphql } from "~/screens/database/connection/connection";
+import { checkGraphqlSupport } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { Introduction } from "~/components/Introduction";
 import { Text } from "@mantine/core";
 import { GQL_SUPPORTED } from "~/constants";
 import { adapter } from "~/adapter";
-import { parseValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
 import { useIsLight } from "~/hooks/theme";
+import { useViewEffect } from "~/hooks/view";
+import { useGraphqlIntrospection } from "~/hooks/graphql";
+import { EditorView } from "@codemirror/view";
+import { useDatabaseStore } from "~/stores/database";
+import { executeGraphqlEditorQuery } from "~/editor/commands";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
@@ -29,38 +31,28 @@ const ResultPaneLazy = memo(ResultPane);
 
 export function GraphqlView() {
 	const { updateCurrentConnection } = useConfigStore.getState();
-	const { setGraphqlResponse } = useDatabaseStore.getState();
+
+	const isActive = useDatabaseStore((s) => s.isGraphqlQueryActive);
 
 	const [isEnabled, setEnabled] = useState(false);
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
+	const [editor, setEditor] = useState<EditorView | null>(null);
 
 	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
-	const activeView = useConfigStore(state => state.activeView);
+	const [schema, introspectSchema] = useGraphqlIntrospection();
 
 	const isAvailable = GQL_SUPPORTED.has(connection.authentication.protocol);
 	const isSandbox = connection.id === "sandbox";
+	const showVariables = connection.graphqlShowVariables;
 
-	const [isLoading, setLoading] = useState(false);
-
-	const runQuery = useStable(async () => {
-		if (activeView !== "graphql") return;
-
-		setLoading(true);
-
-		try {
-			const params = connection.graphqlVariables ? parseValue(connection.graphqlVariables) : {};
-			const result = await executeGraphql(connection.graphqlQuery, params);
-
-			setGraphqlResponse(connection.id, result);
-		} finally {
-			setLoading(false);
+	const runQuery = useStable(() => {
+		if (editor) {
+			executeGraphqlEditorQuery(editor);
 		}
 	});
-
-	const showVariables = connection.graphqlShowVariables;
 
 	const setShowVariables = useStable((graphqlShowVariables: boolean) => {
 		updateCurrentConnection({
@@ -74,23 +66,23 @@ export function GraphqlView() {
 
 	const isValid = queryValid && variablesValid && isEnabled;
 
-	useEffect(() => {
-		if (isConnected) {
+	useViewEffect("graphql", () => {
+		if (isAvailable && isConnected) {
 			checkGraphqlSupport().then(supported => {
 				setEnabled(supported);
+
+				if (supported) {
+					introspectSchema();
+				}
 			});
 		} else {
 			setEnabled(true);
 		}
 	}, [connection.id, isConnected]);
 
-	useIntent("run-graphql-query", runQuery);
+	useIntent("run-graphql-query", () => {});
 	useIntent("toggle-graphql-variables", () => setShowVariables(!showVariables));
 
-	useKeymap([
-		["F9", () => runQuery()],
-		["mod+Enter", () => runQuery()],
-	]);
 
 	return isAvailable ? (
 		<Stack
@@ -105,8 +97,12 @@ export function GraphqlView() {
 								setIsValid={setQueryValid}
 								isEnabled={isEnabled}
 								isValid={queryValid}
+								editor={editor}
+								schema={schema}
 								showVariables={showVariables}
 								setShowVariables={setShowVariables}
+								onIntrospectSchema={introspectSchema}
+								onEditorMount={setEditor}
 							/>
 						</Panel>
 						{showVariables && (
@@ -140,7 +136,7 @@ export function GraphqlView() {
 								size="xl"
 								radius={100}
 								onClick={runQuery}
-								loading={isLoading}
+								loading={isActive}
 								disabled={!isValid}
 								className={clsx(classes.sendButton, isValid && classes.sendButtonValid)}
 							>
