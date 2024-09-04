@@ -116,7 +116,7 @@ export function ConnectionModal() {
 
 	useIntent("edit-connection", ({ id }) => {
 		const base = newConnection();
-		const info = connections.find((con) => con.id === editingId);
+		const info = connections.find((con) => con.id === id);
 
 		setIsCreating(false);
 		setEditingId(id);
