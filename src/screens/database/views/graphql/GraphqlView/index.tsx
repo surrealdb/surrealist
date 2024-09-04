@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
@@ -22,6 +22,9 @@ import { adapter } from "~/adapter";
 import { parseValue } from "~/util/surrealql";
 import { useIntent } from "~/hooks/url";
 import { useIsLight } from "~/hooks/theme";
+import { useViewEffect } from "~/hooks/view";
+import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from "graphql";
+import { sleep } from "radash";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
@@ -32,6 +35,7 @@ export function GraphqlView() {
 	const { setGraphqlResponse } = useDatabaseStore.getState();
 
 	const [isEnabled, setEnabled] = useState(false);
+	const [schema, setSchema] = useState<GraphQLSchema | null>(null);
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
 
@@ -74,10 +78,37 @@ export function GraphqlView() {
 
 	const isValid = queryValid && variablesValid && isEnabled;
 
-	useEffect(() => {
-		if (isConnected) {
+	const introspectSchema = async () => {
+		try {
+			// We must wait for the NS/DB to be selected before
+			// starting the introspection process.
+			await sleep(500);
+
+			const query = getIntrospectionQuery();
+			const response = await executeGraphql(query, {});
+
+			if (!response.success) {
+				throw new Error(response.result);
+			}
+
+			const result = JSON.parse(response.result);
+			const schema = buildClientSchema(result.data);
+
+			setSchema(schema);
+		} catch(err: any) {
+			console.warn("Failed to introspect GraphQL schema", err);
+			setSchema(null);
+		}
+	};
+
+	useViewEffect("graphql", () => {
+		if (isAvailable && isConnected) {
 			checkGraphqlSupport().then(supported => {
 				setEnabled(supported);
+
+				if (supported) {
+					introspectSchema();
+				}
 			});
 		} else {
 			setEnabled(true);
@@ -105,6 +136,7 @@ export function GraphqlView() {
 								setIsValid={setQueryValid}
 								isEnabled={isEnabled}
 								isValid={queryValid}
+								schema={schema}
 								showVariables={showVariables}
 								setShowVariables={setShowVariables}
 							/>
