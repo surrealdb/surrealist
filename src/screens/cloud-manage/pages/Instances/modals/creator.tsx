@@ -568,6 +568,7 @@ export function CreationModal({
 		<Modal
 			opened={opened}
 			onClose={handleClose}
+			closeOnClickOutside={false}
 			trapFocus={false}
 			size={525}
 		>
