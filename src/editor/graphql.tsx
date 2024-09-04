@@ -4,7 +4,7 @@ import { StateEffect, StateField, Extension, Prec } from "@codemirror/state";
 import { EditorView, ViewPlugin, keymap } from "@codemirror/view";
 import { fillAllFieldsCommands, graphqlLanguage } from "cm6-graphql";
 import { DocumentNode, parse } from "graphql";
-import { fillGraphqlFields } from "./keybinds";
+import { fillGraphqlFields, suggestGraphqlFields } from "./keybinds";
 
 const documentEffect = StateEffect.define<DocumentNode | undefined>();
 
@@ -71,6 +71,10 @@ export function getGraphqlDocument(view: EditorView) {
 const FILL_FIELDS_SOURCE: CompletionSource = (context) => {
 	const previous = syntaxTree(context.state).resolveInner(context.pos, -1);
 
+	if (context.state.doc.lineAt(context.pos).text.trim() !== '') {
+		return null;
+	}
+
 	if (previous.name !== 'SelectionSet' || previous.parent?.name !== 'Field') {
 		return null;
 	}
@@ -92,9 +96,10 @@ const FILL_FIELDS_SOURCE: CompletionSource = (context) => {
  */
 export const graphqlFillFields = (): Extension => [
 	Prec.highest(keymap.of([
-		fillGraphqlFields
+		fillGraphqlFields,
+		suggestGraphqlFields
 	])),
 	graphqlLanguage.data.of({
 		autocomplete: FILL_FIELDS_SOURCE
-	})
+	}),
 ];
