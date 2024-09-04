@@ -182,13 +182,15 @@ pub fn start_surreal_process(options: ServeOptions) -> Result<Child, String> {
         args.push("--auth")
     }
 
-    let file_uri = format!("file://{}", options.storage);
+    let file_uri = format!("rocksdb://{}", options.storage);
+    let surrealkv_uri = format!("surrealkv://{}", options.storage);
     let tikv_uri = format!("tikv://{}", options.storage);
 
     match options.driver {
         "memory" => args.push("memory"),
-        "file" => args.push(file_uri.as_str()),
-        "tikv" => args.push(tikv_uri.as_str()),
+        "file" => args.push(&file_uri),
+        "surrealkv" => args.push(&surrealkv_uri),
+        "tikv" => args.push(&tikv_uri),
         _ => Err("Invalid database driver")?,
     }
 

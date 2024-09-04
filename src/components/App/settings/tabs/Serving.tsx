@@ -114,7 +114,7 @@ export function ServingTab() {
 						onChange={setDriver as any}
 					/>
 
-					{(driver === "file" || driver === "tikv") && (
+					{(driver === "file" || driver === "tikv" || driver === "surrealkv") && (
 						<TextInput
 							w="unset"
 							label={isFileDriver ? "Storage path" : "Storage cluster address"}

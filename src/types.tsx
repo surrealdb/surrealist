@@ -5,7 +5,7 @@ import { AnyAuth, Token } from "surrealdb";
 export type ViewRequirement = 'database';
 export type Screen = "start" | "database";
 export type AlertLevel = "info" | "warning" | "important";
-export type DriverType = "file" | "memory" | "tikv";
+export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type SourceMode = "schema" | "infer";
