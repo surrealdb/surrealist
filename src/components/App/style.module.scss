@@ -123,3 +123,11 @@
 	width: 30px;
 	height: 30px;
 }
+
+.provision-complete {
+	border-radius: 50%;
+	background-origin: border-box;
+	background-image: linear-gradient(var(--mantine-color-lime-6), var(--mantine-color-green-7));
+	box-shadow: 0 3px 12px rgba(130, 201, 30, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}

@@ -63,13 +63,7 @@ export function ProvisioningDialog() {
 						w={48}
 						h={48}
 						mx={4}
-						style={{
-							borderRadius: "50%",
-							backgroundOrigin: "border-box",
-							border: `1px solid rgba(255, 255, 255, 0.3)`,
-							backgroundImage: `linear-gradient(var(--mantine-color-lime-6), var(--mantine-color-green-7))`,
-							boxShadow: '0 3px 12px rgba(130, 201, 30, 0.5)'
-						}}
+						className={classes.provisionComplete}
 					>
 						<Icon path={iconCheck} c="white" size="xl" />
 					</Center>
