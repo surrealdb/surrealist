@@ -15,8 +15,8 @@ import { useConfigStore } from "~/stores/config";
 import { getSetting, watchStore } from "~/util/config";
 import { Platform, ViewMode } from "~/types";
 import { getHotkeyHandler } from "@mantine/hooks";
-import { getCurrent } from "@tauri-apps/api/window";
-import { getCurrent as getWebView } from "@tauri-apps/api/webview";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
 import { useInterfaceStore } from "~/stores/interface";
@@ -64,7 +64,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
-				getCurrent().show();
+				getCurrentWindow().show();
 			}, 500);
 		});
 
@@ -95,7 +95,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			initial: true,
 			store: useConfigStore,
 			select: (s) => s.settings.appearance.windowScale,
-			then: (scale) => getWebView().setZoom(scale / 100),
+			then: (scale) => getCurrentWebview().setZoom(scale / 100),
 		});
 
 		watchStore({
@@ -103,7 +103,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			store: useConfigStore,
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
-				getCurrent().setAlwaysOnTop(pinned);
+				getCurrentWindow().setAlwaysOnTop(pinned);
 			},
 		});
 	}
@@ -116,7 +116,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	});
 
 	public async setWindowTitle(title: string) {
-		getCurrent().setTitle(title || "Surrealist");
+		getCurrentWindow().setTitle(title || "Surrealist");
 	}
 
 	public async loadConfig() {
@@ -220,10 +220,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openTextFile(
+	public async openTextFile<M extends boolean>(
 		title: string,
 		filters: any,
-		multiple: boolean
+		multiple: M
 	): Promise<OpenedTextFile[]> {
 		const result = await open({
 			title,
@@ -235,8 +235,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return [];
 		}
 
-		const files: { path: string; }[] = Array.isArray(result) ? result : [result];
-		const tasks = files.map(async ({ path }) => ({
+		const files: string[] = Array.isArray(result) ? result : [result];
+		const tasks = files.map(async (path) => ({
 			name: await basename(path),
 			content: await readTextFile(path)
 		}));
@@ -244,23 +244,23 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return Promise.all(tasks);
 	}
 
-	public async openBinaryFile(
+	public async openBinaryFile<M extends boolean>(
 		title: string,
 		filters: any,
-		multiple: boolean
+		multiple: M
 	): Promise<OpenedBinaryFile[]> {
 		const result = await open({
 			title,
 			filters,
-			multiple: true
+			multiple
 		});
 
 		if (!result) {
 			return [];
 		}
 
-		const files: { path: string; }[] = Array.isArray(result) ? result : [result];
-		const tasks = files.map(async ({ path }) => ({
+		const files: string[] = Array.isArray(result) ? result : [result];
+		const tasks = files.map(async (path) => ({
 			name: await basename(path),
 			content: new Blob([await readFile(path)])
 		}));

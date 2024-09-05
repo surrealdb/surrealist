@@ -9,7 +9,7 @@ use std::{env, path::Path, sync::Mutex};
 use database::DatabaseState;
 use log::info;
 use paths::get_logs_directory;
-use tauri::{AppHandle, Manager, RunEvent};
+use tauri::{AppHandle, Emitter, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
