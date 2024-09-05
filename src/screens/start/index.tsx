@@ -3,13 +3,13 @@ import iconUrl from "~/assets/images/icon.webp";
 import glowUrl from "~/assets/images/start-glow.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import { Box, Image, Paper, Stack, Text } from "@mantine/core";
+import { Box, Image, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
 import { adapter } from "~/adapter";
 import { dispatchIntent } from "~/hooks/url";
-import { useThemeImage } from "~/hooks/theme";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { iconCloud, iconCog, iconPlus, iconServer, iconSurreal } from "~/util/icons";
@@ -27,18 +27,35 @@ function StartAction({
 	icon,
 	onClick,
 }: StartScreenProps) {
+	const isLight = useIsLight();
+
 	return (
 		<Entry
-			leftSection={<Icon path={icon} size={1.05} />}
+			leftSection={
+				<ThemeIcon
+					variant="gradient"
+					radius="sm"
+					style={{
+						backgroundOrigin: 'border-box',
+						border: "1px solid rgba(255, 255, 255, 0.3)",
+						boxShadow: "0 5px 20px -4px rgba(186, 0, 171, 0.6)"
+					}}
+				>
+					<Icon path={icon} size={0.95} />
+				</ThemeIcon>
+			}
 			onClick={onClick}
 			size="md"
-			h={52}
+			h={44}
+			style={{
+				overflow: "unset"
+			}}
 		>
 			<Stack gap={3} align="start" ml="sm">
 				{title}
 				<Text
 					fz="xs"
-					c="slate.3"
+					c={isLight ? "slate.6" : "slate.3"}
 				>
 					{subtitle}
 				</Text>
@@ -113,9 +130,11 @@ export function StartScreen() {
 					p="md"
 					mt={35}
 					w={300}
-					style={{ border: '1px solid rgba(255, 255, 255, 0.1)'}}
+					style={{
+						border: '1px solid rgba(255, 255, 255, 0.1)'
+					}}
 				>
-					<Stack gap="sm">
+					<Stack gap="lg">
 						<StartAction
 							title="Create connection"
 							subtitle="Connect to a remote or local database"
