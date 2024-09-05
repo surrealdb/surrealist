@@ -51,9 +51,9 @@ export const useCloudStore = create<CloudStore>((set) => ({
 	organizations: [],
 	billingCountries: [],
 	sessionExpired: false,
-	isProvisioning: true,
-	isProvisionDone: true,
-	provisioning: { name: "Hello World" } as any,
+	isProvisioning: false,
+	isProvisionDone: false,
+	provisioning: null,
 
 	setLoading: () => set({ authState: "loading" }),
 
