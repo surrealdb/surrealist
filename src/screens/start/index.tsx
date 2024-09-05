@@ -110,7 +110,7 @@ export function StartScreen() {
 				</Box>
 
 				<Paper
-					p="lg"
+					p="md"
 					mt={35}
 					w={300}
 					style={{ border: '1px solid rgba(255, 255, 255, 0.1)'}}
