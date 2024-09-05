@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AuthState, CloudBillingCountry, CloudInstanceType, CloudOrganization, CloudProfile, CloudRegion } from "~/types";
+import { AuthState, CloudBillingCountry, CloudInstance, CloudInstanceType, CloudOrganization, CloudProfile, CloudRegion } from "~/types";
 
 interface CloudValues {
 	profile: CloudProfile;
@@ -26,12 +26,18 @@ export type CloudStore = {
 	organizations: CloudOrganization[];
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
+	isProvisioning: boolean;
+	isProvisionDone: boolean;
+	provisioning: CloudInstance | null;
 
 	setLoading: () => void;
 	setSessionToken: (token: string) => void;
 	setAccountProfile: (profile: CloudProfile) => void;
 	setCloudValues: (values: CloudValues) => void;
 	setSessionExpired: (expired: boolean) => void;
+	setProvisioning: (instance: CloudInstance) => void;
+	finishProvisioning: () => void;
+	hideProvisioning: () => void;
 	clearSession: () => void;
 };
 
@@ -45,6 +51,9 @@ export const useCloudStore = create<CloudStore>((set) => ({
 	organizations: [],
 	billingCountries: [],
 	sessionExpired: false,
+	isProvisioning: false,
+	isProvisionDone: false,
+	provisioning: null,
 
 	setLoading: () => set({ authState: "loading" }),
 
@@ -71,5 +80,18 @@ export const useCloudStore = create<CloudStore>((set) => ({
 		sessionExpired: expired,
 	}),
 
+	setProvisioning: (instance) => set({
+		isProvisioning: true,
+		isProvisionDone: false,
+		provisioning: instance,
+	}),
+
+	finishProvisioning: () => set({
+		isProvisionDone: true,
+	}),
+
+	hideProvisioning: () => set({
+		isProvisioning: false,
+	}),
 
 }));

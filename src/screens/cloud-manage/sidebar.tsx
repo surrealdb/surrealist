@@ -17,7 +17,7 @@ const NAVIGATION: CloudPage[][] = [
 		// "data",
 	],
 	[
-		"members",
+		// "members",
 		// "audits",
 	],
 	[
