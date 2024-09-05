@@ -1,5 +1,5 @@
 import classes from "../style.module.scss";
-import { ActionIcon, Box, Button, Center, Grid, Group, Image, Loader, Modal, Paper, Progress, ScrollArea, Select, SimpleGrid, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Center, Grid, Group, Image, Loader, Modal, Progress, ScrollArea, Select, SimpleGrid, Stack, Table, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -7,7 +7,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceTypes, useAvailableInstanceVersions, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
-import { iconChevronLeft, iconChevronRight, iconClose, iconFloppy, iconHelp, iconMemory, iconPlus, iconQuery, iconSurreal } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconClose, iconFloppy, iconMemory, iconPlus, iconQuery, iconSurreal } from "~/util/icons";
 import { Tile } from "../../../components/Tile";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "../../../api";
@@ -363,83 +363,58 @@ function CreationStepper({
 							Finalize your instance
 						</PrimaryTitle>
 
-						{isLimited ? (
-							<Text>
-								Your free instance is nearly ready! Please
-								confirm your entered details, and press <Text span c="bright">Create</Text> once
-								you are ready to provision your instance. Keep in mind that you can
-								only create one free instance.
-							</Text>
-						) : (
-							<Text>
-								Your new instance is nearly ready! Please choose how many compute units you would like to use,
-								confirm your entered details, and press <Text span c="bright">Create</Text> once
-								you are ready to provision your instance.
-							</Text>
-						)}
+						<PrimaryTitle fz="xl" mt="xl">
+							Compute units
+						</PrimaryTitle>
 
-						{!isLimited && (
-							<Select
-								mt="xl"
-								label={
-									<Group gap="xs">
-										Compute units
-										<Tooltip label="Explanation todo">
-											<div>
-												<Icon path={iconHelp} size="sm" />
-											</div>
-										</Tooltip>
-									</Group>
-								}
-								data={computeUnits}
-								value={units.toString()}
-								onChange={(v) => v && setUnits(Number.parseInt(v))}
-							/>
-						)}
+						<Text>
+							Select the number of compute units you would like to use for your instance. Each compute unit
+							provides additional processing power to your instance.
+						</Text>
 
-						<Paper
-							mt="xl"
-							bg={isLight ? "slate.0" : "slate.9"}
-							p="md"
+						<Select
+							data={computeUnits}
+							disabled={isLimited}
+							value={units.toString()}
+							onChange={(v) => v && setUnits(Number.parseInt(v))}
+						/>
+
+						<PrimaryTitle fz="xl" mt="xl">
+							Overview
+						</PrimaryTitle>
+
+						<Table>
+							<Table.Tbody>
+								<Table.Tr>
+									<Table.Td>Name</Table.Td>
+									<Table.Td c="bright">{name}</Table.Td>
+								</Table.Tr>
+								<Table.Tr>
+									<Table.Td>Preset</Table.Td>
+									<Table.Td c="bright">{instance}</Table.Td>
+								</Table.Tr>
+								<Table.Tr>
+									<Table.Td>Region</Table.Td>
+									<Table.Td c="bright">{region}</Table.Td>
+								</Table.Tr>
+								<Table.Tr>
+									<Table.Td>Version</Table.Td>
+									<Table.Td c="bright">{version}</Table.Td>
+								</Table.Tr>
+							</Table.Tbody>
+						</Table>
+
+						<PrimaryTitle fz="xl" mt="xl">
+							Estimated costs
+						</PrimaryTitle>
+
+						<Text
+							fz={18}
+							fw={500}
+							c="bright"
 						>
-							<PrimaryTitle>
-								Instance details
-							</PrimaryTitle>
-							<Table my="xl">
-								<Table.Tbody>
-									<Table.Tr>
-										<Table.Td>Name</Table.Td>
-										<Table.Td c="bright">{name}</Table.Td>
-									</Table.Tr>
-									<Table.Tr>
-										<Table.Td>Preset</Table.Td>
-										<Table.Td c="bright">{instance}</Table.Td>
-									</Table.Tr>
-									<Table.Tr>
-										<Table.Td>Region</Table.Td>
-										<Table.Td c="bright">{region}</Table.Td>
-									</Table.Tr>
-									<Table.Tr>
-										<Table.Td>Version</Table.Td>
-										<Table.Td c="bright">{version}</Table.Td>
-									</Table.Tr>
-									{!isLimited && (
-										<Table.Tr>
-											<Table.Td>Compute units</Table.Td>
-											<Table.Td c="bright">{units}</Table.Td>
-										</Table.Tr>
-									)}
-								</Table.Tbody>
-							</Table>
-							<Text>Estimated costs</Text>
-							<Text
-								fz={18}
-								fw={500}
-								c="bright"
-							>
-								${estimatedCost}<Text span c={isLight ? "slate.6" : "slate.3"}>/mo</Text>
-							</Text>
-						</Paper>
+							${(instanceInfo?.price_hour ?? 0) * units} <Text span c={isLight ? "slate.6" : "slate.3"}>/hour</Text>
+						</Text>
 					</Stack>
 				)}
 
