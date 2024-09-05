@@ -23,21 +23,6 @@
 	width: 100%;
 }
 
-.glow {
-	pointer-events: none;
-	aspect-ratio: 1;
-	background-size: contain;
-	background-repeat: no-repeat;
-	position: fixed;
-	z-index: -1;
-	transform-origin: top center;
-	width: 100vw;
-	top: 0;
-	left: 0;
-	right: 0;
-	margin-inline: auto;
-}
-
 .logo {
 	height: 24px;
 	position: fi;
