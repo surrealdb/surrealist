@@ -34,7 +34,6 @@
 		"dialog:allow-save",
 		"os:allow-platform",
 		"os:allow-version",
-		"os:allow-os-type",
 		"os:allow-family",
 		"os:allow-arch",
 		"os:allow-exe-extension",
