@@ -6,7 +6,7 @@ use std::{
     thread,
     time::Instant,
 };
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 
 mod shell;
 
