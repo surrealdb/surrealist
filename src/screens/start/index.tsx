@@ -3,7 +3,7 @@ import iconUrl from "~/assets/images/icon.webp";
 import glowUrl from "~/assets/images/start-glow.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import { Box, Image, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Box, Group, Image, Paper, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
@@ -12,7 +12,8 @@ import { dispatchIntent } from "~/hooks/url";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
-import { iconCloud, iconCog, iconPlus, iconServer, iconSurreal } from "~/util/icons";
+import { iconBook, iconCloud, iconCog, iconPlus, iconServer, iconSurreal, iconVideo } from "~/util/icons";
+import { Spacer } from "~/components/Spacer";
 
 interface StartScreenProps {
 	title: string;
@@ -65,8 +66,8 @@ function StartAction({
 }
 
 export function StartScreen() {
-	const { setActiveConnection, setActiveScreen, setActiveView } =
-		useConfigStore.getState();
+	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
+	const isLight = useIsLight();
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
@@ -126,47 +127,143 @@ export function StartScreen() {
 					</Text>
 				</Box>
 
-				<Paper
-					p="md"
-					mt={35}
-					w={300}
-					style={{
-						border: '1px solid rgba(255, 255, 255, 0.1)'
-					}}
-				>
-					<Stack gap="lg">
-						<StartAction
-							title="Create connection"
-							subtitle="Connect to a remote or local database"
-							icon={iconPlus}
-							onClick={openConnectionCreator}
-						/>
-						<StartAction
-							title="Open the Sandbox"
-							subtitle="Explore SurrealDB right inside Surrealist"
-							icon={iconSurreal}
-							onClick={openSandbox}
-						/>
-						<StartAction
-							title="Surreal Cloud"
-							subtitle="Manage your databases in the cloud"
-							icon={iconCloud}
-							onClick={openCloud}
-						/>
-						<StartAction
-							title="List connections"
-							subtitle="Manage your existing connections"
-							icon={iconServer}
-							onClick={() => dispatchIntent("open-connections")}
-						/>
-						<StartAction
-							title="Settings"
-							subtitle="Configure Surrealist to your liking"
-							icon={iconCog}
-							onClick={() => dispatchIntent("open-settings")}
-						/>
+				<Group mt={35} gap={32}>
+					<Paper
+						p="md"
+						w={300}
+						style={{
+							border: '1px solid rgba(255, 255, 255, 0.1)'
+						}}
+					>
+						<Stack gap="lg">
+							<StartAction
+								title="Create connection"
+								subtitle="Connect to a remote or local database"
+								icon={iconPlus}
+								onClick={openConnectionCreator}
+							/>
+							<StartAction
+								title="Open the Sandbox"
+								subtitle="Explore SurrealDB right inside Surrealist"
+								icon={iconSurreal}
+								onClick={openSandbox}
+							/>
+							<StartAction
+								title="Surreal Cloud"
+								subtitle="Manage your databases in the cloud"
+								icon={iconCloud}
+								onClick={openCloud}
+							/>
+							<StartAction
+								title="List connections"
+								subtitle="Manage your existing connections"
+								icon={iconServer}
+								onClick={() => dispatchIntent("open-connections")}
+							/>
+							<StartAction
+								title="Settings"
+								subtitle="Configure Surrealist to your liking"
+								icon={iconCog}
+								onClick={() => dispatchIntent("open-settings")}
+							/>
+						</Stack>
+					</Paper>
+					<Stack h="100%" gap="xl" w={550}>
+						<Title
+							c="bright"
+						>
+							Resources
+						</Title>
+						<SimpleGrid
+							cols={2}
+							spacing="xl"
+						>
+							<Entry
+								leftSection={
+									<Icon path={iconBook} size={0.95} ml="md" />
+								}
+								variant="light"
+								color="slate.5"
+								size="xl"
+								h={64}
+							>
+								<Stack gap={3} align="start" ml="sm">
+									Documentation
+									<Text
+										fz="xs"
+										c={isLight ? "slate.6" : "slate.3"}
+									>
+										Learn more about Surrealist
+									</Text>
+								</Stack>
+							</Entry>
+							<Entry
+								leftSection={
+									<Icon path={iconVideo} size={0.95} ml="md" />
+								}
+								variant="light"
+								color="slate.5"
+								size="xl"
+								h={64}
+							>
+								<Stack gap={3} align="start" ml="sm">
+									Tutorials
+									<Text
+										fz="xs"
+										c={isLight ? "slate.6" : "slate.3"}
+									>
+										Watch our video tutorials
+									</Text>
+								</Stack>
+							</Entry>
+						</SimpleGrid>
+						<Spacer />
+						<Box>
+							<Title
+								c="bright"
+							>
+								Latest news
+							</Title>
+							<Group
+								mt="xl"
+								gap="xl"
+								align="stretch"
+								wrap="nowrap"
+							>
+								<Paper
+									h={110}
+									w={200}
+									style={{
+										flexShrink: 0,
+										borderRadius: 12,
+										border: '1px solid rgba(255, 255, 255, 0.2)',
+										backgroundOrigin: 'border-box',
+										backgroundImage: 'url("https://cdn.brandsafe.io/w(1600)q(80)/cras49o9q5as738bsmjg.webp")',
+										backgroundSize: 'cover',
+									}}
+								/>
+								<Box h="100%">
+									<Title
+										c="bright"
+										fz="xl"
+									>
+										Blog post title
+									</Title>
+									<Text
+										c="slate"
+									>
+										4 days ago
+									</Text>
+									<Text
+										mt="sm"
+									>
+										We are thrilled to announce that the first beta for Surrealist 3.0 is now available for download.
+									</Text>
+								</Box>
+							</Group>
+						</Box>
 					</Stack>
-				</Paper>
+				</Group>
 			</Stack>
 		</Box>
 	);
