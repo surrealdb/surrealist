@@ -37,6 +37,7 @@ import {
 	iconLive,
 	iconModuleML,
 	iconPackageClosed,
+	iconPlus,
 	iconProgressClock,
 	iconQuery,
 	iconServer,
@@ -228,7 +229,12 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 		id: "settings",
 		name: "Settings",
 		icon: iconCog,
-	}
+	},
+	provision: {
+		id: "provision",
+		name: "Provision instance",
+		icon: iconPlus,
+	},
 };
 
 export const EXPORT_TYPES = [

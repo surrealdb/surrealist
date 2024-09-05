@@ -12,8 +12,6 @@ import { CloudInstance } from "~/types";
 import { useQuery } from "@tanstack/react-query";
 import { useConfigStore } from "~/stores/config";
 import { fetchAPI } from "../../api";
-import { CreationModal } from "./modals/creator";
-import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { ConnectCliModal } from "./modals/connect-cli";
@@ -30,11 +28,11 @@ interface Filter {
 }
 
 export function InstancesPage() {
+	const { setActiveCloudPage } = useConfigStore.getState();
+
 	const [search, setSearch] = useInputState("");
 	const [filter, setFilter] = useState<Filter|null>(null);
 	const [searchQuery] = useDebouncedValue(search, 150);
-
-	const [showCreator, manageCreator] = useBoolean();
 
 	const regions = useAvailableRegions();
 	const organization = useOrganization();
@@ -56,6 +54,10 @@ export function InstancesPage() {
 	const [showSdkConnect, sdkConnectHandle] = useDisclosure();
 	const [showCliConnect, cliConnectHandle] = useDisclosure();
 	const [showSettings, settingsHandle] = useDisclosure();
+
+	const handleProvision = useStable(() => {
+		setActiveCloudPage("provision");
+	});
 
 	const handleConnect = useStable((method: ConnectMethod, db: CloudInstance) => {
 		setSelectedInstance(db);
@@ -173,7 +175,7 @@ export function InstancesPage() {
 					<Button
 						variant="gradient"
 						leftSection={<Icon path={iconPlus} />}
-						onClick={manageCreator.open}
+						onClick={handleProvision}
 						radius="sm"
 						size="xs"
 					>
@@ -280,7 +282,7 @@ export function InstancesPage() {
 									mt="xl"
 									variant="gradient"
 									leftSection={<Icon path={iconPlus} />}
-									onClick={manageCreator.open}
+									onClick={handleProvision}
 									radius="sm"
 									size="xs"
 								>
@@ -353,12 +355,6 @@ export function InstancesPage() {
 					</ScrollArea>
 				</Box>
 			)}
-
-			<CreationModal
-				opened={showCreator}
-				onRefresh={refetch}
-				onClose={manageCreator.close}
-			/>
 
 			<ConnectCliModal
 				opened={showCliConnect}

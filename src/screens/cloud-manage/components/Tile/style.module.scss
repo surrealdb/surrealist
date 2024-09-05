@@ -1,7 +1,7 @@
 .root {
 	border: 1px solid transparent;
 	border-radius: var(--mantine-radius-md);
-	background-color: var(--mantine-color-slate-9);
+	background-color: var(--mantine-color-body);
 
 	&[data-active] {
 		border-color: var(--mantine-color-surreal-6);
@@ -14,9 +14,5 @@
 		&[data-active] {
 			border-color: var(--mantine-color-surreal-3);
 		}
-	}
-
-	@include light {
-		background-color: var(--mantine-color-slate-0);
 	}
 }

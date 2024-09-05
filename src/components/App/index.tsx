@@ -20,6 +20,7 @@ import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { InspectorProvider } from "~/providers/Inspector";
 import { DesignerProvider } from "~/providers/Designer";
+import { ProvisioningDialog } from "./modals/provisioning";
 
 function Surrealist() {
 	return (
@@ -57,6 +58,7 @@ export function App() {
 			<HighlightToolModal />
 			<ConsoleDrawer />
 			<CloudExpiredDialog />
+			<ProvisioningDialog />
 
 			{isDesktop && (
 				<UpdaterDialog />

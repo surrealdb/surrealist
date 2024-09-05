@@ -28,25 +28,6 @@
 
 }
 
-.provision-box {
-	border-radius: 50%;
-	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
-}
-
-.provision-loader::after {
-	border: solid 6px transparent;
-	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)),  var(--surrealist-gradient);
-	background-origin: border-box;
-	background-clip: content-box, border-box;
-	animation-duration: 0.75s;
-}
-
-.provision-icon {
-	z-index: 0;
-	width: 86px;
-	height: 86px;
-}
-
 .lang-switcher {
 	background-color: unset;
 

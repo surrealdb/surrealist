@@ -24,6 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAPI } from "./api";
 import { useThemeImage } from "~/hooks/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { ProvisionPage } from "./pages/Provision";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
 	instances: InstancesPage,
@@ -33,6 +34,7 @@ const PAGE_VIEWS: Record<CloudPage, FC> = {
 	billing: BillingPage,
 	support: SupportPage,
 	settings: SettingsPage,
+	provision: ProvisionPage,
 };
 
 export function CloudView() {

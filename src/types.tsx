@@ -52,6 +52,7 @@ export type CloudPage =
 	| "billing"
 	| "support"
 	| "settings"
+	| "provision"
 export type CodeLang =
 	| "cli"
 	| "rust"
