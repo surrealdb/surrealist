@@ -1,5 +1,6 @@
 import classes from "./style.module.scss";
 import iconUrl from "~/assets/images/icon.webp";
+import glowUrl from "~/assets/images/start-glow.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 import { Box, Image, Paper, Stack, Text } from "@mantine/core";
@@ -74,6 +75,13 @@ export function StartScreen() {
 				<Box data-tauri-drag-region className={classes.titlebar} />
 			)}
 
+			<div
+				className={classes.glow}
+				style={{
+					backgroundImage: `url(${glowUrl})`
+				}}
+			/>
+
 			<Stack
 				h="100%"
 				justify="center"
@@ -92,7 +100,8 @@ export function StartScreen() {
 					/>
 
 					<Text
-						c="slate"
+						opacity={0.4}
+						c="bright"
 						ta="center"
 						mt={6}
 					>
