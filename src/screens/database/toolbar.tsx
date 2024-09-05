@@ -35,7 +35,7 @@ import { showInfo } from "~/util/helpers";
 import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
 import { syncDatabaseSchema } from "~/util/schema";
 import { openCloudAuthentication } from "../cloud-manage/api/auth";
-import { ConnectionList } from "./components/ConnectionList";
+import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { executeQuery, openConnection } from "./connection/connection";
@@ -124,7 +124,7 @@ export function DatabaseToolbar() {
 
 	return (
 		<>
-			<ConnectionList />
+			<ConnectionStatus />
 
 			{authState === "unauthenticated" &&
 				connection?.authentication?.mode === "cloud" && (

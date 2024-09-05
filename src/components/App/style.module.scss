@@ -85,49 +85,22 @@
 	background-origin: border-box;
 }
 
-.provision-dialog {
-	background-color: var(--mantine-color-slate-9);
-	border: 1px solid var(--mantine-color-slate-6);
+.connection-options {
+	display: none;
+}
 
-	@include light {
-		background-color: white;
-		border-color: var(--mantine-color-slate-2);
+.connection:hover .connection-options {
+	display: flex;
+}
+
+.connection-group {
+	&-remove {
+		display: none;
+		position: absolute;
+		right: var(--mantine-spacing-xl);
 	}
-}
 
-.provision-box {
-	border-radius: 50%;
-	box-shadow: var(--surrealist-glow);
-}
-
-.provision-loader::before {
-	content: "";
-	border-radius: 50%;
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	position: absolute;
-	z-index: 1;
-	inset: 0;
-}
-
-.provision-loader::after {
-	content: "";
-	border: solid 3px transparent;
-	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)),  var(--surrealist-gradient);
-	background-origin: border-box;
-	background-clip: content-box, border-box;
-	animation-duration: 0.75s;
-}
-
-.provision-icon {
-	z-index: 0;
-	width: 30px;
-	height: 30px;
-}
-
-.provision-complete {
-	border-radius: 50%;
-	background-origin: border-box;
-	background-image: linear-gradient(var(--mantine-color-lime-6), var(--mantine-color-green-7));
-	box-shadow: 0 3px 12px rgba(130, 201, 30, 0.5);
-	border: 1px solid rgba(255, 255, 255, 0.3);
+	&:hover &-remove {
+		display: block;
+	}
 }

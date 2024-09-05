@@ -21,6 +21,7 @@ import { ScopeSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
+import { ConnectionsModal } from "./modals/connections";
 
 function Surrealist() {
 	return (
@@ -43,6 +44,7 @@ export function App() {
 
 			<Settings />
 
+			<ConnectionsModal />
 			<CommandPaletteModal />
 			<ChangelogModal />
 			<ConnectionModal />
