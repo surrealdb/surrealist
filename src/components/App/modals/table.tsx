@@ -65,7 +65,7 @@ export function TableCreatorModal() {
 			setTableIn([]);
 			setTableOut([]);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [opened]);
 
 	useIntent("new-table", openTableCreator);

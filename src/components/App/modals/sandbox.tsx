@@ -21,7 +21,7 @@ export function SandboxModal() {
 			openHandle.open();
 			complete();
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [connection, screen, view]);
 
 	return (

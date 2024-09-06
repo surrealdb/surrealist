@@ -85,7 +85,7 @@ export function ConnectionModal() {
 				draft.name = generateName();
 			});
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [details.name]);
 
 	const remove = useConfirmation({

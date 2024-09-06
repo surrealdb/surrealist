@@ -57,7 +57,7 @@ export function SettingsModal({
 	useLayoutEffect(() => {
 		setName(instance.name);
 		setType(instance.type.slug);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [instance]);
 
 	return (

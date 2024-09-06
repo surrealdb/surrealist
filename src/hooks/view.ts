@@ -18,6 +18,6 @@ export function useViewEffect(view: ViewMode, callback: () => void, deps: any[] 
 		if (activeView === view) {
 			stable();
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [activeView, view, stable, ...deps]);
 }

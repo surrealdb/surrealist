@@ -219,12 +219,12 @@ export function ExplorerPane({
 
 	useLayoutEffect(() => {
 		setCurrentPage(1);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		
 	}, [activeTable, filterClause]);
 
 	useLayoutEffect(() => {
 		setCustomPage(currentPage.toString());
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		
 	}, [currentPage]);
 
 	useEventSubscription(RecordsChangedEvent, refetch);

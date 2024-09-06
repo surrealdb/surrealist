@@ -42,7 +42,7 @@ export function usePanelMinSize(minSizePx: number) {
 		return () => {
 			observer.disconnect();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, []);
 
 	return [minSize, groupRef] as const;

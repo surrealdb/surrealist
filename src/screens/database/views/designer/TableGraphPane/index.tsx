@@ -90,7 +90,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			doFitRef.current = false;
 			fitView();
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [nodes]);
 
 	const renderGraph = useStable(async () => {
@@ -172,7 +172,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	useEffect(() => {
 		renderGraph();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [activeSession.diagramMode, activeSession.diagramDirection, activeSession.diagramShowLinks]);
 
 	useLayoutEffect(() => {
@@ -185,7 +185,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			setNodes([]);
 			setEdges([]);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [schema, isViewActive, isConnected, activeSession.diagramDirection]);
 
 	useEffect(() => {

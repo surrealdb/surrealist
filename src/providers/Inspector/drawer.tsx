@@ -134,7 +134,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		if (history.current) {
 			fetchRecord(history.current);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [history.current]);
 
 	const [width, setWidth] = useState(650);

@@ -26,7 +26,7 @@ export function ConnectCliModal({
 				setToken(response.token);
 			});
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [opened]);
 
 	const endpoint = `wss://${instance.host}`;

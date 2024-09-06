@@ -15,7 +15,7 @@ export function SettingsPage() {
 	useLayoutEffect(() => {
 		setName(organization?.name ?? "");
 		setDesc("");
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [organization]);
 
 	return isPending ? (

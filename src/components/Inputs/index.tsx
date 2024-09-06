@@ -100,7 +100,7 @@ export function CodeInput({
 		return () => {
 			editor.destroy();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, []);
 
 	useEffect(() => {
@@ -155,7 +155,7 @@ export function CodeInput({
 		editor.dispatch({
 			effects: keymaps.reconfigure(value)
 		});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [multiline]);
 
 	useEffect(() => {

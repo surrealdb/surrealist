@@ -20,7 +20,7 @@ export function useLater<T extends any[]>(doLater: (...args: T) => unknown): (..
 			stableLater(...argsRef.current!);
 			setShouldFire(false);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [shouldFire]);
 
 	return useCallback((...args) => {

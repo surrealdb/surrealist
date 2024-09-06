@@ -48,7 +48,7 @@ export function DrawerResizer({
 			window.removeEventListener('mousemove', onMouseMove);
 			window.removeEventListener('mouseup', onMouseUp);
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, []);
 
 	return (

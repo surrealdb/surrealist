@@ -101,7 +101,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			setRecordFrom('');
 			setRecordTo('');
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [opened, table]);
 
 	const isFullyValid = isValid && (!isRelation || recordFrom && recordTo);

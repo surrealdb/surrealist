@@ -47,7 +47,7 @@ export function CommandPaletteModal() {
 			setCategories(cmds);
 			setSelected(cmds[0]?.commands[0] ?? null);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	}, [isOpen]);
 
 	const [filtered, flattened] = useMemo(() => {

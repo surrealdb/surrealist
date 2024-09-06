@@ -71,7 +71,7 @@ export function useConfigRouting() {
 	});
 
 	// Sync initial URL to active view
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	
 	useEffect(applyState, []);
 
 	// Sync history change to active view
