@@ -8,8 +8,8 @@ import { CloudAlert, CloudPage } from "~/types";
 import { InstancesPage } from "./pages/Instances";
 import { MembersPage } from "./pages/Members";
 import { useCloudStore } from "~/stores/cloud";
-import { iconChevronRight, iconOpen } from "~/util/icons";
-import { Box, Button, Group, Image, Stack, Text } from "@mantine/core";
+import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
+import { Alert, Box, Button, Group, Image, Stack, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { openCloudAuthentication } from "./api/auth";
@@ -22,7 +22,7 @@ import { SupportPage } from "./pages/Support";
 import { StatusAlert } from "./components/StatusAlert";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAPI } from "./api";
-import { useThemeImage } from "~/hooks/theme";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { ProvisionPage } from "./pages/Provision";
 
@@ -39,9 +39,11 @@ const PAGE_VIEWS: Record<CloudPage, FC> = {
 
 export function CloudView() {
 	const [{ cloud_access }] = useFeatureFlags();
+	const isLight = useIsLight();
 
 	const page = useConfigStore(s => s.activeCloudPage);
 	const state = useCloudStore(s => s.authState);
+	const isSupported = useCloudStore(s => s.isSupported);
 	const Content = PAGE_VIEWS[page];
 
 	const showCloud = state === "authenticated" || state === "loading";
@@ -104,7 +106,16 @@ export function CloudView() {
 				<Text w={500} fz="lg" ta="center">
 					Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Elevate your business to unparalleled levels of scale and resilience. Focus on building tomorrow's applications. Let us take care of the rest.
 				</Text>
-				{cloud_access ? (
+				{!isSupported ? (
+					<Alert
+						icon={<Icon path={iconErrorCircle} />}
+						color={isLight ? "red.6" : "red.5"}
+						title="Client update required"
+						w={500}
+					>
+						Please update your version of Surrealist to continue using Surreal Cloud.
+					</Alert>
+				) : cloud_access ? (
 					<Group>
 						<Button
 							w={164}
