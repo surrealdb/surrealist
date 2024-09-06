@@ -19,6 +19,7 @@ export const EMPTY_PROFILE: CloudProfile = {
 export type CloudStore = {
 	authState: AuthState;
 	sessionToken: string;
+	isSupported: boolean;
 	profile: CloudProfile;
 	instanceTypes: CloudInstanceType[];
 	instanceVersions: string[];
@@ -33,6 +34,7 @@ export type CloudStore = {
 	setLoading: () => void;
 	setSessionToken: (token: string) => void;
 	setAccountProfile: (profile: CloudProfile) => void;
+	setIsSupported: (supported: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
 	setSessionExpired: (expired: boolean) => void;
 	setProvisioning: (instance: CloudInstance) => void;
@@ -44,6 +46,7 @@ export type CloudStore = {
 export const useCloudStore = create<CloudStore>((set) => ({
 	authState: "unknown",
 	sessionToken: "",
+	isSupported: true,
 	profile: EMPTY_PROFILE,
 	instanceTypes: [],
 	instanceVersions: [],
@@ -63,6 +66,10 @@ export const useCloudStore = create<CloudStore>((set) => ({
 
 	setAccountProfile: (profile) => set({
 		profile,
+	}),
+
+	setIsSupported: (isSupported) => set({
+		isSupported
 	}),
 
 	setCloudValues: (values) => set({

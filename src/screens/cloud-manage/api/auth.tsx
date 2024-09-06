@@ -8,6 +8,7 @@ import { fetchAPI, updateCloudInformation } from ".";
 import { getCloudEndpoints } from "./endpoints";
 import { CloudSignin } from "~/types";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
+import { isClientSupported } from "./version";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -24,7 +25,14 @@ interface PKCE {
  * Open the cloud authentication page
  */
 export async function openCloudAuthentication() {
+	const { setIsSupported } = useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
+	const isSupported = await isClientSupported();
+
+	if (!isSupported) {
+		setIsSupported(false);
+		return;
+	}
 
 	const state = adapter.id + randomString(50);
 	const pkce = await newPKCE();
@@ -115,8 +123,15 @@ export async function verifyAuthentication(code: string, state: string) {
  * Refresh the current access token
  */
 export async function refreshAccess() {
-	const { setLoading, setSessionExpired } = useCloudStore.getState();
+	const { setIsSupported, setLoading, setSessionExpired } = useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
+	const isSupported = await isClientSupported();
+
+	if (!isSupported) {
+		invalidateSession();
+		setIsSupported(false);
+		return;
+	}
 
 	try {
 		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
