@@ -1,0 +1,85 @@
+name: Feature request
+description: Suggest a new feature for Surrealist
+title: "Feature: "
+labels: ["feature", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest an idea for Surrealist!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: What is the usecase in which this feature is relevant?
+      placeholder: A clear and concise description of what the problem is.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution
+      description: Describe the solution and how it might work.
+      placeholder: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: contribute
+    attributes:
+      label: Are you willing to contribute this feature
+      description: Yes/No, optionally provide further details...
+    validations:
+      required: true
+  - type: textarea
+    id: Environment
+    attributes:
+      label: Surrealist Environment
+      description: |
+        Paste your environment here by following these steps
+        1. Open the settings menu
+        2. Left-click the version text under the logo
+        3. Paste clipboard contents here
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: email@example.com
+    validations:
+      required: false
+  - type: checkboxes
+    id: check
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search [our issues](https://github.com/surrealdb/surrealist/issues) to see if this feature request already exists.
+      options:
+      - label: I have searched the existing issues
+        required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/surrealdb/surrealist/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+
+---
+name: Feature request
+about: Suggest a new feature for Surrealist
+title: ''
+labels: enhancement
+assignees: ''
+
+---
+
+**Describe your feature request**
+A clear and concise description of the functionality you would like to see implemented
+
+**Are you willing to contribute this feature?**
+Yes/No, optionally provide further details...
+
+**Related pull request (if applicable)**
+e.g. PR #4
