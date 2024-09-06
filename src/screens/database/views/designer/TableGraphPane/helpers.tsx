@@ -1,22 +1,32 @@
-import classes from "./style.module.scss";
+import { toBlob, toSvg } from "html-to-image";
+import { type Edge, type Node, type NodeChange, Position } from "reactflow";
+import type { DiagramDirection, TableInfo } from "~/types";
+import { getSetting } from "~/util/config";
+import { extractEdgeRecords } from "~/util/schema";
+import { extractKindRecords } from "~/util/surrealql";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
-import { DiagramDirection, TableInfo } from "~/types";
-import { extractEdgeRecords } from "~/util/schema";
-import { Edge, Node, NodeChange, Position } from "reactflow";
-import { toBlob, toSvg } from "html-to-image";
-import { getSetting } from "~/util/config";
-import { extractKindRecords } from "~/util/surrealql";
+import classes from "./style.module.scss";
 
-type EdgeWarning = { type: "edge", table: string, foreign: string, direction: "in" | "out" };
-type LinkWarning = { type: "link", table: string, foreign: string, field: string };
+type EdgeWarning = {
+	type: "edge";
+	table: string;
+	foreign: string;
+	direction: "in" | "out";
+};
+type LinkWarning = {
+	type: "link";
+	table: string;
+	foreign: string;
+	field: string;
+};
 
 export const NODE_TYPES = {
 	table: TableNode,
 	edge: EdgeNode,
 };
 
-export type InternalNode = Node & { width: number, height: number };
+export type InternalNode = Node & { width: number; height: number };
 export type GraphWarning = EdgeWarning | LinkWarning;
 
 export interface NodeData {
@@ -48,9 +58,9 @@ function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 
 export function buildFlowNodes(
 	tables: TableInfo[],
-	showLinks: boolean
+	showLinks: boolean,
 ): [Node[], Edge[], GraphWarning[]] {
-	const lineStyle= getSetting("appearance", "lineStyle");
+	const lineStyle = getSetting("appearance", "lineStyle");
 
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
@@ -91,7 +101,7 @@ export function buildFlowNodes(
 				table,
 				isSelected: false,
 				hasIncoming: false,
-				hasOutgoing: false
+				hasOutgoing: false,
 			},
 			deletable: false,
 		};
@@ -112,7 +122,7 @@ export function buildFlowNodes(
 					type: "edge",
 					table: table.schema.name,
 					foreign: fromTable,
-					direction: "in"
+					direction: "in",
 				});
 				continue;
 			}
@@ -121,7 +131,7 @@ export function buildFlowNodes(
 				...baseEdge,
 				id: `tb-${table.schema.name}-from-edge-${fromTable}`,
 				source: fromTable,
-				target: table.schema.name
+				target: table.schema.name,
 			});
 
 			const node = nodeIndex[fromTable];
@@ -140,7 +150,7 @@ export function buildFlowNodes(
 					type: "edge",
 					table: table.schema.name,
 					foreign: toTable,
-					direction: "out"
+					direction: "out",
 				});
 				continue;
 			}
@@ -149,7 +159,7 @@ export function buildFlowNodes(
 				...baseEdge,
 				id: `tb-${table.schema.name}-to-edge-${toTable}`,
 				source: table.schema.name,
-				target: toTable
+				target: toTable,
 			});
 
 			const node = nodeIndex[toTable];
@@ -169,7 +179,12 @@ export function buildFlowNodes(
 
 		for (const table of tables) {
 			for (const field of table.fields) {
-				if (!field.kind || field.name == 'id' || field.name == 'in' || field.name == 'out') {
+				if (
+					!field.kind ||
+					field.name === "id" ||
+					field.name === "in" ||
+					field.name === "out"
+				) {
 					continue;
 				}
 
@@ -177,7 +192,7 @@ export function buildFlowNodes(
 
 				for (const target of targets) {
 					if (
-						target == table.schema.name ||
+						target === table.schema.name ||
 						edgeIndex.has(`${table.schema.name}:${target}`) ||
 						edgeIndex.has(`${target}:${table.schema.name}`)
 					) {
@@ -189,12 +204,14 @@ export function buildFlowNodes(
 							type: "link",
 							table: table.schema.name,
 							foreign: target,
-							field: field.name
+							field: field.name,
 						});
 						continue;
 					}
 
-					const existing = uniqueLinks.has(`${table.schema.name}:${target}`) || uniqueLinks.has(`${target}:${table.schema.name}`);
+					const existing =
+						uniqueLinks.has(`${table.schema.name}:${target}`) ||
+						uniqueLinks.has(`${target}:${table.schema.name}`);
 
 					if (existing) {
 						continue;
@@ -207,9 +224,9 @@ export function buildFlowNodes(
 						target,
 						className: classes.recordLink,
 						label: field.name,
-						labelBgStyle: { fill: 'var(--mantine-color-slate-8' },
-						labelStyle: { fill: 'white' },
-						data: { linkCount: 1 }
+						labelBgStyle: { fill: "var(--mantine-color-slate-8" },
+						labelStyle: { fill: "white" },
+						data: { linkCount: 1 },
 					};
 
 					uniqueLinks.add(`${table.schema.name}:${target}`);
@@ -224,7 +241,7 @@ export function buildFlowNodes(
 	return [nodes, edges, warnings];
 }
 
-type DimensionNode = { id: string, width: number, height: number };
+type DimensionNode = { id: string; width: number; height: number };
 
 /**
  * Apply a layout to the given nodes and edges
@@ -236,7 +253,7 @@ type DimensionNode = { id: string, width: number, height: number };
 export async function applyNodeLayout(
 	nodes: DimensionNode[],
 	edges: Edge[],
-	direction: DiagramDirection
+	direction: DiagramDirection,
 ): Promise<NodeChange[]> {
 	if (nodes.some((node) => !node.width || !node.height)) {
 		return [];
@@ -245,26 +262,26 @@ export async function applyNodeLayout(
 	const ELK = await import("elkjs/lib/elk.bundled");
 	const elk = new ELK.default();
 	const graph = {
-		id: 'root',
-		children: nodes.map(node => ({
+		id: "root",
+		children: nodes.map((node) => ({
 			id: node.id,
 			width: node.width,
 			height: node.height,
 		})),
-		edges: edges.map(edge => ({
+		edges: edges.map((edge) => ({
 			id: edge.id,
 			sources: [edge.source],
-			targets: [edge.target]
-		}))
+			targets: [edge.target],
+		})),
 	};
 
 	const layout = await elk.layout(graph, {
 		layoutOptions: {
-			'elk.algorithm': 'layered',
-			'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-			'elk.spacing.nodeNode': '80',
-			'elk.direction': direction == "ltr" ? 'RIGHT' : 'LEFT'
-		}
+			"elk.algorithm": "layered",
+			"elk.layered.spacing.nodeNodeBetweenLayers": "100",
+			"elk.spacing.nodeNode": "80",
+			"elk.direction": direction === "ltr" ? "RIGHT" : "LEFT",
+		},
 	});
 
 	const children = layout.children || [];
@@ -273,7 +290,10 @@ export async function applyNodeLayout(
 		return {
 			id,
 			type: "position",
-			position: { x: x!, y: y! }
+			position: {
+				x: x ?? 0,
+				y: y ?? 0,
+			},
 		};
 	});
 }
@@ -285,13 +305,13 @@ export async function applyNodeLayout(
  * @param type The type of output to create
  * @returns
  */
-export async function createSnapshot(el: HTMLElement, type: 'png' | 'svg') {
-	if (type == 'png') {
+export async function createSnapshot(el: HTMLElement, type: "png" | "svg") {
+	if (type === "png") {
 		return toBlob(el, { cacheBust: true });
-	} else {
-		const dataUrl = await toSvg(el, { cacheBust: true });
-		const res = await fetch(dataUrl);
-
-		return await res.blob();
 	}
+
+	const dataUrl = await toSvg(el, { cacheBust: true });
+	const res = await fetch(dataUrl);
+
+	return await res.blob();
 }

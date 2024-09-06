@@ -19,18 +19,24 @@ import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { ContentPane } from "~/components/Pane";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useHasSchemaAccess, useSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { DatabaseSchema, SchemaUser } from "~/types";
-import { showError } from "~/util/helpers";
-import { syncDatabaseSchema } from "~/util/schema";
-import { iconCheck, iconComment, iconEdit, iconKey, iconPlus } from "~/util/icons";
 import { useIntent } from "~/hooks/url";
 import { executeQuery } from "~/screens/database/connection/connection";
+import type { DatabaseSchema, SchemaUser } from "~/types";
+import { showError } from "~/util/helpers";
+import {
+	iconCheck,
+	iconComment,
+	iconEdit,
+	iconKey,
+	iconPlus,
+} from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -49,11 +55,12 @@ export interface AccountsPaneProps {
 
 export function AccountsPane(props: AccountsPaneProps) {
 	const connection = useConnection();
-	const requires = props.type === "NAMESPACE" && !connection?.lastNamespace
-		? "namespace"
-		: props.type === "DATABASE" && !connection?.lastDatabase
-			? "database"
-			: undefined;
+	const requires =
+		props.type === "NAMESPACE" && !connection?.lastNamespace
+			? "namespace"
+			: props.type === "DATABASE" && !connection?.lastDatabase
+				? "database"
+				: undefined;
 
 	const isConnected = useIsConnected();
 	const isDenied = useHasSchemaAccess();
@@ -85,7 +92,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 			}
 
 			if (editingRole.length > 0) {
-				query += ` ROLES ${editingRole.join(', ')}`;
+				query += ` ROLES ${editingRole.join(", ")}`;
 			}
 
 			if (editingComment) {
@@ -97,7 +104,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 		} catch (err: any) {
 			showError({
 				title: "Failed to save account",
-				subtitle: err.message
+				subtitle: err.message,
 			});
 		}
 	});
@@ -136,15 +143,17 @@ export function AccountsPane(props: AccountsPaneProps) {
 	});
 
 	const formatRoles = useStable((user: SchemaUser) => {
-		return user.roles.map((role) => {
-			const roleInfo = ROLES.find((r) => r.value === role);
+		return user.roles
+			.map((role) => {
+				const roleInfo = ROLES.find((r) => r.value === role);
 
-			return roleInfo ? roleInfo.label : role;
-		}).join(' / ');
+				return roleInfo ? roleInfo.label : role;
+			})
+			.join(" / ");
 	});
 
 	useIntent("create-user", ({ level }) => {
-		if (level == props.type) {
+		if (level === props.type) {
 			createUser();
 		}
 	});
@@ -174,29 +183,25 @@ export function AccountsPane(props: AccountsPaneProps) {
 							: isDenied
 								? `No ${props.title.toLocaleLowerCase()} found`
 								: "No access to this information"
-						: "Not connected"
-					}
+						: "Not connected"}
 				</Center>
 			)}
 
-			<ScrollArea
-				style={{ position: "absolute", inset: 10, top: 0 }}
-			>
+			<ScrollArea style={{ position: "absolute", inset: 10, top: 0 }}>
 				<Stack gap={0}>
 					{users.map((user) => (
 						<Group key={user.name} gap="xs" w="100%" wrap="nowrap">
-							<Icon
-								color={props.iconColor}
-								path={iconKey}
-							/>
-							<Text>
-								{user.name}
-							</Text>
+							<Icon color={props.iconColor} path={iconKey} />
+							<Text>{user.name}</Text>
 							<Spacer />
 							{user.comment && (
 								<Tooltip
 									label={
-										<Text maw={250} style={{ whiteSpace: 'pre-wrap' }} lineClamp={5}>
+										<Text
+											maw={250}
+											style={{ whiteSpace: "pre-wrap" }}
+											lineClamp={5}
+										>
 											<b>Comment:</b> {user.comment}
 										</Text>
 									}
@@ -211,10 +216,7 @@ export function AccountsPane(props: AccountsPaneProps) {
 									</div>
 								</Tooltip>
 							)}
-							<Badge
-								variant="light"
-								color="slate"
-							>
+							<Badge variant="light" color="slate">
 								{formatRoles(user)}
 							</Badge>
 							<Tooltip label="Edit user">
@@ -256,8 +258,12 @@ export function AccountsPane(props: AccountsPaneProps) {
 						/>
 
 						<PasswordInput
-							label={currentUser ? 'New password' : 'Password'}
-							description={currentUser ? 'Leave blank to keep the current password' : 'The password for this user'}
+							label={currentUser ? "New password" : "Password"}
+							description={
+								currentUser
+									? "Leave blank to keep the current password"
+									: "The password for this user"
+							}
 							placeholder="Enter password"
 							value={editingPassword}
 							spellCheck={false}
@@ -298,15 +304,15 @@ export function AccountsPane(props: AccountsPaneProps) {
 						</Button>
 						<Spacer />
 						{currentUser && (
-							<Button
-								color="pink.9"
-								onClick={removeUser}
-							>
+							<Button color="pink.9" onClick={removeUser}>
 								Remove
 							</Button>
 						)}
 						<Button
-							disabled={!currentUser && (!editingName || !editingPassword)}
+							disabled={
+								!currentUser &&
+								(!editingName || !editingPassword)
+							}
 							rightSection={<Icon path={iconCheck} />}
 							variant="gradient"
 							type="submit"

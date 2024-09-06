@@ -1,5 +1,13 @@
-import { Group, Stack, Button, Text, ActionIcon, Modal, Box } from "@mantine/core";
-import { ReactNode, useState } from "react";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Group,
+	Modal,
+	Stack,
+	Text,
+} from "@mantine/core";
+import { type ReactNode, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useLater } from "~/hooks/later";
@@ -61,18 +69,16 @@ export function Lister<T extends { name: string }>({
 				<Box>
 					{value.map((item, i) => (
 						<Button
-							key={i}
+							key={item.name}
 							px="xs"
 							fullWidth
 							color="slate"
 							variant="subtle"
 							onClick={() => openEditor(i)}
 							styles={{
-								label: { flex: 1 }
+								label: { flex: 1 },
 							}}
-							leftSection={
-								<Icon path={iconCircle} c="slate.4" />
-							}
+							leftSection={<Icon path={iconCircle} c="slate.4" />}
 							rightSection={
 								<ActionIcon
 									role="button"
@@ -99,9 +105,7 @@ export function Lister<T extends { name: string }>({
 					))}
 				</Box>
 			) : (
-				<Text ta="center">
-					{missing}
-				</Text>
+				<Text ta="center">{missing}</Text>
 			)}
 
 			<Button
@@ -119,9 +123,7 @@ export function Lister<T extends { name: string }>({
 				opened={isEditing}
 				onClose={closeEditor}
 				trapFocus={false}
-				title={
-					<PrimaryTitle>{`Editing ${name}`}</PrimaryTitle>
-				}
+				title={<PrimaryTitle>{`Editing ${name}`}</PrimaryTitle>}
 			>
 				<Stack>
 					{editingData && children(editingData, editingIndex)}

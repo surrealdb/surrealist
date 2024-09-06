@@ -1,20 +1,28 @@
-import { Button, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
+import {
+	Button,
+	Group,
+	Select,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { useQueryClient } from "@tanstack/react-query";
+import { shake } from "radash";
+import { useState } from "react";
+import { useImmer } from "use-immer";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { CloudBilling, CloudOrganization } from "~/types";
-import { useCloudBilling } from "../hooks/billing";
-import { useImmer } from "use-immer";
-import { Spacer } from "~/components/Spacer";
-import { useState } from "react";
-import { fetchAPI } from "../api";
-import { useQueryClient } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import { shake } from "radash";
+import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
+import { fetchAPI } from "../api";
+import { useCloudBilling } from "../hooks/billing";
 
 export async function openBillingModal() {
 	return new Promise<void>((resolve) => {
@@ -24,16 +32,11 @@ export async function openBillingModal() {
 			onClose: resolve,
 			title: (
 				<Group>
-					<Icon
-						path={iconAccount}
-						size="xl"
-					/>
+					<Icon path={iconAccount} size="xl" />
 					<PrimaryTitle>Billing Details</PrimaryTitle>
 				</Group>
 			),
-			children: (
-				<BillingModal />
-			)
+			children: <BillingModal />,
 		});
 	});
 }
@@ -42,15 +45,10 @@ function BillingModal() {
 	const organization = useOrganization();
 	const details = useCloudBilling(organization?.id);
 
-	return (details.data && organization) ? (
-		<BillingForm
-			organization={organization}
-			details={details.data}
-		/>
+	return details.data && organization ? (
+		<BillingForm organization={organization} details={details.data} />
 	) : (
-		<Text>
-			Loading...
-		</Text>
+		<Text>Loading...</Text>
 	);
 }
 
@@ -59,19 +57,17 @@ interface BillingFormProps {
 	details: CloudBilling;
 }
 
-function BillingForm({
-	organization,
-	details
-}: BillingFormProps) {
+function BillingForm({ organization, details }: BillingFormProps) {
 	const [data, setData] = useImmer(details);
 	const [isLoading, setLoading] = useState(false);
 	const queryClient = useQueryClient();
 
-	const countryList = useCloudStore((state) => state.billingCountries)
-		.map((country) => ({
+	const countryList = useCloudStore((state) => state.billingCountries).map(
+		(country) => ({
 			value: country.code,
-			label: country.name
-		}));
+			label: country.name,
+		}),
+	);
 
 	const handleClose = useStable(() => {
 		closeModal("billing");
@@ -83,13 +79,13 @@ function BillingForm({
 		try {
 			await fetchAPI(`/organizations/${organization.id}/billing`, {
 				method: "PUT",
-				body: JSON.stringify(shake(data, e => !e))
+				body: JSON.stringify(shake(data, (e) => !e)),
 			});
 
 			handleClose();
 
 			queryClient.invalidateQueries({
-				queryKey: ["cloud", "billing", organization.id]
+				queryKey: ["cloud", "billing", organization.id],
 			});
 		} finally {
 			setLoading(false);
@@ -103,41 +99,51 @@ function BillingForm({
 					label="Full Name"
 					required
 					value={data.Name}
-					onChange={(e) => setData((d) => {
-						d.Name = e.target.value;
-					})}
+					onChange={(e) =>
+						setData((d) => {
+							d.Name = e.target.value;
+						})
+					}
 				/>
 				<TextInput
 					label="Company Name"
 					value={data.LegalName}
-					onChange={(e) => setData((d) => {
-						d.LegalName = e.target.value;
-					})}
+					onChange={(e) =>
+						setData((d) => {
+							d.LegalName = e.target.value;
+						})
+					}
 				/>
 				<SimpleGrid cols={2}>
 					<TextInput
 						label="Email"
 						required
 						value={data.Email}
-						onChange={(e) => setData((d) => {
-							d.Email = e.target.value;
-						})}
+						onChange={(e) =>
+							setData((d) => {
+								d.Email = e.target.value;
+							})
+						}
 					/>
 					<TextInput
 						label="Phone Number"
 						required
 						value={data.Phone}
-						onChange={(e) => setData((d) => {
-							d.Phone = e.target.value;
-						})}
+						onChange={(e) =>
+							setData((d) => {
+								d.Phone = e.target.value;
+							})
+						}
 					/>
 				</SimpleGrid>
 				<TextInput
 					label="Tax Identification Number"
 					value={data.TaxIdentificationNumber}
-					onChange={(e) => setData((d) => {
-						d.TaxIdentificationNumber = e.target.value;
-					})}
+					onChange={(e) =>
+						setData((d) => {
+							d.TaxIdentificationNumber = e.target.value;
+						})
+					}
 				/>
 				<SimpleGrid cols={2}>
 					<Select
@@ -146,17 +152,21 @@ function BillingForm({
 						searchable
 						data={countryList}
 						value={data.Country}
-						onChange={(v) => setData((d) => {
-							d.Country = v as string;
-						})}
+						onChange={(v) =>
+							setData((d) => {
+								d.Country = v as string;
+							})
+						}
 					/>
 					<TextInput
 						label="State / Region"
 						required
 						value={data.State}
-						onChange={(e) => setData((d) => {
-							d.State = e.target.value;
-						})}
+						onChange={(e) =>
+							setData((d) => {
+								d.State = e.target.value;
+							})
+						}
 					/>
 				</SimpleGrid>
 				<SimpleGrid cols={2}>
@@ -164,16 +174,20 @@ function BillingForm({
 						label="Address"
 						required
 						value={data.AddressLine1}
-						onChange={(e) => setData((d) => {
-							d.AddressLine1 = e.target.value;
-						})}
+						onChange={(e) =>
+							setData((d) => {
+								d.AddressLine1 = e.target.value;
+							})
+						}
 					/>
 					<TextInput
 						label="Address Line 2"
 						value={data.AddressLine2}
-						onChange={(e) => setData((d) => {
-							d.AddressLine2 = e.target.value;
-						})}
+						onChange={(e) =>
+							setData((d) => {
+								d.AddressLine2 = e.target.value;
+							})
+						}
 					/>
 				</SimpleGrid>
 				<SimpleGrid cols={2}>
@@ -181,25 +195,25 @@ function BillingForm({
 						label="City"
 						required
 						value={data.City}
-						onChange={(e) => setData((d) => {
-							d.City = e.target.value;
-						})}
+						onChange={(e) =>
+							setData((d) => {
+								d.City = e.target.value;
+							})
+						}
 					/>
 					<TextInput
 						label="Postal Code"
 						required
 						value={data.Zipcode}
-						onChange={(e) => setData((d) => {
-							d.Zipcode = e.target.value;
-						})}
+						onChange={(e) =>
+							setData((d) => {
+								d.Zipcode = e.target.value;
+							})
+						}
 					/>
 				</SimpleGrid>
 				<Group mt="xl">
-					<Button
-						color="slate"
-						variant="light"
-						onClick={handleClose}
-					>
+					<Button color="slate" variant="light" onClick={handleClose}>
 						Close
 					</Button>
 					<Spacer />

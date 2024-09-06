@@ -1,21 +1,39 @@
-import posthog from "posthog-js";
-import { Surreal, ScopeAuth, Uuid, decodeCbor, VersionRetrievalFailure, UnsupportedVersion } from 'surrealdb';
-import { AuthDetails, Connection, Protocol } from '~/types';
-import { State, useDatabaseStore } from '~/stores/database';
-import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from '~/util/connection';
-import { connectionUri, newId, showError, showWarning } from '~/util/helpers';
-import { syncDatabaseSchema } from '~/util/schema';
-import { ConnectedEvent, DisconnectedEvent } from '~/util/global-events';
-import { useInterfaceStore } from "~/stores/interface";
-import { useConfigStore } from "~/stores/config";
-import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { Value } from "@surrealdb/ql-wasm";
+import posthog from "posthog-js";
+import {
+	type ScopeAuth,
+	type Surreal,
+	UnsupportedVersion,
+	Uuid,
+	VersionRetrievalFailure,
+	decodeCbor,
+} from "surrealdb";
 import { adapter } from "~/adapter";
-import { useCloudStore } from "~/stores/cloud";
 import { SANDBOX } from "~/constants";
+import { useCloudStore } from "~/stores/cloud";
+import { useConfigStore } from "~/stores/config";
+import { type State, useDatabaseStore } from "~/stores/database";
+import { useInterfaceStore } from "~/stores/interface";
+import type { AuthDetails, Connection, Protocol } from "~/types";
+import {
+	getActiveConnection,
+	getAuthDB,
+	getAuthNS,
+	getConnection,
+} from "~/util/connection";
 import { CloudError } from "~/util/errors";
+import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
+import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
+import { syncDatabaseSchema } from "~/util/schema";
+import { getLiveQueries, parseIdent } from "~/util/surrealql";
+import {
+	buildScopeAuth,
+	composeAuthentication,
+	getReconnectInterval,
+	getVersionTimeout,
+	mapResults,
+} from "./helpers";
 import { createPlaceholder, createSurreal } from "./surreal";
-import { buildScopeAuth, composeAuthentication, getReconnectInterval, getVersionTimeout, mapResults } from "./helpers";
 
 export interface ConnectOptions {
 	connection?: Connection;
@@ -37,7 +55,7 @@ let hasFailed = false;
 let forceClose = false;
 let retryTask: any;
 
-const LQ_SUPPORTED = new Set<Protocol>(['ws', 'wss', 'mem', 'indxdb']);
+const LQ_SUPPORTED = new Set<Protocol>(["ws", "wss", "mem", "indxdb"]);
 const LIVE_QUERIES = new Map<string, Set<Uuid>>();
 
 /**
@@ -63,11 +81,12 @@ export async function openConnection(options?: ConnectOptions) {
 	openedConnection = connection;
 	forceClose = false;
 
-	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
+	const { setCurrentState, setVersion, setLatestError } =
+		useDatabaseStore.getState();
 	const rpcEndpoint = connectionUri(connection.authentication);
 	const thisInstance = instance;
 
-	adapter.log('DB', `Opening connection to ${rpcEndpoint}`);
+	adapter.log("DB", `Opening connection to ${rpcEndpoint}`);
 
 	if (retryTask) {
 		clearTimeout(retryTask);
@@ -97,43 +116,52 @@ export async function openConnection(options?: ConnectOptions) {
 			if (authState === "loading") {
 				scheduleReconnect(1000);
 				return;
-			} else if(authState === "unauthenticated") {
+			}
+
+			if (authState === "unauthenticated") {
 				throw new CloudError("Not authenticated with Surreal Cloud");
 			}
 		}
-		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
-		const database = getAuthDB(connection.authentication) || connection.lastDatabase;
+		const namespace =
+			getAuthNS(connection.authentication) || connection.lastNamespace;
+		const database =
+			getAuthDB(connection.authentication) || connection.lastDatabase;
 
 		await instance.connect(rpcEndpoint, {
 			versionCheck,
 			versionCheckTimeout,
 			prepare: async (surreal) => {
 				try {
-					const auth = await composeAuthentication(connection.authentication);
+					const auth = await composeAuthentication(
+						connection.authentication,
+					);
 
 					if (isSignup) {
-						await register(buildScopeAuth(connection.authentication), surreal);
+						await register(
+							buildScopeAuth(connection.authentication),
+							surreal,
+						);
 					} else {
 						await authenticate(auth, surreal);
 					}
-				} catch(err) {
+				} catch (err) {
 					throw new Error(`Authentication failed: ${err}`);
 				}
 			},
 		});
 
 		if (instance === thisInstance) {
-			posthog.capture('connection_open', {
-				protocol: connection.authentication.protocol
+			posthog.capture("connection_open", {
+				protocol: connection.authentication.protocol,
 			});
 
-			adapter.log('DB', "Connection established");
+			adapter.log("DB", "Connection established");
 
 			instance.version().then((v) => {
 				const version = v.replace(/^surrealdb-/, "");
 
 				setVersion(version);
-				adapter.log('DB', `Database version ${version ?? "unknown"}`);
+				adapter.log("DB", `Database version ${version ?? "unknown"}`);
 			});
 
 			hasFailed = false;
@@ -141,7 +169,7 @@ export async function openConnection(options?: ConnectOptions) {
 			if (connection.id === SANDBOX) {
 				await instance.use({
 					namespace: "sandbox",
-					database: "sandbox"
+					database: "sandbox",
 				});
 			} else {
 				await activateDatabase(namespace, database);
@@ -152,7 +180,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 			ConnectedEvent.dispatch(null);
 		}
-	} catch(err: any) {
+	} catch (err: any) {
 		if (instance === thisInstance) {
 			instance.close();
 
@@ -162,17 +190,18 @@ export async function openConnection(options?: ConnectOptions) {
 				if (err instanceof VersionRetrievalFailure) {
 					showWarning({
 						title: "Failed to query version",
-						subtitle: "The database version could not be determined. Please ensure the database is running and accessible by Surrealist."
+						subtitle:
+							"The database version could not be determined. Please ensure the database is running and accessible by Surrealist.",
 					});
 				} else if (err instanceof UnsupportedVersion) {
 					showError({
 						title: "Unsupported version",
-						subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`
+						subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`,
 					});
 				} else if (!(err instanceof CloudError)) {
 					showError({
 						title: "Connection failed",
-						subtitle: err.message
+						subtitle: err.message,
 					});
 				}
 			}
@@ -214,9 +243,9 @@ export async function closeConnection(state?: State) {
  * @param surreal The optional surreal instance
  */
 export async function register(auth: ScopeAuth, surreal?: Surreal) {
-	surreal ??= instance;
+	const db = surreal ?? instance;
 
-	await surreal.signup(auth).catch(() => {
+	await db.signup(auth).catch(() => {
 		throw new Error("Could not sign up");
 	});
 }
@@ -228,16 +257,16 @@ export async function register(auth: ScopeAuth, surreal?: Surreal) {
  * @param surreal The optional surreal instance
  */
 export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
-	surreal ??= instance;
+	const db = surreal ?? instance;
 
 	if (auth === undefined) {
-		await surreal.invalidate();
+		await db.invalidate();
 	} else if (typeof auth === "string") {
-		await surreal.authenticate(auth).catch(() => {
+		await db.authenticate(auth).catch(() => {
 			throw new Error("Authentication token invalid");
 		});
 	} else if (auth) {
-		await surreal.signin(auth).catch(err => {
+		await db.signin(auth).catch((err) => {
 			const { openScopeSignup } = useInterfaceStore.getState();
 
 			if (err.message.includes("No record was returned")) {
@@ -254,15 +283,17 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
  */
 export async function executeQuery(query: string, params?: any) {
 	try {
-		const responseRaw = await instance.query_raw(query, params) || [];
+		const responseRaw = (await instance.query_raw(query, params)) || [];
 
 		return mapResults(responseRaw);
-	} catch(err: any) {
-		return [{
-			success: false,
-			result: err.message,
-			execution_time: ''
-		}];
+	} catch (err: any) {
+		return [
+			{
+				success: false,
+				result: err.message,
+				execution_time: "",
+			},
+		];
 	}
 }
 
@@ -276,9 +307,9 @@ export async function executeQueryFirst(query: string) {
 
 	if (success) {
 		return result;
-	} else {
-		throw new Error(result);
 	}
+
+	throw new Error(result);
 }
 
 /**
@@ -291,9 +322,9 @@ export async function executeQuerySingle<T = any>(query: string): Promise<T> {
 
 	if (success) {
 		return Array.isArray(result) ? result[0] : result;
-	} else {
-		throw new Error(result);
 	}
+
+	throw new Error(result);
 }
 
 /**
@@ -302,20 +333,24 @@ export async function executeQuerySingle<T = any>(query: string): Promise<T> {
  * @param options Query options
  */
 export async function executeUserQuery(options?: UserQueryOptions) {
-	const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } = useInterfaceStore.getState();
-	const { setQueryActive, currentState, setQueryResponse } = useDatabaseStore.getState();
+	const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } =
+		useInterfaceStore.getState();
+	const { setQueryActive, currentState, setQueryResponse } =
+		useDatabaseStore.getState();
 	const { addHistoryEntry } = useConfigStore.getState();
 	const connection = getConnection();
 
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the database"
+			subtitle: "You must be connected to the database",
 		});
 		return;
 	}
 
-	const tabQuery = connection.queries.find((q) => q.id === connection.activeQuery);
+	const tabQuery = connection.queries.find(
+		(q) => q.id === connection.activeQuery,
+	);
 
 	if (!tabQuery) {
 		return;
@@ -338,21 +373,25 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		try {
 			liveIndexes = getLiveQueries(queryStr);
-		} catch(err: any) {
-			adapter.warn('DB', `Failed to parse live queries: ${err.message}`);
+		} catch (err: any) {
+			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
 			console.error(err);
 			liveIndexes = [];
 		}
 
-		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.authentication.protocol)) {
+		if (
+			liveIndexes.length > 0 &&
+			!LQ_SUPPORTED.has(connection.authentication.protocol)
+		) {
 			showError({
 				title: "Live queries unsupported",
-				subtitle: "Unfortunately live queries are not supported in the active connection protocol"
+				subtitle:
+					"Unfortunately live queries are not supported in the active connection protocol",
 			});
 		}
 
-		const response = await executeQuery(queryStr, variableJson) || [];
-		const liveIds = liveIndexes.flatMap(idx => {
+		const response = (await executeQuery(queryStr, variableJson)) || [];
+		const liveIds = liveIndexes.flatMap((idx) => {
 			const res = response[idx];
 
 			if (!res.success || !(res.result instanceof Uuid)) {
@@ -377,13 +416,13 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 					queryId: queryId.toString(),
 					action,
 					data,
-					timestamp
+					timestamp,
 				});
 			});
 		}
 
 		setQueryResponse(id, response);
-		posthog.capture('query_execute');
+		posthog.capture("query_execute");
 	} finally {
 		setQueryActive(false);
 	}
@@ -392,13 +431,17 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		id: newId(),
 		query: queryStr,
 		timestamp: Date.now(),
-		origin: name
+		origin: name,
 	});
 }
 
 function isGraphqlSupportedError(err: string) {
-	return err.includes("Method not found")
-		|| err.includes("A GraphQL request was made, but GraphQL is not supported by the context");
+	return (
+		err.includes("Method not found") ||
+		err.includes(
+			"A GraphQL request was made, but GraphQL is not supported by the context",
+		)
+	);
 }
 
 /**
@@ -409,7 +452,7 @@ export async function checkGraphqlSupport() {
 		const res = await instance.graphql({});
 
 		return !!res.error && !isGraphqlSupportedError(res.error.message);
-	} catch(err: any) {
+	} catch (err: any) {
 		return !isGraphqlSupportedError(err.message);
 	}
 }
@@ -417,22 +460,26 @@ export async function checkGraphqlSupport() {
 /**
  * Send a raw GraphQL request to the active connection
  */
-export async function sendGraphqlRequest(query: string, params?: Record<string, any>, operation?: string) {
+export async function sendGraphqlRequest(
+	query: string,
+	params?: Record<string, any>,
+	operation?: string,
+) {
 	try {
 		const { result, error } = await instance.graphql({
 			query,
 			variables: params,
-			operationName: operation
+			operationName: operation,
 		});
 
 		return {
 			success: !!result,
-			result: result || error
+			result: result || error,
 		};
-	} catch(err: any) {
+	} catch (err: any) {
 		return {
 			success: false,
-			result: err.message
+			result: err.message,
 		};
 	}
 }
@@ -440,14 +487,19 @@ export async function sendGraphqlRequest(query: string, params?: Record<string, 
 /**
  * Execute a GraphQL query against the active connection
  */
-export async function executeGraphql(query: string, params?: Record<string, any>, operation?: string) {
-	const { currentState, setGraphqlQueryActive, setGraphqlResponse } = useDatabaseStore.getState();
+export async function executeGraphql(
+	query: string,
+	params?: Record<string, any>,
+	operation?: string,
+) {
+	const { currentState, setGraphqlQueryActive, setGraphqlResponse } =
+		useDatabaseStore.getState();
 	const connection = getConnection();
 
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the database"
+			subtitle: "You must be connected to the database",
 		});
 
 		throw new Error("Not connected");
@@ -459,11 +511,11 @@ export async function executeGraphql(query: string, params?: Record<string, any>
 		const response = await sendGraphqlRequest(query, params, operation);
 
 		setGraphqlResponse(connection.id, response);
-		posthog.capture('graphql_query_execute');
-	} catch(err: any) {
+		posthog.capture("graphql_query_execute");
+	} catch (err: any) {
 		return {
 			success: false,
-			result: err.message
+			result: err.message,
 		};
 	} finally {
 		setGraphqlQueryActive(false);
@@ -496,22 +548,24 @@ export async function activateDatabase(namespace: string, database: string) {
 	// Select a namespace only
 	if (namespace) {
 		const result = await executeQuerySingle("INFO FOR KV");
-		const namespaces = Object.keys(result?.namespaces ?? {}).map(ns => parseIdent(ns));
+		const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) =>
+			parseIdent(ns),
+		);
 
 		if (namespaces.includes(namespace)) {
 			updateCurrentConnection({
 				lastNamespace: namespace,
-				lastDatabase: database
+				lastDatabase: database,
 			});
 
 			await instance.use({
 				namespace,
-				database: null
+				database: null,
 			});
 		} else {
 			updateCurrentConnection({
 				lastNamespace: "",
-				lastDatabase: ""
+				lastDatabase: "",
 			});
 
 			return;
@@ -519,7 +573,7 @@ export async function activateDatabase(namespace: string, database: string) {
 	} else {
 		updateCurrentConnection({
 			lastNamespace: "",
-			lastDatabase: ""
+			lastDatabase: "",
 		});
 
 		return;
@@ -528,18 +582,20 @@ export async function activateDatabase(namespace: string, database: string) {
 	// Select a database
 	if (namespace && database) {
 		const result = await executeQuerySingle("INFO FOR NS");
-		const databases = Object.keys(result?.databases ?? {}).map(db => parseIdent(db));
+		const databases = Object.keys(result?.databases ?? {}).map((db) =>
+			parseIdent(db),
+		);
 
 		if (databases.includes(database)) {
 			updateCurrentConnection({
-				lastDatabase: database
+				lastDatabase: database,
 			});
 
 			await instance.use({ database });
 			await syncDatabaseSchema();
 		} else {
 			updateCurrentConnection({
-				lastDatabase: ""
+				lastDatabase: "",
 			});
 		}
 	}
@@ -562,7 +618,7 @@ function scheduleReconnect(timeout?: number) {
 		if (currentState !== "connected") {
 			openConnection({
 				connection: getActiveConnection(),
-				isRetry: true
+				isRetry: true,
 			});
 		}
 	}, delay);

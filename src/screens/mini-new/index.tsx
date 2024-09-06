@@ -1,13 +1,32 @@
-import { ActionIcon, Box, Button, Divider, Group, Image, MantineProvider, Modal, Paper, ScrollArea, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import { MANTINE_THEME } from "~/util/mantine";
-import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
-import { DEFAULT_STATE, EmbedState, Embedder } from "~/components/Embedder";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Divider,
+	Group,
+	Image,
+	MantineProvider,
+	Modal,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
-import { useStable } from "~/hooks/stable";
+import {
+	DEFAULT_STATE,
+	type EmbedState,
+	Embedder,
+} from "~/components/Embedder";
 import { Icon } from "~/components/Icon";
-import { iconClose } from "~/util/icons";
 import { useLogoUrl } from "~/hooks/brand";
+import { useStable } from "~/hooks/stable";
+import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
+import { iconClose } from "~/util/icons";
+import { MANTINE_THEME } from "~/util/mantine";
 
 export function MiniNewScreen() {
 	const logoUrl = useLogoUrl();
@@ -22,12 +41,13 @@ export function MiniNewScreen() {
 		const value = e.target.value;
 		const params = new URL(value).searchParams;
 
-		state.setup = params.get('setup') || state.setup;
-		state.query = params.get('query') || state.query;
-		state.variables = params.get('variables') || state.variables;
-		state.dataset = params.get('dataset') || state.dataset;
-		state.orientation = params.get('orientation') as any || state.orientation;
-		state.transparent = params.has('transparent') || state.transparent;
+		state.setup = params.get("setup") || state.setup;
+		state.query = params.get("query") || state.query;
+		state.variables = params.get("variables") || state.variables;
+		state.dataset = params.get("dataset") || state.dataset;
+		state.orientation =
+			(params.get("orientation") as any) || state.orientation;
+		state.transparent = params.has("transparent") || state.transparent;
 
 		setParsedState(state);
 		showParseHandle.close();
@@ -50,8 +70,8 @@ export function MiniNewScreen() {
 					viewportProps={{
 						style: {
 							paddingBottom: 50,
-							paddingInline: 24
-						}
+							paddingInline: 24,
+						},
 					}}
 				>
 					<Stack py={35}>
@@ -60,11 +80,7 @@ export function MiniNewScreen() {
 							Mini generator
 						</Text>
 					</Stack>
-					<Paper
-						maw={1500}
-						p="xl"
-						mx="auto"
-					>
+					<Paper maw={1500} p="xl" mx="auto">
 						<SimpleGrid cols={2} spacing={52}>
 							<Embedder
 								value={parsedState}
@@ -76,7 +92,8 @@ export function MiniNewScreen() {
 										Mini Preview
 									</Text>
 									<Text c="slate.2" mb="lg">
-										The preview will automatically reload after making changes
+										The preview will automatically reload
+										after making changes
 									</Text>
 									<iframe
 										ref={frame}
@@ -88,7 +105,7 @@ export function MiniNewScreen() {
 										style={{
 											border: "none",
 											borderRadius: 24,
-											backgroundColor: "black"
+											backgroundColor: "black",
 										}}
 									/>
 								</Box>
@@ -98,7 +115,8 @@ export function MiniNewScreen() {
 										Restore editor
 									</Text>
 									<Text c="slate.2" mb="sm">
-										Optionally paste in an existing mini URL to restore the editor
+										Optionally paste in an existing mini URL
+										to restore the editor
 									</Text>
 									<Button
 										size="sm"

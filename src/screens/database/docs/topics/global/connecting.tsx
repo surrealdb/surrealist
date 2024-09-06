@@ -1,8 +1,8 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
 import { useActiveConnection } from "~/hooks/connection";
+import { Article, DocsPreview } from "~/screens/database/docs/components";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 import { connectionUri } from "~/util/helpers";
 
 export function DocsGlobalConnecting({ language }: TopicProps) {
@@ -55,7 +55,7 @@ export function DocsGlobalConnecting({ language }: TopicProps) {
 		]);
 		`,
 		}),
-		[esc_endpoint, esc_namespace, esc_database]
+		[esc_endpoint, esc_namespace, esc_database],
 	);
 
 	return (

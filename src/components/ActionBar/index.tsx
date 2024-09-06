@@ -1,28 +1,22 @@
-import { NewsFeed } from "./newsfeed";
-import { HelpAndSupport } from "./support";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { adapter } from "~/adapter";
-import { DatabaseServing } from "./serving";
+import { useFeatureFlags } from "~/util/feature-flags";
 import { CloudAccount } from "./account";
+import { NewsFeed } from "./newsfeed";
+import { DatabaseServing } from "./serving";
+import { HelpAndSupport } from "./support";
 
 export function ActionBar() {
 	const [flags] = useFeatureFlags();
 
 	return (
 		<>
-			{adapter.isServeSupported && (
-				<DatabaseServing />
-			)}
+			{adapter.isServeSupported && <DatabaseServing />}
 
-			{flags.newsfeed && (
-				<NewsFeed />
-			)}
+			{flags.newsfeed && <NewsFeed />}
 
 			<HelpAndSupport />
 
-			{flags.cloud_view && flags.cloud_access && (
-				<CloudAccount />
-			)}
+			{flags.cloud_view && flags.cloud_access && <CloudAccount />}
 		</>
 	);
 }

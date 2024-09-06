@@ -1,24 +1,43 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Center, Divider, Group, Menu, Pagination, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
-import { useIsLight } from "~/hooks/theme";
+import type { SelectionRange } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Center,
+	Divider,
+	Group,
+	Menu,
+	Pagination,
+	Stack,
+	Text,
+	Tooltip,
+	UnstyledButton,
+} from "@mantine/core";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
+import { isMini } from "~/adapter";
+import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { DataTable } from "~/components/DataTable";
 import { RESULT_MODES } from "~/constants";
-import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
-import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
-import { QueryResponse, ResultMode, TabQuery } from "~/types";
-import { useStable } from "~/hooks/stable";
-import { iconBroadcastOff, iconCursor, iconLive, iconQuery } from "~/util/icons";
-import { SelectionRange } from "@codemirror/state";
-import { cancelLiveQueries } from "~/screens/database/connection/connection";
-import { useDatabaseStore } from "~/stores/database";
-import { isMini } from "~/adapter";
-import { EditorView } from "@codemirror/view";
 import { executeEditorQuery } from "~/editor/commands";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { cancelLiveQueries } from "~/screens/database/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { useInterfaceStore } from "~/stores/interface";
+import type { QueryResponse, ResultMode, TabQuery } from "~/types";
+import {
+	iconBroadcastOff,
+	iconCursor,
+	iconHelp,
+	iconLive,
+	iconQuery,
+} from "~/util/icons";
+import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
+import classes from "./style.module.scss";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -63,7 +82,7 @@ export function ResultPane({
 	const responseCount = responses.length;
 	const rowCount = computeRowCount(activeResponse);
 
-	const showCombined = resultMode == 'combined' || resultMode == "live";
+	const showCombined = resultMode === "combined" || resultMode === "live";
 	const showTabs = !showCombined && responses.length > 1;
 	const showResponses = showCombined && responseCount > 0;
 	const showTime = !showCombined && !!activeResponse?.execution_time;
@@ -83,28 +102,30 @@ export function ResultPane({
 	const setResultMode = (mode: ResultMode) => {
 		updateQueryTab({
 			id: activeTab.id,
-			resultMode: mode
+			resultMode: mode,
 		});
 	};
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset result tab when responses change
 	useLayoutEffect(() => {
 		setResultTab(1);
 	}, [responses.length]);
 
-	const activeMode = RESULT_MODES.find(r => r.value == resultMode)!;
+	const activeMode = RESULT_MODES.find((r) => r.value === resultMode);
 	const hasSelection = selection?.empty === false;
 
-	const statusText = (showResponses
-		? `${responseCount} ${responseCount == 1 ? 'response' : 'responses'}`
-		: `${rowCount} ${rowCount == 1 ? 'result' : 'results'} ${showTime ? ` in ${activeResponse.execution_time}` : ''}`);
+	const statusText = showResponses
+		? `${responseCount} ${responseCount === 1 ? "response" : "responses"}`
+		: `${rowCount} ${rowCount === 1 ? "result" : "results"} ${showTime ? ` in ${activeResponse.execution_time}` : ""}`;
 
-	const panelTitle = resultMode == 'combined'
-		? 'Results'
-		: resultMode == 'live'
-			? "Live Messages"
-			: showTabs
-				? `Result #${resultTab}`
-				: "Result";
+	const panelTitle =
+		resultMode === "combined"
+			? "Results"
+			: resultMode === "live"
+				? "Live Messages"
+				: showTabs
+					? `Result #${resultTab}`
+					: "Result";
 
 	return (
 		<ContentPane
@@ -112,21 +133,25 @@ export function ResultPane({
 			icon={iconQuery}
 			radius={square ? 0 : undefined}
 			rightSection={
-				<Group align="center" wrap="nowrap" className={classes.controls}>
-					{resultMode == "live" ? (isLive && (
-						<Button
-							onClick={cancelQueries}
-							color="pink"
-							variant="light"
-							size="xs"
-							radius="sm"
-							leftSection={
-								<Icon path={iconBroadcastOff} />
-							}
-						>
-							Stop listening
-						</Button>
-					)) : (
+				<Group
+					align="center"
+					wrap="nowrap"
+					className={classes.controls}
+				>
+					{resultMode === "live" ? (
+						isLive && (
+							<Button
+								onClick={cancelQueries}
+								color="pink"
+								variant="light"
+								size="xs"
+								radius="sm"
+								leftSection={<Icon path={iconBroadcastOff} />}
+							>
+								Stop listening
+							</Button>
+						)
+					) : (
 						<Text
 							c={isLight ? "slate.5" : "slate.2"}
 							className={classes.results}
@@ -144,7 +169,13 @@ export function ResultPane({
 										h={30}
 										w={30}
 									>
-										<Icon path={activeMode.icon} />
+										<Icon
+											path={
+												activeMode
+													? activeMode.icon
+													: iconHelp
+											}
+										/>
 									</ActionIcon>
 								</Tooltip>
 							) : (
@@ -154,9 +185,13 @@ export function ResultPane({
 									aria-label="Change result mode"
 									variant="light"
 									color="slate"
-									leftSection={<Icon path={activeMode.icon} />}
+									leftSection={
+										activeMode && (
+											<Icon path={activeMode.icon} />
+										)
+									}
 								>
-									{activeMode.label}
+									{activeMode?.label ?? "Unknown"}
 								</Button>
 							)}
 						</Menu.Target>
@@ -182,11 +217,9 @@ export function ResultPane({
 						className={classes.run}
 						loading={isQuerying}
 						onClick={runQuery}
-						rightSection={
-							<Icon path={iconCursor} />
-						}
+						rightSection={<Icon path={iconCursor} />}
 					>
-						Run {hasSelection ? 'selection' : 'query'}
+						Run {hasSelection ? "selection" : "query"}
 					</Button>
 				</Group>
 			}
@@ -198,42 +231,42 @@ export function ResultPane({
 					p="md"
 					onClick={() => setResultMode("live")}
 					style={{
-						borderRadius: 'var(--mantine-radius-lg'
+						borderRadius: "var(--mantine-radius-lg",
 					}}
 				>
 					<Group>
 						<Icon path={iconLive} c="slate" size="xl" />
 						<Text fw={500} c="bright">
-							Click here to open Live Mode and view incoming live messages
+							Click here to open Live Mode and view incoming live
+							messages
 						</Text>
 					</Group>
 				</UnstyledButton>
 			)}
-			{(resultMode == "live") ? (
-				<LivePreview
-					query={activeTab}
-					isLive={isLive}
-				/>
+			{resultMode === "live" ? (
+				<LivePreview query={activeTab} isLive={isLive} />
 			) : activeResponse ? (
 				<>
-					{resultMode == "combined" ? (
+					{resultMode === "combined" ? (
 						<CombinedJsonPreview results={responses} />
-					) : activeResponse.success ? (activeResponse.result?.length === 0 ? (
-						<Text c="slate" flex={1}>
-							No results found for query
-						</Text>
-					) : resultMode == "table" ? (
-						<Box
-							mih={0}
-							flex={1}
-							pos="relative"
-						>
-							<DataTable data={activeResponse.result} />
-						</Box>
+					) : activeResponse.success ? (
+						activeResponse.result?.length === 0 ? (
+							<Text c="slate" flex={1}>
+								No results found for query
+							</Text>
+						) : resultMode === "table" ? (
+							<Box mih={0} flex={1} pos="relative">
+								<DataTable data={activeResponse.result} />
+							</Box>
+						) : (
+							<SingleJsonPreview result={activeResponse.result} />
+						)
 					) : (
-						<SingleJsonPreview result={activeResponse.result} />
-					)) : (
-						<Text c="red" ff="mono" style={{ whiteSpace: "pre-wrap" }}>
+						<Text
+							c="red"
+							ff="mono"
+							style={{ whiteSpace: "pre-wrap" }}
+						>
 							{activeResponse.result}
 						</Text>
 					)}
@@ -241,11 +274,7 @@ export function ResultPane({
 			) : (
 				<Center h="100%" c="slate">
 					<Stack>
-						<Icon
-							path={iconQuery}
-							mx="auto"
-							size="lg"
-						/>
+						<Icon path={iconQuery} mx="auto" size="lg" />
 						Execute a SurrealQL query to view the results here
 					</Stack>
 				</Center>
@@ -254,7 +283,11 @@ export function ResultPane({
 			{showTabs && (
 				<Stack gap="xs" align="center">
 					<Divider w="100%" />
-					<Pagination total={responses.length} value={resultTab} onChange={setResultTab} />
+					<Pagination
+						total={responses.length}
+						value={resultTab}
+						onChange={setResultTab}
+					/>
 				</Stack>
 			)}
 		</ContentPane>

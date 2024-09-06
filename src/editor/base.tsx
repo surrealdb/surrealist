@@ -1,9 +1,30 @@
-import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "@codemirror/autocomplete";
-import { codeFolding, foldGutter, indentOnInput, bracketMatching, foldKeymap, indentUnit } from "@codemirror/language";
-import { indentWithTab, defaultKeymap, history } from "@codemirror/commands";
+import {
+	autocompletion,
+	closeBrackets,
+	closeBracketsKeymap,
+	completionKeymap,
+} from "@codemirror/autocomplete";
+import { defaultKeymap, history, indentWithTab } from "@codemirror/commands";
+import {
+	bracketMatching,
+	codeFolding,
+	foldGutter,
+	foldKeymap,
+	indentOnInput,
+	indentUnit,
+} from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
-import { Extension, EditorState } from "@codemirror/state";
-import { highlightActiveLineGutter, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, keymap, EditorView } from "@codemirror/view";
+import { EditorState, type Extension } from "@codemirror/state";
+import {
+	EditorView,
+	crosshairCursor,
+	drawSelection,
+	dropCursor,
+	highlightActiveLineGutter,
+	highlightSpecialChars,
+	keymap,
+	rectangularSelection,
+} from "@codemirror/view";
 import { indentationMarkers } from "@replit/codemirror-indentation-markers";
 import { acceptWithTab } from "./keybinds";
 import { customHistoryKeymap } from "./keymaps";
@@ -26,15 +47,15 @@ export const editorBase = (): Extension => [
 	crosshairCursor(),
 	indentationMarkers({
 		colors: {
-			light: 'var(--surrealist-indent-color)',
-			dark: 'var(--surrealist-indent-color)',
-			activeLight: 'var(--surrealist-indent-active-color)',
-			activeDark: 'var(--surrealist-indent-active-color)',
-		}
+			light: "var(--surrealist-indent-color)",
+			dark: "var(--surrealist-indent-color)",
+			activeLight: "var(--surrealist-indent-active-color)",
+			activeDark: "var(--surrealist-indent-active-color)",
+		},
 	}),
 	highlightSelectionMatches({
 		highlightWordAroundCursor: true,
-		wholeWords: true
+		wholeWords: true,
 	}),
 	keymap.of([
 		acceptWithTab,
@@ -44,7 +65,7 @@ export const editorBase = (): Extension => [
 		...searchKeymap,
 		...customHistoryKeymap,
 		...foldKeymap,
-		...completionKeymap
+		...completionKeymap,
 	]),
 	indentUnit.of("    "),
 	EditorState.allowMultipleSelections.of(true),

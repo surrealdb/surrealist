@@ -1,24 +1,37 @@
-import classes from "./style.module.scss";
 import { ActionIcon, Collapse, Group, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { DocsArticleTopic, DocsGroupTopic, DocsLinkTopic, DocsSectionTopic, DocsTopic, isArticle, isGroup, isLink, isSection } from "~/screens/database/docs/types";
 import { useStable } from "~/hooks/stable";
-import { CodeLang } from "~/types";
+import {
+	type DocsArticleTopic,
+	type DocsGroupTopic,
+	type DocsLinkTopic,
+	type DocsSectionTopic,
+	type DocsTopic,
+	isArticle,
+	isGroup,
+	isLink,
+	isSection,
+} from "~/screens/database/docs/types";
+import type { CodeLang } from "~/types";
 import { iconChevronDown, iconChevronUp, iconOpen } from "~/util/icons";
+import classes from "./style.module.scss";
 
 interface TopicProps<T> {
 	active: string;
 	entry: T;
 	lang: CodeLang;
-	onOpen: (topic: string) => void
+	onOpen: (topic: string) => void;
 }
 
-export function ArticleTopic({ active, entry, onOpen }: TopicProps<DocsArticleTopic>) {
-
+export function ArticleTopic({
+	active,
+	entry,
+	onOpen,
+}: TopicProps<DocsArticleTopic>) {
 	const onClick = useStable(() => {
 		onOpen(entry.id);
 	});
@@ -36,8 +49,12 @@ export function ArticleTopic({ active, entry, onOpen }: TopicProps<DocsArticleTo
 	);
 }
 
-export function GroupTopic({ active, entry, lang, onOpen }: TopicProps<DocsGroupTopic>) {
-
+export function GroupTopic({
+	active,
+	entry,
+	lang,
+	onOpen,
+}: TopicProps<DocsGroupTopic>) {
 	const onClick = useStable(() => {
 		onOpen(entry.children[0].id);
 	});
@@ -78,16 +95,17 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 	);
 }
 
-export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSectionTopic>) {
+export function SectionTopic({
+	entry,
+	active,
+	lang,
+	onOpen,
+}: TopicProps<DocsSectionTopic>) {
 	const [opened, { toggle }] = useDisclosure(true);
 
 	return (
 		<>
-			<Group
-				mt="lg"
-				onClick={toggle}
-				style={{ cursor: "pointer" }}
-			>
+			<Group mt="lg" onClick={toggle} style={{ cursor: "pointer" }}>
 				<Text c="bright" fw={500}>
 					{entry.title}
 				</Text>
@@ -97,7 +115,10 @@ export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSec
 					variant="subtle"
 					aria-label={opened ? "Collapse section" : "Expand section"}
 				>
-					<Icon path={opened ? iconChevronDown : iconChevronUp} size="sm" />
+					<Icon
+						path={opened ? iconChevronDown : iconChevronUp}
+						size="sm"
+					/>
 				</ActionIcon>
 			</Group>
 			<Collapse in={opened}>
@@ -109,50 +130,63 @@ export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSec
 	);
 }
 
-export function renderTopics(entries: DocsTopic[], active: string, lang: CodeLang, onOpen: (topic: string) => void) {
-	return entries.filter((entry) => {
-		return entry?.excludeLanguages?.includes(lang) !== true;
-	}).map((entry) => {
-		if (isSection(entry)) {
-			return (
-				<SectionTopic
-					key={entry.id}
-					active={active}
-					entry={entry}
-					lang={lang}
-					onOpen={onOpen}
-				/>
-			);
-		} else if (isLink(entry)) {
-			return (
-				<LinkTopic
-					key={entry.id}
-					active={active}
-					entry={entry}
-					lang={lang}
-					onOpen={onOpen}
-				/>
-			);
-		} else if(isArticle(entry)) {
-			return (
-				<ArticleTopic
-					key={entry.id}
-					active={active}
-					entry={entry}
-					lang={lang}
-					onOpen={onOpen}
-				/>
-			);
-		} else if (isGroup(entry)) {
-			return (
-				<GroupTopic
-					key={entry.id}
-					active={active}
-					entry={entry}
-					lang={lang}
-					onOpen={onOpen}
-				/>
-			);
-		}
-	});
+export function renderTopics(
+	entries: DocsTopic[],
+	active: string,
+	lang: CodeLang,
+	onOpen: (topic: string) => void,
+) {
+	return entries
+		.filter((entry) => {
+			return entry?.excludeLanguages?.includes(lang) !== true;
+		})
+		.map((entry) => {
+			if (isSection(entry)) {
+				return (
+					<SectionTopic
+						key={entry.id}
+						active={active}
+						entry={entry}
+						lang={lang}
+						onOpen={onOpen}
+					/>
+				);
+			}
+
+			if (isLink(entry)) {
+				return (
+					<LinkTopic
+						key={entry.id}
+						active={active}
+						entry={entry}
+						lang={lang}
+						onOpen={onOpen}
+					/>
+				);
+			}
+
+			if (isArticle(entry)) {
+				return (
+					<ArticleTopic
+						key={entry.id}
+						active={active}
+						entry={entry}
+						lang={lang}
+						onOpen={onOpen}
+					/>
+				);
+			}
+
+			if (isGroup(entry)) {
+				return (
+					<GroupTopic
+						key={entry.id}
+						active={active}
+						entry={entry}
+						lang={lang}
+						onOpen={onOpen}
+					/>
+				);
+			}
+		});
 }

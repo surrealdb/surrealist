@@ -1,4 +1,13 @@
-import { Button, Flex, Group, Paper, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import {
+	Button,
+	Flex,
+	Group,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Form } from "~/components/Form";
@@ -13,33 +22,37 @@ const apiKey = import.meta.env.VITE_SCOUT_API_KEY;
 type Message = {
 	content: string;
 	sender: "user" | "bot";
-}
+};
 
 type Request = {
 	input: string;
 	conversation: Message[];
-}
+};
 
 export function SupportPage() {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [threadId, setThreadId] = useState<string | undefined>(undefined);
 	const [input, setInput] = useState("");
 	const [conversation, setConversation] = useState<Message[]>([]);
-	const { mutateAsync: sendRequest, isPending, status } = useMutation({
+	const {
+		mutateAsync: sendRequest,
+		isPending,
+		status,
+	} = useMutation({
 		mutationKey: ["cloud", "support", "message"],
 		async mutationFn(inputs: Request) {
 			const res = await fetch(endpoint, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"Authorization": `Bearer ${apiKey}`,
+					Authorization: `Bearer ${apiKey}`,
 				},
 				body: JSON.stringify({
 					id: appId,
 					thread_id: threadId,
 					inputs,
 				}),
-			}).then(res => res.json());
+			}).then((res) => res.json());
 
 			console.log(res);
 
@@ -47,7 +60,7 @@ export function SupportPage() {
 			if (!output) return "Failed to send message";
 			setThreadId(res.thread_id);
 			return output;
-		}
+		},
 	});
 
 	const sendMessage = useStable(() => {
@@ -74,25 +87,23 @@ export function SupportPage() {
 	});
 
 	return (
-		<Stack
-			gap="xl"
-			h="100%"
-		>
-			<Stack
-				flex={1}
-				pos="relative"
-			>
+		<Stack gap="xl" h="100%">
+			<Stack flex={1} pos="relative">
 				<ScrollArea pos="absolute" inset={0}>
 					{conversation.map((message, i) => (
 						<Flex
-							justify={message.sender === "user" ? "end" : "start"}
+							justify={
+								message.sender === "user" ? "end" : "start"
+							}
 							key={i}
 						>
 							<Paper
 								px="lg"
 								py="sm"
 								radius="xl"
-								bg={message.sender === "user" ? "slate" : "blue"}
+								bg={
+									message.sender === "user" ? "slate" : "blue"
+								}
 								maw="80%"
 							>
 								<Text size="lg" c="white">
@@ -101,7 +112,7 @@ export function SupportPage() {
 							</Paper>
 						</Flex>
 					))}
-					{status == "pending" && (
+					{status === "pending" && (
 						<Flex>
 							<Paper
 								px="lg"
@@ -125,7 +136,7 @@ export function SupportPage() {
 							ref={inputRef}
 							size="lg"
 							style={{
-								flexGrow: 1
+								flexGrow: 1,
 							}}
 							placeholder="How can we help you today?"
 							value={input}
@@ -134,21 +145,17 @@ export function SupportPage() {
 						<Button
 							size="lg"
 							px="xl"
-							rightSection={
-								<Icon
-									path={iconCursor}
-									size="md"
-								/>
-							}
+							rightSection={<Icon path={iconCursor} size="md" />}
 							type="submit"
-							disabled={status == 'pending'}
+							disabled={status === "pending"}
 						>
 							Send
 						</Button>
 					</Group>
 				</Form>
 				<Text opacity={40}>
-					You are currently chatting with a bot. To send your message to a human, simply ask.
+					You are currently chatting with a bot. To send your message
+					to a human, simply ask.
 				</Text>
 			</Stack>
 		</Stack>

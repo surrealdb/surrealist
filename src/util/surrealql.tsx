@@ -1,5 +1,5 @@
-import { decodeCbor, encodeCbor, escape_ident } from "surrealdb";
 import { SurrealQL, Value } from "@surrealdb/ql-wasm";
+import { decodeCbor, encodeCbor, escape_ident } from "surrealdb";
 
 /**
  * Validate a query and return an error message if invalid
@@ -8,7 +8,7 @@ export function validateQuery(sql: string): string | undefined {
 	try {
 		SurrealQL.validate(sql);
 		return undefined;
-	} catch(err: any) {
+	} catch (err: any) {
 		return err;
 	}
 }
@@ -20,7 +20,7 @@ export function validateThing(thing: string): string | undefined {
 	try {
 		SurrealQL.validate_thing(thing);
 		return undefined;
-	} catch(err: any) {
+	} catch (err: any) {
 		return err;
 	}
 }
@@ -33,7 +33,7 @@ export function validateWhere(where: string): string | undefined {
 		(window as any).SurrealQL = SurrealQL;
 		SurrealQL.validate_where(where);
 		return undefined;
-	} catch(err: any) {
+	} catch (err: any) {
 		return err;
 	}
 }
@@ -53,11 +53,11 @@ export function getStatementCount(sql: string): number {
  * @param pretty Optionally pretty print
  * @returns The formatted value
  */
-export function formatValue(value: any, json: boolean = false, pretty: boolean = false) {
+export function formatValue(value: any, json = false, pretty = false) {
 	const binary = new Uint8Array(encodeCbor(value));
 	const parsed = Value.from_cbor(binary);
 
-	return parsed[json ? 'json' : 'format'](pretty);
+	return parsed[json ? "json" : "format"](pretty);
 }
 
 /**
@@ -161,8 +161,8 @@ export function parseIdent(ident: string) {
 		return ident.slice(1, -1).replaceAll("\\`", "`");
 	}
 
-	if (first === '⟨' && last === '⟩') {
-		return ident.slice(1, -1).replaceAll('\\⟩', '⟩');
+	if (first === "⟨" && last === "⟩") {
+		return ident.slice(1, -1).replaceAll("\\⟩", "⟩");
 	}
 
 	return ident;

@@ -1,6 +1,12 @@
-import { Button, ButtonProps, Group, Text } from "@mantine/core";
+import { Button, type ButtonProps, Group, Text } from "@mantine/core";
 import { Modal } from "@mantine/core";
-import { PropsWithChildren, ReactNode, createContext, useContext, useState } from "react";
+import {
+	type PropsWithChildren,
+	type ReactNode,
+	createContext,
+	useContext,
+	useState,
+} from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
@@ -17,17 +23,21 @@ interface ConfirmOptions<T> {
 }
 
 const ConfirmContext = createContext<{
-	setConfirmation: (value: any, options: ConfirmOptions<any>) => void
+	setConfirmation: (value: any, options: ConfirmOptions<any>) => void;
 } | null>(null);
 
 /**
  * Returns a function which can be used to trigger a confirmation dialog
  */
-export function useConfirmation<T>(options: ConfirmOptions<T>): (value?: T) => void {
+export function useConfirmation<T>(
+	options: ConfirmOptions<T>,
+): (value?: T) => void {
 	const ctx = useContext(ConfirmContext);
 
 	if (!ctx) {
-		throw new Error("useConfirmation must be used within an ConfirmationProvider");
+		throw new Error(
+			"useConfirmation must be used within an ConfirmationProvider",
+		);
 	}
 
 	return useStable((value) => {
@@ -35,9 +45,9 @@ export function useConfirmation<T>(options: ConfirmOptions<T>): (value?: T) => v
 	});
 }
 
-const DEFAULT_TITLE = 'Are you sure?';
-const DEFAULT_DISMISS = 'Close';
-const DEFAULT_CONFIRM = 'Continue';
+const DEFAULT_TITLE = "Are you sure?";
+const DEFAULT_DISMISS = "Close";
+const DEFAULT_CONFIRM = "Continue";
 
 export function ConfirmationProvider({ children }: PropsWithChildren) {
 	const [isConfirming, setIsConfirming] = useState(false);
@@ -71,18 +81,20 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 			<Modal
 				opened={isConfirming}
 				onClose={onDissmiss}
-				title={<PrimaryTitle>{options?.title ?? DEFAULT_TITLE}</PrimaryTitle>}
+				title={
+					<PrimaryTitle>
+						{options?.title ?? DEFAULT_TITLE}
+					</PrimaryTitle>
+				}
 				zIndex={210}
 			>
-				<Text fz="lg">
-					{options?.message}
-				</Text>
+				<Text fz="lg">{options?.message}</Text>
 				<Group mt="xl">
 					<Button
 						onClick={onDissmiss}
 						variant="light"
 						color="slate"
-						{...options?.dismissProps || {}}
+						{...(options?.dismissProps || {})}
 					>
 						{options?.dismissText ?? DEFAULT_DISMISS}
 					</Button>

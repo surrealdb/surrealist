@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsGlobalSchemaTables({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -152,7 +152,7 @@ export function DocsGlobalSchemaTables({ language }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (

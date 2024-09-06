@@ -1,25 +1,58 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Anchor, Box, Button, Center, Group, Indicator, Loader, Menu, Paper, ScrollArea, SimpleGrid, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { iconCheck, iconOpen, iconPlus, iconSearch, iconTune, iconViewGrid, iconViewList } from "~/util/icons";
-import { Spacer } from "~/components/Spacer";
-import { Icon } from "~/components/Icon";
-import { Fragment, useMemo, useState } from "react";
-import { useDebouncedValue, useDisclosure, useInputState } from "@mantine/hooks";
-import { fuzzyMatch } from "~/util/helpers";
-import { Instance, ConnectMethod } from "../../components/Instance";
-import { useSetting } from "~/hooks/config";
-import { CloudInstance } from "~/types";
+import {
+	ActionIcon,
+	Anchor,
+	Box,
+	Button,
+	Center,
+	Group,
+	Indicator,
+	Loader,
+	Menu,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Table,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
+import {
+	useDebouncedValue,
+	useDisclosure,
+	useInputState,
+} from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { useConfigStore } from "~/stores/config";
-import { fetchAPI } from "../../api";
-import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
+import { Fragment, useMemo, useState } from "react";
+import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import {
+	useAvailableInstanceTypes,
+	useAvailableRegions,
+	useOrganization,
+} from "~/hooks/cloud";
+import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
-import { ConnectCliModal } from "./modals/connect-cli";
+import { useCloudStore } from "~/stores/cloud";
+import { useConfigStore } from "~/stores/config";
+import type { CloudInstance } from "~/types";
 import { createBaseConnection, createCloudInstance } from "~/util/defaults";
+import { fuzzyMatch } from "~/util/helpers";
+import {
+	iconCheck,
+	iconOpen,
+	iconPlus,
+	iconSearch,
+	iconTune,
+	iconViewGrid,
+	iconViewList,
+} from "~/util/icons";
+import { fetchAPI } from "../../api";
+import { type ConnectMethod, Instance } from "../../components/Instance";
+import { ConnectCliModal } from "./modals/connect-cli";
 import { ConnectSdkModal } from "./modals/connect-sdk";
 import { SettingsModal } from "./modals/settings";
-import { useCloudStore } from "~/stores/cloud";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
+import classes from "./style.module.scss";
 
 interface Filter {
 	type: string;
@@ -31,7 +64,7 @@ export function InstancesPage() {
 	const { setActiveCloudPage } = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
-	const [filter, setFilter] = useState<Filter|null>(null);
+	const [filter, setFilter] = useState<Filter | null>(null);
 	const [searchQuery] = useDebouncedValue(search, 150);
 
 	const regions = useAvailableRegions();
@@ -44,13 +77,17 @@ export function InstancesPage() {
 		refetchInterval: 15_000,
 		enabled: authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudInstance[]>(`/organizations/${organization?.id}/instances`);
+			return fetchAPI<CloudInstance[]>(
+				`/organizations/${organization?.id}/instances`,
+			);
 		},
 	});
 
 	const instances = useMemo(() => data || [], [data]);
 
-	const [selectedInstance, setSelectedInstance] = useState(createCloudInstance());
+	const [selectedInstance, setSelectedInstance] = useState(
+		createCloudInstance(),
+	);
 	const [showSdkConnect, sdkConnectHandle] = useDisclosure();
 	const [showCliConnect, cliConnectHandle] = useDisclosure();
 	const [showSettings, settingsHandle] = useDisclosure();
@@ -59,41 +96,51 @@ export function InstancesPage() {
 		setActiveCloudPage("provision");
 	});
 
-	const handleConnect = useStable((method: ConnectMethod, db: CloudInstance) => {
-		setSelectedInstance(db);
+	const handleConnect = useStable(
+		(method: ConnectMethod, db: CloudInstance) => {
+			setSelectedInstance(db);
 
-		if (method === "surrealist") {
-			const { connections, settings, addConnection, setActiveConnection, setActiveView } = useConfigStore.getState();
-			const existing = connections.find((conn) => conn.authentication.cloudInstance === db.id);
+			if (method === "surrealist") {
+				const {
+					connections,
+					settings,
+					addConnection,
+					setActiveConnection,
+					setActiveView,
+				} = useConfigStore.getState();
+				const existing = connections.find(
+					(conn) => conn.authentication.cloudInstance === db.id,
+				);
 
-			setActiveView("query");
+				setActiveView("query");
 
-			if (existing) {
-				setActiveConnection(existing.id);
+				if (existing) {
+					setActiveConnection(existing.id);
+				} else {
+					const base = createBaseConnection(settings);
+
+					addConnection({
+						...base,
+						name: db.name,
+						authentication: {
+							...base.authentication,
+							protocol: "wss",
+							mode: "cloud",
+							token: "",
+							hostname: db.host,
+							cloudInstance: db.id,
+						},
+					});
+
+					setActiveConnection(base.id);
+				}
+			} else if (method === "sdk") {
+				sdkConnectHandle.open();
 			} else {
-				const base = createBaseConnection(settings);
-
-				addConnection({
-					...base,
-					name: db.name,
-					authentication: {
-						...base.authentication,
-						protocol: "wss",
-						mode: "cloud",
-						token: "",
-						hostname: db.host,
-						cloudInstance: db.id,
-					}
-				});
-
-				setActiveConnection(base.id);
+				cliConnectHandle.open();
 			}
-		} else if (method === "sdk") {
-			sdkConnectHandle.open();
-		} else {
-			cliConnectHandle.open();
-		}
-	});
+		},
+	);
 
 	const handleSettings = useStable((db: CloudInstance) => {
 		setSelectedInstance(db);
@@ -107,16 +154,16 @@ export function InstancesPage() {
 				options: instanceTypes.map((type) => ({
 					type: "type",
 					value: type.slug,
-					label: type.slug
-				}))
+					label: type.slug,
+				})),
 			},
 			{
 				title: "Region",
 				options: regions.map((region) => ({
 					type: "region",
 					value: region.slug,
-					label: region.description
-				}))
+					label: region.description,
+				})),
 			},
 			// {
 			// 	title: "Status",
@@ -167,11 +214,8 @@ export function InstancesPage() {
 
 	return (
 		<>
-			{(!isPending && !isFresh) && (
-				<Group
-					gap="lg"
-					mb="xs"
-				>
+			{!isPending && !isFresh && (
+				<Group gap="lg" mb="xs">
 					<Button
 						variant="gradient"
 						leftSection={<Icon path={iconPlus} />}
@@ -201,19 +245,30 @@ export function InstancesPage() {
 							</Tooltip>
 						</Menu.Target>
 						<Menu.Dropdown miw={150}>
-							{filterTypes.map(type => (
+							{filterTypes.map((type) => (
 								<Fragment key={type.title}>
-									<Menu.Label>
-										{type.title}
-									</Menu.Label>
+									<Menu.Label>{type.title}</Menu.Label>
 									{type.options.map((option) => {
-										const isActive = filter?.value === option.value;
+										const isActive =
+											filter?.value === option.value;
 
 										return (
 											<Menu.Item
 												key={option.value}
-												onClick={() => setFilter(isActive ? null : option)}
-												rightSection={isActive && <Icon path={iconCheck} />}
+												onClick={() =>
+													setFilter(
+														isActive
+															? null
+															: option,
+													)
+												}
+												rightSection={
+													isActive && (
+														<Icon
+															path={iconCheck}
+														/>
+													)
+												}
 											>
 												{option.label}
 											</Menu.Item>
@@ -248,21 +303,19 @@ export function InstancesPage() {
 					</ActionIcon.Group>
 				</Group>
 			)}
-			{(isEmpty && instances.length === 0) ? (
+			{isEmpty && instances.length === 0 ? (
 				<Center flex={1}>
 					{isPending ? (
 						<Loader />
 					) : (
-						<Paper
-							radius="md"
-							p="xl"
-							w={500}
-						>
+						<Paper radius="md" p="xl" w={500}>
 							<PrimaryTitle>
 								Create your first instance
 							</PrimaryTitle>
 							<Text mt="xl">
-								This organization does not have any instances yet. Create your first instance to get started with Surreal Cloud.
+								This organization does not have any instances
+								yet. Create your first instance to get started
+								with Surreal Cloud.
 							</Text>
 							<Group>
 								<Anchor href="https://surrealdb.com/docs/cloud">
@@ -293,24 +346,12 @@ export function InstancesPage() {
 					)}
 				</Center>
 			) : isEmpty ? (
-				<Box
-					mt={150}
-					c="slate"
-					fz="lg"
-					ta="center"
-				>
+				<Box mt={150} c="slate" fz="lg" ta="center">
 					No matching instances found
 				</Box>
 			) : (
-				<Box
-					flex={1}
-					pos="relative"
-				>
-					<ScrollArea
-						pos="absolute"
-						scrollbars="y"
-						inset={0}
-					>
+				<Box flex={1} pos="relative">
+					<ScrollArea pos="absolute" scrollbars="y" inset={0}>
 						{mode === "grid" ? (
 							<SimpleGrid
 								cols={{ xs: 1, sm: 2, md: 2, lg: 2, xl: 3 }}

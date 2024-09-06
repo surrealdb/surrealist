@@ -1,22 +1,22 @@
-import dedent from "dedent";
 import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
 import { rust } from "@codemirror/lang-rust";
 import { StreamLanguage } from "@codemirror/language";
 import { csharp } from "@codemirror/legacy-modes/mode/clike";
-import { Extension } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
+import dedent from "dedent";
 import { useMemo } from "react";
-import { CodeLang, Snippets } from "~/types";
-import { CodePreview, CodePreviewProps } from "../CodePreview";
+import type { CodeLang, Snippets } from "~/types";
+import { CodePreview, type CodePreviewProps } from "../CodePreview";
 
 const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
 	rust: rust(),
 	js: javascript(),
 	csharp: [StreamLanguage.define(csharp)],
-	php: php({ plain: true })
+	php: php({ plain: true }),
 };
 
-export interface CodeSnippetProps extends Omit<CodePreviewProps, 'value'> {
+export interface CodeSnippetProps extends Omit<CodePreviewProps, "value"> {
 	title?: string;
 	values: Snippets;
 	language: CodeLang;

@@ -1,13 +1,13 @@
-import posthog from "posthog-js";
 import { ActionIcon, Tooltip } from "@mantine/core";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { useDatabaseStore } from "~/stores/database";
-import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { openConnection } from "~/screens/database/connection/connection";
+import { useDatabaseStore } from "~/stores/database";
 import { getActiveConnection } from "~/util/connection";
+import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { Icon } from "../Icon";
 
 export function DatabaseServing() {
@@ -35,7 +35,7 @@ export function DatabaseServing() {
 				stopServing();
 			});
 
-			posthog.capture('serve_start');
+			posthog.capture("serve_start");
 		}
 
 		setHasStarted(true);
@@ -46,8 +46,12 @@ export function DatabaseServing() {
 	});
 
 	useEffect(() => {
-		const { authentication: { hostname } } = getActiveConnection();
-		const isLocal = hostname.startsWith("localhost") || hostname.startsWith("127.0.0.1");
+		const {
+			authentication: { hostname },
+		} = getActiveConnection();
+		const isLocal =
+			hostname.startsWith("localhost") ||
+			hostname.startsWith("127.0.0.1");
 
 		if (isServing && isLocal) {
 			openConnection();
@@ -65,7 +69,11 @@ export function DatabaseServing() {
 					onClick={handleToggle}
 					loading={isPending}
 					color={isServing ? "pink.7" : undefined}
-					aria-label={isServing ? "Stop serving local database" : "Start serving local database"}
+					aria-label={
+						isServing
+							? "Stop serving local database"
+							: "Start serving local database"
+					}
 					variant="subtle"
 				>
 					<Icon path={isServing ? iconStop : iconPlay} size="lg" />

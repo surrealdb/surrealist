@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsTablesIntroduction({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -34,7 +34,7 @@ export function DocsTablesIntroduction({ language }: TopicProps) {
 		$db->create("table_name");
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -45,7 +45,6 @@ export function DocsTablesIntroduction({ language }: TopicProps) {
 					section. You can view the schema of each table, the columns,
 					and the data types of each column.
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

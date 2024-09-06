@@ -1,28 +1,34 @@
-import { ExplorerPane } from "../ExplorerPane";
-import { memo, useState } from "react";
-import { CreatorDrawer } from "../CreatorDrawer";
-import { useDisclosure } from "@mantine/hooks";
 import { Box, Button, Group, Text } from "@mantine/core";
-import { DisconnectedEvent } from "~/util/global-events";
-import { useEventSubscription } from "~/hooks/event";
-import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
-import { Icon } from "~/components/Icon";
-import { iconDesigner, iconExplorer, iconOpen, iconPlus, iconTable } from "~/util/icons";
-import { useInterfaceStore } from "~/stores/interface";
-import { useViewEffect } from "~/hooks/view";
-import { syncDatabaseSchema } from "~/util/schema";
+import { useDisclosure } from "@mantine/hooks";
+import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { usePanelMinSize } from "~/hooks/panels";
-import { Introduction } from "~/components/Introduction";
 import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { Introduction } from "~/components/Introduction";
+import { PanelDragger } from "~/components/Pane/dragger";
 import { useIsConnected } from "~/hooks/connection";
+import { useEventSubscription } from "~/hooks/event";
+import { usePanelMinSize } from "~/hooks/panels";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
+import { useViewEffect } from "~/hooks/view";
+import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
+import { useInterfaceStore } from "~/stores/interface";
+import { DisconnectedEvent } from "~/util/global-events";
+import {
+	iconDesigner,
+	iconExplorer,
+	iconOpen,
+	iconPlus,
+	iconTable,
+} from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
+import { CreatorDrawer } from "../CreatorDrawer";
+import { ExplorerPane } from "../ExplorerPane";
 import { Exporter } from "../Exporter";
 import { Importer } from "../Importer";
-import { useDesigner } from "~/providers/Designer";
-import { useIsLight } from "~/hooks/theme";
 
 const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
@@ -45,23 +51,23 @@ export function ExplorerView() {
 
 	const buildContextMenu = useStable((table: string) => [
 		{
-			key: 'open',
+			key: "open",
 			title: "View records",
 			icon: <Icon path={iconTable} />,
-			onClick: () => setActiveTable(table)
+			onClick: () => setActiveTable(table),
 		},
 		{
-			key: 'design',
+			key: "design",
 			title: "Open designer",
 			icon: <Icon path={iconDesigner} />,
-			onClick: () => design(table)
+			onClick: () => design(table),
 		},
 		{
-			key: 'new',
+			key: "new",
 			title: "Create new record",
 			icon: <Icon path={iconPlus} />,
-			onClick: () => openCreator(table)
-		}
+			onClick: () => openCreator(table),
+		},
 	]);
 
 	useEventSubscription(DisconnectedEvent, () => {
@@ -86,11 +92,7 @@ export function ExplorerView() {
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel
-						defaultSize={minSize}
-						minSize={minSize}
-						maxSize={35}
-					>
+					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
 						<TablesPaneLazy
 							icon={iconExplorer}
 							activeTable={activeTable}
@@ -122,11 +124,13 @@ export function ExplorerView() {
 										
 										-- Fetch table records
 										SELECT * FROM person;
-									`
+									`,
 								}}
 							>
 								<Text>
-									The explorer view provides an easy way to browse your tables and records without writing any queries.
+									The explorer view provides an easy way to
+									browse your tables and records without
+									writing any queries.
 								</Text>
 								<Group>
 									<Button
@@ -143,7 +147,11 @@ export function ExplorerView() {
 										color="slate"
 										variant="light"
 										rightSection={<Icon path={iconOpen} />}
-										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/table")}
+										onClick={() =>
+											adapter.openUrl(
+												"https://surrealdb.com/docs/surrealdb/surrealql/statements/define/table",
+											)
+										}
 									>
 										Learn more
 									</Button>
@@ -156,7 +164,7 @@ export function ExplorerView() {
 
 			<CreatorDrawer
 				opened={isCreating}
-				table={creatorTable || ''}
+				table={creatorTable || ""}
 				onClose={isCreatingHandle.close}
 			/>
 		</>

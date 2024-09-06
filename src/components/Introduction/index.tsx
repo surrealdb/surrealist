@@ -1,9 +1,9 @@
-import { Center, Paper, Stack, Title, Text, Group } from "@mantine/core";
-import { CodePreview } from "../CodePreview";
-import { PropsWithChildren, ReactNode } from "react";
-import { Icon } from "../Icon";
-import { Extension } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
+import { Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import type { PropsWithChildren, ReactNode } from "react";
 import { useIsLight } from "~/hooks/theme";
+import { CodePreview } from "../CodePreview";
+import { Icon } from "../Icon";
 
 export interface IntroductionProps {
 	title: string;
@@ -21,24 +21,18 @@ export function Introduction({
 	icon,
 	header,
 	snippet,
-	children
+	children,
 }: PropsWithChildren<IntroductionProps>) {
 	const isLight = useIsLight();
 
 	return (
 		<Center h="100%" flex={1}>
-			<Paper
-				w={450}
-				style={{ overflow: "hidden" }}
-				shadow="md"
-			>
+			<Paper w={450} style={{ overflow: "hidden" }} shadow="md">
 				{header}
 				<Stack p="xl" gap="xl">
 					<Group>
 						<Icon path={icon} size={1.35} />
-						<Title c="bright">
-							{title}
-						</Title>
+						<Title c="bright">{title}</Title>
 					</Group>
 					{children}
 				</Stack>
@@ -49,7 +43,9 @@ export function Introduction({
 						radius={0}
 						shadow="none"
 						style={{
-							borderTop: isLight ? "1px solid var(--mantine-color-slate-1)" : undefined
+							borderTop: isLight
+								? "1px solid var(--mantine-color-slate-1)"
+								: undefined,
 						}}
 					>
 						<Text c="bright" fz={18} fw={600} mb="md">

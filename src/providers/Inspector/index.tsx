@@ -1,11 +1,16 @@
 import { useDisclosure } from "@mantine/hooks";
-import { createContext, useContext, PropsWithChildren, useState } from "react";
-import { HistoryHandle, useHistory } from "~/hooks/history";
-import { useStable } from "~/hooks/stable";
-import { InspectorDrawer } from "./drawer";
-import { RecordsChangedEvent } from "~/util/global-events";
+import {
+	type PropsWithChildren,
+	createContext,
+	useContext,
+	useState,
+} from "react";
 import { RecordId } from "surrealdb";
+import { type HistoryHandle, useHistory } from "~/hooks/history";
+import { useStable } from "~/hooks/stable";
+import { RecordsChangedEvent } from "~/util/global-events";
 import { parseValue } from "~/util/surrealql";
+import { InspectorDrawer } from "./drawer";
 
 type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;
@@ -22,11 +27,13 @@ const InspectorContext = createContext<{
 export function useInspector() {
 	const ctx = useContext(InspectorContext);
 
-	return ctx ?? {
-		history: [],
-		inspect: () => {},
-		stopInspect: () => {}
-	};
+	return (
+		ctx ?? {
+			history: [],
+			inspect: () => {},
+			stopInspect: () => {},
+		}
+	);
 }
 
 export function InspectorProvider({ children }: PropsWithChildren) {
@@ -35,24 +42,23 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 
 	const history = useHistory({
 		history: historyItems,
-		setHistory: setHistoryItems
+		setHistory: setHistoryItems,
 	});
 
 	const inspect = useStable((record: RecordId | string) => {
-		if (typeof record === "string") {
-			record = parseValue(record);
+		const recordId =
+			typeof record === "string" ? parseValue(record) : record;
 
-			if (!(record instanceof RecordId)) {
-				throw new TypeError("Invalid record id");
-			}
+		if (!(recordId instanceof RecordId)) {
+			throw new TypeError("Invalid record id");
 		}
 
 		isInspectingHandle.open();
 
 		if (isInspecting) {
-			history.push(record);
+			history.push(recordId);
 		} else {
-			setHistoryItems([record]);
+			setHistoryItems([recordId]);
 		}
 	});
 
@@ -65,7 +71,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 	});
 
 	return (
-		<InspectorContext.Provider value={{history, inspect, stopInspect}}>
+		<InspectorContext.Provider value={{ history, inspect, stopInspect }}>
 			{children}
 
 			<InspectorDrawer

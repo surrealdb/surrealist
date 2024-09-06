@@ -1,27 +1,36 @@
-import { fetch } from "@tauri-apps/plugin-http";
+import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
-import { basename } from "@tauri-apps/api/path";
 import { listen } from "@tauri-apps/api/event";
+import { basename } from "@tauri-apps/api/path";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { open, save } from "@tauri-apps/plugin-dialog";
+import {
+	readFile,
+	readTextFile,
+	writeFile,
+	writeTextFile,
+} from "@tauri-apps/plugin-fs";
+import { fetch } from "@tauri-apps/plugin-http";
+import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
-import { save, open } from "@tauri-apps/plugin-dialog";
-import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
-import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
-import { showError, showInfo } from "~/util/helpers";
-import { useDatabaseStore } from "~/stores/database";
-import { useConfigStore } from "~/stores/config";
-import { getSetting, watchStore } from "~/util/config";
-import { Platform, ViewMode } from "~/types";
-import { getHotkeyHandler } from "@mantine/hooks";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { handleIntentRequest } from "~/util/intents";
 import { VIEW_MODES } from "~/constants";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import { adapter } from ".";
+import type { Platform, ViewMode } from "~/types";
+import { getSetting, watchStore } from "~/util/config";
 import { featureFlags } from "~/util/feature-flags";
+import { showError, showInfo } from "~/util/helpers";
+import { handleIntentRequest } from "~/util/intents";
+import { adapter } from ".";
+import type {
+	OpenedBinaryFile,
+	OpenedTextFile,
+	SurrealistAdapter,
+} from "./base";
 
 const WAIT_DURATION = 1000;
 
@@ -31,9 +40,9 @@ interface Resource {
 }
 
 interface FileResource {
-	success: boolean,
-	name: string,
-	query: string
+	success: boolean;
+	name: string;
+	query: string;
 }
 
 interface LinkResource {
@@ -45,7 +54,6 @@ interface LinkResource {
  * Surrealist adapter for running as Wails desktop app
  */
 export class DesktopAdapter implements SurrealistAdapter {
-
 	public id = "desktop";
 
 	public isServeSupported = true;
@@ -58,7 +66,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	#system: string = type();
 
 	public constructor() {
-		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
+		this.hasTitlebar =
+			this.#system === "windows" || this.#system === "linux";
 
 		this.initDatabaseEvents();
 
@@ -72,9 +81,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 			e.preventDefault();
 		});
 
-		document.body.addEventListener("keydown", getHotkeyHandler([
-			["mod+alt+i", () => invoke("toggle_devtools")]
-		]));
+		document.body.addEventListener(
+			"keydown",
+			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
+		);
 
 		listen("open-resource", () => {
 			this.queryOpenRequest();
@@ -109,10 +119,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public dumpDebug = async () => ({
-		"Platform": "Desktop",
-		"OS": this.#system,
-		"Architecture": this.#arch,
-		"WebView": navigator.userAgent,
+		Platform: "Desktop",
+		OS: this.#system,
+		Architecture: this.#arch,
+		WebView: navigator.userAgent,
 	});
 
 	public async setWindowTitle(title: string) {
@@ -142,7 +152,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public saveConfig(config: string) {
 		return invoke<void>("save_config", {
-			config: JSON.stringify(config)
+			config: JSON.stringify(config),
 		});
 	}
 
@@ -168,10 +178,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 			driver,
 			storage,
 			executable,
-			logLevel
+			logLevel,
 		} = useConfigStore.getState().settings.serving;
 
-		const legacyCompat = featureFlags.get('legacy_serve');
+		const legacyCompat = featureFlags.get("legacy_serve");
 
 		return invoke<void>("start_database", {
 			username,
@@ -181,7 +191,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			storage,
 			executable,
 			logLevel,
-			legacyCompat
+			legacyCompat,
 		});
 	}
 
@@ -197,7 +207,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		title: string,
 		defaultPath: string,
 		filters: any,
-		content: () => Result<string | Blob | null>
+		content: () => Result<string | Blob | null>,
 	): Promise<boolean> {
 		const filePath = await save({ title, defaultPath, filters });
 
@@ -214,7 +224,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		if (typeof result === "string") {
 			await writeTextFile(filePath, result);
 		} else {
-			await writeFile(filePath, new Uint8Array(await result.arrayBuffer()));
+			await writeFile(
+				filePath,
+				new Uint8Array(await result.arrayBuffer()),
+			);
 		}
 
 		return true;
@@ -223,12 +236,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public async openTextFile<M extends boolean>(
 		title: string,
 		filters: any,
-		multiple: M
+		multiple: M,
 	): Promise<OpenedTextFile[]> {
 		const result = await open({
 			title,
 			filters,
-			multiple
+			multiple,
 		});
 
 		if (!result) {
@@ -238,7 +251,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const files: string[] = Array.isArray(result) ? result : [result];
 		const tasks = files.map(async (path) => ({
 			name: await basename(path),
-			content: await readTextFile(path)
+			content: await readTextFile(path),
 		}));
 
 		return Promise.all(tasks);
@@ -247,12 +260,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public async openBinaryFile<M extends boolean>(
 		title: string,
 		filters: any,
-		multiple: M
+		multiple: M,
 	): Promise<OpenedBinaryFile[]> {
 		const result = await open({
 			title,
 			filters,
-			multiple
+			multiple,
 		});
 
 		if (!result) {
@@ -262,7 +275,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const files: string[] = Array.isArray(result) ? result : [result];
 		const tasks = files.map(async (path) => ({
 			name: await basename(path),
-			content: new Blob([await readFile(path)])
+			content: new Blob([await readFile(path)]),
 		}));
 
 		return Promise.all(tasks);
@@ -273,23 +286,27 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public log(label: string, message: string) {
-		info(label + ": " + message);
+		info(`${label}: ${message}`);
 	}
 
 	public warn(label: string, message: string) {
-		warn(label + ": " + message);
+		warn(`${label}: ${message}`);
 	}
 
 	public trace(label: string, message: string) {
-		trace(label + ": " + message);
+		trace(`${label}: ${message}`);
 	}
 
-	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
+	public fetch(
+		url: string,
+		options?: RequestInit | undefined,
+	): Promise<Response> {
 		return fetch(url, options);
 	}
 
 	public async checkForUpdates(force?: boolean) {
-		const { lastPromptedVersion, setLastPromptedVersion } = useConfigStore.getState();
+		const { lastPromptedVersion, setLastPromptedVersion } =
+			useConfigStore.getState();
 		const { setAvailableUpdate } = useInterfaceStore.getState();
 
 		adapter.log("Updater", "Checking for updates");
@@ -312,20 +329,20 @@ export class DesktopAdapter implements SurrealistAdapter {
 		}, 500);
 
 		listen("database:start", () => {
-			this.log('Serve', "Received database start signal");
+			this.log("Serve", "Received database start signal");
 
 			this.#startTask = setTimeout(() => {
 				useDatabaseStore.getState().confirmServing();
 
 				showInfo({
 					title: "Serving started",
-					subtitle: "Local database is now online"
+					subtitle: "Local database is now online",
 				});
 			}, WAIT_DURATION);
 		});
 
 		listen("database:stop", () => {
-			this.log('Serve', "Received database stop signal");
+			this.log("Serve", "Received database stop signal");
 
 			if (this.#startTask) {
 				clearTimeout(this.#startTask);
@@ -335,7 +352,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			showInfo({
 				title: "Serving stopped",
-				subtitle: "Local database is now offline"
+				subtitle: "Local database is now offline",
 			});
 		});
 
@@ -346,12 +363,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			const historySize = getSetting("serving", "historySize");
 
-			useDatabaseStore.getState().pushConsoleLine(event.payload as string, historySize);
+			useDatabaseStore
+				.getState()
+				.pushConsoleLine(event.payload as string, historySize);
 			throttleLevel++;
 		});
 
 		listen("database:error", (event) => {
-			this.log('Serve', "Received database error signal");
+			this.log("Serve", "Received database error signal");
 
 			const msg = event.payload as string;
 
@@ -363,7 +382,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			showError({
 				title: "Serving failed",
-				subtitle: msg
+				subtitle: msg,
 			});
 		});
 	}
@@ -383,7 +402,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				if (!success) {
 					showError({
 						title: `Failed to open "${name}"`,
-						subtitle: `File exceeds maximum size limit`
+						subtitle: `File exceeds maximum size limit`,
 					});
 
 					continue;

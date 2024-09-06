@@ -1,28 +1,40 @@
-import banner from "~/assets/images/sandbox.webp";
-import { ActionIcon, Box, Button, Image, Modal, Stack, Text } from "@mantine/core";
-import { Icon } from "~/components/Icon";
-import { iconChevronRight, iconClose } from "~/util/icons";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Image,
+	Modal,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { useEffect } from "react";
-import { useConnection } from "~/hooks/connection";
+import banner from "~/assets/images/sandbox.webp";
+import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
-import { useOnboarding } from "~/hooks/onboarding";
 import { useBoolean } from "~/hooks/boolean";
+import { useConnection } from "~/hooks/connection";
+import { useOnboarding } from "~/hooks/onboarding";
 import { useConfigStore } from "~/stores/config";
+import { iconChevronRight, iconClose } from "~/util/icons";
 
 export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();
-	const [completed, complete] = useOnboarding('sandbox');
+	const [completed, complete] = useOnboarding("sandbox");
 	const view = useConfigStore((state) => state.activeView);
 	const screen = useConfigStore((state) => state.activeScreen);
 	const connection = useConnection();
 
 	useEffect(() => {
-		if (connection?.id === SANDBOX && screen === "database" && view !== "cloud" && !completed) {
+		if (
+			connection?.id === SANDBOX &&
+			screen === "database" &&
+			view !== "cloud" &&
+			!completed
+		) {
 			openHandle.open();
 			complete();
 		}
-	
-	}, [connection, screen, view]);
+	}, [connection, screen, view, completed]);
 
 	return (
 		<Modal
@@ -47,12 +59,15 @@ export function SandboxModal() {
 			<Box p={24}>
 				<Stack>
 					<Text c="bright">
-						The Sandbox provides an easy to use playground to test, experiment, and learn SurrealDB.
+						The Sandbox provides an easy to use playground to test,
+						experiment, and learn SurrealDB.
 					</Text>
 					<Text>
-						You can use the sandbox without having
-						to start a database up, and data will be reset after you close Surrealist. Additionally, you can use the buttons in the toolbar
-						to manually reset the sandbox or load an official dataset.
+						You can use the sandbox without having to start a
+						database up, and data will be reset after you close
+						Surrealist. Additionally, you can use the buttons in the
+						toolbar to manually reset the sandbox or load an
+						official dataset.
 					</Text>
 				</Stack>
 

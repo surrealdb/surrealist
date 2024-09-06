@@ -1,10 +1,10 @@
+import { ActionBar } from "~/components/ActionBar";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { CLOUD_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { iconChevronRight } from "~/util/icons";
-import { Spacer } from "~/components/Spacer";
-import { ActionBar } from "~/components/ActionBar";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { CLOUD_PAGES } from "~/constants";
 
 export function CloudToolbar() {
 	const activePage = useConfigStore((s) => s.activeCloudPage);
@@ -12,18 +12,9 @@ export function CloudToolbar() {
 
 	return (
 		<>
-			<PrimaryTitle ml={3}>
-				Surreal Cloud
-			</PrimaryTitle>
-			<Icon
-				path={iconChevronRight}
-				size="xl"
-				color="slate.5"
-				mx={-8}
-			/>
-			<PrimaryTitle>
-				{pageName}
-			</PrimaryTitle>
+			<PrimaryTitle ml={3}>Surreal Cloud</PrimaryTitle>
+			<Icon path={iconChevronRight} size="xl" color="slate.5" mx={-8} />
+			<PrimaryTitle>{pageName}</PrimaryTitle>
 			<Spacer />
 			<ActionBar />
 		</>

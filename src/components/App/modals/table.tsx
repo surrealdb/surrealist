@@ -1,23 +1,33 @@
-import { Button, Group, Modal, MultiSelect, Select, Stack, Tabs, TextInput } from "@mantine/core";
-import { useLayoutEffect, useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "~/components/Icon";
+import {
+	Button,
+	Group,
+	Modal,
+	MultiSelect,
+	Select,
+	Stack,
+	Tabs,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { syncDatabaseSchema } from "~/util/schema";
+import { useLayoutEffect, useState } from "react";
+import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { SCHEMA_MODES } from "~/constants";
 import { useTableNames } from "~/hooks/schema";
-import { iconPlus, iconRelation, iconTable } from "~/util/icons";
-import { useInterfaceStore } from "~/stores/interface";
+import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import type { SchemaMode } from "~/types";
 import { tb } from "~/util/helpers";
-import { SCHEMA_MODES } from "~/constants";
-import { SchemaMode } from "~/types";
-import { Form } from "~/components/Form";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { iconPlus, iconRelation, iconTable } from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
 
 export function TableCreatorModal() {
-	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
+	const { openTableCreator, closeTableCreator } =
+		useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showTableCreator);
 	const tables = useTableNames("TABLE");
@@ -26,14 +36,14 @@ export function TableCreatorModal() {
 	const [tableName, setTableName] = useInputState("");
 	const [tableIn, setTableIn] = useState<string[]>([]);
 	const [tableOut, setTableOut] = useState<string[]>([]);
-	const [mode, setMode] = useState<SchemaMode>('schemaless');
+	const [mode, setMode] = useState<SchemaMode>("schemaless");
 
 	const createTable = useStable(async () => {
 		let query = `DEFINE TABLE ${tb(tableName)} ${mode.toUpperCase()} TYPE `;
 
 		if (createType === "relation") {
-			const inTables = tableIn.map((t) => tb(t)).join('|');
-			const outTables = tableOut.map((t) => tb(t)).join('|');
+			const inTables = tableIn.map((t) => tb(t)).join("|");
+			const outTables = tableOut.map((t) => tb(t)).join("|");
 
 			query += `RELATION IN ${inTables} OUT ${outTables};`;
 
@@ -47,14 +57,14 @@ export function TableCreatorModal() {
 
 		await executeQuery(query);
 		await syncDatabaseSchema({
-			tables: [tableName]
+			tables: [tableName],
 		});
 
 		const { activeView } = useConfigStore.getState();
 
 		if (activeView === "explorer") {
 			dispatchIntent("explore-table", {
-				table: tableName
+				table: tableName,
 			});
 		}
 	});
@@ -65,7 +75,6 @@ export function TableCreatorModal() {
 			setTableIn([]);
 			setTableOut([]);
 		}
-	
 	}, [opened]);
 
 	useIntent("new-table", openTableCreator);
@@ -81,12 +90,23 @@ export function TableCreatorModal() {
 					<PrimaryTitle>{`Create new ${createType}`}</PrimaryTitle>
 				}
 			>
-				<Tabs mb="xl" defaultValue="table" value={createType} onChange={setCreateType as any}>
+				<Tabs
+					mb="xl"
+					defaultValue="table"
+					value={createType}
+					onChange={setCreateType as any}
+				>
 					<Tabs.List grow>
-						<Tabs.Tab value="table" rightSection={<Icon path={iconTable} />}>
+						<Tabs.Tab
+							value="table"
+							rightSection={<Icon path={iconTable} />}
+						>
 							Table
 						</Tabs.Tab>
-						<Tabs.Tab value="relation" rightSection={<Icon path={iconRelation} />}>
+						<Tabs.Tab
+							value="relation"
+							rightSection={<Icon path={iconRelation} />}
+						>
 							Relation
 						</Tabs.Tab>
 					</Tabs.List>
@@ -138,7 +158,11 @@ export function TableCreatorModal() {
 								type="submit"
 								variant="gradient"
 								flex={1}
-								disabled={!tableName || (createType === "relation" && (!tableIn || !tableOut))}
+								disabled={
+									!tableName ||
+									(createType === "relation" &&
+										(!tableIn || !tableOut))
+								}
 								rightSection={<Icon path={iconPlus} />}
 							>
 								Create

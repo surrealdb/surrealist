@@ -1,11 +1,11 @@
-import { useWindowEvent, useDidUpdate } from "@mantine/hooks";
+import { useDidUpdate, useWindowEvent } from "@mantine/hooks";
 import posthog from "posthog-js";
 import { sift } from "radash";
-import { useMemo, useEffect } from "react";
-import { VIEW_MODES, CLOUD_PAGES } from "~/constants";
+import { useEffect, useMemo } from "react";
+import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { ViewMode, CloudPage } from "~/types";
+import type { CloudPage, ViewMode } from "~/types";
 import { handleIntentRequest } from "~/util/intents";
 
 const VIEWS = Object.keys(VIEW_MODES);
@@ -40,7 +40,9 @@ export function useConfigRouting() {
 
 	// Apply state based on the current URL path
 	const applyState = useStable(() => {
-		const [view, ...other] = sift(location.pathname.toLowerCase().split('/'));
+		const [view, ...other] = sift(
+			location.pathname.toLowerCase().split("/"),
+		);
 		const params = new URLSearchParams(location.search);
 
 		let repair = false;
@@ -63,7 +65,7 @@ export function useConfigRouting() {
 			history.replaceState(null, document.title, actualPath);
 		}
 
-		const intent = params.get('intent');
+		const intent = params.get("intent");
 
 		if (intent) {
 			handleIntentRequest(intent);
@@ -71,17 +73,17 @@ export function useConfigRouting() {
 	});
 
 	// Sync initial URL to active view
-	
+
 	useEffect(applyState, []);
 
 	// Sync history change to active view
-	useWindowEvent('popstate', applyState);
+	useWindowEvent("popstate", applyState);
 
 	// Sync active view to URL
 	useDidUpdate(() => {
 		if (location.pathname !== actualPath) {
 			history.pushState(null, document.title, actualPath);
-			posthog.capture('$pageview');
+			posthog.capture("$pageview");
 		}
 	}, [actualPath]);
 }

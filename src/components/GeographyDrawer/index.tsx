@@ -1,18 +1,18 @@
-import type { GeographyInput } from "../GeographyMap";
-import { Suspense, lazy, useState } from "react";
-import { iconClose, iconMarker } from "~/util/icons";
 import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { DrawerResizer } from "~/components/DrawerResizer";
-import { LoadingContainer } from "~/components/LoadingContainer";
-import { formatValue } from "~/util/surrealql";
-import { surrealql } from "@surrealdb/codemirror";
-import { Label } from "~/components/Label";
-import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { useInputState } from "@mantine/hooks";
+import { surrealql } from "@surrealdb/codemirror";
+import { Suspense, lazy, useState } from "react";
+import { DrawerResizer } from "~/components/DrawerResizer";
+import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
+import { LoadingContainer } from "~/components/LoadingContainer";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { ON_STOP_PROPAGATION } from "~/util/helpers";
+import { iconClose, iconMarker } from "~/util/icons";
+import { formatValue } from "~/util/surrealql";
 import { CodeEditor } from "../CodeEditor";
+import type { GeographyInput } from "../GeographyMap";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -22,7 +22,11 @@ export interface GeographyDrawerProps {
 	onClose: () => void;
 }
 
-export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps) => {
+export const GeographyDrawer = ({
+	opened,
+	data,
+	onClose,
+}: GeographyDrawerProps) => {
 	const [width, setWidth] = useState(650);
 
 	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
@@ -39,18 +43,20 @@ export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps)
 				body: {
 					height: "100%",
 					display: "flex",
-					flexDirection: "column"
-				}
+					flexDirection: "column",
+				},
 			}}
 		>
-			<DrawerResizer
-				minSize={500}
-				maxSize={1500}
-				onResize={setWidth}
-			/>
+			<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
 
 			<Group mb="md" gap="sm">
-				<PrimaryTitle style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+				<PrimaryTitle
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
 					<Icon left path={iconMarker} size="sm" />
 					Geography explorer
 				</PrimaryTitle>
@@ -83,9 +89,7 @@ export const GeographyDrawer = ({ opened, data, onClose }: GeographyDrawerProps)
 						autoFocus
 						value={geoJSON}
 						onChange={setGeoJSON}
-						extensions={[
-							surrealql(),
-						]}
+						extensions={[surrealql()]}
 					/>
 				</Box>
 			</Stack>

@@ -1,9 +1,12 @@
-import { useConfigStore } from "~/stores/config";
-import { getActiveQuery } from "./connection";
-import { useDatabaseStore } from "~/stores/database";
-import { ResultMode } from "~/types";
 import { RESULT_MODES } from "~/constants";
-import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
+import {
+	executeQuery,
+	executeUserQuery,
+} from "~/screens/database/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import type { ResultMode } from "~/types";
+import { getActiveQuery } from "./connection";
 
 /**
  * Handle incoming window messages
@@ -15,11 +18,13 @@ export function handleWindowMessage(event: MessageEvent) {
 		return;
 	}
 
-	const options = (typeof data.options === "object")
-		? data.options
-		: {};
+	const options = typeof data.options === "object" ? data.options : {};
+	const active = getActiveQuery();
 
-	const active = getActiveQuery()!;
+	if (!active) {
+		return;
+	}
+
 	const { updateQueryTab } = useConfigStore.getState();
 	const { clearQueryResponse } = useDatabaseStore.getState();
 
@@ -30,7 +35,10 @@ export function handleWindowMessage(event: MessageEvent) {
 			updateQueryTab({
 				id: active.id,
 				query: typeof query === "string" ? query : active.query,
-				variables: typeof variables === "string" ? variables : active.variables
+				variables:
+					typeof variables === "string"
+						? variables
+						: active.variables,
 			});
 
 			break;
@@ -48,7 +56,7 @@ export function handleWindowMessage(event: MessageEvent) {
 
 			updateQueryTab({
 				id: active.id,
-				showVariables: mode === "variables"
+				showVariables: mode === "variables",
 			});
 			break;
 		}
@@ -62,7 +70,7 @@ export function handleWindowMessage(event: MessageEvent) {
 
 			updateQueryTab({
 				id: active.id,
-				resultMode: mode as ResultMode
+				resultMode: mode as ResultMode,
 			});
 			break;
 		}

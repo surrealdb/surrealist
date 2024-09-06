@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -19,7 +19,7 @@ export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 		$info = $db->info();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (

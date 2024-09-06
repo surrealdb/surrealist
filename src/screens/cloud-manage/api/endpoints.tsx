@@ -6,12 +6,13 @@ const CLOUD_API_BASE = "https://api.cloud.surrealdb.com/api/v1";
 const CLOUD_API_MGMT_BASE = "https://api.cloud.surrealdb.com/management/v1";
 
 export function getCloudEndpoints() {
-	const { urlAuthBase, urlApiBase, urlApiMgmtBase } = useConfigStore.getState().settings.cloud;
+	const { urlAuthBase, urlApiBase, urlApiMgmtBase } =
+		useConfigStore.getState().settings.cloud;
 	const isCustom = featureFlags.get("cloud_endpoints") === "custom";
 
 	return {
 		authBase: isCustom ? urlAuthBase : CLOUD_AUTH_BASE,
 		apiBase: isCustom ? urlApiBase : CLOUD_API_BASE,
-		mgmtBase: isCustom ? urlApiMgmtBase : CLOUD_API_MGMT_BASE
+		mgmtBase: isCustom ? urlApiMgmtBase : CLOUD_API_MGMT_BASE,
 	};
 }

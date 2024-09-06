@@ -1,13 +1,12 @@
 import fastDeepEqual from "fast-deep-equal";
 import { klona } from "klona";
 import { useMemo, useState } from "react";
-import { useStable } from "./stable";
 import { useLater } from "./later";
+import { useStable } from "./stable";
 
 type Task<T = unknown> = T | Promise<T>;
 
 export interface SaveableOptions<T> {
-
 	/**
 	 * The state object to track changes on
 	 */
@@ -31,11 +30,9 @@ export interface SaveableOptions<T> {
 	 * @param original The original state
 	 */
 	onRevert: (original: T) => void;
-
 }
 
 export interface SaveableHandle {
-
 	/**
 	 * Whether the state is currently considered changed
 	 */
@@ -70,7 +67,6 @@ export interface SaveableHandle {
 	 * Revert the current state and invoke the onRevert callback.
 	 */
 	revert: () => void;
-
 }
 
 /**
@@ -80,12 +76,17 @@ export interface SaveableHandle {
  * @param options The saveable options
  * @returns The saveable handle
  */
-export function useSaveable<T extends Record<string, any>>(options: SaveableOptions<T>): SaveableHandle {
+export function useSaveable<T extends Record<string, any>>(
+	options: SaveableOptions<T>,
+): SaveableHandle {
 	const [isSaving, setIsSaving] = useState(false);
 	const [skipTrack, setSkipTrack] = useState(false);
 	const [original, setOriginal] = useState(klona(options.track));
 
-	const isEqual = useMemo(() => fastDeepEqual(original, options.track), [original, options.track]);
+	const isEqual = useMemo(
+		() => fastDeepEqual(original, options.track),
+		[original, options.track],
+	);
 	const isChanged = !isEqual && !skipTrack;
 	const canSave = isChanged && options.valid !== false;
 
@@ -121,6 +122,6 @@ export function useSaveable<T extends Record<string, any>>(options: SaveableOpti
 		isSaving,
 		track,
 		save,
-		revert
+		revert,
 	};
 }

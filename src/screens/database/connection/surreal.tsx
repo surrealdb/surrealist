@@ -10,7 +10,6 @@ interface GraphqlQuery {
  * Customized Surreal wrapper for handling custom logic
  */
 class CustomSurreal extends Surreal {
-
 	/**
 	 * Execute a GraphQL query on the database
 	 *
@@ -25,7 +24,6 @@ class CustomSurreal extends Surreal {
 
 		return this.rpc("graphql", [req, { pretty: true }]);
 	}
-
 }
 
 /**
@@ -44,6 +42,6 @@ export async function createSurreal() {
 	return new CustomSurreal({
 		engines: surrealdbWasmEngines({
 			capabilities: true,
-		}) as any
+		}) as any,
 	});
 }

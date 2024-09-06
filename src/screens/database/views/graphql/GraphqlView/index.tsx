@@ -1,29 +1,29 @@
-import classes from "./style.module.scss";
+import type { EditorView } from "@codemirror/view";
+import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
+import { Text } from "@mantine/core";
 import clsx from "clsx";
+import { memo, useState } from "react";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { Introduction } from "~/components/Introduction";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { GQL_SUPPORTED } from "~/constants";
+import { executeGraphqlEditorQuery } from "~/editor/commands";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useGraphqlIntrospection } from "~/hooks/graphql";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
+import { useViewEffect } from "~/hooks/view";
+import { checkGraphqlSupport } from "~/screens/database/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
-import { memo, useState } from "react";
-import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
-import { PanelGroup, Panel } from "react-resizable-panels";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "~/components/Icon";
-import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
-import { checkGraphqlSupport } from "~/screens/database/connection/connection";
-import { useConfigStore } from "~/stores/config";
-import { Introduction } from "~/components/Introduction";
-import { Text } from "@mantine/core";
-import { GQL_SUPPORTED } from "~/constants";
-import { adapter } from "~/adapter";
-import { useIntent } from "~/hooks/url";
-import { useIsLight } from "~/hooks/theme";
-import { useViewEffect } from "~/hooks/view";
-import { useGraphqlIntrospection } from "~/hooks/graphql";
-import { EditorView } from "@codemirror/view";
-import { useDatabaseStore } from "~/stores/database";
-import { executeGraphqlEditorQuery } from "~/editor/commands";
+import classes from "./style.module.scss";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
@@ -56,7 +56,7 @@ export function GraphqlView() {
 
 	const setShowVariables = useStable((graphqlShowVariables: boolean) => {
 		updateCurrentConnection({
-			graphqlShowVariables
+			graphqlShowVariables,
 		});
 	});
 
@@ -66,29 +66,31 @@ export function GraphqlView() {
 
 	const isValid = queryValid && variablesValid && isEnabled;
 
-	useViewEffect("graphql", () => {
-		if (isAvailable && isConnected) {
-			checkGraphqlSupport().then(supported => {
-				setEnabled(supported);
+	useViewEffect(
+		"graphql",
+		() => {
+			if (isAvailable && isConnected) {
+				checkGraphqlSupport().then((supported) => {
+					setEnabled(supported);
 
-				if (supported) {
-					introspectSchema();
-				}
-			});
-		} else {
-			setEnabled(true);
-		}
-	}, [connection.id, isConnected]);
+					if (supported) {
+						introspectSchema();
+					}
+				});
+			} else {
+				setEnabled(true);
+			}
+		},
+		[connection.id, isConnected],
+	);
 
 	useIntent("run-graphql-query", () => {});
-	useIntent("toggle-graphql-variables", () => setShowVariables(!showVariables));
-
+	useIntent("toggle-graphql-variables", () =>
+		setShowVariables(!showVariables),
+	);
 
 	return isAvailable ? (
-		<Stack
-			gap="md"
-			h="100%"
-		>
+		<Stack gap="md" h="100%">
 			<PanelGroup direction="horizontal">
 				<Panel minSize={15}>
 					<PanelGroup direction="vertical">
@@ -120,10 +122,7 @@ export function GraphqlView() {
 					</PanelGroup>
 				</Panel>
 				<PanelDragger>
-					<Center
-						pos="relative"
-						h="100%"
-					>
+					<Center pos="relative" h="100%">
 						<Paper
 							className={classes.sendCircle}
 							bg={isLight ? "slate.0" : "slate.9"}
@@ -138,7 +137,10 @@ export function GraphqlView() {
 								onClick={runQuery}
 								loading={isActive}
 								disabled={!isValid}
-								className={clsx(classes.sendButton, isValid && classes.sendButtonValid)}
+								className={clsx(
+									classes.sendButton,
+									isValid && classes.sendButtonValid,
+								)}
 							>
 								<Icon path={iconCursor} size="lg" />
 							</ActionIcon>
@@ -151,24 +153,27 @@ export function GraphqlView() {
 			</PanelGroup>
 		</Stack>
 	) : (
-		<Introduction
-			title="GraphQL"
-			icon={iconGraphql}
-		>
+		<Introduction title="GraphQL" icon={iconGraphql}>
 			<Text>
-				The GraphQL view provides a fully interactive environment for executing GraphQL queries against your database.
+				The GraphQL view provides a fully interactive environment for
+				executing GraphQL queries against your database.
 			</Text>
 			<Group gap="sm" c="pink">
 				<Icon path={iconWarning} />
 				<Text>
-					GraphQL is not supported {isSandbox ? 'in the sandbox' : 'by your current connection'}
+					GraphQL is not supported{" "}
+					{isSandbox
+						? "in the sandbox"
+						: "by your current connection"}
 				</Text>
 			</Group>
 			<Button
 				color="slate"
 				variant="light"
 				rightSection={<Icon path={iconOpen} />}
-				onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
+				onClick={() =>
+					adapter.openUrl("https://surrealdb.com/docs/surrealist")
+				}
 			>
 				Learn more
 			</Button>

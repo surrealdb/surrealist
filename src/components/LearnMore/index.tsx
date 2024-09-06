@@ -1,11 +1,13 @@
-import classes from "./style.module.scss";
-import { Anchor, BoxProps, Group } from "@mantine/core";
-import { HTMLAttributes, PropsWithChildren } from "react";
-import { Icon } from "../Icon";
-import { iconHelp } from "~/util/icons";
+import { Anchor, type BoxProps, Group } from "@mantine/core";
 import clsx from "clsx";
+import type { HTMLAttributes, PropsWithChildren } from "react";
+import { iconHelp } from "~/util/icons";
+import { Icon } from "../Icon";
+import classes from "./style.module.scss";
 
-export interface LearnMoreProps extends BoxProps, Omit<HTMLAttributes<HTMLAnchorElement>, 'style'> {
+export interface LearnMoreProps
+	extends BoxProps,
+		Omit<HTMLAttributes<HTMLAnchorElement>, "style"> {
 	href: string;
 }
 

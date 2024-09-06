@@ -1,12 +1,6 @@
 import classes from "./style.module.scss";
 
-import {
-	Badge,
-	Box,
-	Group,
-	SimpleGrid,
-	Title,
-} from "@mantine/core";
+import { Badge, Box, Group, SimpleGrid, Title } from "@mantine/core";
 
 export {
 	CodeSnippet as DocsPreview,

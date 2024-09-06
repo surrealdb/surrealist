@@ -1,22 +1,36 @@
-import { runQueryKeymap, selectionChanged, surqlCustomFunctionCompletion, surqlLinting, surqlRecordLinks, surqlTableCompletion, surqlVariableCompletion } from "~/editor";
-import { useStable } from "~/hooks/stable";
-import { ContentPane } from "~/components/Pane";
-import { useDebouncedFunction } from "~/hooks/debounce";
-import { CodeEditor } from "~/components/CodeEditor";
+import { Prec, type SelectionRange } from "@codemirror/state";
+import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
-import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
-import { TabQuery } from "~/types";
-import { Icon } from "~/components/Icon";
-import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { Text } from "@mantine/core";
-import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { Prec, SelectionRange } from "@codemirror/state";
-import { useIntent } from "~/hooks/url";
-import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
 import { surrealql } from "@surrealdb/codemirror";
+import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import {
+	runQueryKeymap,
+	selectionChanged,
+	surqlCustomFunctionCompletion,
+	surqlLinting,
+	surqlRecordLinks,
+	surqlTableCompletion,
+	surqlVariableCompletion,
+} from "~/editor";
+import { useDebouncedFunction } from "~/hooks/debounce";
+import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
 import { useInspector } from "~/providers/Inspector";
-import { EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { useConfigStore } from "~/stores/config";
+import type { TabQuery } from "~/types";
+import { extractVariables, showError, tryParseParams } from "~/util/helpers";
+import {
+	iconAutoFix,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+} from "~/util/icons";
+import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -50,7 +64,7 @@ export function QueryPane({
 		setIsValid(!validateQuery(query));
 		updateQueryTab({
 			id: activeTab.id,
-			query
+			query,
 		});
 	});
 
@@ -59,19 +73,21 @@ export function QueryPane({
 	const handleFormat = useStable(() => {
 		try {
 			const query = hasSelection
-				? activeTab.query.slice(0, selection.from)
-					+ formatQuery(activeTab.query.slice(selection.from, selection.to))
-					+ activeTab.query.slice(selection.to)
+				? activeTab.query.slice(0, selection.from) +
+					formatQuery(
+						activeTab.query.slice(selection.from, selection.to),
+					) +
+					activeTab.query.slice(selection.to)
 				: formatQuery(activeTab.query);
 
 			updateQueryTab({
-				id : activeTab.id,
-				query
+				id: activeTab.id,
+				query,
 			});
 		} catch {
 			showError({
 				title: "Failed to format",
-				subtitle: "Your query must be valid to format it"
+				subtitle: "Your query must be valid to format it",
 			});
 		}
 	});
@@ -86,16 +102,21 @@ export function QueryPane({
 		const query = activeTab.query;
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(query).filter((v) => !currentKeys.includes(v));
+		const variables = extractVariables(query).filter(
+			(v) => !currentKeys.includes(v),
+		);
 
-		const newVars = variables.reduce((acc, v) => {
-			acc[v] = "";
-			return acc;
-		}, {} as Record<string, any>);
+		const newVars = variables.reduce(
+			(acc, v) => {
+				acc[v] = "";
+				return acc;
+			},
+			{} as Record<string, any>,
+		);
 
 		const mergedVars = {
 			...currentVars,
-			...newVars
+			...newVars,
 		};
 
 		setShowVariables(true);
@@ -131,7 +152,9 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip label={`Format ${hasSelection ? "selection" : "query"}`}>
+						<Tooltip
+							label={`Format ${hasSelection ? "selection" : "query"}`}
+						>
 							<ActionIcon
 								onClick={handleFormat}
 								variant="light"
@@ -141,14 +164,18 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip maw={175} multiline label={
-							<Stack gap={4}>
-								<Text>Infer variables from query</Text>
-								<Text c="dimmed" size="sm">
-									Automatically add missing variables.
-								</Text>
-							</Stack>
-						}>
+						<Tooltip
+							maw={175}
+							multiline
+							label={
+								<Stack gap={4}>
+									<Text>Infer variables from query</Text>
+									<Text c="dimmed" size="sm">
+										Automatically add missing variables.
+									</Text>
+								</Stack>
+							}
+						>
 							<ActionIcon
 								onClick={inferVariables}
 								variant="light"
@@ -158,11 +185,21 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
+						<Tooltip
+							label={
+								showVariables
+									? "Hide variables"
+									: "Show variables"
+							}
+						>
 							<ActionIcon
 								onClick={toggleVariables}
 								variant="light"
-								aria-label={showVariables ? "Hide variables" : "Show variables"}
+								aria-label={
+									showVariables
+										? "Hide variables"
+										: "Show variables"
+								}
 							>
 								<Icon path={iconDollar} />
 							</ActionIcon>
@@ -185,7 +222,7 @@ export function QueryPane({
 					surqlCustomFunctionCompletion(),
 					selectionChanged(setSelection),
 					lineNumbers(),
-					Prec.high(keymap.of(runQueryKeymap))
+					Prec.high(keymap.of(runQueryKeymap)),
 				]}
 			/>
 		</ContentPane>

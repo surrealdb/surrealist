@@ -1,7 +1,7 @@
 import { compareVersions } from "compare-versions";
-import { fetchAPI } from ".";
-import { featureFlags } from "~/util/feature-flags";
 import { sleep } from "radash";
+import { featureFlags } from "~/util/feature-flags";
+import { fetchAPI } from ".";
 
 interface VersionInfo {
 	version: string;
@@ -12,7 +12,6 @@ interface VersionInfo {
  * Returns whether the client is supported by the server
  */
 export async function isClientSupported() {
-
 	// This function is called before feature flags are processed
 	// so we need to wait a bit before checking the killswitch
 	await sleep(50);

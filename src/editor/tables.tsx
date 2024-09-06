@@ -1,24 +1,24 @@
-import { CompletionSource } from "@codemirror/autocomplete";
-import { Extension } from "@codemirror/state";
+import type { CompletionSource } from "@codemirror/autocomplete";
+import type { Extension } from "@codemirror/state";
 import { surrealqlLanguage } from "@surrealdb/codemirror";
 import { useDatabaseStore } from "~/stores/database";
 
 const TABLE_SOURCE: CompletionSource = (context) => {
 	const match = context.matchBefore(/(from|update|create|delete|into) \w*/i);
 	const tables = useDatabaseStore.getState().databaseSchema?.tables || [];
-	const names = tables.map(table => table.schema.name);
+	const names = tables.map((table) => table.schema.name);
 
 	if (!context.explicit && !match) {
 		return null;
 	}
 
 	return {
-		from: match ? match!.from + match!.text.indexOf(' ') + 1 : context.pos,
+		from: match ? match.from + match.text.indexOf(" ") + 1 : context.pos,
 		validFor: /\w+$/,
-		options: names.map(table => ({
+		options: names.map((table) => ({
 			label: table,
-			type: "class"
-		}))
+			type: "class",
+		})),
 	};
 };
 
@@ -27,6 +27,6 @@ const TABLE_SOURCE: CompletionSource = (context) => {
  */
 export const surqlTableCompletion = (): Extension => {
 	return surrealqlLanguage.data.of({
-		autocomplete: TABLE_SOURCE
+		autocomplete: TABLE_SOURCE,
 	});
 };

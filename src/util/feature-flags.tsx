@@ -1,4 +1,8 @@
-import { FeatureFlags, FeatureFlagSchema, TFeatureFlags } from "@theopensource-company/feature-flags";
+import {
+	type FeatureFlagSchema,
+	FeatureFlags,
+	type TFeatureFlags,
+} from "@theopensource-company/feature-flags";
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
 import { environment, isProduction } from "./environment";
 
@@ -6,43 +10,43 @@ import { environment, isProduction } from "./environment";
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
 export const schema = {
 	feature_flags: {
-		options: [false, true]
+		options: [false, true],
 	},
 	query_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	explorer_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	graphql_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	designer_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	auth_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	functions_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	models_view: {
-		options: [false, true, 'force']
+		options: [false, true, "force"],
 	},
 	apidocs_view: {
-		options: [false, true]
+		options: [false, true],
 	},
 	cloud_view: {
 		options: [false, true],
 	},
 	themes: {
-		options: [false, true]
+		options: [false, true],
 	},
 	newsfeed: {
-		options: [false, true]
+		options: [false, true],
 	},
 	database_version_check: {
-		options: [false, true]
+		options: [false, true],
 	},
 	highlight_tool: {
 		options: [false, true],
@@ -51,7 +55,7 @@ export const schema = {
 		options: [false, true],
 	},
 	cloud_endpoints: {
-		options: ['production', 'custom'],
+		options: ["production", "custom"],
 		readonly: isProduction,
 	},
 	cloud_access: {
@@ -61,8 +65,8 @@ export const schema = {
 		options: [false, true],
 	},
 	changelog: {
-		options: ['auto', 'hidden', 'read', 'unread'],
-	}
+		options: ["auto", "hidden", "read", "unread"],
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({

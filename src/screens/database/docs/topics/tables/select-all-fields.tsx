@@ -1,9 +1,13 @@
 import { Box } from "@mantine/core";
-import { useMemo } from "react";
-import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
-import { getTable } from "~/screens/database/docs/helpers";
 import { pascal } from "radash";
+import { useMemo } from "react";
+import {
+	Article,
+	DocsPreview,
+	TableTitle,
+} from "~/screens/database/docs/components";
+import { getTable } from "~/screens/database/docs/helpers";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 	const table = getTable(topic);
@@ -35,7 +39,7 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 		$db->select("${table.schema.name}");
 		`,
 		}),
-		[table.schema.name]
+		[table.schema.name],
 	);
 
 	return (

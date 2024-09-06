@@ -6,16 +6,17 @@ import { useConnection } from "~/hooks/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 
-const NAME = import.meta.env.VITE_SURREALIST_PREVIEW === "true"
-	? "Surrealist Preview"
-	: "Surrealist";
+const NAME =
+	import.meta.env.VITE_SURREALIST_PREVIEW === "true"
+		? "Surrealist Preview"
+		: "Surrealist";
 
 /**
  * Synchronize the title of the window with the current view
  */
 export function useTitleSync() {
 	const connection = useConnection();
-	const activeView = useConfigStore(s => s.activeView);
+	const activeView = useConfigStore((s) => s.activeView);
 	const [pinned] = useSetting("behavior", "windowPinned");
 
 	useLayoutEffect(() => {

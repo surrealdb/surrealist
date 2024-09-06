@@ -1,23 +1,42 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Divider, Group, List, Paper, ScrollArea, SimpleGrid, Skeleton, Stack, Table, Text } from "@mantine/core";
-import { Section } from "../../components/Section";
-import { Icon } from "~/components/Icon";
-import { iconAccount, iconCheck, iconCreditCard, iconDotsVertical } from "~/util/icons";
-import { ReactNode, useRef, useState } from "react";
-import { Spacer } from "~/components/Spacer";
-import { Label } from "~/components/Label";
-import { useOrganization } from "~/hooks/cloud";
-import { openBillingModal } from "../../modals/billing";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useIsLight } from "~/hooks/theme";
-import { useCloudBilling } from "../../hooks/billing";
-import { useCloudPayments } from "../../hooks/payments";
-import { useStable } from "~/hooks/stable";
-import { fetchAPI } from "../../api";
-import { adapter } from "~/adapter";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Divider,
+	Group,
+	List,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Skeleton,
+	Stack,
+	Table,
+	Text,
+} from "@mantine/core";
 import { useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
+import { type ReactNode, useRef, useState } from "react";
+import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { useOrganization } from "~/hooks/cloud";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import {
+	iconAccount,
+	iconCheck,
+	iconCreditCard,
+	iconDotsVertical,
+} from "~/util/icons";
+import { fetchAPI } from "../../api";
+import { Section } from "../../components/Section";
+import { useCloudBilling } from "../../hooks/billing";
+import { useCloudPayments } from "../../hooks/payments";
+import { openBillingModal } from "../../modals/billing";
+import classes from "./style.module.scss";
 
 interface BillingPlanProps {
 	name: string;
@@ -35,32 +54,20 @@ function BillingPlan({
 	const isLight = useIsLight();
 
 	return (
-		<Paper
-			withBorder
-			p="xl"
-			w={400}
-			style={{ flexShrink: 0 }}
-		>
+		<Paper withBorder p="xl" w={400} style={{ flexShrink: 0 }}>
 			<Stack h="100%" gap="xl">
 				<Box>
-					<PrimaryTitle>
-						{name}
-					</PrimaryTitle>
+					<PrimaryTitle>{name}</PrimaryTitle>
 					<Text c={isLight ? "slate.7" : "slate.2"}>
 						{description}
 					</Text>
 				</Box>
 				<List
 					className={classes.featureList}
-					icon={
-						<Icon
-							path={iconCheck}
-							color="surreal.5"
-						/>
-					}
+					icon={<Icon path={iconCheck} color="surreal.5" />}
 				>
-					{features.map((feature, i) => (
-						<List.Item key={i} c="bright">
+					{features.map((feature) => (
+						<List.Item key={feature} c="bright">
 							{feature}
 						</List.Item>
 					))}
@@ -85,7 +92,9 @@ export function BillingPage() {
 		hasRequested.current = true;
 
 		try {
-			const url = await fetchAPI<string>(`/organizations/${organization?.id}/payment/url`);
+			const url = await fetchAPI<string>(
+				`/organizations/${organization?.id}/payment/url`,
+			);
 
 			adapter.openUrl(url);
 		} finally {
@@ -97,11 +106,11 @@ export function BillingPage() {
 		if (!organization || !hasRequested.current) return;
 
 		await fetchAPI(`/organizations/${organization?.id}/payment`, {
-			method: "PUT"
+			method: "PUT",
 		});
 
 		queryClient.invalidateQueries({
-			queryKey: ["cloud", "payments", organization.id]
+			queryKey: ["cloud", "payments", organization.id],
 		});
 	});
 
@@ -110,10 +119,7 @@ export function BillingPage() {
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
 
 	return (
-		<Box
-			flex={1}
-			pos="relative"
-		>
+		<Box flex={1} pos="relative">
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
@@ -121,7 +127,7 @@ export function BillingPage() {
 				inset={0}
 				className={classes.scrollArea}
 				viewportProps={{
-					style: { paddingBottom: 75 }
+					style: { paddingBottom: 75 },
 				}}
 			>
 				<Stack>
@@ -168,15 +174,8 @@ export function BillingPage() {
 						<SimpleGrid cols={2} spacing="xl">
 							<Paper p="md">
 								<Group>
-									<Icon
-										path={iconCreditCard}
-										size="xl"
-									/>
-									<Text
-										fz="xl"
-										fw={600}
-										c="bright"
-									>
+									<Icon path={iconCreditCard} size="xl" />
+									<Text fz="xl" fw={600} c="bright">
 										Payment Details
 									</Text>
 									<Spacer />
@@ -193,23 +192,33 @@ export function BillingPage() {
 								<Stack mt="md">
 									<Box>
 										<Label>Payment method</Label>
-										<Skeleton visible={paymentQuery.isPending}>
+										<Skeleton
+											visible={paymentQuery.isPending}
+										>
 											{organization?.payment_info ? (
-												<Text c="bright" fw={500}>Credit Card</Text>
+												<Text c="bright" fw={500}>
+													Credit Card
+												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>Not provided yet</Text>
+												<Text c="slate.4" fw={500}>
+													Not provided yet
+												</Text>
 											)}
 										</Skeleton>
 									</Box>
 									<Box>
 										<Label>Card information</Label>
-										<Skeleton visible={paymentQuery.isPending}>
+										<Skeleton
+											visible={paymentQuery.isPending}
+										>
 											{organization?.payment_info ? (
 												<Text c="bright" fw={500}>
 													{cardDescription}
 												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>Not provided yet</Text>
+												<Text c="slate.4" fw={500}>
+													Not provided yet
+												</Text>
 											)}
 										</Skeleton>
 									</Box>
@@ -217,15 +226,8 @@ export function BillingPage() {
 							</Paper>
 							<Paper p="md">
 								<Group>
-									<Icon
-										path={iconAccount}
-										size="xl"
-									/>
-									<Text
-										fz="xl"
-										fw={600}
-										c="bright"
-									>
+									<Icon path={iconAccount} size="xl" />
+									<Text fz="xl" fw={600} c="bright">
 										Billing Details
 									</Text>
 									<Spacer />
@@ -241,25 +243,33 @@ export function BillingPage() {
 								<Stack>
 									<Box>
 										<Label>Name</Label>
-										<Skeleton visible={billingQuery.isPending}>
+										<Skeleton
+											visible={billingQuery.isPending}
+										>
 											{organization?.billing_info ? (
 												<Text c="bright" fw={500}>
 													{billingQuery.data?.Name}
 												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>Not provided yet</Text>
+												<Text c="slate.4" fw={500}>
+													Not provided yet
+												</Text>
 											)}
 										</Skeleton>
 									</Box>
 									<Box>
 										<Label>Email</Label>
-										<Skeleton visible={billingQuery.isPending}>
+										<Skeleton
+											visible={billingQuery.isPending}
+										>
 											{organization?.billing_info ? (
 												<Text c="bright" fw={500}>
 													{billingQuery.data?.Email}
 												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>Not provided yet</Text>
+												<Text c="slate.4" fw={500}>
+													Not provided yet
+												</Text>
 											)}
 										</Skeleton>
 									</Box>
@@ -283,9 +293,15 @@ export function BillingPage() {
 							</Table.Thead>
 							<Table.Tbody>
 								<Table.Tr>
-									<Table.Td c="bright">August 2, 2024</Table.Td>
-									<Table.Td c="orange" fw={600}>Pending</Table.Td>
-									<Table.Td>Mastercard ending in 4952</Table.Td>
+									<Table.Td c="bright">
+										August 2, 2024
+									</Table.Td>
+									<Table.Td c="orange" fw={600}>
+										Pending
+									</Table.Td>
+									<Table.Td>
+										Mastercard ending in 4952
+									</Table.Td>
 									<Table.Td>
 										<ActionIcon>
 											<Icon path={iconDotsVertical} />
@@ -294,8 +310,12 @@ export function BillingPage() {
 								</Table.Tr>
 								<Table.Tr>
 									<Table.Td c="bright">July 2, 2024</Table.Td>
-									<Table.Td c="green" fw={600}>Paid</Table.Td>
-									<Table.Td>Mastercard ending in 4952</Table.Td>
+									<Table.Td c="green" fw={600}>
+										Paid
+									</Table.Td>
+									<Table.Td>
+										Mastercard ending in 4952
+									</Table.Td>
 									<Table.Td>
 										<ActionIcon>
 											<Icon path={iconDotsVertical} />
@@ -304,8 +324,12 @@ export function BillingPage() {
 								</Table.Tr>
 								<Table.Tr>
 									<Table.Td c="bright">June 2, 2024</Table.Td>
-									<Table.Td c="green" fw={600}>Paid</Table.Td>
-									<Table.Td>Mastercard ending in 4952</Table.Td>
+									<Table.Td c="green" fw={600}>
+										Paid
+									</Table.Td>
+									<Table.Td>
+										Mastercard ending in 4952
+									</Table.Td>
 									<Table.Td>
 										<ActionIcon>
 											<Icon path={iconDotsVertical} />

@@ -1,16 +1,19 @@
-import { DATASETS, ORIENTATIONS, SANDBOX } from "~/constants";
-import { BrowserAdapter } from "./browser";
-import { Orientation, SurrealistConfig } from "~/types";
-import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
-import { showError } from "~/util/helpers";
-import { executeQuery } from "~/screens/database/connection/connection";
+import type { MantineColorScheme } from "@mantine/core";
 import { Value } from "@surrealdb/ql-wasm";
-import { MantineColorScheme } from "@mantine/core";
+import { DATASETS, ORIENTATIONS, SANDBOX } from "~/constants";
+import { executeQuery } from "~/screens/database/connection/connection";
+import type { Orientation, SurrealistConfig } from "~/types";
+import {
+	createBaseSettings,
+	createBaseTab,
+	createSandboxConnection,
+} from "~/util/defaults";
+import { showError } from "~/util/helpers";
+import { BrowserAdapter } from "./browser";
 
-const THEMES = new Set(['light', 'dark', 'auto']);
+const THEMES = new Set(["light", "dark", "auto"]);
 
 export class MiniAdapter extends BrowserAdapter {
-
 	public transparent = false;
 	public hideTitlebar = false;
 	public hideBorder = false;
@@ -49,7 +52,7 @@ export class MiniAdapter extends BrowserAdapter {
 		// Transparent background
 		if (transparent !== undefined) {
 			this.transparent = true;
-			document.body.style.backgroundColor = 'transparent';
+			document.body.style.backgroundColor = "transparent";
 		}
 
 		// Initial query
@@ -64,8 +67,8 @@ export class MiniAdapter extends BrowserAdapter {
 				mainTab.variables = parsed.format(true);
 			} catch {
 				showError({
-					title: 'Startup error',
-					subtitle: 'Variables could not be parsed'
+					title: "Startup error",
+					subtitle: "Variables could not be parsed",
 				});
 			}
 		}
@@ -75,11 +78,13 @@ export class MiniAdapter extends BrowserAdapter {
 			const datasetUrl = DATASETS[dataset].url;
 
 			if (datasetUrl) {
-				this.#datasetQuery = await fetch(datasetUrl).then(res => res.text());
+				this.#datasetQuery = await fetch(datasetUrl).then((res) =>
+					res.text(),
+				);
 			} else {
 				showError({
-					title: 'Startup error',
-					subtitle: 'Dataset not recognised'
+					title: "Startup error",
+					subtitle: "Dataset not recognised",
 				});
 			}
 		}
@@ -95,20 +100,21 @@ export class MiniAdapter extends BrowserAdapter {
 				settings.appearance.colorScheme = theme as MantineColorScheme;
 			} else {
 				showError({
-					title: 'Startup error',
-					subtitle: 'Theme not recognised'
+					title: "Startup error",
+					subtitle: "Theme not recognised",
 				});
 			}
 		}
 
 		// Orientation
 		if (orientation) {
-			if (ORIENTATIONS.some(o => o.value === orientation)) {
-				settings.appearance.queryOrientation = orientation as Orientation;
+			if (ORIENTATIONS.some((o) => o.value === orientation)) {
+				settings.appearance.queryOrientation =
+					orientation as Orientation;
 			} else {
 				showError({
-					title: 'Startup error',
-					subtitle: 'Orientation not recognised'
+					title: "Startup error",
+					subtitle: "Orientation not recognised",
 				});
 			}
 		}
@@ -119,8 +125,8 @@ export class MiniAdapter extends BrowserAdapter {
 			sandbox: {
 				...createSandboxConnection(settings),
 				activeQuery: mainTab.id,
-				queries: [mainTab]
-			}
+				queries: [mainTab],
+			},
 		} satisfies DeepPartial<SurrealistConfig>;
 	}
 
@@ -149,5 +155,4 @@ export class MiniAdapter extends BrowserAdapter {
 	public async handleLegacyCleanup() {
 		// not applicable
 	}
-
 }

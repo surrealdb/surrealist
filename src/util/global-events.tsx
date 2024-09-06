@@ -1,5 +1,5 @@
 import { createEventBus } from "~/hooks/event";
-import { Intent, IntentType } from "./intents";
+import type { Intent, IntentType } from "./intents";
 
 /**
  * Invoked after a connection has been established

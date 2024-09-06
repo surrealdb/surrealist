@@ -1,43 +1,75 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Divider, Flex, Group, Indicator, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
-import { HTMLAttributes, MouseEvent, ReactNode, useMemo, useState } from "react";
-import { useConnection, useConnections } from "~/hooks/connection";
-import { Icon } from "../../../../components/Icon";
-import { useDatabaseStore } from "~/stores/database";
-import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconClose, iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconList, iconPlus, iconReset, iconSearch, iconSurreal } from "~/util/icons";
-import { Spacer } from "../../../../components/Spacer";
-import { useConfigStore } from "~/stores/config";
-import { SANDBOX } from "~/constants";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Divider,
+	Flex,
+	Group,
+	Indicator,
+	Menu,
+	Modal,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
-import { Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
-import { Entry, EntryProps } from "../../../../components/Entry";
 import { useContextMenu } from "mantine-contextmenu";
-import { dispatchIntent, useIntent } from "~/hooks/url";
-import { USER_ICONS } from "~/util/user-icons";
-import { Connection } from "~/types";
-import { EditableText } from "~/components/EditableText";
 import { group } from "radash";
-import { useKeymap } from "~/hooks/keymap";
-import { closeConnection, openConnection } from "../../connection/connection";
+import {
+	type HTMLAttributes,
+	type MouseEvent,
+	type ReactNode,
+	useMemo,
+	useState,
+} from "react";
 import { isDesktop } from "~/adapter";
+import { EditableText } from "~/components/EditableText";
+import { SANDBOX } from "~/constants";
+import { useConnection, useConnections } from "~/hooks/connection";
+import { useKeymap } from "~/hooks/keymap";
+import { useStable } from "~/hooks/stable";
+import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import type { Connection } from "~/types";
+import { Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
+import {
+	iconChevronDown,
+	iconClose,
+	iconCloud,
+	iconCopy,
+	iconDelete,
+	iconEdit,
+	iconFolderPlus,
+	iconHomePlus,
+	iconList,
+	iconPlus,
+	iconReset,
+	iconSearch,
+	iconSurreal,
+} from "~/util/icons";
+import { USER_ICONS } from "~/util/user-icons";
+import { Entry, type EntryProps } from "../../../../components/Entry";
+import { Icon } from "../../../../components/Icon";
+import { Spacer } from "../../../../components/Spacer";
+import { closeConnection, openConnection } from "../../connection/connection";
+import classes from "./style.module.scss";
 
 const UNGROUPED = Symbol("ungrouped");
 
-interface ItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, 'style' | 'color'> {
+interface ItemProps
+	extends EntryProps,
+		Omit<HTMLAttributes<HTMLButtonElement>, "style" | "color"> {
 	connection: Connection;
 	active: string;
 	onClose: () => void;
 }
 
-function Item({
-	connection,
-	active,
-	onClose,
-	...other
-}: ItemProps) {
+function Item({ connection, active, onClose, ...other }: ItemProps) {
 	const { showContextMenu } = useContextMenu();
-	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
+	const { setActiveConnection, addConnection, removeConnection } =
+		useConfigStore.getState();
 	const isActive = connection.id === active;
 
 	const activate = useStable(() => {
@@ -49,7 +81,7 @@ function Item({
 		e.stopPropagation();
 		onClose();
 		dispatchIntent("edit-connection", {
-			id: connection.id
+			id: connection.id,
 		});
 	});
 
@@ -59,9 +91,7 @@ function Item({
 			isActive={isActive}
 			className={classes.connection}
 			onClick={activate}
-			leftSection={
-				<Icon path={USER_ICONS[connection.icon ?? 0]} />
-			}
+			leftSection={<Icon path={USER_ICONS[connection.icon ?? 0]} />}
 			rightSection={
 				<ActionIcon
 					component="div"
@@ -84,12 +114,13 @@ function Item({
 					key: "duplicate",
 					title: "Duplicate",
 					icon: <Icon path={iconCopy} />,
-					onClick: () => addConnection({
-						...connection,
-						lastNamespace: "",
-						lastDatabase: "",
-						id: newId()
-					}),
+					onClick: () =>
+						addConnection({
+							...connection,
+							lastNamespace: "",
+							lastDatabase: "",
+							id: newId(),
+						}),
 				},
 				{
 					key: "delete",
@@ -97,18 +128,13 @@ function Item({
 					color: "pink.7",
 					icon: <Icon path={iconDelete} />,
 					onClick: () => removeConnection(connection.id),
-				}
+				},
 			])}
 			{...other}
 		>
-			<Text truncate>
-				{connection.name}
-			</Text>
+			<Text truncate>{connection.name}</Text>
 			{connection.authentication.mode === "cloud" && (
-				<Flex
-					opacity={isActive ? 1 : 0.5}
-					ml="xs"
-				>
+				<Flex opacity={isActive ? 1 : 0.5} ml="xs">
 					| Surreal Cloud
 					<Icon path={iconCloud} size="sm" right />
 				</Flex>
@@ -130,7 +156,7 @@ function ItemList({
 	connections,
 	active,
 	className,
-	onClose
+	onClose,
 }: ItemListProps) {
 	const connectionList = useMemo(() => {
 		return connections.sort((a, b) => a.name.localeCompare(b.name));
@@ -138,9 +164,7 @@ function ItemList({
 
 	return (
 		<Box className={className}>
-			<Group mb={4}>
-				{title}
-			</Group>
+			<Group mb={4}>{title}</Group>
 			{connectionList.length === 0 ? (
 				<Text c="slate" fz="sm" mt={-2}>
 					No connections
@@ -162,7 +186,12 @@ function ItemList({
 }
 
 export function ConnectionList() {
-	const { setActiveConnection, addConnectionGroup, updateConnectionGroup, removeConnectionGroup } = useConfigStore.getState();
+	const {
+		setActiveConnection,
+		addConnectionGroup,
+		updateConnectionGroup,
+		removeConnectionGroup,
+	} = useConfigStore.getState();
 
 	const [isDropped, setIsDropped] = useState(false);
 	const [isListing, listingHandle] = useDisclosure();
@@ -178,9 +207,10 @@ export function ConnectionList() {
 	const filtered = useMemo(() => {
 		const needle = search.trim().toLocaleLowerCase();
 
-		return connections.filter((con) =>
-			con.name.toLowerCase().includes(needle)
-			|| con.authentication.hostname.toLowerCase().includes(needle)
+		return connections.filter(
+			(con) =>
+				con.name.toLowerCase().includes(needle) ||
+				con.authentication.hostname.toLowerCase().includes(needle),
 		);
 	}, [connections, search]);
 
@@ -190,7 +220,8 @@ export function ConnectionList() {
 	});
 
 	const newLocalhost = useStable(() => {
-		const { username, password, port } = useConfigStore.getState().settings.serving;
+		const { username, password, port } =
+			useConfigStore.getState().settings.serving;
 
 		const template = JSON.stringify({
 			name: "Local database",
@@ -205,8 +236,8 @@ export function ConnectionList() {
 				scopeFields: [],
 				token: "",
 				username,
-				password
-			}
+				password,
+			},
 		});
 
 		dispatchIntent("new-connection", { template });
@@ -216,7 +247,7 @@ export function ConnectionList() {
 	const newGroup = useStable(() => {
 		addConnectionGroup({
 			id: newId(),
-			name: `Group ${groups.length + 1}`
+			name: `Group ${groups.length + 1}`,
 		});
 	});
 
@@ -244,9 +275,7 @@ export function ConnectionList() {
 		listingHandle.open();
 	});
 
-	useKeymap([
-		["mod+L", listingHandle.open]
-	]);
+	useKeymap([["mod+L", listingHandle.open]]);
 
 	const groupsList = useMemo(() => {
 		return groups.sort((a, b) => a.name.localeCompare(b.name));
@@ -259,7 +288,7 @@ export function ConnectionList() {
 		disconnected: ["Disconnected", "red", false],
 		retrying: ["Retrying...", "red", true],
 		connecting: ["Connecting...", "yellow.6", true],
-		connected: [`SurrealDB ${remoteVersion}`, "green", false]
+		connected: [`SurrealDB ${remoteVersion}`, "green", false],
 	} as const;
 
 	const [statusText, color, pulse] = statusInfo[currentState];
@@ -274,7 +303,7 @@ export function ConnectionList() {
 						trigger="hover"
 						position="bottom-start"
 						transitionProps={{
-							transition: "scale-y"
+							transition: "scale-y",
 						}}
 					>
 						<Menu.Target>
@@ -282,11 +311,23 @@ export function ConnectionList() {
 								variant="subtle"
 								color="slate"
 								onClick={openListing}
-								leftSection={isSandbox ? (
-									<Icon path={iconSurreal} size={1.2} noStroke />
-								) : (
-									<Icon path={USER_ICONS[connection.icon ?? 0]} size={0.85} mt={-0} />
-								)}
+								leftSection={
+									isSandbox ? (
+										<Icon
+											path={iconSurreal}
+											size={1.2}
+											noStroke
+										/>
+									) : (
+										<Icon
+											path={
+												USER_ICONS[connection.icon ?? 0]
+											}
+											size={0.85}
+											mt={-0}
+										/>
+									)
+								}
 								rightSection={
 									<Indicator
 										processing={pulse}
@@ -296,21 +337,13 @@ export function ConnectionList() {
 									/>
 								}
 							>
-								<Text
-									truncate
-									fw={600}
-									maw={200}
-									c="bright"
-								>
+								<Text truncate fw={600} maw={200} c="bright">
 									{connection.name}
 								</Text>
 							</Button>
 						</Menu.Target>
 						<Menu.Dropdown>
-							<Text
-								px="sm"
-								c="slate"
-							>
+							<Text px="sm" c="slate">
 								{statusText}
 							</Text>
 							<Menu.Divider />
@@ -336,7 +369,9 @@ export function ConnectionList() {
 									</Menu.Item>
 									{currentState === "connected" && (
 										<Menu.Item
-											leftSection={<Icon path={iconClose} />}
+											leftSection={
+												<Icon path={iconClose} />
+											}
 											onClick={() => closeConnection()}
 										>
 											Disconnect
@@ -348,7 +383,14 @@ export function ConnectionList() {
 											<Menu.Label c="red" fw={700}>
 												Connection error
 											</Menu.Label>
-											<Text px="sm" c="red" maw={350} style={{ overflowWrap: "break-word" }}>
+											<Text
+												px="sm"
+												c="red"
+												maw={350}
+												style={{
+													overflowWrap: "break-word",
+												}}
+											>
 												{latestError}
 											</Text>
 										</>
@@ -363,9 +405,7 @@ export function ConnectionList() {
 					variant="subtle"
 					color="slate"
 					onClick={listingHandle.toggle}
-					rightSection={
-						<Icon path={iconChevronDown} />
-					}
+					rightSection={<Icon path={iconChevronDown} />}
 				>
 					Select a connection
 				</Button>
@@ -388,9 +428,7 @@ export function ConnectionList() {
 								variant="unstyled"
 								autoFocus
 								flex={1}
-								leftSection={
-									<Icon path={iconSearch} />
-								}
+								leftSection={<Icon path={iconSearch} />}
 							/>
 							<Menu position="right-start">
 								<Menu.Target>
@@ -411,14 +449,21 @@ export function ConnectionList() {
 									</Menu.Item>
 									{isDesktop && (
 										<Menu.Item
-											leftSection={<Icon path={iconHomePlus} noStroke />}
+											leftSection={
+												<Icon
+													path={iconHomePlus}
+													noStroke
+												/>
+											}
 											onClick={newLocalhost}
 										>
 											New local connection
 										</Menu.Item>
 									)}
 									<Menu.Item
-										leftSection={<Icon path={iconFolderPlus} />}
+										leftSection={
+											<Icon path={iconFolderPlus} />
+										}
 										onClick={newGroup}
 									>
 										New group
@@ -436,9 +481,7 @@ export function ConnectionList() {
 								<Icon path={iconSurreal} size={1.2} noStroke />
 							}
 						>
-							<Text>
-								Sandbox
-							</Text>
+							<Text>Sandbox</Text>
 						</Entry>
 					</Box>
 
@@ -453,19 +496,24 @@ export function ConnectionList() {
 								<>
 									<EditableText
 										value={group.name}
-										onChange={(name) => updateConnectionGroup({ id: group.id, name })}
+										onChange={(name) =>
+											updateConnectionGroup({
+												id: group.id,
+												name,
+											})
+										}
 										c="bright"
 										fz="lg"
 										fw={500}
 									/>
 									<Spacer />
-									<Tooltip
-										label="Remove group"
-									>
+									<Tooltip label="Remove group">
 										<ActionIcon
 											className={classes.groupRemove}
 											aria-label="Remove group"
-											onClick={() => removeConnectionGroup(group.id)}
+											onClick={() =>
+												removeConnectionGroup(group.id)
+											}
 											variant="subtle"
 											size="sm"
 										>

@@ -1,16 +1,16 @@
-import { ContentPane } from "~/components/Pane";
+import { lineNumbers } from "@codemirror/view";
 import { ActionIcon, Badge, Group } from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
+import { Value } from "@surrealdb/ql-wasm";
+import { decodeCbor } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import { surqlLinting } from "~/editor";
 import { useActiveConnection } from "~/hooks/connection";
+import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
-import { surrealql } from "@surrealdb/codemirror";
-import { useDebouncedFunction } from "~/hooks/debounce";
-import { lineNumbers } from "@codemirror/view";
-import { decodeCbor } from "surrealdb";
-import { Value } from "@surrealdb/ql-wasm";
-import { surqlLinting } from "~/editor";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -49,10 +49,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 			rightSection={
 				<Group gap="xs">
 					{!props.isValid && (
-						<Badge
-							color="red"
-							variant="light"
-						>
+						<Badge color="red" variant="light">
 							Invalid syntax
 						</Badge>
 					)}
@@ -69,11 +66,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 			<CodeEditor
 				value={connection.graphqlVariables || ""}
 				onChange={setVariables}
-				extensions={[
-					surrealql(),
-					surqlLinting(),
-					lineNumbers(),
-				]}
+				extensions={[surrealql(), surqlLinting(), lineNumbers()]}
 			/>
 		</ContentPane>
 	);

@@ -2,7 +2,13 @@ import posthog from "posthog-js";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import { CloudProfile, CloudInstanceType, CloudRegion, CloudOrganization, CloudBillingCountry } from "~/types";
+import type {
+	CloudBillingCountry,
+	CloudInstanceType,
+	CloudOrganization,
+	CloudProfile,
+	CloudRegion,
+} from "~/types";
 import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
@@ -13,34 +19,37 @@ export interface APIRequestInit extends RequestInit {
  * Execute a fetch request against the API and returns
  * the JSON response
  */
-export async function fetchAPI<T = unknown>(path: string, options?: APIRequestInit | undefined): Promise<T> {
+export async function fetchAPI<T = unknown>(
+	path: string,
+	options?: APIRequestInit | undefined,
+): Promise<T> {
 	const { sessionToken } = useCloudStore.getState();
 	const { apiBase, mgmtBase } = getCloudEndpoints();
 
 	const baseUrl = options?.management ? mgmtBase : apiBase;
 	const headers: Record<string, string> = {
-		'Content-Type': 'application/json'
+		"Content-Type": "application/json",
 	};
 
 	if (sessionToken) {
-		headers['Authorization'] = `Bearer ${sessionToken}`;
+		headers.Authorization = `Bearer ${sessionToken}`;
 	}
 
 	const response = await adapter.fetch(`${baseUrl}${path}`, {
 		headers: {
 			...headers,
-			...options?.headers
+			...options?.headers,
 		},
-		...options
+		...options,
 	});
 
 	if (!response.ok) {
 		const error = new ApiError(response);
 
-		posthog.capture('cloud_api_error', {
+		posthog.capture("cloud_api_error", {
 			status: response.status,
 			endpoint: path,
-			message: await error.errorMessage()
+			message: await error.errorMessage(),
 		});
 
 		throw new ApiError(response);
@@ -65,7 +74,7 @@ export async function updateCloudInformation() {
 		instanceTypes,
 		instanceVersions,
 		regions,
-		billingCountries
+		billingCountries,
 	] = await Promise.all([
 		fetchAPI<CloudProfile>("/user/profile"),
 		fetchAPI<CloudInstanceType[]>("/instancetypes"),
@@ -74,7 +83,9 @@ export async function updateCloudInformation() {
 		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
 	]);
 
-	const organization = await fetchAPI<CloudOrganization>(`/organizations/${profile.default_org}`);
+	const organization = await fetchAPI<CloudOrganization>(
+		`/organizations/${profile.default_org}`,
+	);
 
 	setCloudValues({
 		profile,
@@ -94,16 +105,21 @@ export async function updateCloudInformation() {
  * Error response from the API
  */
 export class ApiError extends Error {
-
 	public response: Response;
 
 	public constructor(response: Response) {
-		super(`Request failed for "${response.url}" (${response.status}): ${response.statusText}`);
+		super(
+			`Request failed for "${response.url}" (${response.status}): ${response.statusText}`,
+		);
 		this.response = response;
 	}
 
 	public isJson() {
-		return this.response.headers.get("Content-Type")?.startsWith("application/json") ?? false;
+		return (
+			this.response.headers
+				.get("Content-Type")
+				?.startsWith("application/json") ?? false
+		);
 	}
 
 	public async errorMessage() {
@@ -113,5 +129,4 @@ export class ApiError extends Error {
 
 		return message;
 	}
-
 }

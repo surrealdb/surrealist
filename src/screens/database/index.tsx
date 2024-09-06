@@ -1,32 +1,49 @@
-import classes from "./style.module.scss";
+import {
+	Alert,
+	Box,
+	Button,
+	Center,
+	Flex,
+	Group,
+	Image,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+} from "@mantine/core";
 import clsx from "clsx";
-import { ViewMode } from "~/types";
-import { DatabaseSidebar } from "./sidebar";
-import { DatabaseToolbar } from "./toolbar";
-import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Suspense, lazy, useLayoutEffect, useState } from "react";
-import { useConfigStore } from "~/stores/config";
-import { CloudView } from "~/screens/cloud-manage/view";
-import { Center, Stack, Button, Flex, ScrollArea, Group, Box, Text, Image, Paper, Alert } from "@mantine/core";
+import {
+	type HtmlPortalNode,
+	InPortal,
+	OutPortal,
+	createHtmlPortalNode,
+} from "react-reverse-portal";
 import { adapter, isDesktop } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { VIEW_MODES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
+import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
+import { CloudView } from "~/screens/cloud-manage/view";
+import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import type { ViewMode } from "~/types";
 import { isMobile } from "~/util/helpers";
 import { iconOpen, iconWarning } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
-import { Icon } from "~/components/Icon";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
-import { VIEW_MODES } from "~/constants";
 import { SelectDatabase } from "./components/SelectDatabase";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useLogoUrl } from "~/hooks/brand";
+import { DatabaseSidebar } from "./sidebar";
+import classes from "./style.module.scss";
+import { DatabaseToolbar } from "./toolbar";
 
 const PORTAL_ATTRS = {
 	attributes: {
-		style: "height: 100%; display: flex; flex-direction: column;"
-	}
+		style: "height: 100%; display: flex; flex-direction: column;",
+	},
 };
 
 const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
@@ -41,14 +58,18 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	cloud: createHtmlPortalNode(PORTAL_ATTRS),
 };
 
-const QueryView = lazy(() => import('./views/query/QueryView'));
-const ExplorerView = lazy(() => import('./views/explorer/ExplorerView'));
-const GraphqlView = lazy(() => import('./views/graphql/GraphqlView'));
-const DesignerView = lazy(() => import('./views/designer/DesignerView'));
-const AuthenticationView = lazy(() => import('./views/authentication/AuthenticationView'));
-const FunctionsView = lazy(() => import('./views/functions/FunctionsView'));
-const ModelsView = lazy(() => import('./views/models/ModelsView'));
-const DocumentationView = lazy(() => import('./views/documentation/DocumentationView'));
+const QueryView = lazy(() => import("./views/query/QueryView"));
+const ExplorerView = lazy(() => import("./views/explorer/ExplorerView"));
+const GraphqlView = lazy(() => import("./views/graphql/GraphqlView"));
+const DesignerView = lazy(() => import("./views/designer/DesignerView"));
+const AuthenticationView = lazy(
+	() => import("./views/authentication/AuthenticationView"),
+);
+const FunctionsView = lazy(() => import("./views/functions/FunctionsView"));
+const ModelsView = lazy(() => import("./views/models/ModelsView"));
+const DocumentationView = lazy(
+	() => import("./views/documentation/DocumentationView"),
+);
 
 export function DatabaseScreen() {
 	const isLight = useIsLight();
@@ -63,7 +84,7 @@ export function DatabaseScreen() {
 	const canHover = mode === "expandable" && canHoverSidebar;
 	const customTitlebar = adapter.platform === "darwin" && isDesktop;
 
-	const viewMode = useConfigStore(s => s.activeView);
+	const viewMode = useConfigStore((s) => s.activeView);
 	const viewNode = VIEW_PORTALS[viewMode];
 	const viewInfo = VIEW_MODES[viewMode];
 
@@ -79,15 +100,20 @@ export function DatabaseScreen() {
 		});
 	}, [viewMode]);
 
-	const requireDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
+	const requireDatabase =
+		!connection?.lastDatabase && viewInfo?.require === "database";
 
 	return (
 		<div
 			className={classes.root}
 			style={{
 				backgroundColor: isLight
-					? (connection ? themeColor("slate.0") : "white")
-					: (connection ? themeColor("slate.9") : "black")
+					? connection
+						? themeColor("slate.0")
+						: "white"
+					: connection
+						? themeColor("slate.9")
+						: "black",
 			}}
 		>
 			{customTitlebar && (
@@ -112,18 +138,24 @@ export function DatabaseScreen() {
 						<Image src={logoUrl} />
 
 						<Text fz="xl" mt="lg">
-							Surrealist is the ultimate way to visually manage your SurrealDB database
+							Surrealist is the ultimate way to visually manage
+							your SurrealDB database
 						</Text>
 
 						<Text>
-							Support for Surrealist on mobile platforms is currently unavailable, however you can visit Surrealist
-							on a desktop environment to get started.
+							Support for Surrealist on mobile platforms is
+							currently unavailable, however you can visit
+							Surrealist on a desktop environment to get started.
 						</Text>
 
 						<Button
 							mt="lg"
 							variant="gradient"
-							onClick={() => adapter.openUrl("https://surrealdb.com/surrealist")}
+							onClick={() =>
+								adapter.openUrl(
+									"https://surrealdb.com/surrealist",
+								)
+							}
 							rightSection={<Icon path={iconOpen} />}
 						>
 							Read more about Surrealist
@@ -132,11 +164,7 @@ export function DatabaseScreen() {
 				</Center>
 			)}
 
-			<Flex
-				direction="column"
-				flex={1}
-				pos="relative"
-			>
+			<Flex direction="column" flex={1} pos="relative">
 				<ScrollArea
 					scrollbars="y"
 					type="never"
@@ -150,7 +178,7 @@ export function DatabaseScreen() {
 					className={clsx(
 						classes.sidebar,
 						canHover && classes.sidebarExpandable,
-						mode === "wide" && classes.sidebarWide
+						mode === "wide" && classes.sidebarWide,
 					)}
 				>
 					<Flex
@@ -184,34 +212,29 @@ export function DatabaseScreen() {
 							<DatabaseToolbar />
 						</Group>
 					)}
-					<Stack
-						flex={1}
-						pos="relative"
-					>
+					<Stack flex={1} pos="relative">
 						{requireDatabase ? (
 							<Center flex={1}>
-								<Paper
-									radius="md"
-									p="xl"
-									w={500}
-								>
+								<Paper radius="md" p="xl" w={500}>
 									<PrimaryTitle>
 										Before you continue...
 									</PrimaryTitle>
 									<Text mt="md">
-										Please select a namespace and database before accessing the {viewInfo?.name} view.
-										You can use the buttons below to choose an existing namespace and database, or create new ones.
+										Please select a namespace and database
+										before accessing the {viewInfo?.name}{" "}
+										view. You can use the buttons below to
+										choose an existing namespace and
+										database, or create new ones.
 									</Text>
-									<SelectDatabase
-										mt="xl"
-									/>
+									<SelectDatabase mt="xl" />
 									{!isConnected && (
 										<Alert
 											mt="xl"
 											color="orange"
 											icon={<Icon path={iconWarning} />}
 										>
-											You must be connected before selecting a namespace and database
+											You must be connected before
+											selecting a namespace and database
 										</Alert>
 									)}
 								</Paper>

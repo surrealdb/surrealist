@@ -1,11 +1,11 @@
 import { SimpleGrid } from "@mantine/core";
+import { memo } from "react";
+import { useIsConnected } from "~/hooks/connection";
+import { useViewEffect } from "~/hooks/view";
+import { iconAuth, iconFolderSecure, iconServerSecure } from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
 import { AccountsPane } from "../AccountsPane";
 import { ScopePane } from "../ScopesPane";
-import { useIsConnected } from "~/hooks/connection";
-import { iconAuth, iconFolderSecure, iconServerSecure } from "~/util/icons";
-import { useViewEffect } from "~/hooks/view";
-import { syncDatabaseSchema } from "~/util/schema";
-import { memo } from "react";
 
 const AccountsPaneLazy = memo(AccountsPane);
 const ScopePaneLazy = memo(ScopePane);
@@ -23,10 +23,10 @@ export function AuthenticationView() {
 			spacing={6}
 			cols={{
 				base: 2,
-				lg: 4
+				lg: 4,
 			}}
 			style={{
-				gridAutoRows: '1fr'
+				gridAutoRows: "1fr",
 			}}
 		>
 			<AccountsPaneLazy

@@ -1,8 +1,8 @@
-import { DatabaseSchema, QueryResponse } from "~/types";
-import { create } from 'zustand';
-import { createDatabaseSchema } from "~/util/defaults";
 import { omit } from "radash";
-import { GraphqlResponse } from "~/screens/database/connection/connection";
+import { create } from "zustand";
+import type { GraphqlResponse } from "~/screens/database/connection/connection";
+import type { DatabaseSchema, QueryResponse } from "~/types";
+import { createDatabaseSchema } from "~/util/defaults";
 
 export type State = "disconnected" | "connecting" | "retrying" | "connected";
 
@@ -51,84 +51,97 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	queryResponses: {},
 	graphqlResponse: {},
 
-	setQueryActive: (isQueryActive) => set(() => ({
-		isQueryActive
-	})),
+	setQueryActive: (isQueryActive) =>
+		set(() => ({
+			isQueryActive,
+		})),
 
-	setGraphqlQueryActive: (isGraphqlQueryActive) => set(() => ({
-		isGraphqlQueryActive
-	})),
+	setGraphqlQueryActive: (isGraphqlQueryActive) =>
+		set(() => ({
+			isGraphqlQueryActive,
+		})),
 
-	clearSchema: () => set(() => ({
-		databaseSchema: createDatabaseSchema(),
-	})),
+	clearSchema: () =>
+		set(() => ({
+			databaseSchema: createDatabaseSchema(),
+		})),
 
-	prepareServe: () => set(() => ({
-		servePending: true,
-		consoleOutput: [],
-	})),
+	prepareServe: () =>
+		set(() => ({
+			servePending: true,
+			consoleOutput: [],
+		})),
 
-	confirmServing: () => set(() => ({
-		isServing: true,
-		servePending: false,
-	})),
+	confirmServing: () =>
+		set(() => ({
+			isServing: true,
+			servePending: false,
+		})),
 
-	stopServing: () => set(() => ({
-		isServing: false,
-		servePending: false,
-	})),
+	stopServing: () =>
+		set(() => ({
+			isServing: false,
+			servePending: false,
+		})),
 
-	cancelServe: () => set(() => ({
-		servePending: true,
-	})),
+	cancelServe: () =>
+		set(() => ({
+			servePending: true,
+		})),
 
-	pushConsoleLine: (line, max) => set((state) => ({
-		consoleOutput: [
-			...state.consoleOutput,
-			line
-		].slice(-max)
-	})),
+	pushConsoleLine: (line, max) =>
+		set((state) => ({
+			consoleOutput: [...state.consoleOutput, line].slice(-max),
+		})),
 
-	clearConsole: () => set(() => ({
-		consoleOutput: [],
-	})),
+	clearConsole: () =>
+		set(() => ({
+			consoleOutput: [],
+		})),
 
-	setDatabaseSchema: (databaseSchema) => set(() => ({
-		databaseSchema
-	})),
+	setDatabaseSchema: (databaseSchema) =>
+		set(() => ({
+			databaseSchema,
+		})),
 
-	setCurrentState: (currentState) => set(() => ({
-		currentState
-	})),
+	setCurrentState: (currentState) =>
+		set(() => ({
+			currentState,
+		})),
 
-	setLatestError: (latestError) => set(() => ({
-		latestError
-	})),
+	setLatestError: (latestError) =>
+		set(() => ({
+			latestError,
+		})),
 
-	setVersion: (version) => set(() => ({
-		version
-	})),
+	setVersion: (version) =>
+		set(() => ({
+			version,
+		})),
 
-	setQueryResponse: (tab, response) => set((state) => ({
-		queryResponses: {
-			...state.queryResponses,
-			[tab]: response
-		}
-	})),
+	setQueryResponse: (tab, response) =>
+		set((state) => ({
+			queryResponses: {
+				...state.queryResponses,
+				[tab]: response,
+			},
+		})),
 
-	clearQueryResponse: (tab) => set((state) => ({
-		queryResponses: omit(state.queryResponses, [tab])
-	})),
+	clearQueryResponse: (tab) =>
+		set((state) => ({
+			queryResponses: omit(state.queryResponses, [tab]),
+		})),
 
-	setGraphqlResponse: (connection, response) => set((state) => ({
-		graphqlResponse: {
-			...state.graphqlResponse,
-			[connection]: response
-		}
-	})),
+	setGraphqlResponse: (connection, response) =>
+		set((state) => ({
+			graphqlResponse: {
+				...state.graphqlResponse,
+				[connection]: response,
+			},
+		})),
 
-	clearGraphqlResponse: (connection) => set((state) => ({
-		graphqlResponse: omit(state.graphqlResponse, [connection])
-	})),
-
+	clearGraphqlResponse: (connection) =>
+		set((state) => ({
+			graphqlResponse: omit(state.graphqlResponse, [connection]),
+		})),
 }));

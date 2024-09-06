@@ -1,7 +1,7 @@
 import { Anchor, Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsSchemaAnalyzers({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -57,7 +57,7 @@ export function DocsSchemaAnalyzers({ language }: TopicProps) {
 		$db->query("DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3)");
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -73,7 +73,6 @@ export function DocsSchemaAnalyzers({ language }: TopicProps) {
 						Full Text Search for more information.
 					</Anchor>
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

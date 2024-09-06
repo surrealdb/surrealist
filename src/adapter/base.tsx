@@ -1,4 +1,4 @@
-import { Platform, UrlTarget } from "~/types";
+import type { Platform, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
 	name: string;
@@ -11,7 +11,6 @@ export interface OpenedBinaryFile {
 }
 
 export interface SurrealistAdapter {
-
 	/**
 	 * Identifier for this adapter
 	 */
@@ -110,7 +109,7 @@ export interface SurrealistAdapter {
 		title: string,
 		defaultPath: string,
 		filters: any,
-		content: () => Result<string | Blob | null>
+		content: () => Result<string | Blob | null>,
 	): Promise<boolean>;
 
 	/**
@@ -119,7 +118,7 @@ export interface SurrealistAdapter {
 	openTextFile(
 		title: string,
 		filters: any,
-		multiple: boolean
+		multiple: boolean,
 	): Promise<OpenedTextFile[]>;
 
 	/**
@@ -128,7 +127,7 @@ export interface SurrealistAdapter {
 	openBinaryFile(
 		title: string,
 		filters: any,
-		multiple: boolean
+		multiple: boolean,
 	): Promise<OpenedBinaryFile[]>;
 
 	/**
@@ -153,5 +152,4 @@ export interface SurrealistAdapter {
 	 * @param options The fetch options
 	 */
 	fetch(url: string, options?: RequestInit): Promise<Response>;
-
 }

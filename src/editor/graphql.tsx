@@ -1,9 +1,25 @@
-import { CompletionSource } from "@codemirror/autocomplete";
+import type { CompletionSource } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
-import { StateEffect, StateField, Extension, Prec } from "@codemirror/state";
+import {
+	type Extension,
+	Prec,
+	StateEffect,
+	StateField,
+} from "@codemirror/state";
 import { EditorView, ViewPlugin, keymap } from "@codemirror/view";
-import { fillAllFieldsCommands, graphqlLanguage, Position } from "cm6-graphql";
-import { DocumentNode, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, parse } from "graphql";
+import {
+	type Position,
+	fillAllFieldsCommands,
+	graphqlLanguage,
+} from "cm6-graphql";
+import {
+	type DocumentNode,
+	type GraphQLList,
+	type GraphQLNonNull,
+	type GraphQLObjectType,
+	type GraphQLSchema,
+	parse,
+} from "graphql";
 import { fillGraphqlFields } from "./keybinds";
 import { graphqlSuggestions } from "./keymaps";
 
@@ -23,46 +39,45 @@ const documentField = StateField.define<DocumentNode | undefined>({
 		}
 
 		return set;
-	}
+	},
 });
 
 function dispatchAst(view: EditorView) {
 	const query = view.state.doc.toString();
 
 	try {
-		const parsed = parse(query.replaceAll(/{\s*}/g, ''));
+		const parsed = parse(query.replaceAll(/{\s*}/g, ""));
 
 		view.dispatch({
-			effects: documentEffect.of(parsed)
+			effects: documentEffect.of(parsed),
 		});
 	} catch {
 		view.dispatch({
-			effects: documentEffect.of(undefined)
+			effects: documentEffect.of(undefined),
 		});
 	}
 }
 
 const updateAst = (): Extension => [
-	ViewPlugin.fromClass(class {
-		public constructor(view: EditorView) {
-			setTimeout(() => dispatchAst(view));
-		}
-	}),
+	ViewPlugin.fromClass(
+		class {
+			public constructor(view: EditorView) {
+				setTimeout(() => dispatchAst(view));
+			}
+		},
+	),
 	EditorView.updateListener.of((update) => {
 		if (update.docChanged) {
 			dispatchAst(update.view);
 		}
-	})
+	}),
 ];
 
 /**
  * An extension which automatically parses the query AST and
  * exposes it using `getGraphqlDocument`.
  */
-export const graphqlParser = (): Extension => [
-	updateAst(),
-	documentField
-];
+export const graphqlParser = (): Extension => [updateAst(), documentField];
 
 /**
  * Returns the parsed document AST for an editor
@@ -74,11 +89,11 @@ export function getGraphqlDocument(view: EditorView) {
 const FILL_FIELDS_SOURCE: CompletionSource = (context) => {
 	const previous = syntaxTree(context.state).resolveInner(context.pos, -1);
 
-	if (context.state.doc.lineAt(context.pos).text.trim() !== '') {
+	if (context.state.doc.lineAt(context.pos).text.trim() !== "") {
 		return null;
 	}
 
-	if (previous.name !== 'SelectionSet' || previous.parent?.name !== 'Field') {
+	if (previous.name !== "SelectionSet" || previous.parent?.name !== "Field") {
 		return null;
 	}
 
@@ -87,10 +102,10 @@ const FILL_FIELDS_SOURCE: CompletionSource = (context) => {
 		options: [
 			{
 				boost: 10_000,
-				label: 'Fill all fields',
-				apply: fillAllFieldsCommands
-			}
-		]
+				label: "Fill all fields",
+				apply: fillAllFieldsCommands,
+			},
+		],
 	};
 };
 
@@ -98,18 +113,20 @@ const FILL_FIELDS_SOURCE: CompletionSource = (context) => {
  * Automatically fill in all fields in a GraphQL query
  */
 export const graphqlFillFields = (): Extension => [
-	Prec.highest(keymap.of([
-		fillGraphqlFields,
-		...graphqlSuggestions,
-	])),
+	Prec.highest(keymap.of([fillGraphqlFields, ...graphqlSuggestions])),
 	graphqlLanguage.data.of({
-		autocomplete: FILL_FIELDS_SOURCE
+		autocomplete: FILL_FIELDS_SOURCE,
 	}),
 ];
 
 /**
  * Insert all fields into the current GraphQL query
  */
-export function handleFillFields(_view: EditorView, _schema: GraphQLSchema, _query: string, _cursor: Position) {
+export function handleFillFields(
+	_view: EditorView,
+	_schema: GraphQLSchema,
+	_query: string,
+	_cursor: Position,
+) {
 	// TODO Implement this
 }

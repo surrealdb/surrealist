@@ -1,8 +1,8 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
 import { useSchema } from "~/hooks/schema";
+import { Article, DocsPreview } from "~/screens/database/docs/components";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsAuthTokens({ language, topic }: TopicProps) {
 	const schema = useSchema();
@@ -43,7 +43,7 @@ export function DocsAuthTokens({ language, topic }: TopicProps) {
 		$db->authenticate($token);
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (

@@ -1,11 +1,20 @@
-import { Select, Slider, Box, Checkbox } from "@mantine/core";
-import { useCheckbox } from "~/hooks/events";
+import { Box, Checkbox, Select, Slider } from "@mantine/core";
 import { isDesktop } from "~/adapter";
-import { SettingsSection } from "../utilities";
-import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES, VALUE_MODES, RESULT_MODES, THEMES, ORIENTATIONS, SIDEBAR_MODES, LINE_STYLES } from "~/constants";
-import { useSetting } from "~/hooks/config";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { Label } from "~/components/Label";
+import {
+	DESIGNER_DIRECTIONS,
+	DESIGNER_NODE_MODES,
+	LINE_STYLES,
+	ORIENTATIONS,
+	RESULT_MODES,
+	SIDEBAR_MODES,
+	THEMES,
+	VALUE_MODES,
+} from "~/constants";
+import { useSetting } from "~/hooks/config";
+import { useCheckbox } from "~/hooks/events";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { SettingsSection } from "../utilities";
 
 const CAT = "appearance";
 
@@ -14,17 +23,34 @@ export function AppearanceTab() {
 	const [editorScale, setEditorScale] = useSetting(CAT, "editorScale");
 	const [windowScale, setWindowScale] = useSetting(CAT, "windowScale");
 	// const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
-	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
-	const [queryOrientation, setQueryOrientation] = useSetting(CAT, "queryOrientation");
+	const [defaultResultMode, setDefaultResultMode] = useSetting(
+		CAT,
+		"defaultResultMode",
+	);
+	const [queryOrientation, setQueryOrientation] = useSetting(
+		CAT,
+		"queryOrientation",
+	);
 	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
-	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
-	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(CAT, "defaultDiagramDirection");
-	const [defaultDiagramShowLinks, setDefaultDiagramShowLinks] = useSetting(CAT, "defaultDiagramShowLinks");
+	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(
+		CAT,
+		"defaultDiagramMode",
+	);
+	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(
+		CAT,
+		"defaultDiagramDirection",
+	);
+	const [defaultDiagramShowLinks, setDefaultDiagramShowLinks] = useSetting(
+		CAT,
+		"defaultDiagramShowLinks",
+	);
 	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
 	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
 
 	// const updateResultWordWrap = useCheckbox(setResultWordWrap);
-	const updateDefaultDiagramShowLinks = useCheckbox(setDefaultDiagramShowLinks);
+	const updateDefaultDiagramShowLinks = useCheckbox(
+		setDefaultDiagramShowLinks,
+	);
 
 	const [flags] = useFeatureFlags();
 
@@ -55,9 +81,7 @@ export function AppearanceTab() {
 
 			<SettingsSection label="Scale">
 				<Box>
-					<Label>
-						Editor font scale
-					</Label>
+					<Label>Editor font scale</Label>
 					<Slider
 						mt="xs"
 						mb="lg"
@@ -67,19 +91,17 @@ export function AppearanceTab() {
 						defaultValue={editorScale}
 						onChangeEnd={setEditorScale}
 						marks={[
-							{ value: 50, label: '50%' },
-							{ value: 75, label: '75%' },
-							{ value: 100, label: '100%' },
-							{ value: 125, label: '125%' },
-							{ value: 150, label: '150%' },
+							{ value: 50, label: "50%" },
+							{ value: 75, label: "75%" },
+							{ value: 100, label: "100%" },
+							{ value: 125, label: "125%" },
+							{ value: 150, label: "150%" },
 						]}
 					/>
 				</Box>
 				{isDesktop && (
 					<Box>
-						<Label>
-							Window scale
-						</Label>
+						<Label>Window scale</Label>
 						<Slider
 							mt="xs"
 							mb="lg"
@@ -89,10 +111,10 @@ export function AppearanceTab() {
 							defaultValue={windowScale}
 							onChangeEnd={setWindowScale}
 							marks={[
-								{ value: 75, label: '75%' },
-								{ value: 100, label: '100%' },
-								{ value: 125, label: '125%' },
-								{ value: 150, label: '150%' },
+								{ value: 75, label: "75%" },
+								{ value: 100, label: "100%" },
+								{ value: 125, label: "125%" },
+								{ value: 150, label: "150%" },
 							]}
 						/>
 					</Box>

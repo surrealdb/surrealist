@@ -30,7 +30,7 @@ export function createEventBus<T>(): EventBus<T> {
 	return {
 		listeners,
 		dispatch,
-		cleanup
+		cleanup,
 	};
 }
 
@@ -61,7 +61,10 @@ export function useEventBus<T>(): EventBus<T> {
  * @param bus The event bus to subscribe to
  * @param callback The callback to invoke when an event is dispatched
  */
-export function useEventSubscription<T>(bus: EventBus<T>, callback: EventFn<T>) {
+export function useEventSubscription<T>(
+	bus: EventBus<T>,
+	callback: EventFn<T>,
+) {
 	const stable = useStable(callback);
 
 	useEffect(() => {
@@ -81,7 +84,10 @@ export function useEventSubscription<T>(bus: EventBus<T>, callback: EventFn<T>) 
  * @param callback The callback to invoke when an event is dispatched
  * @returns Unsubscribe function
  */
-export function createEventSubscription<T>(bus: EventBus<T>, callback: EventFn<T>): () => void {
+export function createEventSubscription<T>(
+	bus: EventBus<T>,
+	callback: EventFn<T>,
+): () => void {
 	bus.listeners.add(callback);
 
 	return () => {

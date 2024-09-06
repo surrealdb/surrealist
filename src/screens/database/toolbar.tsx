@@ -1,32 +1,48 @@
-import { Group, Button, Modal, TextInput, ActionIcon, Tooltip, Menu, Badge, HoverCard, Text } from "@mantine/core";
+import {
+	ActionIcon,
+	Badge,
+	Button,
+	Group,
+	HoverCard,
+	Menu,
+	Modal,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
+import { sleep } from "radash";
 import { useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { showInfo } from "~/util/helpers";
-import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
-import { useConfigStore } from "~/stores/config";
-import { useDatabaseStore } from "~/stores/database";
-import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
-import { DATASETS } from "~/constants";
-import { DataSet } from "~/types";
-import { syncDatabaseSchema } from "~/util/schema";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { useInterfaceStore } from "~/stores/interface";
-import { dispatchIntent } from "~/hooks/url";
-import { useConfirmation } from "~/providers/Confirmation";
+import { ActionBar } from "~/components/ActionBar";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { openConnection, executeQuery } from "./connection/connection";
-import { sleep } from "radash";
 import { Spacer } from "~/components/Spacer";
-import { ActionBar } from "~/components/ActionBar";
+import { DATASETS } from "~/constants";
+import {
+	useConnection,
+	useIsConnected,
+	useMinimumVersion,
+} from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
+import { dispatchIntent } from "~/hooks/url";
+import { useConfirmation } from "~/providers/Confirmation";
+import { useCloudStore } from "~/stores/cloud";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { useInterfaceStore } from "~/stores/interface";
+import type { DataSet } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { showInfo } from "~/util/helpers";
+import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
+import { openCloudAuthentication } from "../cloud-manage/api/auth";
 import { ConnectionList } from "./components/ConnectionList";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
-import { openCloudAuthentication } from "../cloud-manage/api/auth";
-import { useCloudStore } from "~/stores/cloud";
+import { executeQuery, openConnection } from "./connection/connection";
 
 export function DatabaseToolbar() {
-	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
+	const { clearQueryResponse, clearGraphqlResponse } =
+		useDatabaseStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const { readChangelog } = useInterfaceStore.getState();
 	const [flags] = useFeatureFlags();
@@ -46,8 +62,10 @@ export function DatabaseToolbar() {
 	});
 
 	const saveTabName = useStable(() => {
+		if (!editingTab) return;
+
 		updateConnection({
-			id: editingTab!,
+			id: editingTab,
 			name: tabName,
 		});
 
@@ -56,7 +74,8 @@ export function DatabaseToolbar() {
 
 	const resetSandbox = useConfirmation({
 		title: "Reset sandbox environment",
-		message: "This will clear all data and query responses. Your queries will not be affected. Are you sure you want to continue?",
+		message:
+			"This will clear all data and query responses. Your queries will not be affected. Are you sure you want to continue?",
 		confirmText: "Reset",
 		confirmProps: { variant: "gradient" },
 		onConfirm: async () => {
@@ -76,7 +95,7 @@ export function DatabaseToolbar() {
 		setDatasetLoading(true);
 
 		try {
-			const dataset = await fetch(info.url).then(res => res.text());
+			const dataset = await fetch(info.url).then((res) => res.text());
 
 			await sleep(50);
 			await executeQuery(dataset);
@@ -84,7 +103,7 @@ export function DatabaseToolbar() {
 
 			showInfo({
 				title: "Dataset loaded",
-				subtitle: `${info.name} has been applied`
+				subtitle: `${info.name} has been applied`,
 			});
 		} finally {
 			setDatasetLoading(false);
@@ -96,7 +115,9 @@ export function DatabaseToolbar() {
 		readChangelog();
 	});
 
-	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
+	const [isSupported, version] = useMinimumVersion(
+		import.meta.env.SDB_VERSION,
+	);
 	const isSandbox = connection?.id === "sandbox";
 	const showNS = !isSandbox && isConnected;
 	const showDB = showNS && connection?.lastNamespace;
@@ -105,16 +126,17 @@ export function DatabaseToolbar() {
 		<>
 			<ConnectionList />
 
-			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (
-				<Button
-					color="orange"
-					variant="light"
-					size="xs"
-					onClick={openCloudAuthentication}
-				>
-					Sign in to Surreal Cloud
-				</Button>
-			)}
+			{authState === "unauthenticated" &&
+				connection?.authentication?.mode === "cloud" && (
+					<Button
+						color="orange"
+						variant="light"
+						size="xs"
+						onClick={openCloudAuthentication}
+					>
+						Sign in to Surreal Cloud
+					</Button>
+				)}
 
 			{showNS && (
 				<>
@@ -156,7 +178,7 @@ export function DatabaseToolbar() {
 					</Tooltip>
 					<Menu
 						transitionProps={{
-							transition: "scale-y"
+							transition: "scale-y",
 						}}
 					>
 						<Menu.Target>
@@ -172,9 +194,7 @@ export function DatabaseToolbar() {
 							</Tooltip>
 						</Menu.Target>
 						<Menu.Dropdown miw={200}>
-							<Menu.Label>
-								Select a dataset
-							</Menu.Label>
+							<Menu.Label>Select a dataset</Menu.Label>
 							{Object.entries(DATASETS).map(([id, info]) => (
 								<Menu.Item
 									key={id}
@@ -188,23 +208,25 @@ export function DatabaseToolbar() {
 				</>
 			)}
 
-			{(isConnected && !isSupported) && (
+			{isConnected && !isSupported && (
 				<HoverCard>
 					<HoverCard.Target>
-						<Badge
-							variant="light"
-							color="orange"
-							h={28}
-						>
+						<Badge variant="light" color="orange" h={28}>
 							Unsupported database version
 						</Badge>
 					</HoverCard.Target>
 					<HoverCard.Dropdown>
 						<Text>
-							We recommend using at least <Text span c="bright">SurrealDB {import.meta.env.SDB_VERSION}</Text>
+							We recommend using at least{" "}
+							<Text span c="bright">
+								SurrealDB {import.meta.env.SDB_VERSION}
+							</Text>
 						</Text>
 						<Text>
-							The current version is <Text span c="bright">SurrealDB {version}</Text>
+							The current version is{" "}
+							<Text span c="bright">
+								SurrealDB {version}
+							</Text>
 						</Text>
 					</HoverCard.Dropdown>
 				</HoverCard>
@@ -212,18 +234,26 @@ export function DatabaseToolbar() {
 
 			<Spacer />
 
-			{(flags.changelog === 'auto' ? showChangelog : flags.changelog !== 'hidden') && (
+			{(flags.changelog === "auto"
+				? showChangelog
+				: flags.changelog !== "hidden") && (
 				<Button
 					h={34}
 					size="xs"
 					radius="xs"
 					color="slate"
-					variant={(flags.changelog === 'auto' ? hasReadChangelog : flags.changelog === 'read') ? "filled" : "gradient"}
+					variant={
+						(
+							flags.changelog === "auto"
+								? hasReadChangelog
+								: flags.changelog === "read"
+						)
+							? "filled"
+							: "gradient"
+					}
 					style={{ border: "none" }}
 					onClick={openChangelog}
-					leftSection={
-						<Icon path={iconStar} left />
-					}
+					leftSection={<Icon path={iconStar} left />}
 				>
 					See what's new in {import.meta.env.VERSION}
 				</Button>
@@ -231,10 +261,7 @@ export function DatabaseToolbar() {
 
 			<ActionBar />
 
-			<Modal
-				opened={!!editingTab}
-				onClose={closeEditingTab}
-			>
+			<Modal opened={!!editingTab} onClose={closeEditingTab}>
 				<Form onSubmit={saveTabName}>
 					<Group>
 						<TextInput

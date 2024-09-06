@@ -11,10 +11,7 @@ export interface InviteModalProps {
 	onClose: () => void;
 }
 
-export function InviteModal({
-	opened,
-	onClose,
-}: InviteModalProps) {
+export function InviteModal({ opened, onClose }: InviteModalProps) {
 	const [emails, setEmails] = useState<string[]>([]);
 
 	// const handleSubmit = useStable((e: any) => {
@@ -42,8 +39,8 @@ export function InviteModal({
 		>
 			<Form onSubmit={onClose}>
 				<Text size="lg">
-					Invite new members to your organization by entering their email addresses below.
-					Press enter to add each email.
+					Invite new members to your organization by entering their
+					email addresses below. Press enter to add each email.
 				</Text>
 
 				<EmailInput

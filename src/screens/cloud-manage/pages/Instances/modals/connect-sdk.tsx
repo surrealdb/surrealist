@@ -1,12 +1,12 @@
-import classes from "../style.module.scss";
 import { Group, Modal, SegmentedControl, Text } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { CodeSnippet } from "~/components/CodeSnippet";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CODE_LANGUAGES } from "~/constants";
-import { CloudInstance, CodeLang, Snippets } from "~/types";
+import type { CloudInstance, CodeLang, Snippets } from "~/types";
 import { iconAPI } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export interface ConnectSdkModalProps {
 	opened: boolean;
@@ -37,9 +37,9 @@ export function ConnectSdkModal({
 			`,
 			rust: `
 				let db = any::connect("wss://${instance.host}").await?;
-			`
+			`,
 		}),
-		[instance]
+		[instance],
 	);
 
 	const languages = CODE_LANGUAGES.filter((lang) => snippets[lang.value]);
@@ -59,7 +59,8 @@ export function ConnectSdkModal({
 			}
 		>
 			<Text size="lg">
-				You can connect to this instance with your preferred language using one of our SurrealDB Client SDKs.
+				You can connect to this instance with your preferred language
+				using one of our SurrealDB Client SDKs.
 			</Text>
 
 			<SegmentedControl
@@ -71,10 +72,7 @@ export function ConnectSdkModal({
 				my="xl"
 			/>
 
-			<CodeSnippet
-				language={lang}
-				values={snippets}
-			/>
+			<CodeSnippet language={lang} values={snippets} />
 		</Modal>
 	);
 }

@@ -1,11 +1,14 @@
-import { Platform, UrlTarget } from "~/types";
-import { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import type { Platform, UrlTarget } from "~/types";
+import type {
+	OpenedBinaryFile,
+	OpenedTextFile,
+	SurrealistAdapter,
+} from "./base";
 
 /**
  * Surrealist adapter for running as web app
  */
 export class BrowserAdapter implements SurrealistAdapter {
-
 	public id = "browser";
 
 	public isServeSupported = false;
@@ -18,18 +21,18 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public initialize() {
 		const platform = navigator.platform.toLowerCase();
 
-		if (platform.includes('win')) {
-			this.platform = 'windows';
-		} else if (platform.includes('mac') || platform.includes('darwin')) {
-			this.platform = 'darwin';
-		} else if (platform.includes('linux')) {
-			this.platform = 'linux';
+		if (platform.includes("win")) {
+			this.platform = "windows";
+		} else if (platform.includes("mac") || platform.includes("darwin")) {
+			this.platform = "darwin";
+		} else if (platform.includes("linux")) {
+			this.platform = "linux";
 		}
 	}
 
 	public dumpDebug = () => ({
-		"Platform": "Web",
-		"Navigator": navigator.userAgent,
+		Platform: "Web",
+		Navigator: navigator.userAgent,
 	});
 
 	public async setWindowTitle(title: string) {
@@ -40,7 +43,10 @@ export class BrowserAdapter implements SurrealistAdapter {
 		const config = localStorage.getItem("surrealist:config") || "{}";
 		const parsed = JSON.parse(config);
 
-		if (parsed.configVersion === undefined && Object.keys(parsed).length > 0) {
+		if (
+			parsed.configVersion === undefined &&
+			Object.keys(parsed).length > 0
+		) {
 			this.#legacyConfig = parsed;
 			return {};
 		}
@@ -61,7 +67,10 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async handleLegacyCleanup() {
-		localStorage.setItem("surrealist:v1-config", JSON.stringify(this.#legacyConfig));
+		localStorage.setItem(
+			"surrealist:v1-config",
+			JSON.stringify(this.#legacyConfig),
+		);
 	}
 
 	public async startDatabase() {
@@ -73,14 +82,14 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async openUrl(url: string, target?: UrlTarget) {
-		window.open(url, target === 'internal' ? '_self' : '_blank');
+		window.open(url, target === "internal" ? "_self" : "_blank");
 	}
 
 	public async saveFile(
 		_title: string,
 		defaultPath: string,
 		_filters: any,
-		content: () => Result<string | Blob | null>
+		content: () => Result<string | Blob | null>,
 	): Promise<boolean> {
 		const result = await content();
 
@@ -88,14 +97,15 @@ export class BrowserAdapter implements SurrealistAdapter {
 			return false;
 		}
 
-		const file = (typeof result === 'string')
-			? new File([result], '', { type: 'text/plain' })
-			: result;
+		const file =
+			typeof result === "string"
+				? new File([result], "", { type: "text/plain" })
+				: result;
 
 		const url = window.URL.createObjectURL(file);
-		const el = document.createElement('a');
+		const el = document.createElement("a");
 
-		el.style.display = 'none';
+		el.style.display = "none";
 		document.body.append(el);
 
 		el.href = url;
@@ -109,15 +119,15 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async openTextFile(): Promise<OpenedTextFile[]> {
-		const el = document.createElement('input');
+		const el = document.createElement("input");
 
-		el.type = 'file';
-		el.style.display = 'none';
+		el.type = "file";
+		el.style.display = "none";
 
 		el.click();
 
 		return new Promise((resolve, reject) => {
-			el.addEventListener('change', async () => {
+			el.addEventListener("change", async () => {
 				const files = [...(el.files ?? [])];
 				const tasks = files.map(async (file) => ({
 					name: file.name,
@@ -129,22 +139,22 @@ export class BrowserAdapter implements SurrealistAdapter {
 				resolve(results);
 			});
 
-			el.addEventListener('error', async () => {
-				reject(new Error('Failed to read file'));
+			el.addEventListener("error", async () => {
+				reject(new Error("Failed to read file"));
 			});
 		});
 	}
 
 	public async openBinaryFile(): Promise<OpenedBinaryFile[]> {
-		const el = document.createElement('input');
+		const el = document.createElement("input");
 
-		el.type = 'file';
-		el.style.display = 'none';
+		el.type = "file";
+		el.style.display = "none";
 
 		el.click();
 
 		return new Promise((resolve, reject) => {
-			el.addEventListener('change', async () => {
+			el.addEventListener("change", async () => {
 				const files = [...(el.files ?? [])];
 				const tasks = files.map(async (file) => ({
 					name: file.name,
@@ -156,26 +166,28 @@ export class BrowserAdapter implements SurrealistAdapter {
 				resolve(results);
 			});
 
-			el.addEventListener('error', async () => {
-				reject(new Error('Failed to read file'));
+			el.addEventListener("error", async () => {
+				reject(new Error("Failed to read file"));
 			});
 		});
 	}
 
 	public log(label: string, message: string) {
-		console.log(label + ": " + message);
+		console.log(`${label}: ${message}`);
 	}
 
 	public warn(label: string, message: string) {
-		console.warn(label + ": " + message);
+		console.warn(`${label}: ${message}`);
 	}
 
 	public trace(label: string, message: string) {
-		console.debug(label + ": " + message);
+		console.debug(`${label}: ${message}`);
 	}
 
-	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
+	public fetch(
+		url: string,
+		options?: RequestInit | undefined,
+	): Promise<Response> {
 		return fetch(url, options);
 	}
-
 }

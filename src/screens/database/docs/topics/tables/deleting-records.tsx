@@ -1,8 +1,12 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
+import {
+	Article,
+	DocsPreview,
+	TableTitle,
+} from "~/screens/database/docs/components";
 import { getTable } from "~/screens/database/docs/helpers";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
@@ -34,7 +38,7 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 		$db->delete("${table.schema.name}");
 		`,
 		}),
-		[table.schema.name]
+		[table.schema.name],
 	);
 
 	return (

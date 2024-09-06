@@ -1,24 +1,44 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Badge, Divider, ScrollArea, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import {
+	ActionIcon,
+	Badge,
+	Divider,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import {
+	type ContextMenuItemOptions,
+	useContextMenu,
+} from "mantine-contextmenu";
+import { sort } from "radash";
 import { useMemo } from "react";
-import { useStable } from "~/hooks/stable";
+import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { useIsLight } from "~/hooks/theme";
-import { useInputState } from "@mantine/hooks";
-import { extractEdgeRecords, syncDatabaseSchema } from "~/util/schema";
-import { useHasSchemaAccess, useTables } from "~/hooks/schema";
-import { sort } from "radash";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { Spacer } from "~/components/Spacer";
-import { useConfigStore } from "~/stores/config";
-import { ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
-import { iconDelete, iconPin, iconPinOff, iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
-import { Entry } from "~/components/Entry";
-import { useInterfaceStore } from "~/stores/interface";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useHasSchemaAccess, useTables } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
-import { fuzzyMatch, tb } from "~/util/helpers";
 import { executeQuery } from "~/screens/database/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { fuzzyMatch, tb } from "~/util/helpers";
+import {
+	iconDelete,
+	iconPin,
+	iconPinOff,
+	iconPlus,
+	iconRelation,
+	iconSearch,
+	iconTable,
+} from "~/util/icons";
+import { extractEdgeRecords, syncDatabaseSchema } from "~/util/schema";
+import classes from "./style.module.scss";
 
 export interface TablesPaneProps {
 	icon?: string;
@@ -49,7 +69,9 @@ export function TablesPane({
 
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();
-		const tables = search ? schema.filter((table) => fuzzyMatch(needle, table.schema.name)) : schema;
+		const tables = search
+			? schema.filter((table) => fuzzyMatch(needle, table.schema.name))
+			: schema;
 
 		return sort(tables, (table) => {
 			const [isEdge] = extractEdgeRecords(table);
@@ -66,18 +88,19 @@ export function TablesPane({
 	});
 
 	const removeTable = useConfirmation({
-		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
+		message:
+			"You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
-		onConfirm:  async (table: string) => {
+		onConfirm: async (table: string) => {
 			await executeQuery(`REMOVE TABLE ${tb(table)}`);
 			await syncDatabaseSchema({
-				tables: [table]
+				tables: [table],
 			});
 
-			if (activeTable == table) {
+			if (activeTable === table) {
 				onTableSelect("");
 			}
-		}
+		},
 	});
 
 	return (
@@ -118,7 +141,7 @@ export function TablesPane({
 			>
 				<ScrollArea
 					classNames={{
-						viewport: classes.scroller
+						viewport: classes.scroller,
 					}}
 				>
 					<Stack gap="xs" pb="md">
@@ -134,44 +157,72 @@ export function TablesPane({
 							/>
 						)}
 
-						{isConnected ? (tablesFiltered.length === 0 && (
-							<Text c="slate" ta="center" mt="lg">
-								{hasAccess ? "No tables found" : "Unsupported auth mode"}
-							</Text>
-						)) : (
+						{isConnected ? (
+							tablesFiltered.length === 0 && (
+								<Text c="slate" ta="center" mt="lg">
+									{hasAccess
+										? "No tables found"
+										: "Unsupported auth mode"}
+								</Text>
+							)
+						) : (
 							<Text c="slate" ta="center" mt="lg">
 								Not connected
 							</Text>
 						)}
 
 						{tablesFiltered.map((table) => {
-							const isActive = activeTable == table.schema.name;
-							const isPinned = connection.pinnedTables.includes(table.schema.name);
+							const isActive = activeTable === table.schema.name;
+							const isPinned = connection.pinnedTables.includes(
+								table.schema.name,
+							);
 							const [isEdge] = extractEdgeRecords(table);
 
 							return (
 								<Entry
 									key={table.schema.name}
 									isActive={isActive}
-									onClick={() => onTableSelect(table.schema.name)}
+									onClick={() =>
+										onTableSelect(table.schema.name)
+									}
 									onContextMenu={showContextMenu([
-										...onTableContextMenu?.(table.schema.name) || [],
+										...(onTableContextMenu?.(
+											table.schema.name,
+										) || []),
 										{
-											key: 'pin',
-											title: isPinned ? "Unpin table" : "Pin table",
-											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
-											onClick: () => togglePinned(table.schema.name)
+											key: "pin",
+											title: isPinned
+												? "Unpin table"
+												: "Pin table",
+											icon: (
+												<Icon
+													path={
+														isPinned
+															? iconPinOff
+															: iconPin
+													}
+												/>
+											),
+											onClick: () =>
+												togglePinned(table.schema.name),
 										},
 										{
-											key: 'remove',
+											key: "remove",
 											title: "Remove table",
 											color: "pink.7",
 											icon: <Icon path={iconDelete} />,
-											onClick: () => removeTable(table.schema.name)
-										}
+											onClick: () =>
+												removeTable(table.schema.name),
+										},
 									])}
 									leftSection={
-										<Icon path={isEdge ? iconRelation : iconTable} />
+										<Icon
+											path={
+												isEdge
+													? iconRelation
+													: iconTable
+											}
+										/>
 									}
 									rightSection={
 										isPinned && (
@@ -185,8 +236,8 @@ export function TablesPane({
 								>
 									<Text
 										style={{
-											textOverflow: 'ellipsis',
-											overflow: 'hidden'
+											textOverflow: "ellipsis",
+											overflow: "hidden",
 										}}
 									>
 										{table.schema.name}

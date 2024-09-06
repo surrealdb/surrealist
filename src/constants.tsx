@@ -1,28 +1,28 @@
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 
-import {
+import type {
 	AuthMode,
+	CloudPage,
+	CloudPageInfo,
 	CodeLang,
 	DataSet,
-	ValueMode,
+	LineStyle,
+	Listable,
+	Orientation,
 	Protocol,
+	ResultMode,
+	SchemaMode,
 	Selectable,
+	SidebarMode,
+	ValueMode,
 	ViewInfo,
 	ViewMode,
-	Orientation,
-	SidebarMode,
-	LineStyle,
-	SchemaMode,
-	CloudPage,
-	Listable,
-	ResultMode,
-	CloudPageInfo,
 } from "./types";
 
 import {
-	iconAccount,
 	iconAPI,
+	iconAccount,
 	iconAuth,
 	iconCloud,
 	iconCog,
@@ -104,7 +104,7 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: "Python", value: "py" },
 	{ label: ".NET", value: "csharp" },
 	// { label: "Java", value: "java" },
-	{ label: "PHP", value: "php" }
+	{ label: "PHP", value: "php" },
 ];
 
 export const VALUE_MODES: Selectable<ValueMode>[] = [
@@ -130,7 +130,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
-		anim: import("~/assets/animation/query.json").then(x => x.default),
+		anim: import("~/assets/animation/query.json").then((x) => x.default),
 		desc: "Execute queries against the database and inspect the results",
 		disabled: (flags) => !flags.query_view,
 	},
@@ -138,7 +138,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "explorer",
 		name: "Explorer",
 		icon: iconExplorer,
-		anim: import("~/assets/animation/explorer.json").then(x => x.default),
+		anim: import("~/assets/animation/explorer.json").then((x) => x.default),
 		desc: "Explore the database tables, records, and relations",
 		require: "database",
 		disabled: (flags) => !flags.explorer_view,
@@ -155,7 +155,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "designer",
 		name: "Designer",
 		icon: iconDesigner,
-		anim: import("~/assets/animation/designer.json").then(x => x.default),
+		anim: import("~/assets/animation/designer.json").then((x) => x.default),
 		desc: "Define database tables and relations",
 		require: "database",
 		disabled: (flags) => !flags.designer_view,
@@ -164,7 +164,7 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "authentication",
 		name: "Authentication",
 		icon: iconAuth,
-		anim: import("~/assets/animation/auth.json").then(x => x.default),
+		anim: import("~/assets/animation/auth.json").then((x) => x.default),
 		desc: "Manage account details and database scopes",
 		disabled: (flags) => !flags.designer_view,
 	},
@@ -208,7 +208,7 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	data: {
 		id: "data",
 		name: "Data Containers",
-		icon: iconPackageClosed
+		icon: iconPackageClosed,
 	},
 	audits: {
 		id: "audits",
@@ -223,7 +223,7 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	support: {
 		id: "support",
 		name: "Support",
-		icon: iconEmail
+		icon: iconEmail,
 	},
 	settings: {
 		id: "settings",
@@ -306,6 +306,6 @@ export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
 ];
 
 export const REGION_FLAGS: Record<string, string> = {
-	'aws-euw1': flagIE,
-	'aws-use1': flagUS,
+	"aws-euw1": flagIE,
+	"aws-use1": flagUS,
 };

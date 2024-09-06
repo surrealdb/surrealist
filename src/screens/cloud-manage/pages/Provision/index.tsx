@@ -1,43 +1,72 @@
-import { Box, Button, Divider, Grid, Group, Image, Paper, ScrollArea, Select, Stack, Table, Text, TextInput } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Divider,
+	Grid,
+	Group,
+	Image,
+	Paper,
+	ScrollArea,
+	Select,
+	Stack,
+	Table,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { range } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
+import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
-import { useAvailableInstanceTypes, useAvailableInstanceVersions, useAvailableRegions, useIsAuthenticated, useOrganization } from "~/hooks/cloud";
-import { useCloudStore } from "~/stores/cloud";
-import { iconChevronLeft, iconChevronRight, iconCircle, iconCircleFilled, iconFloppy, iconMemory, iconPlus, iconQuery } from "~/util/icons";
-import { Tile } from "../../components/Tile";
+import {
+	useAvailableInstanceTypes,
+	useAvailableInstanceVersions,
+	useAvailableRegions,
+	useIsAuthenticated,
+	useOrganization,
+} from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { fetchAPI } from "../../api";
-import { showError } from "~/util/helpers";
-import { CloudInstance } from "~/types";
-import { range } from "radash";
-import { Form } from "~/components/Form";
 import { useIsLight } from "~/hooks/theme";
+import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
+import type { CloudInstance } from "~/types";
+import { showError } from "~/util/helpers";
+import {
+	iconChevronLeft,
+	iconChevronRight,
+	iconCircle,
+	iconCircleFilled,
+	iconFloppy,
+	iconMemory,
+	iconPlus,
+	iconQuery,
+} from "~/util/icons";
+import { fetchAPI } from "../../api";
+import { Tile } from "../../components/Tile";
 
 const PROVISION_STEPS = [
 	{
 		title: "Instance details",
-		name: "Details"
+		name: "Details",
 	},
 	{
 		title: "Select a region",
-		name: "Region"
+		name: "Region",
 	},
 	{
 		title: "Select an instance preset",
-		name: "Instance preset"
+		name: "Instance preset",
 	},
 	{
 		title: "Select compute units",
-		name: "Compute units"
+		name: "Compute units",
 	},
 	{
 		title: "Finalize your instance",
-		name: "Finalize"
-	}
+		name: "Finalize",
+	},
 ];
 
 export function ProvisionPage() {
@@ -49,7 +78,7 @@ export function ProvisionPage() {
 
 	const current = useOrganization();
 	const isAuthed = useIsAuthenticated();
-	const organizations = useCloudStore(s => s.organizations);
+	const organizations = useCloudStore((s) => s.organizations);
 	const instanceTypes = useAvailableInstanceTypes();
 	const versions = useAvailableInstanceVersions();
 	const regions = useAvailableRegions();
@@ -62,14 +91,14 @@ export function ProvisionPage() {
 	const [region, setRegion] = useState<string>("");
 
 	// Selectable organization list
-	const orgList = organizations.map(org => ({
+	const orgList = organizations.map((org) => ({
 		value: org.id,
-		label: org.name
+		label: org.name,
 	}));
 
 	// Active instance type information
 	const instanceInfo = useMemo(() => {
-		return instanceTypes.find(t => t.slug === instance);
+		return instanceTypes.find((t) => t.slug === instance);
 	}, [instance, instanceTypes]);
 
 	// Is the current instance is free
@@ -106,20 +135,22 @@ export function ProvisionPage() {
 					specs: {
 						slug: instance,
 						version: version,
-						compute_units: isFree ? undefined : units
-					}
-				})
+						compute_units: isFree ? undefined : units,
+					},
+				}),
 			});
 
 			console.log("Provisioned instance:", result);
 
 			setProvisioning(result);
 		} catch (err: any) {
-			console.log('Failed to provision database:', [...err.response.headers.entries()]);
+			console.log("Failed to provision database:", [
+				...err.response.headers.entries(),
+			]);
 
 			showError({
 				title: "Failed to provision database",
-				subtitle: "Please try again later"
+				subtitle: "Please try again later",
 			});
 		} finally {
 			setActiveCloudPage("instances");
@@ -137,15 +168,15 @@ export function ProvisionPage() {
 			instanceInfo.compute_units.max ?? 5,
 			(i) => ({
 				value: i.toString(),
-				label: `${i} unit${i === 1 ? "" : "s"}`
-			})
+				label: `${i} unit${i === 1 ? "" : "s"}`,
+			}),
 		);
 
 		return [...options];
 	}, [instanceInfo?.compute_units]);
 
 	const updateInstance = (value: string) => {
-		const info = instanceTypes.find(t => t.slug === value);
+		const info = instanceTypes.find((t) => t.slug === value);
 		const minUnits = info?.compute_units?.min ?? 1;
 
 		setInstance(value);
@@ -165,7 +196,9 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const estimatedCost = (isFree ? 0 : ((instanceInfo?.price_hour ?? 0) * units)).toFixed(2);
+	const estimatedCost = (
+		isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units
+	).toFixed(2);
 
 	useLayoutEffect(() => {
 		if (!isAuthed) {
@@ -174,19 +207,8 @@ export function ProvisionPage() {
 	}, [isAuthed, setActiveCloudPage]);
 
 	return (
-		<Group
-			w="100%"
-			flex={1}
-			wrap="nowrap"
-			align="start"
-			gap="xl"
-		>
-			<Stack
-				pt="sm"
-				px="md"
-				h={450}
-				style={{ flexShrink: 0 }}
-			>
+		<Group w="100%" flex={1} wrap="nowrap" align="start" gap="xl">
+			<Stack pt="sm" px="md" h={450} style={{ flexShrink: 0 }}>
 				{PROVISION_STEPS.map((info, index) => {
 					const isDone = index < step;
 					const isActive = index === step;
@@ -194,41 +216,46 @@ export function ProvisionPage() {
 					return (
 						<Group
 							key={info.title}
-							c={isActive ? "surreal" : isDone ? "bright" : isLight ? "slate.3" : "slate.5"}
+							c={
+								isActive
+									? "surreal"
+									: isDone
+										? "bright"
+										: isLight
+											? "slate.3"
+											: "slate.5"
+							}
 							wrap="nowrap"
 						>
-							<Icon path={(isDone || isActive) ? iconCircleFilled : iconCircle} />
-							<Text fw={500}>
-								{info.name}
-							</Text>
+							<Icon
+								path={
+									isDone || isActive
+										? iconCircleFilled
+										: iconCircle
+								}
+							/>
+							<Text fw={500}>{info.name}</Text>
 						</Group>
 					);
 				})}
 			</Stack>
 			<Divider orientation="vertical" mx="xl" />
-			<ScrollArea
-				scrollbars="y"
-				flex={1}
-			>
-				<Form
-					onSubmit={nextStep}
-					w="100%"
-					maw={600}
-				>
+			<ScrollArea scrollbars="y" flex={1}>
+				<Form onSubmit={nextStep} w="100%" maw={600}>
 					{step === 0 && (
 						<Stack>
-							<PrimaryTitle>
-								Instance details
-							</PrimaryTitle>
+							<PrimaryTitle>Instance details</PrimaryTitle>
 
 							<Text mb="lg">
-								Please enter a name for your new instance, and select the organization you would like to create it under.
+								Please enter a name for your new instance, and
+								select the organization you would like to create
+								it under.
 							</Text>
 
 							<Grid
 								mb="xl"
 								styles={{
-									col: { alignContent: "center" }
+									col: { alignContent: "center" },
 								}}
 							>
 								<Grid.Col span={4}>
@@ -269,17 +296,17 @@ export function ProvisionPage() {
 
 					{step === 1 && (
 						<Stack>
-							<PrimaryTitle>
-								Select a region
-							</PrimaryTitle>
+							<PrimaryTitle>Select a region</PrimaryTitle>
 
 							<Text mb="lg">
-								Regions define the physical location of your instance. Choosing a region close to your users can improve performance.
+								Regions define the physical location of your
+								instance. Choosing a region close to your users
+								can improve performance.
 							</Text>
 
 							<ScrollArea mah={300}>
 								<Stack>
-									{regions.map(type => (
+									{regions.map((type) => (
 										<Tile
 											key={type.slug}
 											isActive={type.slug === region}
@@ -287,7 +314,9 @@ export function ProvisionPage() {
 										>
 											<Group gap="xl" pl="xs">
 												<Image
-													src={REGION_FLAGS[type.slug]}
+													src={
+														REGION_FLAGS[type.slug]
+													}
 													w={24}
 												/>
 												<Box>
@@ -314,16 +343,20 @@ export function ProvisionPage() {
 							</PrimaryTitle>
 
 							<Text mb="lg">
-								Instance presets define the resources allocated to your cloud instance. Choose a preset that best fits your needs.
+								Instance presets define the resources allocated
+								to your cloud instance. Choose a preset that
+								best fits your needs.
 							</Text>
 
 							<ScrollArea mah={300}>
 								<Stack>
-									{instanceTypes.map(type => (
+									{instanceTypes.map((type) => (
 										<Tile
 											key={type.slug}
 											isActive={type.slug === instance}
-											onClick={() => updateInstance(type.slug)}
+											onClick={() =>
+												updateInstance(type.slug)
+											}
 										>
 											<Group wrap="nowrap">
 												<Box flex={1}>
@@ -344,34 +377,65 @@ export function ProvisionPage() {
 															<Table.Tr>
 																<Table.Td>
 																	<Group>
-																		<Icon path={iconQuery} />
+																		<Icon
+																			path={
+																				iconQuery
+																			}
+																		/>
 																		vCPU
 																	</Group>
 																</Table.Td>
-																<Table.Td c="bright" miw={75} ta="right">
+																<Table.Td
+																	c="bright"
+																	miw={75}
+																	ta="right"
+																>
 																	{type.cpu}
 																</Table.Td>
 															</Table.Tr>
 															<Table.Tr>
 																<Table.Td>
 																	<Group>
-																		<Icon path={iconMemory} />
+																		<Icon
+																			path={
+																				iconMemory
+																			}
+																		/>
 																		Memory
 																	</Group>
 																</Table.Td>
-																<Table.Td c="bright" miw={75} ta="right">
-																	{type.memory} MB
+																<Table.Td
+																	c="bright"
+																	miw={75}
+																	ta="right"
+																>
+																	{
+																		type.memory
+																	}{" "}
+																	MB
 																</Table.Td>
 															</Table.Tr>
 															<Table.Tr>
 																<Table.Td>
 																	<Group>
-																		<Icon path={iconFloppy} />
-																		Storage limit
+																		<Icon
+																			path={
+																				iconFloppy
+																			}
+																		/>
+																		Storage
+																		limit
 																	</Group>
 																</Table.Td>
-																<Table.Td c="bright" miw={75} ta="right">
-																	{type.storage} GB
+																<Table.Td
+																	c="bright"
+																	miw={75}
+																	ta="right"
+																>
+																	{
+																		type.storage
+																	}{" "}
+																	GB
 																</Table.Td>
 															</Table.Tr>
 														</Table.Tbody>
@@ -387,63 +451,76 @@ export function ProvisionPage() {
 
 					{step === 3 && (
 						<Stack>
-							<PrimaryTitle>
-								Choose compute units
-							</PrimaryTitle>
+							<PrimaryTitle>Choose compute units</PrimaryTitle>
 
 							<Text mb="lg">
-								Select the number of compute units you would like to use for your instance. Each compute unit
-								provides additional processing power to your instance.
+								Select the number of compute units you would
+								like to use for your instance. Each compute unit
+								provides additional processing power to your
+								instance.
 							</Text>
 
 							<Select
 								data={computeUnits}
 								disabled={isFree}
 								value={units.toString()}
-								onChange={(v) => v && setUnits(Number.parseInt(v))}
+								onChange={(v) =>
+									v && setUnits(Number.parseInt(v))
+								}
 							/>
 						</Stack>
 					)}
 
 					{step === 4 && (
 						<Stack>
-							<PrimaryTitle>
-								Finalize your instance
-							</PrimaryTitle>
+							<PrimaryTitle>Finalize your instance</PrimaryTitle>
 
-							<Paper
-								p="md"
-							>
+							<Paper p="md">
 								<Table>
 									<Table.Tbody>
 										<Table.Tr>
 											<Table.Td>Name</Table.Td>
-											<Table.Td c="bright">{name}</Table.Td>
+											<Table.Td c="bright">
+												{name}
+											</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Preset</Table.Td>
-											<Table.Td c="bright">{instance}</Table.Td>
+											<Table.Td c="bright">
+												{instance}
+											</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Region</Table.Td>
-											<Table.Td c="bright">{region}</Table.Td>
+											<Table.Td c="bright">
+												{region}
+											</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Version</Table.Td>
-											<Table.Td c="bright">{version}</Table.Td>
+											<Table.Td c="bright">
+												{version}
+											</Table.Td>
 										</Table.Tr>
 									</Table.Tbody>
 								</Table>
-								<Text fz="xl" fw={500} mt="xl" c={isLight ? "slate.7" : "slate.2"}>
+								<Text
+									fz="xl"
+									fw={500}
+									mt="xl"
+									c={isLight ? "slate.7" : "slate.2"}
+								>
 									Estimated costs
 								</Text>
 
-								<Text
-									fz={18}
-									fw={500}
-									c="bright"
-								>
-									${estimatedCost} <Text span c={isLight ? "slate.6" : "slate.3"}>/hour</Text>
+								<Text fz={18} fw={500} c="bright">
+									${estimatedCost}{" "}
+									<Text
+										span
+										c={isLight ? "slate.6" : "slate.3"}
+									>
+										/hour
+									</Text>
 								</Text>
 							</Paper>
 						</Stack>
@@ -475,7 +552,13 @@ export function ProvisionPage() {
 							type="submit"
 							variant="gradient"
 							disabled={!canContinue}
-							rightSection={<Icon path={willCreate ? iconPlus : iconChevronRight} />}
+							rightSection={
+								<Icon
+									path={
+										willCreate ? iconPlus : iconChevronRight
+									}
+								/>
+							}
 						>
 							{willCreate ? "Create" : "Continue"}
 						</Button>

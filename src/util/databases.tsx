@@ -1,6 +1,9 @@
-import { executeQuery, executeQuerySingle } from "~/screens/database/connection/connection";
+import {
+	executeQuery,
+	executeQuerySingle,
+} from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
-import { getConnection, getAuthNS, getAuthDB } from "./connection";
+import { getAuthDB, getAuthNS, getConnection } from "./connection";
 import { escapeIdent, parseIdent } from "./surrealql";
 
 /**
@@ -18,11 +21,11 @@ export async function fetchNamespaceList() {
 
 	if (authNS) {
 		return [authNS];
-	} else {
-		const { namespaces } = await executeQuerySingle(`INFO FOR KV`);
-
-		return Object.keys(namespaces).map(ns => parseIdent(ns));
 	}
+
+	const { namespaces } = await executeQuerySingle("INFO FOR KV");
+
+	return Object.keys(namespaces).map((ns) => parseIdent(ns));
 }
 
 /**
@@ -40,9 +43,11 @@ export async function fetchDatabaseList(namespace: string) {
 
 	if (authDB) {
 		return [authDB];
-	} else {
-		const [_, { result }] = await executeQuery(`USE NS ${escapeIdent(namespace)}; INFO FOR NS`);
-
-		return Object.keys(result.databases).map(db => parseIdent(db));
 	}
+
+	const [_, { result }] = await executeQuery(
+		`USE NS ${escapeIdent(namespace)}; INFO FOR NS`,
+	);
+
+	return Object.keys(result.databases).map((db) => parseIdent(db));
 }

@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { CodeLang } from "~/types";
+import type { FC } from "react";
+import type { CodeLang } from "~/types";
 
 export type { Snippets } from "~/types";
 
@@ -32,7 +32,11 @@ export interface DocsSectionTopic extends BaseDocsTopic {
 	icon: string;
 }
 
-export type DocsTopic = DocsSectionTopic | DocsLinkTopic | DocsArticleTopic | DocsGroupTopic;
+export type DocsTopic =
+	| DocsSectionTopic
+	| DocsLinkTopic
+	| DocsArticleTopic
+	| DocsGroupTopic;
 
 export function isSection(topic: DocsTopic): topic is DocsSectionTopic {
 	return (topic as DocsSectionTopic).topics !== undefined;

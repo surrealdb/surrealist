@@ -1,11 +1,11 @@
 import { Group, Text } from "@mantine/core";
-import { ComponentPropsWithoutRef, MouseEvent } from "react";
-import { useStable } from "~/hooks/stable";
-import { GeographyDrawer } from "../GeographyDrawer";
 import { useDisclosure } from "@mantine/hooks";
+import type { ComponentPropsWithoutRef, MouseEvent } from "react";
+import { useStable } from "~/hooks/stable";
+import { iconMarker } from "~/util/icons";
+import { GeographyDrawer } from "../GeographyDrawer";
 import type { GeographyInput } from "../GeographyMap";
 import { Icon } from "../Icon";
-import { iconMarker } from "~/util/icons";
 
 export interface GeographyLinkProps extends ComponentPropsWithoutRef<"div"> {
 	value: GeographyInput;
@@ -33,7 +33,7 @@ export const GeographyLink = ({ value, text, ...rest }: GeographyLinkProps) => {
 				gap={0}
 				onClick={handleOpen}
 				style={{
-					cursor: "pointer"
+					cursor: "pointer",
 				}}
 			>
 				<Text

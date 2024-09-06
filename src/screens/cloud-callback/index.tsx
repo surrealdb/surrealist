@@ -1,11 +1,11 @@
 import classes from "./style.module.scss";
 
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Button, Image, MantineProvider, Stack, Text } from "@mantine/core";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useLogoUrl } from "~/hooks/brand";
+import { isDevelopment } from "~/util/environment";
 import { MANTINE_THEME } from "~/util/mantine";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
-import { isDevelopment } from "~/util/environment";
-import { useLogoUrl } from "~/hooks/brand";
 
 type Result = "redirect" | "launch" | "error";
 
@@ -81,33 +81,28 @@ export function CloudCallbackScreen() {
 				align="center"
 				gap="xl"
 			>
-				<Image
-					src={logoUrl}
-					w={175}
-				/>
+				<Image src={logoUrl} w={175} />
 				{result === "redirect" ? (
-					<Text fz="lg">
-						Redirecting...
-					</Text>
+					<Text fz="lg">Redirecting...</Text>
 				) : result === "error" ? (
 					<>
 						<Text fz="lg" c="red">
 							{error ?? "Authentication could not be completed"}
 						</Text>
-						<Button onClick={() => { location.href = REDIRECT_ENDPOINT; }}>
+						<Button
+							onClick={() => {
+								location.href = REDIRECT_ENDPOINT;
+							}}
+						>
 							Continue to Surrealist
 						</Button>
 					</>
 				) : (
 					<>
-						<Text fz="lg">
-							Opening Surrealist...
-						</Text>
-						<Text
-							className={classes.launch}
-							onClick={launchApp}
-						>
-							If the app does not open automatically, please click here to open it
+						<Text fz="lg">Opening Surrealist...</Text>
+						<Text className={classes.launch} onClick={launchApp}>
+							If the app does not open automatically, please click
+							here to open it
 						</Text>
 						<Text c="slate">
 							You can close this tab once the app has opened

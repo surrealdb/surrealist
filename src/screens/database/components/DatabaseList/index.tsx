@@ -1,22 +1,34 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Button, ButtonProps, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
-import { Icon } from "~/components/Icon";
-import { Entry } from "~/components/Entry";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
-import { activateDatabase, executeQuery } from "../../connection/connection";
-import { useBoolean } from "~/hooks/boolean";
-import { fetchDatabaseList } from "~/util/databases";
-import { useQuery } from "@tanstack/react-query";
-import { getAuthLevel } from "~/util/connection";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Form } from "~/components/Form";
+import {
+	ActionIcon,
+	Button,
+	type ButtonProps,
+	Divider,
+	Group,
+	Menu,
+	Modal,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useStable } from "~/hooks/stable";
-import { escapeIdent } from "~/util/surrealql";
+import { useQuery } from "@tanstack/react-query";
+import type { SyntheticEvent } from "react";
+import { Entry } from "~/components/Entry";
+import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useBoolean } from "~/hooks/boolean";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { SyntheticEvent } from "react";
+import { getAuthLevel } from "~/util/connection";
+import { fetchDatabaseList } from "~/util/databases";
+import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
+import { escapeIdent } from "~/util/surrealql";
+import { activateDatabase, executeQuery } from "../../connection/connection";
+import classes from "./style.module.scss";
 
 export interface DatabaseProps {
 	value: string;
@@ -25,12 +37,7 @@ export interface DatabaseProps {
 	onRemove: () => void;
 }
 
-function Database({
-	value,
-	isActive,
-	onOpen,
-	onRemove,
-}: DatabaseProps) {
+function Database({ value, isActive, onOpen, onRemove }: DatabaseProps) {
 	const { lastNamespace, lastDatabase } = useActiveConnection();
 
 	const open = useStable(() => onOpen(value));
@@ -84,9 +91,7 @@ export interface DatabaseListProps {
 	buttonProps?: ButtonProps;
 }
 
-export function DatabaseList({
-	buttonProps
-}: DatabaseListProps) {
+export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
@@ -135,7 +140,7 @@ export function DatabaseList({
 				trigger="click"
 				position="bottom"
 				transitionProps={{
-					transition: "scale-y"
+					transition: "scale-y",
 				}}
 			>
 				<Menu.Target>
@@ -143,18 +148,10 @@ export function DatabaseList({
 						px="sm"
 						variant={connection.lastDatabase ? "subtle" : "light"}
 						color="slate"
-						leftSection={
-							<Icon
-								path={iconDatabase}
-							/>
-						}
+						leftSection={<Icon path={iconDatabase} />}
 						{...buttonProps}
 					>
-						<Text
-							truncate
-							fw={600}
-							maw={200}
-						>
+						<Text truncate fw={600} maw={200}>
 							{connection.lastDatabase || "Select database"}
 						</Text>
 					</Button>
@@ -162,11 +159,7 @@ export function DatabaseList({
 				<Menu.Dropdown w={250}>
 					<Stack flex={1} p="sm">
 						<Group>
-							<Text
-								flex={1}
-								fw={600}
-								c="bright"
-							>
+							<Text flex={1} fw={600} c="bright">
 								Databases
 							</Text>
 							<ActionIcon
@@ -181,16 +174,16 @@ export function DatabaseList({
 						<Divider />
 						<ScrollArea.Autosize mah={250}>
 							{data.length === 0 ? (
-								<Text c="slate">
-									No databases defined
-								</Text>
+								<Text c="slate">No databases defined</Text>
 							) : (
 								<Stack gap="xs">
 									{data.map((db) => (
 										<Database
 											key={db}
 											value={db}
-											isActive={db === connection.lastDatabase}
+											isActive={
+												db === connection.lastDatabase
+											}
 											onOpen={() => openDatabase(db)}
 											onRemove={openHandle.close}
 										/>
@@ -207,14 +200,13 @@ export function DatabaseList({
 				onClose={creatorHandle.close}
 				trapFocus={false}
 				size="md"
-				title={
-					<PrimaryTitle>Create new database</PrimaryTitle>
-				}
+				title={<PrimaryTitle>Create new database</PrimaryTitle>}
 			>
 				<Form onSubmit={createDatabase}>
 					<Stack>
 						<Text>
-							Databases represent isolated containers within a namespace encompassing schemas, tables, and records.
+							Databases represent isolated containers within a
+							namespace encompassing schemas, tables, and records.
 						</Text>
 						<TextInput
 							placeholder="Enter database name"

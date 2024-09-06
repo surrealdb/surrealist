@@ -1,27 +1,47 @@
 import classes from "./style.module.scss";
 
-import { iconBalance, iconClose, iconCloud, iconEye, iconFlag, iconPlay, iconServer, iconWrench } from "~/util/icons";
-import { ActionIcon, Box, Center, Group, Image, Modal, ScrollArea, Stack, Text, Title } from "@mantine/core";
-import { BehaviourTab } from "./tabs/Behaviour";
-import { ServingTab } from "./tabs/Serving";
-import { CloudTab } from "./tabs/Cloud";
-import { AppearanceTab } from "./tabs/Appearance";
-import { TemplatesTab } from "./tabs/Templates";
-import { useIsLight } from "~/hooks/theme";
+import {
+	ActionIcon,
+	Box,
+	Center,
+	Group,
+	Image,
+	Modal,
+	ScrollArea,
+	Stack,
+	Text,
+	Title,
+} from "@mantine/core";
 import { useRef, useState } from "react";
 import { isDesktop } from "~/adapter";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { FeatureFlagsTab } from "./tabs/FeatureFlags";
-import { LicensesTab } from "./tabs/Licenses";
-import { FeatureCondition } from "~/types";
-import { useIntent } from "~/hooks/url";
-import { useVersionCopy } from "~/hooks/debug";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useKeymap } from "~/hooks/keymap";
 import { useLogoUrl } from "~/hooks/brand";
+import { useVersionCopy } from "~/hooks/debug";
+import { useKeymap } from "~/hooks/keymap";
+import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
+import type { FeatureCondition } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
+import {
+	iconBalance,
+	iconClose,
+	iconCloud,
+	iconEye,
+	iconFlag,
+	iconPlay,
+	iconServer,
+	iconWrench,
+} from "~/util/icons";
+import { AppearanceTab } from "./tabs/Appearance";
+import { BehaviourTab } from "./tabs/Behaviour";
+import { CloudTab } from "./tabs/Cloud";
+import { FeatureFlagsTab } from "./tabs/FeatureFlags";
+import { LicensesTab } from "./tabs/Licenses";
+import { ServingTab } from "./tabs/Serving";
+import { TemplatesTab } from "./tabs/Templates";
 
 interface Category {
 	id: string;
@@ -36,13 +56,13 @@ const CATEGORIES: Category[] = [
 		id: "behaviour",
 		name: "Behavior",
 		icon: iconWrench,
-		component: BehaviourTab
+		component: BehaviourTab,
 	},
 	{
-		id : "appearance",
+		id: "appearance",
 		name: "Appearance",
 		icon: iconEye,
-		component: AppearanceTab
+		component: AppearanceTab,
 	},
 	{
 		id: "templates",
@@ -55,7 +75,7 @@ const CATEGORIES: Category[] = [
 		name: "Database Serving",
 		icon: iconPlay,
 		component: ServingTab,
-		disabled: () => !isDesktop
+		disabled: () => !isDesktop,
 	},
 	{
 		id: "cloud",
@@ -68,14 +88,14 @@ const CATEGORIES: Category[] = [
 		name: "Feature Flags",
 		icon: iconFlag,
 		component: FeatureFlagsTab,
-		disabled: (flags) => !flags.feature_flags
+		disabled: (flags) => !flags.feature_flags,
 	},
 	{
 		id: "licenses",
 		name: "OSS Licenses",
 		icon: iconBalance,
 		component: LicensesTab,
-	}
+	},
 ];
 
 export function Settings() {
@@ -89,18 +109,20 @@ export function Settings() {
 
 	const categories = CATEGORIES.map((c) => ({
 		...c,
-		disabled: c.disabled ? c.disabled(flags) : false
+		disabled: c.disabled ? c.disabled(flags) : false,
 	}));
 
-	const activeCategory = categories.find((c) => c.id === activeTab)!;
-	const Component = activeCategory.component;
+	const activeCategory = categories.find((c) => c.id === activeTab);
+	const Component = activeCategory?.component;
 
 	useIntent("open-settings", ({ tab }) => {
 		if (tab) {
 			setActiveTab(tab);
 
 			setTimeout(() => {
-				tabsRef.current?.querySelector<HTMLElement>(`[data-tab="${tab}"]`)?.focus();
+				tabsRef.current
+					?.querySelector<HTMLElement>(`[data-tab="${tab}"]`)
+					?.focus();
 			}, 250);
 
 			if (tab === "feature-flags") {
@@ -112,9 +134,12 @@ export function Settings() {
 	});
 
 	useKeymap([
-		["mod+,", () => {
-			openHandle.open();
-		}]
+		[
+			"mod+,",
+			() => {
+				openHandle.open();
+			},
+		],
 	]);
 
 	return (
@@ -140,10 +165,7 @@ export function Settings() {
 					>
 						<Stack pt="sm" pb="xl" gap="xs">
 							<Center>
-								<Image
-									h={26}
-									src={logoUrl}
-								/>
+								<Image h={26} src={logoUrl} />
 							</Center>
 							<Text
 								ta="center"
@@ -152,36 +174,33 @@ export function Settings() {
 								className={classes.version}
 								onClick={copyDebug}
 							>
-								{clipboard.copied ? "Copied to clipboard!" : `Version ${import.meta.env.VERSION}`}
+								{clipboard.copied
+									? "Copied to clipboard!"
+									: `Version ${import.meta.env.VERSION}`}
 							</Text>
 						</Stack>
 						<Stack gap="xs" ref={tabsRef}>
-							{categories.map(({ id, name, icon, disabled }) => (!disabled || id == activeTab) && (
-								<Entry
-									key={id}
-									variant="subtle"
-									isActive={activeTab === id}
-									onClick={() => setActiveTab(id)}
-									data-tab={id}
-									leftSection={
-										<Icon path={icon} />
-									}
-								>
-									{name}
-								</Entry>
-							))}
+							{categories.map(
+								({ id, name, icon, disabled }) =>
+									(!disabled || id === activeTab) && (
+										<Entry
+											key={id}
+											variant="subtle"
+											isActive={activeTab === id}
+											onClick={() => setActiveTab(id)}
+											data-tab={id}
+											leftSection={<Icon path={icon} />}
+										>
+											{name}
+										</Entry>
+									),
+							)}
 						</Stack>
 					</Box>
-					<Stack
-						px="xl"
-						pt="xl"
-						gap="md"
-						flex={1}
-						miw={0}
-					>
+					<Stack px="xl" pt="xl" gap="md" flex={1} miw={0}>
 						<Group>
 							<Title size={26} c="bright">
-								{activeCategory.name}
+								{activeCategory?.name ?? "Unknown"}
 							</Title>
 							<Spacer />
 							<ActionIcon
@@ -199,7 +218,7 @@ export function Settings() {
 								pt="md"
 								pb="xl"
 							>
-								<Component />
+								{Component && <Component />}
 							</Stack>
 						</ScrollArea>
 					</Stack>

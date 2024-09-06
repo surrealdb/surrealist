@@ -1,30 +1,30 @@
-import { isEdgeTable } from "~/util/schema";
-import { useDatabaseStore } from "~/stores/database";
-import { useConnection } from "./connection";
 import { SANDBOX } from "~/constants";
+import { useDatabaseStore } from "~/stores/database";
+import { isEdgeTable } from "~/util/schema";
+import { useConnection } from "./connection";
 
 type TableMode = "ALL" | "TABLE" | "EDGE";
 
 const BASE_KINDS = [
-	'any',
-	'null',
-	'bool',
-	'bytes',
-	'datetime',
-	'decimal',
-	'duration',
-	'float',
-	'int',
-	'number',
-	'object',
-	'point',
-	'string',
-	'uuid',
-	'function',
-	'geometry<>',
-	'option<>',
-	'set<>',
-	'array<>',
+	"any",
+	"null",
+	"bool",
+	"bytes",
+	"datetime",
+	"decimal",
+	"duration",
+	"float",
+	"int",
+	"number",
+	"object",
+	"point",
+	"string",
+	"uuid",
+	"function",
+	"geometry<>",
+	"option<>",
+	"set<>",
+	"array<>",
 ];
 
 /**
@@ -47,13 +47,13 @@ export function useTables(mode: TableMode = "ALL") {
 		return [];
 	}
 
-	if (mode == "ALL") {
+	if (mode === "ALL") {
 		return schema.tables;
 	}
 
 	return schema.tables.filter((t) => {
-		if (mode == "TABLE") return !isEdgeTable(t);
-		if (mode == "EDGE") return isEdgeTable(t);
+		if (mode === "TABLE") return !isEdgeTable(t);
+		if (mode === "EDGE") return isEdgeTable(t);
 		return false;
 	});
 }
@@ -75,7 +75,10 @@ export function useHasSchemaAccess() {
 	const connection = useConnection();
 	const authMode = connection?.authentication?.mode || "none";
 
-	return connection?.id == SANDBOX || authMode != "none" && authMode != "scope";
+	return (
+		connection?.id === SANDBOX ||
+		(authMode !== "none" && authMode !== "scope")
+	);
 }
 
 /**
@@ -85,8 +88,5 @@ export function useHasSchemaAccess() {
 export function useKindList() {
 	const tables = useTableNames();
 
-	return [
-		...BASE_KINDS,
-		...tables.map(t => `record<${t}>`)
-	];
+	return [...BASE_KINDS, ...tables.map((t) => `record<${t}>`)];
 }

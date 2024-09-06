@@ -16,7 +16,9 @@ export function useIsConnected() {
  * Returns whether Surrealist is connecting to a database
  */
 export function useIsConnecting() {
-	return useDatabaseStore((s) => s.currentState === "connecting" || s.currentState === "retrying");
+	return useDatabaseStore(
+		(s) => s.currentState === "connecting" || s.currentState === "retrying",
+	);
 }
 
 /**

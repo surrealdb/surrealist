@@ -1,12 +1,34 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Box, Button, Center, Group, Indicator, Loader, Menu, ScrollArea, SegmentedControl, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { iconCheck, iconDotsVertical, iconPlus, iconSearch, iconTune } from "~/util/icons";
-import { Icon } from "~/components/Icon";
-import { Fragment, useMemo, useState } from "react";
-import { useCloudStore } from "~/stores/cloud";
-import { Spacer } from "~/components/Spacer";
-import { InviteModal } from "./modals/invite";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Center,
+	Group,
+	Indicator,
+	Loader,
+	Menu,
+	ScrollArea,
+	SegmentedControl,
+	Stack,
+	Table,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Fragment, useMemo, useState } from "react";
+import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
+import { useCloudStore } from "~/stores/cloud";
+import {
+	iconCheck,
+	iconDotsVertical,
+	iconPlus,
+	iconSearch,
+	iconTune,
+} from "~/util/icons";
+import { InviteModal } from "./modals/invite";
+import classes from "./style.module.scss";
 
 interface Filter {
 	type: string;
@@ -16,20 +38,24 @@ interface Filter {
 
 type ListType = "members" | "invites";
 
-function Label({ text, value}: { text: string, value: number }){
+function Label({ text, value }: { text: string; value: number }) {
 	return (
 		<Group wrap="nowrap" gap="sm">
 			{text}
-			{value > 0 && <Text c="bright" fw={600}>{value}</Text>}
+			{value > 0 && (
+				<Text c="bright" fw={600}>
+					{value}
+				</Text>
+			)}
 		</Group>
 	);
 }
 
 export function MembersPage() {
-	const account = useCloudStore(s => s.profile);
-	const [filter, setFilter] = useState<Filter|null>(null);
+	const account = useCloudStore((s) => s.profile);
+	const [filter, setFilter] = useState<Filter | null>(null);
 
-	const isPending = useCloudStore(s => s.authState) === "loading";
+	const isPending = useCloudStore((s) => s.authState) === "loading";
 
 	const [showInvite, inviteHandle] = useDisclosure();
 	const [listType, setListType] = useState<ListType>("members");
@@ -41,16 +67,16 @@ export function MembersPage() {
 				options: [
 					{ type: "role", value: "admin", label: "Admin" },
 					{ type: "role", value: "editor", label: "Editor" },
-					{ type: "role", value: "reporter", label: "Reporter" }
-				]
+					{ type: "role", value: "reporter", label: "Reporter" },
+				],
 			},
 			{
 				title: "Status",
 				options: [
 					{ type: "status", value: "enabled", label: "Enabled" },
-					{ type: "status", value: "disabled", label: "Disabled" }
-				]
-			}
+					{ type: "status", value: "disabled", label: "Disabled" },
+				],
+			},
 		];
 	}, []);
 
@@ -64,10 +90,7 @@ export function MembersPage() {
 				</Center>
 			) : (
 				<>
-					<Group
-						gap="lg"
-						mb="xs"
-					>
+					<Group gap="lg" mb="xs">
 						<Tooltip label="Unavailable for Starter plan">
 							<Button
 								variant="gradient"
@@ -85,8 +108,16 @@ export function MembersPage() {
 							onChange={setListType as any}
 							className={classes.listSwitcher}
 							data={[
-								{ value: "members", label: <Label text="Members" value={1} /> },
-								{ value: "invites", label: <Label text="Invitations" value={0} /> },
+								{
+									value: "members",
+									label: <Label text="Members" value={1} />,
+								},
+								{
+									value: "invites",
+									label: (
+										<Label text="Invitations" value={0} />
+									),
+								},
 							]}
 						/>
 						<Spacer />
@@ -109,19 +140,30 @@ export function MembersPage() {
 								</Tooltip>
 							</Menu.Target>
 							<Menu.Dropdown miw={150}>
-								{filterTypes.map(type => (
+								{filterTypes.map((type) => (
 									<Fragment key={type.title}>
-										<Menu.Label>
-											{type.title}
-										</Menu.Label>
+										<Menu.Label>{type.title}</Menu.Label>
 										{type.options.map((option) => {
-											const isActive = filter?.value === option.value;
+											const isActive =
+												filter?.value === option.value;
 
 											return (
 												<Menu.Item
 													key={option.value}
-													onClick={() => setFilter(isActive ? null : option)}
-													rightSection={isActive && <Icon path={iconCheck} />}
+													onClick={() =>
+														setFilter(
+															isActive
+																? null
+																: option,
+														)
+													}
+													rightSection={
+														isActive && (
+															<Icon
+																path={iconCheck}
+															/>
+														)
+													}
 												>
 													{option.label}
 												</Menu.Item>
@@ -141,15 +183,8 @@ export function MembersPage() {
 							miw={250}
 						/>
 					</Group>
-					<Box
-						flex={1}
-						pos="relative"
-					>
-						<ScrollArea
-							pos="absolute"
-							scrollbars="y"
-							inset={0}
-						>
+					<Box flex={1} pos="relative">
+						<ScrollArea pos="absolute" scrollbars="y" inset={0}>
 							{listType === "members" ? (
 								<Table className={classes.table}>
 									<Table.Thead>
@@ -165,20 +200,23 @@ export function MembersPage() {
 											<Table.Tr key={member.username}>
 												<Table.Td>
 													<Text c="bright" fw={500}>
-														{member.name || "Unknown"}
+														{member.name ||
+															"Unknown"}
 													</Text>
 												</Table.Td>
 												<Table.Td>
 													{member.username}
 												</Table.Td>
-												<Table.Td>
-													Admin
-												</Table.Td>
+												<Table.Td>Admin</Table.Td>
 												<Table.Td>
 													<Menu position="right-start">
 														<Menu.Target>
 															<ActionIcon>
-																<Icon path={iconDotsVertical} />
+																<Icon
+																	path={
+																		iconDotsVertical
+																	}
+																/>
 															</ActionIcon>
 														</Menu.Target>
 														<Menu.Dropdown>
@@ -231,22 +269,13 @@ export function MembersPage() {
 								// 		))}
 								// 	</Table.Tbody>
 								// </Table>
-								<Stack
-									mt={150}
-									align="center"
-									gap="xs"
-								>
-									<Text
-										fz="lg"
-										c="bright"
-										fw={500}
-									>
+								<Stack mt={150} align="center" gap="xs">
+									<Text fz="lg" c="bright" fw={500}>
 										No member invitations are pending
 									</Text>
-									<Text
-										c="slate"
-									>
-										Press "Invite member" to send a new invitation
+									<Text c="slate">
+										Press "Invite member" to send a new
+										invitation
 									</Text>
 								</Stack>
 							)}

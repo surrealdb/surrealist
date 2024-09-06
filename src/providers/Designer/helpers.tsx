@@ -1,19 +1,22 @@
-import { TableInfo } from "~/types";
-import { default as equals } from "fast-deep-equal";
-import { objectify } from "radash";
 import { Accordion, Group } from "@mantine/core";
 import { Text } from "@mantine/core";
-import { Updater } from "use-immer";
-import { tb } from "~/util/helpers";
-import { Icon } from "~/components/Icon";
+import { default as equals } from "fast-deep-equal";
+import { objectify } from "radash";
+import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import type { TableInfo } from "~/types";
+import { tb } from "~/util/helpers";
 
 export interface ElementProps {
 	data: TableInfo;
 	setData: Updater<TableInfo>;
 }
 
-export function SectionTitle({ children, icon }: { children: string, icon: string }) {
+export function SectionTitle({
+	children,
+	icon,
+}: { children: string; icon: string }) {
 	return (
 		<Accordion.Control>
 			<Group gap="sm">
@@ -27,7 +30,7 @@ export function SectionTitle({ children, icon }: { children: string, icon: strin
 }
 
 function buildPermission(type: string, value: boolean | string) {
-	return ` FOR ${type} ${value === true ? 'FULL' : value === false ? 'NONE' : 'WHERE ' + value}`;
+	return ` FOR ${type} ${value === true ? "FULL" : value === false ? "NONE" : `WHERE ${value}`}`;
 }
 
 export interface BuildOptions {
@@ -39,7 +42,11 @@ export interface BuildOptions {
 /**
  * Build the queries to update the entire table schema
  */
-export function buildDefinitionQueries({ previous, current, useOverwrite }: BuildOptions) {
+export function buildDefinitionQueries({
+	previous,
+	current,
+	useOverwrite,
+}: BuildOptions) {
 	const queries: string[] = [];
 	const name = current.schema.name;
 
@@ -50,7 +57,7 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 	if (!equals(previous.schema, current.schema)) {
 		const tableType = current.schema.kind.kind;
 
-		let query = `DEFINE TABLE`;
+		let query = "DEFINE TABLE";
 
 		if (useOverwrite) {
 			query += " OVERWRITE";
@@ -71,11 +78,11 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 		query += ` TYPE ${tableType}`;
 
 		if (tableType === "RELATION" && current.schema.kind.in) {
-			query += ` IN ${current.schema.kind.in.map(name => tb(name)).join("|")}`;
+			query += ` IN ${current.schema.kind.in.map((name) => tb(name)).join("|")}`;
 		}
 
 		if (tableType === "RELATION" && current.schema.kind.out) {
-			query += ` OUT ${current.schema.kind.out.map(name => tb(name)).join("|")}`;
+			query += ` OUT ${current.schema.kind.out.map((name) => tb(name)).join("|")}`;
 		}
 
 		if (current.schema.view) {
@@ -106,7 +113,7 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 	}
 
 	for (const field of current.fields) {
-		let query = `DEFINE FIELD`;
+		let query = "DEFINE FIELD";
 
 		if (useOverwrite) {
 			query += " OVERWRITE";
@@ -150,7 +157,7 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 	}
 
 	for (const index of current.indexes) {
-		let query = `DEFINE INDEX`;
+		let query = "DEFINE INDEX";
 
 		if (useOverwrite) {
 			query += " OVERWRITE";
@@ -168,26 +175,22 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 	}
 
 	for (const event of current.events) {
-		let query = `DEFINE EVENT`;
+		let query = "DEFINE EVENT";
 
 		if (useOverwrite) {
 			query += " OVERWRITE";
 		}
 
-		query += ` ${event.name} ON TABLE ${tb(name)} WHEN ${event.when} THEN ${event.then.map(th => `{${th}}`).join(", ")}`;
+		query += ` ${event.name} ON TABLE ${tb(name)} WHEN ${event.when} THEN ${event.then.map((th) => `{${th}}`).join(", ")}`;
 
 		queries.push(query);
 	}
 
-	adapter.log('Designer', "Applying queries:");
+	adapter.log("Designer", "Applying queries:");
 
-	for (const query of queries) adapter.log('Designer', '- ' + query);
+	for (const query of queries) adapter.log("Designer", `- ${query}`);
 
-	return [
-		'BEGIN TRANSACTION',
-		...queries,
-		'COMMIT TRANSACTION'
-	].join(';\n');
+	return ["BEGIN TRANSACTION", ...queries, "COMMIT TRANSACTION"].join(";\n");
 }
 
 /**
@@ -203,25 +206,19 @@ export function isSchemaValid(info: TableInfo): boolean {
 		info.schema.permissions.select !== "" &&
 		info.schema.permissions.update !== "" &&
 		info.schema.permissions.delete !== "" &&
-		(info.schema.kind.kind !== "RELATION" || (info.schema.kind.in && info.schema.kind.out)) &&
+		(info.schema.kind.kind !== "RELATION" ||
+			(info.schema.kind.in && info.schema.kind.out)) &&
 		info.fields.every(
 			(field) =>
 				field.name &&
 				field.permissions.create !== "" &&
 				field.permissions.select !== "" &&
 				field.permissions.update !== "" &&
-				field.permissions.delete !== ""
+				field.permissions.delete !== "",
 		) &&
-		info.indexes.every(
-			(index) =>
-				index.name &&
-				index.cols
-		) &&
+		info.indexes.every((index) => index.name && index.cols) &&
 		info.events.every(
-			(event) =>
-				event.name &&
-				event.when &&
-				event.then[0].length > 0
+			(event) => event.name && event.when && event.then[0].length > 0,
 		);
 
 	return !!result;

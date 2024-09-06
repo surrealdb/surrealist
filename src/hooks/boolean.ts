@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useStable } from './stable';
+import { useState } from "react";
+import { useStable } from "./stable";
 
 export interface BooleanHandle {
 	open: () => void;
@@ -10,7 +10,7 @@ export interface BooleanHandle {
 
 export function useBoolean(
 	initialState = false,
-	callbacks?: { onOpen?: () => void; onClose?: () => void }
+	callbacks?: { onOpen?: () => void; onClose?: () => void },
 ): readonly [boolean, BooleanHandle] {
 	const { onOpen, onClose } = callbacks || {};
 	const [opened, setOpened] = useState(initialState);

@@ -1,5 +1,5 @@
 import { acceptCompletion } from "@codemirror/autocomplete";
-import { KeyBinding } from "@codemirror/view";
+import type { KeyBinding } from "@codemirror/view";
 import { fillAllFieldsCommands } from "cm6-graphql";
 
 /**
@@ -7,7 +7,7 @@ import { fillAllFieldsCommands } from "cm6-graphql";
  */
 export const acceptWithTab: KeyBinding = {
 	key: "Tab",
-	run: acceptCompletion
+	run: acceptCompletion,
 };
 
 /**
@@ -15,5 +15,5 @@ export const acceptWithTab: KeyBinding = {
  */
 export const fillGraphqlFields: KeyBinding = {
 	key: "Alt-Space",
-	run: fillAllFieldsCommands
+	run: fillAllFieldsCommands,
 };

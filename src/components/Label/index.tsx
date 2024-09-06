@@ -1,6 +1,6 @@
+import { Text, type TextProps } from "@mantine/core";
 import clsx from "clsx";
-import { Text, TextProps } from "@mantine/core";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 export function Label({
 	className,

@@ -1,35 +1,40 @@
+import type { DatabaseSchema } from "~/types";
 import { newId } from "~/util/helpers";
-import { DocsTopic } from "./types";
-import { DatabaseSchema } from "~/types";
-import { DocsGlobalIntroduction } from "./topics/global/introduction";
-import { DocsGlobalInit } from "./topics/global/initialize";
-import { DocsGlobalConnecting } from "./topics/global/connecting";
-// import { DocsGlobalHandlingErrors } from "./topics/global/handling-errors";
-import { DocsGlobalNamespaces } from "./topics/global/namespaces";
-import { DocsGlobalDatabases } from "./topics/global/databases";
+import {
+	iconAuth,
+	iconBook,
+	iconDesigner,
+	iconStar,
+	iconTable,
+} from "~/util/icons";
+import { DocsAuthAccessUserData } from "./topics/authentication/access-user-data";
+import { DocsAuthSignIn } from "./topics/authentication/sign-in";
 // import {DocsGlobalAuthentication} from "./topics/global/authentication";
 // import {DocsGlobalSystemUsers} from "./topics/global/system-users";
-import {DocsAuthSignUp} from "./topics/authentication/sign-up";
-import {DocsAuthSignIn} from "./topics/authentication/sign-in";
-import {DocsAuthTokens} from "./topics/authentication/tokens";
-import {DocsAuthAccessUserData} from "./topics/authentication/access-user-data";
-import {DocsSchemaParams} from "./topics/schema/params";
-import {DocsSchemaScopes} from "./topics/schema/scopes";
-import {DocsSchemaUsers} from "./topics/schema/users";
-import {DocsSchemaFunctions} from "./topics/schema/functions";
-import {DocsSchemaAnalyzers} from "./topics/schema/analyzers";
-import {DocsTablesIntroduction} from "./topics/tables/introduction";
-import {DocsTablesSelect} from "./topics/tables/select";
-import {DocsTablesSelectAllFields} from "./topics/tables/select-all-fields";
-import {DocsTablesCreatingRecords} from "./topics/tables/creating-records";
-import {DocsTablesInsertingRecords} from "./topics/tables/inserting-records";
-import {DocsTablesUpdatingRecords} from "./topics/tables/updating-records";
-import {DocsTablesDeletingRecords} from "./topics/tables/deleting-records";
-import {DocsTablesLiveSelecting} from "./topics/tables/live-selecting";
-import {DocsConceptsFullTextSearch} from "./topics/concepts/full-text-search";
-import {DocsConceptsSurrealML} from "./topics/concepts/surrealml";
-import { iconAuth, iconBook, iconDesigner, iconStar, iconTable } from "~/util/icons";
-
+import { DocsAuthSignUp } from "./topics/authentication/sign-up";
+import { DocsAuthTokens } from "./topics/authentication/tokens";
+import { DocsConceptsFullTextSearch } from "./topics/concepts/full-text-search";
+import { DocsConceptsSurrealML } from "./topics/concepts/surrealml";
+import { DocsGlobalConnecting } from "./topics/global/connecting";
+import { DocsGlobalDatabases } from "./topics/global/databases";
+import { DocsGlobalInit } from "./topics/global/initialize";
+import { DocsGlobalIntroduction } from "./topics/global/introduction";
+// import { DocsGlobalHandlingErrors } from "./topics/global/handling-errors";
+import { DocsGlobalNamespaces } from "./topics/global/namespaces";
+import { DocsSchemaAnalyzers } from "./topics/schema/analyzers";
+import { DocsSchemaFunctions } from "./topics/schema/functions";
+import { DocsSchemaParams } from "./topics/schema/params";
+import { DocsSchemaScopes } from "./topics/schema/scopes";
+import { DocsSchemaUsers } from "./topics/schema/users";
+import { DocsTablesCreatingRecords } from "./topics/tables/creating-records";
+import { DocsTablesDeletingRecords } from "./topics/tables/deleting-records";
+import { DocsTablesInsertingRecords } from "./topics/tables/inserting-records";
+import { DocsTablesIntroduction } from "./topics/tables/introduction";
+import { DocsTablesLiveSelecting } from "./topics/tables/live-selecting";
+import { DocsTablesSelect } from "./topics/tables/select";
+import { DocsTablesSelectAllFields } from "./topics/tables/select-all-fields";
+import { DocsTablesUpdatingRecords } from "./topics/tables/updating-records";
+import type { DocsTopic } from "./types";
 
 /**
  * Build the structure of the documentation based on the given schema.
@@ -42,18 +47,18 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		{
 			id: newId(),
 			title: "Introduction",
-			component: DocsGlobalIntroduction
+			component: DocsGlobalIntroduction,
 		},
 		{
 			id: newId(),
 			title: "Initialises",
 			component: DocsGlobalInit,
-			excludeLanguages: ['cli']
+			excludeLanguages: ["cli"],
 		},
 		{
 			id: newId(),
 			title: "Connecting",
-			component: DocsGlobalConnecting
+			component: DocsGlobalConnecting,
 		},
 		// {
 		// 	id: newId(),
@@ -64,12 +69,12 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 		{
 			id: newId(),
 			title: "Namespaces",
-			component: DocsGlobalNamespaces
+			component: DocsGlobalNamespaces,
 		},
 		{
 			id: newId(),
 			title: "Databases",
-			component: DocsGlobalDatabases
+			component: DocsGlobalDatabases,
 		},
 		{
 			id: newId(),
@@ -91,26 +96,26 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					id: newId(),
 					title: "Sign up",
 					component: DocsAuthSignUp,
-					excludeLanguages: ['cli']
+					excludeLanguages: ["cli"],
 				},
 				{
 					id: newId(),
 					title: "Sign in",
-					component: DocsAuthSignIn
+					component: DocsAuthSignIn,
 				},
 				{
 					id: newId(),
 					title: "Tokens",
 					component: DocsAuthTokens,
-					excludeLanguages: ['cli']
+					excludeLanguages: ["cli"],
 				},
 				{
 					id: newId(),
 					title: "Access user data",
 					component: DocsAuthAccessUserData,
-					excludeLanguages: ['rust', 'py', 'go','java']
-				}
-			]
+					excludeLanguages: ["rust", "py", "go", "java"],
+				},
+			],
 		},
 		{
 			id: newId(),
@@ -130,33 +135,33 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "Params",
-					component: DocsSchemaParams
+					component: DocsSchemaParams,
 				},
 				{
 					id: newId(),
 					title: "Scopes",
 					component: DocsSchemaScopes,
-					excludeLanguages: ['rust', 'py', 'go','java','js']
+					excludeLanguages: ["rust", "py", "go", "java", "js"],
 				},
 				{
 					id: newId(),
 					title: "Users",
 					component: DocsSchemaUsers,
-					excludeLanguages: ['rust', 'py', 'go','java','js','php']
+					excludeLanguages: ["rust", "py", "go", "java", "js", "php"],
 				},
 				{
 					id: newId(),
 					title: "Functions",
 					component: DocsSchemaFunctions,
-					excludeLanguages: ['rust', 'py', 'go','java','js','php']
+					excludeLanguages: ["rust", "py", "go", "java", "js", "php"],
 				},
 				{
 					id: newId(),
 					title: "Analyzers",
 					component: DocsSchemaAnalyzers,
-					excludeLanguages: ['rust', 'py', 'go','java']
-				}
-			]
+					excludeLanguages: ["rust", "py", "go", "java"],
+				},
+			],
 		},
 		{
 			id: newId(),
@@ -168,7 +173,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					title: "Introduction",
 					component: DocsTablesIntroduction,
 				},
-				...schema.tables.map(table => ({
+				...schema.tables.map((table) => ({
 					id: newId(),
 					title: `${table.schema.name}`,
 					children: [
@@ -182,44 +187,44 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 							id: newId(),
 							title: "Selecting fields",
 							component: DocsTablesSelect,
-							extra: { table }
+							extra: { table },
 						},
 						{
 							id: newId(),
 							title: "Selecting all fields",
 							component: DocsTablesSelectAllFields,
-							extra: { table }
+							extra: { table },
 						},
 						{
 							id: newId(),
 							title: "Creating records",
 							component: DocsTablesCreatingRecords,
-							extra: { table }
+							extra: { table },
 						},
 						{
 							id: newId(),
 							title: "Inserting records",
 							component: DocsTablesInsertingRecords,
-							extra: { table }
+							extra: { table },
 						},
 						{
 							id: newId(),
 							title: "Updating records",
 							component: DocsTablesUpdatingRecords,
-							extra: { table }
+							extra: { table },
 						},
 						{
 							id: newId(),
 							title: "Deleting records",
 							component: DocsTablesDeletingRecords,
-							extra: { table }
+							extra: { table },
 						},
 						{
 							id: newId(),
 							title: "Live selecting",
 							component: DocsTablesLiveSelecting,
 							extra: { table },
-							excludeLanguages: ['php']
+							excludeLanguages: ["php"],
 						},
 						// {
 						// 	id: newId(),
@@ -239,9 +244,9 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 						// 	component: DocsTablesManageEvents,
 						// 	extra: { table }
 						// }
-					] satisfies DocsTopic[]
+					] satisfies DocsTopic[],
 				})),
-			]
+			],
 		},
 		{
 			id: newId(),
@@ -251,7 +256,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "Full-text search",
-					component: DocsConceptsFullTextSearch
+					component: DocsConceptsFullTextSearch,
 				},
 				// {
 				// 	id: newId(),
@@ -261,9 +266,9 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "SurrealML",
-					component: DocsConceptsSurrealML
-				}
-			]
+					component: DocsConceptsSurrealML,
+				},
+			],
 		},
 		{
 			id: newId(),
@@ -273,19 +278,19 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "Documentation",
-					link: "https://surrealdb.com/docs/surrealdb/"
+					link: "https://surrealdb.com/docs/surrealdb/",
 				},
 				{
 					id: newId(),
 					title: "SurrealQL",
-					link: "https://surrealdb.com/docs/surrealdb/surrealql/"
+					link: "https://surrealdb.com/docs/surrealdb/surrealql/",
 				},
 				{
 					id: newId(),
 					title: "Integration",
-					link: "https://surrealdb.com/docs/surrealdb/integration/"
-				}
-			]
-		}
+					link: "https://surrealdb.com/docs/surrealdb/integration/",
+				},
+			],
+		},
 	];
 }

@@ -1,7 +1,11 @@
 import { useConfigStore } from "~/stores/config";
 import { IntentEvent } from "~/util/global-events";
+import {
+	type IntentPayload,
+	type IntentType,
+	getIntentView,
+} from "~/util/intents";
 import { useEventSubscription } from "./event";
-import { IntentPayload, IntentType, getIntentView } from "~/util/intents";
 
 /**
  * Listen to the specified intent and invoke the handler when it is dispatched.
@@ -9,7 +13,10 @@ import { IntentPayload, IntentType, getIntentView } from "~/util/intents";
  * @param type The intent type to listen for
  * @param handler The handler to invoke when the intent is dispatched
  */
-export function useIntent(type: IntentType, handler: (payload: IntentPayload) => void) {
+export function useIntent(
+	type: IntentType,
+	handler: (payload: IntentPayload) => void,
+) {
 	useEventSubscription(IntentEvent, (event) => {
 		if (event.type === type) {
 			handler(event.payload || {});

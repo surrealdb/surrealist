@@ -11,15 +11,15 @@ import "../assets/styles/override.scss";
 import "../adapter";
 
 import dayjs from "dayjs";
-import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
+import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
-import { App } from "../components/App";
-import { adapter } from "../adapter";
-import { generateEditorIcons } from "../editor/icons";
-import { isProduction } from "../util/environment";
-import { promptChangelog } from "../util/changelogs";
 import { startConfigSync } from "~/util/config";
+import { adapter } from "../adapter";
+import { App } from "../components/App";
+import { generateEditorIcons } from "../editor/icons";
+import { promptChangelog } from "../util/changelogs";
+import { isProduction } from "../util/environment";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -28,7 +28,7 @@ import { startConfigSync } from "~/util/config";
 	if (isProduction) {
 		posthog.init(import.meta.env.POSTHOG_KEY, {
 			api_host: import.meta.env.POSTHOG_URL,
-			autocapture: false
+			autocapture: false,
 		});
 	}
 
@@ -42,7 +42,12 @@ import { startConfigSync } from "~/util/config";
 	generateEditorIcons();
 
 	// Render the app component
-	const root = document.querySelector("#root")!;
+	const root = document.querySelector("#root");
+
+	if (!root) {
+		throw new Error("Root element not found");
+	}
+
 	createRoot(root).render(<App />);
 
 	// Check for new release

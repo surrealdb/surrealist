@@ -1,35 +1,24 @@
-import iconUrl from "~/assets/images/icon.webp";
-import { Stack, Divider, Image, Group, Flex } from "@mantine/core";
+import { Divider, Flex, Group, Image, Stack } from "@mantine/core";
 import { Fragment, useMemo } from "react";
-import { iconCog, iconSearch } from "~/util/icons";
-import { VIEW_MODES } from "~/constants";
-import { useStable } from "~/hooks/stable";
-import { useConfigStore } from "~/stores/config";
-import { SidebarMode, ViewInfo, ViewMode } from "~/types";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { useIsLight } from "~/hooks/theme";
-import { useConnection } from "~/hooks/connection";
+import iconUrl from "~/assets/images/icon.webp";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
-import { dispatchIntent } from "~/hooks/url";
+import { VIEW_MODES } from "~/constants";
 import { useLogoUrl } from "~/hooks/brand";
+import { useConnection } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { dispatchIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
+import type { SidebarMode, ViewInfo, ViewMode } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { iconCog, iconSearch } from "~/util/icons";
 
 const NAVIGATION: ViewMode[][] = [
-	[
-		"query",
-		"explorer",
-		"graphql",
-	],
-	[
-		"designer",
-		"authentication",
-		"functions",
-		"models",
-	],
-	[
-		"documentation",
-	],
+	["query", "explorer", "graphql"],
+	["designer", "authentication", "functions", "models"],
+	["documentation"],
 ];
 
 export interface SidebarProps {
@@ -61,21 +50,23 @@ export function DatabaseSidebar({
 			const items = row.flatMap((id) => {
 				const info = VIEW_MODES[id];
 
-				return (!info || !info.disabled?.(flags) !== true) ? [] : [info];
+				return !info || !info.disabled?.(flags) !== true ? [] : [info];
 			});
 
 			return items.length > 0 ? [items] : [];
 		});
 	}, [flags]);
 
-
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
-	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
+	const openCommands = useStable(() =>
+		dispatchIntent("open-command-palette"),
+	);
 
 	const { cloud } = VIEW_MODES;
 
 	function renderNavigation(info: ViewInfo) {
-		const isAvailable = info.require !== "database" || connection?.lastDatabase;
+		const isAvailable =
+			info.require !== "database" || connection?.lastDatabase;
 
 		return (
 			<NavigationIcon
@@ -86,7 +77,7 @@ export function DatabaseSidebar({
 				onClick={() => setViewMode(info.id)}
 				onMouseEnter={onItemHover}
 				style={{
-					opacity: isAvailable ? 1 : 0.5
+					opacity: isAvailable ? 1 : 0.5,
 				}}
 			/>
 		);
@@ -94,15 +85,8 @@ export function DatabaseSidebar({
 
 	return (
 		<>
-			<Flex
-				wrap="nowrap"
-				align="center"
-				style={{ flexShrink: 0 }}
-			>
-				<Image
-					src={iconUrl}
-					w={42}
-				/>
+			<Flex wrap="nowrap" align="center" style={{ flexShrink: 0 }}>
+				<Image src={iconUrl} w={42} />
 				<Image
 					src={logoUrl}
 					style={{ flexShrink: 0 }}
@@ -110,29 +94,22 @@ export function DatabaseSidebar({
 					ml={14}
 				/>
 			</Flex>
-			<Stack
-				gap="sm"
-				mt={22}
-				pb={18}
-				component="nav"
-				flex={1}
-			>
-				{connection && navigation.map((items, i) => (
-					<Fragment key={i}>
-						{items.map(info => (
-							<Group
-								key={info.id}
-								gap="lg"
-								wrap="nowrap"
-							>
-								{renderNavigation(info)}
-							</Group>
-						))}
-						{i < navigation.length - 1 && (
-							<Divider color={isLight ? "slate.2" : "slate.7"} />
-						)}
-					</Fragment>
-				))}
+			<Stack gap="sm" mt={22} pb={18} component="nav" flex={1}>
+				{connection &&
+					navigation.map((items, i) => (
+						<Fragment key={i}>
+							{items.map((info) => (
+								<Group key={info.id} gap="lg" wrap="nowrap">
+									{renderNavigation(info)}
+								</Group>
+							))}
+							{i < navigation.length - 1 && (
+								<Divider
+									color={isLight ? "slate.2" : "slate.7"}
+								/>
+							)}
+						</Fragment>
+					))}
 
 				<Spacer />
 

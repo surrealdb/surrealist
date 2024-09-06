@@ -1,12 +1,11 @@
 import { Accordion, TextInput } from "@mantine/core";
-import { ElementProps, SectionTitle } from "../helpers";
-import { Lister } from "../lister";
-import { useStable } from "~/hooks/stable";
 import { CodeInput } from "~/components/Inputs";
+import { useStable } from "~/hooks/stable";
 import { iconBullhorn } from "~/util/icons";
+import { type ElementProps, SectionTitle } from "../helpers";
+import { Lister } from "../lister";
 
 export function EventsElement({ data, setData }: ElementProps) {
-
 	const addEvent = useStable(() => {
 		setData((d) => {
 			d.events.push({
@@ -25,9 +24,7 @@ export function EventsElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="events">
-			<SectionTitle icon={iconBullhorn}>
-				Events
-			</SectionTitle>
+			<SectionTitle icon={iconBullhorn}>Events</SectionTitle>
 			<Accordion.Panel>
 				<Lister
 					value={data.events}

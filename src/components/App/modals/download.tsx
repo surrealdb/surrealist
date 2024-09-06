@@ -1,9 +1,17 @@
+import {
+	ActionIcon,
+	Button,
+	Image,
+	List,
+	Modal,
+	Stack,
+	Text,
+} from "@mantine/core";
 import banner from "~/assets/images/desktop.webp";
-import { ActionIcon, Button, Image, List, Modal, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { iconArrowUpRight, iconCircleFilled, iconClose } from "~/util/icons";
-import { useIntent } from "~/hooks/url";
 import { useBoolean } from "~/hooks/boolean";
+import { useIntent } from "~/hooks/url";
+import { iconArrowUpRight, iconCircleFilled, iconClose } from "~/util/icons";
 
 export function DownloadModal() {
 	const [isOpen, openHandle] = useBoolean();
@@ -31,7 +39,9 @@ export function DownloadModal() {
 
 			<Stack p={24}>
 				<Text size="lg">
-					Take your SurrealDB journey to the next level with Surrealist Desktop and gain advanced capabilities designed for an optimized experience.
+					Take your SurrealDB journey to the next level with
+					Surrealist Desktop and gain advanced capabilities designed
+					for an optimized experience.
 				</Text>
 
 				<List

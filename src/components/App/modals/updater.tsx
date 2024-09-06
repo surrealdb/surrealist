@@ -1,16 +1,16 @@
-import classes from "../style.module.scss";
-import { relaunch } from "@tauri-apps/plugin-process";
 import { ActionIcon, Alert, Box, Dialog, Group, Text } from "@mantine/core";
-import { MouseEvent, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { type MouseEvent, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
+import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconClose, iconDownload } from "~/util/icons";
-import { useConfirmation } from "~/providers/Confirmation";
-import { invoke } from "@tauri-apps/api/core";
-import { useConfigStore } from "~/stores/config";
+import classes from "../style.module.scss";
 
-type Phase = 'idle' | 'downloading' | 'error';
+type Phase = "idle" | "downloading" | "error";
 
 function extractMajor(version: string) {
 	return Number.parseInt(version.split(".")[0] ?? 0);
@@ -21,7 +21,7 @@ export function UpdaterDialog() {
 
 	const update = useInterfaceStore((s) => s.availableUpdate);
 	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
-	const [phase, setPhase] = useState<Phase>('idle');
+	const [phase, setPhase] = useState<Phase>("idle");
 	const [packageTotal, setPackageTotal] = useState(0);
 	const [packageProgress, setPackageProgress] = useState(0);
 
@@ -35,33 +35,33 @@ export function UpdaterDialog() {
 	});
 
 	const installUpdate = useStable(async () => {
-		if (!update || phase !== 'idle') return;
+		if (!update || phase !== "idle") return;
 
 		if (isDangerous) {
 			const config = useConfigStore.getState();
 
 			await invoke("backup_config", {
 				config: JSON.stringify(config),
-				version: config.configVersion
+				version: config.configVersion,
 			});
 		}
 
-		setPhase('downloading');
+		setPhase("downloading");
 		setPackageProgress(0);
 
 		try {
-			await update.downloadAndInstall(e => {
+			await update.downloadAndInstall((e) => {
 				if (e.event === "Started") {
 					setPackageTotal(e.data.contentLength || 0);
 				} else if (e.event === "Progress") {
-					setPackageProgress(p => p + e.data.chunkLength);
+					setPackageProgress((p) => p + e.data.chunkLength);
 				}
 			});
 
 			await relaunch();
-		} catch(err: any) {
+		} catch (err: any) {
 			console.error(err);
-			setPhase('error');
+			setPhase("error");
 		}
 	});
 
@@ -69,13 +69,11 @@ export function UpdaterDialog() {
 		title: "New major version",
 		message: (
 			<>
-				The update you are about to install is a new major version of Surrealist. Are you sure you want to proceed?
-				<Alert
-					mt="xl"
-					color="orange"
-					title="Warning"
-				>
-					An upgrade could result in incompatibility with older versions of SurrealDB.
+				The update you are about to install is a new major version of
+				Surrealist. Are you sure you want to proceed?
+				<Alert mt="xl" color="orange" title="Warning">
+					An upgrade could result in incompatibility with older
+					versions of SurrealDB.
 				</Alert>
 			</>
 		),
@@ -99,9 +97,10 @@ export function UpdaterDialog() {
 		}
 	});
 
-	const progress = packageTotal > 0
-		? (packageProgress / packageTotal * 100).toFixed(0)
-		: 0;
+	const progress =
+		packageTotal > 0
+			? ((packageProgress / packageTotal) * 100).toFixed(0)
+			: 0;
 
 	return (
 		<Dialog
@@ -111,15 +110,15 @@ export function UpdaterDialog() {
 			shadow="sm"
 			position={{
 				bottom: "var(--mantine-spacing-xl)",
-				left: "var(--mantine-spacing-xl)"
+				left: "var(--mantine-spacing-xl)",
 			}}
 			transitionProps={{
 				transition: "slide-up",
 				timingFunction: "ease",
-				duration: 200
+				duration: 200,
 			}}
 			classNames={{
-				root: classes.updateDialog
+				root: classes.updateDialog,
 			}}
 			onClick={handleClick}
 		>
@@ -141,13 +140,9 @@ export function UpdaterDialog() {
 						New version available
 					</Text>
 					{phase === "downloading" ? (
-						<Text c="gray.5">
-							Installing... ({progress}%)
-						</Text>
+						<Text c="gray.5">Installing... ({progress}%)</Text>
 					) : phase === "error" ? (
-						<Text c="red">
-							Failed to install update
-						</Text>
+						<Text c="red">Failed to install update</Text>
 					) : (
 						<Text c="gray.5">
 							Click to install version {update?.version}

@@ -1,5 +1,12 @@
-import classes from "./style.module.scss";
-import { Box, Group, Stack, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
+import {
+	Box,
+	Group,
+	Stack,
+	Text,
+	Title,
+	Tooltip,
+	UnstyledButton,
+} from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { adapter } from "~/adapter";
@@ -8,7 +15,16 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
-import { iconBook, iconBug, iconClose, iconCloud, iconCommand, iconDiscord, iconHelp } from "~/util/icons";
+import {
+	iconBook,
+	iconBug,
+	iconClose,
+	iconCloud,
+	iconCommand,
+	iconDiscord,
+	iconHelp,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 
 interface Topic {
 	title: string;
@@ -28,40 +44,42 @@ const DOCUMENTATION: Topic = {
 	title: "Documentation",
 	description: "Need help? Check out our documentation for help.",
 	icon: iconBook,
-	onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist")
+	onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist"),
 };
 
 const ISSUE_REPORT: Topic = {
 	title: "Report an issue",
 	description: "Something isn't working right? Let us know and we'll fix it.",
 	icon: iconBug,
-	onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
+	onClick: () =>
+		adapter.openUrl("https://github.com/surrealdb/surrealist/issues"),
 };
 
 const SHORTCUTS: Topic = {
 	title: "Shortcut guide",
 	description: "Learn the keyboard shortcuts to navigate the app faster.",
 	icon: iconCommand,
-	onClick: () => dispatchIntent("open-keymap")
+	onClick: () => dispatchIntent("open-keymap"),
 };
 
 const DISCORD: Topic = {
 	title: "Discord",
 	description: "Connect with other users and get help from the community.",
 	icon: iconDiscord,
-	onClick: () => adapter.openUrl("https://discord.gg/dc4JNWrrMc")
+	onClick: () => adapter.openUrl("https://discord.gg/dc4JNWrrMc"),
 };
 
 const CLOUD: Topic = {
 	title: "Cloud Support",
-	description: "Visit the Cloud Support page for help with your cloud account.",
+	description:
+		"Visit the Cloud Support page for help with your cloud account.",
 	icon: iconCloud,
 	onClick: () => {
 		const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
 
 		setActiveView("cloud");
 		setActiveCloudPage("support");
-	}
+	},
 };
 
 export function HelpAndSupport() {
@@ -91,17 +109,10 @@ export function HelpAndSupport() {
 						mx="sm"
 					/>
 					<Box>
-						<Text
-							c="bright"
-							fw={600}
-							fz="lg"
-							mb={4}
-						>
+						<Text c="bright" fw={600} fz="lg" mb={4}>
 							{tile.title}
 						</Text>
-						<Text fz="sm">
-							{tile.description}
-						</Text>
+						<Text fz="sm">{tile.description}</Text>
 					</Box>
 				</Group>
 			</UnstyledButton>
@@ -119,23 +130,11 @@ export function HelpAndSupport() {
 					openHandle.close();
 				}}
 			>
-				<Icon
-					path={tile.icon}
-					c="bright"
-					size="xl"
-					mb="sm"
-				/>
-				<Text
-					c="bright"
-					fw={600}
-					fz="lg"
-					mb={4}
-				>
+				<Icon path={tile.icon} c="bright" size="xl" mb="sm" />
+				<Text c="bright" fw={600} fz="lg" mb={4}>
 					{tile.title}
 				</Text>
-				<Text fz="sm">
-					{tile.description}
-				</Text>
+				<Text fz="sm">{tile.description}</Text>
 			</UnstyledButton>
 		);
 	}

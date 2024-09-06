@@ -1,4 +1,4 @@
-import { Radio, RadioProps, Text } from "@mantine/core";
+import { Radio, type RadioProps, Text } from "@mantine/core";
 import { Icon } from "../Icon";
 
 export interface FancyRadioProps extends RadioProps {
@@ -7,7 +7,12 @@ export interface FancyRadioProps extends RadioProps {
 	subtitle?: string;
 }
 
-export const FancyRadio = ({ title, titleIcon, subtitle, ...props }: FancyRadioProps) => {
+export const FancyRadio = ({
+	title,
+	titleIcon,
+	subtitle,
+	...props
+}: FancyRadioProps) => {
 	const label = (
 		<>
 			<Text style={{ display: "flex", alignItems: "center" }} size="md">

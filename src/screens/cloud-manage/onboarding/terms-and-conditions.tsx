@@ -1,28 +1,24 @@
 import { Anchor, Button, Checkbox, Group, Stack, Text } from "@mantine/core";
-import { openModal, closeAllModals } from "@mantine/modals";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { invalidateSession } from "../api/auth";
-import { Spacer } from "~/components/Spacer";
+import { closeAllModals, openModal } from "@mantine/modals";
 import { useState } from "react";
-import { openAboutModal, Question } from "./about-yourself";
-import { iconCheck } from "~/util/icons";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 import { useCheckbox } from "~/hooks/events";
 import { useStable } from "~/hooks/stable";
-import { fetchAPI } from "../api";
 import { showError } from "~/util/helpers";
+import { iconCheck } from "~/util/icons";
+import { fetchAPI } from "../api";
+import { invalidateSession } from "../api/auth";
+import { type Question, openAboutModal } from "./about-yourself";
 
 export function openTermsModal() {
 	openModal({
 		size: "lg",
 		closeOnEscape: false,
 		closeOnClickOutside: false,
-		title: (
-			<PrimaryTitle>Terms and Conditions</PrimaryTitle>
-		),
-		children: (
-			<TermsModal />
-		)
+		title: <PrimaryTitle>Terms and Conditions</PrimaryTitle>,
+		children: <TermsModal />,
 	});
 }
 
@@ -42,17 +38,17 @@ function TermsModal() {
 
 		try {
 			await fetchAPI("/user/terms-accepted", {
-				method: "PATCH"
+				method: "PATCH",
 			});
 
 			const questions = await fetchAPI<Question[]>("/user/form");
 
 			closeAllModals();
 			openAboutModal(questions);
-		} catch(err: any) {
+		} catch (err: any) {
 			showError({
 				title: "Failed to accept terms",
-				subtitle: err.message
+				subtitle: err.message,
 			});
 		} finally {
 			setLoading(false);
@@ -62,7 +58,8 @@ function TermsModal() {
 	return (
 		<Stack>
 			<Text fz="lg">
-				Please accept our terms and conditions before getting started with Surreal Cloud.
+				Please accept our terms and conditions before getting started
+				with Surreal Cloud.
 			</Text>
 			<Checkbox
 				my="xl"
@@ -70,16 +67,29 @@ function TermsModal() {
 				onChange={updateChecked}
 				label={
 					<>
-						I have read and agree to the <Anchor href="https://surrealdb.com/legal/cloud-beta-terms" target="_blank">Terms and Conditions</Anchor>, <Anchor href="https://surrealdb.com/legal/acceptable-use" target="_blank">Acceptable Use Policy</Anchor>, and <Anchor href="https://surrealdb.com/legal/privacy">Privacy Policy</Anchor>
+						I have read and agree to the{" "}
+						<Anchor
+							href="https://surrealdb.com/legal/cloud-beta-terms"
+							target="_blank"
+						>
+							Terms and Conditions
+						</Anchor>
+						,{" "}
+						<Anchor
+							href="https://surrealdb.com/legal/acceptable-use"
+							target="_blank"
+						>
+							Acceptable Use Policy
+						</Anchor>
+						, and{" "}
+						<Anchor href="https://surrealdb.com/legal/privacy">
+							Privacy Policy
+						</Anchor>
 					</>
 				}
 			/>
 			<Group>
-				<Button
-					color="slate"
-					variant="light"
-					onClick={declineTerms}
-				>
+				<Button color="slate" variant="light" onClick={declineTerms}>
 					Decline
 				</Button>
 				<Spacer />

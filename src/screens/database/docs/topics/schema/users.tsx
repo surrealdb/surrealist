@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsSchemaUsers({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -61,7 +61,7 @@ export function DocsSchemaUsers({ language }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -73,7 +73,6 @@ export function DocsSchemaUsers({ language }: TopicProps) {
 					and assign them to Users with scopes you can manage
 					authentication and access control for your table and fields.
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

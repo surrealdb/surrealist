@@ -1,13 +1,18 @@
-import escape from "escape-string-regexp";
 import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { uid } from "radash";
-import { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { adapter } from "~/adapter";
-import { Authentication, TabQuery } from "~/types";
-import { decodeCbor, escape_ident } from "surrealdb";
 import { Value } from "@surrealdb/ql-wasm";
+import escapeRegex from "escape-string-regexp";
+import { uid } from "radash";
+import type {
+	CSSProperties,
+	FocusEvent,
+	ReactNode,
+	SyntheticEvent,
+} from "react";
+import { decodeCbor, escape_ident } from "surrealdb";
+import { adapter } from "~/adapter";
+import type { Authentication, TabQuery } from "~/types";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -187,7 +192,7 @@ export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
 export function isPermissionError(result: any) {
 	return (
 		typeof result === "string" &&
-        result.includes("Not enough permissions to perform this action")
+		result.includes("Not enough permissions to perform this action")
 	);
 }
 
@@ -201,7 +206,9 @@ export function isPermissionError(result: any) {
 export function connectionUri(options: Authentication, path?: string) {
 	if (options.protocol === "mem") {
 		return "mem://";
-	} else if (options.protocol === "indxdb") {
+	}
+
+	if (options.protocol === "indxdb") {
 		return `indxdb://${options.hostname}`;
 	}
 
@@ -325,24 +332,6 @@ export function tb(value: string) {
 }
 
 /**
- * Compute a hash code for the given string
- *
- * @param value The string to hash
- * @returns The hash code
- */
-export function hashCode(value: string) {
-	let hash = 0;
-
-	for (let i = 0; i < value.length; i++) {
-		const code = value.codePointAt(i)!;
-		hash = (hash << 5) - hash + code;
-		hash = hash & hash;
-	}
-
-	return hash;
-}
-
-/**
  * Parse the JWT payload from the given token
  * without checking for validity. This should
  * never be used in a secure context and only
@@ -376,7 +365,7 @@ export function fastParseJwt(token: string) {
 export function fuzzyMatch(query: string, target: string) {
 	const pattern = query
 		.split(" ")
-		.map((q) => escape(q))
+		.map((q) => escapeRegex(q))
 		.join(".*?");
 	const regex = new RegExp(pattern, "i");
 
@@ -416,8 +405,8 @@ export function extractVariables(query: string): string[] {
 export function isModKey(event: Event) {
 	if (event instanceof KeyboardEvent)
 		return adapter.platform === "darwin"
-			? event.key == "Meta"
-			: event.key == "Control";
+			? event.key === "Meta"
+			: event.key === "Control";
 
 	if (event instanceof MouseEvent)
 		return adapter.platform === "darwin" ? event.metaKey : event.ctrlKey;

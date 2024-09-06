@@ -1,29 +1,42 @@
-import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
-import { FunctionsPanel } from "../FunctionsPanel";
-import { EditorPanel } from "../EditorPanel";
-import { ChangeEvent, memo, useRef, useState } from "react";
-import { Icon } from "~/components/Icon";
-import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
-import { useStable } from "~/hooks/stable";
+import {
+	Box,
+	Button,
+	Group,
+	Modal,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Form } from "~/components/Form";
-import { SchemaFunction } from "~/types";
-import { useImmer } from "use-immer";
-import { useSchema } from "~/hooks/schema";
-import { useSaveable } from "~/hooks/save";
-import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
-import { useConfirmation } from "~/providers/Confirmation";
-import { useViewEffect } from "~/hooks/view";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { type ChangeEvent, memo, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { usePanelMinSize } from "~/hooks/panels";
+import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
+import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsConnected } from "~/hooks/connection";
+import { usePanelMinSize } from "~/hooks/panels";
+import { useSaveable } from "~/hooks/save";
+import { useSchema } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { useViewEffect } from "~/hooks/view";
+import { useConfirmation } from "~/providers/Confirmation";
+import { executeQuery } from "~/screens/database/connection/connection";
+import type { SchemaFunction } from "~/types";
 import { showError } from "~/util/helpers";
+import {
+	iconChevronRight,
+	iconFunction,
+	iconOpen,
+	iconPlus,
+} from "~/util/icons";
+import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
+import { EditorPanel } from "../EditorPanel";
+import { FunctionsPanel } from "../FunctionsPanel";
 
 const FunctionsPanelLazy = memo(FunctionsPanel);
 const EditorPanelLazy = memo(EditorPanel);
@@ -42,10 +55,12 @@ export function FunctionsView() {
 	const handle = useSaveable({
 		valid: !!details && details.args.every(([name, kind]) => name && kind),
 		track: {
-			details
+			details,
 		},
 		onSave: async () => {
-			const query = buildFunctionDefinition(details!);
+			if (!details) return;
+
+			const query = buildFunctionDefinition(details);
 
 			await executeQuery(query).catch(console.error);
 			await syncDatabaseSchema();
@@ -59,8 +74,8 @@ export function FunctionsView() {
 
 	const updateCreateName = useStable((e: ChangeEvent<HTMLInputElement>) => {
 		const name = e.target.value
-			.replaceAll(/\s/g, '_')
-			.replaceAll(/[^\w:]/g, '')
+			.replaceAll(/\s/g, "_")
+			.replaceAll(/[^\w:]/g, "")
 			.toLocaleLowerCase();
 
 		setCreateName(name);
@@ -97,7 +112,7 @@ export function FunctionsView() {
 
 		setDetails({
 			...selectedFunction,
-			block: formatQuery(selectedFunction.block)
+			block: formatQuery(selectedFunction.block),
 		});
 
 		handle.track();
@@ -115,9 +130,9 @@ export function FunctionsView() {
 				comment: "",
 				block: "",
 				permissions: true,
-				returns: ""
+				returns: "",
 			}),
-			name: createName
+			name: createName,
 		});
 
 		duplicationRef.current = null;
@@ -131,7 +146,8 @@ export function FunctionsView() {
 	});
 
 	const removeFunction = useConfirmation({
-		message: "You are about to remove this function. This action cannot be undone.",
+		message:
+			"You are about to remove this function. This action cannot be undone.",
 		confirmText: "Remove",
 		onConfirm: async (name: string) => {
 			await executeQuery(`REMOVE FUNCTION fn::${name}`);
@@ -155,13 +171,9 @@ export function FunctionsView() {
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel
-						defaultSize={minSize}
-						minSize={minSize}
-						maxSize={35}
-					>
+					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
 						<FunctionsPanelLazy
-							active={details?.name || ''}
+							active={details?.name || ""}
 							functions={functions}
 							onCreate={openCreator}
 							onDelete={removeFunction}
@@ -192,12 +204,15 @@ export function FunctionsView() {
 
 										-- And invoke them from any query
 										RETURN fn::greet("Tobie");
-									`
+									`,
 								}}
 							>
 								<Text>
-									Schema functions allow you to define stored procedures that can be reused throughout your queries.
-									This view allows you to effortlessly create and manage your functions.
+									Schema functions allow you to define stored
+									procedures that can be reused throughout
+									your queries. This view allows you to
+									effortlessly create and manage your
+									functions.
 								</Text>
 								<Group>
 									<Button
@@ -214,7 +229,11 @@ export function FunctionsView() {
 										color="slate"
 										variant="light"
 										rightSection={<Icon path={iconOpen} />}
-										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function")}
+										onClick={() =>
+											adapter.openUrl(
+												"https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function",
+											)
+										}
 									>
 										Learn more
 									</Button>
@@ -228,9 +247,7 @@ export function FunctionsView() {
 			<Modal
 				opened={showCreator}
 				onClose={showCreatorHandle.close}
-				title={
-					<PrimaryTitle>Create new function</PrimaryTitle>
-				}
+				title={<PrimaryTitle>Create new function</PrimaryTitle>}
 			>
 				<Form onSubmit={createFunction}>
 					<Stack>
@@ -246,15 +263,16 @@ export function FunctionsView() {
 									ff="mono"
 									fz="xl"
 									c="surreal"
-									style={{ transform: 'translate(4px, 1px)' }}
+									style={{ transform: "translate(4px, 1px)" }}
 								>
 									fn::
 								</Text>
 							}
 							styles={{
 								input: {
-									fontFamily: 'var(--mantine-font-family-monospace)'
-								}
+									fontFamily:
+										"var(--mantine-font-family-monospace)",
+								},
 							}}
 						/>
 						<Group mt="lg">

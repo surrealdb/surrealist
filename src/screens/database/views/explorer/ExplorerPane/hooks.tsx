@@ -1,6 +1,9 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSchema } from "~/hooks/schema";
-import { executeQueryFirst, executeQuerySingle } from "~/screens/database/connection/connection";
+import {
+	executeQueryFirst,
+	executeQuerySingle,
+} from "~/screens/database/connection/connection";
 
 export type SortMode = [string, "asc" | "desc"] | null;
 
@@ -16,11 +19,18 @@ export interface RecordQueryInput {
 export function useRecordQuery(input: RecordQueryInput) {
 	const schema = useSchema();
 
-	return useQuery<{ records: any[], headers: string[] }>({
+	return useQuery<{ records: any[]; headers: string[] }>({
 		queryKey: ["explorer", "records", input],
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
-			const { activeTable, currentPage, pageSize, sortMode, isFilterValid, filter } = input;
+			const {
+				activeTable,
+				currentPage,
+				pageSize,
+				sortMode,
+				isFilterValid,
+				filter,
+			} = input;
 
 			try {
 				if (!activeTable || !isFilterValid) {
@@ -46,18 +56,21 @@ export function useRecordQuery(input: RecordQueryInput) {
 					fetchQuery += ` START ${startAt}`;
 				}
 
-				console.log('Executing', fetchQuery);
+				console.log("Executing", fetchQuery);
 
-				const records = await executeQueryFirst(fetchQuery) || [];
+				const records = (await executeQueryFirst(fetchQuery)) || [];
 
-				console.log('Done');
+				console.log("Done");
 
-				const headers = schema?.tables
-					?.find((t) => t.schema.name === activeTable)
-					?.fields?.filter(
-						(f) => !f.name.includes("[*]") && !f.name.includes("."),
-					)
-					?.map((f) => f.name) || [];
+				const headers =
+					schema?.tables
+						?.find((t) => t.schema.name === activeTable)
+						?.fields?.filter(
+							(f) =>
+								!f.name.includes("[*]") &&
+								!f.name.includes("."),
+						)
+						?.map((f) => f.name) || [];
 
 				return {
 					records,
@@ -66,7 +79,7 @@ export function useRecordQuery(input: RecordQueryInput) {
 			} catch {
 				return { records: [], headers: [] };
 			}
-		}
+		},
 	});
 }
 
@@ -101,6 +114,6 @@ export function usePaginationQuery(input: PaginationQueryInput) {
 			} catch {
 				return 0;
 			}
-		}
+		},
 	});
 }

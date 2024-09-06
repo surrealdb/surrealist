@@ -4,7 +4,7 @@ import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { fetchAPI } from "~/screens/cloud-manage/api";
-import { CloudInstance } from "~/types";
+import type { CloudInstance } from "~/types";
 import { iconConsole } from "~/util/icons";
 
 export interface ConnectCliModalProps {
@@ -22,15 +22,18 @@ export function ConnectCliModal({
 
 	useLayoutEffect(() => {
 		if (opened) {
-			fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then((response) => {
-				setToken(response.token);
-			});
+			fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
+				(response) => {
+					setToken(response.token);
+				},
+			);
 		}
-	
-	}, [opened]);
+	}, [opened, instance.id]);
 
 	const endpoint = `wss://${instance.host}`;
-	const command = token ? `surreal sql --endpoint ${endpoint} --token ${token}` : 'Loading...';
+	const command = token
+		? `surreal sql --endpoint ${endpoint} --token ${token}`
+		: "Loading...";
 
 	return (
 		<Modal
@@ -47,15 +50,16 @@ export function ConnectCliModal({
 			}
 		>
 			<Text size="lg">
-				Before connecting to this database, make sure you have the <Anchor href="https://surrealdb.com/docs/surrealdb/installation">SurrealDB CLI</Anchor> installed.
-				Once it is installed, simply open the terminal of your choice and run the following command to connect to your Surreal Cloud instance.
+				Before connecting to this database, make sure you have the{" "}
+				<Anchor href="https://surrealdb.com/docs/surrealdb/installation">
+					SurrealDB CLI
+				</Anchor>{" "}
+				installed. Once it is installed, simply open the terminal of
+				your choice and run the following command to connect to your
+				Surreal Cloud instance.
 			</Text>
 
-			<CodePreview
-				mt="xl"
-				value={command}
-				withCopy
-			/>
+			<CodePreview mt="xl" value={command} withCopy />
 		</Modal>
 	);
 }

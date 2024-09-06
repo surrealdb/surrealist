@@ -1,7 +1,7 @@
-import { FeatureFlagProvider } from '@theopensource-company/feature-flags/react';
-import { PropsWithChildren, useEffect } from 'react';
-import { useConfigStore } from '~/stores/config';
-import { featureFlags } from '~/util/feature-flags';
+import { FeatureFlagProvider } from "@theopensource-company/feature-flags/react";
+import { type PropsWithChildren, useEffect } from "react";
+import { useConfigStore } from "~/stores/config";
+import { featureFlags } from "~/util/feature-flags";
 
 export function FeatureFlagsProvider({ children }: PropsWithChildren) {
 	const fromConfig = useConfigStore((s) => s.featureFlags);

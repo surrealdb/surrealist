@@ -1,7 +1,7 @@
-import { useRef, useEffect, useState, useId } from "react";
-import { useStable } from "./stable";
-import type { AnimationItem } from "lottie-web";
 import { useQuery } from "@tanstack/react-query";
+import type { AnimationItem } from "lottie-web";
+import { useEffect, useId, useRef, useState } from "react";
+import { useStable } from "./stable";
 
 export interface HoverIconOptions {
 	animation: any;
@@ -23,7 +23,7 @@ export function useHoverIcon(options: HoverIconOptions) {
 	const hasEnded = useStable(() => {
 		const current = itemRef.current?.currentFrame ?? 0;
 		const total = itemRef.current?.totalFrames ?? 1;
-		return current + 1 == total;
+		return current + 1 === total;
 	});
 
 	const onMouseEnter = useStable(() => {
@@ -45,21 +45,20 @@ export function useHoverIcon(options: HoverIconOptions) {
 	const id = useId();
 
 	const { isPending } = useQuery({
-		
 		queryKey: ["lottie", id],
 		queryFn: async () => {
-			const lottie = await import('lottie-web/build/player/lottie_light');
+			const lottie = await import("lottie-web/build/player/lottie_light");
 			const animationData = await Promise.resolve(options.animation);
 
 			if (isMounted && ref.current && !ref.current.innerHTML) {
 				const item = lottie.default.loadAnimation({
 					container: ref.current,
-					renderer: 'svg',
+					renderer: "svg",
 					autoplay: false,
 					loop: false,
 					animationData,
 					rendererSettings: {
-						className: options.className
+						className: options.className,
 					},
 				});
 
@@ -80,13 +79,13 @@ export function useHoverIcon(options: HoverIconOptions) {
 			setIsMounted(false);
 			itemRef.current?.destroy();
 		};
-	}, [options.animation, options.className]);
+	}, []);
 
 	return {
 		isLoading: isPending,
 		ref,
 		onMouseEnter,
 		onMouseLeave,
-		item: itemRef.current
+		item: itemRef.current,
 	};
 }

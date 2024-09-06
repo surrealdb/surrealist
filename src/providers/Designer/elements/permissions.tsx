@@ -1,14 +1,12 @@
 import { Accordion, Stack } from "@mantine/core";
-import { ElementProps, SectionTitle } from "../helpers";
 import { PermissionInput } from "~/components/Inputs";
 import { iconKey } from "~/util/icons";
+import { type ElementProps, SectionTitle } from "../helpers";
 
 export function PermissionsElement({ data, setData }: ElementProps) {
 	return (
 		<Accordion.Item value="permissions">
-			<SectionTitle icon={iconKey}>
-				Permissions
-			</SectionTitle>
+			<SectionTitle icon={iconKey}>Permissions</SectionTitle>
 			<Accordion.Panel>
 				<Stack>
 					<PermissionInput

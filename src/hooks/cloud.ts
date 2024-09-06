@@ -1,6 +1,10 @@
 import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
-import { verifyAuthentication, refreshAccess, checkSessionExpiry } from "~/screens/cloud-manage/api/auth";
+import {
+	checkSessionExpiry,
+	refreshAccess,
+	verifyAuthentication,
+} from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
@@ -10,17 +14,17 @@ import { useIntent } from "./url";
  * Returns the actively selected organization
  */
 export function useOrganization() {
-	const orgs = useCloudStore(s => s.organizations);
-	const active = useConfigStore(s => s.activeCloudOrg);
+	const orgs = useCloudStore((s) => s.organizations);
+	const active = useConfigStore((s) => s.activeCloudOrg);
 
-	return orgs.find(org => org.id === active);
+	return orgs.find((org) => org.id === active);
 }
 
 /**
  * Returns whether the user is authenticated to Surreal Cloud
  */
 export function useIsAuthenticated() {
-	return useCloudStore(s => s.authState === "authenticated");
+	return useCloudStore((s) => s.authState === "authenticated");
 }
 
 /**
@@ -28,10 +32,10 @@ export function useIsAuthenticated() {
  */
 export function useAvailableRegions() {
 	const current = useOrganization();
-	const regions = useCloudStore(s => s.regions);
+	const regions = useCloudStore((s) => s.regions);
 	const valid = new Set(current?.plan?.regions ?? []);
 
-	return regions.filter(region => valid.has(region.slug));
+	return regions.filter((region) => valid.has(region.slug));
 }
 
 /**
@@ -39,17 +43,19 @@ export function useAvailableRegions() {
  */
 export function useAvailableInstanceTypes() {
 	const current = useOrganization();
-	const instanceTypes = useCloudStore(s => s.instanceTypes);
-	const valid = new Set(current?.plan?.instance_types?.map(t => t.slug) ?? []);
+	const instanceTypes = useCloudStore((s) => s.instanceTypes);
+	const valid = new Set(
+		current?.plan?.instance_types?.map((t) => t.slug) ?? [],
+	);
 
-	return instanceTypes.filter(type => valid.has(type.slug));
+	return instanceTypes.filter((type) => valid.has(type.slug));
 }
 
 /**
  * Lists out the available instance versions
  */
 export function useAvailableInstanceVersions() {
-	return useCloudStore(s => s.instanceVersions);
+	return useCloudStore((s) => s.instanceVersions);
 }
 
 /**
@@ -72,9 +78,12 @@ export function useCloudAuthentication() {
 		}
 
 		// Automatically refresh the session before it expires
-		setInterval(() => {
-			checkSessionExpiry();
-		}, 1000 * 60 * 3);
+		setInterval(
+			() => {
+				checkSessionExpiry();
+			},
+			1000 * 60 * 3,
+		);
 	}, []);
 
 	// React to callback intents

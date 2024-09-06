@@ -1,26 +1,39 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Alert, Badge, Box, Button, Drawer, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { type EditorView, lineNumbers } from "@codemirror/view";
+import {
+	ActionIcon,
+	Alert,
+	Badge,
+	Box,
+	Button,
+	Drawer,
+	Group,
+	Select,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import { surrealql } from "@surrealdb/codemirror";
+import { useLayoutEffect, useState } from "react";
+import { RecordId, StringRecordId, Table } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
+import { DrawerResizer } from "~/components/DrawerResizer";
+import { Icon } from "~/components/Icon";
+import { CodeInput } from "~/components/Inputs";
+import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useInputState } from "@mantine/hooks";
-import { useLayoutEffect, useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { iconClose, iconPlus, iconWarning } from "~/util/icons";
-import { RecordsChangedEvent } from "~/util/global-events";
-import { useTableNames, useTables } from "~/hooks/schema";
-import { executeQuery } from "~/screens/database/connection/connection";
-import { RecordId, StringRecordId, Table } from "surrealdb";
-import { surrealql } from "@surrealdb/codemirror";
-import { useValueValidator } from "~/hooks/surrealql";
-import { DrawerResizer } from "~/components/DrawerResizer";
-import { Label } from "~/components/Label";
-import { extractEdgeRecords } from "~/util/schema";
-import { CodeInput } from "~/components/Inputs";
-import { QueryResponse } from "~/types";
-import { EditorView, lineNumbers } from "@codemirror/view";
 import { surqlLinting } from "~/editor";
+import { useTableNames, useTables } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { useValueValidator } from "~/hooks/surrealql";
+import { executeQuery } from "~/screens/database/connection/connection";
+import type { QueryResponse } from "~/types";
+import { RecordsChangedEvent } from "~/util/global-events";
+import { iconClose, iconPlus, iconWarning } from "~/util/icons";
+import { extractEdgeRecords } from "~/util/schema";
+import classes from "./style.module.scss";
 
 type EdgeInfo = [boolean, string[], string[]];
 
@@ -31,11 +44,11 @@ export interface CreatorDrawerProps {
 }
 
 export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
-	const [recordTable, setRecordTable] = useState('');
-	const [recordId, setRecordId] = useInputState('');
-	const [recordBody, setRecordBody] = useInputState('');
-	const [recordFrom, setRecordFrom] = useInputState('');
-	const [recordTo, setRecordTo] = useState('');
+	const [recordTable, setRecordTable] = useState("");
+	const [recordId, setRecordId] = useInputState("");
+	const [recordBody, setRecordBody] = useInputState("");
+	const [recordFrom, setRecordFrom] = useInputState("");
+	const [recordTo, setRecordTo] = useState("");
 	const [isValid, body] = useValueValidator(recordBody);
 	const [errors, setErrors] = useState<string[]>([]);
 	const tables = useTableNames();
@@ -64,19 +77,28 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			const content = {
 				...body,
 				in: from,
-				out: to
+				out: to,
 			};
 
-			response = await executeQuery(/* surql */ `RELATE $from->$id->$to CONTENT $content`, { from, id, to, content });
+			response = await executeQuery(
+				/* surql */ `RELATE $from->$id->$to CONTENT $content`,
+				{ from, id, to, content },
+			);
 		} else {
-			response = await executeQuery(/* surql */ `CREATE $id CONTENT $body`, { id, body });
+			response = await executeQuery(
+				/* surql */ `CREATE $id CONTENT $body`,
+				{ id, body },
+			);
 		}
 
 		const errors = response.flatMap((r) => {
 			if (r.success) return [];
 
 			return [
-				(r.result as string).replace('There was a problem with the database: ', '')
+				(r.result as string).replace(
+					"There was a problem with the database: ",
+					"",
+				),
 			];
 		});
 
@@ -89,22 +111,21 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	});
 
 	const setCursor = useStable((view: EditorView) => {
-		view.dispatch({selection: {anchor: 6, head: 6}});
+		view.dispatch({ selection: { anchor: 6, head: 6 } });
 	});
 
 	useLayoutEffect(() => {
 		if (opened) {
 			setErrors([]);
 			setRecordTable(table);
-			setRecordId('');
-			setRecordBody('{\n    \n}');
-			setRecordFrom('');
-			setRecordTo('');
+			setRecordId("");
+			setRecordBody("{\n    \n}");
+			setRecordFrom("");
+			setRecordTo("");
 		}
-	
 	}, [opened, table]);
 
-	const isFullyValid = isValid && (!isRelation || recordFrom && recordTo);
+	const isFullyValid = isValid && (!isRelation || (recordFrom && recordTo));
 	const [width, setWidth] = useState(650);
 
 	return (
@@ -121,15 +142,11 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					display: "flex",
 					flexWrap: "nowrap",
 					flexDirection: "column",
-					gap: "var(--mantine-spacing-lg)"
-				}
+					gap: "var(--mantine-spacing-lg)",
+				},
 			}}
 		>
-			<DrawerResizer
-				minSize={500}
-				maxSize={1500}
-				onResize={setWidth}
-			/>
+			<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
 
 			<Group gap="sm">
 				<PrimaryTitle>
@@ -140,18 +157,12 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				<Spacer />
 
 				{!isValid && (
-					<Badge
-						color="red"
-						variant="light"
-					>
+					<Badge color="red" variant="light">
 						Invalid content
 					</Badge>
 				)}
 
-				<ActionIcon
-					onClick={onClose}
-					aria-label="Close creator drawer"
-				>
+				<ActionIcon onClick={onClose} aria-label="Close creator drawer">
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
@@ -161,7 +172,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				gap="md"
 				style={{
 					flexShrink: 1,
-					flexBasis: 0
+					flexBasis: 0,
 				}}
 			>
 				{errors.map((error, i) => (
@@ -171,7 +182,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						icon={<Icon path={iconWarning} />}
 						color="red.5"
 						style={{
-							whiteSpace: "pre-wrap"
+							whiteSpace: "pre-wrap",
 						}}
 					>
 						{error}
@@ -205,7 +216,8 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 									<Text>From record</Text>
 									{fromTables.length > 0 && (
 										<Text c="slate">
-											Valid tables: {fromTables.join(", ")}
+											Valid tables:{" "}
+											{fromTables.join(", ")}
 										</Text>
 									)}
 								</Box>
@@ -255,9 +267,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				variant="gradient"
 				onClick={handleSubmit}
 				style={{ flexShrink: 0 }}
-				rightSection={
-					<Icon path={iconPlus} />
-				}
+				rightSection={<Icon path={iconPlus} />}
 			>
 				Create {isRelation ? "relation" : "record"}
 			</Button>
