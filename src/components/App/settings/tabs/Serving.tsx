@@ -1,8 +1,8 @@
-import { TextInput, NumberInput, Select, SimpleGrid } from "@mantine/core";
-import { useStable } from "~/hooks/stable";
-import { SettingsSection } from "../utilities";
+import { NumberInput, Select, SimpleGrid, TextInput } from "@mantine/core";
 import { useSetting } from "~/hooks/config";
-import { LogLevel, Selection } from "~/types";
+import { useStable } from "~/hooks/stable";
+import type { LogLevel, Selection } from "~/types";
+import { SettingsSection } from "../utilities";
 
 const CAT = "serving";
 
@@ -76,7 +76,7 @@ export function ServingTab() {
 					label="SurrealDB executable path"
 					value={executable}
 					spellCheck={false}
-					onChange={e => setExecutable(e.target.value)}
+					onChange={(e) => setExecutable(e.target.value)}
 					placeholder="Leave empty to infer from $PATH"
 				/>
 			</SettingsSection>
@@ -89,7 +89,7 @@ export function ServingTab() {
 						placeholder="root"
 						value={username}
 						spellCheck={false}
-						onChange={e => setUsername(e.target.value)}
+						onChange={(e) => setUsername(e.target.value)}
 					/>
 
 					<TextInput
@@ -98,7 +98,7 @@ export function ServingTab() {
 						placeholder="root"
 						value={password}
 						spellCheck={false}
-						onChange={e => setPassword(e.target.value)}
+						onChange={(e) => setPassword(e.target.value)}
 					/>
 				</SimpleGrid>
 			</SettingsSection>
@@ -114,14 +114,24 @@ export function ServingTab() {
 						onChange={setDriver as any}
 					/>
 
-					{(driver === "file" || driver === "tikv" || driver === "surrealkv") && (
+					{(driver === "file" ||
+						driver === "tikv" ||
+						driver === "surrealkv") && (
 						<TextInput
 							w="unset"
-							label={isFileDriver ? "Storage path" : "Storage cluster address"}
-							placeholder={isFileDriver ? "/path/to/storage" : "address:port"}
+							label={
+								isFileDriver
+									? "Storage path"
+									: "Storage cluster address"
+							}
+							placeholder={
+								isFileDriver
+									? "/path/to/storage"
+									: "address:port"
+							}
 							value={storage}
 							spellCheck={false}
-							onChange={e => setStorage(e.target.value)}
+							onChange={(e) => setStorage(e.target.value)}
 						/>
 					)}
 				</SimpleGrid>

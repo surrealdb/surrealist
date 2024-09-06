@@ -1,5 +1,5 @@
-import { CompletionSource } from "@codemirror/autocomplete";
-import { Extension } from "@codemirror/state";
+import type { CompletionSource } from "@codemirror/autocomplete";
+import type { Extension } from "@codemirror/state";
 import { surrealqlLanguage } from "@surrealdb/codemirror";
 import { getActiveQuery } from "~/util/connection";
 import { tryParseParams } from "~/util/helpers";
@@ -17,10 +17,10 @@ const VARIABLE_SOURCE: CompletionSource = (context) => {
 	return {
 		from: match ? match.from : context.pos,
 		validFor: /\$\w+$/,
-		options: variables.map(variable => ({
-			label: '$' + variable,
-			type: "variable"
-		}))
+		options: variables.map((variable) => ({
+			label: `$${variable}`,
+			type: "variable",
+		})),
 	};
 };
 
@@ -29,6 +29,6 @@ const VARIABLE_SOURCE: CompletionSource = (context) => {
  */
 export const surqlVariableCompletion = (): Extension => {
 	return surrealqlLanguage.data.of({
-		autocomplete: VARIABLE_SOURCE
+		autocomplete: VARIABLE_SOURCE,
 	});
 };

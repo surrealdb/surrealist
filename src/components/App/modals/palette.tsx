@@ -12,21 +12,25 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { useConnection } from "~/hooks/connection";
-import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
-import { Icon } from "~/components/Icon";
-import { iconOpen, iconServer } from "~/util/icons";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Command, CommandCategory, computeCommands } from "~/util/commands";
 import { useInputState } from "@mantine/hooks";
-import { useConfigStore } from "~/stores/config";
-import { useStable } from "~/hooks/stable";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { adapter } from "~/adapter";
-import { Spacer } from "~/components/Spacer";
+import { Icon } from "~/components/Icon";
 import { Shortcut } from "~/components/Shortcut";
-import { dispatchIntent, useIntent } from "~/hooks/url";
+import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
+import { useConnection } from "~/hooks/connection";
 import { useKeymap } from "~/hooks/keymap";
+import { useStable } from "~/hooks/stable";
+import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
+import {
+	type Command,
+	type CommandCategory,
+	computeCommands,
+} from "~/util/commands";
+import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
+import { iconOpen, iconServer } from "~/util/icons";
 
 export function CommandPaletteModal() {
 	const { pushCommand } = useConfigStore.getState();
@@ -47,7 +51,6 @@ export function CommandPaletteModal() {
 			setCategories(cmds);
 			setSelected(cmds[0]?.commands[0] ?? null);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isOpen]);
 
 	const [filtered, flattened] = useMemo(() => {
@@ -59,21 +62,21 @@ export function CommandPaletteModal() {
 			const commands = fuzzyMatch(search, cat.name)
 				? cat.commands
 				: cat.commands.filter(
-					(cmd) =>
-						fuzzyMatch(search, cmd.name) ||
+						(cmd) =>
+							fuzzyMatch(search, cmd.name) ||
 							cmd.aliases?.find((alias) =>
-								fuzzyMatch(search, alias)
-							)
-				);
+								fuzzyMatch(search, alias),
+							),
+					);
 
 			return commands.length === 0
 				? []
 				: [
-					{
-						...cat,
-						commands,
-					},
-				];
+						{
+							...cat,
+							commands,
+						},
+					];
 		});
 
 		const flattened = filtered.flatMap((cat) => cat.commands);
@@ -129,10 +132,10 @@ export function CommandPaletteModal() {
 		if (selected) {
 			let target: Command | undefined;
 
-			if (e.key == "ArrowDown" || (e.key == "Tab" && !e.shiftKey)) {
+			if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
 				target =
 					flattened[flattened.indexOf(selected) + 1] ?? flattened[0];
-			} else if (e.key == "ArrowUp" || (e.key == "Tab" && e.shiftKey)) {
+			} else if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
 				target =
 					flattened[flattened.indexOf(selected) - 1] ??
 					flattened.at(-1);
@@ -156,9 +159,12 @@ export function CommandPaletteModal() {
 	useIntent("open-command-palette", openHandle.open);
 
 	useKeymap([
-		["mod+k", () => {
-			openHandle.open();
-		}]
+		[
+			"mod+k",
+			() => {
+				openHandle.open();
+			},
+		],
 	]);
 
 	return (
@@ -230,7 +236,7 @@ export function CommandPaletteModal() {
 												>
 													{cmd.name}
 												</Text>
-												{cmd.action.type == "href" && (
+												{cmd.action.type === "href" && (
 													<Icon
 														path={iconOpen}
 														className={
@@ -245,14 +251,14 @@ export function CommandPaletteModal() {
 														<Spacer />
 														<Group gap="lg">
 															{(Array.isArray(
-																cmd.shortcut
+																cmd.shortcut,
 															)
 																? cmd.shortcut
 																: [cmd.shortcut]
 															).map(
 																(
 																	shortcut,
-																	i
+																	i,
 																) => (
 																	<Shortcut
 																		key={i}
@@ -260,7 +266,7 @@ export function CommandPaletteModal() {
 																			shortcut
 																		}
 																	/>
-																)
+																),
 															)}
 														</Group>
 													</>

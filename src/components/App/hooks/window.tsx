@@ -5,9 +5,18 @@ import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 
 export function useWindowSettings() {
-	const [windowScale, setWindowScale] = useSetting("appearance", "windowScale");
-	const [editorScale, setEditorScale] = useSetting("appearance", "editorScale");
-	const [windowPinned, setWindowPinned] = useSetting("behavior", "windowPinned");
+	const [windowScale, setWindowScale] = useSetting(
+		"appearance",
+		"windowScale",
+	);
+	const [editorScale, setEditorScale] = useSetting(
+		"appearance",
+		"editorScale",
+	);
+	const [windowPinned, setWindowPinned] = useSetting(
+		"behavior",
+		"windowPinned",
+	);
 
 	const increaseWindowScale = useStable(() => {
 		setWindowScale(clamp(windowScale + 10, 75, 150));

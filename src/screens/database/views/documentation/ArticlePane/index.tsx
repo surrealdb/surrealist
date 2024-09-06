@@ -1,15 +1,22 @@
 import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
-import { ContentPane } from "~/components/Pane";
-import { DocsArticleTopic, DocsSectionTopic, DocsTopic, isGroup, isLink, isSection } from "~/screens/database/docs/types";
-import { RefObject, useMemo } from "react";
-import { ScrollFader } from "~/components/ScrollFader";
-import { CodeLang } from "~/types";
-import { useStable } from "~/hooks/stable";
-import { CODE_LANGUAGES } from "~/constants";
-import { useIntent } from "~/hooks/url";
-import { iconList } from "~/util/icons";
+import { type RefObject, useMemo } from "react";
 import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import { ScrollFader } from "~/components/ScrollFader";
+import { CODE_LANGUAGES } from "~/constants";
+import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
+import {
+	type DocsArticleTopic,
+	type DocsSectionTopic,
+	type DocsTopic,
+	isGroup,
+	isLink,
+	isSection,
+} from "~/screens/database/docs/types";
+import type { CodeLang } from "~/types";
+import { iconList } from "~/util/icons";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
@@ -37,7 +44,10 @@ export function ArticlePane({
 			const items: ReadableArticle[] = [];
 
 			for (const topic of list) {
-				if (topic.excludeLanguages?.includes(language) || isLink(topic)) {
+				if (
+					topic.excludeLanguages?.includes(language) ||
+					isLink(topic)
+				) {
 					continue;
 				}
 
@@ -68,7 +78,9 @@ export function ArticlePane({
 	}, [docs, language]);
 
 	const onScroll = useStable((position: { x: number; y: number }) => {
-		const topics = scrollRef.current?.querySelectorAll("[data-topic]") as NodeListOf<HTMLElement>;
+		const topics = scrollRef.current?.querySelectorAll(
+			"[data-topic]",
+		) as NodeListOf<HTMLElement>;
 
 		let activeTopic: HTMLElement | null = null;
 
@@ -115,8 +127,8 @@ export function ArticlePane({
 				onScrollPositionChange={onScroll}
 				viewportProps={{
 					style: {
-						paddingBottom: '50vh'
-					}
+						paddingBottom: "50vh",
+					},
 				}}
 				style={{
 					position: "absolute",
@@ -124,7 +136,7 @@ export function ArticlePane({
 					top: 0,
 					right: 0,
 					bottom: 0,
-					paddingRight: 12
+					paddingRight: 12,
 				}}
 			>
 				{flattened.map((doc, index) => {
@@ -138,35 +150,35 @@ export function ArticlePane({
 								data-topic={doc.id}
 							>
 								<Group c="bright" my="xl">
-									<Icon path={doc.icon} size={1.65}/>
+									<Icon path={doc.icon} size={1.65} />
 									<Title order={1} fz={28}>
 										{doc.title}
 									</Title>
 								</Group>
 							</Box>
 						);
-					} else {
-						const Content = doc.component;
-
-						return (
-							<Box
-								key={index}
-								mx="xl"
-								py={42}
-								data-topic={doc.id}
-								style={{
-									borderBottom: index < flattened.length - 1 ? border : "none"
-								}}
-							>
-								<Box maw={1500}>
-									<Content
-										topic={doc}
-										language={language}
-									/>
-								</Box>
-							</Box>
-						);
 					}
+
+					const Content = doc.component;
+
+					return (
+						<Box
+							key={index}
+							mx="xl"
+							py={42}
+							data-topic={doc.id}
+							style={{
+								borderBottom:
+									index < flattened.length - 1
+										? border
+										: "none",
+							}}
+						>
+							<Box maw={1500}>
+								<Content topic={doc} language={language} />
+							</Box>
+						</Box>
+					);
 				})}
 			</ScrollArea>
 		</ContentPane>

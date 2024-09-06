@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsSchemaFunctions({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -72,7 +72,7 @@ export function DocsSchemaFunctions({ language }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -86,7 +86,6 @@ export function DocsSchemaFunctions({ language }: TopicProps) {
 					In SurrealDB functions can be written just as you would in
 					your programming language of choice.
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

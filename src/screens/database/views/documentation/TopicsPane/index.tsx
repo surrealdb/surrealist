@@ -1,13 +1,13 @@
 import { ScrollArea, Stack } from "@mantine/core";
+import type { RefObject } from "react";
 import { ContentPane } from "~/components/Pane";
-import { DocsTopic } from "~/screens/database/docs/types";
+import { ScrollFader } from "~/components/ScrollFader";
+import { useSetting } from "~/hooks/config";
+import { useStable } from "~/hooks/stable";
+import type { DocsTopic } from "~/screens/database/docs/types";
+import type { CodeLang } from "~/types";
 import { iconAPI } from "~/util/icons";
 import { renderTopics } from "./topics";
-import { ScrollFader } from "~/components/ScrollFader";
-import { CodeLang } from "~/types";
-import { RefObject } from "react";
-import { useStable } from "~/hooks/stable";
-import { useSetting } from "~/hooks/config";
 
 export interface TocPaneProps {
 	active: string;
@@ -16,11 +16,7 @@ export interface TocPaneProps {
 	scrollRef: RefObject<HTMLDivElement>;
 }
 
-export function TocPane({
-	active,
-	docs,
-	scrollRef
-}: TocPaneProps) {
+export function TocPane({ active, docs, scrollRef }: TocPaneProps) {
 	const [lang] = useSetting("behavior", "docsLanguage");
 
 	const onOpen = useStable((topic: string) => {
@@ -52,11 +48,11 @@ export function TocPane({
 						top: 0,
 						right: 0,
 						bottom: 0,
-						paddingRight: 12
+						paddingRight: 12,
 					},
 					scrollbar: {
-						top: 8
-					}
+						top: 8,
+					},
 				}}
 			>
 				<Stack gap="xs" my="md">

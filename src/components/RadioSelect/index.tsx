@@ -1,4 +1,4 @@
-import { ComboboxItem, Radio, Stack } from "@mantine/core";
+import { type ComboboxItem, Radio, Stack } from "@mantine/core";
 
 export interface RadioSelectProps {
 	data: ReadonlyArray<ComboboxItem>;

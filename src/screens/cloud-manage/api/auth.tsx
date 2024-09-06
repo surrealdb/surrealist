@@ -1,17 +1,18 @@
 import { adapter } from "~/adapter";
-import { showError } from "~/util/helpers";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
-import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
+import type { CloudSignin } from "~/types";
 import { isDevelopment } from "~/util/environment";
+import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
+import { showError } from "~/util/helpers";
+import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { fetchAPI, updateCloudInformation } from ".";
-import { getCloudEndpoints } from "./endpoints";
-import { CloudSignin } from "~/types";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
+import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
-const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+const VERIFIER_CHARS =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 const CALLBACK_ENDPOINT = isDevelopment
 	? "http://localhost:1420/cloud/callback/index.html"
 	: import.meta.env.VITE_CLOUD_CALLBACK_URL;
@@ -43,13 +44,13 @@ export async function openCloudAuthentication() {
 	const params = new URLSearchParams({
 		client_id: CLIENT_ID,
 		redirect_uri: CALLBACK_ENDPOINT,
-		response_type: 'code',
-		provider: 'authkit',
-		code_challenge_method: 'S256',
+		response_type: "code",
+		provider: "authkit",
+		code_challenge_method: "S256",
 		code_challenge: pkce.challenge,
-		scope: 'openid profile email offline_access',
+		scope: "openid profile email offline_access",
 		state,
-		audience: 'https://surrealdb.us.auth0.com/api/v2/',
+		audience: "https://surrealdb.us.auth0.com/api/v2/",
 	});
 
 	adapter.openUrl(`${authBase}/authorize?${params.toString()}`, "internal");
@@ -86,9 +87,9 @@ export async function verifyAuthentication(code: string, state: string) {
 		setLoading();
 
 		const response = await adapter.fetch(`${authBase}/oauth/token`, {
-			method: 'POST',
+			method: "POST",
 			headers: {
-				'Content-Type': 'application/json'
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
 				client_id: CLIENT_ID,
@@ -96,7 +97,7 @@ export async function verifyAuthentication(code: string, state: string) {
 				grant_type: "authorization_code",
 				code_verifier: verifier,
 				code,
-			})
+			}),
 		});
 
 		const result = await response.json();
@@ -114,7 +115,8 @@ export async function verifyAuthentication(code: string, state: string) {
 		invalidateSession();
 		showError({
 			title: "Authentication failed",
-			subtitle: "An error occurred while verifying the authentication details"
+			subtitle:
+				"An error occurred while verifying the authentication details",
 		});
 	}
 }
@@ -123,7 +125,8 @@ export async function verifyAuthentication(code: string, state: string) {
  * Refresh the current access token
  */
 export async function refreshAccess() {
-	const { setIsSupported, setLoading, setSessionExpired } = useCloudStore.getState();
+	const { setIsSupported, setLoading, setSessionExpired } =
+		useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
 	const isSupported = await isClientSupported();
 
@@ -146,16 +149,16 @@ export async function refreshAccess() {
 		setLoading();
 
 		const response = await adapter.fetch(`${authBase}/oauth/token`, {
-			method: 'POST',
+			method: "POST",
 			headers: {
-				'Content-Type': 'application/json'
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
 				client_id: CLIENT_ID,
 				redirect_uri: CALLBACK_ENDPOINT,
 				grant_type: "refresh_token",
 				refresh_token: refreshToken,
-			})
+			}),
 		});
 
 		const result = await response.json();
@@ -185,8 +188,8 @@ export async function acquireSession(accessToken: string) {
 		adapter.log("Cloud", "Acquiring cloud session");
 
 		const result = await fetchAPI<CloudSignin>("/signin", {
-			method: 'POST',
-			body: JSON.stringify(accessToken)
+			method: "POST",
+			body: JSON.stringify(accessToken),
 		});
 
 		setSessionToken(result.token);
@@ -206,7 +209,8 @@ export async function acquireSession(accessToken: string) {
 		invalidateSession();
 		showError({
 			title: "Authentication failed",
-			subtitle: "An unexpected error occurred while authenticating to Surreal Cloud"
+			subtitle:
+				"An unexpected error occurred while authenticating to Surreal Cloud",
 		});
 	}
 }
@@ -240,10 +244,10 @@ export function checkSessionExpiry() {
 	}
 
 	// Decode the JWT
-	const parts = sessionToken.split('.');
+	const parts = sessionToken.split(".");
 
 	if (parts.length !== 3) {
-		throw new Error('Invalid JWT token');
+		throw new Error("Invalid JWT token");
 	}
 
 	// Extract the payload
@@ -275,7 +279,7 @@ function randomString(n: number): string {
 async function newPKCE(): Promise<PKCE> {
 	const verifier = randomString(50);
 	const encoded = new TextEncoder().encode(verifier);
-	const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+	const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
 	const hashArray = new Uint8Array(hashBuffer);
 	const challenge = btoa(String.fromCodePoint(...hashArray))
 		.replaceAll("=", "")
@@ -284,6 +288,6 @@ async function newPKCE(): Promise<PKCE> {
 
 	return {
 		verifier,
-		challenge
+		challenge,
 	};
 }

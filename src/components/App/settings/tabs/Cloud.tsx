@@ -1,8 +1,8 @@
 import { Select, TextInput } from "@mantine/core";
-import { SettingsSection } from "../utilities";
 import { useSetting } from "~/hooks/config";
-import { DatabaseListMode, Selection } from "~/types";
+import type { DatabaseListMode, Selection } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { SettingsSection } from "../utilities";
 
 const CAT = "cloud";
 
@@ -12,17 +12,22 @@ const INSTANCE_LIST_MODES: Selection<DatabaseListMode> = [
 ];
 
 export function CloudTab() {
-	const [instanceListMode, setInstanceListMode] = useSetting(CAT, "databaseListMode");
+	const [instanceListMode, setInstanceListMode] = useSetting(
+		CAT,
+		"databaseListMode",
+	);
 	const [urlAuthBase, setUrlAuthBase] = useSetting(CAT, "urlAuthBase");
 	const [urlApiAuthBase, setUrlApiAuthBase] = useSetting(CAT, "urlApiBase");
-	const [urlApiMgmtBase, setUrlApiMgmtBase] = useSetting(CAT, "urlApiMgmtBase");
+	const [urlApiMgmtBase, setUrlApiMgmtBase] = useSetting(
+		CAT,
+		"urlApiMgmtBase",
+	);
 
 	const [{ cloud_endpoints }] = useFeatureFlags();
 
 	return (
 		<>
 			<SettingsSection>
-
 				<Select
 					label="Instance list mode"
 					data={INSTANCE_LIST_MODES}
@@ -30,18 +35,16 @@ export function CloudTab() {
 					spellCheck={false}
 					onChange={setInstanceListMode as any}
 				/>
-
 			</SettingsSection>
 
 			{cloud_endpoints === "custom" && (
 				<SettingsSection label="Custom endpoints">
-
 					<TextInput
 						w="100%"
 						label="Authentication Base URL"
 						value={urlAuthBase}
 						spellCheck={false}
-						onChange={e => setUrlAuthBase(e.target.value)}
+						onChange={(e) => setUrlAuthBase(e.target.value)}
 					/>
 
 					<TextInput
@@ -49,7 +52,7 @@ export function CloudTab() {
 						label="API Base URL"
 						value={urlApiAuthBase}
 						spellCheck={false}
-						onChange={e => setUrlApiAuthBase(e.target.value)}
+						onChange={(e) => setUrlApiAuthBase(e.target.value)}
 					/>
 
 					<TextInput
@@ -57,9 +60,8 @@ export function CloudTab() {
 						label="Management API Base URL"
 						value={urlApiMgmtBase}
 						spellCheck={false}
-						onChange={e => setUrlApiMgmtBase(e.target.value)}
+						onChange={(e) => setUrlApiMgmtBase(e.target.value)}
 					/>
-
 				</SettingsSection>
 			)}
 		</>

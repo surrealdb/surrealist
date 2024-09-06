@@ -1,21 +1,18 @@
-import {
-	arrayMove,
-	SortableContext,
-} from "@dnd-kit/sortable";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 
 import {
 	DndContext,
-	DragEndEvent,
-	PointerActivationConstraint,
+	type DragEndEvent,
+	type PointerActivationConstraint,
 	closestCorners,
 } from "@dnd-kit/core";
 
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import type { ReactNode } from "react";
 import { useStable } from "~/hooks/stable";
-import { ReactNode } from "react";
-import { useSortableDirection, useSortableSensors } from "./helpers";
-import { SortableDrag, SortableItem } from "./types";
 import { SortableChild } from "./child";
+import { useSortableDirection, useSortableSensors } from "./helpers";
+import type { SortableDrag, SortableItem } from "./types";
 
 export interface SortableProps<T> {
 	items: T[];
@@ -55,7 +52,11 @@ export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
 		>
 			<SortableContext items={props.items} strategy={strategy}>
 				{props.items.map((item) => (
-					<SortableChild key={item.id} item={item} disabled={props.disabled ?? false}>
+					<SortableChild
+						key={item.id}
+						item={item}
+						disabled={props.disabled ?? false}
+					>
 						{props.children}
 					</SortableChild>
 				))}

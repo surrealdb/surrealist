@@ -1,7 +1,10 @@
 import { Stack, Title } from "@mantine/core";
-import { PropsWithChildren, ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
-export function SettingsSection({ label, children }: PropsWithChildren<{ label?: ReactNode }>) {
+export function SettingsSection({
+	label,
+	children,
+}: PropsWithChildren<{ label?: ReactNode }>) {
 	return (
 		<Stack gap="md">
 			{label && (

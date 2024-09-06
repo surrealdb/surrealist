@@ -1,22 +1,43 @@
-import { useStable } from "~/hooks/stable";
-import { ContentPane } from "~/components/Pane";
-import { useDebouncedFunction } from "~/hooks/debounce";
-import { CodeEditor } from "~/components/CodeEditor";
-import { ActionIcon, Alert, Anchor, Badge, Button, Group, Stack, Tooltip } from "@mantine/core";
-import { useConfigStore } from '~/stores/config';
-import { iconAutoFix, iconDollar, iconGraphql, iconOpen, iconRefresh, iconText } from "~/util/icons";
-import { Icon } from "~/components/Icon";
-import { showError, showInfo, tryParseParams } from "~/util/helpers";
-import { Text } from "@mantine/core";
-import { graphql, updateSchema } from 'cm6-graphql';
-import { useActiveConnection } from "~/hooks/connection";
-import { GraphQLSchema, parse, print } from "graphql";
-import { EditorView, keymap, lineNumbers } from "@codemirror/view";
-import { formatValue } from "~/util/surrealql";
-import { useIntent } from "~/hooks/url";
-import { useEffect } from "react";
-import { graphqlParser, graphqlSuggestions, handleFillFields, runGraphqlQueryKeymap } from "~/editor";
 import { Prec } from "@codemirror/state";
+import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
+import {
+	ActionIcon,
+	Alert,
+	Anchor,
+	Badge,
+	Button,
+	Group,
+	Stack,
+	Tooltip,
+} from "@mantine/core";
+import { Text } from "@mantine/core";
+import { graphql, updateSchema } from "cm6-graphql";
+import { type GraphQLSchema, parse, print } from "graphql";
+import { useEffect } from "react";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import {
+	graphqlParser,
+	graphqlSuggestions,
+	handleFillFields,
+	runGraphqlQueryKeymap,
+} from "~/editor";
+import { useActiveConnection } from "~/hooks/connection";
+import { useDebouncedFunction } from "~/hooks/debounce";
+import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
+import { showError, showInfo, tryParseParams } from "~/util/helpers";
+import {
+	iconAutoFix,
+	iconDollar,
+	iconGraphql,
+	iconOpen,
+	iconRefresh,
+	iconText,
+} from "~/util/icons";
+import { formatValue } from "~/util/surrealql";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
@@ -63,7 +84,7 @@ export function QueryPane({
 
 		showInfo({
 			title: "GraphQL",
-			subtitle: "Schema successfully updated"
+			subtitle: "Schema successfully updated",
 		});
 	});
 
@@ -73,7 +94,7 @@ export function QueryPane({
 		} catch {
 			showError({
 				title: "Failed to format",
-				subtitle: "Your query must be valid to format it"
+				subtitle: "Your query must be valid to format it",
 			});
 		}
 	});
@@ -88,9 +109,13 @@ export function QueryPane({
 
 			const variableNames = document.definitions.reduce((acc, def) => {
 				if (def.kind === "OperationDefinition") {
-					const vars = def.variableDefinitions?.map((v) => v.variable.name.value) ?? [];
+					const vars =
+						def.variableDefinitions?.map(
+							(v) => v.variable.name.value,
+						) ?? [];
 
-					return [...acc, ...vars];
+					acc.push(...vars);
+					return acc;
 				}
 
 				return acc;
@@ -98,16 +123,21 @@ export function QueryPane({
 
 			const currentVars = tryParseParams(connection.graphqlQuery);
 			const currentKeys = Object.keys(currentVars);
-			const variables = variableNames.filter((v) => !currentKeys.includes(v));
+			const variables = variableNames.filter(
+				(v) => !currentKeys.includes(v),
+			);
 
-			const newVars = variables.reduce((acc, v) => {
-				acc[v] = "";
-				return acc;
-			}, {} as Record<string, any>);
+			const newVars = variables.reduce(
+				(acc, v) => {
+					acc[v] = "";
+					return acc;
+				},
+				{} as Record<string, any>,
+			);
 
 			const mergedVars = {
 				...currentVars,
-				...newVars
+				...newVars,
 			};
 
 			setShowVariables(true);
@@ -117,7 +147,7 @@ export function QueryPane({
 		} catch {
 			showError({
 				title: "Failed to infer variables",
-				subtitle: "Your query must be valid to infer variables"
+				subtitle: "Your query must be valid to infer variables",
 			});
 		}
 	});
@@ -138,10 +168,7 @@ export function QueryPane({
 			rightSection={
 				<Group gap="sm">
 					{!isValid && (
-						<Badge
-							color="red"
-							variant="light"
-						>
+						<Badge color="red" variant="light">
 							Invalid query
 						</Badge>
 					)}
@@ -166,14 +193,18 @@ export function QueryPane({
 						</ActionIcon>
 					</Tooltip>
 
-					<Tooltip maw={175} multiline label={
-						<Stack gap={4}>
-							<Text>Infer variables from query</Text>
-							<Text c="dimmed" size="sm">
-								Automatically add missing variables.
-							</Text>
-						</Stack>
-					}>
+					<Tooltip
+						maw={175}
+						multiline
+						label={
+							<Stack gap={4}>
+								<Text>Infer variables from query</Text>
+								<Text c="dimmed" size="sm">
+									Automatically add missing variables.
+								</Text>
+							</Stack>
+						}
+					>
 						<ActionIcon
 							onClick={inferVariables}
 							variant="light"
@@ -183,11 +214,19 @@ export function QueryPane({
 						</ActionIcon>
 					</Tooltip>
 
-					<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
+					<Tooltip
+						label={
+							showVariables ? "Hide variables" : "Show variables"
+						}
+					>
 						<ActionIcon
 							onClick={toggleVariables}
 							variant="light"
-							aria-label={showVariables ? "Hide variables" : "Show variables"}
+							aria-label={
+								showVariables
+									? "Hide variables"
+									: "Show variables"
+							}
 						>
 							<Icon path={iconDollar} />
 						</ActionIcon>
@@ -202,15 +241,17 @@ export function QueryPane({
 					onMount={onEditorMount}
 					extensions={[
 						graphql(undefined, {
-							onFillAllFields: handleFillFields
+							onFillAllFields: handleFillFields,
 						}),
 						graphqlParser(),
 						// graphqlFillFields(),
 						lineNumbers(),
-						Prec.high(keymap.of([
-							...runGraphqlQueryKeymap,
-							...graphqlSuggestions,
-						])),
+						Prec.high(
+							keymap.of([
+								...runGraphqlQueryKeymap,
+								...graphqlSuggestions,
+							]),
+						),
 					]}
 				/>
 			) : (
@@ -220,7 +261,8 @@ export function QueryPane({
 					title="GraphQL is not enabled on the remote instance"
 				>
 					<Stack>
-						Visit the SurrealDB documentation to learn how to enable GraphQL on your instance
+						Visit the SurrealDB documentation to learn how to enable
+						GraphQL on your instance
 						<Anchor
 							href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist"
 							underline="never"

@@ -1,4 +1,13 @@
-import { Alert, Button, Group, Modal, Select, Stack, Text, TextInput } from "@mantine/core";
+import {
+	Alert,
+	Button,
+	Group,
+	Modal,
+	Select,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Form } from "~/components/Form";
@@ -7,7 +16,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/cloud-manage/api";
-import { CloudInstance } from "~/types";
+import type { CloudInstance } from "~/types";
 import { showError } from "~/util/helpers";
 import { iconWarning } from "~/util/icons";
 
@@ -29,7 +38,7 @@ export function SettingsModal({
 	const [isLoading, setLoading] = useState(false);
 
 	const instanceTypes = useAvailableInstanceTypes();
-	const types = instanceTypes.map(t => t.slug);
+	const types = instanceTypes.map((t) => t.slug);
 
 	const saveSettings = useStable(async () => {
 		setLoading(true);
@@ -38,16 +47,16 @@ export function SettingsModal({
 			await fetchAPI(`/instances/${instance.id}/type`, {
 				method: "PATCH",
 				body: JSON.stringify({
-					slug: type
-				})
+					slug: type,
+				}),
 			});
 
 			onClose();
 			onRefetch();
-		} catch(err: any) {
+		} catch (err: any) {
 			showError({
 				title: "Failed to save instance",
-				subtitle: `Settings could not be saved: ${err.message}`
+				subtitle: `Settings could not be saved: ${err.message}`,
 			});
 		} finally {
 			setLoading(false);
@@ -57,7 +66,6 @@ export function SettingsModal({
 	useLayoutEffect(() => {
 		setName(instance.name);
 		setType(instance.type.slug);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [instance]);
 
 	return (
@@ -70,11 +78,7 @@ export function SettingsModal({
 		>
 			<Form onSubmit={saveSettings}>
 				<Stack>
-					<Alert
-						color="pink.9"
-						variant="filled"
-						mb="sm"
-					>
+					<Alert color="pink.9" variant="filled" mb="sm">
 						<Group>
 							<Icon path={iconWarning} />
 							<Text>

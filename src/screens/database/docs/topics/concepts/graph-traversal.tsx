@@ -1,10 +1,9 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsConceptsGraphTraversal({ language, topic }: TopicProps) {
-
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -55,14 +54,13 @@ export function DocsConceptsGraphTraversal({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
 		<Article title="Graph Traversal">
 			<div>
 				<p>Signing up a new user</p>
-
 			</div>
 			<Box>
 				<DocsPreview

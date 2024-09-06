@@ -1,6 +1,9 @@
 import { startCompletion } from "@codemirror/autocomplete";
-import { Command, EditorView } from "@codemirror/view";
-import { executeGraphql, executeUserQuery } from "~/screens/database/connection/connection";
+import type { Command, EditorView } from "@codemirror/view";
+import {
+	executeGraphql,
+	executeUserQuery,
+} from "~/screens/database/connection/connection";
 import { getActiveConnection } from "~/util/connection";
 import { tryParseParams } from "~/util/helpers";
 
@@ -13,9 +16,10 @@ export const executeEditorQuery: Command = (view: EditorView) => {
 	const selection = view.state.selection.main;
 
 	executeUserQuery({
-		override: selection?.empty === false
-			? query.slice(selection.from, selection.to)
-			: query
+		override:
+			selection?.empty === false
+				? query.slice(selection.from, selection.to)
+				: query,
 	});
 
 	return true;

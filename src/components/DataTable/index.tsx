@@ -1,20 +1,20 @@
-import classes from "./style.module.scss";
-import { Box, BoxProps, Group, Text } from "@mantine/core";
+import { Box, type BoxProps, Group, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
-import { MouseEvent, useMemo } from "react";
-import { DataCell } from "./datatypes";
-import { ColumnSort } from "~/types";
-import { useStable } from "~/hooks/stable";
-import { Icon } from "../Icon";
 import { alphabetical, isObject } from "radash";
+import { type MouseEvent, useMemo } from "react";
+import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
+import type { ColumnSort } from "~/types";
 import { iconChevronDown, iconChevronUp, iconWarning } from "~/util/icons";
+import { Icon } from "../Icon";
+import { DataCell } from "./datatypes";
+import classes from "./style.module.scss";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
 }
 
-interface DataTableProps extends BoxProps{
+interface DataTableProps extends BoxProps {
 	data: any;
 	active?: string | null;
 	sorting?: ColumnSort | null;
@@ -99,11 +99,8 @@ export function DataTable(props: DataTableProps) {
 	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
-		return keys.map(key => (
-			<Box
-				key={key}
-				component="th"
-			>
+		return keys.map((key) => (
+			<Box key={key} component="th">
 				<Text
 					span
 					fw={700}
@@ -115,11 +112,20 @@ export function DataTable(props: DataTableProps) {
 					}}
 				>
 					{key}
-					{sorting?.[0] == key && <Icon path={sorting[1] == "asc" ? iconChevronDown : iconChevronUp} pos="absolute" />}
+					{sorting?.[0] === key && (
+						<Icon
+							path={
+								sorting[1] === "asc"
+									? iconChevronDown
+									: iconChevronUp
+							}
+							pos="absolute"
+						/>
+					)}
 				</Text>
 			</Box>
 		));
-	}, [keys, sorting, handleSortClick, onSortingChange]);
+	}, [keys, sorting, onSortingChange]);
 
 	const recordRows = useMemo(() => {
 		return values.map((value, i) => {
@@ -127,13 +133,18 @@ export function DataTable(props: DataTableProps) {
 				const cellValue = value[key];
 
 				return (
-					<Box key={j} component="td" className={classes.tableValue} h={37}>
+					<Box
+						key={j}
+						component="td"
+						className={classes.tableValue}
+						h={37}
+					>
 						<DataCell value={cellValue} />
 					</Box>
 				);
 			});
 
-			const isActive = active && value.id == active;
+			const isActive = active && value.id === active;
 
 			return (
 				<Box
@@ -156,11 +167,7 @@ export function DataTable(props: DataTableProps) {
 	}
 
 	return (
-		<ScrollArea
-			className={classes.root}
-			scrollbars="xy"
-			{...rest}
-		>
+		<ScrollArea className={classes.root} scrollbars="xy" {...rest}>
 			<Table className={classes.table}>
 				<thead>
 					<tr>{columnHeaders}</tr>
@@ -169,7 +176,7 @@ export function DataTable(props: DataTableProps) {
 			</Table>
 			{truncated && (
 				<Group mt="md" mb="xl" c="red">
-					<Icon path={iconWarning}/>
+					<Icon path={iconWarning} />
 					The rows have been truncated to 100 for performance reasons
 				</Group>
 			)}

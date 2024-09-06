@@ -1,23 +1,21 @@
-import { Accordion, Stack, Select, Checkbox, MultiSelect } from "@mantine/core";
-import { ElementProps, SectionTitle } from "../helpers";
-import { iconCog } from "~/util/icons";
-import { Selectable, TableType } from "~/types";
+import { Accordion, Checkbox, MultiSelect, Select, Stack } from "@mantine/core";
 import { useTableNames } from "~/hooks/schema";
+import type { Selectable, TableType } from "~/types";
+import { iconCog } from "~/util/icons";
+import { type ElementProps, SectionTitle } from "../helpers";
 
 const TABLE_TYPES: Selectable<TableType>[] = [
 	{ label: "Any", value: "ANY" },
 	{ label: "Normal", value: "NORMAL" },
-	{ label: "Relation", value: "RELATION" }
+	{ label: "Relation", value: "RELATION" },
 ];
 
 export function GeneralElement({ data, setData }: ElementProps) {
-	const tables = useTableNames('TABLE');
+	const tables = useTableNames("TABLE");
 
 	return (
 		<Accordion.Item value="general">
-			<SectionTitle icon={iconCog}>
-				General
-			</SectionTitle>
+			<SectionTitle icon={iconCog}>General</SectionTitle>
 			<Accordion.Panel>
 				<Stack>
 					<Checkbox

@@ -1,8 +1,12 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import {
+	Article,
+	DocsPreview,
+	TableTitle,
+} from "~/screens/database/docs/components";
 import { getTable } from "~/screens/database/docs/helpers";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
@@ -47,7 +51,7 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[table.schema.name]
+		[table.schema.name],
 	);
 
 	return (

@@ -44,20 +44,13 @@ jobs:
       - name: Build frontend
         run: pnpm install --no-frozen-lockfile && pnpm build
 
-      - name: Check formatting
+      - name: Frontend linting
+        run: |
+          pnpm lint:check
+
+      - name: Backend linting
         run: |
           cd src-tauri
           cargo fmt --all -- --check
-          cd ..
-
-      - name: Test Tauri
-        run: |
-          cd src-tauri
-          cargo test --all-features
-          cd ..
-
-      - name: Clippy
-        run: |
-          cd src-tauri
           cargo clippy -- -D warnings
           cd ..

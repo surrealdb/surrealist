@@ -1,4 +1,3 @@
-
 /**
  * The first supported version of SurrealDB 2.0
  */

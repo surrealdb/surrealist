@@ -1,17 +1,17 @@
-import { ContentPane } from "~/components/Pane";
+import { lineNumbers } from "@codemirror/view";
 import { ActionIcon, Badge, Group } from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
+import { Value } from "@surrealdb/ql-wasm";
+import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { decodeCbor } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import { surqlLinting } from "~/editor";
 import { useActiveQuery } from "~/hooks/connection";
+import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
-import { surrealql } from "@surrealdb/codemirror";
-import { HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { useDebouncedFunction } from "~/hooks/debounce";
-import { decodeCbor } from "surrealdb";
-import { Value } from "@surrealdb/ql-wasm";
-import { lineNumbers } from "@codemirror/view";
-import { surqlLinting } from "~/editor";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -26,6 +26,8 @@ export function VariablesPane(props: VariablesPaneProps) {
 	const activeTab = useActiveQuery();
 
 	const setVariables = useDebouncedFunction((content: string | undefined) => {
+		if (!activeTab) return;
+
 		try {
 			const json = content || "";
 			const parsed = decodeCbor(Value.from_string(json).to_cbor().buffer);
@@ -35,7 +37,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 			}
 
 			updateQueryTab({
-				id: activeTab!.id,
+				id: activeTab.id,
 				variables: json,
 			});
 
@@ -56,10 +58,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 				) : (
 					<Group gap="xs">
 						{!props.isValid && (
-							<Badge
-								color="red"
-								variant="light"
-							>
+							<Badge color="red" variant="light">
 								Invalid syntax
 							</Badge>
 						)}
@@ -75,13 +74,9 @@ export function VariablesPane(props: VariablesPaneProps) {
 			}
 		>
 			<CodeEditor
-				value={activeTab?.variables || ''}
+				value={activeTab?.variables || ""}
 				onChange={setVariables}
-				extensions={[
-					surrealql(),
-					surqlLinting(),
-					lineNumbers(),
-				]}
+				extensions={[surrealql(), surqlLinting(), lineNumbers()]}
 			/>
 		</ContentPane>
 	);

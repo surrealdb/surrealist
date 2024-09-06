@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsSchemaParams({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -95,7 +95,7 @@ export function DocsSchemaParams({ language }: TopicProps) {
 		$db->query('SELECT * FROM person WHERE name.firstname = $name.firstname');
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -107,7 +107,6 @@ export function DocsSchemaParams({ language }: TopicProps) {
 					values that are used in multiple queries, or to store values
 					that are used in other parts of your application.
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

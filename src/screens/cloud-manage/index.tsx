@@ -1,7 +1,7 @@
 import { Stack } from "@mantine/core";
-import {useIsLight } from "~/hooks/theme";
-import { CloudView } from "./view";
 import { Scaffold } from "~/components/Scaffold";
+import { useIsLight } from "~/hooks/theme";
+import { CloudView } from "./view";
 
 export function CloudManageScreen() {
 	const isLight = useIsLight();
@@ -12,7 +12,7 @@ export function CloudManageScreen() {
 				h="100vh"
 				p="md"
 				style={{
-					backgroundColor: `var(--mantine-color-slate-${isLight ? 0 : 9})`
+					backgroundColor: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
 				}}
 			>
 				<CloudView />

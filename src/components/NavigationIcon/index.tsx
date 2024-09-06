@@ -1,12 +1,17 @@
-import classes from "./style.module.scss";
-import clsx from "clsx";
-import { Icon } from "../Icon";
-import { Entry, EntryProps } from "../Entry";
-import { HTMLProps, ReactNode } from "react";
 import { Box, Tooltip } from "@mantine/core";
+import clsx from "clsx";
+import type { HTMLProps, ReactNode } from "react";
 import { useHoverIcon } from "~/hooks/hover-icon";
+import { Entry, type EntryProps } from "../Entry";
+import { Icon } from "../Icon";
+import classes from "./style.module.scss";
 
-export interface NavigationIconProps extends EntryProps, Omit<HTMLProps<HTMLButtonElement>, 'name' | 'color' | 'size' | 'style' | 'type' | 'ref'> {
+export interface NavigationIconProps
+	extends EntryProps,
+		Omit<
+			HTMLProps<HTMLButtonElement>,
+			"name" | "color" | "size" | "style" | "type" | "ref"
+		> {
 	name: ReactNode;
 	isActive?: boolean;
 	icon: string | any;
@@ -22,16 +27,11 @@ export function NavigationIcon({
 	onClick,
 	...rest
 }: NavigationIconProps) {
-	const hasIcon = typeof icon === 'string';
+	const hasIcon = typeof icon === "string";
 
-	const {
-		isLoading,
-		ref,
-		onMouseEnter,
-		onMouseLeave
-	} = useHoverIcon({
-		animation: hasIcon ? {w: 0, h: 0, layers:[]} : icon,
-		className: classes.animation
+	const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
+		animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,
+		className: classes.animation,
 	});
 
 	return (
@@ -47,7 +47,10 @@ export function NavigationIcon({
 				onMouseLeave={onMouseLeave}
 			>
 				<Entry
-					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
+					className={clsx(
+						classes.viewButton,
+						isActive && classes.viewButtonActive,
+					)}
 					isActive={isActive}
 					style={{ opacity: isLoading ? 0 : 1 }}
 					onClick={onClick}

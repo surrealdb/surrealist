@@ -1,22 +1,36 @@
-import 'leaflet/dist/leaflet.css';
+import "leaflet/dist/leaflet.css";
 
-import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet';
-import { LatLng, Map, geoJSON as createGeoJSON, latLng } from "leaflet";
-import { Overlay, Paper } from '@mantine/core';
+import { Overlay, Paper } from "@mantine/core";
+import {
+	type Map as GeoMap,
+	type LatLng,
+	geoJSON as createGeoJSON,
+	latLng,
+} from "leaflet";
+import { useEffect, useRef, useState } from "react";
+import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
+import type {
+	GeometryCollection,
+	GeometryLine,
+	GeometryMultiLine,
+	GeometryMultiPoint,
+	GeometryMultiPolygon,
+	GeometryPoint,
+	GeometryPolygon,
+} from "surrealdb";
 import { parseValue } from "~/util/surrealql";
-import { GeometryCollection, GeometryLine, GeometryMultiLine, GeometryMultiPoint, GeometryMultiPolygon, GeometryPoint, GeometryPolygon } from "surrealdb";
-import { useEffect, useRef, useState } from 'react';
 
-import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2 from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
+// biome-ignore lint/performance/noDelete: leaflet is a tragedy
 delete (window.L.Icon.Default.prototype as any)._getIconUrl;
 
 window.L.Icon.Default.mergeOptions({
 	iconRetinaUrl: markerIcon2,
 	iconUrl: markerIcon,
-	shadowUrl: markerShadow
+	shadowUrl: markerShadow,
 });
 
 export type GeographyInput =
@@ -28,15 +42,21 @@ export type GeographyInput =
 	| GeometryMultiPolygon
 	| GeometryCollection;
 
-const convertCoordsToLatLng = (point: [number, number] | [number, number, number]): LatLng => {
+const convertCoordsToLatLng = (
+	point: [number, number] | [number, number, number],
+): LatLng => {
 	return latLng({ lat: point[1], lng: point[0] });
 };
 
 const DEFAULT_ZOOM = 15;
-const DEFAULT_CENTER = latLng(51.515_449_578_195_174, -0.139_976_602_926_186_13);
+const DEFAULT_CENTER = latLng(
+	51.515_449_578_195_174,
+	-0.139_976_602_926_186_13,
+);
 
 const PLACEHOLDER = {
-	type: "FeatureCollection", features: []
+	type: "FeatureCollection",
+	features: [],
 };
 
 export type GeographyMapProps = {
@@ -44,7 +64,7 @@ export type GeographyMapProps = {
 };
 
 export const GeographyMap = ({ value }: GeographyMapProps) => {
-	const ref = useRef<Map>(null);
+	const ref = useRef<GeoMap>(null);
 
 	const [data, setData] = useState<any>(PLACEHOLDER);
 	const [isError, setIsError] = useState(false);
@@ -55,7 +75,7 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 			const data = parseValue(value).toJSON();
 
 			const leafletGeoJson = createGeoJSON(data, {
-				coordsToLatLng: convertCoordsToLatLng
+				coordsToLatLng: convertCoordsToLatLng,
 			});
 
 			setIsError(false);
@@ -89,7 +109,12 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 				<Overlay
 					gradient="linear-gradient(145deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0) 100%)"
 					opacity={0.85}
-					style={{ display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						zIndex: 1000,
+					}}
 				>
 					Failed to parse value
 				</Overlay>

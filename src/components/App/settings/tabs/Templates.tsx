@@ -1,19 +1,19 @@
-import { Entry } from "~/components/Entry";
-import { SettingsSection } from "../utilities";
-import { useSetting } from "~/hooks/config";
-import { Icon } from "~/components/Icon";
-import { iconCheck, iconDelete, iconFile, iconPlus } from "~/util/icons";
 import { Button, Group, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { useImmer } from "use-immer";
-import { Connection, Template } from "~/types";
-import { createBaseConnection } from "~/util/defaults";
+import { ConnectionDetails } from "~/components/ConnectionDetails";
+import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
-import { newId } from "~/util/helpers";
 import { useConfigStore } from "~/stores/config";
+import type { Connection, Template } from "~/types";
+import { createBaseConnection } from "~/util/defaults";
+import { newId } from "~/util/helpers";
+import { iconCheck, iconDelete, iconFile, iconPlus } from "~/util/icons";
+import { SettingsSection } from "../utilities";
 
 const CAT = "templates";
 
@@ -44,7 +44,7 @@ export function TemplatesTab() {
 			name: template.name,
 			icon: template.icon,
 			authentication: template.values,
-			group: template.group
+			group: template.group,
 		});
 	});
 
@@ -56,7 +56,7 @@ export function TemplatesTab() {
 			name: details.name,
 			icon: details.icon,
 			group: details.group || undefined,
-			values: details.authentication
+			values: details.authentication,
 		};
 
 		if (details.id) {
@@ -68,7 +68,7 @@ export function TemplatesTab() {
 		} else {
 			draft.push({
 				...template,
-				id: newId()
+				id: newId(),
 			});
 		}
 
@@ -91,7 +91,8 @@ export function TemplatesTab() {
 		<>
 			<SettingsSection>
 				<Text mb="xs">
-					Templates simplify the process of creating new connections by pre-filling common connection details.
+					Templates simplify the process of creating new connections
+					by pre-filling common connection details.
 				</Text>
 
 				{templates.map((template) => (
@@ -99,9 +100,7 @@ export function TemplatesTab() {
 						key={template.id}
 						variant="filled"
 						onClick={() => openEditor(template)}
-						leftSection={
-							<Icon path={iconFile} />
-						}
+						leftSection={<Icon path={iconFile} />}
 					>
 						{template.name}
 					</Entry>
@@ -110,13 +109,10 @@ export function TemplatesTab() {
 				<Entry
 					variant="subtle"
 					onClick={openCreator}
-					leftSection={
-						<Icon path={iconPlus} />
-					}
+					leftSection={<Icon path={iconPlus} />}
 				>
 					New template
 				</Entry>
-
 			</SettingsSection>
 
 			<Modal
@@ -126,10 +122,7 @@ export function TemplatesTab() {
 				size="lg"
 			>
 				<Form onSubmit={saveTemplate}>
-					<ConnectionDetails
-						value={details}
-						onChange={setDetails}
-					/>
+					<ConnectionDetails value={details} onChange={setDetails} />
 
 					<Group mt="lg">
 						<Button
@@ -152,7 +145,11 @@ export function TemplatesTab() {
 						<Button
 							type="submit"
 							variant="gradient"
-							rightSection={<Icon path={details.id ? iconCheck : iconPlus} />}
+							rightSection={
+								<Icon
+									path={details.id ? iconCheck : iconPlus}
+								/>
+							}
 						>
 							{details.id ? "Save" : "Create"}
 						</Button>

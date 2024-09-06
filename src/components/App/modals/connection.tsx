@@ -1,21 +1,36 @@
-import { Modal, Group, Button, Alert, Text, Menu, Divider, Stack } from "@mantine/core";
-import { useImmer } from "use-immer";
-import { isConnectionValid } from "~/util/connection";
-import { useStable } from "~/hooks/stable";
+import {
+	Alert,
+	Button,
+	Divider,
+	Group,
+	Menu,
+	Modal,
+	Stack,
+	Text,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { Fragment, useLayoutEffect, useMemo, useState } from "react";
-import { useConnections } from "~/hooks/connection";
-import { Connection, Template } from "~/types";
-import { useConfigStore } from "~/stores/config";
-import { createBaseConnection } from "~/util/defaults";
-import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
-import { useSetting } from "~/hooks/config";
-import { useIntent } from "~/hooks/url";
-import { useConfirmation } from "~/providers/Confirmation";
+import { useImmer } from "use-immer";
 import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { useDisclosure } from "@mantine/hooks";
+import { useSetting } from "~/hooks/config";
+import { useConnections } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
+import { useConfirmation } from "~/providers/Confirmation";
+import { useConfigStore } from "~/stores/config";
+import type { Connection, Template } from "~/types";
+import { isConnectionValid } from "~/util/connection";
+import { createBaseConnection } from "~/util/defaults";
+import {
+	iconCheck,
+	iconChevronDown,
+	iconDelete,
+	iconFile,
+	iconPlus,
+} from "~/util/icons";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -29,7 +44,12 @@ function newConnection() {
 
 export function ConnectionModal() {
 	const connections = useConnections();
-	const { addConnection, updateConnection, setActiveConnection, removeConnection } = useConfigStore.getState();
+	const {
+		addConnection,
+		updateConnection,
+		setActiveConnection,
+		removeConnection,
+	} = useConfigStore.getState();
 
 	const [opened, openedHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -71,7 +91,7 @@ export function ConnectionModal() {
 	});
 
 	const applyTemplate = useStable((template: Template) => {
-		setDetails(draft => {
+		setDetails((draft) => {
 			draft.name = template.name;
 			draft.icon = template.icon;
 			draft.group = template.group;
@@ -85,7 +105,6 @@ export function ConnectionModal() {
 				draft.name = generateName();
 			});
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [details.name]);
 
 	const remove = useConfirmation({
@@ -94,7 +113,7 @@ export function ConnectionModal() {
 		onConfirm() {
 			removeConnection(details.id);
 			openedHandle.close();
-		}
+		},
 	});
 
 	useIntent("new-connection", ({ template }) => {
@@ -141,21 +160,21 @@ export function ConnectionModal() {
 								color="surreal.1"
 								size={1.2}
 							/>
-							<Text>
-								Apply a connection template?
-							</Text>
+							<Text>Apply a connection template?</Text>
 							<Spacer />
 							<Menu
 								position="bottom-start"
 								transitionProps={{
-									transition: "scale-y"
+									transition: "scale-y",
 								}}
 							>
 								<Menu.Target>
 									<Button
 										color="slate"
 										variant="light"
-										rightSection={<Icon path={iconChevronDown} />}
+										rightSection={
+											<Icon path={iconChevronDown} />
+										}
 									>
 										Apply template
 									</Button>
@@ -165,12 +184,16 @@ export function ConnectionModal() {
 										{templates.map((info, i) => (
 											<Fragment key={info.id}>
 												<Menu.Item
-													onClick={() => applyTemplate(info)}
+													onClick={() =>
+														applyTemplate(info)
+													}
 													miw={175}
 												>
 													{info.name}
 												</Menu.Item>
-												{i < templates.length - 1 && <Divider />}
+												{i < templates.length - 1 && (
+													<Divider />
+												)}
 											</Fragment>
 										))}
 									</Stack>
@@ -180,10 +203,7 @@ export function ConnectionModal() {
 					</Alert>
 				)}
 
-				<ConnectionDetails
-					value={details}
-					onChange={setDetails}
-				/>
+				<ConnectionDetails value={details} onChange={setDetails} />
 
 				<Group mt="xl">
 					<Button
@@ -208,7 +228,9 @@ export function ConnectionModal() {
 						type="submit"
 						variant="gradient"
 						disabled={!isValid}
-						rightSection={<Icon path={isCreating ? iconPlus : iconCheck} />}
+						rightSection={
+							<Icon path={isCreating ? iconPlus : iconCheck} />
+						}
 					>
 						{isCreating ? "Create" : "Save"}
 					</Button>

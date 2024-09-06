@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsSchemaScopes({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -80,7 +80,7 @@ export function DocsSchemaScopes({ language }: TopicProps) {
 		');
 		`,
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -93,7 +93,6 @@ export function DocsSchemaScopes({ language }: TopicProps) {
 					within a scope, you must first sign in with the appropriate
 					credentials. In SDKs you can run qu
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

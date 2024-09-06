@@ -1,16 +1,26 @@
-import { Alert, Button, Group, Modal, PasswordInput, Stack, Table, Text, TextInput } from "@mantine/core";
+import {
+	Alert,
+	Button,
+	Group,
+	Modal,
+	PasswordInput,
+	Stack,
+	Table,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { openConnection } from "~/screens/database/connection/connection";
 import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { dispatchIntent } from "~/hooks/url";
+import { openConnection } from "~/screens/database/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconWarning } from "~/util/icons";
-import { dispatchIntent } from "~/hooks/url";
 
 export function ScopeSignupModal() {
 	const { closeScopeSignup } = useInterfaceStore.getState();
@@ -33,16 +43,19 @@ export function ScopeSignupModal() {
 				...connection,
 				authentication: {
 					...connection.authentication,
-					mode: "scope-signup"
-				}
-			}
-		}).then(() => {
-			closeScopeSignup();
-		}).catch(err => {
-			setError(err.message);
-		}).finally(() => {
-			loadingHandle.close();
-		});
+					mode: "scope-signup",
+				},
+			},
+		})
+			.then(() => {
+				closeScopeSignup();
+			})
+			.catch((err) => {
+				setError(err.message);
+			})
+			.finally(() => {
+				loadingHandle.close();
+			});
 	});
 
 	useLayoutEffect(() => {
@@ -68,7 +81,9 @@ export function ScopeSignupModal() {
 					</Alert>
 				)}
 				<Text>
-					The provided scope details do not match any existing user. Confirm these scope fields and press "Sign up" below to create a new user.
+					The provided scope details do not match any existing user.
+					Confirm these scope fields and press "Sign up" below to
+					create a new user.
 				</Text>
 
 				<Table>
@@ -81,16 +96,16 @@ export function ScopeSignupModal() {
 					<Table.Tbody>
 						{connection.authentication.scopeFields.map((field) => {
 							const fieldName = field.subject.toLowerCase();
-							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(fieldName)
+							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(
+								fieldName,
+							)
 								? PasswordInput
 								: TextInput;
 
 							return (
 								<Table.Tr key={field.subject}>
 									<Table.Td c="bright">
-										<Text fw={600}>
-											{field.subject}
-										</Text>
+										<Text fw={600}>{field.subject}</Text>
 									</Table.Td>
 									<Table.Td c="bright">
 										<ValueInput
@@ -101,8 +116,8 @@ export function ScopeSignupModal() {
 											spellCheck={false}
 											styles={{
 												input: {
-													backgroundColor: "unset"
-												}
+													backgroundColor: "unset",
+												},
 											}}
 										/>
 									</Table.Td>

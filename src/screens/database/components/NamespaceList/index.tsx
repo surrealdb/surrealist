@@ -1,22 +1,34 @@
-import classes from "./style.module.scss";
-import { ActionIcon, Button, ButtonProps, Divider, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
-import { Icon } from "~/components/Icon";
-import { Entry } from "~/components/Entry";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
-import { activateDatabase, executeQuery } from "../../connection/connection";
-import { useBoolean } from "~/hooks/boolean";
-import { fetchNamespaceList } from "~/util/databases";
-import { useQuery } from "@tanstack/react-query";
-import { getAuthLevel } from "~/util/connection";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Form } from "~/components/Form";
+import {
+	ActionIcon,
+	Button,
+	type ButtonProps,
+	Divider,
+	Group,
+	Menu,
+	Modal,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useStable } from "~/hooks/stable";
-import { escapeIdent } from "~/util/surrealql";
+import { useQuery } from "@tanstack/react-query";
+import type { SyntheticEvent } from "react";
+import { Entry } from "~/components/Entry";
+import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
-import { SyntheticEvent } from "react";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useBoolean } from "~/hooks/boolean";
+import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
+import { getAuthLevel } from "~/util/connection";
+import { fetchNamespaceList } from "~/util/databases";
+import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
+import { escapeIdent } from "~/util/surrealql";
+import { activateDatabase, executeQuery } from "../../connection/connection";
+import classes from "./style.module.scss";
 
 export interface NamespaceProps {
 	value: string;
@@ -25,12 +37,7 @@ export interface NamespaceProps {
 	onRemove: () => void;
 }
 
-function Namespace({
-	value,
-	isActive,
-	onOpen,
-	onRemove,
-}: NamespaceProps) {
+function Namespace({ value, isActive, onOpen, onRemove }: NamespaceProps) {
 	const { lastNamespace } = useActiveConnection();
 
 	const open = useStable(() => onOpen(value));
@@ -42,7 +49,7 @@ function Namespace({
 		onConfirm() {
 			executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
 
-			if (value == lastNamespace) {
+			if (value === lastNamespace) {
 				activateDatabase("", "");
 			}
 		},
@@ -84,9 +91,7 @@ export interface NamespaceListProps {
 	buttonProps?: ButtonProps;
 }
 
-export function NamespaceList({
-	buttonProps
-}: NamespaceListProps) {
+export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
@@ -134,7 +139,7 @@ export function NamespaceList({
 				trigger="click"
 				position="bottom"
 				transitionProps={{
-					transition: "scale-y"
+					transition: "scale-y",
 				}}
 			>
 				<Menu.Target>
@@ -142,40 +147,27 @@ export function NamespaceList({
 						px="sm"
 						variant={connection.lastNamespace ? "subtle" : "light"}
 						color="slate"
-						leftSection={
-							<Icon
-								path={iconNamespace}
-							/>
-						}
+						leftSection={<Icon path={iconNamespace} />}
 						{...buttonProps}
 					>
-						<Text
-							truncate
-							fw={600}
-							maw={200}
-						>
+						<Text truncate fw={600} maw={200}>
 							{connection.lastNamespace || "Select namespace"}
 						</Text>
 					</Button>
 				</Menu.Target>
 				<Menu.Dropdown w={250}>
-					<Stack
-						flex={1}
-						p="sm"
-						gap="sm"
-					>
+					<Stack flex={1} p="sm" gap="sm">
 						<Group>
-							<Text
-								flex={1}
-								fw={600}
-								c="bright"
-							>
+							<Text flex={1} fw={600} c="bright">
 								Namespaces
 							</Text>
 							<ActionIcon
 								color="slate"
 								variant="light"
-								disabled={!connected || (level !== "root" && level !== "namespace")}
+								disabled={
+									!connected ||
+									(level !== "root" && level !== "namespace")
+								}
 								onClick={openCreator}
 							>
 								<Icon path={iconPlus} />
@@ -184,16 +176,16 @@ export function NamespaceList({
 						<Divider />
 						<ScrollArea.Autosize mah={250}>
 							{data.length === 0 ? (
-								<Text c="slate">
-									No namespaces defined
-								</Text>
+								<Text c="slate">No namespaces defined</Text>
 							) : (
 								<Stack gap="xs">
 									{data.map((ns) => (
 										<Namespace
 											key={ns}
 											value={ns}
-											isActive={ns === connection.lastNamespace}
+											isActive={
+												ns === connection.lastNamespace
+											}
 											onOpen={openNamespace}
 											onRemove={openHandle.close}
 										/>
@@ -210,14 +202,13 @@ export function NamespaceList({
 				onClose={creatorHandle.close}
 				trapFocus={false}
 				size="md"
-				title={
-					<PrimaryTitle>Create new namespace</PrimaryTitle>
-				}
+				title={<PrimaryTitle>Create new namespace</PrimaryTitle>}
 			>
 				<Form onSubmit={createNamespace}>
 					<Stack>
 						<Text>
-							Namespaces represent a layer of separation for each organisation, department, or development team.
+							Namespaces represent a layer of separation for each
+							organisation, department, or development team.
 						</Text>
 						<TextInput
 							placeholder="Enter namespace name"

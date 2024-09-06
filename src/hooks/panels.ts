@@ -7,7 +7,7 @@ import { useLayoutEffect, useRef, useState } from "react";
  * @returns The minimum size in percentage and a parent ref
  */
 export function usePanelMinSize(minSizePx: number) {
-	const groupRef = useRef<HTMLDivElement|null>(null);
+	const groupRef = useRef<HTMLDivElement | null>(null);
 	const [minSize, setMinSize] = useState(0);
 
 	useLayoutEffect(() => {
@@ -17,7 +17,11 @@ export function usePanelMinSize(minSizePx: number) {
 			return;
 		}
 
-		const resizeHandles = [...panelGroup.querySelectorAll<HTMLElement>("[data-panel-resize-handle-id]")].filter(e => {
+		const resizeHandles = [
+			...panelGroup.querySelectorAll<HTMLElement>(
+				"[data-panel-resize-handle-id]",
+			),
+		].filter((e) => {
 			return e.parentNode?.parentNode === panelGroup;
 		});
 
@@ -42,8 +46,7 @@ export function usePanelMinSize(minSizePx: number) {
 		return () => {
 			observer.disconnect();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [minSizePx]);
 
 	return [minSize, groupRef] as const;
 }

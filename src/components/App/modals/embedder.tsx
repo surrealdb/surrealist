@@ -15,9 +15,7 @@ export function EmbedderModal() {
 			onClose={openHandle.close}
 			withCloseButton
 			size="lg"
-			title={
-				<PrimaryTitle>Mini generator</PrimaryTitle>
-			}
+			title={<PrimaryTitle>Mini generator</PrimaryTitle>}
 		>
 			<Embedder />
 		</Modal>

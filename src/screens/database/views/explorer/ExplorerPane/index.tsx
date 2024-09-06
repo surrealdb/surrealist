@@ -3,7 +3,7 @@ import {
 	Box,
 	Button,
 	Center,
-	ComboboxData,
+	type ComboboxData,
 	Divider,
 	Group,
 	ScrollArea,
@@ -14,9 +14,9 @@ import {
 } from "@mantine/core";
 
 import {
-	FocusEvent,
-	KeyboardEvent,
-	MouseEvent,
+	type FocusEvent,
+	type KeyboardEvent,
+	type MouseEvent,
 	useLayoutEffect,
 	useMemo,
 	useState,
@@ -36,20 +36,20 @@ import {
 } from "~/util/icons";
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { useContextMenu } from "mantine-contextmenu";
+import { RecordId } from "surrealdb";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
+import { LoadingContainer } from "~/components/LoadingContainer";
 import { ContentPane } from "~/components/Pane";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
+import { executeQuery } from "~/screens/database/connection/connection";
+import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
-import { useContextMenu } from "mantine-contextmenu";
-import { useConfigStore } from "~/stores/config";
-import { executeQuery } from "~/screens/database/connection/connection";
 import { formatValue, validateWhere } from "~/util/surrealql";
-import { SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
-import { RecordId } from "surrealdb";
-import { LoadingContainer } from "~/components/LoadingContainer";
+import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 
 const PAGE_SIZES: ComboboxData = [
 	{ label: "10 Results per page", value: "10" },
@@ -134,11 +134,11 @@ export function ExplorerPane({
 	});
 
 	const previousPage = useStable(() => {
-		setCurrentPage(p => Math.max(1, p - 1));
+		setCurrentPage((p) => Math.max(1, p - 1));
 	});
 
 	const nextPage = useStable(() => {
-		setCurrentPage(p => Math.min(pageCount, p + 1));
+		setCurrentPage((p) => Math.min(pageCount, p + 1));
 	});
 
 	const openCreator = useStable(() => {
@@ -217,14 +217,13 @@ export function ExplorerPane({
 		])(e);
 	});
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset page on table change
 	useLayoutEffect(() => {
 		setCurrentPage(1);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeTable, filterClause]);
 
 	useLayoutEffect(() => {
 		setCustomPage(currentPage.toString());
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentPage]);
 
 	useEventSubscription(RecordsChangedEvent, refetch);
@@ -293,10 +292,7 @@ export function ExplorerPane({
 					styles={() => ({
 						input: {
 							fontFamily: "JetBrains Mono",
-							borderColor:
-								(isFilterValid
-									? undefined
-									: themeColor("pink.9")) + " !important",
+							borderColor: `${isFilterValid ? undefined : themeColor("pink.9")} !important`,
 						},
 					})}
 				/>
@@ -319,9 +315,7 @@ export function ExplorerPane({
 						headers={headers}
 					/>
 
-					<LoadingContainer
-						visible={recordQuery.isFetching}
-					/>
+					<LoadingContainer visible={recordQuery.isFetching} />
 				</ScrollArea>
 			) : (
 				<Center h="90%">
@@ -334,7 +328,7 @@ export function ExplorerPane({
 							leftSection={<Icon path={iconPlus} />}
 							onClick={openCreator}
 						>
-                            Create record
+							Create record
 						</Button>
 					</Box>
 				</Center>
@@ -391,7 +385,7 @@ export function ExplorerPane({
 
 				<Select
 					value={pageSize.toString()}
-					onChange={(v) => setPageSize(Number.parseInt(v!))}
+					onChange={(v) => setPageSize(Number.parseInt(v ?? "0"))}
 					data={PAGE_SIZES}
 					size="xs"
 				/>

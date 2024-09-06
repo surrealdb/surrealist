@@ -1,21 +1,22 @@
 import {
 	DotNetIcon,
-	JavaScriptIcon, PhpIcon,
+	JavaScriptIcon,
+	PhpIcon,
 	PythonIcon,
 	RustIcon,
 	SurrealIcon,
 } from "~/screens/database/docs/icons";
 
-import clsx from "clsx";
-import classes from "../../style.module.scss";
-import { Article } from "~/screens/database/docs/components";
 import { Box, Button, Paper, SimpleGrid, Text, Title } from "@mantine/core";
-import { useSetting } from "~/hooks/config";
-import { CodeLang } from "~/types";
-import { Icon } from "~/components/Icon";
-import { iconOpen } from "~/util/icons";
+import clsx from "clsx";
 import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { useSetting } from "~/hooks/config";
 import { useIsLight } from "~/hooks/theme";
+import { Article } from "~/screens/database/docs/components";
+import type { CodeLang } from "~/types";
+import { iconOpen } from "~/util/icons";
+import classes from "../../style.module.scss";
 
 interface Library {
 	id: CodeLang;
@@ -73,8 +74,8 @@ const LIBRARIES: Library[] = [
 		id: "php",
 		name: "PHP",
 		icon: PhpIcon,
-		link: "https://github.com/surrealdb/surrealdb.php"
-	}
+		link: "https://github.com/surrealdb/surrealdb.php",
+	},
 ];
 
 export function DocsGlobalIntroduction() {
@@ -168,7 +169,7 @@ export function DocsGlobalIntroduction() {
 									bg={isLight ? "slate.0" : "slate.9"}
 									className={clsx(
 										classes.library,
-										isActive && classes.libraryActive
+										isActive && classes.libraryActive,
 									)}
 									onClick={() => setLanguage(lib.id)}
 								>

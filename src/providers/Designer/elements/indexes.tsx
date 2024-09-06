@@ -1,11 +1,11 @@
 import { Accordion, Flex, Text, TextInput } from "@mantine/core";
-import { ElementProps, SectionTitle } from "../helpers";
-import { Lister } from "../lister";
-import { useStable } from "~/hooks/stable";
 import { CodeInput } from "~/components/Inputs";
-import { iconIndex } from "~/util/icons";
-import { SchemaIndex } from "~/types";
+import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import type { SchemaIndex } from "~/types";
+import { iconIndex } from "~/util/icons";
+import { type ElementProps, SectionTitle } from "../helpers";
+import { Lister } from "../lister";
 
 export function IndexesElement({ data, setData }: ElementProps) {
 	const isLight = useIsLight();
@@ -39,9 +39,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="indexes">
-			<SectionTitle icon={iconIndex}>
-				Indexes
-			</SectionTitle>
+			<SectionTitle icon={iconIndex}>Indexes</SectionTitle>
 			<Accordion.Panel>
 				<Lister
 					value={data.indexes}

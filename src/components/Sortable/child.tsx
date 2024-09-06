@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
-import { SortableItem, SortableSlot } from "./types";
 import { CSS } from "@dnd-kit/utilities";
+import type { SortableItem, SortableSlot } from "./types";
 
 type Options = Parameters<typeof useSortable>[0];
 
@@ -15,12 +15,20 @@ export function SortableChild<T extends SortableItem>({
 	item,
 	children,
 	disabled,
-	options
+	options,
 }: SortableChildProps<T>) {
-	const { index, isDragging, attributes, listeners, setNodeRef, transform, transition } = useSortable({
+	const {
+		index,
+		isDragging,
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+	} = useSortable({
 		id: item.id,
 		disabled,
-		...options
+		...options,
 	});
 
 	const style: React.CSSProperties = {

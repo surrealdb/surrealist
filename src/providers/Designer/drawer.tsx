@@ -14,27 +14,34 @@ import {
 } from "@mantine/core";
 
 import { useState } from "react";
-import { Updater } from "use-immer";
-import { TableInfo } from "~/types";
-import { syncDatabaseSchema } from "~/util/schema";
+import type { Updater } from "use-immer";
+import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-import { GeneralElement } from "./elements/general";
-import { PermissionsElement } from "./elements/permissions";
-import { FieldsElement } from "./elements/fields";
-import { IndexesElement } from "./elements/indexes";
-import { EventsElement } from "./elements/events";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
-import { SaveableHandle } from "~/hooks/save";
-import { tb } from "~/util/helpers";
-import { iconClose, iconDelete, iconDesigner, iconRelation, iconTable, iconWarning } from "~/util/icons";
+import { Spacer } from "~/components/Spacer";
+import type { SaveableHandle } from "~/hooks/save";
+import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
-import { ChangefeedElement } from "./elements/changefeed";
-import { DrawerResizer } from "~/components/DrawerResizer";
-import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
+import type { TableInfo } from "~/types";
+import { tb } from "~/util/helpers";
+import {
+	iconClose,
+	iconDelete,
+	iconDesigner,
+	iconRelation,
+	iconTable,
+	iconWarning,
+} from "~/util/icons";
+import { syncDatabaseSchema } from "~/util/schema";
+import { ChangefeedElement } from "./elements/changefeed";
+import { EventsElement } from "./elements/events";
+import { FieldsElement } from "./elements/fields";
+import { GeneralElement } from "./elements/general";
+import { IndexesElement } from "./elements/indexes";
+import { PermissionsElement } from "./elements/permissions";
 
 export interface SchemaDrawerProps {
 	opened: boolean;
@@ -51,25 +58,26 @@ export function DesignDrawer({
 	onChange,
 	handle,
 	errors,
-	onClose
+	onClose,
 }: SchemaDrawerProps) {
 	const { setOpenDesignerPanels } = useConfigStore.getState();
 
 	const isLight = useIsLight();
 	const [width, setWidth] = useState(650);
-	const openDesignerPanels = useConfigStore(s => s.openDesignerPanels);
+	const openDesignerPanels = useConfigStore((s) => s.openDesignerPanels);
 
 	const removeTable = useConfirmation({
-		message: "You are about to remove this table and all data contained within it. This action cannot be undone.",
+		message:
+			"You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
-		onConfirm:  async () => {
+		onConfirm: async () => {
 			onClose(true);
 
 			await executeQuery(`REMOVE TABLE ${tb(value.schema.name)}`);
 			await syncDatabaseSchema({
-				tables: [value.schema.name]
+				tables: [value.schema.name],
 			});
-		}
+		},
 	});
 
 	const isEdge = value.schema.kind.kind === "RELATION";
@@ -85,15 +93,11 @@ export function DesignDrawer({
 				body: {
 					height: "100%",
 					display: "flex",
-					flexDirection: "column"
-				}
+					flexDirection: "column",
+				},
 			}}
 		>
-			<DrawerResizer
-				minSize={500}
-				maxSize={1500}
-				onResize={setWidth}
-			/>
+			<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
 
 			<Group mb="md" gap="sm">
 				<PrimaryTitle>
@@ -103,15 +107,16 @@ export function DesignDrawer({
 
 				<Spacer />
 
-				{handle.isChanged && (handle.isSaveable ? (
-					<Badge color="blue" variant="light">
-						Unsaved changes
-					</Badge>
-				) : (
-					<Badge color="pink.7" variant="light">
-						Missing required fields
-					</Badge>
-				))}
+				{handle.isChanged &&
+					(handle.isSaveable ? (
+						<Badge color="blue" variant="light">
+							Unsaved changes
+						</Badge>
+					) : (
+						<Badge color="pink.7" variant="light">
+							Missing required fields
+						</Badge>
+					))}
 
 				<Tooltip label="Remove table">
 					<ActionIcon
@@ -143,19 +148,16 @@ export function DesignDrawer({
 					{value.schema.name}
 				</Group>
 			</Paper>
-			<ScrollArea
-				mt="sm"
-				flex="1 1 0"
-			>
-				{errors.map((error, i) => (
+			<ScrollArea mt="sm" flex="1 1 0">
+				{errors.map((error) => (
 					<Alert
-						key={i}
+						key={error}
 						className={classes.error}
 						icon={<Icon path={iconWarning} />}
 						color="red.5"
 						mb="xl"
 						style={{
-							whiteSpace: "pre-wrap"
+							whiteSpace: "pre-wrap",
 						}}
 					>
 						{error}
@@ -171,35 +173,17 @@ export function DesignDrawer({
 						label: classes.accordionLabel,
 					}}
 				>
-					<GeneralElement
-						data={value}
-						setData={onChange}
-					/>
+					<GeneralElement data={value} setData={onChange} />
 
-					<PermissionsElement
-						data={value}
-						setData={onChange}
-					/>
+					<PermissionsElement data={value} setData={onChange} />
 
-					<ChangefeedElement
-						data={value}
-						setData={onChange}
-					/>
+					<ChangefeedElement data={value} setData={onChange} />
 
-					<FieldsElement
-						data={value}
-						setData={onChange}
-					/>
+					<FieldsElement data={value} setData={onChange} />
 
-					<IndexesElement
-						data={value}
-						setData={onChange}
-					/>
+					<IndexesElement data={value} setData={onChange} />
 
-					<EventsElement
-						data={value}
-						setData={onChange}
-					/>
+					<EventsElement data={value} setData={onChange} />
 				</Accordion>
 			</ScrollArea>
 			<Box mt="lg">
@@ -207,7 +191,7 @@ export function DesignDrawer({
 					handle={handle}
 					inline
 					inlineProps={{
-						className: classes.saveBox
+						className: classes.saveBox,
 					}}
 				/>
 			</Box>

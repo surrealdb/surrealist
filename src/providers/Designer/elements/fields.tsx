@@ -1,11 +1,15 @@
-import classes from "../style.module.scss";
-import { Accordion, TextInput, Checkbox, Text, Flex } from "@mantine/core";
-import { ElementProps, SectionTitle } from "../helpers";
-import { Lister } from "../lister";
+import { Accordion, Checkbox, Flex, Text, TextInput } from "@mantine/core";
+import {
+	CodeInput,
+	FieldKindInput,
+	PermissionInput,
+} from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
-import { CodeInput, FieldKindInput, PermissionInput } from "~/components/Inputs";
+import type { SchemaField } from "~/types";
 import { iconJSON } from "~/util/icons";
-import { SchemaField } from "~/types";
+import { type ElementProps, SectionTitle } from "../helpers";
+import { Lister } from "../lister";
+import classes from "../style.module.scss";
 
 export function FieldsElement({ data, setData }: ElementProps) {
 	const addField = useStable(() => {
@@ -39,7 +43,9 @@ export function FieldsElement({ data, setData }: ElementProps) {
 			{field.name}
 			{field.kind && (
 				<>
-					<Text c="slate" mr="xs">:</Text>
+					<Text c="slate" mr="xs">
+						:
+					</Text>
 					<Text className={classes.kind}>{field.kind}</Text>
 				</>
 			)}
@@ -48,9 +54,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="fields">
-			<SectionTitle icon={iconJSON}>
-				Fields
-			</SectionTitle>
+			<SectionTitle icon={iconJSON}>Fields</SectionTitle>
 			<Accordion.Panel>
 				<Lister
 					value={data.fields}
@@ -89,7 +93,8 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								checked={field.readonly}
 								onChange={(e) =>
 									setData((draft) => {
-										draft.fields[i].readonly = e.target.checked;
+										draft.fields[i].readonly =
+											e.target.checked;
 									})
 								}
 							/>
@@ -134,7 +139,8 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								value={field.permissions.create}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.fields[i].permissions.create = value;
+										draft.fields[i].permissions.create =
+											value;
 									})
 								}
 							/>
@@ -143,7 +149,8 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								value={field.permissions.select}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.fields[i].permissions.select = value;
+										draft.fields[i].permissions.select =
+											value;
 									})
 								}
 							/>
@@ -152,7 +159,8 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								value={field.permissions.update}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.fields[i].permissions.update = value;
+										draft.fields[i].permissions.update =
+											value;
 									})
 								}
 							/>
@@ -161,7 +169,8 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								value={field.permissions.delete}
 								onChange={(value) =>
 									setData((draft) => {
-										draft.fields[i].permissions.delete = value;
+										draft.fields[i].permissions.delete =
+											value;
 									})
 								}
 							/>

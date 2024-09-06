@@ -1,12 +1,12 @@
 import { Box } from "@mantine/core";
+import { adapter } from "~/adapter";
+import type { MiniAdapter } from "~/adapter/mini";
+import { Scaffold } from "~/components/Scaffold";
 import { useIsLight } from "~/hooks/theme";
 import QueryView from "~/screens/database/views/query/QueryView";
-import { adapter } from "~/adapter";
-import { MiniAdapter } from "~/adapter/mini";
-import { Scaffold } from "~/components/Scaffold";
 
 export function MiniRunScreen() {
-	const { hideBorder, transparent } = (adapter as MiniAdapter);
+	const { hideBorder, transparent } = adapter as MiniAdapter;
 
 	const isLight = useIsLight();
 
@@ -18,7 +18,7 @@ export function MiniRunScreen() {
 				style={{
 					backgroundColor: transparent
 						? undefined
-						: `var(--mantine-color-slate-${isLight ? 0 : 9})`
+						: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
 				}}
 			>
 				<QueryView />

@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { VIEW_MODES } from "~/constants";
 import { useConnection } from "~/hooks/connection";
-import { getOpenConnection, openConnection } from "~/screens/database/connection/connection";
+import {
+	getOpenConnection,
+	openConnection,
+} from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { featureFlags } from "~/util/feature-flags";
 
@@ -10,8 +13,8 @@ import { featureFlags } from "~/util/feature-flags";
  */
 export function useConnectionSwitch() {
 	const connection = useConnection();
-	const activeScreen = useConfigStore(s => s.activeScreen);
-	const activeView = useConfigStore(s => s.activeView);
+	const activeScreen = useConfigStore((s) => s.activeScreen);
+	const activeView = useConfigStore((s) => s.activeView);
 
 	useEffect(() => {
 		const open = getOpenConnection();

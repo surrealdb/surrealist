@@ -1,13 +1,13 @@
 import { Center, Loader, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useOrganization } from "~/hooks/cloud";
-import { Section } from "../../components/Section";
-import { useCloudStore } from "~/stores/cloud";
 import { useLayoutEffect } from "react";
+import { useOrganization } from "~/hooks/cloud";
+import { useCloudStore } from "~/stores/cloud";
+import { Section } from "../../components/Section";
 
 export function SettingsPage() {
 	const organization = useOrganization();
-	const isPending = useCloudStore(s => s.authState) === "loading";
+	const isPending = useCloudStore((s) => s.authState) === "loading";
 
 	const [name, setName] = useInputState("");
 	const [desc, setDesc] = useInputState("");
@@ -15,7 +15,6 @@ export function SettingsPage() {
 	useLayoutEffect(() => {
 		setName(organization?.name ?? "");
 		setDesc("");
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [organization]);
 
 	return isPending ? (

@@ -6,7 +6,7 @@ import { useCallback, useRef } from "react";
  * @param callback The unstable callback function
  * @returns The stable callback
  */
-export function useStable<T extends Function>(callback: T): T {
+export function useStable<T extends (...rest: any[]) => any>(callback: T): T {
 	const onChangeInner = useRef<any>();
 
 	onChangeInner.current = callback;

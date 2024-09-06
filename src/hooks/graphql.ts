@@ -1,4 +1,8 @@
-import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from "graphql";
+import {
+	type GraphQLSchema,
+	buildClientSchema,
+	getIntrospectionQuery,
+} from "graphql";
 import { useState } from "react";
 import { sendGraphqlRequest } from "~/screens/database/connection/connection";
 import { useStable } from "./stable";
@@ -23,7 +27,7 @@ export function useGraphqlIntrospection() {
 			const schema = buildClientSchema(result.data);
 
 			setSchema(schema);
-		} catch(err: any) {
+		} catch (err: any) {
 			console.warn("Failed to introspect GraphQL schema", err);
 			setSchema(null);
 		}

@@ -1,27 +1,37 @@
-import { Avatar, Box, Button, Group, Loader, Menu, Modal, Stack, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
-import { Icon } from "../Icon";
+import {
+	Avatar,
+	Box,
+	Button,
+	Group,
+	Loader,
+	Menu,
+	Modal,
+	Stack,
+	TextInput,
+	Tooltip,
+	UnstyledButton,
+} from "@mantine/core";
+import { Text } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import { useState } from "react";
+import { useBoolean } from "~/hooks/boolean";
+import { useStable } from "~/hooks/stable";
+import { fetchAPI } from "~/screens/cloud-manage/api";
 import { invalidateSession } from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
-import { Text } from "@mantine/core";
-import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { PrimaryTitle } from "../PrimaryTitle";
-import { Form } from "../Form";
-import { useBoolean } from "~/hooks/boolean";
-import { useInputState } from "@mantine/hooks";
-import { fetchAPI } from "~/screens/cloud-manage/api";
+import type { CloudProfile } from "~/types";
 import { showError } from "~/util/helpers";
-import { CloudProfile } from "~/types";
-import { useState } from "react";
 import { iconAccount, iconExitToAp } from "~/util/icons";
+import { Form } from "../Form";
+import { Icon } from "../Icon";
+import { PrimaryTitle } from "../PrimaryTitle";
 
 interface AccountFormProps {
 	onClose(): void;
 }
 
-function AccountForm({
-	onClose
-}: AccountFormProps) {
+function AccountForm({ onClose }: AccountFormProps) {
 	const { setAccountProfile } = useCloudStore.getState();
 
 	const profile = useCloudStore((s) => s.profile);
@@ -37,15 +47,15 @@ function AccountForm({
 				method: "PATCH",
 				body: JSON.stringify({
 					name,
-				})
+				}),
 			});
 
 			setAccountProfile(profile);
 			onClose();
-		} catch(err: any) {
+		} catch (err: any) {
 			showError({
 				title: "Failed to save account",
-				subtitle: err.message
+				subtitle: err.message,
 			});
 		} finally {
 			setLoading(false);
@@ -55,11 +65,7 @@ function AccountForm({
 	return (
 		<Form onSubmit={saveSettings}>
 			<Stack>
-				<TextInput
-					label="Full name"
-					value={name}
-					onChange={setName}
-				/>
+				<TextInput label="Full name" value={name} onChange={setName} />
 				<Group mt="lg">
 					<Button
 						onClick={onClose}
@@ -97,16 +103,12 @@ export function CloudAccount() {
 
 	if (state === "unauthenticated") {
 		return (
-			<Tooltip
-				label="Sign in to Surreal Cloud"
-			>
+			<Tooltip label="Sign in to Surreal Cloud">
 				<Avatar
 					radius="md"
 					size={36}
 					onClick={openCloud}
-					renderRoot={(props) => (
-						<UnstyledButton {...props} />
-					)}
+					renderRoot={(props) => <UnstyledButton {...props} />}
 				/>
 			</Tooltip>
 		);
@@ -121,7 +123,7 @@ export function CloudAccount() {
 				trigger="click-hover"
 				disabled={state === "loading"}
 				transitionProps={{
-					transition: "scale-y"
+					transition: "scale-y",
 				}}
 			>
 				<Menu.Target>
@@ -132,7 +134,9 @@ export function CloudAccount() {
 						src={profile.picture}
 						component={UnstyledButton}
 					>
-						{state === "loading" && <Loader size="sm" color="slate.4" />}
+						{state === "loading" && (
+							<Loader size="sm" color="slate.4" />
+						)}
 					</Avatar>
 				</Menu.Target>
 				<Menu.Dropdown w={200}>
@@ -165,9 +169,7 @@ export function CloudAccount() {
 				onClose={settingsModal.close}
 				title={<PrimaryTitle>Account settings</PrimaryTitle>}
 			>
-				<AccountForm
-					onClose={settingsModal.close}
-				/>
+				<AccountForm onClose={settingsModal.close} />
 			</Modal>
 		</>
 	);

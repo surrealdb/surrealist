@@ -1,7 +1,7 @@
 import { useLayoutEffect, useState } from "react";
-import { ColorScheme } from "~/types";
-import { useSetting } from "./config";
 import { useInterfaceStore } from "~/stores/interface";
+import type { ColorScheme } from "~/types";
+import { useSetting } from "./config";
 
 type Matchable = { matches: boolean };
 
@@ -9,7 +9,7 @@ type Matchable = { matches: boolean };
  * Returns whether the current color scheme is light or not
  */
 export function useIsLight() {
-	return useInterfaceStore(s => s.colorScheme === "light");
+	return useInterfaceStore((s) => s.colorScheme === "light");
 }
 
 /**
@@ -17,7 +17,7 @@ export function useIsLight() {
  */
 export function useThemePreference(): ColorScheme {
 	const { setColorScheme } = useInterfaceStore.getState();
-	const actualScheme = useInterfaceStore(state => state.colorScheme);
+	const actualScheme = useInterfaceStore((state) => state.colorScheme);
 
 	// Listen for the preferred color scheme
 	const [preferredScheme] = useSetting("appearance", "colorScheme");
@@ -26,17 +26,20 @@ export function useThemePreference(): ColorScheme {
 	const [systemScheme, setSystemScheme] = useState<ColorScheme>("dark");
 
 	useLayoutEffect(() => {
-		const query = window.matchMedia('(prefers-color-scheme: light)');
-		const compute = ({ matches }: Matchable) => setSystemScheme(matches ? "light" : "dark");
+		const query = window.matchMedia("(prefers-color-scheme: light)");
+		const compute = ({ matches }: Matchable) =>
+			setSystemScheme(matches ? "light" : "dark");
 
 		compute(query);
 
-		query.addEventListener('change', compute);
+		query.addEventListener("change", compute);
 	}, []);
 
 	// Compute the final color scheme
 	useLayoutEffect(() => {
-		setColorScheme(preferredScheme === "auto" ? systemScheme : preferredScheme);
+		setColorScheme(
+			preferredScheme === "auto" ? systemScheme : preferredScheme,
+		);
 	}, [preferredScheme, setColorScheme, systemScheme]);
 
 	return actualScheme;

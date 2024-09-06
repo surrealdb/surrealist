@@ -1,14 +1,18 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import {
+	Article,
+	DocsPreview,
+	TableTitle,
+} from "~/screens/database/docs/components";
 import { getTable } from "~/screens/database/docs/helpers";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 	const table = getTable(topic);
 	const fieldName =
 		table.fields.find(
-			({ name }: { name: string }) => !["id", "in", "out"].includes(name)
+			({ name }: { name: string }) => !["id", "in", "out"].includes(name),
 		)?.name ?? "id";
 
 	const snippets = useMemo<Snippets>(
@@ -69,7 +73,7 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 		]);
 		`,
 		}),
-		[table.schema.name, fieldName]
+		[table.schema.name, fieldName],
 	);
 
 	return (

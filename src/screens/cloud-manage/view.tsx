@@ -1,30 +1,30 @@
-import classes from "./style.module.scss";
+import { Alert, Box, Button, Group, Image, Stack, Text } from "@mantine/core";
+import { useQuery } from "@tanstack/react-query";
+import type { FC } from "react";
+import { adapter } from "~/adapter";
+import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
 import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
-import splashUrl from "~/assets/images/cloud-splash.webp";
-import { FC } from "react";
+import { Icon } from "~/components/Icon";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
+import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import { CloudAlert, CloudPage } from "~/types";
+import type { CloudAlert, CloudPage } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
+import { fetchAPI } from "./api";
+import { openCloudAuthentication } from "./api/auth";
+import { StatusAlert } from "./components/StatusAlert";
+import { BillingPage } from "./pages/Billing";
 import { InstancesPage } from "./pages/Instances";
 import { MembersPage } from "./pages/Members";
-import { useCloudStore } from "~/stores/cloud";
-import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
-import { Alert, Box, Button, Group, Image, Stack, Text } from "@mantine/core";
-import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
-import { openCloudAuthentication } from "./api/auth";
-import { CloudToolbar } from "./toolbar";
-import { CloudSidebar } from "./sidebar";
 import { PlaceholderPage } from "./pages/Placeholder";
-import { SettingsPage } from "./pages/Settings";
-import { BillingPage } from "./pages/Billing";
-import { SupportPage } from "./pages/Support";
-import { StatusAlert } from "./components/StatusAlert";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAPI } from "./api";
-import { useIsLight, useThemeImage } from "~/hooks/theme";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { ProvisionPage } from "./pages/Provision";
+import { SettingsPage } from "./pages/Settings";
+import { SupportPage } from "./pages/Support";
+import { CloudSidebar } from "./sidebar";
+import classes from "./style.module.scss";
+import { CloudToolbar } from "./toolbar";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
 	instances: InstancesPage,
@@ -41,9 +41,9 @@ export function CloudView() {
 	const [{ cloud_access }] = useFeatureFlags();
 	const isLight = useIsLight();
 
-	const page = useConfigStore(s => s.activeCloudPage);
-	const state = useCloudStore(s => s.authState);
-	const isSupported = useCloudStore(s => s.isSupported);
+	const page = useConfigStore((s) => s.activeCloudPage);
+	const state = useCloudStore((s) => s.authState);
+	const isSupported = useCloudStore((s) => s.isSupported);
 	const Content = PAGE_VIEWS[page];
 
 	const showCloud = state === "authenticated" || state === "loading";
@@ -53,37 +53,25 @@ export function CloudView() {
 		refetchInterval: 15_000,
 		retry: false,
 		enabled: state === "authenticated",
-		queryFn:  () => fetchAPI<CloudAlert>(`/message`)
+		queryFn: () => fetchAPI<CloudAlert>(`/message`),
 	});
 
 	const logoUrl = useThemeImage({
 		light: logoLightUrl,
-		dark: logoDarkUrl
+		dark: logoDarkUrl,
 	});
 
 	const hasAlert = alertQuery.data && Object.keys(alertQuery.data).length > 0;
 
 	return showCloud ? (
 		<>
-			<Group
-				gap="md"
-				pos="relative"
-				align="center"
-				wrap="nowrap"
-			>
+			<Group gap="md" pos="relative" align="center" wrap="nowrap">
 				<CloudToolbar />
 			</Group>
-			<Group
-				flex={1}
-				align="stretch"
-				mt="lg"
-				gap="xl"
-			>
+			<Group flex={1} align="stretch" mt="lg" gap="xl">
 				<CloudSidebar />
 				<Stack flex={1}>
-					{hasAlert && (
-						<StatusAlert alert={alertQuery.data} />
-					)}
+					{hasAlert && <StatusAlert alert={alertQuery.data} />}
 					{Content && <Content />}
 				</Stack>
 			</Group>
@@ -98,13 +86,14 @@ export function CloudView() {
 				style={{ zIndex: 1 }}
 				pb={175}
 			>
-				<Image
-					src={logoUrl}
-					alt="Surreal Cloud"
-					w={500}
-				/>
+				<Image src={logoUrl} alt="Surreal Cloud" w={500} />
 				<Text w={500} fz="lg" ta="center">
-					Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Elevate your business to unparalleled levels of scale and resilience. Focus on building tomorrow's applications. Let us take care of the rest.
+					Surreal Cloud redefines the database experience, offering
+					the power and flexibility of SurrealDB without the pain of
+					managing infrastructure. Elevate your business to
+					unparalleled levels of scale and resilience. Focus on
+					building tomorrow's applications. Let us take care of the
+					rest.
 				</Text>
 				{!isSupported ? (
 					<Alert
@@ -113,7 +102,8 @@ export function CloudView() {
 						title="Client update required"
 						w={500}
 					>
-						Please update your version of Surrealist to continue using Surreal Cloud.
+						Please update your version of Surrealist to continue
+						using Surreal Cloud.
 					</Alert>
 				) : cloud_access ? (
 					<Group>
@@ -131,7 +121,9 @@ export function CloudView() {
 							color="slate"
 							variant="light"
 							rightSection={<Icon path={iconOpen} />}
-							onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
+							onClick={() =>
+								adapter.openUrl("https://surrealdb.com/cloud")
+							}
 						>
 							Learn more
 						</Button>
@@ -142,7 +134,9 @@ export function CloudView() {
 						color="slate"
 						variant="gradient"
 						rightSection={<Icon path={iconChevronRight} />}
-						onClick={() => adapter.openUrl("https://surrealdb.com/signup")}
+						onClick={() =>
+							adapter.openUrl("https://surrealdb.com/signup")
+						}
 						style={{
 							border: "1px solid rgba(255, 255, 255, 0.3)",
 							backgroundOrigin: "border-box",
@@ -162,7 +156,7 @@ export function CloudView() {
 				style={{
 					alignItems: "center",
 					justifyContent: "center",
-					overflow: "hidden"
+					overflow: "hidden",
 				}}
 			>
 				<Image

@@ -1,14 +1,14 @@
-import classes from "./style.module.scss";
+import { history } from "@codemirror/commands";
+import { forceLinting } from "@codemirror/lint";
+import { Compartment, EditorState, type Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
-import { Box, BoxProps } from "@mantine/core";
 import { useEffect, useRef } from "react";
+import { colorTheme, editorBase } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import { useIsLight } from "~/hooks/theme";
-import { Compartment, EditorState, Extension } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
-import { forceLinting } from "@codemirror/lint";
-import { history } from "@codemirror/commands";
-import { editorBase, colorTheme } from "~/editor";
+import classes from "./style.module.scss";
 
 interface EditorRef {
 	editor: EditorView;
@@ -47,7 +47,10 @@ export function CodeEditor(props: CodeEditorProps) {
 
 	const textSize = Math.floor(15 * (editorScale / 100));
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: One-time initialization
 	useEffect(() => {
+		if (!ref.current) return;
+
 		const editable = new Compartment();
 		const history = new Compartment();
 		const theme = new Compartment();
@@ -69,12 +72,12 @@ export function CodeEditor(props: CodeEditorProps) {
 				changeHandler,
 				editableExt,
 				extensions || [],
-			]
+			],
 		});
 
 		const editor = new EditorView({
 			state: initialState,
-			parent: ref.current!,
+			parent: ref.current,
 			scrollTo: EditorView.scrollIntoView(0),
 		});
 
@@ -82,13 +85,13 @@ export function CodeEditor(props: CodeEditorProps) {
 			editor,
 			editable,
 			history,
-			theme
+			theme,
 		};
 
 		if (autoFocus) {
 			const timer = setInterval(() => {
 				editor.focus();
-				if(editor.hasFocus) clearInterval(timer);
+				if (editor.hasFocus) clearInterval(timer);
 			}, 50);
 		}
 
@@ -97,13 +100,14 @@ export function CodeEditor(props: CodeEditorProps) {
 		return () => {
 			editor.destroy();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
-		const { editor } = editorRef.current!;
+		if (!editorRef.current) return;
 
-		if (value == editor.state.doc.toString()) {
+		const { editor } = editorRef.current;
+
+		if (value === editor.state.doc.toString()) {
 			return;
 		}
 
@@ -111,11 +115,9 @@ export function CodeEditor(props: CodeEditorProps) {
 			changes: {
 				from: 0,
 				to: editor.state.doc.length,
-				insert: value
+				insert: value,
 			},
-			effects: [
-				EditorView.scrollIntoView(0)
-			]
+			effects: [EditorView.scrollIntoView(0)],
 		});
 
 		editor.dispatch(transaction);
@@ -123,16 +125,21 @@ export function CodeEditor(props: CodeEditorProps) {
 	}, [value]);
 
 	useEffect(() => {
-		const { editor, editable } = editorRef.current!;
+		if (!editorRef.current) return;
+
+		const { editor, editable } = editorRef.current;
 		const editableExt = EditorState.readOnly.of(!!readOnly);
 
 		editor.dispatch({
-			effects: editable.reconfigure(editableExt)
+			effects: editable.reconfigure(editableExt),
 		});
 	}, [readOnly]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: History key used for reconfiguration
 	useEffect(() => {
-		const { editor, history } = editorRef.current!;
+		if (!editorRef.current) return;
+
+		const { editor, history } = editorRef.current;
 
 		editor.dispatch({
 			effects: [history.reconfigure([])],
@@ -144,10 +151,12 @@ export function CodeEditor(props: CodeEditorProps) {
 	}, [historyKey]);
 
 	useEffect(() => {
-		const { editor, theme } = editorRef.current!;
+		if (!editorRef.current) return;
+
+		const { editor, theme } = editorRef.current;
 
 		editor.dispatch({
-			effects: theme.reconfigure(colorTheme(isLight))
+			effects: theme.reconfigure(colorTheme(isLight)),
 		});
 	}, [isLight]);
 

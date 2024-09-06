@@ -15,7 +15,7 @@
 		},
 		{
 			"type": "npm",
-			"script": "lint",
+			"script": "lint:check",
 			"label": "Lint",
 			"detail": "Run the linter",
 			"icon": {
@@ -24,8 +24,8 @@
 		},
 		{
 			"type": "npm",
-			"script": "lint:fix",
-			"label": "Lint and fix",
+			"script": "lint:apply",
+			"label": "Lint (Apply fixes)",
 			"detail": "Run the linter and fix issues",
 			"icon": {
 				"id": "vm-running"

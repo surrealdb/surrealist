@@ -1,5 +1,5 @@
-import { Box, BoxProps } from "@mantine/core";
-import { PropsWithChildren } from "react";
+import { Box, type BoxProps } from "@mantine/core";
+import type { PropsWithChildren } from "react";
 import { useStable } from "~/hooks/stable";
 
 export interface FormProps extends BoxProps {
@@ -17,11 +17,7 @@ export function Form({
 	});
 
 	return (
-		<Box
-			component="form"
-			onSubmit={doSubmit}
-			{...other}
-		>
+		<Box component="form" onSubmit={doSubmit} {...other}>
 			{children}
 		</Box>
 	);

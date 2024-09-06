@@ -1,10 +1,10 @@
-import classes from "./style.module.scss";
-import { BoxProps, Text, UnstyledButton } from "@mantine/core";
+import { type BoxProps, Text, UnstyledButton } from "@mantine/core";
 import { Center, Group, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { iconBook, iconChat, iconDiscord, iconEmail } from "~/util/icons";
+import classes from "./style.module.scss";
 
 interface SupportTileProps extends BoxProps {
 	icon: string;
@@ -12,16 +12,9 @@ interface SupportTileProps extends BoxProps {
 	onClick?: () => void;
 }
 
-function SupportTile({
-	icon,
-	title,
-	onClick,
-	...props
-}: SupportTileProps) {
+function SupportTile({ icon, title, onClick, ...props }: SupportTileProps) {
 	return (
-		<UnstyledButton
-			onClick={onClick}
-		>
+		<UnstyledButton onClick={onClick}>
 			<Paper
 				withBorder
 				style={{ aspectRatio: 1 }}
@@ -30,9 +23,7 @@ function SupportTile({
 			>
 				<Stack justify="center" align="center" h="100%">
 					<Icon path={icon} size="xl" c="bright" />
-					<Text>
-						{title}
-					</Text>
+					<Text>{title}</Text>
 				</Stack>
 			</Paper>
 		</UnstyledButton>
@@ -41,45 +32,47 @@ function SupportTile({
 
 export function SupportPage() {
 	return (
-		<Center
-			flex={1}
-		>
-			<Paper
-				p="xl"
-				bg="transparent"
-				component={Stack}
-			>
-				<Group
-					gap={35}
-					flex={1}
-					align="stretch"
-				>
+		<Center flex={1}>
+			<Paper p="xl" bg="transparent" component={Stack}>
+				<Group gap={35} flex={1} align="stretch">
 					<Stack flex={1} w={420}>
 						<Group>
 							<Icon path={iconEmail} />
-							<PrimaryTitle>
-								Looking for help?
-							</PrimaryTitle>
+							<PrimaryTitle>Looking for help?</PrimaryTitle>
 						</Group>
 						<Text>
-							Running into issues with your cloud account, billing, or instances? We're here to help!
-							Choose one of the following community support channels for help, or to get in touch with our team.
+							Running into issues with your cloud account,
+							billing, or instances? We're here to help! Choose
+							one of the following community support channels for
+							help, or to get in touch with our team.
 						</Text>
 						<SimpleGrid cols={3} mt="md">
 							<SupportTile
 								icon={iconDiscord}
 								title="Discord"
-								onClick={() => adapter.openUrl("https://discord.gg/dc4JNWrrMc")}
+								onClick={() =>
+									adapter.openUrl(
+										"https://discord.gg/dc4JNWrrMc",
+									)
+								}
 							/>
 							<SupportTile
 								icon={iconBook}
 								title="Documentation"
-								onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
+								onClick={() =>
+									adapter.openUrl(
+										"https://surrealdb.com/docs/cloud",
+									)
+								}
 							/>
 							<SupportTile
 								icon={iconChat}
 								title="Discourse"
-								onClick={() => adapter.openUrl("https://surrealdb.com/community/forums")}
+								onClick={() =>
+									adapter.openUrl(
+										"https://surrealdb.com/community/forums",
+									)
+								}
 							/>
 						</SimpleGrid>
 					</Stack>

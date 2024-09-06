@@ -1,27 +1,73 @@
-import classes from "./style.module.scss";
+import {
+	ActionIcon,
+	Anchor,
+	Badge,
+	Box,
+	Button,
+	Checkbox,
+	Divider,
+	Group,
+	HoverCard,
+	Loader,
+	Popover,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
+import { useContextMenu } from "mantine-contextmenu";
+import { sleep } from "radash";
+import {
+	type ChangeEvent,
+	type ElementRef,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
+import {
+	Background,
+	type NodeChange,
+	ReactFlow,
+	useEdgesState,
+	useNodesState,
+	useReactFlow,
+} from "reactflow";
+import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { ActionIcon, Anchor, Badge, Box, Button, Checkbox, Divider, Group, HoverCard, Loader, Popover, Stack, Text, Tooltip } from "@mantine/core";
-import { Background, NodeChange, ReactFlow, useEdgesState, useNodesState, useReactFlow } from "reactflow";
-import { ChangeEvent, ElementRef, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { GraphWarning, NODE_TYPES, applyNodeLayout, buildFlowNodes, createSnapshot } from "./helpers";
-import { DiagramDirection, DiagramMode, TableInfo } from "~/types";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
+import { RadioSelect } from "~/components/RadioSelect";
+import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useActiveConnection } from "~/hooks/connection";
-import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
-import { RadioSelect } from "~/components/RadioSelect";
-import { adapter } from "~/adapter";
-import { sleep } from "radash";
-import { useConfigStore } from "~/stores/config";
-import { themeColor } from "~/util/mantine";
 import { useSchema } from "~/hooks/schema";
-import { useContextMenu } from "mantine-contextmenu";
-import { iconAPI, iconChevronLeft, iconChevronRight, iconCog, iconFullscreen, iconHelp, iconImage, iconPlus, iconRefresh, iconRelation } from "~/util/icons";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { showInfo } from "~/util/helpers";
+import {
+	iconAPI,
+	iconChevronLeft,
+	iconChevronRight,
+	iconCog,
+	iconFullscreen,
+	iconHelp,
+	iconImage,
+	iconPlus,
+	iconRefresh,
+	iconRelation,
+} from "~/util/icons";
+import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
+import {
+	type GraphWarning,
+	NODE_TYPES,
+	applyNodeLayout,
+	buildFlowNodes,
+	createSnapshot,
+} from "./helpers";
+import classes from "./style.module.scss";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -37,7 +83,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const schema = useSchema();
 	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
-	const isViewActive = useConfigStore((s) => s.activeView == "designer");
+	const isViewActive = useConfigStore((s) => s.activeView === "designer");
 
 	const [isComputing, setIsComputing] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
@@ -61,7 +107,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			doLayoutRef.current = false;
 
 			const direction = activeSession.diagramDirection;
-			const dimNodes = changes.flatMap(change => {
+			const dimNodes = changes.flatMap((change) => {
 				if (change.type !== "dimensions" || !change.dimensions) {
 					return [];
 				}
@@ -73,7 +119,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				};
 			});
 
-			const layoutChanges = await applyNodeLayout(dimNodes, edges, direction);
+			const layoutChanges = await applyNodeLayout(
+				dimNodes,
+				edges,
+				direction,
+			);
 
 			setComputing(false);
 
@@ -85,16 +135,19 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		}
 	});
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Fit view when nodes change
 	useEffect(() => {
 		if (doFitRef.current) {
 			doFitRef.current = false;
 			fitView();
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nodes]);
 
 	const renderGraph = useStable(async () => {
-		const [nodes, edges, warnings] = buildFlowNodes(props.tables, activeSession.diagramShowLinks);
+		const [nodes, edges, warnings] = buildFlowNodes(
+			props.tables,
+			activeSession.diagramShowLinks,
+		);
 
 		setWarnings(warnings);
 
@@ -112,23 +165,30 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		doLayoutRef.current = true;
 	});
 
-	const saveImage = useStable(async (type: 'png' | 'svg') => {
+	const saveImage = useStable(async (type: "png" | "svg") => {
 		const viewport = getViewport();
 
-		const isSuccess = await adapter.saveFile("Save snapshot", `snapshot.${type}`, [
-			{
-				name: "Image",
-				extensions: [type],
+		const isSuccess = await adapter.saveFile(
+			"Save snapshot",
+			`snapshot.${type}`,
+			[
+				{
+					name: "Image",
+					extensions: [type],
+				},
+			],
+			async () => {
+				if (!ref.current) return "";
+
+				setIsExporting(true);
+
+				await sleep(50);
+
+				fitView();
+
+				return await createSnapshot(ref.current, type);
 			},
-		], async () => {
-			setIsExporting(true);
-
-			await sleep(50);
-
-			fitView();
-
-			return await createSnapshot(ref.current!, type);
-		});
+		);
 
 		setIsExporting(false);
 		setViewport(viewport);
@@ -136,7 +196,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		if (isSuccess) {
 			showInfo({
 				title: "Designer",
-				subtitle: "Snapshot saved to disk"
+				subtitle: "Snapshot saved to disk",
 			});
 		}
 	});
@@ -163,18 +223,25 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		});
 	});
 
-	const setDiagramShowLinks = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		updateCurrentConnection({
-			id: activeSession?.id,
-			diagramShowLinks: e.target.checked,
-		});
-	});
+	const setDiagramShowLinks = useStable(
+		(e: ChangeEvent<HTMLInputElement>) => {
+			updateCurrentConnection({
+				id: activeSession?.id,
+				diagramShowLinks: e.target.checked,
+			});
+		},
+	);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on settings change
 	useEffect(() => {
 		renderGraph();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [activeSession.diagramMode, activeSession.diagramDirection, activeSession.diagramShowLinks]);
+	}, [
+		activeSession.diagramMode,
+		activeSession.diagramDirection,
+		activeSession.diagramShowLinks,
+	]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema change
 	useLayoutEffect(() => {
 		if (isViewActive && isConnected) {
 			renderGraph();
@@ -185,28 +252,27 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			setNodes([]);
 			setEdges([]);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [schema, isViewActive, isConnected, activeSession.diagramDirection]);
 
 	useEffect(() => {
-		setNodes(curr => {
-			return curr.map(node => {
+		setNodes((curr) => {
+			return curr.map((node) => {
 				return {
 					...node,
 					data: {
 						...node.data,
-						isSelected: node.id === props.active
+						isSelected: node.id === props.active,
 					},
 				};
 			});
 		});
-	}, [setNodes, props.active]);
+	}, [props.active]);
 
 	return (
 		<ContentPane
 			title="Table Graph"
 			icon={iconRelation}
-			style={{ overflow: 'hidden' }}
+			style={{ overflow: "hidden" }}
 			leftSection={
 				<Tooltip label="Toggle table list">
 					<ActionIcon
@@ -216,7 +282,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						onClick={toggleTableList}
 						aria-label="Toggle table list"
 					>
-						<Icon path={connection.designerTableList ? iconChevronLeft : iconChevronRight} />
+						<Icon
+							path={
+								connection.designerTableList
+									? iconChevronLeft
+									: iconChevronRight
+							}
+						/>
 					</ActionIcon>
 				</Tooltip>
 			}
@@ -225,11 +297,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					{warnings.length > 0 && (
 						<HoverCard position="bottom-end">
 							<HoverCard.Target>
-								<Badge
-									variant="light"
-									color="orange"
-									h={26}
-								>
+								<Badge variant="light" color="orange" h={26}>
 									Encountered {warnings.length} warnings
 								</Badge>
 							</HoverCard.Target>
@@ -261,9 +329,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					>
 						<Popover.Target>
 							<Tooltip label="Graph Options">
-								<ActionIcon
-									aria-label="Expand graph options"
-								>
+								<ActionIcon aria-label="Expand graph options">
 									<Icon path={iconCog} />
 								</ActionIcon>
 							</Tooltip>
@@ -301,7 +367,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				</Group>
 			}
 		>
-			<div style={{ position: "relative", width: "100%", height: "100%" }}>
+			<div
+				style={{ position: "relative", width: "100%", height: "100%" }}
+			>
 				<ReactFlow
 					ref={ref}
 					fitView
@@ -320,40 +388,40 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					}}
 					onContextMenu={showContextMenu([
 						{
-							key: 'create',
+							key: "create",
 							icon: <Icon path={iconPlus} />,
-							title: 'Create table...',
-							onClick: openTableCreator
+							title: "Create table...",
+							onClick: openTableCreator,
 						},
 						{
-							key: 'view',
+							key: "view",
 							icon: <Icon path={iconFullscreen} />,
-							title: 'Fit viewport',
-							onClick: () => fitView()
+							title: "Fit viewport",
+							onClick: () => fitView(),
 						},
 						{
-							key: 'refresh',
+							key: "refresh",
 							icon: <Icon path={iconRefresh} />,
-							title: 'Reset graph',
-							onClick: renderGraph
+							title: "Reset graph",
+							onClick: renderGraph,
 						},
-						{ key: 'divider' },
+						{ key: "divider" },
 						{
-							key: 'download-png',
+							key: "download-png",
 							icon: <Icon path={iconImage} />,
-							title: 'Export as PNG',
-							onClick: () => saveImage('png')
+							title: "Export as PNG",
+							onClick: () => saveImage("png"),
 						},
 						{
-							key: 'download-svg',
+							key: "download-svg",
 							icon: <Icon path={iconAPI} />,
-							title: 'Export as SVG',
-							onClick: () => saveImage('svg')
+							title: "Export as SVG",
+							onClick: () => saveImage("svg"),
 						},
 					])}
 				>
 					<Background
-						color={themeColor(isLight ? "slate.2": "slate.6")}
+						color={themeColor(isLight ? "slate.2" : "slate.6")}
 					/>
 				</ReactFlow>
 
@@ -386,7 +454,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								No tables defined
 							</Text>
 							<Text>
-								Define tables to visualize them in the table graph
+								Define tables to visualize them in the table
+								graph
 							</Text>
 						</Box>
 						<Button

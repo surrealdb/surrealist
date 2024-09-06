@@ -1,10 +1,9 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
-
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -55,7 +54,7 @@ export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
@@ -66,7 +65,6 @@ export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
 					in securing your data. SurrealDB provides a simple way to
 					enable authentication for your database.
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview

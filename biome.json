@@ -1,0 +1,54 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off",
+				"noThenProperty": "off",
+				"noMisleadingCharacterClass": "off",
+				"noArrayIndexKey": "off"
+			},
+			"style": {
+				"noUnusedTemplateLiteral": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": {
+					"level": "error",
+					"options": {
+						"hooks": [
+							{ "name": "useInputState", "stableResult": [1] },
+							{ "name": "useDisclosure", "stableResult": [1] },
+							{ "name": "useBoolean", "stableResult": [1] },
+							{ "name": "useOnboarding", "stableResult": [1] },
+							{ "name": "useImmer", "stableResult": [1] },
+							{ "name": "useNodesState", "stableResult": [1, 2] },
+							{ "name": "useEdgesState", "stableResult": [1, 2] },
+							{ "name": "useStable", "stableResult": true },
+							{ "name": "useReactFlow", "stableResult": true }
+						]
+					}
+				}
+			}
+		}
+	},
+	"formatter": {
+		"enabled": true,
+		"indentWidth": 4,
+		"indentStyle": "tab"
+	},
+	"files": {
+		"ignore": [
+			".vscode",
+			".github",
+			"node_modules",
+			"src-tauri",
+			"dist",
+			"*.js"
+		]
+	}
+}

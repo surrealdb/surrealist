@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
 	const snippets = useMemo<Snippets>(
@@ -54,7 +54,7 @@ export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (

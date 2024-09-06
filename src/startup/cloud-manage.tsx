@@ -1,4 +1,4 @@
-import '@mantine/core/styles.layer.css';
+import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
 
 import "../assets/styles/layers.scss";
@@ -9,13 +9,13 @@ import "../assets/styles/override.scss";
 import "../adapter";
 
 import dayjs from "dayjs";
-import posthog from 'posthog-js';
 import relativeTime from "dayjs/plugin/relativeTime";
+import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
-import { adapter } from '../adapter';
-import { CloudManageScreen } from '~/screens/cloud-manage';
+import { CloudManageScreen } from "~/screens/cloud-manage";
+import { startConfigSync } from "~/util/config";
+import { adapter } from "../adapter";
 import { isProduction } from "../util/environment";
-import { startConfigSync } from '~/util/config';
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -24,7 +24,7 @@ import { startConfigSync } from '~/util/config';
 	if (isProduction) {
 		posthog.init(import.meta.env.POSTHOG_KEY, {
 			api_host: import.meta.env.POSTHOG_URL,
-			autocapture: false
+			autocapture: false,
 		});
 	}
 
@@ -35,8 +35,11 @@ import { startConfigSync } from '~/util/config';
 	await adapter.initialize();
 
 	// Render the app component
-	const root = document.querySelector("#root")!;
+	const root = document.querySelector("#root");
+
+	if (!root) {
+		throw new Error("Root element not found");
+	}
 
 	createRoot(root).render(<CloudManageScreen />);
-
 })();

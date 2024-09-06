@@ -1,4 +1,4 @@
-import { HotkeyItem, useHotkeys } from "@mantine/hooks";
+import { type HotkeyItem, useHotkeys } from "@mantine/hooks";
 
 /**
  * TODO Add remappable keymaps

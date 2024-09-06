@@ -1,12 +1,12 @@
 import { Group } from "@mantine/core";
-import { TocPane } from "../TopicsPane";
-import { ArticlePane } from "../ArticlePane";
 import { memo, useMemo, useRef, useState } from "react";
-import { useSchema } from "~/hooks/schema";
-import { buildDocumentation } from "~/screens/database/docs";
 import { useSetting } from "~/hooks/config";
+import { useSchema } from "~/hooks/schema";
 import { useViewEffect } from "~/hooks/view";
+import { buildDocumentation } from "~/screens/database/docs";
 import { syncDatabaseSchema } from "~/util/schema";
+import { ArticlePane } from "../ArticlePane";
+import { TocPane } from "../TopicsPane";
 
 const ArticlePaneLazy = memo(ArticlePane);
 const TocPaneLazy = memo(TocPane);
@@ -18,7 +18,10 @@ export function DocumentationView() {
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [active, setActive] = useState("");
 
-	const docs = useMemo(() => schema ? buildDocumentation(schema) : [], [schema]);
+	const docs = useMemo(
+		() => (schema ? buildDocumentation(schema) : []),
+		[schema],
+	);
 
 	useViewEffect("documentation", () => {
 		syncDatabaseSchema();
@@ -26,11 +29,7 @@ export function DocumentationView() {
 
 	return (
 		<>
-			<Group
-				h="100%"
-				wrap="nowrap"
-				gap="var(--surrealist-divider-size)"
-			>
+			<Group h="100%" wrap="nowrap" gap="var(--surrealist-divider-size)">
 				<TocPaneLazy
 					active={active}
 					docs={docs}

@@ -1,11 +1,20 @@
-import { Box, Divider, Group, Paper, PaperProps, Text } from "@mantine/core";
-import { HTMLAttributes } from "react";
+import {
+	Box,
+	Divider,
+	Group,
+	Paper,
+	type PaperProps,
+	Text,
+} from "@mantine/core";
+import type { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
 
-export interface ContentPaneProps extends PaperProps, Omit<HTMLAttributes<HTMLDivElement>, "style"> {
+export interface ContentPaneProps
+	extends PaperProps,
+		Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
 	icon?: string;
 	leftSection?: React.ReactNode;
@@ -26,7 +35,6 @@ export function ContentPane({
 	disabled,
 	...rest
 }: ContentPaneProps) {
-
 	const isLight = useIsLight();
 
 	return (
@@ -49,7 +57,12 @@ export function ContentPane({
 						className={classes.header}
 					>
 						{leftSection}
-						{icon && <Icon path={icon} c={isLight ? "slate.4" : "slate.3"} />}
+						{icon && (
+							<Icon
+								path={icon}
+								c={isLight ? "slate.4" : "slate.3"}
+							/>
+						)}
 						<Text
 							fw={600}
 							c="bright"
@@ -62,10 +75,7 @@ export function ContentPane({
 						<Spacer />
 						{rightSection}
 					</Group>
-					<Divider
-						mx="sm"
-						className={classes.divider}
-					/>
+					<Divider mx="sm" className={classes.divider} />
 				</>
 			)}
 			<Box

@@ -1,8 +1,8 @@
-import { MantineColorScheme } from "@mantine/core";
-import { FeatureFlagMap } from "./util/feature-flags";
-import { AnyAuth, Token } from "surrealdb";
+import type { MantineColorScheme } from "@mantine/core";
+import type { AnyAuth, Token } from "surrealdb";
+import type { FeatureFlagMap } from "./util/feature-flags";
 
-export type ViewRequirement = 'database';
+export type ViewRequirement = "database";
 export type Screen = "start" | "database";
 export type AlertLevel = "info" | "warning" | "important";
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
@@ -22,8 +22,17 @@ export type LineStyle = "metro" | "straight" | "smooth";
 export type SchemaMode = "schemaless" | "schemafull";
 export type UrlTarget = "internal" | "external";
 export type DatabaseListMode = "list" | "grid";
-export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
-export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type InstanceState =
+	| "creating"
+	| "updating"
+	| "deleting"
+	| "ready"
+	| "inactive";
+export type AuthState =
+	| "unknown"
+	| "loading"
+	| "authenticated"
+	| "unauthenticated";
 export type AuthLevel = "root" | "namespace" | "database";
 export type AuthMode =
 	| "none"
@@ -52,7 +61,7 @@ export type CloudPage =
 	| "billing"
 	| "support"
 	| "settings"
-	| "provision"
+	| "provision";
 export type CodeLang =
 	| "cli"
 	| "rust"
@@ -66,7 +75,8 @@ export type CodeLang =
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
-export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
+export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
+	Partial<T>;
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string> = { label: string; value: T };
 export type Selection<T extends string> = Selectable<T>[];
@@ -447,11 +457,11 @@ export interface CloudRegion {
 }
 
 export interface CloudPlan {
-	id: string,
-	name: string,
-	description: string,
-	regions: string[],
-	instance_types: CloudInstanceType[]
+	id: string;
+	name: string;
+	description: string;
+	regions: string[];
+	instance_types: CloudInstanceType[];
 }
 
 export interface CloudOrganization {
@@ -488,7 +498,7 @@ export interface CloudPayment {
 	info?: {
 		card_last4?: string;
 		card_brand?: string;
-	}
+	};
 }
 
 export interface CloudBillingCountry {

@@ -1,14 +1,25 @@
-import classes from "./style.module.scss";
-import dayjs from "dayjs";
-import { RecordId, Decimal, GeometryPoint, GeometryLine, GeometryMultiPoint, GeometryMultiLine, GeometryPolygon, GeometryMultiPolygon, GeometryCollection, Uuid } from "surrealdb";
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
+import dayjs from "dayjs";
+import { convert } from "geo-coordinates-parser";
+import {
+	Decimal,
+	GeometryCollection,
+	GeometryLine,
+	GeometryMultiLine,
+	GeometryMultiPoint,
+	GeometryMultiPolygon,
+	GeometryPoint,
+	GeometryPolygon,
+	RecordId,
+	Uuid,
+} from "surrealdb";
 import { TRUNCATE_STYLE } from "~/util/helpers";
-import { Icon } from "../Icon";
-import { RecordLink } from "../RecordLink";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
-import { convert } from 'geo-coordinates-parser';
 import { GeographyLink } from "../GeographyLink";
+import { Icon } from "../Icon";
+import { RecordLink } from "../RecordLink";
+import classes from "./style.module.scss";
 
 // ----- Data Cell Types -----
 
@@ -21,9 +32,11 @@ function NullishCell(props: { value: null | undefined }) {
 }
 
 function BooleanCell(props: { value: boolean }) {
-	const icon = props.value
-		? <Icon path={iconCheck} color="green" />
-		: <Icon path={iconClose} color="pink.9" />;
+	const icon = props.value ? (
+		<Icon path={iconCheck} color="green" />
+	) : (
+		<Icon path={iconClose} color="pink.9" />
+	);
 
 	return <div>{icon}</div>;
 }
@@ -35,7 +48,8 @@ function StringCell(props: { value: string }) {
 			style={{
 				...TRUNCATE_STYLE,
 				maxWidth: 250,
-			}}>
+			}}
+		>
 			{props.value}
 		</Text>
 	);
@@ -75,11 +89,7 @@ function ArrayCell(props: { value: any[] }) {
 
 	return (
 		<div>
-			<HoverCard
-				shadow="xl"
-				withArrow
-				position="bottom-start"
-			>
+			<HoverCard shadow="xl" withArrow position="bottom-start">
 				<HoverCard.Target>
 					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
 						Array({props.value.length})
@@ -136,7 +146,7 @@ function ObjectCell(props: { value: any }) {
 	);
 }
 
-function GeographyPointCell({ value }: { value: GeometryPoint; }) {
+function GeographyPointCell({ value }: { value: GeometryPoint }) {
 	const [long, lat] = value.point;
 	try {
 		const converted = convert(`${lat} ${long}`);
@@ -152,7 +162,7 @@ function GeographyPointCell({ value }: { value: GeometryPoint; }) {
 			<GeographyLink
 				value={value}
 				text={
-					lat == 0 && long == 0
+					lat === 0 && long === 0
 						? "0° N, 0° E (Null Island)"
 						: `(${lat}, ${long})`
 				}
@@ -161,27 +171,27 @@ function GeographyPointCell({ value }: { value: GeometryPoint; }) {
 	}
 }
 
-function GeographyLineStringCell({ value }: { value: GeometryLine; }) {
+function GeographyLineStringCell({ value }: { value: GeometryLine }) {
 	return <GeographyLink value={value} text="LineString" />;
 }
 
-function GeographyPolygonCell({ value }: { value: GeometryPolygon; }) {
+function GeographyPolygonCell({ value }: { value: GeometryPolygon }) {
 	return <GeographyLink value={value} text="Polygon" />;
 }
 
-function GeographyMultiPointCell({ value }: { value: GeometryMultiPoint; }) {
+function GeographyMultiPointCell({ value }: { value: GeometryMultiPoint }) {
 	return <GeographyLink value={value} text="MultiPoint" />;
 }
 
-function GeographyMultiLineCell({ value }: { value: GeometryMultiLine; }) {
+function GeographyMultiLineCell({ value }: { value: GeometryMultiLine }) {
 	return <GeographyLink value={value} text="MultiLineString" />;
 }
 
-function GeographyMultiPolygonCell({ value }: { value: GeometryMultiPolygon; }) {
+function GeographyMultiPolygonCell({ value }: { value: GeometryMultiPolygon }) {
 	return <GeographyLink value={value} text="MultiPolygon" />;
 }
 
-function GeographyCollectionCell({ value }: { value: GeometryCollection; }) {
+function GeographyCollectionCell({ value }: { value: GeometryCollection }) {
 	return <GeographyLink value={value} text="GeometryCollection" />;
 }
 

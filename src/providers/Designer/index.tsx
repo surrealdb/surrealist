@@ -1,17 +1,23 @@
 import { useDisclosure } from "@mantine/hooks";
-import { createContext, useContext, PropsWithChildren, useState, useMemo } from "react";
-import { useStable } from "~/hooks/stable";
-import { DesignDrawer } from "./drawer";
+import {
+	type PropsWithChildren,
+	createContext,
+	useContext,
+	useMemo,
+	useState,
+} from "react";
+import { useImmer } from "use-immer";
+import { useMinimumVersion } from "~/hooks/connection";
 import { useSaveable } from "~/hooks/save";
+import { useTables } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/database/connection/connection";
+import type { TableInfo } from "~/types";
 import { showError } from "~/util/helpers";
 import { syncDatabaseSchema } from "~/util/schema";
-import { isSchemaValid, buildDefinitionQueries } from "./helpers";
-import { useImmer } from "use-immer";
-import { TableInfo } from "~/types";
-import { useTables } from "~/hooks/schema";
-import { useMinimumVersion } from "~/hooks/connection";
 import { SDB_2_0_0 } from "~/util/versions";
+import { DesignDrawer } from "./drawer";
+import { buildDefinitionQueries, isSchemaValid } from "./helpers";
 
 type DesignFunction = (table: string) => void;
 type StopDesignFunction = () => void;
@@ -29,18 +35,18 @@ const DEFAULT_DEF: TableInfo = {
 		drop: false,
 		full: false,
 		kind: {
-			kind: "ANY"
+			kind: "ANY",
 		},
 		permissions: {
 			select: true,
 			create: true,
 			update: true,
-			delete: true
-		}
+			delete: true,
+		},
 	},
 	fields: [],
 	indexes: [],
-	events: []
+	events: [],
 };
 
 /**
@@ -49,12 +55,14 @@ const DEFAULT_DEF: TableInfo = {
 export function useDesigner() {
 	const ctx = useContext(DesignerContext);
 
-	return ctx ?? {
-		active: null,
-		isDesigning: false,
-		design: () => {},
-		stopDesign: () => {}
-	};
+	return (
+		ctx ?? {
+			active: null,
+			isDesigning: false,
+			design: () => {},
+			stopDesign: () => {},
+		}
+	);
 }
 
 export function DesignerProvider({ children }: PropsWithChildren) {
@@ -93,7 +101,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 	const saveHandle = useSaveable({
 		valid: isValid,
 		track: {
-			data
+			data,
 		},
 		onSave: async ({ data: previous }) => {
 			if (!previous) {
@@ -102,8 +110,8 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 
 			const query = buildDefinitionQueries({
 				previous: previous,
-				current: data!,
-				useOverwrite
+				current: data,
+				useOverwrite,
 			});
 
 			try {
@@ -112,7 +120,10 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 					if (r.success) return [];
 
 					return [
-						(r.result as string).replace('There was a problem with the database: ', '')
+						(r.result as string).replace(
+							"There was a problem with the database: ",
+							"",
+						),
 					];
 				});
 
@@ -123,20 +134,20 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 				}
 
 				syncDatabaseSchema({
-					tables: [data.schema.name]
+					tables: [data.schema.name],
 				});
 
 				designingHandle.close();
-			} catch(err: any) {
+			} catch (err: any) {
 				showError({
 					title: "Failed to apply schema",
-					subtitle: err.message
+					subtitle: err.message,
 				});
 			}
 		},
 		onRevert({ data }) {
 			setData(data);
-		}
+		},
 	});
 
 	return (
@@ -145,7 +156,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 				design,
 				isDesigning,
 				stopDesign: designingHandle.close,
-				active: data.schema.name
+				active: data.schema.name,
 			}}
 		>
 			{children}

@@ -1,13 +1,33 @@
-import classes from "./style.module.scss";
-import { Paper, Stack, Group, Menu, ActionIcon, Text, Badge, Button, Table, MantineColor } from "@mantine/core";
-import { iconDotsVertical, iconMarker, iconChevronDown, iconAPI, iconConsole, iconMemory, iconTag, iconPower } from "~/util/icons";
-import { Spacer } from "~/components/Spacer";
+import {
+	ActionIcon,
+	Badge,
+	Button,
+	Group,
+	type MantineColor,
+	Menu,
+	Paper,
+	Stack,
+	Table,
+	Text,
+} from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { CloudInstance, InstanceState } from "~/types";
-import { fetchAPI } from "../../api";
-import { showError, showInfo } from "~/util/helpers";
+import { Spacer } from "~/components/Spacer";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
+import type { CloudInstance, InstanceState } from "~/types";
+import { showError, showInfo } from "~/util/helpers";
+import {
+	iconAPI,
+	iconChevronDown,
+	iconConsole,
+	iconDotsVertical,
+	iconMarker,
+	iconMemory,
+	iconPower,
+	iconTag,
+} from "~/util/icons";
+import { fetchAPI } from "../../api";
+import classes from "./style.module.scss";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 
@@ -15,7 +35,7 @@ const BADGE_INFO = {
 	creating: ["blue", "Creating"],
 	updating: ["blue", "Updating"],
 	deleting: ["red", "Deleting"],
-	inactive: ["red.4", "Inactive"]
+	inactive: ["red.4", "Inactive"],
 } satisfies Partial<Record<InstanceState, [MantineColor, string]>>;
 
 interface StateBadgeProps {
@@ -23,10 +43,7 @@ interface StateBadgeProps {
 	small?: boolean;
 }
 
-function StateBadge({
-	state,
-	small
-}: StateBadgeProps) {
+function StateBadge({ state, small }: StateBadgeProps) {
 	if (state === "ready") {
 		return;
 	}
@@ -34,11 +51,7 @@ function StateBadge({
 	const [color, text] = BADGE_INFO[state];
 
 	return (
-		<Badge
-			color={color}
-			variant="light"
-			size={small ? "sm" : "md"}
-		>
+		<Badge color={color} variant="light" size={small ? "sm" : "md"}>
 			{text}
 		</Badge>
 	);
@@ -60,31 +73,37 @@ export function Instance({
 	onOpenSettings,
 }: Instance) {
 	const inactive = value.state === "inactive";
-	const regions = useCloudStore(s => s.regions);
-	const regionName = regions.find(r => r.slug === value.region)?.description ?? value.region;
+	const regions = useCloudStore((s) => s.regions);
+	const regionName =
+		regions.find((r) => r.slug === value.region)?.description ??
+		value.region;
 
 	const handleDelete = useConfirmation({
-		message: "You are about to delete this instance. This will cause all associated resources to be destroyed",
+		message:
+			"You are about to delete this instance. This will cause all associated resources to be destroyed",
 		confirmText: "Delete",
 		title: "Delete instance",
 		onConfirm: async () => {
 			try {
 				await fetchAPI(`/instances/${value.id}`, {
-					method: "DELETE"
+					method: "DELETE",
 				});
 
 				showInfo({
 					title: "Deleting instance",
 					subtitle: (
 						<>
-							<Text span c="bright">{value.name}</Text> is being deleted
+							<Text span c="bright">
+								{value.name}
+							</Text>{" "}
+							is being deleted
 						</>
-					)
+					),
 				});
 			} catch (err: any) {
 				showError({
 					title: "Failed to delete instance",
-					subtitle: err.message
+					subtitle: err.message,
 				});
 			} finally {
 				onDelete();
@@ -95,16 +114,12 @@ export function Instance({
 	const actionList = (
 		<Menu position="right-start">
 			<Menu.Target>
-				<ActionIcon
-					disabled={value.state !== "ready"}
-				>
+				<ActionIcon disabled={value.state !== "ready"}>
 					<Icon path={iconDotsVertical} />
 				</ActionIcon>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Item
-					onClick={() => onOpenSettings(value)}
-				>
+				<Menu.Item onClick={() => onOpenSettings(value)}>
 					Settings...
 				</Menu.Item>
 				<Menu.Divider />
@@ -113,10 +128,7 @@ export function Instance({
 				>
 					{inactive ? "Activate" : "Deactivate"} instance
 				</Menu.Item> */}
-				<Menu.Item
-					onClick={handleDelete}
-					color="red"
-				>
+				<Menu.Item onClick={handleDelete} color="red">
 					Delete instance
 				</Menu.Item>
 			</Menu.Dropdown>
@@ -127,7 +139,7 @@ export function Instance({
 		<Menu
 			position="bottom-start"
 			transitionProps={{
-				transition: "scale-y"
+				transition: "scale-y",
 			}}
 		>
 			<Menu.Target>
@@ -143,9 +155,7 @@ export function Instance({
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Item
-					onClick={() => onConnect("surrealist", value)}
-				>
+				<Menu.Item onClick={() => onConnect("surrealist", value)}>
 					Open in Surrealist...
 				</Menu.Item>
 				<Menu.Divider />
@@ -183,22 +193,16 @@ export function Instance({
 			</Group>
 			<Group gap="sm" h={32}>
 				<Icon path={iconMemory} c="surreal" />
-				<Text c="bright">
-					{value.type.slug}
-				</Text>
+				<Text c="bright">{value.type.slug}</Text>
 			</Group>
 			<Group gap="sm" h={32}>
 				<Icon path={iconMarker} c="surreal" />
-				<Text c="bright">
-					{regionName}
-				</Text>
+				<Text c="bright">{regionName}</Text>
 			</Group>
 			<Group>
 				<Group gap="sm" h={32}>
 					<Icon path={iconTag} c="surreal" />
-					<Text c="bright">
-						SurrealDB {value.version}
-					</Text>
+					<Text c="bright">SurrealDB {value.version}</Text>
 				</Group>
 				<Spacer />
 				{inactive ? (
@@ -226,15 +230,9 @@ export function Instance({
 					<StateBadge state={value.state} small />
 				</Group>
 			</Table.Td>
-			<Table.Td>
-				{value.type.slug}
-			</Table.Td>
-			<Table.Td>
-				{regionName}
-			</Table.Td>
-			<Table.Td>
-				SurrealDB 2.0
-			</Table.Td>
+			<Table.Td>{value.type.slug}</Table.Td>
+			<Table.Td>{regionName}</Table.Td>
+			<Table.Td>SurrealDB 2.0</Table.Td>
 			<Table.Td>
 				<Group wrap="nowrap">
 					{actionList}

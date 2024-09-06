@@ -1,6 +1,6 @@
+import type { Update } from "@tauri-apps/plugin-updater";
 import { create } from "zustand";
-import { Update } from "@tauri-apps/plugin-updater";
-import { ColorScheme, LiveMessage } from "~/types";
+import type { ColorScheme, LiveMessage } from "~/types";
 
 export type InterfaceStore = {
 	title: string;
@@ -48,75 +48,86 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
-	setColorScheme: (colorScheme) => set(() => ({
-		colorScheme
-	})),
+	setColorScheme: (colorScheme) =>
+		set(() => ({
+			colorScheme,
+		})),
 
-	setAvailableUpdate: (availableUpdate) => set(() => ({
-		availableUpdate,
-		showAvailableUpdate: true,
-	})),
+	setAvailableUpdate: (availableUpdate) =>
+		set(() => ({
+			availableUpdate,
+			showAvailableUpdate: true,
+		})),
 
-	hideAvailableUpdate: () => set(() => ({
-		showAvailableUpdate: false,
-	})),
+	hideAvailableUpdate: () =>
+		set(() => ({
+			showAvailableUpdate: false,
+		})),
 
-	openTableCreator: () => set(() => ({
-		showTableCreator: true,
-	})),
+	openTableCreator: () =>
+		set(() => ({
+			showTableCreator: true,
+		})),
 
-	closeTableCreator: () => set(() => ({
-		showTableCreator: false,
-	})),
+	closeTableCreator: () =>
+		set(() => ({
+			showTableCreator: false,
+		})),
 
-	setIsLive: (id, live) => set((state) => {
-		const liveTabs = new Set(state.liveTabs);
+	setIsLive: (id, live) =>
+		set((state) => {
+			const liveTabs = new Set(state.liveTabs);
 
-		if (live) {
-			liveTabs.add(id);
-		} else {
-			liveTabs.delete(id);
-		}
+			if (live) {
+				liveTabs.add(id);
+			} else {
+				liveTabs.delete(id);
+			}
 
-		return {
-			liveTabs
-		};
-	}),
+			return {
+				liveTabs,
+			};
+		}),
 
-	pushLiveQueryMessage: (id, message) => set((state) => ({
-		liveQueryMessages: {
-			...state.liveQueryMessages,
-			[id]: [
-				message,
-				...(state.liveQueryMessages[id] || []).slice(0, 50)
-			]
-		}
-	})),
+	pushLiveQueryMessage: (id, message) =>
+		set((state) => ({
+			liveQueryMessages: {
+				...state.liveQueryMessages,
+				[id]: [
+					message,
+					...(state.liveQueryMessages[id] || []).slice(0, 50),
+				],
+			},
+		})),
 
-	clearLiveQueryMessages: (id) => set((state) => {
-		const liveQueryMessages = { ...state.liveQueryMessages };
+	clearLiveQueryMessages: (id) =>
+		set((state) => {
+			const liveQueryMessages = { ...state.liveQueryMessages };
 
-		delete liveQueryMessages[id];
+			delete liveQueryMessages[id];
 
-		return {
-			liveQueryMessages
-		};
-	}),
+			return {
+				liveQueryMessages,
+			};
+		}),
 
-	openScopeSignup: () => set(() => ({
-		showScopeSignup: true,
-	})),
+	openScopeSignup: () =>
+		set(() => ({
+			showScopeSignup: true,
+		})),
 
-	closeScopeSignup: () => set(() => ({
-		showScopeSignup: false,
-	})),
+	closeScopeSignup: () =>
+		set(() => ({
+			showScopeSignup: false,
+		})),
 
-	showChangelog: () => set(() => ({
-		showChangelogAlert: true,
-	})),
+	showChangelog: () =>
+		set(() => ({
+			showChangelogAlert: true,
+		})),
 
-	readChangelog: () => set(() => ({
-		hasReadChangelog: true,
-	})),
-
+	readChangelog: () =>
+		set(() => ({
+			hasReadChangelog: true,
+		})),
 }));

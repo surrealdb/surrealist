@@ -1,15 +1,22 @@
-import classes from "./style.module.scss";
+import { Compartment, EditorState, type Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import {
+	ActionIcon,
+	Box,
+	CopyButton,
+	Paper,
+	type PaperProps,
+	Text,
+} from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
 import dedent from "dedent";
-import { surrealql } from "@surrealdb/codemirror";
-import { Compartment, EditorState, Extension } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
-import { ActionIcon, Box, CopyButton, Paper, PaperProps, Text } from "@mantine/core";
-import { ReactNode, useEffect, useMemo, useRef } from "react";
-import { useIsLight } from "~/hooks/theme";
-import { Icon } from "../Icon";
-import { iconCheck, iconCopy } from "~/util/icons";
+import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { colorTheme } from "~/editor";
+import { useIsLight } from "~/hooks/theme";
+import { iconCheck, iconCopy } from "~/util/icons";
+import { Icon } from "../Icon";
+import classes from "./style.module.scss";
 
 interface EditorRef {
 	editor: EditorView;
@@ -47,7 +54,10 @@ export function CodePreview({
 		return withDedent ? dedent(value) : value;
 	}, [value, withDedent]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: One-time initialization
 	useEffect(() => {
+		if (!ref.current) return;
+
 		const config = new Compartment();
 		const theme = new Compartment();
 		const wrap = new Compartment();
@@ -63,31 +73,31 @@ export function CodePreview({
 				EditorState.readOnly.of(true),
 				EditorView.editable.of(false),
 			],
-
 		});
 
 		const editor = new EditorView({
 			state: initialState,
-			parent: ref.current!,
+			parent: ref.current,
 		});
 
 		editorRef.current = {
 			editor,
 			config,
 			theme,
-			wrap
+			wrap,
 		};
 
 		return () => {
 			editor.destroy();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
-		const { editor } = editorRef.current!;
+		if (!editorRef.current) return;
 
-		if (code == editor.state.doc.toString()) {
+		const { editor } = editorRef.current;
+
+		if (code === editor.state.doc.toString()) {
 			return;
 		}
 
@@ -95,34 +105,42 @@ export function CodePreview({
 			changes: {
 				from: 0,
 				to: editor.state.doc.length,
-				insert: code
-			}
+				insert: code,
+			},
 		});
 
 		editor.dispatch(transaction);
 	}, [code]);
 
 	useEffect(() => {
-		const { editor, config } = editorRef.current!;
+		if (!editorRef.current) return;
+
+		const { editor, config } = editorRef.current;
 
 		editor.dispatch({
-			effects: config.reconfigure(extensions || surrealql())
+			effects: config.reconfigure(extensions || surrealql()),
 		});
 	}, [extensions]);
 
 	useEffect(() => {
-		const { editor, theme } = editorRef.current!;
+		if (!editorRef.current) return;
+
+		const { editor, theme } = editorRef.current;
 
 		editor.dispatch({
-			effects: theme.reconfigure(colorTheme(isLight))
+			effects: theme.reconfigure(colorTheme(isLight)),
 		});
 	}, [isLight]);
 
 	useEffect(() => {
-		const { editor, wrap } = editorRef.current!;
+		if (!editorRef.current) return;
+
+		const { editor, wrap } = editorRef.current;
 
 		editor.dispatch({
-			effects: wrap.reconfigure(withWrapping ? EditorView.lineWrapping : [])
+			effects: wrap.reconfigure(
+				withWrapping ? EditorView.lineWrapping : [],
+			),
 		});
 	}, [withWrapping]);
 
@@ -131,13 +149,7 @@ export function CodePreview({
 	return (
 		<>
 			{title && (
-				<Text
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					mb="sm"
-					c="bright"
-				>
+				<Text ff="mono" tt="uppercase" fw={600} mb="sm" c="bright">
 					{title}
 				</Text>
 			)}
@@ -145,7 +157,7 @@ export function CodePreview({
 				p="xs"
 				ref={ref}
 				pos="relative"
-				bg={isLight ? 'slate.0' : 'slate.9'}
+				bg={isLight ? "slate.0" : "slate.9"}
 				className={clsx(classes.root, className)}
 				fz="lg"
 				pr={rightPadding ? 40 : 0}
@@ -155,7 +167,7 @@ export function CodePreview({
 					<CopyButton value={value}>
 						{({ copied, copy }) => (
 							<ActionIcon
-								variant={copied ? 'gradient' : undefined}
+								variant={copied ? "gradient" : undefined}
 								pos="absolute"
 								top={6}
 								right={6}
@@ -167,15 +179,17 @@ export function CodePreview({
 							</ActionIcon>
 						)}
 					</CopyButton>
-				) : rightSection && (
-					<Box
-						pos="absolute"
-						top={6}
-						right={6}
-						style={{ zIndex: 1 }}
-					>
-						{rightSection}
-					</Box>
+				) : (
+					rightSection && (
+						<Box
+							pos="absolute"
+							top={6}
+							right={6}
+							style={{ zIndex: 1 }}
+						>
+							{rightSection}
+						</Box>
+					)
 				)}
 			</Paper>
 		</>

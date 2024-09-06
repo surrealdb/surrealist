@@ -1,46 +1,46 @@
 import cloudLogo from "~/assets/images/cloud-icon.svg";
 
 import {
-	Group,
-	Select,
-	TextInput,
-	Stack,
-	PasswordInput,
+	ActionIcon,
+	Alert,
+	Box,
 	Button,
+	Divider,
+	Group,
+	Image,
 	Modal,
 	Paper,
-	ActionIcon,
-	Tooltip,
-	Alert,
-	SimpleGrid,
+	PasswordInput,
 	Popover,
-	Box,
-	Divider,
-	Image,
+	Select,
+	SimpleGrid,
+	Stack,
+	TextInput,
+	Tooltip,
 } from "@mantine/core";
 
 import {
-	CONNECTION_PROTOCOLS,
 	AUTH_MODES,
+	CONNECTION_PROTOCOLS,
 	SENSITIVE_SCOPE_FIELDS,
 } from "~/constants";
 
+import { Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { AuthMode, Connection, Protocol } from "~/types";
-import { Updater } from "use-immer";
+import { useMemo } from "react";
+import type { Updater } from "use-immer";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useConfigStore } from "~/stores/config";
+import type { AuthMode, Connection, Protocol } from "~/types";
+import { fastParseJwt } from "~/util/helpers";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
+import { USER_ICONS } from "~/util/user-icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
-import { Spacer } from "../Spacer";
-import { useStable } from "~/hooks/stable";
-import { useDisclosure } from "@mantine/hooks";
-import { Text } from "@mantine/core";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { useMemo } from "react";
-import { fastParseJwt } from "~/util/helpers";
-import { USER_ICONS } from "~/util/user-icons";
-import { useConfigStore } from "~/stores/config";
-import { useIsLight } from "~/hooks/theme";
+import { Spacer } from "../Spacer";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -51,10 +51,7 @@ interface SubheaderProps {
 	subtitle: string;
 }
 
-function Subheader({
-	title,
-	subtitle
-}: SubheaderProps) {
+function Subheader({ title, subtitle }: SubheaderProps) {
 	return (
 		<Box>
 			<Text c="bright" fz="lg" fw={500}>
@@ -72,10 +69,7 @@ export interface ConnectionDetailsProps {
 	onChange: Updater<Connection>;
 }
 
-export function ConnectionDetails({
-	value,
-	onChange,
-}: ConnectionDetailsProps) {
+export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const [editingScope, editingScopeHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
 	const isLight = useIsLight();
@@ -103,7 +97,7 @@ export function ConnectionDetails({
 
 				const [, protocol, hostname] = result;
 				const isValid = CONNECTION_PROTOCOLS.some(
-					(p) => p.value === protocol
+					(p) => p.value === protocol,
 				);
 
 				if (!isValid) {
@@ -113,7 +107,7 @@ export function ConnectionDetails({
 				draft.authentication.protocol = protocol as Protocol;
 				draft.authentication.hostname = hostname;
 			});
-		}
+		},
 	);
 
 	const updateIcon = (index: number) => {
@@ -133,12 +127,15 @@ export function ConnectionDetails({
 			: "address:port";
 
 	const isSystemMethod = SYSTEM_METHODS.has(value.authentication.mode);
-	const showDatabase = value.authentication.mode === "database" || value.authentication.mode === "scope";
-	const showNamespace = showDatabase || value.authentication.mode === "namespace";
+	const showDatabase =
+		value.authentication.mode === "database" ||
+		value.authentication.mode === "scope";
+	const showNamespace =
+		showDatabase || value.authentication.mode === "namespace";
 
 	const tokenPayload = useMemo(
 		() => fastParseJwt(value.authentication.token),
-		[value.authentication.token]
+		[value.authentication.token],
 	);
 
 	const protocols = useMemo(() => {
@@ -148,19 +145,20 @@ export function ConnectionDetails({
 	}, [isCloud]);
 
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
-	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
+	const tokenExpireSoon =
+		tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
 
 	const groups = useConfigStore((s) => s.connectionGroups);
 	const groupItems = useMemo(() => {
 		return [
 			{
 				value: "",
-				label: "No group"
+				label: "No group",
 			},
 			...groups.map((group) => ({
 				value: group.id,
 				label: group.name,
-			}))
+			})),
 		];
 	}, [groups]);
 
@@ -232,7 +230,8 @@ export function ConnectionDetails({
 								/>
 								<Box>
 									<Text fw={600} c="bright">
-										This connection is managed by Surreal Cloud
+										This connection is managed by Surreal
+										Cloud
 									</Text>
 									<Text mt={4}>
 										Some details cannot be modified manually
@@ -241,11 +240,7 @@ export function ConnectionDetails({
 							</Group>
 						</Paper>
 
-						<Divider
-							mx={-32}
-							mb={6}
-							mt={12}
-						/>
+						<Divider mx={-32} mb={6} mt={12} />
 					</>
 				)}
 
@@ -281,10 +276,7 @@ export function ConnectionDetails({
 					/>
 				</Group>
 
-				<Divider
-					mb={6}
-					mt={12}
-				/>
+				<Divider mb={6} mt={12} />
 
 				{!isCloud && (
 					<>
@@ -300,7 +292,8 @@ export function ConnectionDetails({
 								data={AUTH_MODES}
 								onChange={(value) =>
 									onChange((draft) => {
-										draft.authentication.mode = value as AuthMode;
+										draft.authentication.mode =
+											value as AuthMode;
 									})
 								}
 							/>
@@ -337,11 +330,14 @@ export function ConnectionDetails({
 									{showNamespace && (
 										<TextInput
 											label="Namespace"
-											value={value.authentication.namespace}
+											value={
+												value.authentication.namespace
+											}
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.authentication.namespace = e.target.value;
+													draft.authentication.namespace =
+														e.target.value;
 												})
 											}
 										/>
@@ -350,11 +346,14 @@ export function ConnectionDetails({
 									{showDatabase && (
 										<TextInput
 											label="Database"
-											value={value.authentication.database}
+											value={
+												value.authentication.database
+											}
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.authentication.database = e.target.value;
+													draft.authentication.database =
+														e.target.value;
 												})
 											}
 										/>
@@ -371,7 +370,8 @@ export function ConnectionDetails({
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.scope = e.target.value;
+												draft.authentication.scope =
+													e.target.value;
 											})
 										}
 									/>
@@ -394,7 +394,8 @@ export function ConnectionDetails({
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.token = e.target.value;
+												draft.authentication.token =
+													e.target.value;
 											})
 										}
 										styles={{
@@ -405,47 +406,49 @@ export function ConnectionDetails({
 										}}
 									/>
 
-									{value.authentication.token && (tokenPayload === null ? (
-										<Alert
-											color="red"
-											icon={<Icon path={iconWarning} />}
-										>
-											The provided token does not appear to be
-											a valid JWT
-										</Alert>
-									) : (
-										tokenExpireSoon &&
-										(tokenExpire > Date.now() ? (
-											<Text c="slate">
-												<Icon
-													path={iconWarning}
-													c="yellow"
-													size="sm"
-													left
-												/>
-												This token expires in{" "}
-												{dayjs(tokenExpire).fromNow()}
-											</Text>
+									{value.authentication.token &&
+										(tokenPayload === null ? (
+											<Alert
+												color="red"
+												icon={
+													<Icon path={iconWarning} />
+												}
+											>
+												The provided token does not
+												appear to be a valid JWT
+											</Alert>
 										) : (
-											<Text c="slate">
-												<Icon
-													path={iconWarning}
-													c="red"
-													size="sm"
-													left
-												/>
-												This token has expired
-											</Text>
-										))
-									))}
+											tokenExpireSoon &&
+											(tokenExpire > Date.now() ? (
+												<Text c="slate">
+													<Icon
+														path={iconWarning}
+														c="yellow"
+														size="sm"
+														left
+													/>
+													This token expires in{" "}
+													{dayjs(
+														tokenExpire,
+													).fromNow()}
+												</Text>
+											) : (
+												<Text c="slate">
+													<Icon
+														path={iconWarning}
+														c="red"
+														size="sm"
+														left
+													/>
+													This token has expired
+												</Text>
+											))
+										))}
 								</>
 							)}
 						</Stack>
 
-						<Divider
-							mb={6}
-							mt={12}
-						/>
+						<Divider mb={6} mt={12} />
 					</>
 				)}
 
@@ -457,10 +460,12 @@ export function ConnectionDetails({
 				<Select
 					label="Group"
 					data={groupItems}
-					value={value.group || ''}
-					onChange={(group) => onChange((draft) => {
-						draft.group = group || undefined;
-					})}
+					value={value.group || ""}
+					onChange={(group) =>
+						onChange((draft) => {
+							draft.group = group || undefined;
+						})
+					}
 				/>
 			</Stack>
 
@@ -479,7 +484,7 @@ export function ConnectionDetails({
 						{value.authentication.scopeFields?.map((field, i) => {
 							const fieldName = field.subject.toLowerCase();
 							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(
-								fieldName
+								fieldName,
 							)
 								? PasswordInput
 								: TextInput;
@@ -521,7 +526,7 @@ export function ConnectionDetails({
 													onChange((draft) => {
 														draft.authentication.scopeFields.splice(
 															i,
-															1
+															1,
 														);
 													})
 												}

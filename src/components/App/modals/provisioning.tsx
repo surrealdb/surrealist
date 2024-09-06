@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import classes from "../style.module.scss";
 import { Center, Dialog, Group, Loader, Stack, Text } from "@mantine/core";
-import { useIsLight } from "~/hooks/theme";
-import { useCloudStore } from "~/stores/cloud";
-import { iconCheck, iconSurreal } from "~/util/icons";
-import { fetchAPI } from "~/screens/cloud-manage/api";
-import { CloudInstance } from "~/types";
 import { sleep } from "radash";
+import { useEffect } from "react";
 import { Icon } from "~/components/Icon";
+import { useIsLight } from "~/hooks/theme";
+import { fetchAPI } from "~/screens/cloud-manage/api";
+import { useCloudStore } from "~/stores/cloud";
+import type { CloudInstance } from "~/types";
+import { iconCheck, iconSurreal } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export function ProvisioningDialog() {
 	const { finishProvisioning, hideProvisioning } = useCloudStore.getState();
@@ -21,7 +21,9 @@ export function ProvisioningDialog() {
 		if (isProvisioning && provisioning && !isProvisionDone) {
 			const task = setInterval(async () => {
 				try {
-					const instance = await fetchAPI<CloudInstance>(`/instances/${provisioning.id}`);
+					const instance = await fetchAPI<CloudInstance>(
+						`/instances/${provisioning.id}`,
+					);
 
 					if (instance.state === "ready") {
 						finishProvisioning();
@@ -39,7 +41,13 @@ export function ProvisioningDialog() {
 				clearInterval(task);
 			};
 		}
-	}, [isProvisionDone, isProvisioning, provisioning, hideProvisioning, finishProvisioning]);
+	}, [
+		isProvisionDone,
+		isProvisioning,
+		provisioning,
+		hideProvisioning,
+		finishProvisioning,
+	]);
 
 	return (
 		<Dialog
@@ -49,12 +57,12 @@ export function ProvisioningDialog() {
 			className={classes.provisionDialog}
 			position={{
 				bottom: "var(--mantine-spacing-xl)",
-				right: "var(--mantine-spacing-xl)"
+				right: "var(--mantine-spacing-xl)",
 			}}
 			transitionProps={{
 				transition: "slide-up",
 				timingFunction: "ease",
-				duration: 200
+				duration: 200,
 			}}
 		>
 			<Group wrap="nowrap">
@@ -85,6 +93,7 @@ export function ProvisioningDialog() {
 							viewBox="0 0 24 24"
 							className={classes.provisionIcon}
 						>
+							<title>Loading spinner</title>
 							<path
 								d={iconSurreal}
 								fill={isLight ? "black" : "white"}
@@ -93,18 +102,12 @@ export function ProvisioningDialog() {
 					</Center>
 				)}
 				<Stack gap={2}>
-					<Text
-						fw={500}
-						c="bright"
-						fz="lg"
-					>
-						{isProvisionDone ? "Instance successfully provisioned" :  "We are provisioning your instance"}
+					<Text fw={500} c="bright" fz="lg">
+						{isProvisionDone
+							? "Instance successfully provisioned"
+							: "We are provisioning your instance"}
 					</Text>
-					{provisioning && (
-						<Text>
-							{provisioning.name}
-						</Text>
-					)}
+					{provisioning && <Text>{provisioning.name}</Text>}
 				</Stack>
 			</Group>
 		</Dialog>

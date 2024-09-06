@@ -1,11 +1,13 @@
-import classes from "./style.module.scss";
-import { HTMLAttributes, useEffect, useRef, useState } from 'react';
-import { useStable } from '~/hooks/stable';
-import { Text, TextProps } from '@mantine/core';
-import { useLater } from '~/hooks/later';
+import { Text, type TextProps } from "@mantine/core";
 import clsx from "clsx";
+import { type HTMLAttributes, useEffect, useRef, useState } from "react";
+import { useLater } from "~/hooks/later";
+import { useStable } from "~/hooks/stable";
+import classes from "./style.module.scss";
 
-export interface EditableTextProps extends TextProps, Omit<HTMLAttributes<HTMLDivElement>, 'onChange' | 'style' | 'color'> {
+export interface EditableTextProps
+	extends TextProps,
+		Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "style" | "color"> {
 	value: string;
 	disabled?: boolean;
 	withDoubleClick?: boolean;
@@ -17,18 +19,14 @@ export const EditableText = (props: EditableTextProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const [isEditing, setIsEditing] = useState(false);
 
-	const {
-		value,
-		onChange,
-		withDoubleClick,
-		withDecoration,
-		...rest
-	} = props;
+	const { value, onChange, withDoubleClick, withDecoration, ...rest } = props;
 
 	const doFocus = useLater(() => {
-		ref.current!.focus();
+		if (!ref.current) return;
 
-		const text = ref.current!.childNodes[0] as Text;
+		ref.current.focus();
+
+		const text = ref.current.childNodes[0] as Text;
 		const range = document.createRange();
 
 		range.selectNode(text);
@@ -39,7 +37,7 @@ export const EditableText = (props: EditableTextProps) => {
 	const onKeyDown = useStable((e: React.KeyboardEvent<HTMLDivElement>) => {
 		e.stopPropagation();
 
-		if (e.key === 'Enter') {
+		if (e.key === "Enter") {
 			e.preventDefault();
 			ref.current?.blur();
 		}
@@ -48,9 +46,9 @@ export const EditableText = (props: EditableTextProps) => {
 	});
 
 	const onBlur = useStable((e: React.FocusEvent<HTMLDivElement>) => {
-		const textValue = ref.current?.textContent?.replaceAll('\n', '');
+		const textValue = ref.current?.textContent?.replaceAll("\n", "");
 
-		onChange(textValue || '');
+		onChange(textValue || "");
 		setIsEditing(false);
 
 		rest?.onBlur?.(e);
@@ -79,7 +77,11 @@ export const EditableText = (props: EditableTextProps) => {
 			onBlur={onBlur}
 			onKeyDown={onKeyDown}
 			onDoubleClick={onDoubleClick}
-			contentEditable={!withDoubleClick || isEditing ? "plaintext-only" as any : "false"}
+			contentEditable={
+				!withDoubleClick || isEditing
+					? ("plaintext-only" as any)
+					: "false"
+			}
 			className={clsx(classes.root, withDecoration && classes.decorate)}
 			spellCheck={false}
 			role="textbox"

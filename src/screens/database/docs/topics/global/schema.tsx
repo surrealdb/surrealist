@@ -1,10 +1,9 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
-import { Snippets, TopicProps } from "~/screens/database/docs/types";
+import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsGlobalSchema({ language, topic }: TopicProps) {
-
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -55,7 +54,7 @@ export function DocsGlobalSchema({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra]
+		[topic.extra],
 	);
 
 	return (
@@ -70,7 +69,6 @@ export function DocsGlobalSchema({ language, topic }: TopicProps) {
 					stored in the database and the relationships between the
 					different tables in the database.
 				</p>
-
 			</div>
 			<Box>
 				<DocsPreview
