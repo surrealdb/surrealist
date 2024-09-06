@@ -9,6 +9,11 @@
 			"recommended": true
 		}
 	},
+	"formatter": {
+		"enabled": true,
+		"indentWidth": 4,
+		"indentStyle": "tab"
+	},
 	"files": {
 		"ignore": [
 			"**/.vscode",
