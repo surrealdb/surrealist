@@ -57,6 +57,9 @@ export const schema = {
 	cloud_access: {
 		options: [false, true],
 	},
+	cloud_killswitch: {
+		options: [false, true],
+	},
 	changelog: {
 		options: ['auto', 'hidden', 'read', 'unread'],
 	}
@@ -93,6 +96,7 @@ export const featureFlags = new FeatureFlags({
 			apidocs_view: true,
 			cloud_view: true,
 			changelog: "hidden",
+			cloud_killswitch: true,
 			newsfeed: true,
 			themes: true,
 		},
@@ -107,6 +111,7 @@ export const featureFlags = new FeatureFlags({
 			apidocs_view: true,
 			cloud_view: true,
 			database_version_check: true,
+			cloud_killswitch: true,
 			newsfeed: true,
 			themes: true,
 		},
