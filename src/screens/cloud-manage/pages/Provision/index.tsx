@@ -74,7 +74,7 @@ export function ProvisionPage() {
 
 	// Is the current instance is free
 	const isFree = useMemo(() => {
-		return instanceInfo?.slug?.startsWith("free");
+		return instanceInfo?.price_hour === 0;
 	}, [instanceInfo]);
 
 	// Whether the user can continue to the next step
