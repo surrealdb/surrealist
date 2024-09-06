@@ -11,6 +11,7 @@ function redirect(path, host) {
 }
 
 function handler(event) {
+
 	let request = event.request;
 	let host = request.headers.host.value;
 	let path = request.uri.toLowerCase();

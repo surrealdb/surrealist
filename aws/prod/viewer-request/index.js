@@ -11,6 +11,7 @@ function redirect(path, host) {
 }
 
 function handler(event) {
+
 	let request = event.request;
 	let host = request.headers.host.value;
 	let path = request.uri.toLowerCase();
@@ -30,11 +31,11 @@ function handler(event) {
 
 		// Rewrites
 		case request.uri === '/mini/new':
-			request.uri = '/mini/new/index.html';
+			request.uri = '/mini/new.html';
 			break;
 
 		case request.uri === '/mini':
-			request.uri = '/mini/run/index.html';
+			request.uri = '/mini/run.html';
 			break;
 
 		case request.uri === '/cloud/callback':
