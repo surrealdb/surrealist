@@ -39,7 +39,8 @@
 	"formatter": {
 		"enabled": true,
 		"indentWidth": 4,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineWidth": 120
 	},
 	"files": {
 		"ignore": [
