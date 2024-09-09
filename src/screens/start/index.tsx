@@ -297,13 +297,13 @@ export function StartScreen() {
 							title="Documentation"
 							subtitle="Learn more about Surrealist"
 							icon={iconBook}
-							onClick={() => {}}
+							onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
 						/>
 						<StartResource
 							title="Community"
 							subtitle="Join the discussion on Discord"
 							icon={iconDiscord}
-							onClick={() => {}}
+							onClick={() => adapter.openUrl("https://discord.com/invite/surrealdb")}
 						/>
 					</SimpleGrid>
 
