@@ -1,19 +1,20 @@
 import classes from "./style.module.scss";
 import iconUrl from "~/assets/images/icon.webp";
 import glowUrl from "~/assets/images/start-glow.webp";
+import cornerUrl from "~/assets/images/start-corner.svg";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import { Box, Group, Image, Paper, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Image, Paper, ScrollArea, SimpleGrid, Stack, Text, Title, UnstyledButton } from "@mantine/core";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
 import { adapter } from "~/adapter";
 import { dispatchIntent } from "~/hooks/url";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
-import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
-import { iconBook, iconCloud, iconCog, iconPlus, iconServer, iconSurreal, iconVideo } from "~/util/icons";
-import { Spacer } from "~/components/Spacer";
+import { iconBook, iconChevronRight, iconCloud, iconCog, iconDiscord, iconPlus, iconServer, iconSurreal } from "~/util/icons";
+import { Entry } from "~/components/Entry";
+import clsx from "clsx";
 
 interface StartScreenProps {
 	title: string;
@@ -28,29 +29,70 @@ function StartAction({
 	icon,
 	onClick,
 }: StartScreenProps) {
-	const isLight = useIsLight();
+	return (
+		<UnstyledButton onClick={onClick}>
+			<Paper
+				p="lg"
+				className={clsx(classes.startBox, classes.startAction)}
+			>
+				<img
+					src={cornerUrl}
+					className={classes.startActionCorner}
+					alt=""
+				/>
+				<Group
+					wrap="nowrap"
+					align="start"
+				>
+					<Text
+						c="bright"
+						fw={600}
+						fz="xl"
+						flex={1}
+					>
+						{title}
+					</Text>
+					<Icon
+						className={classes.startActionIcon}
+						path={icon}
+						size="xl"
+					/>
+				</Group>
+				<Text mt="xl">
+					{subtitle}
+				</Text>
+			</Paper>
+		</UnstyledButton> 
+	);
+}
 
+interface StartResourceProps {
+	title: string;
+	subtitle: string;
+	icon: string;
+	onClick: () => void;
+}
+
+function StartResource({
+	title,
+	subtitle,
+	icon,
+	onClick,
+}: StartResourceProps) {
+	const isLight = useIsLight();
+	
 	return (
 		<Entry
-			leftSection={
-				<ThemeIcon
-					variant="gradient"
-					radius="sm"
-					style={{
-						backgroundOrigin: 'border-box',
-						border: "1px solid rgba(255, 255, 255, 0.3)",
-						boxShadow: "0 5px 20px -4px rgba(186, 0, 171, 0.6)"
-					}}
-				>
-					<Icon path={icon} size={0.95} />
-				</ThemeIcon>
-			}
+			h={84}
+			size="xl"
 			onClick={onClick}
-			size="md"
-			h={44}
-			style={{
-				overflow: "unset"
-			}}
+			className={classes.startBox}
+			leftSection={
+				<Icon path={icon} size={0.95} ml="md" />
+			}
+			rightSection={
+				<Icon path={iconChevronRight} c="slate" />
+			}
 		>
 			<Stack gap={3} align="start" ml="sm">
 				{title}
@@ -62,6 +104,68 @@ function StartAction({
 				</Text>
 			</Stack>
 		</Entry>
+	);
+}
+
+interface StartNewsProps {
+	article: any
+}
+
+function StartNews({
+	article,
+}: StartNewsProps) {
+	return (
+		<UnstyledButton>
+			<Paper
+				p="lg"
+				className={clsx(classes.startBox)}
+			>
+				<Group
+					gap="xl"
+					wrap="nowrap"
+				>
+					<Paper
+						h={110}
+						w={200}
+						style={{
+							flexShrink: 0,
+							borderRadius: 12,
+							border: '1px solid rgba(255, 255, 255, 0.2)',
+							backgroundOrigin: 'border-box',
+							backgroundImage: 'url("https://cdn.brandsafe.io/w(1600)q(80)/cras49o9q5as738bsmjg.webp")',
+							backgroundSize: 'cover',
+						}}
+					/>
+					<Box
+						h="100%"
+						flex={1}
+						style={{ alignSelf: "start" }}
+					>
+						<Title
+							c="bright"
+							fz="xl"
+						>
+							Blog post title
+						</Title>
+						<Text
+							c="slate"
+						>
+							4 days ago
+						</Text>
+						<Text
+							mt="sm"
+						>
+							We are thrilled to announce that the first beta for Surrealist 3.0 is now available for download.
+						</Text>
+					</Box>
+					<Icon
+						path={iconChevronRight}
+						c="slate"
+						size="xl"
+					/>
+				</Group>
+			</Paper>
+		</UnstyledButton>
 	);
 }
 
@@ -88,7 +192,11 @@ export function StartScreen() {
 	});
 
 	return (
-		<Box pos="absolute" inset={0} className={classes.start}>
+		<Box
+			pos="absolute"
+			inset={0}
+			className={classes.start}
+		>
 			{!adapter.hasTitlebar && (
 				<Box data-tauri-drag-region className={classes.titlebar} />
 			)}
@@ -100,171 +208,120 @@ export function StartScreen() {
 				}}
 			/>
 
-			<Stack
+			<ScrollArea.Autosize
 				h="100%"
-				justify="center"
-				align="center"
+				type="scroll"
 			>
-				<Image
-					src={iconUrl}
-					w={85}
-				/>
+				<Stack
+					justify="center"
+					maw={900}
+					mx="auto"
+					py="5vw"
+				>
+					<Stack align="center">
+						<Image
+							src={iconUrl}
+							w={85}
+						/>
 
-				<Box>
-					<Image
-						src={logoUrl}
-						w={225}
-						mt="xs"
-					/>
+						<Image
+							src={logoUrl}
+							w={225}
+							mt="xs"
+						/>
 
-					<Text
-						opacity={0.4}
-						c="bright"
-						ta="center"
-						mt={6}
-					>
-						Version {import.meta.env.VERSION}
-					</Text>
-				</Box>
-
-				<Group mt={35} gap={32}>
-					<Paper
-						p="md"
-						w={300}
-						style={{
-							border: '1px solid rgba(255, 255, 255, 0.1)'
-						}}
-					>
-						<Stack gap="lg">
-							<StartAction
-								title="Create connection"
-								subtitle="Connect to a remote or local database"
-								icon={iconPlus}
-								onClick={openConnectionCreator}
-							/>
-							<StartAction
-								title="Open the Sandbox"
-								subtitle="Explore SurrealDB right inside Surrealist"
-								icon={iconSurreal}
-								onClick={openSandbox}
-							/>
-							<StartAction
-								title="Surreal Cloud"
-								subtitle="Manage your databases in the cloud"
-								icon={iconCloud}
-								onClick={openCloud}
-							/>
-							<StartAction
-								title="List connections"
-								subtitle="Manage your existing connections"
-								icon={iconServer}
-								onClick={() => dispatchIntent("open-connections")}
-							/>
-							<StartAction
-								title="Settings"
-								subtitle="Configure Surrealist to your liking"
-								icon={iconCog}
-								onClick={() => dispatchIntent("open-settings")}
-							/>
-						</Stack>
-					</Paper>
-					<Stack h="100%" gap="xl" w={550}>
-						<Title
+						<Text
+							opacity={0.4}
 							c="bright"
+							mt={6}
 						>
-							Resources
-						</Title>
-						<SimpleGrid
-							cols={2}
-							spacing="xl"
-						>
-							<Entry
-								leftSection={
-									<Icon path={iconBook} size={0.95} ml="md" />
-								}
-								variant="light"
-								color="slate.5"
-								size="xl"
-								h={64}
-							>
-								<Stack gap={3} align="start" ml="sm">
-									Documentation
-									<Text
-										fz="xs"
-										c={isLight ? "slate.6" : "slate.3"}
-									>
-										Learn more about Surrealist
-									</Text>
-								</Stack>
-							</Entry>
-							<Entry
-								leftSection={
-									<Icon path={iconVideo} size={0.95} ml="md" />
-								}
-								variant="light"
-								color="slate.5"
-								size="xl"
-								h={64}
-							>
-								<Stack gap={3} align="start" ml="sm">
-									Tutorials
-									<Text
-										fz="xs"
-										c={isLight ? "slate.6" : "slate.3"}
-									>
-										Watch our video tutorials
-									</Text>
-								</Stack>
-							</Entry>
-						</SimpleGrid>
-						<Spacer />
-						<Box>
-							<Title
-								c="bright"
-							>
-								Latest news
-							</Title>
-							<Group
-								mt="xl"
-								gap="xl"
-								align="stretch"
-								wrap="nowrap"
-							>
-								<Paper
-									h={110}
-									w={200}
-									style={{
-										flexShrink: 0,
-										borderRadius: 12,
-										border: '1px solid rgba(255, 255, 255, 0.2)',
-										backgroundOrigin: 'border-box',
-										backgroundImage: 'url("https://cdn.brandsafe.io/w(1600)q(80)/cras49o9q5as738bsmjg.webp")',
-										backgroundSize: 'cover',
-									}}
-								/>
-								<Box h="100%">
-									<Title
-										c="bright"
-										fz="xl"
-									>
-										Blog post title
-									</Title>
-									<Text
-										c="slate"
-									>
-										4 days ago
-									</Text>
-									<Text
-										mt="sm"
-									>
-										We are thrilled to announce that the first beta for Surrealist 3.0 is now available for download.
-									</Text>
-								</Box>
-							</Group>
-						</Box>
+							Version {import.meta.env.VERSION}
+						</Text>
 					</Stack>
-				</Group>
-			</Stack>
+
+					<SimpleGrid
+						mt="xl"
+						cols={5}
+						spacing="lg"
+					>
+						<StartAction
+							title="Create connection"
+							subtitle="Connect to a remote or local database"
+							icon={iconPlus}
+							onClick={openConnectionCreator}
+						/>
+						<StartAction
+							title="Open the Sandbox"
+							subtitle="Explore SurrealDB right inside Surrealist"
+							icon={iconSurreal}
+							onClick={openSandbox}
+						/>
+						<StartAction
+							title="Surreal Cloud"
+							subtitle="Manage your databases in the cloud"
+							icon={iconCloud}
+							onClick={openCloud}
+						/>
+						<StartAction
+							title="Manage Connections"
+							subtitle="Manage your existing connections"
+							icon={iconServer}
+							onClick={() => dispatchIntent("open-connections")}
+						/>
+						<StartAction
+							title="Settings"
+							subtitle="Configure Surrealist to your liking"
+							icon={iconCog}
+							onClick={() => dispatchIntent("open-settings")}
+						/>
+					</SimpleGrid>
+
+					<Title
+						mt="xl"
+						c="bright"
+					>
+						Resources
+					</Title>
+
+					<SimpleGrid cols={2}>
+						<StartResource
+							title="Documentation"
+							subtitle="Learn more about Surrealist"
+							icon={iconBook}
+							onClick={() => {}}
+						/>
+						<StartResource
+							title="Community"
+							subtitle="Join the discussion on Discord"
+							icon={iconDiscord}
+							onClick={() => {}}
+						/>
+					</SimpleGrid>
+
+					<Title
+						mt="xl"
+						c="bright"
+					>
+						Latest news
+					</Title>
+
+					<StartNews article={{}} />
+					<StartNews article={{}} />
+					<StartNews article={{}} />
+
+					<Center>
+						<Button
+							rightSection={<Icon path={iconChevronRight} />}
+							color="slate"
+							variant="white"
+							radius="xl"
+							mt="xl"
+						>
+							Read more news
+						</Button>
+					</Center>
+				</Stack>
+			</ScrollArea.Autosize>
 		</Box>
 	);
 }

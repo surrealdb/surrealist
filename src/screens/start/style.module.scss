@@ -1,11 +1,5 @@
 .start {
-	overflow: hidden;
-	overflow: clip;
 	z-index: 0;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	flex-direction: column;
 	background-color: var(--mantine-color-slate-9);
 
 	@include light {
@@ -36,4 +30,44 @@
 	left: 0;
 	right: 0;
 	margin-inline: auto;
+}
+
+.start-box {
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.075);
+
+	@include light {
+		background-color: rgba(255, 255, 255, 0.3);
+		border-color: rgba(0, 0, 0, 0.15);
+	}
+}
+
+.start-action {
+	aspect-ratio: 1;
+	position: relative;
+	overflow: hidden;
+
+	.start-action-corner {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		transition: opacity 0.2s;
+	}
+
+	.start-action-icon {
+		transition: color 0.2s;
+		color: var(--mantine-color-slate-5);
+	}
+
+	&:hover .start-action-corner {
+		opacity: 1;
+	}
+
+	&:hover .start-action-icon {
+		color: var(--mantine-color-bright) !important;
+	}
+
 }
