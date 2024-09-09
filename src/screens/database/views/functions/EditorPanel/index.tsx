@@ -44,6 +44,7 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
+import { useState } from "react";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -64,8 +65,10 @@ export function EditorPanel({
 	const fullName = `fn::${details.name}()`;
 
 	const [hasReturns] = useMinimumVersion(SDB_2_0_0);
+	const [argToFocus, setArgtoFocus] = useState(-1);
 
 	const addArgument = useStable(() => {
+		setArgtoFocus(details.args.length);
 		onChange((draft) => {
 			draft.args.push(["", ""]);
 		});
@@ -215,26 +218,14 @@ export function EditorPanel({
 						type="scroll"
 						className={classes.metadataScroll}
 					>
-						<Stack w={300} h="100%" gap="lg">
+						<Stack
+							w={300}
+							h="100%"
+							gap="xl"
+						>
 							<Box>
-								<Group>
-									<Label>Arguments</Label>
-									<Spacer />
-									<Tooltip label="Add function argument">
-										<ActionIcon
-											onClick={addArgument}
-											aria-label="Add function argument"
-										>
-											<Icon path={iconPlus} />
-										</ActionIcon>
-									</Tooltip>
-								</Group>
+								<Label>Arguments</Label>
 								<Stack gap="xs" mt="xs">
-									{details.args.length === 0 && (
-										<Text c="slate">
-											No arguments defined
-										</Text>
-									)}
 									{details.args.map(([name, kind], index) => (
 										<Group key={index} gap="xs">
 											<TextInput
@@ -242,20 +233,18 @@ export function EditorPanel({
 												variant="unstyled"
 												value={name}
 												spellCheck={false}
+												autoFocus={index === argToFocus}
 												leftSection="$"
 												placeholder="name"
 												onChange={(e) =>
 													onChange((draft) => {
-														draft.args[index][0] =
-															e.target.value;
+														draft.args[index][0] = e.target.value;
 													})
 												}
 												styles={{
 													input: {
-														backgroundColor:
-															argColor,
-														fontFamily:
-															"var(--mantine-font-family-monospace)",
+														backgroundColor: argColor,
+														fontFamily: "var(--mantine-font-family-monospace)",
 														paddingLeft: 24,
 														paddingRight: 12,
 													},
@@ -268,14 +257,12 @@ export function EditorPanel({
 												placeholder="type"
 												onChange={(value) =>
 													onChange((draft) => {
-														draft.args[index][1] =
-															value.toLowerCase();
+														draft.args[index][1] = value.toLowerCase();
 													})
 												}
 												styles={{
 													input: {
-														backgroundColor:
-															argColor,
+														backgroundColor: argColor,
 														paddingInline: 12,
 													},
 												}}
@@ -296,6 +283,21 @@ export function EditorPanel({
 											</ActionIcon>
 										</Group>
 									))}
+									<Button
+										mt={2}
+										size="xs"
+										color={isLight ? "black" : "white"}
+										variant="subtle"
+										leftSection={<Icon path={iconPlus} />}
+										onClick={addArgument}
+										styles={{
+											label: {
+												flex: 1
+											}
+										}}
+									>
+										Add function argument
+									</Button>
 								</Stack>
 							</Box>
 							<FieldKindInput
