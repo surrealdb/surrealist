@@ -373,6 +373,7 @@ export function StartScreen() {
 						<Center>
 							<Button
 								rightSection={<Icon path={iconChevronRight} />}
+								onClick={() => dispatchIntent("open-news")}
 								color="slate"
 								variant="white"
 								radius="xl"
