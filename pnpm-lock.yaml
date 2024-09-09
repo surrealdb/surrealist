@@ -95,11 +95,11 @@ importers:
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
       '@surrealdb/ql-wasm':
-        specifier: 0.2.0-beta.2
-        version: 0.2.0-beta.2
+        specifier: 0.2.0-beta.3
+        version: 0.2.0-beta.3
       '@surrealdb/wasm':
-        specifier: 1.0.0-beta.18
-        version: 1.0.0-beta.18(surrealdb@1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
+        specifier: 1.0.0-beta.19
+        version: 1.0.0-beta.19(surrealdb@1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
       '@tanstack/react-query':
         specifier: ^5.37.1
         version: 5.52.2(react@18.3.1)
@@ -1592,11 +1592,11 @@ packages:
   '@surrealdb/lezer@1.0.0-beta.5':
     resolution: {integrity: sha512-sz9ZmLwtYVtOsyY7B2bZJk8z/OWLkSoWmZxKz0uqaAnr4ccqV9uesKuu3/fPRsxgOc5ZzeOUlMnxbPJfeMtgLA==}
 
-  '@surrealdb/ql-wasm@0.2.0-beta.2':
-    resolution: {integrity: sha512-Iw/UNMyCXTF9wywiNHY4Xt+zKnBwGitCYOL6H/zRow+BqKIxeOeaSJ0pm9SU9lWIsoJEQZ/OwM3+CmqsSFYs8A==}
+  '@surrealdb/ql-wasm@0.2.0-beta.3':
+    resolution: {integrity: sha512-vGN2Nqb1pT2EDaMVvEVTKfT/l4E6BZYYM72MePXhBUsjBAs6qn1rOoVaKGWkfj3DB95RTxqCeATxrY9OnhN0DA==}
 
-  '@surrealdb/wasm@1.0.0-beta.18':
-    resolution: {integrity: sha512-ZDOogQYTFrgJTMvVSOigT9bHq636KE+zk10iUga37usYBsBjHv5uCJHLgL4xo0ZtphixTngyQESDb7HFyZRH1w==}
+  '@surrealdb/wasm@1.0.0-beta.19':
+    resolution: {integrity: sha512-8ITpBFgVkVKUJZaSd6+w0Mx0k/OYLtwB0MHo5hpPTOSezkj+ykPpnMDcBY7VWhOu2QAyeRK5GaQagfg9cuUaLw==}
     peerDependencies:
       surrealdb: ^1.0.0-beta.20
 
@@ -4425,9 +4425,9 @@ snapshots:
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
 
-  '@surrealdb/ql-wasm@0.2.0-beta.2': {}
+  '@surrealdb/ql-wasm@0.2.0-beta.3': {}
 
-  '@surrealdb/wasm@1.0.0-beta.18(surrealdb@1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))':
+  '@surrealdb/wasm@1.0.0-beta.19(surrealdb@1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))':
     dependencies:
       surrealdb: 1.0.0-beta.21(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
 
