@@ -4,7 +4,7 @@ import glowUrl from "~/assets/images/start-glow.webp";
 import cornerUrl from "~/assets/images/start-corner.svg";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import { Box, Button, Center, Group, Image, Paper, ScrollArea, SimpleGrid, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { Box, Button, Center, Group, Image, Paper, ScrollArea, SimpleGrid, Skeleton, Stack, Text, Title, UnstyledButton } from "@mantine/core";
 import { useConfigStore } from "~/stores/config";
 import { useStable } from "~/hooks/stable";
 import { SANDBOX } from "~/constants";
@@ -13,8 +13,10 @@ import { dispatchIntent } from "~/hooks/url";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { Icon } from "~/components/Icon";
 import { iconBook, iconChevronRight, iconCloud, iconCog, iconDiscord, iconPlus, iconServer, iconSurreal } from "~/util/icons";
+import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
 import { Entry } from "~/components/Entry";
 import clsx from "clsx";
+import dayjs from "dayjs";
 
 interface StartScreenProps {
 	title: string;
@@ -108,14 +110,19 @@ function StartResource({
 }
 
 interface StartNewsProps {
-	article: any
+	post: NewsPost;
 }
 
 function StartNews({
-	article,
+	post,
 }: StartNewsProps) {
+
+	const handleClick = useStable(() => {
+		dispatchIntent("open-news", { id: post.id });
+	});
+
 	return (
-		<UnstyledButton>
+		<UnstyledButton onClick={handleClick}>
 			<Paper
 				p="lg"
 				className={clsx(classes.startBox)}
@@ -132,7 +139,7 @@ function StartNews({
 							borderRadius: 12,
 							border: '1px solid rgba(255, 255, 255, 0.2)',
 							backgroundOrigin: 'border-box',
-							backgroundImage: 'url("https://cdn.brandsafe.io/w(1600)q(80)/cras49o9q5as738bsmjg.webp")',
+							backgroundImage: `url("${post.thumbnail}")`,
 							backgroundSize: 'cover',
 						}}
 					/>
@@ -145,17 +152,17 @@ function StartNews({
 							c="bright"
 							fz="xl"
 						>
-							Blog post title
+							{post.title}
 						</Title>
 						<Text
 							c="slate"
 						>
-							4 days ago
+							{dayjs(post.published).fromNow()}
 						</Text>
 						<Text
 							mt="sm"
 						>
-							We are thrilled to announce that the first beta for Surrealist 3.0 is now available for download.
+							{post.description}
 						</Text>
 					</Box>
 					<Icon
@@ -171,7 +178,9 @@ function StartNews({
 
 export function StartScreen() {
 	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
-	const isLight = useIsLight();
+	const newsQuery = useLatestNewsQuery();
+
+	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
@@ -305,21 +314,34 @@ export function StartScreen() {
 						Latest news
 					</Title>
 
-					<StartNews article={{}} />
-					<StartNews article={{}} />
-					<StartNews article={{}} />
+					{newsQuery.isPending ? (
+						<>
+							<Skeleton h={144} />
+							<Skeleton h={144} />
+							<Skeleton h={144} />
+						</>
+					) : (
+						<>
+							{newsPosts.map((article, i) => (
+								<StartNews
+									key={i}
+									post={article}
+								/>
+							))}
 
-					<Center>
-						<Button
-							rightSection={<Icon path={iconChevronRight} />}
-							color="slate"
-							variant="white"
-							radius="xl"
-							mt="xl"
-						>
-							Read more news
-						</Button>
-					</Center>
+						<Center>
+							<Button
+								rightSection={<Icon path={iconChevronRight} />}
+								color="slate"
+								variant="white"
+								radius="xl"
+								mt="xl"
+							>
+								Read more news
+							</Button>
+						</Center>
+						</>
+					)}
 				</Stack>
 			</ScrollArea.Autosize>
 		</Box>

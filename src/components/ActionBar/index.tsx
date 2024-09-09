@@ -1,9 +1,9 @@
 import { adapter } from "~/adapter";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { CloudAccount } from "./account";
-import { NewsFeed } from "./newsfeed";
 import { DatabaseServing } from "./serving";
 import { HelpAndSupport } from "./support";
+import { NewsFeed } from "./newsfeed";
 
 export function ActionBar() {
 	const [flags] = useFeatureFlags();

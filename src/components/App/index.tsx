@@ -22,6 +22,7 @@ import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
 import { ConnectionsModal } from "./modals/connections";
+import { NewsFeedDrawer } from "./modals/newsfeed";
 
 function Surrealist() {
 	return (
@@ -56,6 +57,7 @@ export function App() {
 			<KeymapModal />
 			<HighlightToolModal />
 			<ConsoleDrawer />
+			<NewsFeedDrawer />
 			<CloudExpiredDialog />
 			<ProvisioningDialog />
 
