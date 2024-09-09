@@ -16,6 +16,7 @@ import {
 	Stack,
 	Table,
 	Text,
+	Tooltip,
 } from "@mantine/core";
 
 import {
@@ -188,59 +189,7 @@ export function BillingPage() {
 						description="Manage organization payment and billing information"
 					>
 						<SimpleGrid cols={2} spacing="xl">
-							<Paper p="md">
-								<Group>
-									<Icon path={iconCreditCard} size="xl" />
-									<Text fz="xl" fw={600} c="bright">
-										Payment Details
-									</Text>
-									<Spacer />
-									<Button
-										color="slate"
-										variant="light"
-										loading={requesting}
-										onClick={requestPaymentUrl}
-									>
-										Update
-									</Button>
-								</Group>
-								<Divider my="md" />
-								<Stack mt="md">
-									<Box>
-										<Label>Payment method</Label>
-										<Skeleton
-											visible={paymentQuery.isPending}
-										>
-											{organization?.payment_info ? (
-												<Text c="bright" fw={500}>
-													Credit Card
-												</Text>
-											) : (
-												<Text c="slate.4" fw={500}>
-													Not provided yet
-												</Text>
-											)}
-										</Skeleton>
-									</Box>
-									<Box>
-										<Label>Card information</Label>
-										<Skeleton
-											visible={paymentQuery.isPending}
-										>
-											{organization?.payment_info ? (
-												<Text c="bright" fw={500}>
-													{cardDescription}
-												</Text>
-											) : (
-												<Text c="slate.4" fw={500}>
-													Not provided yet
-												</Text>
-											)}
-										</Skeleton>
-									</Box>
-								</Stack>
-							</Paper>
-							<Paper p="md">
+						<Paper p="md">
 								<Group>
 									<Icon path={iconAccount} size="xl" />
 									<Text fz="xl" fw={600} c="bright">
@@ -281,6 +230,64 @@ export function BillingPage() {
 											{organization?.billing_info ? (
 												<Text c="bright" fw={500}>
 													{billingQuery.data?.Email}
+												</Text>
+											) : (
+												<Text c="slate.4" fw={500}>
+													Not provided yet
+												</Text>
+											)}
+										</Skeleton>
+									</Box>
+								</Stack>
+							</Paper>
+							<Paper p="md">
+								<Group>
+									<Icon path={iconCreditCard} size="xl" />
+									<Text fz="xl" fw={600} c="bright">
+										Payment Details
+									</Text>
+									<Spacer />
+									<Tooltip
+										disabled={organization?.billing_info}
+										label="Please provide billing details first"
+									>
+										<Button
+											color="slate"
+											variant="light"
+											loading={requesting}
+											onClick={requestPaymentUrl}
+											disabled={!organization?.billing_info}
+										>
+											Update
+										</Button>
+									</Tooltip>
+								</Group>
+								<Divider my="md" />
+								<Stack mt="md">
+									<Box>
+										<Label>Payment method</Label>
+										<Skeleton
+											visible={paymentQuery.isPending}
+										>
+											{organization?.payment_info ? (
+												<Text c="bright" fw={500}>
+													Credit Card
+												</Text>
+											) : (
+												<Text c="slate.4" fw={500}>
+													Not provided yet
+												</Text>
+											)}
+										</Skeleton>
+									</Box>
+									<Box>
+										<Label>Card information</Label>
+										<Skeleton
+											visible={paymentQuery.isPending}
+										>
+											{organization?.payment_info ? (
+												<Text c="bright" fw={500}>
+													{cardDescription}
 												</Text>
 											) : (
 												<Text c="slate.4" fw={500}>
