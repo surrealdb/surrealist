@@ -95,17 +95,23 @@ export function CloudView() {
 					building tomorrow's applications. Let us take care of the
 					rest.
 				</Text>
-				{!isSupported ? (
-					<Alert
-						icon={<Icon path={iconErrorCircle} />}
-						color={isLight ? "red.6" : "red.5"}
-						title="Client update required"
-						w={500}
+				{!cloud_access ? (
+					<Button
+						w={264}
+						color="slate"
+						variant="gradient"
+						rightSection={<Icon path={iconChevronRight} />}
+						onClick={() =>
+							adapter.openUrl("https://surrealdb.com/signup")
+						}
+						style={{
+							border: "1px solid rgba(255, 255, 255, 0.3)",
+							backgroundOrigin: "border-box",
+						}}
 					>
-						Please update your version of Surrealist to continue
-						using Surreal Cloud.
-					</Alert>
-				) : cloud_access ? (
+						Join the waitlist
+					</Button>
+				) : isSupported ? (
 					<Group>
 						<Button
 							w={164}
@@ -129,21 +135,15 @@ export function CloudView() {
 						</Button>
 					</Group>
 				) : (
-					<Button
-						w={264}
-						color="slate"
-						variant="gradient"
-						rightSection={<Icon path={iconChevronRight} />}
-						onClick={() =>
-							adapter.openUrl("https://surrealdb.com/signup")
-						}
-						style={{
-							border: "1px solid rgba(255, 255, 255, 0.3)",
-							backgroundOrigin: "border-box",
-						}}
+					<Alert
+						icon={<Icon path={iconErrorCircle} />}
+						color={isLight ? "red.6" : "red.5"}
+						title="Client update required"
+						w={500}
 					>
-						Join the waitlist
-					</Button>
+						Please update your version of Surrealist to continue
+						using Surreal Cloud.
+					</Alert>
 				)}
 			</Stack>
 			<Box
