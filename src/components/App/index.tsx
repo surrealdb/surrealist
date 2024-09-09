@@ -9,11 +9,13 @@ import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
 import { CloudExpiredDialog } from "./modals/cloud-expired";
 import { ConnectionModal } from "./modals/connection";
+import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
 import { DownloadModal } from "./modals/download";
 import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { KeymapModal } from "./modals/hotkeys";
+import { NewsFeedDrawer } from "./modals/newsfeed";
 import { CommandPaletteModal } from "./modals/palette";
 import { ProvisioningDialog } from "./modals/provisioning";
 import { SandboxModal } from "./modals/sandbox";
@@ -43,6 +45,7 @@ export function App() {
 
 			<Settings />
 
+			<ConnectionsModal />
 			<CommandPaletteModal />
 			<ChangelogModal />
 			<ConnectionModal />
@@ -54,6 +57,7 @@ export function App() {
 			<KeymapModal />
 			<HighlightToolModal />
 			<ConsoleDrawer />
+			<NewsFeedDrawer />
 			<CloudExpiredDialog />
 			<ProvisioningDialog />
 

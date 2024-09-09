@@ -1,11 +1,5 @@
 .start {
-	overflow: hidden;
-	overflow: clip;
 	z-index: 0;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	flex-direction: column;
 	background-color: var(--mantine-color-slate-9);
 
 	@include light {
@@ -31,63 +25,47 @@
 	position: fixed;
 	z-index: -1;
 	transform-origin: top center;
-	width: 100vw;
+	width: 65vw;
 	top: 0;
 	left: 0;
 	right: 0;
 	margin-inline: auto;
 }
 
-.logo {
-	height: 24px;
-	position: fi;
-}
-
 .start-box {
-	box-shadow: 7px 7px 25px rgba(14, 14, 14, 0.3);
-	background-color: var(--mantine-color-slate-8);
-	border-radius: var(--mantine-radius-xl);
-	transition: background-color 0.25s ease-in-out;
-	background-origin: border-box;
-	position: relative;
-	overflow: hidden;
-	cursor: pointer;
-
-	&::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		border-radius: var(--mantine-radius-xl);
-		pointer-events: none;
-	}
-	
-	> div {
-		background-origin: border-box;
-		background-size: cover;
-		width: 100%;
-		height: 100%;
-		transition: transform .25s ease-in-out;
-
-		&:hover {
-			transform: scale(1.05);
-		}
-	}
-
-	&:hover {
-		background-color: var(--mantine-color-slate-7);
-	}
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.075);
 
 	@include light {
-		background-color: var(--mantine-color-white);
-		box-shadow: 7px 7px 25px rgba(25, 27, 66, 0.15);
-
-		&:hover {
-			background-color: var(--mantine-color-slate-0);
-		}
+		background-color: rgba(255, 255, 255, 0.3);
+		border-color: rgba(0, 0, 0, 0.15);
 	}
 }
 
-.cloud-box::after {
-	border: 1px solid rgba(255, 255, 255, 0.15);
+.start-box-corner {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 100%;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.start-action {
+	aspect-ratio: 1;
+	position: relative;
+	overflow: hidden;
+
+	.start-action-icon {
+		transition: color 0.2s;
+		color: var(--mantine-color-slate-5);
+	}
+
+	&:hover .start-action-icon {
+		color: var(--mantine-color-bright) !important;
+	}
+
+	&:hover .start-box-corner {
+		opacity: 1;
+	}
 }
