@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Box,
 	Button,
 	Divider,
@@ -31,7 +32,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import type { CloudInstance } from "~/types";
+import type { CloudInstance, CloudInstanceType } from "~/types";
 import { showError } from "~/util/helpers";
 import {
 	iconChevronLeft,
@@ -68,6 +69,95 @@ const PROVISION_STEPS = [
 		name: "Finalize",
 	},
 ];
+
+interface InstanceTypeProps {
+	type: CloudInstanceType;
+	isActive: boolean;
+	onSelect: (type: string) => void;
+}
+
+function InstanceType({
+	type,
+	isActive,
+	onSelect,
+}: InstanceTypeProps) {
+	return (
+		<Tile
+			isActive={isActive}
+			onClick={() =>
+				onSelect(type.slug)
+			}
+		>
+			<Group wrap="nowrap">
+				<Box flex={1}>
+					<Text
+						c="bright"
+						fw={600}
+						fz="lg"
+					>
+						{type.slug}
+					</Text>
+					<Text>
+						{type.description}
+					</Text>
+				</Box>
+				<Box>
+					<Table>
+						<Table.Tbody>
+							<Table.Tr>
+								<Table.Td>
+									<Group>
+										<Icon path={iconQuery} />
+										vCPU
+									</Group>
+								</Table.Td>
+								<Table.Td
+									c="bright"
+									miw={75}
+									ta="right"
+								>
+									{type.cpu}
+								</Table.Td>
+							</Table.Tr>
+							<Table.Tr>
+								<Table.Td>
+									<Group>
+										<Icon path={iconMemory} />
+										Memory
+									</Group>
+								</Table.Td>
+								<Table.Td
+									c="bright"
+									miw={75}
+									ta="right"
+								>
+									{type.memory} MB
+								</Table.Td>
+							</Table.Tr>
+							<Table.Tr>
+								<Table.Td>
+									<Group>
+										<Icon
+											path={iconFloppy}
+										/>
+										Storage limit
+									</Group>
+								</Table.Td>
+								<Table.Td
+									c="bright"
+									miw={75}
+									ta="right"
+								>
+									{type.storage} GB
+								</Table.Td>
+							</Table.Tr>
+						</Table.Tbody>
+					</Table>
+				</Box>
+			</Group>
+		</Tile>
+	);
+}
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
@@ -351,98 +441,12 @@ export function ProvisionPage() {
 							<ScrollArea mah={300}>
 								<Stack>
 									{instanceTypes.map((type) => (
-										<Tile
+										<InstanceType
 											key={type.slug}
+											type={type}
 											isActive={type.slug === instance}
-											onClick={() =>
-												updateInstance(type.slug)
-											}
-										>
-											<Group wrap="nowrap">
-												<Box flex={1}>
-													<Text
-														c="bright"
-														fw={600}
-														fz="lg"
-													>
-														{type.slug}
-													</Text>
-													<Text>
-														{type.description}
-													</Text>
-												</Box>
-												<Box>
-													<Table>
-														<Table.Tbody>
-															<Table.Tr>
-																<Table.Td>
-																	<Group>
-																		<Icon
-																			path={
-																				iconQuery
-																			}
-																		/>
-																		vCPU
-																	</Group>
-																</Table.Td>
-																<Table.Td
-																	c="bright"
-																	miw={75}
-																	ta="right"
-																>
-																	{type.cpu}
-																</Table.Td>
-															</Table.Tr>
-															<Table.Tr>
-																<Table.Td>
-																	<Group>
-																		<Icon
-																			path={
-																				iconMemory
-																			}
-																		/>
-																		Memory
-																	</Group>
-																</Table.Td>
-																<Table.Td
-																	c="bright"
-																	miw={75}
-																	ta="right"
-																>
-																	{
-																		type.memory
-																	}{" "}
-																	MB
-																</Table.Td>
-															</Table.Tr>
-															<Table.Tr>
-																<Table.Td>
-																	<Group>
-																		<Icon
-																			path={
-																				iconFloppy
-																			}
-																		/>
-																		Storage
-																		limit
-																	</Group>
-																</Table.Td>
-																<Table.Td
-																	c="bright"
-																	miw={75}
-																	ta="right"
-																>
-																	{
-																		type.storage
-																	}{" "}
-																	GB
-																</Table.Td>
-															</Table.Tr>
-														</Table.Tbody>
-													</Table>
-												</Box>
-											</Group>
-										</Tile>
+											onSelect={updateInstance}
+										/>
 									))}
 								</Stack>
 							</ScrollArea>
@@ -459,6 +463,15 @@ export function ProvisionPage() {
 								provides additional processing power to your
 								instance.
 							</Text>
+
+							{isFree && (
+								<Alert
+									color="blue"
+									title="Upgrade to use compute units"
+								>
+									Compute unit upgrades are not available for free instances
+								</Alert>
+							)}
 
 							<Select
 								data={computeUnits}
