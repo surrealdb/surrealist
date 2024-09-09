@@ -12,11 +12,12 @@ import { adapter } from "~/adapter";
 import { dispatchIntent } from "~/hooks/url";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { Icon } from "~/components/Icon";
-import { iconBook, iconChevronRight, iconCloud, iconCog, iconDiscord, iconPlus, iconServer, iconSurreal } from "~/util/icons";
+import { iconBook, iconChevronRight, iconCloud, iconCog, iconDiscord, iconOpen, iconPlus, iconServer, iconSurreal } from "~/util/icons";
 import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
 import { Entry } from "~/components/Entry";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import { isMobile } from "~/util/helpers";
 
 interface StartScreenProps {
 	title: string;
@@ -179,6 +180,7 @@ function StartNews({
 export function StartScreen() {
 	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
 	const newsQuery = useLatestNewsQuery();
+	const isLight = useIsLight();
 
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
@@ -208,6 +210,43 @@ export function StartScreen() {
 		>
 			{!adapter.hasTitlebar && (
 				<Box data-tauri-drag-region className={classes.titlebar} />
+			)}
+
+			{isMobile() && (
+				<Center
+					pos="fixed"
+					inset={0}
+					bg={isLight ? "slate.0" : "slate.9"}
+					style={{ zIndex: 1000 }}
+				>
+					<Stack maw={285} mx="auto">
+						<Image src={logoUrl} />
+
+						<Text fz="xl" mt="lg">
+							Surrealist is the ultimate way to visually manage
+							your SurrealDB database
+						</Text>
+
+						<Text>
+							Support for Surrealist on mobile platforms is
+							currently unavailable, however you can visit
+							Surrealist on a desktop environment to get started.
+						</Text>
+
+						<Button
+							mt="lg"
+							variant="gradient"
+							onClick={() =>
+								adapter.openUrl(
+									"https://surrealdb.com/surrealist",
+								)
+							}
+							rightSection={<Icon path={iconOpen} />}
+						>
+							Read more about Surrealist
+						</Button>
+					</Stack>
+				</Center>
 			)}
 
 			<div
