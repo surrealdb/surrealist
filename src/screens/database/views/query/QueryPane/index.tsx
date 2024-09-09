@@ -126,6 +126,10 @@ export function QueryPane({
 		});
 	});
 
+	const resolveVariables = useStable(() => {
+		return Object.keys(tryParseParams(activeTab.variables))
+	});
+
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
 
@@ -218,7 +222,7 @@ export function QueryPane({
 					surqlLinting(),
 					surqlRecordLinks(inspect),
 					surqlTableCompletion(),
-					surqlVariableCompletion(),
+					surqlVariableCompletion(resolveVariables),
 					surqlCustomFunctionCompletion(),
 					selectionChanged(setSelection),
 					lineNumbers(),
