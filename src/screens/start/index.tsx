@@ -42,7 +42,7 @@ function StartAction({
 			>
 				<img
 					src={cornerUrl}
-					className={classes.startActionCorner}
+					className={classes.startBoxCorner}
 					alt=""
 				/>
 				<Group
@@ -84,31 +84,36 @@ function StartResource({
 	icon,
 	onClick,
 }: StartResourceProps) {
-	const isLight = useIsLight();
-	
 	return (
-		<Entry
-			h={84}
-			size="xl"
-			onClick={onClick}
-			className={classes.startBox}
-			leftSection={
-				<Icon path={icon} size={0.95} ml="md" />
-			}
-			rightSection={
-				<Icon path={iconChevronRight} c="slate" />
-			}
-		>
-			<Stack gap={3} align="start" ml="sm">
-				{title}
-				<Text
-					fz="xs"
-					c={isLight ? "slate.6" : "slate.3"}
+		<UnstyledButton onClick={onClick}>
+			<Paper
+				p="lg"
+				className={clsx(classes.startBox)}
+			>
+				<Group
+					wrap="nowrap"
 				>
-					{subtitle}
-				</Text>
-			</Stack>
-		</Entry>
+					<Icon
+						path={icon}
+						mx="md"
+						size="xl"
+					/>
+					<Box flex={1}>
+						<Text
+							c="bright"
+							fw={600}
+							fz="xl"
+						>
+							{title}
+						</Text>
+						<Text>
+							{subtitle}
+						</Text>
+					</Box>
+					<Icon path={iconChevronRight} ml="md" />
+				</Group>
+			</Paper>
+		</UnstyledButton> 
 	);
 }
 
@@ -268,7 +273,7 @@ export function StartScreen() {
 					mx="auto"
 					py="5vw"
 				>
-					<Stack align="center">
+					<Stack align="center" gap={0}>
 						<Image
 							src={iconUrl}
 							w={85}
@@ -277,25 +282,25 @@ export function StartScreen() {
 						<Image
 							src={logoUrl}
 							w={225}
-							mt="xs"
+							mt="md"
 						/>
 
 						<Text
+							mt="xs"
 							opacity={0.4}
 							c="bright"
-							mt={6}
 						>
 							Version {import.meta.env.VERSION}
 						</Text>
 					</Stack>
 
 					<SimpleGrid
-						mt="xl"
+						mt={50}
 						cols={5}
 						spacing="lg"
 					>
 						<StartAction
-							title="Create connection"
+							title="Create Connection"
 							subtitle="Connect to a remote or local database"
 							icon={iconPlus}
 							onClick={openConnectionCreator}
@@ -314,7 +319,7 @@ export function StartScreen() {
 						/>
 						<StartAction
 							title="Manage Connections"
-							subtitle="Manage your existing connections"
+							subtitle="List and manage your existing connections"
 							icon={iconServer}
 							onClick={() => dispatchIntent("open-connections")}
 						/>
