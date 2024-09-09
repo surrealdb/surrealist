@@ -12,6 +12,21 @@ import { fetchAPI } from "../api";
 import { invalidateSession } from "../api/auth";
 import { type Question, openAboutModal } from "./about-yourself";
 
+const CONTRACTS = [
+	{
+		name: "Terms and Conditions",
+		url: "https://surrealdb.com/legal/cloud-beta-terms",
+	},
+	{
+		name: "Acceptable Use Policy",
+		url: "https://surrealdb.com/legal/acceptable-use",
+	},
+	{
+		name: "Privacy Policy",
+		url: "https://surrealdb.com/legal/privacy",
+	}
+];
+
 export function openTermsModal() {
 	openModal({
 		size: "lg",
@@ -23,10 +38,12 @@ export function openTermsModal() {
 }
 
 function TermsModal() {
-	const [checked, setChecked] = useState(false);
+	const [termsChecked, setTermsChecked] = useState(false);
+	const [newsChecked, setNewsChecked] = useState(false);
 	const [loading, setLoading] = useState(false);
 
-	const updateChecked = useCheckbox(setChecked);
+	const updateTermsChecked = useCheckbox(setTermsChecked);
+	const updateNewsChecked = useCheckbox(setNewsChecked);
 
 	const declineTerms = useStable(() => {
 		closeAllModals();
@@ -62,40 +79,36 @@ function TermsModal() {
 				with Surreal Cloud.
 			</Text>
 			<Checkbox
-				my="xl"
-				checked={checked}
-				onChange={updateChecked}
+				mt="xl"
+				checked={termsChecked}
+				onChange={updateTermsChecked}
 				label={
 					<>
-						I have read and agree to the{" "}
-						<Anchor
-							href="https://surrealdb.com/legal/cloud-beta-terms"
-							target="_blank"
-						>
-							Terms and Conditions
-						</Anchor>
-						,{" "}
-						<Anchor
-							href="https://surrealdb.com/legal/acceptable-use"
-							target="_blank"
-						>
-							Acceptable Use Policy
-						</Anchor>
-						, and{" "}
-						<Anchor href="https://surrealdb.com/legal/privacy">
-							Privacy Policy
-						</Anchor>
+						<Text span>I have read and agree to the </Text>
+						{CONTRACTS.map((contract, i) => (
+							<>
+								<Anchor key={i} href={contract.url} inline>
+									{contract.name}
+								</Anchor>
+								{i < CONTRACTS.length - 1 && <Text span>, </Text>}
+							</>
+						))}
 					</>
 				}
 			/>
-			<Group>
+			<Checkbox
+				checked={newsChecked}
+				onChange={updateNewsChecked}
+				label="I agree to receive occasional emails about Surreal Cloud updates and features"
+			/>
+			<Group mt="xl">
 				<Button color="slate" variant="light" onClick={declineTerms}>
 					Decline
 				</Button>
 				<Spacer />
 				<Button
 					variant="gradient"
-					disabled={!checked}
+					disabled={!termsChecked}
 					loading={loading}
 					rightSection={<Icon path={iconCheck} />}
 					onClick={acceptTerms}
