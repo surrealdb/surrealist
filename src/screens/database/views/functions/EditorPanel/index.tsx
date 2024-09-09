@@ -24,7 +24,7 @@ import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
-import { surqlLinting } from "~/editor";
+import { surqlCustomFunctionCompletion, surqlLinting, surqlTableCompletion, surqlVariableCompletion } from "~/editor";
 import { useMinimumVersion } from "~/hooks/connection";
 import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
@@ -99,6 +99,10 @@ export function EditorPanel({
 		});
 	});
 
+	const resolveVariables = useStable(() => {
+		return details.args.flatMap(([name]) => name);
+	});
+
 	const argColor = isLight
 		? "var(--mantine-color-slate-0)"
 		: "var(--mantine-color-slate-9)";
@@ -136,7 +140,14 @@ export function EditorPanel({
 							draft.block = value;
 						})
 					}
-					extensions={[surrealql(), surqlLinting(), lineNumbers()]}
+					extensions={[
+						surrealql(),
+						surqlLinting(),
+						surqlVariableCompletion(resolveVariables),
+						surqlCustomFunctionCompletion(),
+						surqlTableCompletion(),
+						lineNumbers(),
+					]}
 				/>
 				<Divider orientation="vertical" />
 				<Flex w={300} h="100%" direction="column">
