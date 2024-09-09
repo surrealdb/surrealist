@@ -1,9 +1,9 @@
 import { ActionIcon, Indicator, Tooltip } from "@mantine/core";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { Icon } from "../Icon";
-import { iconNewspaper } from "~/util/icons";
 import { useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { dispatchIntent } from "~/hooks/url";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { iconNewspaper } from "~/util/icons";
+import { Icon } from "../Icon";
 
 export function NewsFeed() {
 	const [{ newsfeed }] = useFeatureFlags();

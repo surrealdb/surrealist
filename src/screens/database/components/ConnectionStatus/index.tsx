@@ -1,14 +1,14 @@
 import { Button, Group, Indicator, Menu, Text } from "@mantine/core";
 import { useState } from "react";
-import { useConnection } from "~/hooks/connection";
-import { Icon } from "../../../../components/Icon";
-import { useDatabaseStore } from "~/stores/database";
-import { useStable } from "~/hooks/stable";
-import { iconChevronDown, iconClose, iconEdit, iconList, iconReset, iconSurreal } from "~/util/icons";
 import { SANDBOX } from "~/constants";
+import { useConnection } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
+import { useDatabaseStore } from "~/stores/database";
+import type { Connection } from "~/types";
+import { iconChevronDown, iconClose, iconEdit, iconList, iconReset, iconSurreal } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
-import { Connection } from "~/types";
+import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
 
 export function ConnectionStatus() {

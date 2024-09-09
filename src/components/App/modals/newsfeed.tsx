@@ -18,6 +18,14 @@ import {
 	TypographyStylesProvider,
 	UnstyledButton,
 } from "@mantine/core";
+
+import {
+	iconArrowUpRight,
+	iconChevronLeft,
+	iconChevronRight,
+	iconClose,
+} from "~/util/icons";
+
 import { Text } from "@mantine/core";
 import { ActionIcon } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -25,16 +33,10 @@ import dayjs from "dayjs";
 import posthog from "posthog-js";
 import { Fragment, useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
-import {
-	iconArrowUpRight,
-	iconChevronLeft,
-	iconChevronRight,
-	iconClose,
-} from "~/util/icons";
-import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 
 interface NewsItem {
 	id: string;

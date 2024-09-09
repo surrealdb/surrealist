@@ -1,23 +1,25 @@
 import classes from "./style.module.scss";
-import iconUrl from "~/assets/images/icon.webp";
-import glowUrl from "~/assets/images/start-glow.webp";
-import cornerUrl from "~/assets/images/start-corner.svg";
-import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import logoLightUrl from "~/assets/images/light/logo.webp";
-import { Box, Button, Center, Group, Image, Paper, ScrollArea, SimpleGrid, Skeleton, Stack, Text, Title, UnstyledButton } from "@mantine/core";
-import { useConfigStore } from "~/stores/config";
-import { useStable } from "~/hooks/stable";
-import { SANDBOX } from "~/constants";
-import { adapter } from "~/adapter";
-import { dispatchIntent } from "~/hooks/url";
-import { useIsLight, useThemeImage } from "~/hooks/theme";
-import { Icon } from "~/components/Icon";
-import { iconBook, iconChevronRight, iconCloud, iconCog, iconDiscord, iconOpen, iconPlus, iconServer, iconSurreal } from "~/util/icons";
-import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
-import { Entry } from "~/components/Entry";
+
 import clsx from "clsx";
 import dayjs from "dayjs";
+import logoDarkUrl from "~/assets/images/dark/logo.webp";
+import iconUrl from "~/assets/images/icon.webp";
+import logoLightUrl from "~/assets/images/light/logo.webp";
+import cornerUrl from "~/assets/images/start-corner.svg";
+import glowUrl from "~/assets/images/start-glow.webp";
+
+import { Box, Button, Center, Group, Image, Paper, ScrollArea, SimpleGrid, Skeleton, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { adapter } from "~/adapter";
+import { Entry } from "~/components/Entry";
+import { Icon } from "~/components/Icon";
+import { SANDBOX } from "~/constants";
+import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
+import { useStable } from "~/hooks/stable";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
+import { dispatchIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
 import { isMobile } from "~/util/helpers";
+import { iconBook, iconChevronRight, iconCloud, iconCog, iconDiscord, iconOpen, iconPlus, iconServer, iconSurreal } from "~/util/icons";
 
 interface StartScreenProps {
 	title: string;

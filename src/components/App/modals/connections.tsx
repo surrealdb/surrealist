@@ -1,25 +1,26 @@
 import classes from "../style.module.scss";
-import { iconSearch, iconPlus, iconHomePlus, iconFolderPlus, iconSurreal, iconDelete, iconCloud, iconCopy, iconEdit } from "~/util/icons";
-import { Modal, Stack, Box, Flex, TextInput, Menu, ActionIcon, Divider, Group, Tooltip, Text } from "@mantine/core";
-import { isDesktop } from "~/adapter";
-import { EditableText } from "~/components/EditableText";
-import { Entry, EntryProps } from "~/components/Entry";
-import { Spacer } from "~/components/Spacer";
-import { newId, Y_SLIDE_TRANSITION } from "~/util/helpers";
-import { dispatchIntent, useIntent } from "~/hooks/url";
-import { useBoolean } from "~/hooks/boolean";
+
+import { ActionIcon, Box, Divider, Flex, Group, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
-import { HTMLAttributes, MouseEvent, ReactNode, useMemo } from "react";
+import { group } from "radash";
+import { type HTMLAttributes, type MouseEvent, type ReactNode, useMemo } from "react";
+import { isDesktop } from "~/adapter";
+import { EditableText } from "~/components/EditableText";
+import { Entry, type EntryProps } from "~/components/Entry";
+import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { SANDBOX } from "~/constants";
-import { useConnections, useConnection } from "~/hooks/connection";
+import { useBoolean } from "~/hooks/boolean";
+import { useConnection, useConnections } from "~/hooks/connection";
 import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
+import type { Connection } from "~/types";
+import { Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
+import { iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
-import { Connection } from "~/types";
-import { Icon } from "~/components/Icon";
-import { group } from "radash";
 
 const UNGROUPED = Symbol("ungrouped");
 
