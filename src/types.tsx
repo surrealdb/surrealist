@@ -22,6 +22,8 @@ export type LineStyle = "metro" | "straight" | "smooth";
 export type SchemaMode = "schemaless" | "schemafull";
 export type UrlTarget = "internal" | "external";
 export type DatabaseListMode = "list" | "grid";
+export type AuthLevel = "root" | "namespace" | "database";
+export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type InstanceState =
 	| "creating"
 	| "updating"
@@ -33,7 +35,6 @@ export type AuthState =
 	| "loading"
 	| "authenticated"
 	| "unauthenticated";
-export type AuthLevel = "root" | "namespace" | "database";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -75,14 +76,14 @@ export type CodeLang =
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
-export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
-	Partial<T>;
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string> = { label: string; value: T };
 export type Selection<T extends string> = Selectable<T>[];
 export type Listable<T extends string> = Selectable<T> & { icon: string };
 export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
+export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> &
+	Partial<T>;
 
 export interface Authentication {
 	mode: AuthMode;
@@ -492,6 +493,14 @@ export interface CloudBilling {
 	TaxIdentificationNumber: string;
 	Phone: string;
 }
+
+export interface CloudInvoice {
+	id: string;
+    date: string;
+    amount: number;
+    status: InvoiceStatus;
+    url: string;
+};
 
 export interface CloudPayment {
 	payment_info: boolean;

@@ -1,5 +1,9 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
+	Alert,
+	Anchor,
 	Box,
 	Button,
 	Divider,
@@ -13,6 +17,16 @@ import {
 	Table,
 	Text,
 } from "@mantine/core";
+
+import {
+	iconAccount,
+	iconCheck,
+	iconCreditCard,
+	iconDotsVertical,
+	iconHelp,
+	iconOpen,
+} from "~/util/icons";
+
 import { useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
@@ -25,18 +39,19 @@ import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import {
-	iconAccount,
-	iconCheck,
-	iconCreditCard,
-	iconDotsVertical,
-} from "~/util/icons";
+import type { InvoiceStatus } from "~/types";
 import { fetchAPI } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBilling } from "../../hooks/billing";
+import { useCloudInvoices } from "../../hooks/invoices";
 import { useCloudPayments } from "../../hooks/payments";
 import { openBillingModal } from "../../modals/billing";
-import classes from "./style.module.scss";
+
+const INVOICE_STATUSES: Record<InvoiceStatus, { name: string, color: string }> = {
+	succeeded: { name: "Paid", color: "green" },
+	pending: { name: "Pending", color: "orange" },
+	failed: { name: "Failed", color: "red" },
+}
 
 interface BillingPlanProps {
 	name: string;
@@ -82,6 +97,7 @@ export function BillingPage() {
 	const organization = useOrganization();
 	const billingQuery = useCloudBilling(organization?.id);
 	const paymentQuery = useCloudPayments(organization?.id);
+	const invoiceQuery = useCloudInvoices(organization?.id);
 	const queryClient = useQueryClient();
 
 	const [requesting, setRequesting] = useState(false);
@@ -282,62 +298,60 @@ export function BillingPage() {
 						title="Invoices"
 						description="View and download invoices of service charges"
 					>
-						<Table className={classes.table}>
-							<Table.Thead>
-								<Table.Tr>
-									<Table.Th>Invoice date</Table.Th>
-									<Table.Th>Status</Table.Th>
-									<Table.Th>Card used</Table.Th>
-									<Table.Th w={0}>Actions</Table.Th>
-								</Table.Tr>
-							</Table.Thead>
-							<Table.Tbody>
-								<Table.Tr>
-									<Table.Td c="bright">
-										August 2, 2024
-									</Table.Td>
-									<Table.Td c="orange" fw={600}>
-										Pending
-									</Table.Td>
-									<Table.Td>
-										Mastercard ending in 4952
-									</Table.Td>
-									<Table.Td>
-										<ActionIcon>
-											<Icon path={iconDotsVertical} />
-										</ActionIcon>
-									</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td c="bright">July 2, 2024</Table.Td>
-									<Table.Td c="green" fw={600}>
-										Paid
-									</Table.Td>
-									<Table.Td>
-										Mastercard ending in 4952
-									</Table.Td>
-									<Table.Td>
-										<ActionIcon>
-											<Icon path={iconDotsVertical} />
-										</ActionIcon>
-									</Table.Td>
-								</Table.Tr>
-								<Table.Tr>
-									<Table.Td c="bright">June 2, 2024</Table.Td>
-									<Table.Td c="green" fw={600}>
-										Paid
-									</Table.Td>
-									<Table.Td>
-										Mastercard ending in 4952
-									</Table.Td>
-									<Table.Td>
-										<ActionIcon>
-											<Icon path={iconDotsVertical} />
-										</ActionIcon>
-									</Table.Td>
-								</Table.Tr>
-							</Table.Tbody>
-						</Table>
+						{invoiceQuery.isPending ? (
+							<Stack>
+								<Skeleton height={40} />
+								<Skeleton height={40} />
+								<Skeleton height={40} />
+							</Stack>
+						) : invoiceQuery.data?.length ? (
+							<Table className={classes.table}>
+								{/* <Table.Thead>
+									<Table.Tr>
+										<Table.Th>Invoice date</Table.Th>
+										<Table.Th>Status</Table.Th>
+										<Table.Th>Amount</Table.Th>
+										<Table.Th w={0}>Actions</Table.Th>
+									</Table.Tr>
+								</Table.Thead> */}
+								<Table.Tbody>
+									{invoiceQuery.data?.map((invoice) => {
+										const status = INVOICE_STATUSES[invoice.status];
+
+										return (
+											<Table.Tr key={invoice.id}>
+												<Table.Td c="bright">
+													{new Date(invoice.date).toLocaleDateString()}
+												</Table.Td>
+												<Table.Td c={status.color} fw={600}>
+													{status.name}
+												</Table.Td>
+												<Table.Td>
+													${(invoice.amount * 100).toFixed(2)} USD
+												</Table.Td>
+												<Table.Td>
+													<Anchor href={invoice.url}>
+														<ActionIcon>
+															<Icon path={iconOpen} />
+														</ActionIcon>
+													</Anchor>
+												</Table.Td>
+											</Table.Tr>
+										);
+									})}
+								</Table.Tbody>
+							</Table>
+						) : (
+							<Alert
+								icon={<Icon path={iconHelp} />}
+								title="Your organization has no invoices yet"
+								color="blue"
+								w="max-content"
+								pr="xl"
+							>
+								Once you have invoices, you can view and download them here
+							</Alert>
+						)}
 					</Section>
 				</Stack>
 			</ScrollArea>
