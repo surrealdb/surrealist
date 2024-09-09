@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -44,7 +45,6 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
-import { useState } from "react";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
