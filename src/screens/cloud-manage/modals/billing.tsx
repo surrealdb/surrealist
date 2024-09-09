@@ -131,6 +131,15 @@ function BillingForm({ organization, details }: BillingFormProps) {
 						})
 					}
 				/>
+				<TextInput
+					label="Tax Identification Number"
+					value={data.TaxIdentificationNumber}
+					onChange={(e) =>
+						setData((d) => {
+							d.TaxIdentificationNumber = e.target.value;
+						})
+					}
+				/>
 				<SimpleGrid cols={2}>
 					<TextInput
 						label="Email"
@@ -152,17 +161,6 @@ function BillingForm({ organization, details }: BillingFormProps) {
 							})
 						}
 					/>
-				</SimpleGrid>
-				<TextInput
-					label="Tax Identification Number"
-					value={data.TaxIdentificationNumber}
-					onChange={(e) =>
-						setData((d) => {
-							d.TaxIdentificationNumber = e.target.value;
-						})
-					}
-				/>
-				<SimpleGrid cols={2}>
 					<Select
 						label="Country"
 						required
@@ -185,8 +183,6 @@ function BillingForm({ organization, details }: BillingFormProps) {
 							})
 						}
 					/>
-				</SimpleGrid>
-				<SimpleGrid cols={2}>
 					<TextInput
 						label="Address"
 						required
@@ -206,8 +202,6 @@ function BillingForm({ organization, details }: BillingFormProps) {
 							})
 						}
 					/>
-				</SimpleGrid>
-				<SimpleGrid cols={2}>
 					<TextInput
 						label="City"
 						required
