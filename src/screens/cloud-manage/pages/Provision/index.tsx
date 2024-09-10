@@ -2,6 +2,7 @@ import {
 	Alert,
 	Box,
 	Button,
+	Center,
 	Divider,
 	Grid,
 	Group,
@@ -46,6 +47,7 @@ import {
 } from "~/util/icons";
 import { fetchAPI } from "../../api";
 import { Tile } from "../../components/Tile";
+import { Spacer } from "~/components/Spacer";
 
 const PROVISION_STEPS = [
 	{
@@ -76,17 +78,11 @@ interface InstanceTypeProps {
 	onSelect: (type: string) => void;
 }
 
-function InstanceType({
-	type,
-	isActive,
-	onSelect,
-}: InstanceTypeProps) {
+function InstanceType({ type, isActive, onSelect }: InstanceTypeProps) {
 	return (
 		<Tile
 			isActive={isActive}
-			onClick={() =>
-				onSelect(type.slug)
-			}
+			onClick={() => onSelect(type.slug)}
 		>
 			<Group wrap="nowrap">
 				<Box flex={1}>
@@ -97,9 +93,7 @@ function InstanceType({
 					>
 						{type.slug}
 					</Text>
-					<Text>
-						{type.description}
-					</Text>
+					<Text>{type.description}</Text>
 				</Box>
 				<Box>
 					<Table>
@@ -137,9 +131,7 @@ function InstanceType({
 							<Table.Tr>
 								<Table.Td>
 									<Group>
-										<Icon
-											path={iconFloppy}
-										/>
+										<Icon path={iconFloppy} />
 										Storage limit
 									</Group>
 								</Table.Td>
@@ -234,9 +226,7 @@ export function ProvisionPage() {
 
 			setProvisioning(result);
 		} catch (err: any) {
-			console.log("Failed to provision database:", [
-				...err.response.headers.entries(),
-			]);
+			console.log("Failed to provision database:", [...err.response.headers.entries()]);
 
 			showError({
 				title: "Failed to provision database",
@@ -286,9 +276,7 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const estimatedCost = (
-		isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units
-	).toFixed(2);
+	const estimatedCost = (isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units).toFixed(2);
 
 	useLayoutEffect(() => {
 		if (!isAuthed) {
@@ -297,49 +285,67 @@ export function ProvisionPage() {
 	}, [isAuthed, setActiveCloudPage]);
 
 	return (
-		<Group w="100%" flex={1} wrap="nowrap" align="start" gap="xl">
-			<Stack pt="sm" px="md" h={450} style={{ flexShrink: 0 }}>
+		<>
+			<Group
+				pb="xl"
+				mx="auto"
+				gap="lg"
+			>
 				{PROVISION_STEPS.map((info, index) => {
 					const isDone = index < step;
 					const isActive = index === step;
 
 					return (
-						<Group
-							key={info.title}
-							c={
-								isActive
-									? "surreal"
-									: isDone
-										? "bright"
-										: isLight
-											? "slate.3"
-											: "slate.5"
-							}
-							wrap="nowrap"
-						>
-							<Icon
-								path={
-									isDone || isActive
-										? iconCircleFilled
-										: iconCircle
-								}
-							/>
-							<Text fw={500}>{info.name}</Text>
-						</Group>
+						<>
+							<Group
+								key={info.title}
+								wrap="nowrap"
+								c={isActive || isDone ? "bright" : isLight ? "slate.3" : "slate.5"}
+							>
+								<Center
+									style={{
+										borderRadius: "50%",
+										width: 24,
+										height: 24,
+										background: isActive
+											? "var(--surrealist-gradient)"
+											: "var(--mantine-color-slate-7)",
+									}}
+								>
+									{index + 1}
+								</Center>
+								<Text
+									fz="lg"
+									fw={500}
+								>
+									{info.name}
+								</Text>
+							</Group>
+							{index < PROVISION_STEPS.length - 1 && (
+								<Divider orientation="vertical" />
+							)}
+						</>
 					);
 				})}
-			</Stack>
-			<Divider orientation="vertical" mx="xl" />
-			<ScrollArea scrollbars="y" flex={1}>
-				<Form onSubmit={nextStep} w="100%" maw={600}>
+			</Group>
+
+			<ScrollArea
+				scrollbars="y"
+				flex={1}
+			>
+				<Form
+					onSubmit={nextStep}
+					w="100%"
+					maw={652}
+					mx="auto"
+				>
 					{step === 0 && (
 						<Stack>
 							<PrimaryTitle>Instance details</PrimaryTitle>
 
 							<Text mb="lg">
-								Please enter a name for your new instance, and
-								select the organization you would like to create
-								it under.
+								Please enter a name for your new instance, and select the
+								organization you would like to create it under.
 							</Text>
 
 							<Grid
@@ -389,9 +395,8 @@ export function ProvisionPage() {
 							<PrimaryTitle>Select a region</PrimaryTitle>
 
 							<Text mb="lg">
-								Regions define the physical location of your
-								instance. Choosing a region close to your users
-								can improve performance.
+								Regions define the physical location of your instance. Choosing a
+								region close to your users can improve performance.
 							</Text>
 
 							<ScrollArea mah={300}>
@@ -402,11 +407,12 @@ export function ProvisionPage() {
 											isActive={type.slug === region}
 											onClick={() => setRegion(type.slug)}
 										>
-											<Group gap="xl" pl="xs">
+											<Group
+												gap="xl"
+												pl="xs"
+											>
 												<Image
-													src={
-														REGION_FLAGS[type.slug]
-													}
+													src={REGION_FLAGS[type.slug]}
 													w={24}
 												/>
 												<Box>
@@ -428,14 +434,11 @@ export function ProvisionPage() {
 
 					{step === 2 && (
 						<Stack>
-							<PrimaryTitle>
-								Select an instance preset
-							</PrimaryTitle>
+							<PrimaryTitle>Select an instance preset</PrimaryTitle>
 
 							<Text mb="lg">
-								Instance presets define the resources allocated
-								to your cloud instance. Choose a preset that
-								best fits your needs.
+								Instance presets define the resources allocated to your cloud
+								instance. Choose a preset that best fits your needs.
 							</Text>
 
 							<ScrollArea mah={300}>
@@ -458,10 +461,9 @@ export function ProvisionPage() {
 							<PrimaryTitle>Choose compute units</PrimaryTitle>
 
 							<Text mb="lg">
-								Select the number of compute units you would
-								like to use for your instance. Each compute unit
-								provides additional processing power to your
-								instance.
+								Select the number of compute units you would like to use for your
+								instance. Each compute unit provides additional processing power to
+								your instance.
 							</Text>
 
 							{isFree && (
@@ -477,9 +479,7 @@ export function ProvisionPage() {
 								data={computeUnits}
 								disabled={isFree}
 								value={units.toString()}
-								onChange={(v) =>
-									v && setUnits(Number.parseInt(v))
-								}
+								onChange={(v) => v && setUnits(Number.parseInt(v))}
 							/>
 						</Stack>
 					)}
@@ -493,27 +493,19 @@ export function ProvisionPage() {
 									<Table.Tbody>
 										<Table.Tr>
 											<Table.Td>Name</Table.Td>
-											<Table.Td c="bright">
-												{name}
-											</Table.Td>
+											<Table.Td c="bright">{name}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Preset</Table.Td>
-											<Table.Td c="bright">
-												{instance}
-											</Table.Td>
+											<Table.Td c="bright">{instance}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Region</Table.Td>
-											<Table.Td c="bright">
-												{region}
-											</Table.Td>
+											<Table.Td c="bright">{region}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Version</Table.Td>
-											<Table.Td c="bright">
-												{version}
-											</Table.Td>
+											<Table.Td c="bright">{version}</Table.Td>
 										</Table.Tr>
 									</Table.Tbody>
 								</Table>
@@ -526,7 +518,11 @@ export function ProvisionPage() {
 									Estimated costs
 								</Text>
 
-								<Text fz={18} fw={500} c="bright">
+								<Text
+									fz={18}
+									fw={500}
+									c="bright"
+								>
 									${estimatedCost}{" "}
 									<Text
 										span
@@ -560,24 +556,19 @@ export function ProvisionPage() {
 								Previous
 							</Button>
 						)}
+						<Spacer />
 						<Button
 							w={150}
 							type="submit"
 							variant="gradient"
 							disabled={!canContinue}
-							rightSection={
-								<Icon
-									path={
-										willCreate ? iconPlus : iconChevronRight
-									}
-								/>
-							}
+							rightSection={<Icon path={willCreate ? iconPlus : iconChevronRight} />}
 						>
 							{willCreate ? "Create" : "Continue"}
 						</Button>
 					</Group>
 				</Form>
 			</ScrollArea>
-		</Group>
+		</>
 	);
 }
