@@ -30,30 +30,30 @@
 	left: 0;
 	right: 0;
 	margin-inline: auto;
+
+	@include light {
+		opacity: 0.5;
+	}
 }
 
 .start-box {
 	position: relative;
 	overflow: hidden;
 	background-color: rgba(0, 0, 0, 0.5);
-	transition: transform 0.2s;
+	outline: 1px solid transparent;
+	transition: all 0.2s;
 
 	@include light {
 		background-color: rgba(255, 255, 255, 0.5);
 	}
 
 	&:hover {
-		transform: scale(1.015);
-	}
-}
+		outline-color: rgba(255, 221, 251, 0.15);
 
-.start-box-corner {
-	position: absolute;
-	top: 0;
-	right: 0;
-	height: 100%;
-	opacity: 0;
-	transition: opacity 0.2s;
+		@include light {
+			outline-color: rgba(139, 89, 139, 0.25);
+		}
+	}
 }
 
 .start-action {
@@ -62,15 +62,11 @@
 	overflow: hidden;
 
 	.start-action-icon {
-		transition: color 0.2s;
+		transition: all 0.2s;
 		color: var(--mantine-color-slate-5);
 	}
 
 	&:hover .start-action-icon {
 		color: var(--mantine-color-bright) !important;
-	}
-
-	&:hover .start-box-corner {
-		opacity: 1;
 	}
 }

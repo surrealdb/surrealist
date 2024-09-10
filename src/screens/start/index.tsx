@@ -159,8 +159,6 @@ function StartNews({ post }: StartNewsProps) {
 						style={{
 							flexShrink: 0,
 							borderRadius: 12,
-							border: "1px solid rgba(255, 255, 255, 0.2)",
-							backgroundOrigin: "border-box",
 							backgroundImage: `url("${post.thumbnail}")`,
 							backgroundSize: "cover",
 						}}
