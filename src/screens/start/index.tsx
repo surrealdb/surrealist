@@ -38,6 +38,7 @@ import {
 
 import { useRef } from "react";
 import { adapter } from "~/adapter";
+import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
@@ -45,7 +46,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
-import { Faint } from "~/components/Faint";
 
 interface StartActionProps {
 	title: string;

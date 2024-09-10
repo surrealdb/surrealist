@@ -1,4 +1,4 @@
-import { type RefObject, useRef, useEffect } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import { useIsLight } from "~/hooks/theme";
 
 export interface FaintProps {
