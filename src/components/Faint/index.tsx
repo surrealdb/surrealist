@@ -1,4 +1,5 @@
 import { type RefObject, useRef, useEffect } from "react";
+import { useIsLight } from "~/hooks/theme";
 
 export interface FaintProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -8,6 +9,7 @@ export function Faint({
 	containerRef
 }: FaintProps) {
 	const faintRef = useRef<HTMLDivElement>(null);
+	const isLight = useIsLight();
 
 	useEffect(() => {
 		function effect(e: MouseEvent) {
@@ -58,6 +60,7 @@ export function Faint({
 				borderRadius: "100.153px",
 				background: "linear-gradient(276deg, #8200E3 42.56%, #FF01A8 78.41%)",
 				filter: "blur(50px)",
+				opacity: isLight ? 0.25 : 1,
 				zIndex: -1,
 			}}
 		/>

@@ -35,12 +35,15 @@
 .start-box {
 	position: relative;
 	overflow: hidden;
-	background-color: rgba(0, 0, 0, 0.3);
-	border: 1px solid rgba(255, 255, 255, 0.075);
+	background-color: rgba(0, 0, 0, 0.5);
+	transition: transform 0.2s;
 
 	@include light {
-		background-color: rgba(255, 255, 255, 0.3);
-		border-color: rgba(0, 0, 0, 0.15);
+		background-color: rgba(255, 255, 255, 0.5);
+	}
+
+	&:hover {
+		transform: scale(1.015);
 	}
 }
 
