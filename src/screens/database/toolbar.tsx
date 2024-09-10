@@ -35,15 +35,15 @@ import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { executeQuery, openConnection } from "./connection/connection";
+import { SidebarToggle } from "~/components/SidebarToggle";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
-	const { readChangelog, setOverlaySidebar } = useInterfaceStore.getState();
+	const { readChangelog } = useInterfaceStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
-	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
@@ -66,10 +66,6 @@ export function DatabaseToolbar() {
 		});
 
 		closeEditingTab();
-	});
-
-	const toggleSidebar = useStable(() => {
-		setOverlaySidebar(!overlaySidebar);
 	});
 
 	const resetSandbox = useConfirmation({
@@ -122,19 +118,8 @@ export function DatabaseToolbar() {
 
 	return (
 		<>
-			<Tooltip
-				label="Toggle sidebar"
-				position="right"
-			>
-				<ActionIcon
-					size="lg"
-					hiddenFrom="md"
-					onClick={toggleSidebar}
-				>
-					<Icon path={iconChevronRight} />
-				</ActionIcon>
-			</Tooltip>
-
+			<SidebarToggle />
+			
 			<ConnectionStatus />
 
 			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (
