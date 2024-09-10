@@ -60,9 +60,10 @@ function StartAction({ title, subtitle, icon, onClick }: StartActionProps) {
 	return (
 		<UnstyledButton onClick={onClick}>
 			<Paper
-				ref={containerRef}
 				p="lg"
+				ref={containerRef}
 				className={clsx(classes.startBox, classes.startAction)}
+				renderRoot={props => <Stack {...props} />}
 			>
 				<Group
 					wrap="nowrap"
@@ -71,7 +72,7 @@ function StartAction({ title, subtitle, icon, onClick }: StartActionProps) {
 					<Text
 						c="bright"
 						fw={600}
-						fz="xl"
+						fz={15}
 						flex={1}
 					>
 						{title}
@@ -82,7 +83,7 @@ function StartAction({ title, subtitle, icon, onClick }: StartActionProps) {
 						size="xl"
 					/>
 				</Group>
-				<Text mt="xl" mb="xl">{subtitle}</Text>
+				<Text>{subtitle}</Text>
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>
@@ -279,7 +280,8 @@ export function StartScreen() {
 			>
 				<Stack
 					justify="center"
-					maw={900}
+					maw={952}
+					px="xl"
 					mx="auto"
 					py="5vw"
 				>
@@ -325,7 +327,7 @@ export function StartScreen() {
 							onClick={openSandbox}
 						/>
 						<StartAction
-							title="Surreal Cloud"
+							title="Explore Surreal Cloud"
 							subtitle="Manage your databases in the cloud"
 							icon={iconCloud}
 							onClick={openCloud}
@@ -337,7 +339,7 @@ export function StartScreen() {
 							onClick={() => dispatchIntent("open-connections")}
 						/>
 						<StartAction
-							title="Settings"
+							title="Customize Settings"
 							subtitle="Configure Surrealist to your liking"
 							icon={iconCog}
 							onClick={() => dispatchIntent("open-settings")}
