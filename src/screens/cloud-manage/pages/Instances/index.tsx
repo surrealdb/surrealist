@@ -348,7 +348,7 @@ export function InstancesPage() {
 					>
 						{mode === "grid" ? (
 							<SimpleGrid
-								cols={{ xs: 1, sm: 2, md: 2, lg: 2, xl: 3 }}
+								cols={{ xs: 1, md: 2, lg: 2, xl: 3 }}
 								spacing="xl"
 							>
 								{instanceList.map((db) => (

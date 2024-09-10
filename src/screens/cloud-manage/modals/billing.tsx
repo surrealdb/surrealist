@@ -140,7 +140,10 @@ function BillingForm({ organization, details }: BillingFormProps) {
 						})
 					}
 				/>
-				<SimpleGrid cols={2}>
+				<SimpleGrid cols={{
+					xs: 1,
+					sm: 2,
+				}}>
 					<TextInput
 						label="Email"
 						required

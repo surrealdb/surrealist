@@ -202,7 +202,10 @@ export function BillingPage() {
 						description="Manage organization payment and billing information"
 					>
 						<SimpleGrid
-							cols={2}
+							cols={{
+								xs: 1,
+								md: 2,
+							}}
 							spacing="xl"
 						>
 							<Paper p="md">

@@ -290,6 +290,7 @@ export function ProvisionPage() {
 				pb="xl"
 				mx="auto"
 				gap="lg"
+				justify="center"
 			>
 				{PROVISION_STEPS.map((info, index) => {
 					const isDone = index < step;
