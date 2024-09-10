@@ -37,6 +37,11 @@
 	}
 }
 
+.open-navigation {
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	background-origin: border-box;
+}
+
 .splash-image {
 	animation: splash-image 1s cubic-bezier(0.505, 0.160, 0.390, 0.825);
 	animation-delay: .1s;
