@@ -100,10 +100,10 @@ export function CloudView() {
 						<Image
 							src={logoUrl}
 							alt="Surreal Cloud"
-							w={500}
+							maw={500}
 						/>
 						<Text
-							w={500}
+							maw={500}
 							fz="lg"
 							ta="center"
 						>
@@ -159,7 +159,7 @@ export function CloudView() {
 						)}
 					</Stack>
 					<Box
-						pos="absolute"
+						pos="fixed"
 						bottom={-16}
 						left={0}
 						right={0}
