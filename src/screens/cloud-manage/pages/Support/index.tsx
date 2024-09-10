@@ -1,19 +1,19 @@
 import classes from "./style.module.scss";
 
-import discordDarkUrl from "~/assets/images/dark/picto-discord.svg";
-import discordLightUrl from "~/assets/images/light/picto-discord.svg";
-import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
-import documentationLightUrl from "~/assets/images/light/picto-documentation.svg";
 import communtyDarkUrl from "~/assets/images/dark/picto-community.svg";
+import discordDarkUrl from "~/assets/images/dark/picto-discord.svg";
+import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
 import communtyLightUrl from "~/assets/images/light/picto-community.svg";
+import discordLightUrl from "~/assets/images/light/picto-discord.svg";
+import documentationLightUrl from "~/assets/images/light/picto-documentation.svg";
 
 import { type BoxProps, Image, Text, UnstyledButton } from "@mantine/core";
 import { Center, Group, Paper, Stack } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { iconChevronRight } from "~/util/icons";
 import { useThemeImage } from "~/hooks/theme";
+import { iconChevronRight } from "~/util/icons";
 
 interface SupportTileProps extends BoxProps {
 	image: string;

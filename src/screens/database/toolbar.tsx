@@ -15,6 +15,7 @@ import { useState } from "react";
 import { ActionBar } from "~/components/ActionBar";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
 import { DATASETS } from "~/constants";
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
@@ -35,7 +36,6 @@ import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { executeQuery, openConnection } from "./connection/connection";
-import { SidebarToggle } from "~/components/SidebarToggle";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();

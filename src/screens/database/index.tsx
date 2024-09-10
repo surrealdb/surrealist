@@ -1,5 +1,5 @@
-import classes from "./style.module.scss";
 import clsx from "clsx";
+import classes from "./style.module.scss";
 
 import {
 	type HtmlPortalNode,
@@ -18,6 +18,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { CloudView } from "~/screens/cloud-manage/view";
 import { useConfigStore } from "~/stores/config";
@@ -26,9 +27,8 @@ import type { ViewMode } from "~/types";
 import { iconWarning } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { SelectDatabase } from "./components/SelectDatabase";
-import { DatabaseToolbar } from "./toolbar";
 import { DatabaseSidebar } from "./sidebar";
-import { useStable } from "~/hooks/stable";
+import { DatabaseToolbar } from "./toolbar";
 
 const PORTAL_ATTRS = {
 	attributes: {

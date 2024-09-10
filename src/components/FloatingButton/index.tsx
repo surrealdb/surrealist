@@ -1,8 +1,8 @@
 import classes from "./style.module.scss";
 
 import { ActionIcon, type ActionIconProps, Affix } from "@mantine/core";
-import { Icon } from "../Icon";
 import clsx from "clsx";
+import { Icon } from "../Icon";
 
 export interface FloatingButtonProps extends ActionIconProps {
 	icon: string;

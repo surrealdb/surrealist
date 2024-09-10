@@ -21,6 +21,7 @@ import {
 import { useDebouncedValue, useDisclosure, useInputState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useMemo, useState } from "react";
+import { FloatingButton } from "~/components/FloatingButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -47,7 +48,6 @@ import { ConnectCliModal } from "./modals/connect-cli";
 import { ConnectSdkModal } from "./modals/connect-sdk";
 import { SettingsModal } from "./modals/settings";
 import classes from "./style.module.scss";
-import { FloatingButton } from "~/components/FloatingButton";
 
 interface Filter {
 	type: string;

@@ -1,10 +1,10 @@
 import { Box, Center, Loader, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect } from "react";
+import { Label } from "~/components/Label";
 import { useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
 import { Section } from "../../components/Section";
-import { Label } from "~/components/Label";
 
 export function SettingsPage() {
 	const organization = useOrganization();
