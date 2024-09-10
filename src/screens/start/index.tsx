@@ -11,6 +11,7 @@ import {
 	Box,
 	Button,
 	Center,
+	Flex,
 	Group,
 	Image,
 	Paper,
@@ -58,12 +59,16 @@ function StartAction({ title, subtitle, icon, onClick }: StartActionProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<UnstyledButton onClick={onClick}>
+		<UnstyledButton
+			onClick={onClick}
+			h="100%"
+		>
 			<Paper
 				p="lg"
+				h="100%"
 				ref={containerRef}
 				className={clsx(classes.startBox, classes.startAction)}
-				renderRoot={props => <Stack {...props} />}
+				renderRoot={(props) => <Stack {...props} />}
 			>
 				<Group
 					wrap="nowrap"
@@ -147,43 +152,44 @@ function StartNews({ post }: StartNewsProps) {
 		<UnstyledButton onClick={handleClick}>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox)}
+				className={clsx(classes.startBox, classes.startNews)}
 				ref={containerRef}
 			>
-				<Group
+				<Flex
 					gap="xl"
-					wrap="nowrap"
+					className={classes.startNewsInner}
 				>
 					<Paper
-						h={110}
-						w={200}
+						className={classes.startNewsThumbnail}
 						style={{
-							flexShrink: 0,
-							borderRadius: 12,
-							backgroundImage: `url("${post.thumbnail}")`,
-							backgroundSize: "cover",
+							backgroundImage: `url("${post.thumbnail}")`
 						}}
 					/>
-					<Box
-						h="100%"
-						flex={1}
-						style={{ alignSelf: "start" }}
+					<Group
+						gap="xl"
+						wrap="nowrap"
 					>
-						<Title
-							c="bright"
-							fz="xl"
+						<Box
+							h="100%"
+							flex={1}
+							style={{ alignSelf: "start" }}
 						>
-							{post.title}
-						</Title>
-						<Text c="slate">{dayjs(post.published).fromNow()}</Text>
-						<Text mt="sm">{post.description}</Text>
-					</Box>
-					<Icon
-						path={iconChevronRight}
-						c="slate"
-						size="xl"
-					/>
-				</Group>
+							<Title
+								c="bright"
+								fz="xl"
+							>
+								{post.title}
+							</Title>
+							<Text c="slate">{dayjs(post.published).fromNow()}</Text>
+							<Text mt="sm">{post.description}</Text>
+						</Box>
+						<Icon
+							path={iconChevronRight}
+							c="slate"
+							size="xl"
+						/>
+					</Group>
+				</Flex>
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>
@@ -311,8 +317,12 @@ export function StartScreen() {
 
 					<SimpleGrid
 						mt={50}
-						cols={5}
 						spacing="lg"
+						cols={{
+							xs: 1,
+							sm: 3,
+							md: 5,
+						}}
 					>
 						<StartAction
 							title="Create Connection"
@@ -353,7 +363,12 @@ export function StartScreen() {
 						Resources
 					</Title>
 
-					<SimpleGrid cols={2}>
+					<SimpleGrid
+						cols={{
+							xs: 1,
+							sm: 2,
+						}}
+					>
 						<StartResource
 							title="Documentation"
 							subtitle="Learn more about Surrealist"

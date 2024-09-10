@@ -57,7 +57,6 @@
 }
 
 .start-action {
-	aspect-ratio: 1;
 	position: relative;
 	overflow: hidden;
 
@@ -68,5 +67,27 @@
 
 	&:hover .start-action-icon {
 		color: var(--mantine-color-bright) !important;
+	}
+
+	@include md-and-up {
+		aspect-ratio: 1;
+	}
+}
+
+.start-news-inner {
+	flex-direction: column;
+
+	@include xs-and-up {
+		flex-direction: row;
+	}
+}
+
+.start-news-thumbnail {
+	flex-shrink: 0;
+	background-size: cover;
+	aspect-ratio: 200 / 110;
+
+	@include xs-and-up {
+		height: 110px;
 	}
 }
