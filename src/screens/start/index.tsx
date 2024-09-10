@@ -31,8 +31,8 @@ import {
 	iconDiscord,
 	iconOpen,
 	iconPlus,
+	iconSandbox,
 	iconServer,
-	iconSurreal,
 } from "~/util/icons";
 
 import { useRef } from "react";
@@ -321,7 +321,7 @@ export function StartScreen() {
 						<StartAction
 							title="Open the Sandbox"
 							subtitle="Explore SurrealDB right inside Surrealist"
-							icon={iconSurreal}
+							icon={iconSandbox}
 							onClick={openSandbox}
 						/>
 						<StartAction

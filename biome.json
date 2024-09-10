@@ -41,7 +41,10 @@
 		"indentWidth": 4,
 		"indentStyle": "tab",
 		"lineWidth": 100,
-		"attributePosition": "multiline"
+		"attributePosition": "multiline",
+		"ignore": [
+			"src/util/icons.tsx"
+		]
 	},
 	"files": {
 		"ignore": [

@@ -6,7 +6,7 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
-import { iconChevronDown, iconClose, iconEdit, iconList, iconReset, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconClose, iconEdit, iconList, iconReset, iconSandbox } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
@@ -58,9 +58,9 @@ export function ConnectionStatus() {
 								color="slate"
 								onClick={openConnections}
 								leftSection={isSandbox ? (
-									<Icon path={iconSurreal} size={1.2} noStroke />
+									<Icon path={iconSandbox} />
 								) : (
-									<Icon path={USER_ICONS[connection.icon ?? 0]} size={0.85} mt={-0} />
+									<Icon path={USER_ICONS[connection.icon ?? 0]} />
 								)}
 								rightSection={
 									<Indicator
@@ -76,6 +76,7 @@ export function ConnectionStatus() {
 									fw={600}
 									maw={200}
 									c="bright"
+									ml={2}
 								>
 									{connection.name}
 								</Text>
