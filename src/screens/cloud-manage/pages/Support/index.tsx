@@ -72,96 +72,36 @@ export function SupportPage() {
 	});
 
 	return (
-		<Center flex={1}>
-			<Paper
-				p="xl"
-				bg="transparent"
-				component={Stack}
+		<Stack
+			flex={1}
+			w="100%"
+			maw={900}
+			mx="auto"
+		>
+			<PrimaryTitle>Looking for help?</PrimaryTitle>
+			<Text
+				mb="xl"
+				fz="lg"
 			>
-				<Group
-					gap={35}
-					flex={1}
-					align="stretch"
-				>
-					<Stack
-						flex={1}
-						w={552}
-					>
-						<PrimaryTitle>Looking for help?</PrimaryTitle>
-						<Text
-							mb="xl"
-							fz="lg"
-						>
-							Running into issues with your cloud account, billing, or instances?
-							We're here to help! Reach out to us through one of the following
-							community support channels for help, or to get in touch with our team.
-						</Text>
-						<SupportTile
-							image={discordUrl}
-							title="Discord Chat"
-							onClick={() => adapter.openUrl("https://discord.gg/dc4JNWrrMc")}
-						/>
-						<SupportTile
-							image={documentationUrl}
-							title="Cloud Documentation"
-							onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
-						/>
-						<SupportTile
-							image={communtyUrl}
-							title="Community Forums"
-							onClick={() =>
-								adapter.openUrl("https://surrealdb.com/community/forums")
-							}
-						/>
-					</Stack>
-					{/* <Divider
-						orientation="vertical"
-					/>
-					<Stack flex={1} w={420}>
-						<Group>
-							<Icon path={iconEmail} />
-							<PrimaryTitle>
-								Submit a ticket
-							</PrimaryTitle>
-						</Group>
-						<Text>
-							Submit a ticket to get help with your account, billing, database, or any other issue experienced with Surreal Cloud. We aim to respond within 2-3 business days.
-						</Text>
-						<Text>
-							Before we get started, please select the scope of your ticket.
-						</Text>
-						<Select
-							value="account"
-							data={[
-								{ value: "account", label: "Account" },
-								{ value: "billing", label: "Billing" },
-								{ value: "database", label: "Database" },
-								{ value: "other", label: "Other" },
-							]}
-						/>
-						<Text>
-							Please provide a clear subject and detailed message to help us understand your issue.
-						</Text>
-						<TextInput
-							placeholder="Subject"
-						/>
-						<Textarea
-							rows={10}
-							placeholder="Message"
-						/>
-						<Group>
-							<Spacer />
-							<Button
-								variant="gradient"
-								size="xs"
-								rightSection={<Icon path={iconCursor} />}
-							>
-								Submit ticket
-							</Button>
-						</Group>
-					</Stack> */}
-				</Group>
-			</Paper>
-		</Center>
+				Running into issues with your cloud account, billing, or instances? We're here to
+				help! Reach out to us through one of the following community support channels for
+				help, or to get in touch with our team.
+			</Text>
+			<SupportTile
+				image={discordUrl}
+				title="Discord Chat"
+				onClick={() => adapter.openUrl("https://discord.gg/dc4JNWrrMc")}
+			/>
+			<SupportTile
+				image={documentationUrl}
+				title="Cloud Documentation"
+				onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
+			/>
+			<SupportTile
+				image={communtyUrl}
+				title="Community Forums"
+				onClick={() => adapter.openUrl("https://surrealdb.com/community/forums")}
+			/>
+		</Stack>
 	);
 }

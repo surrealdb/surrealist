@@ -1,9 +1,10 @@
-import { Center, Loader, Stack, TextInput } from "@mantine/core";
+import { Box, Center, Loader, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect } from "react";
 import { useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
 import { Section } from "../../components/Section";
+import { Label } from "~/components/Label";
 
 export function SettingsPage() {
 	const organization = useOrganization();
@@ -22,18 +23,26 @@ export function SettingsPage() {
 			<Loader />
 		</Center>
 	) : (
-		<Stack>
+		<Stack
+			w="100%"
+			maw={900}
+			mx="auto"
+		>
 			<Section
 				title="Organization details"
 				description="Manage your organization profile and information"
 				withMaxWidth
 			>
-				<TextInput
-					label="Name"
-					value={name}
-					onChange={setName}
-					disabled
-				/>
+				<Box>
+					<Label>Name</Label>
+					<Text>The display name of your organization</Text>
+					<TextInput
+						mt="xs"
+						value={name}
+						onChange={setName}
+						disabled
+					/>
+				</Box>
 
 				{/* <Textarea
 					label="Description"

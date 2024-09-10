@@ -48,11 +48,11 @@ import { useCloudInvoices } from "../../hooks/invoices";
 import { useCloudPayments } from "../../hooks/payments";
 import { openBillingModal } from "../../modals/billing";
 
-const INVOICE_STATUSES: Record<InvoiceStatus, { name: string, color: string }> = {
+const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
 	pending: { name: "Pending", color: "orange" },
 	failed: { name: "Failed", color: "red" },
-}
+};
 
 interface BillingPlanProps {
 	name: string;
@@ -61,29 +61,38 @@ interface BillingPlanProps {
 	action?: ReactNode;
 }
 
-function BillingPlan({
-	name,
-	description,
-	features,
-	action,
-}: BillingPlanProps) {
+function BillingPlan({ name, description, features, action }: BillingPlanProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Paper withBorder p="xl" w={400} style={{ flexShrink: 0 }}>
-			<Stack h="100%" gap="xl">
+		<Paper
+			withBorder
+			p="xl"
+			w={400}
+			style={{ flexShrink: 0 }}
+		>
+			<Stack
+				h="100%"
+				gap="xl"
+			>
 				<Box>
 					<PrimaryTitle>{name}</PrimaryTitle>
-					<Text c={isLight ? "slate.7" : "slate.2"}>
-						{description}
-					</Text>
+					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
 				</Box>
 				<List
 					className={classes.featureList}
-					icon={<Icon path={iconCheck} color="surreal.5" />}
+					icon={
+						<Icon
+							path={iconCheck}
+							color="surreal.5"
+						/>
+					}
 				>
 					{features.map((feature) => (
-						<List.Item key={feature} c="bright">
+						<List.Item
+							key={feature}
+							c="bright"
+						>
 							{feature}
 						</List.Item>
 					))}
@@ -109,9 +118,7 @@ export function BillingPage() {
 		hasRequested.current = true;
 
 		try {
-			const url = await fetchAPI<string>(
-				`/organizations/${organization?.id}/payment/url`,
-			);
+			const url = await fetchAPI<string>(`/organizations/${organization?.id}/payment/url`);
 
 			adapter.openUrl(url);
 		} finally {
@@ -136,7 +143,13 @@ export function BillingPage() {
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
 
 	return (
-		<Box flex={1} pos="relative">
+		<Box
+			flex={1}
+			pos="relative"
+			w="100%"
+			maw={900}
+			mx="auto"
+		>
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
@@ -188,11 +201,21 @@ export function BillingPage() {
 						title="Billing Information"
 						description="Manage organization payment and billing information"
 					>
-						<SimpleGrid cols={2} spacing="xl">
-						<Paper p="md">
+						<SimpleGrid
+							cols={2}
+							spacing="xl"
+						>
+							<Paper p="md">
 								<Group>
-									<Icon path={iconAccount} size="xl" />
-									<Text fz="xl" fw={600} c="bright">
+									<Icon
+										path={iconAccount}
+										size="xl"
+									/>
+									<Text
+										fz="xl"
+										fw={600}
+										c="bright"
+									>
 										Billing Details
 									</Text>
 									<Spacer />
@@ -208,15 +231,19 @@ export function BillingPage() {
 								<Stack>
 									<Box>
 										<Label>Name</Label>
-										<Skeleton
-											visible={billingQuery.isPending}
-										>
+										<Skeleton visible={billingQuery.isPending}>
 											{organization?.billing_info ? (
-												<Text c="bright" fw={500}>
+												<Text
+													c="bright"
+													fw={500}
+												>
 													{billingQuery.data?.Name}
 												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>
+												<Text
+													c="slate.4"
+													fw={500}
+												>
 													Not provided yet
 												</Text>
 											)}
@@ -224,15 +251,19 @@ export function BillingPage() {
 									</Box>
 									<Box>
 										<Label>Email</Label>
-										<Skeleton
-											visible={billingQuery.isPending}
-										>
+										<Skeleton visible={billingQuery.isPending}>
 											{organization?.billing_info ? (
-												<Text c="bright" fw={500}>
+												<Text
+													c="bright"
+													fw={500}
+												>
 													{billingQuery.data?.Email}
 												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>
+												<Text
+													c="slate.4"
+													fw={500}
+												>
 													Not provided yet
 												</Text>
 											)}
@@ -242,8 +273,15 @@ export function BillingPage() {
 							</Paper>
 							<Paper p="md">
 								<Group>
-									<Icon path={iconCreditCard} size="xl" />
-									<Text fz="xl" fw={600} c="bright">
+									<Icon
+										path={iconCreditCard}
+										size="xl"
+									/>
+									<Text
+										fz="xl"
+										fw={600}
+										c="bright"
+									>
 										Payment Details
 									</Text>
 									<Spacer />
@@ -266,15 +304,19 @@ export function BillingPage() {
 								<Stack mt="md">
 									<Box>
 										<Label>Payment method</Label>
-										<Skeleton
-											visible={paymentQuery.isPending}
-										>
+										<Skeleton visible={paymentQuery.isPending}>
 											{organization?.payment_info ? (
-												<Text c="bright" fw={500}>
+												<Text
+													c="bright"
+													fw={500}
+												>
 													Credit Card
 												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>
+												<Text
+													c="slate.4"
+													fw={500}
+												>
 													Not provided yet
 												</Text>
 											)}
@@ -282,15 +324,19 @@ export function BillingPage() {
 									</Box>
 									<Box>
 										<Label>Card information</Label>
-										<Skeleton
-											visible={paymentQuery.isPending}
-										>
+										<Skeleton visible={paymentQuery.isPending}>
 											{organization?.payment_info ? (
-												<Text c="bright" fw={500}>
+												<Text
+													c="bright"
+													fw={500}
+												>
 													{cardDescription}
 												</Text>
 											) : (
-												<Text c="slate.4" fw={500}>
+												<Text
+													c="slate.4"
+													fw={500}
+												>
 													Not provided yet
 												</Text>
 											)}
@@ -330,7 +376,10 @@ export function BillingPage() {
 												<Table.Td c="bright">
 													{new Date(invoice.date).toLocaleDateString()}
 												</Table.Td>
-												<Table.Td c={status.color} fw={600}>
+												<Table.Td
+													c={status.color}
+													fw={600}
+												>
 													{status.name}
 												</Table.Td>
 												<Table.Td>
@@ -353,7 +402,6 @@ export function BillingPage() {
 								icon={<Icon path={iconHelp} />}
 								title="Your organization has no invoices yet"
 								color="blue"
-								w="max-content"
 								pr="xl"
 							>
 								Once you have invoices, you can view and download them here

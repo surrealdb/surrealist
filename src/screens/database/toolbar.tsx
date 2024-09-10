@@ -17,11 +17,7 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { DATASETS } from "~/constants";
-import {
-	useConnection,
-	useIsConnected,
-	useMinimumVersion,
-} from "~/hooks/connection";
+import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -41,13 +37,13 @@ import { NamespaceList } from "./components/NamespaceList";
 import { executeQuery, openConnection } from "./connection/connection";
 
 export function DatabaseToolbar() {
-	const { clearQueryResponse, clearGraphqlResponse } =
-		useDatabaseStore.getState();
+	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
+	const { readChangelog, setOverlaySidebar } = useInterfaceStore.getState();
 	const { updateConnection } = useConfigStore.getState();
-	const { readChangelog } = useInterfaceStore.getState();
 	const [flags] = useFeatureFlags();
 
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
+	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
@@ -70,6 +66,10 @@ export function DatabaseToolbar() {
 		});
 
 		closeEditingTab();
+	});
+
+	const toggleSidebar = useStable(() => {
+		setOverlaySidebar(!overlaySidebar);
 	});
 
 	const resetSandbox = useConfirmation({
@@ -115,28 +115,38 @@ export function DatabaseToolbar() {
 		readChangelog();
 	});
 
-	const [isSupported, version] = useMinimumVersion(
-		import.meta.env.SDB_VERSION,
-	);
+	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
 	const isSandbox = connection?.id === "sandbox";
 	const showNS = !isSandbox && isConnected;
 	const showDB = showNS && connection?.lastNamespace;
 
 	return (
 		<>
+			<Tooltip
+				label="Toggle sidebar"
+				position="right"
+			>
+				<ActionIcon
+					size="lg"
+					hiddenFrom="md"
+					onClick={toggleSidebar}
+				>
+					<Icon path={iconChevronRight} />
+				</ActionIcon>
+			</Tooltip>
+
 			<ConnectionStatus />
 
-			{authState === "unauthenticated" &&
-				connection?.authentication?.mode === "cloud" && (
-					<Button
-						color="orange"
-						variant="light"
-						size="xs"
-						onClick={openCloudAuthentication}
-					>
-						Sign in to Surreal Cloud
-					</Button>
-				)}
+			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (
+				<Button
+					color="orange"
+					variant="light"
+					size="xs"
+					onClick={openCloudAuthentication}
+				>
+					Sign in to Surreal Cloud
+				</Button>
+			)}
 
 			{showNS && (
 				<>
@@ -211,20 +221,30 @@ export function DatabaseToolbar() {
 			{isConnected && !isSupported && (
 				<HoverCard>
 					<HoverCard.Target>
-						<Badge variant="light" color="orange" h={28}>
+						<Badge
+							variant="light"
+							color="orange"
+							h={28}
+						>
 							Unsupported database version
 						</Badge>
 					</HoverCard.Target>
 					<HoverCard.Dropdown>
 						<Text>
 							We recommend using at least{" "}
-							<Text span c="bright">
+							<Text
+								span
+								c="bright"
+							>
 								SurrealDB {import.meta.env.SDB_VERSION}
 							</Text>
 						</Text>
 						<Text>
 							The current version is{" "}
-							<Text span c="bright">
+							<Text
+								span
+								c="bright"
+							>
 								SurrealDB {version}
 							</Text>
 						</Text>
@@ -234,26 +254,25 @@ export function DatabaseToolbar() {
 
 			<Spacer />
 
-			{(flags.changelog === "auto"
-				? showChangelog
-				: flags.changelog !== "hidden") && (
+			{(flags.changelog === "auto" ? showChangelog : flags.changelog !== "hidden") && (
 				<Button
 					h={34}
 					size="xs"
 					radius="xs"
 					color="slate"
 					variant={
-						(
-							flags.changelog === "auto"
-								? hasReadChangelog
-								: flags.changelog === "read"
-						)
+						(flags.changelog === "auto" ? hasReadChangelog : flags.changelog === "read")
 							? "filled"
 							: "gradient"
 					}
 					style={{ border: "none" }}
 					onClick={openChangelog}
-					leftSection={<Icon path={iconStar} left />}
+					leftSection={
+						<Icon
+							path={iconStar}
+							left
+						/>
+					}
 				>
 					See what's new in {import.meta.env.VERSION}
 				</Button>
@@ -261,7 +280,10 @@ export function DatabaseToolbar() {
 
 			<ActionBar />
 
-			<Modal opened={!!editingTab} onClose={closeEditingTab}>
+			<Modal
+				opened={!!editingTab}
+				onClose={closeEditingTab}
+			>
 				<Form onSubmit={saveTabName}>
 					<Group>
 						<TextInput

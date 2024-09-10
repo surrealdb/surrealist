@@ -240,7 +240,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							</Group>
 						</Paper>
 
-						<Divider mx={-32} mb={6} mt={12} />
+						<Divider mb={6} mt={12} />
 					</>
 				)}
 
