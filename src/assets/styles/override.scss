@@ -9,6 +9,7 @@
 	--surrealist-indent-color: var(--mantine-color-slate-1);
 	--surrealist-indent-active-color: var(--mantine-color-slate-2);
 	--surrealist-kind-color: #8d6bff;
+	--surrealist-divider-color: var(--mantine-color-slate-1);
     --mantine-color-body: var(--mantine-color-white);
 }
 
@@ -18,6 +19,7 @@
 	--surrealist-indent-color: var(--mantine-color-slate-7);
 	--surrealist-indent-active-color: var(--mantine-color-slate-6);
 	--surrealist-kind-color: #a79fff;
+	--surrealist-divider-color: var(--mantine-color-slate-7);
     --mantine-color-body: var(--mantine-color-slate-8);
 }
 
@@ -187,9 +189,5 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Divider-root {
-	--divider-color: var(--mantine-color-slate-7);
-
-	@include light {
-		--divider-color: var(--mantine-color-slate-1);
-	}
+	--divider-color: var(--surrealist-divider-color);
 }

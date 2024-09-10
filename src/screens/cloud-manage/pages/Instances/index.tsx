@@ -1,9 +1,11 @@
 import {
 	ActionIcon,
+	Affix,
 	Anchor,
 	Box,
 	Button,
 	Center,
+	Flex,
 	Group,
 	Indicator,
 	Loader,
@@ -16,21 +18,13 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
-import {
-	useDebouncedValue,
-	useDisclosure,
-	useInputState,
-} from "@mantine/hooks";
+import { useDebouncedValue, useDisclosure, useInputState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import {
-	useAvailableInstanceTypes,
-	useAvailableRegions,
-	useOrganization,
-} from "~/hooks/cloud";
+import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -53,6 +47,7 @@ import { ConnectCliModal } from "./modals/connect-cli";
 import { ConnectSdkModal } from "./modals/connect-sdk";
 import { SettingsModal } from "./modals/settings";
 import classes from "./style.module.scss";
+import { FloatingButton } from "~/components/FloatingButton";
 
 interface Filter {
 	type: string;
@@ -77,17 +72,13 @@ export function InstancesPage() {
 		refetchInterval: 15_000,
 		enabled: authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudInstance[]>(
-				`/organizations/${organization?.id}/instances`,
-			);
+			return fetchAPI<CloudInstance[]>(`/organizations/${organization?.id}/instances`);
 		},
 	});
 
 	const instances = useMemo(() => data || [], [data]);
 
-	const [selectedInstance, setSelectedInstance] = useState(
-		createCloudInstance(),
-	);
+	const [selectedInstance, setSelectedInstance] = useState(createCloudInstance());
 	const [showSdkConnect, sdkConnectHandle] = useDisclosure();
 	const [showCliConnect, cliConnectHandle] = useDisclosure();
 	const [showSettings, settingsHandle] = useDisclosure();
@@ -96,51 +87,44 @@ export function InstancesPage() {
 		setActiveCloudPage("provision");
 	});
 
-	const handleConnect = useStable(
-		(method: ConnectMethod, db: CloudInstance) => {
-			setSelectedInstance(db);
+	const handleConnect = useStable((method: ConnectMethod, db: CloudInstance) => {
+		setSelectedInstance(db);
 
-			if (method === "surrealist") {
-				const {
-					connections,
-					settings,
-					addConnection,
-					setActiveConnection,
-					setActiveView,
-				} = useConfigStore.getState();
-				const existing = connections.find(
-					(conn) => conn.authentication.cloudInstance === db.id,
-				);
+		if (method === "surrealist") {
+			const { connections, settings, addConnection, setActiveConnection, setActiveView } =
+				useConfigStore.getState();
+			const existing = connections.find(
+				(conn) => conn.authentication.cloudInstance === db.id,
+			);
 
-				setActiveView("query");
+			setActiveView("query");
 
-				if (existing) {
-					setActiveConnection(existing.id);
-				} else {
-					const base = createBaseConnection(settings);
-
-					addConnection({
-						...base,
-						name: db.name,
-						authentication: {
-							...base.authentication,
-							protocol: "wss",
-							mode: "cloud",
-							token: "",
-							hostname: db.host,
-							cloudInstance: db.id,
-						},
-					});
-
-					setActiveConnection(base.id);
-				}
-			} else if (method === "sdk") {
-				sdkConnectHandle.open();
+			if (existing) {
+				setActiveConnection(existing.id);
 			} else {
-				cliConnectHandle.open();
+				const base = createBaseConnection(settings);
+
+				addConnection({
+					...base,
+					name: db.name,
+					authentication: {
+						...base.authentication,
+						protocol: "wss",
+						mode: "cloud",
+						token: "",
+						hostname: db.host,
+						cloudInstance: db.id,
+					},
+				});
+
+				setActiveConnection(base.id);
 			}
-		},
-	);
+		} else if (method === "sdk") {
+			sdkConnectHandle.open();
+		} else {
+			cliConnectHandle.open();
+		}
+	});
 
 	const handleSettings = useStable((db: CloudInstance) => {
 		setSelectedInstance(db);
@@ -215,17 +199,22 @@ export function InstancesPage() {
 	return (
 		<>
 			{!isPending && !isFresh && (
-				<Group gap="lg" mb="xs">
+				<Group
+					gap="lg"
+					mb="xs"
+					wrap="nowrap"
+				>
 					<Button
 						variant="gradient"
 						leftSection={<Icon path={iconPlus} />}
 						onClick={handleProvision}
+						visibleFrom="xs"
 						radius="sm"
 						size="xs"
 					>
 						Create instance
 					</Button>
-					<Spacer />
+					<Spacer visibleFrom="xs" />
 					<Menu>
 						<Menu.Target>
 							<Tooltip label="Filter instances">
@@ -249,26 +238,13 @@ export function InstancesPage() {
 								<Fragment key={type.title}>
 									<Menu.Label>{type.title}</Menu.Label>
 									{type.options.map((option) => {
-										const isActive =
-											filter?.value === option.value;
+										const isActive = filter?.value === option.value;
 
 										return (
 											<Menu.Item
 												key={option.value}
-												onClick={() =>
-													setFilter(
-														isActive
-															? null
-															: option,
-													)
-												}
-												rightSection={
-													isActive && (
-														<Icon
-															path={iconCheck}
-														/>
-													)
-												}
+												onClick={() => setFilter(isActive ? null : option)}
+												rightSection={isActive && <Icon path={iconCheck} />}
 											>
 												{option.label}
 											</Menu.Item>
@@ -282,10 +258,15 @@ export function InstancesPage() {
 						value={search}
 						onChange={setSearch}
 						placeholder="Search instances"
-						leftSection={<Icon path={iconSearch} size="sm" />}
+						leftSection={
+							<Icon
+								path={iconSearch}
+								size="sm"
+							/>
+						}
 						radius="sm"
 						size="xs"
-						miw={250}
+						className={classes.search}
 					/>
 					<ActionIcon.Group>
 						<ActionIcon
@@ -308,14 +289,15 @@ export function InstancesPage() {
 					{isPending ? (
 						<Loader />
 					) : (
-						<Paper radius="md" p="xl" w={500}>
-							<PrimaryTitle>
-								Create your first instance
-							</PrimaryTitle>
+						<Paper
+							radius="md"
+							p="xl"
+							w={500}
+						>
+							<PrimaryTitle>Create your first instance</PrimaryTitle>
 							<Text mt="xl">
-								This organization does not have any instances
-								yet. Create your first instance to get started
-								with Surreal Cloud.
+								This organization does not have any instances yet. Create your first
+								instance to get started with Surreal Cloud.
 							</Text>
 							<Group>
 								<Anchor href="https://surrealdb.com/docs/cloud">
@@ -346,12 +328,24 @@ export function InstancesPage() {
 					)}
 				</Center>
 			) : isEmpty ? (
-				<Box mt={150} c="slate" fz="lg" ta="center">
+				<Box
+					mt={150}
+					c="slate"
+					fz="lg"
+					ta="center"
+				>
 					No matching instances found
 				</Box>
 			) : (
-				<Box flex={1} pos="relative">
-					<ScrollArea pos="absolute" scrollbars="y" inset={0}>
+				<Box
+					flex={1}
+					pos="relative"
+				>
+					<ScrollArea
+						pos="absolute"
+						scrollbars="y"
+						inset={0}
+					>
 						{mode === "grid" ? (
 							<SimpleGrid
 								cols={{ xs: 1, sm: 2, md: 2, lg: 2, xl: 3 }}
@@ -396,6 +390,12 @@ export function InstancesPage() {
 					</ScrollArea>
 				</Box>
 			)}
+
+			<FloatingButton
+				icon={iconPlus}
+				hiddenFrom="xs"
+				onClick={handleProvision}
+			/>
 
 			<ConnectCliModal
 				opened={showCliConnect}

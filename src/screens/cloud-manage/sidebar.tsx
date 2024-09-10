@@ -1,9 +1,14 @@
+import classes from "./style.module.scss";
+
 import {
+	ActionIcon,
 	Avatar,
+	type BoxProps,
 	Divider,
 	Group,
 	Menu,
 	Paper,
+	Popover,
 	Skeleton,
 	Stack,
 } from "@mantine/core";
@@ -17,7 +22,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudPage, CloudPageInfo } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { iconCheck, iconChevronDown } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconViewGrid } from "~/util/icons";
 
 const NAVIGATION: CloudPage[][] = [
 	[
@@ -31,7 +36,7 @@ const NAVIGATION: CloudPage[][] = [
 	["billing", "support", "settings"],
 ];
 
-export function CloudSidebar() {
+export function CloudSidebar(props: BoxProps) {
 	const { setActiveCloudPage, setActiveCloudOrg } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
@@ -69,70 +74,90 @@ export function CloudSidebar() {
 		);
 	}
 
-	const orgName =
-		organizations.find((org) => org.id === activeOrg)?.name || "Unknown";
+	const orgName = organizations.find((org) => org.id === activeOrg)?.name || "Unknown";
 
 	return (
-		<Paper w={250} component={Stack} p="md">
-			<Menu
-				position="bottom-start"
-				transitionProps={{
-					transition: "scale-y",
-				}}
-			>
-				<Menu.Target>
-					<Skeleton visible={isLoading}>
-						<Paper withBorder p="xs">
-							<Group
-								style={{
-									cursor: "pointer",
-								}}
+		<Stack
+			className={classes.cloudSidebar}
+			{...props}
+		>
+			<Group wrap="nowrap">
+				<Popover
+					width="target"
+					position="bottom-start"
+					transitionProps={{
+						transition: "scale-y",
+					}}
+				>
+					<Popover.Target>
+						<Skeleton visible={isLoading}>
+							<Paper
+								withBorder
+								p="xs"
 							>
-								<Avatar name={orgName} radius="xs" size="sm" />
-								<Text c="bright" fw={600}>
-									{orgName}
-								</Text>
-								<Spacer />
-								<Icon path={iconChevronDown} />
-							</Group>
-						</Paper>
-					</Skeleton>
-				</Menu.Target>
-				<Menu.Dropdown w={226}>
-					{organizations.map((org) => (
-						<Menu.Item
-							key={org.id}
-							rightSection={
-								org.id === activeOrg ? (
-									<Icon path={iconCheck} />
-								) : undefined
-							}
-							onClick={() => setActiveCloudOrg(org.id)}
-							p="sm"
-						>
-							{org.name}
-						</Menu.Item>
-					))}
-					<Menu.Divider />
-					<Text p="sm">
-						The ability to create organizations is not currently
-						available.
-					</Text>
-				</Menu.Dropdown>
-			</Menu>
+								<Group
+									style={{
+										cursor: "pointer",
+									}}
+								>
+									<Avatar
+										name={orgName}
+										radius="xs"
+										size="sm"
+									/>
+									<Text
+										c="bright"
+										fw={600}
+									>
+										{orgName}
+									</Text>
+									<Spacer />
+									<Icon path={iconChevronDown} />
+								</Group>
+							</Paper>
+						</Skeleton>
+					</Popover.Target>
+					<Popover.Dropdown p="xs">
+						{organizations.map((org) => (
+							<Entry
+								key={org.id}
+								rightSection={
+									org.id === activeOrg ? <Icon path={iconCheck} /> : undefined
+								}
+								onClick={() => setActiveCloudOrg(org.id)}
+								p="sm"
+							>
+								{org.name}
+							</Entry>
+						))}
+						<Divider />
+						<Text p="sm">
+							The ability to create organizations is not currently available.
+						</Text>
+					</Popover.Dropdown>
+				</Popover>
+				<ActionIcon
+					size={38}
+					hiddenFrom="sm"
+				>
+					<Icon path={iconViewGrid} />
+				</ActionIcon>
+			</Group>
 
-			<Stack gap="sm" flex={1}>
+			<Stack
+				gap="sm"
+				flex={1}
+				visibleFrom="sm"
+			>
 				{navigation.map((items, i) => (
 					<Fragment key={i}>
 						{items.map((info) => (
-							<Fragment key={info.id}>
-								{renderNavigation(info)}
-							</Fragment>
+							<Fragment key={info.id}>{renderNavigation(info)}</Fragment>
 						))}
 						{i < navigation.length - 1 && <Divider />}
 					</Fragment>
 				))}
 			</Stack>
-		</Paper>
+		</Stack>
 	);
 }

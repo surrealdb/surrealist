@@ -11,27 +11,31 @@ export interface CloudToolbarProps {
 	showBreadcrumb?: boolean;
 }
 
-export function CloudToolbar({
-	showBreadcrumb
-}: CloudToolbarProps) {
+export function CloudToolbar({ showBreadcrumb }: CloudToolbarProps) {
 	const activePage = useConfigStore((s) => s.activeCloudPage);
 	const pageName = CLOUD_PAGES[activePage]?.name ?? "Unknown";
 
 	return (
 		<>
 			<SidebarToggle />
-			
+
 			{showBreadcrumb && (
 				<>
-					<PrimaryTitle ml={3}>Surreal Cloud</PrimaryTitle>
+					<PrimaryTitle
+						ml={3}
+						visibleFrom="md"
+					>
+						Surreal Cloud
+					</PrimaryTitle>
 					<Icon
 						path={iconChevronRight}
+						visibleFrom="md"
 						size="xl"
 						color="slate.5"
 						mx={-8}
 					/>
 					<PrimaryTitle>{pageName}</PrimaryTitle>
-			</>
+				</>
 			)}
 
 			<Spacer />

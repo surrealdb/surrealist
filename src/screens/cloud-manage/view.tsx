@@ -1,4 +1,6 @@
-import { Alert, Box, Button, Group, Image, Stack, Text } from "@mantine/core";
+import classes from "./style.module.scss";
+
+import { Alert, Box, Button, Flex, Group, Image, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import type { FC } from "react";
 import { adapter } from "~/adapter";
@@ -23,7 +25,6 @@ import { ProvisionPage } from "./pages/Provision";
 import { SettingsPage } from "./pages/Settings";
 import { SupportPage } from "./pages/Support";
 import { CloudSidebar } from "./sidebar";
-import classes from "./style.module.scss";
 import { CloudToolbar } from "./toolbar";
 
 const PAGE_VIEWS: Record<CloudPage, FC> = {
@@ -75,8 +76,9 @@ export function CloudView() {
 			</Group>
 			
 			{renderCloud ? (
-				<Group
+				<Flex
 					flex={1}
+					className={classes.cloudContent}
 					align="stretch"
 					mt="lg"
 					gap="xl"
@@ -86,7 +88,7 @@ export function CloudView() {
 						{hasAlert && <StatusAlert alert={alertQuery.data} />}
 						{Content && <Content />}
 					</Stack>
-				</Group>
+				</Flex>
 			) : (
 				<>
 					<Stack
