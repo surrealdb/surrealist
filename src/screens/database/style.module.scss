@@ -10,6 +10,10 @@
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
+	
+	@include md-and-up {
+		margin-left: var(--offset) !important;
+	}
 }
 
 .titlebar {
@@ -21,23 +25,30 @@
 	z-index: 1;
 }
 
+$sidebar-thin: 74px;
+$sidebar-wide: 215px;
+
 .sidebar {
 	z-index: 10;
-	width: 74px;
 	transition: all .15s ease-out;
 	border-right: 1px solid transparent;
+	width: $sidebar-wide;
 
-	&-expandable:hover {
+	&-fill {
+		width: 100%;
+	}
+
+	&-collapsed {
+		width: $sidebar-thin;
+	}
+
+	&-hoverable:hover {
 		width: 230px;
 		border-color: var(--mantine-color-slate-7);
 
 		@include light {
 			border-color: var(--mantine-color-slate-1);
 		}
-	}
-
-	&-wide {
-		width: 215px;
 	}
 
 	:global(.mantine-ScrollArea-viewport) > div {

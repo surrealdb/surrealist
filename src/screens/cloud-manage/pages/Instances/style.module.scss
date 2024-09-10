@@ -1,3 +1,11 @@
+.search {
+	flex: 1;
+
+	@include xs-and-up {
+		max-width: 350px;
+	}
+}
+
 .table {
 	-webkit-user-select: text;
 	user-select: text;

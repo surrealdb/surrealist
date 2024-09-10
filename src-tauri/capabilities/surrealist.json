@@ -49,7 +49,9 @@
 			"identifier": "http:allow-fetch",
 			"allow": [
 				"https://surrealdb.us.auth0.com/*",
-				"https://api.staging.surrealdb.cloud/api/*"
+				"https://api.cloud.surrealdb.com/api/*",
+				"https://checkout.stripe.com/*",
+				"https://lago-production.s3.amazonaws.com/*"
 			]
 		}
 	]

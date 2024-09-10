@@ -1,24 +1,15 @@
-import {
-	Alert,
-	Box,
-	Button,
-	Center,
-	Flex,
-	Group,
-	Image,
-	Paper,
-	ScrollArea,
-	Stack,
-	Text,
-} from "@mantine/core";
 import clsx from "clsx";
-import { Suspense, lazy, useLayoutEffect, useState } from "react";
+import classes from "./style.module.scss";
+
 import {
 	type HtmlPortalNode,
 	InPortal,
 	OutPortal,
 	createHtmlPortalNode,
 } from "react-reverse-portal";
+
+import { Alert, Box, Center, Drawer, Flex, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { Suspense, lazy, memo, useLayoutEffect, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -27,17 +18,16 @@ import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { CloudView } from "~/screens/cloud-manage/view";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewMode } from "~/types";
-import { isMobile } from "~/util/helpers";
-import { iconOpen, iconWarning } from "~/util/icons";
+import { iconWarning } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
-import classes from "./style.module.scss";
 import { DatabaseToolbar } from "./toolbar";
 
 const PORTAL_ATTRS = {
@@ -58,35 +48,36 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	cloud: createHtmlPortalNode(PORTAL_ATTRS),
 };
 
+const DatabaseSidebarLazy = memo(DatabaseSidebar);
+
 const QueryView = lazy(() => import("./views/query/QueryView"));
 const ExplorerView = lazy(() => import("./views/explorer/ExplorerView"));
 const GraphqlView = lazy(() => import("./views/graphql/GraphqlView"));
 const DesignerView = lazy(() => import("./views/designer/DesignerView"));
-const AuthenticationView = lazy(
-	() => import("./views/authentication/AuthenticationView"),
-);
+const AuthenticationView = lazy(() => import("./views/authentication/AuthenticationView"));
 const FunctionsView = lazy(() => import("./views/functions/FunctionsView"));
 const ModelsView = lazy(() => import("./views/models/ModelsView"));
-const DocumentationView = lazy(
-	() => import("./views/documentation/DocumentationView"),
-);
+const DocumentationView = lazy(() => import("./views/documentation/DocumentationView"));
 
 export function DatabaseScreen() {
+	const { setOverlaySidebar } = useInterfaceStore.getState();
+
 	const isLight = useIsLight();
-	const logoUrl = useLogoUrl();
 	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
+	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
-	const [mode] = useSetting("appearance", "sidebarMode");
-	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
-
-	const canHover = mode === "expandable" && canHoverSidebar;
+	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const customTitlebar = adapter.platform === "darwin" && isDesktop;
 
 	const viewMode = useConfigStore((s) => s.activeView);
 	const viewNode = VIEW_PORTALS[viewMode];
 	const viewInfo = VIEW_MODES[viewMode];
+
+	const onCloseSidebar = useStable(() => {
+		setOverlaySidebar(false);
+	});
 
 	const [loaded, setLoaded] = useState<ViewMode[]>([]);
 
@@ -100,8 +91,8 @@ export function DatabaseScreen() {
 		});
 	}, [viewMode]);
 
-	const requireDatabase =
-		!connection?.lastDatabase && viewInfo?.require === "database";
+	const requireDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
+	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
 	return (
 		<div
@@ -127,79 +118,24 @@ export function DatabaseScreen() {
 				</Flex>
 			)}
 
-			{isMobile() && (
-				<Center
-					pos="fixed"
-					inset={0}
-					bg={isLight ? "slate.0" : "slate.9"}
-					style={{ zIndex: 1000 }}
-				>
-					<Stack maw={285} mx="auto">
-						<Image src={logoUrl} />
-
-						<Text fz="xl" mt="lg">
-							Surrealist is the ultimate way to visually manage
-							your SurrealDB database
-						</Text>
-
-						<Text>
-							Support for Surrealist on mobile platforms is
-							currently unavailable, however you can visit
-							Surrealist on a desktop environment to get started.
-						</Text>
-
-						<Button
-							mt="lg"
-							variant="gradient"
-							onClick={() =>
-								adapter.openUrl(
-									"https://surrealdb.com/surrealist",
-								)
-							}
-							rightSection={<Icon path={iconOpen} />}
-						>
-							Read more about Surrealist
-						</Button>
-					</Stack>
-				</Center>
-			)}
-
-			<Flex direction="column" flex={1} pos="relative">
-				<ScrollArea
-					scrollbars="y"
-					type="never"
-					pos="fixed"
-					component="aside"
-					top={0}
-					left={0}
-					bottom={0}
-					bg={isLight ? "slate.0" : "slate.9"}
-					onMouseEnter={hoverSidebarHandle.open}
-					className={clsx(
-						classes.sidebar,
-						canHover && classes.sidebarExpandable,
-						mode === "wide" && classes.sidebarWide,
-					)}
-				>
-					<Flex
-						pt={customTitlebar ? 38 : 22}
-						direction="column"
-						h="100%"
-						px={16}
-					>
-						<DatabaseSidebar
-							sidebarMode={mode}
-							onNavigate={hoverSidebarHandle.close}
-							onItemHover={hoverSidebarHandle.open}
-						/>
-					</Flex>
-				</ScrollArea>
+			<Flex
+				direction="column"
+				flex={1}
+				pos="relative"
+			>
+				<DatabaseSidebarLazy
+					sidebarMode={sidebarMode}
+					withTitlebarOffset={customTitlebar}
+					visibleFrom="md"
+				/>
 
 				<Box
 					m="lg"
 					mt={customTitlebar ? "sm" : "lg"}
-					ml={25 + (mode === "wide" ? 190 : 49)}
 					className={classes.wrapper}
+					__vars={{
+						'--offset': `${sidebarOffset}px`
+					}}
 				>
 					{viewMode !== "cloud" && (
 						<Group
@@ -212,19 +148,23 @@ export function DatabaseScreen() {
 							<DatabaseToolbar />
 						</Group>
 					)}
-					<Stack flex={1} pos="relative">
+					<Stack
+						flex={1}
+						pos="relative"
+					>
 						{requireDatabase ? (
 							<Center flex={1}>
-								<Paper radius="md" p="xl" w={500}>
-									<PrimaryTitle>
-										Before you continue...
-									</PrimaryTitle>
+								<Paper
+									radius="md"
+									p="xl"
+									w={500}
+								>
+									<PrimaryTitle>Before you continue...</PrimaryTitle>
 									<Text mt="md">
-										Please select a namespace and database
-										before accessing the {viewInfo?.name}{" "}
-										view. You can use the buttons below to
-										choose an existing namespace and
-										database, or create new ones.
+										Please select a namespace and database before accessing the{" "}
+										{viewInfo?.name} view. You can use the buttons below to
+										choose an existing namespace and database, or create new
+										ones.
 									</Text>
 									<SelectDatabase mt="xl" />
 									{!isConnected && (
@@ -233,8 +173,8 @@ export function DatabaseScreen() {
 											color="orange"
 											icon={<Icon path={iconWarning} />}
 										>
-											You must be connected before
-											selecting a namespace and database
+											You must be connected before selecting a namespace and
+											database
 										</Alert>
 									)}
 								</Paper>
@@ -317,6 +257,17 @@ export function DatabaseScreen() {
 					</Stack>
 				</Box>
 			</Flex>
+
+			<Drawer
+				opened={overlaySidebar}
+				onClose={onCloseSidebar}
+				size={275}
+			>
+				<DatabaseSidebarLazy
+					sidebarMode="fill"
+					withTitlebarOffset={customTitlebar}
+				/>
+			</Drawer>
 		</div>
 	);
 }

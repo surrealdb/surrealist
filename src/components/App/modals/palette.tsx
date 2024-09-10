@@ -24,11 +24,7 @@ import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
-import {
-	type Command,
-	type CommandCategory,
-	computeCommands,
-} from "~/util/commands";
+import { type Command, type CommandCategory, computeCommands } from "~/util/commands";
 import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { iconOpen, iconServer } from "~/util/icons";
 
@@ -64,9 +60,7 @@ export function CommandPaletteModal() {
 				: cat.commands.filter(
 						(cmd) =>
 							fuzzyMatch(search, cmd.name) ||
-							cmd.aliases?.find((alias) =>
-								fuzzyMatch(search, alias),
-							),
+							cmd.aliases?.find((alias) => fuzzyMatch(search, alias)),
 					);
 
 			return commands.length === 0
@@ -85,10 +79,7 @@ export function CommandPaletteModal() {
 	}, [categories, search]);
 
 	useLayoutEffect(() => {
-		if (
-			flattened.length > 0 &&
-			(!selected || !flattened.includes(selected))
-		) {
+		if (flattened.length > 0 && (!selected || !flattened.includes(selected))) {
 			setSelected(flattened[0]);
 		}
 	}, [flattened, selected]);
@@ -133,22 +124,17 @@ export function CommandPaletteModal() {
 			let target: Command | undefined;
 
 			if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
-				target =
-					flattened[flattened.indexOf(selected) + 1] ?? flattened[0];
+				target = flattened[flattened.indexOf(selected) + 1] ?? flattened[0];
 			} else if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
-				target =
-					flattened[flattened.indexOf(selected) - 1] ??
-					flattened.at(-1);
+				target = flattened[flattened.indexOf(selected) - 1] ?? flattened.at(-1);
 			}
 
 			if (target) {
 				setSelected(target);
 
-				ref.current
-					?.querySelector(`[data-cmd="${target.id}"]`)
-					?.scrollIntoView({
-						block: "nearest",
-					});
+				ref.current?.querySelector(`[data-cmd="${target.id}"]`)?.scrollIntoView({
+					block: "nearest",
+				});
 
 				e.stopPropagation();
 				e.preventDefault();
@@ -182,8 +168,15 @@ export function CommandPaletteModal() {
 		>
 			<Box>
 				{connection && (
-					<Group gap="xs" mb="sm" c="surreal">
-						<Icon path={iconServer} size="sm" />
+					<Group
+						gap="xs"
+						mb="sm"
+						c="surreal"
+					>
+						<Icon
+							path={iconServer}
+							size="sm"
+						/>
 						<Text>In {connection.name}</Text>
 					</Group>
 				)}
@@ -201,23 +194,34 @@ export function CommandPaletteModal() {
 
 			<Divider my="lg" />
 
-			<Box h={350} pb={0}>
-				<ScrollArea viewportRef={ref} scrollbars="y" h="100%">
+			<Box
+				h={350}
+				pb={0}
+			>
+				<ScrollArea
+					viewportRef={ref}
+					scrollbars="y"
+					h="100%"
+				>
 					{filtered.length > 0 ? (
 						<Stack pb="xl">
 							{filtered.map((cat) => (
 								<Box key={cat.name}>
-									<Text c="slate" fw={500}>
+									<Text
+										c="slate"
+										fw={500}
+									>
 										{cat.name}
 									</Text>
-									<Stack mt="xs" gap={2}>
+									<Stack
+										mt="xs"
+										gap={2}
+									>
 										{cat.commands.map((cmd) => (
 											<UnstyledButton
-												key={cmd.name}
+												key={cmd.id}
 												onClick={() => activate(cmd)}
-												onMouseMove={() =>
-													setSelected(cmd)
-												}
+												onMouseMove={() => setSelected(cmd)}
 												className={classes.command}
 												data-active={selected === cmd}
 												data-cmd={cmd.id}
@@ -225,23 +229,15 @@ export function CommandPaletteModal() {
 											>
 												<Icon
 													path={cmd.icon}
-													className={
-														classes.commandIcon
-													}
+													className={classes.commandIcon}
 												/>
-												<Text
-													className={
-														classes.commandLabel
-													}
-												>
+												<Text className={classes.commandLabel}>
 													{cmd.name}
 												</Text>
 												{cmd.action.type === "href" && (
 													<Icon
 														path={iconOpen}
-														className={
-															classes.commandIcon
-														}
+														className={classes.commandIcon}
 														size="sm"
 														ml={-8}
 													/>
@@ -250,24 +246,15 @@ export function CommandPaletteModal() {
 													<>
 														<Spacer />
 														<Group gap="lg">
-															{(Array.isArray(
-																cmd.shortcut,
-															)
+															{(Array.isArray(cmd.shortcut)
 																? cmd.shortcut
 																: [cmd.shortcut]
-															).map(
-																(
-																	shortcut,
-																	i,
-																) => (
-																	<Shortcut
-																		key={i}
-																		value={
-																			shortcut
-																		}
-																	/>
-																),
-															)}
+															).map((shortcut, i) => (
+																<Shortcut
+																	key={i}
+																	value={shortcut}
+																/>
+															))}
 														</Group>
 													</>
 												)}
@@ -278,7 +265,11 @@ export function CommandPaletteModal() {
 							))}
 						</Stack>
 					) : (
-						<Text ta="center" py="md" c="slate">
+						<Text
+							ta="center"
+							py="md"
+							c="slate"
+						>
 							No matching commands found
 						</Text>
 					)}

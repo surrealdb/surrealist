@@ -177,8 +177,6 @@ export function computeCommands(): CommandCategory[] {
 		const tables = databaseSchema?.tables || [];
 		const scopes = databaseSchema?.scopes || [];
 
-		console.log(activeView);
-
 		categories.push(
 			{
 				name: "Views",

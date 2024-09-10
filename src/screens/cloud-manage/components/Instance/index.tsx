@@ -51,7 +51,11 @@ function StateBadge({ state, small }: StateBadgeProps) {
 	const [color, text] = BADGE_INFO[state];
 
 	return (
-		<Badge color={color} variant="light" size={small ? "sm" : "md"}>
+		<Badge
+			color={color}
+			variant="light"
+			size={small ? "sm" : "md"}
+		>
 			{text}
 		</Badge>
 	);
@@ -65,18 +69,10 @@ export interface Instance {
 	onOpenSettings: (db: CloudInstance) => void;
 }
 
-export function Instance({
-	type,
-	value,
-	onDelete,
-	onConnect,
-	onOpenSettings,
-}: Instance) {
+export function Instance({ type, value, onDelete, onConnect, onOpenSettings }: Instance) {
 	const inactive = value.state === "inactive";
 	const regions = useCloudStore((s) => s.regions);
-	const regionName =
-		regions.find((r) => r.slug === value.region)?.description ??
-		value.region;
+	const regionName = regions.find((r) => r.slug === value.region)?.description ?? value.region;
 
 	const handleDelete = useConfirmation({
 		message:
@@ -93,7 +89,10 @@ export function Instance({
 					title: "Deleting instance",
 					subtitle: (
 						<>
-							<Text span c="bright">
+							<Text
+								span
+								c="bright"
+							>
 								{value.name}
 							</Text>{" "}
 							is being deleted
@@ -119,16 +118,17 @@ export function Instance({
 				</ActionIcon>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Item onClick={() => onOpenSettings(value)}>
-					Settings...
-				</Menu.Item>
+				<Menu.Item onClick={() => onOpenSettings(value)}>Settings...</Menu.Item>
 				<Menu.Divider />
 				{/* <Menu.Item
 					onClick={handleDeactivate}
 				>
 					{inactive ? "Activate" : "Deactivate"} instance
 				</Menu.Item> */}
-				<Menu.Item onClick={handleDelete} color="red">
+				<Menu.Item
+					onClick={handleDelete}
+					color="red"
+				>
 					Delete instance
 				</Menu.Item>
 			</Menu.Dropdown>
@@ -184,24 +184,52 @@ export function Instance({
 			gap="sm"
 		>
 			<Group>
-				<Text c="bright" fw={600} fz="xl">
+				<Text
+					c="bright"
+					fw={600}
+					fz="xl"
+				>
 					{value.name}
 				</Text>
 				<StateBadge state={value.state} />
 				<Spacer />
 				{actionList}
 			</Group>
-			<Group gap="sm" h={32}>
-				<Icon path={iconMemory} c="surreal" />
+			<Group
+				title="Instance Preset"
+				gap="sm"
+				h={32}
+			>
+				<Icon
+					path={iconMemory}
+					size="lg"
+					c="slate"
+				/>
 				<Text c="bright">{value.type.slug}</Text>
 			</Group>
-			<Group gap="sm" h={32}>
-				<Icon path={iconMarker} c="surreal" />
+			<Group
+				title="Region"
+				gap="sm"
+				h={32}
+			>
+				<Icon
+					path={iconMarker}
+					size="lg"
+					c="slate"
+				/>
 				<Text c="bright">{regionName}</Text>
 			</Group>
 			<Group>
-				<Group gap="sm" h={32}>
-					<Icon path={iconTag} c="surreal" />
+				<Group
+					title="Version"
+					gap="sm"
+					h={32}
+				>
+					<Icon
+						path={iconTag}
+						size="lg"
+						c="slate"
+					/>
 					<Text c="bright">SurrealDB {value.version}</Text>
 				</Group>
 				<Spacer />
@@ -224,10 +252,16 @@ export function Instance({
 		<Table.Tr key={value.id}>
 			<Table.Td>
 				<Group wrap="nowrap">
-					<Text c="bright" fw={500}>
+					<Text
+						c="bright"
+						fw={500}
+					>
 						{value.name}
 					</Text>
-					<StateBadge state={value.state} small />
+					<StateBadge
+						state={value.state}
+						small
+					/>
 				</Group>
 			</Table.Td>
 			<Table.Td>{value.type.slug}</Table.Td>

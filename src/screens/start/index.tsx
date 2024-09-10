@@ -30,7 +30,6 @@ import {
 	iconCloud,
 	iconCog,
 	iconDiscord,
-	iconOpen,
 	iconPlus,
 	iconSandbox,
 	iconServer,
@@ -198,12 +197,12 @@ function StartNews({ post }: StartNewsProps) {
 export function StartScreen() {
 	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
 	const newsQuery = useLatestNewsQuery();
-	const isLight = useIsLight();
 
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
+		setActiveView("query");
 	});
 
 	const openConnectionCreator = useStable(() => {
@@ -213,6 +212,14 @@ export function StartScreen() {
 	const openCloud = useStable(() => {
 		setActiveScreen("database");
 		setActiveView("cloud");
+	});
+
+	const openConnectionList = useStable(() => {
+		dispatchIntent("open-connections")
+	});
+
+	const openSettings = useStable(() => {
+		dispatchIntent("open-settings");
 	});
 
 	const logoUrl = useThemeImage({
@@ -306,13 +313,13 @@ export function StartScreen() {
 							title="Manage Connections"
 							subtitle="List and manage your existing connections"
 							icon={iconServer}
-							onClick={() => dispatchIntent("open-connections")}
+							onClick={openConnectionList}
 						/>
 						<StartAction
 							title="Customize Settings"
 							subtitle="Configure Surrealist to your liking"
 							icon={iconCog}
-							onClick={() => dispatchIntent("open-settings")}
+							onClick={openSettings}
 						/>
 					</SimpleGrid>
 

@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Button,
 	Group,
 	Select,
@@ -21,7 +22,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
-import { fetchAPI } from "../api";
+import { ApiError, fetchAPI } from "../api";
 import { useCloudBilling } from "../hooks/billing";
 
 export async function openBillingModal() {
@@ -62,6 +63,8 @@ function BillingForm({ organization, details }: BillingFormProps) {
 	const [isLoading, setLoading] = useState(false);
 	const queryClient = useQueryClient();
 
+	const [error, setError] = useState("");
+
 	const countryList = useCloudStore((state) => state.billingCountries).map(
 		(country) => ({
 			value: country.code,
@@ -87,6 +90,12 @@ function BillingForm({ organization, details }: BillingFormProps) {
 			queryClient.invalidateQueries({
 				queryKey: ["cloud", "billing", organization.id],
 			});
+		} catch(err: any) {
+			if (err instanceof ApiError) {
+				const msg = await err.errorMessage();
+
+				setError(msg || "Unknown error occurred while saving details");
+			}	
 		} finally {
 			setLoading(false);
 		}
@@ -95,6 +104,14 @@ function BillingForm({ organization, details }: BillingFormProps) {
 	return (
 		<Form onSubmit={handleSubmit}>
 			<Stack>
+				{error && (
+					<Alert
+						color="red"
+						title="Failed to save billing details"
+					>
+						{error}
+					</Alert>
+				)}
 				<TextInput
 					label="Full Name"
 					required
@@ -114,7 +131,19 @@ function BillingForm({ organization, details }: BillingFormProps) {
 						})
 					}
 				/>
-				<SimpleGrid cols={2}>
+				<TextInput
+					label="Tax Identification Number"
+					value={data.TaxIdentificationNumber}
+					onChange={(e) =>
+						setData((d) => {
+							d.TaxIdentificationNumber = e.target.value;
+						})
+					}
+				/>
+				<SimpleGrid cols={{
+					xs: 1,
+					sm: 2,
+				}}>
 					<TextInput
 						label="Email"
 						required
@@ -135,17 +164,6 @@ function BillingForm({ organization, details }: BillingFormProps) {
 							})
 						}
 					/>
-				</SimpleGrid>
-				<TextInput
-					label="Tax Identification Number"
-					value={data.TaxIdentificationNumber}
-					onChange={(e) =>
-						setData((d) => {
-							d.TaxIdentificationNumber = e.target.value;
-						})
-					}
-				/>
-				<SimpleGrid cols={2}>
 					<Select
 						label="Country"
 						required
@@ -168,8 +186,6 @@ function BillingForm({ organization, details }: BillingFormProps) {
 							})
 						}
 					/>
-				</SimpleGrid>
-				<SimpleGrid cols={2}>
 					<TextInput
 						label="Address"
 						required
@@ -189,8 +205,6 @@ function BillingForm({ organization, details }: BillingFormProps) {
 							})
 						}
 					/>
-				</SimpleGrid>
-				<SimpleGrid cols={2}>
 					<TextInput
 						label="City"
 						required

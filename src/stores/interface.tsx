@@ -13,6 +13,7 @@ export type InterfaceStore = {
 	showScopeSignup: boolean;
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
+	overlaySidebar: boolean;
 
 	setWindowTitle: (title: string) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
@@ -27,6 +28,7 @@ export type InterfaceStore = {
 	closeScopeSignup: () => void;
 	showChangelog: () => void;
 	readChangelog: () => void;
+	setOverlaySidebar: (overlaySidebar: boolean) => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
@@ -45,6 +47,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	hasReadChangelog: false,
 	showQueryVariables: false,
 	showGraphqlVariables: false,
+	overlaySidebar: false,
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
@@ -93,10 +96,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 		set((state) => ({
 			liveQueryMessages: {
 				...state.liveQueryMessages,
-				[id]: [
-					message,
-					...(state.liveQueryMessages[id] || []).slice(0, 50),
-				],
+				[id]: [message, ...(state.liveQueryMessages[id] || []).slice(0, 50)],
 			},
 		})),
 
@@ -129,5 +129,10 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	readChangelog: () =>
 		set(() => ({
 			hasReadChangelog: true,
+		})),
+
+	setOverlaySidebar: (overlaySidebar) =>
+		set(() => ({
+			overlaySidebar,
 		})),
 }));
