@@ -40,7 +40,8 @@
 		"enabled": true,
 		"indentWidth": 4,
 		"indentStyle": "tab",
-		"lineWidth": 120
+		"lineWidth": 100,
+		"attributePosition": "multiline"
 	},
 	"files": {
 		"ignore": [
