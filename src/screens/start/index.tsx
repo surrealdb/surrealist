@@ -45,7 +45,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
-import { isMobile } from "~/util/helpers";
 import { Faint } from "~/components/Faint";
 
 interface StartActionProps {
@@ -232,45 +231,6 @@ export function StartScreen() {
 					data-tauri-drag-region
 					className={classes.titlebar}
 				/>
-			)}
-
-			{isMobile() && (
-				<Center
-					pos="fixed"
-					inset={0}
-					bg={isLight ? "slate.0" : "slate.9"}
-					style={{ zIndex: 1000 }}
-				>
-					<Stack
-						maw={285}
-						mx="auto"
-					>
-						<Image src={logoUrl} />
-
-						<Text
-							fz="xl"
-							mt="lg"
-						>
-							Surrealist is the ultimate way to visually manage your SurrealDB
-							database
-						</Text>
-
-						<Text>
-							Support for Surrealist on mobile platforms is currently unavailable,
-							however you can visit Surrealist on a desktop environment to get
-							started.
-						</Text>
-
-						<Button
-							mt="lg"
-							variant="gradient"
-							onClick={() => adapter.openUrl("https://surrealdb.com/surrealist")}
-							rightSection={<Icon path={iconOpen} />}
-						>
-							Read more about Surrealist
-						</Button>
-					</Stack>
-				</Center>
 			)}
 
 			<div
