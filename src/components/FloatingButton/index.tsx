@@ -11,7 +11,10 @@ export interface FloatingButtonProps extends ActionIconProps {
 
 export function FloatingButton({ icon, className, onClick, ...other }: FloatingButtonProps) {
 	return (
-		<Affix position={{ bottom: 32, right: 32 }}>
+		<Affix
+			position={{ bottom: 32, right: 32 }}
+			zIndex={150}
+		>
 			<ActionIcon
 				variant="gradient"
 				radius="50%"
