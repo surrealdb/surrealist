@@ -39,13 +39,13 @@ import {
 	iconRefresh,
 	iconReset,
 	iconRoutes,
+	iconSandbox,
 	iconSearch,
 	iconServer,
 	iconServerSecure,
 	iconStar,
 	iconStarPlus,
 	iconStop,
-	iconSurreal,
 	iconText,
 	iconTextBoxMinus,
 	iconTextBoxPlus,
@@ -134,7 +134,7 @@ export function computeCommands(): CommandCategory[] {
 				{
 					id: newId(),
 					name: `Open the Sandbox`,
-					icon: iconSurreal,
+					icon: iconSandbox,
 					action: launch(() => {
 						setActiveConnection(SANDBOX);
 					}),

@@ -1,73 +1,93 @@
 .start {
-    z-index: 0;
-    background-color: var(--mantine-color-slate-9);
+	z-index: 0;
+	background-color: var(--mantine-color-slate-9);
 
-    @include light {
-        background-color: var(--mantine-color-slate-1);
-    }
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
 }
 
 .titlebar {
-    height: 22px;
-    user-select: none;
-    cursor: default;
-    color: var(--mantine-color-bright);
-    position: relative;
-    z-index: 10;
-    width: 100%;
+	height: 22px;
+	user-select: none;
+	cursor: default;
+	color: var(--mantine-color-bright);
+	position: relative;
+	z-index: 10;
+	width: 100%;
 }
 
 .glow {
-    pointer-events: none;
-    aspect-ratio: 1;
-    background-size: contain;
-    background-repeat: no-repeat;
-    position: fixed;
-    z-index: -1;
-    transform-origin: top center;
-    width: 65vw;
-    top: 0;
-    left: 0;
-    right: 0;
-    margin-inline: auto;
+	pointer-events: none;
+	aspect-ratio: 1;
+	background-size: contain;
+	background-repeat: no-repeat;
+	position: fixed;
+	z-index: -1;
+	transform-origin: top center;
+	width: 65vw;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin-inline: auto;
+
+	@include light {
+		opacity: 0.5;
+	}
 }
 
 .start-box {
-    position: relative;
-    overflow: hidden;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.075);
+	position: relative;
+	overflow: hidden;
+	background-color: rgba(0, 0, 0, 0.5);
+	outline: 1px solid transparent;
+	transition: all 0.2s;
 
-    @include light {
-        background-color: rgba(255, 255, 255, 0.3);
-        border-color: rgba(0, 0, 0, 0.15);
-    }
-}
+	@include light {
+		background-color: rgba(255, 255, 255, 0.5);
+	}
 
-.start-box-corner {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.2s;
+	&:hover {
+		outline-color: rgba(255, 221, 251, 0.15);
+
+		@include light {
+			outline-color: rgba(139, 89, 139, 0.25);
+		}
+	}
 }
 
 .start-action {
-    aspect-ratio: 1;
-    position: relative;
-    overflow: hidden;
+	position: relative;
+	overflow: hidden;
 
-    .start-action-icon {
-        transition: color 0.2s;
-        color: var(--mantine-color-slate-5);
-    }
+	.start-action-icon {
+		transition: all 0.2s;
+		color: var(--mantine-color-slate-5);
+	}
 
-    &:hover .start-action-icon {
-        color: var(--mantine-color-bright) !important;
-    }
+	&:hover .start-action-icon {
+		color: var(--mantine-color-bright) !important;
+	}
 
-    &:hover .start-box-corner {
-        opacity: 1;
-    }
+	@include md-and-up {
+		aspect-ratio: 1;
+	}
+}
+
+.start-news-inner {
+	flex-direction: column;
+
+	@include xs-and-up {
+		flex-direction: row;
+	}
+}
+
+.start-news-thumbnail {
+	flex-shrink: 0;
+	background-size: cover;
+	aspect-ratio: 200 / 110;
+
+	@include xs-and-up {
+		height: 110px;
+	}
 }

@@ -19,7 +19,7 @@ import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import type { Connection } from "~/types";
 import { Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
-import { iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconPlus, iconSearch, iconSurreal } from "~/util/icons";
+import { iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconPlus, iconSandbox, iconSearch } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 
 const UNGROUPED = Symbol("ungrouped");
@@ -306,7 +306,7 @@ export function ConnectionsModal() {
 						isActive={isSandbox}
 						onClick={openSandbox}
 						leftSection={
-							<Icon path={iconSurreal} size={1.2} noStroke />
+							<Icon path={iconSandbox} />
 						}
 					>
 						<Text>
