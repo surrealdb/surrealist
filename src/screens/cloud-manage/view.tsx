@@ -154,7 +154,7 @@ export function CloudView() {
 								icon={<Icon path={iconErrorCircle} />}
 								color={isLight ? "red.6" : "red.5"}
 								title="Client update required"
-								w={500}
+								maw={500}
 							>
 								Please update your version of Surrealist to continue using Surreal Cloud.
 							</Alert>
