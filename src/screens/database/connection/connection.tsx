@@ -15,12 +15,7 @@ import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { AuthDetails, Connection, Protocol } from "~/types";
-import {
-	getActiveConnection,
-	getAuthDB,
-	getAuthNS,
-	getConnection,
-} from "~/util/connection";
+import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
@@ -81,8 +76,7 @@ export async function openConnection(options?: ConnectOptions) {
 	openedConnection = connection;
 	forceClose = false;
 
-	const { setCurrentState, setVersion, setLatestError } =
-		useDatabaseStore.getState();
+	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
 	const rpcEndpoint = connectionUri(connection.authentication);
 	const thisInstance = instance;
 
@@ -122,25 +116,19 @@ export async function openConnection(options?: ConnectOptions) {
 				throw new CloudError("Not authenticated with Surreal Cloud");
 			}
 		}
-		const namespace =
-			getAuthNS(connection.authentication) || connection.lastNamespace;
-		const database =
-			getAuthDB(connection.authentication) || connection.lastDatabase;
+		
+		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
+		const database = getAuthDB(connection.authentication) || connection.lastDatabase;
 
 		await instance.connect(rpcEndpoint, {
 			versionCheck,
 			versionCheckTimeout,
 			prepare: async (surreal) => {
 				try {
-					const auth = await composeAuthentication(
-						connection.authentication,
-					);
+					const auth = await composeAuthentication(connection.authentication);
 
 					if (isSignup) {
-						await register(
-							buildScopeAuth(connection.authentication),
-							surreal,
-						);
+						await register(buildScopeAuth(connection.authentication), surreal);
 					} else {
 						await authenticate(auth, surreal);
 					}
@@ -335,8 +323,7 @@ export async function executeQuerySingle<T = any>(query: string): Promise<T> {
 export async function executeUserQuery(options?: UserQueryOptions) {
 	const { setIsLive, pushLiveQueryMessage, clearLiveQueryMessages } =
 		useInterfaceStore.getState();
-	const { setQueryActive, currentState, setQueryResponse } =
-		useDatabaseStore.getState();
+	const { setQueryActive, currentState, setQueryResponse } = useDatabaseStore.getState();
 	const { addHistoryEntry } = useConfigStore.getState();
 	const connection = getConnection();
 
@@ -348,9 +335,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		return;
 	}
 
-	const tabQuery = connection.queries.find(
-		(q) => q.id === connection.activeQuery,
-	);
+	const tabQuery = connection.queries.find((q) => q.id === connection.activeQuery);
 
 	if (!tabQuery) {
 		return;
@@ -379,10 +364,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			liveIndexes = [];
 		}
 
-		if (
-			liveIndexes.length > 0 &&
-			!LQ_SUPPORTED.has(connection.authentication.protocol)
-		) {
+		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.authentication.protocol)) {
 			showError({
 				title: "Live queries unsupported",
 				subtitle:
@@ -438,9 +420,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 function isGraphqlSupportedError(err: string) {
 	return (
 		err.includes("Method not found") ||
-		err.includes(
-			"A GraphQL request was made, but GraphQL is not supported by the context",
-		)
+		err.includes("A GraphQL request was made, but GraphQL is not supported by the context")
 	);
 }
 
@@ -492,8 +472,7 @@ export async function executeGraphql(
 	params?: Record<string, any>,
 	operation?: string,
 ) {
-	const { currentState, setGraphqlQueryActive, setGraphqlResponse } =
-		useDatabaseStore.getState();
+	const { currentState, setGraphqlQueryActive, setGraphqlResponse } = useDatabaseStore.getState();
 	const connection = getConnection();
 
 	if (!connection || currentState !== "connected") {
@@ -548,9 +527,7 @@ export async function activateDatabase(namespace: string, database: string) {
 	// Select a namespace only
 	if (namespace) {
 		const result = await executeQuerySingle("INFO FOR KV");
-		const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) =>
-			parseIdent(ns),
-		);
+		const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) => parseIdent(ns));
 
 		if (namespaces.includes(namespace)) {
 			updateCurrentConnection({
@@ -582,9 +559,7 @@ export async function activateDatabase(namespace: string, database: string) {
 	// Select a database
 	if (namespace && database) {
 		const result = await executeQuerySingle("INFO FOR NS");
-		const databases = Object.keys(result?.databases ?? {}).map((db) =>
-			parseIdent(db),
-		);
+		const databases = Object.keys(result?.databases ?? {}).map((db) => parseIdent(db));
 
 		if (databases.includes(database)) {
 			updateCurrentConnection({
