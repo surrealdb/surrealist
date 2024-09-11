@@ -17,6 +17,7 @@ import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import type { SidebarMode, ViewInfo, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { isMobile } from "~/util/helpers";
 import { iconCog, iconSearch } from "~/util/icons";
 
 const NAVIGATION: ViewMode[][] = [
@@ -165,7 +166,9 @@ export function DatabaseSidebar({
 						name={
 							<Group wrap="nowrap">
 								Search
-								<Shortcut value="mod K" />
+								{!isMobile() && (
+									<Shortcut value="mod K" />
+								)}
 							</Group>
 						}
 						icon={iconSearch}
