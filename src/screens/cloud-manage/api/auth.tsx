@@ -200,9 +200,9 @@ export async function acquireSession(accessToken: string) {
 
 		setSessionExpired(false);
 
-		if (!result.terms_accepted_at) {
+		// if (!result.terms_accepted_at) {
 			openTermsModal();
-		}
+		// }
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
 
