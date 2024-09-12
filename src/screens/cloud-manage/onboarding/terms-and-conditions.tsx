@@ -98,7 +98,7 @@ function TermsModal({ conditions }: TermsModalProps) {
 			<Checkbox
 				checked={newsChecked}
 				onChange={updateNewsChecked}
-				label="I agree to receive occasional emails about Surreal Cloud updates and features"
+				label="By subscribing to SurrealDB, you will receive carefully curated content, information on new products and features plus details of educational events where you can engage with our team and community"
 			/>
 			<Group mt="xl">
 				<Button
