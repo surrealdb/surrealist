@@ -9,9 +9,8 @@ import {
 
 import { Box, Button, Group, Menu, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
-import { type ChangeEvent, memo, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -20,17 +19,17 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useViewEffect } from "~/hooks/view";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
-import type { AuthTarget, AuthType, SchemaAccess, SchemaFunction, SchemaUser } from "~/types";
-import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
+import type { AuthTarget, AuthType } from "~/types";
+import { syncConnectionSchema } from "~/util/schema";
 import { AuthenticationPanel } from "../AuthenticationPanel";
 import { AccessEditorPanel } from "../AccessEditorPanel";
 import { UserEditorPanel } from "../UserEditorPanel";
+import { LearnMore } from "~/components/LearnMore";
 
 const AuthenticationPanelLazy = memo(AuthenticationPanel);
 const AccessEditorPanelLazy = memo(AccessEditorPanel);
@@ -127,7 +126,11 @@ export function AuthenticationView() {
 					<PanelDragger />
 					<Panel minSize={minSize}>
 						{active?.[0] === "user" ? (
-							<UserEditorPanelLazy />
+							<UserEditorPanelLazy
+								active={active}
+								isNew={isNew}
+								users={users}
+							/>
 						) : active?.[0] === "access" ? (
 							<AccessEditorPanelLazy />
 						) : (
@@ -164,12 +167,12 @@ export function AuthenticationView() {
 												New authentication
 											</Button>
 										</Menu.Target>
-										<Menu.Dropdown w={200}>
+										<Menu.Dropdown>
 											<Menu.Item
 												onClick={() => openCreator("user")}
 												leftSection={<Icon path={iconAccount} />}
 											>
-												Create user
+												Create system user
 											</Menu.Item>
 											<Menu.Item
 												onClick={() => openCreator("access")}
@@ -210,6 +213,11 @@ export function AuthenticationView() {
 			>
 				<Form onSubmit={createAuthentication}>
 					<Stack>
+						<Text>
+							{createType === "user"
+								? "System users are used to authenticate with an instance, namespace, or database"
+								: "Access methods provide fine grained control over the data accessible by a user"}
+						</Text>
 						<TextInput
 							placeholder={createType === "user" ? "username" : "name"}
 							value={createName}
@@ -217,6 +225,21 @@ export function AuthenticationView() {
 							onChange={setCreateName}
 							autoFocus
 						/>
+						{createType === "user" ? (
+							<LearnMore
+								href="https://surrealdb.com/docs/surrealdb/security/authentication#system-users"
+								mb="xl"
+							>
+								Learn more about system users
+							</LearnMore>
+						) : (
+							<LearnMore
+								href="https://surrealdb.com/docs/surrealql/statements/define/access"
+								mb="xl"
+							>
+								Learn more about access methods
+							</LearnMore>
+						)}
 						<Group mt="lg">
 							<Button
 								onClick={showCreatorHandle.close}
