@@ -24,8 +24,19 @@ export type UrlTarget = "internal" | "external";
 export type DatabaseListMode = "list" | "grid";
 export type AuthLevel = "root" | "namespace" | "database";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
-export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
-export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type AuthType = "user" | "access";
+
+export type InstanceState =
+	| "creating"
+	| "updating"
+	| "deleting"
+	| "ready"
+	| "inactive";
+export type AuthState =
+	| "unknown"
+	| "loading"
+	| "authenticated"
+	| "unauthenticated";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -67,6 +78,7 @@ export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type Assign<T, O extends object> = Omit<T, keyof O> & O;
+export type AuthTarget = [AuthType, string];
 
 export interface Authentication {
 	mode: AuthMode;

@@ -42,15 +42,15 @@ const FunctionsPanelLazy = memo(FunctionsPanel);
 const EditorPanelLazy = memo(EditorPanel);
 
 export function FunctionsView() {
-	const functions = useDatabaseSchema()?.functions ?? [];
+	const isConnected = useIsConnected();
 	const duplicationRef = useRef<SchemaFunction | null>(null);
+
+	const { functions } = useDatabaseSchema();
 
 	const [details, setDetails] = useImmer<SchemaFunction | null>(null);
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [showCreator, showCreatorHandle] = useDisclosure();
 	const [createName, setCreateName] = useState("");
-
-	const isConnected = useIsConnected();
 
 	const handle = useSaveable({
 		valid: !!details && details.args.every(([name, kind]) => name && kind),

@@ -1,14 +1,15 @@
 import {
-	Box,
-	Button,
-	Group,
-	Modal,
-	Stack,
-	Text,
-	TextInput,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { type ChangeEvent, memo, useRef, useState } from "react";
+	iconAccount,
+	iconAuth,
+	iconChevronDown,
+	iconChevronRight,
+	iconKey,
+	iconOpen,
+} from "~/util/icons";
+
+import { Box, Button, Group, Menu, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { useDisclosure, useInputState } from "@mantine/hooks";
+import { type ChangeEvent, memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
@@ -20,23 +21,13 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useSaveable } from "~/hooks/save";
-import { useDatabaseSchema } from "~/hooks/schema";
+import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useViewEffect } from "~/hooks/view";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
-import type { SchemaFunction } from "~/types";
-import { showError } from "~/util/helpers";
-import {
-	iconAuth,
-	iconChevronDown,
-	iconChevronRight,
-	iconFunction,
-	iconOpen,
-	iconPlus,
-} from "~/util/icons";
+import type { AuthTarget, AuthType, SchemaAccess, SchemaFunction, SchemaUser } from "~/types";
 import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
-import { formatQuery, validateQuery } from "~/util/surrealql";
 import { AuthenticationPanel } from "../AuthenticationPanel";
 import { AccessEditorPanel } from "../AccessEditorPanel";
 import { UserEditorPanel } from "../UserEditorPanel";
@@ -46,123 +37,62 @@ const AccessEditorPanelLazy = memo(AccessEditorPanel);
 const UserEditorPanelLazy = memo(UserEditorPanel);
 
 export function AuthenticationView() {
-	const functions = useDatabaseSchema()?.functions ?? [];
-	const duplicationRef = useRef<SchemaFunction | null>(null);
-
-	const [details, setDetails] = useImmer<SchemaFunction | null>(null);
-	const [isCreating, isCreatingHandle] = useDisclosure();
-	const [showCreator, showCreatorHandle] = useDisclosure();
-	const [createName, setCreateName] = useState("");
-
 	const isConnected = useIsConnected();
 
-	const handle = useSaveable({
-		valid: !!details && details.args.every(([name, kind]) => name && kind),
-		track: {
-			details,
-		},
-		onSave: async () => {
-			if (!details) return;
+	const kvSchema = useRootSchema();
+	const nsSchema = useNamespaceSchema();
+	const dbSchema = useDatabaseSchema();
 
-			const query = buildFunctionDefinition(details);
+	const [listType, setListType] = useState<AuthType>("user");
 
-			await executeQuery(query).catch(console.error);
-			await syncConnectionSchema();
+	const [active, setActive] = useState<AuthTarget | null>(null);
+	const [isNew, setIsNew] = useState(false);
+	const [showCreator, showCreatorHandle] = useDisclosure();
+	const [createName, setCreateName] = useInputState("");
+	const [createType, setCreateType] = useState<AuthType>("user");
 
-			isCreatingHandle.close();
-		},
-		onRevert({ details }) {
-			setDetails(details);
-		},
-	});
+	const users = useMemo(
+		() => [...kvSchema.users, ...nsSchema.users, ...dbSchema.users],
+		[kvSchema.users, nsSchema.users, dbSchema.users],
+	);
 
-	const updateCreateName = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		const name = e.target.value
-			.replaceAll(/\s/g, "_")
-			.replaceAll(/[^\w:]/g, "")
-			.toLocaleLowerCase();
+	const accesses = useMemo(
+		() => [...kvSchema.accesses, ...nsSchema.accesses, ...dbSchema.accesses],
+		[kvSchema.accesses, nsSchema.accesses, dbSchema.accesses],
+	);
 
-		setCreateName(name);
-	});
-
-	const openCreator = useStable(() => {
+	const openCreator = useStable((type: AuthType) => {
 		showCreatorHandle.open();
-		duplicationRef.current = null;
 		setCreateName("");
+		setCreateType(type);
 	});
 
-	const editFunction = useStable((name: string) => {
-		isCreatingHandle.close();
-
-		const selectedFunction = functions.find((f) => f.name === name) || null;
-
-		if (!selectedFunction) {
-			showError({
-				title: "Function not found",
-				subtitle: "The selected function was not found",
-			});
-			return;
-		}
-
-		const isFunctionBlockInvalid = validateQuery(selectedFunction.block);
-
-		if (isFunctionBlockInvalid) {
-			showError({
-				title: "Failed to format",
-				subtitle: "Your function must be valid to format it",
-			});
-			return;
-		}
-
-		setDetails({
-			...selectedFunction,
-			block: formatQuery(selectedFunction.block),
-		});
-
-		handle.track();
+	const editAuthentication = useStable((target: AuthTarget) => {
+		setIsNew(false);
+		setActive(target);
 	});
 
-	const createFunction = useStable(async () => {
-		const duplication = duplicationRef.current;
-
+	const createAuthentication = useStable(async () => {
 		showCreatorHandle.close();
-		isCreatingHandle.open();
 
-		setDetails({
-			...(duplication || {
-				args: [],
-				comment: "",
-				block: "",
-				permissions: true,
-				returns: "",
-			}),
-			name: createName,
-		});
-
-		duplicationRef.current = null;
-		handle.track();
+		setIsNew(true);
+		setActive([createType, createName]);
 	});
 
-	const duplicateFunction = useStable((def: SchemaFunction) => {
-		showCreatorHandle.open();
-		duplicationRef.current = def;
-		setCreateName(def.name);
-	});
-
-	const removeFunction = useConfirmation({
-		message:
-			"You are about to remove this function. This action cannot be undone.",
+	const removeAuthentication = useConfirmation({
+		message: "You are about to remove this function. This action cannot be undone.",
 		confirmText: "Remove",
-		onConfirm: async (name: string) => {
-			await executeQuery(`REMOVE FUNCTION fn::${name}`);
+		onConfirm: async ([type, name]: AuthTarget) => {
+			const what = type === "user" ? "USER" : "ACCESS";
+
+			await executeQuery(`REMOVE ${what} ${name}`);
 			await syncConnectionSchema();
 
-			setDetails(null);
-			handle.track();
+			setActive(null);
 		},
 	});
 
-	useViewEffect("functions", () => {
+	useViewEffect("authentication", () => {
 		syncConnectionSchema();
 	});
 
@@ -170,18 +100,36 @@ export function AuthenticationView() {
 
 	return (
 		<>
-			<Box h="100%" ref={ref}>
+			<Box
+				h="100%"
+				ref={ref}
+			>
 				<PanelGroup
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
-						<AuthenticationPanelLazy />
+					<Panel
+						defaultSize={minSize}
+						minSize={minSize}
+						maxSize={35}
+					>
+						<AuthenticationPanelLazy
+							list={listType}
+							users={users}
+							active={active}
+							accesses={accesses}
+							onChangeList={setListType}
+							onCreate={openCreator}
+							onDelete={removeAuthentication}
+							onSelect={editAuthentication}
+						/>
 					</Panel>
 					<PanelDragger />
 					<Panel minSize={minSize}>
-						{details ? (
+						{active?.[0] === "user" ? (
 							<UserEditorPanelLazy />
+						) : active?.[0] === "access" ? (
+							<AccessEditorPanelLazy />
 						) : (
 							<Introduction
 								title="Authentication"
@@ -193,7 +141,7 @@ export function AuthenticationView() {
 											PASSWORD '123456'
 											ROLES OWNER;
 
-										-- Define record access
+										-- Define record user access
 										DEFINE ACCESS user ON DATABASE TYPE RECORD
 											SIGNUP ( ... )
 											SIGNIN ( ... );
@@ -205,14 +153,32 @@ export function AuthenticationView() {
 									instance, namespace, and database.
 								</Text>
 								<Group>
-									<Button
-										flex={1}
-										variant="gradient"
-										rightSection={<Icon path={iconChevronDown} />}
-										disabled={!isConnected}
-									>
-										Define authentication
-									</Button>
+									<Menu position="bottom">
+										<Menu.Target>
+											<Button
+												flex={1}
+												variant="gradient"
+												rightSection={<Icon path={iconChevronDown} />}
+												disabled={!isConnected}
+											>
+												New authentication
+											</Button>
+										</Menu.Target>
+										<Menu.Dropdown w={200}>
+											<Menu.Item
+												onClick={() => openCreator("user")}
+												leftSection={<Icon path={iconAccount} />}
+											>
+												Create user
+											</Menu.Item>
+											<Menu.Item
+												onClick={() => openCreator("access")}
+												leftSection={<Icon path={iconKey} />}
+											>
+												Create access method
+											</Menu.Item>
+										</Menu.Dropdown>
+									</Menu>
 									<Button
 										flex={1}
 										color="slate"
@@ -220,7 +186,7 @@ export function AuthenticationView() {
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() =>
 											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function",
+												"https://surrealdb.com/docs/surrealdb/security/authentication",
 											)
 										}
 									>
@@ -236,33 +202,20 @@ export function AuthenticationView() {
 			<Modal
 				opened={showCreator}
 				onClose={showCreatorHandle.close}
-				title={<PrimaryTitle>Create new function</PrimaryTitle>}
+				title={
+					<PrimaryTitle>
+						Create new {createType === "user" ? "system user" : "access method"}
+					</PrimaryTitle>
+				}
 			>
-				<Form onSubmit={createFunction}>
+				<Form onSubmit={createAuthentication}>
 					<Stack>
 						<TextInput
-							placeholder="function_name"
+							placeholder={createType === "user" ? "username" : "name"}
 							value={createName}
 							spellCheck={false}
-							onChange={updateCreateName}
-							size="lg"
+							onChange={setCreateName}
 							autoFocus
-							leftSection={
-								<Text
-									ff="mono"
-									fz="xl"
-									c="surreal"
-									style={{ transform: "translate(4px, 1px)" }}
-								>
-									fn::
-								</Text>
-							}
-							styles={{
-								input: {
-									fontFamily:
-										"var(--mantine-font-family-monospace)",
-								},
-							}}
 						/>
 						<Group mt="lg">
 							<Button
