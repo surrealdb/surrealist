@@ -353,7 +353,7 @@ export function BillingPage() {
 					</Section>
 
 					<Section
-						title="Coupons"
+						title="Discount Codes"
 						description="Apply discount codes to your organization"
 					>
 						<Group maw={500}>
@@ -361,7 +361,7 @@ export function BillingPage() {
 								flex={1}
 								value={coupon}
 								onChange={setCoupon}
-								placeholder="Enter coupon code"
+								placeholder="Enter discount code"
 							/>
 							<Button
 								variant="gradient"
