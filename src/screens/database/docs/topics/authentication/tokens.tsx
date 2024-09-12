@@ -1,11 +1,11 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { useSchema } from "~/hooks/schema";
+import { useDatabaseSchema } from "~/hooks/schema";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
 
 export function DocsAuthTokens({ language, topic }: TopicProps) {
-	const schema = useSchema();
+	const schema = useDatabaseSchema();
 
 	const snippets = useMemo<Snippets>(
 		() => ({

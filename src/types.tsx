@@ -247,14 +247,21 @@ export interface Kind {
 	out?: string[];
 }
 
+export type RootSchema = SchemaInfoKV;
+export type NamespaceSchema = SchemaInfoNS;
+
+export interface ConnectionSchema {
+	root: RootSchema;
+	namespace: NamespaceSchema;
+	database: DatabaseSchema;
+}
+
 export interface DatabaseSchema {
-	kvUsers: SchemaUser[];
-	nsUsers: SchemaUser[];
-	dbUsers: SchemaUser[];
-	scopes: SchemaScope[];
 	functions: SchemaFunction[];
 	models: SchemaModel[];
+	accesses: SchemaAccess[];
 	tables: TableInfo[];
+	users: SchemaUser[];
 }
 
 export interface SchemaTable {
@@ -292,16 +299,27 @@ export interface SchemaEvent {
 
 export interface SchemaUser {
 	name: string;
-	comment: string;
+	base: string;
+	hash: string;
 	roles: string[];
-	passhash: string;
+	comment?: string;
+	duration: {
+		session: string;
+		token: string;
+	}
 }
 
-export interface SchemaScope {
+export interface SchemaAccess {
 	name: string;
-	signin?: string;
-	signup?: string;
-	session?: string;
+	base: string;
+	kind: string;
+	authenticate?: any;
+	comment?: string;
+	duration: {
+		session: string;
+		grant: string;
+		token: string;
+	}
 }
 
 export interface SchemaFunction {
@@ -330,37 +348,31 @@ export interface TableInfo {
 
 export interface SchemaInfoKV {
 	namespaces: any[];
+	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
 
 export interface SchemaInfoNS {
 	databases: any[];
-	tokens: any[];
+	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
 
 export interface SchemaInfoDB {
-	analyzers: any[];
 	functions: SchemaFunction[];
 	models: SchemaModel[];
-	params: any[];
-	scopes: SchemaScope[];
+	accesses: SchemaAccess[];
 	tables: SchemaTable[];
-	tokens: any[];
 	users: SchemaUser[];
+	analyzers: any[];	// unused
+	params: any[];		// unused
 }
 
 export interface SchemaInfoTB {
 	events: SchemaEvent[];
 	fields: SchemaField[];
 	indexes: SchemaIndex[];
-	tables: any[];
-}
-
-export interface Analyzer {
-	name: string;
-	tokenizers: string[];
-	filters: string[];
+	tables: any[];		// unused
 }
 
 export interface SurrealOptions {

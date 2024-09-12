@@ -23,7 +23,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { SchemaMode } from "~/types";
 import { tb } from "~/util/helpers";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 
 export function TableCreatorModal() {
 	const { openTableCreator, closeTableCreator } =
@@ -56,7 +56,7 @@ export function TableCreatorModal() {
 		closeTableCreator();
 
 		await executeQuery(query);
-		await syncDatabaseSchema({
+		await syncConnectionSchema({
 			tables: [tableName],
 		});
 

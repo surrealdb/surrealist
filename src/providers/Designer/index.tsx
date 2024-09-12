@@ -14,7 +14,7 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { TableInfo } from "~/types";
 import { showError } from "~/util/helpers";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
 import { buildDefinitionQueries, isSchemaValid } from "./helpers";
@@ -133,7 +133,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 					return false;
 				}
 
-				syncDatabaseSchema({
+				syncConnectionSchema({
 					tables: [data.schema.name],
 				});
 

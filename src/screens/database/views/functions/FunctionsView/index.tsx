@@ -20,7 +20,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useSaveable } from "~/hooks/save";
-import { useSchema } from "~/hooks/schema";
+import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useViewEffect } from "~/hooks/view";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -33,7 +33,7 @@ import {
 	iconOpen,
 	iconPlus,
 } from "~/util/icons";
-import { buildFunctionDefinition, syncDatabaseSchema } from "~/util/schema";
+import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { EditorPanel } from "../EditorPanel";
 import { FunctionsPanel } from "../FunctionsPanel";
@@ -42,7 +42,7 @@ const FunctionsPanelLazy = memo(FunctionsPanel);
 const EditorPanelLazy = memo(EditorPanel);
 
 export function FunctionsView() {
-	const functions = useSchema()?.functions ?? [];
+	const functions = useDatabaseSchema()?.functions ?? [];
 	const duplicationRef = useRef<SchemaFunction | null>(null);
 
 	const [details, setDetails] = useImmer<SchemaFunction | null>(null);
@@ -63,7 +63,7 @@ export function FunctionsView() {
 			const query = buildFunctionDefinition(details);
 
 			await executeQuery(query).catch(console.error);
-			await syncDatabaseSchema();
+			await syncConnectionSchema();
 
 			isCreatingHandle.close();
 		},
@@ -151,7 +151,7 @@ export function FunctionsView() {
 		confirmText: "Remove",
 		onConfirm: async (name: string) => {
 			await executeQuery(`REMOVE FUNCTION fn::${name}`);
-			await syncDatabaseSchema();
+			await syncConnectionSchema();
 
 			setDetails(null);
 			handle.track();
@@ -159,7 +159,7 @@ export function FunctionsView() {
 	});
 
 	useViewEffect("functions", () => {
-		syncDatabaseSchema();
+		syncConnectionSchema();
 	});
 
 	const [minSize, ref] = usePanelMinSize(275);

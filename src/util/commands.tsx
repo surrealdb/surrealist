@@ -1,10 +1,7 @@
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
 import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import {
-	closeConnection,
-	openConnection,
-} from "~/screens/database/connection/connection";
+import { closeConnection, openConnection } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnection } from "./connection";
@@ -53,7 +50,7 @@ import {
 	iconWrench,
 } from "./icons";
 import type { IntentPayload, IntentType } from "./intents";
-import { syncDatabaseSchema } from "./schema";
+import { syncConnectionSchema } from "./schema";
 
 type LaunchAction = { type: "launch"; handler: () => void };
 type InsertAction = { type: "insert"; content: string };
@@ -109,8 +106,11 @@ export function computeCommands(): CommandCategory[] {
 		resetOnboardings,
 	} = useConfigStore.getState();
 
-	const { isServing, currentState, databaseSchema } =
-		useDatabaseStore.getState();
+	const {
+		isServing,
+		currentState,
+		connectionSchema,
+	} = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
@@ -174,8 +174,7 @@ export function computeCommands(): CommandCategory[] {
 	);
 
 	if (activeCon) {
-		const tables = databaseSchema?.tables || [];
-		const scopes = databaseSchema?.scopes || [];
+		const tables = connectionSchema.database.tables || [];
 
 		categories.push(
 			{
@@ -357,12 +356,13 @@ export function computeCommands(): CommandCategory[] {
 						icon: iconAccountSecure,
 						action: intent("create-scope"),
 					},
-					...scopes.map((scope) => ({
-						id: newId(),
-						name: `Register user in scope ${scope.name}`,
-						icon: iconAccountPlus,
-						action: intent("register-user", { scope: scope.name }),
-					})),
+					// TODO Replace with record access
+					// ...scopes.map((scope) => ({
+					// 	id: newId(),
+					// 	name: `Register user in scope ${scope.name}`,
+					// 	icon: iconAccountPlus,
+					// 	action: intent("register-user", { scope: scope.name }),
+					// })),
 				],
 			},
 			{
@@ -555,9 +555,7 @@ export function computeCommands(): CommandCategory[] {
 								name: "Check for updates",
 								icon: iconDownload,
 								action: launch(() => {
-									(adapter as DesktopAdapter).checkForUpdates(
-										true,
-									);
+									(adapter as DesktopAdapter).checkForUpdates(true);
 								}),
 							},
 						]
@@ -593,7 +591,7 @@ export function computeCommands(): CommandCategory[] {
 					id: newId(),
 					name: "Sync database schema",
 					icon: iconReset,
-					action: launch(syncDatabaseSchema),
+					action: launch(syncConnectionSchema),
 				},
 				...(isDesktop
 					? [
@@ -602,9 +600,7 @@ export function computeCommands(): CommandCategory[] {
 								name: "Toggle developer tools",
 								icon: iconWrench,
 								action: launch(() => {
-									(
-										adapter as DesktopAdapter
-									).toggleDevTools();
+									(adapter as DesktopAdapter).toggleDevTools();
 								}),
 							},
 						]

@@ -19,7 +19,7 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import {
 	buildScopeAuth,
@@ -567,7 +567,7 @@ export async function activateDatabase(namespace: string, database: string) {
 			});
 
 			await instance.use({ database });
-			await syncDatabaseSchema();
+			await syncConnectionSchema();
 		} else {
 			updateCurrentConnection({
 				lastDatabase: "",

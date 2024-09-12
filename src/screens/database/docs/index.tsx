@@ -1,4 +1,4 @@
-import type { DatabaseSchema } from "~/types";
+import type { ConnectionSchema } from "~/types";
 import { newId } from "~/util/helpers";
 import {
 	iconAuth,
@@ -42,7 +42,7 @@ import type { DocsTopic } from "./types";
  * @param schema The schema to build the documentation for.
  * @returns The structure of the documentation.
  */
-export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
+export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 	return [
 		{
 			id: newId(),
@@ -173,7 +173,7 @@ export function buildDocumentation(schema: DatabaseSchema): DocsTopic[] {
 					title: "Introduction",
 					component: DocsTablesIntroduction,
 				},
-				...schema.tables.map((table) => ({
+				...schema.database.tables.map((table) => ({
 					id: newId(),
 					title: `${table.schema.name}`,
 					children: [

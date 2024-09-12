@@ -1,8 +1,8 @@
 import { omit } from "radash";
 import { create } from "zustand";
 import type { GraphqlResponse } from "~/screens/database/connection/connection";
-import type { DatabaseSchema, QueryResponse } from "~/types";
-import { createDatabaseSchema } from "~/util/defaults";
+import type { ConnectionSchema, QueryResponse } from "~/types";
+import { createConnectionSchema } from "~/util/defaults";
 
 export type State = "disconnected" | "connecting" | "retrying" | "connected";
 
@@ -14,7 +14,7 @@ export type DatabaseStore = {
 	isQueryActive: boolean;
 	isGraphqlQueryActive: boolean;
 	consoleOutput: string[];
-	databaseSchema: DatabaseSchema;
+	connectionSchema: ConnectionSchema;
 	version: string;
 	queryResponses: Record<string, QueryResponse[]>;
 	graphqlResponse: Record<string, GraphqlResponse>;
@@ -28,7 +28,7 @@ export type DatabaseStore = {
 	cancelServe: () => void;
 	pushConsoleLine: (line: string, max: number) => void;
 	clearConsole: () => void;
-	setDatabaseSchema: (databaseSchema: DatabaseSchema) => void;
+	setDatabaseSchema: (databaseSchema: ConnectionSchema) => void;
 	setCurrentState: (currentState: State) => void;
 	setLatestError: (latestError: string) => void;
 	setVersion: (version: string) => void;
@@ -46,7 +46,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	isQueryActive: false,
 	isGraphqlQueryActive: false,
 	consoleOutput: [],
-	databaseSchema: createDatabaseSchema(),
+	connectionSchema: createConnectionSchema(),
 	version: "",
 	queryResponses: {},
 	graphqlResponse: {},
@@ -63,7 +63,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 
 	clearSchema: () =>
 		set(() => ({
-			databaseSchema: createDatabaseSchema(),
+			connectionSchema: createConnectionSchema(),
 		})),
 
 	prepareServe: () =>
@@ -101,7 +101,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 
 	setDatabaseSchema: (databaseSchema) =>
 		set(() => ({
-			databaseSchema,
+			connectionSchema: databaseSchema,
 		})),
 
 	setCurrentState: (currentState) =>

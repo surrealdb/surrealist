@@ -24,7 +24,7 @@ import {
 	iconPlus,
 	iconTable,
 } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { ExplorerPane } from "../ExplorerPane";
 import { Exporter } from "../Exporter";
@@ -80,7 +80,7 @@ export function ExplorerView() {
 	});
 
 	useViewEffect("explorer", () => {
-		syncDatabaseSchema();
+		syncConnectionSchema();
 	});
 
 	const [minSize, ref] = usePanelMinSize(275);

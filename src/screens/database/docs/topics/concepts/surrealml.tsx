@@ -1,10 +1,10 @@
 import { Anchor } from "@mantine/core";
-import { useSchema } from "~/hooks/schema";
+import { useDatabaseSchema } from "~/hooks/schema";
 import { Article } from "~/screens/database/docs/components";
 import type { TopicProps } from "~/screens/database/docs/types";
 
 export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
-	const schema = useSchema();
+	const schema = useDatabaseSchema();
 
 	return (
 		<Article title="Surreal ML">
