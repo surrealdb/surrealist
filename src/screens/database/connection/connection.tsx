@@ -116,7 +116,7 @@ export async function openConnection(options?: ConnectOptions) {
 				throw new CloudError("Not authenticated with Surreal Cloud");
 			}
 		}
-		
+
 		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
 		const database = getAuthDB(connection.authentication) || connection.lastDatabase;
 
@@ -154,6 +154,9 @@ export async function openConnection(options?: ConnectOptions) {
 
 			hasFailed = false;
 
+			setCurrentState("connected");
+			setLatestError("");
+
 			if (connection.id === SANDBOX) {
 				await instance.use({
 					namespace: "sandbox",
@@ -162,9 +165,6 @@ export async function openConnection(options?: ConnectOptions) {
 			} else {
 				await activateDatabase(namespace, database);
 			}
-
-			setCurrentState("connected");
-			setLatestError("");
 
 			ConnectedEvent.dispatch(null);
 		}
@@ -519,26 +519,31 @@ export function cancelLiveQueries(tab: string) {
  */
 export async function activateDatabase(namespace: string, database: string) {
 	const { updateCurrentConnection } = useConfigStore.getState();
-	const { clearSchema } = useDatabaseStore.getState();
 
-	// Clear the previous database schema
-	clearSchema();
+	try {
+		// Select a namespace only
+		if (namespace) {
+			const result = await executeQuerySingle("INFO FOR KV");
+			const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) => parseIdent(ns));
 
-	// Select a namespace only
-	if (namespace) {
-		const result = await executeQuerySingle("INFO FOR KV");
-		const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) => parseIdent(ns));
+			if (namespaces.includes(namespace)) {
+				updateCurrentConnection({
+					lastNamespace: namespace,
+					lastDatabase: database,
+				});
 
-		if (namespaces.includes(namespace)) {
-			updateCurrentConnection({
-				lastNamespace: namespace,
-				lastDatabase: database,
-			});
+				await instance.use({
+					namespace,
+					database: null,
+				});
+			} else {
+				updateCurrentConnection({
+					lastNamespace: "",
+					lastDatabase: "",
+				});
 
-			await instance.use({
-				namespace,
-				database: null,
-			});
+				return;
+			}
 		} else {
 			updateCurrentConnection({
 				lastNamespace: "",
@@ -547,32 +552,26 @@ export async function activateDatabase(namespace: string, database: string) {
 
 			return;
 		}
-	} else {
-		updateCurrentConnection({
-			lastNamespace: "",
-			lastDatabase: "",
-		});
 
-		return;
-	}
+		// Select a database
+		if (namespace && database) {
+			const result = await executeQuerySingle("INFO FOR NS");
+			const databases = Object.keys(result?.databases ?? {}).map((db) => parseIdent(db));
 
-	// Select a database
-	if (namespace && database) {
-		const result = await executeQuerySingle("INFO FOR NS");
-		const databases = Object.keys(result?.databases ?? {}).map((db) => parseIdent(db));
+			if (databases.includes(database)) {
+				updateCurrentConnection({
+					lastDatabase: database,
+				});
 
-		if (databases.includes(database)) {
-			updateCurrentConnection({
-				lastDatabase: database,
-			});
-
-			await instance.use({ database });
-			await syncConnectionSchema();
-		} else {
-			updateCurrentConnection({
-				lastDatabase: "",
-			});
+				await instance.use({ database });
+			} else {
+				updateCurrentConnection({
+					lastDatabase: "",
+				});
+			}
 		}
+	} finally {
+		await syncConnectionSchema();
 	}
 }
 
