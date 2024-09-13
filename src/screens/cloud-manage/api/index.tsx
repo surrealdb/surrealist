@@ -82,7 +82,7 @@ export async function updateCloudInformation() {
 	]);
 
 	const organization = await fetchAPI<CloudOrganization>(
-		`/organizations/${activeCloudOrg ?? profile.default_org}`,
+		`/organizations/${activeCloudOrg || profile.default_org}`,
 	);
 
 	setCloudValues({
