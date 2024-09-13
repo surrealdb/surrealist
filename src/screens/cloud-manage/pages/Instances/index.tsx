@@ -69,7 +69,7 @@ export function InstancesPage() {
 
 	const { data, isPending, refetch } = useQuery({
 		queryKey: ["cloud", "databases", organization?.id],
-		refetchInterval: 15_000,
+		refetchInterval: 5_000,
 		enabled: authState === "authenticated",
 		queryFn: async () => {
 			return fetchAPI<CloudInstance[]>(`/organizations/${organization?.id}/instances`);
