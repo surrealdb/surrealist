@@ -8,11 +8,10 @@ import {
 	Select,
 	Stack,
 	Tabs,
-	Textarea,
 	TextInput,
+	Textarea,
 } from "@mantine/core";
 
-import { iconCheck, iconPlus } from "~/util/icons";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Form } from "~/components/Form";
@@ -20,13 +19,14 @@ import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { AccessType, Base, SchemaAccess } from "~/types";
 import { showError } from "~/util/helpers";
+import { iconCheck, iconPlus } from "~/util/icons";
 import { readBlock, syncConnectionSchema, writeBlock } from "~/util/schema";
 import { escapeIdent } from "~/util/surrealql";
-import { Spacer } from "~/components/Spacer";
 
 type VerifyMode = "url" | "keyalg";
 

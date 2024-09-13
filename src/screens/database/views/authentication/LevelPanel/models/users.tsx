@@ -11,8 +11,8 @@ import {
 	Stack,
 	Tabs,
 	Text,
-	Textarea,
 	TextInput,
+	Textarea,
 	Title,
 } from "@mantine/core";
 

@@ -17,23 +17,23 @@ import { type ReactNode, useState } from "react";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
+import { useBoolean } from "~/hooks/boolean";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
+import { useConfirmation } from "~/providers/Confirmation";
 import {
 	SelectDatabase,
 	type SelectDatabaseProps,
 } from "~/screens/database/components/SelectDatabase";
-import type { Base, SchemaAccess, SchemaUser } from "~/types";
-import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
-import { UserEditorModal } from "./models/users";
-import { useBoolean } from "~/hooks/boolean";
-import { useIntent } from "~/hooks/url";
-import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
-import { escapeIdent } from "~/util/surrealql";
+import type { Base, SchemaAccess, SchemaUser } from "~/types";
+import { ON_STOP_PROPAGATION } from "~/util/helpers";
+import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
+import { escapeIdent } from "~/util/surrealql";
 import { AccessEditorModal } from "./models/access";
+import { UserEditorModal } from "./models/users";
 
 interface DisabledState {
 	message: string;

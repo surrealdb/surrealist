@@ -1,6 +1,7 @@
 import { iconFolderSecure, iconServerSecure } from "~/util/icons";
 
 import { Box } from "@mantine/core";
+import { mdiDatabaseOutline } from "@mdi/js";
 import { memo, useMemo } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
@@ -9,7 +10,6 @@ import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/sc
 import { useViewEffect } from "~/hooks/view";
 import { syncConnectionSchema } from "~/util/schema";
 import { LevelPanel } from "../LevelPanel";
-import { mdiDatabaseOutline } from "@mdi/js";
 
 const LevelPanelLazy = memo(LevelPanel);
 

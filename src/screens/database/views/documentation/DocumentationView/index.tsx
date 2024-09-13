@@ -3,10 +3,10 @@ import { memo, useMemo, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
 import { useViewEffect } from "~/hooks/view";
 import { buildDocumentation } from "~/screens/database/docs";
+import { useDatabaseStore } from "~/stores/database";
 import { syncConnectionSchema } from "~/util/schema";
 import { ArticlePane } from "../ArticlePane";
 import { TocPane } from "../TopicsPane";
-import { useDatabaseStore } from "~/stores/database";
 
 const ArticlePaneLazy = memo(ArticlePane);
 const TocPaneLazy = memo(TocPane);
