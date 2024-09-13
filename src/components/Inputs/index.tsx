@@ -31,6 +31,7 @@ export interface CodeInputProps
 	height?: number;
 	autoFocus?: boolean;
 	placeholder?: string;
+	readOnly?: boolean;
 	extensions?: Extension;
 	onChange: (value: string) => void;
 	onMount?: (editor: EditorView) => void;
@@ -41,6 +42,7 @@ export function CodeInput({
 	value,
 	height,
 	autoFocus,
+	readOnly,
 	extensions,
 	disabled,
 	multiline,
@@ -70,7 +72,7 @@ export function CodeInput({
 		const keymaps = new Compartment();
 		const theme = new Compartment();
 
-		const editableExt = editable.of(EditorState.readOnly.of(!!disabled));
+		const editableExt = editable.of(EditorState.readOnly.of(!!disabled || !!readOnly));
 		const fallbackExt = fallback.of(placeholder ? ph(placeholder) : []);
 		const keymapsExt = keymaps.of([]);
 
@@ -145,12 +147,12 @@ export function CodeInput({
 		if (!editorRef.current) return;
 
 		const { editor, editable } = editorRef.current;
-		const editableExt = EditorState.readOnly.of(!!disabled);
+		const editableExt = EditorState.readOnly.of(!!disabled || !!readOnly);
 
 		editor.dispatch({
 			effects: editable.reconfigure(editableExt),
 		});
-	}, [disabled]);
+	}, [disabled, readOnly]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;

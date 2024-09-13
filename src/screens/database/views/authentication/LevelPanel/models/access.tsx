@@ -26,6 +26,7 @@ import type { AccessType, Base, SchemaAccess } from "~/types";
 import { showError } from "~/util/helpers";
 import { readBlock, syncConnectionSchema, writeBlock } from "~/util/schema";
 import { escapeIdent } from "~/util/surrealql";
+import { Spacer } from "~/components/Spacer";
 
 type VerifyMode = "url" | "keyalg";
 
@@ -199,7 +200,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			title={
 				<PrimaryTitle>
 					{existing
-						? `Editing access method ${existing.name}`
+						? `Viewing access method ${existing.name}`
 						: `Create ${level.toLowerCase()} access method`}
 				</PrimaryTitle>
 			}
@@ -234,6 +235,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 
 							<Select
 								withAsterisk
+								readOnly={!!existing} // NOTE temp
 								label="Access type"
 								value={type}
 								onChange={setType as any}
@@ -243,6 +245,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 							<CodeInput
 								label="Authentication query"
 								placeholder="Enter authentication clause"
+								readOnly={!!existing} // NOTE temp
 								value={authClause}
 								onChange={setAuthClause}
 								multiline
@@ -258,6 +261,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 								placeholder="CREATE ..."
 								value={signupClause}
 								onChange={setSignupClause}
+								readOnly={!!existing} // NOTE temp
 								multiline
 								height={96}
 							/>
@@ -267,6 +271,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 								placeholder="SELECT * FROM ..."
 								value={signinClause}
 								onChange={setSigninClause}
+								readOnly={!!existing} // NOTE temp
 								multiline
 								height={96}
 							/>
@@ -285,6 +290,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 								placeholder="Enter duration"
 								value={tokenDuration}
 								onChange={setTokenDuration}
+								readOnly={!!existing} // NOTE temp
 							/>
 
 							<CodeInput
@@ -293,6 +299,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 								placeholder="Enter duration"
 								value={sessionDuration}
 								onChange={setSessionDuration}
+								readOnly={!!existing} // NOTE temp
 							/>
 
 							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
@@ -303,16 +310,20 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 
 					<Tabs.Panel value="jwt">
 						<Stack gap="lg">
-							<TextInput
-								label="Issuer key"
-								placeholder="secret key"
-								value={jwtIssuerKey}
-								onChange={setJwtIssuerKey}
-							/>
+							{type === "JWT" && (
+								<TextInput
+									label="Issuer key"
+									placeholder="secret key"
+									value={jwtIssuerKey}
+									onChange={setJwtIssuerKey}
+									readOnly={!!existing} // NOTE temp
+								/>
+							)}
 
 							<Checkbox
 								label="Use JWKS verification"
 								checked={jwtVerifyMode === "url"}
+								disabled={!!existing} // NOTE temp
 								onChange={(e) => {
 									setJwtVerifyMode(e.target.checked ? "url" : "keyalg");
 								}}
@@ -322,6 +333,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 								<TextInput
 									label="JWKS Endpoint"
 									placeholder="https://example.com/.well-known/jwks.json"
+									readOnly={!!existing} // NOTE temp
 									value={jwtVerifyUrl}
 									onChange={setJwtVerifyUrl}
 								/>
@@ -332,6 +344,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 										label="Verify algorithm"
 										value={jwtVerifyAlg}
 										onChange={setJwtVerifyAlg}
+										readOnly={!!existing} // NOTE temp
 									/>
 
 									<TextInput
@@ -339,6 +352,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 										placeholder="secret key"
 										value={jwtVerifyKey}
 										onChange={setJwtVerifyKey}
+										readOnly={!!existing} // NOTE temp
 									/>
 								</>
 							)}
@@ -350,6 +364,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 							placeholder="Enter optional description for this access method"
 							value={comment}
 							onChange={setComment}
+							readOnly={!!existing} // NOTE temp
 							rows={5}
 						/>
 					</Tabs.Panel>
@@ -364,14 +379,27 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 					>
 						Close
 					</Button>
-					<Button
+					{/* <Button
 						type="submit"
 						variant="gradient"
 						flex={1}
+						disabled
 						rightSection={<Icon path={target ? iconCheck : iconPlus} />}
 					>
 						{target ? "Save access method" : "Create access method"}
-					</Button>
+					</Button> */}
+					{target ? (
+						<Spacer />
+					) : (
+						<Button
+							type="submit"
+							variant="gradient"
+							flex={1}
+							rightSection={<Icon path={iconPlus} />}
+						>
+							Create access method
+						</Button>
+					)}
 				</Group>
 			</Form>
 		</Modal>

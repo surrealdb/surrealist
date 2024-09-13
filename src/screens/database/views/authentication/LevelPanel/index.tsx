@@ -203,7 +203,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 											</Menu.Target>
 											<Menu.Dropdown>
 												<Menu.Item onClick={() => editAccess(access)}>
-													Edit access method
+													View access method
 												</Menu.Item>
 												<Menu.Item
 													onClick={() => removeAccess(access)}
