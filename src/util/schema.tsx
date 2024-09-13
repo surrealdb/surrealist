@@ -16,7 +16,7 @@ import { adapter } from "~/adapter";
 import { executeQuerySingle } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { createConnectionSchema } from "./defaults";
-import { escapeIdent } from "./surrealql";
+import { escapeIdent, getStatementCount } from "./surrealql";
 
 export interface SchemaSyncOptions {
 	tables?: string[];
@@ -84,7 +84,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 		schema.database.functions = functions.map((info) => ({
 			...info,
 			name: info.name.replaceAll("`", ""),
-			block: formatBlock(info.block),
+			block: readBlock(info.block),
 			comment: info.comment || "",
 			returns: info.returns || "",
 		}));
@@ -123,7 +123,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 				indexes: Object.values(info.indexes),
 				events: Object.values(info.events).map((ev) => ({
 					...ev,
-					then: ev.then.map(formatBlock),
+					then: ev.then.map(readBlock),
 				})),
 			};
 
@@ -221,11 +221,21 @@ export function displaySchemaPermission(permission: string | boolean) {
 }
 
 /**
- * Trim the outer braces of a block
+ * Trim the outer braces or parenthsis of a block
  */
-function formatBlock(block: string | undefined) {
-	const trimmed =
-		block?.at(0) === "{" && block?.at(-1) === "}" ? block.slice(1, -1) : block ?? "";
+export function readBlock(block: string | undefined) {
+	const hasBraces = block?.at(0) === "{" && block?.at(-1) === "}";
+	const hasParen = block?.at(0) === "(" && block?.at(-1) === ")";
+	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : block ?? "";
 
 	return dedent(trimmed);
+}
+
+/**
+ * Wrap a block in braces or parenthesis
+ */
+export function writeBlock(block: string) {
+	const [openSymbol, closeSymbol] = getStatementCount(block) > 1 ? ["{", "}"] : ["(", ")"];
+
+	return `${openSymbol}\n${block}\n${closeSymbol}`;
 }

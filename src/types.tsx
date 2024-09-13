@@ -25,6 +25,7 @@ export type DatabaseListMode = "list" | "grid";
 export type AuthLevel = "root" | "namespace" | "database";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type AuthType = "user" | "access";
+export type AccessType = "JWT" | "RECORD";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 
 export type InstanceState =
@@ -241,6 +242,19 @@ export interface ScopeField {
 	value: string;
 }
 
+export interface AccessJwt {
+	issuer: {
+		alg: string;
+		key: string;
+	},
+	verify: {
+		url: string;
+	} | {
+		alg: string;
+		key: string;
+	}
+}
+
 export interface TableView {
 	expr: string;
 	cond: string;
@@ -325,14 +339,21 @@ export interface SchemaUser {
 export interface SchemaAccess {
 	name: string;
 	base: string;
-	kind: string;
-	authenticate?: any;
+	authenticate?: string;
 	comment?: string;
 	duration: {
 		session: Duration;
-		grant: Duration;
 		token: Duration;
-	}
+	};
+	kind: {
+		kind: "JWT";
+		jwt: AccessJwt;
+	} | {
+		kind: "RECORD";
+		signin: string;
+		signup: string;
+		jwt: AccessJwt;
+	};
 }
 
 export interface SchemaFunction {

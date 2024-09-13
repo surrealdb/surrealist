@@ -1,15 +1,20 @@
+import classes from "../style.module.scss";
+
 import {
+	Accordion,
 	Button,
 	Checkbox,
 	Group,
 	Modal,
 	PasswordInput,
+	ScrollArea,
 	Stack,
 	Text,
 	Textarea,
 	TextInput,
 	Title,
 } from "@mantine/core";
+
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Form } from "~/components/Form";
@@ -18,10 +23,11 @@ import { CodeInput } from "~/components/Inputs";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
+import { SectionTitle } from "~/providers/Designer/helpers";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { Base, SchemaUser } from "~/types";
 import { showError } from "~/util/helpers";
-import { iconCheck, iconPlus } from "~/util/icons";
+import { iconAccount, iconChat, iconCheck, iconClock, iconHelp, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 const ROLES = [
@@ -41,8 +47,8 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 	const [target, setTarget] = useState<SchemaUser | null>(null);
 	const [username, setUsername] = useInputState("");
 	const [password, setPassword] = useInputState("");
-	const [sessionDuration, setSessionDuration] = useInputState("");
-	const [tokenDuration, setTokenDuration] = useInputState("");
+	const [sessionDuration, setSessionDuration] = useState("");
+	const [tokenDuration, setTokenDuration] = useState("");
 	const [roles, setRoles] = useState<string[]>([]);
 	const [comment, setComment] = useInputState("");
 
@@ -53,7 +59,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			setRoles(existing?.roles ?? []);
 			setComment(existing?.comment ?? "");
 			setSessionDuration(existing?.duration?.session?.toString() ?? "");
-			setTokenDuration(existing?.duration?.token?.toString() ?? "");
+			setTokenDuration(existing?.duration?.token?.toString() ?? "1h");
 			setPassword("");
 		}
 	}, [opened, existing]);
@@ -73,7 +79,6 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			}
 
 			const durations: string[] = [];
-				
 
 			if (tokenDuration) {
 				durations.push(`FOR TOKEN ${tokenDuration}`);
@@ -109,6 +114,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 		<Modal
 			opened={opened}
 			onClose={onClose}
+			scrollAreaComponent={ScrollArea.Autosize}
 			title={
 				<PrimaryTitle>
 					{existing
@@ -118,114 +124,118 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			}
 		>
 			<Form onSubmit={saveUser}>
-				<Stack gap="xl">
-					{!target && (
-						<TextInput
-							label="User name"
-							placeholder="admin"
-							value={username}
-							spellCheck={false}
-							onChange={setUsername}
-							required
-						/>
-					)}
-					<PasswordInput
-						label={target ? "New password" : "Password"}
-						description={
-							target
-								? "Leave blank to keep the current password"
-								: "The password for this user"
-						}
-						placeholder="Enter password"
-						value={password}
-						spellCheck={false}
-						onChange={setPassword}
-						required={!target}
-					/>
-
-					<Checkbox.Group
-						label="Select a role"
-						description="The role of the user on this database"
-						value={roles}
-						onChange={setRoles}
-						withAsterisk
-					>
-						<Stack mt="xs">
-							{ROLES.map((role) => (
-								<Checkbox
-									{...role}
-									key={role.value}
+				<Accordion
+					multiple
+					variant="separated"
+					defaultValue={["general"]}
+					className={classes.accordion}
+				>
+					<Accordion.Item value="general">
+						<SectionTitle icon={iconAccount}>General</SectionTitle>
+						<Accordion.Panel>
+							<Stack gap="lg">
+								{!target && (
+									<TextInput
+										label="User name"
+										placeholder="admin"
+										value={username}
+										spellCheck={false}
+										onChange={setUsername}
+										required
+									/>
+								)}
+								<PasswordInput
+									label={target ? "New password" : "Password"}
+									description={
+										target
+											? "Leave blank to keep the current password"
+											: "The password for this user"
+									}
+									placeholder="Enter password"
+									value={password}
+									spellCheck={false}
+									onChange={setPassword}
+									required={!target}
 								/>
-							))}
-						</Stack>
-					</Checkbox.Group>
 
-					<Text
-						fz="xl"
-						fw={600}
-						c="bright"
-						mt="lg"
-						mb={-10}
+								<Checkbox.Group
+									label="Select a role"
+									description="The role of the user on this database"
+									value={roles}
+									onChange={setRoles}
+									withAsterisk
+								>
+									<Stack mt="xs">
+										{ROLES.map((role) => (
+											<Checkbox
+												{...role}
+												key={role.value}
+											/>
+										))}
+									</Stack>
+								</Checkbox.Group>
+							</Stack>
+						</Accordion.Panel>
+					</Accordion.Item>
+
+					<Accordion.Item value="durations">
+						<SectionTitle icon={iconClock}>Durations</SectionTitle>
+						<Accordion.Panel>
+							<Stack gap="lg">
+								<CodeInput
+									label="Token duration"
+									description="The duration of the token used to establish an authenticated session"
+									placeholder="Enter duration"
+									value={tokenDuration}
+									onChange={setTokenDuration}
+								/>
+
+								<CodeInput
+									label="Session duration"
+									description="The duration of the authenticated session established with the token"
+									placeholder="Enter duration"
+									value={sessionDuration}
+									onChange={setSessionDuration}
+								/>
+
+								<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
+									Learn more about session and token durations
+								</LearnMore>
+							</Stack>
+						</Accordion.Panel>
+					</Accordion.Item>
+
+					<Accordion.Item value="comment">
+						<SectionTitle icon={iconChat}>Comment</SectionTitle>
+						<Accordion.Panel>
+							<Textarea
+								placeholder="Enter optional description for this user"
+								value={comment}
+								onChange={setComment}
+								rows={5}
+							/>
+						</Accordion.Panel>
+					</Accordion.Item>
+				</Accordion>
+
+				<Group mt="xl">
+					<Button
+						onClick={onClose}
+						color="slate"
+						variant="light"
+						flex={1}
 					>
-						Durations
-					</Text>
-
-					<CodeInput
-						label="Token duration"
-						description="The duration of the token used to establish and authenticated session"
-						placeholder="Enter duration"
-						value={tokenDuration}
-						onChange={setTokenDuration}
-					/>
-
-					<CodeInput
-						label="Session duration"
-						description="The duration of the authenticated session established with the token"
-						placeholder="Enter duration"
-						value={sessionDuration}
-						onChange={setSessionDuration}
-					/>
-
-					<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
-						Learn more about session and token durations
-					</LearnMore>
-
-					<Text
-						fz="xl"
-						fw={600}
-						c="bright"
-						mt="lg"
-						mb={-10}
+						Close
+					</Button>
+					<Button
+						type="submit"
+						variant="gradient"
+						flex={1}
+						rightSection={<Icon path={target ? iconCheck : iconPlus} />}
 					>
-						Comment
-					</Text>
-
-					<Textarea
-						placeholder="Enter optional description for this user"
-						value={comment}
-						onChange={setComment}
-						rows={5}
-					/>
-
-					<Group mt="lg">
-						<Button
-							onClick={onClose}
-							color="slate"
-							variant="light"
-							flex={1}
-						>
-							Close
-						</Button>
-						<Button
-							type="submit"
-							variant="gradient"
-							flex={1}
-							rightSection={<Icon path={target ? iconCheck : iconPlus} />}
-						>
-							{target ? "Save user" : "Create user"}
-						</Button>
-					</Group>
-				</Stack>
+						{target ? "Save user" : "Create user"}
+					</Button>
+				</Group>
 			</Form>
 		</Modal>
 	);

@@ -33,6 +33,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { escapeIdent } from "~/util/surrealql";
 import { syncConnectionSchema } from "~/util/schema";
+import { AccessEditorModal } from "./models/access";
 
 interface DisabledState {
 	message: string;
@@ -256,6 +257,13 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 				level={level}
 				onClose={showUserEditorHandle.close}
 				existing={editingUser}
+			/>
+
+			<AccessEditorModal
+				opened={showAccessEditor}
+				level={level}
+				onClose={showAccessEditorHandle.close}
+				existing={editingAccess}
 			/>
 		</ContentPane>
 	);
