@@ -52,6 +52,10 @@ function TermsModal({ conditions }: TermsModalProps) {
 		try {
 			await fetchAPI("/user/terms-accepted", {
 				method: "PATCH",
+				body: JSON.stringify({
+					use: termsChecked,
+					marketing: newsChecked,
+				})
 			});
 
 			const questions = await fetchAPI<Question[]>("/user/form");
