@@ -30,6 +30,7 @@ import type { Base, SchemaUser } from "~/types";
 import { showError } from "~/util/helpers";
 import { iconAccount, iconChat, iconCheck, iconClock, iconHelp, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
+import { escapeIdent } from "~/util/surrealql";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -67,7 +68,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 
 	const saveUser = useStable(async () => {
 		try {
-			let query = `DEFINE USER OVERWRITE ${username} ON ${level}`;
+			let query = `DEFINE USER OVERWRITE ${escapeIdent(username)} ON ${level}`;
 
 			if (target && !password) {
 				query += ` PASSHASH "${target.hash}"`;

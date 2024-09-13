@@ -34,6 +34,7 @@ import type { AccessType, Base, SchemaAccess } from "~/types";
 import { showError } from "~/util/helpers";
 import { iconAccount, iconChat, iconCheck, iconClock, iconJSON, iconKey, iconPlus, iconQuery } from "~/util/icons";
 import { readBlock, syncConnectionSchema, writeBlock } from "~/util/schema";
+import { escapeIdent } from "~/util/surrealql";
 
 type VerifyMode = "url" | "keyalg";
 
@@ -49,8 +50,8 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 	const [name, setName] = useInputState("");
 	const [type, setType] = useState<AccessType>("RECORD");
 	const [authClause, setAuthClause] = useState("");
-	const [signinClause, setSigninClause] = useState("");
 	const [signupClause, setSignupClause] = useState("");
+	const [signinClause, setSigninClause] = useState("");
 	const [sessionDuration, setSessionDuration] = useInputState("");
 	const [tokenDuration, setTokenDuration] = useInputState("");
 	const [jwtIssuerKey, setJwtIssuerKey] = useInputState("");
@@ -78,8 +79,8 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			setJwtVerifyUrl("");
 
 			if (existing?.kind?.kind === "RECORD") {
-				setSigninClause(readBlock(existing.kind.signin));
 				setSignupClause(readBlock(existing.kind.signup));
+				setSigninClause(readBlock(existing.kind.signin));
 			}
 
 			const verify = existing?.kind?.jwt?.verify;
@@ -99,17 +100,17 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 
 	const saveUser = useStable(async () => {
 		try {
-			let query = `DEFINE ACCESS OVERWRITE ${name} ON ${level} TYPE`;
+			let query = `DEFINE ACCESS OVERWRITE ${escapeIdent(name)} ON ${level} TYPE`;
 
 			if (type === "RECORD") {
 				query += ` RECORD`;
 
-				if (signinClause) {
-					query += ` SIGNIN ${writeBlock(signinClause)}`;
-				}
-
 				if (signupClause) {
 					query += ` SIGNUP ${writeBlock(signupClause)}`;
+				}
+
+				if (signinClause) {
+					query += ` SIGNIN ${writeBlock(signinClause)}`;
 				}
 
 				if (jwtIssuerKey || jwtVerifyAlg || jwtVerifyKey || jwtVerifyUrl) {
@@ -230,15 +231,6 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 					<Tabs.Panel value="session">
 						<Stack gap="lg">
 							<CodeInput
-								label="Sign in query"
-								placeholder="SELECT * FROM ..."
-								value={signinClause}
-								onChange={setSigninClause}
-								multiline
-								height={96}
-							/>
-
-							<CodeInput
 								label="Sign up query"
 								placeholder="CREATE ..."
 								value={signupClause}
@@ -247,8 +239,17 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 								height={96}
 							/>
 
+							<CodeInput
+								label="Sign in query"
+								placeholder="SELECT * FROM ..."
+								value={signinClause}
+								onChange={setSigninClause}
+								multiline
+								height={96}
+							/>
+
 							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#record-users">
-								Learn more about sign in and sign up queries
+								Learn more about sign up and sign in queries
 							</LearnMore>
 						</Stack>
 					</Tabs.Panel>
@@ -333,77 +334,19 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 					</Tabs.Panel>
 				</Tabs>
 
-				{/* 
-						<Text
-							fz="xl"
-							fw={600}
-							c="bright"
-							mt="lg"
-							mb={-10}
-						>
-							Comment
-						</Text>
-
-						<Textarea
-							placeholder="Enter optional description for this access method"
-							value={comment}
-							onChange={setComment}
-							rows={5}
-						/>
-					</Stack>
-					<Stack>
-						<Text
-							fz="xl"
-							fw={600}
-							c="bright"
-							mt="lg"
-							mb={-10}
-						>
-							Queries
-						</Text>
-
-						<CodeInput
-							label="Authentication query"
-							placeholder="Enter authentication clause"
-							value={authClause}
-							onChange={setAuthClause}
-							multiline
-							height={96}
-						/>
-						{type === "RECORD" && (
-							<>
-								<CodeInput
-									label="Sign in query"
-									placeholder="SELECT * FROM ..."
-									value={signinClause}
-									onChange={setSigninClause}
-									multiline
-									height={96}
-								/>
-								<CodeInput
-									label="Sign up query"
-									placeholder="CREATE ..."
-									value={signupClause}
-									onChange={setSignupClause}
-									multiline
-									height={96}
-								/>
-							</>
-						)}
-					</Stack>
-				</SimpleGrid> */}
-				<Group mt="lg">
+				<Group mt="xl">
 					<Button
 						onClick={onClose}
 						color="slate"
 						variant="light"
+						flex={1}
 					>
 						Close
 					</Button>
-					<Spacer />
 					<Button
 						type="submit"
 						variant="gradient"
+						flex={1}
 						rightSection={<Icon path={target ? iconCheck : iconPlus} />}
 					>
 						{target ? "Save access method" : "Create access method"}
