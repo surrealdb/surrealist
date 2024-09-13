@@ -37,6 +37,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useVersionCopy } from "~/hooks/debug";
 import { useKeymap } from "~/hooks/keymap";
+import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
 import type { Assign, FeatureCondition } from "~/types";
@@ -48,7 +49,6 @@ import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { LicensesTab } from "./tabs/Licenses";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
-import { useStable } from "~/hooks/stable";
 
 interface Category {
 	id: string;
