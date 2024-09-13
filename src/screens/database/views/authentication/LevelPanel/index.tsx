@@ -13,22 +13,26 @@ import {
 } from "@mantine/core";
 
 import { capitalize } from "radash";
+import { type ReactNode, useState } from "react";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import {
 	SelectDatabase,
 	type SelectDatabaseProps,
 } from "~/screens/database/components/SelectDatabase";
 import type { Base, SchemaAccess, SchemaUser } from "~/types";
-import { iconAccount, iconKey, iconPlus } from "~/util/icons";
-
-const ROLES = [
-	{ value: "OWNER", label: "Owner" },
-	{ value: "EDITOR", label: "Editor" },
-	{ value: "VIEWER", label: "Viewer" },
-];
+import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
+import { UserEditorModal } from "./models/users";
+import { useBoolean } from "~/hooks/boolean";
+import { useIntent } from "~/hooks/url";
+import { ON_STOP_PROPAGATION } from "~/util/helpers";
+import { useConfirmation } from "~/providers/Confirmation";
+import { executeQuery } from "~/screens/database/connection/connection";
+import { escapeIdent } from "~/util/surrealql";
+import { syncConnectionSchema } from "~/util/schema";
 
 interface DisabledState {
 	message: string;
@@ -47,6 +51,50 @@ export interface LevelPanelProps {
 export function LevelPanel({ level, icon, color, disabled, users, accesses }: LevelPanelProps) {
 	const isConnected = useIsConnected();
 
+	const [showUserEditor, showUserEditorHandle] = useBoolean();
+	const [showAccessEditor, showAccessEditorHandle] = useBoolean();
+
+	const [editingUser, setEditingUser] = useState<SchemaUser | null>(null);
+	const [editingAccess, setEditingAccess] = useState<SchemaAccess | null>(null);
+
+	const createUser = useStable(() => {
+		setEditingUser(null);
+		showUserEditorHandle.open();
+	});
+
+	const createAccess = useStable(() => {
+		setEditingAccess(null);
+		showAccessEditorHandle.open();
+	});
+
+	const editUser = useStable((user: SchemaUser) => {
+		setEditingUser(user);
+		showUserEditorHandle.open();
+	});
+
+	const editAccess = useStable((access: SchemaAccess) => {
+		setEditingAccess(access);
+		showAccessEditorHandle.open();
+	});
+
+	const removeUser = useConfirmation<SchemaUser>({
+		title: "Remove system user",
+		message: `This will remove the user from ${level.toLocaleLowerCase()} authentication and reject any future sign-in attempts. Are you sure?`,
+		onConfirm: async (value) => {
+			await executeQuery(`REMOVE USER ${escapeIdent(value.name)} ON ${level}`);
+			await syncConnectionSchema();
+		},
+	});
+
+	const removeAccess = useConfirmation<SchemaAccess>({
+		title: "Remove access method",
+		message: `This will remove the access method from ${level.toLocaleLowerCase()} authentication and prevent any future sign-in attempts using this method. Are you sure?`,
+		onConfirm: async (value) => {
+			await executeQuery(`REMOVE ACCESS ${escapeIdent(value.name)} ON ${level}`);
+			await syncConnectionSchema();
+		},
+	});
+
 	const nameTitle = capitalize(level);
 	const nameLower = nameTitle.toLowerCase();
 
@@ -54,6 +102,12 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 	const accessList = accesses.filter((access) => access.base === level);
 
 	const isEmpty = userList.length === 0 && accessList.length === 0;
+
+	useIntent("create-user", (opts) => {
+		if (opts.level === level) {
+			createUser();
+		}
+	});
 
 	return (
 		<ContentPane
@@ -73,13 +127,13 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Item
-							// onClick={() => onCreate("user")}
+							onClick={createUser}
 							leftSection={<Icon path={iconAccount} />}
 						>
 							New system user
 						</Menu.Item>
 						<Menu.Item
-							// onClick={() => onCreate("access")}
+							onClick={createAccess}
 							leftSection={<Icon path={iconKey} />}
 						>
 							New access method
@@ -129,88 +183,153 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 					>
 						<Stack gap="xl">
 							{accessList.length > 0 && (
-								<Box>
-									<Group mb="sm">
-										<Text
-											c="bright"
-											fw={600}
-											fz="lg"
-										>
-											Access Methods
-										</Text>
-										<Badge color="slate">{accessList.length}</Badge>
-									</Group>
-									<Stack gap={4}>
-										{accessList.map((access) => (
-											<Entry
-												key={access.name}
-												leftSection={
-													<Icon
-														path={iconKey}
-														c={color}
-													/>
-												}
-											>
-												<Box ta="start">
-													<Text>{access.name}</Text>
-													<Text
-														c="slate"
-														fz="sm"
-														mt={-3}
-													>
-														Todo
-													</Text>
-												</Box>
-											</Entry>
-										))}
-									</Stack>
-								</Box>
+								<AuthList
+									name="Access Methods"
+									list={accessList}
+									icon={iconKey}
+									color={color}
+									onEdit={editAccess}
+									onRemove={removeAccess}
+									onOptions={(access) => (
+										<Menu position="right-start">
+											<Menu.Target>
+												<ActionIcon variant="subtle">
+													<Icon path={iconDotsVertical} />
+												</ActionIcon>
+											</Menu.Target>
+											<Menu.Dropdown>
+												<Menu.Item onClick={() => editAccess(access)}>
+													Edit access method
+												</Menu.Item>
+												<Menu.Item
+													onClick={() => removeAccess(access)}
+													color="red"
+												>
+													Remove access method
+												</Menu.Item>
+											</Menu.Dropdown>
+										</Menu>
+									)}
+								/>
 							)}
 
 							{userList.length > 0 && (
-								<Box>
-									<Group mb="sm">
-										<Text
-											c="bright"
-											fw={600}
-											fz="lg"
-										>
-											System Users
-										</Text>
-										<Badge color="slate">{userList.length}</Badge>
-									</Group>
-									<Stack gap={4}>
-										{userList.map((user) => (
-											<Entry
-												key={user.name}
-												leftSection={
-													<Icon
-														path={iconAccount}
-														c={color}
-													/>
-												}
-											>
-												<Box ta="start">
-													<Text>{user.name}</Text>
-													<Text
-														c="slate"
-														fz="sm"
-														mt={-3}
-													>
-														{user.roles
-															.map((r) => capitalize(r))
-															.join(", ")}
-													</Text>
-												</Box>
-											</Entry>
-										))}
-									</Stack>
-								</Box>
+								<AuthList
+									name="System Users"
+									list={userList}
+									icon={iconAccount}
+									color={color}
+									onEdit={editUser}
+									onRemove={removeUser}
+									onOptions={(user) => (
+										<Menu position="right-start">
+											<Menu.Target>
+												<ActionIcon variant="subtle">
+													<Icon path={iconDotsVertical} />
+												</ActionIcon>
+											</Menu.Target>
+											<Menu.Dropdown>
+												<Menu.Item onClick={() => editUser(user)}>
+													Edit system user
+												</Menu.Item>
+												<Menu.Item
+													onClick={() => removeUser(user)}
+													color="red"
+												>
+													Remove system user
+												</Menu.Item>
+											</Menu.Dropdown>
+										</Menu>
+									)}
+									onDetails={(user) =>
+										user.roles.map((r) => capitalize(r)).join(", ")
+									}
+								/>
 							)}
 						</Stack>
 					</ScrollArea>
 				</>
 			)}
+
+			<UserEditorModal
+				opened={showUserEditor}
+				level={level}
+				onClose={showUserEditorHandle.close}
+				existing={editingUser}
+			/>
 		</ContentPane>
+	);
+}
+
+interface AuthListProps<T> {
+	name: string;
+	list: T[];
+	icon: string;
+	color: string;
+	onEdit: (item: T) => void;
+	onRemove: (item: T) => void;
+	onOptions?: (item: T) => ReactNode;
+	onDetails?: (item: T) => string;
+}
+
+function AuthList<T extends { name: string }>({
+	name,
+	list,
+	icon,
+	color,
+	onEdit,
+	onRemove,
+	onOptions,
+	onDetails,
+}: AuthListProps<T>) {
+	return (
+		<Box>
+			<Group mb="sm">
+				<Text
+					c="bright"
+					fw={600}
+					fz="lg"
+				>
+					{name}
+				</Text>
+				<Badge color="slate">{list.length}</Badge>
+			</Group>
+			<Stack gap={4}>
+				{list.map((item) => {
+					const details = onDetails ? onDetails(item) : "";
+
+					return (
+						<Entry
+							key={item.name}
+							onClick={() => onEdit(item)}
+							leftSection={
+								<Icon
+									path={icon}
+									c={color}
+								/>
+							}
+							rightSection={
+								onOptions && (
+									<Box onClick={ON_STOP_PROPAGATION}>{onOptions(item)}</Box>
+								)
+							}
+						>
+							<Box ta="start">
+								<Text>{item.name}</Text>
+								{details && (
+									<Text
+										c="slate"
+										fz="sm"
+										mt={-3}
+									>
+										{details}
+									</Text>
+								)}
+							</Box>
+						</Entry>
+					);
+				})}
+			</Stack>
+		</Box>
 	);
 }
