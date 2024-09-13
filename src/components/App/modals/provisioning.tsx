@@ -102,10 +102,10 @@ export function ProvisioningDialog() {
 					</Center>
 				)}
 				<Stack gap={2}>
-					<Text fw={500} c="bright" fz="lg">
+					<Text fw={600} c="bright" fz="lg">
 						{isProvisionDone
 							? "Instance successfully provisioned"
-							: "We are provisioning your instance"}
+							: "Your instance is being provisioned"}
 					</Text>
 					{provisioning && <Text>{provisioning.name}</Text>}
 				</Stack>
