@@ -1,9 +1,4 @@
-import {
-	Compartment,
-	EditorState,
-	type Extension,
-	Prec,
-} from "@codemirror/state";
+import { Compartment, EditorState, type Extension, Prec } from "@codemirror/state";
 import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
 import {
 	ActionIcon,
@@ -20,13 +15,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
-import {
-	type HTMLAttributes,
-	type KeyboardEvent,
-	useEffect,
-	useMemo,
-	useRef,
-} from "react";
+import { type HTMLAttributes, type KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { acceptWithTab, colorTheme, inputBase } from "~/editor";
 import { useKindList } from "~/hooks/schema";
@@ -39,8 +28,10 @@ export interface CodeInputProps
 	extends InputBaseProps,
 		Omit<HTMLAttributes<HTMLDivElement>, "style" | "value" | "onChange"> {
 	value: string;
+	height?: number;
 	autoFocus?: boolean;
 	placeholder?: string;
+	readOnly?: boolean;
 	extensions?: Extension;
 	onChange: (value: string) => void;
 	onMount?: (editor: EditorView) => void;
@@ -49,7 +40,9 @@ export interface CodeInputProps
 
 export function CodeInput({
 	value,
+	height,
 	autoFocus,
+	readOnly,
 	extensions,
 	disabled,
 	multiline,
@@ -79,7 +72,7 @@ export function CodeInput({
 		const keymaps = new Compartment();
 		const theme = new Compartment();
 
-		const editableExt = editable.of(EditorState.readOnly.of(!!disabled));
+		const editableExt = editable.of(EditorState.readOnly.of(!!disabled || !!readOnly));
 		const fallbackExt = fallback.of(placeholder ? ph(placeholder) : []);
 		const keymapsExt = keymaps.of([]);
 
@@ -154,12 +147,12 @@ export function CodeInput({
 		if (!editorRef.current) return;
 
 		const { editor, editable } = editorRef.current;
-		const editableExt = EditorState.readOnly.of(!!disabled);
+		const editableExt = EditorState.readOnly.of(!!disabled || !!readOnly);
 
 		editor.dispatch({
 			effects: editable.reconfigure(editableExt),
 		});
-	}, [disabled]);
+	}, [disabled, readOnly]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
@@ -214,6 +207,9 @@ export function CodeInput({
 			multiline
 			className={clsx(classes.codeInput, className)}
 			disabled={disabled}
+			__vars={{
+				'--height': height ? `${height}px` : undefined
+			}}
 			{...rest}
 		/>
 	);
@@ -263,11 +259,7 @@ export function PermissionInput({
 						<ActionIcon
 							color="green.4"
 							onClick={() => onChange("FULL")}
-							variant={
-								textValue.toUpperCase() === "FULL"
-									? "light"
-									: "subtle"
-							}
+							variant={textValue.toUpperCase() === "FULL" ? "light" : "subtle"}
 							aria-label="Grant full access"
 						>
 							<Icon path={iconCheck} />
@@ -277,11 +269,7 @@ export function PermissionInput({
 						<ActionIcon
 							color="pink.6"
 							onClick={() => onChange("NONE")}
-							variant={
-								textValue.toUpperCase() === "NONE"
-									? "light"
-									: "subtle"
-							}
+							variant={textValue.toUpperCase() === "NONE" ? "light" : "subtle"}
 							aria-label="Reject all access"
 						>
 							<Icon path={iconCancel} />
@@ -312,18 +300,12 @@ export function FieldKindInput({ className, ...rest }: FieldKindInputProps) {
 	);
 }
 
-export interface EmailInputProps
-	extends Omit<PillsInputProps, "value" | "onChange"> {
+export interface EmailInputProps extends Omit<PillsInputProps, "value" | "onChange"> {
 	value: string[];
 	onChange: (value: string[]) => void;
 }
 
-export function EmailInput({
-	value,
-	onChange,
-	autoFocus,
-	...other
-}: EmailInputProps) {
+export function EmailInput({ value, onChange, autoFocus, ...other }: EmailInputProps) {
 	const [draft, setDraft] = useInputState("");
 	const isValid = !draft || draft.includes("@");
 	const isLight = useIsLight();
@@ -348,15 +330,16 @@ export function EmailInput({
 	});
 
 	return (
-		<PillsInput {...other} error={!isValid}>
+		<PillsInput
+			{...other}
+			error={!isValid}
+		>
 			<Pill.Group mih={22}>
 				{value.map((email, i) => (
 					<Pill
 						key={email}
 						withRemoveButton
-						onRemove={() =>
-							onChange?.(value.filter((_, j) => i !== j))
-						}
+						onRemove={() => onChange?.(value.filter((_, j) => i !== j))}
 						bg={isLight ? "slate.1" : "slate.9"}
 					>
 						{email}

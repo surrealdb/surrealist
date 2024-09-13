@@ -1,9 +1,6 @@
 import dedent from "dedent";
 import equal from "fast-deep-equal";
-import { klona } from "klona";
-import { adapter } from "~/adapter";
-import { executeQuerySingle } from "~/screens/database/connection/connection";
-import { useDatabaseStore } from "~/stores/database";
+
 import type {
 	SchemaFunction,
 	SchemaInfoDB,
@@ -13,37 +10,32 @@ import type {
 	SchemaModel,
 	TableInfo,
 } from "~/types";
-import { createDatabaseSchema } from "./defaults";
-import { tb } from "./helpers";
 
-const emptyKV = () => ({ users: [] });
-const emptyNS = () => ({ users: [] });
-const emptyDB = () => ({
-	users: [],
-	functions: [],
-	models: [],
-	tables: [],
-	scopes: [],
-});
+import { klona } from "klona";
+import { adapter } from "~/adapter";
+import { executeQuerySingle } from "~/screens/database/connection/connection";
+import { useDatabaseStore } from "~/stores/database";
+import { createConnectionSchema } from "./defaults";
+import { escapeIdent, getStatementCount } from "./surrealql";
 
 export interface SchemaSyncOptions {
 	tables?: string[];
 }
 
 /**
- * Synchronize the remote database schema locally
+ * Synchronize the remote connection schema locally
  *
  * @param options Sync options
  */
-export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
+export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 	const { currentState } = useDatabaseStore.getState();
 
 	if (currentState !== "connected") {
 		return;
 	}
 
-	const { databaseSchema, setDatabaseSchema } = useDatabaseStore.getState();
-	const schema = createDatabaseSchema();
+	const { connectionSchema, setDatabaseSchema } = useDatabaseStore.getState();
+	const schema = createConnectionSchema();
 
 	adapter.log("Schema", "Synchronizing database schema");
 
@@ -53,107 +45,99 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
 		executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE"),
 	]);
 
-	const kvInfo =
-		kvInfoTask.status === "fulfilled" ? kvInfoTask.value : emptyKV();
-	const nsInfo =
-		nsInfoTask.status === "fulfilled" ? nsInfoTask.value : emptyNS();
-	const dbInfo =
-		dbInfoTask.status === "fulfilled" ? dbInfoTask.value : emptyDB();
+	if (kvInfoTask.status === "fulfilled") {
+		const { namespaces, accesses, users } = kvInfoTask.value;
 
-	// KV users, NS users, and DB users
-	schema.kvUsers = kvInfo.users;
-	schema.nsUsers = nsInfo.users;
-	schema.dbUsers = dbInfo.users;
+		schema.root.namespaces = namespaces;
+		schema.root.accesses = accesses;
+		schema.root.users = users;
 
-	// Scopes
-	schema.scopes = (dbInfo.scopes || []).map((sc) => ({
-		...sc,
-		signin: sc?.signin?.slice(1, -1),
-		signup: sc?.signup?.slice(1, -1),
-	}));
-
-	// Schema functions
-	schema.functions = dbInfo.functions.map((info) => ({
-		...info,
-		name: info.name.replaceAll("`", ""),
-		block: dedent(info.block.slice(1, -1)),
-		comment: info.comment || "",
-		returns: info.returns || "",
-	}));
-
-	// Schema models
-	schema.models = dbInfo.models;
-
-	// Tables
-	const isLimited = Array.isArray(options?.tables);
-	const tableNames = isLimited
-		? (options.tables as string[])
-		: dbInfo.tables.map((t) => t.name);
-
-	const tbInfoMap = await Promise.all(
-		tableNames.map((table) => {
-			return executeQuerySingle<SchemaInfoTB>(
-				`INFO FOR TABLE ${tb(table)} STRUCTURE`,
-			);
-		}),
-	);
-
-	if (isLimited) {
-		schema.tables = klona(databaseSchema.tables);
+		// TODO Trim access queries
 	}
 
-	for (const [idx, tableName] of tableNames.entries()) {
-		adapter.log("Schema", `Updating table ${tableName}`);
+	if (nsInfoTask.status === "fulfilled") {
+		const { databases, accesses, users } = nsInfoTask.value;
 
-		const info = tbInfoMap[idx];
-		const table = dbInfo.tables.find((t) => t.name === tableName);
-		const index = schema.tables.findIndex(
-			(t) => t.schema.name === tableName,
+		schema.namespace.databases = databases;
+		schema.namespace.accesses = accesses;
+		schema.namespace.users = users;
+
+		// TODO Trim access queries
+	}
+
+	if (dbInfoTask.status === "fulfilled") {
+		const { accesses, models, users, functions, tables } = dbInfoTask.value;
+
+		schema.database.accesses = accesses;
+		schema.database.models = models;
+		schema.database.users = users;
+
+		// TODO Trim access queries
+
+		// schema.database.accesses = (schema.database.accesses || []).map((sc) => ({
+		// 	...sc,
+		// 	signin: sc?.signin?.slice(1, -1),
+		// 	signup: sc?.signup?.slice(1, -1),
+		// }));
+
+		// Schema functions
+		schema.database.functions = functions.map((info) => ({
+			...info,
+			name: info.name.replaceAll("`", ""),
+			block: readBlock(info.block),
+			comment: info.comment || "",
+			returns: info.returns || "",
+		}));
+
+		// Tables
+		const isLimited = Array.isArray(options?.tables);
+		const tableNames = isLimited ? (options.tables as string[]) : tables.map((t) => t.name);
+
+		const tbInfoMap = await Promise.all(
+			tableNames.map((table) => {
+				return executeQuerySingle<SchemaInfoTB>(
+					`INFO FOR TABLE ${escapeIdent(table)} STRUCTURE`,
+				);
+			}),
 		);
 
-		if (!table) {
-			schema.tables.splice(index, 1);
-			continue;
+		if (isLimited) {
+			schema.database.tables = klona(connectionSchema.database.tables);
 		}
 
-		// TODO Clean up in 2.0
-		const definition: TableInfo = {
-			schema: {
-				...table,
-				changefeed:
-					typeof table.changefeed === "object"
-						? table.changefeed
-						: typeof table.changefeed === "string"
-							? {
-									expiry: (table.changefeed as string)
-										.replaceAll(
-											/CHANGEFEED|INCLUDE ORIGINAL/g,
-											"",
-										)
-										.trim(),
-									store_original: (
-										table.changefeed as string
-									).includes("INCLUDE ORIGINAL"),
-								}
-							: undefined,
-			},
-			fields: Object.values(info.fields),
-			indexes: Object.values(info.indexes),
-			events: Object.values(info.events).map((ev) => ({
-				...ev,
-				then: ev.then.map((th) => th.slice(1, -1)),
-			})),
-		};
+		for (const [idx, tableName] of tableNames.entries()) {
+			adapter.log("Schema", `Updating table ${tableName}`);
 
-		if (!isLimited || index === -1) {
-			schema.tables.push(definition);
-		} else {
-			schema.tables[index] = definition;
+			const info = tbInfoMap[idx];
+			const table = tables.find((t) => t.name === tableName);
+			const index = tables.findIndex((t) => t.name === tableName);
+
+			if (!table) {
+				schema.database.tables.splice(index, 1);
+				continue;
+			}
+
+			const definition: TableInfo = {
+				schema: table,
+				fields: Object.values(info.fields),
+				indexes: Object.values(info.indexes),
+				events: Object.values(info.events).map((ev) => ({
+					...ev,
+					then: ev.then.map(readBlock),
+				})),
+			};
+
+			if (!isLimited || index === -1) {
+				schema.database.tables.push(definition);
+			} else {
+				schema.database.tables[index] = definition;
+			}
 		}
 	}
 
 	// Update the schema
-	if (!equal(schema, databaseSchema)) {
+	if (!equal(schema, connectionSchema)) {
+		console.debug("Updated schema:", schema);
 		setDatabaseSchema(schema);
 	}
 }
@@ -162,9 +146,7 @@ export async function syncDatabaseSchema(options?: SchemaSyncOptions) {
  * Build a function definition query
  */
 export function buildFunctionDefinition(func: SchemaFunction): string {
-	const args = func.args
-		.map(([name, kind]) => `$${name}: ${kind}`)
-		.join(", ");
+	const args = func.args.map(([name, kind]) => `$${name}: ${kind}`).join(", ");
 	const block = func.block
 		.split("\n")
 		.map((line) => `\t${line}`)
@@ -212,9 +194,7 @@ export function buildModelDefinition(func: SchemaModel): string {
  * @param table The table to check
  * @returns True if the table is an edge table
  */
-export function extractEdgeRecords(
-	table: TableInfo,
-): [boolean, string[], string[]] {
+export function extractEdgeRecords(table: TableInfo): [boolean, string[], string[]] {
 	const { kind } = table.schema;
 
 	return [kind.kind === "RELATION", kind.in || [], kind.out || []];
@@ -237,9 +217,25 @@ export function isEdgeTable(table: TableInfo) {
  * @returns A string which is the permission in SurrealQL format
  */
 export function displaySchemaPermission(permission: string | boolean) {
-	return typeof permission === "string"
-		? `WHERE ${permission}`
-		: permission
-			? "FULL"
-			: "NONE";
+	return typeof permission === "string" ? `WHERE ${permission}` : permission ? "FULL" : "NONE";
+}
+
+/**
+ * Trim the outer braces or parenthsis of a block
+ */
+export function readBlock(block: string | undefined) {
+	const hasBraces = block?.at(0) === "{" && block?.at(-1) === "}";
+	const hasParen = block?.at(0) === "(" && block?.at(-1) === ")";
+	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : block ?? "";
+
+	return dedent(trimmed);
+}
+
+/**
+ * Wrap a block in braces or parenthesis
+ */
+export function writeBlock(block: string) {
+	const [openSymbol, closeSymbol] = getStatementCount(block) > 1 ? ["{", "}"] : ["(", ")"];
+
+	return `${openSymbol}\n${block}\n${closeSymbol}`;
 }

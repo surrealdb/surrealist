@@ -19,7 +19,7 @@ import { useIntent } from "~/hooks/url";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { showError, showInfo } from "~/util/helpers";
 import { iconChevronRight, iconDownload } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
 
 type Importer = null | "sql" | "csv";
@@ -115,7 +115,7 @@ export function Importer() {
 						);
 					},
 					complete() {
-						syncDatabaseSchema();
+						syncConnectionSchema();
 					},
 				});
 			} else {
@@ -126,7 +126,7 @@ export function Importer() {
 					subtitle: "Database was successfully imported",
 				});
 
-				await syncDatabaseSchema();
+				await syncConnectionSchema();
 			}
 		} catch (err: any) {
 			console.error(err);

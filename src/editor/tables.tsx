@@ -5,7 +5,7 @@ import { useDatabaseStore } from "~/stores/database";
 
 const TABLE_SOURCE: CompletionSource = (context) => {
 	const match = context.matchBefore(/(from|update|create|delete|into) \w*/i);
-	const tables = useDatabaseStore.getState().databaseSchema?.tables || [];
+	const tables = useDatabaseStore.getState().connectionSchema.database.tables;
 	const names = tables.map((table) => table.schema.name);
 
 	if (!context.explicit && !match) {

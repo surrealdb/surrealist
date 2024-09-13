@@ -35,7 +35,7 @@ import {
 	iconTable,
 	iconWarning,
 } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { ChangefeedElement } from "./elements/changefeed";
 import { EventsElement } from "./elements/events";
 import { FieldsElement } from "./elements/fields";
@@ -74,7 +74,7 @@ export function DesignDrawer({
 			onClose(true);
 
 			await executeQuery(`REMOVE TABLE ${tb(value.schema.name)}`);
-			await syncDatabaseSchema({
+			await syncConnectionSchema({
 				tables: [value.schema.name],
 			});
 		},

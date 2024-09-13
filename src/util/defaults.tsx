@@ -3,7 +3,7 @@ import type {
 	Authentication,
 	CloudInstance,
 	Connection,
-	DatabaseSchema,
+	ConnectionSchema,
 	SurrealistConfig,
 	SurrealistSettings,
 	TabQuery,
@@ -164,15 +164,25 @@ export function createSandboxConnection(
 	};
 }
 
-export function createDatabaseSchema(): DatabaseSchema {
+export function createConnectionSchema(): ConnectionSchema {
 	return {
-		kvUsers: [],
-		nsUsers: [],
-		dbUsers: [],
-		scopes: [],
-		functions: [],
-		models: [],
-		tables: [],
+		root: {
+			namespaces: [],
+			accesses: [],
+			users: [],
+		},
+		namespace: {
+			databases: [],
+			accesses: [],
+			users: [],
+		},
+		database: {
+			tables: [],
+			accesses: [],
+			users: [],
+			functions: [],
+			models: [],
+		}
 	};
 }
 

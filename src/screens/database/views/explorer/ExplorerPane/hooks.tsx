@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useSchema } from "~/hooks/schema";
+import { useDatabaseSchema } from "~/hooks/schema";
 import {
 	executeQueryFirst,
 	executeQuerySingle,
@@ -17,7 +17,7 @@ export interface RecordQueryInput {
 }
 
 export function useRecordQuery(input: RecordQueryInput) {
-	const schema = useSchema();
+	const schema = useDatabaseSchema();
 
 	return useQuery<{ records: any[]; headers: string[] }>({
 		queryKey: ["explorer", "records", input],

@@ -28,10 +28,24 @@ const BASE_KINDS = [
 ];
 
 /**
+ * Access the current root schema
+ */
+export function useRootSchema() {
+	return useDatabaseStore((s) => s.connectionSchema.root);
+}
+
+/**
+ * Access the current namespace schema
+ */
+export function useNamespaceSchema() {
+	return useDatabaseStore((s) => s.connectionSchema.namespace);
+}
+
+/**
  * Access the current database schema
  */
-export function useSchema() {
-	return useDatabaseStore((s) => s.databaseSchema);
+export function useDatabaseSchema() {
+	return useDatabaseStore((s) => s.connectionSchema.database);
 }
 
 /**
@@ -41,7 +55,7 @@ export function useSchema() {
  * @returns The filtered tables
  */
 export function useTables(mode: TableMode = "ALL") {
-	const schema = useSchema();
+	const schema = useDatabaseSchema();
 
 	if (!schema) {
 		return [];

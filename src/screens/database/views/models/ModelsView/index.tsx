@@ -8,13 +8,13 @@ import { Introduction } from "~/components/Introduction";
 import { ML_SUPPORTED } from "~/constants";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useSaveable } from "~/hooks/save";
-import { useSchema } from "~/hooks/schema";
+import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useViewEffect } from "~/hooks/view";
 import type { Authentication, SchemaModel } from "~/types";
 import { connectionUri } from "~/util/helpers";
 import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
 
@@ -45,7 +45,7 @@ function composeConnection(connection: Authentication, path: string) {
 }
 
 export function ModelsView() {
-	const models = useSchema()?.models ?? [];
+	const models = useDatabaseSchema()?.models ?? [];
 	const { id, authentication } = useActiveConnection();
 	const isConnected = useIsConnected();
 
@@ -89,7 +89,7 @@ export function ModelsView() {
 			});
 		}
 
-		syncDatabaseSchema();
+		syncConnectionSchema();
 
 		posthog.capture("model_import");
 	});
@@ -116,7 +116,7 @@ export function ModelsView() {
 	});
 
 	useViewEffect("models", () => {
-		syncDatabaseSchema();
+		syncConnectionSchema();
 	});
 
 	return (

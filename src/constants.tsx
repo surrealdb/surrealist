@@ -2,6 +2,7 @@ import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 
 import type {
+	AccessType,
 	AuthMode,
 	CloudPage,
 	CloudPageInfo,
@@ -14,6 +15,7 @@ import type {
 	ResultMode,
 	SchemaMode,
 	Selectable,
+	Selection,
 	SidebarMode,
 	ValueMode,
 	ViewInfo,

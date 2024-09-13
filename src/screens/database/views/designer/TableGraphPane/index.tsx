@@ -39,7 +39,7 @@ import { RadioSelect } from "~/components/RadioSelect";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
 import { useIsConnected } from "~/hooks/connection";
 import { useActiveConnection } from "~/hooks/connection";
-import { useSchema } from "~/hooks/schema";
+import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
@@ -80,7 +80,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
-	const schema = useSchema();
+	const schema = useDatabaseSchema();
 	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
 	const isViewActive = useConfigStore((s) => s.activeView === "designer");

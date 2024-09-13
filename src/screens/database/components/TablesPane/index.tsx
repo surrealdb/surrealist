@@ -37,7 +37,7 @@ import {
 	iconSearch,
 	iconTable,
 } from "~/util/icons";
-import { extractEdgeRecords, syncDatabaseSchema } from "~/util/schema";
+import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
 
 export interface TablesPaneProps {
@@ -93,7 +93,7 @@ export function TablesPane({
 		confirmText: "Remove",
 		onConfirm: async (table: string) => {
 			await executeQuery(`REMOVE TABLE ${tb(table)}`);
-			await syncDatabaseSchema({
+			await syncConnectionSchema({
 				tables: [table],
 			});
 

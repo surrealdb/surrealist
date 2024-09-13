@@ -1,62 +1,83 @@
-import { SimpleGrid } from "@mantine/core";
-import { memo } from "react";
-import { useIsConnected } from "~/hooks/connection";
-import { useViewEffect } from "~/hooks/view";
-import { iconAuth, iconFolderSecure, iconServerSecure } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
-import { AccountsPane } from "../AccountsPane";
-import { ScopePane } from "../ScopesPane";
+import { iconFolderSecure, iconServerSecure } from "~/util/icons";
 
-const AccountsPaneLazy = memo(AccountsPane);
-const ScopePaneLazy = memo(ScopePane);
+import { Box } from "@mantine/core";
+import { mdiDatabaseOutline } from "@mdi/js";
+import { memo, useMemo } from "react";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { useActiveConnection } from "~/hooks/connection";
+import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
+import { useViewEffect } from "~/hooks/view";
+import { syncConnectionSchema } from "~/util/schema";
+import { LevelPanel } from "../LevelPanel";
+
+const LevelPanelLazy = memo(LevelPanel);
 
 export function AuthenticationView() {
-	const isOnline = useIsConnected();
+	const kvSchema = useRootSchema();
+	const nsSchema = useNamespaceSchema();
+	const dbSchema = useDatabaseSchema();
+
+	const { lastNamespace, lastDatabase } = useActiveConnection();
+
+	const users = useMemo(
+		() => [...kvSchema.users, ...nsSchema.users, ...dbSchema.users],
+		[kvSchema.users, nsSchema.users, dbSchema.users],
+	);
+
+	const accesses = useMemo(
+		() => [...kvSchema.accesses, ...nsSchema.accesses, ...dbSchema.accesses],
+		[kvSchema.accesses, nsSchema.accesses, dbSchema.accesses],
+	);
 
 	useViewEffect("authentication", () => {
-		syncDatabaseSchema();
+		syncConnectionSchema();
 	});
 
 	return (
-		<SimpleGrid
-			h="100%"
-			spacing={6}
-			cols={{
-				base: 2,
-				lg: 4,
-			}}
-			style={{
-				gridAutoRows: "1fr",
-			}}
-		>
-			<AccountsPaneLazy
-				isOnline={isOnline}
-				title="Root Users"
-				icon={iconAuth}
-				iconColor="red.6"
-				field="kvUsers"
-				type="ROOT"
-			/>
-
-			<AccountsPaneLazy
-				isOnline={isOnline}
-				title="Namespace Users"
-				icon={iconFolderSecure}
-				iconColor="blue.6"
-				field="nsUsers"
-				type="NAMESPACE"
-			/>
-
-			<AccountsPaneLazy
-				isOnline={isOnline}
-				title="Database Users"
-				icon={iconServerSecure}
-				iconColor="yellow.6"
-				field="dbUsers"
-				type="DATABASE"
-			/>
-			<ScopePaneLazy />
-		</SimpleGrid>
+		<>
+			<Box h="100%">
+				<PanelGroup direction="horizontal">
+					<Panel minSize={15}>
+						<LevelPanelLazy
+							level="ROOT"
+							color="red"
+							icon={iconServerSecure}
+							users={users}
+							accesses={accesses}
+						/>
+					</Panel>
+					<PanelDragger />
+					<Panel minSize={15}>
+						<LevelPanelLazy
+							level="NAMESPACE"
+							color="blue"
+							icon={iconFolderSecure}
+							users={users}
+							accesses={accesses}
+							disabled={!lastNamespace && {
+								message: "You need to select a namespace before viewing namespace authentication",
+								selector: { withNamespace: true }
+							}}
+						/>
+					</Panel>
+					<PanelDragger />
+					<Panel minSize={15}>
+						<LevelPanelLazy
+							level="DATABASE"
+							color="orange"
+							icon={mdiDatabaseOutline}
+							users={users}
+							accesses={accesses}
+							disabled={!lastDatabase && {
+								message: "You need to select a database before viewing database authentication",
+								selector: { withDatabase: true }
+							}}
+						/>
+					</Panel>
+				</PanelGroup>
+			</Box>
+		</>
 	);
 }
 

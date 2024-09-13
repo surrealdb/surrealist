@@ -30,7 +30,7 @@ import type { DataSet } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showInfo } from "~/util/helpers";
 import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { openCloudAuthentication } from "../cloud-manage/api/auth";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
@@ -95,7 +95,7 @@ export function DatabaseToolbar() {
 
 			await sleep(50);
 			await executeQuery(dataset);
-			await syncDatabaseSchema();
+			await syncConnectionSchema();
 
 			showInfo({
 				title: "Dataset loaded",

@@ -33,6 +33,10 @@
 		}
 	}
 
+	:global(.cm-content) {
+		min-height: var(--height);
+	}
+
 	:global(.cm-line) {
 		padding-left: 0;
 	}

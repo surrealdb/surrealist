@@ -13,7 +13,7 @@ import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
 import { iconDesigner } from "~/util/icons";
-import { syncDatabaseSchema } from "~/util/schema";
+import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
 
 const TableGraphPaneLazy = memo(TableGraphPane);
@@ -45,7 +45,7 @@ export function DesignerView() {
 	});
 
 	useViewEffect("designer", () => {
-		syncDatabaseSchema();
+		syncConnectionSchema();
 	});
 
 	const [minSize, ref] = usePanelMinSize(275);

@@ -8,7 +8,18 @@ import {
 	createHtmlPortalNode,
 } from "react-reverse-portal";
 
-import { Alert, Box, Center, Drawer, Flex, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+	Alert,
+	Box,
+	Center,
+	Drawer,
+	Flex,
+	Group,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { Suspense, lazy, memo, useLayoutEffect, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -134,7 +145,7 @@ export function DatabaseScreen() {
 					mt={customTitlebar ? "sm" : "lg"}
 					className={classes.wrapper}
 					__vars={{
-						'--offset': `${sidebarOffset}px`
+						"--offset": `${sidebarOffset}px`,
 					}}
 				>
 					{viewMode !== "cloud" && (
@@ -166,7 +177,11 @@ export function DatabaseScreen() {
 										choose an existing namespace and database, or create new
 										ones.
 									</Text>
-									<SelectDatabase mt="xl" />
+									<SelectDatabase
+										withNamespace
+										withDatabase
+										mt="xl"
+									/>
 									{!isConnected && (
 										<Alert
 											mt="xl"

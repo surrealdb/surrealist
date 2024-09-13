@@ -1,15 +1,11 @@
-import {
-	type CompletionSource,
-	snippetCompletion,
-} from "@codemirror/autocomplete";
+import { type CompletionSource, snippetCompletion } from "@codemirror/autocomplete";
 import type { Extension } from "@codemirror/state";
 import { surrealqlLanguage } from "@surrealdb/codemirror";
 import { useDatabaseStore } from "~/stores/database";
 
 const CUSTOM_FUNCTION_SOURCE: CompletionSource = (context) => {
 	const match = context.matchBefore(/fn::\w*/i);
-	const functions =
-		useDatabaseStore.getState().databaseSchema?.functions || [];
+	const functions = useDatabaseStore.getState().connectionSchema.database.functions;
 	const names = functions.map((fn) => `fn::${fn.name}`);
 
 	if (!context.explicit && !match) {

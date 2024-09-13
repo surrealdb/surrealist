@@ -1,5 +1,5 @@
 import type { MantineColorScheme } from "@mantine/core";
-import type { AnyAuth, Token } from "surrealdb";
+import type { AnyAuth, Duration, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type ViewRequirement = "database";
@@ -24,8 +24,21 @@ export type UrlTarget = "internal" | "external";
 export type DatabaseListMode = "list" | "grid";
 export type AuthLevel = "root" | "namespace" | "database";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
-export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
-export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type AuthType = "user" | "access";
+export type AccessType = "JWT" | "RECORD";
+export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
+
+export type InstanceState =
+	| "creating"
+	| "updating"
+	| "deleting"
+	| "ready"
+	| "inactive";
+export type AuthState =
+	| "unknown"
+	| "loading"
+	| "authenticated"
+	| "unauthenticated";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -67,6 +80,7 @@ export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type Assign<T, O extends object> = Omit<T, keyof O> & O;
+export type AuthTarget = [AuthType, string];
 
 export interface Authentication {
 	mode: AuthMode;
@@ -228,6 +242,19 @@ export interface ScopeField {
 	value: string;
 }
 
+export interface AccessJwt {
+	issuer: {
+		alg: string;
+		key: string;
+	},
+	verify: {
+		url: string;
+	} | {
+		alg: string;
+		key: string;
+	}
+}
+
 export interface TableView {
 	expr: string;
 	cond: string;
@@ -247,14 +274,21 @@ export interface Kind {
 	out?: string[];
 }
 
+export type RootSchema = SchemaInfoKV;
+export type NamespaceSchema = SchemaInfoNS;
+
+export interface ConnectionSchema {
+	root: RootSchema;
+	namespace: NamespaceSchema;
+	database: DatabaseSchema;
+}
+
 export interface DatabaseSchema {
-	kvUsers: SchemaUser[];
-	nsUsers: SchemaUser[];
-	dbUsers: SchemaUser[];
-	scopes: SchemaScope[];
 	functions: SchemaFunction[];
 	models: SchemaModel[];
+	accesses: SchemaAccess[];
 	tables: TableInfo[];
+	users: SchemaUser[];
 }
 
 export interface SchemaTable {
@@ -292,16 +326,34 @@ export interface SchemaEvent {
 
 export interface SchemaUser {
 	name: string;
-	comment: string;
+	base: string;
+	hash: string;
 	roles: string[];
-	passhash: string;
+	comment?: string;
+	duration: {
+		session: Duration;
+		token: Duration;
+	}
 }
 
-export interface SchemaScope {
+export interface SchemaAccess {
 	name: string;
-	signin?: string;
-	signup?: string;
-	session?: string;
+	base: string;
+	authenticate?: string;
+	comment?: string;
+	duration: {
+		session: Duration;
+		token: Duration;
+	};
+	kind: {
+		kind: "JWT";
+		jwt: AccessJwt;
+	} | {
+		kind: "RECORD";
+		signin: string;
+		signup: string;
+		jwt: AccessJwt;
+	};
 }
 
 export interface SchemaFunction {
@@ -330,37 +382,31 @@ export interface TableInfo {
 
 export interface SchemaInfoKV {
 	namespaces: any[];
+	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
 
 export interface SchemaInfoNS {
 	databases: any[];
-	tokens: any[];
+	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
 
 export interface SchemaInfoDB {
-	analyzers: any[];
 	functions: SchemaFunction[];
 	models: SchemaModel[];
-	params: any[];
-	scopes: SchemaScope[];
+	accesses: SchemaAccess[];
 	tables: SchemaTable[];
-	tokens: any[];
 	users: SchemaUser[];
+	analyzers: any[];	// unused
+	params: any[];		// unused
 }
 
 export interface SchemaInfoTB {
 	events: SchemaEvent[];
 	fields: SchemaField[];
 	indexes: SchemaIndex[];
-	tables: any[];
-}
-
-export interface Analyzer {
-	name: string;
-	tokenizers: string[];
-	filters: string[];
+	tables: any[];		// unused
 }
 
 export interface SurrealOptions {
