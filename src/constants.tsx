@@ -311,8 +311,3 @@ export const REGION_FLAGS: Record<string, string> = {
 	"aws-euw1": flagIE,
 	"aws-use1": flagUS,
 };
-
-export const ACCESS_TYPES: Selection<AccessType> = [
-	{ label: "JWT", value: "JWT" },
-	{ label: "Record", value: "RECORD" },
-];

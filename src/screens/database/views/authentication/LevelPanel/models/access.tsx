@@ -1,42 +1,49 @@
-import classes from "../style.module.scss";
-
 import {
-	Accordion,
+	Alert,
 	Button,
 	Checkbox,
 	Group,
 	Modal,
-	PasswordInput,
 	ScrollArea,
 	Select,
-	SimpleGrid,
 	Stack,
 	Tabs,
-	Text,
 	Textarea,
 	TextInput,
-	Title,
 } from "@mantine/core";
 
+import { iconCheck, iconPlus } from "~/util/icons";
 import { useInputState } from "@mantine/hooks";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
-import { ACCESS_TYPES } from "~/constants";
 import { useStable } from "~/hooks/stable";
-import { SectionTitle } from "~/providers/Designer/helpers";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { AccessType, Base, SchemaAccess } from "~/types";
 import { showError } from "~/util/helpers";
-import { iconAccount, iconChat, iconCheck, iconClock, iconJSON, iconKey, iconPlus, iconQuery } from "~/util/icons";
 import { readBlock, syncConnectionSchema, writeBlock } from "~/util/schema";
 import { escapeIdent } from "~/util/surrealql";
 
 type VerifyMode = "url" | "keyalg";
+
+const ALGORITHMS = [
+	"EDDSA",
+	"ES256",
+	"ES384",
+	"ES512",
+	"HS256",
+	"HS384",
+	"HS512",
+	"PS256",
+	"PS384",
+	"PS512",
+	"RS256",
+	"RS384",
+	"RS512",
+];
 
 export interface AccessEditorModalProps {
 	level: Base;
@@ -63,9 +70,11 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 
 	useLayoutEffect(() => {
 		if (opened) {
+			const defaultType = level === "DATABASE" ? "RECORD" : "JWT";
+
 			setTarget(existing);
 			setName(existing?.name ?? "");
-			setType(existing?.kind?.kind ?? "RECORD");
+			setType(existing?.kind?.kind ?? defaultType);
 			setAuthClause(readBlock(existing?.authenticate ?? ""));
 			setComment(existing?.comment ?? "");
 			setSessionDuration(existing?.duration?.session?.toString() ?? "");
@@ -74,7 +83,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			setJwtVerifyMode("keyalg");
 			setSigninClause("");
 			setSignupClause("");
-			setJwtVerifyAlg("");
+			setJwtVerifyAlg("HS256");
 			setJwtVerifyKey("");
 			setJwtVerifyUrl("");
 
@@ -96,7 +105,16 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 				}
 			}
 		}
-	}, [opened, existing]);
+	}, [level, opened, existing]);
+
+	const accessTypes = useMemo(() => {
+		const record =
+			level === "DATABASE"
+				? { label: "Record", value: "RECORD" }
+				: { label: "Record (database only)", value: "RECORD", disabled: true };
+
+		return [{ label: "JWT", value: "JWT" }, record];
+	}, [level]);
 
 	const saveUser = useStable(async () => {
 		try {
@@ -113,7 +131,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 					query += ` SIGNIN ${writeBlock(signinClause)}`;
 				}
 
-				if (jwtIssuerKey || jwtVerifyAlg || jwtVerifyKey || jwtVerifyUrl) {
+				if (jwtIssuerKey || jwtVerifyKey || jwtVerifyUrl) {
 					query += ` WITH JWT`;
 
 					if (jwtVerifyMode === "url") {
@@ -188,9 +206,14 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 		>
 			<Form onSubmit={saveUser}>
 				<Tabs defaultValue="general">
-					<Tabs.List grow mb="xl">
+					<Tabs.List
+						grow
+						mb="xl"
+					>
 						<Tabs.Tab value="general">General</Tabs.Tab>
-						<Tabs.Tab value="session">Session</Tabs.Tab>
+
+						{type === "RECORD" && <Tabs.Tab value="session">Session</Tabs.Tab>}
+
 						<Tabs.Tab value="durations">Durations</Tabs.Tab>
 						<Tabs.Tab value="jwt">JWT</Tabs.Tab>
 						<Tabs.Tab value="comment">Comment</Tabs.Tab>
@@ -210,11 +233,11 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 							)}
 
 							<Select
-								data={ACCESS_TYPES}
+								withAsterisk
 								label="Access type"
 								value={type}
 								onChange={setType as any}
-								withAsterisk
+								data={accessTypes}
 							/>
 
 							<CodeInput
@@ -280,14 +303,12 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 
 					<Tabs.Panel value="jwt">
 						<Stack gap="lg">
-							{type === "RECORD" && (
-								<TextInput
-									label="Issuer key"
-									placeholder="secret key"
-									value={jwtIssuerKey}
-									onChange={setJwtIssuerKey}
-								/>
-							)}
+							<TextInput
+								label="Issuer key"
+								placeholder="secret key"
+								value={jwtIssuerKey}
+								onChange={setJwtIssuerKey}
+							/>
 
 							<Checkbox
 								label="Use JWKS verification"
@@ -306,9 +327,9 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 								/>
 							) : (
 								<>
-									<TextInput
+									<Select
+										data={ALGORITHMS}
 										label="Verify algorithm"
-										placeholder="HS256"
 										value={jwtVerifyAlg}
 										onChange={setJwtVerifyAlg}
 									/>
