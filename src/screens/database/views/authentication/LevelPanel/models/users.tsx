@@ -9,6 +9,7 @@ import {
 	PasswordInput,
 	ScrollArea,
 	Stack,
+	Tabs,
 	Text,
 	Textarea,
 	TextInput,
@@ -115,6 +116,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			opened={opened}
 			onClose={onClose}
 			scrollAreaComponent={ScrollArea.Autosize}
+			size={500}
 			title={
 				<PrimaryTitle>
 					{existing
@@ -124,99 +126,91 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			}
 		>
 			<Form onSubmit={saveUser}>
-				<Accordion
-					multiple
-					variant="separated"
-					defaultValue={["general"]}
-					className={classes.accordion}
-				>
-					<Accordion.Item value="general">
-						<SectionTitle icon={iconAccount}>General</SectionTitle>
-						<Accordion.Panel>
-							<Stack gap="lg">
-								{!target && (
-									<TextInput
-										label="User name"
-										placeholder="admin"
-										value={username}
-										spellCheck={false}
-										onChange={setUsername}
-										required
-									/>
-								)}
-								<PasswordInput
-									label={target ? "New password" : "Password"}
-									description={
-										target
-											? "Leave blank to keep the current password"
-											: "The password for this user"
-									}
-									placeholder="Enter password"
-									value={password}
+				<Tabs defaultValue="general">
+					<Tabs.List grow mb="xl">
+						<Tabs.Tab value="general">General</Tabs.Tab>
+						<Tabs.Tab value="durations">Durations</Tabs.Tab>
+						<Tabs.Tab value="comment">Comment</Tabs.Tab>
+					</Tabs.List>
+
+					<Tabs.Panel value="general">
+						<Stack gap="lg">
+							{!target && (
+								<TextInput
+									label="User name"
+									placeholder="admin"
+									value={username}
 									spellCheck={false}
-									onChange={setPassword}
-									required={!target}
+									onChange={setUsername}
+									required
 								/>
-
-								<Checkbox.Group
-									label="Select a role"
-									description="The role of the user on this database"
-									value={roles}
-									onChange={setRoles}
-									withAsterisk
-								>
-									<Stack mt="xs">
-										{ROLES.map((role) => (
-											<Checkbox
-												{...role}
-												key={role.value}
-											/>
-										))}
-									</Stack>
-								</Checkbox.Group>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-
-					<Accordion.Item value="durations">
-						<SectionTitle icon={iconClock}>Durations</SectionTitle>
-						<Accordion.Panel>
-							<Stack gap="lg">
-								<CodeInput
-									label="Token duration"
-									description="The duration of the token used to establish an authenticated session"
-									placeholder="Enter duration"
-									value={tokenDuration}
-									onChange={setTokenDuration}
-								/>
-
-								<CodeInput
-									label="Session duration"
-									description="The duration of the authenticated session established with the token"
-									placeholder="Enter duration"
-									value={sessionDuration}
-									onChange={setSessionDuration}
-								/>
-
-								<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
-									Learn more about session and token durations
-								</LearnMore>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-
-					<Accordion.Item value="comment">
-						<SectionTitle icon={iconChat}>Comment</SectionTitle>
-						<Accordion.Panel>
-							<Textarea
-								placeholder="Enter optional description for this user"
-								value={comment}
-								onChange={setComment}
-								rows={5}
+							)}
+							<PasswordInput
+								label={target ? "New password" : "Password"}
+								description={
+									target
+										? "Leave blank to keep the current password"
+										: "The password for this user"
+								}
+								placeholder="Enter password"
+								value={password}
+								spellCheck={false}
+								onChange={setPassword}
+								required={!target}
 							/>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
+
+							<Checkbox.Group
+								label="Select a role"
+								description="The role of the user on this database"
+								value={roles}
+								onChange={setRoles}
+								withAsterisk
+							>
+								<Stack mt="xs">
+									{ROLES.map((role) => (
+										<Checkbox
+											{...role}
+											key={role.value}
+										/>
+									))}
+								</Stack>
+							</Checkbox.Group>
+						</Stack>
+					</Tabs.Panel>
+
+					<Tabs.Panel value="durations">
+						<Stack gap="lg">
+							<CodeInput
+								label="Token duration"
+								description="The duration of the token used to establish an authenticated session"
+								placeholder="Enter duration"
+								value={tokenDuration}
+								onChange={setTokenDuration}
+							/>
+
+							<CodeInput
+								label="Session duration"
+								description="The duration of the authenticated session established with the token"
+								placeholder="Enter duration"
+								value={sessionDuration}
+								onChange={setSessionDuration}
+							/>
+
+							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
+								Learn more about session and token durations
+							</LearnMore>
+						</Stack>
+					</Tabs.Panel>
+
+					<Tabs.Panel value="comment">
+						<Textarea
+							placeholder="Enter optional description for this user"
+							value={comment}
+							onChange={setComment}
+							rows={5}
+						/>
+					</Tabs.Panel>
+				</Tabs>
 
 				<Group mt="xl">
 					<Button

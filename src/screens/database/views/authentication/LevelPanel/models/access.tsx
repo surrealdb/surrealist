@@ -11,6 +11,7 @@ import {
 	Select,
 	SimpleGrid,
 	Stack,
+	Tabs,
 	Text,
 	Textarea,
 	TextInput,
@@ -52,7 +53,6 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 	const [signupClause, setSignupClause] = useState("");
 	const [sessionDuration, setSessionDuration] = useInputState("");
 	const [tokenDuration, setTokenDuration] = useInputState("");
-	const [jwtIssuerAlg, setJwtIssuerAlg] = useInputState("");
 	const [jwtIssuerKey, setJwtIssuerKey] = useInputState("");
 	const [jwtVerifyAlg, setJwtVerifyAlg] = useInputState("");
 	const [jwtVerifyKey, setJwtVerifyKey] = useInputState("");
@@ -69,20 +69,30 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			setComment(existing?.comment ?? "");
 			setSessionDuration(existing?.duration?.session?.toString() ?? "");
 			setTokenDuration(existing?.duration?.token?.toString() ?? "1h");
-			setJwtIssuerAlg(existing?.kind?.jwt?.issuer?.alg ?? "");
 			setJwtIssuerKey(existing?.kind?.jwt?.issuer?.key ?? "");
+			setJwtVerifyMode("keyalg");
+			setSigninClause("");
+			setSignupClause("");
+			setJwtVerifyAlg("");
+			setJwtVerifyKey("");
+			setJwtVerifyUrl("");
 
 			if (existing?.kind?.kind === "RECORD") {
 				setSigninClause(readBlock(existing.kind.signin));
 				setSignupClause(readBlock(existing.kind.signup));
-			} else {
-				setSigninClause("");
-				setSignupClause("");
 			}
 
-			if ("url" in (existing?.kind?.jwt?.verify ?? {})) {
-				setJwtVerifyAlg(existing?.kind?.jwt?.verify?.alg ?? "");
-				setJwtVerifyKey(existing?.kind?.jwt?.verify?.key ?? "");
+			const verify = existing?.kind?.jwt?.verify;
+
+			if (verify) {
+				if ("url" in verify) {
+					setJwtVerifyMode("url");
+					setJwtVerifyUrl(verify.url);
+				} else {
+					setJwtVerifyMode("keyalg");
+					setJwtVerifyAlg(verify.alg);
+					setJwtVerifyKey(verify.key);
+				}
 			}
 		}
 	}, [opened, existing]);
@@ -102,11 +112,27 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 					query += ` SIGNUP ${writeBlock(signupClause)}`;
 				}
 
-				// TODO with jwt
+				if (jwtIssuerKey || jwtVerifyAlg || jwtVerifyKey || jwtVerifyUrl) {
+					query += ` WITH JWT`;
+
+					if (jwtVerifyMode === "url") {
+						query += ` URL "${jwtVerifyUrl}"`;
+					} else {
+						query += ` ALGORITHM ${jwtVerifyAlg} KEY "${jwtVerifyKey}"`;
+					}
+
+					if (jwtIssuerKey) {
+						query += ` WITH ISSUER KEY "${jwtIssuerKey}"`;
+					}
+				}
 			} else if (type === "JWT") {
 				query += ` JWT`;
 
-
+				if (jwtVerifyMode === "url") {
+					query += ` URL "${jwtVerifyUrl}"`;
+				} else {
+					query += ` ALGORITHM ${jwtVerifyAlg} KEY "${jwtVerifyKey}"`;
+				}
 			}
 
 			if (authClause) {
@@ -150,6 +176,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			opened={opened}
 			onClose={onClose}
 			scrollAreaComponent={ScrollArea.Autosize}
+			size={500}
 			title={
 				<PrimaryTitle>
 					{existing
@@ -159,156 +186,152 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			}
 		>
 			<Form onSubmit={saveUser}>
-				<Accordion
-					multiple
-					variant="separated"
-					defaultValue={["general"]}
-					className={classes.accordion}
-				>
-					<Accordion.Item value="general">
-						<SectionTitle icon={iconKey}>General</SectionTitle>
-						<Accordion.Panel>
-							<Stack gap="lg">
-								{!target && (
-									<TextInput
-										label="Access method name"
-										placeholder="admin"
-										value={name}
-										spellCheck={false}
-										onChange={setName}
-										required
-									/>
-								)}
+				<Tabs defaultValue="general">
+					<Tabs.List grow mb="xl">
+						<Tabs.Tab value="general">General</Tabs.Tab>
+						<Tabs.Tab value="session">Session</Tabs.Tab>
+						<Tabs.Tab value="durations">Durations</Tabs.Tab>
+						<Tabs.Tab value="jwt">JWT</Tabs.Tab>
+						<Tabs.Tab value="comment">Comment</Tabs.Tab>
+					</Tabs.List>
 
-								<Select
-									data={ACCESS_TYPES}
-									label="Access type"
-									value={type}
-									onChange={setType as any}
-									withAsterisk
-								/>
-
-								<CodeInput
-									label="Authentication query"
-									placeholder="Enter authentication clause"
-									value={authClause}
-									onChange={setAuthClause}
-									multiline
-									height={96}
-								/>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-					
-					{type === "RECORD" && (
-						<Accordion.Item value="session">
-							<SectionTitle icon={iconAccount}>Sign up & sign in</SectionTitle>
-							<Accordion.Panel>
-								<Stack gap="lg">
-									<CodeInput
-										label="Sign in query"
-										placeholder="SELECT * FROM ..."
-										value={signinClause}
-										onChange={setSigninClause}
-										multiline
-										height={96}
-									/>
-
-									<CodeInput
-										label="Sign up query"
-										placeholder="CREATE ..."
-										value={signupClause}
-										onChange={setSignupClause}
-										multiline
-										height={96}
-									/>
-
-									<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#record-users">
-										Learn more about sign in and sign up queries
-									</LearnMore>
-								</Stack>
-							</Accordion.Panel>
-						</Accordion.Item>
-					)}
-
-					<Accordion.Item value="durations">
-						<SectionTitle icon={iconClock}>Durations</SectionTitle>
-						<Accordion.Panel>
-							<Stack gap="lg">
-								<CodeInput
-									label="Token duration"
-									description="The duration of the token used to establish an authenticated session"
-									placeholder="Enter duration"
-									value={tokenDuration}
-									onChange={setTokenDuration}
-								/>
-
-								<CodeInput
-									label="Session duration"
-									description="The duration of the authenticated session established with the token"
-									placeholder="Enter duration"
-									value={sessionDuration}
-									onChange={setSessionDuration}
-								/>
-
-								<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
-									Learn more about session and token durations
-								</LearnMore>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-
-					<Accordion.Item value="jwt">
-						<SectionTitle icon={iconJSON}>JWT</SectionTitle>
-						<Accordion.Panel>
-							<Stack gap="lg">
-								{type === "RECORD" && (
-									<>
-										<TextInput
-											label="Issuer algorithm"
-											placeholder="HS256"
-											value={jwtIssuerAlg}
-											onChange={setJwtIssuerAlg}
-										/>
-
-										<TextInput
-											label="Issuer key"
-											placeholder="secret"
-											value={jwtIssuerKey}
-											onChange={setJwtIssuerKey}
-										/>
-									</>
-								)}
-
+					<Tabs.Panel value="general">
+						<Stack gap="lg">
+							{!target && (
 								<TextInput
-									label="Verify algorithm"
-									placeholder="HS256"
-									value={jwtVerifyAlg}
-									onChange={setJwtVerifyAlg}
+									label="Access method name"
+									placeholder="admin"
+									value={name}
+									spellCheck={false}
+									onChange={setName}
+									required
 								/>
+							)}
 
-								<TextInput
-									label="Verify key"
-									placeholder="secret"
-									value={jwtVerifyKey}
-									onChange={setJwtVerifyKey}
-								/>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-
-					<Accordion.Item value="comment">
-						<SectionTitle icon={iconChat}>Comment</SectionTitle>
-						<Accordion.Panel>
-							<Textarea
-								placeholder="Enter optional description for this access method"
-								value={comment}
-								onChange={setComment}
-								rows={5}
+							<Select
+								data={ACCESS_TYPES}
+								label="Access type"
+								value={type}
+								onChange={setType as any}
+								withAsterisk
 							/>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
+
+							<CodeInput
+								label="Authentication query"
+								placeholder="Enter authentication clause"
+								value={authClause}
+								onChange={setAuthClause}
+								multiline
+								height={96}
+							/>
+						</Stack>
+					</Tabs.Panel>
+
+					<Tabs.Panel value="session">
+						<Stack gap="lg">
+							<CodeInput
+								label="Sign in query"
+								placeholder="SELECT * FROM ..."
+								value={signinClause}
+								onChange={setSigninClause}
+								multiline
+								height={96}
+							/>
+
+							<CodeInput
+								label="Sign up query"
+								placeholder="CREATE ..."
+								value={signupClause}
+								onChange={setSignupClause}
+								multiline
+								height={96}
+							/>
+
+							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#record-users">
+								Learn more about sign in and sign up queries
+							</LearnMore>
+						</Stack>
+					</Tabs.Panel>
+
+					<Tabs.Panel value="durations">
+						<Stack gap="lg">
+							<CodeInput
+								label="Token duration"
+								description="The duration of the token used to establish an authenticated session"
+								placeholder="Enter duration"
+								value={tokenDuration}
+								onChange={setTokenDuration}
+							/>
+
+							<CodeInput
+								label="Session duration"
+								description="The duration of the authenticated session established with the token"
+								placeholder="Enter duration"
+								value={sessionDuration}
+								onChange={setSessionDuration}
+							/>
+
+							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
+								Learn more about session and token durations
+							</LearnMore>
+						</Stack>
+					</Tabs.Panel>
+
+					<Tabs.Panel value="jwt">
+						<Stack gap="lg">
+							{type === "RECORD" && (
+								<TextInput
+									label="Issuer key"
+									placeholder="secret key"
+									value={jwtIssuerKey}
+									onChange={setJwtIssuerKey}
+								/>
+							)}
+
+							<Checkbox
+								label="Use JWKS verification"
+								checked={jwtVerifyMode === "url"}
+								onChange={(e) => {
+									setJwtVerifyMode(e.target.checked ? "url" : "keyalg");
+								}}
+							/>
+
+							{jwtVerifyMode === "url" ? (
+								<TextInput
+									label="JWKS Endpoint"
+									placeholder="https://example.com/.well-known/jwks.json"
+									value={jwtVerifyUrl}
+									onChange={setJwtVerifyUrl}
+								/>
+							) : (
+								<>
+									<TextInput
+										label="Verify algorithm"
+										placeholder="HS256"
+										value={jwtVerifyAlg}
+										onChange={setJwtVerifyAlg}
+									/>
+
+									<TextInput
+										label="Verify key"
+										placeholder="secret key"
+										value={jwtVerifyKey}
+										onChange={setJwtVerifyKey}
+									/>
+								</>
+							)}
+						</Stack>
+					</Tabs.Panel>
+
+					<Tabs.Panel value="comment">
+						<Textarea
+							placeholder="Enter optional description for this access method"
+							value={comment}
+							onChange={setComment}
+							rows={5}
+						/>
+					</Tabs.Panel>
+				</Tabs>
 
 				{/* 
 						<Text
