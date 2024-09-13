@@ -1,24 +1,14 @@
-import {
-	iconAccount,
-	iconAuth,
-	iconChevronDown,
-	iconChevronRight,
-	iconKey,
-	iconOpen,
-} from "~/util/icons";
+import { iconChevronRight, iconFolderSecure, iconServer, iconServerSecure } from "~/util/icons";
 
-import { Box, Button, Group, Menu, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsConnected } from "~/hooks/connection";
-import { usePanelMinSize } from "~/hooks/panels";
 import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useViewEffect } from "~/hooks/view";
@@ -26,14 +16,11 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { AuthTarget, AuthType } from "~/types";
 import { syncConnectionSchema } from "~/util/schema";
-import { AuthenticationPanel } from "../AuthenticationPanel";
-import { AccessEditorPanel } from "../AccessEditorPanel";
-import { UserEditorPanel } from "../UserEditorPanel";
 import { LearnMore } from "~/components/LearnMore";
+import { LevelPanel } from "../LevelPanel";
+import { mdiDatabaseOutline } from "@mdi/js";
 
-const AuthenticationPanelLazy = memo(AuthenticationPanel);
-const AccessEditorPanelLazy = memo(AccessEditorPanel);
-const UserEditorPanelLazy = memo(UserEditorPanel);
+const LevelPanelLazy = memo(LevelPanel);
 
 export function AuthenticationView() {
 	const isConnected = useIsConnected();
@@ -95,109 +82,38 @@ export function AuthenticationView() {
 		syncConnectionSchema();
 	});
 
-	const [minSize, ref] = usePanelMinSize(275);
-
 	return (
 		<>
-			<Box
-				h="100%"
-				ref={ref}
-			>
-				<PanelGroup
-					direction="horizontal"
-					style={{ opacity: minSize === 0 ? 0 : 1 }}
-				>
-					<Panel
-						defaultSize={minSize}
-						minSize={minSize}
-						maxSize={35}
-					>
-						<AuthenticationPanelLazy
-							list={listType}
+			<Box h="100%">
+				<PanelGroup direction="horizontal">
+					<Panel minSize={15}>
+						<LevelPanelLazy
+							level="ROOT"
+							color="red"
+							icon={iconServerSecure}
 							users={users}
-							active={active}
 							accesses={accesses}
-							onChangeList={setListType}
-							onCreate={openCreator}
-							onDelete={removeAuthentication}
-							onSelect={editAuthentication}
 						/>
 					</Panel>
 					<PanelDragger />
-					<Panel minSize={minSize}>
-						{active?.[0] === "user" ? (
-							<UserEditorPanelLazy
-								active={active}
-								isNew={isNew}
-								users={users}
-							/>
-						) : active?.[0] === "access" ? (
-							<AccessEditorPanelLazy />
-						) : (
-							<Introduction
-								title="Authentication"
-								icon={iconAuth}
-								snippet={{
-									code: `
-										-- Define a system user
-										DEFINE USER username ON ROOT
-											PASSWORD '123456'
-											ROLES OWNER;
-
-										-- Define record user access
-										DEFINE ACCESS user ON DATABASE TYPE RECORD
-											SIGNUP ( ... )
-											SIGNIN ( ... );
-									`,
-								}}
-							>
-								<Text>
-									Manage the system users and access methods configured for the
-									instance, namespace, and database.
-								</Text>
-								<Group>
-									<Menu position="bottom">
-										<Menu.Target>
-											<Button
-												flex={1}
-												variant="gradient"
-												rightSection={<Icon path={iconChevronDown} />}
-												disabled={!isConnected}
-											>
-												New authentication
-											</Button>
-										</Menu.Target>
-										<Menu.Dropdown>
-											<Menu.Item
-												onClick={() => openCreator("user")}
-												leftSection={<Icon path={iconAccount} />}
-											>
-												Create system user
-											</Menu.Item>
-											<Menu.Item
-												onClick={() => openCreator("access")}
-												leftSection={<Icon path={iconKey} />}
-											>
-												Create access method
-											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
-									<Button
-										flex={1}
-										color="slate"
-										variant="light"
-										rightSection={<Icon path={iconOpen} />}
-										onClick={() =>
-											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealdb/security/authentication",
-											)
-										}
-									>
-										Learn more
-									</Button>
-								</Group>
-							</Introduction>
-						)}
+					<Panel minSize={15}>
+						<LevelPanelLazy
+							level="NAMESPACE"
+							color="blue"
+							icon={iconFolderSecure}
+							users={users}
+							accesses={accesses}
+						/>
+					</Panel>
+					<PanelDragger />
+					<Panel minSize={15}>
+						<LevelPanelLazy
+							level="DATABASE"
+							color="orange"
+							icon={mdiDatabaseOutline}
+							users={users}
+							accesses={accesses}
+						/>
 					</Panel>
 				</PanelGroup>
 			</Box>

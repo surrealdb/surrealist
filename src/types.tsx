@@ -25,6 +25,7 @@ export type DatabaseListMode = "list" | "grid";
 export type AuthLevel = "root" | "namespace" | "database";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type AuthType = "user" | "access";
+export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 
 export type InstanceState =
 	| "creating"
