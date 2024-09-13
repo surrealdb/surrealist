@@ -1,5 +1,5 @@
 import type { MantineColorScheme } from "@mantine/core";
-import type { AnyAuth, Token } from "surrealdb";
+import type { AnyAuth, Duration, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type ViewRequirement = "database";
@@ -317,8 +317,8 @@ export interface SchemaUser {
 	roles: string[];
 	comment?: string;
 	duration: {
-		session: string;
-		token: string;
+		session: Duration;
+		token: Duration;
 	}
 }
 
@@ -329,9 +329,9 @@ export interface SchemaAccess {
 	authenticate?: any;
 	comment?: string;
 	duration: {
-		session: string;
-		grant: string;
-		token: string;
+		session: Duration;
+		grant: Duration;
+		token: Duration;
 	}
 }
 

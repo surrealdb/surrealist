@@ -224,7 +224,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 									onOptions={(user) => (
 										<Menu position="right-start">
 											<Menu.Target>
-												<ActionIcon variant="subtle">
+												<ActionIcon variant="subtle" component={Box}>
 													<Icon path={iconDotsVertical} />
 												</ActionIcon>
 											</Menu.Target>
