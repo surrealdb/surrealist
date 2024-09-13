@@ -116,7 +116,7 @@ fn main() {
                 .title("Surrealist")
                 .inner_size(1235.0, 675.0)
                 .center()
-                .min_inner_size(1235.0, 675.0);
+                .min_inner_size(825.0, 575.0);
 
             #[cfg(target_os = "macos")]
             let builder = builder

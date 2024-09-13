@@ -15,6 +15,24 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
+import {
+	iconChevronLeft,
+	iconChevronRight,
+	iconFloppy,
+	iconMemory,
+	iconPlus,
+	iconQuery,
+} from "~/util/icons";
+
+import {
+	useAvailableInstanceTypes,
+	useAvailableInstanceVersions,
+	useAvailableRegions,
+	useIsAuthenticated,
+	useOrganization,
+} from "~/hooks/cloud";
+
 import { useInputState } from "@mantine/hooks";
 import { range } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -23,29 +41,12 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { REGION_FLAGS } from "~/constants";
-import {
-	useAvailableInstanceTypes,
-	useAvailableInstanceVersions,
-	useAvailableRegions,
-	useIsAuthenticated,
-	useOrganization,
-} from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance, CloudInstanceType } from "~/types";
 import { showError } from "~/util/helpers";
-import {
-	iconChevronLeft,
-	iconChevronRight,
-	iconCircle,
-	iconCircleFilled,
-	iconFloppy,
-	iconMemory,
-	iconPlus,
-	iconQuery,
-} from "~/util/icons";
 import { fetchAPI } from "../../api";
 import { Tile } from "../../components/Tile";
 
@@ -59,8 +60,8 @@ const PROVISION_STEPS = [
 		name: "Region",
 	},
 	{
-		title: "Select an instance preset",
-		name: "Instance preset",
+		title: "Select an instance type",
+		name: "Instance type",
 	},
 	{
 		title: "Select compute units",
@@ -83,6 +84,7 @@ function InstanceType({ type, isActive, onSelect }: InstanceTypeProps) {
 		<Tile
 			isActive={isActive}
 			onClick={() => onSelect(type.slug)}
+			disabled={type.enabled === false}
 		>
 			<Group wrap="nowrap">
 				<Box flex={1}>
@@ -94,6 +96,11 @@ function InstanceType({ type, isActive, onSelect }: InstanceTypeProps) {
 						{type.slug}
 					</Text>
 					<Text>{type.description}</Text>
+					{type.enabled === false && (
+						<Text c="orange">
+							This instance type is not available
+						</Text>	
+					)}
 				</Box>
 				<Box>
 					<Table>
@@ -435,11 +442,11 @@ export function ProvisionPage() {
 
 					{step === 2 && (
 						<Stack>
-							<PrimaryTitle>Select an instance preset</PrimaryTitle>
+							<PrimaryTitle>Select an instance type</PrimaryTitle>
 
 							<Text mb="lg">
-								Instance presets define the resources allocated to your cloud
-								instance. Choose a preset that best fits your needs.
+								Instance types define the resources allocated to your cloud
+								instance. Choose a configuration that best fits your needs.
 							</Text>
 
 							<ScrollArea mah={300}>
@@ -497,7 +504,7 @@ export function ProvisionPage() {
 											<Table.Td c="bright">{name}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
-											<Table.Td>Preset</Table.Td>
+											<Table.Td>Type</Table.Td>
 											<Table.Td c="bright">{instance}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
@@ -540,11 +547,12 @@ export function ProvisionPage() {
 						{step === 0 ? (
 							<Button
 								w={150}
-								onClick={() => setActiveCloudPage("instances")}
 								color="slate"
 								variant="light"
+								onClick={() => setActiveCloudPage("instances")}
+								leftSection={<Icon path={iconChevronLeft} />}
 							>
-								Close
+								Go back
 							</Button>
 						) : (
 							<Button

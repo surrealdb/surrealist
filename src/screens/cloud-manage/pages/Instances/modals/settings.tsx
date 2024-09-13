@@ -1,13 +1,4 @@
-import {
-	Alert,
-	Button,
-	Group,
-	Modal,
-	Select,
-	Stack,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { Alert, Button, Group, Modal, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Form } from "~/components/Form";
@@ -27,17 +18,12 @@ export interface SettingsModalProps {
 	instance: CloudInstance;
 }
 
-export function SettingsModal({
-	opened,
-	onClose,
-	onRefetch,
-	instance,
-}: SettingsModalProps) {
+export function SettingsModal({ opened, onClose, onRefetch, instance }: SettingsModalProps) {
 	const [name, setName] = useInputState("");
 	const [type, setType] = useInputState("");
 	const [isLoading, setLoading] = useState(false);
 
-	const instanceTypes = useAvailableInstanceTypes();
+	const instanceTypes = useAvailableInstanceTypes().filter((t) => t.enabled !== false);
 	const types = instanceTypes.map((t) => t.slug);
 
 	const saveSettings = useStable(async () => {
@@ -78,12 +64,14 @@ export function SettingsModal({
 		>
 			<Form onSubmit={saveSettings}>
 				<Stack>
-					<Alert color="pink.9" variant="filled" mb="sm">
+					<Alert
+						color="pink.9"
+						variant="filled"
+						mb="sm"
+					>
 						<Group>
 							<Icon path={iconWarning} />
-							<Text>
-								Instance name cannot be changed at this time
-							</Text>
+							<Text>Instance name cannot be changed at this time</Text>
 						</Group>
 					</Alert>
 

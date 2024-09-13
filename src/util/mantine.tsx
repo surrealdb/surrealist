@@ -254,45 +254,14 @@ export const MANTINE_THEME = createTheme({
 			defaultProps: {
 				withCloseButton: false,
 				padding: "lg",
+				offset: 14,
+				radius: "md",
 			},
-			styles: (theme: any, props: any) => {
-				const hasTopRight =
-					props.position === "left" || props.position === "bottom";
-				const hasBottomRight =
-					props.position === "left" || props.position === "top";
-				const hasTopLeft =
-					props.position === "right" || props.position === "bottom";
-				const hasBottomLeft =
-					props.position === "right" || props.position === "top";
-
-				const isHorizontal =
-					props.position === "left" || props.position === "right";
-				const isVertical =
-					props.position === "top" || props.position === "bottom";
-
-				return {
-					inner: {
-						paddingLeft:
-							props.position === "right" ? theme.spacing.md : 0,
-						paddingRight:
-							props.position === "left" ? theme.spacing.md : 0,
-						top: isVertical ? 0 : theme.spacing.md,
-						bottom: isVertical ? 0 : theme.spacing.md,
-						left: isHorizontal ? 0 : theme.spacing.md,
-						right: isHorizontal ? 0 : theme.spacing.md,
-						width: "unset",
-					},
-					content: {
-						borderTopRightRadius: hasTopRight ? theme.radius.lg : 0,
-						borderBottomRightRadius: hasBottomRight
-							? theme.radius.lg
-							: 0,
-						borderTopLeftRadius: hasTopLeft ? theme.radius.lg : 0,
-						borderBottomLeftRadius: hasBottomLeft
-							? theme.radius.lg
-							: 0,
-					},
-				};
+			styles: {
+				inner: {
+					inset: 0,
+					width: "unset",
+				},
 			},
 		}),
 	},

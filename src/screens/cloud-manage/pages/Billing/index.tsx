@@ -16,6 +16,7 @@ import {
 	Stack,
 	Table,
 	Text,
+	TextInput,
 	Tooltip,
 } from "@mantine/core";
 
@@ -28,7 +29,7 @@ import {
 	iconOpen,
 } from "~/util/icons";
 
-import { useWindowEvent } from "@mantine/hooks";
+import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
 import { type ReactNode, useRef, useState } from "react";
@@ -111,6 +112,7 @@ export function BillingPage() {
 	const queryClient = useQueryClient();
 
 	const [requesting, setRequesting] = useState(false);
+	const [coupon, setCoupon] = useInputState("");
 	const hasRequested = useRef(false);
 
 	const requestPaymentUrl = useStable(async () => {
@@ -348,6 +350,26 @@ export function BillingPage() {
 								</Stack>
 							</Paper>
 						</SimpleGrid>
+					</Section>
+
+					<Section
+						title="Discount Codes"
+						description="Apply discount codes to your organization"
+					>
+						<Group maw={500}>
+							<TextInput
+								flex={1}
+								value={coupon}
+								onChange={setCoupon}
+								placeholder="Enter discount code"
+							/>
+							<Button
+								variant="gradient"
+								disabled={!coupon}
+							>
+								Redeem
+							</Button>
+						</Group>
 					</Section>
 
 					<Section

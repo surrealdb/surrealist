@@ -12,32 +12,28 @@ import { fetchAPI } from "../api";
 import { invalidateSession } from "../api/auth";
 import { type Question, openAboutModal } from "./about-yourself";
 
-const CONTRACTS = [
-	{
-		name: "Terms and Conditions",
-		url: "https://surrealdb.com/legal/cloud-beta-terms",
-	},
-	{
-		name: "Acceptable Use Policy",
-		url: "https://surrealdb.com/legal/acceptable-use",
-	},
-	{
-		name: "Privacy Policy",
-		url: "https://surrealdb.com/legal/privacy",
-	}
-];
+interface Condition {
+	name: string;
+	url: string;
+}
 
-export function openTermsModal() {
+export async function openTermsModal() {
+	const conditions = await fetchAPI<Condition[]>("/tc-pp");
+
 	openModal({
 		size: "lg",
 		closeOnEscape: false,
 		closeOnClickOutside: false,
 		title: <PrimaryTitle>Terms and Conditions</PrimaryTitle>,
-		children: <TermsModal />,
+		children: <TermsModal conditions={conditions} />,
 	});
 }
 
-function TermsModal() {
+interface TermsModalProps {
+	conditions: Condition[];
+}
+
+function TermsModal({ conditions }: TermsModalProps) {
 	const [termsChecked, setTermsChecked] = useState(false);
 	const [newsChecked, setNewsChecked] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -75,8 +71,7 @@ function TermsModal() {
 	return (
 		<Stack>
 			<Text fz="lg">
-				Please accept our terms and conditions before getting started
-				with Surreal Cloud.
+				Please accept our terms and conditions before getting started with Surreal Cloud.
 			</Text>
 			<Checkbox
 				mt="xl"
@@ -85,12 +80,16 @@ function TermsModal() {
 				label={
 					<>
 						<Text span>I have read and agree to the </Text>
-						{CONTRACTS.map((contract, i) => (
+						{conditions.map((condition, i) => (
 							<>
-								<Anchor key={i} href={contract.url} inline>
-									{contract.name}
+								<Anchor
+									key={i}
+									href={condition.url}
+									inline
+								>
+									{condition.name}
 								</Anchor>
-								{i < CONTRACTS.length - 1 && <Text span>, </Text>}
+								{i < conditions.length - 1 && <Text span>, </Text>}
 							</>
 						))}
 					</>
@@ -99,10 +98,14 @@ function TermsModal() {
 			<Checkbox
 				checked={newsChecked}
 				onChange={updateNewsChecked}
-				label="I agree to receive occasional emails about Surreal Cloud updates and features"
+				label="By subscribing to SurrealDB, you will receive carefully curated content, information on new products and features plus details of educational events where you can engage with our team and community"
 			/>
 			<Group mt="xl">
-				<Button color="slate" variant="light" onClick={declineTerms}>
+				<Button
+					color="slate"
+					variant="light"
+					onClick={declineTerms}
+				>
 					Decline
 				</Button>
 				<Spacer />

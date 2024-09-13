@@ -43,12 +43,8 @@ export function useAvailableRegions() {
  */
 export function useAvailableInstanceTypes() {
 	const current = useOrganization();
-	const instanceTypes = useCloudStore((s) => s.instanceTypes);
-	const valid = new Set(
-		current?.plan?.instance_types?.map((t) => t.slug) ?? [],
-	);
-
-	return instanceTypes.filter((type) => valid.has(type.slug));
+	
+	return current?.plan.instance_types ?? [];
 }
 
 /**

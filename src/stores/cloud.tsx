@@ -11,7 +11,6 @@ import type {
 
 interface CloudValues {
 	profile: CloudProfile;
-	instanceTypes: CloudInstanceType[];
 	instanceVersions: string[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
@@ -29,7 +28,6 @@ export type CloudStore = {
 	sessionToken: string;
 	isSupported: boolean;
 	profile: CloudProfile;
-	instanceTypes: CloudInstanceType[];
 	instanceVersions: string[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];

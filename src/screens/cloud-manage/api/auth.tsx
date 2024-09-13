@@ -11,8 +11,7 @@ import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
-const VERIFIER_CHARS =
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 const CALLBACK_ENDPOINT = isDevelopment
 	? "http://localhost:1420/cloud/callback/index.html"
 	: import.meta.env.VITE_CLOUD_CALLBACK_URL;
@@ -115,8 +114,7 @@ export async function verifyAuthentication(code: string, state: string) {
 		invalidateSession();
 		showError({
 			title: "Authentication failed",
-			subtitle:
-				"An error occurred while verifying the authentication details",
+			subtitle: "An error occurred while verifying the authentication details",
 		});
 	}
 }
@@ -125,8 +123,7 @@ export async function verifyAuthentication(code: string, state: string) {
  * Refresh the current access token
  */
 export async function refreshAccess() {
-	const { setIsSupported, setLoading, setSessionExpired } =
-		useCloudStore.getState();
+	const { setIsSupported, setLoading, setSessionExpired } = useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
 	const isSupported = await isClientSupported();
 
@@ -209,8 +206,7 @@ export async function acquireSession(accessToken: string) {
 		invalidateSession();
 		showError({
 			title: "Authentication failed",
-			subtitle:
-				"An unexpected error occurred while authenticating to Surreal Cloud",
+			subtitle: "An unexpected error occurred while authenticating to Surreal Cloud",
 		});
 	}
 }
