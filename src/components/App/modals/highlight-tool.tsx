@@ -1,4 +1,3 @@
-import classes from "../style.module.scss";
 import { highlightCode } from "@lezer/highlight";
 import { Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
@@ -15,6 +14,7 @@ import { useIntent } from "~/hooks/url";
 import type { ColorScheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { formatQuery } from "~/util/surrealql";
+import classes from "../style.module.scss";
 
 export function Render({ value, theme }: { value: string; theme: ColorScheme }) {
 	const render = useStable(() => {
