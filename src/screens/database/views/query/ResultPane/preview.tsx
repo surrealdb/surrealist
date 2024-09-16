@@ -7,9 +7,9 @@ import { tryit } from "radash";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
+import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useValueFormatter } from "~/hooks/surrealql";
-import { useRelativeTime } from "~/hooks/time";
 import { useRefreshTimer } from "~/hooks/timer";
 import { useInspector } from "~/providers/Inspector";
 import { executeQuery } from "~/screens/database/connection/connection";
@@ -44,11 +44,7 @@ function attemptFormat(format: Formatter, data: any) {
 	return err ? `"Error: ${err.message}"` : res;
 }
 
-function buildCombinedResult(
-	index: number,
-	{ result, execution_time }: any,
-	format: Formatter,
-) {
+function buildCombinedResult(index: number, { result, execution_time }: any, format: Formatter) {
 	const header = `\n\n-------- Query ${index + 1 + (execution_time ? ` (${execution_time})` : "")} --------\n\n`;
 
 	return header + attemptFormat(format, result);
@@ -73,10 +69,7 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 
 	const contents = useMemo(() => {
 		return results
-			.reduce(
-				(acc, cur, i) => acc + buildCombinedResult(i, cur, format),
-				"",
-			)
+			.reduce((acc, cur, i) => acc + buildCombinedResult(i, cur, format), "")
 			.trim();
 	}, [results, format]);
 
@@ -84,10 +77,7 @@ export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
 		<CodeEditor
 			value={contents}
 			readOnly
-			extensions={[
-				surrealql("combined-results"),
-				surqlRecordLinks(inspect),
-			]}
+			extensions={[surrealql("combined-results"), surqlRecordLinks(inspect)]}
 		/>
 	);
 }
@@ -99,10 +89,7 @@ export interface SingleJsonPreviewProps {
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
 	const [format] = useValueFormatter();
 	const { inspect } = useInspector();
-	const contents = useMemo(
-		() => attemptFormat(format, result),
-		[result, format],
-	);
+	const contents = useMemo(() => attemptFormat(format, result), [result, format]);
 
 	return (
 		<CodeEditor
@@ -119,10 +106,8 @@ export interface LivePreviewProps {
 }
 
 export function LivePreview({ query, isLive }: LivePreviewProps) {
-	const messages = useInterfaceStore(
-		(s) => s.liveQueryMessages[query.id] || [],
-	);
-	const formatTime = useRelativeTime();
+	const messages = useInterfaceStore((s) => s.liveQueryMessages[query.id] || []);
+	const { inspect } = useInspector();
 
 	const { showContextMenu } = useContextMenu();
 	const [format] = useValueFormatter();
@@ -147,12 +132,16 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 						}}
 					>
 						{messages.map((msg) => {
-							const [color, icon] = LIVE_ACTION_COLORS[
-								msg.action
-							] || ["slate", iconHelp];
+							const [color, icon] = LIVE_ACTION_COLORS[msg.action] || [
+								"slate",
+								iconHelp,
+							];
 
 							return (
-								<Accordion.Item key={msg.id} value={msg.id}>
+								<Accordion.Item
+									key={msg.id}
+									value={msg.id}
+								>
 									<Accordion.Control
 										pl="xs"
 										onContextMenu={showContextMenu([
@@ -161,18 +150,13 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 												title: "Copy live query id",
 												icon: <Icon path={iconCopy} />,
 												onClick: () =>
-													navigator.clipboard.writeText(
-														msg.queryId,
-													),
+													navigator.clipboard.writeText(msg.queryId),
 											},
 											{
 												key: "kill",
 												title: "Kill live query",
-												icon: (
-													<Icon path={iconDelete} />
-												),
-												onClick: () =>
-													killQuery(msg.queryId),
+												icon: <Icon path={iconDelete} />,
+												onClick: () => killQuery(msg.queryId),
 											},
 										])}
 									>
@@ -189,21 +173,23 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 													/>
 												}
 											>
-												<Text c={color} fw={700}>
+												<Text
+													c={color}
+													fw={700}
+												>
 													{msg.action}
 												</Text>
 											</Badge>
 											<Stack gap={0}>
-												<Text>
-													{formatTime(msg.timestamp)}
-												</Text>
-												<Text c="slate" size="xs">
+												<RelativeTime value={msg.timestamp} />
+												<Text
+													c="slate"
+													size="xs"
+												>
 													<Text
 														span
 														ff="mono"
-														onFocus={
-															ON_FOCUS_SELECT
-														}
+														onFocus={ON_FOCUS_SELECT}
 													>
 														{msg.queryId}
 													</Text>
@@ -214,12 +200,12 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 									{hasBody(msg) && (
 										<Accordion.Panel>
 											<CodeEditor
-												value={attemptFormat(
-													format,
-													msg.data,
-												)}
+												value={attemptFormat(format, msg.data)}
 												readOnly
-												extensions={[surrealql()]}
+												extensions={[
+													surrealql(),
+													surqlRecordLinks(inspect),
+												]}
 											/>
 										</Accordion.Panel>
 									)}
@@ -229,7 +215,10 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 					</Accordion>
 				</ScrollArea>
 			) : (
-				<Center h="100%" c="slate">
+				<Center
+					h="100%"
+					c="slate"
+				>
 					<Stack>
 						<Icon
 							path={isLive ? iconBroadcastOn : iconBroadcastOff}
@@ -240,7 +229,10 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 							? "Waiting for live query messages..."
 							: "No live queries currently active"}
 						{isLive && (
-							<Badge color="red" mx="auto">
+							<Badge
+								color="red"
+								mx="auto"
+							>
 								Listening...
 							</Badge>
 						)}
