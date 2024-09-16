@@ -42,7 +42,8 @@ const INTENT_REGISTRY = {
 	"create-scope": "authentication",
 	"register-user": "authentication",
 	"docs-switch-language": "documentation",
-	"cloud-callback": "cloud",
+	"cloud-signin": "cloud",
+	"cloud-signout": "cloud",
 } satisfies IntentMap;
 
 export type IntentType = keyof typeof INTENT_REGISTRY;
