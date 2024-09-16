@@ -54,9 +54,11 @@ export function buildDefinitionQueries({
 	const indexIndex = objectify(current.indexes, (i) => i.name);
 	const eventIndex = objectify(current.events, (e) => e.name);
 
-	if (!equals(previous.schema, current.schema)) {
-		const tableType = current.schema.kind.kind;
+	const isRelation = current.schema.kind.kind === "RELATION";
+	const inTables = current.schema.kind.in?.map((name) => tb(name))?.join("|") ?? "";
+	const outTables = current.schema.kind.out?.map((name) => tb(name))?.join("|") ?? "";
 
+	if (!equals(previous.schema, current.schema)) {
 		let query = "DEFINE TABLE";
 
 		if (useOverwrite) {
@@ -75,14 +77,14 @@ export function buildDefinitionQueries({
 			query += " SCHEMALESS";
 		}
 
-		query += ` TYPE ${tableType}`;
+		query += ` TYPE ${current.schema.kind.kind}`;
 
-		if (tableType === "RELATION" && current.schema.kind.in) {
-			query += ` IN ${current.schema.kind.in.map((name) => tb(name)).join("|")}`;
+		if (isRelation && inTables) {
+			query += ` IN ${inTables}`;
 		}
 
-		if (tableType === "RELATION" && current.schema.kind.out) {
-			query += ` OUT ${current.schema.kind.out.map((name) => tb(name)).join("|")}`;
+		if (isRelation && outTables) {
+			query += ` OUT ${outTables}`;
 		}
 
 		if (current.schema.view) {
@@ -126,7 +128,13 @@ export function buildDefinitionQueries({
 		}
 
 		if (field.kind) {
-			query += ` TYPE ${field.kind}`;
+			if (isRelation && field.name === "in") {
+				query += ` TYPE record<${inTables}>`;
+			} else if (isRelation && field.name === "out") {
+				query += ` TYPE record<${outTables}>`;
+			} else {
+				query += ` TYPE ${field.kind}`;
+			}
 		}
 
 		if (field.value) {
