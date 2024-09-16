@@ -98,7 +98,7 @@ function InstanceType({ type, isActive, onSelect }: InstanceTypeProps) {
 					<Text>{type.description}</Text>
 					{type.enabled === false && (
 						<Text c="orange">
-							This instance type is not available
+							This instance type is not available in your current plan
 						</Text>	
 					)}
 				</Box>
