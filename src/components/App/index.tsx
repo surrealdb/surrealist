@@ -11,6 +11,8 @@ import { CloudExpiredDialog } from "./modals/cloud-expired";
 import { ConnectionModal } from "./modals/connection";
 import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
+import { DataExportModal } from "./modals/data-export";
+import { DataImportModal } from "./modals/data-import";
 import { DownloadModal } from "./modals/download";
 import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
@@ -56,6 +58,8 @@ export function App() {
 			<TableCreatorModal />
 			<KeymapModal />
 			<HighlightToolModal />
+			<DataExportModal />
+			<DataImportModal />
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />

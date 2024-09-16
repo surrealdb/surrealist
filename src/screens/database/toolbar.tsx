@@ -19,6 +19,7 @@ import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
 import { DATASETS } from "~/constants";
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
+import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -49,7 +50,6 @@ export function DatabaseToolbar() {
 	const isConnected = useIsConnected();
 	const connection = useConnection();
 
-	const [isDatasetLoading, setDatasetLoading] = useState(false);
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
 
@@ -87,24 +87,7 @@ export function DatabaseToolbar() {
 		},
 	});
 
-	const applyDataset = useStable(async (info: DataSet) => {
-		setDatasetLoading(true);
-
-		try {
-			const dataset = await fetch(info.url).then((res) => res.text());
-
-			await sleep(50);
-			await executeQuery(dataset);
-			await syncConnectionSchema();
-
-			showInfo({
-				title: "Dataset loaded",
-				subtitle: `${info.name} has been applied`,
-			});
-		} finally {
-			setDatasetLoading(false);
-		}
-	});
+	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
 
 	const openChangelog = useStable(() => {
 		dispatchIntent("open-changelog");
@@ -177,11 +160,11 @@ export function DatabaseToolbar() {
 						}}
 					>
 						<Menu.Target>
-							<Tooltip label="Load demo dataset">
+							<Tooltip label="Apply demo dataset">
 								<ActionIcon
 									color="slate"
 									variant="subtle"
-									aria-label="Load demo dataset"
+									aria-label="Apply demo dataset"
 									loading={isDatasetLoading}
 								>
 									<Icon path={iconFile} />
@@ -190,12 +173,12 @@ export function DatabaseToolbar() {
 						</Menu.Target>
 						<Menu.Dropdown miw={200}>
 							<Menu.Label>Select a dataset</Menu.Label>
-							{Object.entries(DATASETS).map(([id, info]) => (
+							{datasets.map(({ label, value }) => (
 								<Menu.Item
-									key={id}
-									onClick={() => applyDataset(info)}
+									key={value}
+									onClick={() => applyDataset(value)}
 								>
-									{info.name}
+									{label}
 								</Menu.Item>
 							))}
 						</Menu.Dropdown>

@@ -7,10 +7,10 @@ import { useRef, useState } from "react";
 import { RecordId, Table } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
-import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
+import { useBoolean } from "~/hooks/boolean";
 import { useIsConnected } from "~/hooks/connection";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
@@ -18,25 +18,24 @@ import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { showError, showInfo } from "~/util/helpers";
-import { iconChevronRight, iconDownload } from "~/util/icons";
+import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
 
-type Importer = null | "sql" | "csv";
+type ImportType = "sql" | "csv";
 
-export function Importer() {
+export function DataImportModal() {
 	const isLight = useIsLight();
 	const tables = useTableNames();
 	const isOnline = useIsConnected();
-	const [importer, setImporter] = useState<Importer>(null);
+
+	const [isOpen, openedHandle] = useBoolean();
+
+	const [importType, setImportType] = useState<ImportType>("sql");
 	const [isImporting, setImporting] = useState(false);
 	const [table, setTable] = useInputState("");
 
 	const importFile = useRef<OpenedTextFile | null>(null);
-
-	const closeImporter = useStable(() => {
-		setImporter(null);
-	});
 
 	const startImport = useStable(async () => {
 		try {
@@ -57,12 +56,13 @@ export function Importer() {
 			}
 
 			importFile.current = file;
+			openedHandle.open();
 
 			if (file.name.endsWith(".csv")) {
-				setImporter("csv");
+				setImportType("csv");
 				setTable("");
 			} else {
-				setImporter("sql");
+				setImportType("sql");
 			}
 		} finally {
 			setImporting(false);
@@ -79,7 +79,7 @@ export function Importer() {
 
 			const content = importFile.current.content.trim();
 
-			if (importer === "csv") {
+			if (importType === "csv") {
 				papaparse.parse(content, {
 					header: true,
 					dynamicTyping: true,
@@ -105,14 +105,12 @@ export function Importer() {
 
 						const content = row.data as any;
 						const what =
-							"id" in content
-								? new RecordId(table, content.id)
-								: new Table(table);
+							"id" in content ? new RecordId(table, content.id) : new Table(table);
 
-						executeQuery(
-							/* surql */ `CREATE $what CONTENT $content`,
-							{ what, content },
-						);
+						executeQuery(/* surql */ `CREATE $what CONTENT $content`, {
+							what,
+							content,
+						});
 					},
 					complete() {
 						syncConnectionSchema();
@@ -137,72 +135,63 @@ export function Importer() {
 			});
 		} finally {
 			setImporting(false);
-			closeImporter();
+			openedHandle.close();
 		}
 	});
 
 	useIntent("import-database", startImport);
 
 	return (
-		<>
-			<Entry
-				leftSection={<Icon path={iconDownload} />}
-				rightSection={<Icon path={iconChevronRight} />}
-				onClick={startImport}
-				loading={isImporting}
-				disabled={!isOnline}
-				style={{ flexShrink: 0 }}
-				bg="transparent"
-			>
-				Import data
-			</Entry>
-
-			<Modal
-				opened={importer === "sql"}
-				onClose={closeImporter}
-				size="sm"
-				title={<PrimaryTitle>Import database</PrimaryTitle>}
-			>
-				<Text mb="xl" c={isLight ? "slate.7" : "slate.2"}>
-					Are you sure you want to import the selected file?
-				</Text>
-
-				<Text mb="xl" c={isLight ? "slate.7" : "slate.2"}>
-					While existing data will be preserved, it may be overwritten
-					by the imported data.
-				</Text>
-
-				<Button
-					mt="xl"
-					fullWidth
-					onClick={confirmImport}
-					loading={isImporting}
-					variant="gradient"
-				>
-					Start import
-					<Icon path={iconDownload} right />
-				</Button>
-			</Modal>
-
-			<Modal
-				opened={importer === "csv"}
-				onClose={closeImporter}
-				size="sm"
-				title={<PrimaryTitle>Import table</PrimaryTitle>}
-			>
+		<Modal
+			opened={isOpen}
+			onClose={openedHandle.close}
+			size="sm"
+			title={
+				<PrimaryTitle>
+					Import {importType === "sql" ? "database" : "table"}
+				</PrimaryTitle>
+			}
+		>
+			{importType === "sql" ? (
 				<Stack>
-					<Text>
-						This importer allows you to parse CSV data into a table.
+					<Text c={isLight ? "slate.7" : "slate.2"}>
+						Are you sure you want to import the selected file?
 					</Text>
+
+					<Text
+						mb="xl"
+						c={isLight ? "slate.7" : "slate.2"}
+					>
+						While existing data will be preserved, it may be overwritten by the
+						imported data.
+					</Text>
+
+					<Button
+						mt="xl"
+						fullWidth
+						onClick={confirmImport}
+						loading={isImporting}
+						variant="gradient"
+					>
+						Start import
+						<Icon
+							path={iconDownload}
+							right
+						/>
+					</Button>
+				</Stack>
+			) : (
+				<Stack>
+					<Text>This importer allows you to parse CSV data into a table.</Text>
 					<Text>
-						The first row of the CSV file will be interpreted as
-						column names. Before importing, make sure these match
-						the columns in the table you are importing to.
+						The first row of the CSV file will be interpreted as column names.
+						Before importing, make sure these match the columns in the table you are
+						importing to.
 					</Text>
 
 					<Text>
-						While existing data will be preserved, it may be
-						overwritten by the imported data.
+						While existing data will be preserved, it may be overwritten by the
+						imported data.
 					</Text>
 
 					<Divider />
@@ -226,10 +215,13 @@ export function Importer() {
 						disabled={!table}
 					>
 						Start import
-						<Icon path={iconDownload} right />
+						<Icon
+							path={iconDownload}
+							right
+						/>
 					</Button>
 				</Stack>
-			</Modal>
-		</>
+			)}
+		</Modal>
 	);
 }

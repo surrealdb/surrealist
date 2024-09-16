@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
+import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
@@ -11,24 +12,25 @@ import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
 import { useInterfaceStore } from "~/stores/interface";
 import { DisconnectedEvent } from "~/util/global-events";
 import {
+	iconChevronRight,
 	iconDesigner,
+	iconDownload,
 	iconExplorer,
 	iconOpen,
 	iconPlus,
 	iconTable,
+	iconUpload,
 } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { ExplorerPane } from "../ExplorerPane";
-import { Exporter } from "../Exporter";
-import { Importer } from "../Importer";
 
 const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
@@ -100,8 +102,24 @@ export function ExplorerView() {
 							onTableContextMenu={buildContextMenu}
 							extraSection={
 								<>
-									<Exporter />
-									<Importer />
+									<Entry
+										leftSection={<Icon path={iconUpload} />}
+										rightSection={<Icon path={iconChevronRight} />}
+										onClick={() => dispatchIntent("export-database")}
+										style={{ flexShrink: 0 }}
+										bg="transparent"
+									>
+										Export data
+									</Entry>
+									<Entry
+										leftSection={<Icon path={iconDownload} />}
+										rightSection={<Icon path={iconChevronRight} />}
+										onClick={() => dispatchIntent("import-database")}
+										style={{ flexShrink: 0 }}
+										bg="transparent"
+									>
+										Import data
+									</Entry>
 								</>
 							}
 						/>

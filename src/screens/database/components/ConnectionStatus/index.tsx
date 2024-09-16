@@ -1,12 +1,16 @@
-import { Button, Group, Indicator, Menu, Text } from "@mantine/core";
+import { Button, Group, Indicator, Menu, Modal, Select, Stack, Text } from "@mantine/core";
 import { useState } from "react";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SANDBOX } from "~/constants";
+import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
+import { useDatasets } from "~/hooks/dataset";
+import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
-import { iconChevronDown, iconClose, iconEdit, iconList, iconReset, iconSandbox } from "~/util/icons";
+import { iconChevronDown, iconClose, iconDownload, iconEdit, iconFile, iconList, iconReset, iconSandbox, iconUpload } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
@@ -14,6 +18,13 @@ import { closeConnection, openConnection } from "../../connection/connection";
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
 	const connection = useConnection();
+	const schema = useDatabaseSchema();
+
+	const isSchemaEmpty = Object.entries(schema).every(([_, tables]) => tables.length === 0);
+
+	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
+	const [showDatasets, showDatasetsHandle] = useBoolean();
+	const [dataset, setDataset] = useState("");
 
 	const currentState = useDatabaseStore((s) => s.currentState);
 	const latestError = useDatabaseStore((s) => s.latestError);
@@ -26,6 +37,16 @@ export function ConnectionStatus() {
 	const openConnections = useStable(() => {
 		dispatchIntent("open-connections");
 		setIsDropped(false);
+	});
+
+	const openDatasets = useStable(() => {
+		showDatasetsHandle.open();
+		setDataset("");
+	});
+
+	const confirmDataset = useStable(async () => {
+		await applyDataset(dataset);
+		showDatasetsHandle.close();
 	});
 
 	const isSandbox = connection?.id === SANDBOX;
@@ -82,42 +103,73 @@ export function ConnectionStatus() {
 								</Text>
 							</Button>
 						</Menu.Target>
-						<Menu.Dropdown>
+						<Menu.Dropdown miw={175}>
 							<Text
+								py={2}
 								px="sm"
 								c="slate"
 							>
 								{statusText}
 							</Text>
 							<Menu.Divider />
+							<Menu.Label>
+								Connection
+							</Menu.Label>
 							<Menu.Item
 								leftSection={<Icon path={iconList} />}
 								onClick={openConnections}
 							>
-								Change connection...
+								Change connection
+							</Menu.Item>
+							{!isSandbox && (
+								<Menu.Item
+									leftSection={<Icon path={iconEdit} />}
+									onClick={() => openEditor(connection)}
+								>
+									Edit connection
+								</Menu.Item>
+							)}
+							<Menu.Label mt="sm">
+								Actions
+							</Menu.Label>
+							{!isSandbox && connection.lastDatabase && isSchemaEmpty && (
+								<Menu.Item
+									leftSection={<Icon path={iconFile} />}
+									disabled={currentState !== "connected"}
+									onClick={openDatasets}
+								>
+									Initialize with dataset
+								</Menu.Item>
+							)}
+							<Menu.Item
+								leftSection={<Icon path={iconUpload} />}
+								disabled={currentState !== "connected"}
+								onClick={() => dispatchIntent("export-database")}
+							>
+								Export data
+							</Menu.Item>
+							<Menu.Item
+								leftSection={<Icon path={iconDownload} />}
+								disabled={currentState !== "connected"}
+								onClick={() => dispatchIntent("import-database")}
+							>
+								Import data
 							</Menu.Item>
 							{!isSandbox && (
 								<>
-									<Menu.Item
-										leftSection={<Icon path={iconEdit} />}
-										onClick={() => openEditor(connection)}
-									>
-										Edit connection
-									</Menu.Item>
 									<Menu.Item
 										leftSection={<Icon path={iconReset} />}
 										onClick={() => openConnection()}
 									>
 										Reconnect
 									</Menu.Item>
-									{currentState === "connected" && (
-										<Menu.Item
-											leftSection={<Icon path={iconClose} />}
-											onClick={() => closeConnection()}
-										>
-											Disconnect
-										</Menu.Item>
-									)}
+									<Menu.Item
+										leftSection={<Icon path={iconClose} />}
+										disabled={currentState !== "connected"}
+										onClick={() => closeConnection()}
+									>
+										Disconnect
+									</Menu.Item>
 									{latestError && (
 										<>
 											<Menu.Divider />
@@ -146,6 +198,49 @@ export function ConnectionStatus() {
 					Select a connection
 				</Button>
 			)}
+
+			<Modal
+				opened={showDatasets}
+				onClose={showDatasetsHandle.close}
+				title={<Group>
+					<Icon path={iconFile} size="lg" />
+					<PrimaryTitle>Initialize with dataset</PrimaryTitle>
+				</Group>}
+			>
+				<Stack gap="xl">
+					<Text>
+						You can initialize your empty database with an official dataset to provide a starting point for your project.
+					</Text>
+
+					<Select
+						placeholder="Select a dataset"
+						value={dataset}
+						onChange={setDataset as any}
+						data={datasets}
+					/>
+
+					<Group>
+						<Button
+							onClick={showDatasetsHandle.close}
+							color="slate"
+							variant="light"
+							flex={1}
+						>
+							Close
+						</Button>
+						<Button
+							type="submit"
+							variant="gradient"
+							flex={1}
+							disabled={!dataset}
+							onClick={confirmDataset}
+							loading={isDatasetLoading}
+						>
+							Apply dataset
+						</Button>
+					</Group>
+				</Stack>
+			</Modal>
 		</>
 	);
 }
