@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -22,14 +22,17 @@ export interface GeographyDrawerProps {
 	onClose: () => void;
 }
 
-export const GeographyDrawer = ({
+export function GeographyDrawer({
 	opened,
 	data,
 	onClose,
-}: GeographyDrawerProps) => {
+}: GeographyDrawerProps) {
 	const [width, setWidth] = useState(650);
-
 	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
+
+	useEffect(() => {
+		setGeoJSON(formatValue(data));
+	}, [data]);
 
 	return (
 		<Drawer
@@ -95,4 +98,4 @@ export const GeographyDrawer = ({
 			</Stack>
 		</Drawer>
 	);
-};
+}

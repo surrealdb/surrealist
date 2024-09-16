@@ -150,6 +150,7 @@ function GeographyPointCell({ value }: { value: GeometryPoint }) {
 	const [long, lat] = value.point;
 	try {
 		const converted = convert(`${lat} ${long}`);
+		
 		return (
 			<GeographyLink
 				value={value}
