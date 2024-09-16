@@ -14,29 +14,24 @@ import { useIntent } from "~/hooks/url";
 import type { ColorScheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { formatQuery } from "~/util/surrealql";
-import classes from "../style.module.scss";
 
 export function Render({ value, theme }: { value: string; theme: ColorScheme }) {
 	const render = useStable(() => {
 		const rendered = document.createElement("pre");
-
-		rendered.style.whiteSpace = "pre-wrap";
+		const textColor = getComputedStyle(document.documentElement).getPropertyValue("--mantine-color-text");
 
 		function emit(text: string, classes?: string) {
 			const textNode = document.createTextNode(text);
+			const span = document.createElement("span");
 
 			if (classes) {
-				const span = document.createElement("span");
-
-				if (classes) {
-					span.style.color = classes;
-				}
-
-				span.append(textNode);
-				rendered.append(span);
+				span.style.color = classes;
 			} else {
-				rendered.append(textNode);
+				span.style.color = textColor;
 			}
+
+			span.append(textNode);
+			rendered.append(span);
 		}
 
 		function emitBreak() {
