@@ -41,13 +41,13 @@ import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { InvoiceStatus } from "~/types";
+import { showInfo } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBilling } from "../../hooks/billing";
 import { useCloudInvoices } from "../../hooks/invoices";
 import { useCloudPayments } from "../../hooks/payments";
 import { openBillingModal } from "../../modals/billing";
-import { showInfo } from "~/util/helpers";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
