@@ -389,8 +389,6 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		LIVE_QUERIES.set(id, new Set(liveIds));
 
-		const timestamp = Date.now();
-
 		for (const queryId of liveIds) {
 			instance.subscribeLive(queryId, (action, data) => {
 				pushLiveQueryMessage(id, {
@@ -398,7 +396,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 					queryId: queryId.toString(),
 					action,
 					data,
-					timestamp,
+					timestamp: Date.now(),
 				});
 			});
 		}

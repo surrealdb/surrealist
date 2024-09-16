@@ -7,9 +7,9 @@ import { tryit } from "radash";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
+import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useValueFormatter } from "~/hooks/surrealql";
-import { useRelativeTime } from "~/hooks/time";
 import { useRefreshTimer } from "~/hooks/timer";
 import { useInspector } from "~/providers/Inspector";
 import { executeQuery } from "~/screens/database/connection/connection";
@@ -107,8 +107,6 @@ export interface LivePreviewProps {
 
 export function LivePreview({ query, isLive }: LivePreviewProps) {
 	const messages = useInterfaceStore((s) => s.liveQueryMessages[query.id] || []);
-
-	const formatTime = useRelativeTime();
 	const { inspect } = useInspector();
 
 	const { showContextMenu } = useContextMenu();
@@ -183,7 +181,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 												</Text>
 											</Badge>
 											<Stack gap={0}>
-												<Text>{formatTime(msg.timestamp)}</Text>
+												<RelativeTime value={msg.timestamp} />
 												<Text
 													c="slate"
 													size="xs"
