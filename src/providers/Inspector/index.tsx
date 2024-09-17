@@ -11,6 +11,7 @@ import { useStable } from "~/hooks/stable";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
+import posthog from "posthog-js";
 
 type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;
@@ -60,6 +61,8 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 		} else {
 			setHistoryItems([recordId]);
 		}
+
+		posthog.capture("open_record_inspector");
 	});
 
 	const stopInspect = useStable(() => {

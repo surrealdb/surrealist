@@ -25,6 +25,8 @@ import {
 	iconHelp,
 } from "~/util/icons";
 import classes from "./style.module.scss";
+import { useEffect } from "react";
+import posthog from "posthog-js";
 
 interface Topic {
 	title: string;
@@ -86,6 +88,12 @@ export function HelpAndSupport() {
 	const [isOpen, openHandle] = useDisclosure();
 	const isAuthed = useIsAuthenticated();
 	const isLight = useIsLight();
+
+	useEffect(() => {
+		if (isOpen) {
+			posthog.capture("support_open");
+		}
+	}, [isOpen]);
 
 	useIntent("open-help", openHandle.open);
 

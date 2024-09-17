@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
+import posthog from "posthog-js";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -112,6 +113,8 @@ export function CommandPaletteModal() {
 				break;
 			}
 		}
+
+		posthog.capture("execute_command");
 	};
 
 	const handleKeyDown = useStable((e: React.KeyboardEvent) => {
