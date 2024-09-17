@@ -58,7 +58,7 @@ export function DataExportModal() {
 			if (success) {
 				showInfo({
 					title: "Export",
-					subtitle: "Database export saved to disk",
+					subtitle: "Database export successfully created",
 				});
 			}
 		} finally {
