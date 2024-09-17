@@ -76,9 +76,11 @@ export async function openConnection(options?: ConnectOptions) {
 	openedConnection = connection;
 	forceClose = false;
 
-	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
+	const { setCurrentState, setVersion, setLatestError, clearSchema } = useDatabaseStore.getState();
 	const rpcEndpoint = connectionUri(connection.authentication);
 	const thisInstance = instance;
+
+	clearSchema();
 
 	adapter.log("DB", `Opening connection to ${rpcEndpoint}`);
 
