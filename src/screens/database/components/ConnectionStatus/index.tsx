@@ -10,7 +10,17 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
-import { iconChevronDown, iconClose, iconDownload, iconEdit, iconFile, iconList, iconReset, iconSandbox, iconUpload } from "~/util/icons";
+import {
+	iconChevronDown,
+	iconClose,
+	iconDownload,
+	iconEdit,
+	iconFile,
+	iconList,
+	iconReset,
+	iconSandbox,
+	iconUpload,
+} from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
@@ -20,7 +30,10 @@ export function ConnectionStatus() {
 	const connection = useConnection();
 	const schema = useDatabaseSchema();
 
-	const isSchemaEmpty = Object.entries(schema).every(([_, tables]) => tables.length === 0);
+	const noTables = schema.tables.length === 0;
+	const noFunctions = schema.functions.length === 0;
+	const noUsers = schema.users.length === 0;
+	const isSchemaEmpty = noTables && noFunctions && noUsers;
 
 	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
 	const [showDatasets, showDatasetsHandle] = useBoolean();
@@ -55,7 +68,7 @@ export function ConnectionStatus() {
 		disconnected: ["Disconnected", "red", false],
 		retrying: ["Retrying...", "red", true],
 		connecting: ["Connecting...", "yellow.6", true],
-		connected: [`SurrealDB ${remoteVersion}`, "green", false]
+		connected: [`SurrealDB ${remoteVersion}`, "green", false],
 	} as const;
 
 	const [statusText, color, pulse] = statusInfo[currentState];
@@ -70,7 +83,7 @@ export function ConnectionStatus() {
 						trigger="hover"
 						position="bottom-start"
 						transitionProps={{
-							transition: "scale-y"
+							transition: "scale-y",
 						}}
 					>
 						<Menu.Target>
@@ -78,11 +91,13 @@ export function ConnectionStatus() {
 								variant="subtle"
 								color="slate"
 								onClick={openConnections}
-								leftSection={isSandbox ? (
-									<Icon path={iconSandbox} />
-								) : (
-									<Icon path={USER_ICONS[connection.icon ?? 0]} />
-								)}
+								leftSection={
+									isSandbox ? (
+										<Icon path={iconSandbox} />
+									) : (
+										<Icon path={USER_ICONS[connection.icon ?? 0]} />
+									)
+								}
 								rightSection={
 									<Indicator
 										processing={pulse}
@@ -112,9 +127,7 @@ export function ConnectionStatus() {
 								{statusText}
 							</Text>
 							<Menu.Divider />
-							<Menu.Label>
-								Connection
-							</Menu.Label>
+							<Menu.Label>Connection</Menu.Label>
 							<Menu.Item
 								leftSection={<Icon path={iconList} />}
 								onClick={openConnections}
@@ -129,9 +142,7 @@ export function ConnectionStatus() {
 									Edit connection
 								</Menu.Item>
 							)}
-							<Menu.Label mt="sm">
-								Actions
-							</Menu.Label>
+							<Menu.Label mt="sm">Actions</Menu.Label>
 							{!isSandbox && connection.lastDatabase && isSchemaEmpty && (
 								<Menu.Item
 									leftSection={<Icon path={iconFile} />}
@@ -173,10 +184,18 @@ export function ConnectionStatus() {
 									{latestError && (
 										<>
 											<Menu.Divider />
-											<Menu.Label c="red" fw={700}>
+											<Menu.Label
+												c="red"
+												fw={700}
+											>
 												Connection error
 											</Menu.Label>
-											<Text px="sm" c="red" maw={350} style={{ overflowWrap: "break-word" }}>
+											<Text
+												px="sm"
+												c="red"
+												maw={350}
+												style={{ overflowWrap: "break-word" }}
+											>
 												{latestError}
 											</Text>
 										</>
@@ -191,9 +210,7 @@ export function ConnectionStatus() {
 					variant="subtle"
 					color="slate"
 					onClick={openConnections}
-					rightSection={
-						<Icon path={iconChevronDown} />
-					}
+					rightSection={<Icon path={iconChevronDown} />}
 				>
 					Select a connection
 				</Button>
@@ -202,14 +219,20 @@ export function ConnectionStatus() {
 			<Modal
 				opened={showDatasets}
 				onClose={showDatasetsHandle.close}
-				title={<Group>
-					<Icon path={iconFile} size="lg" />
-					<PrimaryTitle>Initialize with dataset</PrimaryTitle>
-				</Group>}
+				title={
+					<Group>
+						<Icon
+							path={iconFile}
+							size="lg"
+						/>
+						<PrimaryTitle>Initialize with dataset</PrimaryTitle>
+					</Group>
+				}
 			>
 				<Stack gap="xl">
 					<Text>
-						You can initialize your empty database with an official dataset to provide a starting point for your project.
+						You can initialize your empty database with an official dataset to provide a
+						starting point for your project.
 					</Text>
 
 					<Select
