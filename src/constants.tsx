@@ -60,11 +60,7 @@ export const DATASETS: Record<string, DataSet> = {
 	"surreal-deal-store": {
 		name: "Surreal Deal Store",
 		url: "https://datasets.surrealdb.com/surreal-deal-store-mini.surql",
-	},
-	"surreal-deal": {
-		name: "Surreal Deal",
-		url: "https://datasets.surrealdb.com/surreal-deal-mini-v2.surql",
-	},
+	}
 };
 
 export const THEMES = [
