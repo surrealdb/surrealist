@@ -73,7 +73,7 @@ export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
-export type Selectable<T extends string> = { label: string; value: T };
+export type Selectable<T extends string = string> = { label: string; value: T };
 export type Selection<T extends string> = Selectable<T>[];
 export type Listable<T extends string> = Selectable<T> & { icon: string };
 export type Snippets = Partial<Record<CodeLang, string>>;
