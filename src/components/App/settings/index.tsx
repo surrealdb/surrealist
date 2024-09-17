@@ -28,7 +28,7 @@ import {
 	iconWrench,
 } from "~/util/icons";
 
-import { useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { isDesktop } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -49,6 +49,7 @@ import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { LicensesTab } from "./tabs/Licenses";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
+import { isDevelopment, isPreview } from "~/util/environment";
 
 interface Category {
 	id: string;
@@ -119,6 +120,18 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 
 	const [copyDebug, clipboard] = useVersionCopy();
 	const sidebarCategories = categories.filter((c) => !c.disabled || c.id === activeTab);
+	
+	const version = useMemo(() => {
+		let builder = `Version ${import.meta.env.VERSION}`;
+
+		if (isPreview) {
+			builder += " (pre)";
+		} else if(isDevelopment) {
+			builder += " (dev)";
+		}
+
+		return builder;
+	}, []);
 
 	return (
 		<Box
@@ -149,7 +162,7 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 				>
 					{clipboard.copied
 						? "Copied to clipboard!"
-						: `Version ${import.meta.env.VERSION}`}
+						: version}
 				</Text>
 			</Stack>
 			<Stack gap="xs">
