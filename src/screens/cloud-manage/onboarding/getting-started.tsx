@@ -1,8 +1,9 @@
-import { Anchor, Button, Group, Image, Paper, Stack, Text } from "@mantine/core";
+import { Button, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
 import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { iconBook, iconChat, iconChevronRight, iconOpen, iconVideo } from "~/util/icons";
@@ -36,9 +37,8 @@ function StartingModal() {
 				capabilities.
 			</Text>
 			<Stack my="xl">
-				<Anchor
+				<Link
 					href="https://surrealdb.com/docs/cloud"
-					underline="never"
 				>
 					<Paper
 						px="md"
@@ -63,10 +63,9 @@ function StartingModal() {
 							/>
 						</Group>
 					</Paper>
-				</Anchor>
-				<Anchor
+				</Link>
+				<Link
 					href="https://surrealdb.com/docs/cloud"
-					underline="never"
 				>
 					<Paper
 						px="md"
@@ -91,10 +90,9 @@ function StartingModal() {
 							/>
 						</Group>
 					</Paper>
-				</Anchor>
-				<Anchor
+				</Link>
+				<Link
 					href="https://surrealdb.com/docs/cloud"
-					underline="never"
 				>
 					<Paper
 						px="md"
@@ -119,7 +117,7 @@ function StartingModal() {
 							/>
 						</Group>
 					</Paper>
-				</Anchor>
+				</Link>
 			</Stack>
 			<Group>
 				<Button

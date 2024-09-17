@@ -1,4 +1,4 @@
-import { Anchor, Button, Checkbox, Group, Stack, Text } from "@mantine/core";
+import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -11,6 +11,7 @@ import { iconCheck } from "~/util/icons";
 import { fetchAPI } from "../api";
 import { invalidateSession } from "../api/auth";
 import { type Question, openAboutModal } from "./about-yourself";
+import { Link } from "~/components/Link";
 
 interface Condition {
 	name: string;
@@ -86,13 +87,13 @@ function TermsModal({ conditions }: TermsModalProps) {
 						<Text span>I have read and agree to the </Text>
 						{conditions.map((condition, i) => (
 							<>
-								<Anchor
+								<Link
 									key={i}
 									href={condition.url}
 									inline
 								>
 									{condition.name}
-								</Anchor>
+								</Link>
 								{i < conditions.length - 1 && <Text span>, </Text>}
 							</>
 						))}

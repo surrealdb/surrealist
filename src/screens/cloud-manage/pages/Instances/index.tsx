@@ -1,11 +1,8 @@
 import {
 	ActionIcon,
-	Affix,
-	Anchor,
 	Box,
 	Button,
 	Center,
-	Flex,
 	Group,
 	Indicator,
 	Loader,
@@ -48,6 +45,7 @@ import { ConnectCliModal } from "./modals/connect-cli";
 import { ConnectSdkModal } from "./modals/connect-sdk";
 import { SettingsModal } from "./modals/settings";
 import classes from "./style.module.scss";
+import { Link } from "~/components/Link";
 
 interface Filter {
 	type: string;
@@ -300,7 +298,7 @@ export function InstancesPage() {
 								instance to get started with Surreal Cloud.
 							</Text>
 							<Group>
-								<Anchor href="https://surrealdb.com/docs/cloud">
+								<Link href="https://surrealdb.com/docs/cloud">
 									<Button
 										mt="xl"
 										color="slate"
@@ -311,7 +309,7 @@ export function InstancesPage() {
 									>
 										Learn more
 									</Button>
-								</Anchor>
+								</Link>
 								<Spacer />
 								<Button
 									mt="xl"

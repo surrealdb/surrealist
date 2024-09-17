@@ -3,7 +3,6 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Alert,
-	Anchor,
 	Box,
 	Button,
 	Divider,
@@ -48,6 +47,7 @@ import { useCloudBilling } from "../../hooks/billing";
 import { useCloudInvoices } from "../../hooks/invoices";
 import { useCloudPayments } from "../../hooks/payments";
 import { openBillingModal } from "../../modals/billing";
+import { Link } from "~/components/Link";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -411,11 +411,11 @@ export function BillingPage() {
 													${(invoice.amount * 100).toFixed(2)} USD
 												</Table.Td>
 												<Table.Td>
-													<Anchor href={invoice.url}>
+													<Link href={invoice.url}>
 														<ActionIcon>
 															<Icon path={iconOpen} />
 														</ActionIcon>
-													</Anchor>
+													</Link>
 												</Table.Td>
 											</Table.Tr>
 										);

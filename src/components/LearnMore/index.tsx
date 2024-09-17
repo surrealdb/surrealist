@@ -1,9 +1,10 @@
-import { Anchor, type BoxProps, Group } from "@mantine/core";
+import { type BoxProps, Group } from "@mantine/core";
 import clsx from "clsx";
 import type { HTMLAttributes, PropsWithChildren } from "react";
 import { iconHelp } from "~/util/icons";
 import { Icon } from "../Icon";
 import classes from "./style.module.scss";
+import { Link } from "../Link";
 
 export interface LearnMoreProps
 	extends BoxProps,
@@ -18,9 +19,8 @@ export function LearnMore({
 	...other
 }: PropsWithChildren<LearnMoreProps>) {
 	return (
-		<Anchor
+		<Link
 			href={href}
-			underline="never"
 			className={clsx(classes.root, className)}
 			{...other}
 		>
@@ -28,6 +28,6 @@ export function LearnMore({
 				<Icon path={iconHelp} />
 				{children}
 			</Group>
-		</Anchor>
+		</Link>
 	);
 }

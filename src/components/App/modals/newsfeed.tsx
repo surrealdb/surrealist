@@ -2,7 +2,6 @@ import classes from "../style.module.scss";
 
 import {
 	Alert,
-	Anchor,
 	Badge,
 	Box,
 	Button,
@@ -37,6 +36,7 @@ import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
+import { Link } from "~/components/Link";
 
 interface NewsItem {
 	id: string;
@@ -171,10 +171,9 @@ export function NewsFeedDrawer() {
 												color="surreal.2"
 												py={0}
 											>
-												<Anchor
+												<Link
 													my="lg"
 													display="block"
-													underline="never"
 													href={reading.link}
 												>
 													<Text
@@ -190,7 +189,7 @@ export function NewsFeedDrawer() {
 															right
 														/>
 													</Text>
-												</Anchor>
+												</Link>
 											</Alert>
 										)}
 									</Box>

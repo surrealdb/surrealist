@@ -1,4 +1,4 @@
-import { Anchor } from "@mantine/core";
+import { Link } from "~/components/Link";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { Article } from "~/screens/database/docs/components";
 import type { TopicProps } from "~/screens/database/docs/types";
@@ -20,13 +20,13 @@ export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
 					either Python or Rust. You can use SurrealML within your
 					database connection to store and execute trained ML models
 					using{" "}
-					<Anchor href="https://surrealdb.com/docs/surrealdb/surrealql/functions/ml">
+					<Link href="https://surrealdb.com/docs/surrealdb/surrealql/functions/ml">
 						Machine learning functions
-					</Anchor>
+					</Link>
 					. Learn more about{" "}
-					<Anchor href="https://surrealdb.com/docs/surrealdb/surrealml">
+					<Link href="https://surrealdb.com/docs/surrealdb/surrealml">
 						SurrealML in the documentation
-					</Anchor>
+					</Link>
 				</p>
 				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>

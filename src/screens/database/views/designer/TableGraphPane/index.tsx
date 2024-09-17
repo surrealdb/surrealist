@@ -1,6 +1,5 @@
 import {
 	ActionIcon,
-	Anchor,
 	Badge,
 	Box,
 	Button,
@@ -68,6 +67,7 @@ import {
 	createSnapshot,
 } from "./helpers";
 import classes from "./style.module.scss";
+import { Link } from "~/components/Link";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -358,11 +358,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Popover.Dropdown>
 					</Popover>
 					<Tooltip label="Designer help">
-						<Anchor href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+						<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
 							<ActionIcon aria-label="Open designer help">
 								<Icon path={iconHelp} />
 							</ActionIcon>
-						</Anchor>
+						</Link>
 					</Tooltip>
 				</Group>
 			}
