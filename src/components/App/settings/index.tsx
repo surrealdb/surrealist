@@ -41,6 +41,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
 import type { Assign, FeatureCondition } from "~/types";
+import { isDevelopment, isPreview } from "~/util/environment";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { AppearanceTab } from "./tabs/Appearance";
 import { BehaviourTab } from "./tabs/Behaviour";
@@ -49,7 +50,6 @@ import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { LicensesTab } from "./tabs/Licenses";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
-import { isDevelopment, isPreview } from "~/util/environment";
 
 interface Category {
 	id: string;

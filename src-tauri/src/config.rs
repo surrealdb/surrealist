@@ -4,9 +4,7 @@ use std::{
     path::PathBuf,
 };
 
-use crate::paths::{
-    get_config_backup_path, get_config_path,
-};
+use crate::paths::{get_config_backup_path, get_config_path};
 
 const DEFAULT_CONFIG: &str = "{}";
 

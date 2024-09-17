@@ -1,6 +1,7 @@
 import { python } from "@codemirror/lang-python";
 import { Button, Group, Stack, Text } from "@mantine/core";
 import posthog from "posthog-js";
+import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -17,7 +18,6 @@ import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
-import { useMemo } from "react";
 
 const SURML_FILTERS = [
 	{
