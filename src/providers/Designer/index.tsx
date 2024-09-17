@@ -1,4 +1,5 @@
 import { useDisclosure } from "@mantine/hooks";
+import posthog from "posthog-js";
 import {
 	type PropsWithChildren,
 	createContext,
@@ -18,7 +19,6 @@ import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
 import { buildDefinitionQueries, isSchemaValid } from "./helpers";
-import posthog from "posthog-js";
 
 type DesignFunction = (table: string) => void;
 type StopDesignFunction = () => void;

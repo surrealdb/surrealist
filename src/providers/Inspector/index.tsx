@@ -1,4 +1,5 @@
 import { useDisclosure } from "@mantine/hooks";
+import posthog from "posthog-js";
 import {
 	type PropsWithChildren,
 	createContext,
@@ -11,7 +12,6 @@ import { useStable } from "~/hooks/stable";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
-import posthog from "posthog-js";
 
 type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;

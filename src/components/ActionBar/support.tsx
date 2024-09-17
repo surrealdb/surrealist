@@ -9,6 +9,8 @@ import {
 } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import posthog from "posthog-js";
+import { useEffect } from "react";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsAuthenticated } from "~/hooks/cloud";
@@ -25,8 +27,6 @@ import {
 	iconHelp,
 } from "~/util/icons";
 import classes from "./style.module.scss";
-import { useEffect } from "react";
-import posthog from "posthog-js";
 
 interface Topic {
 	title: string;
