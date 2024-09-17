@@ -2,6 +2,7 @@ import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useState } from "react";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useCheckbox } from "~/hooks/events";
@@ -11,7 +12,6 @@ import { iconCheck } from "~/util/icons";
 import { fetchAPI } from "../api";
 import { invalidateSession } from "../api/auth";
 import { type Question, openAboutModal } from "./about-yourself";
-import { Link } from "~/components/Link";
 
 interface Condition {
 	name: string;

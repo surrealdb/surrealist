@@ -1,5 +1,5 @@
 import { Table, Text } from "@mantine/core";
-import { Modal, PasswordInput, TextInput, Group, Button } from "@mantine/core";
+import { Button, Group, Modal, PasswordInput, TextInput } from "@mantine/core";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";

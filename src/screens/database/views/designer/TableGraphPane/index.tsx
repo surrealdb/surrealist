@@ -33,6 +33,7 @@ import {
 } from "reactflow";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import { RadioSelect } from "~/components/RadioSelect";
 import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
@@ -67,7 +68,6 @@ import {
 	createSnapshot,
 } from "./helpers";
 import classes from "./style.module.scss";
-import { Link } from "~/components/Link";
 
 export interface TableGraphPaneProps {
 	active: string | null;

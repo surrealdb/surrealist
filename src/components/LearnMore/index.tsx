@@ -3,8 +3,8 @@ import clsx from "clsx";
 import type { HTMLAttributes, PropsWithChildren } from "react";
 import { iconHelp } from "~/util/icons";
 import { Icon } from "../Icon";
-import classes from "./style.module.scss";
 import { Link } from "../Link";
+import classes from "./style.module.scss";
 
 export interface LearnMoreProps
 	extends BoxProps,

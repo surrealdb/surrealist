@@ -20,12 +20,12 @@ import { KeymapModal } from "./modals/hotkeys";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { CommandPaletteModal } from "./modals/palette";
 import { ProvisioningDialog } from "./modals/provisioning";
+import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
 import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
-import { RegisterUserModal } from "./modals/register";
 
 function Surrealist() {
 	return (

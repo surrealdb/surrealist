@@ -32,11 +32,11 @@ import dayjs from "dayjs";
 import posthog from "posthog-js";
 import { Fragment, useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
-import { Link } from "~/components/Link";
 
 interface NewsItem {
 	id: string;

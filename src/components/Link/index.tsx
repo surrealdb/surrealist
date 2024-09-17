@@ -1,8 +1,8 @@
-import classes from "./style.module.scss";
 import { Text, type TextProps } from "@mantine/core";
 import clsx from "clsx";
 import type { PropsWithChildren } from "react";
 import { adapter } from "~/adapter";
+import classes from "./style.module.scss";
 
 export interface LinkProps extends TextProps {
 	href: string;
