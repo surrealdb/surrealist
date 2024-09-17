@@ -16,8 +16,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public hasTitlebar = true;
 	public platform: Platform = "windows";
 
-	#legacyConfig: any;
-
 	public initialize() {
 		const platform = navigator.platform.toLowerCase();
 
@@ -47,7 +45,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 			parsed.configVersion === undefined &&
 			Object.keys(parsed).length > 0
 		) {
-			this.#legacyConfig = parsed;
 			return {};
 		}
 
@@ -56,21 +53,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	public async saveConfig(config: any) {
 		localStorage.setItem("surrealist:config", JSON.stringify(config));
-	}
-
-	public async hasLegacyConfig() {
-		return !!this.#legacyConfig;
-	}
-
-	public async getLegacyConfig() {
-		return this.#legacyConfig;
-	}
-
-	public async handleLegacyCleanup() {
-		localStorage.setItem(
-			"surrealist:v1-config",
-			JSON.stringify(this.#legacyConfig),
-		);
 	}
 
 	public async startDatabase() {

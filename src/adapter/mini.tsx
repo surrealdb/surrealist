@@ -144,15 +144,4 @@ export class MiniAdapter extends BrowserAdapter {
 		}
 	}
 
-	public async hasLegacyConfig() {
-		return false;
-	}
-
-	public async getLegacyConfig() {
-		// not applicable
-	}
-
-	public async handleLegacyCleanup() {
-		// not applicable
-	}
 }
