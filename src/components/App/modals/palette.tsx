@@ -114,7 +114,9 @@ export function CommandPaletteModal() {
 			}
 		}
 
-		posthog.capture("execute_command");
+		posthog.capture("execute_command", {
+			command: cmd.name
+		});
 	};
 
 	const handleKeyDown = useStable((e: React.KeyboardEvent) => {
