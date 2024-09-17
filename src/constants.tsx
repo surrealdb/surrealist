@@ -52,7 +52,7 @@ export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
 export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_LIVE_MESSAGES = 50;
-export const SENSITIVE_SCOPE_FIELDS = new Set(["password", "pass", "secret"]);
+export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
@@ -60,11 +60,7 @@ export const DATASETS: Record<string, DataSet> = {
 	"surreal-deal-store": {
 		name: "Surreal Deal Store",
 		url: "https://datasets.surrealdb.com/surreal-deal-store-mini.surql",
-	},
-	"surreal-deal": {
-		name: "Surreal Deal",
-		url: "https://datasets.surrealdb.com/surreal-deal-mini-v2.surql",
-	},
+	}
 };
 
 export const THEMES = [
@@ -93,9 +89,10 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 	{ label: "Root", value: "root" },
 	{ label: "Namespace", value: "namespace" },
 	{ label: "Database", value: "database" },
-	{ label: "Scope", value: "scope" },
+	{ label: "Record Access", value: "access" },
 	{ label: "Token", value: "token" },
 	{ label: "Anonymous", value: "none" },
+	{ label: "Scope (Legacy)", value: "scope" },
 ];
 
 export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
@@ -167,8 +164,8 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Authentication",
 		icon: iconAuth,
 		anim: import("~/assets/animation/auth.json").then((x) => x.default),
-		desc: "Manage account details and database scopes",
-		disabled: (flags) => !flags.designer_view,
+		desc: "Manage system users and access methods",
+		disabled: (flags) => !flags.auth_view,
 	},
 	functions: {
 		id: "functions",
@@ -244,7 +241,7 @@ export const EXPORT_TYPES = [
 	"analyzers",
 	"functions",
 	"params",
-	"scopes",
+	"access",
 ] as const;
 
 export const SURREAL_KINDS = [

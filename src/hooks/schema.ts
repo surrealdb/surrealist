@@ -89,9 +89,11 @@ export function useHasSchemaAccess() {
 	const connection = useConnection();
 	const authMode = connection?.authentication?.mode || "none";
 
+	// TODO Check token type
+
 	return (
 		connection?.id === SANDBOX ||
-		(authMode !== "none" && authMode !== "scope")
+		(authMode !== "none" && authMode !== "scope" && authMode !== "access")
 	);
 }
 

@@ -1,7 +1,8 @@
-import { Anchor, Group, Modal, Text } from "@mantine/core";
+import { Group, Modal, Text } from "@mantine/core";
 import { useLayoutEffect, useState } from "react";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { fetchAPI } from "~/screens/cloud-manage/api";
 import type { CloudInstance } from "~/types";
@@ -51,9 +52,9 @@ export function ConnectCliModal({
 		>
 			<Text size="lg">
 				Before connecting to this database, make sure you have the{" "}
-				<Anchor href="https://surrealdb.com/docs/surrealdb/installation">
+				<Link href="https://surrealdb.com/docs/surrealdb/installation">
 					SurrealDB CLI
-				</Anchor>{" "}
+				</Link>{" "}
 				installed. Once it is installed, simply open the terminal of
 				your choice and run the following command to connect to your
 				Surreal Cloud instance.

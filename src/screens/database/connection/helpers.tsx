@@ -1,5 +1,5 @@
 import { objectify } from "radash";
-import type { QueryResult, ScopeAuth } from "surrealdb";
+import type { AccessRecordAuth, QueryResult, ScopeAuth } from "surrealdb";
 import { fetchAPI } from "~/screens/cloud-manage/api";
 import type { AuthDetails, Authentication, QueryResponse } from "~/types";
 import { getSetting } from "~/util/config";
@@ -9,7 +9,7 @@ export async function composeAuthentication(
 	connection: Authentication,
 ): Promise<AuthDetails> {
 	const {
-		mode: authMode,
+		mode,
 		username,
 		password,
 		namespace,
@@ -18,7 +18,7 @@ export async function composeAuthentication(
 		cloudInstance,
 	} = connection;
 
-	switch (authMode) {
+	switch (mode) {
 		case "root": {
 			return { username, password };
 		}
@@ -27,6 +27,9 @@ export async function composeAuthentication(
 		}
 		case "database": {
 			return { namespace, database, username, password };
+		}
+		case "access": {
+			return buildAccessAuth(connection);
 		}
 		case "scope": {
 			return buildScopeAuth(connection);
@@ -66,14 +69,25 @@ export function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
 }
 
 export function buildScopeAuth(connection: Authentication): ScopeAuth {
-	const { namespace, database, scope, scopeFields } = connection;
+	const { namespace, database, scope, accessFields } = connection;
 	const fields = objectify(
-		scopeFields,
+		accessFields,
 		(f) => f.subject,
 		(f) => f.value,
 	);
 
 	return { namespace, database, scope, ...fields };
+}
+
+export function buildAccessAuth(connection: Authentication): AccessRecordAuth {
+	const { namespace, database, access, accessFields } = connection;
+	const variables = objectify(
+		accessFields,
+		(f) => f.subject,
+		(f) => f.value,
+	);
+
+	return { namespace, database, access, variables };
 }
 
 export function getVersionTimeout() {

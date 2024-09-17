@@ -2,7 +2,6 @@ import classes from "../style.module.scss";
 
 import {
 	Alert,
-	Anchor,
 	Badge,
 	Box,
 	Button,
@@ -33,6 +32,7 @@ import dayjs from "dayjs";
 import posthog from "posthog-js";
 import { Fragment, useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -171,10 +171,9 @@ export function NewsFeedDrawer() {
 												color="surreal.2"
 												py={0}
 											>
-												<Anchor
+												<Link
 													my="lg"
 													display="block"
-													underline="never"
 													href={reading.link}
 												>
 													<Text
@@ -190,7 +189,7 @@ export function NewsFeedDrawer() {
 															right
 														/>
 													</Text>
-												</Anchor>
+												</Link>
 											</Alert>
 										)}
 									</Box>

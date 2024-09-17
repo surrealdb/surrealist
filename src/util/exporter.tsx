@@ -23,7 +23,7 @@ export async function createDatabaseExport({ types, comments, records }: ExportO
 	const dbParams = Object.values(definitions.params);
 	const dbAnalyzers = Object.values(definitions.analyzers);
 	const dbFunctions = Object.values(definitions.functions);
-	const dbScopes = Object.values(definitions.scopes || {});
+	const dbAccess = Object.values(definitions.access || {});
 
 	const output: string[] = [];
 
@@ -75,12 +75,12 @@ export async function createDatabaseExport({ types, comments, records }: ExportO
 		}
 	}
 
-	// Include scopes
-	if (types.includes("scopes") && dbScopes.length > 0) {
-		pushSection("SCOPES");
+	// Include access methods
+	if (types.includes("access") && dbAccess.length > 0) {
+		pushSection("ACCESS");
 
-		for (const scopeDef of dbScopes) {
-			output.push(`${scopeDef};`);
+		for (const accessDef of dbAccess) {
+			output.push(`${accessDef};`);
 		}
 	}
 

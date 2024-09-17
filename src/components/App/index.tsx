@@ -20,8 +20,9 @@ import { KeymapModal } from "./modals/hotkeys";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { CommandPaletteModal } from "./modals/palette";
 import { ProvisioningDialog } from "./modals/provisioning";
+import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
-import { ScopeSignupModal } from "./modals/signup";
+import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
@@ -54,12 +55,13 @@ export function App() {
 			<DownloadModal />
 			<EmbedderModal />
 			<SandboxModal />
-			<ScopeSignupModal />
+			<AccessSignupModal />
 			<TableCreatorModal />
 			<KeymapModal />
 			<HighlightToolModal />
 			<DataExportModal />
 			<DataImportModal />
+			<RegisterUserModal />
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />

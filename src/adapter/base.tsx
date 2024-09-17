@@ -67,24 +67,6 @@ export interface SurrealistAdapter {
 	saveConfig(config: any): Promise<void>;
 
 	/**
-	 * Check whether the adapter has a legacy config. This is
-	 * called after loadConfig.
-	 */
-	hasLegacyConfig(): Result<boolean>;
-
-	/**
-	 * Return the legacy config used for migration
-	 */
-	getLegacyConfig(): Promise<any>;
-
-	/**
-	 * Clean up any legacy config. This is called after the config
-	 * has been migrated, or if the user chooses to ignore the
-	 * migration.
-	 */
-	handleLegacyCleanup(): Promise<void>;
-
-	/**
 	 * Start the database with the given parameters
 	 */
 	startDatabase(): Promise<void>;

@@ -1,6 +1,5 @@
-import { Value } from "@surrealdb/ql-wasm";
-import posthog from "posthog-js";
 import {
+	type AccessRecordAuth,
 	type ScopeAuth,
 	type Surreal,
 	UnsupportedVersion,
@@ -8,6 +7,18 @@ import {
 	VersionRetrievalFailure,
 	decodeCbor,
 } from "surrealdb";
+
+import {
+	buildAccessAuth,
+	buildScopeAuth,
+	composeAuthentication,
+	getReconnectInterval,
+	getVersionTimeout,
+	mapResults,
+} from "./helpers";
+
+import { Value } from "@surrealdb/ql-wasm";
+import posthog from "posthog-js";
 import { adapter } from "~/adapter";
 import { SANDBOX } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
@@ -21,13 +32,6 @@ import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
-import {
-	buildScopeAuth,
-	composeAuthentication,
-	getReconnectInterval,
-	getVersionTimeout,
-	mapResults,
-} from "./helpers";
 import { createPlaceholder, createSurreal } from "./surreal";
 
 export interface ConnectOptions {
@@ -76,9 +80,12 @@ export async function openConnection(options?: ConnectOptions) {
 	openedConnection = connection;
 	forceClose = false;
 
-	const { setCurrentState, setVersion, setLatestError } = useDatabaseStore.getState();
+	const { setCurrentState, setVersion, setLatestError, clearSchema } =
+		useDatabaseStore.getState();
 	const rpcEndpoint = connectionUri(connection.authentication);
 	const thisInstance = instance;
+
+	clearSchema();
 
 	adapter.log("DB", `Opening connection to ${rpcEndpoint}`);
 
@@ -101,7 +108,8 @@ export async function openConnection(options?: ConnectOptions) {
 	});
 
 	try {
-		const isSignup = connection.authentication.mode === "scope-signup";
+		const isScopeSignup = connection.authentication.mode === "scope-signup";
+		const isAccessSignup = connection.authentication.mode === "access-signup";
 		const [versionCheck, versionCheckTimeout] = getVersionTimeout();
 
 		if (connection.authentication.mode === "cloud") {
@@ -127,7 +135,9 @@ export async function openConnection(options?: ConnectOptions) {
 				try {
 					const auth = await composeAuthentication(connection.authentication);
 
-					if (isSignup) {
+					if (isAccessSignup) {
+						await register(buildAccessAuth(connection.authentication), surreal);
+					} else if (isScopeSignup) {
 						await register(buildScopeAuth(connection.authentication), surreal);
 					} else {
 						await authenticate(auth, surreal);
@@ -230,7 +240,7 @@ export async function closeConnection(state?: State) {
  * @param auth The authentication details
  * @param surreal The optional surreal instance
  */
-export async function register(auth: ScopeAuth, surreal?: Surreal) {
+export async function register(auth: ScopeAuth | AccessRecordAuth, surreal?: Surreal) {
 	const db = surreal ?? instance;
 
 	await db.signup(auth).catch(() => {
@@ -255,10 +265,10 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
 		});
 	} else if (auth) {
 		await db.signin(auth).catch((err) => {
-			const { openScopeSignup } = useInterfaceStore.getState();
+			const { openAccessSignup } = useInterfaceStore.getState();
 
 			if (err.message.includes("No record was returned")) {
-				openScopeSignup();
+				openAccessSignup();
 			} else {
 				throw new Error(err.message);
 			}

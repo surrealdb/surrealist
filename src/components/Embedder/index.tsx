@@ -143,7 +143,8 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 		const url = new URL(location.toString());
 
-		if (isProduction && !url.hostname.endsWith("surrealist.app")) {
+		if (isProduction) {
+			url.protocol = "https:";
 			url.hostname = "surrealist.app";
 			url.port = "";
 		}

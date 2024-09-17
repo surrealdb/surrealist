@@ -3,7 +3,6 @@ import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
 import {
 	ActionIcon,
 	Alert,
-	Anchor,
 	Badge,
 	Button,
 	Group,
@@ -16,6 +15,7 @@ import { type GraphQLSchema, parse, print } from "graphql";
 import { useEffect } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import {
 	graphqlParser,
@@ -263,9 +263,8 @@ export function QueryPane({
 					<Stack>
 						Visit the SurrealDB documentation to learn how to enable
 						GraphQL on your instance
-						<Anchor
+						<Link
 							href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist"
-							underline="never"
 						>
 							<Button
 								color="slate"
@@ -276,7 +275,7 @@ export function QueryPane({
 							>
 								Learn more
 							</Button>
-						</Anchor>
+						</Link>
 					</Stack>
 				</Alert>
 			)}

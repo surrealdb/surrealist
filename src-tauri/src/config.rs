@@ -4,9 +4,7 @@ use std::{
     path::PathBuf,
 };
 
-use crate::paths::{
-    get_config_backup_path, get_config_path, get_legacy_config_backup_path, get_legacy_config_path,
-};
+use crate::paths::{get_config_backup_path, get_config_path};
 
 const DEFAULT_CONFIG: &str = "{}";
 
@@ -76,42 +74,4 @@ pub fn restore_config_backup(version: u32) -> Result<(), String> {
         Ok(_) => Ok(()),
         Err(_) => Err("Failed to restore config backup".into()),
     }
-}
-
-#[deprecated]
-#[tauri::command]
-pub fn load_legacy_config() -> String {
-    let config_path = get_legacy_config_path();
-
-    // Attempt to read the config file
-    let read_op = File::open(config_path);
-    let mut buffer = String::new();
-
-    match read_op {
-        Ok(mut file) => {
-            file.read_to_string(&mut buffer)
-                .expect("legacy config should be readable");
-        }
-        Err(_) => {
-            write_config(DEFAULT_CONFIG, get_config_path());
-            buffer = DEFAULT_CONFIG.to_string();
-        }
-    }
-
-    buffer
-}
-
-#[deprecated]
-#[tauri::command]
-pub fn has_legacy_config() -> bool {
-    get_legacy_config_path().exists()
-}
-
-#[deprecated]
-#[tauri::command]
-pub fn complete_legacy_migrate() {
-    let legacy = get_legacy_config_path();
-    let target = get_legacy_config_backup_path();
-
-    fs::rename(legacy, target).expect("legacy config could not be moved");
 }

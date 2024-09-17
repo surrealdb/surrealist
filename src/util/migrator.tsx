@@ -30,6 +30,7 @@ export function applyMigrations(config: any): SurrealistConfig {
 				con.authentication.database = "";
 			}
 
+			con.authentication.accessFields = con.connection.scopeFields || [];
 			con.authentication.authMode = undefined;
 			con.connection = undefined;
 		}

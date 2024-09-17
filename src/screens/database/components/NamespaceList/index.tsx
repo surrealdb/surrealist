@@ -218,7 +218,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 							autoFocus
 						/>
 						<LearnMore
-							href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/namespace"
+							href="https://surrealdb.com/docs/surrealdb/introduction/concepts/namespace"
 							mb="xl"
 						>
 							Learn more about namespaces

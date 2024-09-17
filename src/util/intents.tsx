@@ -39,7 +39,7 @@ const INTENT_REGISTRY = {
 	"infer-graphql-variables": "graphql",
 	"design-table": "designer",
 	"create-user": "authentication",
-	"create-scope": "authentication",
+	"create-access": "authentication",
 	"register-user": "authentication",
 	"docs-switch-language": "documentation",
 	"cloud-callback": "cloud",

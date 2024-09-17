@@ -1,5 +1,6 @@
-import { Anchor, ScrollArea, Table } from "@mantine/core";
+import { ScrollArea, Table } from "@mantine/core";
 import licenseReport from "~/assets/data/license-report.json";
+import { Link } from "~/components/Link";
 
 export function LicensesTab() {
 	return (
@@ -36,7 +37,7 @@ export function LicensesTab() {
 									<Table.Td>{pkg.installedVersion}</Table.Td>
 									<Table.Td>{pkg.author}</Table.Td>
 									<Table.Td>
-										<Anchor href={link}>{link}</Anchor>
+										<Link href={link}>{link}</Link>
 									</Table.Td>
 								</Table.Tr>
 							);

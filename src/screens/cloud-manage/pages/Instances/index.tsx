@@ -1,11 +1,8 @@
 import {
 	ActionIcon,
-	Affix,
-	Anchor,
 	Box,
 	Button,
 	Center,
-	Flex,
 	Group,
 	Indicator,
 	Loader,
@@ -23,6 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Fragment, useMemo, useState } from "react";
 import { FloatingButton } from "~/components/FloatingButton";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
@@ -300,7 +298,7 @@ export function InstancesPage() {
 								instance to get started with Surreal Cloud.
 							</Text>
 							<Group>
-								<Anchor href="https://surrealdb.com/docs/cloud">
+								<Link href="https://surrealdb.com/docs/cloud">
 									<Button
 										mt="xl"
 										color="slate"
@@ -311,7 +309,7 @@ export function InstancesPage() {
 									>
 										Learn more
 									</Button>
-								</Anchor>
+								</Link>
 								<Spacer />
 								<Button
 									mt="xl"

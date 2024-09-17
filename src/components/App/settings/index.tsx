@@ -28,7 +28,7 @@ import {
 	iconWrench,
 } from "~/util/icons";
 
-import { useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { isDesktop } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -41,6 +41,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
 import type { Assign, FeatureCondition } from "~/types";
+import { isDevelopment, isPreview } from "~/util/environment";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { AppearanceTab } from "./tabs/Appearance";
 import { BehaviourTab } from "./tabs/Behaviour";
@@ -119,6 +120,18 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 
 	const [copyDebug, clipboard] = useVersionCopy();
 	const sidebarCategories = categories.filter((c) => !c.disabled || c.id === activeTab);
+	
+	const version = useMemo(() => {
+		let builder = `Version ${import.meta.env.VERSION}`;
+
+		if (isPreview) {
+			builder += " (pre)";
+		} else if(isDevelopment) {
+			builder += " (dev)";
+		}
+
+		return builder;
+	}, []);
 
 	return (
 		<Box
@@ -149,7 +162,7 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 				>
 					{clipboard.copied
 						? "Copied to clipboard!"
-						: `Version ${import.meta.env.VERSION}`}
+						: version}
 				</Text>
 			</Stack>
 			<Stack gap="xs">

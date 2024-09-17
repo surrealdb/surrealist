@@ -18,7 +18,7 @@ const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
 	"auth",
 	"token",
-	"scope",
+	"access",
 	"session",
 	"before",
 	"after",

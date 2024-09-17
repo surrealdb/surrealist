@@ -106,11 +106,7 @@ export function computeCommands(): CommandCategory[] {
 		resetOnboardings,
 	} = useConfigStore.getState();
 
-	const {
-		isServing,
-		currentState,
-		connectionSchema,
-	} = useDatabaseStore.getState();
+	const { isServing, currentState, connectionSchema } = useDatabaseStore.getState();
 
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
@@ -175,6 +171,11 @@ export function computeCommands(): CommandCategory[] {
 
 	if (activeCon) {
 		const tables = connectionSchema.database.tables || [];
+		const accessMethods = [
+			...connectionSchema.root.accesses,
+			...connectionSchema.namespace.accesses,
+			...connectionSchema.database.accesses,
+		].filter((access) => access.kind.kind === "RECORD");
 
 		categories.push(
 			{
@@ -352,17 +353,16 @@ export function computeCommands(): CommandCategory[] {
 					},
 					{
 						id: newId(),
-						name: "Create scope",
+						name: "Create access",
 						icon: iconAccountSecure,
-						action: intent("create-scope"),
+						action: intent("create-access"),
 					},
-					// TODO Replace with record access
-					// ...scopes.map((scope) => ({
-					// 	id: newId(),
-					// 	name: `Register user in scope ${scope.name}`,
-					// 	icon: iconAccountPlus,
-					// 	action: intent("register-user", { scope: scope.name }),
-					// })),
+					...accessMethods.map((access) => ({
+						id: newId(),
+						name: `Register user with access method ${access.name}`,
+						icon: iconAccountPlus,
+						action: intent("register-user", { access: access.name }),
+					})),
 				],
 			},
 			{

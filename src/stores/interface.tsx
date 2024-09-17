@@ -10,7 +10,7 @@ export type InterfaceStore = {
 	showTableCreator: boolean;
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
-	showScopeSignup: boolean;
+	showAccessSignup: boolean;
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
 	overlaySidebar: boolean;
@@ -24,8 +24,8 @@ export type InterfaceStore = {
 	closeTableCreator: () => void;
 	pushLiveQueryMessage: (id: string, message: LiveMessage) => void;
 	clearLiveQueryMessages: (id: string) => void;
-	openScopeSignup: () => void;
-	closeScopeSignup: () => void;
+	openAccessSignup: () => void;
+	closeAccessSignup: () => void;
 	showChangelog: () => void;
 	readChangelog: () => void;
 	setOverlaySidebar: (overlaySidebar: boolean) => void;
@@ -42,7 +42,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	showTableCreator: false,
 	liveTabs: new Set<string>(),
 	liveQueryMessages: {},
-	showScopeSignup: false,
+	showAccessSignup: false,
 	showChangelogAlert: false,
 	hasReadChangelog: false,
 	showQueryVariables: false,
@@ -111,14 +111,14 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 			};
 		}),
 
-	openScopeSignup: () =>
+	openAccessSignup: () =>
 		set(() => ({
-			showScopeSignup: true,
+			showAccessSignup: true,
 		})),
 
-	closeScopeSignup: () =>
+	closeAccessSignup: () =>
 		set(() => ({
-			showScopeSignup: false,
+			showAccessSignup: false,
 		})),
 
 	showChangelog: () =>

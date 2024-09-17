@@ -75,7 +75,9 @@ export function getAuthDB(auth: Authentication) {
 	if (
 		auth.mode === "database" ||
 		auth.mode === "scope" ||
-		auth.mode === "scope-signup"
+		auth.mode === "scope-signup" ||
+		auth.mode === "access" ||
+		auth.mode === "access-signup"
 	) {
 		return auth.database;
 	}
@@ -159,6 +161,11 @@ export function isConnectionValid(auth: Authentication | undefined) {
 
 	// Check for token
 	if (auth.mode === "token" && !auth.token) {
+		return false;
+	}
+
+	// Check for access
+	if (auth.mode === "access" && !auth.access) {
 		return false;
 	}
 

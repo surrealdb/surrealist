@@ -1,7 +1,8 @@
-import { Anchor, Button, Checkbox, Group, Stack, Text } from "@mantine/core";
+import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useState } from "react";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useCheckbox } from "~/hooks/events";
@@ -86,13 +87,13 @@ function TermsModal({ conditions }: TermsModalProps) {
 						<Text span>I have read and agree to the </Text>
 						{conditions.map((condition, i) => (
 							<>
-								<Anchor
+								<Link
 									key={i}
 									href={condition.url}
 									inline
 								>
 									{condition.name}
-								</Anchor>
+								</Link>
 								{i < conditions.length - 1 && <Text span>, </Text>}
 							</>
 						))}

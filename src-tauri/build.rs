@@ -1,9 +1,7 @@
 fn main() {
     tauri_build::build();
 
-    let profile = std::env::var("PROFILE").unwrap();
-
-    if profile == "debug" {
-        println!("cargo:rustc-env=VITE_SURREALIST_PREVIEW=true");
+    if std::env::var("VITE_SURREALIST_PREVIEW").is_err() {
+        println!("cargo:rustc-env=VITE_SURREALIST_PREVIEW=false");
     }
 }

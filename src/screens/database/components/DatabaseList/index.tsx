@@ -216,7 +216,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 							autoFocus
 						/>
 						<LearnMore
-							href="https://surrealdb.com/docs/surrealdb/surrealql/statements/define/database"
+							href="https://surrealdb.com/docs/surrealdb/introduction/concepts/database"
 							mb="xl"
 						>
 							Learn more about databases

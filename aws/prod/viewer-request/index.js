@@ -31,11 +31,11 @@ function handler(event) {
 
 		// Rewrites
 		case request.uri === '/mini/new':
-			request.uri = '/mini/new.html';
+			request.uri = '/mini/new/index.html';
 			break;
 
 		case request.uri === '/mini':
-			request.uri = '/mini/run.html';
+			request.uri = '/mini/run/index.html';
 			break;
 
 		case request.uri === '/cloud/callback':

@@ -1,6 +1,7 @@
 import { python } from "@codemirror/lang-python";
 import { Button, Group, Stack, Text } from "@mantine/core";
 import posthog from "posthog-js";
+import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -26,8 +27,7 @@ const SURML_FILTERS = [
 ];
 
 function composeConnection(connection: Authentication, path: string) {
-	const isSecure =
-		connection.protocol === "https" || connection.protocol === "wss";
+	const isSecure = connection.protocol === "https" || connection.protocol === "wss";
 	const endpoint = new URL(
 		path,
 		`${isSecure ? "https" : "http"}://${connection.hostname}`,
@@ -46,7 +46,7 @@ function composeConnection(connection: Authentication, path: string) {
 
 export function ModelsView() {
 	const models = useDatabaseSchema()?.models ?? [];
-	const { id, authentication } = useActiveConnection();
+	const { id, lastNamespace, lastDatabase, authentication } = useActiveConnection();
 	const isConnected = useIsConnected();
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
@@ -71,15 +71,8 @@ export function ModelsView() {
 	});
 
 	const uploadModel = useStable(async () => {
-		const files = await adapter.openBinaryFile(
-			"Select a SurrealML model",
-			SURML_FILTERS,
-			true,
-		);
-		const { endpoint, headers } = composeConnection(
-			authentication,
-			"/ml/import",
-		);
+		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
+		const { endpoint, headers } = composeConnection(authentication, "/ml/import");
 
 		for (const file of files) {
 			await fetch(endpoint, {
@@ -115,12 +108,33 @@ export function ModelsView() {
 		);
 	});
 
+	const snippet = useMemo(() => ({
+		title: "Using Python",
+		extensions: [python()],
+		code: `
+			# Upload your model directly to SurrealDB
+			SurMlFile.upload(
+				path="./model.surml",
+				url="${connectionUri(authentication, "ml/import")}",
+				chunk_size=36864,
+				namespace="${lastNamespace}",
+				database="${lastDatabase}",
+				username="...",
+				password="..."
+			)							
+		`,
+	}), [authentication, lastDatabase, lastNamespace]);
+
 	useViewEffect("models", () => {
 		syncConnectionSchema();
 	});
 
 	return (
-		<Group h="100%" wrap="nowrap" gap="var(--surrealist-divider-size)">
+		<Group
+			h="100%"
+			wrap="nowrap"
+			gap="var(--surrealist-divider-size)"
+		>
 			{isAvailable && (
 				<ModelsPanel
 					active={details?.name || ""}
@@ -131,7 +145,11 @@ export function ModelsView() {
 				/>
 			)}
 			{details ? (
-				<Stack h="100%" flex={1} gap="var(--surrealist-divider-size)">
+				<Stack
+					h="100%"
+					flex={1}
+					gap="var(--surrealist-divider-size)"
+				>
 					<EditorPanel
 						handle={handle}
 						details={details}
@@ -142,39 +160,21 @@ export function ModelsView() {
 				<Introduction
 					title="Models"
 					icon={iconModuleML}
-					snippet={
-						isAvailable
-							? {
-									title: "Using Python",
-									extensions: [python()],
-									code: `
-							# Upload your model directly to SurrealDB
-							SurMlFile.upload(
-								path="./model.surml",
-								url="${connectionUri(authentication, "ml/import")}",
-								chunk_size=36864,
-								namespace="${authentication.namespace}",
-								database="${authentication.database}",
-								username="...",
-								password="..."
-							)							
-						`,
-								}
-							: undefined
-					}
+					snippet={isAvailable ? snippet : undefined}
 				>
 					<Text>
-						Upload your SurrealML models directly to SurrealDB and
-						use the power of Machine Learning within your queries.
+						Upload your SurrealML models directly to SurrealDB and use the power of
+						Machine Learning within your queries.
 					</Text>
 					{!isAvailable && (
-						<Group gap="sm" c="pink">
+						<Group
+							gap="sm"
+							c="pink"
+						>
 							<Icon path={iconWarning} />
 							<Text>
 								SurrealML is not supported{" "}
-								{isSandbox
-									? "in the sandbox"
-									: "by your current connection"}
+								{isSandbox ? "in the sandbox" : "by your current connection"}
 							</Text>
 						</Group>
 					)}
@@ -195,11 +195,7 @@ export function ModelsView() {
 							color="slate"
 							variant="light"
 							rightSection={<Icon path={iconOpen} />}
-							onClick={() =>
-								adapter.openUrl(
-									"https://surrealdb.com/docs/surrealml",
-								)
-							}
+							onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealml")}
 						>
 							Learn more
 						</Button>

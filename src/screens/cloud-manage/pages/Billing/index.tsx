@@ -3,7 +3,6 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Alert,
-	Anchor,
 	Box,
 	Button,
 	Divider,
@@ -36,6 +35,7 @@ import { type ReactNode, useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
+import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
@@ -411,11 +411,11 @@ export function BillingPage() {
 													${(invoice.amount * 100).toFixed(2)} USD
 												</Table.Td>
 												<Table.Td>
-													<Anchor href={invoice.url}>
+													<Link href={invoice.url}>
 														<ActionIcon>
 															<Icon path={iconOpen} />
 														</ActionIcon>
-													</Anchor>
+													</Link>
 												</Table.Td>
 											</Table.Tr>
 										);

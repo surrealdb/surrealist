@@ -155,21 +155,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			config: JSON.stringify(config),
 		});
 	}
-
-	public async hasLegacyConfig() {
-		return invoke<boolean>("has_legacy_config");
-	}
-
-	public async getLegacyConfig() {
-		const config = await invoke<string>("load_legacy_config");
-
-		return JSON.parse(config);
-	}
-
-	public async handleLegacyCleanup() {
-		return invoke<void>("complete_legacy_migrate");
-	}
-
+	
 	public async startDatabase() {
 		const {
 			username,
