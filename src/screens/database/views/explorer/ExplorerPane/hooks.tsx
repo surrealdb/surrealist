@@ -56,11 +56,7 @@ export function useRecordQuery(input: RecordQueryInput) {
 					fetchQuery += ` START ${startAt}`;
 				}
 
-				console.log("Executing", fetchQuery);
-
 				const records = (await executeQueryFirst(fetchQuery)) || [];
-
-				console.log("Done");
 
 				const headers =
 					schema?.tables
