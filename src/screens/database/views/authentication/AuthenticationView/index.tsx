@@ -1,7 +1,6 @@
-import { iconFolderSecure, iconServerSecure } from "~/util/icons";
+import { iconDatabaseSecure, iconFolderSecure, iconServerSecure } from "~/util/icons";
 
 import { Box } from "@mantine/core";
-import { mdiDatabaseOutline } from "@mdi/js";
 import { memo, useMemo } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
@@ -66,7 +65,7 @@ export function AuthenticationView() {
 						<LevelPanelLazy
 							level="DATABASE"
 							color="orange"
-							icon={mdiDatabaseOutline}
+							icon={iconDatabaseSecure}
 							users={users}
 							accesses={accesses}
 							disabled={!lastDatabase && {
