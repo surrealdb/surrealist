@@ -9,6 +9,8 @@ import {
 } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import posthog from "posthog-js";
+import { useEffect } from "react";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useIsAuthenticated } from "~/hooks/cloud";
@@ -86,6 +88,12 @@ export function HelpAndSupport() {
 	const [isOpen, openHandle] = useDisclosure();
 	const isAuthed = useIsAuthenticated();
 	const isLight = useIsLight();
+
+	useEffect(() => {
+		if (isOpen) {
+			posthog.capture("support_open");
+		}
+	}, [isOpen]);
 
 	useIntent("open-help", openHandle.open);
 

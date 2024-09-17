@@ -1,4 +1,5 @@
 import { useDisclosure } from "@mantine/hooks";
+import posthog from "posthog-js";
 import {
 	type PropsWithChildren,
 	createContext,
@@ -60,6 +61,8 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 		} else {
 			setHistoryItems([recordId]);
 		}
+
+		posthog.capture("open_record_inspector");
 	});
 
 	const stopInspect = useStable(() => {

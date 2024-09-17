@@ -488,7 +488,7 @@ export async function executeGraphql(
 		const response = await sendGraphqlRequest(query, params, operation);
 
 		setGraphqlResponse(connection.id, response);
-		posthog.capture("graphql_query_execute");
+		posthog.capture("graphql_execute");
 	} catch (err: any) {
 		return {
 			success: false,

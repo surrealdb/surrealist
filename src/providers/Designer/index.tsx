@@ -1,4 +1,5 @@
 import { useDisclosure } from "@mantine/hooks";
+import posthog from "posthog-js";
 import {
 	type PropsWithChildren,
 	createContext,
@@ -84,6 +85,8 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 		setErrors([]);
 		saveHandle.track();
 		designingHandle.open();
+
+		posthog.capture("open_table_designer");
 	});
 
 	const closeDrawer = useStable((force?: boolean) => {
