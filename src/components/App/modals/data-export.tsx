@@ -33,7 +33,7 @@ export function DataExportModal() {
 		"analyzers",
 		"functions",
 		"params",
-		"scopes",
+		"access",
 	]);
 
 	const fileName = `${slugify(connection.name)}-${dayjs().format("YYYY-MM-DD")}.surql`;

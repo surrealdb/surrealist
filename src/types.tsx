@@ -47,6 +47,8 @@ export type AuthMode =
 	| "token"
 	| "scope"
 	| "scope-signup"
+	| "access"
+	| "access-signup"
 	| "cloud";
 export type ViewMode =
 	| "cloud"
@@ -92,7 +94,8 @@ export interface Authentication {
 	database: string;
 	token: string;
 	scope: string;
-	scopeFields: ScopeField[];
+	access: string;
+	accessFields: AccessField[];
 	cloudInstance?: string;
 }
 
@@ -237,7 +240,7 @@ export interface SurrealistConfig {
 	onboarding: string[];
 }
 
-export interface ScopeField {
+export interface AccessField {
 	subject: string;
 	value: string;
 }

@@ -200,6 +200,7 @@ export function ConnectionsModal() {
 				hostname: `localhost:${port}`,
 				scope: "",
 				scopeFields: [],
+				access: "",
 				token: "",
 				username,
 				password

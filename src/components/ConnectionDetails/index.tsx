@@ -19,11 +19,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import {
-	AUTH_MODES,
-	CONNECTION_PROTOCOLS,
-	SENSITIVE_SCOPE_FIELDS,
-} from "~/constants";
+import { AUTH_MODES, CONNECTION_PROTOCOLS, SENSITIVE_ACCESS_FIELDS } from "~/constants";
 
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -54,10 +50,18 @@ interface SubheaderProps {
 function Subheader({ title, subtitle }: SubheaderProps) {
 	return (
 		<Box>
-			<Text c="bright" fz="lg" fw={500}>
+			<Text
+				c="bright"
+				fz="lg"
+				fw={500}
+			>
 				{title}
 			</Text>
-			<Text c="slate.3" fz="sm" mt={-2}>
+			<Text
+				c="slate.3"
+				fz="sm"
+				mt={-2}
+			>
 				{subtitle}
 			</Text>
 		</Box>
@@ -70,45 +74,41 @@ export interface ConnectionDetailsProps {
 }
 
 export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
-	const [editingScope, editingScopeHandle] = useDisclosure();
+	const [editingAccess, editingAccessHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
 	const isLight = useIsLight();
 
-	const addScopeField = useStable(() => {
+	const addAccessField = useStable(() => {
 		onChange((draft) => {
-			draft.authentication.scopeFields.push({
+			draft.authentication.accessFields.push({
 				subject: "",
 				value: "",
 			});
 		});
 	});
 
-	const handleEndpointChange = useStable(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			onChange((draft) => {
-				const content = e.target.value;
-				const result = content.match(ENDPOINT_PATTERN);
+	const handleEndpointChange = useStable((e: React.ChangeEvent<HTMLInputElement>) => {
+		onChange((draft) => {
+			const content = e.target.value;
+			const result = content.match(ENDPOINT_PATTERN);
 
-				draft.authentication.hostname = content;
+			draft.authentication.hostname = content;
 
-				if (result === null) {
-					return;
-				}
+			if (result === null) {
+				return;
+			}
 
-				const [, protocol, hostname] = result;
-				const isValid = CONNECTION_PROTOCOLS.some(
-					(p) => p.value === protocol,
-				);
+			const [, protocol, hostname] = result;
+			const isValid = CONNECTION_PROTOCOLS.some((p) => p.value === protocol);
 
-				if (!isValid) {
-					return;
-				}
+			if (!isValid) {
+				return;
+			}
 
-				draft.authentication.protocol = protocol as Protocol;
-				draft.authentication.hostname = hostname;
-			});
-		},
-	);
+			draft.authentication.protocol = protocol as Protocol;
+			draft.authentication.hostname = hostname;
+		});
+	});
 
 	const updateIcon = (index: number) => {
 		onChange((draft) => {
@@ -120,18 +120,15 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const isIndexDB = value.authentication.protocol === "indxdb";
 	const isCloud = value.authentication.mode === "cloud";
 
-	const placeholder = isMemory
-		? "Not applicable"
-		: isIndexDB
-			? "database_name"
-			: "address:port";
+	const placeholder = isMemory ? "Not applicable" : isIndexDB ? "database_name" : "address:port";
 
 	const isSystemMethod = SYSTEM_METHODS.has(value.authentication.mode);
 	const showDatabase =
 		value.authentication.mode === "database" ||
-		value.authentication.mode === "scope";
-	const showNamespace =
-		showDatabase || value.authentication.mode === "namespace";
+		value.authentication.mode === "scope" ||
+		value.authentication.mode === "access";
+
+	const showNamespace = showDatabase || value.authentication.mode === "namespace";
 
 	const tokenPayload = useMemo(
 		() => fastParseJwt(value.authentication.token),
@@ -139,14 +136,11 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	);
 
 	const protocols = useMemo(() => {
-		return isCloud
-			? CONNECTION_PROTOCOLS.filter((p) => p.remote)
-			: CONNECTION_PROTOCOLS;
+		return isCloud ? CONNECTION_PROTOCOLS.filter((p) => p.remote) : CONNECTION_PROTOCOLS;
 	}, [isCloud]);
 
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
-	const tokenExpireSoon =
-		tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
+	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
 
 	const groups = useConfigStore((s) => s.connectionGroups);
 	const groupItems = useMemo(() => {
@@ -184,15 +178,14 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							</ActionIcon>
 						</Popover.Target>
 						<Popover.Dropdown>
-							<SimpleGrid cols={8} spacing={4}>
+							<SimpleGrid
+								cols={8}
+								spacing={4}
+							>
 								{USER_ICONS.map((icon, i) => (
 									<ActionIcon
 										key={i}
-										variant={
-											value.icon === i
-												? "gradient"
-												: "subtle"
-										}
+										variant={value.icon === i ? "gradient" : "subtle"}
 										onClick={() => updateIcon(i)}
 										aria-label={`Select icon ${i + 1}`}
 									>
@@ -229,18 +222,21 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 									w={48}
 								/>
 								<Box>
-									<Text fw={600} c="bright">
-										This connection is managed by Surreal
-										Cloud
+									<Text
+										fw={600}
+										c="bright"
+									>
+										This connection is managed by Surreal Cloud
 									</Text>
-									<Text mt={4}>
-										Some details cannot be modified manually
-									</Text>
+									<Text mt={4}>Some details cannot be modified manually</Text>
 								</Box>
 							</Group>
 						</Paper>
 
-						<Divider mb={6} mt={12} />
+						<Divider
+							mb={6}
+							mt={12}
+						/>
 					</>
 				)}
 
@@ -276,7 +272,10 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					/>
 				</Group>
 
-				<Divider mb={6} mt={12} />
+				<Divider
+					mb={6}
+					mt={12}
+				/>
 
 				{!isCloud && (
 					<>
@@ -292,8 +291,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 								data={AUTH_MODES}
 								onChange={(value) =>
 									onChange((draft) => {
-										draft.authentication.mode =
-											value as AuthMode;
+										draft.authentication.mode = value as AuthMode;
 									})
 								}
 							/>
@@ -306,8 +304,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.username =
-													e.target.value;
+												draft.authentication.username = e.target.value;
 											})
 										}
 									/>
@@ -317,8 +314,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.password =
-													e.target.value;
+												draft.authentication.password = e.target.value;
 											})
 										}
 									/>
@@ -330,14 +326,11 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 									{showNamespace && (
 										<TextInput
 											label="Namespace"
-											value={
-												value.authentication.namespace
-											}
+											value={value.authentication.namespace}
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.authentication.namespace =
-														e.target.value;
+													draft.authentication.namespace = e.target.value;
 												})
 											}
 										/>
@@ -346,14 +339,11 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 									{showDatabase && (
 										<TextInput
 											label="Database"
-											value={
-												value.authentication.database
-											}
+											value={value.authentication.database}
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.authentication.database =
-														e.target.value;
+													draft.authentication.database = e.target.value;
 												})
 											}
 										/>
@@ -365,13 +355,12 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 								<Group wrap="nowrap">
 									<TextInput
 										flex={1}
-										label="Scope"
+										label="Scope (Legacy)"
 										value={value.authentication.scope}
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.scope =
-													e.target.value;
+												draft.authentication.scope = e.target.value;
 											})
 										}
 									/>
@@ -379,9 +368,33 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 										mt={19}
 										color="blue"
 										variant="light"
-										onClick={editingScopeHandle.open}
+										onClick={editingAccessHandle.open}
 									>
 										Edit scope data
+									</Button>
+								</Group>
+							)}
+
+							{value.authentication.mode === "access" && (
+								<Group wrap="nowrap">
+									<TextInput
+										flex={1}
+										label="Access method"
+										value={value.authentication.access}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.access = e.target.value;
+											})
+										}
+									/>
+									<Button
+										mt={19}
+										color="blue"
+										variant="light"
+										onClick={editingAccessHandle.open}
+									>
+										Edit access fields
 									</Button>
 								</Group>
 							)}
@@ -394,14 +407,12 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 										spellCheck={false}
 										onChange={(e) =>
 											onChange((draft) => {
-												draft.authentication.token =
-													e.target.value;
+												draft.authentication.token = e.target.value;
 											})
 										}
 										styles={{
 											input: {
-												fontFamily:
-													"var(--mantine-font-family-monospace)",
+												fontFamily: "var(--mantine-font-family-monospace)",
 											},
 										}}
 									/>
@@ -410,12 +421,9 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 										(tokenPayload === null ? (
 											<Alert
 												color="red"
-												icon={
-													<Icon path={iconWarning} />
-												}
+												icon={<Icon path={iconWarning} />}
 											>
-												The provided token does not
-												appear to be a valid JWT
+												The provided token does not appear to be a valid JWT
 											</Alert>
 										) : (
 											tokenExpireSoon &&
@@ -428,9 +436,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 														left
 													/>
 													This token expires in{" "}
-													{dayjs(
-														tokenExpire,
-													).fromNow()}
+													{dayjs(tokenExpire).fromNow()}
 												</Text>
 											) : (
 												<Text c="slate">
@@ -448,7 +454,10 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							)}
 						</Stack>
 
-						<Divider mb={6} mt={12} />
+						<Divider
+							mb={6}
+							mt={12}
+						/>
 					</>
 				)}
 
@@ -470,22 +479,23 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 			</Stack>
 
 			<Modal
-				opened={editingScope}
-				onClose={editingScopeHandle.close}
-				size={560}
-				title={<PrimaryTitle>Scope data editor</PrimaryTitle>}
+				opened={editingAccess}
+				onClose={editingAccessHandle.close}
+				withCloseButton
+				title={<PrimaryTitle>Access fields</PrimaryTitle>}
 			>
-				{value.authentication.scopeFields?.length === 0 ? (
-					<Text c="gray" fs="italic">
-						Press "Add field" to define scope fields
+				{value.authentication.accessFields?.length === 0 ? (
+					<Text
+						c="gray"
+						fs="italic"
+					>
+						Press "Add field" to define access fields
 					</Text>
 				) : (
 					<Stack>
-						{value.authentication.scopeFields?.map((field, i) => {
+						{value.authentication.accessFields?.map((field, i) => {
 							const fieldName = field.subject.toLowerCase();
-							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(
-								fieldName,
-							)
+							const ValueInput = SENSITIVE_ACCESS_FIELDS.has(fieldName)
 								? PasswordInput
 								: TextInput;
 
@@ -499,9 +509,8 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.authentication.scopeFields[
-														i
-													].subject = e.target.value;
+													draft.authentication.accessFields[i].subject =
+														e.target.value;
 												})
 											}
 										/>
@@ -512,19 +521,18 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 											spellCheck={false}
 											onChange={(e) =>
 												onChange((draft) => {
-													draft.authentication.scopeFields[
-														i
-													].value = e.target.value;
+													draft.authentication.accessFields[i].value =
+														e.target.value;
 												})
 											}
 										/>
 										<Tooltip label="Remove field">
 											<ActionIcon
 												color="pink.9"
-												aria-label="Remove scope field"
+												aria-label="Remove access field"
 												onClick={() =>
 													onChange((draft) => {
-														draft.authentication.scopeFields.splice(
+														draft.authentication.accessFields.splice(
 															i,
 															1,
 														);
@@ -541,27 +549,17 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 								</Paper>
 							);
 						})}
+						<Button
+							mt="sm"
+							size="xs"
+							variant="gradient"
+							rightSection={<Icon path={iconPlus} />}
+							onClick={addAccessField}
+						>
+							Add access field
+						</Button>
 					</Stack>
 				)}
-
-				<Group mt="lg">
-					<Button
-						color="slate"
-						variant="light"
-						onClick={editingScopeHandle.close}
-					>
-						Back
-					</Button>
-					<Spacer />
-					<Button
-						rightSection={<Icon path={iconPlus} />}
-						variant="light"
-						color="blue"
-						onClick={addScopeField}
-					>
-						Add field
-					</Button>
-				</Group>
 			</Modal>
 		</>
 	);

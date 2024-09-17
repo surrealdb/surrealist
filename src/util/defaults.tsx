@@ -97,7 +97,8 @@ export function createBaseAuthentication(): Authentication {
 		namespace: "",
 		token: "",
 		scope: "",
-		scopeFields: [],
+		access: "",
+		accessFields: [],
 	};
 }
 

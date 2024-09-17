@@ -9,12 +9,13 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
 import { useDisclosure } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { SENSITIVE_SCOPE_FIELDS } from "~/constants";
+import { SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
@@ -22,33 +23,37 @@ import { openConnection } from "~/screens/database/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconWarning } from "~/util/icons";
 
-export function ScopeSignupModal() {
-	const { closeScopeSignup } = useInterfaceStore.getState();
+export function AccessSignupModal() {
+	const { closeAccessSignup } = useInterfaceStore.getState();
 
 	const [error, setError] = useState("");
 	const [loading, loadingHandle] = useDisclosure();
-	const opened = useInterfaceStore((s) => s.showScopeSignup);
+	const opened = useInterfaceStore((s) => s.showAccessSignup);
 	const connection = useActiveConnection();
+
+	const isAccess = connection.authentication.mode === "access";
 
 	const openEditor = useStable(() => {
 		dispatchIntent("edit-connection", { id: connection.id });
-		closeScopeSignup();
+		closeAccessSignup();
 	});
 
 	const createAccount = useStable(() => {
 		loadingHandle.open();
+
+		const signupMode = isAccess ? "access-signup" : "scope-signup";
 
 		openConnection({
 			connection: {
 				...connection,
 				authentication: {
 					...connection.authentication,
-					mode: "scope-signup",
+					mode: signupMode,
 				},
 			},
 		})
 			.then(() => {
-				closeScopeSignup();
+				closeAccessSignup();
 			})
 			.catch((err) => {
 				setError(err.message);
@@ -67,8 +72,8 @@ export function ScopeSignupModal() {
 	return (
 		<Modal
 			opened={opened}
-			onClose={closeScopeSignup}
-			title={<PrimaryTitle>Sign up to scope</PrimaryTitle>}
+			onClose={closeAccessSignup}
+			title={<PrimaryTitle>Register with access method</PrimaryTitle>}
 		>
 			<Stack>
 				{error && (
@@ -81,24 +86,21 @@ export function ScopeSignupModal() {
 					</Alert>
 				)}
 				<Text>
-					The provided scope details do not match any existing user.
-					Confirm these scope fields and press "Sign up" below to
-					create a new user.
+					The provided access fields do not match any existing user. Confirm these access
+					fields and press "Sign up" below to create a new user.
 				</Text>
 
 				<Table>
 					<Table.Thead>
 						<Table.Tr>
-							<Table.Th w="50%">Scope field</Table.Th>
+							<Table.Th w="50%">Access field</Table.Th>
 							<Table.Th w="50%">Value</Table.Th>
 						</Table.Tr>
 					</Table.Thead>
 					<Table.Tbody>
-						{connection.authentication.scopeFields.map((field) => {
+						{connection.authentication.accessFields.map((field) => {
 							const fieldName = field.subject.toLowerCase();
-							const ValueInput = SENSITIVE_SCOPE_FIELDS.has(
-								fieldName,
-							)
+							const ValueInput = SENSITIVE_ACCESS_FIELDS.has(fieldName)
 								? PasswordInput
 								: TextInput;
 
@@ -131,7 +133,7 @@ export function ScopeSignupModal() {
 					<Button
 						color="slate"
 						variant="light"
-						onClick={closeScopeSignup}
+						onClick={closeAccessSignup}
 					>
 						Close
 					</Button>
@@ -141,7 +143,7 @@ export function ScopeSignupModal() {
 						variant="light"
 						onClick={openEditor}
 					>
-						Edit details
+						Edit connection
 					</Button>
 					<Button
 						type="submit"

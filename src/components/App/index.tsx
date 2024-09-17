@@ -21,10 +21,11 @@ import { NewsFeedDrawer } from "./modals/newsfeed";
 import { CommandPaletteModal } from "./modals/palette";
 import { ProvisioningDialog } from "./modals/provisioning";
 import { SandboxModal } from "./modals/sandbox";
-import { ScopeSignupModal } from "./modals/signup";
+import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
+import { RegisterUserModal } from "./modals/register";
 
 function Surrealist() {
 	return (
@@ -54,12 +55,13 @@ export function App() {
 			<DownloadModal />
 			<EmbedderModal />
 			<SandboxModal />
-			<ScopeSignupModal />
+			<AccessSignupModal />
 			<TableCreatorModal />
 			<KeymapModal />
 			<HighlightToolModal />
 			<DataExportModal />
 			<DataImportModal />
+			<RegisterUserModal />
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />
