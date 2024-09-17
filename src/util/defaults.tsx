@@ -56,12 +56,12 @@ export function createBaseSettings(): SurrealistSettings {
 			editorScale: 100,
 			resultWordWrap: true,
 			defaultResultMode: "combined",
+			defaultResultFormat: "sql",
 			defaultDiagramMode: "fields",
 			defaultDiagramDirection: "ltr",
 			defaultDiagramShowLinks: false,
 			lineStyle: "metro",
 			sidebarMode: "expandable",
-			valueMode: "sql",
 			queryOrientation: "vertical",
 		},
 		templates: {
@@ -142,6 +142,7 @@ export function createBaseTab(
 		variables: "{}",
 		valid: query ? !validateQuery(query) : true,
 		resultMode: settings.appearance.defaultResultMode,
+		resultFormat: settings.appearance.defaultResultFormat,
 		showVariables: false,
 	};
 }

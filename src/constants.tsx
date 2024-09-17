@@ -15,9 +15,8 @@ import type {
 	ResultMode,
 	SchemaMode,
 	Selectable,
-	Selection,
 	SidebarMode,
-	ValueMode,
+	ResultFormat,
 	ViewInfo,
 	ViewMode,
 } from "./types";
@@ -26,11 +25,13 @@ import {
 	iconAPI,
 	iconAccount,
 	iconAuth,
+	iconBraces,
 	iconCloud,
 	iconCog,
 	iconCombined,
 	iconCreditCard,
 	iconDataTable,
+	iconDatabase,
 	iconDesigner,
 	iconEmail,
 	iconExplorer,
@@ -76,6 +77,11 @@ export const RESULT_MODES: Listable<ResultMode>[] = [
 	{ label: "Live", value: "live", icon: iconLive },
 ];
 
+export const RESULT_FORMATS: Listable<ResultFormat>[] = [
+	{ label: "JSON", value: "json", icon: iconBraces },
+	{ label: "SurrealQL", value: "sql", icon: iconDatabase },
+];
+
 export const CONNECTION_PROTOCOLS: ProtocolOption[] = [
 	{ label: "HTTP", value: "http", remote: true },
 	{ label: "HTTPS", value: "https", remote: true },
@@ -104,11 +110,6 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: ".NET", value: "csharp" },
 	// { label: "Java", value: "java" },
 	{ label: "PHP", value: "php" },
-];
-
-export const VALUE_MODES: Selectable<ValueMode>[] = [
-	{ label: "JSON", value: "json" },
-	{ label: "SurrealQL", value: "sql" },
 ];
 
 export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [

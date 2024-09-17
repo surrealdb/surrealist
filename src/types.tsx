@@ -8,6 +8,7 @@ export type AlertLevel = "info" | "warning" | "important";
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type ResultMode = "table" | "single" | "combined" | "live";
+export type ResultFormat = "json" | "sql";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DiagramDirection = "ltr" | "rtl";
@@ -15,7 +16,6 @@ export type ColorScheme = "light" | "dark";
 export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
-export type ValueMode = "json" | "sql";
 export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type LineStyle = "metro" | "straight" | "smooth";
@@ -150,12 +150,12 @@ export interface SurrealistAppearanceSettings {
 	editorScale: number;
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
+	defaultResultFormat: ResultFormat;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
 	defaultDiagramShowLinks: boolean;
 	lineStyle: LineStyle;
 	sidebarMode: SidebarMode;
-	valueMode: ValueMode;
 	queryOrientation: Orientation;
 }
 
@@ -194,6 +194,7 @@ export interface TabQuery {
 	variables: string;
 	valid: boolean;
 	resultMode: ResultMode;
+	resultFormat: ResultFormat;
 	showVariables: boolean;
 }
 

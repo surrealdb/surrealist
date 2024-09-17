@@ -1,23 +1,24 @@
 import { useDebouncedValue } from "@mantine/hooks";
 import { useMemo } from "react";
-import type { ValueMode } from "~/types";
+import type { ResultFormat } from "~/types";
 import { formatValue, parseValue } from "~/util/surrealql";
-import { useSetting } from "./config";
 import { useStable } from "./stable";
+import { useActiveQuery } from "./connection";
 
 export type Formatter = (value: any) => string;
 
 /**
  * A hook used to format SurrealQL structures into strings
  */
-export function useValueFormatter(): [Formatter, ValueMode] {
-	const [mode] = useSetting("appearance", "valueMode");
+export function useResultFormatter(): [Formatter, ResultFormat] {
+	const query = useActiveQuery();
+	const format = query?.resultFormat || "sql";
 
-	const format = useStable((value: any) => {
-		return formatValue(value, mode === "json", true);
+	const formatter = useStable((value: any) => {
+		return formatValue(value, format === "json", true);
 	});
 
-	return [format, mode];
+	return [formatter, format];
 }
 
 /**

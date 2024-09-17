@@ -20,7 +20,7 @@ import { isMini } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { RESULT_MODES } from "~/constants";
+import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/commands";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -28,14 +28,8 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { QueryResponse, ResultMode, TabQuery } from "~/types";
-import {
-	iconBroadcastOff,
-	iconCursor,
-	iconHelp,
-	iconLive,
-	iconQuery,
-} from "~/util/icons";
+import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
+import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
 import classes from "./style.module.scss";
 
@@ -76,6 +70,7 @@ export function ResultPane({
 	const isLight = useIsLight();
 	const [resultTab, setResultTab] = useState<number>(1);
 	const resultMode = activeTab.resultMode;
+	const resultFormat = activeTab.resultFormat;
 	const responses = responseMap[activeTab.id] || [];
 	const activeResponse = responses[resultTab - 1];
 
@@ -106,12 +101,20 @@ export function ResultPane({
 		});
 	};
 
+	const setResultFormat = (format: ResultFormat) => {
+		updateQueryTab({
+			id: activeTab.id,
+			resultFormat: format,
+		});
+	};
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset result tab when responses change
 	useLayoutEffect(() => {
 		setResultTab(1);
 	}, [responses.length]);
 
 	const activeMode = RESULT_MODES.find((r) => r.value === resultMode);
+	const activeFormat = RESULT_FORMATS.find((r) => r.value === resultFormat);
 	const hasSelection = selection?.empty === false;
 
 	const statusText = showResponses
@@ -163,19 +166,51 @@ export function ResultPane({
 					<Menu>
 						<Menu.Target>
 							{isMini ? (
-								<Tooltip label="Click to change mode">
+								<Tooltip label="Click to change result format">
 									<ActionIcon
-										aria-label={`Change result mode. Currently ${activeMode}`}
+										aria-label={`Change result format. Currently ${activeFormat?.label}`}
 										h={30}
 										w={30}
 									>
-										<Icon
-											path={
-												activeMode
-													? activeMode.icon
-													: iconHelp
-											}
-										/>
+										<Icon path={activeFormat?.icon ?? iconHelp} />
+									</ActionIcon>
+								</Tooltip>
+							) : (
+								<Button
+									size="xs"
+									radius="xs"
+									aria-label="Change format mode"
+									variant="light"
+									color="slate"
+									leftSection={activeFormat && <Icon path={activeFormat.icon} />}
+								>
+									{activeFormat?.label ?? "Unknown"}
+								</Button>
+							)}
+						</Menu.Target>
+						<Menu.Dropdown>
+							{RESULT_FORMATS.map(({ label, value, icon }) => (
+								<Menu.Item
+									key={value}
+									onClick={() => setResultFormat(value)}
+									leftSection={<Icon path={icon} />}
+								>
+									{label}
+								</Menu.Item>
+							))}
+						</Menu.Dropdown>
+					</Menu>
+
+					<Menu>
+						<Menu.Target>
+							{isMini ? (
+								<Tooltip label="Click to change mode">
+									<ActionIcon
+										aria-label={`Change result mode. Currently ${activeMode?.label}`}
+										h={30}
+										w={30}
+									>
+										<Icon path={activeMode?.icon ?? iconHelp} />
 									</ActionIcon>
 								</Tooltip>
 							) : (
@@ -185,11 +220,7 @@ export function ResultPane({
 									aria-label="Change result mode"
 									variant="light"
 									color="slate"
-									leftSection={
-										activeMode && (
-											<Icon path={activeMode.icon} />
-										)
-									}
+									leftSection={activeMode && <Icon path={activeMode.icon} />}
 								>
 									{activeMode?.label ?? "Unknown"}
 								</Button>
@@ -235,27 +266,43 @@ export function ResultPane({
 					}}
 				>
 					<Group>
-						<Icon path={iconLive} c="slate" size="xl" />
-						<Text fw={500} c="bright">
-							Click here to open Live Mode and view incoming live
-							messages
+						<Icon
+							path={iconLive}
+							c="slate"
+							size="xl"
+						/>
+						<Text
+							fw={500}
+							c="bright"
+						>
+							Click here to open Live Mode and view incoming live messages
 						</Text>
 					</Group>
 				</UnstyledButton>
 			)}
 			{resultMode === "live" ? (
-				<LivePreview query={activeTab} isLive={isLive} />
+				<LivePreview
+					query={activeTab}
+					isLive={isLive}
+				/>
 			) : activeResponse ? (
 				<>
 					{resultMode === "combined" ? (
 						<CombinedJsonPreview results={responses} />
 					) : activeResponse.success ? (
 						activeResponse.result?.length === 0 ? (
-							<Text c="slate" flex={1}>
+							<Text
+								c="slate"
+								flex={1}
+							>
 								No results found for query
 							</Text>
 						) : resultMode === "table" ? (
-							<Box mih={0} flex={1} pos="relative">
+							<Box
+								mih={0}
+								flex={1}
+								pos="relative"
+							>
 								<DataTable data={activeResponse.result} />
 							</Box>
 						) : (
@@ -272,16 +319,26 @@ export function ResultPane({
 					)}
 				</>
 			) : (
-				<Center h="100%" c="slate">
+				<Center
+					h="100%"
+					c="slate"
+				>
 					<Stack>
-						<Icon path={iconQuery} mx="auto" size="lg" />
+						<Icon
+							path={iconQuery}
+							mx="auto"
+							size="lg"
+						/>
 						Execute a SurrealQL query to view the results here
 					</Stack>
 				</Center>
 			)}
 
 			{showTabs && (
-				<Stack gap="xs" align="center">
+				<Stack
+					gap="xs"
+					align="center"
+				>
 					<Divider w="100%" />
 					<Pagination
 						total={responses.length}
