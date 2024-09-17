@@ -3,6 +3,7 @@ import {
 	DESIGNER_NODE_MODES,
 	LINE_STYLES,
 	ORIENTATIONS,
+	RESULT_FORMATS,
 	RESULT_MODES,
 	SIDEBAR_MODES,
 	THEMES,
@@ -28,6 +29,11 @@ export function AppearanceTab() {
 	const [defaultResultMode, setDefaultResultMode] = useSetting(
 		CAT,
 		"defaultResultMode",
+	);
+
+	const [defaultResultFormat, setDefaultResultFormat] = useSetting(
+		CAT,
+		"defaultResultFormat",
 	);
 
 	const [queryOrientation, setQueryOrientation] = useSetting(
@@ -130,6 +136,13 @@ export function AppearanceTab() {
 					data={RESULT_MODES}
 					value={defaultResultMode}
 					onChange={setDefaultResultMode as any}
+				/>
+
+				<Select
+					label="Default result format"
+					data={RESULT_FORMATS}
+					value={defaultResultFormat}
+					onChange={setDefaultResultFormat as any}
 				/>
 
 				<Select
