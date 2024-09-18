@@ -74,7 +74,7 @@ export function CloudView() {
 			>
 				<CloudToolbar showBreadcrumb={renderCloud} />
 			</Group>
-			
+
 			{renderCloud ? (
 				<Flex
 					flex={1}
@@ -110,9 +110,9 @@ export function CloudView() {
 							ta="center"
 						>
 							Surreal Cloud redefines the database experience, offering the power and
-							flexibility of SurrealDB without the pain of managing infrastructure. Elevate
-							your business to unparalleled levels of scale and resilience. Focus on building
-							tomorrow's applications. Let us take care of the rest.
+							flexibility of SurrealDB without the pain of managing infrastructure.
+							Elevate your business to unparalleled levels of scale and resilience.
+							Focus on building tomorrow's applications. Let us take care of the rest.
 						</Text>
 						{!cloud_access ? (
 							<Button
@@ -156,23 +156,12 @@ export function CloudView() {
 								title="Client update required"
 								maw={500}
 							>
-								Please update your version of Surrealist to continue using Surreal Cloud.
+								Please update your version of Surrealist to continue using Surreal
+								Cloud.
 							</Alert>
 						)}
 					</Stack>
-					<Box
-						pos="fixed"
-						bottom={-16}
-						left={0}
-						right={0}
-						h={333}
-						display="flex"
-						style={{
-							alignItems: "center",
-							justifyContent: "center",
-							overflow: "hidden",
-						}}
-					>
+					<Box className={classes.splashImageContainer}>
 						<Image
 							src={splashUrl}
 							alt="Surreal Cloud"
