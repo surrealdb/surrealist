@@ -1,13 +1,7 @@
-import {
-	Alert,
-	Button,
-	Divider,
-	Group,
-	Menu,
-	Modal,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Alert, Button, Divider, Group, Menu, Modal, Stack, Text } from "@mantine/core";
+
+import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
+
 import { useDisclosure } from "@mantine/hooks";
 import { Fragment, useLayoutEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
@@ -24,13 +18,6 @@ import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
-import {
-	iconCheck,
-	iconChevronDown,
-	iconDelete,
-	iconFile,
-	iconPlus,
-} from "~/util/icons";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -44,12 +31,8 @@ function newConnection() {
 
 export function ConnectionModal() {
 	const connections = useConnections();
-	const {
-		addConnection,
-		updateConnection,
-		setActiveConnection,
-		removeConnection,
-	} = useConfigStore.getState();
+	const { addConnection, updateConnection, setActiveConnection, removeConnection } =
+		useConfigStore.getState();
 
 	const [opened, openedHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -57,6 +40,7 @@ export function ConnectionModal() {
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
+
 	const isValid = useMemo(() => {
 		return details.name && isConnectionValid(details.authentication);
 	}, [details.authentication, details.name]);
@@ -117,19 +101,13 @@ export function ConnectionModal() {
 	});
 
 	useIntent("new-connection", ({ template }) => {
-		const base = newConnection();
-
 		setIsCreating(true);
 		setEditingId("");
+		setDetails(newConnection());
 		openedHandle.open();
 
-		if (typeof template === "string") {
+		if (template) {
 			applyTemplate(JSON.parse(template) as Template);
-		} else {
-			setDetails({
-				...base,
-				name: generateName(),
-			});
 		}
 	});
 
@@ -152,7 +130,10 @@ export function ConnectionModal() {
 		>
 			<Form onSubmit={saveInfo}>
 				{templates.length > 0 && (
-					<Alert mb="xl" p="xs">
+					<Alert
+						mb="xl"
+						p="xs"
+					>
 						<Group>
 							<Icon
 								ml={6}
@@ -172,9 +153,7 @@ export function ConnectionModal() {
 									<Button
 										color="slate"
 										variant="light"
-										rightSection={
-											<Icon path={iconChevronDown} />
-										}
+										rightSection={<Icon path={iconChevronDown} />}
 									>
 										Apply template
 									</Button>
@@ -184,16 +163,12 @@ export function ConnectionModal() {
 										{templates.map((info, i) => (
 											<Fragment key={info.id}>
 												<Menu.Item
-													onClick={() =>
-														applyTemplate(info)
-													}
+													onClick={() => applyTemplate(info)}
 													miw={175}
 												>
 													{info.name}
 												</Menu.Item>
-												{i < templates.length - 1 && (
-													<Divider />
-												)}
+												{i < templates.length - 1 && <Divider />}
 											</Fragment>
 										))}
 									</Stack>
@@ -203,7 +178,10 @@ export function ConnectionModal() {
 					</Alert>
 				)}
 
-				<ConnectionDetails value={details} onChange={setDetails} />
+				<ConnectionDetails
+					value={details}
+					onChange={setDetails}
+				/>
 
 				<Group mt="xl">
 					<Button
@@ -228,9 +206,7 @@ export function ConnectionModal() {
 						type="submit"
 						variant="gradient"
 						disabled={!isValid}
-						rightSection={
-							<Icon path={isCreating ? iconPlus : iconCheck} />
-						}
+						rightSection={<Icon path={isCreating ? iconPlus : iconCheck} />}
 					>
 						{isCreating ? "Create" : "Save"}
 					</Button>
