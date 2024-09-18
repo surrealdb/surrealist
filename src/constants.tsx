@@ -43,6 +43,7 @@ import {
 	iconPlus,
 	iconProgressClock,
 	iconQuery,
+	iconRelation,
 	iconServer,
 } from "./util/icons";
 
@@ -61,7 +62,7 @@ export const DATASETS: Record<string, DataSet> = {
 	"surreal-deal-store": {
 		name: "Surreal Deal Store",
 		url: "https://datasets.surrealdb.com/surreal-deal-store-mini.surql",
-	}
+	},
 };
 
 export const THEMES = [
@@ -71,15 +72,45 @@ export const THEMES = [
 ];
 
 export const RESULT_MODES: Listable<ResultMode>[] = [
-	{ label: "Combined", value: "combined", icon: iconCombined },
-	{ label: "Individual", value: "single", icon: iconQuery },
-	{ label: "Table", value: "table", icon: iconDataTable },
-	{ label: "Live", value: "live", icon: iconLive },
+	{
+		label: "Combined",
+		value: "combined",
+		icon: iconCombined,
+		description: "View all results in a single list",
+	},
+	{
+		label: "Individual",
+		value: "single",
+		icon: iconQuery,
+		description: "Inspect each result individually",
+	},
+	{
+		label: "Table",
+		value: "table",
+		icon: iconDataTable,
+		description: "Render query results in a table",
+	},
+	{
+		label: "Live",
+		value: "live",
+		icon: iconLive,
+		description: "Subscribe to live query results",
+	},
 ];
 
 export const RESULT_FORMATS: Listable<ResultFormat>[] = [
-	{ label: "JSON", value: "json", icon: iconBraces },
-	{ label: "SurrealQL", value: "sql", icon: iconDatabase },
+	{
+		label: "SurrealQL",
+		value: "sql",
+		icon: iconDatabase,
+		description: "Format results in full SurrealQL",
+	},
+	{
+		label: "JSON",
+		value: "json",
+		icon: iconBraces,
+		description: "Format results in classic JSON",
+	},
 ];
 
 export const CONNECTION_PROTOCOLS: ProtocolOption[] = [
@@ -237,13 +268,7 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	},
 };
 
-export const EXPORT_TYPES = [
-	"tables",
-	"analyzers",
-	"functions",
-	"params",
-	"access",
-] as const;
+export const EXPORT_TYPES = ["tables", "analyzers", "functions", "params", "access"] as const;
 
 export const SURREAL_KINDS = [
 	{ label: "No kind specified", value: "" },

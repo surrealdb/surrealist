@@ -1,5 +1,3 @@
-import type { SelectionRange } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
 import {
 	ActionIcon,
 	Box,
@@ -7,13 +5,17 @@ import {
 	Center,
 	Divider,
 	Group,
-	Menu,
 	Pagination,
 	Stack,
 	Text,
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
+
+import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
+
+import type { SelectionRange } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
@@ -29,9 +31,9 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
-import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
 import classes from "./style.module.scss";
+import { ListMenu } from "~/components/ListMenu";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -163,56 +165,43 @@ export function ResultPane({
 						</Text>
 					)}
 
-					<Menu>
-						<Menu.Target>
-							{isMini ? (
-								<Tooltip label="Click to change result format">
-									<ActionIcon
-										aria-label={`Change result format. Currently ${activeFormat?.label}`}
-										h={30}
-										w={30}
-									>
-										<Icon path={activeFormat?.icon ?? iconHelp} />
-									</ActionIcon>
-								</Tooltip>
-							) : (
+					{!isMini && (
+						<ListMenu
+							data={RESULT_FORMATS}
+							value={resultFormat}
+							onChange={setResultFormat}
+						>
+							<Tooltip label="Change result format">
 								<Button
 									size="xs"
 									radius="xs"
 									aria-label="Change format mode"
 									variant="light"
 									color="slate"
-									leftSection={activeFormat && <Icon path={activeFormat.icon} />}
+									leftSection={
+										activeFormat?.icon && <Icon path={activeFormat.icon} />
+									}
 								>
-									{activeFormat?.label ?? "Unknown"}
+									{activeFormat?.label ?? resultFormat}
 								</Button>
-							)}
-						</Menu.Target>
-						<Menu.Dropdown>
-							{RESULT_FORMATS.map(({ label, value, icon }) => (
-								<Menu.Item
-									key={value}
-									onClick={() => setResultFormat(value)}
-									leftSection={<Icon path={icon} />}
-								>
-									{label}
-								</Menu.Item>
-							))}
-						</Menu.Dropdown>
-					</Menu>
+							</Tooltip>
+						</ListMenu>
+					)}
 
-					<Menu>
-						<Menu.Target>
+					<ListMenu
+						data={RESULT_MODES}
+						value={resultMode}
+						onChange={setResultMode}
+					>
+						<Tooltip label="Change result mode">
 							{isMini ? (
-								<Tooltip label="Click to change mode">
-									<ActionIcon
-										aria-label={`Change result mode. Currently ${activeMode?.label}`}
-										h={30}
-										w={30}
-									>
-										<Icon path={activeMode?.icon ?? iconHelp} />
-									</ActionIcon>
-								</Tooltip>
+								<ActionIcon
+									aria-label={`Change result mode. Currently ${activeMode?.label}`}
+									h={30}
+									w={30}
+								>
+									<Icon path={activeMode?.icon ?? iconHelp} />
+								</ActionIcon>
 							) : (
 								<Button
 									size="xs"
@@ -220,24 +209,15 @@ export function ResultPane({
 									aria-label="Change result mode"
 									variant="light"
 									color="slate"
-									leftSection={activeMode && <Icon path={activeMode.icon} />}
+									leftSection={
+										activeMode?.icon && <Icon path={activeMode.icon} />
+									}
 								>
 									{activeMode?.label ?? "Unknown"}
 								</Button>
 							)}
-						</Menu.Target>
-						<Menu.Dropdown>
-							{RESULT_MODES.map(({ label, value, icon }) => (
-								<Menu.Item
-									key={value}
-									onClick={() => setResultMode(value)}
-									leftSection={<Icon path={icon} />}
-								>
-									{label}
-								</Menu.Item>
-							))}
-						</Menu.Dropdown>
-					</Menu>
+						</Tooltip>
+					</ListMenu>
 
 					<Button
 						size="xs"

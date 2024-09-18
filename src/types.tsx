@@ -77,7 +77,7 @@ export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string = string> = { label: string; value: T };
 export type Selection<T extends string> = Selectable<T>[];
-export type Listable<T extends string> = Selectable<T> & { icon: string };
+export type Listable<T extends string> = Selectable<T> & { description?: string, icon?: string };
 export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
