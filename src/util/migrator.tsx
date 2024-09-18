@@ -6,9 +6,10 @@ import type { SurrealistConfig } from "~/types";
 export function applyMigrations(config: any): SurrealistConfig {
 	const version = config.configVersion;
 
-	// 2.0.0
+	// 2.0.0 -> 3.0.0
+
 	if (version === 1) {
-		for (const con of config.connections) {
+		function fixConnection(con: any) {
 			con.authentication = con.connection;
 			con.authentication.mode = con.connection.authMode;
 
@@ -34,8 +35,27 @@ export function applyMigrations(config: any): SurrealistConfig {
 			con.authentication.authMode = undefined;
 			con.connection = undefined;
 		}
+		
+		for (const con of config.connections) {
+			fixConnection(con);
+		}
+
+		if (config.sandbox) {
+			fixConnection(config.sandbox);
+		}
 
 		config.configVersion++;
+	}
+
+	// NOTE - REPAIR: Empty accessFields array
+	// Remove in the future
+
+	for (const con of config.connections) {
+		con.authentication.accessFields ??= [];
+	}
+
+	if (config.sandbox) {
+		config.sandbox.authentication.accessFields ??= [];
 	}
 
 	return config;
