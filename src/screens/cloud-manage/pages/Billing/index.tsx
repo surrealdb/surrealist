@@ -41,13 +41,14 @@ import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { InvoiceStatus } from "~/types";
-import { showInfo } from "~/util/helpers";
+import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBilling } from "../../hooks/billing";
 import { useCloudInvoices } from "../../hooks/invoices";
 import { useCloudPayments } from "../../hooks/payments";
 import { openBillingModal } from "../../modals/billing";
+import { Form } from "~/components/Form";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -142,7 +143,7 @@ export function BillingPage() {
 
 			setCoupon("");
 		} catch(err: any) {
-			showInfo({
+			showError({
 				title: "Failed to apply discount code",
 				subtitle: "The discount code is invalid or has already been applied",
 			});
@@ -377,21 +378,23 @@ export function BillingPage() {
 						title="Discount Codes"
 						description="Apply discount codes to your organization"
 					>
-						<Group maw={500}>
-							<TextInput
-								flex={1}
-								value={coupon}
-								onChange={setCoupon}
-								placeholder="Enter discount code"
-							/>
-							<Button
-								variant="gradient"
-								disabled={!coupon}
-								onClick={redeemCoupon}
-							>
-								Apply
-							</Button>
-						</Group>
+						<Form onSubmit={redeemCoupon}>
+							<Group maw={500}>
+								<TextInput
+									flex={1}
+									value={coupon}
+									onChange={setCoupon}
+									placeholder="Enter discount code"
+								/>
+								<Button
+									type="submit"
+									variant="gradient"
+									disabled={!coupon}
+								>
+									Apply
+								</Button>
+							</Group>
+						</Form>
 					</Section>
 
 					<Section
