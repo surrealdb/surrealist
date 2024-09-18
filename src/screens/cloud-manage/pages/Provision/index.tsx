@@ -37,7 +37,6 @@ import {
 } from "~/hooks/cloud";
 
 import { useInputState } from "@mantine/hooks";
-import { range } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -52,6 +51,8 @@ import type { CloudInstance, CloudInstanceType } from "~/types";
 import { clamp, showError } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { Tile } from "../../components/Tile";
+import { InstanceType } from "../../components/InstanceType";
+import { CounterInput } from "~/components/Inputs";
 
 const PROVISION_STEPS = [
 	{
@@ -76,92 +77,6 @@ const PROVISION_STEPS = [
 	},
 ];
 
-interface InstanceTypeProps {
-	type: CloudInstanceType;
-	isActive?: boolean;
-	inactive?: boolean;
-	onSelect?: (type: string) => void;
-}
-
-function InstanceType({ type, isActive, inactive, onSelect }: InstanceTypeProps) {
-	return (
-		<Tile
-			isActive={isActive}
-			onClick={onSelect ? () => onSelect(type.slug) : undefined}
-			disabled={type.enabled === false}
-			inactive={inactive}
-		>
-			<Group
-				wrap="nowrap"
-				align="stretch"
-			>
-				<Stack
-					flex={1}
-					gap={0}
-				>
-					<Group>
-						<Text
-							c="bright"
-							fw={600}
-							fz="xl"
-						>
-							{type.slug}
-						</Text>
-					</Group>
-					{type.enabled === false && (
-						<Text c="red">Not available in your current plan</Text>
-					)}
-					<Spacer />
-					<Text>
-						<Icon
-							path={iconHammer}
-							left
-							size="sm"
-						/>
-						Development
-					</Text>
-				</Stack>
-				<Box>
-					<Table>
-						<Table.Tbody>
-							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconQuery} />
-										vCPU
-									</Group>
-								</Table.Td>
-								<Table.Td
-									c="bright"
-									miw={75}
-									ta="right"
-								>
-									{type.cpu}
-								</Table.Td>
-							</Table.Tr>
-							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconMemory} />
-										Memory
-									</Group>
-								</Table.Td>
-								<Table.Td
-									c="bright"
-									miw={75}
-									ta="right"
-								>
-									{type.memory} MB
-								</Table.Td>
-							</Table.Tr>
-						</Table.Tbody>
-					</Table>
-				</Box>
-			</Group>
-		</Tile>
-	);
-}
-
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
 	const { setActiveCloudPage } = useConfigStore.getState();
@@ -179,7 +94,6 @@ export function ProvisionPage() {
 	const [name, setName] = useInputState("");
 	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
 	const [units, setUnits] = useState(1);
-	const [unitText, setUnitText] = useInputState("1");
 	const [org, setOrg] = useState<string>(current?.id || "");
 	const [instance, setInstance] = useState<string>("");
 	const [region, setRegion] = useState<string>("");
@@ -250,13 +164,6 @@ export function ProvisionPage() {
 		} finally {
 			setActiveCloudPage("instances");
 		}
-	});
-
-	const updateUnits = useStable((value: number) => {
-		const clamped = clamp(value, minComputeUnits, maxComputeUnits);
-
-		setUnits(clamped);
-		setUnitText(clamped.toString());
 	});
 
 	const updateInstance = (value: string) => {
@@ -473,7 +380,7 @@ export function ProvisionPage() {
 								your instance.
 							</Text>
 
-							{hasSingleCompute ? (
+							{!hasSingleCompute ? (
 								<Alert
 									color="blue"
 									title="Upgrade to use compute units"
@@ -505,48 +412,13 @@ export function ProvisionPage() {
 									>
 										Desired compute units
 									</Text>
-									<Group>
-										<ActionIcon
-											disabled={units <= minComputeUnits}
-											onClick={() => updateUnits(units - 1)}
-										>
-											<Text
-												c="bright"
-												fw={500}
-												fz="lg"
-											>
-												-
-											</Text>
-										</ActionIcon>
-										<TextInput
-											w={75}
-											value={unitText}
-											onChange={setUnitText}
-											onBlur={() => updateUnits(Number.parseInt(unitText))}
-											type="number"
-											size="xs"
-											radius="sm"
-											styles={{
-												input: {
-													textAlign: "center",
-													fontWeight: 500,
-													fontSize: "var(--mantine-font-size-lg)",
-												},
-											}}
-										/>
-										<ActionIcon
-											disabled={units >= maxComputeUnits}
-											onClick={() => updateUnits(units + 1)}
-										>
-											<Text
-												c="bright"
-												fw={500}
-												fz="lg"
-											>
-												+
-											</Text>
-										</ActionIcon>
-									</Group>
+									
+									<CounterInput
+										value={units}
+										onChange={setUnits}
+										min={minComputeUnits}
+										max={maxComputeUnits}
+									/>
 								</>
 							)}
 						</Stack>
