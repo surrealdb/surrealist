@@ -197,6 +197,7 @@ export async function openConnection(options?: ConnectOptions) {
 						subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`,
 					});
 				} else if (!(err instanceof CloudError)) {
+					console.error(err);
 					showError({
 						title: "Connection failed",
 						subtitle: err.message,
@@ -531,10 +532,9 @@ export async function activateDatabase(namespace: string, database: string) {
 	try {
 		// Select a namespace only
 		if (namespace) {
-			const result = await executeQuerySingle("INFO FOR KV");
-			const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) => parseIdent(ns));
+			const isValid = await isNamespaceValid(namespace);
 
-			if (namespaces.includes(namespace)) {
+			if (isValid) {
 				updateCurrentConnection({
 					lastNamespace: namespace,
 					lastDatabase: database,
@@ -563,10 +563,9 @@ export async function activateDatabase(namespace: string, database: string) {
 
 		// Select a database
 		if (namespace && database) {
-			const result = await executeQuerySingle("INFO FOR NS");
-			const databases = Object.keys(result?.databases ?? {}).map((db) => parseIdent(db));
+			const isValid = await isDatabaseValid(database);
 
-			if (databases.includes(database)) {
+			if (isValid) {
 				updateCurrentConnection({
 					lastDatabase: database,
 				});
@@ -604,4 +603,26 @@ function scheduleReconnect(timeout?: number) {
 			});
 		}
 	}, delay);
+}
+
+async function isNamespaceValid(namespace: string) {
+	try {
+		const result = await executeQuerySingle("INFO FOR KV");
+		const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) => parseIdent(ns));
+
+		return namespaces.includes(namespace);
+	} catch {
+		return true;
+	}
+}
+
+async function isDatabaseValid(database: string) {
+	try {
+		const result = await executeQuerySingle("INFO FOR NS");
+		const databases = Object.keys(result?.databases ?? {}).map((db) => parseIdent(db));
+
+		return databases.includes(database);
+	} catch {
+		return true;
+	}
 }
