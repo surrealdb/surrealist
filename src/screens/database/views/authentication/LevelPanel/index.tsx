@@ -20,6 +20,7 @@ import { ContentPane } from "~/components/Pane";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
 import {
@@ -296,6 +297,8 @@ function AuthList<T extends { name: string }>({
 	onOptions,
 	onDetails,
 }: AuthListProps<T>) {
+	const isLight = useIsLight();
+
 	return (
 		<Box>
 			<Group mb="sm">
@@ -306,7 +309,13 @@ function AuthList<T extends { name: string }>({
 				>
 					{name}
 				</Text>
-				<Badge color="slate">{list.length}</Badge>
+				<Badge
+					color={isLight ? "slate.0" : "slate.9"}
+					radius="sm"
+					c="inherit"
+				>
+					{list.length}
+				</Badge>
 			</Group>
 			<Stack gap={4}>
 				{list.map((item) => {

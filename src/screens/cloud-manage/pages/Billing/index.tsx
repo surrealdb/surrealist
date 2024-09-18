@@ -23,7 +23,6 @@ import {
 	iconAccount,
 	iconCheck,
 	iconCreditCard,
-	iconDotsVertical,
 	iconHelp,
 	iconOpen,
 } from "~/util/icons";
@@ -42,6 +41,7 @@ import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { InvoiceStatus } from "~/types";
+import { showInfo } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBilling } from "../../hooks/billing";
@@ -125,6 +125,27 @@ export function BillingPage() {
 			adapter.openUrl(url);
 		} finally {
 			setRequesting(false);
+		}
+	});
+
+	const redeemCoupon = useStable(async () => {
+		try {
+			await fetchAPI(`/organizations/${organization?.id}/coupon`, {
+				method: "POST",
+				body: JSON.stringify(coupon),
+			});
+	
+			showInfo({
+				title: "Discount code applied",
+				subtitle: "The discount code has been successfully applied",
+			});
+
+			setCoupon("");
+		} catch(err: any) {
+			showInfo({
+				title: "Failed to apply discount code",
+				subtitle: "The discount code is invalid or has already been applied",
+			});
 		}
 	});
 
@@ -366,8 +387,9 @@ export function BillingPage() {
 							<Button
 								variant="gradient"
 								disabled={!coupon}
+								onClick={redeemCoupon}
 							>
-								Redeem
+								Apply
 							</Button>
 						</Group>
 					</Section>
