@@ -21,6 +21,7 @@ import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
+import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/commands";
@@ -33,7 +34,6 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
 import classes from "./style.module.scss";
-import { ListMenu } from "~/components/ListMenu";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {

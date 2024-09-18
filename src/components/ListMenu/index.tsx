@@ -3,8 +3,8 @@ import { Menu } from "@mantine/core";
 import type { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
 import type { Listable } from "~/types";
-import { Icon } from "../Icon";
 import { iconCheck } from "~/util/icons";
+import { Icon } from "../Icon";
 
 export interface ListMenuProps<T extends string> {
 	data: Listable<T>[];

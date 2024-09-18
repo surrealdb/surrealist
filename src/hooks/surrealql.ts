@@ -2,8 +2,8 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { useMemo } from "react";
 import type { ResultFormat } from "~/types";
 import { formatValue, parseValue } from "~/util/surrealql";
-import { useStable } from "./stable";
 import { useActiveQuery } from "./connection";
+import { useStable } from "./stable";
 
 export type Formatter = (value: any) => string;
 

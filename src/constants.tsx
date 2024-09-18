@@ -12,11 +12,11 @@ import type {
 	Listable,
 	Orientation,
 	Protocol,
+	ResultFormat,
 	ResultMode,
 	SchemaMode,
 	Selectable,
 	SidebarMode,
-	ResultFormat,
 	ViewInfo,
 	ViewMode,
 } from "./types";
