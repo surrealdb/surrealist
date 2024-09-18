@@ -1,3 +1,4 @@
+import { isArray, isObject } from "radash";
 import type { SurrealistConfig } from "~/types";
 
 /**
@@ -50,13 +51,13 @@ export function applyMigrations(config: any): SurrealistConfig {
 	// NOTE - REPAIR: Empty accessFields array
 	// Remove in the future
 
-	if (config.connections) {
+	if (config.connections && isArray(config.connections)) {
 		for (const con of config.connections) {
 			con.authentication.accessFields ??= [];
 		}
 	}
 
-	if (config.sandbox) {
+	if (config.sandbox && isObject(config.sandbox)) {
 		config.sandbox.authentication.accessFields ??= [];
 	}
 
