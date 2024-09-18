@@ -49,7 +49,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 		const { namespaces, accesses, users } = kvInfoTask.value;
 
 		schema.root.namespaces = namespaces;
-		schema.root.accesses = accesses;
+		schema.root.accesses = accesses ?? [];
 		schema.root.users = users;
 
 		// TODO Trim access queries
@@ -59,7 +59,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 		const { databases, accesses, users } = nsInfoTask.value;
 
 		schema.namespace.databases = databases;
-		schema.namespace.accesses = accesses;
+		schema.namespace.accesses = accesses ?? [];
 		schema.namespace.users = users;
 
 		// TODO Trim access queries
@@ -68,7 +68,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 	if (dbInfoTask.status === "fulfilled") {
 		const { accesses, models, users, functions, tables } = dbInfoTask.value;
 
-		schema.database.accesses = accesses;
+		schema.database.accesses = accesses ?? [];
 		schema.database.models = models;
 		schema.database.users = users;
 
