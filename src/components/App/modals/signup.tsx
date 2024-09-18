@@ -98,7 +98,7 @@ export function AccessSignupModal() {
 						</Table.Tr>
 					</Table.Thead>
 					<Table.Tbody>
-						{connection.authentication.accessFields.map((field) => {
+						{connection.authentication.accessFields?.map((field) => {
 							const fieldName = field.subject.toLowerCase();
 							const ValueInput = SENSITIVE_ACCESS_FIELDS.has(fieldName)
 								? PasswordInput

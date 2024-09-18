@@ -155,6 +155,12 @@
 			outline-offset: calc(0.125rem* var(--mantine-scale));
 			border-radius: var(--mantine-radius-xs);
 		}
+		
+		button[name="close"] {
+			width: 24px;
+			height: 24px;
+			transform: translateY(4px);
+		}
 
 		@include light {
 			border-color: var(--mantine-color-slate-2);
