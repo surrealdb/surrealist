@@ -137,7 +137,6 @@ export function DesignDrawer({
 				</ActionIcon>
 			</Group>
 			<Paper
-				withBorder
 				bg={isLight ? "white" : "slate.9"}
 				p="sm"
 				ff="monospace"
