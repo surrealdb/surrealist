@@ -1,5 +1,7 @@
 import {
+	ActionIcon,
 	Alert,
+	Badge,
 	Box,
 	Button,
 	Center,
@@ -20,6 +22,7 @@ import {
 	iconChevronLeft,
 	iconChevronRight,
 	iconFloppy,
+	iconHammer,
 	iconMemory,
 	iconPlus,
 	iconQuery,
@@ -46,7 +49,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance, CloudInstanceType } from "~/types";
-import { showError } from "~/util/helpers";
+import { clamp, showError } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { Tile } from "../../components/Tile";
 
@@ -75,33 +78,49 @@ const PROVISION_STEPS = [
 
 interface InstanceTypeProps {
 	type: CloudInstanceType;
-	isActive: boolean;
-	onSelect: (type: string) => void;
+	isActive?: boolean;
+	inactive?: boolean;
+	onSelect?: (type: string) => void;
 }
 
-function InstanceType({ type, isActive, onSelect }: InstanceTypeProps) {
+function InstanceType({ type, isActive, inactive, onSelect }: InstanceTypeProps) {
 	return (
 		<Tile
 			isActive={isActive}
-			onClick={() => onSelect(type.slug)}
+			onClick={onSelect ? () => onSelect(type.slug) : undefined}
 			disabled={type.enabled === false}
+			inactive={inactive}
 		>
-			<Group wrap="nowrap">
-				<Box flex={1}>
-					<Text
-						c="bright"
-						fw={600}
-						fz="lg"
-					>
-						{type.slug}
-					</Text>
-					<Text>{type.description}</Text>
+			<Group
+				wrap="nowrap"
+				align="stretch"
+			>
+				<Stack
+					flex={1}
+					gap={0}
+				>
+					<Group>
+						<Text
+							c="bright"
+							fw={600}
+							fz="xl"
+						>
+							{type.slug}
+						</Text>
+					</Group>
 					{type.enabled === false && (
-						<Text c="orange">
-							This instance type is not available in your current plan
-						</Text>	
+						<Text c="red">Not available in your current plan</Text>
 					)}
-				</Box>
+					<Spacer />
+					<Text>
+						<Icon
+							path={iconHammer}
+							left
+							size="sm"
+						/>
+						Development
+					</Text>
+				</Stack>
 				<Box>
 					<Table>
 						<Table.Tbody>
@@ -135,21 +154,6 @@ function InstanceType({ type, isActive, onSelect }: InstanceTypeProps) {
 									{type.memory} MB
 								</Table.Td>
 							</Table.Tr>
-							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconFloppy} />
-										Storage limit
-									</Group>
-								</Table.Td>
-								<Table.Td
-									c="bright"
-									miw={75}
-									ta="right"
-								>
-									{type.storage} GB
-								</Table.Td>
-							</Table.Tr>
 						</Table.Tbody>
 					</Table>
 				</Box>
@@ -175,6 +179,7 @@ export function ProvisionPage() {
 	const [name, setName] = useInputState("");
 	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
 	const [units, setUnits] = useState(1);
+	const [unitText, setUnitText] = useInputState("1");
 	const [org, setOrg] = useState<string>(current?.id || "");
 	const [instance, setInstance] = useState<string>("");
 	const [region, setRegion] = useState<string>("");
@@ -189,6 +194,9 @@ export function ProvisionPage() {
 	const instanceInfo = useMemo(() => {
 		return instanceTypes.find((t) => t.slug === instance);
 	}, [instance, instanceTypes]);
+
+	const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
+	const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
 
 	// Is the current instance is free
 	const isFree = useMemo(() => {
@@ -244,23 +252,12 @@ export function ProvisionPage() {
 		}
 	});
 
-	// Compute unit options
-	const computeUnits = useMemo(() => {
-		if (!instanceInfo?.compute_units) {
-			return [];
-		}
+	const updateUnits = useStable((value: number) => {
+		const clamped = clamp(value, minComputeUnits, maxComputeUnits);
 
-		const options = range(
-			instanceInfo.compute_units.min ?? 1,
-			instanceInfo.compute_units.max ?? 5,
-			(i) => ({
-				value: i.toString(),
-				label: `${i} unit${i === 1 ? "" : "s"}`,
-			}),
-		);
-
-		return [...options];
-	}, [instanceInfo?.compute_units]);
+		setUnits(clamped);
+		setUnitText(clamped.toString());
+	});
 
 	const updateInstance = (value: string) => {
 		const info = instanceTypes.find((t) => t.slug === value);
@@ -284,6 +281,8 @@ export function ProvisionPage() {
 
 	const willCreate = step === 4;
 	const estimatedCost = (isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units).toFixed(2);
+	const hasSingleCompute =
+		instanceInfo?.compute_units?.min === 1 && instanceInfo?.compute_units?.max === 1;
 
 	useLayoutEffect(() => {
 		if (!isAuthed) {
@@ -407,7 +406,7 @@ export function ProvisionPage() {
 								region close to your users can improve performance.
 							</Text>
 
-							<ScrollArea mah={300}>
+							<ScrollArea.Autosize mah="calc(100vh - 350px)">
 								<Stack>
 									{regions.map((type) => (
 										<Tile
@@ -436,7 +435,7 @@ export function ProvisionPage() {
 										</Tile>
 									))}
 								</Stack>
-							</ScrollArea>
+							</ScrollArea.Autosize>
 						</Stack>
 					)}
 
@@ -449,7 +448,7 @@ export function ProvisionPage() {
 								instance. Choose a configuration that best fits your needs.
 							</Text>
 
-							<ScrollArea mah={300}>
+							<ScrollArea.Autosize mah="calc(100vh - 350px)">
 								<Stack>
 									{instanceTypes.map((type) => (
 										<InstanceType
@@ -460,13 +459,13 @@ export function ProvisionPage() {
 										/>
 									))}
 								</Stack>
-							</ScrollArea>
+							</ScrollArea.Autosize>
 						</Stack>
 					)}
 
 					{step === 3 && (
 						<Stack>
-							<PrimaryTitle>Choose compute units</PrimaryTitle>
+							<PrimaryTitle>Customise compute units</PrimaryTitle>
 
 							<Text mb="lg">
 								Select the number of compute units you would like to use for your
@@ -474,21 +473,82 @@ export function ProvisionPage() {
 								your instance.
 							</Text>
 
-							{isFree && (
+							{hasSingleCompute ? (
 								<Alert
 									color="blue"
 									title="Upgrade to use compute units"
 								>
-									Compute unit upgrades are not available for free instances
+									Compute unit are not customisable for free instances
 								</Alert>
+							) : (
+								<>
+									{instanceInfo && (
+										<>
+											<Text
+												fw={600}
+												fz="xl"
+												c="bright"
+											>
+												Your selected instance
+											</Text>
+											<InstanceType
+												type={instanceInfo}
+												inactive
+											/>
+										</>
+									)}
+									<Text
+										mt="xl"
+										fw={600}
+										fz="xl"
+										c="bright"
+									>
+										Desired compute units
+									</Text>
+									<Group>
+										<ActionIcon
+											disabled={units <= minComputeUnits}
+											onClick={() => updateUnits(units - 1)}
+										>
+											<Text
+												c="bright"
+												fw={500}
+												fz="lg"
+											>
+												-
+											</Text>
+										</ActionIcon>
+										<TextInput
+											w={75}
+											value={unitText}
+											onChange={setUnitText}
+											onBlur={() => updateUnits(Number.parseInt(unitText))}
+											type="number"
+											size="xs"
+											radius="sm"
+											styles={{
+												input: {
+													textAlign: "center",
+													fontWeight: 500,
+													fontSize: "var(--mantine-font-size-lg)",
+												},
+											}}
+										/>
+										<ActionIcon
+											disabled={units >= maxComputeUnits}
+											onClick={() => updateUnits(units + 1)}
+										>
+											<Text
+												c="bright"
+												fw={500}
+												fz="lg"
+											>
+												+
+											</Text>
+										</ActionIcon>
+									</Group>
+								</>
 							)}
-
-							<Select
-								data={computeUnits}
-								disabled={isFree}
-								value={units.toString()}
-								onChange={(v) => v && setUnits(Number.parseInt(v))}
-							/>
 						</Stack>
 					)}
 
@@ -504,8 +564,12 @@ export function ProvisionPage() {
 											<Table.Td c="bright">{name}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
-											<Table.Td>Type</Table.Td>
+											<Table.Td>Instance Type</Table.Td>
 											<Table.Td c="bright">{instance}</Table.Td>
+										</Table.Tr>
+										<Table.Tr>
+											<Table.Td>Compute units</Table.Td>
+											<Table.Td c="bright">{units}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Region</Table.Td>

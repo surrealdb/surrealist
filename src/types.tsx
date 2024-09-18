@@ -476,9 +476,9 @@ export interface CloudInstanceType {
 	description: string;
 	cpu: number;
 	memory: number;
-	storage: number;
 	price_hour: number;
 	enabled?: boolean;
+	category: string;
 	compute_units: {
 		min?: number;
 		max?: number;
