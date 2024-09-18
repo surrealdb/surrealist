@@ -4,7 +4,7 @@ import type { SurrealistConfig } from "~/types";
  * Apply migrations to the config object
  */
 export function applyMigrations(config: any): SurrealistConfig {
-	const version = config.configVersion;
+	const version = config.configVersion ?? -1;
 
 	// 2.0.0 -> 3.0.0
 
@@ -50,8 +50,10 @@ export function applyMigrations(config: any): SurrealistConfig {
 	// NOTE - REPAIR: Empty accessFields array
 	// Remove in the future
 
-	for (const con of config.connections) {
-		con.authentication.accessFields ??= [];
+	if (config.connections) {
+		for (const con of config.connections) {
+			con.authentication.accessFields ??= [];
+		}
 	}
 
 	if (config.sandbox) {
