@@ -2,13 +2,15 @@ import { Box, Button, Group, Paper, ScrollArea, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useAvailableInstanceTypes } from "~/hooks/cloud";
+import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import type { CloudInstance } from "~/types";
 import { InstanceType } from "../../InstanceType";
 import { useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useMutation } from "@tanstack/react-query";
 import { fetchAPI } from "~/screens/cloud-manage/api";
+import { useCloudInstances } from "~/screens/cloud-manage/hooks/instances";
+import { useCloudTypeLimits } from "~/screens/cloud-manage/hooks/limits";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({
@@ -29,6 +31,10 @@ interface InstanceTypeModalProps {
 
 function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const instanceTypes = useAvailableInstanceTypes();
+	const current = useOrganization();
+
+	const { data: instances } = useCloudInstances(current?.id);
+	const isAvailable = useCloudTypeLimits(instances ?? []);
 
 	const [selected, setSelected] = useState(instance.type.slug);
 
@@ -63,6 +69,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 								key={type.slug}
 								type={type}
 								isActive={type.slug === selected}
+								isLimited={!isAvailable(type)}
 								onSelect={setSelected}
 							/>
 						))}

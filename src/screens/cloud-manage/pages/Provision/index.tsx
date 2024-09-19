@@ -55,6 +55,7 @@ import { InstanceType } from "../../components/InstanceType";
 import { CounterInput } from "~/components/Inputs";
 import { useCloudInstances } from "../../hooks/instances";
 import { fork } from "radash";
+import { useCloudTypeLimits } from "../../hooks/limits";
 
 const PROVISION_STEPS = [
 	{
@@ -94,6 +95,7 @@ export function ProvisionPage() {
 	const regions = useAvailableRegions();
 
 	const { data: instances } = useCloudInstances(current?.id);
+	const isAvailable = useCloudTypeLimits(instances ?? []);
 
 	const [name, setName] = useInputState("");
 	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
@@ -107,16 +109,6 @@ export function ProvisionPage() {
 		value: org.id,
 		label: org.name,
 	}));
-
-	// Count of free and paid instances
-	const instanceTotals = useMemo(() => {
-		const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
-
-		return {
-			free: free.length,
-			paid: paid.length,
-		};
-	}, [instances]);
 
 	// Active instance type information
 	const instanceInfo = useMemo(() => {
@@ -183,16 +175,6 @@ export function ProvisionPage() {
 	const updateInstance = (value: string) => {
 		setInstance(value);
 		setUnits(minComputeUnits);
-	};
-
-	const isLimited = (type: CloudInstanceType) => {
-		if (!current) return true;
-
-		const isFree = type.price_hour === 0;
-
-		return isFree
-			? instanceTotals.free >= current.max_free_instances
-			: instanceTotals.paid >= current.max_paid_instances;
 	};
 
 	const previousStep = useStable(() => {
@@ -382,7 +364,7 @@ export function ProvisionPage() {
 											key={type.slug}
 											type={type}
 											isActive={type.slug === instance}
-											isLimited={isLimited(type)}
+											isLimited={!isAvailable(type)}
 											onSelect={updateInstance}
 										/>
 									))}
