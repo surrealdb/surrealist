@@ -121,19 +121,19 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const actionList = (
 		<Menu position="right-start">
 			<Menu.Target>
-				<ActionIcon>
+				<ActionIcon disabled={value.state !== "ready"}>
 					<Icon path={iconDotsVertical} />
 				</ActionIcon>
 			</Menu.Target>
 			<Menu.Dropdown>
 				<Menu.Label>Actions</Menu.Label>
-				<Menu.Item
+				{/* <Menu.Item
 					onClick={() => {}}
 					leftSection={<Icon path={iconText} />}
 					disabled
 				>
 					Rename instance...
-				</Menu.Item>
+				</Menu.Item> */}
 				<Menu.Item
 					onClick={() => openInstanceTypeModal(value)}
 					leftSection={<Icon path={iconMemory} />}
