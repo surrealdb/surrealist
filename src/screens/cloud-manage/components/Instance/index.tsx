@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Badge,
@@ -10,24 +12,31 @@ import {
 	Table,
 	Text,
 } from "@mantine/core";
+
+import {
+	iconAPI,
+	iconChevronDown,
+	iconConsole,
+	iconCopy,
+	iconDelete,
+	iconDotsVertical,
+	iconMarker,
+	iconMemory,
+	iconPower,
+	iconQuery,
+	iconTag,
+	iconText,
+} from "~/util/icons";
+
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance, InstanceState } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
-import {
-	iconAPI,
-	iconChevronDown,
-	iconConsole,
-	iconDotsVertical,
-	iconMarker,
-	iconMemory,
-	iconPower,
-	iconTag,
-} from "~/util/icons";
 import { fetchAPI } from "../../api";
-import classes from "./style.module.scss";
+import { openInstanceTypeModal } from "./modals/change-type";
+import { openComputeUnitsModal } from "./modals/change-units";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 
@@ -66,10 +75,9 @@ export interface Instance {
 	value: CloudInstance;
 	onDelete: () => void;
 	onConnect: (method: ConnectMethod, db: CloudInstance) => void;
-	onOpenSettings: (db: CloudInstance) => void;
 }
 
-export function Instance({ type, value, onDelete, onConnect, onOpenSettings }: Instance) {
+export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const inactive = value.state === "inactive";
 	const regions = useCloudStore((s) => s.regions);
 	const regionName = regions.find((r) => r.slug === value.region)?.description ?? value.region;
@@ -113,21 +121,43 @@ export function Instance({ type, value, onDelete, onConnect, onOpenSettings }: I
 	const actionList = (
 		<Menu position="right-start">
 			<Menu.Target>
-				<ActionIcon disabled={value.state !== "ready"}>
+				<ActionIcon>
 					<Icon path={iconDotsVertical} />
 				</ActionIcon>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Item onClick={() => onOpenSettings(value)}>Settings...</Menu.Item>
-				<Menu.Divider />
+				<Menu.Label>Actions</Menu.Label>
+				<Menu.Item
+					onClick={() => {}}
+					leftSection={<Icon path={iconText} />}
+					disabled
+				>
+					Rename instance...
+				</Menu.Item>
+				<Menu.Item
+					onClick={() => openInstanceTypeModal(value)}
+					leftSection={<Icon path={iconMemory} />}
+				>
+					Change instance type...
+				</Menu.Item>
+				<Menu.Item
+					onClick={() => openComputeUnitsModal(value)}
+					leftSection={<Icon path={iconQuery} />}
+				>
+					Change compute units...
+				</Menu.Item>
+				
 				{/* <Menu.Item
 					onClick={handleDeactivate}
 				>
 					{inactive ? "Activate" : "Deactivate"} instance
 				</Menu.Item> */}
+				<Menu.Item onClick={() => onConnect("sdk", value)} leftSection={<Icon path={iconCopy} />}>Copy URL</Menu.Item>
+				<Menu.Label mt="sm">Dangerous</Menu.Label>
 				<Menu.Item
 					onClick={handleDelete}
-					color="red"
+					leftSection={<Icon path={iconDelete} c="red" />}
+					c="red"
 				>
 					Delete instance
 				</Menu.Item>

@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Box,
@@ -15,6 +17,17 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
+
+import {
+	iconCheck,
+	iconOpen,
+	iconPlus,
+	iconSearch,
+	iconTune,
+	iconViewGrid,
+	iconViewList,
+} from "~/util/icons";
+
 import { useDebouncedValue, useDisclosure, useInputState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useMemo, useState } from "react";
@@ -31,21 +44,10 @@ import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
 import { createBaseConnection, createCloudInstance } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
-import {
-	iconCheck,
-	iconOpen,
-	iconPlus,
-	iconSearch,
-	iconTune,
-	iconViewGrid,
-	iconViewList,
-} from "~/util/icons";
 import { fetchAPI } from "../../api";
 import { type ConnectMethod, Instance } from "../../components/Instance";
 import { ConnectCliModal } from "./modals/connect-cli";
 import { ConnectSdkModal } from "./modals/connect-sdk";
-import { SettingsModal } from "./modals/settings";
-import classes from "./style.module.scss";
 
 interface Filter {
 	type: string;
@@ -79,7 +81,6 @@ export function InstancesPage() {
 	const [selectedInstance, setSelectedInstance] = useState(createCloudInstance());
 	const [showSdkConnect, sdkConnectHandle] = useDisclosure();
 	const [showCliConnect, cliConnectHandle] = useDisclosure();
-	const [showSettings, settingsHandle] = useDisclosure();
 
 	const handleProvision = useStable(() => {
 		setActiveCloudPage("provision");
@@ -122,11 +123,6 @@ export function InstancesPage() {
 		} else {
 			cliConnectHandle.open();
 		}
-	});
-
-	const handleSettings = useStable((db: CloudInstance) => {
-		setSelectedInstance(db);
-		settingsHandle.open();
 	});
 
 	const filterTypes = useMemo(() => {
@@ -356,7 +352,6 @@ export function InstancesPage() {
 										type="card"
 										onDelete={refetch}
 										onConnect={handleConnect}
-										onOpenSettings={handleSettings}
 									/>
 								))}
 							</SimpleGrid>
@@ -379,7 +374,6 @@ export function InstancesPage() {
 											type="row"
 											onDelete={refetch}
 											onConnect={handleConnect}
-											onOpenSettings={handleSettings}
 										/>
 									))}
 								</Table.Tbody>
@@ -405,13 +399,6 @@ export function InstancesPage() {
 				opened={showSdkConnect}
 				instance={selectedInstance}
 				onClose={sdkConnectHandle.close}
-			/>
-
-			<SettingsModal
-				opened={showSettings}
-				instance={selectedInstance}
-				onClose={settingsHandle.close}
-				onRefetch={refetch}
 			/>
 		</>
 	);

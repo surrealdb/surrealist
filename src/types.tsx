@@ -467,6 +467,7 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
+	compute_units: number;
 	state: InstanceState;
 	type: CloudInstanceType;
 }
