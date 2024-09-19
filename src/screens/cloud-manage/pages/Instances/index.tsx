@@ -48,6 +48,7 @@ import { fetchAPI } from "../../api";
 import { type ConnectMethod, Instance } from "../../components/Instance";
 import { ConnectCliModal } from "./modals/connect-cli";
 import { ConnectSdkModal } from "./modals/connect-sdk";
+import { useCloudInstances } from "../../hooks/instances";
 
 interface Filter {
 	type: string;
@@ -65,16 +66,8 @@ export function InstancesPage() {
 	const regions = useAvailableRegions();
 	const organization = useOrganization();
 	const instanceTypes = useAvailableInstanceTypes();
-	const authState = useCloudStore((state) => state.authState);
 
-	const { data, isPending, refetch } = useQuery({
-		queryKey: ["cloud", "databases", organization?.id],
-		refetchInterval: 5_000,
-		enabled: authState === "authenticated",
-		queryFn: async () => {
-			return fetchAPI<CloudInstance[]>(`/organizations/${organization?.id}/instances`);
-		},
-	});
+	const { data, isPending, refetch } = useCloudInstances(organization?.id);
 
 	const instances = useMemo(() => data || [], [data]);
 

@@ -502,6 +502,8 @@ export interface CloudPlan {
 export interface CloudOrganization {
 	id: string;
 	name: string;
+	max_free_instances: number;
+	max_paid_instances: number;
 	billing_info: boolean;
 	payment_info: boolean;
 	plan: CloudPlan;

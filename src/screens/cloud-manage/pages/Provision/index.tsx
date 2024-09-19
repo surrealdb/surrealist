@@ -53,6 +53,8 @@ import { fetchAPI } from "../../api";
 import { Tile } from "../../components/Tile";
 import { InstanceType } from "../../components/InstanceType";
 import { CounterInput } from "~/components/Inputs";
+import { useCloudInstances } from "../../hooks/instances";
+import { fork } from "radash";
 
 const PROVISION_STEPS = [
 	{
@@ -91,6 +93,8 @@ export function ProvisionPage() {
 	const versions = useAvailableInstanceVersions();
 	const regions = useAvailableRegions();
 
+	const { data: instances } = useCloudInstances(current?.id);
+
 	const [name, setName] = useInputState("");
 	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
 	const [units, setUnits] = useState(1);
@@ -103,6 +107,16 @@ export function ProvisionPage() {
 		value: org.id,
 		label: org.name,
 	}));
+
+	// Count of free and paid instances
+	const instanceTotals = useMemo(() => {
+		const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
+
+		return {
+			free: free.length,
+			paid: paid.length,
+		};
+	}, [instances]);
 
 	// Active instance type information
 	const instanceInfo = useMemo(() => {
@@ -167,11 +181,18 @@ export function ProvisionPage() {
 	});
 
 	const updateInstance = (value: string) => {
-		const info = instanceTypes.find((t) => t.slug === value);
-		const minUnits = info?.compute_units?.min ?? 1;
-
 		setInstance(value);
-		setUnits(minUnits);
+		setUnits(minComputeUnits);
+	};
+
+	const isLimited = (type: CloudInstanceType) => {
+		if (!current) return true;
+
+		const isFree = type.price_hour === 0;
+
+		return isFree
+			? instanceTotals.free >= current.max_free_instances
+			: instanceTotals.paid >= current.max_paid_instances;
 	};
 
 	const previousStep = useStable(() => {
@@ -188,8 +209,7 @@ export function ProvisionPage() {
 
 	const willCreate = step === 4;
 	const estimatedCost = (isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units).toFixed(2);
-	const hasSingleCompute =
-		instanceInfo?.compute_units?.min === 1 && instanceInfo?.compute_units?.max === 1;
+	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	useLayoutEffect(() => {
 		if (!isAuthed) {
@@ -362,6 +382,7 @@ export function ProvisionPage() {
 											key={type.slug}
 											type={type}
 											isActive={type.slug === instance}
+											isLimited={isLimited(type)}
 											onSelect={updateInstance}
 										/>
 									))}
@@ -412,7 +433,7 @@ export function ProvisionPage() {
 									>
 										Desired compute units
 									</Text>
-									
+
 									<CounterInput
 										value={units}
 										onChange={setUnits}

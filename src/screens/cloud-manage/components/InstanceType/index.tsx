@@ -15,24 +15,24 @@ const CATEGORIES: Record<string, { name: string; icon: string }> = {
 		name: "Production",
 		icon: iconQuery,
 	},
-}
+};
 
 export interface InstanceTypeProps {
 	type: CloudInstanceType;
 	isActive?: boolean;
+	isLimited?: boolean;
 	inactive?: boolean;
 	onSelect?: (type: string) => void;
 }
 
-export function InstanceType({ type, isActive, inactive, onSelect }: InstanceTypeProps) {
-
+export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: InstanceTypeProps) {
 	const category = CATEGORIES[type.category];
 
 	return (
 		<Tile
 			isActive={isActive}
 			onClick={onSelect ? () => onSelect(type.slug) : undefined}
-			disabled={type.enabled === false}
+			disabled={type.enabled === false || isLimited}
 			inactive={inactive}
 		>
 			<Group
@@ -52,8 +52,10 @@ export function InstanceType({ type, isActive, inactive, onSelect }: InstanceTyp
 							{type.slug}
 						</Text>
 					</Group>
-					{type.enabled === false && (
+					{type.enabled === false ? (
 						<Text c="red">Not available in your current plan</Text>
+					) : isLimited && (
+						<Text c="orange">You have reached the maximum amount of instances of this type</Text>
 					)}
 					<Spacer />
 					{category && (
