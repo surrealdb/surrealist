@@ -146,17 +146,28 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				>
 					Change compute nodes...
 				</Menu.Item>
-				
-				{/* <Menu.Item
-					onClick={handleDeactivate}
+				<Menu.Item
+					leftSection={<Icon path={iconCopy} />}
+					onClick={() => {
+						navigator.clipboard.writeText(`${value.host}`).then(() => {
+							showInfo({
+								title: "Success",
+								subtitle: "Successfully copied the hostname",
+							});
+						})
+					}}
 				>
-					{inactive ? "Activate" : "Deactivate"} instance
-				</Menu.Item> */}
-				<Menu.Item onClick={() => onConnect("sdk", value)} leftSection={<Icon path={iconCopy} />}>Copy URL</Menu.Item>
+					Copy hostname
+				</Menu.Item>
 				<Menu.Label mt="sm">Dangerous</Menu.Label>
 				<Menu.Item
 					onClick={handleDelete}
-					leftSection={<Icon path={iconDelete} c="red" />}
+					leftSection={
+						<Icon
+							path={iconDelete}
+							c="red"
+						/>
+					}
 					c="red"
 				>
 					Delete instance
