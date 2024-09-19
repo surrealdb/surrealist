@@ -54,7 +54,6 @@ import { Tile } from "../../components/Tile";
 import { InstanceType } from "../../components/InstanceType";
 import { CounterInput } from "~/components/Inputs";
 import { useCloudInstances } from "../../hooks/instances";
-import { fork } from "radash";
 import { useCloudTypeLimits } from "../../hooks/limits";
 
 const PROVISION_STEPS = [
@@ -71,8 +70,8 @@ const PROVISION_STEPS = [
 		name: "Instance type",
 	},
 	{
-		title: "Select compute units",
-		name: "Compute units",
+		title: "Select compute nodes",
+		name: "Compute nodes",
 	},
 	{
 		title: "Finalize your instance",
@@ -375,20 +374,20 @@ export function ProvisionPage() {
 
 					{step === 3 && (
 						<Stack>
-							<PrimaryTitle>Customise compute units</PrimaryTitle>
+							<PrimaryTitle>Customise compute nodes</PrimaryTitle>
 
 							<Text mb="lg">
-								Select the number of compute units you would like to use for your
-								instance. Each compute unit provides additional processing power to
+								Select the number of compute nodes you would like to use for your
+								instance. Each compute node provides additional processing power to
 								your instance.
 							</Text>
 
 							{!hasSingleCompute ? (
 								<Alert
 									color="blue"
-									title="Upgrade to use compute units"
+									title="Upgrade to use compute nodes"
 								>
-									Compute unit are not customisable for free instances
+									Compute nodes are not customisable for free instances
 								</Alert>
 							) : (
 								<>
@@ -413,7 +412,7 @@ export function ProvisionPage() {
 										fz="xl"
 										c="bright"
 									>
-										Desired compute units
+										Desired compute nodes
 									</Text>
 
 									<CounterInput
@@ -443,7 +442,7 @@ export function ProvisionPage() {
 											<Table.Td c="bright">{instance}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
-											<Table.Td>Compute units</Table.Td>
+											<Table.Td>Compute nodes</Table.Td>
 											<Table.Td c="bright">{units}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>

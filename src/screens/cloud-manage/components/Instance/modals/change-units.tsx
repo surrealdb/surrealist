@@ -15,7 +15,7 @@ export async function openComputeUnitsModal(instance: CloudInstance) {
 		size: "lg",
 		title: (
 			<Box>
-				<PrimaryTitle>Change compute units</PrimaryTitle>
+				<PrimaryTitle>Change compute nodes</PrimaryTitle>
 				<Text fz="lg">{instance.name}</Text>
 			</Box>
 		),
@@ -58,16 +58,16 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 			>
 				<Stack>
 					<Text mb="lg">
-						Select the number of compute units you would like to use for your instance. Each
-						compute unit provides additional processing power to your instance.
+						Select the number of compute nodes you would like to use for your instance. Each
+						compute node provides additional processing power to your instance.
 					</Text>
 
 					{!hasSingleCompute ? (
 						<Alert
 							color="blue"
-							title="Upgrade to use compute units"
+							title="Upgrade to use compute nodes"
 						>
-							Compute unit are not customisable for free instances
+							Compute nodes are not customisable for free instances
 						</Alert>
 					) : (
 						<>
@@ -88,7 +88,7 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 								fz="xl"
 								c="bright"
 							>
-								Desired compute units
+								Desired compute nodes
 							</Text>
 
 							<CounterInput

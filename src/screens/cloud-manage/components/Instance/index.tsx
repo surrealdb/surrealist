@@ -144,7 +144,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					onClick={() => openComputeUnitsModal(value)}
 					leftSection={<Icon path={iconQuery} />}
 				>
-					Change compute units...
+					Change compute nodes...
 				</Menu.Item>
 				
 				{/* <Menu.Item
