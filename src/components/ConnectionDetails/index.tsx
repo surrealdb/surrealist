@@ -37,6 +37,7 @@ import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 import { Spacer } from "../Spacer";
+import { fork } from "radash";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -136,7 +137,22 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	);
 
 	const protocols = useMemo(() => {
-		return isCloud ? CONNECTION_PROTOCOLS.filter((p) => p.remote) : CONNECTION_PROTOCOLS;
+		const [remote, local] = fork(CONNECTION_PROTOCOLS, (p) => p.remote);
+
+		if (isCloud) {
+			return remote;
+		}
+		
+		return [
+			{
+				group: "Remote",
+				items: remote,
+			},
+			{
+				group: "Local",
+				items: local,
+			}
+		]
 	}, [isCloud]);
 
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
@@ -248,7 +264,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 				<Group>
 					<Select
 						data={protocols}
-						maw={110}
+						maw={125}
 						value={value.authentication.protocol}
 						onChange={(value) =>
 							onChange((draft) => {

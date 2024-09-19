@@ -159,6 +159,30 @@ body.mod .cm-record-link:hover {
     }
 }
 
+.mantine-Select-group {
+	&:not(:first-child) {
+		margin-top: var(--mantine-spacing-sm);
+	}
+
+	.mantine-Select-option {
+		padding-block: 5px;
+	}
+}
+
+.mantine-Select-groupLabel {
+	color: var(--mantine-color-dimmed);
+	font-size: var(--mantine-font-size-xs);
+	padding: 3px 9px;
+
+	&::after {
+		display: none;
+	}
+
+	@include light {
+		color: var(--mantine-color-slate-5);
+	}
+}
+
 .mantine-Slider-bar {
     background: var(--surrealist-gradient);
 }
