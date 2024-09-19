@@ -4,6 +4,18 @@ import type { CloudInstanceType } from "~/types";
 import { iconHammer, iconQuery, iconMemory } from "~/util/icons";
 import { Tile } from "../Tile";
 import { Icon } from "~/components/Icon";
+import { capitalize } from "radash";
+
+const CATEGORIES: Record<string, { name: string; icon: string }> = {
+	development: {
+		name: "Development",
+		icon: iconHammer,
+	},
+	production: {
+		name: "Production",
+		icon: iconQuery,
+	},
+}
 
 export interface InstanceTypeProps {
 	type: CloudInstanceType;
@@ -13,6 +25,9 @@ export interface InstanceTypeProps {
 }
 
 export function InstanceType({ type, isActive, inactive, onSelect }: InstanceTypeProps) {
+
+	const category = CATEGORIES[type.category];
+
 	return (
 		<Tile
 			isActive={isActive}
@@ -41,14 +56,16 @@ export function InstanceType({ type, isActive, inactive, onSelect }: InstanceTyp
 						<Text c="red">Not available in your current plan</Text>
 					)}
 					<Spacer />
-					<Text>
-						<Icon
-							path={iconHammer}
-							left
-							size="sm"
-						/>
-						Development
-					</Text>
+					{category && (
+						<Text>
+							<Icon
+								path={category.icon}
+								left
+								size="sm"
+							/>
+							{capitalize(category.name)}
+						</Text>
+					)}
 				</Stack>
 				<Box>
 					<Table>
