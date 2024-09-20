@@ -1,15 +1,15 @@
 import { Alert, Box, Button, Group, Paper, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { CounterInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { fetchAPI } from "~/screens/cloud-manage/api";
 import type { CloudInstance } from "~/types";
 import { InstanceType } from "../../InstanceType";
-import { useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { useMutation } from "@tanstack/react-query";
-import { fetchAPI } from "~/screens/cloud-manage/api";
-import { CounterInput } from "~/components/Inputs";
-import { useIsLight } from "~/hooks/theme";
 
 export async function openComputeUnitsModal(instance: CloudInstance) {
 	openModal({

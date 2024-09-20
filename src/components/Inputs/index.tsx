@@ -23,10 +23,11 @@ import {
 	useRef,
 } from "react";
 
-import { clamp, useInputState } from "@mantine/hooks";
-import { surrealql } from "@surrealdb/codemirror";
 import { Compartment, EditorState, type Extension, Prec } from "@codemirror/state";
 import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
+import { Text } from "@mantine/core";
+import { clamp, useInputState } from "@mantine/hooks";
+import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
 import { Icon } from "~/components/Icon";
 import { acceptWithTab, colorTheme, inputBase } from "~/editor";
@@ -34,7 +35,6 @@ import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { iconCancel, iconCheck } from "~/util/icons";
-import { Text } from "@mantine/core";
 
 export interface CodeInputProps
 	extends InputBaseProps,

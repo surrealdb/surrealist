@@ -36,9 +36,9 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance, InstanceState } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI } from "../../api";
+import { openCapabilitiesModal } from "./modals/capabilities";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
-import { openCapabilitiesModal } from "./modals/capabilities";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 

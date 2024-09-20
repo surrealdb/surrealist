@@ -3,9 +3,9 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
+import glowUrl from "~/assets/images/gradient-glow.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import glowUrl from "~/assets/images/gradient-glow.webp";
 
 import {
 	Box,

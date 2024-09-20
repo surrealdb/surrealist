@@ -1,12 +1,12 @@
-import communtyDarkUrl from "~/assets/images/dark/picto-community.svg";
-import tutorialDarkUrl from "~/assets/images/dark/picto-tutorial.svg";
-import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
-import communtyLightUrl from "~/assets/images/light/picto-community.svg";
-import tutorialLightUrl from "~/assets/images/light/picto-tutorial.svg";
-import documentationLightUrl from "~/assets/images/light/picto-documentation.svg";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
-import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
+import communtyDarkUrl from "~/assets/images/dark/picto-community.svg";
+import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
+import tutorialDarkUrl from "~/assets/images/dark/picto-tutorial.svg";
 import glowUrl from "~/assets/images/gradient-glow.webp";
+import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
+import communtyLightUrl from "~/assets/images/light/picto-community.svg";
+import documentationLightUrl from "~/assets/images/light/picto-documentation.svg";
+import tutorialLightUrl from "~/assets/images/light/picto-tutorial.svg";
 
 import { Button, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";

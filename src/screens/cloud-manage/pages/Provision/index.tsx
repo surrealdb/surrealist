@@ -40,6 +40,7 @@ import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { CounterInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { REGION_FLAGS } from "~/constants";
@@ -50,9 +51,8 @@ import { useConfigStore } from "~/stores/config";
 import type { CloudInstance, CloudInstanceType } from "~/types";
 import { clamp, showError } from "~/util/helpers";
 import { fetchAPI } from "../../api";
-import { Tile } from "../../components/Tile";
 import { InstanceType } from "../../components/InstanceType";
-import { CounterInput } from "~/components/Inputs";
+import { Tile } from "../../components/Tile";
 import { useCloudInstances } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 

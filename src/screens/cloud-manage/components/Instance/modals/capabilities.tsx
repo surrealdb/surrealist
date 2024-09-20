@@ -1,17 +1,17 @@
 import { Box, Button, Checkbox, Group, Paper, ScrollArea, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import type { CloudInstance } from "~/types";
-import { InstanceType } from "../../InstanceType";
-import { useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { useMutation } from "@tanstack/react-query";
+import { useIsLight } from "~/hooks/theme";
 import { fetchAPI } from "~/screens/cloud-manage/api";
 import { useCloudInstances } from "~/screens/cloud-manage/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-manage/hooks/limits";
-import { useIsLight } from "~/hooks/theme";
+import type { CloudInstance } from "~/types";
+import { InstanceType } from "../../InstanceType";
 
 export async function openCapabilitiesModal(instance: CloudInstance) {
 	openModal({

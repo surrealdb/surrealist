@@ -46,9 +46,9 @@ import { createBaseConnection, createCloudInstance } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { type ConnectMethod, Instance } from "../../components/Instance";
+import { useCloudInstances } from "../../hooks/instances";
 import { ConnectCliModal } from "./modals/connect-cli";
 import { ConnectSdkModal } from "./modals/connect-sdk";
-import { useCloudInstances } from "../../hooks/instances";
 
 interface Filter {
 	type: string;

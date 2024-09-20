@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import { fetchAPI } from "../api";
 import type { CloudInstance } from "~/types";
+import { fetchAPI } from "../api";
 
 /**
  * Fetch organization instances

@@ -24,6 +24,7 @@ import { AUTH_MODES, CONNECTION_PROTOCOLS, SENSITIVE_ACCESS_FIELDS } from "~/con
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
+import { fork } from "radash";
 import { useMemo } from "react";
 import type { Updater } from "use-immer";
 import { useStable } from "~/hooks/stable";
@@ -37,7 +38,6 @@ import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 import { Spacer } from "../Spacer";
-import { fork } from "radash";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);

@@ -1,10 +1,10 @@
-import { Group, Stack, Box, Text, Table } from "@mantine/core";
+import { Box, Group, Stack, Table, Text } from "@mantine/core";
+import { capitalize } from "radash";
+import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import type { CloudInstanceType } from "~/types";
-import { iconHammer, iconQuery, iconMemory } from "~/util/icons";
+import { iconHammer, iconMemory, iconQuery } from "~/util/icons";
 import { Tile } from "../Tile";
-import { Icon } from "~/components/Icon";
-import { capitalize } from "radash";
 
 const CATEGORIES: Record<string, { name: string; icon: string }> = {
 	development: {
