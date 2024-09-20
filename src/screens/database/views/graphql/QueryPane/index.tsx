@@ -1,34 +1,14 @@
-import { Prec } from "@codemirror/state";
-import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
-import {
-	ActionIcon,
-	Alert,
-	Badge,
-	Button,
-	Group,
-	Stack,
-	Tooltip,
-} from "@mantine/core";
-import { Text } from "@mantine/core";
-import { graphql, updateSchema } from "cm6-graphql";
-import { type GraphQLSchema, parse, print } from "graphql";
-import { useEffect } from "react";
-import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
-import { Link } from "~/components/Link";
-import { ContentPane } from "~/components/Pane";
+import classes from "./style.module.scss";
+
+import { ActionIcon, Alert, Badge, Button, Group, Stack, Tooltip } from "@mantine/core";
+
 import {
 	graphqlParser,
 	graphqlSuggestions,
 	handleFillFields,
 	runGraphqlQueryKeymap,
 } from "~/editor";
-import { useActiveConnection } from "~/hooks/connection";
-import { useDebouncedFunction } from "~/hooks/debounce";
-import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
-import { useConfigStore } from "~/stores/config";
-import { showError, showInfo, tryParseParams } from "~/util/helpers";
+
 import {
 	iconAutoFix,
 	iconDollar,
@@ -37,6 +17,23 @@ import {
 	iconRefresh,
 	iconText,
 } from "~/util/icons";
+
+import { Prec } from "@codemirror/state";
+import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { Text } from "@mantine/core";
+import { graphql, updateSchema } from "cm6-graphql";
+import { type GraphQLSchema, parse, print } from "graphql";
+import { useEffect } from "react";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
+import { ContentPane } from "~/components/Pane";
+import { useActiveConnection } from "~/hooks/connection";
+import { useDebouncedFunction } from "~/hooks/debounce";
+import { useStable } from "~/hooks/stable";
+import { useIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
+import { showError, showInfo, tryParseParams } from "~/util/helpers";
 import { formatValue } from "~/util/surrealql";
 
 export interface QueryPaneProps {
@@ -109,10 +106,7 @@ export function QueryPane({
 
 			const variableNames = document.definitions.reduce((acc, def) => {
 				if (def.kind === "OperationDefinition") {
-					const vars =
-						def.variableDefinitions?.map(
-							(v) => v.variable.name.value,
-						) ?? [];
+					const vars = def.variableDefinitions?.map((v) => v.variable.name.value) ?? [];
 
 					acc.push(...vars);
 					return acc;
@@ -123,9 +117,7 @@ export function QueryPane({
 
 			const currentVars = tryParseParams(connection.graphqlQuery);
 			const currentKeys = Object.keys(currentVars);
-			const variables = variableNames.filter(
-				(v) => !currentKeys.includes(v),
-			);
+			const variables = variableNames.filter((v) => !currentKeys.includes(v));
 
 			const newVars = variables.reduce(
 				(acc, v) => {
@@ -165,10 +157,14 @@ export function QueryPane({
 		<ContentPane
 			title="GraphQL"
 			icon={iconGraphql}
+			className={classes.root}
 			rightSection={
 				<Group gap="sm">
 					{!isValid && (
-						<Badge color="red" variant="light">
+						<Badge
+							color="red"
+							variant="light"
+						>
 							Invalid query
 						</Badge>
 					)}
@@ -199,7 +195,10 @@ export function QueryPane({
 						label={
 							<Stack gap={4}>
 								<Text>Infer variables from query</Text>
-								<Text c="dimmed" size="sm">
+								<Text
+									c="dimmed"
+									size="sm"
+								>
 									Automatically add missing variables.
 								</Text>
 							</Stack>
@@ -214,19 +213,11 @@ export function QueryPane({
 						</ActionIcon>
 					</Tooltip>
 
-					<Tooltip
-						label={
-							showVariables ? "Hide variables" : "Show variables"
-						}
-					>
+					<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
 						<ActionIcon
 							onClick={toggleVariables}
 							variant="light"
-							aria-label={
-								showVariables
-									? "Hide variables"
-									: "Show variables"
-							}
+							aria-label={showVariables ? "Hide variables" : "Show variables"}
 						>
 							<Icon path={iconDollar} />
 						</ActionIcon>
@@ -246,12 +237,7 @@ export function QueryPane({
 						graphqlParser(),
 						// graphqlFillFields(),
 						lineNumbers(),
-						Prec.high(
-							keymap.of([
-								...runGraphqlQueryKeymap,
-								...graphqlSuggestions,
-							]),
-						),
+						Prec.high(keymap.of([...runGraphqlQueryKeymap, ...graphqlSuggestions])),
 					]}
 				/>
 			) : (
@@ -261,11 +247,9 @@ export function QueryPane({
 					title="GraphQL is not enabled on the remote instance"
 				>
 					<Stack>
-						Visit the SurrealDB documentation to learn how to enable
-						GraphQL on your instance
-						<Link
-							href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist"
-						>
+						Visit the SurrealDB documentation to learn how to enable GraphQL on your
+						instance
+						<Link href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist">
 							<Button
 								color="slate"
 								variant="light"
