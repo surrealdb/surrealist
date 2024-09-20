@@ -15,7 +15,6 @@ import {
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -43,15 +42,17 @@ interface Result {
 export function DocumentationModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [search, setSearch] = useInputState("");
-	const client = useQueryClient();
 
 	const [searchQuery] = useDebouncedValue(search, 150);
 
 	const { data, isFetching } = useQuery({
 		queryKey: ["documentation", searchQuery],
-		enabled: searchQuery.length > 0,
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
+			if (!searchQuery) {
+				return [];
+			}
+
 			const escaped = JSON.stringify(searchQuery);
 			const hostname = JSON.stringify("main--surrealdb-docs.netlify.app");
 
@@ -126,6 +127,8 @@ export function DocumentationModal() {
 
 	useKeymap([["mod+j", () => dispatchIntent("open-documentation")]]);
 
+	const isEmpty = data?.length === 0;
+
 	return (
 		<Modal
 			opened={isOpen}
@@ -174,28 +177,29 @@ export function DocumentationModal() {
 				className={classes.docsScroller}
 				scrollbars="y"
 				display="block"
-				mah={350}
-				mih={64}
+				mah="calc(100vh - 200px)"
 			>
-				{!data ? (
+				{(isEmpty && !search) ? (
 					<Text
 						ta="center"
 						py="md"
 						c="slate"
+						my="xl"
 					>
 						Enter a search term to find documentation
 					</Text>
-				) : data.length === 0 ? (
+				) : isEmpty ? (
 					<Text
 						ta="center"
 						py="md"
 						c="slate"
+						my="xl"
 					>
 						No search results found
 					</Text>
 				) : (
 					<Stack p="lg">
-						{data.map((doc) => (
+						{data?.map((doc) => (
 							<Entry
 								key={doc.url}
 								onClick={() => openDocumentation(doc)}
@@ -206,7 +210,7 @@ export function DocumentationModal() {
 									<PrimaryTitle>{doc.title}</PrimaryTitle>
 									<Text c="surreal">{doc.url}</Text>
 									<Text
-										// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+										// biome-ignore lint/security/noDangerouslySetInnerHtml: temp, replace with markdown
 										dangerouslySetInnerHTML={{ __html: doc.highlight[3] }}
 										style={{
 											textWrap: "wrap",

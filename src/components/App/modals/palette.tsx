@@ -143,8 +143,7 @@ export function CommandPaletteModal() {
 
 			<ScrollArea.Autosize
 				scrollbars="y"
-				mah={350}
-				mih={64}
+				mah="calc(100vh - 200px)"
 			>
 				{filtered.length > 0 ? (
 					<Stack p="lg">
@@ -203,6 +202,7 @@ export function CommandPaletteModal() {
 						ta="center"
 						py="md"
 						c="slate"
+						my="xl"
 					>
 						No matching commands found
 					</Text>

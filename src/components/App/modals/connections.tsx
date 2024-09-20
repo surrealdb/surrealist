@@ -324,7 +324,7 @@ export function ConnectionsModal() {
 
 			<ScrollArea.Autosize
 				scrollbars="y"
-				mah={350}
+				mah="calc(100vh - 200px)"
 				mih={64}
 			>
 				<Stack gap="xl" p="lg">
