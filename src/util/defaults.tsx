@@ -195,14 +195,15 @@ export function createCloudInstance(): CloudInstance {
 		region: "",
 		version: "",
 		state: "inactive",
+		compute_units: 0,
 		type: {
 			slug: "",
 			description: "",
 			cpu: 0,
 			memory: 0,
-			storage: 0,
 			price_hour: 0,
 			compute_units: {},
+			category: "",
 		},
 	};
 }
