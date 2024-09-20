@@ -142,7 +142,7 @@ function ItemList({
 				{title}
 			</Group>
 			{connectionList.length === 0 ? (
-				<Text c="slate" fz="sm" mt={-2}>
+				<Text c="slate" ml="sm" mt="sm">
 					No connections
 				</Text>
 			) : (
