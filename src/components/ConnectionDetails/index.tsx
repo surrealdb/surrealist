@@ -24,6 +24,7 @@ import { AUTH_MODES, CONNECTION_PROTOCOLS, SENSITIVE_ACCESS_FIELDS } from "~/con
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
+import { fork } from "radash";
 import { useMemo } from "react";
 import type { Updater } from "use-immer";
 import { useStable } from "~/hooks/stable";
@@ -136,7 +137,22 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	);
 
 	const protocols = useMemo(() => {
-		return isCloud ? CONNECTION_PROTOCOLS.filter((p) => p.remote) : CONNECTION_PROTOCOLS;
+		const [remote, local] = fork(CONNECTION_PROTOCOLS, (p) => p.remote);
+
+		if (isCloud) {
+			return remote;
+		}
+		
+		return [
+			{
+				group: "Remote",
+				items: remote,
+			},
+			{
+				group: "Local",
+				items: local,
+			}
+		]
 	}, [isCloud]);
 
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
@@ -248,7 +264,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 				<Group>
 					<Select
 						data={protocols}
-						maw={110}
+						maw={125}
 						value={value.authentication.protocol}
 						onChange={(value) =>
 							onChange((draft) => {

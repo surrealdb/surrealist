@@ -3,9 +3,9 @@ import classes from "./style.module.scss";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
+import glowUrl from "~/assets/images/gradient-glow.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import glowUrl from "~/assets/images/start-glow.webp";
 
 import {
 	Box,
@@ -42,7 +42,7 @@ import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
-import { useIsLight, useThemeImage } from "~/hooks/theme";
+import { useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 

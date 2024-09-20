@@ -73,7 +73,6 @@ export function useConfigRouting() {
 	});
 
 	// Sync initial URL to active view
-
 	useEffect(applyState, []);
 
 	// Sync history change to active view

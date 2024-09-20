@@ -2,6 +2,7 @@ import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
 import {
 	checkSessionExpiry,
+	invalidateSession,
 	refreshAccess,
 	verifyAuthentication,
 } from "~/screens/cloud-manage/api/auth";
@@ -82,8 +83,8 @@ export function useCloudAuthentication() {
 		);
 	}, []);
 
-	// React to callback intents
-	useIntent("cloud-callback", (payload) => {
+	// React to signin intents
+	useIntent("cloud-signin", (payload) => {
 		const { code, state } = payload;
 
 		if (!code || !state) {
@@ -93,4 +94,11 @@ export function useCloudAuthentication() {
 
 		verifyAuthentication(code, state);
 	});
+
+	
+	// React to callback intents
+	useIntent("cloud-signout", () => {
+		invalidateSession();
+	});
+	
 }

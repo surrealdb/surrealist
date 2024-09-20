@@ -341,7 +341,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the database",
+			subtitle: "You must be connected to the remote instance",
 		});
 		return;
 	}
@@ -487,7 +487,7 @@ export async function executeGraphql(
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the database",
+			subtitle: "You must be connected to the remote instance",
 		});
 
 		throw new Error("Not connected");

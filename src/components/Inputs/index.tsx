@@ -1,5 +1,5 @@
-import { Compartment, EditorState, type Extension, Prec } from "@codemirror/state";
-import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Autocomplete,
@@ -10,19 +10,31 @@ import {
 	Pill,
 	PillsInput,
 	type PillsInputProps,
+	TextInput,
 	Tooltip,
 } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
+
+import {
+	type FocusEvent,
+	type HTMLAttributes,
+	type KeyboardEvent,
+	useEffect,
+	useMemo,
+	useRef,
+} from "react";
+
+import { Compartment, EditorState, type Extension, Prec } from "@codemirror/state";
+import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
+import { Text } from "@mantine/core";
+import { clamp, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
-import { type HTMLAttributes, type KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { acceptWithTab, colorTheme, inputBase } from "~/editor";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { iconCancel, iconCheck } from "~/util/icons";
-import classes from "./style.module.scss";
 
 export interface CodeInputProps
 	extends InputBaseProps,
@@ -208,7 +220,7 @@ export function CodeInput({
 			className={clsx(classes.codeInput, className)}
 			disabled={disabled}
 			__vars={{
-				'--height': height ? `${height}px` : undefined
+				"--height": height ? `${height}px` : undefined,
 			}}
 			{...rest}
 		/>
@@ -355,5 +367,85 @@ export function EmailInput({ value, onChange, autoFocus, ...other }: EmailInputP
 				/>
 			</Pill.Group>
 		</PillsInput>
+	);
+}
+
+export interface CounterInputProps {
+	value: number;
+	onChange: (value: number) => void;
+	min?: number;
+	max?: number;
+}
+
+export function CounterInput({ value, onChange, min, max }: CounterInputProps) {
+	const isMin = min !== undefined && Number(value) <= min;
+	const isMax = max !== undefined && Number(value) >= max;
+
+	const [valueText, setValueText] = useInputState("");
+
+	const updateUnits = useStable((value: number) => {
+		const clamped = clamp(value, min ?? Number.MIN_VALUE, max ?? Number.MAX_VALUE);
+
+		onChange(clamped);
+		setValueText(clamped.toString());
+	});
+
+	const submitCount = useStable((e: FocusEvent | KeyboardEvent) => {
+		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
+			return;
+		}
+
+		e.preventDefault();
+		updateUnits(Number.parseInt(valueText));
+	});
+
+	useEffect(() => {
+		setValueText(value.toString());
+	}, [value]);
+
+	return (
+		<Group>
+			<ActionIcon
+				disabled={isMin}
+				onClick={() => updateUnits(value - 1)}
+			>
+				<Text
+					c="bright"
+					fw={500}
+					fz="lg"
+				>
+					-
+				</Text>
+			</ActionIcon>
+			<TextInput
+				w={75}
+				value={valueText}
+				onChange={setValueText}
+				onBlur={submitCount}
+				onKeyDown={submitCount}
+				type="number"
+				size="xs"
+				radius="sm"
+				styles={{
+					input: {
+						textAlign: "center",
+						fontWeight: 500,
+						fontSize: "var(--mantine-font-size-lg)",
+					},
+				}}
+			/>
+			<ActionIcon
+				disabled={isMax}
+				onClick={() => updateUnits(value + 1)}
+			>
+				<Text
+					c="bright"
+					fw={500}
+					fz="lg"
+				>
+					+
+				</Text>
+			</ActionIcon>
+		</Group>
 	);
 }

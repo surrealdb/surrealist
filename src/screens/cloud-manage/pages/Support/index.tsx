@@ -1,14 +1,12 @@
 import classes from "./style.module.scss";
 
 import communtyDarkUrl from "~/assets/images/dark/picto-community.svg";
-import discordDarkUrl from "~/assets/images/dark/picto-discord.svg";
 import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
 import communtyLightUrl from "~/assets/images/light/picto-community.svg";
-import discordLightUrl from "~/assets/images/light/picto-discord.svg";
 import documentationLightUrl from "~/assets/images/light/picto-documentation.svg";
 
 import { type BoxProps, Image, Text, UnstyledButton } from "@mantine/core";
-import { Center, Group, Paper, Stack } from "@mantine/core";
+import { Group, Paper, Stack } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -56,10 +54,6 @@ function SupportTile({ image, title, onClick, ...props }: SupportTileProps) {
 }
 
 export function SupportPage() {
-	const discordUrl = useThemeImage({
-		dark: discordDarkUrl,
-		light: discordLightUrl,
-	});
 
 	const documentationUrl = useThemeImage({
 		dark: documentationDarkUrl,
@@ -87,11 +81,6 @@ export function SupportPage() {
 				help! Reach out to us through one of the following community support channels for
 				help, or to get in touch with our team.
 			</Text>
-			<SupportTile
-				image={discordUrl}
-				title="Discord Chat"
-				onClick={() => adapter.openUrl("https://discord.gg/dc4JNWrrMc")}
-			/>
 			<SupportTile
 				image={documentationUrl}
 				title="Cloud Documentation"

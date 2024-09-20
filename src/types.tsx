@@ -467,6 +467,7 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
+	compute_units: number;
 	state: InstanceState;
 	type: CloudInstanceType;
 }
@@ -476,9 +477,9 @@ export interface CloudInstanceType {
 	description: string;
 	cpu: number;
 	memory: number;
-	storage: number;
 	price_hour: number;
 	enabled?: boolean;
+	category: string;
 	compute_units: {
 		min?: number;
 		max?: number;
@@ -501,6 +502,8 @@ export interface CloudPlan {
 export interface CloudOrganization {
 	id: string;
 	name: string;
+	max_free_instances: number;
+	max_paid_instances: number;
 	billing_info: boolean;
 	payment_info: boolean;
 	plan: CloudPlan;
