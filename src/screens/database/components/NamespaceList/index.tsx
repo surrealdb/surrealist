@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
-import type { SyntheticEvent } from "react";
+import { useMemo, type SyntheticEvent } from "react";
 import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -23,12 +23,13 @@ import { useBoolean } from "~/hooks/boolean";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { getAuthLevel } from "~/util/connection";
+import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { fetchNamespaceList } from "~/util/databases";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
-import { escapeIdent } from "~/util/surrealql";
+import { escapeIdent, parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
 import classes from "./style.module.scss";
+import { useRootSchema } from "~/hooks/schema";
 
 export interface NamespaceProps {
 	value: string;
@@ -95,15 +96,19 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
+	const schema = useRootSchema();
+
+	const namespaces = useMemo(() => {
+		const authNS = getAuthNS(connection.authentication);
+
+		if (authNS) {
+			return [authNS];
+		}
+
+		return schema.namespaces.map((ns) => parseIdent(ns.name));
+	}, [schema, connection.authentication]);
 
 	const level = getAuthLevel(connection.authentication);
-
-	const { data, refetch } = useQuery({
-		queryKey: ["namespaces", connection?.id, opened],
-		enabled: connected,
-		queryFn: fetchNamespaceList,
-		initialData: [],
-	});
 
 	const openNamespace = (ns: string) => {
 		if (connection.lastNamespace !== ns) {
@@ -124,8 +129,6 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 
 	const createNamespace = useStable(async () => {
 		await executeQuery(`DEFINE NAMESPACE ${escapeIdent(namespaceName)}`);
-
-		refetch();
 
 		creatorHandle.close();
 		openNamespace(namespaceName);
@@ -175,11 +178,11 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 						</Group>
 						<Divider />
 						<ScrollArea.Autosize mah={250}>
-							{data.length === 0 ? (
+							{namespaces.length === 0 ? (
 								<Text c="slate">No namespaces defined</Text>
 							) : (
 								<Stack gap="xs">
-									{data.map((ns) => (
+									{namespaces.map((ns) => (
 										<Namespace
 											key={ns}
 											value={ns}

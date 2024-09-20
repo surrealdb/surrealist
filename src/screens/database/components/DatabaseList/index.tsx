@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
-import type { SyntheticEvent } from "react";
+import { useMemo, type SyntheticEvent } from "react";
 import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -23,12 +23,13 @@ import { useBoolean } from "~/hooks/boolean";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { getAuthLevel } from "~/util/connection";
+import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { fetchDatabaseList } from "~/util/databases";
 import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
-import { escapeIdent } from "~/util/surrealql";
+import { escapeIdent, parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
 import classes from "./style.module.scss";
+import { useNamespaceSchema } from "~/hooks/schema";
 
 export interface DatabaseProps {
 	value: string;
@@ -95,16 +96,20 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
+	const schema = useNamespaceSchema();
 
 	const namespace = connection.lastNamespace;
 	const level = getAuthLevel(connection.authentication);
 
-	const { data, refetch } = useQuery({
-		queryKey: ["databases", connection.id, namespace, opened],
-		enabled: connected && !!namespace,
-		queryFn: () => fetchDatabaseList(namespace),
-		initialData: [],
-	});
+	const databases = useMemo(() => {
+		const authDB = getAuthDB(connection.authentication);
+
+		if (authDB) {
+			return [authDB];
+		}
+
+		return schema.databases.map((db) => parseIdent(db.name));
+	}, [schema, connection.authentication]);
 
 	const openDatabase = (db: string) => {
 		if (connection.lastDatabase !== db) {
@@ -125,8 +130,6 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 
 	const createDatabase = useStable(async () => {
 		await executeQuery(`DEFINE DATABASE ${escapeIdent(databaseName)}`);
-
-		refetch();
 
 		creatorHandle.close();
 		openDatabase(databaseName);
@@ -173,11 +176,11 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 						</Group>
 						<Divider />
 						<ScrollArea.Autosize mah={250}>
-							{data.length === 0 ? (
+							{databases.length === 0 ? (
 								<Text c="slate">No databases defined</Text>
 							) : (
 								<Stack gap="xs">
-									{data.map((db) => (
+									{databases.map((db) => (
 										<Database
 											key={db}
 											value={db}

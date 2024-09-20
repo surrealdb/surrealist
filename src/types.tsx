@@ -383,14 +383,22 @@ export interface TableInfo {
 	events: SchemaEvent[];
 }
 
+export interface SchemaNamespace {
+	name: string;
+}
+
+export interface SchemaDatabase {
+	name: string;
+}
+
 export interface SchemaInfoKV {
-	namespaces: any[];
+	namespaces: SchemaNamespace[];
 	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
 
 export interface SchemaInfoNS {
-	databases: any[];
+	databases: SchemaDatabase[];
 	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
