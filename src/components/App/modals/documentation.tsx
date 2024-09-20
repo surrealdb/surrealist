@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
@@ -22,7 +22,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeymap } from "~/hooks/keymap";
-import { useIntent } from "~/hooks/url";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { iconBook } from "~/util/icons";
 
@@ -43,6 +43,7 @@ interface Result {
 export function DocumentationModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [search, setSearch] = useInputState("");
+	const client = useQueryClient();
 
 	const [searchQuery] = useDebouncedValue(search, 150);
 
@@ -115,16 +116,11 @@ export function DocumentationModal() {
 		adapter.openUrl(`https://surrealdb.com${doc.url}`);
 	};
 
-	useIntent("open-documentation", openHandle.open);
+	useIntent("open-documentation", () => {
+		openHandle.open();
+	});
 
-	useKeymap([
-		[
-			"mod+j",
-			() => {
-				openHandle.open();
-			},
-		],
-	]);
+	useKeymap([["mod+j", () => dispatchIntent("open-documentation")]]);
 
 	return (
 		<Modal

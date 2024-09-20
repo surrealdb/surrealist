@@ -27,15 +27,6 @@ export function CommandPaletteModal() {
 	const [search, setSearch] = useInputState("");
 	const [categories, setCategories] = useState<CommandCategory[]>([]);
 
-	useLayoutEffect(() => {
-		if (isOpen) {
-			const cmds = computeCommands();
-
-			setSearch("");
-			setCategories(cmds);
-		}
-	}, [isOpen]);
-
 	const [filtered, flattened] = useMemo(() => {
 		const filtered = categories.flatMap((cat) => {
 			if (search && cat.search === false) {
@@ -101,16 +92,14 @@ export function CommandPaletteModal() {
 
 	const [handleKeyDown, searchRef] = useKeyNavigation(flattened);
 
-	useIntent("open-command-palette", openHandle.open);
+	useIntent("open-command-palette", () => {
+		openHandle.open();
 
-	useKeymap([
-		[
-			"mod+k",
-			() => {
-				openHandle.open();
-			},
-		],
-	]);
+		setSearch("");
+		setCategories(computeCommands());
+	});
+
+	useKeymap([["mod+k", () => dispatchIntent("open-command-palette")]]);
 
 	return (
 		<Modal
