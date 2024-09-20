@@ -524,9 +524,10 @@ export function computeCommands(): CommandCategory[] {
 				},
 				{
 					id: newId(),
-					name: "Browse SurrealDB Docs",
+					name: "Search SurrealDB documentation",
+					aliases: ["Docs"],
 					icon: iconBook,
-					action: href("https://surrealdb.com/docs/"),
+					action: intent("open-documentation"),
 				},
 				{
 					id: newId(),
