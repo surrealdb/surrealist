@@ -2,6 +2,7 @@
 	background-color: hsla(240, 6%, 14%, 0.5);
 	backdrop-filter: blur(12px);
 	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
 
 	@include light {
 		background-color: white;
@@ -9,45 +10,15 @@
 }
 
 .listing-body {
-	padding-bottom: 0;
+	padding: 0;
 }
 
-.palette-input input {
+.listing-search input {
 	font-size: 1.15rem;
 	background-color: unset !important;
 
 	&::placeholder {
 		color: var(--mantine-color-slate-4);
-	}
-}
-
-.command {
-	display: flex;
-	height: 2.5rem;
-	align-items: center;
-	outline: none;
-	padding-inline: var(--mantine-spacing-sm);
-	border-radius: var(--mantine-radius-md);
-	gap: var(--mantine-spacing-md);
-
-	.command-icon {
-		color: var(--mantine-color-slate-3);
-
-		@include light {
-			color: var(--mantine-color-slate-5);
-		}
-	}
-
-	.command-label {
-		color: var(--mantine-color-bright);
-	}
-
-	&[data-active="true"] {
-		background-color: var(--mantine-color-slate-6);
-
-		@include light {
-			background-color: var(--mantine-color-slate-1);
-		}
 	}
 }
 

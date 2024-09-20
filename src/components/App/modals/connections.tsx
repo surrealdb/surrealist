@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { ActionIcon, Box, Divider, Flex, Group, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Divider, Flex, Group, Menu, Modal, ScrollArea, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { group } from "radash";
@@ -19,7 +19,7 @@ import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import type { Connection } from "~/types";
 import { Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
-import { iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconPlus, iconSandbox, iconSearch } from "~/util/icons";
+import { iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconPlus, iconSandbox, iconSearch, iconServer } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 
 const UNGROUPED = Symbol("ungrouped");
@@ -250,63 +250,84 @@ export function ConnectionsModal() {
 			onClose={openedHandle.close}
 			transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 			centered={false}
+			size="lg"
 			classNames={{
 				content: classes.listingModal,
 				body: classes.listingBody,
 			}}
 		>
-			<Stack gap="xl">
-				<Box>
-					<Flex gap="sm">
-						<TextInput
-							placeholder="Search..."
-							value={search}
-							spellCheck={false}
-							onChange={setSearch}
-							variant="unstyled"
-							autoFocus
-							flex={1}
-							leftSection={
-								<Icon path={iconSearch} />
-							}
-						/>
-						<Menu position="right-start">
-							<Menu.Target>
-								<ActionIcon
-									aria-label="Add..."
-									size={36}
-									radius="md"
-								>
-									<Icon path={iconPlus} />
-								</ActionIcon>
-							</Menu.Target>
-							<Menu.Dropdown>
+			<Box p="lg">
+				<Group
+					mb="xs"
+					gap="xs"
+					c="bright"
+				>
+					<Icon
+						path={iconServer}
+						size="sm"
+					/>
+					<Text>Connections</Text>
+				</Group>
+				<Group>
+					<TextInput
+						flex={1}
+						placeholder="Search for connections..."
+						variant="unstyled"
+						className={classes.listingSearch}
+						autoFocus
+						value={search}
+						spellCheck={false}
+						onChange={setSearch}
+					/>
+					<Menu position="right-start">
+						<Menu.Target>
+							<ActionIcon
+								aria-label="Add..."
+								variant="gradient"
+								style={{
+									backgroundOrigin: "border-box",
+									border: "1px solid rgba(255, 255, 255, 0.3)"
+								}}
+								size={36}
+								radius="md"
+							>
+								<Icon path={iconPlus} />
+							</ActionIcon>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Item
+								leftSection={<Icon path={iconPlus} />}
+								onClick={newConnection}
+							>
+								New connection
+							</Menu.Item>
+							{isDesktop && (
 								<Menu.Item
-									leftSection={<Icon path={iconPlus} />}
-									onClick={newConnection}
+									leftSection={<Icon path={iconHomePlus} noStroke />}
+									onClick={newLocalhost}
 								>
-									New connection
+									New local connection
 								</Menu.Item>
-								{isDesktop && (
-									<Menu.Item
-										leftSection={<Icon path={iconHomePlus} noStroke />}
-										onClick={newLocalhost}
-									>
-										New local connection
-									</Menu.Item>
-								)}
-								<Menu.Item
-									leftSection={<Icon path={iconFolderPlus} />}
-									onClick={newGroup}
-								>
-									New group
-								</Menu.Item>
-							</Menu.Dropdown>
-						</Menu>
-					</Flex>
+							)}
+							<Menu.Item
+								leftSection={<Icon path={iconFolderPlus} />}
+								onClick={newGroup}
+							>
+								New group
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+				</Group>
+			</Box>
 
-					<Divider my="lg" />
+			<Divider mx="lg" />
 
+			<ScrollArea.Autosize
+				scrollbars="y"
+				mah={350}
+				mih={64}
+			>
+				<Stack gap="xl" p="lg">
 					<Entry
 						isActive={isSandbox}
 						onClick={openSandbox}
@@ -318,56 +339,56 @@ export function ConnectionsModal() {
 							Sandbox
 						</Text>
 					</Entry>
-				</Box>
 
-				{groupsList.map((group) => (
-					<ItemList
-						key={group.id}
-						connections={grouped[group.id] ?? []}
-						active={connection?.id ?? ""}
-						onClose={openedHandle.close}
-						className={classes.connectionGroup}
-						title={
-							<>
-								<EditableText
-									value={group.name}
-									onChange={(name) => updateConnectionGroup({ id: group.id, name })}
-									c="bright"
-									fz="lg"
-									fw={500}
-								/>
-								<Spacer />
-								<Tooltip
-									label="Remove group"
-								>
-									<ActionIcon
-										className={classes.connectionGroupRemove}
-										aria-label="Remove group"
-										onClick={() => removeConnectionGroup(group.id)}
-										variant="subtle"
-										size="sm"
+					{groupsList.map((group) => (
+						<ItemList
+							key={group.id}
+							connections={grouped[group.id] ?? []}
+							active={connection?.id ?? ""}
+							onClose={openedHandle.close}
+							className={classes.connectionGroup}
+							title={
+								<>
+									<EditableText
+										value={group.name}
+										onChange={(name) => updateConnectionGroup({ id: group.id, name })}
+										c="bright"
+										fz="lg"
+										fw={500}
+									/>
+									<Spacer />
+									<Tooltip
+										label="Remove group"
 									>
-										<Icon path={iconDelete} size="sm" />
-									</ActionIcon>
-								</Tooltip>
-							</>
-						}
-					/>
-				))}
+										<ActionIcon
+											className={classes.connectionGroupRemove}
+											aria-label="Remove group"
+											onClick={() => removeConnectionGroup(group.id)}
+											variant="subtle"
+											size="sm"
+										>
+											<Icon path={iconDelete} size="sm" />
+										</ActionIcon>
+									</Tooltip>
+								</>
+							}
+						/>
+					))}
 
-				{(ungrouped.length > 0 || groups.length === 0) && (
-					<ItemList
-						connections={ungrouped}
-						active={connection?.id ?? ""}
-						onClose={openedHandle.close}
-						title={
-							<Text c="bright" fz="lg" fw={500}>
-								Connections
-							</Text>
-						}
-					/>
-				)}
-			</Stack>
+					{(ungrouped.length > 0 || groups.length === 0) && (
+						<ItemList
+							connections={ungrouped}
+							active={connection?.id ?? ""}
+							onClose={openedHandle.close}
+							title={
+								<Text c="bright" fz="lg" fw={500}>
+									Connections
+								</Text>
+							}
+						/>
+					)}
+				</Stack>
+			</ScrollArea.Autosize>
 		</Modal>
 	);
 }

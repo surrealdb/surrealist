@@ -26,6 +26,7 @@ import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
+import { DocumentationModal } from "./modals/documentation";
 
 function Surrealist() {
 	return (
@@ -50,6 +51,7 @@ export function App() {
 
 			<ConnectionsModal />
 			<CommandPaletteModal />
+			<DocumentationModal />
 			<ChangelogModal />
 			<ConnectionModal />
 			<DownloadModal />

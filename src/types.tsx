@@ -80,6 +80,7 @@ export type Selection<T extends string> = Selectable<T>[];
 export type Listable<T extends string> = Selectable<T> & { icon: string };
 export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
+export type Identified<T = object, I = string> = T & { id: I };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type Assign<T, O extends object> = Omit<T, keyof O> & O;
 export type AuthTarget = [AuthType, string];

@@ -4,6 +4,7 @@ import type { ViewMode } from "~/types";
 const INTENT_REGISTRY = {
 	"open-command-palette": null,
 	"open-connections": null,
+	"open-documentation": null,
 	"open-help": null,
 	"open-news": null,
 	"open-changelog": null,
