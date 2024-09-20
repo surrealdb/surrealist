@@ -1,7 +1,7 @@
 import { useWindowEvent } from "@mantine/hooks";
 import { useRef, useState } from "react";
-import { useStable } from "./stable";
 import type { Identified } from "~/types";
+import { useStable } from "./stable";
 
 /**
  * Returns whether any of the keys is currently pressed
