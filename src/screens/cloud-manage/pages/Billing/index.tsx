@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Alert,
+	Badge,
 	Box,
 	Button,
 	Divider,
@@ -40,7 +41,7 @@ import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { InvoiceStatus } from "~/types";
+import type { CloudInstanceType, CloudRegion, InvoiceStatus } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { Section } from "../../components/Section";
@@ -59,19 +60,19 @@ const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> =
 interface BillingPlanProps {
 	name: string;
 	description: string;
-	features: string[];
+	regions: string[];
+	types: CloudInstanceType[]
 	action?: ReactNode;
 }
 
-function BillingPlan({ name, description, features, action }: BillingPlanProps) {
+function BillingPlan({ name, description, regions, types, action }: BillingPlanProps) {
 	const isLight = useIsLight();
 
 	return (
 		<Paper
 			withBorder
 			p="xl"
-			w={400}
-			style={{ flexShrink: 0 }}
+			maw={500}
 		>
 			<Stack
 				h="100%"
@@ -81,24 +82,63 @@ function BillingPlan({ name, description, features, action }: BillingPlanProps) 
 					<PrimaryTitle>{name}</PrimaryTitle>
 					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
 				</Box>
-				<List
-					className={classes.featureList}
-					icon={
-						<Icon
-							path={iconCheck}
-							color="surreal.5"
-						/>
-					}
-				>
-					{features.map((feature) => (
-						<List.Item
-							key={feature}
-							c="bright"
+
+				<Group align="stretch">
+					<Box>
+						<Text fz="lg" mb="sm">
+							Included regions
+						</Text>
+
+						<List
+							className={classes.featureList}
+							icon={
+								<Icon
+									path={iconCheck}
+									color="surreal.5"
+								/>
+							}
 						>
-							{feature}
-						</List.Item>
-					))}
-				</List>
+							{regions.map((region) => (
+								<List.Item
+									key={region}
+									c="bright"
+									mb={4}
+								>
+									{region}
+								</List.Item>
+							))}
+						</List>
+					</Box>
+
+					<Spacer />
+
+					<Box>
+						<Text fz="lg" mb="sm">
+							Included instance types
+						</Text>
+
+						<List
+							className={classes.featureList}
+							icon={
+								<Icon
+									path={iconCheck}
+									color="surreal.5"
+								/>
+							}
+						>
+							{types.map((type) => (
+								<List.Item
+									key={type.slug}
+									c="bright"
+									mb={4}
+								>
+									{type.slug}
+								</List.Item>
+							))}
+						</List>
+					</Box>
+				</Group>
+				
 				{action}
 			</Stack>
 		</Paper>
@@ -185,41 +225,19 @@ export function BillingPage() {
 				}}
 			>
 				<Stack>
-					{/* <Section
-						title={
-							<Group>
-								Choose your plan
-								<Badge variant="light">
-									Coming soon
-								</Badge>
-							</Group>
-						}
-						description="Pick a plan that suits your organization's needs"
-					>
-						<ScrollArea
-							scrollbars="x"
+					{organization?.plan && (
+						<Section
+							title="Your plan"
+							description="The plan active for this organization"
 						>
-							<Group wrap="nowrap">
-								{organization?.available_plans?.map((plan) => (
-									<BillingPlan
-										key={plan.id}
-										name={plan.name}
-										description={plan.description}
-										features={[]}
-										pricing={null}
-										action={
-											<Button
-												variant="gradient"
-												size="xs"
-											>
-												Select plan
-											</Button>
-										}
-									/>
-								))}
-							</Group>
-						</ScrollArea>
-					</Section> */}
+							<BillingPlan
+								name={organization.plan.name}
+								description={organization.plan.description}
+								regions={organization.plan.regions}
+								types={organization.plan.instance_types}
+							/>
+						</Section>
+					)}
 
 					<Section
 						title="Billing Information"
