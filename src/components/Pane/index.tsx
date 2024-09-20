@@ -6,12 +6,12 @@ import {
 	type PaperProps,
 	Text,
 } from "@mantine/core";
+import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
-import clsx from "clsx";
 
 export interface ContentPaneProps
 	extends PaperProps,
