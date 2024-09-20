@@ -1,9 +1,4 @@
-import type {
-	CloudBillingCountry,
-	CloudOrganization,
-	CloudProfile,
-	CloudRegion,
-} from "~/types";
+import type { CloudBillingCountry, CloudOrganization, CloudProfile, CloudRegion } from "~/types";
 
 import posthog from "posthog-js";
 import { adapter } from "~/adapter";
@@ -44,15 +39,23 @@ export async function fetchAPI<T = unknown>(
 	});
 
 	if (!response.ok) {
-		const error = new ApiError(response);
+		const isJson =
+			response.headers.get("Content-Type")?.startsWith("application/json") ?? false;
+
+		let reason = response.statusText;
+
+		if (isJson) {
+			const { message } = await response.json();
+			reason = message;
+		}
 
 		posthog.capture("cloud_api_error", {
 			status: response.status,
 			endpoint: path,
-			message: await error.errorMessage(),
+			message: reason,
 		});
 
-		throw new ApiError(response);
+		throw new ApiError(response, reason);
 	}
 
 	if (response.headers.get("Content-Type")?.startsWith("application/json")) {
@@ -69,12 +72,7 @@ export async function updateCloudInformation() {
 	const { setCloudValues } = useCloudStore.getState();
 	const { activeCloudOrg, setActiveCloudOrg } = useConfigStore.getState();
 
-	const [
-		profile,
-		instanceVersions,
-		regions,
-		billingCountries,
-	] = await Promise.all([
+	const [profile, instanceVersions, regions, billingCountries] = await Promise.all([
 		fetchAPI<CloudProfile>("/user/profile"),
 		fetchAPI<string[]>("/instanceversions"),
 		fetchAPI<CloudRegion[]>("/regions"),
@@ -102,28 +100,11 @@ export async function updateCloudInformation() {
  * Error response from the API
  */
 export class ApiError extends Error {
-	public response: Response;
+	public reason: string;
 
-	public constructor(response: Response) {
-		super(
-			`Request failed for "${response.url}" (${response.status}): ${response.statusText}`,
-		);
-		this.response = response;
-	}
+	public constructor(response: Response, reason: string) {
+		super(`Request failed for "${response.url}" (${response.status}): ${reason}`);
 
-	public isJson() {
-		return (
-			this.response.headers
-				.get("Content-Type")
-				?.startsWith("application/json") ?? false
-		);
-	}
-
-	public async errorMessage() {
-		if (!this.isJson()) return "";
-
-		const { message } = await this.response.json();
-
-		return message;
+		this.reason = reason;
 	}
 }
