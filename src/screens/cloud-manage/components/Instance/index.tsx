@@ -16,6 +16,7 @@ import {
 import {
 	iconAPI,
 	iconChevronDown,
+	iconCog,
 	iconConsole,
 	iconCopy,
 	iconDelete,
@@ -37,6 +38,7 @@ import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI } from "../../api";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
+import { openCapabilitiesModal } from "./modals/capabilities";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 
@@ -145,6 +147,12 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					leftSection={<Icon path={iconQuery} />}
 				>
 					Change compute nodes...
+				</Menu.Item>
+				<Menu.Item
+					onClick={() => openCapabilitiesModal(value)}
+					leftSection={<Icon path={iconCog} />}
+				>
+					Configure capabilities...
 				</Menu.Item>
 				<Menu.Item
 					leftSection={<Icon path={iconCopy} />}

@@ -9,6 +9,7 @@ import { useStable } from "~/hooks/stable";
 import { useMutation } from "@tanstack/react-query";
 import { fetchAPI } from "~/screens/cloud-manage/api";
 import { CounterInput } from "~/components/Inputs";
+import { useIsLight } from "~/hooks/theme";
 
 export async function openComputeUnitsModal(instance: CloudInstance) {
 	openModal({
@@ -29,6 +30,7 @@ interface ComputeUnitsModalProps {
 
 function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 	const [units, setUnits] = useState(instance.compute_units);
+	const isLight = useIsLight();
 
 	const minComputeUnits = instance.type.compute_units.min;
 	const maxComputeUnits = instance.type.compute_units.max;
@@ -53,7 +55,7 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 	return (
 		<Stack>
 			<Paper
-				bg="slate.9"
+				bg={isLight ? "slate.0" : "slate.9"}
 				p="xl"
 			>
 				<Stack>

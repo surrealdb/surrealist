@@ -11,6 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { fetchAPI } from "~/screens/cloud-manage/api";
 import { useCloudInstances } from "~/screens/cloud-manage/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-manage/hooks/limits";
+import { useIsLight } from "~/hooks/theme";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({
@@ -32,6 +33,7 @@ interface InstanceTypeModalProps {
 function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const instanceTypes = useAvailableInstanceTypes();
 	const current = useOrganization();
+	const isLight = useIsLight();
 
 	const { data: instances } = useCloudInstances(current?.id);
 	const isAvailable = useCloudTypeLimits(instances ?? []);
@@ -61,7 +63,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 				configuration that best fits your needs.
 			</Text>
 
-			<Paper bg="slate.9">
+			<Paper bg={isLight ? "slate.0" : "slate.9"}>
 				<ScrollArea.Autosize mah={350}>
 					<Stack p="xl">
 						{instanceTypes.map((type) => (
