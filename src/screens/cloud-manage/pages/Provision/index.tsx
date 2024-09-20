@@ -189,7 +189,7 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const estimatedCost = (isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units).toFixed(2);
+	const estimatedCost = isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units;
 	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	useLayoutEffect(() => {
@@ -430,7 +430,7 @@ export function ProvisionPage() {
 						<Stack>
 							<PrimaryTitle>Finalize your instance</PrimaryTitle>
 
-							<Paper p="md">
+							<Paper p="xl">
 								<Table>
 									<Table.Tbody>
 										<Table.Tr>
@@ -463,19 +463,37 @@ export function ProvisionPage() {
 								>
 									Estimated costs
 								</Text>
-
+						
 								<Text
-									fz={18}
-									fw={500}
-									c="bright"
+									fz={13}
+									c={isLight ? "slate.6" : "slate.2"}
 								>
-									${estimatedCost}{" "}
 									<Text
 										span
-										c={isLight ? "slate.6" : "slate.3"}
+										ml={4}
+										fz={22}
+										fw={500}
+										c="bright"
 									>
-										/hour
+										${estimatedCost.toFixed(2)}
 									</Text>
+									/hour
+								</Text>
+
+								<Text
+									fz={13}
+									c={isLight ? "slate.6" : "slate.2"}
+								>
+									Approx.
+									<Text
+										span
+										ml={4}
+										fw={500}
+										c="bright"
+									>
+										${(estimatedCost * 24 * 30).toFixed(2)}
+									</Text>
+									/month
 								</Text>
 							</Paper>
 						</Stack>
