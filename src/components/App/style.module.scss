@@ -145,3 +145,7 @@
 	height: 32px;
 	transform: translateY(1px);
 }
+
+.docs-scroller :global(.mantine-ScrollArea-viewport) > div {
+	display: block !important;
+}
