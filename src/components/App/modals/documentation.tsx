@@ -116,8 +116,12 @@ export function DocumentationModal() {
 		adapter.openUrl(`https://surrealdb.com${doc.url}`);
 	};
 
-	useIntent("open-documentation", () => {
+	useIntent("open-documentation", ({ search }) => {
 		openHandle.open();
+
+		if (search) {
+			setSearch(search);
+		}
 	});
 
 	useKeymap([["mod+j", () => dispatchIntent("open-documentation")]]);
