@@ -382,7 +382,7 @@ export function ProvisionPage() {
 								your instance.
 							</Text>
 
-							{!hasSingleCompute ? (
+							{hasSingleCompute ? (
 								<Alert
 									color="blue"
 									title="Upgrade to use compute nodes"
