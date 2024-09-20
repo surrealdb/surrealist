@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { type MouseEvent, useMemo, type SyntheticEvent } from "react";
+import { type MouseEvent, type SyntheticEvent, useMemo } from "react";
 import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -23,13 +23,13 @@ import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
 import { escapeIdent, parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
-import { useRootSchema } from "~/hooks/schema";
 
 export interface NamespaceProps {
 	value: string;
