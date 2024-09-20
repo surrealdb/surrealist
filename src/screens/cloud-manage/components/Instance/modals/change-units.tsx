@@ -64,7 +64,7 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 						compute node provides additional processing power to your instance.
 					</Text>
 
-					{!hasSingleCompute ? (
+					{hasSingleCompute ? (
 						<Alert
 							color="blue"
 							title="Upgrade to use compute nodes"
