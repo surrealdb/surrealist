@@ -167,8 +167,8 @@ export function CommandPaletteModal() {
 			size="lg"
 			onKeyDown={handleKeyDown}
 			classNames={{
-				content: classes.paletteModal,
-				body: classes.paletteBody,
+				content: classes.listingModal,
+				body: classes.listingBody,
 			}}
 		>
 			<Box>

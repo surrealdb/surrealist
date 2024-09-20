@@ -250,6 +250,10 @@ export function ConnectionsModal() {
 			onClose={openedHandle.close}
 			transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 			centered={false}
+			classNames={{
+				content: classes.listingModal,
+				body: classes.listingBody,
+			}}
 		>
 			<Stack gap="xl">
 				<Box>
