@@ -565,17 +565,18 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 								</Paper>
 							);
 						})}
-						<Button
-							mt="sm"
-							size="xs"
-							variant="gradient"
-							rightSection={<Icon path={iconPlus} />}
-							onClick={addAccessField}
-						>
-							Add access field
-						</Button>
 					</Stack>
 				)}
+				<Button
+					mt="xl"
+					size="xs"
+					fullWidth
+					variant="gradient"
+					rightSection={<Icon path={iconPlus} />}
+					onClick={addAccessField}
+				>
+					Add access field
+				</Button>
 			</Modal>
 		</>
 	);
