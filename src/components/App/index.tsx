@@ -13,6 +13,7 @@ import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
 import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
+import { DocumentationModal } from "./modals/documentation";
 import { DownloadModal } from "./modals/download";
 import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
@@ -50,6 +51,7 @@ export function App() {
 
 			<ConnectionsModal />
 			<CommandPaletteModal />
+			<DocumentationModal />
 			<ChangelogModal />
 			<ConnectionModal />
 			<DownloadModal />

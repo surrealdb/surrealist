@@ -423,7 +423,7 @@ export function computeCommands(): CommandCategory[] {
 								id: newId(),
 								name: "Toggle window always on top",
 								icon: iconPin,
-								shortcut: "F11",
+								shortcut: "F10",
 								action: intent("toggle-pinned"),
 							},
 						]
@@ -524,9 +524,11 @@ export function computeCommands(): CommandCategory[] {
 				},
 				{
 					id: newId(),
-					name: "Browse SurrealDB Docs",
+					name: "Search SurrealDB documentation",
+					aliases: ["Docs"],
 					icon: iconBook,
-					action: href("https://surrealdb.com/docs/"),
+					shortcut: "mod j",
+					action: intent("open-documentation"),
 				},
 				{
 					id: newId(),

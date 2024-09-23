@@ -62,26 +62,23 @@ export function KeymapModal() {
 									keys="mod l"
 									description="View the connections list"
 								/>
+								<Key
+									keys="mod j"
+									description="Search the documentation"
+								/>
 								{isDesktop && (
 									<Key
 										keys="mod +"
 										description="Increase application zoom"
 									/>
 								)}
-								<Key
-									keys="mod shift +"
-									description="Increase editor zoom"
-								/>
+								
 								{isDesktop && (
 									<Key
 										keys="mod -"
 										description="Decrease application zoom"
 									/>
 								)}
-								<Key
-									keys="mod shift -"
-									description="Decrease editor zoom"
-								/>
 								{isDesktop && (
 									<Key
 										keys="F10"
@@ -123,6 +120,14 @@ export function KeymapModal() {
 								<Key
 									keys="ctrl alt ["
 									description="Fold everything"
+								/>
+								<Key
+									keys="mod shift +"
+									description="Increase editor zoom"
+								/>
+								<Key
+									keys="mod shift -"
+									description="Decrease editor zoom"
 								/>
 								<Key
 									keys="mod /"
