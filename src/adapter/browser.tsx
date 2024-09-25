@@ -1,4 +1,9 @@
-import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
+import type {
+	Connection,
+	Platform,
+	SurrealistConfig,
+	UrlTarget,
+} from "~/types";
 import type {
 	OpenedBinaryFile,
 	OpenedTextFile,
@@ -59,16 +64,31 @@ export class BrowserAdapter implements SurrealistAdapter {
 		const response = await this.fetch("/servers.json");
 		const result = await response.json();
 
-		const isValidActiveConnection = (result.connections as any[]).map(c => c.id).includes(result.activeConnection);
+		const v = await import("valibot");
+		const { SurrealistEmbeddedConfigSchema } = await import(
+			"~/types.validated"
+		);
 
-		for (const con of result.connections) {
-			con.lastNamespace = con.connection.namespace;
-			con.lastDatabase = con.connection.database;
+		const { activeConnection, connections: partialConnections } = v.parse(
+			SurrealistEmbeddedConfigSchema,
+			result
+		);
+
+		const connections = partialConnections as Partial<Connection>[];
+
+		const isValidActiveConnection = (connections as any[])
+			.map((c) => c.id)
+			.includes(activeConnection);
+
+		// set last namespace and database to be the default connection
+		for (const con of connections) {
+			con.lastNamespace = con.authentication?.namespace;
+			con.lastDatabase = con.authentication?.database;
 		}
 
 		return {
-			activeConnection: result.activeConnection,
-			connections: result.connections,
+			activeConnection,
+			connections: connections as Connection[],
 			activeScreen: isValidActiveConnection ? "database" : "start",
 		};
 	}
@@ -93,7 +113,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		_title: string,
 		defaultPath: string,
 		_filters: any,
-		content: () => Result<string | Blob | null>,
+		content: () => Result<string | Blob | null>
 	): Promise<boolean> {
 		const result = await content();
 
@@ -190,7 +210,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	public fetch(
 		url: string,
-		options?: RequestInit | undefined,
+		options?: RequestInit | undefined
 	): Promise<Response> {
 		return fetch(url, options);
 	}

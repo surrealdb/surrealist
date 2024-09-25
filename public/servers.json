@@ -1,18 +1,18 @@
 {
-    "activeConnection": "test",
-    "connections": [
-        {
-            "id": "test",
-            "name": "test",
-            "authentication": {
-                "protocol": "ws",
-                "hostname": "127.0.0.1:8000",
-                "username": "root",
-                "password": "",
-                "mode": "root",
-                "namespace": "test",
-                "database": "test"
-            }
-        }
-    ]
+	"activeConnection": "test",
+	"connections": [
+		{
+			"id": "test",
+			"name": "test",
+			"authentication": {
+				"protocol": "ws",
+				"hostname": "127.0.0.1:8000",
+				"mode": "root",
+				"username": "root",
+				"password": "",
+				"namespace": "test",
+				"database": "test"
+			}
+		}
+	]
 }
