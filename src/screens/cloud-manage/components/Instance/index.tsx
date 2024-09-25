@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Badge,
+	Box,
 	Button,
 	Group,
 	type MantineColor,
@@ -232,15 +233,26 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 			className={classes.root}
 			gap="sm"
 		>
-			<Group>
-				<Text
-					c="bright"
-					fw={600}
-					fz="xl"
-				>
-					{value.name}
-				</Text>
-				<StateBadge state={value.state} />
+			<Group align="start" mb="sm">
+				<Box>
+					<Group>
+						<Text
+							c="bright"
+							fw={600}
+							fz="xl"
+						>
+							{value.name}
+						</Text>
+						<StateBadge state={value.state} />
+					</Group>
+					<Text
+						mt={2}
+						fz="sm"
+						style={{ userSelect: "text" }}
+					>
+						ID: {value.id}
+					</Text>
+				</Box>
 				<Spacer />
 				{actionList}
 			</Group>
