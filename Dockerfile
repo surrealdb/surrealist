@@ -6,7 +6,8 @@ RUN npm i -g pnpm
 WORKDIR /app
 
 COPY package.json .
-COPY pnpn-lock.yaml .
+COPY patches patches
+COPY pnpm-lock.yaml .
 
 RUN pnpm install
 
@@ -15,8 +16,16 @@ RUN npm run build:embedded
 
 # set up production image (static assets served by nginx)
 FROM nginx:stable-alpine
+
+WORKDIR /usr/share/nginx/
+
+RUN rm -rf html
+RUN mkdir html
+
+WORKDIR /
+
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/nginx.conf /etc/nginx
 
 EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

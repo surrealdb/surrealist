@@ -2,9 +2,9 @@
 .github
 .vscode
 aws
-cloud
 dist
 node_modules
+src-tauri
 Dockerfile
 .dockerignore
 .git

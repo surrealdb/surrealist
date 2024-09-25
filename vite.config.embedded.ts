@@ -13,12 +13,12 @@ export default defineConfig((config) => {
 			compression({
 				threshold: 100,
 				deleteOriginalAssets: true,
-				include: /\.(html|xml|css|json|js|mjs|svg|wasm)$/,
+				include: /assets\/.+\.(html|xml|css|json|js|mjs|svg|wasm)$/,
 			}),
 		],
 		define: {
 			...defaultConfig.define,
 			"import.meta.env.IS_EMBEDDED": true,
-		}
+		},
 	};
 });
