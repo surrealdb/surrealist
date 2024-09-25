@@ -19,6 +19,7 @@
 		"lint:apply": "biome check . --formatter-enabled=false --write",
 		"lint:apply:unsafe": "biome check . --formatter-enabled=false --write --unsafe",
 		"license-report": "license-report --fields name --fields licenseType --fields link --fields installedVersion --fields author > src/assets/data/license-report.json",
+		"start": "npm run dev",
 		"tauri": "tauri",
 		"tauri:dev": "tauri dev",
 		"tauri:build": "tauri build",

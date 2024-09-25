@@ -1,0 +1,11 @@
+.cargo
+.github
+.vscode
+aws
+cloud
+dist
+node_modules
+Dockerfile
+.dockerignore
+.git
+.gitignore

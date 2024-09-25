@@ -16,5 +16,9 @@ export default defineConfig((config) => {
 				include: /\.(html|xml|css|json|js|mjs|svg|wasm)$/,
 			}),
 		],
+		define: {
+			...defaultConfig.define,
+			"import.meta.env.IS_EMBEDDED": true,
+		}
 	};
 });

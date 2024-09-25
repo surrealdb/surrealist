@@ -13,6 +13,8 @@ import { validateQuery } from "./surrealql";
 
 export const CONFIG_VERSION = 2;
 
+const defaultResultMode = "combined";
+
 export function createBaseConfig(): SurrealistConfig {
 	const settings = createBaseSettings();
 
@@ -55,7 +57,7 @@ export function createBaseSettings(): SurrealistSettings {
 			windowScale: 100,
 			editorScale: 100,
 			resultWordWrap: true,
-			defaultResultMode: "combined",
+			defaultResultMode,
 			defaultDiagramMode: "fields",
 			defaultDiagramDirection: "ltr",
 			defaultDiagramShowLinks: false,
@@ -132,7 +134,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 }
 
 export function createBaseTab(
-	settings: SurrealistSettings,
+	settings?: SurrealistSettings,
 	query?: string,
 ): TabQuery {
 	return {
@@ -141,7 +143,7 @@ export function createBaseTab(
 		name: "",
 		variables: "{}",
 		valid: query ? !validateQuery(query) : true,
-		resultMode: settings.appearance.defaultResultMode,
+		resultMode: settings ? settings.appearance.defaultResultMode : defaultResultMode,
 		showVariables: false,
 	};
 }

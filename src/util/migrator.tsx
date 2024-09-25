@@ -1,5 +1,6 @@
 import { isArray, isObject } from "radash";
 import type { SurrealistConfig } from "~/types";
+import { createBaseTab } from "./defaults";
 
 /**
  * Apply migrations to the config object
@@ -54,6 +55,23 @@ export function applyMigrations(config: any): SurrealistConfig {
 	if (config.connections && isArray(config.connections)) {
 		for (const con of config.connections) {
 			con.authentication.accessFields ??= [];
+
+			if (!isArray(con.queries) || con.queries.length === 0) {
+				const baseTab = createBaseTab();
+				con.queries = [
+					{
+						...baseTab,
+						name: "New query",
+					},
+				];
+			}
+			
+			if (con.activeQuery === undefined) {
+				con.activeQuery = con.queries[0].id;
+			}
+			if (con.queryHistory === undefined) {
+				con.queryHistory = [];
+			}
 		}
 	}
 

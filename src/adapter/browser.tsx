@@ -1,4 +1,4 @@
-import type { Platform, UrlTarget } from "~/types";
+import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 import type {
 	OpenedBinaryFile,
 	OpenedTextFile,
@@ -48,7 +48,29 @@ export class BrowserAdapter implements SurrealistAdapter {
 			return {};
 		}
 
+		if (import.meta.env.IS_EMBEDDED && Object.keys(parsed).length === 0) {
+			return await this.loadEmbeddedConfig();
+		}
+
 		return parsed;
+	}
+
+	private async loadEmbeddedConfig(): Promise<Partial<SurrealistConfig>> {
+		const response = await this.fetch("/servers.json");
+		const result = await response.json();
+
+		const isValidActiveConnection = (result.connections as any[]).map(c => c.id).includes(result.activeConnection);
+
+		for (const con of result.connections) {
+			con.lastNamespace = con.connection.namespace;
+			con.lastDatabase = con.connection.database;
+		}
+
+		return {
+			activeConnection: result.activeConnection,
+			connections: result.connections,
+			activeScreen: isValidActiveConnection ? "database" : "start",
+		};
 	}
 
 	public async saveConfig(config: any) {
