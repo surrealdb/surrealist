@@ -1,15 +1,6 @@
-import type {
-	Connection,
-	Platform,
-	SurrealistConfig,
-	UrlTarget,
-} from "~/types";
-import type {
-	OpenedBinaryFile,
-	OpenedTextFile,
-	SurrealistAdapter,
-} from "./base";
+import type { Connection, Platform, SurrealistConfig, UrlTarget } from "~/types";
 import { showWarning } from "~/util/helpers";
+import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
  * Surrealist adapter for running as web app
@@ -47,10 +38,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		const config = localStorage.getItem("surrealist:config") || "{}";
 		const parsed = JSON.parse(config);
 
-		if (
-			parsed.configVersion === undefined &&
-			Object.keys(parsed).length > 0
-		) {
+		if (parsed.configVersion === undefined && Object.keys(parsed).length > 0) {
 			return {};
 		}
 
@@ -80,12 +68,12 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 		try {
 			const v = await import("valibot");
-			const { SurrealistEmbeddedConfigSchema } = await import(
-				"~/types.validated"
-			);
+			const { SurrealistEmbeddedConfigSchema } = await import("~/types.validated");
 
-			const { activeConnection, connections: partialConnections } =
-				v.parse(SurrealistEmbeddedConfigSchema, result);
+			const { activeConnection, connections: partialConnections } = v.parse(
+				SurrealistEmbeddedConfigSchema,
+				result,
+			);
 
 			const connections = partialConnections as Partial<Connection>[];
 
@@ -134,7 +122,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		_title: string,
 		defaultPath: string,
 		_filters: any,
-		content: () => Result<string | Blob | null>
+		content: () => Result<string | Blob | null>,
 	): Promise<boolean> {
 		const result = await content();
 
@@ -143,9 +131,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		}
 
 		const file =
-			typeof result === "string"
-				? new File([result], "", { type: "text/plain" })
-				: result;
+			typeof result === "string" ? new File([result], "", { type: "text/plain" }) : result;
 
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement("a");
@@ -229,10 +215,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		console.debug(`${label}: ${message}`);
 	}
 
-	public fetch(
-		url: string,
-		options?: RequestInit | undefined
-	): Promise<Response> {
+	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
 		return fetch(url, options);
 	}
 }
