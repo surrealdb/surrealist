@@ -12,12 +12,13 @@ import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useViewEffect } from "~/hooks/view";
-import type { Authentication, SchemaModel } from "~/types";
+import type { SchemaModel } from "~/types";
 import { connectionUri } from "~/util/helpers";
 import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
+import { composeHttpConnection } from "~/screens/database/connection/connection";
 
 const SURML_FILTERS = [
 	{
@@ -26,28 +27,12 @@ const SURML_FILTERS = [
 	},
 ];
 
-function composeConnection(connection: Authentication, path: string) {
-	const isSecure = connection.protocol === "https" || connection.protocol === "wss";
-	const endpoint = new URL(
-		path,
-		`${isSecure ? "https" : "http"}://${connection.hostname}`,
-	).toString();
-
-	const auth = btoa(`${connection.username}:${connection.password}`);
-	const headers = {
-		Accept: "application/json",
-		Authorization: `Basic ${auth}`,
-		"surreal-ns": connection.namespace,
-		"surreal-db": connection.database,
-	};
-
-	return { endpoint, headers };
-}
-
 export function ModelsView() {
 	const models = useDatabaseSchema()?.models ?? [];
-	const { id, lastNamespace, lastDatabase, authentication } = useActiveConnection();
+	const connection = useActiveConnection();
 	const isConnected = useIsConnected();
+
+	const { id, lastNamespace, lastDatabase, authentication } = connection;
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
 	const isAvailable = ML_SUPPORTED.has(authentication.protocol);
@@ -72,7 +57,9 @@ export function ModelsView() {
 
 	const uploadModel = useStable(async () => {
 		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
-		const { endpoint, headers } = composeConnection(authentication, "/ml/import");
+		const { endpoint, headers } = composeHttpConnection(connection, "/ml/import", {
+			Accept: "application/json",
+		});
 
 		for (const file of files) {
 			await fetch(endpoint, {
@@ -91,8 +78,8 @@ export function ModelsView() {
 		// TODO Replace with version field when definition work properly
 		const [, name, version] = /^(\w+)<(.+)>$/.exec(model.name) || [];
 
-		const { endpoint, headers } = composeConnection(
-			authentication,
+		const { endpoint, headers } = composeHttpConnection(
+			connection,
 			`/ml/export/${name}/${version}`,
 		);
 
