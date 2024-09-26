@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
+import { Alert, Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -14,7 +14,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { useIntent } from "~/hooks/url";
-import { createDatabaseExport } from "~/util/exporter";
+import { requestDatabaseExport } from "~/screens/database/connection/connection";
 import { showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 
@@ -27,13 +27,14 @@ export function DataExportModal() {
 
 	const [isExporting, setIsExporting] = useState(false);
 	const [records, setRecord, setRecords] = useToggleList<string>([]);
-	const [comments, commentsHandle] = useDisclosure(true);
+	// const [comments, commentsHandle] = useDisclosure(true);
+	const [comments, commentsHandle] = useDisclosure(false);
 	const [exportTypes, setExportTypes] = useToggleList<ExportType>([
-		"tables",
-		"analyzers",
-		"functions",
-		"params",
-		"access",
+		// "tables",
+		// "analyzers",
+		// "functions",
+		// "params",
+		// "access",
 	]);
 
 	const fileName = `${slugify(connection.name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
@@ -44,14 +45,18 @@ export function DataExportModal() {
 				"Save database export",
 				fileName,
 				[SURQL_FILTER],
-				() => {
+				async () => {
 					setIsExporting(true);
 
-					return createDatabaseExport({
-						types: exportTypes,
-						records,
-						comments,
-					});
+					// return createDatabaseExport({
+					// 	types: exportTypes,
+					// 	records,
+					// 	comments,
+					// });
+
+					const exported = await requestDatabaseExport();
+
+					return exported ?? null;
 				},
 			);
 
@@ -90,6 +95,13 @@ export function DataExportModal() {
 					export.
 				</Text>
 
+				<Alert
+					title="Notice"
+					color="orange"
+				>
+					Export customization is currently unavailable as it is being integrated directly into SurrealDB
+				</Alert>
+
 				<Stack>
 					<Text
 						c="bright"
@@ -103,6 +115,7 @@ export function DataExportModal() {
 						label="Include comments"
 						checked={comments}
 						onChange={commentsHandle.toggle}
+						disabled
 					/>
 				</Stack>
 
@@ -122,6 +135,7 @@ export function DataExportModal() {
 								label={`Include ${type}`}
 								checked={exportTypes.includes(type)}
 								onChange={setExportTypes.bind(null, type)}
+								disabled
 							/>
 						))}
 					</SimpleGrid>
@@ -146,6 +160,7 @@ export function DataExportModal() {
 									label="Include all records"
 									checked={records.length === tables.length}
 									onChange={toggleAllRecords}
+									disabled
 									indeterminate={
 										records.length > 0 && records.length < tables.length
 									}
@@ -161,6 +176,7 @@ export function DataExportModal() {
 											label={table}
 											checked={records.includes(table)}
 											onChange={setRecord.bind(null, table)}
+											disabled
 											size="xs"
 										/>
 									))}
@@ -174,7 +190,7 @@ export function DataExportModal() {
 					fullWidth
 					onClick={handleExport}
 					loading={isExporting}
-					disabled={exportTypes.length === 0}
+					// disabled={exportTypes.length === 0}
 					variant="gradient"
 					rightSection={<Icon path={iconDownload} />}
 				>

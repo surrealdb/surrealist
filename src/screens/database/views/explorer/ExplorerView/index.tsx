@@ -7,7 +7,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
@@ -36,7 +36,7 @@ const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
 
 export function ExplorerView() {
-	const isLight = useIsLight();
+	const connection = useConnection();
 	const { openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
 
@@ -87,6 +87,10 @@ export function ExplorerView() {
 
 	const [minSize, ref] = usePanelMinSize(275);
 
+	// NOTE - Temporary
+	const protocol = connection?.authentication?.protocol;
+	const isExportDisabled = protocol === "indxdb" || protocol === "mem";
+
 	return (
 		<>
 			<Box h="100%" ref={ref}>
@@ -107,6 +111,7 @@ export function ExplorerView() {
 										rightSection={<Icon path={iconChevronRight} />}
 										onClick={() => dispatchIntent("export-database")}
 										style={{ flexShrink: 0 }}
+										disabled={isExportDisabled}
 										bg="transparent"
 									>
 										Export data

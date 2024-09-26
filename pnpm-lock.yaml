@@ -89,8 +89,8 @@ importers:
         specifier: ^6.5.0
         version: 6.5.3(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.33.0)
       '@surrealdb/codemirror':
-        specifier: 1.0.0-beta.10
-        version: 1.0.0-beta.10
+        specifier: 1.0.0-beta.11
+        version: 1.0.0-beta.11
       '@surrealdb/lezer':
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
@@ -1589,11 +1589,11 @@ packages:
     resolution: {integrity: sha512-TV7t8GKYaJWsn00tFDqBw8+Uqmr8A0fRU1tvTQhyZzGv0sJCGRQL3JGMI3ucuKo3XIZdUP+Lx7/gh2t3lewy7g==}
     engines: {node: '>=14.16'}
 
-  '@surrealdb/codemirror@1.0.0-beta.10':
-    resolution: {integrity: sha512-kgVa+CBbgiW5fZ9Mw5XZ50hhgNnWL92zwOgTudbgJFnEnsIgQOGLCN3twgPyDq57NctLNJafBew0N34OcjSTng==}
+  '@surrealdb/codemirror@1.0.0-beta.11':
+    resolution: {integrity: sha512-JB9wCTZvummpg3SYQ2cnA52LJqzJnextK3vuW33jTv4tU1wY2LFqbgn8JWgOYeNWyp7J1h5HgNCkBoN8dlAUYQ==}
 
-  '@surrealdb/lezer@1.0.0-beta.10':
-    resolution: {integrity: sha512-MbPZNCNL5gkWchAIbvZLgrk5Dp7pd0hYYaBheCpXFd+90b52Aryhotc/n4pIu2MmUmP3NCqk9+qVCih2NT2uqg==}
+  '@surrealdb/lezer@1.0.0-beta.11':
+    resolution: {integrity: sha512-otcbmbbAvLTebHqX1wReRTFLULBWej1fpSeCF6TMzsJiR4qDnaz8RXmZeLJbGrYptXthoBxJQKSaoh8M8+diCw==}
 
   '@surrealdb/lezer@1.0.0-beta.5':
     resolution: {integrity: sha512-sz9ZmLwtYVtOsyY7B2bZJk8z/OWLkSoWmZxKz0uqaAnr4ccqV9uesKuu3/fPRsxgOc5ZzeOUlMnxbPJfeMtgLA==}
@@ -4425,14 +4425,14 @@ snapshots:
 
   '@sindresorhus/is@5.6.0': {}
 
-  '@surrealdb/codemirror@1.0.0-beta.10':
+  '@surrealdb/codemirror@1.0.0-beta.11':
     dependencies:
       '@codemirror/language': 6.10.2
       '@lezer/common': 1.2.1
       '@lezer/javascript': 1.4.18
-      '@surrealdb/lezer': 1.0.0-beta.10
+      '@surrealdb/lezer': 1.0.0-beta.11
 
-  '@surrealdb/lezer@1.0.0-beta.10':
+  '@surrealdb/lezer@1.0.0-beta.11':
     dependencies:
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
