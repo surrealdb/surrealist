@@ -9,6 +9,7 @@ import type {
 	OpenedTextFile,
 	SurrealistAdapter,
 } from "./base";
+import { showWarning } from "~/util/helpers";
 
 /**
  * Surrealist adapter for running as web app
@@ -61,36 +62,56 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	private async loadEmbeddedConfig(): Promise<Partial<SurrealistConfig>> {
-		const response = await this.fetch("/servers.json");
-		const result = await response.json();
+		const errorTitle = "Failed to fetch embedded config";
 
-		const v = await import("valibot");
-		const { SurrealistEmbeddedConfigSchema } = await import(
-			"~/types.validated"
-		);
+		let result: any;
 
-		const { activeConnection, connections: partialConnections } = v.parse(
-			SurrealistEmbeddedConfigSchema,
-			result
-		);
-
-		const connections = partialConnections as Partial<Connection>[];
-
-		const isValidActiveConnection = (connections as any[])
-			.map((c) => c.id)
-			.includes(activeConnection);
-
-		// set last namespace and database to be the default connection
-		for (const con of connections) {
-			con.lastNamespace = con.authentication?.namespace;
-			con.lastDatabase = con.authentication?.database;
+		try {
+			const response = await this.fetch("/servers.json");
+			result = await response.json();
+		} catch {
+			showWarning({
+				title: errorTitle,
+				subtitle:
+					"The file 'servers.json' does not seem to be found. Please ensure the file exists.",
+			});
+			return {};
 		}
 
-		return {
-			activeConnection,
-			connections: connections as Connection[],
-			activeScreen: isValidActiveConnection ? "database" : "start",
-		};
+		try {
+			const v = await import("valibot");
+			const { SurrealistEmbeddedConfigSchema } = await import(
+				"~/types.validated"
+			);
+
+			const { activeConnection, connections: partialConnections } =
+				v.parse(SurrealistEmbeddedConfigSchema, result);
+
+			const connections = partialConnections as Partial<Connection>[];
+
+			const isValidActiveConnection = (connections as any[])
+				.map((c) => c.id)
+				.includes(activeConnection);
+
+			// set last namespace and database to be the default connection
+			for (const con of connections) {
+				con.lastNamespace = con.authentication?.namespace;
+				con.lastDatabase = con.authentication?.database;
+			}
+
+			return {
+				activeConnection,
+				connections: connections as Connection[],
+				activeScreen: isValidActiveConnection ? "database" : "start",
+			};
+		} catch {
+			showWarning({
+				title: errorTitle,
+				subtitle:
+					"Failed to validate the file 'servers.json'. Please ensure the file is correctly configured.",
+			});
+			return {};
+		}
 	}
 
 	public async saveConfig(config: any) {
