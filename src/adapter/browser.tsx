@@ -51,17 +51,17 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	private async loadEmbeddedConfig(): Promise<Partial<SurrealistConfig>> {
 		const errorTitle = "Failed to fetch embedded config";
+		const embeddedFileName = "connections.json";
 
 		let result: any;
 
 		try {
-			const response = await this.fetch("/servers.json");
+			const response = await this.fetch(`/${embeddedFileName}`);
 			result = await response.json();
 		} catch {
 			showWarning({
 				title: errorTitle,
-				subtitle:
-					"The file 'servers.json' does not seem to be found. Please ensure the file exists.",
+				subtitle: `The file '${embeddedFileName}' does not seem to be found. Please ensure the file exists.`,
 			});
 			return {};
 		}
@@ -95,8 +95,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		} catch {
 			showWarning({
 				title: errorTitle,
-				subtitle:
-					"Failed to validate the file 'servers.json'. Please ensure the file is correctly configured.",
+				subtitle: `Failed to validate the file '${embeddedFileName}'. Please ensure the file is correctly configured.`,
 			});
 			return {};
 		}
