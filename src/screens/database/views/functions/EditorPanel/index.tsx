@@ -1,4 +1,3 @@
-import { lineNumbers } from "@codemirror/view";
 import {
 	Badge,
 	Box,
@@ -12,6 +11,25 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
+
+import {
+	iconCheck,
+	iconCopy,
+	iconDelete,
+	iconDownload,
+	iconJSON,
+	iconPlus,
+	iconText,
+} from "~/util/icons";
+
+import {
+	surqlCustomFunctionCompletion,
+	surqlLinting,
+	surqlTableCompletion,
+	surqlVariableCompletion,
+} from "~/editor";
+
+import { lineNumbers } from "@codemirror/view";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useState } from "react";
@@ -25,22 +43,12 @@ import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
-import { surqlCustomFunctionCompletion, surqlLinting, surqlTableCompletion, surqlVariableCompletion } from "~/editor";
 import { useMinimumVersion } from "~/hooks/connection";
 import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { SchemaFunction } from "~/types";
 import { showError } from "~/util/helpers";
-import {
-	iconCheck,
-	iconCopy,
-	iconDelete,
-	iconDownload,
-	iconJSON,
-	iconPlus,
-	iconText,
-} from "~/util/icons";
 import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
@@ -54,13 +62,7 @@ export interface EditorPanelProps {
 	onDelete: (name: string) => void;
 }
 
-export function EditorPanel({
-	handle,
-	details,
-	isCreating,
-	onChange,
-	onDelete,
-}: EditorPanelProps) {
+export function EditorPanel({ handle, details, isCreating, onChange, onDelete }: EditorPanelProps) {
 	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
 
@@ -75,11 +77,8 @@ export function EditorPanel({
 	});
 
 	const downloadBody = useStable(() => {
-		adapter.saveFile(
-			`Save function`,
-			`${details.name}.surql`,
-			[SURQL_FILTER],
-			() => buildFunctionDefinition(details),
+		adapter.saveFile(`Save function`, `${details.name}.surql`, [SURQL_FILTER], () =>
+			buildFunctionDefinition(details),
 		);
 	});
 
@@ -106,9 +105,7 @@ export function EditorPanel({
 		return details.args.flatMap(([name]) => name);
 	});
 
-	const argColor = isLight
-		? "var(--mantine-color-slate-0)"
-		: "var(--mantine-color-slate-9)";
+	const argColor = isLight ? "var(--mantine-color-slate-0)" : "var(--mantine-color-slate-9)";
 
 	return (
 		<ContentPane
@@ -116,7 +113,10 @@ export function EditorPanel({
 			icon={iconJSON}
 			infoSection={
 				isCreating && (
-					<Badge ml="xs" variant="light">
+					<Badge
+						ml="xs"
+						variant="light"
+					>
 						Creating
 					</Badge>
 				)
@@ -132,7 +132,11 @@ export function EditorPanel({
 				</Tooltip>
 			}
 		>
-			<Group h="100%" align="stretch" gap="md">
+			<Group
+				h="100%"
+				align="stretch"
+				gap="md"
+			>
 				<CodeEditor
 					flex={1}
 					h="100%"
@@ -153,16 +157,32 @@ export function EditorPanel({
 					]}
 				/>
 				<Divider orientation="vertical" />
-				<Flex w={300} h="100%" direction="column">
+				<Flex
+					w={300}
+					h="100%"
+					direction="column"
+				>
 					<Box>
 						<Paper bg={isLight ? "slate.0" : "slate.9"}>
 							<Flex align="center">
-								<ScrollArea scrollbars="x" type="scroll" p="lg">
+								<ScrollArea
+									scrollbars="x"
+									type="scroll"
+									p="lg"
+								>
 									<Flex>
-										<Text fz={15} c="surreal" ff="mono">
+										<Text
+											fz={15}
+											c="surreal"
+											ff="mono"
+										>
 											fn::
 										</Text>
-										<Text fz={15} c="bright" ff="mono">
+										<Text
+											fz={15}
+											c="bright"
+											ff="mono"
+										>
 											{details.name}()
 										</Text>
 									</Flex>
@@ -171,26 +191,21 @@ export function EditorPanel({
 								<CopyButton value={fullName}>
 									{({ copied, copy }) => (
 										<ActionIcon
-											variant={
-												copied ? "gradient" : undefined
-											}
+											variant={copied ? "gradient" : undefined}
 											aria-label="Copy function name"
 											onClick={copy}
 											mr="lg"
 										>
-											<Icon
-												path={
-													copied
-														? iconCheck
-														: iconCopy
-												}
-											/>
+											<Icon path={copied ? iconCheck : iconCopy} />
 										</ActionIcon>
 									)}
 								</CopyButton>
 							</Flex>
 						</Paper>
-						<SimpleGrid cols={2} mt="md">
+						<SimpleGrid
+							cols={2}
+							mt="md"
+						>
 							<Button
 								size="xs"
 								radius="xs"
@@ -225,9 +240,15 @@ export function EditorPanel({
 						>
 							<Box>
 								<Label>Arguments</Label>
-								<Stack gap="xs" mt="xs">
+								<Stack
+									gap="xs"
+									mt="xs"
+								>
 									{details.args.map(([name, kind], index) => (
-										<Group key={index} gap="xs">
+										<Group
+											key={index}
+											gap="xs"
+										>
 											<TextInput
 												flex={1}
 												variant="unstyled"
@@ -244,7 +265,8 @@ export function EditorPanel({
 												styles={{
 													input: {
 														backgroundColor: argColor,
-														fontFamily: "var(--mantine-font-family-monospace)",
+														fontFamily:
+															"var(--mantine-font-family-monospace)",
 														paddingLeft: 24,
 														paddingRight: 12,
 													},
@@ -272,10 +294,7 @@ export function EditorPanel({
 												aria-label="Remove function argument"
 												onClick={() =>
 													onChange((draft) => {
-														draft.args.splice(
-															index,
-															1,
-														);
+														draft.args.splice(index, 1);
 													})
 												}
 											>
@@ -292,8 +311,8 @@ export function EditorPanel({
 										onClick={addArgument}
 										styles={{
 											label: {
-												flex: 1
-											}
+												flex: 1,
+											},
 										}}
 									>
 										Add function argument
