@@ -75,6 +75,10 @@ export class BrowserAdapter implements SurrealistAdapter {
 				result,
 			);
 
+			if (partialConnections.length <= 0) {
+				return {};
+			}
+
 			const connections = partialConnections as Partial<Connection>[];
 
 			const isValidActiveConnection = (connections as any[])
