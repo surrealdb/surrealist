@@ -71,6 +71,16 @@ export function GeneralElement({ data, setData }: ElementProps) {
 									})
 								}
 							/>
+
+							<Checkbox
+								label="Enforce record existence"
+								checked={data.schema.kind.enforced ?? false}
+								onChange={(e) =>
+									setData((draft) => {
+										draft.schema.kind.enforced = e.target.checked;
+									})
+								}
+							/>
 						</>
 					)}
 				</Stack>

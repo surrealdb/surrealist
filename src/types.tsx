@@ -273,6 +273,7 @@ export interface Permissions {
 
 export interface Kind {
 	kind: TableType;
+	enforced?: boolean;
 	in?: string[];
 	out?: string[];
 }
