@@ -152,7 +152,7 @@ export function buildFunctionDefinition(func: SchemaFunction): string {
 		.map((line) => `\t${line}`)
 		.join("\n");
 
-	let query = `DEFINE FUNCTION OVERRIDE fn::${func.name}(${args})`;
+	let query = `DEFINE FUNCTION OVERWRITE fn::${func.name}(${args})`;
 
 	if (func.returns) {
 		query += ` -> ${func.returns}`;
