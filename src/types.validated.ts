@@ -18,7 +18,7 @@ const ProtocolSchema = createProtocolSchema();
 
 export const SurrealistEmbeddedConfigSchema = v.object({
 	groupName: v.optional(v.string(), "Embedded"),
-	activeConnection: v.optional(v.string()),
+	defaultConnection: v.optional(v.string()),
 	connections: v.optional(
 		v.array(
 			v.object({
@@ -38,3 +38,5 @@ export const SurrealistEmbeddedConfigSchema = v.object({
 		[], // defaults to empty array
 	),
 });
+
+export type SurrealistEmbeddedConfig = v.InferOutput<typeof SurrealistEmbeddedConfigSchema>;

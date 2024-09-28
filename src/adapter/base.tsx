@@ -1,4 +1,5 @@
 import type { Platform, UrlTarget } from "~/types";
+import type { SurrealistEmbeddedConfig } from "~/types.validated";
 
 export interface OpenedTextFile {
 	name: string;
@@ -60,6 +61,11 @@ export interface SurrealistAdapter {
 	loadConfig(): Promise<any>;
 
 	/**
+	 * Load the embedded config from the adapter
+	 */
+	loadEmbeddedConfig(): Promise<SurrealistEmbeddedConfig | undefined>;
+
+	/**
 	 * Save the config to the adapter
 	 *
 	 * @param config The config to save
@@ -97,20 +103,12 @@ export interface SurrealistAdapter {
 	/**
 	 * Open a text file locally
 	 */
-	openTextFile(
-		title: string,
-		filters: any,
-		multiple: boolean,
-	): Promise<OpenedTextFile[]>;
+	openTextFile(title: string, filters: any, multiple: boolean): Promise<OpenedTextFile[]>;
 
 	/**
 	 * Open a binary file locally
 	 */
-	openBinaryFile(
-		title: string,
-		filters: any,
-		multiple: boolean,
-	): Promise<OpenedBinaryFile[]>;
+	openBinaryFile(title: string, filters: any, multiple: boolean): Promise<OpenedBinaryFile[]>;
 
 	/**
 	 * Log a message to the implemented logging system

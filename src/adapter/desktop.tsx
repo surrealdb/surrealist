@@ -5,12 +5,7 @@ import { basename } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import {
-	readFile,
-	readTextFile,
-	writeFile,
-	writeTextFile,
-} from "@tauri-apps/plugin-fs";
+import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { fetch } from "@tauri-apps/plugin-http";
 import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { arch, type } from "@tauri-apps/plugin-os";
@@ -26,11 +21,7 @@ import { featureFlags } from "~/util/feature-flags";
 import { showError, showInfo } from "~/util/helpers";
 import { handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
-import type {
-	OpenedBinaryFile,
-	OpenedTextFile,
-	SurrealistAdapter,
-} from "./base";
+import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 const WAIT_DURATION = 1000;
 
@@ -66,8 +57,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	#system: string = type();
 
 	public constructor() {
-		this.hasTitlebar =
-			this.#system === "windows" || this.#system === "linux";
+		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
 
 		this.initDatabaseEvents();
 
@@ -150,22 +140,19 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return JSON.parse(config);
 	}
 
+	public async loadEmbeddedConfig() {
+		return undefined;
+	}
+
 	public saveConfig(config: string) {
 		return invoke<void>("save_config", {
 			config: JSON.stringify(config),
 		});
 	}
-	
+
 	public async startDatabase() {
-		const {
-			username,
-			password,
-			port,
-			driver,
-			storage,
-			executable,
-			logLevel,
-		} = useConfigStore.getState().settings.serving;
+		const { username, password, port, driver, storage, executable, logLevel } =
+			useConfigStore.getState().settings.serving;
 
 		const legacyCompat = featureFlags.get("legacy_serve");
 
@@ -210,10 +197,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		if (typeof result === "string") {
 			await writeTextFile(filePath, result);
 		} else {
-			await writeFile(
-				filePath,
-				new Uint8Array(await result.arrayBuffer()),
-			);
+			await writeFile(filePath, new Uint8Array(await result.arrayBuffer()));
 		}
 
 		return true;
@@ -283,16 +267,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		trace(`${label}: ${message}`);
 	}
 
-	public fetch(
-		url: string,
-		options?: RequestInit | undefined,
-	): Promise<Response> {
+	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
 		return fetch(url, options);
 	}
 
 	public async checkForUpdates(force?: boolean) {
-		const { lastPromptedVersion, setLastPromptedVersion } =
-			useConfigStore.getState();
+		const { lastPromptedVersion, setLastPromptedVersion } = useConfigStore.getState();
 		const { setAvailableUpdate } = useInterfaceStore.getState();
 
 		adapter.log("Updater", "Checking for updates");
@@ -349,9 +329,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			const historySize = getSetting("serving", "historySize");
 
-			useDatabaseStore
-				.getState()
-				.pushConsoleLine(event.payload as string, historySize);
+			useDatabaseStore.getState().pushConsoleLine(event.payload as string, historySize);
 			throttleLevel++;
 		});
 

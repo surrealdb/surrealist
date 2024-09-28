@@ -1,4 +1,4 @@
-import type { Connection, Platform, SurrealistConfig, UrlTarget } from "~/types";
+import type { Platform, UrlTarget } from "~/types";
 import { showWarning } from "~/util/helpers";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
@@ -42,14 +42,14 @@ export class BrowserAdapter implements SurrealistAdapter {
 			return {};
 		}
 
-		if (import.meta.env.IS_EMBEDDED && Object.keys(parsed).length === 0) {
-			return await this.loadEmbeddedConfig();
-		}
-
 		return parsed;
 	}
 
-	private async loadEmbeddedConfig(): Promise<Partial<SurrealistConfig>> {
+	public async loadEmbeddedConfig() {
+		if (!import.meta.env.IS_EMBEDDED) {
+			return undefined;
+		}
+
 		const errorTitle = "Failed to fetch embedded config";
 		const embeddedFileName = "connections.json";
 
@@ -63,55 +63,20 @@ export class BrowserAdapter implements SurrealistAdapter {
 				title: errorTitle,
 				subtitle: `The file '${embeddedFileName}' does not seem to be found. Please ensure the file exists.`,
 			});
-			return {};
+			return undefined;
 		}
 
 		try {
 			const v = await import("valibot");
 			const { SurrealistEmbeddedConfigSchema } = await import("~/types.validated");
 
-			const {
-				groupName,
-				activeConnection,
-				connections: partialConnections,
-			} = v.parse(SurrealistEmbeddedConfigSchema, result);
-
-			if (partialConnections.length <= 0) {
-				return {};
-			}
-
-			const groupId = "embedded";
-			const connections = partialConnections as Partial<Connection>[];
-
-			const isValidActiveConnection = (connections as any[])
-				.map((c) => c.id)
-				.includes(activeConnection);
-
-			// set last namespace and database to be the default connection
-			for (const con of connections) {
-				con.group = groupId;
-				con.lastNamespace = con.authentication?.namespace;
-				con.lastDatabase = con.authentication?.database;
-			}
-
-			return {
-				activeConnection,
-				connectionGroups: [
-					{
-						id: groupId,
-						name: groupName,
-						editable: false,
-					},
-				],
-				connections: connections as Connection[],
-				activeScreen: isValidActiveConnection ? "database" : "start",
-			};
+			return v.parse(SurrealistEmbeddedConfigSchema, result);
 		} catch {
 			showWarning({
 				title: errorTitle,
 				subtitle: `Failed to validate the file '${embeddedFileName}'. Please ensure the file is correctly configured.`,
 			});
-			return {};
+			return undefined;
 		}
 	}
 
