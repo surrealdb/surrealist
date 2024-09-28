@@ -8,30 +8,43 @@ export const syncEmbeddedConfig = (
 	config: SurrealistConfig,
 	embeddedConfig: SurrealistEmbeddedConfig,
 ): SurrealistConfig => {
-	// clean embedded connections
-	config.connectionGroups = config.connectionGroups.filter(
-		(group) => group.id !== embeddedGroupId,
-	);
-	config.connections = config.connections.filter(
-		(connection) => connection.group !== embeddedGroupId,
-	);
-
 	if (embeddedConfig.connections.length <= 0) {
 		// nothing configured in the embedded file
+		// clean embedded connections
+		config.connectionGroups = config.connectionGroups.filter(
+			(group) => group.id !== embeddedGroupId,
+		);
+		config.connections = config.connections.filter(
+			(connection) => connection.group !== embeddedGroupId,
+		);
+
 		return config;
 	}
 
 	// sync connection groups
-	config.connectionGroups.push({
-		id: embeddedGroupId,
-		name: embeddedConfig.groupName,
-		editable: false,
-	});
+	const existingConnectionGroup = config.connectionGroups.find(
+		(group) => group.id === embeddedGroupId,
+	);
+	if (existingConnectionGroup) {
+		existingConnectionGroup.name = embeddedConfig.groupName;
+	} else {
+		config.connectionGroups.push({
+			id: embeddedGroupId,
+			name: embeddedConfig.groupName,
+			editable: false,
+		});
+	}
 
 	// sync connections for the embedded group
 	for (const con of embeddedConfig.connections) {
+		const existingConnection = config.connections.find((c) => c.id === con.id);
+		if (existingConnection) {
+			continue;
+		}
+
 		const newConnection = createBaseConnection(config.settings);
 
+		newConnection.id = con.id;
 		newConnection.name = con.name;
 		newConnection.group = embeddedGroupId;
 		newConnection.authentication = con.authentication as Authentication;
