@@ -17,6 +17,7 @@ const AuthModeSchema = createAuthModeSchema();
 const ProtocolSchema = createProtocolSchema();
 
 export const SurrealistEmbeddedConfigSchema = v.object({
+	groupName: v.optional(v.string(), "Embedded"),
 	activeConnection: v.optional(v.string()),
 	connections: v.optional(
 		v.array(
@@ -32,8 +33,8 @@ export const SurrealistEmbeddedConfigSchema = v.object({
 					namespace: v.optional(v.string()),
 					database: v.optional(v.string()),
 				}),
-			})
+			}),
 		),
-		[] // defaults to empty array
+		[], // defaults to empty array
 	),
 });

@@ -70,15 +70,17 @@ export class BrowserAdapter implements SurrealistAdapter {
 			const v = await import("valibot");
 			const { SurrealistEmbeddedConfigSchema } = await import("~/types.validated");
 
-			const { activeConnection, connections: partialConnections } = v.parse(
-				SurrealistEmbeddedConfigSchema,
-				result,
-			);
+			const {
+				groupName,
+				activeConnection,
+				connections: partialConnections,
+			} = v.parse(SurrealistEmbeddedConfigSchema, result);
 
 			if (partialConnections.length <= 0) {
 				return {};
 			}
 
+			const groupId = "embedded";
 			const connections = partialConnections as Partial<Connection>[];
 
 			const isValidActiveConnection = (connections as any[])
@@ -87,12 +89,20 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 			// set last namespace and database to be the default connection
 			for (const con of connections) {
+				con.group = groupId;
 				con.lastNamespace = con.authentication?.namespace;
 				con.lastDatabase = con.authentication?.database;
 			}
 
 			return {
 				activeConnection,
+				connectionGroups: [
+					{
+						id: groupId,
+						name: groupName,
+						editable: false,
+					},
+				],
 				connections: connections as Connection[],
 				activeScreen: isValidActiveConnection ? "database" : "start",
 			};

@@ -1,6 +1,18 @@
 import classes from "../style.module.scss";
 
-import { ActionIcon, Box, Divider, Flex, Group, Menu, Modal, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import {
+	ActionIcon,
+	Box,
+	Divider,
+	Flex,
+	Group,
+	Menu,
+	Modal,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { group } from "radash";
@@ -19,23 +31,28 @@ import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import type { Connection } from "~/types";
 import { Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
-import { iconCloud, iconCopy, iconDelete, iconEdit, iconFolderPlus, iconHomePlus, iconPlus, iconSandbox, iconSearch } from "~/util/icons";
+import {
+	iconCloud,
+	iconCopy,
+	iconDelete,
+	iconEdit,
+	iconFolderPlus,
+	iconHomePlus,
+	iconPlus,
+	iconSandbox,
+	iconSearch,
+} from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 
 const UNGROUPED = Symbol("ungrouped");
 
-interface ItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, 'style' | 'color'> {
+interface ItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, "style" | "color"> {
 	connection: Connection;
 	active: string;
 	onClose: () => void;
 }
 
-function Item({
-	connection,
-	active,
-	onClose,
-	...other
-}: ItemProps) {
+function Item({ connection, active, onClose, ...other }: ItemProps) {
 	const { showContextMenu } = useContextMenu();
 	const { setActiveConnection, addConnection, removeConnection } = useConfigStore.getState();
 	const isActive = connection.id === active;
@@ -49,7 +66,7 @@ function Item({
 		e.stopPropagation();
 		onClose();
 		dispatchIntent("edit-connection", {
-			id: connection.id
+			id: connection.id,
 		});
 	});
 
@@ -59,9 +76,7 @@ function Item({
 			isActive={isActive}
 			className={classes.connection}
 			onClick={activate}
-			leftSection={
-				<Icon path={USER_ICONS[connection.icon ?? 0]} />
-			}
+			leftSection={<Icon path={USER_ICONS[connection.icon ?? 0]} />}
 			rightSection={
 				<ActionIcon
 					component="div"
@@ -84,12 +99,13 @@ function Item({
 					key: "duplicate",
 					title: "Duplicate",
 					icon: <Icon path={iconCopy} />,
-					onClick: () => addConnection({
-						...connection,
-						lastNamespace: "",
-						lastDatabase: "",
-						id: newId()
-					}),
+					onClick: () =>
+						addConnection({
+							...connection,
+							lastNamespace: "",
+							lastDatabase: "",
+							id: newId(),
+						}),
 				},
 				{
 					key: "delete",
@@ -97,20 +113,22 @@ function Item({
 					color: "pink.7",
 					icon: <Icon path={iconDelete} />,
 					onClick: () => removeConnection(connection.id),
-				}
+				},
 			])}
 			{...other}
 		>
-			<Text truncate>
-				{connection.name}
-			</Text>
+			<Text truncate>{connection.name}</Text>
 			{connection.authentication.mode === "cloud" && (
 				<Flex
 					opacity={isActive ? 1 : 0.5}
 					ml="xs"
 				>
 					| Surreal Cloud
-					<Icon path={iconCloud} size="sm" right />
+					<Icon
+						path={iconCloud}
+						size="sm"
+						right
+					/>
 				</Flex>
 			)}
 		</Entry>
@@ -125,28 +143,27 @@ interface ItemListProps {
 	onClose: () => void;
 }
 
-function ItemList({
-	title,
-	connections,
-	active,
-	className,
-	onClose
-}: ItemListProps) {
+function ItemList({ title, connections, active, className, onClose }: ItemListProps) {
 	const connectionList = useMemo(() => {
 		return connections.sort((a, b) => a.name.localeCompare(b.name));
 	}, [connections]);
 
 	return (
 		<Box className={className}>
-			<Group mb={4}>
-				{title}
-			</Group>
+			<Group mb={4}>{title}</Group>
 			{connectionList.length === 0 ? (
-				<Text c="slate" fz="sm" mt={-2}>
+				<Text
+					c="slate"
+					fz="sm"
+					mt={-2}
+				>
 					No connections
 				</Text>
 			) : (
-				<Stack gap={6} mih={10}>
+				<Stack
+					gap={6}
+					mih={10}
+				>
 					{connectionList.map((con) => (
 						<Item
 							key={con.id}
@@ -164,7 +181,12 @@ function ItemList({
 export function ConnectionsModal() {
 	const [isOpen, openedHandle] = useBoolean();
 
-	const { setActiveConnection, addConnectionGroup, updateConnectionGroup, removeConnectionGroup } = useConfigStore.getState();
+	const {
+		setActiveConnection,
+		addConnectionGroup,
+		updateConnectionGroup,
+		removeConnectionGroup,
+	} = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
 	const connections = useConnections();
@@ -175,9 +197,10 @@ export function ConnectionsModal() {
 	const filtered = useMemo(() => {
 		const needle = search.trim().toLocaleLowerCase();
 
-		return connections.filter((con) =>
-			con.name.toLowerCase().includes(needle)
-			|| con.authentication.hostname.toLowerCase().includes(needle)
+		return connections.filter(
+			(con) =>
+				con.name.toLowerCase().includes(needle) ||
+				con.authentication.hostname.toLowerCase().includes(needle),
 		);
 	}, [connections, search]);
 
@@ -203,8 +226,8 @@ export function ConnectionsModal() {
 				access: "",
 				token: "",
 				username,
-				password
-			}
+				password,
+			},
 		});
 
 		dispatchIntent("new-connection", { template });
@@ -214,7 +237,8 @@ export function ConnectionsModal() {
 	const newGroup = useStable(() => {
 		addConnectionGroup({
 			id: newId(),
-			name: `Group ${groups.length + 1}`
+			name: `Group ${groups.length + 1}`,
+			editable: true,
 		});
 	});
 
@@ -232,9 +256,7 @@ export function ConnectionsModal() {
 	const grouped = group(filtered, (con) => con.group ?? UNGROUPED) || {};
 	const ungrouped = grouped[UNGROUPED] ?? [];
 
-	useKeymap([
-		["mod+L", openedHandle.open]
-	]);
+	useKeymap([["mod+L", openedHandle.open]]);
 
 	useIntent("open-connections", ({ search }) => {
 		if (search) {
@@ -262,9 +284,7 @@ export function ConnectionsModal() {
 							variant="unstyled"
 							autoFocus
 							flex={1}
-							leftSection={
-								<Icon path={iconSearch} />
-							}
+							leftSection={<Icon path={iconSearch} />}
 						/>
 						<Menu position="right-start">
 							<Menu.Target>
@@ -285,7 +305,12 @@ export function ConnectionsModal() {
 								</Menu.Item>
 								{isDesktop && (
 									<Menu.Item
-										leftSection={<Icon path={iconHomePlus} noStroke />}
+										leftSection={
+											<Icon
+												path={iconHomePlus}
+												noStroke
+											/>
+										}
 										onClick={newLocalhost}
 									>
 										New local connection
@@ -306,13 +331,9 @@ export function ConnectionsModal() {
 					<Entry
 						isActive={isSandbox}
 						onClick={openSandbox}
-						leftSection={
-							<Icon path={iconSandbox} />
-						}
+						leftSection={<Icon path={iconSandbox} />}
 					>
-						<Text>
-							Sandbox
-						</Text>
+						<Text>Sandbox</Text>
 					</Entry>
 				</Box>
 
@@ -327,25 +348,30 @@ export function ConnectionsModal() {
 							<>
 								<EditableText
 									value={group.name}
-									onChange={(name) => updateConnectionGroup({ id: group.id, name })}
+									onChange={(name) =>
+										updateConnectionGroup({ id: group.id, name })
+									}
 									c="bright"
 									fz="lg"
 									fw={500}
 								/>
 								<Spacer />
-								<Tooltip
-									label="Remove group"
-								>
-									<ActionIcon
-										className={classes.connectionGroupRemove}
-										aria-label="Remove group"
-										onClick={() => removeConnectionGroup(group.id)}
-										variant="subtle"
-										size="sm"
-									>
-										<Icon path={iconDelete} size="sm" />
-									</ActionIcon>
-								</Tooltip>
+								{group.editable === false ? null : (
+									<Tooltip label="Remove group">
+										<ActionIcon
+											className={classes.connectionGroupRemove}
+											aria-label="Remove group"
+											onClick={() => removeConnectionGroup(group.id)}
+											variant="subtle"
+											size="sm"
+										>
+											<Icon
+												path={iconDelete}
+												size="sm"
+											/>
+										</ActionIcon>
+									</Tooltip>
+								)}
 							</>
 						}
 					/>
@@ -357,7 +383,11 @@ export function ConnectionsModal() {
 						active={connection?.id ?? ""}
 						onClose={openedHandle.close}
 						title={
-							<Text c="bright" fz="lg" fw={500}>
+							<Text
+								c="bright"
+								fz="lg"
+								fw={500}
+							>
 								Connections
 							</Text>
 						}
