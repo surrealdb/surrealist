@@ -445,10 +445,10 @@ export function BillingPage() {
 													{new Date(invoice.date).toLocaleDateString()}
 												</Table.Td>
 												<Table.Td
-													c={status.color}
+													c={status?.color ?? "slate"}
 													fw={600}
 												>
-													{status.name}
+													{status?.name ?? invoice.status}
 												</Table.Td>
 												<Table.Td>
 													${(invoice.amount * 100).toFixed(2)} USD
