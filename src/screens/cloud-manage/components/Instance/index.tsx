@@ -17,7 +17,6 @@ import {
 import {
 	iconAPI,
 	iconChevronDown,
-	iconCog,
 	iconConsole,
 	iconCopy,
 	iconDelete,
@@ -27,7 +26,7 @@ import {
 	iconPower,
 	iconQuery,
 	iconTag,
-	iconText,
+	iconTune,
 } from "~/util/icons";
 
 import { Icon } from "~/components/Icon";
@@ -151,7 +150,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Menu.Item>
 				<Menu.Item
 					onClick={() => openCapabilitiesModal(value)}
-					leftSection={<Icon path={iconCog} />}
+					leftSection={<Icon path={iconTune} />}
 				>
 					Capabilities
 				</Menu.Item>
