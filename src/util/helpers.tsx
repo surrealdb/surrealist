@@ -373,6 +373,22 @@ export function fuzzyMatch(query: string, target: string) {
 }
 
 /**
+ * A simplistic fuzzy match function which matches
+ * the query against the target string. Allows passing
+ * multiple queries separated by commas.
+ * 
+ * @param query The query to match
+ * @param target The target string
+ * @returns Result
+ */
+export function fuzzyMultiMatch(query: string, target: string) {
+	return query
+		.split(",")
+		.filter((q) => q.trim().length > 0)
+		.some((q) => fuzzyMatch(q, target));
+}
+
+/**
  * Check if the current platform is mobile
  */
 export function isMobile() {
