@@ -91,10 +91,10 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 
 		// Tables
 		const isLimited = Array.isArray(options?.tables);
-		const tableNames = isLimited ? (options.tables as string[]) : tables.map((t) => t.name);
+		const tablesToSync = isLimited ? (options.tables as string[]) : tables.map((t) => t.name);
 
 		const tbInfoMap = await Promise.all(
-			tableNames.map((table) => {
+			tablesToSync.map((table) => {
 				return executeQuerySingle<SchemaInfoTB>(
 					`INFO FOR TABLE ${escapeIdent(table)} STRUCTURE`,
 				);
@@ -105,32 +105,32 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 			schema.database.tables = klona(connectionSchema.database.tables);
 		}
 
-		for (const [idx, tableName] of tableNames.entries()) {
+		for (const [idx, tableName] of tablesToSync.entries()) {
 			adapter.log("Schema", `Updating table ${tableName}`);
 
-			const info = tbInfoMap[idx];
-			const table = tables.find((t) => t.name === tableName);
-			const index = tables.findIndex((t) => t.name === tableName);
+			const tableStruct = tbInfoMap[idx];
+			const tableInfo = tables.find((t) => t.name === tableName);
+			const existingIndex = schema.database.tables.findIndex((t) => t.schema.name === tableName);
 
-			if (!table) {
-				schema.database.tables.splice(index, 1);
+			if (!tableInfo) {
+				schema.database.tables.splice(existingIndex, 1);
 				continue;
 			}
 
 			const definition: TableInfo = {
-				schema: table,
-				fields: Object.values(info.fields),
-				indexes: Object.values(info.indexes),
-				events: Object.values(info.events).map((ev) => ({
+				schema: tableInfo,
+				fields: Object.values(tableStruct.fields),
+				indexes: Object.values(tableStruct.indexes),
+				events: Object.values(tableStruct.events).map((ev) => ({
 					...ev,
 					then: ev.then.map(readBlock),
 				})),
 			};
 
-			if (!isLimited || index === -1) {
+			if (!isLimited || existingIndex === -1) {
 				schema.database.tables.push(definition);
 			} else {
-				schema.database.tables[index] = definition;
+				schema.database.tables[existingIndex] = definition;
 			}
 		}
 	}
