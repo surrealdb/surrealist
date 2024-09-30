@@ -44,6 +44,7 @@ const INTENT_REGISTRY = {
 	"docs-switch-language": "documentation",
 	"cloud-signin": "cloud",
 	"cloud-signout": "cloud",
+	"cloud-activate": "cloud",
 } satisfies IntentMap;
 
 export type IntentType = keyof typeof INTENT_REGISTRY;
