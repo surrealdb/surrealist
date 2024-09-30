@@ -1,16 +1,17 @@
-import { Box, Checkbox, Select, Slider } from "@mantine/core";
-import { isDesktop } from "~/adapter";
-import { Label } from "~/components/Label";
 import {
 	DESIGNER_DIRECTIONS,
 	DESIGNER_NODE_MODES,
 	LINE_STYLES,
 	ORIENTATIONS,
+	RESULT_FORMATS,
 	RESULT_MODES,
 	SIDEBAR_MODES,
 	THEMES,
-	VALUE_MODES,
 } from "~/constants";
+
+import { Box, Checkbox, Select, Slider } from "@mantine/core";
+import { isDesktop } from "~/adapter";
+import { Label } from "~/components/Label";
 import { useSetting } from "~/hooks/config";
 import { useCheckbox } from "~/hooks/events";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -22,30 +23,38 @@ export function AppearanceTab() {
 	const [colorScheme, setColorScheme] = useSetting(CAT, "colorScheme");
 	const [editorScale, setEditorScale] = useSetting(CAT, "editorScale");
 	const [windowScale, setWindowScale] = useSetting(CAT, "windowScale");
-	// const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
+	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
+	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
+
 	const [defaultResultMode, setDefaultResultMode] = useSetting(
 		CAT,
 		"defaultResultMode",
 	);
+
+	const [defaultResultFormat, setDefaultResultFormat] = useSetting(
+		CAT,
+		"defaultResultFormat",
+	);
+
 	const [queryOrientation, setQueryOrientation] = useSetting(
 		CAT,
 		"queryOrientation",
 	);
-	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
+
 	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(
 		CAT,
 		"defaultDiagramMode",
 	);
+
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(
 		CAT,
 		"defaultDiagramDirection",
 	);
+
 	const [defaultDiagramShowLinks, setDefaultDiagramShowLinks] = useSetting(
 		CAT,
 		"defaultDiagramShowLinks",
 	);
-	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
-	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
 
 	// const updateResultWordWrap = useCheckbox(setResultWordWrap);
 	const updateDefaultDiagramShowLinks = useCheckbox(
@@ -70,12 +79,6 @@ export function AppearanceTab() {
 					label="Sidebar appearance"
 					value={sidebarMode}
 					onChange={setSidebarMode as any}
-				/>
-				<Select
-					label="Value formatting mode"
-					data={VALUE_MODES}
-					value={valueMode}
-					onChange={setValueMode as any}
 				/>
 			</SettingsSection>
 
@@ -133,6 +136,13 @@ export function AppearanceTab() {
 					data={RESULT_MODES}
 					value={defaultResultMode}
 					onChange={setDefaultResultMode as any}
+				/>
+
+				<Select
+					label="Default result format"
+					data={RESULT_FORMATS}
+					value={defaultResultFormat}
+					onChange={setDefaultResultFormat as any}
 				/>
 
 				<Select
