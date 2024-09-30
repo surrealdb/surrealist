@@ -397,8 +397,11 @@ function GranularCapability({
 					onClick={expandedHandle.toggle}
 					style={{ cursor: "pointer" }}
 				>
-					<Text>{value.base ? "Enabled" : "Disabled"}</Text>
-					{value.overrides.length > 0 && <Text>{value.overrides.length} exceptions</Text>}
+					<Text>
+						{value.base ? "Enabled" : "Disabled"}
+						{value.overrides.length > 0 && `, ${value.overrides.length} exceptions`}
+					</Text>
+					
 					<Icon path={iconChevronDown} />
 				</Group>
 			</Group>
