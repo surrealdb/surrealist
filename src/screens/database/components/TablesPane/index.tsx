@@ -27,7 +27,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { fuzzyMatch, tb } from "~/util/helpers";
+import { fuzzyMatch, fuzzyMultiMatch, tb } from "~/util/helpers";
 import {
 	iconDelete,
 	iconPin,
@@ -70,7 +70,7 @@ export function TablesPane({
 	const tablesFiltered = useMemo(() => {
 		const needle = search.toLowerCase();
 		const tables = search
-			? schema.filter((table) => fuzzyMatch(needle, table.schema.name))
+			? schema.filter((table) => fuzzyMultiMatch(needle, table.schema.name))
 			: schema;
 
 		return sort(tables, (table) => {

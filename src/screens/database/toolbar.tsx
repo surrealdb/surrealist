@@ -72,6 +72,7 @@ export function DatabaseToolbar() {
 		title: "Reset sandbox environment",
 		message:
 			"This will clear all data and query responses. Your queries will not be affected. Are you sure you want to continue?",
+		skippable: true,
 		confirmText: "Reset",
 		confirmProps: { variant: "gradient" },
 		onConfirm: async () => {
@@ -102,7 +103,7 @@ export function DatabaseToolbar() {
 	return (
 		<>
 			<SidebarToggle />
-			
+
 			<ConnectionStatus />
 
 			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (

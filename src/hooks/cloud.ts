@@ -8,6 +8,7 @@ import {
 } from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
+import { featureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./url";
 
@@ -99,6 +100,11 @@ export function useCloudAuthentication() {
 	// React to callback intents
 	useIntent("cloud-signout", () => {
 		invalidateSession();
+	});
+
+	// React to cloud activation
+	useIntent("cloud-activate", () => {
+		featureFlags.set("cloud_access", true);
 	});
 	
 }

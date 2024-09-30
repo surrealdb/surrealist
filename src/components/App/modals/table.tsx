@@ -30,7 +30,7 @@ export function TableCreatorModal() {
 		useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showTableCreator);
-	const tables = useTableNames("TABLE");
+	const tables = useTableNames();
 
 	const [createType, setCreateType] = useState("table");
 	const [tableName, setTableName] = useInputState("");
