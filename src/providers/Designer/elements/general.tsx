@@ -11,7 +11,7 @@ const TABLE_TYPES: Selectable<TableType>[] = [
 ];
 
 export function GeneralElement({ data, setData }: ElementProps) {
-	const tables = useTableNames("TABLE");
+	const tables = useTableNames();
 
 	return (
 		<Accordion.Item value="general">
