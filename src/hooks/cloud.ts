@@ -8,9 +8,9 @@ import {
 } from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
+import { featureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./url";
-import { featureFlags } from "~/util/feature-flags";
 
 /**
  * Returns the actively selected organization
