@@ -50,6 +50,7 @@
 			"allow": [
 				"https://surrealdb.us.auth0.com/*",
 				"https://api.cloud.surrealdb.com/api/*",
+				"https://auth.surrealdb.com/*",
 				"https://checkout.stripe.com/*",
 				"https://lago-production.s3.amazonaws.com/*"
 			]
