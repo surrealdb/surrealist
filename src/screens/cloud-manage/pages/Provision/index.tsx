@@ -189,7 +189,8 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const estimatedCost = isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units;
+	const hourlyPriceCents = isFree ? 0 : instanceInfo?.price_hour ?? 0;
+	const estimatedCost = (hourlyPriceCents / 100) * units;
 	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	useLayoutEffect(() => {
@@ -463,7 +464,7 @@ export function ProvisionPage() {
 								>
 									Estimated costs
 								</Text>
-						
+
 								<Text
 									fz={13}
 									c={isLight ? "slate.6" : "slate.2"}
