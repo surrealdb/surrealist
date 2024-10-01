@@ -95,11 +95,11 @@ importers:
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
       '@surrealdb/ql-wasm':
-        specifier: 0.2.0-beta.5
-        version: 0.2.0-beta.5
+        specifier: 0.2.0-beta.6
+        version: 0.2.0-beta.6
       '@surrealdb/wasm':
-        specifier: 1.0.0-beta.22
-        version: 1.0.0-beta.22(surrealdb@1.0.1(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
+        specifier: 1.0.0-beta.23
+        version: 1.0.0-beta.23(surrealdb@1.0.4(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))
       '@tanstack/react-query':
         specifier: ^5.37.1
         version: 5.52.2(react@18.3.1)
@@ -227,8 +227,8 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0
       surrealdb:
-        specifier: 1.0.1
-        version: 1.0.1(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
+        specifier: ^1.0.4
+        version: 1.0.4(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       use-immer:
         specifier: ^0.9.0
         version: 0.9.0(immer@10.1.1)(react@18.3.1)
@@ -1598,13 +1598,13 @@ packages:
   '@surrealdb/lezer@1.0.0-beta.5':
     resolution: {integrity: sha512-sz9ZmLwtYVtOsyY7B2bZJk8z/OWLkSoWmZxKz0uqaAnr4ccqV9uesKuu3/fPRsxgOc5ZzeOUlMnxbPJfeMtgLA==}
 
-  '@surrealdb/ql-wasm@0.2.0-beta.5':
-    resolution: {integrity: sha512-qS56HzjcZmvk6ZflqcCamjEoRk0EWQv+J2Lv2g5+QU1EbA5np3cb6Eh+RT19mX4eUadkERw+4LTfORI8jrFhyg==}
+  '@surrealdb/ql-wasm@0.2.0-beta.6':
+    resolution: {integrity: sha512-JfIS0PU7bq9OAbe3Q61qorOhnnT8aWqeHe2CCtOePxzhVXz1MSZGcRkh1DJWmTGBVcq0aNoFLtr+D/D4g2Hddw==}
 
-  '@surrealdb/wasm@1.0.0-beta.22':
-    resolution: {integrity: sha512-NHClkX9MeBCyQVcZpFfNpV5NpEQHHqrdbB1/5OHz/kvQsTjipkwd9MVe8IVZdnpwhj8fw84AxfrIoJfxYAAaWw==}
+  '@surrealdb/wasm@1.0.0-beta.23':
+    resolution: {integrity: sha512-fDyKLX8Cm2AsPiXg2DiMvnxe1+cfvKc5uJ5HKsHk9YESRrHbq73aKt/9ufoef0PiWHoR45YoYI28318phq/JOw==}
     peerDependencies:
-      surrealdb: ^1.0.0-beta.20
+      surrealdb: ^1.0.4
 
   '@szmarczak/http-timer@5.0.1':
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
@@ -2743,8 +2743,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  surrealdb@1.0.1:
-    resolution: {integrity: sha512-VW/TACJEW5+2vJ1+LwMmbRMyJOKy4xq0vu/lCl4N487iUGzQRlTRSuURcjWTwrxCiLktW1P3JVYXSOHDOdECWQ==}
+  surrealdb@1.0.4:
+    resolution: {integrity: sha512-08RotfawXLqNlfCar4eQdNNAAJol+REOYpsmS2Vv28u7FjvGzCSb7WOoZ8e+chwV1/leNIm3iVQee2HCMCLgqg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       tslib: ^2.6.3
@@ -4442,11 +4442,11 @@ snapshots:
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
 
-  '@surrealdb/ql-wasm@0.2.0-beta.5': {}
+  '@surrealdb/ql-wasm@0.2.0-beta.6': {}
 
-  '@surrealdb/wasm@1.0.0-beta.22(surrealdb@1.0.1(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))':
+  '@surrealdb/wasm@1.0.0-beta.23(surrealdb@1.0.4(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)))':
     dependencies:
-      surrealdb: 1.0.1(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
+      surrealdb: 1.0.4(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
 
   '@szmarczak/http-timer@5.0.1':
     dependencies:
@@ -5686,7 +5686,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  surrealdb@1.0.1(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
+  surrealdb@1.0.4(tslib@2.7.0)(typescript@5.5.4)(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
     dependencies:
       isows: 1.0.4(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       tslib: 2.7.0
