@@ -77,6 +77,7 @@
 		"geo-coordinates-parser": "^1.7.0",
 		"graphql": "^16.9.0",
 		"html-to-image": "^1.11.11",
+		"idb": "^8.0.0",
 		"immer": "^10.0.2",
 		"klona": "^2.0.6",
 		"leaflet": "^1.9.4",
