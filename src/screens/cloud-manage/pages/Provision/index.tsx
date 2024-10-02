@@ -25,7 +25,6 @@ import {
 } from "~/hooks/cloud";
 
 import { useInputState } from "@mantine/hooks";
-import { iconChevronLeft, iconChevronRight, iconPlus } from "~/util/icons";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -39,6 +38,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
 import { showError } from "~/util/helpers";
+import { iconChevronLeft, iconChevronRight, iconPlus } from "~/util/icons";
 import { fetchAPI } from "../../api";
 import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
