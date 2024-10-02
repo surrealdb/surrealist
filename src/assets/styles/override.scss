@@ -118,6 +118,10 @@ body.mod .cm-record-link:hover {
         background-origin: border-box;
         border-color: rgba(255, 255, 255, 0.3);
     }
+
+	&[data-checked] .mantine-Checkbox-icon {
+        color: white !important;
+    }
 }
 
 .mantine-Radio-root {

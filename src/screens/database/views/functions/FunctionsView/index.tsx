@@ -121,19 +121,12 @@ export function FunctionsView() {
 			return;
 		}
 
-		const isFunctionBlockInvalid = validateQuery(selectedFunction.block);
-
-		if (isFunctionBlockInvalid) {
-			showError({
-				title: "Failed to format",
-				subtitle: "Your function must be valid to format it",
-			});
-			return;
-		}
+		const isInvalid = validateQuery(selectedFunction.block);
+		const block = isInvalid ? selectedFunction.block : formatQuery(selectedFunction.block);
 
 		setDetails({
 			...selectedFunction,
-			block: formatQuery(selectedFunction.block),
+			block,
 		});
 
 		handle.track();

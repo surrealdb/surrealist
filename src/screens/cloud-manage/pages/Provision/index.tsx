@@ -1,7 +1,5 @@
 import {
-	ActionIcon,
 	Alert,
-	Badge,
 	Box,
 	Button,
 	Center,
@@ -17,16 +15,6 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
-import {
-	iconChevronLeft,
-	iconChevronRight,
-	iconFloppy,
-	iconHammer,
-	iconMemory,
-	iconPlus,
-	iconQuery,
-} from "~/util/icons";
 
 import {
 	useAvailableInstanceTypes,
@@ -50,6 +38,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
 import { showError } from "~/util/helpers";
+import { iconChevronLeft, iconChevronRight, iconPlus } from "~/util/icons";
 import { fetchAPI } from "../../api";
 import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
@@ -57,26 +46,11 @@ import { useCloudInstances } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 
 const PROVISION_STEPS = [
-	{
-		title: "Instance details",
-		name: "Details",
-	},
-	{
-		title: "Select a region",
-		name: "Region",
-	},
-	{
-		title: "Select an instance type",
-		name: "Instance type",
-	},
-	{
-		title: "Select compute nodes",
-		name: "Compute nodes",
-	},
-	{
-		title: "Finalize your instance",
-		name: "Finalize",
-	},
+	"Instance details",
+	"Select a region",
+	"Select an instance type",
+	"Select compute nodes",
+	"Finalize your instance",
 ];
 
 export function ProvisionPage() {
@@ -189,7 +163,8 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const estimatedCost = isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units;
+	const hourlyPriceCents = isFree ? 0 : instanceInfo?.price_hour ?? 0;
+	const estimatedCost = (hourlyPriceCents / 100) * units;
 	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	useLayoutEffect(() => {
@@ -213,7 +188,7 @@ export function ProvisionPage() {
 					return (
 						<>
 							<Group
-								key={info.title}
+								key={info}
 								wrap="nowrap"
 								c={isActive || isDone ? "bright" : isLight ? "slate.3" : "slate.5"}
 							>
@@ -233,7 +208,7 @@ export function ProvisionPage() {
 									fz="lg"
 									fw={500}
 								>
-									{info.name}
+									{info}
 								</Text>
 							</Group>
 							{index < PROVISION_STEPS.length - 1 && (
@@ -292,7 +267,7 @@ export function ProvisionPage() {
 									/>
 								</Grid.Col>
 								<Grid.Col span={4}>
-									<Text>Version</Text>
+									<Text>SurrealDB Version</Text>
 								</Grid.Col>
 								<Grid.Col span={8}>
 									<Select
@@ -463,7 +438,7 @@ export function ProvisionPage() {
 								>
 									Estimated costs
 								</Text>
-						
+
 								<Text
 									fz={13}
 									c={isLight ? "slate.6" : "slate.2"}
