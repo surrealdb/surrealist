@@ -427,24 +427,18 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		setQueryResponse(id, response);
 		posthog.capture("query_execute");
+
+		if (queryStr.length <= MAX_HISTORY_QUERY_LENGTH) {
+			addHistoryEntry({
+				id: newId(),
+				query: queryStr,
+				timestamp: Date.now(),
+				origin: name,
+			});
+		}
 	} finally {
 		setQueryActive(false);
 	}
-
-	if (queryStr.length > MAX_HISTORY_QUERY_LENGTH) {
-		showWarning({
-			title: "Query history",
-			subtitle: "The query is too long to be stored in the history",
-		})
-		return;
-	}
-
-	addHistoryEntry({
-		id: newId(),
-		query: queryStr,
-		timestamp: Date.now(),
-		origin: name,
-	});
 }
 
 function isGraphqlSupportedError(err: string) {

@@ -1,18 +1,11 @@
 import classes from "./style.module.scss";
 
-import {
-	ActionIcon,
-	Divider,
-	Group,
-	Stack,
-	Text,
-	TextInput,
-	Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Divider, Group, Menu, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 
 import {
 	iconClose,
 	iconDelete,
+	iconDotsVertical,
 	iconQuery,
 	iconSearch,
 	iconText,
@@ -23,7 +16,7 @@ import { useInputState } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useContextMenu } from "mantine-contextmenu";
 import { capitalize } from "radash";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -41,9 +34,7 @@ interface HistoryRowProps {
 }
 
 function HistoryRow({ entry, onClose }: HistoryRowProps) {
-	const { updateCurrentConnection, updateQueryTab, addQueryTab } =
-		useConfigStore.getState();
-	const { showContextMenu } = useContextMenu();
+	const { updateCurrentConnection, updateQueryTab, addQueryTab } = useConfigStore.getState();
 
 	const connection = useActiveConnection();
 	const activeTab = useActiveQuery();
@@ -67,9 +58,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 
 	const handleDeleteQuery = useStable(() => {
 		updateCurrentConnection({
-			queryHistory: connection.queryHistory.filter(
-				(item) => item !== entry,
-			),
+			queryHistory: connection.queryHistory.filter((item) => item !== entry),
 		});
 	});
 
@@ -80,61 +69,82 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 	}, [entry.query]);
 
 	return (
-		<Box
-			className={classes.query}
-			onContextMenu={showContextMenu([
-				{
-					key: "open",
-					title: "Open in new tab",
-					icon: <Icon path={iconQuery} />,
-					onClick: () => handleUseQuery(),
-				},
-				{
-					key: "replace",
-					title: "Open in current tab",
-					icon: <Icon path={iconText} />,
-					onClick: () => handleReplaceQuery(),
-				},
-				{
-					key: "remove",
-					title: "Remove query",
-					color: '"pink.7',
-					icon: <Icon path={iconDelete} />,
-					onClick: () => handleDeleteQuery(),
-				},
-			])}
-		>
-			<Group h={28} wrap="nowrap">
-				<Group gap="xs" wrap="nowrap" miw={0}>
-					<Text c="bright" style={{ flexShrink: 0 }}>
+		<Box>
+			<Group
+				h={28}
+				wrap="nowrap"
+			>
+				<Group
+					gap="xs"
+					wrap="nowrap"
+					miw={0}
+				>
+					<Text
+						c="bright"
+						style={{ flexShrink: 0 }}
+					>
 						{capitalize(dayjs(entry.timestamp).fromNow())}
 					</Text>
 					{entry.origin && (
-						<Text c="slate" truncate miw={0}>
+						<Text
+							c="slate"
+							truncate
+							miw={0}
+						>
 							from {entry.origin}
 						</Text>
 					)}
 				</Group>
 				<Spacer />
-				<Tooltip label="Open in new tab">
-					<ActionIcon
-						component="div"
-						variant="gradient"
-						className={classes.queryAction}
-						onClick={handleUseQuery}
-						aria-label="Open query in new tab"
-					>
-						<Icon path={iconQuery} size={0.9} />
-					</ActionIcon>
-				</Tooltip>
+				<Menu position="right-start">
+					<Menu.Target>
+						<ActionIcon>
+							<Icon path={iconDotsVertical} />
+						</ActionIcon>
+					</Menu.Target>
+					<Menu.Dropdown>
+						<Menu.Label>Open</Menu.Label>
+						<Menu.Item
+							onClick={handleUseQuery}
+							leftSection={<Icon path={iconQuery} />}
+						>
+							Open in new tab
+						</Menu.Item>
+						<Menu.Item
+							onClick={handleReplaceQuery}
+							leftSection={<Icon path={iconText} />}
+						>
+							Open in current tab
+						</Menu.Item>
+						<Menu.Label mt="sm">Dangerous</Menu.Label>
+						<Menu.Item
+							c="red"
+							onClick={handleDeleteQuery}
+							leftSection={
+								<Icon
+									path={iconDelete}
+									c="red"
+								/>
+							}
+						>
+							Remove from history
+						</Menu.Item>
+					</Menu.Dropdown>
+				</Menu>
 			</Group>
 
-			<CodePreview mt="xs" value={shortQuery} withWrapping />
+			<CodePreview
+				mt="xs"
+				value={shortQuery}
+				withWrapping
+			/>
 
 			<Divider mt="md" />
 		</Box>
 	);
 }
+
+const HistoryRowLazy = memo(HistoryRow);
 
 export interface HistoryDrawerProps {
 	opened: boolean;
@@ -170,18 +180,24 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 			position="right"
 			trapFocus={false}
 		>
-			<Group mb="md" gap="sm">
+			<Group
+				mb="md"
+				gap="sm"
+			>
 				<PrimaryTitle>Query history</PrimaryTitle>
 
 				<Spacer />
 
-				<ActionIcon
-					onClick={clearHistory}
-					title="Clear history"
-					aria-label="Clear query history"
-				>
-					<Icon path={iconDelete} />
-				</ActionIcon>
+				<Tooltip label="Clear history">
+					<ActionIcon
+						onClick={clearHistory}
+						title="Clear history"
+						aria-label="Clear query history"
+						color="red"
+					>
+						<Icon path={iconDelete} />
+					</ActionIcon>
+				</Tooltip>
 
 				<ActionIcon
 					onClick={props.onClose}
@@ -201,13 +217,21 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 				/>
 
 				{filtered.length === 0 && (
-					<Text ta="center" mt="sm" c="slate">
+					<Text
+						ta="center"
+						mt="sm"
+						c="slate"
+					>
 						No queries to display
 					</Text>
 				)}
 
 				{filtered.map((entry, i) => (
-					<HistoryRow key={i} entry={entry} onClose={props.onClose} />
+					<HistoryRowLazy
+						key={i}
+						entry={entry}
+						onClose={props.onClose}
+					/>
 				))}
 			</Stack>
 		</Drawer>
