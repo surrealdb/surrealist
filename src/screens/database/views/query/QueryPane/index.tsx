@@ -1,12 +1,13 @@
 import { Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
-import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
+import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import {
 	runQueryKeymap,
 	selectionChanged,
@@ -29,6 +30,7 @@ import {
 	iconServer,
 	iconStar,
 	iconText,
+	iconWarning,
 } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
 
@@ -146,6 +148,23 @@ export function QueryPane({
 					<OutPortal node={switchPortal} />
 				) : (
 					<Group gap="sm">
+						{activeTab.query.length > MAX_HISTORY_QUERY_LENGTH && (
+							<HoverCard position="bottom">
+								<HoverCard.Target>
+									<ThemeIcon
+										radius="xs"
+										variant="light"
+										color="orange"
+									>
+										<Icon path={iconWarning} />
+									</ThemeIcon>
+								</HoverCard.Target>
+								<HoverCard.Dropdown maw={225}>
+									This query exceeds the maximum length to be saved in the query history. 
+								</HoverCard.Dropdown>
+							</HoverCard>
+						)}
+
 						<Tooltip label="Save query">
 							<ActionIcon
 								onClick={onSaveQuery}

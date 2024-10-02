@@ -20,7 +20,7 @@ import {
 import { Value } from "@surrealdb/ql-wasm";
 import posthog from "posthog-js";
 import { adapter } from "~/adapter";
-import { SANDBOX } from "~/constants";
+import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
@@ -429,6 +429,14 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		posthog.capture("query_execute");
 	} finally {
 		setQueryActive(false);
+	}
+
+	if (queryStr.length > MAX_HISTORY_QUERY_LENGTH) {
+		showWarning({
+			title: "Query history",
+			subtitle: "The query is too long to be stored in the history",
+		})
+		return;
 	}
 
 	addHistoryEntry({
