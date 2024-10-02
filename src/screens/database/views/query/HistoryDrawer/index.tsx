@@ -9,6 +9,15 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
+
+import {
+	iconClose,
+	iconDelete,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "~/util/icons";
+
 import { Box, Drawer } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -23,13 +32,8 @@ import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
-import {
-	iconClose,
-	iconDelete,
-	iconQuery,
-	iconSearch,
-	iconText,
-} from "~/util/icons";
+
+const MAX_PREVIEW_LENGTH = 500;
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
@@ -68,6 +72,12 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 			),
 		});
 	});
+
+	const shortQuery = useMemo(() => {
+		return entry.query.length > MAX_PREVIEW_LENGTH
+			? `${entry.query.slice(0, MAX_PREVIEW_LENGTH)}...`
+			: entry.query;
+	}, [entry.query]);
 
 	return (
 		<Box
@@ -119,7 +129,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 				</Tooltip>
 			</Group>
 
-			<CodePreview mt="xs" value={entry.query} withWrapping />
+			<CodePreview mt="xs" value={shortQuery} withWrapping />
 
 			<Divider mt="md" />
 		</Box>
