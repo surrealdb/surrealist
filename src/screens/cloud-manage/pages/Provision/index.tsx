@@ -1,7 +1,5 @@
 import {
-	ActionIcon,
 	Alert,
-	Badge,
 	Box,
 	Button,
 	Center,
@@ -19,16 +17,6 @@ import {
 } from "@mantine/core";
 
 import {
-	iconChevronLeft,
-	iconChevronRight,
-	iconFloppy,
-	iconHammer,
-	iconMemory,
-	iconPlus,
-	iconQuery,
-} from "~/util/icons";
-
-import {
 	useAvailableInstanceTypes,
 	useAvailableInstanceVersions,
 	useAvailableRegions,
@@ -37,6 +25,7 @@ import {
 } from "~/hooks/cloud";
 
 import { useInputState } from "@mantine/hooks";
+import { iconChevronLeft, iconChevronRight, iconPlus } from "~/util/icons";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -57,26 +46,11 @@ import { useCloudInstances } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 
 const PROVISION_STEPS = [
-	{
-		title: "Instance details",
-		name: "Details",
-	},
-	{
-		title: "Select a region",
-		name: "Region",
-	},
-	{
-		title: "Select an instance type",
-		name: "Instance type",
-	},
-	{
-		title: "Select compute nodes",
-		name: "Compute nodes",
-	},
-	{
-		title: "Finalize your instance",
-		name: "Finalize",
-	},
+	"Instance details",
+	"Select a region",
+	"Select an instance type",
+	"Select compute nodes",
+	"Finalize your instance",
 ];
 
 export function ProvisionPage() {
@@ -214,7 +188,7 @@ export function ProvisionPage() {
 					return (
 						<>
 							<Group
-								key={info.title}
+								key={info}
 								wrap="nowrap"
 								c={isActive || isDone ? "bright" : isLight ? "slate.3" : "slate.5"}
 							>
@@ -234,7 +208,7 @@ export function ProvisionPage() {
 									fz="lg"
 									fw={500}
 								>
-									{info.name}
+									{info}
 								</Text>
 							</Group>
 							{index < PROVISION_STEPS.length - 1 && (
@@ -293,7 +267,7 @@ export function ProvisionPage() {
 									/>
 								</Grid.Col>
 								<Grid.Col span={4}>
-									<Text>Version</Text>
+									<Text>SurrealDB Version</Text>
 								</Grid.Col>
 								<Grid.Col span={8}>
 									<Select
