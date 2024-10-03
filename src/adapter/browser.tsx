@@ -3,13 +3,14 @@ import type {
 	OpenedBinaryFile,
 	OpenedTextFile,
 	SurrealistAdapter,
+	SurrealistAdapterType,
 } from "./base";
 
 /**
- * Surrealist adapter for running as web app
+ * Base adapter for running as web app
  */
-export class BrowserAdapter implements SurrealistAdapter {
-	public id = "browser";
+export abstract class BaseBrowserAdapter implements SurrealistAdapter {
+	abstract id: SurrealistAdapterType;
 
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
@@ -41,10 +42,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		const config = localStorage.getItem("surrealist:config") || "{}";
 		const parsed = JSON.parse(config);
 
-		if (
-			parsed.configVersion === undefined &&
-			Object.keys(parsed).length > 0
-		) {
+		if (parsed.configVersion === undefined && Object.keys(parsed).length > 0) {
 			return {};
 		}
 
@@ -80,9 +78,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		}
 
 		const file =
-			typeof result === "string"
-				? new File([result], "", { type: "text/plain" })
-				: result;
+			typeof result === "string" ? new File([result], "", { type: "text/plain" }) : result;
 
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement("a");
@@ -166,10 +162,14 @@ export class BrowserAdapter implements SurrealistAdapter {
 		console.debug(`${label}: ${message}`);
 	}
 
-	public fetch(
-		url: string,
-		options?: RequestInit | undefined,
-	): Promise<Response> {
+	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
 		return fetch(url, options);
 	}
+}
+
+/**
+ * Surrealist adapter for running as web app
+ */
+export class BrowserAdapter extends BaseBrowserAdapter {
+	public id = "browser" as const;
 }
