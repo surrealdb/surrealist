@@ -1,15 +1,12 @@
 import type { SurrealistAdapter } from "./base";
-import { BrowserAdapter } from "./browser";
-import { DesktopAdapter } from "./desktop";
-import { MiniAdapter } from "./mini";
 
 export const adapter: SurrealistAdapter =
 	"__TAURI_INTERNALS__" in window
-		? new DesktopAdapter()
+		? new (await import("./desktop")).DesktopAdapter()
 		: document.querySelector("meta[name=surrealist-mini]")
-			? new MiniAdapter()
-			: new BrowserAdapter();
+			? new (await import("./mini")).MiniAdapter()
+			: new (await import("./browser")).BrowserAdapter();
 
-export const isDesktop = adapter instanceof DesktopAdapter;
-export const isBrowser = adapter instanceof BrowserAdapter;
-export const isMini = adapter instanceof MiniAdapter;
+export const isDesktop = adapter.id === "desktop";
+export const isBrowser = adapter.id === "browser";
+export const isMini = adapter.id === "mini";
