@@ -10,11 +10,13 @@ export interface OpenedBinaryFile {
 	content: Blob;
 }
 
+export type SurrealistAdapterType = "browser" | "desktop" | "mini";
+
 export interface SurrealistAdapter {
 	/**
 	 * Identifier for this adapter
 	 */
-	id: string;
+	id: SurrealistAdapterType;
 
 	/**
 	 * Returns whether local database serving is supported
@@ -97,20 +99,12 @@ export interface SurrealistAdapter {
 	/**
 	 * Open a text file locally
 	 */
-	openTextFile(
-		title: string,
-		filters: any,
-		multiple: boolean,
-	): Promise<OpenedTextFile[]>;
+	openTextFile(title: string, filters: any, multiple: boolean): Promise<OpenedTextFile[]>;
 
 	/**
 	 * Open a binary file locally
 	 */
-	openBinaryFile(
-		title: string,
-		filters: any,
-		multiple: boolean,
-	): Promise<OpenedBinaryFile[]>;
+	openBinaryFile(title: string, filters: any, multiple: boolean): Promise<OpenedBinaryFile[]>;
 
 	/**
 	 * Log a message to the implemented logging system
