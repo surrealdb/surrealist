@@ -1,0 +1,8 @@
+{
+	"formatter": {
+		"external": {
+			"command": "pnpx",
+			"arguments": ["biome", "format", "--write", "--stdin-file-path={buffer_path}"]
+		}
+	}
+}
