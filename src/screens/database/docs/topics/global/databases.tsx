@@ -50,7 +50,7 @@ export function DocsGlobalDatabases({ language }: TopicProps) {
 				<p>
 					The database is the primary storage in a namespace. It
 					contains the tables, views, and indexes that are used to
-					store and retrieve data.You can specify which database to
+					store and retrieve data. You can specify which database to
 					use and also switch between multiple databases.
 				</p>
 			</div>
