@@ -110,11 +110,10 @@ export function DocsGlobalIntroduction() {
 					Using the CLI
 				</Title>
 				<p>
-					When working outside of a programming environment, the
-					SurrealDB CLI provides a convenient way to interact with
-					your database. It provides a simple command-line interface
-					for executing queries, which is especially useful for
-					limited environments.
+					The	SurrealDB CLI provides a convenient way to interact with
+					your database on the command line. It provides a simple
+					interface for executing queries, which is especially useful
+					for limited environments.
 				</p>
 				{active && (
 					<>

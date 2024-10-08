@@ -27,8 +27,8 @@ export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
 			<div>
 				<p>
 					You can access information about a user that is currently
-					authenticated with a scope. This information includes the
-					user's name, email, and other details.
+					authenticated with an access method. This information may
+					include the user's name, email, and other details.
 				</p>
 			</div>
 			<Box>

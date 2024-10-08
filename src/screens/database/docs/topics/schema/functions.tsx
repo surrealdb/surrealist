@@ -81,7 +81,7 @@ export function DocsSchemaFunctions({ language }: TopicProps) {
 				<p>
 					Functions are a way to encapsulate logic in a database. To
 					define functions you have to be a system user
-					(namespace,database,root) They can be used to perform
+					(namespace, database, or root). They can be used to perform
 					calculations, manipulate data, or perform other operations.
 					In SurrealDB functions can be written just as you would in
 					your programming language of choice.

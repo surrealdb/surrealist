@@ -87,11 +87,11 @@ export function DocsSchemaScopes({ language }: TopicProps) {
 		<Article title="Scopes">
 			<div>
 				<p>
-					Within SurrealDB, scopes are a way to manage access to data.
+					Within SurrealDB, accesses are a way to manage access to data.
 					They are defined within the schema and can be used to
 					restrict access to certain parts of the data. To access data
-					within a scope, you must first sign in with the appropriate
-					credentials. In SDKs you can run qu
+					within an access, you must first sign in with the appropriate
+					credentials.
 				</p>
 			</div>
 			<Box>

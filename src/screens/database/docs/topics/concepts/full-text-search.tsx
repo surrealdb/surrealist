@@ -80,7 +80,7 @@ export function DocsConceptsFullTextSearch({ language }: TopicProps) {
 					Full Text Search enables search capabilities within your
 					database connection. This enables text matching, proximity
 					matching, proximity search, and more. In SurrealDB Full-Text
-					Search is ACID-COMPLIANT and you can access this using{" "}
+					Search is ACID-compliant and can be accessed using{" "}
 					<Link href="https://surrealdb.com/docs/surrealdb/surrealql/functions/search#searchhighlight">
 						{" "}
 						Search functions
@@ -90,7 +90,7 @@ export function DocsConceptsFullTextSearch({ language }: TopicProps) {
 						{" "}
 						Indexes
 					</Link>
-					. To learn more checkout this{" "}
+					. To learn more, check out this{" "}
 					<Link href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
 						{" "}
 						Reference guide

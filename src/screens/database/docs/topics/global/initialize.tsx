@@ -71,11 +71,11 @@ export function DocsGlobalInit({ language }: TopicProps) {
 	);
 
 	return (
-		<Article title="Initialises">
+		<Article title="Initialising">
 			<div>
 				<p>
 					To initialise a connection to SurrealDB, you need to create
-					a new instance of the Surreal class and connect.This will
+					a new instance of a SurrealDB client and connect. This will
 					allow you to interact with the database and run queries to
 					the database. Do this by importing the Surreal class and
 					create a new instance of the class. Then, use the connect
