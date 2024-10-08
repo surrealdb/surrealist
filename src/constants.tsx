@@ -1,13 +1,22 @@
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 
+import {
+	DotNetIcon,
+	JavaScriptIcon,
+	PhpIcon,
+	PythonIcon,
+	RustIcon,
+	SurrealIcon,
+} from "./util/drivers";
+
 import type {
-	AccessType,
 	AuthMode,
 	CloudPage,
 	CloudPageInfo,
 	CodeLang,
 	Dataset,
+	Driver,
 	LineStyle,
 	Listable,
 	Orientation,
@@ -15,7 +24,6 @@ import type {
 	ResultMode,
 	SchemaMode,
 	Selectable,
-	Selection,
 	SidebarMode,
 	ValueMode,
 	ViewInfo,
@@ -302,3 +310,56 @@ export const REGION_FLAGS: Record<string, string> = {
 	"aws-euw1": flagIE,
 	"aws-use1": flagUS,
 };
+
+export const DRIVERS: Driver[] = [
+	{
+		id: "cli",
+		name: "CLI",
+		icon: SurrealIcon,
+		link: "https://surrealdb.com/docs/surrealdb/cli",
+	},
+	{
+		id: "rust",
+		name: "Rust",
+		icon: RustIcon,
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/rust",
+	},
+	{
+		id: "js",
+		name: "JavaScript",
+		icon: JavaScriptIcon,
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/javascript",
+	},
+	// {
+	// 	id: "golang",
+	// 	name: "GoLang",
+	// 	icon: GoLangIcon,
+	// 	color: "#00ADD8",
+	// 	link: "https://surrealdb.com/docs/surrealdb/integration/sdks/golang"
+	// },
+	{
+		id: "py",
+		name: "Python",
+		icon: PythonIcon,
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/python",
+	},
+	{
+		id: "csharp",
+		name: ".NET",
+		icon: DotNetIcon,
+		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/dotnet",
+	},
+	// {
+	// 	id: "java",
+	// 	name: "Java",
+	// 	icon: JavaIcon,
+	// 	color: "#007396",
+	// 	link: "https://surrealdb.com/docs/surrealdb/integration/sdks/java"
+	// },
+	{
+		id: "php",
+		name: "PHP",
+		icon: PhpIcon,
+		link: "https://github.com/surrealdb/surrealdb.php",
+	},
+];

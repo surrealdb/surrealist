@@ -445,6 +445,13 @@ export interface Dataset {
 	path: string;
 }
 
+export interface Driver {
+	id: CodeLang;
+	name: string;
+	icon: React.FC<{ active?: boolean }>;
+	link: string;
+}
+
 export interface CloudSignin {
 	token: string;
 	terms_accepted_at?: string;
