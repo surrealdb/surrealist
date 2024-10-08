@@ -7,6 +7,7 @@ import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/ut
 import { showError } from "~/util/helpers";
 import { parseDatasetURL } from "~/util/surrealql";
 import { BrowserAdapter } from "./browser";
+import dedent from "dedent";
 
 const THEMES = new Set(["light", "dark", "auto"]);
 
@@ -54,14 +55,14 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Initial query
 		if (query) {
-			mainTab.query = decodeURIComponent(query);
+			mainTab.query = dedent(decodeURIComponent(query));
 		}
 
 		// Initial variables
 		if (variables) {
 			try {
 				const parsed = Value.from_string(variables);
-				mainTab.variables = parsed.format(true);
+				mainTab.variables = dedent(parsed.format(true));
 			} catch {
 				showError({
 					title: "Startup error",
