@@ -244,7 +244,7 @@ export function QueryPane({
 				<Alert
 					color="red.3"
 					icon={<Icon path={iconGraphql} />}
-					title="GraphQL is not enabled on remote instances"
+					title="GraphQL is not enabled on this remote instance"
 				>
 					<Stack>
 						Visit the SurrealDB documentation to learn how to enable GraphQL on your
