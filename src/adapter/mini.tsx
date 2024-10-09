@@ -51,6 +51,7 @@ export class MiniAdapter extends BrowserAdapter {
 		if (transparent !== undefined) {
 			this.transparent = true;
 			document.body.style.backgroundColor = "transparent";
+			document.documentElement.style.colorScheme = "unset";
 		}
 
 		// Initial query
