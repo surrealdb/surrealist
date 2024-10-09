@@ -1,5 +1,5 @@
-import type { SelectionRange } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Box,
@@ -14,6 +14,9 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
+
+import type { SelectionRange } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
@@ -21,7 +24,7 @@ import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_MODES } from "~/constants";
-import { executeEditorQuery } from "~/editor/commands";
+import { executeEditorQuery } from "~/editor/query";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
@@ -29,15 +32,8 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryResponse, ResultMode, TabQuery } from "~/types";
-import {
-	iconBroadcastOff,
-	iconCursor,
-	iconHelp,
-	iconLive,
-	iconQuery,
-} from "~/util/icons";
+import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
-import classes from "./style.module.scss";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -169,13 +165,7 @@ export function ResultPane({
 										h={30}
 										w={30}
 									>
-										<Icon
-											path={
-												activeMode
-													? activeMode.icon
-													: iconHelp
-											}
-										/>
+										<Icon path={activeMode ? activeMode.icon : iconHelp} />
 									</ActionIcon>
 								</Tooltip>
 							) : (
@@ -185,11 +175,7 @@ export function ResultPane({
 									aria-label="Change result mode"
 									variant="light"
 									color="slate"
-									leftSection={
-										activeMode && (
-											<Icon path={activeMode.icon} />
-										)
-									}
+									leftSection={activeMode && <Icon path={activeMode.icon} />}
 								>
 									{activeMode?.label ?? "Unknown"}
 								</Button>
@@ -235,27 +221,43 @@ export function ResultPane({
 					}}
 				>
 					<Group>
-						<Icon path={iconLive} c="slate" size="xl" />
-						<Text fw={500} c="bright">
-							Click here to open Live Mode and view incoming live
-							messages
+						<Icon
+							path={iconLive}
+							c="slate"
+							size="xl"
+						/>
+						<Text
+							fw={500}
+							c="bright"
+						>
+							Click here to open Live Mode and view incoming live messages
 						</Text>
 					</Group>
 				</UnstyledButton>
 			)}
 			{resultMode === "live" ? (
-				<LivePreview query={activeTab} isLive={isLive} />
+				<LivePreview
+					query={activeTab}
+					isLive={isLive}
+				/>
 			) : activeResponse ? (
 				<>
 					{resultMode === "combined" ? (
 						<CombinedJsonPreview results={responses} />
 					) : activeResponse.success ? (
 						activeResponse.result?.length === 0 ? (
-							<Text c="slate" flex={1}>
+							<Text
+								c="slate"
+								flex={1}
+							>
 								No results found for query
 							</Text>
 						) : resultMode === "table" ? (
-							<Box mih={0} flex={1} pos="relative">
+							<Box
+								mih={0}
+								flex={1}
+								pos="relative"
+							>
 								<DataTable data={activeResponse.result} />
 							</Box>
 						) : (
@@ -272,16 +274,26 @@ export function ResultPane({
 					)}
 				</>
 			) : (
-				<Center h="100%" c="slate">
+				<Center
+					h="100%"
+					c="slate"
+				>
 					<Stack>
-						<Icon path={iconQuery} mx="auto" size="lg" />
+						<Icon
+							path={iconQuery}
+							mx="auto"
+							size="lg"
+						/>
 						Execute a SurrealQL query to view the results here
 					</Stack>
 				</Center>
 			)}
 
 			{showTabs && (
-				<Stack gap="xs" align="center">
+				<Stack
+					gap="xs"
+					align="center"
+				>
 					<Divider w="100%" />
 					<Pagination
 						total={responses.length}

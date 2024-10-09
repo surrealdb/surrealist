@@ -1,5 +1,5 @@
-import type { SelectionRange } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import classes from "./style.module.scss";
+
 import {
 	Box,
 	Button,
@@ -11,6 +11,9 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
+import type { SelectionRange } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
 import { Image } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
@@ -44,7 +47,6 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import classes from "./style.module.scss";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -133,8 +135,7 @@ export function QueryView() {
 		setShowVariables(false);
 	});
 
-	const variablesOrientation =
-		orientation === "horizontal" ? "vertical" : "horizontal";
+	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
@@ -154,6 +155,7 @@ export function QueryView() {
 							switchPortal={switchPortal}
 							setIsValid={setVariablesValid}
 							closeVariables={closeVariables}
+							editor={editor}
 							square={squareCards}
 						/>
 					) : (
@@ -172,7 +174,11 @@ export function QueryView() {
 					)
 				) : (
 					<PanelGroup direction={variablesOrientation}>
-						<Panel minSize={35}>
+						<Panel
+							id="query"
+							order={0}
+							minSize={35}
+						>
 							<QueryPaneLazy
 								activeTab={active}
 								setIsValid={setQueryValid}
@@ -187,11 +193,17 @@ export function QueryView() {
 						{showVariables && (
 							<>
 								<PanelDragger />
-								<Panel defaultSize={40} minSize={35}>
+								<Panel
+									id="variables"
+									order={1}
+									defaultSize={40}
+									minSize={35}
+								>
 									<VariablesPaneLazy
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
 										closeVariables={closeVariables}
+										editor={editor}
 									/>
 								</Panel>
 							</>
@@ -213,7 +225,10 @@ export function QueryView() {
 	);
 
 	return (
-		<Stack gap="md" h="100%">
+		<Stack
+			gap="md"
+			h="100%"
+		>
 			<InPortal node={switchPortal}>
 				<SegmentedControl
 					data={["Query", "Variables"]}
@@ -234,7 +249,10 @@ export function QueryView() {
 								height={20}
 								width={20}
 							/>
-							<Image h={16} src={surrealistIcon} />
+							<Image
+								h={16}
+								src={surrealistIcon}
+							/>
 							<Spacer />
 						</Group>
 					)}
@@ -280,11 +298,7 @@ export function QueryView() {
 				opened={isSaving}
 				onClose={isSavingHandle.close}
 				trapFocus={false}
-				title={
-					<PrimaryTitle>
-						{editingId ? "Edit saved query" : "Save query"}
-					</PrimaryTitle>
-				}
+				title={<PrimaryTitle>{editingId ? "Edit saved query" : "Save query"}</PrimaryTitle>}
 			>
 				<Form onSubmit={handleSaveQuery}>
 					<Stack>
@@ -304,7 +318,11 @@ export function QueryView() {
 							label={
 								<Group gap={4}>
 									Labels
-									<Text span size="xs" c="slate">
+									<Text
+										span
+										size="xs"
+										c="slate"
+									>
 										(optional)
 									</Text>
 								</Group>
