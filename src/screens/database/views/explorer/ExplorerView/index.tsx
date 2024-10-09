@@ -121,7 +121,7 @@ export function ExplorerView() {
 										disabled={isExportDisabled}
 										bg="transparent"
 									>
-										Export data
+										Export database
 									</Entry>
 									<Entry
 										leftSection={<Icon path={iconDownload} />}
@@ -130,7 +130,7 @@ export function ExplorerView() {
 										style={{ flexShrink: 0 }}
 										bg="transparent"
 									>
-										Import data
+										Import database
 									</Entry>
 								</>
 							}
