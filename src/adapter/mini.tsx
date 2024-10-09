@@ -3,12 +3,9 @@ import { Value } from "@surrealdb/ql-wasm";
 import { DATASETS, ORIENTATIONS, SANDBOX } from "~/constants";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { Orientation, SurrealistConfig } from "~/types";
-import {
-	createBaseSettings,
-	createBaseTab,
-	createSandboxConnection,
-} from "~/util/defaults";
+import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
+import { parseDatasetURL } from "~/util/surrealql";
 import { BrowserAdapter } from "./browser";
 
 const THEMES = new Set(["light", "dark", "auto"]);
@@ -75,12 +72,10 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Premade dataset loading
 		if (dataset) {
-			const datasetUrl = DATASETS[dataset].url;
+			const datasetUrl = parseDatasetURL(dataset);
 
 			if (datasetUrl) {
-				this.#datasetQuery = await fetch(datasetUrl).then((res) =>
-					res.text(),
-				);
+				this.#datasetQuery = await fetch(datasetUrl).then((res) => res.text());
 			} else {
 				showError({
 					title: "Startup error",
@@ -109,8 +104,7 @@ export class MiniAdapter extends BrowserAdapter {
 		// Orientation
 		if (orientation) {
 			if (ORIENTATIONS.some((o) => o.value === orientation)) {
-				settings.appearance.queryOrientation =
-					orientation as Orientation;
+				settings.appearance.queryOrientation = orientation as Orientation;
 			} else {
 				showError({
 					title: "Startup error",
@@ -143,5 +137,4 @@ export class MiniAdapter extends BrowserAdapter {
 			executeQuery(this.#setupQuery);
 		}
 	}
-
 }

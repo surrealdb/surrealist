@@ -28,17 +28,8 @@ export type AuthType = "user" | "access";
 export type AccessType = "JWT" | "RECORD";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 
-export type InstanceState =
-	| "creating"
-	| "updating"
-	| "deleting"
-	| "ready"
-	| "inactive";
-export type AuthState =
-	| "unknown"
-	| "loading"
-	| "authenticated"
-	| "unauthenticated";
+export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
+export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -249,13 +240,15 @@ export interface AccessJwt {
 	issuer: {
 		alg: string;
 		key: string;
-	},
-	verify: {
-		url: string;
-	} | {
-		alg: string;
-		key: string;
-	}
+	};
+	verify:
+		| {
+				url: string;
+		  }
+		| {
+				alg: string;
+				key: string;
+		  };
 }
 
 export interface TableView {
@@ -337,7 +330,7 @@ export interface SchemaUser {
 	duration: {
 		session: Duration;
 		token: Duration;
-	}
+	};
 }
 
 export interface SchemaAccess {
@@ -349,15 +342,17 @@ export interface SchemaAccess {
 		session: Duration;
 		token: Duration;
 	};
-	kind: {
-		kind: "JWT";
-		jwt: AccessJwt;
-	} | {
-		kind: "RECORD";
-		signin: string;
-		signup: string;
-		jwt: AccessJwt;
-	};
+	kind:
+		| {
+				kind: "JWT";
+				jwt: AccessJwt;
+		  }
+		| {
+				kind: "RECORD";
+				signin: string;
+				signup: string;
+				jwt: AccessJwt;
+		  };
 }
 
 export interface SchemaFunction {
@@ -402,15 +397,15 @@ export interface SchemaInfoDB {
 	accesses: SchemaAccess[];
 	tables: SchemaTable[];
 	users: SchemaUser[];
-	analyzers: any[];	// unused
-	params: any[];		// unused
+	analyzers: any[]; // unused
+	params: any[]; // unused
 }
 
 export interface SchemaInfoTB {
 	events: SchemaEvent[];
 	fields: SchemaField[];
 	indexes: SchemaIndex[];
-	tables: any[];		// unused
+	tables: any[]; // unused
 }
 
 export interface SurrealOptions {
@@ -445,9 +440,9 @@ export interface CloudPageInfo {
 	disabled?: FeatureCondition;
 }
 
-export interface DataSet {
+export interface Dataset {
 	name: string;
-	url: string;
+	path: string;
 }
 
 export interface CloudSignin {
