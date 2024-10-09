@@ -4,7 +4,7 @@ import { CodeSnippet } from "~/components/CodeSnippet";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
-import { iconAPI } from "~/util/icons";
+import { iconAccount, iconAPI, iconDatabase } from "~/util/icons";
 import { DriverSelector } from "~/components/DriverSelector";
 import { useInputState } from "@mantine/hooks";
 import { LearnMore } from "~/components/LearnMore";
@@ -155,40 +155,72 @@ export function ConnectSdkModal({ opened, onClose, instance }: ConnectSdkModalPr
 					2. Enter optional connection details
 				</Text>
 
-				<Paper
-					bg="slate.9"
-					p="lg"
-				>
-					<SimpleGrid cols={2}>
-						<TextInput
-							label="Namespace"
-							size="xs"
-							value={namespace}
-							onChange={setNamespace}
-						/>
+				<SimpleGrid cols={2}>
+					<Paper
+						bg="slate.9"
+						p="md"
+					>
+						<Group>
+							<Icon path={iconDatabase} />
+							<Text
+								fw={500}
+								c="bright"
+							>
+								Namespace and database
+							</Text>
+						</Group>
+						<SimpleGrid
+							cols={2}
+							mt="lg"
+						>
+							<TextInput
+								placeholder="Namespace"
+								size="xs"
+								value={namespace}
+								onChange={setNamespace}
+							/>
 
-						<TextInput
-							label="Database"
-							size="xs"
-							value={database}
-							onChange={setDatabase}
-						/>
+							<TextInput
+								placeholder="Database"
+								size="xs"
+								value={database}
+								onChange={setDatabase}
+							/>
+						</SimpleGrid>
+					</Paper>
+					<Paper
+						bg="slate.9"
+						p="md"
+					>
+						<Group>
+							<Icon path={iconAccount} />
+							<Text
+								fw={500}
+								c="bright"
+							>
+								Username and password
+							</Text>
+						</Group>
+						<SimpleGrid
+							cols={2}
+							mt="lg"
+						>
+							<TextInput
+								placeholder="Username"
+								size="xs"
+								value={username}
+								onChange={setUsername}
+							/>
 
-						<TextInput
-							label="Username"
-							size="xs"
-							value={username}
-							onChange={setUsername}
-						/>
-
-						<TextInput
-							label="Password"
-							size="xs"
-							value={password}
-							onChange={setPassword}
-						/>
-					</SimpleGrid>
-				</Paper>
+							<TextInput
+								placeholder="Password"
+								size="xs"
+								value={password}
+								onChange={setPassword}
+							/>
+						</SimpleGrid>
+					</Paper>
+				</SimpleGrid>
 
 				<Text
 					mt="lg"
