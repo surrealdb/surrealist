@@ -5,8 +5,8 @@ import { executeQuery } from "~/screens/database/connection/connection";
 import type { Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
-import { BrowserAdapter } from "./browser";
 import { parseDatasetURL } from "~/util/surrealql";
+import { BrowserAdapter } from "./browser";
 
 const THEMES = new Set(["light", "dark", "auto"]);
 

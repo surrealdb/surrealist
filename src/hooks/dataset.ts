@@ -5,8 +5,8 @@ import { executeQuery } from "~/screens/database/connection/connection";
 import type { Selectable } from "~/types";
 import { showInfo } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
-import { useStable } from "./stable";
 import { parseDatasetURL } from "~/util/surrealql";
+import { useStable } from "./stable";
 
 /**
  * Provides the necessary data and methods to apply datasets
