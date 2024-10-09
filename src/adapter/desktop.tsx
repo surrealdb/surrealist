@@ -1,4 +1,3 @@
-import { compareVersions } from "compare-versions";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
@@ -12,6 +11,7 @@ import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
+import { compareVersions } from "compare-versions";
 import { VIEW_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";

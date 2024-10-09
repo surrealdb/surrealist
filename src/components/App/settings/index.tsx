@@ -42,7 +42,9 @@ import { useVersionCopy } from "~/hooks/debug";
 import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useDesktopUpdater } from "~/hooks/updater";
 import { useIntent } from "~/hooks/url";
+import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
 import { isDevelopment, isPreview } from "~/util/environment";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -53,8 +55,6 @@ import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { LicensesTab } from "./tabs/Licenses";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
-import { useInterfaceStore } from "~/stores/interface";
-import { useDesktopUpdater } from "~/hooks/updater";
 
 interface Category {
 	id: string;

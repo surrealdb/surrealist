@@ -1,11 +1,11 @@
 import { ActionIcon, Box, Dialog, Group, Text } from "@mantine/core";
+import type { MouseEvent } from "react";
 import { Icon } from "~/components/Icon";
+import { useStable } from "~/hooks/stable";
+import { useDesktopUpdater } from "~/hooks/updater";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconClose, iconDownload } from "~/util/icons";
 import classes from "../style.module.scss";
-import { useStable } from "~/hooks/stable";
-import { useDesktopUpdater } from "~/hooks/updater";
-import type { MouseEvent } from "react";
 
 export function UpdaterDialog() {
 	const { hideAvailableUpdate } = useInterfaceStore.getState();

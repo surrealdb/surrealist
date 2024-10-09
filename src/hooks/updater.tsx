@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useInterfaceStore } from "~/stores/interface";
-import { useStable } from "./stable";
-import { useConfigStore } from "~/stores/config";
+import { Alert, Group } from "@mantine/core";
 import { invoke } from "@tauri-apps/api/core";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { useConfirmation } from "~/providers/Confirmation";
-import { Alert, Group } from "@mantine/core";
-import { iconDownload } from "~/util/icons";
+import { useState } from "react";
 import { Icon } from "~/components/Icon";
+import { useConfirmation } from "~/providers/Confirmation";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { iconDownload } from "~/util/icons";
+import { useStable } from "./stable";
 
 type Phase = "idle" | "downloading" | "error";
 
