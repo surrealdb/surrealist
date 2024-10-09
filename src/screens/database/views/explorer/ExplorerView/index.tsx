@@ -1,3 +1,14 @@
+import {
+	iconChevronRight,
+	iconDesigner,
+	iconDownload,
+	iconExplorer,
+	iconOpen,
+	iconPlus,
+	iconTable,
+	iconUpload,
+} from "~/util/icons";
+
 import { Box, Button, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { memo, useState } from "react";
@@ -11,23 +22,12 @@ import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
 import { useInterfaceStore } from "~/stores/interface";
 import { DisconnectedEvent } from "~/util/global-events";
-import {
-	iconChevronRight,
-	iconDesigner,
-	iconDownload,
-	iconExplorer,
-	iconOpen,
-	iconPlus,
-	iconTable,
-	iconUpload,
-} from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { ExplorerPane } from "../ExplorerPane";
@@ -93,12 +93,19 @@ export function ExplorerView() {
 
 	return (
 		<>
-			<Box h="100%" ref={ref}>
+			<Box
+				h="100%"
+				ref={ref}
+			>
 				<PanelGroup
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
+					<Panel
+						defaultSize={minSize}
+						minSize={minSize}
+						maxSize={35}
+					>
 						<TablesPaneLazy
 							icon={iconExplorer}
 							activeTable={activeTable}
@@ -151,9 +158,8 @@ export function ExplorerView() {
 								}}
 							>
 								<Text>
-									The explorer view provides an easy way to
-									browse your tables and records without
-									writing any queries.
+									The explorer view provides an easy way to browse your tables and
+									records without writing any queries.
 								</Text>
 								<Group>
 									<Button

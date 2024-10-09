@@ -1,9 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useDatabaseSchema } from "~/hooks/schema";
-import {
-	executeQueryFirst,
-	executeQuerySingle,
-} from "~/screens/database/connection/connection";
+import { executeQueryFirst, executeQuerySingle } from "~/screens/database/connection/connection";
+import { escapeIdent } from "~/util/surrealql";
 
 export type SortMode = [string, "asc" | "desc"] | null;
 
@@ -23,14 +21,7 @@ export function useRecordQuery(input: RecordQueryInput) {
 		queryKey: ["explorer", "records", input],
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
-			const {
-				activeTable,
-				currentPage,
-				pageSize,
-				sortMode,
-				isFilterValid,
-				filter,
-			} = input;
+			const { activeTable, currentPage, pageSize, sortMode, isFilterValid, filter } = input;
 
 			try {
 				if (!activeTable || !isFilterValid) {
@@ -40,7 +31,7 @@ export function useRecordQuery(input: RecordQueryInput) {
 				const limitBy = pageSize;
 				const startAt = (currentPage - 1) * pageSize;
 
-				let fetchQuery = `SELECT * FROM ${activeTable}`;
+				let fetchQuery = `SELECT * FROM ${escapeIdent(activeTable)}`;
 
 				if (filter) {
 					fetchQuery += ` WHERE ${filter}`;
@@ -61,11 +52,7 @@ export function useRecordQuery(input: RecordQueryInput) {
 				const headers =
 					schema?.tables
 						?.find((t) => t.schema.name === activeTable)
-						?.fields?.filter(
-							(f) =>
-								!f.name.includes("[*]") &&
-								!f.name.includes("."),
-						)
+						?.fields?.filter((f) => !f.name.includes("[*]") && !f.name.includes("."))
 						?.map((f) => f.name) || [];
 
 				return {
@@ -96,7 +83,7 @@ export function usePaginationQuery(input: PaginationQueryInput) {
 			}
 
 			try {
-				let countQuery = `SELECT count() AS count FROM ${activeTable}`;
+				let countQuery = `SELECT count() AS count FROM ${escapeIdent(activeTable)}`;
 
 				if (filter) {
 					countQuery += ` WHERE ${filter}`;
