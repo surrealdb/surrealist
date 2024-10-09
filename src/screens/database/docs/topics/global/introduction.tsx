@@ -85,6 +85,7 @@ export function DocsGlobalIntroduction() {
 					<DriverSelector
 						value={language}
 						onChange={setLanguage}
+						exclude={["java", "go"]}
 						cols={{
 							xs: 1,
 							sm: 2,

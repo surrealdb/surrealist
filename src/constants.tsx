@@ -3,6 +3,8 @@ import flagUS from "flag-icons/flags/4x3/us.svg";
 
 import {
 	DotNetIcon,
+	GoLangIcon,
+	JavaIcon,
 	JavaScriptIcon,
 	PhpIcon,
 	PythonIcon,
@@ -322,44 +324,42 @@ export const DRIVERS: Driver[] = [
 		id: "rust",
 		name: "Rust",
 		icon: RustIcon,
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/rust",
+		link: "https://surrealdb.com/docs/sdk/rust",
 	},
 	{
 		id: "js",
 		name: "JavaScript",
 		icon: JavaScriptIcon,
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/javascript",
+		link: "https://surrealdb.com/docs/sdk/javascript",
 	},
-	// {
-	// 	id: "golang",
-	// 	name: "GoLang",
-	// 	icon: GoLangIcon,
-	// 	color: "#00ADD8",
-	// 	link: "https://surrealdb.com/docs/surrealdb/integration/sdks/golang"
-	// },
+	{
+		id: "go",
+		name: "GoLang",
+		icon: GoLangIcon,
+		link: "https://surrealdb.com/docs/sdk/golang",
+	},
 	{
 		id: "py",
 		name: "Python",
 		icon: PythonIcon,
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/python",
+		link: "https://surrealdb.com/docs/sdk/python",
 	},
 	{
 		id: "csharp",
 		name: ".NET",
 		icon: DotNetIcon,
-		link: "https://surrealdb.com/docs/surrealdb/integration/sdks/dotnet",
+		link: "https://surrealdb.com/docs/sdk/dotnet",
 	},
-	// {
-	// 	id: "java",
-	// 	name: "Java",
-	// 	icon: JavaIcon,
-	// 	color: "#007396",
-	// 	link: "https://surrealdb.com/docs/surrealdb/integration/sdks/java"
-	// },
+	{
+		id: "java",
+		name: "Java",
+		icon: JavaIcon,
+		link: "https://surrealdb.com/docs/sdk/java",
+	},
 	{
 		id: "php",
 		name: "PHP",
 		icon: PhpIcon,
-		link: "https://github.com/surrealdb/surrealdb.php",
+		link: "https://surrealdb.com/docs/sdk/php",
 	},
 ];

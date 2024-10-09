@@ -94,6 +94,20 @@ export function ConnectSdkModal({ opened, onClose, instance }: ConnectSdkModalPr
 					password: "${password}",
 				}).await?;
 			`,
+			java: `
+				try (final Surreal db = new Surreal()) {
+					
+					// Open a connection
+					db.connect("wss://${instance.host}");
+
+					// Select a namespace and database
+					db.useNs("${namespace}").useDb("${database}");
+
+					// Authenticate
+					db.signin(new Root("${username}", "${password}"));
+
+				}
+			`,
 		}),
 		[instance, namespace, database, username, password],
 	);
@@ -137,7 +151,7 @@ export function ConnectSdkModal({ opened, onClose, instance }: ConnectSdkModalPr
 				<DriverSelector
 					value={lang}
 					onChange={setLang}
-					exclude={["cli"]}
+					exclude={["cli", "go"]}
 					cols={{
 						base: 3,
 						xs: 6,

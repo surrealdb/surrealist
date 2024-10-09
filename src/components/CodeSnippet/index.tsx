@@ -2,7 +2,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
 import { rust } from "@codemirror/lang-rust";
 import { StreamLanguage } from "@codemirror/language";
-import { csharp } from "@codemirror/legacy-modes/mode/clike";
+import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
 import type { Extension } from "@codemirror/state";
 import dedent from "dedent";
 import { useMemo } from "react";
@@ -14,7 +14,8 @@ const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
 	rust: rust(),
 	js: javascript(),
 	py: python(),
-	csharp: [StreamLanguage.define(csharp)],
+	java: StreamLanguage.define(java),
+	csharp: StreamLanguage.define(csharp),
 	php: php({ plain: true }),
 };
 
