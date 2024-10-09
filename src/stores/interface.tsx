@@ -17,7 +17,7 @@ export type InterfaceStore = {
 
 	setWindowTitle: (title: string) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
-	setAvailableUpdate: (update: Update) => void;
+	setAvailableUpdate: (update: Update, alert: boolean) => void;
 	hideAvailableUpdate: () => void;
 	setIsLive: (id: string, live: boolean) => void;
 	openTableCreator: () => void;
@@ -56,10 +56,10 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 			colorScheme,
 		})),
 
-	setAvailableUpdate: (availableUpdate) =>
+	setAvailableUpdate: (availableUpdate, showAvailableUpdate) =>
 		set(() => ({
 			availableUpdate,
-			showAvailableUpdate: true,
+			showAvailableUpdate,
 		})),
 
 	hideAvailableUpdate: () =>
