@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Badge,
@@ -13,8 +15,7 @@ import {
 	Text,
 	Tooltip,
 } from "@mantine/core";
-import { useContextMenu } from "mantine-contextmenu";
-import { sleep } from "radash";
+
 import {
 	type ChangeEvent,
 	type ElementRef,
@@ -23,6 +24,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+
 import {
 	Background,
 	type NodeChange,
@@ -31,6 +33,30 @@ import {
 	useNodesState,
 	useReactFlow,
 } from "reactflow";
+
+import {
+	iconAPI,
+	iconChevronLeft,
+	iconChevronRight,
+	iconCog,
+	iconFullscreen,
+	iconHelp,
+	iconImage,
+	iconPlus,
+	iconRefresh,
+	iconRelation,
+} from "~/util/icons";
+
+import {
+	type GraphWarning,
+	NODE_TYPES,
+	applyNodeLayout,
+	buildFlowNodes,
+	createSnapshot,
+} from "./helpers";
+
+import { useContextMenu } from "mantine-contextmenu";
+import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -46,28 +72,8 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { showInfo } from "~/util/helpers";
-import {
-	iconAPI,
-	iconChevronLeft,
-	iconChevronRight,
-	iconCog,
-	iconFullscreen,
-	iconHelp,
-	iconImage,
-	iconPlus,
-	iconRefresh,
-	iconRelation,
-} from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
-import {
-	type GraphWarning,
-	NODE_TYPES,
-	applyNodeLayout,
-	buildFlowNodes,
-	createSnapshot,
-} from "./helpers";
-import classes from "./style.module.scss";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -119,11 +125,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				};
 			});
 
-			const layoutChanges = await applyNodeLayout(
-				dimNodes,
-				edges,
-				direction,
-			);
+			const layoutChanges = await applyNodeLayout(dimNodes, edges, direction);
 
 			setComputing(false);
 
@@ -223,23 +225,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		});
 	});
 
-	const setDiagramShowLinks = useStable(
-		(e: ChangeEvent<HTMLInputElement>) => {
-			updateCurrentConnection({
-				id: activeSession?.id,
-				diagramShowLinks: e.target.checked,
-			});
-		},
-	);
+	const setDiagramShowLinks = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		updateCurrentConnection({
+			id: activeSession?.id,
+			diagramShowLinks: e.target.checked,
+		});
+	});
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on settings change
 	useEffect(() => {
 		renderGraph();
-	}, [
-		activeSession.diagramMode,
-		activeSession.diagramDirection,
-		activeSession.diagramShowLinks,
-	]);
+	}, [activeSession.diagramMode, activeSession.diagramDirection, activeSession.diagramShowLinks]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema change
 	useLayoutEffect(() => {
@@ -283,11 +279,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						aria-label="Toggle table list"
 					>
 						<Icon
-							path={
-								connection.designerTableList
-									? iconChevronLeft
-									: iconChevronRight
-							}
+							path={connection.designerTableList ? iconChevronLeft : iconChevronRight}
 						/>
 					</ActionIcon>
 				</Tooltip>
@@ -297,7 +289,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					{warnings.length > 0 && (
 						<HoverCard position="bottom-end">
 							<HoverCard.Target>
-								<Badge variant="light" color="orange" h={26}>
+								<Badge
+									variant="light"
+									color="orange"
+									h={26}
+								>
 									Encountered {warnings.length} warnings
 								</Badge>
 							</HoverCard.Target>
@@ -367,14 +363,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				</Group>
 			}
 		>
-			<div
-				style={{ position: "relative", width: "100%", height: "100%" }}
-			>
+			<div style={{ position: "relative", width: "100%", height: "100%" }}>
 				<ReactFlow
 					ref={ref}
 					fitView
 					nodes={nodes}
 					edges={edges}
+					minZoom={0.1}
 					nodeTypes={NODE_TYPES}
 					nodesConnectable={false}
 					edgesFocusable={false}
@@ -420,9 +415,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						},
 					])}
 				>
-					<Background
-						color={themeColor(isLight ? "slate.2" : "slate.6")}
-					/>
+					<Background color={themeColor(isLight ? "slate.2" : "slate.6")} />
 				</ReactFlow>
 
 				{isExporting && (
@@ -435,7 +428,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						style={{ zIndex: 5 }}
 					>
 						<Loader />
-						<Text fz="xl" fw={600}>
+						<Text
+							fz="xl"
+							fw={600}
+						>
 							Exporting graph...
 						</Text>
 					</Stack>
@@ -450,13 +446,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						gap="xl"
 					>
 						<Box ta="center">
-							<Text fz="xl" fw={600}>
+							<Text
+								fz="xl"
+								fw={600}
+							>
 								No tables defined
 							</Text>
-							<Text>
-								Define tables to visualize them in the table
-								graph
-							</Text>
+							<Text>Define tables to visualize them in the table graph</Text>
 						</Box>
 						<Button
 							variant="gradient"
