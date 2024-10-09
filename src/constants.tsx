@@ -7,7 +7,7 @@ import type {
 	CloudPage,
 	CloudPageInfo,
 	CodeLang,
-	DataSet,
+	Dataset,
 	LineStyle,
 	Listable,
 	Orientation,
@@ -56,11 +56,11 @@ export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
-export const DATASETS: Record<string, DataSet> = {
+export const DATASETS: Record<string, Dataset> = {
 	"surreal-deal-store": {
 		name: "Surreal Deal Store",
-		url: "https://datasets.surrealdb.com/surreal-deal-store-mini.surql",
-	}
+		path: "/surreal-deal-store-mini.surql",
+	},
 };
 
 export const THEMES = [
@@ -236,13 +236,7 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	},
 };
 
-export const EXPORT_TYPES = [
-	"tables",
-	"analyzers",
-	"functions",
-	"params",
-	"access",
-] as const;
+export const EXPORT_TYPES = ["tables", "analyzers", "functions", "params", "access"] as const;
 
 export const SURREAL_KINDS = [
 	{ label: "No kind specified", value: "" },

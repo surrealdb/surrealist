@@ -2,10 +2,11 @@ import { sleep } from "radash";
 import { useMemo, useState } from "react";
 import { DATASETS } from "~/constants";
 import { executeQuery } from "~/screens/database/connection/connection";
-import type { DataSet, Selectable } from "~/types";
+import type { Selectable } from "~/types";
 import { showInfo } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { useStable } from "./stable";
+import { parseDatasetURL } from "~/util/surrealql";
 
 /**
  * Provides the necessary data and methods to apply datasets
@@ -30,7 +31,8 @@ export function useDatasets() {
 		setIsLoading(true);
 
 		try {
-			const dataset = await fetch(info.url).then((res) => res.text());
+			const source = parseDatasetURL(id);
+			const dataset = await fetch(source).then((res) => res.text());
 
 			await sleep(50);
 			await executeQuery(dataset);
