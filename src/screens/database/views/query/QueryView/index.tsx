@@ -47,6 +47,7 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
+import { Link } from "~/components/Link";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -243,16 +244,20 @@ export function QueryView() {
 				<>
 					{!(adapter as MiniAdapter).hideTitlebar && (
 						<Group>
-							<Image
-								src={logoUrl}
-								style={{ pointerEvents: "none" }}
-								height={20}
-								width={20}
-							/>
-							<Image
-								h={16}
-								src={surrealistIcon}
-							/>
+							<Link href="https://surrealdb.com/surrealist">
+								<Group>
+									<Image
+										h={16}
+										src={surrealistIcon}
+									/>
+									<Image
+										src={logoUrl}
+										style={{ pointerEvents: "none" }}
+										height={20}
+										width={20}
+									/>
+								</Group>
+							</Link>
 							<Spacer />
 						</Group>
 					)}
