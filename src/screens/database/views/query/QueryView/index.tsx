@@ -174,7 +174,11 @@ export function QueryView() {
 					)
 				) : (
 					<PanelGroup direction={variablesOrientation}>
-						<Panel minSize={35}>
+						<Panel
+							id="query"
+							order={0}
+							minSize={35}
+						>
 							<QueryPaneLazy
 								activeTab={active}
 								setIsValid={setQueryValid}
@@ -190,6 +194,8 @@ export function QueryView() {
 							<>
 								<PanelDragger />
 								<Panel
+									id="variables"
+									order={1}
 									defaultSize={40}
 									minSize={35}
 								>
