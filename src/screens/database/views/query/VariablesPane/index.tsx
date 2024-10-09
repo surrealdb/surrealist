@@ -1,13 +1,16 @@
-import { lineNumbers } from "@codemirror/view";
+import { Prec } from "@codemirror/state";
+import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { ActionIcon, Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
+import { useEffect, useRef, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { decodeCbor } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { surqlLinting } from "~/editor";
+import { runQueryKeymap, surqlLinting } from "~/editor";
+import { queryEditorField, setQueryEditor } from "~/editor/query";
 import { useActiveQuery } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConfigStore } from "~/stores/config";
@@ -17,13 +20,23 @@ export interface VariablesPaneProps {
 	isValid: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	square?: boolean;
+	editor: EditorView | null;
 	setIsValid: (isValid: boolean) => void;
 	closeVariables: () => void;
 }
 
-export function VariablesPane(props: VariablesPaneProps) {
+export function VariablesPane({
+	isValid,
+	switchPortal,
+	square,
+	editor,
+	setIsValid,
+	closeVariables,
+}: VariablesPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 	const activeTab = useActiveQuery();
+
+	const [variableEditor, setVariableEditor] = useState<EditorView | null>(null);
 
 	const setVariables = useDebouncedFunction((content: string | undefined) => {
 		if (!activeTab) return;
@@ -41,30 +54,39 @@ export function VariablesPane(props: VariablesPaneProps) {
 				variables: json,
 			});
 
-			props.setIsValid(true);
+			setIsValid(true);
 		} catch {
-			props.setIsValid(false);
+			setIsValid(false);
 		}
 	}, 50);
+
+	useEffect(() => {
+		if (variableEditor && editor) {
+			setQueryEditor(variableEditor, editor);
+		}
+	}, [variableEditor, editor]);
 
 	return (
 		<ContentPane
 			title="Variables"
 			icon={iconDollar}
-			radius={props.square ? 0 : undefined}
+			radius={square ? 0 : undefined}
 			rightSection={
-				props.switchPortal ? (
-					<OutPortal node={props.switchPortal} />
+				switchPortal ? (
+					<OutPortal node={switchPortal} />
 				) : (
 					<Group gap="xs">
-						{!props.isValid && (
-							<Badge color="red" variant="light">
+						{!isValid && (
+							<Badge
+								color="red"
+								variant="light"
+							>
 								Invalid syntax
 							</Badge>
 						)}
 						<ActionIcon
 							color="slate"
-							onClick={props.closeVariables}
+							onClick={closeVariables}
 							aria-label="Close variables panel"
 						>
 							<Icon path={iconClose} />
@@ -76,7 +98,14 @@ export function VariablesPane(props: VariablesPaneProps) {
 			<CodeEditor
 				value={activeTab?.variables || ""}
 				onChange={setVariables}
-				extensions={[surrealql(), surqlLinting(), lineNumbers()]}
+				onMount={setVariableEditor}
+				extensions={[
+					surrealql(),
+					surqlLinting(),
+					lineNumbers(),
+					queryEditorField,
+					Prec.high(keymap.of(runQueryKeymap)),
+				]}
 			/>
 		</ContentPane>
 	);

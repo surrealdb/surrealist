@@ -1,12 +1,3 @@
-import { Prec, type SelectionRange } from "@codemirror/state";
-import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
-import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { surrealql } from "@surrealdb/codemirror";
-import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
-import { ContentPane } from "~/components/Pane";
 import {
 	runQueryKeymap,
 	selectionChanged,
@@ -16,6 +7,16 @@ import {
 	surqlTableCompletion,
 	surqlVariableCompletion,
 } from "~/editor";
+
+import { Prec, type SelectionRange } from "@codemirror/state";
+import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
+import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -23,13 +24,7 @@ import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import {
-	iconAutoFix,
-	iconDollar,
-	iconServer,
-	iconStar,
-	iconText,
-} from "~/util/icons";
+import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
 
 export interface QueryPaneProps {
@@ -74,9 +69,7 @@ export function QueryPane({
 		try {
 			const query = hasSelection
 				? activeTab.query.slice(0, selection.from) +
-					formatQuery(
-						activeTab.query.slice(selection.from, selection.to),
-					) +
+					formatQuery(activeTab.query.slice(selection.from, selection.to)) +
 					activeTab.query.slice(selection.to)
 				: formatQuery(activeTab.query);
 
@@ -102,9 +95,7 @@ export function QueryPane({
 		const query = activeTab.query;
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(query).filter(
-			(v) => !currentKeys.includes(v),
-		);
+		const variables = extractVariables(query).filter((v) => !currentKeys.includes(v));
 
 		const newVars = variables.reduce(
 			(acc, v) => {
@@ -127,7 +118,7 @@ export function QueryPane({
 	});
 
 	const resolveVariables = useStable(() => {
-		return Object.keys(tryParseParams(activeTab.variables))
+		return Object.keys(tryParseParams(activeTab.variables));
 	});
 
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
@@ -156,9 +147,7 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip
-							label={`Format ${hasSelection ? "selection" : "query"}`}
-						>
+						<Tooltip label={`Format ${hasSelection ? "selection" : "query"}`}>
 							<ActionIcon
 								onClick={handleFormat}
 								variant="light"
@@ -174,7 +163,10 @@ export function QueryPane({
 							label={
 								<Stack gap={4}>
 									<Text>Infer variables from query</Text>
-									<Text c="dimmed" size="sm">
+									<Text
+										c="dimmed"
+										size="sm"
+									>
 										Automatically add missing variables.
 									</Text>
 								</Stack>
@@ -189,21 +181,11 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip
-							label={
-								showVariables
-									? "Hide variables"
-									: "Show variables"
-							}
-						>
+						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
 							<ActionIcon
 								onClick={toggleVariables}
 								variant="light"
-								aria-label={
-									showVariables
-										? "Hide variables"
-										: "Show variables"
-								}
+								aria-label={showVariables ? "Hide variables" : "Show variables"}
 							>
 								<Icon path={iconDollar} />
 							</ActionIcon>

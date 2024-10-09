@@ -1,29 +1,11 @@
 import type { CompletionSource } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
-import {
-	type Extension,
-	Prec,
-	StateEffect,
-	StateField,
-} from "@codemirror/state";
+import { type Extension, Prec, StateEffect, StateField } from "@codemirror/state";
 import { EditorView, ViewPlugin, keymap } from "@codemirror/view";
-import {
-	type Position,
-	fillAllFieldsCommands,
-	graphqlLanguage,
-} from "cm6-graphql";
-import {
-	type DocumentNode,
-	type GraphQLList,
-	type GraphQLNonNull,
-	type GraphQLObjectType,
-	type GraphQLSchema,
-	parse,
-} from "graphql";
+import { type Position, fillAllFieldsCommands, graphqlLanguage } from "cm6-graphql";
+import { type DocumentNode, type GraphQLSchema, parse } from "graphql";
 import { fillGraphqlFields } from "./keybinds";
 import { graphqlSuggestions } from "./keymaps";
-
-type NodeType = GraphQLNonNull<GraphQLList<GraphQLNonNull<GraphQLObjectType>>>;
 
 const documentEffect = StateEffect.define<DocumentNode | undefined>();
 
