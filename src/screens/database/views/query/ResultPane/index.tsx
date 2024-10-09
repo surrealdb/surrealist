@@ -15,7 +15,6 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 import { useState } from "react";
@@ -25,6 +24,7 @@ import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_MODES } from "~/constants";
+import { executeEditorQuery } from "~/editor/query";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
@@ -32,8 +32,8 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryResponse, ResultMode, TabQuery } from "~/types";
+import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
-import { executeEditorQuery } from "~/editor/query";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
