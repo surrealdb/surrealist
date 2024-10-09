@@ -20,7 +20,7 @@ import {
 import { Value } from "@surrealdb/ql-wasm";
 import posthog from "posthog-js";
 import { adapter } from "~/adapter";
-import { SANDBOX } from "~/constants";
+import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
@@ -427,16 +427,18 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		setQueryResponse(id, response);
 		posthog.capture("query_execute");
+
+		if (queryStr.length <= MAX_HISTORY_QUERY_LENGTH) {
+			addHistoryEntry({
+				id: newId(),
+				query: queryStr,
+				timestamp: Date.now(),
+				origin: name,
+			});
+		}
 	} finally {
 		setQueryActive(false);
 	}
-
-	addHistoryEntry({
-		id: newId(),
-		query: queryStr,
-		timestamp: Date.now(),
-		origin: name,
-	});
 }
 
 function isGraphqlSupportedError(err: string) {
