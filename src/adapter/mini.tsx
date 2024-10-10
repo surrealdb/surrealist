@@ -79,7 +79,7 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Initial query
 		if (query) {
-			mainTab.query = dedent(decodeURIComponent(query));
+			mainTab.query = dedent(query);
 		}
 
 		// Initial variables
@@ -111,7 +111,7 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Execute a startup query
 		if (setup) {
-			this.#setupQuery = decodeURIComponent(setup);
+			this.#setupQuery = setup;
 		}
 
 		// Interface theme
