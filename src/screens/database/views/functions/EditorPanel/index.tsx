@@ -65,7 +65,14 @@ export interface EditorPanelProps {
 	onDelete: (name: string) => void;
 }
 
-export function EditorPanel({ handle, details, error, isCreating, onChange, onDelete }: EditorPanelProps) {
+export function EditorPanel({
+	handle,
+	details,
+	error,
+	isCreating,
+	onChange,
+	onDelete,
+}: EditorPanelProps) {
 	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
 
@@ -140,7 +147,10 @@ export function EditorPanel({ handle, details, error, isCreating, onChange, onDe
 				align="stretch"
 				gap="md"
 			>
-				<Stack flex={1} gap={0}>
+				<Stack
+					flex={1}
+					gap={0}
+				>
 					{error && (
 						<Alert
 							icon={<Icon path={iconWarning} />}
@@ -153,25 +163,30 @@ export function EditorPanel({ handle, details, error, isCreating, onChange, onDe
 							{error}
 						</Alert>
 					)}
-					<CodeEditor
+					<Box
 						flex={1}
-						h="100%"
-						value={details.block}
-						autoFocus
-						onChange={(value) =>
-							onChange((draft: any) => {
-								draft.block = value;
-							})
-						}
-						extensions={[
-							surrealql(),
-							surqlLinting(),
-							surqlVariableCompletion(resolveVariables),
-							surqlCustomFunctionCompletion(),
-							surqlTableCompletion(),
-							lineNumbers(),
-						]}
-					/>
+						pos="relative"
+					>
+						<CodeEditor
+							inset={0}
+							pos="absolute"
+							value={details.block}
+							autoFocus
+							onChange={(value) =>
+								onChange((draft: any) => {
+									draft.block = value;
+								})
+							}
+							extensions={[
+								surrealql(),
+								surqlLinting(),
+								surqlVariableCompletion(resolveVariables),
+								surqlCustomFunctionCompletion(),
+								surqlTableCompletion(),
+								lineNumbers(),
+							]}
+						/>
+					</Box>
 				</Stack>
 				<Divider orientation="vertical" />
 				<Flex
