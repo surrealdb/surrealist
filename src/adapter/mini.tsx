@@ -8,6 +8,7 @@ import { showError } from "~/util/helpers";
 import { parseDatasetURL } from "~/util/surrealql";
 import { BrowserAdapter } from "./browser";
 import dedent from "dedent";
+import { broadcastMessage } from "~/util/messaging";
 
 const THEMES = new Set(["light", "dark", "auto"]);
 
@@ -15,6 +16,7 @@ export class MiniAdapter extends BrowserAdapter {
 	public transparent = false;
 	public hideTitlebar = false;
 	public hideBorder = false;
+	public uniqueRef = "";
 
 	#datasetQuery: string | undefined;
 	#setupQuery: string | undefined;
@@ -25,6 +27,7 @@ export class MiniAdapter extends BrowserAdapter {
 		const params = new URL(document.location.toString()).searchParams;
 
 		const {
+			ref,
 			query,
 			variables,
 			dataset,
@@ -35,6 +38,11 @@ export class MiniAdapter extends BrowserAdapter {
 			transparent,
 			orientation,
 		} = Object.fromEntries(params.entries());
+
+		// Unique reference id
+		if (ref !== undefined) {
+			this.uniqueRef = ref;
+		}
 
 		// Hide titlebar
 		if (compact !== undefined) {
@@ -130,7 +138,7 @@ export class MiniAdapter extends BrowserAdapter {
 		// noop
 	}
 
-	public initializeDataset() {
+	public initializeWithDataset() {
 		if (this.#datasetQuery) {
 			executeQuery(this.#datasetQuery);
 		}
@@ -138,5 +146,15 @@ export class MiniAdapter extends BrowserAdapter {
 		if (this.#setupQuery) {
 			executeQuery(this.#setupQuery);
 		}
+	}
+
+	public broadcastReady() {
+		const opts: any = {};
+
+		if (this.uniqueRef) {
+			opts.ref = this.uniqueRef;
+		}
+
+		broadcastMessage("ready", opts);
 	}
 }

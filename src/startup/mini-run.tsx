@@ -39,10 +39,13 @@ import type { MiniAdapter } from "../adapter/mini";
 	// Connect and initialize the dataset
 	openConnection().then(() => {
 		setTimeout(() => {
-			(adapter as MiniAdapter).initializeDataset();
+			const adp = adapter as MiniAdapter;
+
+			// Apply the selected dataset
+			adp.initializeWithDataset();
 
 			// Notify the parent window that the app is ready
-			broadcastMessage("ready");
+			adp.broadcastReady();
 		}, 150);
 	});
 
