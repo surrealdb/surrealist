@@ -123,6 +123,7 @@ export interface Template {
 export interface ConnectionGroup {
 	id: string;
 	name: string;
+	editable: boolean;
 }
 
 export interface SurrealistBehaviorSettings {

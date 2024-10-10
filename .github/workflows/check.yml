@@ -54,3 +54,15 @@ jobs:
           cargo fmt --all -- --check
           cargo clippy -- -D warnings
           cd ..
+
+  validate_dockerfile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Dockerfile
+        run: |
+          docker build .
+      

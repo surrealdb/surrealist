@@ -1,9 +1,6 @@
 import type { Platform, UrlTarget } from "~/types";
-import type {
-	OpenedBinaryFile,
-	OpenedTextFile,
-	SurrealistAdapter,
-} from "./base";
+import { showWarning } from "~/util/helpers";
+import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
  * Surrealist adapter for running as web app
@@ -41,14 +38,46 @@ export class BrowserAdapter implements SurrealistAdapter {
 		const config = localStorage.getItem("surrealist:config") || "{}";
 		const parsed = JSON.parse(config);
 
-		if (
-			parsed.configVersion === undefined &&
-			Object.keys(parsed).length > 0
-		) {
+		if (parsed.configVersion === undefined && Object.keys(parsed).length > 0) {
 			return {};
 		}
 
 		return parsed;
+	}
+
+	public async loadEmbeddedConfig() {
+		if (!import.meta.env.IS_EMBEDDED) {
+			return undefined;
+		}
+
+		const errorTitle = "Failed to fetch embedded config";
+		const embeddedFileName = "connections.json";
+
+		let result: any;
+
+		try {
+			const response = await this.fetch(`/${embeddedFileName}`);
+			result = await response.json();
+		} catch {
+			showWarning({
+				title: errorTitle,
+				subtitle: `The file '${embeddedFileName}' does not seem to be found. Please ensure the file exists.`,
+			});
+			return undefined;
+		}
+
+		try {
+			const v = await import("valibot");
+			const { SurrealistEmbeddedConfigSchema } = await import("~/types.validated");
+
+			return v.parse(SurrealistEmbeddedConfigSchema, result);
+		} catch {
+			showWarning({
+				title: errorTitle,
+				subtitle: `Failed to validate the file '${embeddedFileName}'. Please ensure the file is correctly configured.`,
+			});
+			return undefined;
+		}
 	}
 
 	public async saveConfig(config: any) {
@@ -80,9 +109,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		}
 
 		const file =
-			typeof result === "string"
-				? new File([result], "", { type: "text/plain" })
-				: result;
+			typeof result === "string" ? new File([result], "", { type: "text/plain" }) : result;
 
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement("a");
@@ -166,10 +193,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		console.debug(`${label}: ${message}`);
 	}
 
-	public fetch(
-		url: string,
-		options?: RequestInit | undefined,
-	): Promise<Response> {
+	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
 		return fetch(url, options);
 	}
 }

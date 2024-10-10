@@ -1,0 +1,11 @@
+.cargo
+.github
+.vscode
+aws
+dist
+node_modules
+src-tauri
+Dockerfile
+.dockerignore
+.git
+.gitignore

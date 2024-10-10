@@ -20,10 +20,7 @@ export function applyMigrations(config: any): SurrealistConfig {
 			con.graphqlQuery = "";
 			con.graphqlVariables = "";
 
-			if (
-				con.connection.authMode === "root" ||
-				con.connection.authMode === "namespace"
-			) {
+			if (con.connection.authMode === "root" || con.connection.authMode === "namespace") {
 				con.authentication.namespace = "";
 			}
 
@@ -36,7 +33,7 @@ export function applyMigrations(config: any): SurrealistConfig {
 			con.authentication.authMode = undefined;
 			con.connection = undefined;
 		}
-		
+
 		for (const con of config.connections) {
 			fixConnection(con);
 		}

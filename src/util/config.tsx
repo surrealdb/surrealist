@@ -6,12 +6,11 @@ import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
+import { syncEmbeddedConfig } from "./sync";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
-export type StoreType<T> = T extends UseBoundStore<StoreApi<infer I>>
-	? I
-	: never;
+export type StoreType<T> = T extends UseBoundStore<StoreApi<infer I>> ? I : never;
 
 /**
  * Watch a store for changes and invoke the callback when the
@@ -47,10 +46,7 @@ export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
  * @param key The setting key
  * @returns Setting value
  */
-export function getSetting<C extends Category, K extends keyof Settings<C>>(
-	category: C,
-	key: K,
-) {
+export function getSetting<C extends Category, K extends keyof Settings<C>>(category: C, key: K) {
 	return useConfigStore.getState().settings[category][key];
 }
 
@@ -60,10 +56,11 @@ export function getSetting<C extends Category, K extends keyof Settings<C>>(
 export async function startConfigSync() {
 	const loadedConfig = await adapter.loadConfig();
 	const migrateConfig = applyMigrations(loadedConfig);
-	const config = assign<SurrealistConfig>(
-		useConfigStore.getState(),
-		migrateConfig,
-	);
+	const loadedEmbeddedConfig = await adapter.loadEmbeddedConfig();
+	const currentConfig = loadedEmbeddedConfig
+		? syncEmbeddedConfig(migrateConfig, loadedEmbeddedConfig)
+		: migrateConfig;
+	const config = assign<SurrealistConfig>(useConfigStore.getState(), currentConfig);
 	const compatible = config.configVersion <= CONFIG_VERSION;
 
 	// Handle incompatible config versions
