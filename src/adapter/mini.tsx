@@ -1,7 +1,7 @@
 import type { MantineColorScheme } from "@mantine/core";
 import { Value } from "@surrealdb/ql-wasm";
 import { DATASETS, ORIENTATIONS, SANDBOX } from "~/constants";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
 import type { Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
@@ -17,6 +17,7 @@ export class MiniAdapter extends BrowserAdapter {
 	public hideTitlebar = false;
 	public hideBorder = false;
 	public uniqueRef = "";
+	public autorun = false;
 
 	#datasetQuery: string | undefined;
 	#setupQuery: string | undefined;
@@ -37,6 +38,7 @@ export class MiniAdapter extends BrowserAdapter {
 			borderless,
 			transparent,
 			orientation,
+			autorun,
 		} = Object.fromEntries(params.entries());
 
 		// Unique reference id
@@ -123,6 +125,11 @@ export class MiniAdapter extends BrowserAdapter {
 			}
 		}
 
+		// Autorun query
+		if (autorun !== undefined) {
+			this.autorun = true;
+		}
+
 		return {
 			settings,
 			activeConnection: SANDBOX,
@@ -138,13 +145,17 @@ export class MiniAdapter extends BrowserAdapter {
 		// noop
 	}
 
-	public initializeWithDataset() {
+	public initializeContent() {
 		if (this.#datasetQuery) {
 			executeQuery(this.#datasetQuery);
 		}
 
 		if (this.#setupQuery) {
 			executeQuery(this.#setupQuery);
+		}
+
+		if (this.autorun) {
+			executeUserQuery();
 		}
 	}
 

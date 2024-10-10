@@ -41,8 +41,8 @@ import type { MiniAdapter } from "../adapter/mini";
 		setTimeout(() => {
 			const adp = adapter as MiniAdapter;
 
-			// Apply the selected dataset
-			adp.initializeWithDataset();
+			// Initialize the mini
+			adp.initializeContent();
 
 			// Notify the parent window that the app is ready
 			adp.broadcastReady();
