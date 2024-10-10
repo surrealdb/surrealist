@@ -78,7 +78,8 @@ export function QueryView() {
 	const [saveContent, setSaveContent] = useInputState("");
 	const [saveTags, setSaveTags] = useInputState<string[]>([]);
 
-	const squareCards = adapter instanceof MiniAdapter && adapter.hideBorder;
+	const miniAppearance = adapter instanceof MiniAdapter ? adapter.appearance : "normal";
+	const miniCorners = adapter instanceof MiniAdapter ? adapter.corners : undefined;
 
 	const handleSaveRequest = useStable(async () => {
 		if (!active) {
@@ -157,11 +158,11 @@ export function QueryView() {
 							setIsValid={setVariablesValid}
 							closeVariables={closeVariables}
 							editor={editor}
-							square={squareCards}
+							corners={miniCorners}
 						/>
 					) : (
 						<QueryPaneLazy
-							square={squareCards}
+							corners={miniCorners}
 							activeTab={active}
 							setIsValid={setQueryValid}
 							switchPortal={switchPortal}
@@ -219,7 +220,7 @@ export function QueryView() {
 					isQueryValid={queryValid}
 					selection={selection}
 					editor={editor}
-					square={squareCards}
+					corners={miniCorners}
 				/>
 			</Panel>
 		</PanelGroup>
@@ -242,7 +243,7 @@ export function QueryView() {
 
 			{isMini ? (
 				<>
-					{!(adapter as MiniAdapter).hideTitlebar && (
+					{miniAppearance === "normal" && (
 						<Group>
 							<Link href="https://surrealdb.com/surrealist">
 								<Group>

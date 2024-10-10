@@ -6,7 +6,7 @@ import { useIsLight } from "~/hooks/theme";
 import QueryView from "~/screens/database/views/query/QueryView";
 
 export function MiniRunScreen() {
-	const { hideBorder, transparent } = adapter as MiniAdapter;
+	const { appearance, transparent } = adapter as MiniAdapter;
 
 	const isLight = useIsLight();
 
@@ -14,7 +14,7 @@ export function MiniRunScreen() {
 		<Scaffold>
 			<Box
 				h="100vh"
-				p={hideBorder ? 0 : "md"}
+				p={appearance === "plain" ? 0 : "md"}
 				style={{
 					backgroundColor: transparent
 						? undefined

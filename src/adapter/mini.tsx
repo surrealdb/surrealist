@@ -2,7 +2,7 @@ import type { MantineColorScheme } from "@mantine/core";
 import { Value } from "@surrealdb/ql-wasm";
 import { DATASETS, ORIENTATIONS, SANDBOX } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
-import type { Orientation, SurrealistConfig } from "~/types";
+import type { MiniAppearance, Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
 import { parseDatasetURL } from "~/util/surrealql";
@@ -13,9 +13,9 @@ import { broadcastMessage } from "~/util/messaging";
 const THEMES = new Set(["light", "dark", "auto"]);
 
 export class MiniAdapter extends BrowserAdapter {
+	public appearance: MiniAppearance = "normal";
+	public corners: string | undefined = undefined;
 	public transparent = false;
-	public hideTitlebar = false;
-	public hideBorder = false;
 	public uniqueRef = "";
 	public autorun = false;
 
@@ -34,6 +34,8 @@ export class MiniAdapter extends BrowserAdapter {
 			dataset,
 			setup,
 			theme,
+			appearance,
+			corners,
 			compact,
 			borderless,
 			transparent,
@@ -46,15 +48,26 @@ export class MiniAdapter extends BrowserAdapter {
 			this.uniqueRef = ref;
 		}
 
-		// Hide titlebar
-		if (compact !== undefined) {
-			this.hideTitlebar = true;
+		// Appearance
+		if (appearance) {
+			this.appearance = appearance as MiniAppearance;
 		}
 
-		// Borderless
+		// Panel corners
+		if (corners !== undefined) {
+			this.corners = corners;
+		}
+
+		// Hide titlebar (deprecated)
+		if (compact !== undefined) {
+			console.warn("The compact property is deprecated, please use appearance compact");
+			this.appearance = "compact";
+		}
+
+		// Borderless (deprecated)
 		if (borderless !== undefined) {
-			this.hideTitlebar = true;
-			this.hideBorder = true;
+			console.warn("The borderless property is deprecated, please use appearance plain");
+			this.appearance = "plain";
 		}
 
 		// Transparent background
