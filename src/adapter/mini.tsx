@@ -1,14 +1,14 @@
 import type { MantineColorScheme } from "@mantine/core";
 import { Value } from "@surrealdb/ql-wasm";
+import dedent from "dedent";
 import { DATASETS, ORIENTATIONS, SANDBOX } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
 import type { MiniAppearance, Orientation, SurrealistConfig } from "~/types";
 import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
+import { broadcastMessage } from "~/util/messaging";
 import { parseDatasetURL } from "~/util/surrealql";
 import { BrowserAdapter } from "./browser";
-import dedent from "dedent";
-import { broadcastMessage } from "~/util/messaging";
 
 const THEMES = new Set(["light", "dark", "auto"]);
 

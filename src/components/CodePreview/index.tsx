@@ -1,8 +1,8 @@
 import classes from "./style.module.scss";
 
 import { Compartment, EditorState, type Extension } from "@codemirror/state";
-import { ActionIcon, Box, CopyButton, Paper, type PaperProps, Text } from "@mantine/core";
 import { EditorView } from "@codemirror/view";
+import { ActionIcon, Box, CopyButton, Paper, type PaperProps, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
 import dedent from "dedent";

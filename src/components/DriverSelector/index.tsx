@@ -1,11 +1,11 @@
 import classes from "./style.module.scss";
 
-import type { CodeLang } from "~/types";
-import { type BoxProps, Paper, SimpleGrid, Text, type StyleProp } from "@mantine/core";
-import { useIsLight } from "~/hooks/theme";
+import { type BoxProps, Paper, SimpleGrid, type StyleProp, Text } from "@mantine/core";
 import clsx from "clsx";
-import { DRIVERS } from "~/constants";
 import { useMemo } from "react";
+import { DRIVERS } from "~/constants";
+import { useIsLight } from "~/hooks/theme";
+import type { CodeLang } from "~/types";
 
 export interface DriverSelectorProps extends BoxProps {
 	cols: StyleProp<number>;

@@ -1,14 +1,14 @@
 import { Group, Modal, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import { useMemo, useState } from "react";
 import { CodeSnippet } from "~/components/CodeSnippet";
-import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import type { CloudInstance, CodeLang, Snippets } from "~/types";
-import { iconAccount, iconAPI, iconDatabase } from "~/util/icons";
 import { DriverSelector } from "~/components/DriverSelector";
-import { useInputState } from "@mantine/hooks";
+import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";
+import type { CloudInstance, CodeLang, Snippets } from "~/types";
+import { iconAPI, iconAccount, iconDatabase } from "~/util/icons";
 
 export interface ConnectSdkModalProps {
 	opened: boolean;

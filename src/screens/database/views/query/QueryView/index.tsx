@@ -27,6 +27,7 @@ import surrealistIcon from "~/assets/images/icon.webp";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
+import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -47,7 +48,6 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import { Link } from "~/components/Link";
 
 const switchPortal = createHtmlPortalNode();
 

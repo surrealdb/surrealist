@@ -1,5 +1,6 @@
 import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
+import { python } from "@codemirror/lang-python";
 import { rust } from "@codemirror/lang-rust";
 import { StreamLanguage } from "@codemirror/language";
 import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
@@ -8,7 +9,6 @@ import dedent from "dedent";
 import { useMemo } from "react";
 import type { CodeLang, Snippets } from "~/types";
 import { CodePreview, type CodePreviewProps } from "../CodePreview";
-import { python } from "@codemirror/lang-python";
 
 const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
 	rust: rust(),

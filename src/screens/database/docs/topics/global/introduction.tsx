@@ -1,12 +1,12 @@
 import { Box, Button, Paper, Text, Title } from "@mantine/core";
 import { adapter } from "~/adapter";
+import { DriverSelector } from "~/components/DriverSelector";
 import { Icon } from "~/components/Icon";
+import { DRIVERS } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useIsLight } from "~/hooks/theme";
 import { Article } from "~/screens/database/docs/components";
 import { iconOpen } from "~/util/icons";
-import { DRIVERS } from "~/constants";
-import { DriverSelector } from "~/components/DriverSelector";
 
 export function DocsGlobalIntroduction() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
