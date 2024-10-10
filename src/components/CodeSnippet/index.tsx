@@ -1,8 +1,9 @@
 import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
+import { python } from "@codemirror/lang-python";
 import { rust } from "@codemirror/lang-rust";
 import { StreamLanguage } from "@codemirror/language";
-import { csharp } from "@codemirror/legacy-modes/mode/clike";
+import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
 import type { Extension } from "@codemirror/state";
 import dedent from "dedent";
 import { useMemo } from "react";
@@ -12,7 +13,9 @@ import { CodePreview, type CodePreviewProps } from "../CodePreview";
 const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
 	rust: rust(),
 	js: javascript(),
-	csharp: [StreamLanguage.define(csharp)],
+	py: python(),
+	java: StreamLanguage.define(java),
+	csharp: StreamLanguage.define(csharp),
 	php: php({ plain: true }),
 };
 
@@ -22,12 +25,7 @@ export interface CodeSnippetProps extends Omit<CodePreviewProps, "value"> {
 	language: CodeLang;
 }
 
-export function CodeSnippet({
-	title,
-	values,
-	language,
-	...other
-}: CodeSnippetProps) {
+export function CodeSnippet({ title, values, language, ...other }: CodeSnippetProps) {
 	const snippet = useMemo(() => {
 		const value = values[language];
 		return value ? dedent(value) : undefined;

@@ -14,6 +14,7 @@ export type DiagramDirection = "ltr" | "rtl";
 export type ColorScheme = "light" | "dark";
 export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type MiniAppearance = "normal" | "compact" | "plain";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
 export type ValueMode = "json" | "sql";
 export type Orientation = "horizontal" | "vertical";
@@ -443,6 +444,13 @@ export interface CloudPageInfo {
 export interface Dataset {
 	name: string;
 	path: string;
+}
+
+export interface Driver {
+	id: CodeLang;
+	name: string;
+	icon: React.FC<{ active?: boolean }>;
+	link: string;
 }
 
 export interface CloudSignin {

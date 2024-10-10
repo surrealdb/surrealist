@@ -53,7 +53,7 @@ export interface ResultPaneProps {
 	isQueryValid: boolean;
 	selection: SelectionRange | undefined;
 	editor: EditorView | null;
-	square?: boolean;
+	corners?: string;
 }
 
 export function ResultPane({
@@ -61,7 +61,7 @@ export function ResultPane({
 	isQueryValid,
 	selection,
 	editor,
-	square,
+	corners,
 }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
@@ -127,7 +127,7 @@ export function ResultPane({
 		<ContentPane
 			title={panelTitle}
 			icon={iconQuery}
-			radius={square ? 0 : undefined}
+			radius={corners}
 			rightSection={
 				<Group
 					align="center"

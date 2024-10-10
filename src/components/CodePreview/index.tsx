@@ -1,13 +1,8 @@
+import classes from "./style.module.scss";
+
 import { Compartment, EditorState, type Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import {
-	ActionIcon,
-	Box,
-	CopyButton,
-	Paper,
-	type PaperProps,
-	Text,
-} from "@mantine/core";
+import { ActionIcon, Box, CopyButton, Paper, type PaperProps, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
 import dedent from "dedent";
@@ -16,7 +11,6 @@ import { colorTheme } from "~/editor";
 import { useIsLight } from "~/hooks/theme";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
-import classes from "./style.module.scss";
 
 interface EditorRef {
 	editor: EditorView;
@@ -138,9 +132,7 @@ export function CodePreview({
 		const { editor, wrap } = editorRef.current;
 
 		editor.dispatch({
-			effects: wrap.reconfigure(
-				withWrapping ? EditorView.lineWrapping : [],
-			),
+			effects: wrap.reconfigure(withWrapping ? EditorView.lineWrapping : []),
 		});
 	}, [withWrapping]);
 
@@ -149,7 +141,13 @@ export function CodePreview({
 	return (
 		<>
 			{title && (
-				<Text ff="mono" tt="uppercase" fw={600} mb="sm" c="bright">
+				<Text
+					ff="mono"
+					tt="uppercase"
+					fw={600}
+					mb="sm"
+					c="bright"
+				>
 					{title}
 				</Text>
 			)}

@@ -27,7 +27,7 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
+import { iconChevronRight, iconReset, iconStar, iconTable } from "~/util/icons";
 import { openCloudAuthentication } from "../cloud-manage/api/auth";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
@@ -164,7 +164,7 @@ export function DatabaseToolbar() {
 									aria-label="Apply demo dataset"
 									loading={isDatasetLoading}
 								>
-									<Icon path={iconFile} />
+									<Icon path={iconTable} />
 								</ActionIcon>
 							</Tooltip>
 						</Menu.Target>

@@ -27,6 +27,7 @@ import surrealistIcon from "~/assets/images/icon.webp";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
+import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -77,7 +78,8 @@ export function QueryView() {
 	const [saveContent, setSaveContent] = useInputState("");
 	const [saveTags, setSaveTags] = useInputState<string[]>([]);
 
-	const squareCards = adapter instanceof MiniAdapter && adapter.hideBorder;
+	const miniAppearance = adapter instanceof MiniAdapter ? adapter.appearance : "normal";
+	const miniCorners = adapter instanceof MiniAdapter ? adapter.corners : undefined;
 
 	const handleSaveRequest = useStable(async () => {
 		if (!active) {
@@ -156,11 +158,11 @@ export function QueryView() {
 							setIsValid={setVariablesValid}
 							closeVariables={closeVariables}
 							editor={editor}
-							square={squareCards}
+							corners={miniCorners}
 						/>
 					) : (
 						<QueryPaneLazy
-							square={squareCards}
+							corners={miniCorners}
 							activeTab={active}
 							setIsValid={setQueryValid}
 							switchPortal={switchPortal}
@@ -218,7 +220,7 @@ export function QueryView() {
 					isQueryValid={queryValid}
 					selection={selection}
 					editor={editor}
-					square={squareCards}
+					corners={miniCorners}
 				/>
 			</Panel>
 		</PanelGroup>
@@ -241,18 +243,22 @@ export function QueryView() {
 
 			{isMini ? (
 				<>
-					{!(adapter as MiniAdapter).hideTitlebar && (
+					{miniAppearance === "normal" && (
 						<Group>
-							<Image
-								src={logoUrl}
-								style={{ pointerEvents: "none" }}
-								height={20}
-								width={20}
-							/>
-							<Image
-								h={16}
-								src={surrealistIcon}
-							/>
+							<Link href="https://surrealdb.com/surrealist">
+								<Group>
+									<Image
+										h={16}
+										src={surrealistIcon}
+									/>
+									<Image
+										src={logoUrl}
+										style={{ pointerEvents: "none" }}
+										height={20}
+										width={20}
+									/>
+								</Group>
+							</Link>
 							<Spacer />
 						</Group>
 					)}

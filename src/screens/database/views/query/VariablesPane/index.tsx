@@ -19,7 +19,7 @@ import { iconClose, iconDollar } from "~/util/icons";
 export interface VariablesPaneProps {
 	isValid: boolean;
 	switchPortal?: HtmlPortalNode<any>;
-	square?: boolean;
+	corners?: string;
 	editor: EditorView | null;
 	setIsValid: (isValid: boolean) => void;
 	closeVariables: () => void;
@@ -28,7 +28,7 @@ export interface VariablesPaneProps {
 export function VariablesPane({
 	isValid,
 	switchPortal,
-	square,
+	corners,
 	editor,
 	setIsValid,
 	closeVariables,
@@ -70,7 +70,7 @@ export function VariablesPane({
 		<ContentPane
 			title="Variables"
 			icon={iconDollar}
-			radius={square ? 0 : undefined}
+			radius={corners}
 			rightSection={
 				switchPortal ? (
 					<OutPortal node={switchPortal} />
