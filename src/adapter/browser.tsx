@@ -1,9 +1,7 @@
 import type { Platform, UrlTarget } from "~/types";
-import type {
-	OpenedBinaryFile,
-	OpenedTextFile,
-	SurrealistAdapter,
-} from "./base";
+import * as idxdb from "~/util/idxdb";
+import { CONFIG_KEY } from "~/util/storage";
+import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
  * Surrealist adapter for running as web app
@@ -38,21 +36,32 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async loadConfig() {
-		const config = localStorage.getItem("surrealist:config") || "{}";
-		const parsed = JSON.parse(config);
+		const localStorageValue = localStorage.getItem(CONFIG_KEY);
+		if (localStorageValue) {
+			const config = localStorageValue || "{}";
+			const parsed = JSON.parse(config);
 
-		if (
-			parsed.configVersion === undefined &&
-			Object.keys(parsed).length > 0
-		) {
-			return {};
+			if (parsed.configVersion === undefined && Object.keys(parsed).length > 0) {
+				return {};
+			}
+
+			return parsed;
 		}
 
-		return parsed;
+		return (await idxdb.getConfig()) || {};
 	}
 
 	public async saveConfig(config: any) {
-		localStorage.setItem("surrealist:config", JSON.stringify(config));
+		const objConfig: any = {};
+
+		for (const key in config) {
+			if (typeof config[key] !== "function") {
+				objConfig[key] = config[key];
+			}
+		}
+
+		await idxdb.setConfig(objConfig);
+		localStorage.removeItem(CONFIG_KEY);
 	}
 
 	public async startDatabase() {
@@ -80,9 +89,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		}
 
 		const file =
-			typeof result === "string"
-				? new File([result], "", { type: "text/plain" })
-				: result;
+			typeof result === "string" ? new File([result], "", { type: "text/plain" }) : result;
 
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement("a");
@@ -166,10 +173,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		console.debug(`${label}: ${message}`);
 	}
 
-	public fetch(
-		url: string,
-		options?: RequestInit | undefined,
-	): Promise<Response> {
+	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
 		return fetch(url, options);
 	}
 }
