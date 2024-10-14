@@ -44,6 +44,7 @@ export function MiniNewScreen() {
 		state.dataset = params.get("dataset") || state.dataset;
 		state.orientation = (params.get("orientation") as any) || state.orientation;
 		state.transparent = params.has("transparent") || state.transparent;
+		state.nonumbers = params.has("nonumbers") || state.nonumbers;
 
 		setParsedState(state);
 		showParseHandle.close();

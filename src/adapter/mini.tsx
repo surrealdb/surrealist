@@ -16,6 +16,7 @@ export class MiniAdapter extends BrowserAdapter {
 	public appearance: MiniAppearance = "normal";
 	public corners: string | undefined = undefined;
 	public transparent = false;
+	public nonumbers = false;
 	public uniqueRef = "";
 	public autorun = false;
 
@@ -36,11 +37,13 @@ export class MiniAdapter extends BrowserAdapter {
 			theme,
 			appearance,
 			corners,
-			compact,
-			borderless,
 			transparent,
 			orientation,
+			nonumbers,
 			autorun,
+			// deprecated
+			compact,
+			borderless,
 		} = Object.fromEntries(params.entries());
 
 		// Unique reference id
@@ -141,6 +144,11 @@ export class MiniAdapter extends BrowserAdapter {
 		// Autorun query
 		if (autorun !== undefined) {
 			this.autorun = true;
+		}
+
+		// Hide line numbers
+		if (nonumbers !== undefined) {
+			this.nonumbers = true;
 		}
 
 		return {

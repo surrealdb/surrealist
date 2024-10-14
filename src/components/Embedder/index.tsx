@@ -39,6 +39,7 @@ export const DEFAULT_STATE: EmbedState = {
 	variables: "{}",
 	orientation: "vertical",
 	transparent: false,
+	nonumbers: false,
 };
 
 const DATASET_OPTIONS = [
@@ -94,6 +95,7 @@ export interface EmbedState {
 	theme: MantineColorScheme;
 	orientation: Orientation;
 	transparent?: boolean;
+	nonumbers?: boolean;
 }
 
 export interface EmbedderProps {
@@ -113,7 +115,8 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
-		const { dataset, setup, query, variables, orientation, theme, transparent } = state;
+		const { dataset, setup, query, variables, orientation, theme, transparent, nonumbers } =
+			state;
 
 		if (setup.length > 0) {
 			search.append("setup", setup);
@@ -141,6 +144,10 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 		if (transparent) {
 			search.append("transparent", "true");
+		}
+
+		if (nonumbers) {
+			search.append("nonumbers", "true");
 		}
 
 		const url = new URL(location.toString());
@@ -271,15 +278,26 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 			</Box>
 			<Box>
 				<SectionTitle help="Miscellaneous options for the mini">Options</SectionTitle>
-				<Checkbox
-					label="Transparent"
-					checked={state.transparent}
-					onChange={(e) => {
-						setState((draft) => {
-							draft.transparent = e.target.checked;
-						});
-					}}
-				/>
+				<Stack>
+					<Checkbox
+						label="Transparent"
+						checked={state.transparent}
+						onChange={(e) => {
+							setState((draft) => {
+								draft.transparent = e.target.checked;
+							});
+						}}
+					/>
+					<Checkbox
+						label="Hide line numbers"
+						checked={state.nonumbers}
+						onChange={(e) => {
+							setState((draft) => {
+								draft.nonumbers = e.target.checked;
+							});
+						}}
+					/>
+				</Stack>
 			</Box>
 			<Divider />
 			<Box>
