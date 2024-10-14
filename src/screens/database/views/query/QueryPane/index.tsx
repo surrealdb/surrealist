@@ -26,6 +26,8 @@ import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
+import { adapter } from "~/adapter";
+import { MiniAdapter } from "~/adapter/mini";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -121,6 +123,7 @@ export function QueryPane({
 		return Object.keys(tryParseParams(activeTab.variables));
 	});
 
+	const hideLineNumbers = adapter instanceof MiniAdapter && adapter.nonumbers;
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
 
@@ -207,8 +210,8 @@ export function QueryPane({
 					surqlVariableCompletion(resolveVariables),
 					surqlCustomFunctionCompletion(),
 					selectionChanged(setSelection),
-					lineNumbers(),
 					Prec.high(keymap.of(runQueryKeymap)),
+					hideLineNumbers ? [] : lineNumbers(),
 				]}
 			/>
 		</ContentPane>
