@@ -14,6 +14,8 @@ import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { adapter } from "~/adapter";
+import { MiniAdapter } from "~/adapter/mini";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -26,8 +28,6 @@ import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
-import { adapter } from "~/adapter";
-import { MiniAdapter } from "~/adapter/mini";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
