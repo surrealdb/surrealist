@@ -5,9 +5,9 @@ import { rust } from "@codemirror/lang-rust";
 import { StreamLanguage } from "@codemirror/language";
 import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
 import type { Extension } from "@codemirror/state";
-import dedent from "dedent";
 import { useMemo } from "react";
 import type { CodeLang, Snippets } from "~/types";
+import { dedent } from "~/util/dedent";
 import { CodePreview, type CodePreviewProps } from "../CodePreview";
 
 const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
