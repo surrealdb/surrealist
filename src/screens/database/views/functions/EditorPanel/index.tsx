@@ -45,7 +45,7 @@ import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
-import { useSetting } from "~/hooks/config";
+import { useLineNumberSetting, useSetting } from "~/hooks/config";
 import { useMinimumVersion } from "~/hooks/connection";
 import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
@@ -77,7 +77,7 @@ export function EditorPanel({
 	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
 
-	const [functionsLineNumbers] = useSetting("appearance", "functionsLineNumbers");
+	const [hasLineNumbers] = useLineNumberSetting();
 
 	const [hasReturns] = useMinimumVersion(SDB_2_0_0);
 	const [argToFocus, setArgtoFocus] = useState(-1);
@@ -175,7 +175,7 @@ export function EditorPanel({
 							pos="absolute"
 							value={details.block}
 							autoFocus
-							lineNumbers={functionsLineNumbers}
+							lineNumbers={hasLineNumbers("functions")}
 							onChange={(value) =>
 								onChange((draft: any) => {
 									draft.block = value;

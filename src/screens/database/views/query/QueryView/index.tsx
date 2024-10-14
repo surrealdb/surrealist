@@ -32,7 +32,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useLogoUrl } from "~/hooks/brand";
-import { useSetting } from "~/hooks/config";
+import { useLineNumberSetting, useSetting } from "~/hooks/config";
 import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
@@ -139,8 +139,9 @@ export function QueryView() {
 
 	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
 
-	const [queryLineNumbers] = useSetting("appearance", "queryLineNumbers");
-	const hideLineNumbers = adapter instanceof MiniAdapter ? adapter.nonumbers : !queryLineNumbers;
+	const [hasLineNumbers] = useLineNumberSetting();
+	const hideLineNumbers =
+		adapter instanceof MiniAdapter ? adapter.nonumbers : !hasLineNumbers("query");
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
