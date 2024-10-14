@@ -54,6 +54,9 @@ export function createBaseSettings(): SurrealistSettings {
 			colorScheme: "dark",
 			windowScale: 100,
 			editorScale: 100,
+			queryLineNumbers: true,
+			inspectorLineNumbers: true,
+			functionsLineNumbers: true,
 			resultWordWrap: true,
 			defaultResultMode: "combined",
 			defaultDiagramMode: "fields",
@@ -131,10 +134,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseTab(
-	settings: SurrealistSettings,
-	query?: string,
-): TabQuery {
+export function createBaseTab(settings: SurrealistSettings, query?: string): TabQuery {
 	return {
 		id: newId(),
 		query: query || "",
@@ -146,9 +146,7 @@ export function createBaseTab(
 	};
 }
 
-export function createSandboxConnection(
-	settings: SurrealistSettings,
-): Connection {
+export function createSandboxConnection(settings: SurrealistSettings): Connection {
 	const base = createBaseConnection(settings);
 
 	return {
@@ -183,7 +181,7 @@ export function createConnectionSchema(): ConnectionSchema {
 			users: [],
 			functions: [],
 			models: [],
-		}
+		},
 	};
 }
 

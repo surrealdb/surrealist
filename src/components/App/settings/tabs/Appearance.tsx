@@ -23,19 +23,13 @@ export function AppearanceTab() {
 	const [editorScale, setEditorScale] = useSetting(CAT, "editorScale");
 	const [windowScale, setWindowScale] = useSetting(CAT, "windowScale");
 	// const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
-	const [defaultResultMode, setDefaultResultMode] = useSetting(
-		CAT,
-		"defaultResultMode",
-	);
-	const [queryOrientation, setQueryOrientation] = useSetting(
-		CAT,
-		"queryOrientation",
-	);
+	const [queryLineNumbers, setQueryLineNumbers] = useSetting(CAT, "queryLineNumbers");
+	const [inspectorLineNumbers, setInspectorLineNumbers] = useSetting(CAT, "inspectorLineNumbers");
+	const [functionsLineNumbers, setFunctionsLineNumbers] = useSetting(CAT, "functionsLineNumbers");
+	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
+	const [queryOrientation, setQueryOrientation] = useSetting(CAT, "queryOrientation");
 	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
-	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(
-		CAT,
-		"defaultDiagramMode",
-	);
+	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(
 		CAT,
 		"defaultDiagramDirection",
@@ -48,9 +42,10 @@ export function AppearanceTab() {
 	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
 
 	// const updateResultWordWrap = useCheckbox(setResultWordWrap);
-	const updateDefaultDiagramShowLinks = useCheckbox(
-		setDefaultDiagramShowLinks,
-	);
+	const updateQueryLineNumbers = useCheckbox(setQueryLineNumbers);
+	const updateInspectorLineNumbers = useCheckbox(setInspectorLineNumbers);
+	const updateFunctionsLineNumbers = useCheckbox(setFunctionsLineNumbers);
+	const updateDefaultDiagramShowLinks = useCheckbox(setDefaultDiagramShowLinks);
 
 	const [flags] = useFeatureFlags();
 
@@ -119,6 +114,26 @@ export function AppearanceTab() {
 						/>
 					</Box>
 				)}
+			</SettingsSection>
+
+			<SettingsSection label="Line numbers">
+				<Checkbox
+					label="Show in query editor"
+					checked={queryLineNumbers}
+					onChange={updateQueryLineNumbers}
+				/>
+
+				<Checkbox
+					label="Show in record inspector"
+					checked={inspectorLineNumbers}
+					onChange={updateInspectorLineNumbers}
+				/>
+
+				<Checkbox
+					label="Show in function editor"
+					checked={functionsLineNumbers}
+					onChange={updateFunctionsLineNumbers}
+				/>
 			</SettingsSection>
 
 			<SettingsSection label="Query view">

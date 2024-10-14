@@ -140,6 +140,9 @@ export interface SurrealistAppearanceSettings {
 	colorScheme: MantineColorScheme;
 	windowScale: number;
 	editorScale: number;
+	queryLineNumbers: boolean;
+	inspectorLineNumbers: boolean;
+	functionsLineNumbers: boolean;
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
 	defaultDiagramMode: DiagramMode;

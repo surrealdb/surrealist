@@ -139,6 +139,9 @@ export function QueryView() {
 
 	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
 
+	const [queryLineNumbers] = useSetting("appearance", "queryLineNumbers");
+	const hideLineNumbers = adapter instanceof MiniAdapter ? adapter.nonumbers : !queryLineNumbers;
+
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
 	useIntent("run-query", executeUserQuery);
@@ -159,6 +162,7 @@ export function QueryView() {
 							closeVariables={closeVariables}
 							editor={editor}
 							corners={miniCorners}
+							lineNumbers={!hideLineNumbers}
 						/>
 					) : (
 						<QueryPaneLazy
@@ -168,6 +172,7 @@ export function QueryView() {
 							switchPortal={switchPortal}
 							selection={selection}
 							showVariables={showVariables}
+							lineNumbers={!hideLineNumbers}
 							onSaveQuery={handleSaveRequest}
 							setShowVariables={setShowVariables}
 							onSelectionChange={setSelection}
@@ -186,6 +191,7 @@ export function QueryView() {
 								setIsValid={setQueryValid}
 								showVariables={showVariables}
 								selection={selection}
+								lineNumbers={!hideLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
 								onSelectionChange={setSelection}
@@ -205,6 +211,7 @@ export function QueryView() {
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
 										closeVariables={closeVariables}
+										lineNumbers={!hideLineNumbers}
 										editor={editor}
 									/>
 								</Panel>

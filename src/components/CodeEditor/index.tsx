@@ -1,7 +1,7 @@
 import { history } from "@codemirror/commands";
 import { forceLinting } from "@codemirror/lint";
 import { Compartment, EditorState, type Extension } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
+import { EditorView, lineNumbers as renderLineNumbers } from "@codemirror/view";
 import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
@@ -12,9 +12,10 @@ import classes from "./style.module.scss";
 
 interface EditorRef {
 	editor: EditorView;
-	editable: Compartment;
-	history: Compartment;
-	theme: Compartment;
+	readOnlyComp: Compartment;
+	historyComp: Compartment;
+	themeComp: Compartment;
+	numbersComp: Compartment;
 }
 
 export interface CodeEditorProps extends BoxProps {
@@ -23,6 +24,7 @@ export interface CodeEditorProps extends BoxProps {
 	readOnly?: boolean;
 	autoFocus?: boolean;
 	historyKey?: string;
+	lineNumbers?: boolean;
 	onMount?: (editor: EditorView) => void;
 	onChange?: (value: string) => void;
 }
@@ -36,6 +38,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		readOnly,
 		autoFocus,
 		historyKey,
+		lineNumbers,
 		onMount,
 		...rest
 	} = props;
@@ -51,11 +54,10 @@ export function CodeEditor(props: CodeEditorProps) {
 	useEffect(() => {
 		if (!ref.current) return;
 
-		const editable = new Compartment();
-		const history = new Compartment();
-		const theme = new Compartment();
-		const editableExt = editable.of(EditorState.readOnly.of(!!readOnly));
-		const historyExt = history.of(newHistory());
+		const readOnlyComp = new Compartment();
+		const historyComp = new Compartment();
+		const themeComp = new Compartment();
+		const numbersComp = new Compartment();
 
 		const changeHandler = EditorView.updateListener.of((update) => {
 			if (update.docChanged) {
@@ -67,10 +69,11 @@ export function CodeEditor(props: CodeEditorProps) {
 			doc: value,
 			extensions: [
 				editorBase(),
-				theme.of(colorTheme(isLight)),
-				historyExt,
+				readOnlyComp.of(EditorState.readOnly.of(!!readOnly)),
+				historyComp.of(newHistory()),
+				themeComp.of(colorTheme(isLight)),
+				numbersComp.of(lineNumbers ? renderLineNumbers() : []),
 				changeHandler,
-				editableExt,
 				extensions || [],
 			],
 		});
@@ -83,9 +86,10 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		editorRef.current = {
 			editor,
-			editable,
-			history,
-			theme,
+			readOnlyComp,
+			historyComp,
+			themeComp,
+			numbersComp,
 		};
 
 		if (autoFocus) {
@@ -127,11 +131,10 @@ export function CodeEditor(props: CodeEditorProps) {
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, editable } = editorRef.current;
-		const editableExt = EditorState.readOnly.of(!!readOnly);
+		const { editor, readOnlyComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: editable.reconfigure(editableExt),
+			effects: readOnlyComp.reconfigure(EditorState.readOnly.of(!!readOnly)),
 		});
 	}, [readOnly]);
 
@@ -139,26 +142,36 @@ export function CodeEditor(props: CodeEditorProps) {
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, history } = editorRef.current;
+		const { editor, historyComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: [history.reconfigure([])],
+			effects: [historyComp.reconfigure([])],
 		});
 
 		editor.dispatch({
-			effects: [history.reconfigure([newHistory()])],
+			effects: [historyComp.reconfigure([newHistory()])],
 		});
 	}, [historyKey]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, theme } = editorRef.current;
+		const { editor, themeComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: theme.reconfigure(colorTheme(isLight)),
+			effects: themeComp.reconfigure(colorTheme(isLight)),
 		});
 	}, [isLight]);
+
+	useEffect(() => {
+		if (!editorRef.current) return;
+
+		const { editor, numbersComp } = editorRef.current;
+
+		editor.dispatch({
+			effects: numbersComp.reconfigure(lineNumbers ? renderLineNumbers() : []),
+		});
+	}, [lineNumbers]);
 
 	return (
 		<Box

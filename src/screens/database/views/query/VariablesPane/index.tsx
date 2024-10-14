@@ -1,9 +1,9 @@
 import { Prec } from "@codemirror/state";
-import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { decodeCbor } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -20,6 +20,7 @@ export interface VariablesPaneProps {
 	isValid: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	corners?: string;
+	lineNumbers: boolean;
 	editor: EditorView | null;
 	setIsValid: (isValid: boolean) => void;
 	closeVariables: () => void;
@@ -29,6 +30,7 @@ export function VariablesPane({
 	isValid,
 	switchPortal,
 	corners,
+	lineNumbers,
 	editor,
 	setIsValid,
 	closeVariables,
@@ -99,10 +101,10 @@ export function VariablesPane({
 				value={activeTab?.variables || ""}
 				onChange={setVariables}
 				onMount={setVariableEditor}
+				lineNumbers={lineNumbers}
 				extensions={[
 					surrealql(),
 					surqlLinting(),
-					lineNumbers(),
 					queryEditorField,
 					Prec.high(keymap.of(runQueryKeymap)),
 				]}

@@ -7,6 +7,7 @@ import { surqlLinting, surqlRecordLinks } from "~/editor";
 import type { SaveableHandle } from "~/hooks/save";
 import { useInspector } from "..";
 import classes from "../style.module.scss";
+import { useSetting } from "~/hooks/config";
 
 export interface ContentTabProps {
 	value: string;
@@ -17,19 +18,22 @@ export interface ContentTabProps {
 export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 	const { inspect } = useInspector();
 
+	const [inspectorLineNumbers] = useSetting("appearance", "inspectorLineNumbers");
+
 	return (
 		<>
-			<Paper flex="1 0 0" mih={0} mt="xs" p="xs">
+			<Paper
+				flex="1 0 0"
+				mih={0}
+				mt="xs"
+				p="xs"
+			>
 				<CodeEditor
 					h="100%"
 					value={value}
 					onChange={onChange}
-					extensions={[
-						surrealql(),
-						surqlLinting(),
-						surqlRecordLinks(inspect),
-						lineNumbers(),
-					]}
+					lineNumbers={inspectorLineNumbers}
+					extensions={[surrealql(), surqlLinting(), surqlRecordLinks(inspect)]}
 				/>
 			</Paper>
 

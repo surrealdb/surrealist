@@ -55,6 +55,7 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
+import { useSetting } from "~/hooks/config";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -75,6 +76,8 @@ export function EditorPanel({
 }: EditorPanelProps) {
 	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
+
+	const [functionsLineNumbers] = useSetting("appearance", "functionsLineNumbers");
 
 	const [hasReturns] = useMinimumVersion(SDB_2_0_0);
 	const [argToFocus, setArgtoFocus] = useState(-1);
@@ -172,6 +175,7 @@ export function EditorPanel({
 							pos="absolute"
 							value={details.block}
 							autoFocus
+							lineNumbers={functionsLineNumbers}
 							onChange={(value) =>
 								onChange((draft: any) => {
 									draft.block = value;
@@ -183,7 +187,6 @@ export function EditorPanel({
 								surqlVariableCompletion(resolveVariables),
 								surqlCustomFunctionCompletion(),
 								surqlTableCompletion(),
-								lineNumbers(),
 							]}
 						/>
 					</Box>
