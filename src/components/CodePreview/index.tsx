@@ -5,12 +5,12 @@ import { EditorView } from "@codemirror/view";
 import { ActionIcon, Box, CopyButton, Paper, type PaperProps, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
-import dedent from "dedent";
 import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { colorTheme } from "~/editor";
 import { useIsLight } from "~/hooks/theme";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
+import { dedent } from "~/util/dedent";
 
 interface EditorRef {
 	editor: EditorView;

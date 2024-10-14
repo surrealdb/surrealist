@@ -1,4 +1,3 @@
-import dedent from "dedent";
 import equal from "fast-deep-equal";
 
 import type {
@@ -17,6 +16,7 @@ import { executeQuerySingle } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { createConnectionSchema } from "./defaults";
 import { escapeIdent, getStatementCount } from "./surrealql";
+import { dedent } from "./dedent";
 
 export interface SchemaSyncOptions {
 	tables?: string[];
@@ -110,7 +110,9 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 
 			const tableStruct = tbInfoMap[idx];
 			const tableInfo = tables.find((t) => t.name === tableName);
-			const existingIndex = schema.database.tables.findIndex((t) => t.schema.name === tableName);
+			const existingIndex = schema.database.tables.findIndex(
+				(t) => t.schema.name === tableName,
+			);
 
 			if (!tableInfo) {
 				schema.database.tables.splice(existingIndex, 1);
