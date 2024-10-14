@@ -1,6 +1,6 @@
 import { type ConfigStore, useConfigStore } from "~/stores/config";
-import type { Category, Settings } from "~/util/config";
 import type { LineNumberTarget } from "~/types";
+import type { Category, Settings } from "~/util/config";
 import { useStable } from "./stable";
 
 const ACTIONS = {
