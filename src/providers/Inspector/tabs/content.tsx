@@ -4,10 +4,10 @@ import { surrealql } from "@surrealdb/codemirror";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveBox } from "~/components/SaveBox";
 import { surqlLinting, surqlRecordLinks } from "~/editor";
+import { useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
 import { useInspector } from "..";
 import classes from "../style.module.scss";
-import { useSetting } from "~/hooks/config";
 
 export interface ContentTabProps {
 	value: string;

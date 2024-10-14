@@ -45,6 +45,7 @@ import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
+import { useSetting } from "~/hooks/config";
 import { useMinimumVersion } from "~/hooks/connection";
 import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
@@ -55,7 +56,6 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
-import { useSetting } from "~/hooks/config";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
