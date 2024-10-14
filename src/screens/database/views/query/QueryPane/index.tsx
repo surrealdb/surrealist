@@ -9,7 +9,7 @@ import {
 } from "~/editor";
 
 import { Prec, type SelectionRange } from "@codemirror/state";
-import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
@@ -32,6 +32,7 @@ export interface QueryPaneProps {
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
+	lineNumbers: boolean;
 	corners?: string;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
@@ -47,6 +48,7 @@ export function QueryPane({
 	selection,
 	switchPortal,
 	setShowVariables,
+	lineNumbers,
 	corners,
 	onSaveQuery,
 	onSelectionChange,
@@ -199,6 +201,7 @@ export function QueryPane({
 				onChange={scheduleSetQuery}
 				historyKey={activeTab.id}
 				onMount={onEditorMounted}
+				lineNumbers={lineNumbers}
 				extensions={[
 					surrealql(),
 					surqlLinting(),
@@ -207,7 +210,6 @@ export function QueryPane({
 					surqlVariableCompletion(resolveVariables),
 					surqlCustomFunctionCompletion(),
 					selectionChanged(setSelection),
-					lineNumbers(),
 					Prec.high(keymap.of(runQueryKeymap)),
 				]}
 			/>

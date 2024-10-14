@@ -49,7 +49,10 @@ export function VariablesPane(props: VariablesPaneProps) {
 			rightSection={
 				<Group gap="xs">
 					{!props.isValid && (
-						<Badge color="red" variant="light">
+						<Badge
+							color="red"
+							variant="light"
+						>
 							Invalid syntax
 						</Badge>
 					)}
@@ -66,7 +69,8 @@ export function VariablesPane(props: VariablesPaneProps) {
 			<CodeEditor
 				value={connection.graphqlVariables || ""}
 				onChange={setVariables}
-				extensions={[surrealql(), surqlLinting(), lineNumbers()]}
+				lineNumbers
+				extensions={[surrealql(), surqlLinting()]}
 			/>
 		</ContentPane>
 	);

@@ -24,6 +24,7 @@ export type SchemaMode = "schemaless" | "schemafull";
 export type UrlTarget = "internal" | "external";
 export type DatabaseListMode = "list" | "grid";
 export type AuthLevel = "root" | "namespace" | "database";
+export type LineNumberTarget = "query" | "inspector" | "functions";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type AuthType = "user" | "access";
 export type AccessType = "JWT" | "RECORD";
@@ -140,6 +141,7 @@ export interface SurrealistAppearanceSettings {
 	colorScheme: MantineColorScheme;
 	windowScale: number;
 	editorScale: number;
+	lineNumbers: LineNumberTarget[];
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
 	defaultDiagramMode: DiagramMode;

@@ -4,6 +4,7 @@ import { surrealql } from "@surrealdb/codemirror";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveBox } from "~/components/SaveBox";
 import { surqlLinting, surqlRecordLinks } from "~/editor";
+import { useLineNumberSetting, useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
 import { useInspector } from "..";
 import classes from "../style.module.scss";
@@ -16,20 +17,22 @@ export interface ContentTabProps {
 
 export function ContentTab({ value, onChange, saveHandle }: ContentTabProps) {
 	const { inspect } = useInspector();
+	const [hasLineNumbers] = useLineNumberSetting();
 
 	return (
 		<>
-			<Paper flex="1 0 0" mih={0} mt="xs" p="xs">
+			<Paper
+				flex="1 0 0"
+				mih={0}
+				mt="xs"
+				p="xs"
+			>
 				<CodeEditor
 					h="100%"
 					value={value}
 					onChange={onChange}
-					extensions={[
-						surrealql(),
-						surqlLinting(),
-						surqlRecordLinks(inspect),
-						lineNumbers(),
-					]}
+					lineNumbers={hasLineNumbers("inspector")}
+					extensions={[surrealql(), surqlLinting(), surqlRecordLinks(inspect)]}
 				/>
 			</Paper>
 

@@ -230,13 +230,13 @@ export function QueryPane({
 					value={connection.graphqlQuery}
 					onChange={scheduleSetQuery}
 					onMount={onEditorMount}
+					lineNumbers
 					extensions={[
 						graphql(undefined, {
 							onFillAllFields: handleFillFields,
 						}),
 						graphqlParser(),
 						// graphqlFillFields(),
-						lineNumbers(),
 						Prec.high(keymap.of([...runGraphqlQueryKeymap, ...graphqlSuggestions])),
 					]}
 				/>

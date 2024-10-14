@@ -16,6 +16,7 @@ export class MiniAdapter extends BrowserAdapter {
 	public appearance: MiniAppearance = "normal";
 	public corners: string | undefined = undefined;
 	public transparent = false;
+	public nonumbers = false;
 	public uniqueRef = "";
 	public autorun = false;
 
@@ -36,11 +37,13 @@ export class MiniAdapter extends BrowserAdapter {
 			theme,
 			appearance,
 			corners,
-			compact,
-			borderless,
 			transparent,
 			orientation,
+			nonumbers,
 			autorun,
+			// deprecated
+			compact,
+			borderless,
 		} = Object.fromEntries(params.entries());
 
 		// Unique reference id
@@ -49,7 +52,7 @@ export class MiniAdapter extends BrowserAdapter {
 		}
 
 		// Appearance
-		if (appearance) {
+		if (appearance !== undefined) {
 			this.appearance = appearance as MiniAppearance;
 		}
 
@@ -72,7 +75,7 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Transparent background
 		if (transparent !== undefined) {
-			this.transparent = true;
+			this.transparent = bool(transparent);
 			document.body.style.backgroundColor = "transparent";
 			document.documentElement.style.colorScheme = "unset";
 		}
@@ -140,7 +143,12 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Autorun query
 		if (autorun !== undefined) {
-			this.autorun = true;
+			this.autorun = bool(autorun);
+		}
+
+		// Hide line numbers
+		if (nonumbers !== undefined) {
+			this.nonumbers = bool(nonumbers);
 		}
 
 		return {
@@ -181,4 +189,8 @@ export class MiniAdapter extends BrowserAdapter {
 
 		broadcastMessage("ready", opts);
 	}
+}
+
+function bool(value: string | undefined) {
+	return value !== undefined && value !== "false";
 }
