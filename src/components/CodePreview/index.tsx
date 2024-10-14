@@ -8,9 +8,9 @@ import clsx from "clsx";
 import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { colorTheme } from "~/editor";
 import { useIsLight } from "~/hooks/theme";
+import { dedent } from "~/util/dedent";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
-import { dedent } from "~/util/dedent";
 
 interface EditorRef {
 	editor: EditorView;

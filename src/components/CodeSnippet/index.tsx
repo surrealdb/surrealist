@@ -7,8 +7,8 @@ import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
 import type { Extension } from "@codemirror/state";
 import { useMemo } from "react";
 import type { CodeLang, Snippets } from "~/types";
-import { CodePreview, type CodePreviewProps } from "../CodePreview";
 import { dedent } from "~/util/dedent";
+import { CodePreview, type CodePreviewProps } from "../CodePreview";
 
 const EXTENSIONS: Partial<Record<CodeLang, Extension>> = {
 	rust: rust(),

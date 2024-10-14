@@ -23,13 +23,13 @@ import {
 import { useImmer } from "use-immer";
 import { DATASETS, ORIENTATIONS, THEMES } from "~/constants";
 import type { ColorScheme, Orientation } from "~/types";
+import { dedent } from "~/util/dedent";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { iconHelp } from "~/util/icons";
 import { CodePreview } from "../CodePreview";
 import { Icon } from "../Icon";
 import { CodeInput } from "../Inputs";
 import { Spacer } from "../Spacer";
-import { dedent } from "~/util/dedent";
 
 export const DEFAULT_STATE: EmbedState = {
 	dataset: "none",
