@@ -2,10 +2,8 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
-	Box,
 	type BoxProps,
 	Center,
-	Divider,
 	Drawer,
 	Group,
 	Image,
@@ -22,16 +20,13 @@ import {
 	iconBalance,
 	iconChevronRight,
 	iconClose,
-	iconCloud,
 	iconDownload,
-	iconEye,
 	iconFlag,
 	iconHelp,
 	iconPlay,
 	iconServer,
 	iconTransfer,
 	iconTune,
-	iconWrench,
 } from "~/util/icons";
 
 import { useMemo, useState } from "react";
@@ -51,13 +46,13 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
 import { isDevelopment, isPreview } from "~/util/environment";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { AppearanceTab } from "./tabs/Appearance";
-import { BehaviourTab } from "./tabs/Behaviour";
-import { CloudTab } from "./tabs/Cloud";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { LicensesTab } from "./tabs/Licenses";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
+import { PreferencesTab } from "./tabs/Preferences";
+import { AboutTab } from "./tabs/About";
+import { ManageDataTab } from "./tabs/ManageData";
 
 interface Category {
 	id: string;
@@ -69,10 +64,10 @@ interface Category {
 
 const CATEGORIES: Category[] = [
 	{
-		id: "settings",
-		name: "Settings",
+		id: "preferences",
+		name: "Preferences",
 		icon: iconTune,
-		component: AppearanceTab,
+		component: PreferencesTab,
 	},
 	{
 		id: "templates",
@@ -88,10 +83,10 @@ const CATEGORIES: Category[] = [
 		disabled: () => !isDesktop,
 	},
 	{
-		id: "import-export",
-		name: "Import / Export",
+		id: "manage-data",
+		name: "Manage Data",
 		icon: iconTransfer,
-		component: LicensesTab,
+		component: ManageDataTab,
 	},
 	{
 		id: "feature-flags",
@@ -110,7 +105,7 @@ const CATEGORIES: Category[] = [
 		id: "about",
 		name: "About",
 		icon: iconHelp,
-		component: LicensesTab,
+		component: AboutTab,
 	},
 ];
 
@@ -369,19 +364,7 @@ export function Settings() {
 								<Icon path={iconClose} />
 							</ActionIcon>
 						</Group>
-						<ScrollArea
-							flex={1}
-							scrollbars="y"
-						>
-							<Stack
-								gap="xl"
-								className={classes.settingsList}
-								pt="md"
-								pb="xl"
-							>
-								{Component && <Component />}
-							</Stack>
-						</ScrollArea>
+						{Component && <Component />}
 					</Stack>
 				</Group>
 			</Modal>

@@ -91,8 +91,9 @@ export function TemplatesTab() {
 		<>
 			<SettingsSection>
 				<Text mb="xs">
-					Templates simplify the process of creating new connections
-					by pre-filling common connection details.
+					Connection templates provide a way to simplify the process of creating new
+					connections by pre-filling common connection details. You can select any of your
+					templates when creating or editing a connection.
 				</Text>
 
 				{templates.map((template) => (
@@ -122,7 +123,10 @@ export function TemplatesTab() {
 				size="lg"
 			>
 				<Form onSubmit={saveTemplate}>
-					<ConnectionDetails value={details} onChange={setDetails} />
+					<ConnectionDetails
+						value={details}
+						onChange={setDetails}
+					/>
 
 					<Group mt="lg">
 						<Button
@@ -145,11 +149,7 @@ export function TemplatesTab() {
 						<Button
 							type="submit"
 							variant="gradient"
-							rightSection={
-								<Icon
-									path={details.id ? iconCheck : iconPlus}
-								/>
-							}
+							rightSection={<Icon path={details.id ? iconCheck : iconPlus} />}
 						>
 							{details.id ? "Save" : "Create"}
 						</Button>
