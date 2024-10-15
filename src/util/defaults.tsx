@@ -54,7 +54,7 @@ export function createBaseSettings(): SurrealistSettings {
 			colorScheme: "dark",
 			windowScale: 100,
 			editorScale: 100,
-			lineNumbers: [],
+			lineNumbers: ["query", "inspector", "functions"],
 			resultWordWrap: true,
 			defaultResultMode: "combined",
 			defaultDiagramMode: "fields",
