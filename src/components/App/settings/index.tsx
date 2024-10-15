@@ -26,8 +26,11 @@ import {
 	iconDownload,
 	iconEye,
 	iconFlag,
+	iconHelp,
 	iconPlay,
 	iconServer,
+	iconTransfer,
+	iconTune,
 	iconWrench,
 } from "~/util/icons";
 
@@ -66,15 +69,9 @@ interface Category {
 
 const CATEGORIES: Category[] = [
 	{
-		id: "behaviour",
-		name: "Behavior",
-		icon: iconWrench,
-		component: BehaviourTab,
-	},
-	{
-		id: "appearance",
-		name: "Appearance",
-		icon: iconEye,
+		id: "settings",
+		name: "Settings",
+		icon: iconTune,
 		component: AppearanceTab,
 	},
 	{
@@ -91,10 +88,10 @@ const CATEGORIES: Category[] = [
 		disabled: () => !isDesktop,
 	},
 	{
-		id: "cloud",
-		name: "Surreal Cloud",
-		icon: iconCloud,
-		component: CloudTab,
+		id: "import-export",
+		name: "Import / Export",
+		icon: iconTransfer,
+		component: LicensesTab,
 	},
 	{
 		id: "feature-flags",
@@ -107,6 +104,12 @@ const CATEGORIES: Category[] = [
 		id: "licenses",
 		name: "OSS Licenses",
 		icon: iconBalance,
+		component: LicensesTab,
+	},
+	{
+		id: "about",
+		name: "About",
+		icon: iconHelp,
 		component: LicensesTab,
 	},
 ];
