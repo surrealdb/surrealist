@@ -43,8 +43,14 @@
 
 Surrealist is the ultimate way to visually manage your [SurrealDB](https://surrealdb.com/) database. Effortlessly connect to any SurrealDB database and execute queries, explore your tables and records, design your preferred schema, and much more. Surrealist is designed to suit a broad range of workflows, so whether you are pushing SurrealDB to its limits, or just getting started, Surrealist is the perfect tool to use.
 
-## Documentation
+## Surrealist Documentation
 You can [read our documentation](https://surrealdb.com/docs/surrealist) for information on how to install and get started using Surrealist.
+
+## Learn SurrealDB
+
+- SurrealDB University: https://surrealdb.com/learn/fundamentals
+- Aeon's Surreal Renaissance (Interative book): https://surrealdb.com/learn/book
+- Documentation: https://surrealdb.com/docs/surrealdb
 
 ## Using the Web App
 The quickest way to jump into Surrealist is using the web app at https://surrealist.app/
