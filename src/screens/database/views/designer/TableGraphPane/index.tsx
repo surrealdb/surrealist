@@ -21,6 +21,7 @@ import {
 	type ElementRef,
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -48,6 +49,7 @@ import {
 } from "~/util/icons";
 
 import {
+	EDGE_TYPES,
 	type GraphWarning,
 	NODE_TYPES,
 	applyNodeLayout,
@@ -74,6 +76,7 @@ import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
+import { getSetting } from "~/util/config";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -131,7 +134,28 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 			if (changes.length > 0) {
 				doFitRef.current = true;
-				handleOnNodesChange(layoutChanges);
+				handleOnNodesChange(layoutChanges[0]);
+
+				setEdges((prev) => {
+					return prev.map((curr) => {
+						const found = layoutChanges[1].find((edge) => edge.id === curr.id);
+
+						if (!found) {
+							return curr;
+						}
+
+						return {
+							...curr,
+							data: {
+								...curr.data,
+								elkData: {
+									bendSections: found.bendSections,
+									isDragged: false,
+								}
+							}
+						};
+					})
+				});
 				fitView();
 			}
 		}
@@ -371,10 +395,58 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					edges={edges}
 					minZoom={0.1}
 					nodeTypes={NODE_TYPES}
+					edgeTypes={EDGE_TYPES}
 					nodesConnectable={false}
 					edgesFocusable={false}
 					proOptions={{ hideAttribution: true }}
-					onNodesChange={onNodesChange}
+					onNodesChange={(c) => {
+						onNodesChange(c);
+
+						const lineStyle = getSetting("appearance", "lineStyle");
+
+						if (lineStyle !== "metro") {
+							return;
+						}
+
+						const changes = new Set<string>();
+
+						for (const change of c) {
+							if (change.type === "position") {
+								const node = nodes.find(({ id }) => id === change.id);
+
+								if (!node) {
+									continue;
+								}
+
+								const edgesToChange = edges.filter(({ target, source }) => target === node.id || source === node.id).map(({ id }) => id);
+
+								for (const edge of edgesToChange) {
+									changes.add(edge);
+								}
+							}
+						}
+
+						if (changes.size === 0) {
+							return;
+						}
+
+						setEdges((prev) => prev.map((edge) => {
+							if (!changes.has(edge.id)) {
+								return edge;
+							}
+
+							return {
+								...edge,
+								data: {
+									...edge.data,
+									elkData: edge.data.elkData ? {
+										...edge.data.elkData,
+										isDragged: true,
+									} : undefined,
+								},
+							}
+						}));
+					}}
 					onEdgesChange={onEdgesChange}
 					className={classes.diagram}
 					style={{ opacity: computing ? 0 : 1 }}

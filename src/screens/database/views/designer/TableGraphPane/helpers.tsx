@@ -7,6 +7,7 @@ import { extractKindRecords } from "~/util/surrealql";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
 import classes from "./style.module.scss";
+import { ElkStepEdge } from "./edges/ElkEdge";
 
 type EdgeWarning = {
 	type: "edge";
@@ -24,6 +25,10 @@ type LinkWarning = {
 export const NODE_TYPES = {
 	table: TableNode,
 	edge: EdgeNode,
+};
+
+export const EDGE_TYPES = {
+	elk: ElkStepEdge,
 };
 
 export type InternalNode = Node & { width: number; height: number };
@@ -74,7 +79,7 @@ export function buildFlowNodes(
 
 	switch (lineStyle) {
 		case "metro": {
-			baseEdge.type = "smoothstep";
+			baseEdge.type = "elk";
 			baseEdge.pathOptions = { borderRadius: 50 };
 			break;
 		}
@@ -254,9 +259,9 @@ export async function applyNodeLayout(
 	nodes: DimensionNode[],
 	edges: Edge[],
 	direction: DiagramDirection,
-): Promise<NodeChange[]> {
+): Promise<[NodeChange[], { id: string, bendSections: any[] }[]]> {
 	if (nodes.some((node) => !node.width || !node.height)) {
-		return [];
+		return [[], []];
 	}
 
 	const ELK = await import("elkjs/lib/elk.bundled");
@@ -285,17 +290,24 @@ export async function applyNodeLayout(
 	});
 
 	const children = layout.children || [];
+	const layoutEdges = layout.edges || [];
 
-	return children.map(({ id, x, y }) => {
-		return {
+	return [
+		children.map(({ id, x, y }) => {
+			return {
+				id,
+				type: "position",
+				position: {
+					x: x ?? 0,
+					y: y ?? 0,
+				},
+			};
+		}),
+		layoutEdges.map(({ id, sections }) => ({
 			id,
-			type: "position",
-			position: {
-				x: x ?? 0,
-				y: y ?? 0,
-			},
-		};
-	});
+			bendSections: sections || []
+		})),
+	];
 }
 
 /**
