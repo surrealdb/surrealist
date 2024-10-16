@@ -1,6 +1,3 @@
-import type { Selection, SurrealistConfig } from "~/types";
-import { isDesktop } from "~/adapter";
-import { parseScale } from "./helpers";
 import {
 	DESIGNER_DIRECTIONS,
 	DESIGNER_NODE_MODES,
@@ -12,6 +9,10 @@ import {
 	THEMES,
 	VALUE_MODES,
 } from "~/constants";
+
+import type { Selection, SurrealistConfig } from "~/types";
+import { isDesktop } from "~/adapter";
+import { parseScale } from "./helpers";
 
 type Reader<T> = (config: SurrealistConfig) => T;
 type Writer<T> = (config: SurrealistConfig, value: T) => void;

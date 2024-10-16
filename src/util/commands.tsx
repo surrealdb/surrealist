@@ -37,6 +37,8 @@ import {
 	iconText,
 	iconTextBoxMinus,
 	iconTextBoxPlus,
+	iconTransfer,
+	iconTune,
 	iconUpload,
 	iconWrench,
 } from "./icons";
@@ -52,17 +54,19 @@ import { featureFlags } from "./feature-flags";
 import { newId } from "./helpers";
 import type { IntentPayload, IntentType } from "./intents";
 import { syncConnectionSchema } from "./schema";
+import { type BaseController, computePreferences } from "./preferences";
 
 type LaunchAction = { type: "launch"; handler: () => void };
 type InsertAction = { type: "insert"; content: string };
 type HrefAction = { type: "href"; href: string };
+type PreferenceAction = { type: "preference"; controller: BaseController<any> };
 type IntentAction = {
 	type: "intent";
 	intent: IntentType;
 	payload?: IntentPayload;
 };
 
-type Action = LaunchAction | InsertAction | HrefAction | IntentAction;
+type Action = LaunchAction | InsertAction | HrefAction | IntentAction | PreferenceAction;
 
 export interface Command {
 	id: string;
@@ -89,6 +93,10 @@ const insert = (content: string) => ({ type: "insert", content }) as const;
 /** Create an href command */
 const href = (href: string) => ({ type: "href", href }) as const;
 
+/** Create a new preference command */
+const preference = (controller: BaseController<any>) =>
+	({ type: "preference", controller }) as const;
+
 /** Create an intent command */
 const intent = (intent: IntentType, payload?: IntentPayload) =>
 	({ type: "intent", intent, payload }) as const;
@@ -112,6 +120,7 @@ export function computeCommands(): CommandCategory[] {
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
 	const canDisconnect = currentState !== "disconnected" && !isSandbox;
+	const preferences = computePreferences().flatMap(({ preferences }) => preferences);
 	const categories: CommandCategory[] = [];
 
 	categories.push(
@@ -445,15 +454,9 @@ export function computeCommands(): CommandCategory[] {
 				},
 				{
 					id: newId(),
-					name: "Manage Behaviour",
-					icon: iconWrench,
-					action: intent("open-settings", { tab: "behaviour" }),
-				},
-				{
-					id: newId(),
-					name: "Manage Appearance",
-					icon: iconEye,
-					action: intent("open-settings", { tab: "appearance" }),
+					name: "Manage Preferences",
+					icon: iconTune,
+					action: intent("open-settings", { tab: "preferences" }),
 				},
 				{
 					id: newId(),
@@ -475,6 +478,12 @@ export function computeCommands(): CommandCategory[] {
 					: []),
 				{
 					id: newId(),
+					name: "Manage Data",
+					icon: iconTransfer,
+					action: intent("open-settings", { tab: "manage-data" }),
+				},
+				{
+					id: newId(),
 					name: "Manage Feature Flags",
 					icon: iconFlag,
 					action: intent("open-settings", { tab: "feature-flags" }),
@@ -486,7 +495,22 @@ export function computeCommands(): CommandCategory[] {
 					action: intent("open-settings", { tab: "licenses" }),
 					aliases: ["Manage OSS Licenses"],
 				},
+				{
+					id: newId(),
+					name: "View About",
+					icon: iconHelp,
+					action: intent("open-settings", { tab: "about" }),
+				},
 			],
+		},
+		{
+			name: "Preferences",
+			commands: preferences.map((pref) => ({
+				id: newId(),
+				name: pref.name,
+				icon: iconWrench,
+				action: preference(pref.controller),
+			})),
 		},
 		{
 			name: "Navigation",
