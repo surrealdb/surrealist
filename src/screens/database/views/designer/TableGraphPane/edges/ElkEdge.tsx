@@ -25,6 +25,9 @@ export function ElkStepEdge({
 		}
 
 		const bends: string = bendSection.bendPoints?.map((v, index, arr) => {
+			const minBendRadius = 8;
+			const maxBendRadius = 36;
+
 			const lastSection = arr[index - 1] ?? bendSection.startPoint;
 			const nextSection = arr[index + 1] ?? bendSection.endPoint;
 
@@ -32,9 +35,7 @@ export function ElkStepEdge({
 			const nextLength = Math.max(Math.abs(nextSection.x - v.x), Math.abs(nextSection.y - v.y));
 
 			const _bend = Math.min(lastLength, nextLength) / 2;
-			const maxBendRadius = 36;
-
-			const bendRadius = _bend < maxBendRadius ? _bend : maxBendRadius;
+			const bendRadius = Math.max(Math.min(_bend, maxBendRadius), minBendRadius);
 
 			if (
 				v.x === lastSection.x &&
