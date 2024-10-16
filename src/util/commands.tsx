@@ -1,12 +1,3 @@
-import { adapter, isDesktop } from "~/adapter";
-import type { DesktopAdapter } from "~/adapter/desktop";
-import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { closeConnection, openConnection } from "~/screens/database/connection/connection";
-import { useConfigStore } from "~/stores/config";
-import { useDatabaseStore } from "~/stores/database";
-import { getConnection } from "./connection";
-import { featureFlags } from "./feature-flags";
-import { newId } from "./helpers";
 import {
 	iconAPI,
 	iconAccountPlus,
@@ -49,6 +40,16 @@ import {
 	iconUpload,
 	iconWrench,
 } from "./icons";
+
+import { adapter, isDesktop } from "~/adapter";
+import type { DesktopAdapter } from "~/adapter/desktop";
+import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
+import { closeConnection, openConnection } from "~/screens/database/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { getConnection } from "./connection";
+import { featureFlags } from "./feature-flags";
+import { newId } from "./helpers";
 import type { IntentPayload, IntentType } from "./intents";
 import { syncConnectionSchema } from "./schema";
 
