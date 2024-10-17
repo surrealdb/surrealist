@@ -1,6 +1,14 @@
 import { useMemo } from "react";
-import { BaseEdge, type EdgeProps, SmoothStepEdge } from "reactflow";
-import type { EdgeData } from "../helpers";
+import { BaseEdge, type Edge, type EdgeProps, SmoothStepEdge } from "@xyflow/react";
+import type { ElkEdgeSection } from "elkjs/lib/elk-api";
+
+export type ElkEdge = Edge<
+	{
+		isDragged: boolean;
+		path?: ElkEdgeSection;
+	},
+	"elk"
+>;
 
 export function ElkStepEdge({
 	sourceX,
@@ -9,7 +17,7 @@ export function ElkStepEdge({
 	targetY,
 	data,
 	...rest
-}: EdgeProps<EdgeData>) {
+}: EdgeProps<ElkEdge>) {
 	const bendSection = data?.path;
 
 	const edgePath = useMemo(() => {
@@ -145,7 +153,6 @@ export function ElkStepEdge({
 		return (
 			<SmoothStepEdge
 				{...rest}
-				data={data}
 				sourceX={sourceX}
 				sourceY={sourceY}
 				targetX={targetX}

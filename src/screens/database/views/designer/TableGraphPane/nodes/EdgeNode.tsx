@@ -1,12 +1,13 @@
 import { iconRelation } from "~/util/icons";
-import type { NodeData } from "../helpers";
 import { BaseNode } from "./BaseNode";
-import type { NodeProps } from "reactflow";
+import type { Node, NodeProps } from "@xyflow/react";
+import type { SharedNodeData } from "../helpers";
 
-export function EdgeNode({ id, data }: NodeProps<NodeData>) {
+export type EdgeNode = Node<SharedNodeData, "edge">;
+
+export function EdgeNode({ data }: NodeProps<EdgeNode>) {
 	return (
 		<BaseNode
-			id={id}
 			icon={iconRelation}
 			table={data.table}
 			isSelected={data.isSelected}

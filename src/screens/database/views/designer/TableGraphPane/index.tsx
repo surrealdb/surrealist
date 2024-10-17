@@ -19,21 +19,24 @@ import {
 import {
 	type ChangeEvent,
 	type ElementRef,
+	type MouseEvent,
 	useEffect,
 	useLayoutEffect,
-	useMemo,
 	useRef,
 	useState,
 } from "react";
 
 import {
 	Background,
-	type NodeChange,
+	type Edge,
+	type Node,
+	type OnNodesChange,
 	ReactFlow,
 	useEdgesState,
+	useNodesInitialized,
 	useNodesState,
 	useReactFlow,
-} from "reactflow";
+} from "@xyflow/react";
 
 import {
 	iconAPI,
@@ -73,7 +76,6 @@ import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
-import { getSetting } from "~/util/config";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
@@ -102,118 +104,31 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
-	const [nodes, setNodes, handleOnNodesChange] = useNodesState([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const [computing, setComputing] = useState(false);
+	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+	const [rendering, setRendering] = useState(false);
 
-	const doLayoutRef = useRef(false);
-	const doFitRef = useRef(false);
+	const { getNodes, getEdges } = useReactFlow();
+	const nodesInitialized = useNodesInitialized({ includeHiddenNodes: true });
+	const isLayedOut = useRef(false);
 
-	const onNodesChange = useStable(async (changes: NodeChange[]) => {
-		handleOnNodesChange(changes);
+	useLayoutEffect(() => {
+		if (isLayedOut.current || !nodesInitialized) {
+			return;
+		}
 
-		if (doLayoutRef.current) {
-			doLayoutRef.current = false;
+		isLayedOut.current = true;
 
-			const direction = activeSession.diagramDirection;
-			const dimNodes = changes.flatMap((change) => {
-				if (change.type !== "dimensions" || !change.dimensions) {
-					return [];
-				}
-
-				return {
-					id: change.id,
-					width: change.dimensions.width,
-					height: change.dimensions.height,
-				};
+		applyNodeLayout(getNodes(), getEdges(), activeSession.diagramDirection)
+			.then(([nodes, edges]) => {
+				onNodesChange(nodes);
+				onEdgesChange(edges);
+				setTimeout(fitView, 0);
+			})
+			.finally(() => {
+				setRendering(false);
 			});
-
-			const layoutChanges = await applyNodeLayout(dimNodes, edges, direction);
-
-			setComputing(false);
-
-			if (changes.length > 0) {
-				doFitRef.current = true;
-
-				handleOnNodesChange(layoutChanges[0]);
-
-				setEdges((prev) => {
-					return prev.map((curr) => {
-						const found = layoutChanges[1].find((edge) => edge.id === curr.id);
-
-						if (!found) {
-							return curr;
-						}
-
-						return {
-							...curr,
-							data: {
-								...curr.data,
-								path: found.path,
-								isDragged: false,
-							},
-						};
-					});
-				});
-
-				fitView();
-			}
-		}
-
-		const lineStyle = getSetting("appearance", "lineStyle");
-
-		if (lineStyle !== "metro") {
-			return;
-		}
-
-		const uniqueChanges = new Set<string>();
-
-		for (const change of changes) {
-			if (change.type === "position") {
-				const node = nodes.find(({ id }) => id === change.id);
-
-				if (!node) {
-					continue;
-				}
-
-				const edgesToChange = edges
-					.filter(({ target, source }) => target === node.id || source === node.id)
-					.map(({ id }) => id);
-
-				for (const edge of edgesToChange) {
-					uniqueChanges.add(edge);
-				}
-			}
-		}
-
-		if (uniqueChanges.size === 0) {
-			return;
-		}
-
-		setEdges((prev) =>
-			prev.map((edge) => {
-				if (!uniqueChanges.has(edge.id)) {
-					return edge;
-				}
-
-				return {
-					...edge,
-					data: {
-						...edge.data,
-						isDragged: true,
-					},
-				};
-			}),
-		);
-	});
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Fit view when nodes change
-	useEffect(() => {
-		if (doFitRef.current) {
-			doFitRef.current = false;
-			fitView();
-		}
-	}, [nodes]);
+	}, [nodesInitialized, activeSession]);
 
 	const renderGraph = useStable(async () => {
 		const [nodes, edges, warnings] = buildFlowNodes(
@@ -226,15 +141,34 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		if (nodes.length === 0) {
 			setNodes([]);
 			setEdges([]);
-			setIsComputing(false);
+			setRendering(false);
 			return;
 		}
 
+		isLayedOut.current = false;
+		setRendering(true);
 		setNodes(nodes);
 		setEdges(edges);
-		setComputing(true);
+	});
 
-		doLayoutRef.current = true;
+	const handleNodeClick = useStable((_: MouseEvent, node: Node) => {
+		props.setActiveTable(node.id);
+	});
+
+	const handleNodeDragStart = useStable((_: MouseEvent, node: Node) => {
+		setEdges((edges) =>
+			edges.map((edge) => {
+				const isDisrupted = edge.source === node.id || edge.target === node.id;
+
+				return {
+					...edge,
+					data: {
+						...edge.data,
+						isDragged: isDisrupted ? true : edge.data?.isDragged ?? false,
+					},
+				};
+			}),
+		);
 	});
 
 	const saveImage = useStable(async (type: "png" | "svg") => {
@@ -448,10 +382,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					className={classes.diagram}
-					style={{ opacity: computing ? 0 : 1 }}
-					onNodeClick={(_ev, node) => {
-						props.setActiveTable(node.id);
+					style={{
+						opacity: rendering ? 0 : 1,
+						transition: rendering ? undefined : "opacity .15s",
 					}}
+					onNodeClick={handleNodeClick}
+					onNodeDragStart={handleNodeDragStart}
 					onContextMenu={showContextMenu([
 						{
 							key: "create",

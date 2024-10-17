@@ -1,12 +1,13 @@
 import { iconTable } from "~/util/icons";
-import type { NodeData } from "../helpers";
 import { BaseNode } from "./BaseNode";
-import type { NodeProps } from "reactflow";
+import type { Node, NodeProps } from "@xyflow/react";
+import type { SharedNodeData } from "../helpers";
 
-export function TableNode({ id, data }: NodeProps<NodeData>) {
+export type TableNode = Node<SharedNodeData, "table">;
+
+export function TableNode({ data }: NodeProps<TableNode>) {
 	return (
 		<BaseNode
-			id={id}
 			icon={iconTable}
 			table={data.table}
 			isSelected={data.isSelected}

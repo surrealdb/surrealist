@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { ReactFlowProvider } from "reactflow";
+import { ReactFlowProvider } from "@xyflow/react";
 import { Icon } from "~/components/Icon";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
@@ -52,7 +52,10 @@ export function DesignerView() {
 
 	return (
 		<>
-			<Box h="100%" ref={ref}>
+			<Box
+				h="100%"
+				ref={ref}
+			>
 				<PanelGroup
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
@@ -75,7 +78,10 @@ export function DesignerView() {
 							<PanelDragger />
 						</>
 					)}
-					<Panel minSize={minSize} order={2}>
+					<Panel
+						minSize={minSize}
+						order={2}
+					>
 						<ReactFlowProvider>
 							<TableGraphPaneLazy
 								tables={tables}

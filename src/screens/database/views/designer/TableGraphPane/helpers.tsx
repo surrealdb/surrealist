@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
+import type { Edge, EdgeChange, EdgeTypes, Node, NodeChange, NodeTypes } from "@xyflow/react";
 import { toBlob, toSvg } from "html-to-image";
-import { type Edge, type Node, type NodeChange, Position } from "reactflow";
 import type { DiagramDirection, TableInfo } from "~/types";
 import { getSetting } from "~/util/config";
 import { extractEdgeRecords } from "~/util/schema";
@@ -10,6 +10,7 @@ import { ElkStepEdge } from "./edges/ElkEdge";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
 import type { ElkEdgeSection } from "elkjs/lib/elk-api";
+import { objectify } from "radash";
 
 type EdgeWarning = {
 	type: "edge";
@@ -17,6 +18,7 @@ type EdgeWarning = {
 	foreign: string;
 	direction: "in" | "out";
 };
+
 type LinkWarning = {
 	type: "link";
 	table: string;
@@ -24,29 +26,24 @@ type LinkWarning = {
 	field: string;
 };
 
-export const NODE_TYPES = {
+export const NODE_TYPES: NodeTypes = {
 	table: TableNode,
 	edge: EdgeNode,
 };
 
-export const EDGE_TYPES = {
+export const EDGE_TYPES: EdgeTypes = {
 	elk: ElkStepEdge,
 };
 
 export type InternalNode = Node & { width: number; height: number };
 export type GraphWarning = EdgeWarning | LinkWarning;
 
-export interface NodeData {
+export type SharedNodeData = {
 	table: TableInfo;
 	isSelected: boolean;
 	hasIncoming: boolean;
 	hasOutgoing: boolean;
-}
-
-export interface EdgeData {
-	isDragged: boolean;
-	path?: ElkEdgeSection;
-}
+};
 
 interface NormalizedTable {
 	isEdge: boolean;
@@ -103,19 +100,19 @@ export function buildFlowNodes(
 	// Define all nodes
 	for (const { table, isEdge } of items) {
 		const name = table.schema.name;
-		const node: Node<NodeData> = {
+		const node: any = {
 			id: name,
 			type: isEdge ? "edge" : "table",
 			position: { x: 0, y: 0 },
-			sourcePosition: Position.Right,
-			targetPosition: Position.Left,
+			deletable: false,
+			// sourcePosition: Position.Right,
+			// targetPosition: Position.Left,
 			data: {
 				table,
 				isSelected: false,
 				hasIncoming: false,
 				hasOutgoing: false,
 			},
-			deletable: false,
 		};
 
 		nodes.push(node);
@@ -253,7 +250,6 @@ export function buildFlowNodes(
 	return [nodes, edges, warnings];
 }
 
-type DimensionNode = { id: string; width: number; height: number };
 type NodeEdge = { id: string; path?: ElkEdgeSection };
 
 /**
@@ -264,22 +260,21 @@ type NodeEdge = { id: string; path?: ElkEdgeSection };
  * @returns The changes to apply
  */
 export async function applyNodeLayout(
-	nodes: DimensionNode[],
+	nodes: Node[],
 	edges: Edge[],
 	direction: DiagramDirection,
-): Promise<[NodeChange[], NodeEdge[]]> {
-	if (nodes.some((node) => !node.width || !node.height)) {
-		return [[], []];
-	}
-
+): Promise<[NodeChange[], EdgeChange[]]> {
 	const ELK = await import("elkjs/lib/elk.bundled");
 	const elk = new ELK.default();
+
+	const edgeIndex = objectify(edges, (e) => e.id);
+
 	const graph = {
 		id: "root",
 		children: nodes.map((node) => ({
 			id: node.id,
-			width: node.width,
-			height: node.height,
+			width: node.measured?.width ?? node.width,
+			height: node.measured?.height ?? node.height,
 		})),
 		edges: edges.map((edge) => ({
 			id: edge.id,
@@ -300,22 +295,35 @@ export async function applyNodeLayout(
 	const children = layout.children || [];
 	const layoutEdges = layout.edges || [];
 
-	return [
-		children.map(({ id, x, y }) => {
-			return {
-				id,
-				type: "position",
-				position: {
-					x: x ?? 0,
-					y: y ?? 0,
-				},
-			};
-		}),
-		layoutEdges.map(({ id, sections }) => ({
+	const nodeChanges: NodeChange[] = children.map(({ id, x, y }) => {
+		return {
 			id,
-			path: sections?.[0],
-		})),
-	];
+			type: "position",
+			position: {
+				x: x ?? 0,
+				y: y ?? 0,
+			},
+		};
+	});
+
+	const edgeChanges: EdgeChange[] = layoutEdges.map(({ id, sections }) => {
+		const current = edgeIndex[id];
+
+		return {
+			id,
+			type: "replace",
+			item: {
+				...current,
+				data: {
+					...current.data,
+					isDragged: false,
+					path: sections?.[0],
+				},
+			},
+		};
+	});
+
+	return [nodeChanges, edgeChanges];
 }
 
 /**
