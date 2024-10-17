@@ -7,7 +7,6 @@ import {
 	SCALE_STEPS,
 	SIDEBAR_MODES,
 	THEMES,
-	VALUE_MODES,
 } from "~/constants";
 
 import type { Selection, SurrealistConfig } from "~/types";
@@ -122,17 +121,6 @@ export function computePreferences(): PreferenceSection[] {
 						reader: (config) => config.settings.appearance.sidebarMode,
 						writer: (config, value) => {
 							config.settings.appearance.sidebarMode = value;
-						},
-					}),
-				},
-				{
-					name: "Value formatting",
-					description: "The format used to display values",
-					controller: new SelectionController({
-						options: VALUE_MODES,
-						reader: (config) => config.settings.appearance.valueMode,
-						writer: (config, value) => {
-							config.settings.appearance.valueMode = value;
 						},
 					}),
 				},
