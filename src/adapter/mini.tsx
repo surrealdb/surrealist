@@ -8,11 +8,13 @@ import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/ut
 import { showError } from "~/util/helpers";
 import { broadcastMessage } from "~/util/messaging";
 import { parseDatasetURL } from "~/util/surrealql";
-import { BrowserAdapter } from "./browser";
+import { BaseBrowserAdapter } from "./browser";
 
 const THEMES = new Set(["light", "dark", "auto"]);
 
-export class MiniAdapter extends BrowserAdapter {
+export class MiniAdapter extends BaseBrowserAdapter {
+	public id = "mini" as const;
+
 	public appearance: MiniAppearance = "normal";
 	public corners: string | undefined = undefined;
 	public transparent = false;
