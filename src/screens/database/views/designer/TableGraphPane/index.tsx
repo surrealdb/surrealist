@@ -73,10 +73,10 @@ import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
+import { getSetting } from "~/util/config";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
-import { getSetting } from "~/util/config";
 
 export interface TableGraphPaneProps {
 	active: string | null;

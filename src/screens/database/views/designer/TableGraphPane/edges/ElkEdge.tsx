@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { BaseEdge, EdgeProps, SmoothStepEdge } from "reactflow";
+import { BaseEdge, type EdgeProps, SmoothStepEdge } from "reactflow";
 
-interface EdgeData extends Object {
+interface EdgeData extends Record<string, any> {
 	data: any;
 	elkData?: {
 		bendSections: import("elkjs/lib/elk.bundled").ElkEdgeSection[];
@@ -17,7 +17,7 @@ export function ElkStepEdge({
 	data,
 	...rest
 }: EdgeProps<EdgeData>) {
-	const bendSection = useMemo(() => !!data?.elkData?.bendSections ? data.elkData.bendSections[0] : undefined, [data?.elkData?.bendSections]);
+	const bendSection = useMemo(() => data?.elkData?.bendSections ? data.elkData.bendSections[0] : undefined, [data?.elkData?.bendSections]);
 
 	const edgePath = useMemo(() => {
 		if (!bendSection) {
@@ -65,7 +65,9 @@ export function ElkStepEdge({
 
 				// From the top
 				return `L${v.x},${v.y - bendRadius} Q${v.x},${v.y}, ${v.x + bendRadius},${v.y}`;
-			} else if (
+			}
+
+			if (
 				currentRounded.x === lastRounded.x &&
 				nextRounded.x < currentRounded.x
 			) {
@@ -77,7 +79,9 @@ export function ElkStepEdge({
 
 				// From the top
 				return `L${v.x},${v.y - bendRadius} Q${v.x},${v.y}, ${v.x - bendRadius},${v.y}`;
-			} else if (
+			}
+
+			if (
 				currentRounded.y === lastRounded.y &&
 				nextRounded.y > currentRounded.y
 			) {
@@ -89,7 +93,9 @@ export function ElkStepEdge({
 
 				// From the left
 				return `L${v.x - bendRadius},${v.y} Q${v.x},${v.y}, ${v.x},${v.y + bendRadius}`;
-			} else if (
+			}
+
+			if (
 				currentRounded.y === lastRounded.y &&
 				nextRounded.y < currentRounded.y
 			) {
@@ -109,7 +115,7 @@ export function ElkStepEdge({
 		}).join(' ') || "";
 
 		return `M${bendSection.startPoint.x},${bendSection.startPoint.y} ${bends} L${bendSection.endPoint.x},${bendSection.endPoint.y}`;
-	}, [bendSection]);
+	}, [bendSection, sourceX, sourceY, targetX, targetY]);
 
 	const labelPosition = useMemo(() => {
 		if (!bendSection) {
@@ -135,7 +141,7 @@ export function ElkStepEdge({
 		}
 
 		return position;
-	}, [bendSection]);
+	}, [bendSection, sourceX, sourceY, targetX, targetY]);
 
 	if (!bendSection || data?.elkData?.isDragged) {
 		return (

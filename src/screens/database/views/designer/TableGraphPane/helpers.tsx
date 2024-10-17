@@ -4,10 +4,10 @@ import type { DiagramDirection, TableInfo } from "~/types";
 import { getSetting } from "~/util/config";
 import { extractEdgeRecords } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
+import { ElkStepEdge } from "./edges/ElkEdge";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
 import classes from "./style.module.scss";
-import { ElkStepEdge } from "./edges/ElkEdge";
 
 type EdgeWarning = {
 	type: "edge";
