@@ -19,6 +19,7 @@ import {
 import {
 	type ChangeEvent,
 	type ElementRef,
+	type MouseEvent,
 	useEffect,
 	useLayoutEffect,
 	useRef,
@@ -27,12 +28,15 @@ import {
 
 import {
 	Background,
-	type NodeChange,
+	type Edge,
+	type Node,
+	type OnNodesChange,
 	ReactFlow,
 	useEdgesState,
+	useNodesInitialized,
 	useNodesState,
 	useReactFlow,
-} from "reactflow";
+} from "@xyflow/react";
 
 import {
 	iconAPI,
@@ -48,6 +52,7 @@ import {
 } from "~/util/icons";
 
 import {
+	EDGE_TYPES,
 	type GraphWarning,
 	NODE_TYPES,
 	applyNodeLayout,
@@ -99,51 +104,31 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
-	const [nodes, setNodes, handleOnNodesChange] = useNodesState([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const [computing, setComputing] = useState(false);
+	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+	const [rendering, setRendering] = useState(false);
 
-	const doLayoutRef = useRef(false);
-	const doFitRef = useRef(false);
+	const { getNodes, getEdges } = useReactFlow();
+	const nodesInitialized = useNodesInitialized({ includeHiddenNodes: true });
+	const isLayedOut = useRef(false);
 
-	const onNodesChange = useStable(async (changes: NodeChange[]) => {
-		handleOnNodesChange(changes);
+	useLayoutEffect(() => {
+		if (isLayedOut.current || !nodesInitialized) {
+			return;
+		}
 
-		if (doLayoutRef.current) {
-			doLayoutRef.current = false;
+		isLayedOut.current = true;
 
-			const direction = activeSession.diagramDirection;
-			const dimNodes = changes.flatMap((change) => {
-				if (change.type !== "dimensions" || !change.dimensions) {
-					return [];
-				}
-
-				return {
-					id: change.id,
-					width: change.dimensions.width,
-					height: change.dimensions.height,
-				};
+		applyNodeLayout(getNodes(), getEdges(), activeSession.diagramDirection)
+			.then(([nodes, edges]) => {
+				onNodesChange(nodes);
+				onEdgesChange(edges);
+				setTimeout(fitView, 0);
+			})
+			.finally(() => {
+				setRendering(false);
 			});
-
-			const layoutChanges = await applyNodeLayout(dimNodes, edges, direction);
-
-			setComputing(false);
-
-			if (changes.length > 0) {
-				doFitRef.current = true;
-				handleOnNodesChange(layoutChanges);
-				fitView();
-			}
-		}
-	});
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Fit view when nodes change
-	useEffect(() => {
-		if (doFitRef.current) {
-			doFitRef.current = false;
-			fitView();
-		}
-	}, [nodes]);
+	}, [nodesInitialized, activeSession]);
 
 	const renderGraph = useStable(async () => {
 		const [nodes, edges, warnings] = buildFlowNodes(
@@ -156,15 +141,34 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		if (nodes.length === 0) {
 			setNodes([]);
 			setEdges([]);
-			setIsComputing(false);
+			setRendering(false);
 			return;
 		}
 
+		isLayedOut.current = false;
+		setRendering(true);
 		setNodes(nodes);
 		setEdges(edges);
-		setComputing(true);
+	});
 
-		doLayoutRef.current = true;
+	const handleNodeClick = useStable((_: MouseEvent, node: Node) => {
+		props.setActiveTable(node.id);
+	});
+
+	const handleNodeDragStart = useStable((_: MouseEvent, node: Node) => {
+		setEdges((edges) =>
+			edges.map((edge) => {
+				const isDisrupted = edge.source === node.id || edge.target === node.id;
+
+				return {
+					...edge,
+					data: {
+						...edge.data,
+						isDragged: isDisrupted ? true : edge.data?.isDragged ?? false,
+					},
+				};
+			}),
+		);
 	});
 
 	const saveImage = useStable(async (type: "png" | "svg") => {
@@ -371,16 +375,19 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					edges={edges}
 					minZoom={0.1}
 					nodeTypes={NODE_TYPES}
+					edgeTypes={EDGE_TYPES}
 					nodesConnectable={false}
 					edgesFocusable={false}
 					proOptions={{ hideAttribution: true }}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					className={classes.diagram}
-					style={{ opacity: computing ? 0 : 1 }}
-					onNodeClick={(_ev, node) => {
-						props.setActiveTable(node.id);
+					style={{
+						opacity: rendering ? 0 : 1,
+						transition: rendering ? undefined : "opacity .15s",
 					}}
+					onNodeClick={handleNodeClick}
+					onNodeDragStart={handleNodeDragStart}
 					onContextMenu={showContextMenu([
 						{
 							key: "create",

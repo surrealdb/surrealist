@@ -3,18 +3,18 @@
 	inset: 12px;
 	top: 0;
 
-	> div > div {
+	>div>div {
 		height: 100%;
 	}
 }
 
-.fields-scroll > div > div {
+.fields-scroll>div>div {
 	display: block !important;
 }
 
 .list {
 	padding-left: 24px;
-	
+
 	li::marker {
 		color: var(--mantine-color-surreal-5);
 	}
@@ -22,37 +22,37 @@
 
 .diagram {
 
-	:global(.react-flow__handle) {
-		// backdrop-filter: blur(2px);
-		// -webkit-backdrop-filter: blur(2px);
-		background-color: rgba(0, 0, 0, 0.4) !important;
-		border: 1px solid var(--mantine-color-slate-5) !important;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: unset;
+	// :global(.react-flow__handle) {
+	// 	// backdrop-filter: blur(2px);
+	// 	// -webkit-backdrop-filter: blur(2px);
+	// 	background-color: rgba(0, 0, 0, 0.4) !important;
+	// 	border: 1px solid var(--mantine-color-slate-5) !important;
+	// 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+	// 	display: flex;
+	// 	align-items: center;
+	// 	justify-content: center;
+	// 	cursor: unset;
 
-		&::before {
-			content: "";
-			width: 9px;
-			height: 9px;
-			border-radius: 100%;
-			background-color: white;
-		}
-	}
+	// 	&::before {
+	// 		content: "";
+	// 		width: 9px;
+	// 		height: 9px;
+	// 		border-radius: 100%;
+	// 		background-color: white;
+	// 	}
+	// }
 
-	:global(.react-flow__handle-left) {
-		width: 18px;
-		height: 18px;
-		left: -9px;
-	}
+	// :global(.react-flow__handle-left) {
+	// 	width: 18px;
+	// 	height: 18px;
+	// 	left: -9px;
+	// }
 
-	:global(.react-flow__handle-right) {
-		width: 18px;
-		height: 18px;
-		right: -9px;
-	}
+	// :global(.react-flow__handle-right) {
+	// 	width: 18px;
+	// 	height: 18px;
+	// 	right: -9px;
+	// }
 
 	:global(.react-flow__edge > path) {
 		stroke-width: 2px;
