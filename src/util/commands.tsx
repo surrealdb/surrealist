@@ -13,7 +13,6 @@ import {
 	iconCommand,
 	iconConsole,
 	iconDownload,
-	iconEye,
 	iconFlag,
 	iconFolderSecure,
 	iconHelp,
@@ -54,12 +53,12 @@ import { featureFlags } from "./feature-flags";
 import { newId } from "./helpers";
 import type { IntentPayload, IntentType } from "./intents";
 import { syncConnectionSchema } from "./schema";
-import { type BaseController, computePreferences } from "./preferences";
+import { computePreferences, type PreferenceController } from "./preferences";
 
 type LaunchAction = { type: "launch"; handler: () => void };
 type InsertAction = { type: "insert"; content: string };
 type HrefAction = { type: "href"; href: string };
-type PreferenceAction = { type: "preference"; controller: BaseController<any> };
+type PreferenceAction = { type: "preference"; controller: PreferenceController };
 type IntentAction = {
 	type: "intent";
 	intent: IntentType;
@@ -94,7 +93,7 @@ const insert = (content: string) => ({ type: "insert", content }) as const;
 const href = (href: string) => ({ type: "href", href }) as const;
 
 /** Create a new preference command */
-const preference = (controller: BaseController<any>) =>
+const preference = (controller: PreferenceController) =>
 	({ type: "preference", controller }) as const;
 
 /** Create an intent command */

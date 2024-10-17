@@ -1,7 +1,4 @@
-import type {
-	FeatureFlag,
-	FeatureFlagOption,
-} from "@theopensource-company/feature-flags";
+import type { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
 import { unique } from "radash";
 import { create } from "zustand";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
@@ -49,15 +46,14 @@ function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
 	}
 
 	const connections = state.connections.map((con) => {
-		return con.id === state.activeConnection
-			? { ...con, ...modifier(con), id: con.id }
-			: con;
+		return con.id === state.activeConnection ? { ...con, ...modifier(con), id: con.id } : con;
 	});
 
 	return { connections };
 }
 
 export type ConfigStore = SurrealistConfig & {
+	applyPreference: <T>(updater: (state: ConfigStore, value: T) => void, value: T) => void;
 	addConnectionGroup: (group: ConnectionGroup) => void;
 	removeConnectionGroup: (groupId: string) => void;
 	updateConnectionGroup: (group: PartialId<ConnectionGroup>) => void;
@@ -81,18 +77,10 @@ export type ConfigStore = SurrealistConfig & {
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
 	addHistoryEntry: (entry: HistoryQuery) => void;
 	toggleTablePin: (table: string) => void;
-	updateBehaviorSettings: (
-		settings: Partial<SurrealistBehaviorSettings>,
-	) => void;
-	updateAppearanceSettings: (
-		settings: Partial<SurrealistAppearanceSettings>,
-	) => void;
-	updateTemplateSettings: (
-		settings: Partial<SurrealistTemplateSettings>,
-	) => void;
-	updateServingSettings: (
-		settings: Partial<SurrealistServingSettings>,
-	) => void;
+	updateBehaviorSettings: (settings: Partial<SurrealistBehaviorSettings>) => void;
+	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
+	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
+	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
 	updateCloudSettings: (settings: Partial<SurrealistCloudSettings>) => void;
 	setFeatureFlag: <T extends FeatureFlag<typeof schema>>(
 		key: T,
@@ -109,6 +97,12 @@ export type ConfigStore = SurrealistConfig & {
 export const useConfigStore = create<ConfigStore>()((set) => ({
 	...createBaseConfig(),
 
+	applyPreference: (updater, value) =>
+		set((state) => {
+			updater(state, value);
+			return state;
+		}),
+
 	addConnectionGroup: (group) =>
 		set((state) => ({
 			connectionGroups: [...state.connectionGroups, group],
@@ -117,9 +111,7 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 	removeConnectionGroup: (groupId) =>
 		set((state) => {
 			return {
-				connectionGroups: state.connectionGroups.filter(
-					(group) => group.id !== groupId,
-				),
+				connectionGroups: state.connectionGroups.filter((group) => group.id !== groupId),
 				connections: state.connections.map((connection) => {
 					return connection.group === groupId
 						? { ...connection, group: undefined }
@@ -147,23 +139,18 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 					(connection) => connection.id !== connectionId,
 				),
 				activeConnection:
-					state.activeConnection === connectionId
-						? SANDBOX
-						: state.activeConnection,
+					state.activeConnection === connectionId ? SANDBOX : state.activeConnection,
 			};
 		}),
 
 	updateConnection: (payload) =>
 		set((state) => ({
 			connections: state.connections.map((connection) =>
-				connection.id === payload.id
-					? { ...connection, ...payload }
-					: connection,
+				connection.id === payload.id ? { ...connection, ...payload } : connection,
 			),
 		})),
 
-	updateCurrentConnection: (payload) =>
-		set((state) => updateConnection(state, () => payload)),
+	updateCurrentConnection: (payload) => set((state) => updateConnection(state, () => payload)),
 
 	setConnections: (connections) => set(() => ({ connections })),
 
@@ -178,9 +165,7 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 				};
 			}
 
-			const connection = connections.find(
-				({ id }) => id === activeConnection,
-			);
+			const connection = connections.find(({ id }) => id === activeConnection);
 			if (!connection) return {};
 
 			if (!isConnectionValid(connection.authentication)) {
@@ -210,12 +195,9 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 				let counter = 0;
 
 				do {
-					queryName =
-						`${baseName} ${counter ? counter + 1 : ""}`.trim();
+					queryName = `${baseName} ${counter ? counter + 1 : ""}`.trim();
 					counter++;
-				} while (
-					connection.queries.some((query) => query.name === queryName)
-				);
+				} while (connection.queries.some((query) => query.name === queryName));
 
 				return {
 					queries: [
@@ -235,9 +217,7 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 	removeQueryTab: (queryId) =>
 		set((state) =>
 			updateConnection(state, (connection) => {
-				const index = connection.queries.findIndex(
-					(query) => query.id === queryId,
-				);
+				const index = connection.queries.findIndex((query) => query.id === queryId);
 
 				if (index < 0) {
 					return {};
@@ -295,9 +275,7 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 	saveQuery: (query) =>
 		set((state) => {
 			const savedQueries = [...state.savedQueries];
-			const index = savedQueries.findIndex(
-				(entry) => entry.id === query.id,
-			);
+			const index = savedQueries.findIndex((entry) => entry.id === query.id);
 
 			if (index < 0) {
 				savedQueries.push(query);
@@ -312,9 +290,7 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 
 	removeSavedQuery: (savedId) =>
 		set((state) => ({
-			savedQueries: state.savedQueries.filter(
-				(entry) => entry.id !== savedId,
-			),
+			savedQueries: state.savedQueries.filter((entry) => entry.id !== savedId),
 		})),
 
 	setSavedQueries: (savedQueries) =>
@@ -322,8 +298,7 @@ export const useConfigStore = create<ConfigStore>()((set) => ({
 			savedQueries,
 		})),
 
-	setLastPromptedVersion: (lastPromptedVersion) =>
-		set(() => ({ lastPromptedVersion })),
+	setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
 
 	addHistoryEntry: (entry) =>
 		set((state) =>

@@ -14,13 +14,21 @@ import type { Selection, SurrealistConfig } from "~/types";
 import { isDesktop } from "~/adapter";
 import { parseScale } from "./helpers";
 
-type Reader<T> = (config: SurrealistConfig) => T;
-type Writer<T> = (config: SurrealistConfig, value: T) => void;
+interface ReaderWriter<T> {
+	reader: (config: SurrealistConfig) => T;
+	writer: (config: SurrealistConfig, value: T) => void;
+}
+
+export type PreferenceController =
+	| CheckboxController
+	| NumberController
+	| SelectionController<any>
+	| BitfieldController<any>;
 
 export interface Preference {
 	name: string;
 	description: string;
-	controller: BaseController<any>;
+	controller: PreferenceController;
 }
 
 export interface PreferenceSection {
@@ -28,29 +36,33 @@ export interface PreferenceSection {
 	preferences: Preference[];
 }
 
-export interface BaseController<T> {
-	reader: Reader<T>;
-	writer: Writer<T>;
+/**
+ * A preference controller for a checkbox
+ */
+export class CheckboxController {
+	constructor(public options: ReaderWriter<boolean>) {}
 }
 
-/** Create a new checkbox controller */
-const checkbox = (options: BaseController<boolean>) => ({ type: "checkbox", ...options }) as const;
+/**
+ * A preference controller for a number
+ */
+export class NumberController {
+	constructor(public options: ReaderWriter<number>) {}
+}
 
-/** Create a new numeric controller */
-const number = (options: BaseController<number>) => ({ type: "number", ...options }) as const;
+/**
+ * A preference controller for a selection dropdown
+ */
+export class SelectionController<T extends string> {
+	constructor(public options: ReaderWriter<T> & { options: Selection<T> }) {}
+}
 
-// /** Create a new string controller */
-// const string = (options: BaseController<string>) => ({ type: "string", ...options }) as const;
-
-/** Create a new selection controller */
-const selection = <T extends string>(
-	options: BaseController<T> & { options: () => Selection<T> },
-) => ({ type: "select", ...options }) as const;
-
-/** Create a new bitfield controller */
-const bitfield = <T extends string>(
-	options: BaseController<T[]> & { options: () => Selection<T> },
-) => ({ type: "bitfield", ...options }) as const;
+/**
+ * A preference controller for a checkbox fieldset
+ */
+export class BitfieldController<T extends string> {
+	constructor(public options: ReaderWriter<T[]> & { options: Selection<T> }) {}
+}
 
 /**
  * Compute available preferences based on the current state
@@ -65,7 +77,7 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Always on top",
 					description: "Keep the window above all other windows",
-					controller: checkbox({
+					controller: new CheckboxController({
 						reader: (config) => config.settings.behavior.windowPinned,
 						writer: (config, value) => {
 							config.settings.behavior.windowPinned = value;
@@ -75,8 +87,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Window scale",
 					description: "The zoom level of the window",
-					controller: selection({
-						options: () => SCALE_STEPS,
+					controller: new SelectionController({
+						options: SCALE_STEPS,
 						reader: (config) => parseScale(config.settings.appearance.windowScale),
 						writer: (config, value) => {
 							config.settings.appearance.windowScale = Number.parseFloat(value) / 100;
@@ -94,8 +106,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Theme",
 					description: "The color scheme of the application",
-					controller: selection({
-						options: () => THEMES,
+					controller: new SelectionController({
+						options: THEMES,
 						reader: (config) => config.settings.appearance.colorScheme,
 						writer: (config, value) => {
 							config.settings.appearance.colorScheme = value;
@@ -105,8 +117,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Sidebar",
 					description: "Control the appearance of the sidebar",
-					controller: selection({
-						options: () => SIDEBAR_MODES,
+					controller: new SelectionController({
+						options: SIDEBAR_MODES,
 						reader: (config) => config.settings.appearance.sidebarMode,
 						writer: (config, value) => {
 							config.settings.appearance.sidebarMode = value;
@@ -116,8 +128,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Value formatting",
 					description: "The format used to display values",
-					controller: selection({
-						options: () => VALUE_MODES,
+					controller: new SelectionController({
+						options: VALUE_MODES,
 						reader: (config) => config.settings.appearance.valueMode,
 						writer: (config, value) => {
 							config.settings.appearance.valueMode = value;
@@ -127,8 +139,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Editor scale",
 					description: "The zoom level of all code editors",
-					controller: selection({
-						options: () => SCALE_STEPS,
+					controller: new SelectionController({
+						options: SCALE_STEPS,
 						reader: (config) => parseScale(config.settings.appearance.editorScale),
 						writer: (config, value) => {
 							config.settings.appearance.editorScale = Number.parseFloat(value) / 100;
@@ -143,7 +155,7 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Version check timeout",
 					description: "The maximum time to wait for a version check",
-					controller: number({
+					controller: new NumberController({
 						reader: (config) => config.settings.behavior.versionCheckTimeout,
 						writer: (config, value) => {
 							config.settings.behavior.versionCheckTimeout = value;
@@ -153,7 +165,7 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Reconnect interval",
 					description: "The time to wait before reconnecting",
-					controller: number({
+					controller: new NumberController({
 						reader: (config) => config.settings.behavior.reconnectInterval,
 						writer: (config, value) => {
 							config.settings.behavior.reconnectInterval = value;
@@ -168,7 +180,7 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Suggest table names",
 					description: "Automatically suggest table names",
-					controller: checkbox({
+					controller: new CheckboxController({
 						reader: (config) => config.settings.behavior.tableSuggest,
 						writer: (config, value) => {
 							config.settings.behavior.tableSuggest = value;
@@ -178,7 +190,7 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Suggest param names",
 					description: "Automatically suggest variable names",
-					controller: checkbox({
+					controller: new CheckboxController({
 						reader: (config) => config.settings.behavior.variableSuggest,
 						writer: (config, value) => {
 							config.settings.behavior.variableSuggest = value;
@@ -188,12 +200,12 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Line numbers",
 					description: "Render line numbers in configured editors",
-					controller: bitfield({
-						options: () => [
+					controller: new BitfieldController({
+						options: [
 							{ label: "Table names", value: "query" },
 							{ label: "Param names", value: "inspector" },
 							{ label: "Function names", value: "functions" },
-						],
+						] as const,
 						reader: (config) => config.settings.appearance.lineNumbers,
 						writer: (config, value) => {
 							config.settings.appearance.lineNumbers = value;
@@ -208,8 +220,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Default result mode",
 					description: "The default result view mode for new queries",
-					controller: selection({
-						options: () => RESULT_MODES,
+					controller: new SelectionController({
+						options: RESULT_MODES,
 						reader: (config) => config.settings.appearance.defaultResultMode,
 						writer: (config, value) => {
 							config.settings.appearance.defaultResultMode = value;
@@ -219,7 +231,7 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Query validation",
 					description: "Validate queries for potential issues",
-					controller: checkbox({
+					controller: new CheckboxController({
 						reader: (config) => config.settings.behavior.queryErrorChecker,
 						writer: (config, value) => {
 							config.settings.behavior.queryErrorChecker = value;
@@ -229,8 +241,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Orientation",
 					description: "The orientation of the query and result panels",
-					controller: selection({
-						options: () => ORIENTATIONS,
+					controller: new SelectionController({
+						options: ORIENTATIONS,
 						reader: (config) => config.settings.appearance.queryOrientation,
 						writer: (config, value) => {
 							config.settings.appearance.queryOrientation = value;
@@ -245,8 +257,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Line style",
 					description: "The style of lines connecting nodes",
-					controller: selection({
-						options: () => LINE_STYLES,
+					controller: new SelectionController({
+						options: LINE_STYLES,
 						reader: (config) => config.settings.appearance.lineStyle,
 						writer: (config, value) => {
 							config.settings.appearance.lineStyle = value;
@@ -256,8 +268,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Default node appearance",
 					description: "The default appearance for nodes in new connection",
-					controller: selection({
-						options: () => DESIGNER_NODE_MODES,
+					controller: new SelectionController({
+						options: DESIGNER_NODE_MODES,
 						reader: (config) => config.settings.appearance.defaultDiagramMode,
 						writer: (config, value) => {
 							config.settings.appearance.defaultDiagramMode = value;
@@ -267,8 +279,8 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Default layout direction",
 					description: "The default diagram direction for new connections",
-					controller: selection({
-						options: () => DESIGNER_DIRECTIONS,
+					controller: new SelectionController({
+						options: DESIGNER_DIRECTIONS,
 						reader: (config) => config.settings.appearance.defaultDiagramDirection,
 						writer: (config, value) => {
 							config.settings.appearance.defaultDiagramDirection = value;
@@ -278,7 +290,7 @@ export function computePreferences(): PreferenceSection[] {
 				{
 					name: "Show links",
 					description: "Whether to show links between nodes",
-					controller: checkbox({
+					controller: new CheckboxController({
 						reader: (config) => config.settings.appearance.defaultDiagramShowLinks,
 						writer: (config, value) => {
 							config.settings.appearance.defaultDiagramShowLinks = value;

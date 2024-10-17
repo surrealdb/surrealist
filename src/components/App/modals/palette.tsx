@@ -19,6 +19,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { PreferenceInput } from "~/components/Inputs/preference";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
@@ -215,7 +216,9 @@ export function CommandPaletteModal() {
 											{cmd.action.type === "preference" && (
 												<>
 													<Spacer />
-													<Checkbox />
+													<PreferenceInput
+														controller={cmd.action.controller}
+													/>
 												</>
 											)}
 										</Entry>
