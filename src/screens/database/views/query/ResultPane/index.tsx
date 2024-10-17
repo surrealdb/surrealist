@@ -7,13 +7,14 @@ import {
 	Center,
 	Divider,
 	Group,
-	Menu,
 	Pagination,
 	Stack,
 	Text,
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
+
+import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
@@ -22,8 +23,9 @@ import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
+import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
-import { RESULT_MODES } from "~/constants";
+import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -31,8 +33,7 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { QueryResponse, ResultMode, TabQuery } from "~/types";
-import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
+import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
 
 function computeRowCount(response: QueryResponse) {
@@ -72,6 +73,7 @@ export function ResultPane({
 	const isLight = useIsLight();
 	const [resultTab, setResultTab] = useState<number>(1);
 	const resultMode = activeTab.resultMode;
+	const resultFormat = activeTab.resultFormat;
 	const responses = responseMap[activeTab.id] || [];
 	const activeResponse = responses[resultTab - 1];
 
@@ -102,12 +104,20 @@ export function ResultPane({
 		});
 	};
 
+	const setResultFormat = (format: ResultFormat) => {
+		updateQueryTab({
+			id: activeTab.id,
+			resultFormat: format,
+		});
+	};
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset result tab when responses change
 	useLayoutEffect(() => {
 		setResultTab(1);
 	}, [responses.length]);
 
 	const activeMode = RESULT_MODES.find((r) => r.value === resultMode);
+	const activeFormat = RESULT_FORMATS.find((r) => r.value === resultFormat);
 	const hasSelection = selection?.empty === false;
 
 	const statusText = showResponses
@@ -156,8 +166,35 @@ export function ResultPane({
 						</Text>
 					)}
 
-					<Menu>
-						<Menu.Target>
+					{!isMini && (
+						<ListMenu
+							data={RESULT_FORMATS}
+							value={resultFormat}
+							onChange={setResultFormat}
+						>
+							<Tooltip label="Change result format">
+								<Button
+									size="xs"
+									radius="xs"
+									aria-label="Change format mode"
+									variant="light"
+									color="slate"
+									leftSection={
+										activeFormat?.icon && <Icon path={activeFormat.icon} />
+									}
+								>
+									{activeFormat?.label ?? resultFormat}
+								</Button>
+							</Tooltip>
+						</ListMenu>
+					)}
+
+					<ListMenu
+						data={RESULT_MODES}
+						value={resultMode}
+						onChange={setResultMode}
+					>
+						<Tooltip label="Change result mode">
 							{isMini ? (
 								<Tooltip label="Click to change mode">
 									<ActionIcon
@@ -165,7 +202,7 @@ export function ResultPane({
 										h={30}
 										w={30}
 									>
-										<Icon path={activeMode ? activeMode.icon : iconHelp} />
+										<Icon path={activeMode?.icon ?? iconHelp} />
 									</ActionIcon>
 								</Tooltip>
 							) : (
@@ -175,24 +212,15 @@ export function ResultPane({
 									aria-label="Change result mode"
 									variant="light"
 									color="slate"
-									leftSection={activeMode && <Icon path={activeMode.icon} />}
+									leftSection={
+										activeMode && <Icon path={activeMode?.icon ?? iconHelp} />
+									}
 								>
 									{activeMode?.label ?? "Unknown"}
 								</Button>
 							)}
-						</Menu.Target>
-						<Menu.Dropdown>
-							{RESULT_MODES.map(({ label, value, icon }) => (
-								<Menu.Item
-									key={value}
-									onClick={() => setResultMode(value)}
-									leftSection={<Icon path={icon} />}
-								>
-									{label}
-								</Menu.Item>
-							))}
-						</Menu.Dropdown>
-					</Menu>
+						</Tooltip>
+					</ListMenu>
 
 					<Button
 						size="xs"

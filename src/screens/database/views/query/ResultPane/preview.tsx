@@ -20,7 +20,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
-import { type Formatter, useValueFormatter } from "~/hooks/surrealql";
+import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
 import { useInspector } from "~/providers/Inspector";
 import { executeQuery } from "~/screens/database/connection/connection";
@@ -65,7 +65,7 @@ export interface CombinedJsonPreviewProps {
 }
 
 export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
-	const [format] = useValueFormatter();
+	const [format] = useResultFormatter();
 	const { inspect } = useInspector();
 
 	const contents = useMemo(() => {
@@ -88,7 +88,7 @@ export interface SingleJsonPreviewProps {
 }
 
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
-	const [format] = useValueFormatter();
+	const [format] = useResultFormatter();
 	const { inspect } = useInspector();
 	const contents = useMemo(() => attemptFormat(format, result), [result, format]);
 
@@ -111,7 +111,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 	const { inspect } = useInspector();
 
 	const { showContextMenu } = useContextMenu();
-	const [format] = useValueFormatter();
+	const [format] = useResultFormatter();
 
 	useRefreshTimer(30_000);
 

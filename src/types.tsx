@@ -8,6 +8,7 @@ export type AlertLevel = "info" | "warning" | "important";
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type ResultMode = "table" | "single" | "combined" | "live";
+export type ResultFormat = "json" | "sql";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DiagramDirection = "ltr" | "rtl";
@@ -16,7 +17,6 @@ export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
 export type MiniAppearance = "normal" | "compact" | "plain";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
-export type ValueMode = "json" | "sql";
 export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type LineStyle = "metro" | "straight" | "smooth";
@@ -70,7 +70,10 @@ export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string = string> = { label: string; value: T };
 export type Selection<T extends string = string> = Selectable<T>[];
-export type Listable<T extends string = string> = Selectable<T> & { icon: string };
+export type Listable<T extends string = string> = Selectable<T> & {
+	description?: string;
+	icon?: string;
+};
 export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
@@ -144,12 +147,12 @@ export interface SurrealistAppearanceSettings {
 	lineNumbers: LineNumberTarget[];
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
+	defaultResultFormat: ResultFormat;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
 	defaultDiagramShowLinks: boolean;
 	lineStyle: LineStyle;
 	sidebarMode: SidebarMode;
-	valueMode: ValueMode;
 	queryOrientation: Orientation;
 }
 
@@ -188,6 +191,7 @@ export interface TabQuery {
 	variables: string;
 	valid: boolean;
 	resultMode: ResultMode;
+	resultFormat: ResultFormat;
 	showVariables: boolean;
 }
 

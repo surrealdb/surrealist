@@ -23,11 +23,11 @@ import type {
 	Listable,
 	Orientation,
 	Protocol,
+	ResultFormat,
 	ResultMode,
 	SchemaMode,
 	Selectable,
 	SidebarMode,
-	ValueMode,
 	ViewInfo,
 	ViewMode,
 } from "./types";
@@ -36,11 +36,13 @@ import {
 	iconAPI,
 	iconAccount,
 	iconAuth,
+	iconBraces,
 	iconCloud,
 	iconCog,
 	iconCombined,
 	iconCreditCard,
 	iconDataTable,
+	iconDatabase,
 	iconDesigner,
 	iconEmail,
 	iconExplorer,
@@ -80,10 +82,45 @@ export const THEMES = [
 ];
 
 export const RESULT_MODES: Listable<ResultMode>[] = [
-	{ label: "Combined", value: "combined", icon: iconCombined },
-	{ label: "Individual", value: "single", icon: iconQuery },
-	{ label: "Table", value: "table", icon: iconDataTable },
-	{ label: "Live", value: "live", icon: iconLive },
+	{
+		label: "Combined",
+		value: "combined",
+		icon: iconCombined,
+		description: "View all results in a single list",
+	},
+	{
+		label: "Individual",
+		value: "single",
+		icon: iconQuery,
+		description: "Inspect each result individually",
+	},
+	{
+		label: "Table",
+		value: "table",
+		icon: iconDataTable,
+		description: "Render query results in a table",
+	},
+	{
+		label: "Live",
+		value: "live",
+		icon: iconLive,
+		description: "Subscribe to live query results",
+	},
+];
+
+export const RESULT_FORMATS: Listable<ResultFormat>[] = [
+	{
+		label: "SurrealQL",
+		value: "sql",
+		icon: iconDatabase,
+		description: "Format results in full SurrealQL",
+	},
+	{
+		label: "JSON",
+		value: "json",
+		icon: iconBraces,
+		description: "Format results in classic JSON",
+	},
 ];
 
 export const CONNECTION_PROTOCOLS: ProtocolOption[] = [
@@ -114,11 +151,6 @@ export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
 	{ label: ".NET", value: "csharp" },
 	// { label: "Java", value: "java" },
 	{ label: "PHP", value: "php" },
-];
-
-export const VALUE_MODES: Selectable<ValueMode>[] = [
-	{ label: "JSON", value: "json" },
-	{ label: "SurrealQL", value: "sql" },
 ];
 
 export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
