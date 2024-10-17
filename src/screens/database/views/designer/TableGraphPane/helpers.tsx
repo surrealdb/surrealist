@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import { toBlob, toSvg } from "html-to-image";
 import { type Edge, type Node, type NodeChange, Position } from "reactflow";
 import type { DiagramDirection, TableInfo } from "~/types";
@@ -7,7 +9,7 @@ import { extractKindRecords } from "~/util/surrealql";
 import { ElkStepEdge } from "./edges/ElkEdge";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
-import classes from "./style.module.scss";
+import type { ElkEdgeSection } from "elkjs/lib/elk-api";
 
 type EdgeWarning = {
 	type: "edge";
@@ -39,6 +41,11 @@ export interface NodeData {
 	isSelected: boolean;
 	hasIncoming: boolean;
 	hasOutgoing: boolean;
+}
+
+export interface EdgeData {
+	isDragged: boolean;
+	path?: ElkEdgeSection;
 }
 
 interface NormalizedTable {
@@ -247,6 +254,7 @@ export function buildFlowNodes(
 }
 
 type DimensionNode = { id: string; width: number; height: number };
+type NodeEdge = { id: string; path?: ElkEdgeSection };
 
 /**
  * Apply a layout to the given nodes and edges
@@ -259,7 +267,7 @@ export async function applyNodeLayout(
 	nodes: DimensionNode[],
 	edges: Edge[],
 	direction: DiagramDirection,
-): Promise<[NodeChange[], { id: string, bendSections: any[] }[]]> {
+): Promise<[NodeChange[], NodeEdge[]]> {
 	if (nodes.some((node) => !node.width || !node.height)) {
 		return [[], []];
 	}
@@ -305,7 +313,7 @@ export async function applyNodeLayout(
 		}),
 		layoutEdges.map(({ id, sections }) => ({
 			id,
-			bendSections: sections || []
+			path: sections?.[0],
 		})),
 	];
 }

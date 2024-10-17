@@ -1,14 +1,4 @@
-import {
-	Box,
-	Divider,
-	Flex,
-	Group,
-	Paper,
-	ScrollArea,
-	Stack,
-	Text,
-	Tooltip,
-} from "@mantine/core";
+import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
 import { type MouseEvent, type ReactNode, useRef } from "react";
 import { Handle, Position } from "reactflow";
 import { Icon } from "~/components/Icon";
@@ -34,11 +24,17 @@ function Summary(props: SummaryProps) {
 	const valueColor = props.value > 0 ? "surreal" : "dimmed";
 
 	return (
-		<Group pr={4} wrap="nowrap">
+		<Group
+			pr={4}
+			wrap="nowrap"
+		>
 			<Icon path={props.icon} />
 			<Text c={props.isLight ? "slate.9" : "white"}>{props.title}</Text>
 			<Spacer />
-			<Text c={valueColor} fw={600}>
+			<Text
+				c={valueColor}
+				fw={600}
+			>
 				{props.value}
 			</Text>
 		</Group>
@@ -53,7 +49,12 @@ function FieldKind({ kind }: FieldKindProps) {
 	const simpleKind = simplifyKind(kind);
 
 	const value = (
-		<Text c="surreal.6" ff="mono" maw="50%" truncate>
+		<Text
+			c="surreal.6"
+			ff="mono"
+			maw="50%"
+			truncate
+		>
 			{simpleKind}
 		</Text>
 	);
@@ -67,7 +68,10 @@ function FieldKind({ kind }: FieldKindProps) {
 			position="top"
 			openDelay={0}
 			label={
-				<Text fw={500} ff="monospace">
+				<Text
+					fw={500}
+					ff="monospace"
+				>
 					{kind}
 				</Text>
 			}
@@ -85,8 +89,16 @@ interface FieldProps {
 
 function Field({ isLight, name, value }: FieldProps) {
 	return (
-		<Flex key={name} justify="space-between" gap="xl">
-			<Text title={name} c={isLight ? undefined : "white"} truncate>
+		<Flex
+			key={name}
+			justify="space-between"
+			gap="xl"
+		>
+			<Text
+				title={name}
+				c={isLight ? undefined : "white"}
+				truncate
+			>
 				{name}
 			</Text>
 			{value}
@@ -117,7 +129,10 @@ function Fields(props: FieldsProps) {
 	});
 
 	return (
-		<Box display="flex" style={{ cursor: "pointer" }}>
+		<Box
+			display="flex"
+			style={{ cursor: "pointer" }}
+		>
 			<ScrollArea
 				flex={1}
 				mah={210}
@@ -128,7 +143,11 @@ function Fields(props: FieldsProps) {
 				className={classes.fieldsScroll}
 				onScrollPositionChange={skipMouse}
 			>
-				<Stack gap="xs" mt={10} p={0}>
+				<Stack
+					gap="xs"
+					mt={10}
+					p={0}
+				>
 					{fields.map((field) => (
 						<Field
 							key={field.name}
@@ -138,7 +157,10 @@ function Fields(props: FieldsProps) {
 								field.kind ? (
 									<FieldKind kind={field.kind} />
 								) : (
-									<Text c="slate" title={field.kind}>
+									<Text
+										c="slate"
+										title={field.kind}
+									>
 										none
 									</Text>
 								)
@@ -152,6 +174,7 @@ function Fields(props: FieldsProps) {
 }
 
 interface BaseNodeProps {
+	id: string;
 	icon: string;
 	table: TableInfo;
 	isSelected: boolean;
@@ -161,6 +184,7 @@ interface BaseNodeProps {
 }
 
 export function BaseNode({
+	id,
 	icon,
 	table,
 	isSelected,
@@ -173,8 +197,7 @@ export function BaseNode({
 	const isLight = useIsLight();
 	const isLTR = diagramDirection === "ltr";
 	const showMore =
-		diagramMode === "summary" ||
-		(diagramMode === "fields" && table.fields.length > 0);
+		diagramMode === "summary" || (diagramMode === "fields" && table.fields.length > 0);
 
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
@@ -215,13 +238,7 @@ export function BaseNode({
 				>
 					<Icon
 						path={icon}
-						color={
-							isSelected
-								? "surreal"
-								: isLight
-									? "slate.7"
-									: "slate.2"
-						}
+						color={isSelected ? "surreal" : isLight ? "slate.7" : "slate.2"}
 					/>
 					<Text
 						style={{
@@ -239,15 +256,17 @@ export function BaseNode({
 							color={isLight ? "slate.2" : "slate.6"}
 							my="sm"
 						/>
-						<Stack gap="xs" mt={10} p={0}>
+						<Stack
+							gap="xs"
+							mt={10}
+							p={0}
+						>
 							<Field
 								isLight={isLight}
 								name="in"
 								value={
 									<Text ta="right">
-										{extractKindRecords(
-											inField.kind ?? "",
-										).join(", ")}
+										{extractKindRecords(inField.kind ?? "").join(", ")}
 									</Text>
 								}
 							/>
@@ -256,9 +275,7 @@ export function BaseNode({
 								name="out"
 								value={
 									<Text ta="right">
-										{extractKindRecords(
-											outField.kind ?? "",
-										).join(", ")}
+										{extractKindRecords(outField.kind ?? "").join(", ")}
 									</Text>
 								}
 							/>
@@ -274,9 +291,16 @@ export function BaseNode({
 						/>
 
 						{diagramMode === "fields" ? (
-							<Fields isLight={isLight} table={table} />
+							<Fields
+								isLight={isLight}
+								table={table}
+							/>
 						) : (
-							<Stack gap="xs" mt={10} p={0}>
+							<Stack
+								gap="xs"
+								mt={10}
+								p={0}
+							>
 								<Summary
 									isLight={isLight}
 									icon={iconJSON}

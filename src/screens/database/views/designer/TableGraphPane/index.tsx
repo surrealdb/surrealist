@@ -134,6 +134,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 			if (changes.length > 0) {
 				doFitRef.current = true;
+
 				handleOnNodesChange(layoutChanges[0]);
 
 				setEdges((prev) => {
@@ -148,14 +149,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							...curr,
 							data: {
 								...curr.data,
-								elkData: {
-									bendSections: found.bendSections,
-									isDragged: false,
-								}
-							}
+								path: found.path,
+								isDragged: false,
+							},
 						};
-					})
+					});
 				});
+
 				fitView();
 			}
 		}
@@ -176,7 +176,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					continue;
 				}
 
-				const edgesToChange = edges.filter(({ target, source }) => target === node.id || source === node.id).map(({ id }) => id);
+				const edgesToChange = edges
+					.filter(({ target, source }) => target === node.id || source === node.id)
+					.map(({ id }) => id);
 
 				for (const edge of edgesToChange) {
 					uniqueChanges.add(edge);
@@ -188,22 +190,21 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return;
 		}
 
-		setEdges((prev) => prev.map((edge) => {
-			if (!uniqueChanges.has(edge.id)) {
-				return edge;
-			}
+		setEdges((prev) =>
+			prev.map((edge) => {
+				if (!uniqueChanges.has(edge.id)) {
+					return edge;
+				}
 
-			return {
-				...edge,
-				data: {
-					...edge.data,
-					elkData: edge.data.elkData ? {
-						...edge.data.elkData,
+				return {
+					...edge,
+					data: {
+						...edge.data,
 						isDragged: true,
-					} : undefined,
-				},
-			}
-		}));
+					},
+				};
+			}),
+		);
 	});
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Fit view when nodes change

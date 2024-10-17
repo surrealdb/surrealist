@@ -1,14 +1,12 @@
 import { iconRelation } from "~/util/icons";
 import type { NodeData } from "../helpers";
 import { BaseNode } from "./BaseNode";
+import type { NodeProps } from "reactflow";
 
-interface EdgeNodeProps {
-	data: NodeData;
-}
-
-export function EdgeNode({ data }: EdgeNodeProps) {
+export function EdgeNode({ id, data }: NodeProps<NodeData>) {
 	return (
 		<BaseNode
+			id={id}
 			icon={iconRelation}
 			table={data.table}
 			isSelected={data.isSelected}
