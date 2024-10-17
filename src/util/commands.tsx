@@ -66,6 +66,7 @@ type IntentAction = {
 };
 
 type Action = LaunchAction | InsertAction | HrefAction | IntentAction | PreferenceAction;
+type CategoryVisibility = "always" | "searched" | "unsearched";
 
 export interface Command {
 	id: string;
@@ -79,7 +80,7 @@ export interface Command {
 
 export interface CommandCategory {
 	name: string;
-	search?: boolean;
+	visibility?: CategoryVisibility;
 	commands: Command[];
 }
 
@@ -125,7 +126,7 @@ export function computeCommands(): CommandCategory[] {
 	categories.push(
 		{
 			name: "History",
-			search: false,
+			visibility: "unsearched",
 			commands: commandHistory.map((entry) => ({
 				id: newId(),
 				name: entry,
@@ -504,6 +505,7 @@ export function computeCommands(): CommandCategory[] {
 		},
 		{
 			name: "Preferences",
+			visibility: "searched",
 			commands: preferences.map((pref) => ({
 				id: newId(),
 				name: pref.name,

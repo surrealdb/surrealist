@@ -1,21 +1,9 @@
 import classes from "../style.module.scss";
 
-import {
-	Box,
-	Checkbox,
-	Divider,
-	Group,
-	Modal,
-	ScrollArea,
-	Stack,
-	Text,
-	TextInput,
-	UnstyledButton,
-} from "@mantine/core";
-
+import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import posthog from "posthog-js";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -25,7 +13,6 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeymap } from "~/hooks/keymap";
 import { useKeyNavigation } from "~/hooks/keys";
-import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import { type Command, type CommandCategory, computeCommands } from "~/util/commands";
@@ -41,7 +28,10 @@ export function CommandPaletteModal() {
 
 	const [filtered, flattened] = useMemo(() => {
 		const filtered = categories.flatMap((cat) => {
-			if (search && cat.search === false) {
+			if (
+				(cat.visibility === "unsearched" && search) ||
+				(cat.visibility === "searched" && !search)
+			) {
 				return [];
 			}
 
