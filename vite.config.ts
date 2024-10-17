@@ -104,6 +104,7 @@ export function getDefaultConfig({ mode }: { mode?: string }): UserConfig {
 			},
 		},
 		define: {
+			"import.meta.env.DATE": JSON.stringify(new Date()),
 			"import.meta.env.VERSION": JSON.stringify(version),
 			"import.meta.env.SDB_VERSION": JSON.stringify(surreal),
 			"import.meta.env.POSTHOG_KEY": JSON.stringify(

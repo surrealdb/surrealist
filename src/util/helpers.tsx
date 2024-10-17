@@ -4,12 +4,7 @@ import { showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
 import { uid } from "radash";
-import type {
-	CSSProperties,
-	FocusEvent,
-	ReactNode,
-	SyntheticEvent,
-} from "react";
+import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { decodeCbor, escape_ident } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { Authentication, TabQuery } from "~/types";
@@ -70,7 +65,10 @@ export function showError(info: { title: ReactNode; subtitle: ReactNode }) {
 		color: "pink.9",
 		message: (
 			<Stack gap={0}>
-				<Text fw={600} c="bright">
+				<Text
+					fw={600}
+					c="bright"
+				>
 					{info.title}
 				</Text>
 				<Text>{info.subtitle}</Text>
@@ -90,7 +88,10 @@ export function showWarning(info: { title: ReactNode; subtitle: ReactNode }) {
 		color: "orange",
 		message: (
 			<Stack gap={0}>
-				<Text fw={600} c="bright">
+				<Text
+					fw={600}
+					c="bright"
+				>
 					{info.title}
 				</Text>
 				<Text>{info.subtitle}</Text>
@@ -110,7 +111,10 @@ export function showInfo(info: { title: ReactNode; subtitle: ReactNode }) {
 		color: "surreal.6",
 		message: (
 			<Stack gap={0}>
-				<Text fw={600} c="bright">
+				<Text
+					fw={600}
+					c="bright"
+				>
 					{info.title}
 				</Text>
 				<Text>{info.subtitle}</Text>
@@ -179,9 +183,7 @@ export function applyOrder<T>(items: T[], order: T[]) {
  * @returns The promise
  */
 export function timeout<T>(cb: () => Promise<T>, timeout = 1000) {
-	return new Promise<T>((res, rej) =>
-		setTimeout(() => cb().then(res).catch(rej), timeout),
-	);
+	return new Promise<T>((res, rej) => setTimeout(() => cb().then(res).catch(rej), timeout));
 }
 /**
  * Returns whether the result is a permission error
@@ -304,9 +306,7 @@ export function tryParseParams(paramString: string) {
 	let params: any = {};
 
 	try {
-		const parsed = decodeCbor(
-			Value.from_string(paramString).to_cbor().buffer,
-		);
+		const parsed = decodeCbor(Value.from_string(paramString).to_cbor().buffer);
 
 		if (typeof parsed !== "object" || Array.isArray(parsed)) {
 			throw new TypeError("Must be object");
@@ -376,7 +376,7 @@ export function fuzzyMatch(query: string, target: string) {
  * A simplistic fuzzy match function which matches
  * the query against the target string. Allows passing
  * multiple queries separated by commas.
- * 
+ *
  * @param query The query to match
  * @param target The target string
  * @returns Result
@@ -393,9 +393,7 @@ export function fuzzyMultiMatch(query: string, target: string) {
  */
 export function isMobile() {
 	const userAgent = navigator.userAgent.toLowerCase();
-	return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(
-		userAgent,
-	);
+	return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
 }
 
 /**
@@ -407,9 +405,7 @@ export function isMobile() {
 export function extractVariables(query: string): string[] {
 	const matches = query.match(VARIABLE_PATTERN) || [];
 
-	return matches
-		.map((v) => v.slice(1))
-		.filter((v) => !RESERVED_VARIABLES.has(v));
+	return matches.map((v) => v.slice(1)).filter((v) => !RESERVED_VARIABLES.has(v));
 }
 
 /**
@@ -420,9 +416,7 @@ export function extractVariables(query: string): string[] {
  */
 export function isModKey(event: Event) {
 	if (event instanceof KeyboardEvent)
-		return adapter.platform === "darwin"
-			? event.key === "Meta"
-			: event.key === "Control";
+		return adapter.platform === "darwin" ? event.key === "Meta" : event.key === "Control";
 
 	if (event instanceof MouseEvent)
 		return adapter.platform === "darwin" ? event.metaKey : event.ctrlKey;
@@ -445,4 +439,29 @@ export function slugify(text: string) {
 		.replaceAll(/[^\da-z-]/g, "")
 		.replaceAll(/-+/g, "-")
 		.replaceAll(/^-+|-+$/g, "");
+}
+
+/**
+ * Returns if both numbers are approximately equal
+ */
+export function isEqualApprox(a: number, b: number) {
+	return Math.abs(a - b) < 0.0001;
+}
+
+/**
+ * Convert a scale factor to a percentage string
+ */
+export function parseScale(scale: number) {
+	switch (true) {
+		case isEqualApprox(scale, 1.5):
+			return "150";
+		case isEqualApprox(scale, 1.25):
+			return "125";
+		case isEqualApprox(scale, 0.75):
+			return "75";
+		case isEqualApprox(scale, 0.5):
+			return "50";
+		default:
+			return "100";
+	}
 }

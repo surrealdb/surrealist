@@ -1,6 +1,17 @@
 import classes from "../style.module.scss";
 
-import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import {
+	Box,
+	Checkbox,
+	Divider,
+	Group,
+	Modal,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+	UnstyledButton,
+} from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
 import posthog from "posthog-js";
@@ -8,6 +19,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { PreferenceInput } from "~/components/Inputs/preference";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
@@ -59,9 +71,9 @@ export function CommandPaletteModal() {
 	const activate = (cmd: Command) => {
 		const query = search.trim();
 
-		if (query.length > 0) {
-			pushCommand(query);
-		}
+		posthog.capture("execute_command", {
+			command: cmd.name,
+		});
 
 		switch (cmd.action.type) {
 			case "insert": {
@@ -85,9 +97,9 @@ export function CommandPaletteModal() {
 			}
 		}
 
-		posthog.capture("execute_command", {
-			command: cmd.name,
-		});
+		if (query.length > 0) {
+			pushCommand(query);
+		}
 	};
 
 	const [handleKeyDown, searchRef] = useKeyNavigation(flattened);
@@ -199,6 +211,14 @@ export function CommandPaletteModal() {
 															/>
 														))}
 													</Group>
+												</>
+											)}
+											{cmd.action.type === "preference" && (
+												<>
+													<Spacer />
+													<PreferenceInput
+														controller={cmd.action.controller}
+													/>
 												</>
 											)}
 										</Entry>

@@ -1,5 +1,7 @@
 import classes from "./style.module.scss";
 
+// TODO Split into multiple files
+
 import {
 	ActionIcon,
 	Autocomplete,
