@@ -1,23 +1,3 @@
-import { Box, Button, Group, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { memo, useState } from "react";
-import { Panel, PanelGroup } from "react-resizable-panels";
-import { adapter } from "~/adapter";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
-import { Introduction } from "~/components/Introduction";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { useIsConnected } from "~/hooks/connection";
-import { useEventSubscription } from "~/hooks/event";
-import { usePanelMinSize } from "~/hooks/panels";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { dispatchIntent, useIntent } from "~/hooks/url";
-import { useViewEffect } from "~/hooks/view";
-import { useDesigner } from "~/providers/Designer";
-import { TablesPane } from "~/screens/database/components/TablesPane";
-import { useInterfaceStore } from "~/stores/interface";
-import { DisconnectedEvent } from "~/util/global-events";
 import {
 	iconChevronRight,
 	iconDesigner,
@@ -28,6 +8,26 @@ import {
 	iconTable,
 	iconUpload,
 } from "~/util/icons";
+
+import { Box, Button, Group, Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { memo, useState } from "react";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { adapter } from "~/adapter";
+import { Entry } from "~/components/Entry";
+import { Icon } from "~/components/Icon";
+import { Introduction } from "~/components/Introduction";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useEventSubscription } from "~/hooks/event";
+import { usePanelMinSize } from "~/hooks/panels";
+import { useStable } from "~/hooks/stable";
+import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useViewEffect } from "~/hooks/view";
+import { useDesigner } from "~/providers/Designer";
+import { TablesPane } from "~/screens/database/components/TablesPane";
+import { useInterfaceStore } from "~/stores/interface";
+import { DisconnectedEvent } from "~/util/global-events";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { ExplorerPane } from "../ExplorerPane";
@@ -36,7 +36,7 @@ const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
 
 export function ExplorerView() {
-	const isLight = useIsLight();
+	const connection = useConnection();
 	const { openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
 
@@ -87,14 +87,25 @@ export function ExplorerView() {
 
 	const [minSize, ref] = usePanelMinSize(275);
 
+	// NOTE - Temporary
+	const protocol = connection?.authentication?.protocol;
+	const isExportDisabled = protocol === "indxdb" || protocol === "mem";
+
 	return (
 		<>
-			<Box h="100%" ref={ref}>
+			<Box
+				h="100%"
+				ref={ref}
+			>
 				<PanelGroup
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
+					<Panel
+						defaultSize={minSize}
+						minSize={minSize}
+						maxSize={35}
+					>
 						<TablesPaneLazy
 							icon={iconExplorer}
 							activeTable={activeTable}
@@ -107,9 +118,10 @@ export function ExplorerView() {
 										rightSection={<Icon path={iconChevronRight} />}
 										onClick={() => dispatchIntent("export-database")}
 										style={{ flexShrink: 0 }}
+										disabled={isExportDisabled}
 										bg="transparent"
 									>
-										Export data
+										Export database
 									</Entry>
 									<Entry
 										leftSection={<Icon path={iconDownload} />}
@@ -118,7 +130,7 @@ export function ExplorerView() {
 										style={{ flexShrink: 0 }}
 										bg="transparent"
 									>
-										Import data
+										Import database
 									</Entry>
 								</>
 							}
@@ -146,9 +158,8 @@ export function ExplorerView() {
 								}}
 							>
 								<Text>
-									The explorer view provides an easy way to
-									browse your tables and records without
-									writing any queries.
+									The explorer view provides an easy way to browse your tables and
+									records without writing any queries.
 								</Text>
 								<Group>
 									<Button

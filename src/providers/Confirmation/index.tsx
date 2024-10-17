@@ -1,5 +1,3 @@
-import { Button, type ButtonProps, Group, Text } from "@mantine/core";
-import { Modal } from "@mantine/core";
 import {
 	type PropsWithChildren,
 	type ReactNode,
@@ -7,13 +5,18 @@ import {
 	useContext,
 	useState,
 } from "react";
+
+import { Button, type ButtonProps, Group, Text } from "@mantine/core";
+import { Modal } from "@mantine/core";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useActiveKeys } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 
 interface ConfirmOptions<T> {
 	title?: ReactNode;
 	message: ReactNode;
+	skippable?: boolean;
 	dismissText?: ReactNode;
 	dismissProps?: ButtonProps;
 	confirmText?: ReactNode;
@@ -54,6 +57,8 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 	const [options, setOptions] = useState<ConfirmOptions<any>>();
 	const [value, setValue] = useState<any>();
 
+	const isShifting = useActiveKeys("Shift");
+
 	const setConfirmation = (value: any, options: ConfirmOptions<any>) => {
 		if (isConfirming) {
 			throw new Error("Confirmation already in progress");
@@ -61,7 +66,12 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 
 		setValue(value);
 		setOptions(options);
-		setIsConfirming(true);
+
+		if (options.skippable && isShifting) {
+			options?.onConfirm?.(value);
+		} else {
+			setIsConfirming(true);
+		}
 	};
 
 	const onDissmiss = useStable(() => {

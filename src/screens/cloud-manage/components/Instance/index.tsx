@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Badge,
+	Box,
 	Button,
 	Group,
 	type MantineColor,
@@ -16,7 +17,6 @@ import {
 import {
 	iconAPI,
 	iconChevronDown,
-	iconCog,
 	iconConsole,
 	iconCopy,
 	iconDelete,
@@ -25,8 +25,10 @@ import {
 	iconMemory,
 	iconPower,
 	iconQuery,
+	iconServer,
+	iconSurrealist,
 	iconTag,
-	iconText,
+	iconTune,
 } from "~/util/icons";
 
 import { Icon } from "~/components/Icon";
@@ -128,7 +130,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</ActionIcon>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Label>Actions</Menu.Label>
+				<Menu.Label>Configure</Menu.Label>
 				{/* <Menu.Item
 					onClick={() => {}}
 					leftSection={<Icon path={iconText} />}
@@ -140,20 +142,21 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					onClick={() => openInstanceTypeModal(value)}
 					leftSection={<Icon path={iconMemory} />}
 				>
-					Change instance type...
+					Instance type
 				</Menu.Item>
 				<Menu.Item
 					onClick={() => openComputeUnitsModal(value)}
 					leftSection={<Icon path={iconQuery} />}
 				>
-					Change compute nodes...
+					Compute nodes
 				</Menu.Item>
 				<Menu.Item
 					onClick={() => openCapabilitiesModal(value)}
-					leftSection={<Icon path={iconCog} />}
+					leftSection={<Icon path={iconTune} />}
 				>
-					Configure capabilities...
+					Capabilities
 				</Menu.Item>
+				<Menu.Label mt="sm">Actions</Menu.Label>
 				<Menu.Item
 					leftSection={<Icon path={iconCopy} />}
 					onClick={() => {
@@ -162,7 +165,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 								title: "Success",
 								subtitle: "Successfully copied the hostname",
 							});
-						})
+						});
 					}}
 				>
 					Copy hostname
@@ -204,8 +207,11 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Item onClick={() => onConnect("surrealist", value)}>
-					Open in Surrealist...
+				<Menu.Item
+					leftSection={<Icon path={iconServer} />}
+					onClick={() => onConnect("surrealist", value)}
+				>
+					Open in Surrealist
 				</Menu.Item>
 				<Menu.Divider />
 				<Menu.Item
@@ -232,15 +238,29 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 			className={classes.root}
 			gap="sm"
 		>
-			<Group>
-				<Text
-					c="bright"
-					fw={600}
-					fz="xl"
-				>
-					{value.name}
-				</Text>
-				<StateBadge state={value.state} />
+			<Group
+				align="start"
+				mb="sm"
+			>
+				<Box>
+					<Group>
+						<Text
+							c="bright"
+							fw={600}
+							fz="xl"
+						>
+							{value.name}
+						</Text>
+						<StateBadge state={value.state} />
+					</Group>
+					<Text
+						mt={2}
+						fz="sm"
+						style={{ userSelect: "text" }}
+					>
+						ID: {value.id}
+					</Text>
+				</Box>
 				<Spacer />
 				{actionList}
 			</Group>

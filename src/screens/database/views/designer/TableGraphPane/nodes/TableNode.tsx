@@ -1,12 +1,11 @@
+import type { Node, NodeProps } from "@xyflow/react";
 import { iconTable } from "~/util/icons";
-import type { NodeData } from "../helpers";
+import type { SharedNodeData } from "../helpers";
 import { BaseNode } from "./BaseNode";
 
-interface TableNodeProps {
-	data: NodeData;
-}
+export type TableNode = Node<SharedNodeData, "table">;
 
-export function TableNode({ data }: TableNodeProps) {
+export function TableNode({ data }: NodeProps<TableNode>) {
 	return (
 		<BaseNode
 			icon={iconTable}

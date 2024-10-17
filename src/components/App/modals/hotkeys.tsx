@@ -148,6 +148,10 @@ export function KeymapModal() {
 									keys="mod shift z"
 									description="Redo changes"
 								/>
+								<Key
+									keys="LMB alt"
+									description="Rectangular selection"
+								/>
 							</SimpleGrid>
 						</Paper>
 					</Box>

@@ -99,7 +99,17 @@ export function CommandPaletteModal() {
 		setCategories(computeCommands());
 	});
 
-	useKeymap([["mod+k", () => dispatchIntent("open-command-palette")]]);
+	useKeymap([
+		[
+			"mod+k",
+			(e) => {
+				// NOTE - Fix #479, needs long term solution
+				if (e.ctrlKey && adapter.platform === "darwin") return;
+
+				dispatchIntent("open-command-palette");
+			},
+		],
+	]);
 
 	return (
 		<Modal

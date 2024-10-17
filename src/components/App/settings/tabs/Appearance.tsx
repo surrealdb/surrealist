@@ -1,17 +1,18 @@
-import { Box, Checkbox, Select, Slider } from "@mantine/core";
-import { isDesktop } from "~/adapter";
-import { Label } from "~/components/Label";
 import {
 	DESIGNER_DIRECTIONS,
 	DESIGNER_NODE_MODES,
 	LINE_STYLES,
 	ORIENTATIONS,
+	RESULT_FORMATS,
 	RESULT_MODES,
 	SIDEBAR_MODES,
 	THEMES,
-	VALUE_MODES,
 } from "~/constants";
-import { useSetting } from "~/hooks/config";
+
+import { Box, Checkbox, Select, Slider } from "@mantine/core";
+import { isDesktop } from "~/adapter";
+import { Label } from "~/components/Label";
+import { useLineNumberSetting, useSetting } from "~/hooks/config";
 import { useCheckbox } from "~/hooks/events";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { SettingsSection } from "../utilities";
@@ -19,40 +20,30 @@ import { SettingsSection } from "../utilities";
 const CAT = "appearance";
 
 export function AppearanceTab() {
+	const [flags] = useFeatureFlags();
+
 	const [colorScheme, setColorScheme] = useSetting(CAT, "colorScheme");
 	const [editorScale, setEditorScale] = useSetting(CAT, "editorScale");
 	const [windowScale, setWindowScale] = useSetting(CAT, "windowScale");
 	// const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
-	const [defaultResultMode, setDefaultResultMode] = useSetting(
-		CAT,
-		"defaultResultMode",
-	);
-	const [queryOrientation, setQueryOrientation] = useSetting(
-		CAT,
-		"queryOrientation",
-	);
-	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
-	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(
-		CAT,
-		"defaultDiagramMode",
-	);
+	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
+	const [queryOrientation, setQueryOrientation] = useSetting(CAT, "queryOrientation");
+	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
+	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
+	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(
 		CAT,
 		"defaultDiagramDirection",
 	);
+
 	const [defaultDiagramShowLinks, setDefaultDiagramShowLinks] = useSetting(
 		CAT,
 		"defaultDiagramShowLinks",
 	);
-	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
-	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
 
-	// const updateResultWordWrap = useCheckbox(setResultWordWrap);
-	const updateDefaultDiagramShowLinks = useCheckbox(
-		setDefaultDiagramShowLinks,
-	);
+	const updateDefaultDiagramShowLinks = useCheckbox(setDefaultDiagramShowLinks);
 
-	const [flags] = useFeatureFlags();
+	const [hasLineNumbers, toggleLineNumbers] = useLineNumberSetting();
 
 	return (
 		<>
@@ -70,12 +61,6 @@ export function AppearanceTab() {
 					label="Sidebar appearance"
 					value={sidebarMode}
 					onChange={setSidebarMode as any}
-				/>
-				<Select
-					label="Value formatting mode"
-					data={VALUE_MODES}
-					value={valueMode}
-					onChange={setValueMode as any}
 				/>
 			</SettingsSection>
 
@@ -119,6 +104,26 @@ export function AppearanceTab() {
 						/>
 					</Box>
 				)}
+			</SettingsSection>
+
+			<SettingsSection label="Line numbers">
+				<Checkbox
+					label="Show in query editor"
+					checked={hasLineNumbers("query")}
+					onChange={() => toggleLineNumbers("query")}
+				/>
+
+				<Checkbox
+					label="Show in record inspector"
+					checked={hasLineNumbers("inspector")}
+					onChange={() => toggleLineNumbers("inspector")}
+				/>
+
+				<Checkbox
+					label="Show in function editor"
+					checked={hasLineNumbers("functions")}
+					onChange={() => toggleLineNumbers("functions")}
+				/>
 			</SettingsSection>
 
 			<SettingsSection label="Query view">

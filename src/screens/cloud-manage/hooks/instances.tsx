@@ -13,7 +13,6 @@ export function useCloudInstances(organization?: string) {
 		queryKey: ["cloud", "databases", organization],
 		refetchInterval: 5_000,
 		enabled: authState === "authenticated",
-		initialData: [],
 		queryFn: async () => {
 			return fetchAPI<CloudInstance[]>(`/organizations/${organization}/instances`);
 		},

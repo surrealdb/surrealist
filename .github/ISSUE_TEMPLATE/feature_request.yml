@@ -26,10 +26,8 @@ body:
   - type: textarea
     id: contribute
     attributes:
-      label: Are you willing to contribute this feature
-      description: Yes/No, optionally provide further details...
-    validations:
-      required: true
+      label: Have you considered contributing this feature yourself?
+      description: Optionally provide further details...
   - type: textarea
     id: Environment
     attributes:

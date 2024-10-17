@@ -1,13 +1,13 @@
 import classes from "./style.module.scss";
 
-import { Button, Image, MantineProvider, Stack, Text } from "@mantine/core";
+import { Image, MantineProvider, Stack, Text } from "@mantine/core";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useLogoUrl } from "~/hooks/brand";
 import { isDevelopment } from "~/util/environment";
 import { MANTINE_THEME } from "~/util/mantine";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 
-type Result = "redirect" | "launch" | "error";
+type Result = "redirect" | "launch" | "error" | "close";
 
 const REDIRECT_ENDPOINT = isDevelopment ? "http://localhost:1420" : `https://${location.host}`;
 
@@ -38,10 +38,10 @@ export function CloudCallbackScreen() {
 		const target = params.get("target");
 		const error_description = params.get("error_description");
 
-		// An error occurred
+		// An error occurred, display it
 		if (error || error_description) {
 			setResult("error");
-			setError(`An error occurred: ${error_description} (${error})`);
+			setError(`Encountered an error: ${error_description} (${error})`);
 			return;
 		}
 
@@ -53,7 +53,7 @@ export function CloudCallbackScreen() {
 					? "browser"
 					: "unknown";
 
-		// Launch the desktop app
+		// Found desktopn, launch the desktop app
 		if (platform === "desktop") {
 			if (code && state) {
 				codeRef.current = code;
@@ -65,7 +65,7 @@ export function CloudCallbackScreen() {
 			return;
 		}
 
-		// Browser authentication redirect
+		// Found browser, redirect to the browser app
 		if (platform === "browser") {
 			if (code && state) {
 				sessionStorage.setItem(CODE_RES_KEY, code);
@@ -75,12 +75,12 @@ export function CloudCallbackScreen() {
 			}
 
 			location.href = `${REDIRECT_ENDPOINT}?intent=cloud-signout`;
-			
+
 			return;
 		}
 
-		// Invalid
-		setResult("error");
+		// Unspecified callback, request user to close the page
+		setResult("close");
 	}, [launchApp]);
 
 	return (
@@ -101,22 +101,15 @@ export function CloudCallbackScreen() {
 				/>
 				{result === "redirect" ? (
 					<Text fz="lg">Redirecting...</Text>
+				) : result === "close" ? (
+					<Text fz="lg">You can now safely close this page and return to Surrealist</Text>
 				) : result === "error" ? (
-					<>
-						<Text
-							fz="lg"
-							c="red"
-						>
-							{error ?? "Authentication could not be completed"}
-						</Text>
-						<Button
-							onClick={() => {
-								location.href = REDIRECT_ENDPOINT;
-							}}
-						>
-							Continue to Surrealist
-						</Button>
-					</>
+					<Text
+						fz="lg"
+						c="red"
+					>
+						{error ?? "Authentication could not be completed"}
+					</Text>
 				) : (
 					<>
 						<Text fz="lg">Opening Surrealist...</Text>

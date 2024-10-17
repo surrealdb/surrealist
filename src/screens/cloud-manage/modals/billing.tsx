@@ -13,7 +13,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
-import { ApiError, fetchAPI } from "../api";
+import { ApiError, fetchAPI, updateCloudInformation } from "../api";
 import { useCloudBilling } from "../hooks/billing";
 
 export async function openBillingModal() {
@@ -124,6 +124,7 @@ function BillingForm({ organization, details }: BillingFormProps) {
 			});
 
 			handleClose();
+			updateCloudInformation();
 
 			queryClient.invalidateQueries({
 				queryKey: ["cloud", "billing", organization.id],

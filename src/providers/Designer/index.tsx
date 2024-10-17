@@ -150,6 +150,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 		},
 		onRevert({ data }) {
 			setData(data);
+			setErrors([]);
 		},
 	});
 

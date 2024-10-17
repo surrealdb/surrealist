@@ -51,7 +51,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 		},
 		{
 			id: newId(),
-			title: "Initialises",
+			title: "Initialising",
 			component: DocsGlobalInit,
 			excludeLanguages: ["cli"],
 		},

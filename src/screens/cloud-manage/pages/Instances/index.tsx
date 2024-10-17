@@ -29,7 +29,6 @@ import {
 } from "~/util/icons";
 
 import { useDebouncedValue, useDisclosure, useInputState } from "@mantine/hooks";
-import { useQuery } from "@tanstack/react-query";
 import { Fragment, useMemo, useState } from "react";
 import { FloatingButton } from "~/components/FloatingButton";
 import { Icon } from "~/components/Icon";
@@ -39,12 +38,10 @@ import { Spacer } from "~/components/Spacer";
 import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
 import { createBaseConnection, createCloudInstance } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
-import { fetchAPI } from "../../api";
 import { type ConnectMethod, Instance } from "../../components/Instance";
 import { useCloudInstances } from "../../hooks/instances";
 import { ConnectCliModal } from "./modals/connect-cli";

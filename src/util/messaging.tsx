@@ -1,8 +1,5 @@
 import { RESULT_MODES } from "~/constants";
-import {
-	executeQuery,
-	executeUserQuery,
-} from "~/screens/database/connection/connection";
+import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import type { ResultMode } from "~/types";
@@ -35,10 +32,7 @@ export function handleWindowMessage(event: MessageEvent) {
 			updateQueryTab({
 				id: active.id,
 				query: typeof query === "string" ? query : active.query,
-				variables:
-					typeof variables === "string"
-						? variables
-						: active.variables,
+				variables: typeof variables === "string" ? variables : active.variables,
 			});
 
 			break;
@@ -89,4 +83,14 @@ export function handleWindowMessage(event: MessageEvent) {
 			break;
 		}
 	}
+}
+
+/**
+ * Broadcast a message to the parent window
+ *
+ * @param action The action to broadcast
+ * @param options The options to send
+ */
+export function broadcastMessage(action: string, options: any = {}) {
+	parent.postMessage({ action, options }, "*");
 }

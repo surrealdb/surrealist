@@ -12,7 +12,7 @@ const TYPE_ICONS: TypeIcon[] = [
  * Generate and insert custom completion icon styles
  */
 export function generateEditorIcons() {
-	const definitions = TYPE_ICONS.map((info, type) => {
+	const definitions = TYPE_ICONS.map((info) => {
 		const svg = btoa(
 			`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${info.icon}" fill="${info.color}" stroke="${info.color}" stroke-width="0.75"></path></svg>`,
 		);

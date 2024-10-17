@@ -1,7 +1,5 @@
 import {
-	ActionIcon,
 	Alert,
-	Badge,
 	Box,
 	Button,
 	Center,
@@ -17,16 +15,6 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
-import {
-	iconChevronLeft,
-	iconChevronRight,
-	iconFloppy,
-	iconHammer,
-	iconMemory,
-	iconPlus,
-	iconQuery,
-} from "~/util/icons";
 
 import {
 	useAvailableInstanceTypes,
@@ -48,8 +36,9 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import type { CloudInstance, CloudInstanceType } from "~/types";
-import { clamp, showError } from "~/util/helpers";
+import type { CloudInstance } from "~/types";
+import { showError } from "~/util/helpers";
+import { iconChevronLeft, iconChevronRight, iconPlus } from "~/util/icons";
 import { fetchAPI } from "../../api";
 import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
@@ -57,26 +46,11 @@ import { useCloudInstances } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 
 const PROVISION_STEPS = [
-	{
-		title: "Instance details",
-		name: "Details",
-	},
-	{
-		title: "Select a region",
-		name: "Region",
-	},
-	{
-		title: "Select an instance type",
-		name: "Instance type",
-	},
-	{
-		title: "Select compute nodes",
-		name: "Compute nodes",
-	},
-	{
-		title: "Finalize your instance",
-		name: "Finalize",
-	},
+	"Instance details",
+	"Select a region",
+	"Select an instance type",
+	"Select compute nodes",
+	"Finalize your instance",
 ];
 
 export function ProvisionPage() {
@@ -189,7 +163,8 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const estimatedCost = (isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units).toFixed(2);
+	const hourlyPriceCents = isFree ? 0 : instanceInfo?.price_hour ?? 0;
+	const estimatedCost = (hourlyPriceCents / 100) * units;
 	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	useLayoutEffect(() => {
@@ -213,7 +188,7 @@ export function ProvisionPage() {
 					return (
 						<>
 							<Group
-								key={info.title}
+								key={info}
 								wrap="nowrap"
 								c={isActive || isDone ? "bright" : isLight ? "slate.3" : "slate.5"}
 							>
@@ -233,7 +208,7 @@ export function ProvisionPage() {
 									fz="lg"
 									fw={500}
 								>
-									{info.name}
+									{info}
 								</Text>
 							</Group>
 							{index < PROVISION_STEPS.length - 1 && (
@@ -292,7 +267,7 @@ export function ProvisionPage() {
 									/>
 								</Grid.Col>
 								<Grid.Col span={4}>
-									<Text>Version</Text>
+									<Text>SurrealDB Version</Text>
 								</Grid.Col>
 								<Grid.Col span={8}>
 									<Select
@@ -382,7 +357,7 @@ export function ProvisionPage() {
 								your instance.
 							</Text>
 
-							{!hasSingleCompute ? (
+							{hasSingleCompute ? (
 								<Alert
 									color="blue"
 									title="Upgrade to use compute nodes"
@@ -430,7 +405,7 @@ export function ProvisionPage() {
 						<Stack>
 							<PrimaryTitle>Finalize your instance</PrimaryTitle>
 
-							<Paper p="md">
+							<Paper p="xl">
 								<Table>
 									<Table.Tbody>
 										<Table.Tr>
@@ -465,17 +440,35 @@ export function ProvisionPage() {
 								</Text>
 
 								<Text
-									fz={18}
-									fw={500}
-									c="bright"
+									fz={13}
+									c={isLight ? "slate.6" : "slate.2"}
 								>
-									${estimatedCost}{" "}
 									<Text
 										span
-										c={isLight ? "slate.6" : "slate.3"}
+										ml={4}
+										fz={22}
+										fw={500}
+										c="bright"
 									>
-										/hour
+										${estimatedCost.toFixed(2)}
 									</Text>
+									/hour
+								</Text>
+
+								<Text
+									fz={13}
+									c={isLight ? "slate.6" : "slate.2"}
+								>
+									Approx.
+									<Text
+										span
+										ml={4}
+										fw={500}
+										c="bright"
+									>
+										${(estimatedCost * 24 * 30).toFixed(2)}
+									</Text>
+									/month
 								</Text>
 							</Paper>
 						</Stack>

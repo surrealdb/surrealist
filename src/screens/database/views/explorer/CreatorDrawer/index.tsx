@@ -64,9 +64,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 			return;
 		}
 
-		const id = recordId
-			? new RecordId(recordTable, recordId)
-			: new Table(recordTable);
+		const id = recordId ? new RecordId(recordTable, recordId) : new Table(recordTable);
 
 		let response: QueryResponse[];
 
@@ -80,26 +78,20 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				out: to,
 			};
 
-			response = await executeQuery(
-				/* surql */ `RELATE $from->$id->$to CONTENT $content`,
-				{ from, id, to, content },
-			);
+			response = await executeQuery(/* surql */ `RELATE $from->$id->$to CONTENT $content`, {
+				from,
+				id,
+				to,
+				content,
+			});
 		} else {
-			response = await executeQuery(
-				/* surql */ `CREATE $id CONTENT $body`,
-				{ id, body },
-			);
+			response = await executeQuery(/* surql */ `CREATE $id CONTENT $body`, { id, body });
 		}
 
 		const errors = response.flatMap((r) => {
 			if (r.success) return [];
 
-			return [
-				(r.result as string).replace(
-					"There was a problem with the database: ",
-					"",
-				),
-			];
+			return [(r.result as string).replace("There was a problem with the database: ", "")];
 		});
 
 		setErrors(errors);
@@ -146,23 +138,37 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				},
 			}}
 		>
-			<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
+			<DrawerResizer
+				minSize={500}
+				maxSize={1500}
+				onResize={setWidth}
+			/>
 
 			<Group gap="sm">
 				<PrimaryTitle>
-					<Icon left path={iconPlus} size="sm" />
+					<Icon
+						left
+						path={iconPlus}
+						size="sm"
+					/>
 					Record creator
 				</PrimaryTitle>
 
 				<Spacer />
 
 				{!isValid && (
-					<Badge color="red" variant="light">
+					<Badge
+						color="red"
+						variant="light"
+					>
 						Invalid content
 					</Badge>
 				)}
 
-				<ActionIcon onClick={onClose} aria-label="Close creator drawer">
+				<ActionIcon
+					onClick={onClose}
+					aria-label="Close creator drawer"
+				>
 					<Icon path={iconClose} />
 				</ActionIcon>
 			</Group>
@@ -215,10 +221,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 								<Box>
 									<Text>From record</Text>
 									{fromTables.length > 0 && (
-										<Text c="slate">
-											Valid tables:{" "}
-											{fromTables.join(", ")}
-										</Text>
+										<Text c="slate">Valid tables: {fromTables.join(", ")}</Text>
 									)}
 								</Box>
 							}
@@ -231,9 +234,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 								<Box>
 									<Text>To record</Text>
 									{toTables.length > 0 && (
-										<Text c="slate">
-											Valid tables: {toTables.join(", ")}
-										</Text>
+										<Text c="slate">Valid tables: {toTables.join(", ")}</Text>
 									)}
 								</Box>
 							}
@@ -241,7 +242,10 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					</SimpleGrid>
 				)}
 
-				<Box flex={1} pos="relative">
+				<Box
+					flex={1}
+					pos="relative"
+				>
 					<Label>Contents</Label>
 					<CodeEditor
 						pos="absolute"
@@ -250,13 +254,10 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						right={0}
 						bottom={0}
 						autoFocus
+						lineNumbers
 						value={recordBody}
 						onChange={setRecordBody}
-						extensions={[
-							surrealql(),
-							surqlLinting(),
-							lineNumbers(),
-						]}
+						extensions={[surrealql(), surqlLinting()]}
 						onMount={setCursor}
 					/>
 				</Box>

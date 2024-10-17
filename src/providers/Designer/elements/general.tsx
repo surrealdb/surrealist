@@ -11,7 +11,7 @@ const TABLE_TYPES: Selectable<TableType>[] = [
 ];
 
 export function GeneralElement({ data, setData }: ElementProps) {
-	const tables = useTableNames("TABLE");
+	const tables = useTableNames();
 
 	return (
 		<Accordion.Item value="general">
@@ -68,6 +68,16 @@ export function GeneralElement({ data, setData }: ElementProps) {
 								onChange={(value) =>
 									setData((draft) => {
 										draft.schema.kind.out = value;
+									})
+								}
+							/>
+
+							<Checkbox
+								label="Enforce record existence"
+								checked={data.schema.kind.enforced ?? false}
+								onChange={(e) =>
+									setData((draft) => {
+										draft.schema.kind.enforced = e.target.checked;
 									})
 								}
 							/>

@@ -31,10 +31,11 @@ export function useIntent(
  * @param payload Optional payload
  */
 export function dispatchIntent(intent: IntentType, payload?: IntentPayload) {
-	const { setActiveView } = useConfigStore.getState();
+	const { setActiveScreen, setActiveView } = useConfigStore.getState();
 	const view = getIntentView(intent);
 
 	if (view) {
+		setActiveScreen("database");
 		setActiveView(view);
 	}
 
