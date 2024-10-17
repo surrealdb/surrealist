@@ -1,15 +1,17 @@
 import classes from "./style.module.scss";
 
 import {
-	MarkerType,
 	type Edge,
 	type EdgeChange,
 	type EdgeTypes,
+	MarkerType,
 	type Node,
 	type NodeChange,
 	type NodeTypes,
 } from "@xyflow/react";
+import type { ElkEdgeSection } from "elkjs/lib/elk-api";
 import { toBlob, toSvg } from "html-to-image";
+import { objectify } from "radash";
 import type { DiagramDirection, TableInfo } from "~/types";
 import { getSetting } from "~/util/config";
 import { extractEdgeRecords } from "~/util/schema";
@@ -17,8 +19,6 @@ import { extractKindRecords } from "~/util/surrealql";
 import { ElkStepEdge } from "./edges/ElkEdge";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
-import type { ElkEdgeSection } from "elkjs/lib/elk-api";
-import { objectify } from "radash";
 
 type EdgeWarning = {
 	type: "edge";

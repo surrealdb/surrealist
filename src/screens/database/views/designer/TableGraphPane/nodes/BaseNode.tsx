@@ -1,6 +1,6 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
-import { type MouseEvent, type ReactNode, useRef } from "react";
 import { Handle, Position, useInternalNode } from "@xyflow/react";
+import { type MouseEvent, type ReactNode, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useActiveConnection } from "~/hooks/connection";

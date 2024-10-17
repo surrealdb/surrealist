@@ -1,6 +1,6 @@
-import { useMemo } from "react";
 import { BaseEdge, type Edge, type EdgeProps, SmoothStepEdge } from "@xyflow/react";
 import type { ElkEdgeSection } from "elkjs/lib/elk-api";
+import { useMemo } from "react";
 
 export type ElkEdge = Edge<
 	{

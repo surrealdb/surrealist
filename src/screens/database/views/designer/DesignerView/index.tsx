@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
+import { ReactFlowProvider } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { ReactFlowProvider } from "@xyflow/react";
 import { Icon } from "~/components/Icon";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
