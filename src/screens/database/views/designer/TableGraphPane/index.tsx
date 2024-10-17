@@ -159,6 +159,51 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				fitView();
 			}
 		}
+
+		const lineStyle = getSetting("appearance", "lineStyle");
+
+		if (lineStyle !== "metro") {
+			return;
+		}
+
+		const uniqueChanges = new Set<string>();
+
+		for (const change of changes) {
+			if (change.type === "position") {
+				const node = nodes.find(({ id }) => id === change.id);
+
+				if (!node) {
+					continue;
+				}
+
+				const edgesToChange = edges.filter(({ target, source }) => target === node.id || source === node.id).map(({ id }) => id);
+
+				for (const edge of edgesToChange) {
+					uniqueChanges.add(edge);
+				}
+			}
+		}
+
+		if (uniqueChanges.size === 0) {
+			return;
+		}
+
+		setEdges((prev) => prev.map((edge) => {
+			if (!uniqueChanges.has(edge.id)) {
+				return edge;
+			}
+
+			return {
+				...edge,
+				data: {
+					...edge.data,
+					elkData: edge.data.elkData ? {
+						...edge.data.elkData,
+						isDragged: true,
+					} : undefined,
+				},
+			}
+		}));
 	});
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Fit view when nodes change
@@ -399,54 +444,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					nodesConnectable={false}
 					edgesFocusable={false}
 					proOptions={{ hideAttribution: true }}
-					onNodesChange={(c) => {
-						onNodesChange(c);
-
-						const lineStyle = getSetting("appearance", "lineStyle");
-
-						if (lineStyle !== "metro") {
-							return;
-						}
-
-						const changes = new Set<string>();
-
-						for (const change of c) {
-							if (change.type === "position") {
-								const node = nodes.find(({ id }) => id === change.id);
-
-								if (!node) {
-									continue;
-								}
-
-								const edgesToChange = edges.filter(({ target, source }) => target === node.id || source === node.id).map(({ id }) => id);
-
-								for (const edge of edgesToChange) {
-									changes.add(edge);
-								}
-							}
-						}
-
-						if (changes.size === 0) {
-							return;
-						}
-
-						setEdges((prev) => prev.map((edge) => {
-							if (!changes.has(edge.id)) {
-								return edge;
-							}
-
-							return {
-								...edge,
-								data: {
-									...edge.data,
-									elkData: edge.data.elkData ? {
-										...edge.data.elkData,
-										isDragged: true,
-									} : undefined,
-								},
-							}
-						}));
-					}}
+					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					className={classes.diagram}
 					style={{ opacity: computing ? 0 : 1 }}
