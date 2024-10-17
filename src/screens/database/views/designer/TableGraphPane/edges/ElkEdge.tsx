@@ -37,51 +37,73 @@ export function ElkStepEdge({
 			const _bend = Math.min(lastLength, nextLength) / 2;
 			const bendRadius = Math.max(Math.min(_bend, maxBendRadius), minBendRadius);
 
+			// NOTE: values are rounded because the values can differ by a very small amount
+			const lastRounded = {
+				x: Math.round(lastSection.x),
+				y: Math.round(lastSection.y),
+			};
+
+			const currentRounded = {
+				x: Math.round(v.x),
+				y: Math.round(v.y),
+			}
+
+			const nextRounded = {
+				x: Math.round(nextSection.x),
+				y: Math.round(nextSection.y),
+			};
+
 			if (
-				v.x === lastSection.x &&
-				nextSection.x > v.x
+				currentRounded.x === lastRounded.x &&
+				nextRounded.x > currentRounded.x
 			) {
-				if (v.y < lastSection.y) {
-					// bends to the right from the bottom
+				// Bend to the right
+				if (lastRounded.y > currentRounded.y) {
+					// From the bottom
 					return `L${v.x},${v.y + bendRadius} Q${v.x},${v.y}, ${v.x + bendRadius},${v.y}`;
 				}
 
-				// bends to the right from the top
+				// From the top
 				return `L${v.x},${v.y - bendRadius} Q${v.x},${v.y}, ${v.x + bendRadius},${v.y}`;
 			} else if (
-				v.x === lastSection.x &&
-				nextSection.x < v.x
+				currentRounded.x === lastRounded.x &&
+				nextRounded.x < currentRounded.x
 			) {
-				if (v.y < lastSection.y) {
-					// bends to the left from the bottom
+				// Bend to the left
+				if (lastRounded.y > currentRounded.y) {
+					// From the bottom
 					return `L${v.x},${v.y + bendRadius} Q${v.x},${v.y}, ${v.x - bendRadius},${v.y}`;
 				}
 
-				// bends to the left from the top
+				// From the top
 				return `L${v.x},${v.y - bendRadius} Q${v.x},${v.y}, ${v.x - bendRadius},${v.y}`;
 			} else if (
-				v.y === lastSection.y &&
-				nextSection.y > v.y
+				currentRounded.y === lastRounded.y &&
+				nextRounded.y > currentRounded.y
 			) {
-				if (v.x < lastSection.x) {
-					// bends down from the right
+				// Bend to the bottom
+				if (lastRounded.x > currentRounded.x) {
+					// From the right
 					return `L${v.x + bendRadius},${v.y} Q${v.x},${v.y}, ${v.x},${v.y + bendRadius}`;
 				}
 
-				// bends down from the left
+				// From the left
 				return `L${v.x - bendRadius},${v.y} Q${v.x},${v.y}, ${v.x},${v.y + bendRadius}`;
 			} else if (
-				v.y === lastSection.y &&
-				nextSection.y < v.y
+				currentRounded.y === lastRounded.y &&
+				nextRounded.y < currentRounded.y
 			) {
-				if (v.x < lastSection.x) {
-					// bends up from the right
+				// Bend to the top
+				if (lastRounded.x > currentRounded.x) {
+					// From the right
 					return `L${v.x + bendRadius},${v.y} Q${v.x},${v.y}, ${v.x},${v.y - bendRadius}`;
 				}
 
-				// bends up from the left
+				// From the left
 				return `L${v.x - bendRadius},${v.y} Q${v.x},${v.y}, ${v.x},${v.y - bendRadius}`;
 			}
+
+			console.error("Unknown bend direction", lastRounded, currentRounded, nextRounded);
 
 			return `L${v.x},${v.y}`;
 		}).join(' ') || "";
