@@ -25,6 +25,8 @@ import {
 	iconMemory,
 	iconPower,
 	iconQuery,
+	iconServer,
+	iconSurrealist,
 	iconTag,
 	iconTune,
 } from "~/util/icons";
@@ -163,7 +165,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 								title: "Success",
 								subtitle: "Successfully copied the hostname",
 							});
-						})
+						});
 					}}
 				>
 					Copy hostname
@@ -205,8 +207,11 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Item onClick={() => onConnect("surrealist", value)}>
-					Open in Surrealist...
+				<Menu.Item
+					leftSection={<Icon path={iconServer} />}
+					onClick={() => onConnect("surrealist", value)}
+				>
+					Open in Surrealist
 				</Menu.Item>
 				<Menu.Divider />
 				<Menu.Item
@@ -233,7 +238,10 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 			className={classes.root}
 			gap="sm"
 		>
-			<Group align="start" mb="sm">
+			<Group
+				align="start"
+				mb="sm"
+			>
 				<Box>
 					<Group>
 						<Text

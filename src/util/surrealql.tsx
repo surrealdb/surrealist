@@ -1,5 +1,6 @@
 import { SurrealQL, Value } from "@surrealdb/ql-wasm";
 import { decodeCbor, encodeCbor, escape_ident } from "surrealdb";
+import { DATASETS } from "~/constants";
 
 /**
  * Validate a query and return an error message if invalid
@@ -177,4 +178,20 @@ export function parseIdent(ident: string) {
  */
 export function compareIdents(a: string, b: string) {
 	return parseIdent(a) === parseIdent(b);
+}
+
+/**
+ * Parse a dataset URL from a source string
+ *
+ * @param source A path to a dataset or known dataset identifier
+ * @returns The dataset URL
+ */
+export function parseDatasetURL(source: string) {
+	const path = source.startsWith("/") ? source : DATASETS[source]?.path;
+
+	if (!path) {
+		throw new Error("Invalid dataset source");
+	}
+
+	return new URL(path, "https://datasets.surrealdb.com");
 }

@@ -153,6 +153,10 @@ export function buildDefinitionQueries({
 			query += ` DEFAULT ${field.default}`;
 		}
 
+		if (field.readonly) {
+			query += " READONLY";
+		}
+
 		query += " PERMISSIONS";
 		query += buildPermission("create", field.permissions.create);
 		query += buildPermission("select", field.permissions.select);

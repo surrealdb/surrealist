@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Button,
@@ -11,9 +13,9 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
 import { useInputState } from "@mantine/hooks";
-import { useQuery } from "@tanstack/react-query";
-import type { SyntheticEvent } from "react";
+import { type MouseEvent, type SyntheticEvent, useMemo } from "react";
 import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -21,14 +23,13 @@ import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useNamespaceSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { getAuthLevel } from "~/util/connection";
-import { fetchDatabaseList } from "~/util/databases";
+import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
-import { escapeIdent } from "~/util/surrealql";
+import { escapeIdent, parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
-import classes from "./style.module.scss";
 
 export interface DatabaseProps {
 	value: string;
@@ -78,7 +79,10 @@ function Database({ value, isActive, onOpen, onRemove }: DatabaseProps) {
 					aria-label="Remove database"
 					size="xs"
 				>
-					<Icon path={iconClose} size="sm" />
+					<Icon
+						path={iconClose}
+						size="sm"
+					/>
 				</ActionIcon>
 			}
 		>
@@ -95,16 +99,20 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
+	const schema = useNamespaceSchema();
 
 	const namespace = connection.lastNamespace;
 	const level = getAuthLevel(connection.authentication);
 
-	const { data, refetch } = useQuery({
-		queryKey: ["databases", connection.id, namespace, opened],
-		enabled: connected && !!namespace,
-		queryFn: () => fetchDatabaseList(namespace),
-		initialData: [],
-	});
+	const databases = useMemo(() => {
+		const authDB = getAuthDB(connection.authentication);
+
+		if (authDB) {
+			return [authDB];
+		}
+
+		return schema.databases.map((db) => parseIdent(db.name));
+	}, [schema, connection.authentication]);
 
 	const openDatabase = (db: string) => {
 		if (connection.lastDatabase !== db) {
@@ -126,74 +134,102 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	const createDatabase = useStable(async () => {
 		await executeQuery(`DEFINE DATABASE ${escapeIdent(databaseName)}`);
 
-		refetch();
-
 		creatorHandle.close();
 		openDatabase(databaseName);
 	});
 
+	const willCreate = (level === "root" || level === "namespace") && databases.length === 0;
+
 	return (
 		<>
-			<Menu
-				opened={opened}
-				onChange={openHandle.set}
-				trigger="click"
-				position="bottom"
-				transitionProps={{
-					transition: "scale-y",
-				}}
-			>
-				<Menu.Target>
-					<Button
-						px="sm"
-						variant={connection.lastDatabase ? "subtle" : "light"}
-						color="slate"
-						leftSection={<Icon path={iconDatabase} />}
-						{...buttonProps}
+			{willCreate ? (
+				<Button
+					px="sm"
+					color="slate"
+					variant="light"
+					leftSection={<Icon path={iconDatabase} />}
+					onClick={openCreator}
+					{...buttonProps}
+				>
+					<Text
+						truncate
+						fw={600}
+						maw={200}
 					>
-						<Text truncate fw={600} maw={200}>
-							{connection.lastDatabase || "Select database"}
-						</Text>
-					</Button>
-				</Menu.Target>
-				<Menu.Dropdown w={250}>
-					<Stack flex={1} p="sm">
-						<Group>
-							<Text flex={1} fw={600} c="bright">
-								Databases
-							</Text>
-							<ActionIcon
-								color="slate"
-								variant="light"
-								disabled={!connected || level !== "root"}
-								onClick={openCreator}
+						Create database
+					</Text>
+				</Button>
+			) : (
+				<Menu
+					opened={opened}
+					onChange={openHandle.set}
+					trigger="click"
+					position="bottom"
+					transitionProps={{
+						transition: "scale-y",
+					}}
+				>
+					<Menu.Target>
+						<Button
+							px="sm"
+							variant={connection.lastDatabase ? "subtle" : "light"}
+							color="slate"
+							leftSection={<Icon path={iconDatabase} />}
+							{...buttonProps}
+						>
+							<Text
+								truncate
+								fw={600}
+								maw={200}
 							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
-						</Group>
-						<Divider />
-						<ScrollArea.Autosize mah={250}>
-							{data.length === 0 ? (
-								<Text c="slate">No databases defined</Text>
-							) : (
-								<Stack gap="xs">
-									{data.map((db) => (
-										<Database
-											key={db}
-											value={db}
-											isActive={
-												db === connection.lastDatabase
-											}
-											onOpen={() => openDatabase(db)}
-											onRemove={openHandle.close}
-										/>
-									))}
-								</Stack>
-							)}
-						</ScrollArea.Autosize>
-					</Stack>
-				</Menu.Dropdown>
-			</Menu>
+								{connection.lastDatabase || "Select database"}
+							</Text>
+						</Button>
+					</Menu.Target>
+					<Menu.Dropdown w={250}>
+						<Stack
+							flex={1}
+							p="sm"
+						>
+							<Group>
+								<Text
+									flex={1}
+									fw={600}
+									c="bright"
+								>
+									Databases
+								</Text>
+								<ActionIcon
+									color="slate"
+									variant="light"
+									disabled={!connected || (level !== "root" && level !== "namespace")}
+									onClick={openCreator}
+								>
+									<Icon path={iconPlus} />
+								</ActionIcon>
+							</Group>
+							<Divider />
+							<ScrollArea.Autosize mah={250}>
+								{databases.length === 0 ? (
+									<Text c="slate">No databases defined</Text>
+								) : (
+									<Stack gap="xs">
+										{databases.map((db) => (
+											<Database
+												key={db}
+												value={db}
+												isActive={db === connection.lastDatabase}
+												onOpen={() => openDatabase(db)}
+												onRemove={openHandle.close}
+											/>
+										))}
+									</Stack>
+								)}
+							</ScrollArea.Autosize>
+						</Stack>
+					</Menu.Dropdown>
+				</Menu>
+			)}
 
 			<Modal
 				opened={showCreator}
@@ -205,8 +241,8 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 				<Form onSubmit={createDatabase}>
 					<Stack>
 						<Text>
-							Databases represent isolated containers within a
-							namespace encompassing schemas, tables, and records.
+							Databases represent isolated containers within a namespace encompassing
+							schemas, tables, and records.
 						</Text>
 						<TextInput
 							placeholder="Enter database name"

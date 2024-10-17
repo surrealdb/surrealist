@@ -45,6 +45,7 @@ import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
+import { useLineNumberSetting, useSetting } from "~/hooks/config";
 import { useMinimumVersion } from "~/hooks/connection";
 import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
@@ -65,9 +66,18 @@ export interface EditorPanelProps {
 	onDelete: (name: string) => void;
 }
 
-export function EditorPanel({ handle, details, error, isCreating, onChange, onDelete }: EditorPanelProps) {
+export function EditorPanel({
+	handle,
+	details,
+	error,
+	isCreating,
+	onChange,
+	onDelete,
+}: EditorPanelProps) {
 	const isLight = useIsLight();
 	const fullName = `fn::${details.name}()`;
+
+	const [hasLineNumbers] = useLineNumberSetting();
 
 	const [hasReturns] = useMinimumVersion(SDB_2_0_0);
 	const [argToFocus, setArgtoFocus] = useState(-1);
@@ -140,7 +150,10 @@ export function EditorPanel({ handle, details, error, isCreating, onChange, onDe
 				align="stretch"
 				gap="md"
 			>
-				<Stack flex={1} gap={0}>
+				<Stack
+					flex={1}
+					gap={0}
+				>
 					{error && (
 						<Alert
 							icon={<Icon path={iconWarning} />}
@@ -153,25 +166,30 @@ export function EditorPanel({ handle, details, error, isCreating, onChange, onDe
 							{error}
 						</Alert>
 					)}
-					<CodeEditor
+					<Box
 						flex={1}
-						h="100%"
-						value={details.block}
-						autoFocus
-						onChange={(value) =>
-							onChange((draft: any) => {
-								draft.block = value;
-							})
-						}
-						extensions={[
-							surrealql(),
-							surqlLinting(),
-							surqlVariableCompletion(resolveVariables),
-							surqlCustomFunctionCompletion(),
-							surqlTableCompletion(),
-							lineNumbers(),
-						]}
-					/>
+						pos="relative"
+					>
+						<CodeEditor
+							inset={0}
+							pos="absolute"
+							value={details.block}
+							autoFocus
+							lineNumbers={hasLineNumbers("functions")}
+							onChange={(value) =>
+								onChange((draft: any) => {
+									draft.block = value;
+								})
+							}
+							extensions={[
+								surrealql(),
+								surqlLinting(),
+								surqlVariableCompletion(resolveVariables),
+								surqlCustomFunctionCompletion(),
+								surqlTableCompletion(),
+							]}
+						/>
+					</Box>
 				</Stack>
 				<Divider orientation="vertical" />
 				<Flex

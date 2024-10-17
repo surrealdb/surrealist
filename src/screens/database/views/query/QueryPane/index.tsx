@@ -1,13 +1,3 @@
-import { Prec, type SelectionRange } from "@codemirror/state";
-import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
-import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { surrealql } from "@surrealdb/codemirror";
-import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
-import { ContentPane } from "~/components/Pane";
-import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import {
 	runQueryKeymap,
 	selectionChanged,
@@ -17,6 +7,16 @@ import {
 	surqlTableCompletion,
 	surqlVariableCompletion,
 } from "~/editor";
+
+import { Prec, type SelectionRange } from "@codemirror/state";
+import { type EditorView, keymap } from "@codemirror/view";
+import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
+import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -24,22 +24,17 @@ import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import {
-	iconAutoFix,
-	iconDollar,
-	iconServer,
-	iconStar,
-	iconText,
-	iconWarning,
-} from "~/util/icons";
+import { iconAutoFix, iconDollar, iconServer, iconStar, iconText, iconWarning } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
+import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
-	square?: boolean;
+	lineNumbers: boolean;
+	corners?: string;
 	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
 	onSaveQuery: () => void;
@@ -54,7 +49,8 @@ export function QueryPane({
 	selection,
 	switchPortal,
 	setShowVariables,
-	square,
+	lineNumbers,
+	corners,
 	onSaveQuery,
 	onSelectionChange,
 	onEditorMounted,
@@ -76,9 +72,7 @@ export function QueryPane({
 		try {
 			const query = hasSelection
 				? activeTab.query.slice(0, selection.from) +
-					formatQuery(
-						activeTab.query.slice(selection.from, selection.to),
-					) +
+					formatQuery(activeTab.query.slice(selection.from, selection.to)) +
 					activeTab.query.slice(selection.to)
 				: formatQuery(activeTab.query);
 
@@ -104,9 +98,7 @@ export function QueryPane({
 		const query = activeTab.query;
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(query).filter(
-			(v) => !currentKeys.includes(v),
-		);
+		const variables = extractVariables(query).filter((v) => !currentKeys.includes(v));
 
 		const newVars = variables.reduce(
 			(acc, v) => {
@@ -129,7 +121,7 @@ export function QueryPane({
 	});
 
 	const resolveVariables = useStable(() => {
-		return Object.keys(tryParseParams(activeTab.variables))
+		return Object.keys(tryParseParams(activeTab.variables));
 	});
 
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
@@ -142,7 +134,7 @@ export function QueryPane({
 		<ContentPane
 			title="Query"
 			icon={iconServer}
-			radius={square ? 0 : undefined}
+			radius={corners}
 			rightSection={
 				switchPortal ? (
 					<OutPortal node={switchPortal} />
@@ -160,7 +152,8 @@ export function QueryPane({
 									</ThemeIcon>
 								</HoverCard.Target>
 								<HoverCard.Dropdown maw={225}>
-									This query exceeds the maximum length to be saved in the query history. 
+									This query exceeds the maximum length to be saved in the query
+									history.
 								</HoverCard.Dropdown>
 							</HoverCard>
 						)}
@@ -175,9 +168,7 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip
-							label={`Format ${hasSelection ? "selection" : "query"}`}
-						>
+						<Tooltip label={`Format ${hasSelection ? "selection" : "query"}`}>
 							<ActionIcon
 								onClick={handleFormat}
 								variant="light"
@@ -193,7 +184,10 @@ export function QueryPane({
 							label={
 								<Stack gap={4}>
 									<Text>Infer variables from query</Text>
-									<Text c="dimmed" size="sm">
+									<Text
+										c="dimmed"
+										size="sm"
+									>
 										Automatically add missing variables.
 									</Text>
 								</Stack>
@@ -208,21 +202,11 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip
-							label={
-								showVariables
-									? "Hide variables"
-									: "Show variables"
-							}
-						>
+						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
 							<ActionIcon
 								onClick={toggleVariables}
 								variant="light"
-								aria-label={
-									showVariables
-										? "Hide variables"
-										: "Show variables"
-								}
+								aria-label={showVariables ? "Hide variables" : "Show variables"}
 							>
 								<Icon path={iconDollar} />
 							</ActionIcon>
@@ -236,6 +220,7 @@ export function QueryPane({
 				onChange={scheduleSetQuery}
 				historyKey={activeTab.id}
 				onMount={onEditorMounted}
+				lineNumbers={lineNumbers}
 				extensions={[
 					surrealql(),
 					surqlLinting(),
@@ -244,7 +229,6 @@ export function QueryPane({
 					surqlVariableCompletion(resolveVariables),
 					surqlCustomFunctionCompletion(),
 					selectionChanged(setSelection),
-					lineNumbers(),
 					Prec.high(keymap.of(runQueryKeymap)),
 				]}
 			/>

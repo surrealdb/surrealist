@@ -22,7 +22,7 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 		`,
 			rust: `
 			use serde::Serialize;
-			use surrealdb::opt::auth::Scope;
+			use surrealdb::opt::auth::Record;
 
 			#[derive(Serialize)]
 			struct Credentials<'a> {
@@ -30,10 +30,10 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 				pass: &'a str,
 			}
 
-			let jwt = db.signup(Scope {
+			let jwt = db.signup(Record {
 				namespace: ${esc_namespace},
 				database: ${esc_database},
-				scope: "user",
+				access: "user",
 				params: Credentials {
 					email: "info@surrealdb.com",
 					pass: "123456",

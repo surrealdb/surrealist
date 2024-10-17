@@ -16,7 +16,7 @@ export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
 					out there, instead works with them to ease the storage,
 					loading, and execution of models. Someone using SurrealML
 					will be able to train their model in a chosen framework in
-					Python, save their model, and load and execute the model in
+					Python, save the model, and load and execute it in
 					either Python or Rust. You can use SurrealML within your
 					database connection to store and execute trained ML models
 					using{" "}

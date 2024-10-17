@@ -87,7 +87,7 @@ export function DataExportModal() {
 			opened={isOpen}
 			onClose={openedHandle.close}
 			size="sm"
-			title={<PrimaryTitle>Export data</PrimaryTitle>}
+			title={<PrimaryTitle>Export database</PrimaryTitle>}
 		>
 			<Stack gap="xl">
 				<Text>
@@ -99,7 +99,8 @@ export function DataExportModal() {
 					title="Notice"
 					color="orange"
 				>
-					Export customization is currently unavailable as it is being integrated directly into SurrealDB
+					Export customization is currently unavailable as it is being integrated directly
+					into SurrealDB
 				</Alert>
 
 				<Stack>

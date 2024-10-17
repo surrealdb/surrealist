@@ -9,7 +9,7 @@ import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { GQL_SUPPORTED } from "~/constants";
-import { executeGraphqlEditorQuery } from "~/editor/commands";
+import { executeGraphqlEditorQuery } from "~/editor/query";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
 import { useStable } from "~/hooks/stable";
@@ -85,12 +85,13 @@ export function GraphqlView() {
 	);
 
 	useIntent("run-graphql-query", () => {});
-	useIntent("toggle-graphql-variables", () =>
-		setShowVariables(!showVariables),
-	);
+	useIntent("toggle-graphql-variables", () => setShowVariables(!showVariables));
 
 	return isAvailable ? (
-		<Stack gap="md" h="100%">
+		<Stack
+			gap="md"
+			h="100%"
+		>
 			<PanelGroup direction="horizontal">
 				<Panel minSize={15}>
 					<PanelGroup direction="vertical">
@@ -110,7 +111,10 @@ export function GraphqlView() {
 						{showVariables && (
 							<>
 								<PanelDragger />
-								<Panel defaultSize={40} minSize={35}>
+								<Panel
+									defaultSize={40}
+									minSize={35}
+								>
 									<VariablesPaneLazy
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
@@ -122,7 +126,10 @@ export function GraphqlView() {
 					</PanelGroup>
 				</Panel>
 				<PanelDragger>
-					<Center pos="relative" h="100%">
+					<Center
+						pos="relative"
+						h="100%"
+					>
 						<Paper
 							className={classes.sendCircle}
 							bg={isLight ? "slate.0" : "slate.9"}
@@ -142,7 +149,10 @@ export function GraphqlView() {
 									isValid && classes.sendButtonValid,
 								)}
 							>
-								<Icon path={iconCursor} size="lg" />
+								<Icon
+									path={iconCursor}
+									size="lg"
+								/>
 							</ActionIcon>
 						</Paper>
 					</Center>
@@ -153,27 +163,29 @@ export function GraphqlView() {
 			</PanelGroup>
 		</Stack>
 	) : (
-		<Introduction title="GraphQL" icon={iconGraphql}>
+		<Introduction
+			title="GraphQL"
+			icon={iconGraphql}
+		>
 			<Text>
-				The GraphQL view provides a fully interactive environment for
-				executing GraphQL queries against your database.
+				The GraphQL view provides a fully interactive environment for executing GraphQL
+				queries against your database.
 			</Text>
-			<Group gap="sm" c="pink">
+			<Group
+				gap="sm"
+				c="pink"
+			>
 				<Icon path={iconWarning} />
 				<Text>
 					GraphQL is not supported{" "}
-					{isSandbox
-						? "in the sandbox"
-						: "by your current connection"}
+					{isSandbox ? "in the sandbox" : "by your current connection"}
 				</Text>
 			</Group>
 			<Button
 				color="slate"
 				variant="light"
 				rightSection={<Icon path={iconOpen} />}
-				onClick={() =>
-					adapter.openUrl("https://surrealdb.com/docs/surrealist")
-				}
+				onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
 			>
 				Learn more
 			</Button>

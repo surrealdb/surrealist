@@ -230,13 +230,13 @@ export function QueryPane({
 					value={connection.graphqlQuery}
 					onChange={scheduleSetQuery}
 					onMount={onEditorMount}
+					lineNumbers
 					extensions={[
 						graphql(undefined, {
 							onFillAllFields: handleFillFields,
 						}),
 						graphqlParser(),
 						// graphqlFillFields(),
-						lineNumbers(),
 						Prec.high(keymap.of([...runGraphqlQueryKeymap, ...graphqlSuggestions])),
 					]}
 				/>
@@ -244,7 +244,7 @@ export function QueryPane({
 				<Alert
 					color="red.3"
 					icon={<Icon path={iconGraphql} />}
-					title="GraphQL is not enabled on the remote instance"
+					title="GraphQL is not enabled on this remote instance"
 				>
 					<Stack>
 						Visit the SurrealDB documentation to learn how to enable GraphQL on your

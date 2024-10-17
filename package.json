@@ -1,12 +1,10 @@
 {
 	"name": "surrealist",
 	"private": true,
-	"version": "3.0.4",
+	"version": "3.0.8",
 	"surreal": "2.0.0",
 	"type": "module",
-	"authors": [
-		"SurrealDB"
-	],
+	"authors": ["SurrealDB"],
 	"scripts": {
 		"build": "tsc && vite build",
 		"build:desktop": "tsc && vite build -c vite.config.desktop.ts",
@@ -51,8 +49,8 @@
 		"@replit/codemirror-indentation-markers": "^6.5.0",
 		"@surrealdb/codemirror": "1.0.0-beta.11",
 		"@surrealdb/lezer": "1.0.0-beta.5",
-		"@surrealdb/ql-wasm": "0.2.0-beta.6",
-		"@surrealdb/wasm": "1.0.0-beta.23",
+		"@surrealdb/ql-wasm": "0.2.0-beta.7",
+		"@surrealdb/wasm": "1.0.0",
 		"@tanstack/react-query": "^5.37.1",
 		"@tauri-apps/api": "2.0.0-rc.4",
 		"@tauri-apps/plugin-deep-link": "2.0.0-rc.1",
@@ -65,13 +63,13 @@
 		"@tauri-apps/plugin-shell": "2.0.0-rc.1",
 		"@tauri-apps/plugin-updater": "2.0.0-rc.2",
 		"@theopensource-company/feature-flags": "^0.4.6",
+		"@xyflow/react": "^12.3.2",
 		"ansi-to-html": "^0.7.2",
 		"clsx": "^2.1.0",
 		"cm6-graphql": "^0.1.1",
 		"codemirror": "^6.0.1",
 		"compare-versions": "^6.1.1",
 		"dayjs": "^1.11.9",
-		"dedent": "^1.5.1",
 		"elkjs": "^0.9.1",
 		"escape-string-regexp": "^5.0.0",
 		"fast-deep-equal": "^3.1.3",
@@ -93,7 +91,6 @@
 		"react-leaflet": "^4.2.1",
 		"react-resizable-panels": "^2.0.5",
 		"react-reverse-portal": "^2.1.1",
-		"reactflow": "^11.10.4",
 		"rss-parser": "^3.13.0",
 		"surrealdb": "^1.0.4",
 		"use-immer": "^0.9.0",
@@ -121,7 +118,6 @@
 	},
 	"pnpm": {
 		"patchedDependencies": {
-			"@reactflow/core@11.11.4": "patches/@reactflow__core@11.11.4.patch",
 			"graphql@16.9.0": "patches/graphql@16.9.0.patch"
 		}
 	}

@@ -1,3 +1,14 @@
+import {
+	iconBroadcastOff,
+	iconBroadcastOn,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconHammer,
+	iconHelp,
+	iconPlus,
+} from "~/util/icons";
+
 import { Center, Text } from "@mantine/core";
 import { Accordion, Badge, Group, ScrollArea, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -9,23 +20,13 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
-import { type Formatter, useValueFormatter } from "~/hooks/surrealql";
+import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
 import { useInspector } from "~/providers/Inspector";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import type { LiveMessage, TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import {
-	iconBroadcastOff,
-	iconBroadcastOn,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconHammer,
-	iconHelp,
-	iconPlus,
-} from "~/util/icons";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],
@@ -64,7 +65,7 @@ export interface CombinedJsonPreviewProps {
 }
 
 export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
-	const [format] = useValueFormatter();
+	const [format] = useResultFormatter();
 	const { inspect } = useInspector();
 
 	const contents = useMemo(() => {
@@ -87,7 +88,7 @@ export interface SingleJsonPreviewProps {
 }
 
 export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
-	const [format] = useValueFormatter();
+	const [format] = useResultFormatter();
 	const { inspect } = useInspector();
 	const contents = useMemo(() => attemptFormat(format, result), [result, format]);
 
@@ -110,7 +111,7 @@ export function LivePreview({ query, isLive }: LivePreviewProps) {
 	const { inspect } = useInspector();
 
 	const { showContextMenu } = useContextMenu();
-	const [format] = useValueFormatter();
+	const [format] = useResultFormatter();
 
 	useRefreshTimer(30_000);
 

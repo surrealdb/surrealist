@@ -15,6 +15,7 @@ import {
 	Switch,
 	Text,
 	TextInput,
+	UnstyledButton,
 } from "@mantine/core";
 
 import { Stack } from "@mantine/core";
@@ -95,11 +96,10 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 
 	const [scripting, setScripting] = useState(false);
 	const [guestAccess, setGuestAccess] = useState(false);
-	const [liveQueries, setLiveQueries] = useState(false);
-	const [enabledRpcs, setEnabledRpcs] = useState<string[]>([]);
-	const [enabledEndpoints, setEnabledEndpoints] = useState<string[]>([]);
+	const [enabledRpcs, setEnabledRpcs] = useState<string[]>(RPCS);
+	const [enabledEndpoints, setEnabledEndpoints] = useState<string[]>(ENDPOINTS);
 	const [networkAccess, setNetworkAccess] = useState({ base: false, overrides: [] as string[] });
-	const [functions, setFunctions] = useState({ base: false, overrides: [] as string[] });
+	const [functions, setFunctions] = useState({ base: true, overrides: [] as string[] });
 
 	const rpcs = useMemo(() => {
 		return RPCS.map((rpc) => ({
@@ -118,8 +118,8 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 	return (
 		<Stack>
 			<Text mb="lg">
-				You can configure the capabilities of this instance to control fine-grained access to
-				individual features, functions, and endpoints. 
+				You can configure the capabilities of this instance to control fine-grained access
+				to individual features, functions, and endpoints.
 			</Text>
 
 			<Alert
@@ -150,14 +150,6 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 						disabled
 					/>
 
-					<BinaryCapability
-						name="Live Queries"
-						description="Allow clients to subscribe to live query updates"
-						value={liveQueries}
-						onChange={setLiveQueries}
-						disabled
-					/>
-
 					<OptionsCapability
 						data={rpcs}
 						name="Enabled RPCs"
@@ -178,8 +170,8 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 
 					<GranularCapability
 						name="Network access"
-						description="Configure outbound network access to specific domains"
-						what="domains"
+						description="Configure outbound network access to specific targets"
+						what="network targets"
 						value={networkAccess}
 						onChange={setNetworkAccess}
 						disabled
@@ -308,15 +300,15 @@ function OptionsCapability({
 					)}
 				</Box>
 				<Spacer />
-				<Group
-					py="sm"
-					gap="sm"
-					onClick={expandedHandle.toggle}
-					style={{ cursor: "pointer" }}
-				>
-					<Text>{text}</Text>
-					<Icon path={iconChevronDown} />
-				</Group>
+				<UnstyledButton onClick={expandedHandle.toggle}>
+					<Group
+						py="sm"
+						gap="sm"
+					>
+						<Text>{text}</Text>
+						<Icon path={iconChevronDown} />
+					</Group>
+				</UnstyledButton>
 			</Group>
 			<Collapse in={isExpanded}>
 				<Paper
@@ -391,19 +383,19 @@ function GranularCapability({
 					)}
 				</Box>
 				<Spacer />
-				<Group
-					py="sm"
-					gap="sm"
-					onClick={expandedHandle.toggle}
-					style={{ cursor: "pointer" }}
-				>
-					<Text>
-						{value.base ? "Enabled" : "Disabled"}
-						{value.overrides.length > 0 && `, ${value.overrides.length} exceptions`}
-					</Text>
-					
-					<Icon path={iconChevronDown} />
-				</Group>
+				<UnstyledButton onClick={expandedHandle.toggle}>
+					<Group
+						py="sm"
+						gap="sm"
+					>
+						<Text>
+							{value.base ? "Enabled" : "Disabled"}
+							{value.overrides.length > 0 && `, ${value.overrides.length} exceptions`}
+						</Text>
+
+						<Icon path={iconChevronDown} />
+					</Group>
+				</UnstyledButton>
 			</Group>
 			<Collapse in={isExpanded}>
 				<Paper

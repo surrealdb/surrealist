@@ -10,14 +10,13 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
-import { sleep } from "radash";
+
 import { useState } from "react";
 import { ActionBar } from "~/components/ActionBar";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
-import { DATASETS } from "~/constants";
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
@@ -27,16 +26,13 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { DataSet } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { showInfo } from "~/util/helpers";
-import { iconChevronRight, iconFile, iconReset, iconStar } from "~/util/icons";
-import { syncConnectionSchema } from "~/util/schema";
+import { iconChevronRight, iconReset, iconStar, iconTable } from "~/util/icons";
 import { openCloudAuthentication } from "../cloud-manage/api/auth";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
-import { executeQuery, openConnection } from "./connection/connection";
+import { openConnection } from "./connection/connection";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
@@ -168,7 +164,7 @@ export function DatabaseToolbar() {
 									aria-label="Apply demo dataset"
 									loading={isDatasetLoading}
 								>
-									<Icon path={iconFile} />
+									<Icon path={iconTable} />
 								</ActionIcon>
 							</Tooltip>
 						</Menu.Target>

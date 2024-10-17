@@ -8,14 +8,15 @@ export type AlertLevel = "info" | "warning" | "important";
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type ResultMode = "table" | "single" | "combined" | "live";
+export type ResultFormat = "json" | "sql";
 export type SourceMode = "schema" | "infer";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DiagramDirection = "ltr" | "rtl";
 export type ColorScheme = "light" | "dark";
 export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type MiniAppearance = "normal" | "compact" | "plain";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
-export type ValueMode = "json" | "sql";
 export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type LineStyle = "metro" | "straight" | "smooth";
@@ -23,22 +24,14 @@ export type SchemaMode = "schemaless" | "schemafull";
 export type UrlTarget = "internal" | "external";
 export type DatabaseListMode = "list" | "grid";
 export type AuthLevel = "root" | "namespace" | "database";
+export type LineNumberTarget = "query" | "inspector" | "functions";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type AuthType = "user" | "access";
 export type AccessType = "JWT" | "RECORD";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 
-export type InstanceState =
-	| "creating"
-	| "updating"
-	| "deleting"
-	| "ready"
-	| "inactive";
-export type AuthState =
-	| "unknown"
-	| "loading"
-	| "authenticated"
-	| "unauthenticated";
+export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
+export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -77,9 +70,13 @@ export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string = string> = { label: string; value: T };
 export type Selection<T extends string = string> = Selectable<T>[];
-export type Listable<T extends string = string> = Selectable<T> & { icon: string };
+export type Listable<T extends string = string> = Selectable<T> & {
+	description?: string;
+	icon?: string;
+};
 export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
+export type Identified<T = object, I = string> = T & { id: I };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type Assign<T, O extends object> = Omit<T, keyof O> & O;
 export type AuthTarget = [AuthType, string];
@@ -148,14 +145,15 @@ export interface SurrealistAppearanceSettings {
 	colorScheme: MantineColorScheme;
 	windowScale: number;
 	editorScale: number;
+	lineNumbers: LineNumberTarget[];
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
+	defaultResultFormat: ResultFormat;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramDirection: DiagramDirection;
 	defaultDiagramShowLinks: boolean;
 	lineStyle: LineStyle;
 	sidebarMode: SidebarMode;
-	valueMode: ValueMode;
 	queryOrientation: Orientation;
 }
 
@@ -194,6 +192,7 @@ export interface TabQuery {
 	variables: string;
 	valid: boolean;
 	resultMode: ResultMode;
+	resultFormat: ResultFormat;
 	showVariables: boolean;
 }
 
@@ -249,13 +248,15 @@ export interface AccessJwt {
 	issuer: {
 		alg: string;
 		key: string;
-	},
-	verify: {
-		url: string;
-	} | {
-		alg: string;
-		key: string;
-	}
+	};
+	verify:
+		| {
+				url: string;
+		  }
+		| {
+				alg: string;
+				key: string;
+		  };
 }
 
 export interface TableView {
@@ -337,7 +338,7 @@ export interface SchemaUser {
 	duration: {
 		session: Duration;
 		token: Duration;
-	}
+	};
 }
 
 export interface SchemaAccess {
@@ -349,15 +350,17 @@ export interface SchemaAccess {
 		session: Duration;
 		token: Duration;
 	};
-	kind: {
-		kind: "JWT";
-		jwt: AccessJwt;
-	} | {
-		kind: "RECORD";
-		signin: string;
-		signup: string;
-		jwt: AccessJwt;
-	};
+	kind:
+		| {
+				kind: "JWT";
+				jwt: AccessJwt;
+		  }
+		| {
+				kind: "RECORD";
+				signin: string;
+				signup: string;
+				jwt: AccessJwt;
+		  };
 }
 
 export interface SchemaFunction {
@@ -384,14 +387,22 @@ export interface TableInfo {
 	events: SchemaEvent[];
 }
 
+export interface SchemaNamespace {
+	name: string;
+}
+
+export interface SchemaDatabase {
+	name: string;
+}
+
 export interface SchemaInfoKV {
-	namespaces: any[];
+	namespaces: SchemaNamespace[];
 	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
 
 export interface SchemaInfoNS {
-	databases: any[];
+	databases: SchemaDatabase[];
 	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
@@ -402,15 +413,15 @@ export interface SchemaInfoDB {
 	accesses: SchemaAccess[];
 	tables: SchemaTable[];
 	users: SchemaUser[];
-	analyzers: any[];	// unused
-	params: any[];		// unused
+	analyzers: any[]; // unused
+	params: any[]; // unused
 }
 
 export interface SchemaInfoTB {
 	events: SchemaEvent[];
 	fields: SchemaField[];
 	indexes: SchemaIndex[];
-	tables: any[];		// unused
+	tables: any[]; // unused
 }
 
 export interface SurrealOptions {
@@ -445,9 +456,16 @@ export interface CloudPageInfo {
 	disabled?: FeatureCondition;
 }
 
-export interface DataSet {
+export interface Dataset {
 	name: string;
-	url: string;
+	path: string;
+}
+
+export interface Driver {
+	id: CodeLang;
+	name: string;
+	icon: React.FC<{ active?: boolean }>;
+	link: string;
 }
 
 export interface CloudSignin {

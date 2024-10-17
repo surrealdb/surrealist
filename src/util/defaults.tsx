@@ -54,14 +54,15 @@ export function createBaseSettings(): SurrealistSettings {
 			colorScheme: "dark",
 			windowScale: 100,
 			editorScale: 100,
+			lineNumbers: ["query", "inspector", "functions"],
 			resultWordWrap: true,
 			defaultResultMode: "combined",
+			defaultResultFormat: "sql",
 			defaultDiagramMode: "fields",
 			defaultDiagramDirection: "ltr",
 			defaultDiagramShowLinks: false,
 			lineStyle: "metro",
 			sidebarMode: "expandable",
-			valueMode: "sql",
 			queryOrientation: "vertical",
 		},
 		templates: {
@@ -131,10 +132,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseTab(
-	settings: SurrealistSettings,
-	query?: string,
-): TabQuery {
+export function createBaseTab(settings: SurrealistSettings, query?: string): TabQuery {
 	return {
 		id: newId(),
 		query: query || "",
@@ -142,13 +140,12 @@ export function createBaseTab(
 		variables: "{}",
 		valid: query ? !validateQuery(query) : true,
 		resultMode: settings.appearance.defaultResultMode,
+		resultFormat: settings.appearance.defaultResultFormat,
 		showVariables: false,
 	};
 }
 
-export function createSandboxConnection(
-	settings: SurrealistSettings,
-): Connection {
+export function createSandboxConnection(settings: SurrealistSettings): Connection {
 	const base = createBaseConnection(settings);
 
 	return {
@@ -183,7 +180,7 @@ export function createConnectionSchema(): ConnectionSchema {
 			users: [],
 			functions: [],
 			models: [],
-		}
+		},
 	};
 }
 

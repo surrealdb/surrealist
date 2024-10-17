@@ -14,7 +14,7 @@ import { createRoot } from "react-dom/client";
 import { openConnection } from "~/screens/database/connection/connection";
 import { MiniRunScreen } from "~/screens/mini-run";
 import { startConfigSync } from "~/util/config";
-import { handleWindowMessage } from "~/util/messaging";
+import { broadcastMessage, handleWindowMessage } from "~/util/messaging";
 import { adapter } from "../adapter";
 import type { MiniAdapter } from "../adapter/mini";
 
@@ -39,7 +39,13 @@ import type { MiniAdapter } from "../adapter/mini";
 	// Connect and initialize the dataset
 	openConnection().then(() => {
 		setTimeout(() => {
-			(adapter as MiniAdapter).initializeDataset();
+			const adp = adapter as MiniAdapter;
+
+			// Initialize the mini
+			adp.initializeContent();
+
+			// Notify the parent window that the app is ready
+			adp.broadcastReady();
 		}, 150);
 	});
 
