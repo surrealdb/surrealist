@@ -10,13 +10,14 @@ import {
 
 import { Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
-import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
+import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -24,7 +25,7 @@ import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import { iconAutoFix, iconDollar, iconServer, iconStar, iconText } from "~/util/icons";
+import { iconAutoFix, iconDollar, iconServer, iconStar, iconText, iconWarning } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
 
 export interface QueryPaneProps {
@@ -139,6 +140,24 @@ export function QueryPane({
 					<OutPortal node={switchPortal} />
 				) : (
 					<Group gap="sm">
+						{activeTab.query.length > MAX_HISTORY_QUERY_LENGTH && (
+							<HoverCard position="bottom">
+								<HoverCard.Target>
+									<ThemeIcon
+										radius="xs"
+										variant="light"
+										color="orange"
+									>
+										<Icon path={iconWarning} />
+									</ThemeIcon>
+								</HoverCard.Target>
+								<HoverCard.Dropdown maw={225}>
+									This query exceeds the maximum length to be saved in the query
+									history.
+								</HoverCard.Dropdown>
+							</HoverCard>
+						)}
+
 						<Tooltip label="Save query">
 							<ActionIcon
 								onClick={onSaveQuery}
