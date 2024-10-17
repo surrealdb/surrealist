@@ -118,6 +118,10 @@ body.mod .cm-record-link:hover {
         background-origin: border-box;
         border-color: rgba(255, 255, 255, 0.3);
     }
+
+	&[data-checked] .mantine-Checkbox-icon {
+        color: white !important;
+    }
 }
 
 .mantine-Radio-root {
@@ -157,6 +161,30 @@ body.mod .cm-record-link:hover {
     @include light {
         background-color: rgba(0, 0, 0, 0.075);
     }
+}
+
+.mantine-Select-group {
+	&:not(:first-child) {
+		margin-top: var(--mantine-spacing-sm);
+	}
+
+	.mantine-Select-option {
+		padding-block: 5px;
+	}
+}
+
+.mantine-Select-groupLabel {
+	color: var(--mantine-color-dimmed);
+	font-size: var(--mantine-font-size-xs);
+	padding: 3px 9px;
+
+	&::after {
+		display: none;
+	}
+
+	@include light {
+		color: var(--mantine-color-slate-5);
+	}
 }
 
 .mantine-Slider-bar {

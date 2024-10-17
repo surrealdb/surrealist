@@ -1,3 +1,14 @@
+import {
+	iconBroadcastOff,
+	iconBroadcastOn,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconHammer,
+	iconHelp,
+	iconPlus,
+} from "~/util/icons";
+
 import { Center, Text } from "@mantine/core";
 import { Accordion, Badge, Group, ScrollArea, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -16,16 +27,6 @@ import { executeQuery } from "~/screens/database/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import type { LiveMessage, TabQuery } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import {
-	iconBroadcastOff,
-	iconBroadcastOn,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconHammer,
-	iconHelp,
-	iconPlus,
-} from "~/util/icons";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],

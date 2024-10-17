@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useStable } from "./stable";
 
 type EventFn<T> = (value: T) => void;
@@ -67,13 +67,13 @@ export function useEventSubscription<T>(
 ) {
 	const stable = useStable(callback);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		bus.listeners.add(stable);
 
 		return () => {
 			bus.listeners.delete(stable);
 		};
-	});
+	}, [bus]);
 }
 
 /**

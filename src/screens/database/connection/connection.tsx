@@ -25,7 +25,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { AuthDetails, Connection, Protocol } from "~/types";
+import type { AuthDetails, Authentication, Connection, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -50,6 +50,7 @@ export interface GraphqlResponse {
 
 let openedConnection: Connection;
 let instance = createPlaceholder();
+let accessToken = "";
 let hasFailed = false;
 let forceClose = false;
 let retryTask: any;
@@ -244,9 +245,14 @@ export async function closeConnection(state?: State) {
 export async function register(auth: ScopeAuth | AccessRecordAuth, surreal?: Surreal) {
 	const db = surreal ?? instance;
 
-	await db.signup(auth).catch(() => {
-		throw new Error("Could not sign up");
-	});
+	await db
+		.signup(auth)
+		.then((t) => {
+			accessToken = t;
+		})
+		.catch(() => {
+			throw new Error("Could not sign up");
+		});
 }
 
 /**
@@ -259,21 +265,28 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
 	const db = surreal ?? instance;
 
 	if (auth === undefined) {
+		accessToken = "";
 		await db.invalidate();
 	} else if (typeof auth === "string") {
+		accessToken = auth;
 		await db.authenticate(auth).catch(() => {
 			throw new Error("Authentication token invalid");
 		});
 	} else if (auth) {
-		await db.signin(auth).catch((err) => {
-			const { openAccessSignup } = useInterfaceStore.getState();
+		await db
+			.signin(auth)
+			.then((t) => {
+				accessToken = t;
+			})
+			.catch((err) => {
+				const { openAccessSignup } = useInterfaceStore.getState();
 
-			if (err.message.includes("No record was returned")) {
-				openAccessSignup();
-			} else {
-				throw new Error(err.message);
-			}
-		});
+				if (err.message.includes("No record was returned")) {
+					openAccessSignup();
+				} else {
+					throw new Error(err.message);
+				}
+			});
 	}
 }
 
@@ -341,7 +354,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the database",
+			subtitle: "You must be connected to the remote instance",
 		});
 		return;
 	}
@@ -487,7 +500,7 @@ export async function executeGraphql(
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the database",
+			subtitle: "You must be connected to the remote instance",
 		});
 
 		throw new Error("Not connected");
@@ -580,6 +593,66 @@ export async function activateDatabase(namespace: string, database: string) {
 	} finally {
 		await syncConnectionSchema();
 	}
+}
+
+/**
+ * NOTE - Temporary
+ */
+export async function requestDatabaseExport() {
+	const { currentState } = useDatabaseStore.getState();
+	const connection = getConnection();
+
+	if (!connection || currentState !== "connected") {
+		showError({
+			title: "Failed to export",
+			subtitle: "You must be connected to the remote instance",
+		});
+		return;
+	}
+
+	const { endpoint, headers } = composeHttpConnection(connection, "/export");
+
+	const response = await fetch(endpoint, {
+		headers,
+	});
+
+	return await response.blob();
+}
+
+/**
+ * Compose HTTP authentication headers
+ */
+export function composeHttpConnection(
+	connection: Connection,
+	path: string,
+	extraHeaders?: Record<string, string>,
+) {
+	if (!accessToken) {
+		throw new Error("No access token available");
+	}
+
+	const { protocol, hostname } = connection.authentication;
+
+	const isSecure = protocol === "https" || protocol === "wss";
+	const endpoint = new URL(
+		path,
+		`${isSecure ? "https" : "http"}://${hostname}`,
+	).toString();
+
+	const headers: Record<string, string> = {
+		...extraHeaders,
+		Authorization: `Bearer ${accessToken}`
+	};
+
+	if (connection.lastNamespace) {
+		headers["Surreal-NS"] = connection.lastNamespace;
+	}
+
+	if (connection.lastDatabase) {
+		headers["Surreal-DB"] = connection.lastDatabase;
+	}
+
+	return { endpoint, headers };
 }
 
 /**

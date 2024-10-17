@@ -151,7 +151,6 @@ export function DesignDrawer({
 				{errors.map((error) => (
 					<Alert
 						key={error}
-						className={classes.error}
 						icon={<Icon path={iconWarning} />}
 						color="red.5"
 						mb="xl"

@@ -1,5 +1,5 @@
-import type { SelectionRange } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import classes from "./style.module.scss";
+
 import {
 	Box,
 	Button,
@@ -11,6 +11,9 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
+import type { SelectionRange } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
 import { Image } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
@@ -24,11 +27,12 @@ import surrealistIcon from "~/assets/images/icon.webp";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
+import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useLogoUrl } from "~/hooks/brand";
-import { useSetting } from "~/hooks/config";
+import { useLineNumberSetting, useSetting } from "~/hooks/config";
 import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
@@ -44,7 +48,6 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import classes from "./style.module.scss";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -75,7 +78,8 @@ export function QueryView() {
 	const [saveContent, setSaveContent] = useInputState("");
 	const [saveTags, setSaveTags] = useInputState<string[]>([]);
 
-	const squareCards = adapter instanceof MiniAdapter && adapter.hideBorder;
+	const miniAppearance = adapter instanceof MiniAdapter ? adapter.appearance : "normal";
+	const miniCorners = adapter instanceof MiniAdapter ? adapter.corners : undefined;
 
 	const handleSaveRequest = useStable(async () => {
 		if (!active) {
@@ -133,8 +137,11 @@ export function QueryView() {
 		setShowVariables(false);
 	});
 
-	const variablesOrientation =
-		orientation === "horizontal" ? "vertical" : "horizontal";
+	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
+
+	const [hasLineNumbers] = useLineNumberSetting();
+	const hideLineNumbers =
+		adapter instanceof MiniAdapter ? adapter.nonumbers : !hasLineNumbers("query");
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
@@ -154,16 +161,19 @@ export function QueryView() {
 							switchPortal={switchPortal}
 							setIsValid={setVariablesValid}
 							closeVariables={closeVariables}
-							square={squareCards}
+							editor={editor}
+							corners={miniCorners}
+							lineNumbers={!hideLineNumbers}
 						/>
 					) : (
 						<QueryPaneLazy
-							square={squareCards}
+							corners={miniCorners}
 							activeTab={active}
 							setIsValid={setQueryValid}
 							switchPortal={switchPortal}
 							selection={selection}
 							showVariables={showVariables}
+							lineNumbers={!hideLineNumbers}
 							onSaveQuery={handleSaveRequest}
 							setShowVariables={setShowVariables}
 							onSelectionChange={setSelection}
@@ -172,12 +182,17 @@ export function QueryView() {
 					)
 				) : (
 					<PanelGroup direction={variablesOrientation}>
-						<Panel minSize={35}>
+						<Panel
+							id="query"
+							order={0}
+							minSize={35}
+						>
 							<QueryPaneLazy
 								activeTab={active}
 								setIsValid={setQueryValid}
 								showVariables={showVariables}
 								selection={selection}
+								lineNumbers={!hideLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
 								onSelectionChange={setSelection}
@@ -187,11 +202,18 @@ export function QueryView() {
 						{showVariables && (
 							<>
 								<PanelDragger />
-								<Panel defaultSize={40} minSize={35}>
+								<Panel
+									id="variables"
+									order={1}
+									defaultSize={40}
+									minSize={35}
+								>
 									<VariablesPaneLazy
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
 										closeVariables={closeVariables}
+										lineNumbers={!hideLineNumbers}
+										editor={editor}
 									/>
 								</Panel>
 							</>
@@ -206,14 +228,17 @@ export function QueryView() {
 					isQueryValid={queryValid}
 					selection={selection}
 					editor={editor}
-					square={squareCards}
+					corners={miniCorners}
 				/>
 			</Panel>
 		</PanelGroup>
 	);
 
 	return (
-		<Stack gap="md" h="100%">
+		<Stack
+			gap="md"
+			h="100%"
+		>
 			<InPortal node={switchPortal}>
 				<SegmentedControl
 					data={["Query", "Variables"]}
@@ -226,15 +251,22 @@ export function QueryView() {
 
 			{isMini ? (
 				<>
-					{!(adapter as MiniAdapter).hideTitlebar && (
+					{miniAppearance === "normal" && (
 						<Group>
-							<Image
-								src={logoUrl}
-								style={{ pointerEvents: "none" }}
-								height={20}
-								width={20}
-							/>
-							<Image h={16} src={surrealistIcon} />
+							<Link href="https://surrealdb.com/surrealist">
+								<Group>
+									<Image
+										h={16}
+										src={surrealistIcon}
+									/>
+									<Image
+										src={logoUrl}
+										style={{ pointerEvents: "none" }}
+										height={20}
+										width={20}
+									/>
+								</Group>
+							</Link>
 							<Spacer />
 						</Group>
 					)}
@@ -280,11 +312,7 @@ export function QueryView() {
 				opened={isSaving}
 				onClose={isSavingHandle.close}
 				trapFocus={false}
-				title={
-					<PrimaryTitle>
-						{editingId ? "Edit saved query" : "Save query"}
-					</PrimaryTitle>
-				}
+				title={<PrimaryTitle>{editingId ? "Edit saved query" : "Save query"}</PrimaryTitle>}
 			>
 				<Form onSubmit={handleSaveQuery}>
 					<Stack>
@@ -304,7 +332,11 @@ export function QueryView() {
 							label={
 								<Group gap={4}>
 									Labels
-									<Text span size="xs" c="slate">
+									<Text
+										span
+										size="xs"
+										c="slate"
+									>
 										(optional)
 									</Text>
 								</Group>

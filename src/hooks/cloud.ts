@@ -2,11 +2,13 @@ import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
 import {
 	checkSessionExpiry,
+	invalidateSession,
 	refreshAccess,
 	verifyAuthentication,
 } from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
+import { featureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./url";
 
@@ -82,8 +84,8 @@ export function useCloudAuthentication() {
 		);
 	}, []);
 
-	// React to callback intents
-	useIntent("cloud-callback", (payload) => {
+	// React to signin intents
+	useIntent("cloud-signin", (payload) => {
 		const { code, state } = payload;
 
 		if (!code || !state) {
@@ -93,4 +95,16 @@ export function useCloudAuthentication() {
 
 		verifyAuthentication(code, state);
 	});
+
+	
+	// React to callback intents
+	useIntent("cloud-signout", () => {
+		invalidateSession();
+	});
+
+	// React to cloud activation
+	useIntent("cloud-activate", () => {
+		featureFlags.set("cloud_access", true);
+	});
+	
 }

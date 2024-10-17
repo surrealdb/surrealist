@@ -66,9 +66,9 @@ export function DocsSchemaAnalyzers({ language }: TopicProps) {
 			<div>
 				<p>
 					Analyzers are used to enable full-text search on a table
-					within your database. If you have any analzers defined for a
+					within your database. If you have any analyzers defined for a
 					table, you can use the full-text search capabilities of
-					SurrealDB. Checkout the section on{" "}
+					SurrealDB. Check out the section on{" "}
 					<Link href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
 						{" "}
 						Full Text Search for more information.

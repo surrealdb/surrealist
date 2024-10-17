@@ -152,7 +152,10 @@ export function CommandPaletteModal() {
 	useKeymap([
 		[
 			"mod+k",
-			() => {
+			(e) => {
+				// NOTE - Fix #479, needs long term solution
+				if (e.ctrlKey && adapter.platform === "darwin") return;
+
 				openHandle.open();
 			},
 		],

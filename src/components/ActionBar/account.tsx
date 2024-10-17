@@ -17,7 +17,7 @@ import { useState } from "react";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/cloud-manage/api";
-import { invalidateSession } from "~/screens/cloud-manage/api/auth";
+import { destroySession } from "~/screens/cloud-manage/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudProfile } from "~/types";
@@ -157,7 +157,7 @@ export function CloudAccount() {
 					</Menu.Item>
 					<Menu.Item
 						leftSection={<Icon path={iconExitToAp} />}
-						onClick={invalidateSession}
+						onClick={destroySession}
 					>
 						Sign out
 					</Menu.Item>

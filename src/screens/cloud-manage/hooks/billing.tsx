@@ -13,9 +13,7 @@ export function useCloudBilling(organization?: string) {
 		queryKey: ["cloud", "billing", organization],
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudBilling>(
-				`/organizations/${organization}/billing`,
-			);
+			return fetchAPI<CloudBilling>(`/organizations/${organization}/billing`);
 		},
 	});
 }

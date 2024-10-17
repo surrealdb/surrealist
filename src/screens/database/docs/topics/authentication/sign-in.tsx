@@ -13,7 +13,7 @@ export function DocsAuthSignIn({ language }: TopicProps) {
 	const esc_database = JSON.stringify(authentication.database);
 
 	const descriptions = {
-		cli: `With the SurrealDB CLI, you can only signin via system(Root, Namespace and Database) users. This example shows a command on how to signin with the username and password left blank.`,
+		cli: `With the CLI's surreal sql command, you can sign in as a system (Root, Namespace and Database) users. This example shows a command on how to sign in as a root user with the username and password left blank.`,
 		_: `With SurrealDB's SDKs, you can signin both system (Root, Namespace and Database) users and scope users. The example shows how to sigin a new user based on the credentials required for access.`,
 	};
 
@@ -83,11 +83,11 @@ export function DocsAuthSignIn({ language }: TopicProps) {
 			},
 		}).await?;
 
-		// Sign in a Scope user
+		// Sign in a Record user
 		db.signin(Scope {
 			namespace: "test",
 			database: "test",
-			scope: "user",
+			access: "user",
 			params: Credentials {
 				email: "info@surrealdb.com",
 				pass: "123456",

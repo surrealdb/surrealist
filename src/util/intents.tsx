@@ -22,6 +22,8 @@ const INTENT_REGISTRY = {
 	"decrease-editor-scale": null,
 	"toggle-pinned": null,
 	"highlight-tool": null,
+	"import-database": null,
+	"export-database": null,
 	"new-query": "query",
 	"run-query": "query",
 	"save-query": "query",
@@ -31,8 +33,6 @@ const INTENT_REGISTRY = {
 	"open-saved-queries": "query",
 	"open-query-history": "query",
 	"explore-table": "explorer",
-	"import-database": "explorer",
-	"export-database": "explorer",
 	"run-graphql-query": "graphql",
 	"format-graphql-query": "graphql",
 	"toggle-graphql-variables": "graphql",
@@ -42,7 +42,9 @@ const INTENT_REGISTRY = {
 	"create-access": "authentication",
 	"register-user": "authentication",
 	"docs-switch-language": "documentation",
-	"cloud-callback": "cloud",
+	"cloud-signin": "cloud",
+	"cloud-signout": "cloud",
+	"cloud-activate": "cloud",
 } satisfies IntentMap;
 
 export type IntentType = keyof typeof INTENT_REGISTRY;

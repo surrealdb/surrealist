@@ -15,6 +15,7 @@ export type DiagramDirection = "ltr" | "rtl";
 export type ColorScheme = "light" | "dark";
 export type Platform = "darwin" | "windows" | "linux";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type MiniAppearance = "normal" | "compact" | "plain";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
 export type Orientation = "horizontal" | "vertical";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
@@ -23,22 +24,14 @@ export type SchemaMode = "schemaless" | "schemafull";
 export type UrlTarget = "internal" | "external";
 export type DatabaseListMode = "list" | "grid";
 export type AuthLevel = "root" | "namespace" | "database";
+export type LineNumberTarget = "query" | "inspector" | "functions";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type AuthType = "user" | "access";
 export type AccessType = "JWT" | "RECORD";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 
-export type InstanceState =
-	| "creating"
-	| "updating"
-	| "deleting"
-	| "ready"
-	| "inactive";
-export type AuthState =
-	| "unknown"
-	| "loading"
-	| "authenticated"
-	| "unauthenticated";
+export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
+export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -76,8 +69,11 @@ export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string = string> = { label: string; value: T };
-export type Selection<T extends string> = Selectable<T>[];
-export type Listable<T extends string> = Selectable<T> & { description?: string, icon?: string };
+export type Selection<T extends string = string> = Selectable<T>[];
+export type Listable<T extends string = string> = Selectable<T> & {
+	description?: string;
+	icon?: string;
+};
 export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
@@ -148,6 +144,7 @@ export interface SurrealistAppearanceSettings {
 	colorScheme: MantineColorScheme;
 	windowScale: number;
 	editorScale: number;
+	lineNumbers: LineNumberTarget[];
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
 	defaultResultFormat: ResultFormat;
@@ -250,13 +247,15 @@ export interface AccessJwt {
 	issuer: {
 		alg: string;
 		key: string;
-	},
-	verify: {
-		url: string;
-	} | {
-		alg: string;
-		key: string;
-	}
+	};
+	verify:
+		| {
+				url: string;
+		  }
+		| {
+				alg: string;
+				key: string;
+		  };
 }
 
 export interface TableView {
@@ -274,6 +273,7 @@ export interface Permissions {
 
 export interface Kind {
 	kind: TableType;
+	enforced?: boolean;
 	in?: string[];
 	out?: string[];
 }
@@ -337,7 +337,7 @@ export interface SchemaUser {
 	duration: {
 		session: Duration;
 		token: Duration;
-	}
+	};
 }
 
 export interface SchemaAccess {
@@ -349,15 +349,17 @@ export interface SchemaAccess {
 		session: Duration;
 		token: Duration;
 	};
-	kind: {
-		kind: "JWT";
-		jwt: AccessJwt;
-	} | {
-		kind: "RECORD";
-		signin: string;
-		signup: string;
-		jwt: AccessJwt;
-	};
+	kind:
+		| {
+				kind: "JWT";
+				jwt: AccessJwt;
+		  }
+		| {
+				kind: "RECORD";
+				signin: string;
+				signup: string;
+				jwt: AccessJwt;
+		  };
 }
 
 export interface SchemaFunction {
@@ -402,15 +404,15 @@ export interface SchemaInfoDB {
 	accesses: SchemaAccess[];
 	tables: SchemaTable[];
 	users: SchemaUser[];
-	analyzers: any[];	// unused
-	params: any[];		// unused
+	analyzers: any[]; // unused
+	params: any[]; // unused
 }
 
 export interface SchemaInfoTB {
 	events: SchemaEvent[];
 	fields: SchemaField[];
 	indexes: SchemaIndex[];
-	tables: any[];		// unused
+	tables: any[]; // unused
 }
 
 export interface SurrealOptions {
@@ -445,9 +447,16 @@ export interface CloudPageInfo {
 	disabled?: FeatureCondition;
 }
 
-export interface DataSet {
+export interface Dataset {
 	name: string;
-	url: string;
+	path: string;
+}
+
+export interface Driver {
+	id: CodeLang;
+	name: string;
+	icon: React.FC<{ active?: boolean }>;
+	link: string;
 }
 
 export interface CloudSignin {
@@ -468,6 +477,7 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
+	compute_units: number;
 	state: InstanceState;
 	type: CloudInstanceType;
 }
@@ -477,9 +487,9 @@ export interface CloudInstanceType {
 	description: string;
 	cpu: number;
 	memory: number;
-	storage: number;
 	price_hour: number;
 	enabled?: boolean;
+	category: string;
 	compute_units: {
 		min?: number;
 		max?: number;
@@ -502,6 +512,8 @@ export interface CloudPlan {
 export interface CloudOrganization {
 	id: string;
 	name: string;
+	max_free_instances: number;
+	max_paid_instances: number;
 	billing_info: boolean;
 	payment_info: boolean;
 	plan: CloudPlan;

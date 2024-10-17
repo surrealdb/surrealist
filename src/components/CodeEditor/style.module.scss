@@ -221,10 +221,6 @@
 		}
 	}
 
-	:global(.cm-completionIcon[aria-hidden]) {
-		display: none;
-	}
-
 	:global(.cm-diagnosticText) {
 		font-family: var(--mantine-font-family-monospace);
 	}

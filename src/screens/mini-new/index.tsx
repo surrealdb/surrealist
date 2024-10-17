@@ -14,13 +14,10 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
-import {
-	DEFAULT_STATE,
-	type EmbedState,
-	Embedder,
-} from "~/components/Embedder";
+import { DEFAULT_STATE, type EmbedState, Embedder } from "~/components/Embedder";
 import { Icon } from "~/components/Icon";
 import { useLogoUrl } from "~/hooks/brand";
 import { useStable } from "~/hooks/stable";
@@ -45,9 +42,9 @@ export function MiniNewScreen() {
 		state.query = params.get("query") || state.query;
 		state.variables = params.get("variables") || state.variables;
 		state.dataset = params.get("dataset") || state.dataset;
-		state.orientation =
-			(params.get("orientation") as any) || state.orientation;
+		state.orientation = (params.get("orientation") as any) || state.orientation;
 		state.transparent = params.has("transparent") || state.transparent;
+		state.nonumbers = params.has("nonumbers") || state.nonumbers;
 
 		setParsedState(state);
 		showParseHandle.close();
@@ -75,25 +72,47 @@ export function MiniNewScreen() {
 					}}
 				>
 					<Stack py={35}>
-						<Image src={logoUrl} w={250} mx="auto" />
-						<Text ta="center" fw={600} fz="xl">
+						<Image
+							src={logoUrl}
+							w={250}
+							mx="auto"
+						/>
+						<Text
+							ta="center"
+							fw={600}
+							fz="xl"
+						>
 							Mini generator
 						</Text>
 					</Stack>
-					<Paper maw={1500} p="xl" mx="auto">
-						<SimpleGrid cols={2} spacing={52}>
+					<Paper
+						maw={1500}
+						p="xl"
+						mx="auto"
+					>
+						<SimpleGrid
+							cols={2}
+							spacing={52}
+						>
 							<Embedder
 								value={parsedState}
 								onChangeURL={setUrl}
 							/>
 							<Stack gap="lg">
 								<Box>
-									<Text fw={600} fz="lg" mb={2} c="bright">
+									<Text
+										fw={600}
+										fz="lg"
+										mb={2}
+										c="bright"
+									>
 										Mini Preview
 									</Text>
-									<Text c="slate.2" mb="lg">
-										The preview will automatically reload
-										after making changes
+									<Text
+										c="slate.2"
+										mb="lg"
+									>
+										The preview will automatically reload after making changes
 									</Text>
 									<iframe
 										ref={frame}
@@ -105,18 +124,25 @@ export function MiniNewScreen() {
 										style={{
 											border: "none",
 											borderRadius: 24,
-											backgroundColor: "black",
 										}}
 									/>
 								</Box>
 								<Divider />
 								<Box>
-									<Text fw={600} fz="lg" mb={2} c="bright">
+									<Text
+										fw={600}
+										fz="lg"
+										mb={2}
+										c="bright"
+									>
 										Restore editor
 									</Text>
-									<Text c="slate.2" mb="sm">
-										Optionally paste in an existing mini URL
-										to restore the editor
+									<Text
+										c="slate.2"
+										mb="sm"
+									>
+										Optionally paste in an existing mini URL to restore the
+										editor
 									</Text>
 									<Button
 										size="sm"
@@ -136,9 +162,7 @@ export function MiniNewScreen() {
 												placeholder="Paste your mini URL here"
 												flex={1}
 											/>
-											<ActionIcon
-												onClick={showParseHandle.close}
-											>
+											<ActionIcon onClick={showParseHandle.close}>
 												<Icon path={iconClose} />
 											</ActionIcon>
 										</Group>

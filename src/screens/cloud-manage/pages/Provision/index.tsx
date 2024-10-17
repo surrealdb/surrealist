@@ -17,15 +17,6 @@ import {
 } from "@mantine/core";
 
 import {
-	iconChevronLeft,
-	iconChevronRight,
-	iconFloppy,
-	iconMemory,
-	iconPlus,
-	iconQuery,
-} from "~/util/icons";
-
-import {
 	useAvailableInstanceTypes,
 	useAvailableInstanceVersions,
 	useAvailableRegions,
@@ -34,10 +25,10 @@ import {
 } from "~/hooks/cloud";
 
 import { useInputState } from "@mantine/hooks";
-import { range } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { CounterInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { REGION_FLAGS } from "~/constants";
@@ -45,118 +36,22 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import type { CloudInstance, CloudInstanceType } from "~/types";
+import type { CloudInstance } from "~/types";
 import { showError } from "~/util/helpers";
+import { iconChevronLeft, iconChevronRight, iconPlus } from "~/util/icons";
 import { fetchAPI } from "../../api";
+import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
+import { useCloudInstances } from "../../hooks/instances";
+import { useCloudTypeLimits } from "../../hooks/limits";
 
 const PROVISION_STEPS = [
-	{
-		title: "Instance details",
-		name: "Details",
-	},
-	{
-		title: "Select a region",
-		name: "Region",
-	},
-	{
-		title: "Select an instance type",
-		name: "Instance type",
-	},
-	{
-		title: "Select compute units",
-		name: "Compute units",
-	},
-	{
-		title: "Finalize your instance",
-		name: "Finalize",
-	},
+	"Instance details",
+	"Select a region",
+	"Select an instance type",
+	"Select compute nodes",
+	"Finalize your instance",
 ];
-
-interface InstanceTypeProps {
-	type: CloudInstanceType;
-	isActive: boolean;
-	onSelect: (type: string) => void;
-}
-
-function InstanceType({ type, isActive, onSelect }: InstanceTypeProps) {
-	return (
-		<Tile
-			isActive={isActive}
-			onClick={() => onSelect(type.slug)}
-			disabled={type.enabled === false}
-		>
-			<Group wrap="nowrap">
-				<Box flex={1}>
-					<Text
-						c="bright"
-						fw={600}
-						fz="lg"
-					>
-						{type.slug}
-					</Text>
-					<Text>{type.description}</Text>
-					{type.enabled === false && (
-						<Text c="orange">
-							This instance type is not available
-						</Text>	
-					)}
-				</Box>
-				<Box>
-					<Table>
-						<Table.Tbody>
-							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconQuery} />
-										vCPU
-									</Group>
-								</Table.Td>
-								<Table.Td
-									c="bright"
-									miw={75}
-									ta="right"
-								>
-									{type.cpu}
-								</Table.Td>
-							</Table.Tr>
-							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconMemory} />
-										Memory
-									</Group>
-								</Table.Td>
-								<Table.Td
-									c="bright"
-									miw={75}
-									ta="right"
-								>
-									{type.memory} MB
-								</Table.Td>
-							</Table.Tr>
-							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconFloppy} />
-										Storage limit
-									</Group>
-								</Table.Td>
-								<Table.Td
-									c="bright"
-									miw={75}
-									ta="right"
-								>
-									{type.storage} GB
-								</Table.Td>
-							</Table.Tr>
-						</Table.Tbody>
-					</Table>
-				</Box>
-			</Group>
-		</Tile>
-	);
-}
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
@@ -171,6 +66,9 @@ export function ProvisionPage() {
 	const instanceTypes = useAvailableInstanceTypes();
 	const versions = useAvailableInstanceVersions();
 	const regions = useAvailableRegions();
+
+	const { data: instances } = useCloudInstances(current?.id);
+	const isAvailable = useCloudTypeLimits(instances ?? []);
 
 	const [name, setName] = useInputState("");
 	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
@@ -189,6 +87,9 @@ export function ProvisionPage() {
 	const instanceInfo = useMemo(() => {
 		return instanceTypes.find((t) => t.slug === instance);
 	}, [instance, instanceTypes]);
+
+	const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
+	const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
 
 	// Is the current instance is free
 	const isFree = useMemo(() => {
@@ -244,30 +145,9 @@ export function ProvisionPage() {
 		}
 	});
 
-	// Compute unit options
-	const computeUnits = useMemo(() => {
-		if (!instanceInfo?.compute_units) {
-			return [];
-		}
-
-		const options = range(
-			instanceInfo.compute_units.min ?? 1,
-			instanceInfo.compute_units.max ?? 5,
-			(i) => ({
-				value: i.toString(),
-				label: `${i} unit${i === 1 ? "" : "s"}`,
-			}),
-		);
-
-		return [...options];
-	}, [instanceInfo?.compute_units]);
-
 	const updateInstance = (value: string) => {
-		const info = instanceTypes.find((t) => t.slug === value);
-		const minUnits = info?.compute_units?.min ?? 1;
-
 		setInstance(value);
-		setUnits(minUnits);
+		setUnits(minComputeUnits);
 	};
 
 	const previousStep = useStable(() => {
@@ -283,7 +163,9 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const estimatedCost = (isFree ? 0 : (instanceInfo?.price_hour ?? 0) * units).toFixed(2);
+	const hourlyPriceCents = isFree ? 0 : instanceInfo?.price_hour ?? 0;
+	const estimatedCost = (hourlyPriceCents / 100) * units;
+	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	useLayoutEffect(() => {
 		if (!isAuthed) {
@@ -306,7 +188,7 @@ export function ProvisionPage() {
 					return (
 						<>
 							<Group
-								key={info.title}
+								key={info}
 								wrap="nowrap"
 								c={isActive || isDone ? "bright" : isLight ? "slate.3" : "slate.5"}
 							>
@@ -326,7 +208,7 @@ export function ProvisionPage() {
 									fz="lg"
 									fw={500}
 								>
-									{info.name}
+									{info}
 								</Text>
 							</Group>
 							{index < PROVISION_STEPS.length - 1 && (
@@ -385,7 +267,7 @@ export function ProvisionPage() {
 									/>
 								</Grid.Col>
 								<Grid.Col span={4}>
-									<Text>Version</Text>
+									<Text>SurrealDB Version</Text>
 								</Grid.Col>
 								<Grid.Col span={8}>
 									<Select
@@ -407,7 +289,7 @@ export function ProvisionPage() {
 								region close to your users can improve performance.
 							</Text>
 
-							<ScrollArea mah={300}>
+							<ScrollArea.Autosize mah="calc(100vh - 350px)">
 								<Stack>
 									{regions.map((type) => (
 										<Tile
@@ -436,7 +318,7 @@ export function ProvisionPage() {
 										</Tile>
 									))}
 								</Stack>
-							</ScrollArea>
+							</ScrollArea.Autosize>
 						</Stack>
 					)}
 
@@ -449,46 +331,73 @@ export function ProvisionPage() {
 								instance. Choose a configuration that best fits your needs.
 							</Text>
 
-							<ScrollArea mah={300}>
+							<ScrollArea.Autosize mah="calc(100vh - 350px)">
 								<Stack>
 									{instanceTypes.map((type) => (
 										<InstanceType
 											key={type.slug}
 											type={type}
 											isActive={type.slug === instance}
+											isLimited={!isAvailable(type)}
 											onSelect={updateInstance}
 										/>
 									))}
 								</Stack>
-							</ScrollArea>
+							</ScrollArea.Autosize>
 						</Stack>
 					)}
 
 					{step === 3 && (
 						<Stack>
-							<PrimaryTitle>Choose compute units</PrimaryTitle>
+							<PrimaryTitle>Customise compute nodes</PrimaryTitle>
 
 							<Text mb="lg">
-								Select the number of compute units you would like to use for your
-								instance. Each compute unit provides additional processing power to
+								Select the number of compute nodes you would like to use for your
+								instance. Each compute node provides additional processing power to
 								your instance.
 							</Text>
 
-							{isFree && (
+							{hasSingleCompute ? (
 								<Alert
 									color="blue"
-									title="Upgrade to use compute units"
+									title="Upgrade to use compute nodes"
 								>
-									Compute unit upgrades are not available for free instances
+									Compute nodes are not customisable for free instances
 								</Alert>
-							)}
+							) : (
+								<>
+									{instanceInfo && (
+										<>
+											<Text
+												fw={600}
+												fz="xl"
+												c="bright"
+											>
+												Your selected instance
+											</Text>
+											<InstanceType
+												type={instanceInfo}
+												inactive
+											/>
+										</>
+									)}
+									<Text
+										mt="xl"
+										fw={600}
+										fz="xl"
+										c="bright"
+									>
+										Desired compute nodes
+									</Text>
 
-							<Select
-								data={computeUnits}
-								disabled={isFree}
-								value={units.toString()}
-								onChange={(v) => v && setUnits(Number.parseInt(v))}
-							/>
+									<CounterInput
+										value={units}
+										onChange={setUnits}
+										min={minComputeUnits}
+										max={maxComputeUnits}
+									/>
+								</>
+							)}
 						</Stack>
 					)}
 
@@ -496,7 +405,7 @@ export function ProvisionPage() {
 						<Stack>
 							<PrimaryTitle>Finalize your instance</PrimaryTitle>
 
-							<Paper p="md">
+							<Paper p="xl">
 								<Table>
 									<Table.Tbody>
 										<Table.Tr>
@@ -504,8 +413,12 @@ export function ProvisionPage() {
 											<Table.Td c="bright">{name}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
-											<Table.Td>Type</Table.Td>
+											<Table.Td>Instance Type</Table.Td>
 											<Table.Td c="bright">{instance}</Table.Td>
+										</Table.Tr>
+										<Table.Tr>
+											<Table.Td>Compute nodes</Table.Td>
+											<Table.Td c="bright">{units}</Table.Td>
 										</Table.Tr>
 										<Table.Tr>
 											<Table.Td>Region</Table.Td>
@@ -527,17 +440,35 @@ export function ProvisionPage() {
 								</Text>
 
 								<Text
-									fz={18}
-									fw={500}
-									c="bright"
+									fz={13}
+									c={isLight ? "slate.6" : "slate.2"}
 								>
-									${estimatedCost}{" "}
 									<Text
 										span
-										c={isLight ? "slate.6" : "slate.3"}
+										ml={4}
+										fz={22}
+										fw={500}
+										c="bright"
 									>
-										/hour
+										${estimatedCost.toFixed(2)}
 									</Text>
+									/hour
+								</Text>
+
+								<Text
+									fz={13}
+									c={isLight ? "slate.6" : "slate.2"}
+								>
+									Approx.
+									<Text
+										span
+										ml={4}
+										fw={500}
+										c="bright"
+									>
+										${(estimatedCost * 24 * 30).toFixed(2)}
+									</Text>
+									/month
 								</Text>
 							</Paper>
 						</Stack>

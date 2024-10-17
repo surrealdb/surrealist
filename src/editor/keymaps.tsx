@@ -1,10 +1,7 @@
 import { redo, redoSelection, undo, undoSelection } from "@codemirror/commands";
 import type { KeyBinding } from "@codemirror/view";
-import {
-	executeEditorQuery,
-	executeGraphqlEditorQuery,
-	suggestCompletions,
-} from "./commands";
+import { suggestCompletions } from "./commands";
+import { executeEditorQuery, executeGraphqlEditorQuery } from "./query";
 
 /**
  * A custom variant of the history keymap that uses

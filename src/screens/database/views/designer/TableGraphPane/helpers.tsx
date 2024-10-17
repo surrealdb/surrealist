@@ -1,12 +1,24 @@
+import classes from "./style.module.scss";
+
+import {
+	type Edge,
+	type EdgeChange,
+	type EdgeTypes,
+	MarkerType,
+	type Node,
+	type NodeChange,
+	type NodeTypes,
+} from "@xyflow/react";
+import type { ElkEdgeSection } from "elkjs/lib/elk-api";
 import { toBlob, toSvg } from "html-to-image";
-import { type Edge, type Node, type NodeChange, Position } from "reactflow";
+import { objectify } from "radash";
 import type { DiagramDirection, TableInfo } from "~/types";
 import { getSetting } from "~/util/config";
 import { extractEdgeRecords } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
+import { ElkStepEdge } from "./edges/ElkEdge";
 import { EdgeNode } from "./nodes/EdgeNode";
 import { TableNode } from "./nodes/TableNode";
-import classes from "./style.module.scss";
 
 type EdgeWarning = {
 	type: "edge";
@@ -14,6 +26,7 @@ type EdgeWarning = {
 	foreign: string;
 	direction: "in" | "out";
 };
+
 type LinkWarning = {
 	type: "link";
 	table: string;
@@ -21,20 +34,24 @@ type LinkWarning = {
 	field: string;
 };
 
-export const NODE_TYPES = {
+export const NODE_TYPES: NodeTypes = {
 	table: TableNode,
 	edge: EdgeNode,
+};
+
+export const EDGE_TYPES: EdgeTypes = {
+	elk: ElkStepEdge,
 };
 
 export type InternalNode = Node & { width: number; height: number };
 export type GraphWarning = EdgeWarning | LinkWarning;
 
-export interface NodeData {
+export type SharedNodeData = {
 	table: TableInfo;
 	isSelected: boolean;
 	hasIncoming: boolean;
 	hasOutgoing: boolean;
-}
+};
 
 interface NormalizedTable {
 	isEdge: boolean;
@@ -74,7 +91,7 @@ export function buildFlowNodes(
 
 	switch (lineStyle) {
 		case "metro": {
-			baseEdge.type = "smoothstep";
+			baseEdge.type = "elk";
 			baseEdge.pathOptions = { borderRadius: 50 };
 			break;
 		}
@@ -91,19 +108,17 @@ export function buildFlowNodes(
 	// Define all nodes
 	for (const { table, isEdge } of items) {
 		const name = table.schema.name;
-		const node: Node<NodeData> = {
+		const node: any = {
 			id: name,
 			type: isEdge ? "edge" : "table",
 			position: { x: 0, y: 0 },
-			sourcePosition: Position.Right,
-			targetPosition: Position.Left,
+			deletable: false,
 			data: {
 				table,
 				isSelected: false,
 				hasIncoming: false,
 				hasOutgoing: false,
 			},
-			deletable: false,
 		};
 
 		nodes.push(node);
@@ -132,6 +147,12 @@ export function buildFlowNodes(
 				id: `tb-${table.schema.name}-from-edge-${fromTable}`,
 				source: fromTable,
 				target: table.schema.name,
+				markerEnd: {
+					type: MarkerType.Arrow,
+					width: 14,
+					height: 14,
+					color: "#ffffff",
+				},
 			});
 
 			const node = nodeIndex[fromTable];
@@ -160,6 +181,12 @@ export function buildFlowNodes(
 				id: `tb-${table.schema.name}-to-edge-${toTable}`,
 				source: table.schema.name,
 				target: toTable,
+				markerEnd: {
+					type: MarkerType.Arrow,
+					width: 14,
+					height: 14,
+					color: "#ffffff",
+				},
 			});
 
 			const node = nodeIndex[toTable];
@@ -176,6 +203,9 @@ export function buildFlowNodes(
 	// Define all record links
 	if (showLinks) {
 		const uniqueLinks = new Set<string>();
+		const linkColor = getComputedStyle(document.body).getPropertyValue(
+			"--mantine-color-slate-5",
+		);
 
 		for (const table of tables) {
 			for (const field of table.fields) {
@@ -225,8 +255,14 @@ export function buildFlowNodes(
 						className: classes.recordLink,
 						label: field.name,
 						labelBgStyle: { fill: "var(--mantine-color-slate-8" },
-						labelStyle: { fill: "white" },
+						labelStyle: { fill: "currentColor" },
 						data: { linkCount: 1 },
+						markerEnd: {
+							type: MarkerType.Arrow,
+							width: 14,
+							height: 14,
+							color: linkColor,
+						},
 					};
 
 					uniqueLinks.add(`${table.schema.name}:${target}`);
@@ -241,8 +277,6 @@ export function buildFlowNodes(
 	return [nodes, edges, warnings];
 }
 
-type DimensionNode = { id: string; width: number; height: number };
-
 /**
  * Apply a layout to the given nodes and edges
  *
@@ -251,22 +285,21 @@ type DimensionNode = { id: string; width: number; height: number };
  * @returns The changes to apply
  */
 export async function applyNodeLayout(
-	nodes: DimensionNode[],
+	nodes: Node[],
 	edges: Edge[],
 	direction: DiagramDirection,
-): Promise<NodeChange[]> {
-	if (nodes.some((node) => !node.width || !node.height)) {
-		return [];
-	}
-
+): Promise<[NodeChange[], EdgeChange[]]> {
 	const ELK = await import("elkjs/lib/elk.bundled");
 	const elk = new ELK.default();
+
+	const edgeIndex = objectify(edges, (e) => e.id);
+
 	const graph = {
 		id: "root",
 		children: nodes.map((node) => ({
 			id: node.id,
-			width: node.width,
-			height: node.height,
+			width: node.measured?.width ?? node.width,
+			height: node.measured?.height ?? node.height,
 		})),
 		edges: edges.map((edge) => ({
 			id: edge.id,
@@ -285,8 +318,9 @@ export async function applyNodeLayout(
 	});
 
 	const children = layout.children || [];
+	const layoutEdges = layout.edges || [];
 
-	return children.map(({ id, x, y }) => {
+	const nodeChanges: NodeChange[] = children.map(({ id, x, y }) => {
 		return {
 			id,
 			type: "position",
@@ -296,6 +330,25 @@ export async function applyNodeLayout(
 			},
 		};
 	});
+
+	const edgeChanges: EdgeChange[] = layoutEdges.map(({ id, sections }) => {
+		const current = edgeIndex[id];
+
+		return {
+			id,
+			type: "replace",
+			item: {
+				...current,
+				data: {
+					...current.data,
+					isDragged: false,
+					path: sections?.[0],
+				},
+			},
+		};
+	});
+
+	return [nodeChanges, edgeChanges];
 }
 
 /**

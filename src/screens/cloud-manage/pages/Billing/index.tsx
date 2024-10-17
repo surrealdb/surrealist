@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Alert,
+	Badge,
 	Box,
 	Button,
 	Divider,
@@ -19,20 +20,14 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import {
-	iconAccount,
-	iconCheck,
-	iconCreditCard,
-	iconDotsVertical,
-	iconHelp,
-	iconOpen,
-} from "~/util/icons";
+import { iconAccount, iconCheck, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
 
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
 import { type ReactNode, useRef, useState } from "react";
 import { adapter } from "~/adapter";
+import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
@@ -41,8 +36,9 @@ import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { InvoiceStatus } from "~/types";
-import { fetchAPI } from "../../api";
+import type { CloudInstanceType, CloudRegion, InvoiceStatus } from "~/types";
+import { showError, showInfo } from "~/util/helpers";
+import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBilling } from "../../hooks/billing";
 import { useCloudInvoices } from "../../hooks/invoices";
@@ -58,19 +54,19 @@ const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> =
 interface BillingPlanProps {
 	name: string;
 	description: string;
-	features: string[];
+	regions: string[];
+	types: CloudInstanceType[];
 	action?: ReactNode;
 }
 
-function BillingPlan({ name, description, features, action }: BillingPlanProps) {
+function BillingPlan({ name, description, regions, types, action }: BillingPlanProps) {
 	const isLight = useIsLight();
 
 	return (
 		<Paper
 			withBorder
 			p="xl"
-			w={400}
-			style={{ flexShrink: 0 }}
+			maw={500}
 		>
 			<Stack
 				h="100%"
@@ -80,24 +76,69 @@ function BillingPlan({ name, description, features, action }: BillingPlanProps) 
 					<PrimaryTitle>{name}</PrimaryTitle>
 					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
 				</Box>
-				<List
-					className={classes.featureList}
-					icon={
-						<Icon
-							path={iconCheck}
-							color="surreal.5"
-						/>
-					}
-				>
-					{features.map((feature) => (
-						<List.Item
-							key={feature}
-							c="bright"
+
+				<Group align="stretch">
+					<Box>
+						<Text
+							fz="lg"
+							mb="sm"
 						>
-							{feature}
-						</List.Item>
-					))}
-				</List>
+							Included regions
+						</Text>
+
+						<List
+							className={classes.featureList}
+							icon={
+								<Icon
+									path={iconCheck}
+									color="surreal.5"
+								/>
+							}
+						>
+							{regions.map((region) => (
+								<List.Item
+									key={region}
+									c="bright"
+									mb={4}
+								>
+									{region}
+								</List.Item>
+							))}
+						</List>
+					</Box>
+
+					<Spacer />
+
+					<Box>
+						<Text
+							fz="lg"
+							mb="sm"
+						>
+							Included instance types
+						</Text>
+
+						<List
+							className={classes.featureList}
+							icon={
+								<Icon
+									path={iconCheck}
+									color="surreal.5"
+								/>
+							}
+						>
+							{types.map((type) => (
+								<List.Item
+									key={type.slug}
+									c="bright"
+									mb={4}
+								>
+									{type.slug}
+								</List.Item>
+							))}
+						</List>
+					</Box>
+				</Group>
+
 				{action}
 			</Stack>
 		</Paper>
@@ -128,12 +169,35 @@ export function BillingPage() {
 		}
 	});
 
+	const redeemCoupon = useStable(async () => {
+		try {
+			await fetchAPI(`/organizations/${organization?.id}/coupon`, {
+				method: "POST",
+				body: JSON.stringify(coupon),
+			});
+
+			showInfo({
+				title: "Discount code applied",
+				subtitle: "The discount code has been successfully applied",
+			});
+
+			setCoupon("");
+		} catch (err: any) {
+			showError({
+				title: "Failed to apply discount code",
+				subtitle: "The discount code is invalid or has already been applied",
+			});
+		}
+	});
+
 	useWindowEvent("focus", async () => {
 		if (!organization || !hasRequested.current) return;
 
 		await fetchAPI(`/organizations/${organization?.id}/payment`, {
 			method: "PUT",
 		});
+
+		updateCloudInformation();
 
 		queryClient.invalidateQueries({
 			queryKey: ["cloud", "payments", organization.id],
@@ -163,41 +227,19 @@ export function BillingPage() {
 				}}
 			>
 				<Stack>
-					{/* <Section
-						title={
-							<Group>
-								Choose your plan
-								<Badge variant="light">
-									Coming soon
-								</Badge>
-							</Group>
-						}
-						description="Pick a plan that suits your organization's needs"
-					>
-						<ScrollArea
-							scrollbars="x"
+					{organization?.plan && (
+						<Section
+							title="Your plan"
+							description="The plan active for this organization"
 						>
-							<Group wrap="nowrap">
-								{organization?.available_plans?.map((plan) => (
-									<BillingPlan
-										key={plan.id}
-										name={plan.name}
-										description={plan.description}
-										features={[]}
-										pricing={null}
-										action={
-											<Button
-												variant="gradient"
-												size="xs"
-											>
-												Select plan
-											</Button>
-										}
-									/>
-								))}
-							</Group>
-						</ScrollArea>
-					</Section> */}
+							<BillingPlan
+								name={organization.plan.name}
+								description={organization.plan.description}
+								regions={organization.plan.regions}
+								types={organization.plan.instance_types}
+							/>
+						</Section>
+					)}
 
 					<Section
 						title="Billing Information"
@@ -356,20 +398,23 @@ export function BillingPage() {
 						title="Discount Codes"
 						description="Apply discount codes to your organization"
 					>
-						<Group maw={500}>
-							<TextInput
-								flex={1}
-								value={coupon}
-								onChange={setCoupon}
-								placeholder="Enter discount code"
-							/>
-							<Button
-								variant="gradient"
-								disabled={!coupon}
-							>
-								Redeem
-							</Button>
-						</Group>
+						<Form onSubmit={redeemCoupon}>
+							<Group maw={500}>
+								<TextInput
+									flex={1}
+									value={coupon}
+									onChange={setCoupon}
+									placeholder="Enter discount code"
+								/>
+								<Button
+									type="submit"
+									variant="gradient"
+									disabled={!coupon}
+								>
+									Apply
+								</Button>
+							</Group>
+						</Form>
 					</Section>
 
 					<Section
@@ -402,10 +447,10 @@ export function BillingPage() {
 													{new Date(invoice.date).toLocaleDateString()}
 												</Table.Td>
 												<Table.Td
-													c={status.color}
+													c={status?.color ?? "slate"}
 													fw={600}
 												>
-													{status.name}
+													{status?.name ?? invoice.status}
 												</Table.Td>
 												<Table.Td>
 													${(invoice.amount * 100).toFixed(2)} USD

@@ -5,6 +5,7 @@ import {
 	Box,
 	type BoxProps,
 	Center,
+	Divider,
 	Drawer,
 	Group,
 	Image,
@@ -12,6 +13,7 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
+	ThemeIcon,
 	Title,
 	Tooltip,
 } from "@mantine/core";
@@ -21,6 +23,7 @@ import {
 	iconChevronRight,
 	iconClose,
 	iconCloud,
+	iconDownload,
 	iconEye,
 	iconFlag,
 	iconPlay,
@@ -39,7 +42,9 @@ import { useVersionCopy } from "~/hooks/debug";
 import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useDesktopUpdater } from "~/hooks/updater";
 import { useIntent } from "~/hooks/url";
+import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
 import { isDevelopment, isPreview } from "~/util/environment";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -118,15 +123,18 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 	const isLight = useIsLight();
 	const logoUrl = useLogoUrl();
 
+	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
+	const { phase, progress, version, startUpdate } = useDesktopUpdater();
+
 	const [copyDebug, clipboard] = useVersionCopy();
 	const sidebarCategories = categories.filter((c) => !c.disabled || c.id === activeTab);
-	
-	const version = useMemo(() => {
+
+	const versionText = useMemo(() => {
 		let builder = `Version ${import.meta.env.VERSION}`;
 
 		if (isPreview) {
 			builder += " (pre)";
-		} else if(isDevelopment) {
+		} else if (isDevelopment) {
 			builder += " (dev)";
 		}
 
@@ -134,12 +142,13 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 	}, []);
 
 	return (
-		<Box
-			pt="lg"
+		<Stack
+			py="lg"
 			px="xl"
 			h="100%"
 			w={250}
 			bg={isLight ? "slate.0" : "slate.9"}
+			gap={0}
 			{...other}
 		>
 			<Stack
@@ -160,12 +169,13 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 					className={classes.version}
 					onClick={copyDebug}
 				>
-					{clipboard.copied
-						? "Copied to clipboard!"
-						: version}
+					{clipboard.copied ? "Copied to clipboard!" : versionText}
 				</Text>
 			</Stack>
-			<Stack gap="xs">
+			<Stack
+				gap="xs"
+				flex={1}
+			>
 				{sidebarCategories.map(({ id, name, icon }) => (
 					<Entry
 						key={id}
@@ -177,8 +187,56 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 						{name}
 					</Entry>
 				))}
+
+				{availableUpdate && (
+					<>
+						<Spacer />
+						<Entry
+							onClick={startUpdate}
+							className={classes.updateButton}
+							variant="light"
+							color="slate"
+							leftSection={
+								<ThemeIcon
+									variant="gradient"
+									radius="xs"
+									className={classes.updateIcon}
+								>
+									<Icon
+										path={iconDownload}
+										c="bright"
+									/>
+								</ThemeIcon>
+							}
+						>
+							<Text fw={600}>New version available</Text>
+							{phase === "downloading" ? (
+								<Text
+									c="gray.5"
+									fz="sm"
+								>
+									Installing... ({progress}%)
+								</Text>
+							) : phase === "error" ? (
+								<Text
+									c="red"
+									fz="sm"
+								>
+									Failed to install update
+								</Text>
+							) : (
+								<Text
+									c="gray.5"
+									fz="sm"
+								>
+									Click to install version {version}
+								</Text>
+							)}
+						</Entry>
+					</>
+				)}
 			</Stack>
-		</Box>
+		</Stack>
 	);
 }
 
@@ -255,7 +313,7 @@ export function Settings() {
 						hiddenFrom="md"
 						opened={overlaySidebar}
 						onClose={overlaySidebarHandle.close}
-        				portalProps={{ target: "#bruh" }}
+						portalProps={{ target: "#bruh" }}
 						overlayProps={{ opacity: 0 }}
 						padding={0}
 						offset={0}
@@ -263,8 +321,8 @@ export function Settings() {
 						size={250}
 						styles={{
 							body: {
-								height: "100%"
-							}
+								height: "100%",
+							},
 						}}
 					>
 						<SettingsSidebar

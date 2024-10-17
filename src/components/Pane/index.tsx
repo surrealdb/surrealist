@@ -6,6 +6,7 @@ import {
 	type PaperProps,
 	Text,
 } from "@mantine/core";
+import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { Icon } from "../Icon";
@@ -28,6 +29,7 @@ export function ContentPane({
 	children,
 	title,
 	icon,
+	className,
 	leftSection,
 	infoSection,
 	rightSection,
@@ -40,7 +42,7 @@ export function ContentPane({
 	return (
 		<Paper
 			radius="lg"
-			className={classes.root}
+			className={clsx(classes.root, className)}
 			pos="relative"
 			opacity={disabled ? 0.5 : 1}
 			style={{ pointerEvents: disabled ? "none" : undefined }}

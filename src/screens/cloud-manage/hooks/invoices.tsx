@@ -13,9 +13,7 @@ export function useCloudInvoices(organization?: string) {
 		queryKey: ["cloud", "invoices", organization],
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudInvoice[]>(
-				`/organizations/${organization}/billing/invoices`,
-			);
+			return fetchAPI<CloudInvoice[]>(`/organizations/${organization}/billing/invoices`);
 		},
 	});
 }

@@ -230,6 +230,20 @@ export function invalidateSession() {
 }
 
 /**
+ * Invalidate the current session and signs out of the account
+ */
+export function destroySession() {
+	const { authBase } = getCloudEndpoints();
+
+	const params = new URLSearchParams({
+		client_id: CLIENT_ID,
+		returnTo: `${CALLBACK_ENDPOINT}?action=logout&target=${adapter.id}`,
+	});
+
+	adapter.openUrl(`${authBase}/v2/logout?${params.toString()}`, "internal");
+}
+
+/**
  * Check for imminent session expiry and attempt to refresh
  */
 export function checkSessionExpiry() {

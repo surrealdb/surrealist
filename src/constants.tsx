@@ -1,13 +1,24 @@
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 
+import {
+	DotNetIcon,
+	GoLangIcon,
+	JavaIcon,
+	JavaScriptIcon,
+	PhpIcon,
+	PythonIcon,
+	RustIcon,
+	SurrealIcon,
+} from "./util/drivers";
+
 import type {
-	AccessType,
 	AuthMode,
 	CloudPage,
 	CloudPageInfo,
 	CodeLang,
-	DataSet,
+	Dataset,
+	Driver,
 	LineStyle,
 	Listable,
 	Orientation,
@@ -58,10 +69,10 @@ export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 
-export const DATASETS: Record<string, DataSet> = {
+export const DATASETS: Record<string, Dataset> = {
 	"surreal-deal-store": {
 		name: "Surreal Deal Store",
-		url: "https://datasets.surrealdb.com/surreal-deal-store-mini.surql",
+		path: "/surreal-deal-store-mini.surql",
 	},
 };
 
@@ -334,3 +345,54 @@ export const REGION_FLAGS: Record<string, string> = {
 	"aws-euw1": flagIE,
 	"aws-use1": flagUS,
 };
+
+export const DRIVERS: Driver[] = [
+	{
+		id: "cli",
+		name: "CLI",
+		icon: SurrealIcon,
+		link: "https://surrealdb.com/docs/surrealdb/cli",
+	},
+	{
+		id: "rust",
+		name: "Rust",
+		icon: RustIcon,
+		link: "https://surrealdb.com/docs/sdk/rust",
+	},
+	{
+		id: "js",
+		name: "JavaScript",
+		icon: JavaScriptIcon,
+		link: "https://surrealdb.com/docs/sdk/javascript",
+	},
+	{
+		id: "go",
+		name: "GoLang",
+		icon: GoLangIcon,
+		link: "https://surrealdb.com/docs/sdk/golang",
+	},
+	{
+		id: "py",
+		name: "Python",
+		icon: PythonIcon,
+		link: "https://surrealdb.com/docs/sdk/python",
+	},
+	{
+		id: "csharp",
+		name: ".NET",
+		icon: DotNetIcon,
+		link: "https://surrealdb.com/docs/sdk/dotnet",
+	},
+	{
+		id: "java",
+		name: "Java",
+		icon: JavaIcon,
+		link: "https://surrealdb.com/docs/sdk/java",
+	},
+	{
+		id: "php",
+		name: "PHP",
+		icon: PhpIcon,
+		link: "https://surrealdb.com/docs/sdk/php",
+	},
+];

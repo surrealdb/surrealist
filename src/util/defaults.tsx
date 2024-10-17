@@ -54,6 +54,7 @@ export function createBaseSettings(): SurrealistSettings {
 			colorScheme: "dark",
 			windowScale: 100,
 			editorScale: 100,
+			lineNumbers: ["query", "inspector", "functions"],
 			resultWordWrap: true,
 			defaultResultMode: "combined",
 			defaultResultFormat: "sql",
@@ -131,10 +132,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseTab(
-	settings: SurrealistSettings,
-	query?: string,
-): TabQuery {
+export function createBaseTab(settings: SurrealistSettings, query?: string): TabQuery {
 	return {
 		id: newId(),
 		query: query || "",
@@ -147,9 +145,7 @@ export function createBaseTab(
 	};
 }
 
-export function createSandboxConnection(
-	settings: SurrealistSettings,
-): Connection {
+export function createSandboxConnection(settings: SurrealistSettings): Connection {
 	const base = createBaseConnection(settings);
 
 	return {
@@ -184,7 +180,7 @@ export function createConnectionSchema(): ConnectionSchema {
 			users: [],
 			functions: [],
 			models: [],
-		}
+		},
 	};
 }
 
@@ -196,14 +192,15 @@ export function createCloudInstance(): CloudInstance {
 		region: "",
 		version: "",
 		state: "inactive",
+		compute_units: 0,
 		type: {
 			slug: "",
 			description: "",
 			cpu: 0,
 			memory: 0,
-			storage: 0,
 			price_hour: 0,
 			compute_units: {},
+			category: "",
 		},
 	};
 }

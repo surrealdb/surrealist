@@ -13,6 +13,13 @@ export function useIsLight() {
 }
 
 /**
+ * Returns whether the current color scheme is light or not
+ */
+export function getIsLight() {
+	return useInterfaceStore.getState().colorScheme === "light";
+}
+
+/**
  * Compute the final color scheme based on the user's preference and the system's color scheme
  */
 export function useThemePreference(): ColorScheme {

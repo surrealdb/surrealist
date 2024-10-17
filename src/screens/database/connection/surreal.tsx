@@ -42,6 +42,6 @@ export async function createSurreal() {
 	return new CustomSurreal({
 		engines: surrealdbWasmEngines({
 			capabilities: true,
-		}) as any,
+		}),
 	});
 }

@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Box,
@@ -12,6 +14,9 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
+import type { SelectionRange } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
+
 import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 
 import type { SelectionRange } from "@codemirror/state";
@@ -23,8 +28,7 @@ import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
-import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
-import { executeEditorQuery } from "~/editor/commands";
+import { RESULT_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
@@ -33,7 +37,6 @@ import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
-import classes from "./style.module.scss";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -53,7 +56,7 @@ export interface ResultPaneProps {
 	isQueryValid: boolean;
 	selection: SelectionRange | undefined;
 	editor: EditorView | null;
-	square?: boolean;
+	corners?: string;
 }
 
 export function ResultPane({
@@ -61,7 +64,7 @@ export function ResultPane({
 	isQueryValid,
 	selection,
 	editor,
-	square,
+	corners,
 }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
@@ -136,7 +139,7 @@ export function ResultPane({
 		<ContentPane
 			title={panelTitle}
 			icon={iconQuery}
-			radius={square ? 0 : undefined}
+			radius={corners}
 			rightSection={
 				<Group
 					align="center"
@@ -195,13 +198,15 @@ export function ResultPane({
 					>
 						<Tooltip label="Change result mode">
 							{isMini ? (
-								<ActionIcon
-									aria-label={`Change result mode. Currently ${activeMode?.label}`}
-									h={30}
-									w={30}
-								>
-									<Icon path={activeMode?.icon ?? iconHelp} />
-								</ActionIcon>
+								<Tooltip label="Click to change mode">
+									<ActionIcon
+										aria-label={`Change result mode. Currently ${activeMode}`}
+										h={30}
+										w={30}
+									>
+										<Icon path={activeMode ? activeMode.icon : iconHelp} />
+									</ActionIcon>
+								</Tooltip>
 							) : (
 								<Button
 									size="xs"
@@ -209,9 +214,7 @@ export function ResultPane({
 									aria-label="Change result mode"
 									variant="light"
 									color="slate"
-									leftSection={
-										activeMode?.icon && <Icon path={activeMode.icon} />
-									}
+									leftSection={activeMode && <Icon path={activeMode.icon} />}
 								>
 									{activeMode?.label ?? "Unknown"}
 								</Button>
