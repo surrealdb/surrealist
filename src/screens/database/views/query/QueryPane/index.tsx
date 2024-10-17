@@ -17,6 +17,7 @@ import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
+import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -26,7 +27,6 @@ import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { iconAutoFix, iconDollar, iconServer, iconStar, iconText, iconWarning } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
-import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
