@@ -26,6 +26,7 @@ import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
+import { executeEditorQuery } from "~/editor/query";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
@@ -34,7 +35,6 @@ import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
-import { executeEditorQuery } from "~/editor/query";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
