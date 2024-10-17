@@ -54,7 +54,6 @@ import {
 	iconPlus,
 	iconProgressClock,
 	iconQuery,
-	iconRelation,
 	iconServer,
 } from "./util/icons";
 

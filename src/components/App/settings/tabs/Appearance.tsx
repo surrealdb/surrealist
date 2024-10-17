@@ -28,7 +28,8 @@ export function AppearanceTab() {
 	// const [resultWordWrap, setResultWordWrap] = useSetting(CAT, "resultWordWrap");
 	const [defaultResultMode, setDefaultResultMode] = useSetting(CAT, "defaultResultMode");
 	const [queryOrientation, setQueryOrientation] = useSetting(CAT, "queryOrientation");
-	const [valueMode, setValueMode] = useSetting(CAT, "valueMode");
+	const [sidebarMode, setSidebarMode] = useSetting(CAT, "sidebarMode");
+	const [lineStyle, setLineStyle] = useSetting(CAT, "lineStyle");
 	const [defaultDiagramMode, setDefaultDiagramMode] = useSetting(CAT, "defaultDiagramMode");
 	const [defaultDiagramDirection, setDefaultDiagramDirection] = useSetting(
 		CAT,
@@ -137,13 +138,6 @@ export function AppearanceTab() {
 					data={RESULT_MODES}
 					value={defaultResultMode}
 					onChange={setDefaultResultMode as any}
-				/>
-
-				<Select
-					label="Default result format"
-					data={RESULT_FORMATS}
-					value={defaultResultFormat}
-					onChange={setDefaultResultFormat as any}
 				/>
 
 				<Select

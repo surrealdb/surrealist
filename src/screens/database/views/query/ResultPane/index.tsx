@@ -14,9 +14,6 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import type { SelectionRange } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
-
 import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
 
 import type { SelectionRange } from "@codemirror/state";
@@ -28,7 +25,7 @@ import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
-import { RESULT_MODES } from "~/constants";
+import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
@@ -37,6 +34,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
 import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
+import { executeEditorQuery } from "~/editor/query";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -204,7 +202,7 @@ export function ResultPane({
 										h={30}
 										w={30}
 									>
-										<Icon path={activeMode ? activeMode.icon : iconHelp} />
+										<Icon path={activeMode?.icon ?? iconHelp} />
 									</ActionIcon>
 								</Tooltip>
 							) : (
@@ -214,7 +212,9 @@ export function ResultPane({
 									aria-label="Change result mode"
 									variant="light"
 									color="slate"
-									leftSection={activeMode && <Icon path={activeMode.icon} />}
+									leftSection={
+										activeMode && <Icon path={activeMode?.icon ?? iconHelp} />
+									}
 								>
 									{activeMode?.label ?? "Unknown"}
 								</Button>
