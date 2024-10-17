@@ -200,13 +200,15 @@ export function BaseNode({
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
 
+	console.log();
+
 	return (
 		<>
 			<Handle
 				type="target"
 				position={isLTR ? Position.Left : Position.Right}
 				style={{
-					visibility: hasIncoming ? "visible" : "hidden",
+					visibility: "hidden",
 				}}
 			/>
 
@@ -214,7 +216,7 @@ export function BaseNode({
 				type="source"
 				position={isLTR ? Position.Right : Position.Left}
 				style={{
-					visibility: hasOutgoing ? "visible" : "hidden",
+					visibility: "hidden",
 				}}
 			/>
 

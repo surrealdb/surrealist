@@ -1,6 +1,14 @@
 import classes from "./style.module.scss";
 
-import type { Edge, EdgeChange, EdgeTypes, Node, NodeChange, NodeTypes } from "@xyflow/react";
+import {
+	MarkerType,
+	type Edge,
+	type EdgeChange,
+	type EdgeTypes,
+	type Node,
+	type NodeChange,
+	type NodeTypes,
+} from "@xyflow/react";
 import { toBlob, toSvg } from "html-to-image";
 import type { DiagramDirection, TableInfo } from "~/types";
 import { getSetting } from "~/util/config";
@@ -105,8 +113,6 @@ export function buildFlowNodes(
 			type: isEdge ? "edge" : "table",
 			position: { x: 0, y: 0 },
 			deletable: false,
-			// sourcePosition: Position.Right,
-			// targetPosition: Position.Left,
 			data: {
 				table,
 				isSelected: false,
@@ -141,6 +147,12 @@ export function buildFlowNodes(
 				id: `tb-${table.schema.name}-from-edge-${fromTable}`,
 				source: fromTable,
 				target: table.schema.name,
+				markerEnd: {
+					type: MarkerType.Arrow,
+					width: 14,
+					height: 14,
+					color: "#ffffff",
+				},
 			});
 
 			const node = nodeIndex[fromTable];
@@ -169,6 +181,12 @@ export function buildFlowNodes(
 				id: `tb-${table.schema.name}-to-edge-${toTable}`,
 				source: table.schema.name,
 				target: toTable,
+				markerEnd: {
+					type: MarkerType.Arrow,
+					width: 14,
+					height: 14,
+					color: "#ffffff",
+				},
 			});
 
 			const node = nodeIndex[toTable];
@@ -185,6 +203,9 @@ export function buildFlowNodes(
 	// Define all record links
 	if (showLinks) {
 		const uniqueLinks = new Set<string>();
+		const linkColor = getComputedStyle(document.body).getPropertyValue(
+			"--mantine-color-slate-5",
+		);
 
 		for (const table of tables) {
 			for (const field of table.fields) {
@@ -234,8 +255,14 @@ export function buildFlowNodes(
 						className: classes.recordLink,
 						label: field.name,
 						labelBgStyle: { fill: "var(--mantine-color-slate-8" },
-						labelStyle: { fill: "white" },
+						labelStyle: { fill: "currentColor" },
 						data: { linkCount: 1 },
+						markerEnd: {
+							type: MarkerType.Arrow,
+							width: 14,
+							height: 14,
+							color: linkColor,
+						},
 					};
 
 					uniqueLinks.add(`${table.schema.name}:${target}`);
@@ -249,8 +276,6 @@ export function buildFlowNodes(
 
 	return [nodes, edges, warnings];
 }
-
-type NodeEdge = { id: string; path?: ElkEdgeSection };
 
 /**
  * Apply a layout to the given nodes and edges
