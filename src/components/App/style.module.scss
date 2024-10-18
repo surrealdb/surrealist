@@ -23,7 +23,9 @@
 }
 
 .changelog-content {
-	ul, li {
+
+	ul,
+	li {
 		margin-bottom: 0;
 	}
 
@@ -133,7 +135,7 @@
 
 .provision-loader::after {
 	border: solid 3px transparent;
-	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)),  var(--surrealist-gradient);
+	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)), var(--surrealist-gradient);
 	background-origin: border-box;
 	background-clip: content-box, border-box;
 	animation-duration: 0.75s;
@@ -146,6 +148,14 @@
 	transform: translateY(1px);
 }
 
-.docs-scroller :global(.mantine-ScrollArea-viewport) > div {
+.docs-scroller :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
+}
+
+.listing-active {
+	background-color: var(--mantine-color-slate-7);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
 }

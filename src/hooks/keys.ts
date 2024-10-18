@@ -1,5 +1,5 @@
 import { useWindowEvent } from "@mantine/hooks";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { Identified } from "~/types";
 import { useStable } from "./stable";
 
@@ -39,58 +39,61 @@ function getNavigationElement<T extends Identified>(cmd: T) {
  * Allow keyboard navigation between items in a list.
  * 
  * @param items The items to navigate between
+ * @param onSubmit Optional callback to call when an item is activated
  * @returns onKeyDown handler and a ref to the search input
  */
-export function useKeyNavigation<T extends Identified>(items: T[]) {
-	const searchRef = useRef<HTMLInputElement | null>(null);
-
+export function useKeyNavigation<T extends Identified>(items: T[], onSubmit?: (item: T) => void, initial?: string) {
+	const [active, setActive] = useState<string>(initial ?? "");
+	
 	const handleKeyDown = useStable((e: React.KeyboardEvent) => {
+		if (!active) return;
+
+		if (e.key === "Enter") {
+			const item = items.find((item) => item.id === active);
+			onSubmit?.(item as T);
+			return;
+		}
+
 		const isDown = e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey);
 		const isUp = e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey);
 
 		if (!isDown && !isUp) {
-			if (e.key !== "Shift" && e.key !== "Enter") {
-				searchRef.current?.focus();
-			}
-
 			return;
 		}
-
-		const active = document.activeElement as HTMLElement | null;
-		const activeId = active?.getAttribute("data-navigation-item-id");
-		const selected = items.find((cmd) => cmd.id === activeId);
 
 		e.preventDefault();
+		e.stopPropagation();
 
-		if (!selected) {
-			setTimeout(() => {
-				getNavigationElement(items[0])?.focus();
-			});
-			return;
-		}
+		let nextItem = "";
 
 		if (isDown) {
-			const index = items.indexOf(selected);
+			const index = items.findIndex((item) => item.id === active);
 			const next = items[index + 1] || items[0];
 
-			setTimeout(() => {
-				getNavigationElement(next)?.focus();
-			});
-
-			return;
-		}
-
-		if (isUp) {
-			const index = items.indexOf(selected);
+			nextItem = next.id;
+		} else if (isUp) {
+			const index = items.findIndex((item) => item.id === active);
 			const prev = items[index - 1] || items[items.length - 1];
 
-			setTimeout(() => {
-				getNavigationElement(prev)?.focus();
-			});
+			nextItem = prev.id;
+		}
 
-			return;
+		setActive(nextItem);
+
+		const selected = document.querySelector<HTMLElement>(`[data-navigation-item-id="${nextItem}"]`) as HTMLElement | null;
+
+		selected?.scrollIntoView({
+			block: "nearest"
+		});
+	});
+
+	useLayoutEffect(() => {
+		const found = items.find((item) => item.id === active);
+
+		if (!found && items.length > 0) {
+			setActive(items[0].id);
 		}
 	});
 
-	return [handleKeyDown, searchRef] as const;
+	return [handleKeyDown, active] as const;
 }

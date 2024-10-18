@@ -104,6 +104,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			store: useConfigStore,
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
+				console.log("pinned", pinned);
 				getCurrentWindow().setAlwaysOnTop(pinned);
 			},
 		});

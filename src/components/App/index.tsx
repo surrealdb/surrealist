@@ -19,7 +19,7 @@ import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { KeymapModal } from "./modals/hotkeys";
 import { NewsFeedDrawer } from "./modals/newsfeed";
-import { CommandPaletteModal } from "./modals/palette";
+import { CommandPaletteModal } from "./modals/commands";
 import { ProvisioningDialog } from "./modals/provisioning";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";

@@ -1,13 +1,14 @@
 import classes from "../style.module.scss";
 
 import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
-
 import { useInputState } from "@mantine/hooks";
+import clsx from "clsx";
 import posthog from "posthog-js";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, useMemo, useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { PreferenceInput } from "~/components/Inputs/preference";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
@@ -17,19 +18,37 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import { type Command, type CommandCategory, computeCommands } from "~/util/commands";
-import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
+import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { iconOpen, iconSearch } from "~/util/icons";
 
 export function CommandPaletteModal() {
 	const { pushCommand } = useConfigStore.getState();
+	const searchRef = useRef<HTMLInputElement>(null);
 
 	const [isOpen, openHandle] = useBoolean();
 	const [search, setSearch] = useInputState("");
 	const [categories, setCategories] = useState<CommandCategory[]>([]);
 
+	const handlePreferenceInput = useStable((e: KeyboardEvent) => {
+		e.stopPropagation();
+
+		if (e.code === "Tab") {
+			e.preventDefault();
+			return;
+		}
+
+		if (e.code === "Escape") {
+			searchRef.current?.focus();
+			openHandle.open();
+		}
+	});
+
 	const [filtered, flattened] = useMemo(() => {
 		const filtered = categories.flatMap((cat) => {
-			if (search && cat.search === false) {
+			if (
+				(cat.visibility === "unsearched" && search) ||
+				(cat.visibility === "searched" && !search)
+			) {
 				return [];
 			}
 
@@ -56,16 +75,17 @@ export function CommandPaletteModal() {
 		return [filtered, flattened];
 	}, [categories, search]);
 
-	const activate = (cmd: Command) => {
+	const activate = useStable((cmd: Command) => {
 		const query = search.trim();
 
-		if (query.length > 0) {
-			pushCommand(query);
-		}
+		posthog.capture("execute_command", {
+			command: cmd.name,
+		});
 
 		switch (cmd.action.type) {
 			case "insert": {
 				setSearch(cmd.action.content);
+				searchRef.current?.focus();
 				break;
 			}
 			case "href": {
@@ -83,14 +103,23 @@ export function CommandPaletteModal() {
 				cmd.action.handler();
 				break;
 			}
+			case "preference": {
+				const el = document.querySelector(`[data-navigation-item-id="${cmd.id}"]`);
+				const input = el?.querySelector<HTMLElement>(".mantine-InputWrapper-root input");
+				const checkbox = el?.querySelector<HTMLElement>(".mantine-Checkbox-root input");
+
+				(input ?? checkbox)?.click();
+				input?.focus();
+				return;
+			}
 		}
 
-		posthog.capture("execute_command", {
-			command: cmd.name,
-		});
-	};
+		if (query.length > 0) {
+			pushCommand(query);
+		}
+	});
 
-	const [handleKeyDown, searchRef] = useKeyNavigation(flattened);
+	const [handleKeyDown, selected] = useKeyNavigation(flattened, activate);
 
 	useIntent("open-command-palette", () => {
 		openHandle.open();
@@ -176,6 +205,9 @@ export function CommandPaletteModal() {
 											disabled={cmd.disabled}
 											leftSection={<Icon path={cmd.icon} />}
 											data-navigation-item-id={cmd.id}
+											className={clsx(
+												selected === cmd.id && classes.listingActive,
+											)}
 										>
 											<Text>{cmd.name}</Text>
 											{cmd.action.type === "href" && (
@@ -199,6 +231,20 @@ export function CommandPaletteModal() {
 															/>
 														))}
 													</Group>
+												</>
+											)}
+											{cmd.action.type === "preference" && (
+												<>
+													<Spacer />
+													<Box
+														onClick={ON_STOP_PROPAGATION}
+														onKeyDown={handlePreferenceInput}
+													>
+														<PreferenceInput
+															controller={cmd.action.controller}
+															compact
+														/>
+													</Box>
 												</>
 											)}
 										</Entry>

@@ -1,9 +1,7 @@
-import type {
-	FeatureFlag,
-	FeatureFlagOption,
-} from "@theopensource-company/feature-flags";
+import type { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
 import { unique } from "radash";
 import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { dispatchIntent } from "~/hooks/url";
 import type {
@@ -49,15 +47,14 @@ function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
 	}
 
 	const connections = state.connections.map((con) => {
-		return con.id === state.activeConnection
-			? { ...con, ...modifier(con), id: con.id }
-			: con;
+		return con.id === state.activeConnection ? { ...con, ...modifier(con), id: con.id } : con;
 	});
 
 	return { connections };
 }
 
 export type ConfigStore = SurrealistConfig & {
+	applyPreference: <T>(updater: (state: ConfigStore, value: T) => void, value: T) => void;
 	addConnectionGroup: (group: ConnectionGroup) => void;
 	removeConnectionGroup: (groupId: string) => void;
 	updateConnectionGroup: (group: PartialId<ConnectionGroup>) => void;
@@ -81,18 +78,10 @@ export type ConfigStore = SurrealistConfig & {
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
 	addHistoryEntry: (entry: HistoryQuery) => void;
 	toggleTablePin: (table: string) => void;
-	updateBehaviorSettings: (
-		settings: Partial<SurrealistBehaviorSettings>,
-	) => void;
-	updateAppearanceSettings: (
-		settings: Partial<SurrealistAppearanceSettings>,
-	) => void;
-	updateTemplateSettings: (
-		settings: Partial<SurrealistTemplateSettings>,
-	) => void;
-	updateServingSettings: (
-		settings: Partial<SurrealistServingSettings>,
-	) => void;
+	updateBehaviorSettings: (settings: Partial<SurrealistBehaviorSettings>) => void;
+	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
+	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
+	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
 	updateCloudSettings: (settings: Partial<SurrealistCloudSettings>) => void;
 	setFeatureFlag: <T extends FeatureFlag<typeof schema>>(
 		key: T,
@@ -106,365 +95,356 @@ export type ConfigStore = SurrealistConfig & {
 	setOpenDesignerPanels: (openDesignerPanels: string[]) => void;
 };
 
-export const useConfigStore = create<ConfigStore>()((set) => ({
-	...createBaseConfig(),
+export const useConfigStore = create<ConfigStore>()(
+	immer((set) => ({
+		...createBaseConfig(),
 
-	addConnectionGroup: (group) =>
-		set((state) => ({
-			connectionGroups: [...state.connectionGroups, group],
-		})),
+		applyPreference: (updater, value) =>
+			set((state) => {
+				updater(state, value);
+			}),
 
-	removeConnectionGroup: (groupId) =>
-		set((state) => {
-			return {
-				connectionGroups: state.connectionGroups.filter(
-					(group) => group.id !== groupId,
+		addConnectionGroup: (group) =>
+			set((state) => ({
+				connectionGroups: [...state.connectionGroups, group],
+			})),
+
+		removeConnectionGroup: (groupId) =>
+			set((state) => {
+				return {
+					connectionGroups: state.connectionGroups.filter(
+						(group) => group.id !== groupId,
+					),
+					connections: state.connections.map((connection) => {
+						return connection.group === groupId
+							? { ...connection, group: undefined }
+							: connection;
+					}),
+				};
+			}),
+
+		updateConnectionGroup: (group) =>
+			set((state) => ({
+				connectionGroups: state.connectionGroups.map((g) =>
+					g.id === group.id ? { ...g, ...group } : g,
 				),
-				connections: state.connections.map((connection) => {
-					return connection.group === groupId
-						? { ...connection, group: undefined }
-						: connection;
-				}),
-			};
-		}),
+			})),
 
-	updateConnectionGroup: (group) =>
-		set((state) => ({
-			connectionGroups: state.connectionGroups.map((g) =>
-				g.id === group.id ? { ...g, ...group } : g,
-			),
-		})),
+		addConnection: (connection) =>
+			set((state) => ({
+				connections: [...state.connections, connection],
+			})),
 
-	addConnection: (connection) =>
-		set((state) => ({
-			connections: [...state.connections, connection],
-		})),
+		removeConnection: (connectionId) =>
+			set((state) => {
+				return {
+					connections: state.connections.filter(
+						(connection) => connection.id !== connectionId,
+					),
+					activeConnection:
+						state.activeConnection === connectionId ? SANDBOX : state.activeConnection,
+				};
+			}),
 
-	removeConnection: (connectionId) =>
-		set((state) => {
-			return {
-				connections: state.connections.filter(
-					(connection) => connection.id !== connectionId,
+		updateConnection: (payload) =>
+			set((state) => ({
+				connections: state.connections.map((connection) =>
+					connection.id === payload.id ? { ...connection, ...payload } : connection,
 				),
-				activeConnection:
-					state.activeConnection === connectionId
-						? SANDBOX
-						: state.activeConnection,
-			};
-		}),
+			})),
 
-	updateConnection: (payload) =>
-		set((state) => ({
-			connections: state.connections.map((connection) =>
-				connection.id === payload.id
-					? { ...connection, ...payload }
-					: connection,
-			),
-		})),
+		updateCurrentConnection: (payload) =>
+			set((state) => updateConnection(state, () => payload)),
 
-	updateCurrentConnection: (payload) =>
-		set((state) => updateConnection(state, () => payload)),
+		setConnections: (connections) => set(() => ({ connections })),
 
-	setConnections: (connections) => set(() => ({ connections })),
+		setActiveScreen: (activeScreen) => set(() => ({ activeScreen })),
 
-	setActiveScreen: (activeScreen) => set(() => ({ activeScreen })),
+		setActiveConnection: (activeConnection) =>
+			set(({ connections }) => {
+				if (activeConnection === "sandbox") {
+					return {
+						activeConnection,
+						activeScreen: "database",
+					};
+				}
 
-	setActiveConnection: (activeConnection) =>
-		set(({ connections }) => {
-			if (activeConnection === "sandbox") {
+				const connection = connections.find(({ id }) => id === activeConnection);
+				if (!connection) return {};
+
+				if (!isConnectionValid(connection.authentication)) {
+					dispatchIntent("edit-connection", { id: connection.id });
+					return {};
+				}
+
 				return {
 					activeConnection,
 					activeScreen: "database",
 				};
-			}
-
-			const connection = connections.find(
-				({ id }) => id === activeConnection,
-			);
-			if (!connection) return {};
-
-			if (!isConnectionValid(connection.authentication)) {
-				dispatchIntent("edit-connection", { id: connection.id });
-				return {};
-			}
-
-			return {
-				activeConnection,
-				activeScreen: "database",
-			};
-		}),
-
-	setActiveView: (activeView) => set(() => ({ activeView })),
-
-	setActiveCloudPage: (activeCloudPage) => set(() => ({ activeCloudPage })),
-
-	setActiveCloudOrg: (activeCloudOrg) => set(() => ({ activeCloudOrg })),
-
-	addQueryTab: (options) =>
-		set((state) =>
-			updateConnection(state, (connection) => {
-				const tabId = newId();
-				const baseName = options?.name || "New query";
-
-				let queryName = "";
-				let counter = 0;
-
-				do {
-					queryName =
-						`${baseName} ${counter ? counter + 1 : ""}`.trim();
-					counter++;
-				} while (
-					connection.queries.some((query) => query.name === queryName)
-				);
-
-				return {
-					queries: [
-						...connection.queries,
-						{
-							...createBaseTab(state.settings, options?.query),
-							variables: options?.variables || "{}",
-							name: queryName,
-							id: tabId,
-						},
-					],
-					activeQuery: tabId,
-				};
 			}),
-		),
 
-	removeQueryTab: (queryId) =>
-		set((state) =>
-			updateConnection(state, (connection) => {
-				const index = connection.queries.findIndex(
-					(query) => query.id === queryId,
-				);
+		setActiveView: (activeView) => set(() => ({ activeView })),
 
-				if (index < 0) {
-					return {};
-				}
+		setActiveCloudPage: (activeCloudPage) => set(() => ({ activeCloudPage })),
 
-				let activeQuery = connection.activeQuery;
+		setActiveCloudOrg: (activeCloudOrg) => set(() => ({ activeCloudOrg })),
 
-				if (connection.activeQuery === queryId) {
-					activeQuery =
-						index === connection.queries.length - 1
-							? connection.queries[index - 1]?.id
-							: connection.queries[index + 1]?.id;
-				}
+		addQueryTab: (options) =>
+			set((state) =>
+				updateConnection(state, (connection) => {
+					const tabId = newId();
+					const baseName = options?.name || "New query";
 
-				return {
-					queries: connection.queries.toSpliced(index, 1),
-					activeQuery,
-				};
-			}),
-		),
+					let queryName = "";
+					let counter = 0;
 
-	updateQueryTab: (payload) =>
-		set((state) =>
-			updateConnection(state, (connection) => {
-				const index = connection.queries.findIndex(
-					(query) => query.id === connection.activeQuery,
-				);
+					do {
+						queryName = `${baseName} ${counter ? counter + 1 : ""}`.trim();
+						counter++;
+					} while (connection.queries.some((query) => query.name === queryName));
 
-				if (index < 0) {
-					return {};
-				}
-
-				const query = {
-					...connection.queries[index],
-					...payload,
-				};
-
-				if (payload.query !== undefined) {
-					query.valid = !validateQuery(query.query);
-				}
-
-				return {
-					queries: connection.queries.with(index, query),
-				};
-			}),
-		),
-
-	setActiveQueryTab: (connectionId) =>
-		set((state) =>
-			updateConnection(state, () => ({
-				activeQuery: connectionId,
-			})),
-		),
-
-	saveQuery: (query) =>
-		set((state) => {
-			const savedQueries = [...state.savedQueries];
-			const index = savedQueries.findIndex(
-				(entry) => entry.id === query.id,
-			);
-
-			if (index < 0) {
-				savedQueries.push(query);
-			} else {
-				savedQueries[index] = query;
-			}
-
-			return {
-				savedQueries,
-			};
-		}),
-
-	removeSavedQuery: (savedId) =>
-		set((state) => ({
-			savedQueries: state.savedQueries.filter(
-				(entry) => entry.id !== savedId,
+					return {
+						queries: [
+							...connection.queries,
+							{
+								...createBaseTab(state.settings, options?.query),
+								variables: options?.variables || "{}",
+								name: queryName,
+								id: tabId,
+							},
+						],
+						activeQuery: tabId,
+					};
+				}),
 			),
-		})),
 
-	setSavedQueries: (savedQueries) =>
-		set(() => ({
-			savedQueries,
-		})),
+		removeQueryTab: (queryId) =>
+			set((state) =>
+				updateConnection(state, (connection) => {
+					const index = connection.queries.findIndex((query) => query.id === queryId);
 
-	setLastPromptedVersion: (lastPromptedVersion) =>
-		set(() => ({ lastPromptedVersion })),
+					if (index < 0) {
+						return {};
+					}
 
-	addHistoryEntry: (entry) =>
-		set((state) =>
-			updateConnection(state, (connection) => {
-				const queryHistory = [...connection.queryHistory];
+					let activeQuery = connection.activeQuery;
 
-				queryHistory.push(entry);
+					if (connection.activeQuery === queryId) {
+						activeQuery =
+							index === connection.queries.length - 1
+								? connection.queries[index - 1]?.id
+								: connection.queries[index + 1]?.id;
+					}
 
-				if (queryHistory.length > MAX_HISTORY_SIZE) {
-					queryHistory.shift();
-				}
+					return {
+						queries: connection.queries.toSpliced(index, 1),
+						activeQuery,
+					};
+				}),
+			),
 
-				return {
-					queryHistory,
-				};
-			}),
-		),
+		updateQueryTab: (payload) =>
+			set((state) =>
+				updateConnection(state, (connection) => {
+					const index = connection.queries.findIndex(
+						(query) => query.id === connection.activeQuery,
+					);
 
-	toggleTablePin: (table) =>
-		set((state) =>
-			updateConnection(state, (connection) => {
-				const pinnedTables = [...connection.pinnedTables];
-				const index = pinnedTables.indexOf(table);
+					if (index < 0) {
+						return {};
+					}
+
+					const query = {
+						...connection.queries[index],
+						...payload,
+					};
+
+					if (payload.query !== undefined) {
+						query.valid = !validateQuery(query.query);
+					}
+
+					return {
+						queries: connection.queries.with(index, query),
+					};
+				}),
+			),
+
+		setActiveQueryTab: (connectionId) =>
+			set((state) =>
+				updateConnection(state, () => ({
+					activeQuery: connectionId,
+				})),
+			),
+
+		saveQuery: (query) =>
+			set((state) => {
+				const savedQueries = [...state.savedQueries];
+				const index = savedQueries.findIndex((entry) => entry.id === query.id);
 
 				if (index < 0) {
-					pinnedTables.push(table);
+					savedQueries.push(query);
 				} else {
-					pinnedTables.splice(index, 1);
+					savedQueries[index] = query;
 				}
 
 				return {
-					pinnedTables,
+					savedQueries,
 				};
 			}),
-		),
 
-	setFeatureFlag: (key, value) =>
-		set(({ featureFlags }) => ({
-			featureFlags: {
-				...featureFlags,
-				[key]: value,
-			},
-		})),
+		removeSavedQuery: (savedId) =>
+			set((state) => ({
+				savedQueries: state.savedQueries.filter((entry) => entry.id !== savedId),
+			})),
 
-	updateBehaviorSettings: (settings) =>
-		set((state) => ({
-			settings: {
-				...state.settings,
-				behavior: {
-					...state.settings.behavior,
-					...settings,
+		setSavedQueries: (savedQueries) =>
+			set(() => ({
+				savedQueries,
+			})),
+
+		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
+
+		addHistoryEntry: (entry) =>
+			set((state) =>
+				updateConnection(state, (connection) => {
+					const queryHistory = [...connection.queryHistory];
+
+					queryHistory.push(entry);
+
+					if (queryHistory.length > MAX_HISTORY_SIZE) {
+						queryHistory.shift();
+					}
+
+					return {
+						queryHistory,
+					};
+				}),
+			),
+
+		toggleTablePin: (table) =>
+			set((state) =>
+				updateConnection(state, (connection) => {
+					const pinnedTables = [...connection.pinnedTables];
+					const index = pinnedTables.indexOf(table);
+
+					if (index < 0) {
+						pinnedTables.push(table);
+					} else {
+						pinnedTables.splice(index, 1);
+					}
+
+					return {
+						pinnedTables,
+					};
+				}),
+			),
+
+		setFeatureFlag: (key, value) =>
+			set(({ featureFlags }) => ({
+				featureFlags: {
+					...featureFlags,
+					[key]: value,
 				},
-			},
-		})),
+			})),
 
-	updateAppearanceSettings: (settings) =>
-		set((state) => ({
-			settings: {
-				...state.settings,
-				appearance: {
-					...state.settings.appearance,
-					...settings,
+		updateBehaviorSettings: (settings) =>
+			set((state) => ({
+				settings: {
+					...state.settings,
+					behavior: {
+						...state.settings.behavior,
+						...settings,
+					},
 				},
-			},
-		})),
+			})),
 
-	updateTemplateSettings: (settings) =>
-		set((state) => ({
-			settings: {
-				...state.settings,
-				templates: {
-					...state.settings.templates,
-					...settings,
+		updateAppearanceSettings: (settings) =>
+			set((state) => ({
+				settings: {
+					...state.settings,
+					appearance: {
+						...state.settings.appearance,
+						...settings,
+					},
 				},
-			},
-		})),
+			})),
 
-	updateServingSettings: (settings) =>
-		set((state) => ({
-			settings: {
-				...state.settings,
-				serving: {
-					...state.settings.serving,
-					...settings,
+		updateTemplateSettings: (settings) =>
+			set((state) => ({
+				settings: {
+					...state.settings,
+					templates: {
+						...state.settings.templates,
+						...settings,
+					},
 				},
-			},
-		})),
+			})),
 
-	updateCloudSettings: (settings) =>
-		set((state) => ({
-			settings: {
-				...state.settings,
-				cloud: {
-					...state.settings.cloud,
-					...settings,
+		updateServingSettings: (settings) =>
+			set((state) => ({
+				settings: {
+					...state.settings,
+					serving: {
+						...state.settings.serving,
+						...settings,
+					},
 				},
-			},
-		})),
+			})),
 
-	pushCommand: (command) =>
-		set((state) => {
-			const commandHistory = [...state.commandHistory];
-			const index = commandHistory.indexOf(command);
+		updateCloudSettings: (settings) =>
+			set((state) => ({
+				settings: {
+					...state.settings,
+					cloud: {
+						...state.settings.cloud,
+						...settings,
+					},
+				},
+			})),
 
-			if (index >= 0) {
-				commandHistory.splice(index, 1);
-			}
+		pushCommand: (command) =>
+			set((state) => {
+				const commandHistory = [...state.commandHistory];
+				const index = commandHistory.indexOf(command);
 
-			commandHistory.unshift(command);
+				if (index >= 0) {
+					commandHistory.splice(index, 1);
+				}
 
-			if (commandHistory.length > 3) {
-				commandHistory.pop();
-			}
+				commandHistory.unshift(command);
 
-			return {
-				commandHistory,
-			};
-		}),
+				if (commandHistory.length > 3) {
+					commandHistory.pop();
+				}
 
-	setPreviousVersion: (previousVersion) =>
-		set(() => ({
-			previousVersion,
-		})),
+				return {
+					commandHistory,
+				};
+			}),
 
-	updateViewedNews: () =>
-		set(() => ({
-			lastViewedNewsAt: Date.now(),
-		})),
+		setPreviousVersion: (previousVersion) =>
+			set(() => ({
+				previousVersion,
+			})),
 
-	completeOnboarding: (key) =>
-		set((state) => ({
-			onboarding: unique([...state.onboarding, key]),
-		})),
+		updateViewedNews: () =>
+			set(() => ({
+				lastViewedNewsAt: Date.now(),
+			})),
 
-	resetOnboardings: () =>
-		set(() => ({
-			onboarding: [],
-		})),
+		completeOnboarding: (key) =>
+			set((state) => ({
+				onboarding: unique([...state.onboarding, key]),
+			})),
 
-	setOpenDesignerPanels: (openDesignerPanels) =>
-		set(() => ({
-			openDesignerPanels,
-		})),
-}));
+		resetOnboardings: () =>
+			set(() => ({
+				onboarding: [],
+			})),
+
+		setOpenDesignerPanels: (openDesignerPanels) =>
+			set(() => ({
+				openDesignerPanels,
+			})),
+	})),
+);

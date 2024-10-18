@@ -1,3 +1,4 @@
+import { isFunction, shake } from "radash";
 import type {
 	OpenedBinaryFile,
 	OpenedTextFile,
@@ -43,6 +44,8 @@ export abstract class BaseBrowserAdapter implements SurrealistAdapter {
 
 	public async loadConfig() {
 		const localStorageValue = localStorage.getItem(CONFIG_KEY);
+
+		// NOTE legacy local storage config
 		if (localStorageValue) {
 			const config = localStorageValue || "{}";
 			const parsed = JSON.parse(config);
@@ -58,15 +61,7 @@ export abstract class BaseBrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async saveConfig(config: any) {
-		const objConfig: any = {};
-
-		for (const key in config) {
-			if (typeof config[key] !== "function") {
-				objConfig[key] = config[key];
-			}
-		}
-
-		await idxdb.setConfig(objConfig);
+		await idxdb.setConfig(shake(config, isFunction));
 		localStorage.removeItem(CONFIG_KEY);
 	}
 
