@@ -85,6 +85,13 @@ export function CommandPaletteModal() {
 				cmd.action.handler();
 				break;
 			}
+			case "preference": {
+				const el = document.querySelector(`[data-navigation-item-id="${cmd.id}"]`);
+				const input = el?.querySelector(".mantine-Checkbox-root input");
+
+				(input as HTMLElement)?.click();
+				return;
+			}
 		}
 
 		if (query.length > 0) {
