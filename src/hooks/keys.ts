@@ -48,6 +48,8 @@ export function useKeyNavigation<T extends Identified>(items: T[]) {
 		const isDown = e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey);
 		const isUp = e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey);
 
+		console.log(isDown, isUp);
+
 		if (!isDown && !isUp) {
 			if (e.key !== "Shift" && e.key !== "Enter") {
 				searchRef.current?.focus();

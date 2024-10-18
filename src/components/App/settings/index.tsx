@@ -332,7 +332,7 @@ export function Settings() {
 						/>
 					</Drawer>
 					<Stack
-						px="xl"
+						pl="xl"
 						pt="xl"
 						gap="md"
 						flex={1}

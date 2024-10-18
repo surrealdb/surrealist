@@ -28,7 +28,7 @@ export function FeatureFlagsTab() {
 						size="sm"
 					/>
 				}
-				placeholder="Filter feature flags"
+				placeholder="Search feature flags"
 				variant="unstyled"
 				value={search}
 				onChange={setSearch}
