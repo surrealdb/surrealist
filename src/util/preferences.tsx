@@ -11,7 +11,6 @@ import {
 
 import type { Selection, SurrealistConfig } from "~/types";
 import { isDesktop } from "~/adapter";
-import { parseScale } from "./helpers";
 
 interface ReaderWriter<T> {
 	reader: (config: SurrealistConfig) => T;
@@ -88,9 +87,9 @@ export function computePreferences(): PreferenceSection[] {
 					description: "The zoom level of the window",
 					controller: new SelectionController({
 						options: SCALE_STEPS,
-						reader: (config) => parseScale(config.settings.appearance.windowScale),
+						reader: (config) => config.settings.appearance.windowScale.toString(),
 						writer: (config, value) => {
-							config.settings.appearance.windowScale = Number.parseFloat(value) / 100;
+							config.settings.appearance.windowScale = Number.parseFloat(value);
 						},
 					}),
 				},
@@ -129,9 +128,9 @@ export function computePreferences(): PreferenceSection[] {
 					description: "The zoom level of all code editors",
 					controller: new SelectionController({
 						options: SCALE_STEPS,
-						reader: (config) => parseScale(config.settings.appearance.editorScale),
+						reader: (config) => config.settings.appearance.editorScale.toString(),
 						writer: (config, value) => {
-							config.settings.appearance.editorScale = Number.parseFloat(value) / 100;
+							config.settings.appearance.editorScale = Number.parseFloat(value);
 						},
 					}),
 				},

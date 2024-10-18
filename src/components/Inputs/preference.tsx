@@ -14,7 +14,6 @@ export interface PreferenceInputProps extends BoxProps {
 
 export function PreferenceInput({ controller, ...other }: PreferenceInputProps) {
 	const { applyPreference } = useConfigStore.getState();
-
 	const value = useConfigStore((state) => controller.options.reader(state));
 
 	if (controller instanceof CheckboxController) {
@@ -23,7 +22,7 @@ export function PreferenceInput({ controller, ...other }: PreferenceInputProps) 
 				{...other}
 				checked={value}
 				onChange={(event) => {
-					applyPreference(controller.options.writer, event.currentTarget.checked);
+					applyPreference(controller.options.writer, event.target.checked);
 				}}
 			/>
 		);

@@ -447,21 +447,3 @@ export function slugify(text: string) {
 export function isEqualApprox(a: number, b: number) {
 	return Math.abs(a - b) < 0.0001;
 }
-
-/**
- * Convert a scale factor to a percentage string
- */
-export function parseScale(scale: number) {
-	switch (true) {
-		case isEqualApprox(scale, 1.5):
-			return "150";
-		case isEqualApprox(scale, 1.25):
-			return "125";
-		case isEqualApprox(scale, 0.75):
-			return "75";
-		case isEqualApprox(scale, 0.5):
-			return "50";
-		default:
-			return "100";
-	}
-}
