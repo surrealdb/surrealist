@@ -220,8 +220,7 @@ function SettingsSidebar({
 export function Settings() {
 	const [flags, setFlags] = useFeatureFlags();
 	const [open, openHandle] = useBoolean();
-	const [activeTab, setActiveTab] = useState("behaviour");
-	// const tabsRef = useRef<HTMLDivElement>(null);
+	const [activeTab, setActiveTab] = useState("preferences");
 
 	const categories: OptionalCategory[] = CATEGORIES.map((c) => ({
 		...c,

@@ -1,21 +1,27 @@
 import { openDB } from "idb";
 import { CONFIG_KEY } from "./storage";
 
-const dbName = "surrealist";
-const indexedDbVersion = 1;
-const keyValueStore = "store";
+const DATABASE = "surrealist";
+const VERSION = 1;
+const STORE = "store";
 
-const dbPromise = openDB(dbName, indexedDbVersion, {
+const request = openDB(DATABASE, VERSION, {
 	upgrade(db) {
-		db.createObjectStore(keyValueStore);
+		db.createObjectStore(STORE);
 	},
 });
 
+/**
+ * Retrieve the browser stored configuration
+ */
 async function getConfig() {
-	return (await dbPromise).get(keyValueStore, CONFIG_KEY);
+	return (await request).get(STORE, CONFIG_KEY);
 }
+/**
+ * Save the configuration to the browser storage
+ */
 async function setConfig(value: any) {
-	return (await dbPromise).put(keyValueStore, value, CONFIG_KEY);
+	return (await request).put(STORE, value, CONFIG_KEY);
 }
 
 export { getConfig, setConfig };
