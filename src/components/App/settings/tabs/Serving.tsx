@@ -1,4 +1,4 @@
-import { NumberInput, Select, SimpleGrid, TextInput } from "@mantine/core";
+import { NumberInput, ScrollArea, Select, SimpleGrid, Text, TextInput } from "@mantine/core";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import type { LogLevel, Selection } from "~/types";
@@ -42,8 +42,25 @@ export function ServingTab() {
 	});
 
 	return (
-		<>
-			<SettingsSection>
+		<ScrollArea
+			pr="xl"
+			flex={1}
+			scrollbars="y"
+			type="always"
+		>
+			<Text
+				mb="xl"
+				maw={500}
+			>
+				You can use Surrealist Desktop to serve SurrealDB on your local machine.
+				<br />
+				This page allows you to customize the settings for the database.
+			</Text>
+
+			<SettingsSection
+				label="Options"
+				maw={400}
+			>
 				<NumberInput
 					label="Serving port"
 					value={port}
@@ -52,24 +69,22 @@ export function ServingTab() {
 					max={65_535}
 				/>
 
-				<SimpleGrid cols={2}>
-					<Select
-						w="unset"
-						label="Log level"
-						data={LOG_LEVELS}
-						value={logLevel}
-						onChange={setLogLevel as any}
-					/>
+				<Select
+					w="unset"
+					label="Log level"
+					data={LOG_LEVELS}
+					value={logLevel}
+					onChange={setLogLevel as any}
+				/>
 
-					<NumberInput
-						w="unset"
-						label="Console history size"
-						value={historySize}
-						onChange={updateHistorySize}
-						min={1}
-						max={10_000}
-					/>
-				</SimpleGrid>
+				<NumberInput
+					w="unset"
+					label="Console history size"
+					value={historySize}
+					onChange={updateHistorySize}
+					min={1}
+					max={10_000}
+				/>
 
 				<TextInput
 					w="unset"
@@ -81,61 +96,55 @@ export function ServingTab() {
 				/>
 			</SettingsSection>
 
-			<SettingsSection label="Authentication">
-				<SimpleGrid cols={2}>
-					<TextInput
-						w="unset"
-						label="Initial root user"
-						placeholder="root"
-						value={username}
-						spellCheck={false}
-						onChange={(e) => setUsername(e.target.value)}
-					/>
+			<SettingsSection
+				mt="xl"
+				maw={400}
+				label="Authentication"
+			>
+				<TextInput
+					w="unset"
+					label="Initial root user"
+					placeholder="root"
+					value={username}
+					spellCheck={false}
+					onChange={(e) => setUsername(e.target.value)}
+				/>
 
-					<TextInput
-						w="unset"
-						label="Initial root password"
-						placeholder="root"
-						value={password}
-						spellCheck={false}
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-				</SimpleGrid>
+				<TextInput
+					w="unset"
+					label="Initial root password"
+					placeholder="root"
+					value={password}
+					spellCheck={false}
+					onChange={(e) => setPassword(e.target.value)}
+				/>
 			</SettingsSection>
 
-			<SettingsSection label="Storage">
-				<SimpleGrid cols={2}>
-					<Select
-						w="unset"
-						label="Storage mode"
-						data={DRIVERS}
-						value={driver}
-						spellCheck={false}
-						onChange={setDriver as any}
-					/>
+			<SettingsSection
+				mt="xl"
+				maw={400}
+				label="Storage"
+			>
+				<Select
+					w="unset"
+					label="Storage mode"
+					data={DRIVERS}
+					value={driver}
+					spellCheck={false}
+					onChange={setDriver as any}
+				/>
 
-					{(driver === "file" ||
-						driver === "tikv" ||
-						driver === "surrealkv") && (
-						<TextInput
-							w="unset"
-							label={
-								isFileDriver
-									? "Storage path"
-									: "Storage cluster address"
-							}
-							placeholder={
-								isFileDriver
-									? "/path/to/storage"
-									: "address:port"
-							}
-							value={storage}
-							spellCheck={false}
-							onChange={(e) => setStorage(e.target.value)}
-						/>
-					)}
-				</SimpleGrid>
+				{(driver === "file" || driver === "tikv" || driver === "surrealkv") && (
+					<TextInput
+						w="unset"
+						label={isFileDriver ? "Storage path" : "Storage cluster address"}
+						placeholder={isFileDriver ? "/path/to/storage" : "address:port"}
+						value={storage}
+						spellCheck={false}
+						onChange={(e) => setStorage(e.target.value)}
+					/>
+				)}
 			</SettingsSection>
-		</>
+		</ScrollArea>
 	);
 }

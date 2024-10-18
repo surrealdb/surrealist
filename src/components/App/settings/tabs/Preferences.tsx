@@ -16,12 +16,10 @@ export function PreferencesTab() {
 
 	return (
 		<ScrollArea
-			mt={32}
 			pr="xl"
 			flex={1}
 			scrollbars="y"
 			type="always"
-			bottom="var(--mantine-spacing-xl)"
 		>
 			<TextInput
 				leftSection={

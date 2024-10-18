@@ -91,9 +91,9 @@ export function TemplatesTab() {
 		<>
 			<SettingsSection>
 				<Text mb="xs">
-					Connection templates provide a way to simplify the process of creating new
-					connections by pre-filling common connection details. You can select any of your
-					templates when creating or editing a connection.
+					Connection templates make it easier to create new connections by pre-filling
+					common connection details. <br />
+					From the connection editor you can choose which template to use.
 				</Text>
 
 				{templates.map((template) => (
