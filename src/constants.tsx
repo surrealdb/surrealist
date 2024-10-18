@@ -83,11 +83,11 @@ export const DATASETS: Record<string, Dataset> = {
 };
 
 export const SCALE_STEPS: Selection<ScaleStep> = [
-	{ label: "150%", value: "150" },
 	{ label: "125%", value: "125" },
+	{ label: "110%", value: "110" },
 	{ label: "100%", value: "100" },
+	{ label: "90%", value: "90" },
 	{ label: "75%", value: "75" },
-	{ label: "50%", value: "50" },
 ];
 
 export const THEMES: Selection<MantineColorScheme> = [

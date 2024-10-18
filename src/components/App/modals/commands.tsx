@@ -4,7 +4,7 @@ import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import posthog from "posthog-js";
-import { useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, useMemo, useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -18,7 +18,7 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import { type Command, type CommandCategory, computeCommands } from "~/util/commands";
-import { Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
+import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { iconOpen, iconSearch } from "~/util/icons";
 
 export function CommandPaletteModal() {
@@ -28,6 +28,20 @@ export function CommandPaletteModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [search, setSearch] = useInputState("");
 	const [categories, setCategories] = useState<CommandCategory[]>([]);
+
+	const handlePreferenceInput = useStable((e: KeyboardEvent) => {
+		e.stopPropagation();
+
+		if (e.code === "Tab") {
+			e.preventDefault();
+			return;
+		}
+
+		if (e.code === "Escape") {
+			searchRef.current?.focus();
+			openHandle.open();
+		}
+	});
 
 	const [filtered, flattened] = useMemo(() => {
 		const filtered = categories.flatMap((cat) => {
@@ -91,9 +105,11 @@ export function CommandPaletteModal() {
 			}
 			case "preference": {
 				const el = document.querySelector(`[data-navigation-item-id="${cmd.id}"]`);
-				const input = el?.querySelector(".mantine-Checkbox-root input");
+				const input = el?.querySelector<HTMLElement>(".mantine-InputWrapper-root input");
+				const checkbox = el?.querySelector<HTMLElement>(".mantine-Checkbox-root input");
 
-				(input as HTMLElement)?.click();
+				(input ?? checkbox)?.click();
+				input?.focus();
 				return;
 			}
 		}
@@ -220,9 +236,15 @@ export function CommandPaletteModal() {
 											{cmd.action.type === "preference" && (
 												<>
 													<Spacer />
-													<PreferenceInput
-														controller={cmd.action.controller}
-													/>
+													<Box
+														onClick={ON_STOP_PROPAGATION}
+														onKeyDown={handlePreferenceInput}
+													>
+														<PreferenceInput
+															controller={cmd.action.controller}
+															compact
+														/>
+													</Box>
 												</>
 											)}
 										</Entry>

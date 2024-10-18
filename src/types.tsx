@@ -29,7 +29,7 @@ export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type AuthType = "user" | "access";
 export type AccessType = "JWT" | "RECORD";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
-export type ScaleStep = "50" | "75" | "100" | "125" | "150";
+export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 
 export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";

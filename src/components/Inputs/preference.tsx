@@ -10,9 +10,10 @@ import {
 
 export interface PreferenceInputProps extends BoxProps {
 	controller: PreferenceController;
+	compact?: boolean;
 }
 
-export function PreferenceInput({ controller, ...other }: PreferenceInputProps) {
+export function PreferenceInput({ controller, compact, ...other }: PreferenceInputProps) {
 	const { applyPreference } = useConfigStore.getState();
 	const value = useConfigStore((state) => controller.options.reader(state));
 
@@ -33,6 +34,7 @@ export function PreferenceInput({ controller, ...other }: PreferenceInputProps) 
 			<NumberInput
 				{...other}
 				value={value}
+				size={compact ? "xs" : undefined}
 				onChange={(input) => {
 					applyPreference(
 						controller.options.writer,
@@ -49,6 +51,7 @@ export function PreferenceInput({ controller, ...other }: PreferenceInputProps) 
 				{...other}
 				data={controller.options.options}
 				value={value}
+				size={compact ? "xs" : undefined}
 				onChange={(input) => {
 					applyPreference(controller.options.writer, input);
 				}}

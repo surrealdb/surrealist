@@ -275,7 +275,7 @@ export function computePreferences(): PreferenceSection[] {
 					}),
 				},
 				{
-					name: "Show links",
+					name: "Show record links",
 					description: "Whether to show links between nodes",
 					controller: new CheckboxController({
 						reader: (config) => config.settings.appearance.defaultDiagramShowLinks,

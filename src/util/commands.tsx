@@ -120,7 +120,10 @@ export function computeCommands(): CommandCategory[] {
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
 	const canDisconnect = currentState !== "disconnected" && !isSandbox;
-	const preferences = computePreferences().flatMap(({ preferences }) => preferences);
+	const preferences = computePreferences().flatMap(({ name, preferences }) =>
+		preferences.map((pref) => ({ ...pref, name: `${name} > ${pref.name}` })),
+	);
+
 	const categories: CommandCategory[] = [];
 
 	categories.push(

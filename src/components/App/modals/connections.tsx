@@ -30,7 +30,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { group } from "radash";
+import { group, isEmpty } from "radash";
 import { type HTMLAttributes, type MouseEvent, type ReactNode, useMemo } from "react";
 import { isDesktop } from "~/adapter";
 import { EditableText } from "~/components/EditableText";
@@ -49,7 +49,7 @@ import type { Connection } from "~/types";
 import { Y_SLIDE_TRANSITION, fuzzyMatch, newId } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
 
-const UNGROUPED = Symbol("ungrouped");
+const UNGROUPED = "__ungrouped__";
 
 export function ConnectionsModal() {
 	const [isOpen, openedHandle] = useBoolean();
@@ -111,20 +111,19 @@ export function ConnectionsModal() {
 		return groups.sort((a, b) => a.name.localeCompare(b.name));
 	}, [groups]);
 
-	const [grouped, ungrouped, flattened] = useMemo(() => {
-		const filtered = connections
-			.filter((con) => {
-				return (
-					fuzzyMatch(search, con.name) || fuzzyMatch(search, con.authentication.hostname)
-				);
-			})
-			.sort((a, b) => a.name.localeCompare(b.name));
+	const connectionsList = useMemo(() => {
+		return connections.sort((a, b) => a.name.localeCompare(b.name));
+	}, [connections]);
+
+	const [grouped, flattened] = useMemo(() => {
+		const filtered = connectionsList.filter((con) => {
+			return fuzzyMatch(search, con.name) || fuzzyMatch(search, con.authentication.hostname);
+		});
 
 		const grouped = group(filtered, (con) => con.group ?? UNGROUPED) || {};
-		const ungrouped = grouped[UNGROUPED] ?? [];
 
-		return [grouped, ungrouped, [sandbox, ...filtered]];
-	}, [connections, search, sandbox]);
+		return [grouped, [sandbox, ...filtered]];
+	}, [connectionsList, search, sandbox]);
 
 	const activate = useStable((con: Connection) => {
 		setActiveConnection(con.id);
@@ -246,7 +245,7 @@ export function ConnectionsModal() {
 						<Text>Sandbox</Text>
 					</Entry>
 
-					{groupsList.length === 0 && ungrouped.length === 0 && (
+					{!grouped[UNGROUPED] && !groupsList.length && (
 						<Text
 							ta="center"
 							py="md"
@@ -297,9 +296,9 @@ export function ConnectionsModal() {
 						/>
 					))}
 
-					{ungrouped.length > 0 && (
+					{grouped[UNGROUPED] && (
 						<ItemList
-							connections={ungrouped}
+							connections={grouped[UNGROUPED]}
 							active={connection?.id ?? ""}
 							selected={selected}
 							onClose={openedHandle.close}
