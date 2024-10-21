@@ -1,4 +1,4 @@
-import { type BoxProps, Checkbox, NumberInput, Select } from "@mantine/core";
+import { type BoxProps, Checkbox, NumberInput, Select, TextInput } from "@mantine/core";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
 import {
@@ -6,6 +6,7 @@ import {
 	NumberController,
 	type PreferenceController,
 	SelectionController,
+	TextController,
 } from "~/util/preferences";
 
 export interface PreferenceInputProps extends BoxProps {
@@ -40,6 +41,21 @@ export function PreferenceInput({ controller, compact, ...other }: PreferenceInp
 						controller.options.writer,
 						isNumber(input) ? input : Number.parseInt(input),
 					);
+				}}
+			/>
+		);
+	}
+
+	if (controller instanceof TextController) {
+		return (
+			<TextInput
+				{...other}
+				value={value}
+				size={compact ? "xs" : undefined}
+				placeholder={controller.options.placeholder}
+				w={250}
+				onChange={(e) => {
+					applyPreference(controller.options.writer, e.currentTarget.value);
 				}}
 			/>
 		);

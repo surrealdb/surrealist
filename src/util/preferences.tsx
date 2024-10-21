@@ -22,6 +22,7 @@ interface ReaderWriter<T> {
 export type PreferenceController =
 	| CheckboxController
 	| NumberController
+	| TextController
 	| SelectionController<any>
 	| BitfieldController<any>;
 
@@ -51,6 +52,13 @@ export class NumberController {
 }
 
 /**
+ * A preference controller for text inputs
+ */
+export class TextController {
+	constructor(public options: ReaderWriter<string> & { placeholder?: string }) {}
+}
+
+/**
  * A preference controller for a selection dropdown
  */
 export class SelectionController<T extends string> {
@@ -68,7 +76,7 @@ export class BitfieldController<T extends string> {
  * Compute available preferences based on the current state
  */
 export function computePreferences(): PreferenceSection[] {
-	const { themes, syntax_themes } = featureFlags.store;
+	const { themes, syntax_themes, cloud_endpoints } = featureFlags.store;
 
 	const sections: PreferenceSection[] = [];
 
@@ -306,6 +314,37 @@ export function computePreferences(): PreferenceSection[] {
 			],
 		},
 	);
+
+	if (cloud_endpoints) {
+		sections.push({
+			name: "Cloud endpoints",
+			preferences: [
+				{
+					name: "Auth base",
+					description: "The base URL for cloud authentication",
+					controller: new TextController({
+						placeholder: "https://...",
+						reader: (config) => config.settings.cloud.urlAuthBase,
+						writer: (config, value) => {
+							config.settings.cloud.urlAuthBase = value;
+						},
+					}),
+				},
+				{
+					name: "API base",
+					description: "The base URL for the cloud API",
+					controller: new TextController({
+						placeholder: "https://...",
+						reader: (config) => config.settings.cloud.urlApiBase,
+						writer: (config, value) => {
+							config.settings.cloud.urlApiBase = value;
+							config.settings.cloud.urlApiMgmtBase = value;
+						},
+					}),
+				},
+			],
+		});
+	}
 
 	return sections;
 }
