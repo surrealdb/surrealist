@@ -13,6 +13,8 @@ import {
 import { isDesktop } from "~/adapter";
 import type { Selection, SurrealistConfig } from "~/types";
 import { featureFlags } from "./feature-flags";
+import { toggle } from "radash";
+import { optional } from "./helpers";
 
 interface ReaderWriter<T> {
 	reader: (config: SurrealistConfig) => T;
@@ -23,8 +25,7 @@ export type PreferenceController =
 	| CheckboxController
 	| NumberController
 	| TextController
-	| SelectionController<any>
-	| BitfieldController<any>;
+	| SelectionController<any>;
 
 export interface Preference {
 	name: string;
@@ -63,13 +64,6 @@ export class TextController {
  */
 export class SelectionController<T extends string> {
 	constructor(public options: ReaderWriter<T> & { options: Selection<T> }) {}
-}
-
-/**
- * A preference controller for a checkbox fieldset
- */
-export class BitfieldController<T extends string> {
-	constructor(public options: ReaderWriter<T[]> & { options: Selection<T> }) {}
 }
 
 /**
@@ -211,18 +205,50 @@ export function computePreferences(): PreferenceSection[] {
 						},
 					}),
 				},
+			],
+		},
+		{
+			name: "Line numbers",
+			preferences: [
 				{
-					name: "Line numbers",
-					description: "Render line numbers in configured editors",
-					controller: new BitfieldController({
-						options: [
-							{ label: "Table names", value: "query" },
-							{ label: "Param names", value: "inspector" },
-							{ label: "Function names", value: "functions" },
-						] as const,
-						reader: (config) => config.settings.appearance.lineNumbers,
-						writer: (config, value) => {
-							config.settings.appearance.lineNumbers = value;
+					name: "Query editor",
+					description: "Show line numbers in the query view editor",
+					controller: new CheckboxController({
+						reader: (config) =>
+							config.settings.appearance.lineNumbers.includes("query"),
+						writer: (config) => {
+							config.settings.appearance.lineNumbers = toggle(
+								config.settings.appearance.lineNumbers,
+								"query",
+							);
+						},
+					}),
+				},
+				{
+					name: "Record inspector",
+					description: "Show line numbers in the record inspector",
+					controller: new CheckboxController({
+						reader: (config) =>
+							config.settings.appearance.lineNumbers.includes("inspector"),
+						writer: (config) => {
+							config.settings.appearance.lineNumbers = toggle(
+								config.settings.appearance.lineNumbers,
+								"inspector",
+							);
+						},
+					}),
+				},
+				{
+					name: "Function editor",
+					description: "Show line numbers in the functions view editor",
+					controller: new CheckboxController({
+						reader: (config) =>
+							config.settings.appearance.lineNumbers.includes("functions"),
+						writer: (config) => {
+							config.settings.appearance.lineNumbers = toggle(
+								config.settings.appearance.lineNumbers,
+								"functions",
+							);
 						},
 					}),
 				},
@@ -347,8 +373,4 @@ export function computePreferences(): PreferenceSection[] {
 	}
 
 	return sections;
-}
-
-function optional(pref: Preference | false) {
-	return pref ? [pref] : [];
 }

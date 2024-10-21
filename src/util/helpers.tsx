@@ -447,3 +447,13 @@ export function slugify(text: string) {
 export function isEqualApprox(a: number, b: number) {
 	return Math.abs(a - b) < 0.0001;
 }
+
+/**
+ * Allow spreading optional values into an array
+ *
+ * @param value The optional value
+ * @returns Array with the value or empty array
+ */
+export function optional<T>(value: T | false | undefined | null): T[] {
+	return value ? [value] : [];
+}
