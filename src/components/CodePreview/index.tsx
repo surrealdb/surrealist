@@ -6,17 +6,18 @@ import { ActionIcon, Box, CopyButton, Paper, type PaperProps, Text } from "@mant
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
 import { type ReactNode, useEffect, useMemo, useRef } from "react";
-import { colorTheme } from "~/editor";
-import { useIsLight } from "~/hooks/theme";
+import { editorTheme } from "~/editor";
+import { useIsLight, useTheme } from "~/hooks/theme";
+import { useConfigStore } from "~/stores/config";
 import { dedent } from "~/util/dedent";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
 
 interface EditorRef {
 	editor: EditorView;
-	config: Compartment;
-	theme: Compartment;
-	wrap: Compartment;
+	configComp: Compartment;
+	themeComp: Compartment;
+	wrapComp: Compartment;
 }
 
 export interface CodePreviewProps extends PaperProps {
@@ -44,6 +45,9 @@ export function CodePreview({
 	const editorRef = useRef<EditorRef>();
 	const ref = useRef<HTMLDivElement | null>(null);
 
+	const colorScheme = useTheme();
+	const syntaxTheme = useConfigStore((s) => s.settings.appearance.syntaxTheme);
+
 	const code = useMemo(() => {
 		return withDedent ? dedent(value) : value;
 	}, [value, withDedent]);
@@ -52,18 +56,16 @@ export function CodePreview({
 	useEffect(() => {
 		if (!ref.current) return;
 
-		const config = new Compartment();
-		const theme = new Compartment();
-		const wrap = new Compartment();
-		const configExt = config.of(extensions || surrealql());
-		const wrapExt = wrap.of(withWrapping ? EditorView.lineWrapping : []);
+		const configComp = new Compartment();
+		const themeComp = new Compartment();
+		const wrapComp = new Compartment();
 
 		const initialState = EditorState.create({
 			doc: code,
 			extensions: [
-				configExt,
-				theme.of(colorTheme(isLight)),
-				wrapExt,
+				configComp.of(extensions || surrealql()),
+				themeComp.of(editorTheme(colorScheme, syntaxTheme)),
+				wrapComp.of(withWrapping ? EditorView.lineWrapping : []),
 				EditorState.readOnly.of(true),
 				EditorView.editable.of(false),
 			],
@@ -76,9 +78,9 @@ export function CodePreview({
 
 		editorRef.current = {
 			editor,
-			config,
-			theme,
-			wrap,
+			configComp,
+			themeComp,
+			wrapComp,
 		};
 
 		return () => {
@@ -109,30 +111,30 @@ export function CodePreview({
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, config } = editorRef.current;
+		const { editor, configComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: config.reconfigure(extensions || surrealql()),
+			effects: configComp.reconfigure(extensions || surrealql()),
 		});
 	}, [extensions]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, theme } = editorRef.current;
+		const { editor, themeComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: theme.reconfigure(colorTheme(isLight)),
+			effects: themeComp.reconfigure(editorTheme(colorScheme, syntaxTheme)),
 		});
-	}, [isLight]);
+	}, [colorScheme, syntaxTheme]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, wrap } = editorRef.current;
+		const { editor, wrapComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: wrap.reconfigure(withWrapping ? EditorView.lineWrapping : []),
+			effects: wrapComp.reconfigure(withWrapping ? EditorView.lineWrapping : []),
 		});
 	}, [withWrapping]);
 

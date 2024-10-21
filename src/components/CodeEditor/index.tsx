@@ -5,9 +5,10 @@ import { EditorView, lineNumbers as renderLineNumbers } from "@codemirror/view";
 import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
-import { colorTheme, editorBase } from "~/editor";
+import { editorBase, editorTheme } from "~/editor";
 import { useSetting } from "~/hooks/config";
-import { useIsLight } from "~/hooks/theme";
+import { useTheme } from "~/hooks/theme";
+import { useConfigStore } from "~/stores/config";
 import classes from "./style.module.scss";
 
 interface EditorRef {
@@ -43,7 +44,8 @@ export function CodeEditor(props: CodeEditorProps) {
 		...rest
 	} = props;
 
-	const isLight = useIsLight();
+	const colorScheme = useTheme();
+	const syntaxTheme = useConfigStore((s) => s.settings.appearance.syntaxTheme);
 	const ref = useRef<HTMLDivElement | null>(null);
 	const editorRef = useRef<EditorRef>();
 	const [editorScale] = useSetting("appearance", "editorScale");
@@ -71,7 +73,7 @@ export function CodeEditor(props: CodeEditorProps) {
 				editorBase(),
 				readOnlyComp.of(EditorState.readOnly.of(!!readOnly)),
 				historyComp.of(newHistory()),
-				themeComp.of(colorTheme(isLight)),
+				themeComp.of(editorTheme(colorScheme, syntaxTheme)),
 				numbersComp.of(lineNumbers ? renderLineNumbers() : []),
 				changeHandler,
 				extensions || [],
@@ -159,9 +161,9 @@ export function CodeEditor(props: CodeEditorProps) {
 		const { editor, themeComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: themeComp.reconfigure(colorTheme(isLight)),
+			effects: themeComp.reconfigure(editorTheme(colorScheme, syntaxTheme)),
 		});
-	}, [isLight]);
+	}, [colorScheme, syntaxTheme]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;

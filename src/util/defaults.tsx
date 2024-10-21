@@ -52,6 +52,7 @@ export function createBaseSettings(): SurrealistSettings {
 		},
 		appearance: {
 			colorScheme: "dark",
+			syntaxTheme: "default",
 			windowScale: 100,
 			editorScale: 100,
 			lineNumbers: ["query", "inspector", "functions"],

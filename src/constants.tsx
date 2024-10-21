@@ -18,6 +18,8 @@ import type {
 	CloudPageInfo,
 	CodeLang,
 	Dataset,
+	DiagramDirection,
+	DiagramMode,
 	Driver,
 	LineStyle,
 	Listable,
@@ -25,9 +27,12 @@ import type {
 	Protocol,
 	ResultFormat,
 	ResultMode,
+	ScaleStep,
 	SchemaMode,
 	Selectable,
+	Selection,
 	SidebarMode,
+	SyntaxTheme,
 	ViewInfo,
 	ViewMode,
 } from "./types";
@@ -57,6 +62,8 @@ import {
 	iconServer,
 } from "./util/icons";
 
+import type { MantineColorScheme } from "@mantine/core";
+
 export type StructureTab = "graph" | "builder";
 export type ExportType = (typeof EXPORT_TYPES)[number];
 export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
@@ -76,10 +83,23 @@ export const DATASETS: Record<string, Dataset> = {
 	},
 };
 
-export const THEMES = [
+export const SCALE_STEPS: Selection<ScaleStep> = [
+	{ label: "125%", value: "125" },
+	{ label: "110%", value: "110" },
+	{ label: "100%", value: "100" },
+	{ label: "90%", value: "90" },
+	{ label: "75%", value: "75" },
+];
+
+export const THEMES: Selection<MantineColorScheme> = [
 	{ label: "Automatic", value: "auto" },
 	{ label: "Light", value: "light" },
 	{ label: "Dark", value: "dark" },
+];
+
+export const SYNTAX_THEMES: Selection<SyntaxTheme> = [
+	{ label: "Default", value: "default" },
+	{ label: "Vivid", value: "vivid" },
 ];
 
 export const RESULT_MODES: Listable<ResultMode>[] = [
@@ -309,13 +329,13 @@ export const GEOMETRY_TYPES = [
 	{ label: "Collection", value: "collection" },
 ];
 
-export const DESIGNER_NODE_MODES = [
+export const DESIGNER_NODE_MODES: Selection<DiagramMode> = [
 	{ label: "Fields", value: "fields" },
 	{ label: "Summary", value: "summary" },
 	{ label: "Simple", value: "simple" },
 ];
 
-export const DESIGNER_DIRECTIONS = [
+export const DESIGNER_DIRECTIONS: Selection<DiagramDirection> = [
 	{ label: "Left to right", value: "ltr" },
 	{ label: "Right to left", value: "rtl" },
 ];

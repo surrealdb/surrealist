@@ -42,6 +42,9 @@ export const schema = {
 	themes: {
 		options: [false, true],
 	},
+	syntax_themes: {
+		options: [false, true],
+	},
 	newsfeed: {
 		options: [false, true],
 	},
@@ -88,6 +91,7 @@ export const featureFlags = new FeatureFlags({
 			highlight_tool: true,
 			cloud_access: true,
 			themes: true,
+			syntax_themes: true,
 		},
 		preview: {
 			query_view: true,

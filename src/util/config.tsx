@@ -9,29 +9,27 @@ import { applyMigrations } from "./migrator";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
-export type StoreType<T> = T extends UseBoundStore<StoreApi<infer I>>
-	? I
-	: never;
 
 /**
  * Watch a store for changes and invoke the callback when the
  * selected state changes.
  *
  * @param options The watch options
+ * @returns Unsubscribe function
  */
 export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
 	initial?: boolean;
 	store: S;
-	select: (slice: StoreType<S>) => T;
+	select: (slice: ReturnType<S["getState"]>) => T;
 	then: (value: T, prev?: T) => void;
-}) {
+}): () => void {
 	const { store, select, then, initial } = options;
 
 	if (initial) {
 		options.then(select(store.getState()));
 	}
 
-	store.subscribe((state, prev) => {
+	return store.subscribe((state, prev) => {
 		const value = select(state);
 
 		if (!isEqual(value, select(prev))) {
@@ -47,10 +45,7 @@ export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
  * @param key The setting key
  * @returns Setting value
  */
-export function getSetting<C extends Category, K extends keyof Settings<C>>(
-	category: C,
-	key: K,
-) {
+export function getSetting<C extends Category, K extends keyof Settings<C>>(category: C, key: K) {
 	return useConfigStore.getState().settings[category][key];
 }
 
@@ -60,10 +55,7 @@ export function getSetting<C extends Category, K extends keyof Settings<C>>(
 export async function startConfigSync() {
 	const loadedConfig = await adapter.loadConfig();
 	const migrateConfig = applyMigrations(loadedConfig);
-	const config = assign<SurrealistConfig>(
-		useConfigStore.getState(),
-		migrateConfig,
-	);
+	const config = assign<SurrealistConfig>(useConfigStore.getState(), migrateConfig);
 	const compatible = config.configVersion <= CONFIG_VERSION;
 
 	// Handle incompatible config versions

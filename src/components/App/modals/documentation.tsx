@@ -15,12 +15,15 @@ import {
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import clsx from "clsx";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeymap } from "~/hooks/keymap";
+import { useKeyNavigation } from "~/hooks/keys";
+import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { iconBook } from "~/util/icons";
@@ -31,6 +34,7 @@ interface Offset {
 }
 
 interface Result {
+	id: string;
 	url: string;
 	title: string;
 	content: string[];
@@ -61,6 +65,7 @@ export function DocumentationModal() {
 				LET $host = ${hostname};
 
 				SELECT
+					rand::guid() as id,
 					path as url,
 					hostname,
 					title,
@@ -112,10 +117,12 @@ export function DocumentationModal() {
 		},
 	});
 
-	const openDocumentation = (doc: Result) => {
+	const openDocumentation = useStable((doc: Result) => {
 		openHandle.close();
 		adapter.openUrl(`https://surrealdb.com${doc.url}`);
-	};
+	});
+
+	const [handleKeyDown, selected] = useKeyNavigation(data ?? [], openDocumentation);
 
 	useIntent("open-documentation", ({ search }) => {
 		openHandle.open();
@@ -136,6 +143,7 @@ export function DocumentationModal() {
 			transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 			centered={false}
 			size="lg"
+			onKeyDown={handleKeyDown}
 			classNames={{
 				content: classes.listingModal,
 				body: classes.listingBody,
@@ -179,7 +187,7 @@ export function DocumentationModal() {
 				display="block"
 				mah="calc(100vh - 200px)"
 			>
-				{(isEmpty && !search) ? (
+				{isEmpty && !search ? (
 					<Text
 						ta="center"
 						py="md"
@@ -205,6 +213,8 @@ export function DocumentationModal() {
 								onClick={() => openDocumentation(doc)}
 								h="unset"
 								ta="start"
+								data-navigation-item-id={doc.id}
+								className={clsx(selected === doc.id && classes.listingActive)}
 							>
 								<Box>
 									<PrimaryTitle>{doc.title}</PrimaryTitle>

@@ -2,15 +2,12 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
-	Box,
 	type BoxProps,
 	Center,
-	Divider,
 	Drawer,
 	Group,
 	Image,
 	Modal,
-	ScrollArea,
 	Stack,
 	Text,
 	ThemeIcon,
@@ -22,37 +19,34 @@ import {
 	iconBalance,
 	iconChevronRight,
 	iconClose,
-	iconCloud,
 	iconDownload,
-	iconEye,
 	iconFlag,
+	iconHelp,
 	iconPlay,
 	iconServer,
-	iconWrench,
+	iconTransfer,
+	iconTune,
 } from "~/util/icons";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { isDesktop } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useVersionCopy } from "~/hooks/debug";
 import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useIntent } from "~/hooks/url";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
-import { isDevelopment, isPreview } from "~/util/environment";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { AppearanceTab } from "./tabs/Appearance";
-import { BehaviourTab } from "./tabs/Behaviour";
-import { CloudTab } from "./tabs/Cloud";
+import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { LicensesTab } from "./tabs/Licenses";
+import { ManageDataTab } from "./tabs/ManageData";
+import { PreferencesTab } from "./tabs/Preferences";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
 
@@ -66,16 +60,10 @@ interface Category {
 
 const CATEGORIES: Category[] = [
 	{
-		id: "behaviour",
-		name: "Behavior",
-		icon: iconWrench,
-		component: BehaviourTab,
-	},
-	{
-		id: "appearance",
-		name: "Appearance",
-		icon: iconEye,
-		component: AppearanceTab,
+		id: "preferences",
+		name: "Preferences",
+		icon: iconTune,
+		component: PreferencesTab,
 	},
 	{
 		id: "templates",
@@ -91,10 +79,10 @@ const CATEGORIES: Category[] = [
 		disabled: () => !isDesktop,
 	},
 	{
-		id: "cloud",
-		name: "Surreal Cloud",
-		icon: iconCloud,
-		component: CloudTab,
+		id: "manage-data",
+		name: "Manage Data",
+		icon: iconTransfer,
+		component: ManageDataTab,
 	},
 	{
 		id: "feature-flags",
@@ -109,6 +97,12 @@ const CATEGORIES: Category[] = [
 		icon: iconBalance,
 		component: LicensesTab,
 	},
+	{
+		id: "about",
+		name: "About",
+		icon: iconHelp,
+		component: AboutTab,
+	},
 ];
 
 type OptionalCategory = Assign<Category, { disabled?: boolean }>;
@@ -116,30 +110,23 @@ type OptionalCategory = Assign<Category, { disabled?: boolean }>;
 interface SettingsSidebarProps extends BoxProps {
 	activeTab: string;
 	categories: OptionalCategory[];
+	withBorder?: boolean;
 	setActiveTab: (tab: string) => void;
 }
 
-function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: SettingsSidebarProps) {
-	const isLight = useIsLight();
+function SettingsSidebar({
+	activeTab,
+	categories,
+	withBorder,
+	setActiveTab,
+	...other
+}: SettingsSidebarProps) {
 	const logoUrl = useLogoUrl();
 
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const { phase, progress, version, startUpdate } = useDesktopUpdater();
 
-	const [copyDebug, clipboard] = useVersionCopy();
 	const sidebarCategories = categories.filter((c) => !c.disabled || c.id === activeTab);
-
-	const versionText = useMemo(() => {
-		let builder = `Version ${import.meta.env.VERSION}`;
-
-		if (isPreview) {
-			builder += " (pre)";
-		} else if (isDevelopment) {
-			builder += " (dev)";
-		}
-
-		return builder;
-	}, []);
 
 	return (
 		<Stack
@@ -147,31 +134,21 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 			px="xl"
 			h="100%"
 			w={250}
-			bg={isLight ? "slate.0" : "slate.9"}
+			style={{
+				borderRight: withBorder ? "1px solid var(--surrealist-divider-color)" : undefined,
+			}}
 			gap={0}
 			{...other}
 		>
-			<Stack
-				pt="sm"
-				pb="xl"
-				gap="xs"
+			<Center
+				mb="xl"
+				py={4}
 			>
-				<Center>
-					<Image
-						h={26}
-						src={logoUrl}
-					/>
-				</Center>
-				<Text
-					ta="center"
-					c={clipboard.copied ? "surreal.6" : "slate"}
-					size="xs"
-					className={classes.version}
-					onClick={copyDebug}
-				>
-					{clipboard.copied ? "Copied to clipboard!" : versionText}
-				</Text>
-			</Stack>
+				<Image
+					h={36}
+					src={logoUrl}
+				/>
+			</Center>
 			<Stack
 				gap="xs"
 				flex={1}
@@ -243,8 +220,7 @@ function SettingsSidebar({ activeTab, categories, setActiveTab, ...other }: Sett
 export function Settings() {
 	const [flags, setFlags] = useFeatureFlags();
 	const [open, openHandle] = useBoolean();
-	const [activeTab, setActiveTab] = useState("behaviour");
-	// const tabsRef = useRef<HTMLDivElement>(null);
+	const [activeTab, setActiveTab] = useState("preferences");
 
 	const categories: OptionalCategory[] = CATEGORIES.map((c) => ({
 		...c,
@@ -292,38 +268,32 @@ export function Settings() {
 				opened={open}
 				onClose={openHandle.close}
 				padding={0}
-				size={960}
+				size={1200}
 			>
 				<Group
-					h="55vh"
-					mih={500}
+					h="calc(100vh - 100px)"
+					mah={650}
 					gap="xs"
 					align="stretch"
 					wrap="nowrap"
 					pos="relative"
-					id="bruh"
+					id="settings"
 				>
 					<SettingsSidebar
 						activeTab={activeTab}
 						categories={categories}
 						setActiveTab={updateActiveTab}
+						withBorder
 						visibleFrom="md"
 					/>
 					<Drawer
 						hiddenFrom="md"
 						opened={overlaySidebar}
 						onClose={overlaySidebarHandle.close}
-						portalProps={{ target: "#bruh" }}
-						overlayProps={{ opacity: 0 }}
+						portalProps={{ target: "#settings" }}
+						overlayProps={{ backgroundOpacity: 0.35 }}
 						padding={0}
-						offset={0}
-						radius={0}
 						size={250}
-						styles={{
-							body: {
-								height: "100%",
-							},
-						}}
 					>
 						<SettingsSidebar
 							activeTab={activeTab}
@@ -334,13 +304,13 @@ export function Settings() {
 						/>
 					</Drawer>
 					<Stack
-						px="xl"
+						pl="xl"
 						pt="xl"
-						gap="md"
+						gap={0}
 						flex={1}
 						miw={0}
 					>
-						<Group>
+						<Group mb={26}>
 							<Tooltip
 								label="Toggle sidebar"
 								position="right"
@@ -362,23 +332,12 @@ export function Settings() {
 							<ActionIcon
 								onClick={openHandle.close}
 								aria-label="Close settings"
+								mr="xl"
 							>
 								<Icon path={iconClose} />
 							</ActionIcon>
 						</Group>
-						<ScrollArea
-							flex={1}
-							scrollbars="y"
-						>
-							<Stack
-								gap="xl"
-								className={classes.settingsList}
-								pt="md"
-								pb="xl"
-							>
-								{Component && <Component />}
-							</Stack>
-						</ScrollArea>
+						{Component && <Component />}
 					</Stack>
 				</Group>
 			</Modal>

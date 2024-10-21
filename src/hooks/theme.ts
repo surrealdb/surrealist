@@ -6,6 +6,13 @@ import { useSetting } from "./config";
 type Matchable = { matches: boolean };
 
 /**
+ * Use the current theme
+ */
+export function useTheme(): ColorScheme {
+	return useInterfaceStore((s) => s.colorScheme);
+}
+
+/**
  * Returns whether the current color scheme is light or not
  */
 export function useIsLight() {
