@@ -32,11 +32,12 @@ import { clamp, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
 import { Icon } from "~/components/Icon";
-import { acceptWithTab, colorTheme, inputBase } from "~/editor";
+import { acceptWithTab, editorTheme, inputBase } from "~/editor";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
+import { useIsLight, useTheme } from "~/hooks/theme";
 import { iconCancel, iconCheck } from "~/util/icons";
+import { useConfigStore } from "~/stores/config";
 
 export interface CodeInputProps
 	extends InputBaseProps,
@@ -71,24 +72,23 @@ export function CodeInput({
 	const ref = useRef<HTMLDivElement | null>(null);
 	const editorRef = useRef<{
 		editor: EditorView;
-		editable: Compartment;
-		fallback: Compartment;
-		keymaps: Compartment;
-		theme: Compartment;
+		readOnlyComp: Compartment;
+		fallbackComp: Compartment;
+		keymapsComp: Compartment;
+		themeComp: Compartment;
 	}>();
+
+	const colorScheme = useTheme();
+	const syntaxTheme = useConfigStore((s) => s.settings.appearance.syntaxTheme);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: One-time initialization
 	useEffect(() => {
 		if (!ref.current) return;
 
-		const editable = new Compartment();
-		const fallback = new Compartment();
-		const keymaps = new Compartment();
-		const theme = new Compartment();
-
-		const editableExt = editable.of(EditorState.readOnly.of(!!disabled || !!readOnly));
-		const fallbackExt = fallback.of(placeholder ? ph(placeholder) : []);
-		const keymapsExt = keymaps.of([]);
+		const readOnlyComp = new Compartment();
+		const fallbackComp = new Compartment();
+		const keymapsComp = new Compartment();
+		const themeComp = new Compartment();
 
 		const changeHandler = EditorView.updateListener.of((update) => {
 			if (update.docChanged) {
@@ -100,12 +100,12 @@ export function CodeInput({
 			doc: value,
 			extensions: [
 				inputBase(),
-				colorTheme(isLight),
-				extensions || surrealql(),
 				changeHandler,
-				editableExt,
-				fallbackExt,
-				keymapsExt,
+				extensions || surrealql(),
+				themeComp.of(editorTheme(colorScheme, syntaxTheme)),
+				readOnlyComp.of(EditorState.readOnly.of(!!disabled || !!readOnly)),
+				fallbackComp.of(placeholder ? ph(placeholder) : []),
+				keymapsComp.of([]),
 			],
 		});
 
@@ -116,10 +116,10 @@ export function CodeInput({
 
 		editorRef.current = {
 			editor,
-			editable,
-			fallback,
-			keymaps,
-			theme,
+			readOnlyComp,
+			fallbackComp,
+			keymapsComp,
+			themeComp,
 		};
 
 		if (autoFocus) {
@@ -160,29 +160,29 @@ export function CodeInput({
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, editable } = editorRef.current;
+		const { editor, readOnlyComp } = editorRef.current;
 		const editableExt = EditorState.readOnly.of(!!disabled || !!readOnly);
 
 		editor.dispatch({
-			effects: editable.reconfigure(editableExt),
+			effects: readOnlyComp.reconfigure(editableExt),
 		});
 	}, [disabled, readOnly]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, fallback } = editorRef.current;
+		const { editor, fallbackComp } = editorRef.current;
 		const fallbackExt = placeholder ? ph(placeholder) : [];
 
 		editor.dispatch({
-			effects: fallback.reconfigure(fallbackExt),
+			effects: fallbackComp.reconfigure(fallbackExt),
 		});
 	}, [placeholder]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, keymaps } = editorRef.current;
+		const { editor, keymapsComp } = editorRef.current;
 		const value = Prec.highest(
 			keymap.of(
 				multiline
@@ -200,19 +200,19 @@ export function CodeInput({
 		);
 
 		editor.dispatch({
-			effects: keymaps.reconfigure(value),
+			effects: keymapsComp.reconfigure(value),
 		});
 	}, [multiline, onSubmit]);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, theme } = editorRef.current;
+		const { editor, themeComp } = editorRef.current;
 
 		editor.dispatch({
-			effects: theme.reconfigure(colorTheme(isLight)),
+			effects: themeComp.reconfigure(editorTheme(colorScheme, syntaxTheme)),
 		});
-	}, [isLight]);
+	}, [colorScheme, syntaxTheme]);
 
 	return (
 		<InputBase

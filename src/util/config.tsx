@@ -15,20 +15,21 @@ export type Settings<T extends Category> = SurrealistConfig["settings"][T];
  * selected state changes.
  *
  * @param options The watch options
+ * @returns Unsubscribe function
  */
 export function watchStore<T, S extends UseBoundStore<StoreApi<any>>>(options: {
 	initial?: boolean;
 	store: S;
 	select: (slice: ReturnType<S["getState"]>) => T;
 	then: (value: T, prev?: T) => void;
-}) {
+}): () => void {
 	const { store, select, then, initial } = options;
 
 	if (initial) {
 		options.then(select(store.getState()));
 	}
 
-	store.subscribe((state, prev) => {
+	return store.subscribe((state, prev) => {
 		const value = select(state);
 
 		if (!isEqual(value, select(prev))) {

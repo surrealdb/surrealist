@@ -6,11 +6,13 @@ import {
 	RESULT_MODES,
 	SCALE_STEPS,
 	SIDEBAR_MODES,
+	SYNTAX_THEMES,
 	THEMES,
 } from "~/constants";
 
 import type { Selection, SurrealistConfig } from "~/types";
 import { isDesktop } from "~/adapter";
+import { featureFlags } from "./feature-flags";
 
 interface ReaderWriter<T> {
 	reader: (config: SurrealistConfig) => T;
@@ -66,6 +68,8 @@ export class BitfieldController<T extends string> {
  * Compute available preferences based on the current state
  */
 export function computePreferences(): PreferenceSection[] {
+	const { themes, syntax_themes } = featureFlags.store;
+
 	const sections: PreferenceSection[] = [];
 
 	if (isDesktop) {
@@ -101,17 +105,32 @@ export function computePreferences(): PreferenceSection[] {
 		{
 			name: "Appearance",
 			preferences: [
-				{
-					name: "Theme",
-					description: "The color scheme of the application",
-					controller: new SelectionController({
-						options: THEMES,
-						reader: (config) => config.settings.appearance.colorScheme,
-						writer: (config, value) => {
-							config.settings.appearance.colorScheme = value;
-						},
-					}),
-				},
+				...optional(
+					themes && {
+						name: "Theme",
+						description: "The color scheme of the application",
+						controller: new SelectionController({
+							options: THEMES,
+							reader: (config) => config.settings.appearance.colorScheme,
+							writer: (config, value) => {
+								config.settings.appearance.colorScheme = value;
+							},
+						}),
+					},
+				),
+				...optional(
+					syntax_themes && {
+						name: "Syntax theme",
+						description: "The color scheme of highlighted code",
+						controller: new SelectionController({
+							options: SYNTAX_THEMES,
+							reader: (config) => config.settings.appearance.syntaxTheme,
+							writer: (config, value) => {
+								config.settings.appearance.syntaxTheme = value;
+							},
+						}),
+					},
+				),
 				{
 					name: "Sidebar",
 					description: "Control the appearance of the sidebar",
@@ -289,4 +308,8 @@ export function computePreferences(): PreferenceSection[] {
 	);
 
 	return sections;
+}
+
+function optional(pref: Preference | false) {
+	return pref ? [pref] : [];
 }

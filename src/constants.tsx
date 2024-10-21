@@ -32,6 +32,7 @@ import type {
 	Selectable,
 	Selection,
 	SidebarMode,
+	SyntaxTheme,
 	ViewInfo,
 	ViewMode,
 } from "./types";
@@ -94,6 +95,11 @@ export const THEMES: Selection<MantineColorScheme> = [
 	{ label: "Automatic", value: "auto" },
 	{ label: "Light", value: "light" },
 	{ label: "Dark", value: "dark" },
+];
+
+export const SYNTAX_THEMES: Selection<SyntaxTheme> = [
+	{ label: "Default", value: "default" },
+	{ label: "Vivid", value: "vivid" },
 ];
 
 export const RESULT_MODES: Listable<ResultMode>[] = [
