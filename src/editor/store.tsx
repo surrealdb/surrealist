@@ -1,6 +1,6 @@
-import type { StateEffectType, Extension } from "@codemirror/state";
+import type { Extension, StateEffectType } from "@codemirror/state";
 import { ViewPlugin } from "@codemirror/view";
-import type { UseBoundStore, StoreApi } from "zustand";
+import type { StoreApi, UseBoundStore } from "zustand";
 import { watchStore } from "~/util/config";
 
 /**

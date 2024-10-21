@@ -36,8 +36,8 @@ import { acceptWithTab, editorTheme, inputBase } from "~/editor";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useTheme } from "~/hooks/theme";
-import { iconCancel, iconCheck } from "~/util/icons";
 import { useConfigStore } from "~/stores/config";
+import { iconCancel, iconCheck } from "~/util/icons";
 
 export interface CodeInputProps
 	extends InputBaseProps,

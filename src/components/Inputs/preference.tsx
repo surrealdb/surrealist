@@ -4,8 +4,8 @@ import { useConfigStore } from "~/stores/config";
 import {
 	CheckboxController,
 	NumberController,
-	SelectionController,
 	type PreferenceController,
+	SelectionController,
 } from "~/util/preferences";
 
 export interface PreferenceInputProps extends BoxProps {

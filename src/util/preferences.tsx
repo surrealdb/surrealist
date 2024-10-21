@@ -10,8 +10,8 @@ import {
 	THEMES,
 } from "~/constants";
 
-import type { Selection, SurrealistConfig } from "~/types";
 import { isDesktop } from "~/adapter";
+import type { Selection, SurrealistConfig } from "~/types";
 import { featureFlags } from "./feature-flags";
 
 interface ReaderWriter<T> {

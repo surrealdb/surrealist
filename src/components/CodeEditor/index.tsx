@@ -8,8 +8,8 @@ import { useEffect, useRef } from "react";
 import { editorBase, editorTheme } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import { useTheme } from "~/hooks/theme";
-import classes from "./style.module.scss";
 import { useConfigStore } from "~/stores/config";
+import classes from "./style.module.scss";
 
 interface EditorRef {
 	editor: EditorView;

@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { useVersionCopy } from "~/hooks/debug";
-import { isPreview, isDevelopment } from "~/util/environment";
+import { isDevelopment, isPreview } from "~/util/environment";
 import { iconCheck, iconWrench } from "~/util/icons";
 
 export function AboutTab() {

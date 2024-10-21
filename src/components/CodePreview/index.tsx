@@ -6,12 +6,12 @@ import { ActionIcon, Box, CopyButton, Paper, type PaperProps, Text } from "@mant
 import { surrealql } from "@surrealdb/codemirror";
 import clsx from "clsx";
 import { type ReactNode, useEffect, useMemo, useRef } from "react";
+import { editorTheme } from "~/editor";
 import { useIsLight, useTheme } from "~/hooks/theme";
+import { useConfigStore } from "~/stores/config";
 import { dedent } from "~/util/dedent";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
-import { editorTheme } from "~/editor";
-import { useConfigStore } from "~/stores/config";
 
 interface EditorRef {
 	editor: EditorView;

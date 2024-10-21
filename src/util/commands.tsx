@@ -52,8 +52,8 @@ import { getConnection } from "./connection";
 import { featureFlags } from "./feature-flags";
 import { newId } from "./helpers";
 import type { IntentPayload, IntentType } from "./intents";
+import { type PreferenceController, computePreferences } from "./preferences";
 import { syncConnectionSchema } from "./schema";
-import { computePreferences, type PreferenceController } from "./preferences";
 
 type LaunchAction = { type: "launch"; handler: () => void };
 type InsertAction = { type: "insert"; content: string };
