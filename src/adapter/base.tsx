@@ -10,13 +10,11 @@ export interface OpenedBinaryFile {
 	content: Blob;
 }
 
-export type SurrealistAdapterType = "browser" | "desktop" | "mini";
-
 export interface SurrealistAdapter {
 	/**
 	 * Identifier for this adapter
 	 */
-	id: SurrealistAdapterType;
+	id: string;
 
 	/**
 	 * Returns whether local database serving is supported

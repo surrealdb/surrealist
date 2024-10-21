@@ -1,20 +1,14 @@
 import { isFunction, shake } from "radash";
-import type {
-	OpenedBinaryFile,
-	OpenedTextFile,
-	SurrealistAdapter,
-	SurrealistAdapterType,
-} from "./base";
-
 import type { Platform, UrlTarget } from "~/types";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
+import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
  * Base adapter for running as web app
  */
-export abstract class BaseBrowserAdapter implements SurrealistAdapter {
-	abstract id: SurrealistAdapterType;
+export class BrowserAdapter implements SurrealistAdapter {
+	public readonly id: string = "browser";
 
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
@@ -177,11 +171,4 @@ export abstract class BaseBrowserAdapter implements SurrealistAdapter {
 	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
 		return fetch(url, options);
 	}
-}
-
-/**
- * Surrealist adapter for running as web app
- */
-export class BrowserAdapter extends BaseBrowserAdapter {
-	public id = "browser" as const;
 }

@@ -46,7 +46,7 @@ interface LinkResource {
  * Surrealist adapter for running as Wails desktop app
  */
 export class DesktopAdapter implements SurrealistAdapter {
-	public id = "desktop" as const;
+	public readonly id: string = "desktop";
 
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
