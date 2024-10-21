@@ -10,10 +10,10 @@ import {
 	THEMES,
 } from "~/constants";
 
+import { toggle } from "radash";
 import { isDesktop } from "~/adapter";
 import type { Selection, SurrealistConfig } from "~/types";
 import { featureFlags } from "./feature-flags";
-import { toggle } from "radash";
 import { optional } from "./helpers";
 
 interface ReaderWriter<T> {
