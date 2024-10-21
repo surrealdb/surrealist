@@ -12,6 +12,11 @@ export interface OpenedBinaryFile {
 
 export interface SurrealistAdapter {
 	/**
+	 * Identifier for this adapter
+	 */
+	id: string;
+
+	/**
 	 * Returns whether local database serving is supported
 	 */
 	isServeSupported: boolean;

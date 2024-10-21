@@ -13,6 +13,8 @@ import { BrowserAdapter } from "./browser";
 const THEMES = new Set(["light", "dark", "auto"]);
 
 export class MiniAdapter extends BrowserAdapter {
+	public readonly id: string = "mini";
+
 	public appearance: MiniAppearance = "normal";
 	public corners: string | undefined = undefined;
 	public transparent = false;

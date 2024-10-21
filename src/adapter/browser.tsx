@@ -8,6 +8,8 @@ import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base
  * Base adapter for running as web app
  */
 export class BrowserAdapter implements SurrealistAdapter {
+	public readonly id: string = "browser";
+
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
 	public hasTitlebar = true;
