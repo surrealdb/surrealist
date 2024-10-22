@@ -1,4 +1,4 @@
-import { assign, debounce, isEqual } from "radash";
+import { assign, debounce, isEqual, pick } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { adapter } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
@@ -6,9 +6,11 @@ import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
+import { klona } from "klona";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
+export type ConfigFields = (keyof SurrealistConfig)[];
 
 /**
  * Watch a store for changes and invoke the callback when the
@@ -78,4 +80,60 @@ export async function startConfigSync() {
 			},
 		),
 	);
+}
+
+export interface ConfigBackupOptions {
+	stripSensitive: boolean;
+	connections: string[];
+}
+
+/**
+ * Backup the current config
+ */
+export function backupConfig({ stripSensitive, connections }: ConfigBackupOptions) {
+	const current = useConfigStore.getState();
+	const config = klona<Partial<SurrealistConfig>>(current);
+
+	// Omit unnecessary fields
+	config.previousVersion = undefined;
+	config.activeView = undefined;
+	config.activeScreen = undefined;
+	config.activeConnection = undefined;
+	config.activeCloudPage = undefined;
+	config.activeCloudOrg = undefined;
+	config.lastPromptedVersion = undefined;
+	config.lastViewedNewsAt = undefined;
+
+	// Limit connections
+	if (connections.length > 0) {
+		config.connections = current.connections.filter((c) => connections.includes(c.id));
+	}
+
+	// Remove sensitive data
+	if (stripSensitive) {
+		for (const connection of config.connections ?? []) {
+			connection.authentication = {
+				...connection.authentication,
+				username: "",
+				password: "",
+				accessFields: [],
+				token: "",
+			};
+		}
+
+		for (const template of config.settings?.templates?.list ?? []) {
+			template.values = {
+				...template.values,
+				username: "",
+				password: "",
+				accessFields: [],
+				token: "",
+			};
+		}
+	}
+
+	return JSON.stringify({
+		timestamp: new Date(),
+		config,
+	});
 }

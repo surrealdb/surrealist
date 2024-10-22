@@ -238,7 +238,7 @@ export interface SurrealistConfig {
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
-	settings: SurrealistSettings;
+	settings: SurrealistSettings; // TODO Rename to preferences and flatten inner objects
 	featureFlags: Partial<FeatureFlagMap>;
 	openDesignerPanels: string[];
 	commandHistory: string[];

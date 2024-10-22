@@ -80,7 +80,7 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		id: "manage-data",
-		name: "Manage Data",
+		name: "Backup & Restore",
 		icon: iconTransfer,
 		component: ManageDataTab,
 	},
