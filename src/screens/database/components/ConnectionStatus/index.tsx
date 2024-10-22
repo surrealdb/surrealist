@@ -4,6 +4,7 @@ import {
 	iconDownload,
 	iconEdit,
 	iconList,
+	iconRefresh,
 	iconReset,
 	iconSandbox,
 	iconTable,
@@ -22,6 +23,7 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
+import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
@@ -173,6 +175,12 @@ export function ConnectionStatus() {
 							</Menu.Item>
 							{!isSandbox && (
 								<>
+									<Menu.Item
+										leftSection={<Icon path={iconRefresh} />}
+										onClick={() => syncConnectionSchema()}
+									>
+										Sync schema
+									</Menu.Item>
 									<Menu.Item
 										leftSection={<Icon path={iconReset} />}
 										onClick={() => openConnection()}
