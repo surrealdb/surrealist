@@ -63,6 +63,7 @@ import {
 import { useContextMenu } from "mantine-contextmenu";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
@@ -207,9 +208,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		}
 	});
 
-	const toggleTableList = useStable(() => {
+	const openTableList = useStable(() => {
 		updateCurrentConnection({
-			designerTableList: !connection.designerTableList,
+			designerTableList: true,
 		});
 	});
 
@@ -274,19 +275,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			icon={iconRelation}
 			style={{ overflow: "hidden" }}
 			leftSection={
-				<Tooltip label="Toggle table list">
-					<ActionIcon
+				!connection.designerTableList && (
+					<ActionButton
+						label="Reveal tables"
 						mr="sm"
 						color="slate"
 						variant="light"
-						onClick={toggleTableList}
-						aria-label="Toggle table list"
+						onClick={openTableList}
 					>
-						<Icon
-							path={connection.designerTableList ? iconChevronLeft : iconChevronRight}
-						/>
-					</ActionIcon>
-				</Tooltip>
+						<Icon path={iconChevronRight} />
+					</ActionButton>
+				)
 			}
 			rightSection={
 				<Group wrap="nowrap">

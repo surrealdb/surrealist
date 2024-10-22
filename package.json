@@ -90,7 +90,7 @@
 		"react-dom": "^18.2.0",
 		"react-error-boundary": "^4.0.12",
 		"react-leaflet": "^4.2.1",
-		"react-resizable-panels": "^2.0.5",
+		"react-resizable-panels": "^2.1.4",
 		"react-reverse-portal": "^2.1.1",
 		"rss-parser": "^3.13.0",
 		"surrealdb": "^1.0.4",

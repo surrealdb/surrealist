@@ -33,7 +33,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useLogoUrl } from "~/hooks/brand";
 import { useLineNumberSetting, useSetting } from "~/hooks/config";
-import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
+import { useActiveConnection, useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -57,6 +57,7 @@ const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
 	const { saveQuery, updateQueryTab } = useConfigStore.getState();
+	const { queryTabList } = useActiveConnection();
 	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
@@ -279,18 +280,29 @@ export function QueryView() {
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
 					<PanelGroup direction="horizontal">
+						{queryTabList && (
+							<>
+								<Panel
+									defaultSize={minSize}
+									minSize={minSize}
+									maxSize={35}
+									id="tabs"
+									order={1}
+								>
+									<TabsPane
+										openHistory={showHistoryHandle.open}
+										openSaved={showSavedHandle.open}
+									/>
+								</Panel>
+								<PanelDragger />
+							</>
+						)}
 						<Panel
-							defaultSize={minSize}
-							minSize={minSize}
-							maxSize={35}
+							id="content"
+							order={2}
 						>
-							<TabsPane
-								openHistory={showHistoryHandle.open}
-								openSaved={showSavedHandle.open}
-							/>
+							{queryEditor}
 						</Panel>
-						<PanelDragger />
-						<Panel>{queryEditor}</Panel>
 					</PanelGroup>
 				</Box>
 			)}

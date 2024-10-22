@@ -30,6 +30,15 @@
 			"icon": {
 				"id": "vm-running"
 			}
+		},
+		{
+			"type": "npm",
+			"script": "lint:apply:unsafe",
+			"label": "Lint unsafe (Apply fixes)",
+			"detail": "Run the linter and fix issues",
+			"icon": {
+				"id": "vm-running"
+			}
 		}
 	]
 }

@@ -1,13 +1,7 @@
-import {
-	ActionIcon,
-	Badge,
-	Divider,
-	ScrollArea,
-	Stack,
-	Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
+import { ActionButton } from "~/components/ActionButton";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -24,6 +18,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { TabQuery } from "~/types";
 import {
 	iconArrowUpRight,
+	iconChevronLeft,
 	iconChevronRight,
 	iconClose,
 	iconCopy,
@@ -69,9 +64,7 @@ export function TabsPane(props: TabsPaneProps) {
 		for (const [i, query] of queries.entries()) {
 			if (
 				query.id !== id &&
-				(dir === 0 ||
-					(dir === -1 && i < index) ||
-					(dir === 1 && i > index))
+				(dir === 0 || (dir === -1 && i < index) || (dir === 1 && i > index))
 			) {
 				removeTab(query.id);
 			}
@@ -88,6 +81,12 @@ export function TabsPane(props: TabsPaneProps) {
 	const saveQueryOrder = useStable((queries: TabQuery[]) => {
 		updateCurrentConnection({
 			queries,
+		});
+	});
+
+	const closeQueryList = useStable(() => {
+		updateCurrentConnection({
+			queryTabList: false,
 		});
 	});
 
@@ -116,11 +115,20 @@ export function TabsPane(props: TabsPaneProps) {
 				</Badge>
 			}
 			rightSection={
-				<Tooltip label="New query">
-					<ActionIcon onClick={newTab} aria-label="Create new query">
+				<>
+					<ActionButton
+						label="Hide queries"
+						onClick={closeQueryList}
+					>
+						<Icon path={iconChevronLeft} />
+					</ActionButton>
+					<ActionButton
+						label="New query"
+						onClick={newTab}
+					>
 						<Icon path={iconPlus} />
-					</ActionIcon>
-				</Tooltip>
+					</ActionButton>
+				</>
 			}
 		>
 			<Stack
@@ -137,7 +145,10 @@ export function TabsPane(props: TabsPaneProps) {
 						viewport: classes.scroller,
 					}}
 				>
-					<Stack gap="xs" pb="md">
+					<Stack
+						gap="xs"
+						pb="md"
+					>
 						<Sortable
 							items={queries}
 							direction="vertical"
@@ -152,9 +163,7 @@ export function TabsPane(props: TabsPaneProps) {
 									<Entry
 										key={query.id}
 										isActive={isActive}
-										onClick={() =>
-											setActiveQueryTab(query.id)
-										}
+										onClick={() => setActiveQueryTab(query.id)}
 										className={clsx(
 											classes.query,
 											isDragging && classes.queryDragging,
@@ -163,20 +172,14 @@ export function TabsPane(props: TabsPaneProps) {
 											{
 												key: "open",
 												title: "Open",
-												icon: (
-													<Icon
-														path={iconArrowUpRight}
-													/>
-												),
-												onClick: () =>
-													setActiveQueryTab(query.id),
+												icon: <Icon path={iconArrowUpRight} />,
+												onClick: () => setActiveQueryTab(query.id),
 											},
 											{
 												key: "duplicate",
 												title: "Duplicate",
 												icon: <Icon path={iconCopy} />,
-												onClick: () =>
-													duplicateQuery(query),
+												onClick: () => duplicateQuery(query),
 											},
 											{
 												key: "close-div",
@@ -185,40 +188,31 @@ export function TabsPane(props: TabsPaneProps) {
 												key: "close",
 												title: "Close",
 												disabled: queries.length === 1,
-												onClick: () =>
-													removeTab(query.id),
+												onClick: () => removeTab(query.id),
 											},
 											{
 												key: "close-others",
 												title: "Close Others",
 												disabled: queries.length === 1,
-												onClick: () =>
-													removeOthers(query.id, 0),
+												onClick: () => removeOthers(query.id, 0),
 											},
 											{
 												key: "close-before",
 												title: "Close queries Before",
 												disabled:
 													queries.length === 1 ||
-													queries.findIndex(
-														(q) =>
-															q.id === query.id,
-													) === 0,
-												onClick: () =>
-													removeOthers(query.id, -1),
+													queries.findIndex((q) => q.id === query.id) ===
+														0,
+												onClick: () => removeOthers(query.id, -1),
 											},
 											{
 												key: "close-after",
 												title: "Close queries After",
 												disabled:
 													queries.length === 1 ||
-													queries.findIndex(
-														(q) =>
-															q.id === query.id,
-													) >=
+													queries.findIndex((q) => q.id === query.id) >=
 														queries.length - 1,
-												onClick: () =>
-													removeOthers(query.id, 1),
+												onClick: () => removeOthers(query.id, 1),
 											},
 										])}
 										leftSection={<Icon path={iconQuery} />}
@@ -226,14 +220,8 @@ export function TabsPane(props: TabsPaneProps) {
 											<>
 												{isLive && (
 													<LiveIndicator
-														className={
-															classes.queryLive
-														}
-														color={
-															isActive
-																? "white"
-																: "red"
-														}
+														className={classes.queryLive}
+														color={isActive ? "white" : "red"}
 														mr={-4}
 													/>
 												)}
@@ -243,15 +231,8 @@ export function TabsPane(props: TabsPaneProps) {
 														size="sm"
 														component="div"
 														variant="subtle"
-														className={
-															classes.queryClose
-														}
-														onClick={(e) =>
-															removeTab(
-																query.id,
-																e,
-															)
-														}
+														className={classes.queryClose}
+														onClick={(e) => removeTab(query.id, e)}
 														color={
 															isActive && isLight
 																? "white"
@@ -271,9 +252,7 @@ export function TabsPane(props: TabsPaneProps) {
 									>
 										<EditableText
 											value={query.name || ""}
-											onChange={(value) =>
-												renameQuery(query.id, value)
-											}
+											onChange={(value) => renameQuery(query.id, value)}
 											withDoubleClick
 											withDecoration
 											style={{

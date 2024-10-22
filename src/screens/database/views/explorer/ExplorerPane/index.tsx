@@ -38,10 +38,12 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { RecordId } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { ContentPane } from "~/components/Pane";
+import { useActiveConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/database/connection/connection";
@@ -63,12 +65,10 @@ export interface ExplorerPaneProps {
 	onCreateRecord: () => void;
 }
 
-export function ExplorerPane({
-	activeTable,
-	onCreateRecord,
-}: ExplorerPaneProps) {
-	const { addQueryTab, setActiveView } = useConfigStore.getState();
+export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
+	const { addQueryTab, setActiveView, updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
+	const connection = useActiveConnection();
 
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");
@@ -145,6 +145,12 @@ export function ExplorerPane({
 		onCreateRecord();
 	});
 
+	const openTableList = useStable(() => {
+		updateCurrentConnection({
+			explorerTableList: true,
+		});
+	});
+
 	const refetch = useStable(() => {
 		recordQuery.refetch();
 		paginationQuery.refetch();
@@ -174,9 +180,7 @@ export function ExplorerPane({
 				title: "Copy as JSON",
 				icon: <Icon path={iconJSON} />,
 				onClick: () => {
-					navigator.clipboard.writeText(
-						formatValue(record, true, true),
-					);
+					navigator.clipboard.writeText(formatValue(record, true, true));
 				},
 			},
 			{
@@ -232,6 +236,20 @@ export function ExplorerPane({
 		<ContentPane
 			title="Record Explorer"
 			icon={iconTable}
+			leftSection={
+				!connection.explorerTableList && (
+					<ActionButton
+						label="Reveal tables"
+						mr="sm"
+						color="slate"
+						variant="light"
+						onClick={openTableList}
+						aria-label="Reveal tables"
+					>
+						<Icon path={iconChevronRight} />
+					</ActionButton>
+				)
+			}
 			rightSection={
 				activeTable && (
 					<Group align="center">
@@ -253,16 +271,10 @@ export function ExplorerPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip
-							label={filtering ? "Hide filter" : "Filter records"}
-						>
+						<Tooltip label={filtering ? "Hide filter" : "Filter records"}>
 							<ActionIcon
 								onClick={toggleFilter}
-								aria-label={
-									filtering
-										? "Hide filter"
-										: "Show record filter"
-								}
+								aria-label={filtering ? "Hide filter" : "Show record filter"}
 							>
 								<Icon path={iconFilter} />
 							</ActionIcon>
@@ -270,11 +282,12 @@ export function ExplorerPane({
 
 						<Divider orientation="vertical" />
 
-						<Icon path={iconServer} mr={-6} />
+						<Icon
+							path={iconServer}
+							mr={-6}
+						/>
 						<Text lineClamp={1}>
-							{recordQuery.isLoading
-								? "loading..."
-								: `${recordCount || "no"} rows`}
+							{recordQuery.isLoading ? "loading..." : `${recordCount || "no"} rows`}
 						</Text>
 					</Group>
 				)
