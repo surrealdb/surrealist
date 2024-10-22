@@ -12,10 +12,10 @@ import { useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
+import { useConfigStore } from "~/stores/config";
 import { iconDesigner } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
-import { useConfigStore } from "~/stores/config";
 
 const TableGraphPaneLazy = memo(TableGraphPane);
 

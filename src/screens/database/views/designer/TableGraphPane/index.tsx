@@ -63,6 +63,7 @@ import {
 import { useContextMenu } from "mantine-contextmenu";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
@@ -79,7 +80,6 @@ import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface TableGraphPaneProps {
 	active: string | null;

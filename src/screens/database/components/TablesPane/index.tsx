@@ -12,6 +12,7 @@ import { useInputState } from "@mantine/hooks";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
 import { sort } from "radash";
 import { useMemo } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -37,7 +38,6 @@ import {
 } from "~/util/icons";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface TablesPaneProps {
 	icon?: string;

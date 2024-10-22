@@ -38,10 +38,12 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { RecordId } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { ContentPane } from "~/components/Pane";
+import { useActiveConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/database/connection/connection";
@@ -50,8 +52,6 @@ import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
-import { useActiveConnection } from "~/hooks/connection";
-import { ActionButton } from "~/components/ActionButton";
 
 const PAGE_SIZES: ComboboxData = [
 	{ label: "10 Results per page", value: "10" },

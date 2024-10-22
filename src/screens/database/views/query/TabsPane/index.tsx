@@ -1,6 +1,7 @@
 import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
+import { ActionButton } from "~/components/ActionButton";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -28,7 +29,6 @@ import {
 	iconStar,
 } from "~/util/icons";
 import classes from "./style.module.scss";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface TabsPaneProps {
 	openHistory: () => void;

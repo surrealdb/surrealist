@@ -14,10 +14,12 @@ import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantin
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
+import { useActiveConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -36,8 +38,6 @@ import {
 	iconWarning,
 } from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
-import { useActiveConnection } from "~/hooks/connection";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
