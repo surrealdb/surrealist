@@ -214,13 +214,9 @@ export function computePreferences(): PreferenceSection[] {
 					name: "Query editor",
 					description: "Show line numbers in the query view editor",
 					controller: new CheckboxController({
-						reader: (config) =>
-							config.settings.appearance.lineNumbers.includes("query"),
-						writer: (config) => {
-							config.settings.appearance.lineNumbers = toggle(
-								config.settings.appearance.lineNumbers,
-								"query",
-							);
+						reader: (config) => config.settings.appearance.queryLineNumbers,
+						writer: (config, value) => {
+							config.settings.appearance.queryLineNumbers = value;
 						},
 					}),
 				},
@@ -228,13 +224,9 @@ export function computePreferences(): PreferenceSection[] {
 					name: "Record inspector",
 					description: "Show line numbers in the record inspector",
 					controller: new CheckboxController({
-						reader: (config) =>
-							config.settings.appearance.lineNumbers.includes("inspector"),
-						writer: (config) => {
-							config.settings.appearance.lineNumbers = toggle(
-								config.settings.appearance.lineNumbers,
-								"inspector",
-							);
+						reader: (config) => config.settings.appearance.inspectorLineNumbers,
+						writer: (config, value) => {
+							config.settings.appearance.inspectorLineNumbers = value;
 						},
 					}),
 				},
@@ -242,13 +234,9 @@ export function computePreferences(): PreferenceSection[] {
 					name: "Function editor",
 					description: "Show line numbers in the functions view editor",
 					controller: new CheckboxController({
-						reader: (config) =>
-							config.settings.appearance.lineNumbers.includes("functions"),
-						writer: (config) => {
-							config.settings.appearance.lineNumbers = toggle(
-								config.settings.appearance.lineNumbers,
-								"functions",
-							);
+						reader: (config) => config.settings.appearance.functionLineNumbers,
+						writer: (config, value) => {
+							config.settings.appearance.functionLineNumbers = value;
 						},
 					}),
 				},

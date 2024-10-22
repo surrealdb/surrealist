@@ -13,7 +13,6 @@ export type DiagramDirection = "ltr" | "rtl";
 export type DiagramMode = "fields" | "summary" | "simple";
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
-export type LineNumberTarget = "query" | "inspector" | "functions";
 export type LineStyle = "metro" | "straight" | "smooth";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type MiniAppearance = "normal" | "compact" | "plain";
@@ -150,7 +149,9 @@ export interface SurrealistAppearanceSettings {
 	syntaxTheme: SyntaxTheme;
 	windowScale: number;
 	editorScale: number;
-	lineNumbers: LineNumberTarget[];
+	queryLineNumbers: boolean;
+	inspectorLineNumbers: boolean;
+	functionLineNumbers: boolean;
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
 	defaultResultFormat: ResultFormat;
@@ -237,7 +238,7 @@ export interface SurrealistConfig {
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
-	settings: SurrealistSettings;
+	settings: SurrealistSettings; // TODO Rename to preferences and flatten inner objects
 	featureFlags: Partial<FeatureFlagMap>;
 	openDesignerPanels: string[];
 	commandHistory: string[];

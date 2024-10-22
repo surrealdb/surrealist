@@ -112,7 +112,7 @@ export function ConnectionsModal() {
 	}, [groups]);
 
 	const connectionsList = useMemo(() => {
-		return connections.sort((a, b) => a.name.localeCompare(b.name));
+		return connections.toSorted((a, b) => a.name.localeCompare(b.name));
 	}, [connections]);
 
 	const [grouped, flattened] = useMemo(() => {
