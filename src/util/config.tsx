@@ -1,3 +1,4 @@
+import { klona } from "klona";
 import { assign, debounce, isEqual, pick } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { adapter } from "~/adapter";
@@ -6,7 +7,6 @@ import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
-import { klona } from "klona";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
