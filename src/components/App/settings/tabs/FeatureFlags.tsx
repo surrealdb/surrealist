@@ -33,6 +33,7 @@ export function FeatureFlagsTab() {
 						size="sm"
 					/>
 				}
+				autoFocus
 				placeholder="Search preferences"
 				value={search}
 				onChange={setSearch}
@@ -43,6 +44,15 @@ export function FeatureFlagsTab() {
 				mt="xl"
 				pb={32}
 			>
+				{filteredFlags.length === 0 && (
+					<Text
+						ta="center"
+						c="slate"
+						mt="xl"
+					>
+						No flags matched your search
+					</Text>
+				)}
 				{filteredFlags.map((flag) => {
 					const mapped = Object.fromEntries(
 						schema[flag].options.map((v) => [v.toString(), v]),
