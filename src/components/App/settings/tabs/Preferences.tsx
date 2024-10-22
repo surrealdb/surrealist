@@ -6,7 +6,7 @@ import { PreferenceInput } from "~/components/Inputs/preference";
 import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconSearch } from "~/util/icons";
-import { computePreferences, PreferenceSection } from "~/util/preferences";
+import { PreferenceSection, computePreferences } from "~/util/preferences";
 
 export function PreferencesTab() {
 	const [search, setSearch] = useInputState("");
