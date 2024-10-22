@@ -15,10 +15,12 @@ import { TablesPane } from "~/screens/database/components/TablesPane";
 import { iconDesigner } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
+import { useConfigStore } from "~/stores/config";
 
 const TableGraphPaneLazy = memo(TableGraphPane);
 
 export function DesignerView() {
+	const { updateCurrentConnection } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
 	const { designerTableList } = useActiveConnection();
 
@@ -33,6 +35,12 @@ export function DesignerView() {
 			onClick: () => design(table),
 		},
 	]);
+
+	const closeTableList = useStable(() => {
+		updateCurrentConnection({
+			designerTableList: false,
+		});
+	});
 
 	useEffect(() => {
 		if (!isOnline) {
@@ -73,6 +81,7 @@ export function DesignerView() {
 									icon={iconDesigner}
 									onTableSelect={design}
 									onTableContextMenu={buildContextMenu}
+									onClose={closeTableList}
 								/>
 							</Panel>
 							<PanelDragger />
@@ -80,6 +89,7 @@ export function DesignerView() {
 					)}
 					<Panel
 						minSize={minSize}
+						id="graph"
 						order={2}
 					>
 						<ReactFlowProvider>

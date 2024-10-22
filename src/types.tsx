@@ -114,6 +114,8 @@ export interface Connection {
 	diagramDirection: DiagramDirection;
 	diagramShowLinks: boolean;
 	designerTableList: boolean;
+	explorerTableList: boolean;
+	queryTabList: boolean;
 	graphqlQuery: string;
 	graphqlVariables: string;
 	graphqlShowVariables: boolean;

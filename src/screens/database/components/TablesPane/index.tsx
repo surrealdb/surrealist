@@ -9,10 +9,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import {
-	type ContextMenuItemOptions,
-	useContextMenu,
-} from "mantine-contextmenu";
+import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
 import { sort } from "radash";
 import { useMemo } from "react";
 import { Entry } from "~/components/Entry";
@@ -29,6 +26,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { fuzzyMatch, fuzzyMultiMatch, tb } from "~/util/helpers";
 import {
+	iconChevronLeft,
 	iconDelete,
 	iconPin,
 	iconPinOff,
@@ -39,21 +37,26 @@ import {
 } from "~/util/icons";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface TablesPaneProps {
 	icon?: string;
 	activeTable?: string | undefined;
+	closeDisabled?: boolean;
+	extraSection?: React.ReactNode;
+	onClose?: () => void;
 	onTableSelect: (table: string) => void;
 	onTableContextMenu?: (table: string) => ContextMenuItemOptions[];
-	extraSection?: React.ReactNode;
 }
 
 export function TablesPane({
 	icon,
 	activeTable,
+	closeDisabled,
+	extraSection,
+	onClose,
 	onTableSelect,
 	onTableContextMenu,
-	extraSection,
 }: TablesPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
 
@@ -120,15 +123,24 @@ export function TablesPane({
 				)
 			}
 			rightSection={
-				<Tooltip label="New table">
-					<ActionIcon
+				<>
+					{onClose && (
+						<ActionButton
+							label="Hide tables"
+							disabled={closeDisabled}
+							onClick={onClose}
+						>
+							<Icon path={iconChevronLeft} />
+						</ActionButton>
+					)}
+					<ActionButton
+						label="New table"
 						onClick={openTableCreator}
-						aria-label="Create new table"
 						disabled={!isConnected}
 					>
 						<Icon path={iconPlus} />
-					</ActionIcon>
-				</Tooltip>
+					</ActionButton>
+				</>
 			}
 		>
 			<Stack
@@ -144,7 +156,10 @@ export function TablesPane({
 						viewport: classes.scroller,
 					}}
 				>
-					<Stack gap="xs" pb="md">
+					<Stack
+						gap="xs"
+						pb="md"
+					>
 						{isConnected && schema.length > 0 && (
 							<TextInput
 								placeholder="Search tables..."
@@ -159,71 +174,51 @@ export function TablesPane({
 
 						{isConnected ? (
 							tablesFiltered.length === 0 && (
-								<Text c="slate" ta="center" mt="lg">
-									{hasAccess
-										? "No tables found"
-										: "Unsupported auth mode"}
+								<Text
+									c="slate"
+									ta="center"
+									mt="lg"
+								>
+									{hasAccess ? "No tables found" : "Unsupported auth mode"}
 								</Text>
 							)
 						) : (
-							<Text c="slate" ta="center" mt="lg">
+							<Text
+								c="slate"
+								ta="center"
+								mt="lg"
+							>
 								Not connected
 							</Text>
 						)}
 
 						{tablesFiltered.map((table) => {
 							const isActive = activeTable === table.schema.name;
-							const isPinned = connection.pinnedTables.includes(
-								table.schema.name,
-							);
+							const isPinned = connection.pinnedTables.includes(table.schema.name);
 							const [isEdge] = extractEdgeRecords(table);
 
 							return (
 								<Entry
 									key={table.schema.name}
 									isActive={isActive}
-									onClick={() =>
-										onTableSelect(table.schema.name)
-									}
+									onClick={() => onTableSelect(table.schema.name)}
 									onContextMenu={showContextMenu([
-										...(onTableContextMenu?.(
-											table.schema.name,
-										) || []),
+										...(onTableContextMenu?.(table.schema.name) || []),
 										{
 											key: "pin",
-											title: isPinned
-												? "Unpin table"
-												: "Pin table",
-											icon: (
-												<Icon
-													path={
-														isPinned
-															? iconPinOff
-															: iconPin
-													}
-												/>
-											),
-											onClick: () =>
-												togglePinned(table.schema.name),
+											title: isPinned ? "Unpin table" : "Pin table",
+											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
+											onClick: () => togglePinned(table.schema.name),
 										},
 										{
 											key: "remove",
 											title: "Remove table",
 											color: "pink.7",
 											icon: <Icon path={iconDelete} />,
-											onClick: () =>
-												removeTable(table.schema.name),
+											onClick: () => removeTable(table.schema.name),
 										},
 									])}
-									leftSection={
-										<Icon
-											path={
-												isEdge
-													? iconRelation
-													: iconTable
-											}
-										/>
-									}
+									leftSection={<Icon path={isEdge ? iconRelation : iconTable} />}
 									rightSection={
 										isPinned && (
 											<Icon

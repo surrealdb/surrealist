@@ -25,8 +25,19 @@ import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import { iconAutoFix, iconDollar, iconServer, iconStar, iconText, iconWarning } from "~/util/icons";
+import {
+	iconAutoFix,
+	iconChevronLeft,
+	iconChevronRight,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+	iconWarning,
+} from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
+import { useActiveConnection } from "~/hooks/connection";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -55,8 +66,10 @@ export function QueryPane({
 	onSelectionChange,
 	onEditorMounted,
 }: QueryPaneProps) {
-	const { updateQueryTab } = useConfigStore.getState();
+	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { inspect } = useInspector();
+
+	const connection = useActiveConnection();
 
 	const setQueryForced = useStable((query: string) => {
 		setIsValid(!validateQuery(query));
@@ -67,6 +80,12 @@ export function QueryPane({
 	});
 
 	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 50);
+
+	const openQueryList = useStable(() => {
+		updateCurrentConnection({
+			queryTabList: true,
+		});
+	});
 
 	const handleFormat = useStable(() => {
 		try {
@@ -132,9 +151,22 @@ export function QueryPane({
 
 	return (
 		<ContentPane
-			title="Query"
+			title={activeTab.name ?? "Query"}
 			icon={iconServer}
 			radius={corners}
+			leftSection={
+				!connection.queryTabList && (
+					<ActionButton
+						label="Reveal queries"
+						mr="sm"
+						color="slate"
+						variant="light"
+						onClick={openQueryList}
+					>
+						<Icon path={iconChevronRight} />
+					</ActionButton>
+				)
+			}
 			rightSection={
 				switchPortal ? (
 					<OutPortal node={switchPortal} />
