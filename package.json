@@ -4,7 +4,9 @@
 	"version": "3.0.8",
 	"surreal": "2.0.0",
 	"type": "module",
-	"authors": ["SurrealDB"],
+	"authors": [
+		"SurrealDB"
+	],
 	"scripts": {
 		"build": "tsc && vite build",
 		"build:desktop": "tsc && vite build -c vite.config.desktop.ts",
@@ -47,7 +49,7 @@
 		"@mantine/notifications": "^7.13.3",
 		"@mdi/js": "^7.2.96",
 		"@replit/codemirror-indentation-markers": "^6.5.0",
-		"@surrealdb/codemirror": "1.0.0-beta.11",
+		"@surrealdb/codemirror": "1.0.0-beta.14",
 		"@surrealdb/lezer": "1.0.0-beta.5",
 		"@surrealdb/ql-wasm": "0.2.0-beta.7",
 		"@surrealdb/wasm": "1.0.0",
@@ -108,11 +110,11 @@
 		"@vitejs/plugin-legacy": "^5.4.1",
 		"@vitejs/plugin-react": "^4.0.4",
 		"license-report": "^6.5.0",
-		"sass": "^1.65.1",
+		"sass": "^1.80.3",
 		"sharp": "^0.33.4",
 		"svgo": "^3.3.2",
 		"typescript": "^5.1.6",
-		"vite": "^5.2.9",
+		"vite": "^5.4.10",
 		"vite-plugin-compression2": "^1.1.2",
 		"vite-plugin-image-optimizer": "^1.1.8",
 		"vite-plugin-markdown": "^2.2.0"
