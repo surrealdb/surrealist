@@ -107,8 +107,8 @@ export function ManageDataTab() {
 							Generate a backup of your Surrealist configuration which can be restored
 							later.
 							<br />
-							You can customize the backup to include preferences, templates, and
-							connections.
+							You can customize the backup to include sensitive details or limit the
+							included connections.
 						</Text>
 						<Checkbox
 							label="Include sensitive information"
@@ -161,8 +161,6 @@ export function ManageDataTab() {
 					>
 						<Text>
 							Restore a previously generated backup of your Surrealist configuration.
-							<br />
-							You can customize if specific resources are overwritten or appended.
 						</Text>
 						<Group>
 							<Button
