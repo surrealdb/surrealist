@@ -3,7 +3,7 @@ import type { Connection, SurrealistConfig } from "~/types";
 
 /**
  * Apply migrations to the config object
- * 
+ *
  * Policy:
  * - The config version is only incremented when backwards-breaking changes are made
  * - Config version bumps should only be shipped in major releases
@@ -16,7 +16,6 @@ export function applyMigrations(config: any): SurrealistConfig {
 	// 2.0.0 -> 3.0.0: Convert the old connection format to the new one
 
 	if (version === 1) {
-
 		applyToConnections(config, (con) => {
 			con.authentication = con.connection;
 			con.authentication.mode = con.connection.authMode;
@@ -27,10 +26,7 @@ export function applyMigrations(config: any): SurrealistConfig {
 			con.graphqlQuery = "";
 			con.graphqlVariables = "";
 
-			if (
-				con.connection.authMode === "root" ||
-				con.connection.authMode === "namespace"
-			) {
+			if (con.connection.authMode === "root" || con.connection.authMode === "namespace") {
 				con.authentication.namespace = "";
 			}
 
@@ -56,11 +52,20 @@ export function applyMigrations(config: any): SurrealistConfig {
 	// 3.0.2 -> 3.0.3: Adopt new resultFormat setting
 
 	applyToConnections(config, (con) => {
-		for (const query of (con.queries || [])) {
+		for (const query of con.queries || []) {
 			query.resultFormat ??= "sql";
 		}
 	});
 
+	// 3.0.8 -> 3.1.0: Add default designer options
+
+	applyToConnections(config, (con) => {
+		con.diagramAlgorithm ??= "default";
+		con.diagramDirection ??= "default";
+		con.diagramLineStyle ??= "default";
+		con.diagramLinkMode ??= "default";
+		con.diagramMode ??= "default";
+	});
 
 	return config;
 }

@@ -9,11 +9,18 @@ import {
 	type NodeChange,
 	type NodeTypes,
 } from "@xyflow/react";
-import type { ElkEdgeSection } from "elkjs/lib/elk-api";
+
+import type {
+	DiagramAlgorithm,
+	DiagramDirection,
+	DiagramLineStyle,
+	DiagramLinks,
+	DiagramMode,
+	TableInfo,
+} from "~/types";
+
 import { toBlob, toSvg } from "html-to-image";
 import { objectify } from "radash";
-import type { DiagramDirection, TableInfo } from "~/types";
-import { getSetting } from "~/util/config";
 import { extractEdgeRecords } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
 import { ElkStepEdge } from "./edges/ElkEdge";
@@ -49,8 +56,8 @@ export type GraphWarning = EdgeWarning | LinkWarning;
 export type SharedNodeData = {
 	table: TableInfo;
 	isSelected: boolean;
-	hasIncoming: boolean;
-	hasOutgoing: boolean;
+	direction: DiagramDirection;
+	mode: DiagramMode;
 };
 
 interface NormalizedTable {
@@ -75,10 +82,11 @@ function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 
 export function buildFlowNodes(
 	tables: TableInfo[],
-	showLinks: boolean,
+	nodeMode: DiagramMode,
+	direction: DiagramDirection,
+	linkMode: DiagramLinks,
+	lineStyle: DiagramLineStyle,
 ): [Node[], Edge[], GraphWarning[]] {
-	const lineStyle = getSetting("appearance", "lineStyle");
-
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
 	const edges: Edge[] = [];
@@ -116,9 +124,9 @@ export function buildFlowNodes(
 			data: {
 				table,
 				isSelected: false,
-				hasIncoming: false,
-				hasOutgoing: false,
-			},
+				direction: direction,
+				mode: nodeMode,
+			} as SharedNodeData,
 		};
 
 		nodes.push(node);
@@ -155,12 +163,6 @@ export function buildFlowNodes(
 				},
 			});
 
-			const node = nodeIndex[fromTable];
-
-			if (node) {
-				node.data.hasOutgoing = true;
-			}
-
 			edgeIndex.set(`${fromTable}:${table.schema.name}`, true);
 			edgeIndex.set(`${table.schema.name}:${fromTable}`, true);
 		}
@@ -189,19 +191,13 @@ export function buildFlowNodes(
 				},
 			});
 
-			const node = nodeIndex[toTable];
-
-			if (node) {
-				node.data.hasIncoming = true;
-			}
-
 			edgeIndex.set(`${toTable}:${table.schema.name}`, true);
 			edgeIndex.set(`${table.schema.name}:${toTable}`, true);
 		}
 	}
 
 	// Define all record links
-	if (showLinks) {
+	if (linkMode === "visible") {
 		const uniqueLinks = new Set<string>();
 		const linkColor = getComputedStyle(document.body).getPropertyValue(
 			"--mantine-color-slate-5",
@@ -287,6 +283,7 @@ export function buildFlowNodes(
 export async function applyNodeLayout(
 	nodes: Node[],
 	edges: Edge[],
+	algorithm: DiagramAlgorithm,
 	direction: DiagramDirection,
 ): Promise<[NodeChange[], EdgeChange[]]> {
 	const ELK = await import("elkjs/lib/elk.bundled");
@@ -310,7 +307,7 @@ export async function applyNodeLayout(
 
 	const layout = await elk.layout(graph, {
 		layoutOptions: {
-			"elk.algorithm": "layered",
+			"elk.algorithm": algorithm === "spaced" ? "force" : "layered",
 			"elk.layered.spacing.nodeNodeBetweenLayers": "100",
 			"elk.spacing.nodeNode": "80",
 			"elk.direction": direction === "ltr" ? "RIGHT" : "LEFT",
@@ -367,4 +364,11 @@ export async function createSnapshot(el: HTMLElement, type: "png" | "svg") {
 	const res = await fetch(dataUrl);
 
 	return await res.blob();
+}
+
+/**
+ * Apply a default value if the given value is "default"
+ */
+export function applyDefault<T extends string>(value: T, fallback: T) {
+	return value === "default" ? fallback : value;
 }

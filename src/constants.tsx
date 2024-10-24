@@ -18,10 +18,12 @@ import type {
 	CloudPageInfo,
 	CodeLang,
 	Dataset,
+	DiagramAlgorithm,
 	DiagramDirection,
+	DiagramLineStyle,
+	DiagramLinks,
 	DiagramMode,
 	Driver,
-	LineStyle,
 	Listable,
 	Orientation,
 	Protocol,
@@ -330,14 +332,22 @@ export const GEOMETRY_TYPES = [
 ];
 
 export const DESIGNER_NODE_MODES: Selection<DiagramMode> = [
+	{ label: "Default", value: "default" },
 	{ label: "Fields", value: "fields" },
 	{ label: "Summary", value: "summary" },
 	{ label: "Simple", value: "simple" },
 ];
 
 export const DESIGNER_DIRECTIONS: Selection<DiagramDirection> = [
+	{ label: "Default", value: "default" },
 	{ label: "Left to right", value: "ltr" },
 	{ label: "Right to left", value: "rtl" },
+];
+
+export const DESIGNER_LINKS: Selection<DiagramLinks> = [
+	{ label: "Default", value: "default" },
+	{ label: "Hide record links", value: "hidden" },
+	{ label: "Show record links", value: "visible" },
 ];
 
 export const SURQL_FILTER = {
@@ -350,10 +360,17 @@ export const ORIENTATIONS: Selectable<Orientation>[] = [
 	{ label: "Vertical", value: "vertical" },
 ];
 
-export const LINE_STYLES: Selectable<LineStyle>[] = [
+export const DESIGNER_LINE_STYLES: Selectable<DiagramLineStyle>[] = [
+	{ label: "Default", value: "default" },
 	{ label: "Metro", value: "metro" },
 	{ label: "Straight", value: "straight" },
 	{ label: "Smooth", value: "smooth" },
+];
+
+export const DESIGNER_ALGORITHMS: Selectable<DiagramAlgorithm>[] = [
+	{ label: "Default", value: "default" },
+	{ label: "Aligned", value: "aligned" },
+	{ label: "Spaced", value: "spaced" },
 ];
 
 export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
