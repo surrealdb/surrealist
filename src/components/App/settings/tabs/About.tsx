@@ -78,27 +78,20 @@ export function AboutTab() {
 				>
 					Copy environment information
 				</Button>
-				<CheckUpdatesButton />
+				{isDesktop && (
+					<Button
+						onClick={() => {
+							(adapter as DesktopAdapter).checkForUpdates(true);
+						}}
+						rightSection={<Icon path={iconReset} />}
+						color="slate"
+						variant="light"
+						size="xs"
+					>
+						Check for updates
+					</Button>
+				)}
 			</Stack>
 		</>
-	);
-}
-
-function CheckUpdatesButton() {
-	return (
-		!isDesktop && (
-			<Button
-				onClick={() => {
-					setClicked(true);
-					(adapter as DesktopAdapter).checkForUpdates(true);
-				}}
-				rightSection={<Icon path={iconReset} />}
-				color="slate"
-				variant="light"
-				size="xs"
-			>
-				Check for updates
-			</Button>
-		)
 	);
 }
