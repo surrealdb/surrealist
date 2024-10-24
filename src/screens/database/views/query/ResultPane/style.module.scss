@@ -10,10 +10,10 @@
 	}
 }
 
-@container (width < 225px) {
+@container (width < 525px) {
 	.run {
 		padding-inline: 10px;
-		
+
 		:global(.mantine-Button-label) {
 			display: none;
 		}

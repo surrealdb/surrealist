@@ -5,20 +5,25 @@ import {
 	Box,
 	Button,
 	Center,
-	Divider,
 	Group,
-	Pagination,
 	Stack,
 	Text,
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
 
-import { iconBroadcastOff, iconCursor, iconHelp, iconLive, iconQuery } from "~/util/icons";
+import {
+	iconBroadcastOff,
+	iconCursor,
+	iconHelp,
+	iconList,
+	iconLive,
+	iconQuery,
+} from "~/util/icons";
 
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
 import { DataTable } from "~/components/DataTable";
@@ -33,8 +38,12 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
-import { CombinedJsonPreview, LivePreview, SingleJsonPreview } from "./preview";
+import type { Listable, QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
+import type { PreviewProps } from "./previews";
+import { CombinedPreview } from "./previews/combined";
+import { IndividualPreview } from "./previews/individual";
+import { LivePreview } from "./previews/live";
+import { TablePreview } from "./previews/table";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -48,6 +57,13 @@ function computeRowCount(response: QueryResponse) {
 
 	return response.success ? 1 : 0;
 }
+
+const PREVIEW_MODES: Record<ResultMode, React.FC<PreviewProps>> = {
+	combined: CombinedPreview,
+	live: LivePreview,
+	single: IndividualPreview,
+	table: TablePreview,
+};
 
 export interface ResultPaneProps {
 	activeTab: TabQuery;
@@ -75,17 +91,24 @@ export function ResultPane({
 	const resultMode = activeTab.resultMode;
 	const resultFormat = activeTab.resultFormat;
 	const responses = responseMap[activeTab.id] || [];
-	const activeResponse = responses[resultTab - 1];
-
 	const responseCount = responses.length;
-	const rowCount = computeRowCount(activeResponse);
 
 	const showCombined = resultMode === "combined" || resultMode === "live";
-	const showTabs = !showCombined && responses.length > 1;
-	const showResponses = showCombined && responseCount > 0;
-	const showTime = !showCombined && !!activeResponse?.execution_time;
+	const showQueries = !showCombined && responses.length > 1;
 
 	const isLive = liveTabs.has(activeTab.id);
+
+	const queryList = useMemo(() => {
+		return responses.map<Listable>((res, i) => {
+			const rowCount = computeRowCount(res);
+
+			return {
+				label: `Query ${i + 1}`,
+				description: `${rowCount} ${rowCount === 1 ? "result" : "results"} in ${res.execution_time}`,
+				value: (i + 1).toString(),
+			};
+		});
+	}, [responses]);
 
 	const cancelQueries = useStable(() => {
 		cancelLiveQueries(activeTab.id);
@@ -114,24 +137,22 @@ export function ResultPane({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset result tab when responses change
 	useLayoutEffect(() => {
 		setResultTab(1);
-	}, [responses.length]);
+	}, [responseCount]);
 
 	const activeMode = RESULT_MODES.find((r) => r.value === resultMode);
 	const activeFormat = RESULT_FORMATS.find((r) => r.value === resultFormat);
 	const hasSelection = selection?.empty === false;
-
-	const statusText = showResponses
-		? `${responseCount} ${responseCount === 1 ? "response" : "responses"}`
-		: `${rowCount} ${rowCount === 1 ? "result" : "results"} ${showTime ? ` in ${activeResponse.execution_time}` : ""}`;
 
 	const panelTitle =
 		resultMode === "combined"
 			? "Results"
 			: resultMode === "live"
 				? "Live Messages"
-				: showTabs
+				: showQueries
 					? `Result #${resultTab}`
 					: "Result";
+
+	const Preview = PREVIEW_MODES[resultMode];
 
 	return (
 		<ContentPane
@@ -157,13 +178,34 @@ export function ResultPane({
 								Stop listening
 							</Button>
 						)
-					) : (
+					) : resultMode === "combined" ? (
 						<Text
 							c={isLight ? "slate.5" : "slate.2"}
 							className={classes.results}
 						>
-							{statusText}
+							{responseCount} {responseCount === 1 ? "response" : "responses"}
 						</Text>
+					) : (
+						showQueries && (
+							<ListMenu
+								data={queryList}
+								value={resultTab.toString()}
+								onChange={(e) => setResultTab(Number.parseInt(e ?? "1"))}
+							>
+								<Tooltip label="Change result">
+									<Button
+										size="xs"
+										radius="xs"
+										aria-label="Change result"
+										variant="light"
+										color="slate"
+										leftSection={<Icon path={iconList} />}
+									>
+										Query {resultTab}
+									</Button>
+								</Tooltip>
+							</ListMenu>
+						)
 					)}
 
 					{!isMini && (
@@ -263,45 +305,8 @@ export function ResultPane({
 					</Group>
 				</UnstyledButton>
 			)}
-			{resultMode === "live" ? (
-				<LivePreview
-					query={activeTab}
-					isLive={isLive}
-				/>
-			) : activeResponse ? (
-				<>
-					{resultMode === "combined" ? (
-						<CombinedJsonPreview results={responses} />
-					) : activeResponse.success ? (
-						activeResponse.result?.length === 0 ? (
-							<Text
-								c="slate"
-								flex={1}
-							>
-								No results found for query
-							</Text>
-						) : resultMode === "table" ? (
-							<Box
-								mih={0}
-								flex={1}
-								pos="relative"
-							>
-								<DataTable data={activeResponse.result} />
-							</Box>
-						) : (
-							<SingleJsonPreview result={activeResponse.result} />
-						)
-					) : (
-						<Text
-							c="red"
-							ff="mono"
-							style={{ whiteSpace: "pre-wrap" }}
-						>
-							{activeResponse.result}
-						</Text>
-					)}
-				</>
-			) : (
+
+			{responseCount === 0 ? (
 				<Center
 					h="100%"
 					c="slate"
@@ -315,20 +320,13 @@ export function ResultPane({
 						Execute a SurrealQL query to view the results here
 					</Stack>
 				</Center>
-			)}
-
-			{showTabs && (
-				<Stack
-					gap="xs"
-					align="center"
-				>
-					<Divider w="100%" />
-					<Pagination
-						total={responses.length}
-						value={resultTab}
-						onChange={setResultTab}
-					/>
-				</Stack>
+			) : (
+				<Preview
+					responses={responses}
+					selected={resultTab - 1}
+					query={activeTab}
+					isLive={isLive}
+				/>
 			)}
 		</ContentPane>
 	);
