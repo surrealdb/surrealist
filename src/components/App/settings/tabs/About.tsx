@@ -1,12 +1,15 @@
 import classes from "../style.module.scss";
 
-import { Button, Stack, Text } from "@mantine/core";
-import { useMemo } from "react";
+import { Button, Stack, Text, Transition } from "@mantine/core";
+import { useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { useVersionCopy } from "~/hooks/debug";
 import { isDevelopment, isPreview } from "~/util/environment";
-import { iconCheck, iconWrench } from "~/util/icons";
+import { iconCheck, iconReset, iconWrench } from "~/util/icons";
+import { format } from "date-fns";
+import { adapter, isDesktop } from "~/adapter";
+import type { DesktopAdapter } from "~/adapter/desktop";
 
 export function AboutTab() {
 	const [copyDebug, clipboard] = useVersionCopy();
@@ -26,9 +29,10 @@ export function AboutTab() {
 	const information = useMemo(
 		() => [
 			["Version", versionText],
-			["Build date", import.meta.env.DATE],
+			["Build date", format(import.meta.env.DATE, "MMMM do, yyyy")],
+			["Build time", format(import.meta.env.DATE, "HH:mm:ss OOO")],
 			["Build mode", import.meta.env.MODE],
-			["Compatibility", import.meta.env.SDB_VERSION],
+			["Compatibility", `SurrealDB ${import.meta.env.SDB_VERSION}+`],
 		],
 		[versionText],
 	);
@@ -74,7 +78,27 @@ export function AboutTab() {
 				>
 					Copy environment information
 				</Button>
+				<CheckUpdatesButton />
 			</Stack>
 		</>
+	);
+}
+
+function CheckUpdatesButton() {
+	return (
+		!isDesktop && (
+			<Button
+				onClick={() => {
+					setClicked(true);
+					(adapter as DesktopAdapter).checkForUpdates(true);
+				}}
+				rightSection={<Icon path={iconReset} />}
+				color="slate"
+				variant="light"
+				size="xs"
+			>
+				Check for updates
+			</Button>
+		)
 	);
 }
