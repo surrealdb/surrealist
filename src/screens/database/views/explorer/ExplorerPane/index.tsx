@@ -38,12 +38,14 @@ import { ContentPane } from "~/components/Pane";
 import { useActiveConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
+import { RecordLink } from "~/components/RecordLink";
 
 export interface ExplorerPaneProps {
 	activeTable: string;
@@ -105,6 +107,24 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		paginationQuery.refetch();
 	});
 
+	const removeRecord = useConfirmation<RecordId>({
+		title: "Delete record",
+		message: (value) => (
+			<Box>
+				Are you sure you want to delete this record?
+				<RecordLink
+					mt="sm"
+					value={value}
+					withOpen={false}
+				/>
+			</Box>
+		),
+		onConfirm: async (id) => {
+			await executeQuery(`DELETE ${formatValue(id)}`);
+			refetch();
+		},
+	});
+
 	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
 		if (!(record.id instanceof RecordId)) return;
 
@@ -159,12 +179,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				color: "pink.7",
 				icon: <Icon path={iconDelete} />,
 				onClick: async () => {
-					if (!(record.id instanceof RecordId)) return;
-
-					// TODO Use confirmation
-					await executeQuery(`DELETE ${formatValue(record.id)}`);
-
-					refetch();
+					if (record.id instanceof RecordId) {
+						removeRecord(record.id);
+					}
 				},
 			},
 		])(e);

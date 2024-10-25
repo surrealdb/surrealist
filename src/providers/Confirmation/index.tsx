@@ -1,10 +1,4 @@
-import {
-	type PropsWithChildren,
-	type ReactNode,
-	createContext,
-	useContext,
-	useState,
-} from "react";
+import { type PropsWithChildren, type ReactNode, createContext, useContext, useState } from "react";
 
 import { Button, type ButtonProps, Group, Text } from "@mantine/core";
 import { Modal } from "@mantine/core";
@@ -13,13 +7,15 @@ import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 
+type DynamicNode<T> = ReactNode | ((value: T) => ReactNode);
+
 interface ConfirmOptions<T> {
-	title?: ReactNode;
-	message: ReactNode;
+	title?: DynamicNode<T>;
+	message: DynamicNode<T>;
 	skippable?: boolean;
-	dismissText?: ReactNode;
+	dismissText?: DynamicNode<T>;
 	dismissProps?: ButtonProps;
-	confirmText?: ReactNode;
+	confirmText?: DynamicNode<T>;
 	confirmProps?: ButtonProps;
 	onDismiss?: () => void;
 	onConfirm: (value: T) => void;
@@ -29,18 +25,18 @@ const ConfirmContext = createContext<{
 	setConfirmation: (value: any, options: ConfirmOptions<any>) => void;
 } | null>(null);
 
+function applyNode<T>(node: DynamicNode<T>, value: T) {
+	return typeof node === "function" ? node(value) : node;
+}
+
 /**
  * Returns a function which can be used to trigger a confirmation dialog
  */
-export function useConfirmation<T>(
-	options: ConfirmOptions<T>,
-): (value?: T) => void {
+export function useConfirmation<T>(options: ConfirmOptions<T>): (value?: T) => void {
 	const ctx = useContext(ConfirmContext);
 
 	if (!ctx) {
-		throw new Error(
-			"useConfirmation must be used within an ConfirmationProvider",
-		);
+		throw new Error("useConfirmation must be used within an ConfirmationProvider");
 	}
 
 	return useStable((value) => {
@@ -92,13 +88,11 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 				opened={isConfirming}
 				onClose={onDissmiss}
 				title={
-					<PrimaryTitle>
-						{options?.title ?? DEFAULT_TITLE}
-					</PrimaryTitle>
+					<PrimaryTitle>{applyNode(options?.title ?? DEFAULT_TITLE, value)}</PrimaryTitle>
 				}
 				zIndex={210}
 			>
-				<Text fz="lg">{options?.message}</Text>
+				<Text fz="lg">{applyNode(options?.message, value)}</Text>
 				<Group mt="xl">
 					<Button
 						onClick={onDissmiss}
@@ -106,7 +100,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 						color="slate"
 						{...(options?.dismissProps || {})}
 					>
-						{options?.dismissText ?? DEFAULT_DISMISS}
+						{applyNode(options?.dismissText ?? DEFAULT_DISMISS, value)}
 					</Button>
 					<Spacer />
 					<Button
@@ -114,7 +108,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 						onClick={onConfirm}
 						{...options?.confirmProps}
 					>
-						{options?.confirmText ?? DEFAULT_CONFIRM}
+						{applyNode(options?.confirmText ?? DEFAULT_CONFIRM, value)}
 					</Button>
 				</Group>
 			</Modal>
