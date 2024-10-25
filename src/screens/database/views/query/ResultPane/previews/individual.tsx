@@ -1,12 +1,12 @@
+import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { surqlRecordLinks } from "~/editor";
+import { useSetting } from "~/hooks/config";
 import { useResultFormatter } from "~/hooks/surrealql";
 import { useInspector } from "~/providers/Inspector";
 import { type PreviewProps, attemptFormat } from ".";
-import { Text } from "@mantine/core";
-import { useSetting } from "~/hooks/config";
 
 export function IndividualPreview({ responses, selected }: PreviewProps) {
 	const [format] = useResultFormatter();

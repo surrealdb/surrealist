@@ -68,6 +68,7 @@ import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import { RadioSelect } from "~/components/RadioSelect";
@@ -78,6 +79,7 @@ import {
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
 } from "~/constants";
+import { useSetting } from "~/hooks/config";
 import { useIsConnected } from "~/hooks/connection";
 import { useActiveConnection } from "~/hooks/connection";
 import { useDatabaseSchema } from "~/hooks/schema";
@@ -96,8 +98,6 @@ import type {
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
-import { Label } from "~/components/Label";
-import { useSetting } from "~/hooks/config";
 
 export interface TableGraphPaneProps {
 	active: string | null;

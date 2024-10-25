@@ -10,32 +10,31 @@ import { Lister } from "../lister";
 export function IndexesElement({ data, setData }: ElementProps) {
 	const isLight = useIsLight();
 
-	const addIndex = useStable(() => {
-		setData((d) => {
-			d.indexes.push({
-				name: "",
-				cols: "",
-				index: "",
-			});
-		});
-	});
-
-	const removeIndex = useStable((index: number) => {
-		setData((d) => {
-			d.indexes.splice(index, 1);
-		});
-	});
+	const initIndex = useStable(() => ({
+		name: "",
+		cols: "",
+		index: "",
+	}));
 
 	const renderIndex = useStable((index: SchemaIndex) => (
 		<Flex>
 			{index.name}
 			{index.cols && (
-				<Text c={isLight ? "slate.5" : "slate.3"} ml="xs">
+				<Text
+					c={isLight ? "slate.5" : "slate.3"}
+					ml="xs"
+				>
 					({index.cols})
 				</Text>
 			)}
 		</Flex>
 	));
+
+	const handleChange = useStable((indexes: SchemaIndex[]) => {
+		setData((draft) => {
+			draft.indexes = indexes;
+		});
+	});
 
 	return (
 		<Accordion.Item value="indexes">
@@ -45,22 +44,23 @@ export function IndexesElement({ data, setData }: ElementProps) {
 					value={data.indexes}
 					missing="No schema indexes defined yet"
 					name="index"
-					onCreate={addIndex}
-					onRemove={removeIndex}
+					factory={initIndex}
+					onChange={handleChange}
 					display={renderIndex}
 				>
-					{(index, i) => (
+					{(index, setIndex, isCreating) => (
 						<>
 							<TextInput
 								required
 								autoFocus
 								label="Index name"
 								placeholder="index_name"
+								disabled={!isCreating}
 								value={index.name}
 								spellCheck={false}
 								onChange={(e) =>
-									setData((draft) => {
-										draft.indexes[i].name = e.target.value;
+									setIndex((draft) => {
+										draft.name = e.target.value;
 									})
 								}
 							/>
@@ -69,8 +69,8 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								label="Indexed fields"
 								value={index.cols}
 								onChange={(value) =>
-									setData((draft) => {
-										draft.indexes[i].cols = value;
+									setIndex((draft) => {
+										draft.cols = value;
 									})
 								}
 							/>
@@ -79,8 +79,8 @@ export function IndexesElement({ data, setData }: ElementProps) {
 								placeholder="UNIQUE"
 								value={index.index}
 								onChange={(value: any) =>
-									setData((draft) => {
-										draft.indexes[i].index = value;
+									setIndex((draft) => {
+										draft.index = value;
 									})
 								}
 							/>

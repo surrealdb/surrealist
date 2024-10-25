@@ -1,12 +1,12 @@
 import { Box, Divider, Group, Stack } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
-import type { PreviewProps } from ".";
 import { useSetting } from "~/hooks/config";
-import { Text } from "@mantine/core";
+import type { PreviewProps } from ".";
 
 export function TablePreview({ responses, selected }: PreviewProps) {
 	const { success, result } = responses[selected] ?? { result: null };
