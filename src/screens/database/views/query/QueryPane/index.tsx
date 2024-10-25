@@ -8,6 +8,16 @@ import {
 	surqlVariableCompletion,
 } from "~/editor";
 
+import {
+	iconAutoFix,
+	iconChevronRight,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+	iconWarning,
+} from "~/util/icons";
+
 import { Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
@@ -27,17 +37,10 @@ import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import type { TabQuery } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import {
-	iconAutoFix,
-	iconChevronLeft,
-	iconChevronRight,
-	iconDollar,
-	iconServer,
-	iconStar,
-	iconText,
-	iconWarning,
-} from "~/util/icons";
 import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
+import { useEffect } from "react";
+import { DesktopAdapter } from "~/adapter/desktop";
+import { adapter } from "~/adapter";
 
 export interface QueryPaneProps {
 	activeTab: TabQuery;
@@ -71,15 +74,19 @@ export function QueryPane({
 
 	const connection = useActiveConnection();
 
-	const setQueryForced = useStable((query: string) => {
+	const setQueryForced = useStable((query: string, save: boolean) => {
 		setIsValid(!validateQuery(query));
 		updateQueryTab({
 			id: activeTab.id,
 			query,
 		});
+
+		if (save && adapter instanceof DesktopAdapter) {
+			adapter.writeQueryFile(activeTab, query);
+		}
 	});
 
-	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 50);
+	const scheduleSetQuery = useDebouncedFunction((v) => setQueryForced(v, true), 50);
 
 	const openQueryList = useStable(() => {
 		updateCurrentConnection({
@@ -143,8 +150,31 @@ export function QueryPane({
 		return Object.keys(tryParseParams(activeTab.variables));
 	});
 
+	const loadQueryFromFile = useStable(async (id: string) => {
+		const tab = connection.queries.find((q) => q.id === id);
+
+		if (tab && adapter instanceof DesktopAdapter) {
+			try {
+				const query = await adapter.readQueryFile(activeTab);
+
+				if (query !== tab.query) {
+					setQueryForced(query, false);
+				}
+			} catch {
+				showError({
+					title: "Failed to load query",
+					subtitle: "The query file could not be read",
+				});
+			}
+		}
+	});
+
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
+
+	useEffect(() => {
+		loadQueryFromFile(activeTab.id);
+	}, [activeTab.id]);
 
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);

@@ -1,4 +1,4 @@
-import type { Platform, UrlTarget } from "~/types";
+import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
 	name: string;
@@ -64,7 +64,7 @@ export interface SurrealistAdapter {
 	 *
 	 * @param config The config to save
 	 */
-	saveConfig(config: any): Promise<void>;
+	saveConfig(config: SurrealistConfig): Promise<void>;
 
 	/**
 	 * Start the database with the given parameters

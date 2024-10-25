@@ -146,7 +146,7 @@ export function createBaseTab(settings: SurrealistSettings, query?: string): Tab
 		query: query || "",
 		name: "",
 		variables: "{}",
-		valid: query ? !validateQuery(query) : true,
+		valid: true,
 		resultMode: settings.appearance.defaultResultMode,
 		resultFormat: settings.appearance.defaultResultFormat,
 		showVariables: false,

@@ -33,6 +33,7 @@ interface NewQueryTab {
 	query?: string;
 	name?: string;
 	variables?: string;
+	systemPath?: string;
 }
 
 function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
@@ -209,6 +210,7 @@ export const useConfigStore = create<ConfigStore>()(
 							{
 								...createBaseTab(state.settings, options?.query),
 								variables: options?.variables || "{}",
+								systemPath: options?.systemPath,
 								name: queryName,
 								id: tabId,
 							},
@@ -258,10 +260,6 @@ export const useConfigStore = create<ConfigStore>()(
 						...connection.queries[index],
 						...payload,
 					};
-
-					if (payload.query !== undefined) {
-						query.valid = !validateQuery(query.query);
-					}
 
 					return {
 						queries: connection.queries.with(index, query),

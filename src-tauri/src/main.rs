@@ -17,6 +17,7 @@ mod config;
 mod database;
 mod open;
 mod paths;
+mod whitelist;
 mod window;
 
 struct OpenResourceState(pub Mutex<Vec<url::Url>>);
@@ -100,6 +101,9 @@ fn main() {
             database::stop_database,
             window::toggle_devtools,
             open::get_opened_resources,
+            open::read_query_file,
+            open::write_query_file,
+            open::prune_allowed_files,
         ])
         .setup(|app| {
             info!("Launch args: {:?}", env::args());

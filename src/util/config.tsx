@@ -7,6 +7,7 @@ import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
+import { DesktopAdapter } from "~/adapter/desktop";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
@@ -80,6 +81,11 @@ export async function startConfigSync() {
 			},
 		),
 	);
+
+	// Prune removed query files
+	if (adapter instanceof DesktopAdapter) {
+		adapter.pruneQueryFiles();
+	}
 }
 
 export interface ConfigBackupOptions {
@@ -107,6 +113,11 @@ export function backupConfig({ stripSensitive, connections }: ConfigBackupOption
 	// Limit connections
 	if (connections.length > 0) {
 		config.connections = current.connections.filter((c) => connections.includes(c.id));
+	}
+
+	// Remove file system queries
+	for (const connection of config.connections ?? []) {
+		connection.queries = connection.queries.filter((q) => !q.systemPath);
 	}
 
 	// Remove sensitive data

@@ -201,10 +201,11 @@ export interface TabQuery {
 	query: string;
 	name?: string;
 	variables: string;
-	valid: boolean;
+	valid: boolean; // TODO Remove
 	resultMode: ResultMode;
 	resultFormat: ResultFormat;
 	showVariables: boolean;
+	systemPath?: string;
 }
 
 export interface HistoryQuery {

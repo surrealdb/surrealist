@@ -33,6 +33,13 @@ pub fn get_config_backup_path(version: u32) -> PathBuf {
     config_path
 }
 
+/// The path to the file whitelist
+pub fn get_file_whitelist_path() -> PathBuf {
+    let mut config_path = get_data_directory();
+    config_path.push("allowed_files");
+    config_path
+}
+
 /// The path to the logs directory
 pub fn get_logs_directory() -> PathBuf {
     let mut config_path = get_data_directory();

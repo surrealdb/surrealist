@@ -1,5 +1,5 @@
 import { isFunction, shake } from "radash";
-import type { Platform, UrlTarget } from "~/types";
+import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
@@ -54,7 +54,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 		return (await idxdb.getConfig()) || {};
 	}
 
-	public async saveConfig(config: any) {
+	public async saveConfig(config: SurrealistConfig) {
 		await idxdb.setConfig(shake(config, isFunction));
 		localStorage.removeItem(CONFIG_KEY);
 	}

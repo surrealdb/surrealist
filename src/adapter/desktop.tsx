@@ -16,7 +16,7 @@ import { VIEW_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Platform, ViewMode } from "~/types";
+import type { Platform, SurrealistConfig, TabQuery, ViewMode } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
 import { featureFlags } from "~/util/feature-flags";
 import { showError, showInfo } from "~/util/helpers";
@@ -34,7 +34,7 @@ interface Resource {
 interface FileResource {
 	success: boolean;
 	name: string;
-	query: string;
+	path: string;
 }
 
 interface LinkResource {
@@ -142,7 +142,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return JSON.parse(config);
 	}
 
-	public saveConfig(config: string) {
+	public saveConfig(config: SurrealistConfig) {
 		return invoke<void>("save_config", {
 			config: JSON.stringify(config),
 		});
@@ -298,6 +298,31 @@ export class DesktopAdapter implements SurrealistAdapter {
 		}
 	}
 
+	public readQueryFile(query: TabQuery) {
+		if (!query.systemPath) {
+			return Promise.resolve("");
+		}
+
+		return invoke<string>("read_query_file", { path: query.systemPath });
+	}
+
+	public writeQueryFile(query: TabQuery, content: string) {
+		if (!query.systemPath) {
+			return;
+		}
+
+		return invoke<void>("write_query_file", { path: query.systemPath, content });
+	}
+
+	public pruneQueryFiles() {
+		const { sandbox, connections } = useConfigStore.getState();
+		const list = [sandbox, ...connections];
+		const queries = list.flatMap((c) => c.queries);
+		const paths = queries.flatMap((q) => (q.systemPath ? [q.systemPath] : []));
+
+		return invoke<void>("prune_allowed_files", { paths });
+	}
+
 	private initDatabaseEvents() {
 		let throttleLevel = 0;
 
@@ -372,7 +397,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		for (const { File, Link } of resources) {
 			if (File) {
-				const { success, name, query } = File;
+				const { success, name, path } = File;
 
 				if (!success) {
 					showError({
@@ -383,7 +408,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					continue;
 				}
 
-				addQueryTab({ name, query });
+				addQueryTab({ name: name, systemPath: path });
 				setActiveView("query");
 			} else if (Link) {
 				const { host, params } = Link;

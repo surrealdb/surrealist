@@ -1,3 +1,17 @@
+import {
+	iconArrowUpRight,
+	iconChevronLeft,
+	iconChevronRight,
+	iconClose,
+	iconCopy,
+	iconFile,
+	iconHistory,
+	iconList,
+	iconPlus,
+	iconQuery,
+	iconStar,
+} from "~/util/icons";
+
 import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
@@ -16,19 +30,9 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { TabQuery } from "~/types";
-import {
-	iconArrowUpRight,
-	iconChevronLeft,
-	iconChevronRight,
-	iconClose,
-	iconCopy,
-	iconHistory,
-	iconList,
-	iconPlus,
-	iconQuery,
-	iconStar,
-} from "~/util/icons";
 import classes from "./style.module.scss";
+import { adapter } from "~/adapter";
+import { DesktopAdapter } from "~/adapter/desktop";
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -56,6 +60,10 @@ export function TabsPane(props: TabsPaneProps) {
 		e?.stopPropagation();
 		removeQueryTab(id);
 		cancelLiveQueries(id);
+
+		if (adapter instanceof DesktopAdapter) {
+			adapter.pruneQueryFiles();
+		}
 	});
 
 	const removeOthers = useStable((id: string, dir: number) => {
@@ -215,7 +223,9 @@ export function TabsPane(props: TabsPaneProps) {
 												onClick: () => removeOthers(query.id, 1),
 											},
 										])}
-										leftSection={<Icon path={iconQuery} />}
+										leftSection={
+											<Icon path={query.systemPath ? iconFile : iconQuery} />
+										}
 										rightSection={
 											<>
 												{isLive && (
