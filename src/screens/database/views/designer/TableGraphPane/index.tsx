@@ -487,7 +487,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							key: "view",
 							icon: <Icon path={iconFullscreen} />,
 							title: "Fit viewport",
-							onClick: () => fitView(),
+							onClick: () => fitView({ duration: 300 }),
 						},
 						{
 							key: "refresh",
