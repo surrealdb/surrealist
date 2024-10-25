@@ -9,7 +9,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
@@ -20,7 +20,10 @@ import { extractVariables, showError, showInfo } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 
 export function RegisterUserModal() {
-	const { lastNamespace, lastDatabase, authentication } = useActiveConnection();
+	const connection = useConnection();
+	const lastNamespace = connection?.lastNamespace ?? "";
+	const lastDatabase = connection?.lastDatabase ?? "";
+	const authentication = connection?.authentication;
 	const schema = useDatabaseSchema();
 
 	const [isOpen, openedHandle] = useBoolean();
@@ -29,7 +32,7 @@ export function RegisterUserModal() {
 	const [isLoading, setLoading] = useState(false);
 
 	const registerUser = useStable(async () => {
-		if (!access) return;
+		if (!access || !authentication) return;
 
 		const variables = fields.reduce((acc, field) => {
 			acc[field.subject] = field.value;
@@ -40,7 +43,7 @@ export function RegisterUserModal() {
 
 		try {
 			setLoading(true);
-			
+
 			console.log("Registering user with variables", variables);
 
 			await register({
@@ -52,15 +55,15 @@ export function RegisterUserModal() {
 
 			showInfo({
 				title: "User registered",
-				subtitle: "The user has been successfully registered"
+				subtitle: "The user has been successfully registered",
 			});
-		} catch(err: any) {
-			adapter.warn('Auth', `Failed to register user: ${err.message}`);
+		} catch (err: any) {
+			adapter.warn("Auth", `Failed to register user: ${err.message}`);
 			console.error(err);
 
 			showError({
 				title: "Registration failed",
-				subtitle: err.message
+				subtitle: err.message,
 			});
 		} finally {
 			setLoading(false);
@@ -79,25 +82,31 @@ export function RegisterUserModal() {
 				subject: field,
 				value: "",
 			}));
-			
+
 			setAccess(accessInfo);
 			setFields(fields);
 			openedHandle.open();
 		}
 	});
-	
+
 	return (
 		<Modal
 			size="md"
 			opened={isOpen}
 			onClose={openedHandle.close}
 			trapFocus={false}
-			title={
-				<PrimaryTitle>Register user</PrimaryTitle>
-			}
+			title={<PrimaryTitle>Register user</PrimaryTitle>}
 		>
 			<Text>
-				Please fill out the following required fields to register a new user with the access method <Text span c="bright">{access?.name}</Text>.
+				Please fill out the following required fields to register a new user with the access
+				method{" "}
+				<Text
+					span
+					c="bright"
+				>
+					{access?.name}
+				</Text>
+				.
 			</Text>
 
 			<Form onSubmit={registerUser}>
@@ -118,16 +127,14 @@ export function RegisterUserModal() {
 							return (
 								<Table.Tr key={field.subject}>
 									<Table.Td c="bright">
-										<Text fw={600}>
-											{field.subject}
-										</Text>
+										<Text fw={600}>{field.subject}</Text>
 									</Table.Td>
 									<Table.Td c="bright">
 										<ValueInput
 											size="xs"
 											value={field.value}
 											spellCheck={false}
-											onChange={e =>
+											onChange={(e) =>
 												setFields((draft) => {
 													draft[i].value = e.target.value;
 												})

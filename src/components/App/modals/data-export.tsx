@@ -8,7 +8,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { EXPORT_TYPES, type ExportType, SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -21,7 +21,7 @@ import { iconDownload } from "~/util/icons";
 export function DataExportModal() {
 	const isLight = useIsLight();
 	const tables = useTableNames();
-	const connection = useActiveConnection();
+	const connection = useConnection();
 
 	const [isOpen, openedHandle] = useBoolean();
 
@@ -37,7 +37,7 @@ export function DataExportModal() {
 		// "access",
 	]);
 
-	const fileName = `${slugify(connection.name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
+	const fileName = `${slugify(connection?.name ?? "")}-${dayjs().format("YYYY-MM-DD")}.surql`;
 
 	const handleExport = useStable(async () => {
 		try {
