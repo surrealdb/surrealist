@@ -5,7 +5,6 @@ import {
 	Badge,
 	Box,
 	Button,
-	Checkbox,
 	Divider,
 	Group,
 	HoverCard,
@@ -19,7 +18,6 @@ import {
 } from "@mantine/core";
 
 import {
-	type ChangeEvent,
 	type ElementRef,
 	type MouseEvent,
 	useEffect,
@@ -32,7 +30,6 @@ import {
 	Background,
 	type Edge,
 	type Node,
-	type OnNodesChange,
 	ReactFlow,
 	useEdgesState,
 	useNodesInitialized,
@@ -42,7 +39,6 @@ import {
 
 import {
 	iconAPI,
-	iconChevronLeft,
 	iconChevronRight,
 	iconCog,
 	iconFullscreen,
@@ -63,15 +59,6 @@ import {
 	createSnapshot,
 } from "./helpers";
 
-import { useContextMenu } from "mantine-contextmenu";
-import { sleep } from "radash";
-import { adapter } from "~/adapter";
-import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
-import { Link } from "~/components/Link";
-import { ContentPane } from "~/components/Pane";
-import { RadioSelect } from "~/components/RadioSelect";
 import {
 	DESIGNER_ALGORITHMS,
 	DESIGNER_DIRECTIONS,
@@ -79,14 +66,7 @@ import {
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
 } from "~/constants";
-import { useSetting } from "~/hooks/config";
-import { useIsConnected } from "~/hooks/connection";
-import { useActiveConnection } from "~/hooks/connection";
-import { useDatabaseSchema } from "~/hooks/schema";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
+
 import type {
 	DiagramAlgorithm,
 	DiagramDirection,
@@ -95,9 +75,27 @@ import type {
 	DiagramMode,
 	TableInfo,
 } from "~/types";
+
+import { useContextMenu } from "mantine-contextmenu";
+import { sleep } from "radash";
+import { adapter } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
+import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
+import { Link } from "~/components/Link";
+import { ContentPane } from "~/components/Pane";
+import { useSetting } from "~/hooks/config";
+import { useIsConnected } from "~/hooks/connection";
+import { useActiveConnection } from "~/hooks/connection";
+import { useDatabaseSchema } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
+import { useIntent } from "~/hooks/url";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -309,6 +307,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			});
 		});
 	}, [props.active]);
+
+	useIntent("focus-table", ({ table }) => {
+		const node = getNodes().find((node) => node.id === table);
+
+		if (node) {
+			fitView({
+				nodes: [node],
+				duration: 300,
+			});
+		}
+	});
 
 	return (
 		<ContentPane
