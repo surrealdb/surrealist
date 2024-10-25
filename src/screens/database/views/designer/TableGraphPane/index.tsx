@@ -436,13 +436,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							</Text>
 						</Popover.Dropdown>
 					</Popover>
-					<Tooltip label="Designer help">
-						<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+					<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+						<Tooltip label="Designer help">
 							<ActionIcon aria-label="Open designer help">
 								<Icon path={iconHelp} />
 							</ActionIcon>
-						</Link>
-					</Tooltip>
+						</Tooltip>
+					</Link>
 				</Group>
 			}
 		>
