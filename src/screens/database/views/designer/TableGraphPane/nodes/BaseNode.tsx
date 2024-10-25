@@ -6,7 +6,7 @@ import { Spacer } from "~/components/Spacer";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { TableInfo } from "~/types";
+import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION, simplifyKind } from "~/util/helpers";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
@@ -176,26 +176,16 @@ function Fields(props: FieldsProps) {
 interface BaseNodeProps {
 	icon: string;
 	table: TableInfo;
+	direction: DiagramDirection;
+	mode: DiagramMode;
 	isSelected: boolean;
-	hasIncoming: boolean;
-	hasOutgoing: boolean;
 	isEdge?: boolean;
 }
 
-export function BaseNode({
-	icon,
-	table,
-	isSelected,
-	hasIncoming,
-	hasOutgoing,
-	isEdge,
-}: BaseNodeProps) {
-	const { diagramMode, diagramDirection } = useActiveConnection();
-
+export function BaseNode({ icon, table, direction, mode, isSelected, isEdge }: BaseNodeProps) {
 	const isLight = useIsLight();
-	const isLTR = diagramDirection === "ltr";
-	const showMore =
-		diagramMode === "summary" || (diagramMode === "fields" && table.fields.length > 0);
+	const isLTR = direction === "ltr";
+	const showMore = mode === "summary" || (mode === "fields" && table.fields.length > 0);
 
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
@@ -290,7 +280,7 @@ export function BaseNode({
 							mt="sm"
 						/>
 
-						{diagramMode === "fields" ? (
+						{mode === "fields" ? (
 							<Fields
 								isLight={isLight}
 								table={table}

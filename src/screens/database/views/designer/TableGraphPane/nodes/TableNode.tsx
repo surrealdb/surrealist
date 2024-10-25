@@ -10,9 +10,9 @@ export function TableNode({ data }: NodeProps<TableNode>) {
 		<BaseNode
 			icon={iconTable}
 			table={data.table}
+			mode={data.mode}
+			direction={data.direction}
 			isSelected={data.isSelected}
-			hasIncoming={data.hasIncoming}
-			hasOutgoing={data.hasOutgoing}
 		/>
 	);
 }

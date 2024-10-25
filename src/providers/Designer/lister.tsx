@@ -1,16 +1,12 @@
-import {
-	ActionIcon,
-	Box,
-	Button,
-	Group,
-	Modal,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { ActionIcon, Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
+import { klona } from "klona";
+import { replace } from "radash";
 import { type ReactNode, useState } from "react";
+import { type Updater, useImmer } from "use-immer";
+import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useLater } from "~/hooks/later";
+import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { iconCircle, iconClose, iconPlus } from "~/util/icons";
 
@@ -18,9 +14,9 @@ export interface ListerProps<T> {
 	name: string;
 	missing: string;
 	value: T[];
-	children: (item: T, index: number) => ReactNode;
-	onCreate: () => void;
-	onRemove: (index: number) => void;
+	factory: () => T;
+	children: (item: T, updater: Updater<T>, isCreating: boolean) => ReactNode;
+	onChange: (items: T[]) => void;
 	display?: (item: T) => ReactNode;
 }
 
@@ -28,62 +24,69 @@ export function Lister<T extends { name: string }>({
 	name,
 	missing,
 	value,
+	factory,
 	children,
-	onCreate,
-	onRemove,
+	onChange,
 	display,
 }: ListerProps<T>) {
-	const [isEditing, setIsEditing] = useState(false);
-	const [editingIndex, setEditingIndex] = useState(-1);
+	const [isEditing, editingHandle] = useBoolean(false);
+	const [isCreating, setIsCreating] = useState(false);
+	const [values, setValues] = useImmer<T | null>(null);
 
-	const openEditor = useStable((index: number) => {
-		setEditingIndex(index);
-		setIsEditing(true);
+	const openEditor = useStable((item: T) => {
+		setValues(klona(item));
+		editingHandle.open();
+		setIsCreating(false);
 	});
 
-	const closeEditor = useStable(() => {
-		setIsEditing(false);
+	const saveEditor = useStable(() => {
+		editingHandle.close();
+		if (!values) return;
+
+		if (isCreating) {
+			onChange([...value, values]);
+		} else {
+			onChange(replace(value, values, (i) => i.name === values.name));
+		}
 	});
 
-	const handleRemove = useStable((e: React.MouseEvent, index: number) => {
+	const handleRemove = useStable((e: React.MouseEvent, item: T) => {
 		e.stopPropagation();
-		onRemove(index);
+		onChange(value.filter((i) => i !== item));
 	});
-
-	const openLatest = useStable(() => {
-		openEditor(value.length - 1);
-	});
-
-	const scheduleOpenLatest = useLater(openLatest);
 
 	const handleCreate = useStable(() => {
-		onCreate();
-		scheduleOpenLatest();
+		setValues(factory());
+		editingHandle.open();
+		setIsCreating(true);
 	});
-
-	const editingData = value[editingIndex];
 
 	return (
 		<>
 			{value.length > 0 ? (
 				<Box>
-					{value.map((item, i) => (
+					{value.map((item) => (
 						<Button
 							key={item.name}
 							px="xs"
 							fullWidth
 							color="slate"
 							variant="subtle"
-							onClick={() => openEditor(i)}
+							onClick={() => openEditor(item)}
 							styles={{
 								label: { flex: 1 },
 							}}
-							leftSection={<Icon path={iconCircle} c="slate.4" />}
+							leftSection={
+								<Icon
+									path={iconCircle}
+									c="slate.4"
+								/>
+							}
 							rightSection={
 								<ActionIcon
 									role="button"
 									component="div"
-									onClick={(e) => handleRemove(e, i)}
+									onClick={(e) => handleRemove(e, item)}
 									color="pink.9"
 									variant="transparent"
 									aria-label="Remove item"
@@ -92,15 +95,14 @@ export function Lister<T extends { name: string }>({
 								</ActionIcon>
 							}
 						>
-							{item.name ? (
-								<Text c="bright" fw={500} ff="monospace">
-									{display?.(item) ?? item.name}
-								</Text>
-							) : (
-								<Text c="slate.3" fw={500} ff="monospace">
-									Unnamed {name}
-								</Text>
-							)}
+							<Text
+								c="bright"
+								fw={500}
+								ff="monospace"
+								component="div"
+							>
+								{display?.(item) ?? item.name}
+							</Text>
 						</Button>
 					))}
 				</Box>
@@ -121,24 +123,35 @@ export function Lister<T extends { name: string }>({
 
 			<Modal
 				opened={isEditing}
-				onClose={closeEditor}
+				onClose={editingHandle.close}
 				trapFocus={false}
-				title={<PrimaryTitle>{`Editing ${name}`}</PrimaryTitle>}
+				title={
+					<PrimaryTitle>
+						{isCreating ? "Creating" : "Editing"} {name}
+					</PrimaryTitle>
+				}
 			>
-				<Stack>
-					{editingData && children(editingData, editingIndex)}
-
-					<Group mt="md">
+				<Form onSubmit={saveEditor}>
+					<Stack>{values && children(values, setValues as any, isCreating)}</Stack>
+					<Group mt="xl">
 						<Button
-							variant="light"
-							color="slate"
 							flex={1}
-							onClick={closeEditor}
+							color="slate"
+							variant="light"
+							onClick={editingHandle.close}
 						>
-							Finish editing
+							Close
+						</Button>
+						<Button
+							flex={1}
+							variant="gradient"
+							disabled={!values?.name}
+							type="submit"
+						>
+							Save
 						</Button>
 					</Group>
-				</Stack>
+				</Form>
 			</Modal>
 		</>
 	);

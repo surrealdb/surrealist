@@ -1,7 +1,9 @@
 import {
+	DESIGNER_ALGORITHMS,
 	DESIGNER_DIRECTIONS,
+	DESIGNER_LINE_STYLES,
+	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
-	LINE_STYLES,
 	ORIENTATIONS,
 	RESULT_MODES,
 	SCALE_STEPS,
@@ -283,21 +285,32 @@ export function computePreferences(): PreferenceSection[] {
 			name: "Designer view",
 			preferences: [
 				{
-					name: "Line style",
-					description: "The style of lines connecting nodes",
+					name: "Default line style",
+					description: "The default appearance of relations",
 					controller: new SelectionController({
-						options: LINE_STYLES,
-						reader: (config) => config.settings.appearance.lineStyle,
+						options: nodef(DESIGNER_LINE_STYLES),
+						reader: (config) => config.settings.appearance.defaultDiagramLineStyle,
 						writer: (config, value) => {
-							config.settings.appearance.lineStyle = value;
+							config.settings.appearance.defaultDiagramLineStyle = value;
 						},
 					}),
 				},
 				{
-					name: "Default node appearance",
-					description: "The default appearance for nodes in new connection",
+					name: "Default algorithm",
+					description: "The default layout algorithm",
 					controller: new SelectionController({
-						options: DESIGNER_NODE_MODES,
+						options: nodef(DESIGNER_ALGORITHMS),
+						reader: (config) => config.settings.appearance.defaultDiagramAlgorithm,
+						writer: (config, value) => {
+							config.settings.appearance.defaultDiagramAlgorithm = value;
+						},
+					}),
+				},
+				{
+					name: "Default table appearance",
+					description: "The default appearance of tables",
+					controller: new SelectionController({
+						options: nodef(DESIGNER_NODE_MODES),
 						reader: (config) => config.settings.appearance.defaultDiagramMode,
 						writer: (config, value) => {
 							config.settings.appearance.defaultDiagramMode = value;
@@ -306,9 +319,9 @@ export function computePreferences(): PreferenceSection[] {
 				},
 				{
 					name: "Default layout direction",
-					description: "The default diagram direction for new connections",
+					description: "The default diagram direction",
 					controller: new SelectionController({
-						options: DESIGNER_DIRECTIONS,
+						options: nodef(DESIGNER_DIRECTIONS),
 						reader: (config) => config.settings.appearance.defaultDiagramDirection,
 						writer: (config, value) => {
 							config.settings.appearance.defaultDiagramDirection = value;
@@ -316,12 +329,13 @@ export function computePreferences(): PreferenceSection[] {
 					}),
 				},
 				{
-					name: "Show record links",
-					description: "Whether to show links between nodes",
-					controller: new CheckboxController({
-						reader: (config) => config.settings.appearance.defaultDiagramShowLinks,
+					name: "Default record link visibility",
+					description: "The default visibility of record links",
+					controller: new SelectionController({
+						options: nodef(DESIGNER_LINKS),
+						reader: (config) => config.settings.appearance.defaultDiagramLinkMode,
 						writer: (config, value) => {
-							config.settings.appearance.defaultDiagramShowLinks = value;
+							config.settings.appearance.defaultDiagramLinkMode = value;
 						},
 					}),
 				},
@@ -361,4 +375,8 @@ export function computePreferences(): PreferenceSection[] {
 	}
 
 	return sections;
+}
+
+function nodef<T extends string>(items: Selection<T>) {
+	return items.filter(({ value }) => value !== "default");
 }

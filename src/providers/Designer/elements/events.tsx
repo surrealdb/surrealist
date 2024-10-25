@@ -1,24 +1,21 @@
 import { Accordion, TextInput } from "@mantine/core";
 import { CodeInput } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
+import type { SchemaEvent } from "~/types";
 import { iconBullhorn } from "~/util/icons";
 import { type ElementProps, SectionTitle } from "../helpers";
 import { Lister } from "../lister";
 
 export function EventsElement({ data, setData }: ElementProps) {
-	const addEvent = useStable(() => {
-		setData((d) => {
-			d.events.push({
-				name: "",
-				when: "",
-				then: [""],
-			});
-		});
-	});
+	const initEvent = useStable(() => ({
+		name: "",
+		when: "",
+		then: [""],
+	}));
 
-	const removeEvent = useStable((index: number) => {
-		setData((d) => {
-			d.events.splice(index, 1);
+	const handleChange = useStable((events: SchemaEvent[]) => {
+		setData((draft) => {
+			draft.events = events;
 		});
 	});
 
@@ -30,21 +27,22 @@ export function EventsElement({ data, setData }: ElementProps) {
 					value={data.events}
 					missing="No schema events defined yet"
 					name="event"
-					onCreate={addEvent}
-					onRemove={removeEvent}
+					factory={initEvent}
+					onChange={handleChange}
 				>
-					{(event, i) => (
+					{(event, setEvent, isCreating) => (
 						<>
 							<TextInput
 								autoFocus
 								required
 								label="Event name"
 								placeholder="event_name"
+								disabled={!isCreating}
 								value={event.name}
 								spellCheck={false}
 								onChange={(e) =>
-									setData((draft) => {
-										draft.events[i].name = e.target.value;
+									setEvent((draft) => {
+										draft.name = e.target.value;
 									})
 								}
 							/>
@@ -53,8 +51,8 @@ export function EventsElement({ data, setData }: ElementProps) {
 								label="Event condition"
 								value={event.when}
 								onChange={(value) =>
-									setData((draft) => {
-										draft.events[i].when = value;
+									setEvent((draft) => {
+										draft.when = value;
 									})
 								}
 							/>
@@ -65,8 +63,8 @@ export function EventsElement({ data, setData }: ElementProps) {
 								multiline
 								value={event.then[0]}
 								onChange={(value) =>
-									setData((draft) => {
-										draft.events[i].then[0] = value;
+									setEvent((draft) => {
+										draft.then[0] = value;
 									})
 								}
 							/>

@@ -10,9 +10,9 @@ export function EdgeNode({ data }: NodeProps<EdgeNode>) {
 		<BaseNode
 			icon={iconRelation}
 			table={data.table}
+			mode={data.mode}
+			direction={data.direction}
 			isSelected={data.isSelected}
-			hasIncoming
-			hasOutgoing
 			isEdge
 		/>
 	);

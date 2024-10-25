@@ -21,9 +21,7 @@ export function ProvisioningDialog() {
 		if (isProvisioning && provisioning && !isProvisionDone) {
 			const task = setInterval(async () => {
 				try {
-					const instance = await fetchAPI<CloudInstance>(
-						`/instances/${provisioning.id}`,
-					);
+					const instance = await fetchAPI<CloudInstance>(`/instances/${provisioning.id}`);
 
 					if (instance.state === "ready") {
 						finishProvisioning();
@@ -41,19 +39,15 @@ export function ProvisioningDialog() {
 				clearInterval(task);
 			};
 		}
-	}, [
-		isProvisionDone,
-		isProvisioning,
-		provisioning,
-		hideProvisioning,
-		finishProvisioning,
-	]);
+	}, [isProvisionDone, isProvisioning, provisioning, hideProvisioning, finishProvisioning]);
 
 	return (
 		<Dialog
 			opened={isProvisioning}
+			onClose={hideProvisioning}
 			size="lg"
 			shadow="sm"
+			withCloseButton
 			className={classes.provisionDialog}
 			position={{
 				bottom: "var(--mantine-spacing-xl)",
@@ -73,7 +67,11 @@ export function ProvisioningDialog() {
 						mx={4}
 						className={classes.provisionComplete}
 					>
-						<Icon path={iconCheck} c="white" size="xl" />
+						<Icon
+							path={iconCheck}
+							c="white"
+							size="xl"
+						/>
 					</Center>
 				) : (
 					<Center
@@ -102,7 +100,11 @@ export function ProvisioningDialog() {
 					</Center>
 				)}
 				<Stack gap={2}>
-					<Text fw={600} c="bright" fz="lg">
+					<Text
+						fw={600}
+						c="bright"
+						fz="lg"
+					>
 						{isProvisionDone
 							? "Instance successfully provisioned"
 							: "Your instance is being provisioned"}

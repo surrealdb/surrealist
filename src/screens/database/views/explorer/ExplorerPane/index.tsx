@@ -3,27 +3,17 @@ import {
 	Box,
 	Button,
 	Center,
-	type ComboboxData,
 	Divider,
 	Group,
 	ScrollArea,
-	Select,
 	Text,
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
 
-import {
-	type FocusEvent,
-	type KeyboardEvent,
-	type MouseEvent,
-	useLayoutEffect,
-	useMemo,
-	useState,
-} from "react";
+import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
 
 import {
-	iconChevronLeft,
 	iconChevronRight,
 	iconCopy,
 	iconDelete,
@@ -42,6 +32,8 @@ import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
+import { Pagination } from "~/components/Pagination";
+import { usePagination } from "~/components/Pagination/hook";
 import { ContentPane } from "~/components/Pane";
 import { useActiveConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
@@ -53,13 +45,6 @@ import { themeColor } from "~/util/mantine";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 
-const PAGE_SIZES: ComboboxData = [
-	{ label: "10 Results per page", value: "10" },
-	{ label: "25 Results per page", value: "25" },
-	{ label: "50 Results per page", value: "50" },
-	{ label: "100 Results per page", value: "100" },
-];
-
 export interface ExplorerPaneProps {
 	activeTable: string;
 	onCreateRecord: () => void;
@@ -69,12 +54,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const { addQueryTab, setActiveView, updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const connection = useActiveConnection();
+	const pagination = usePagination();
 
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");
-	const [customPage, setCustomPage] = useInputState("");
-	const [currentPage, setCurrentPage] = useState(1);
-	const [pageSize, setPageSize] = useState(25);
 	const [sortMode, setSortMode] = useState<SortMode>(null);
 
 	const [showFilter] = useDebouncedValue(filtering, 250);
@@ -86,8 +69,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const recordQuery = useRecordQuery({
 		activeTable,
-		currentPage,
-		pageSize,
+		currentPage: pagination.currentPage,
+		pageSize: pagination.pageSize,
 		sortMode,
 		isFilterValid,
 		filter: showFilter ? filterClause : "",
@@ -102,43 +85,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const records: unknown[] = recordQuery.data?.records || [];
 	const headers: string[] = recordQuery.data?.headers || [];
 	const recordCount: number = paginationQuery.data || 0;
-	const pageCount = Math.ceil(recordCount / pageSize);
 
 	const toggleFilter = useStable(() => {
 		setFiltering(!filtering);
-	});
-
-	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
-		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
-			return;
-		}
-
-		let newPage = Number.parseInt(customPage);
-
-		if (!customPage || Number.isNaN(newPage)) {
-			setCurrentPage(1);
-			setCustomPage("1");
-			return;
-		}
-
-		if (newPage < 1) {
-			newPage = 1;
-		}
-
-		if (newPage > pageCount) {
-			newPage = pageCount;
-		}
-
-		setCurrentPage(newPage);
-		setCustomPage(newPage.toString());
-	});
-
-	const previousPage = useStable(() => {
-		setCurrentPage((p) => Math.max(1, p - 1));
-	});
-
-	const nextPage = useStable(() => {
-		setCurrentPage((p) => Math.min(pageCount, p + 1));
 	});
 
 	const openCreator = useStable(() => {
@@ -221,14 +170,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		])(e);
 	});
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset page on table change
 	useLayoutEffect(() => {
-		setCurrentPage(1);
-	}, [activeTable, filterClause]);
-
-	useLayoutEffect(() => {
-		setCustomPage(currentPage.toString());
-	}, [currentPage]);
+		pagination.setTotal(recordCount);
+	}, [pagination.setTotal, recordCount]);
 
 	useEventSubscription(RecordsChangedEvent, refetch);
 
@@ -356,51 +300,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					bottom: 12,
 				}}
 			>
-				<Group gap="xs">
-					<ActionIcon
-						onClick={previousPage}
-						disabled={currentPage <= 1}
-						loading={paginationQuery.isLoading}
-						aria-label="Previous page"
-					>
-						<Icon path={iconChevronLeft} />
-					</ActionIcon>
-
-					<TextInput
-						value={customPage}
-						spellCheck={false}
-						onChange={setCustomPage}
-						maw={36}
-						size="xs"
-						withAsterisk
-						onBlur={gotoPage}
-						onKeyDown={gotoPage}
-						disabled={paginationQuery.isLoading}
-						styles={{
-							input: {
-								textAlign: "center",
-								paddingInline: 0,
-							},
-						}}
-					/>
-
-					<Text c="slate">of {pageCount} pages</Text>
-
-					<ActionIcon
-						onClick={nextPage}
-						disabled={currentPage >= pageCount}
-						loading={paginationQuery.isLoading}
-						aria-label="Next page"
-					>
-						<Icon path={iconChevronRight} />
-					</ActionIcon>
-				</Group>
-
-				<Select
-					value={pageSize.toString()}
-					onChange={(v) => setPageSize(Number.parseInt(v ?? "0"))}
-					data={PAGE_SIZES}
-					size="xs"
+				<Pagination
+					store={pagination}
+					loading={recordQuery.isLoading}
 				/>
 			</Group>
 		</ContentPane>
