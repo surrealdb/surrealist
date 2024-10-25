@@ -1,13 +1,15 @@
 import {
-	ActionIcon,
-	Badge,
-	Divider,
-	ScrollArea,
-	Stack,
-	Text,
-	TextInput,
-	Tooltip,
-} from "@mantine/core";
+	iconChevronLeft,
+	iconDelete,
+	iconPin,
+	iconPinOff,
+	iconPlus,
+	iconRelation,
+	iconSearch,
+	iconTable,
+} from "~/util/icons";
+
+import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
 import { sort } from "radash";
@@ -25,17 +27,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { fuzzyMatch, fuzzyMultiMatch, tb } from "~/util/helpers";
-import {
-	iconChevronLeft,
-	iconDelete,
-	iconPin,
-	iconPinOff,
-	iconPlus,
-	iconRelation,
-	iconSearch,
-	iconTable,
-} from "~/util/icons";
+import { fuzzyMultiMatch, tb } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
 

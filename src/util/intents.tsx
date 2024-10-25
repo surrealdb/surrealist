@@ -39,6 +39,7 @@ const INTENT_REGISTRY = {
 	"toggle-graphql-variables": "graphql",
 	"infer-graphql-variables": "graphql",
 	"design-table": "designer",
+	"focus-table": "designer",
 	"create-user": "authentication",
 	"create-access": "authentication",
 	"register-user": "authentication",
