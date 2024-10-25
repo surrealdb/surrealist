@@ -9,8 +9,8 @@ import {
 	iconTable,
 } from "~/util/icons";
 
-import { useInputState } from "@mantine/hooks";
 import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
 import { sort } from "radash";
 import { useMemo } from "react";

@@ -90,12 +90,12 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
-import { useIntent } from "~/hooks/url";
 
 export interface TableGraphPaneProps {
 	active: string | null;
