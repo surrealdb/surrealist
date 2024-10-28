@@ -57,7 +57,7 @@ export function applyMigrations(config: any): SurrealistConfig {
 		}
 	});
 
-	// 3.0.8 -> 3.1.0: Add default designer options
+	// 3.0.8 -> 3.1.0: Add default designer options & query types
 
 	applyToConnections(config, (con) => {
 		con.diagramAlgorithm ??= "default";
@@ -65,6 +65,10 @@ export function applyMigrations(config: any): SurrealistConfig {
 		con.diagramLineStyle ??= "default";
 		con.diagramLinkMode ??= "default";
 		con.diagramMode ??= "default";
+
+		for (const query of con.queries ?? []) {
+			query.type ??= "config";
+		}
 	});
 
 	return config;

@@ -16,7 +16,7 @@ import { VIEW_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Platform, SurrealistConfig, TabQuery, ViewMode } from "~/types";
+import type { Platform, QueryTab, SurrealistConfig, ViewMode } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
 import { featureFlags } from "~/util/feature-flags";
 import { showError, showInfo } from "~/util/helpers";
@@ -298,27 +298,20 @@ export class DesktopAdapter implements SurrealistAdapter {
 		}
 	}
 
-	public readQueryFile(query: TabQuery) {
-		if (!query.systemPath) {
-			return Promise.resolve("");
-		}
-
-		return invoke<string>("read_query_file", { path: query.systemPath });
+	public readQueryFile(query: QueryTab) {
+		return invoke<string>("read_query_file", { path: query.query });
 	}
 
-	public writeQueryFile(query: TabQuery, content: string) {
-		if (!query.systemPath) {
-			return;
-		}
-
-		return invoke<void>("write_query_file", { path: query.systemPath, content });
+	public writeQueryFile(query: QueryTab, content: string) {
+		return invoke<void>("write_query_file", { path: query.query, content });
 	}
 
 	public pruneQueryFiles() {
 		const { sandbox, connections } = useConfigStore.getState();
-		const list = [sandbox, ...connections];
-		const queries = list.flatMap((c) => c.queries);
-		const paths = queries.flatMap((q) => (q.systemPath ? [q.systemPath] : []));
+		const paths = [sandbox, ...connections]
+			.flatMap((c) => c.queries)
+			.filter((q) => q.type === "file")
+			.map((q) => q.query);
 
 		return invoke<void>("prune_allowed_files", { paths });
 	}
@@ -408,7 +401,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					continue;
 				}
 
-				addQueryTab({ name: name, systemPath: path });
+				addQueryTab({ type: "file", name: name, query: path });
 				setActiveView("query");
 			} else if (Link) {
 				const { host, params } = Link;

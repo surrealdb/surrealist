@@ -115,9 +115,9 @@ export function backupConfig({ stripSensitive, connections }: ConfigBackupOption
 		config.connections = current.connections.filter((c) => connections.includes(c.id));
 	}
 
-	// Remove file system queries
+	// Remove non-config queries
 	for (const connection of config.connections ?? []) {
-		connection.queries = connection.queries.filter((q) => !q.systemPath);
+		connection.queries = connection.queries.filter((q) => q.type === "config");
 	}
 
 	// Remove sensitive data

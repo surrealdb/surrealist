@@ -26,7 +26,6 @@ import type { EditorView } from "@codemirror/view";
 import { useMemo, useState } from "react";
 import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
-import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
@@ -38,12 +37,13 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Listable, QueryResponse, ResultFormat, ResultMode, TabQuery } from "~/types";
+import type { Listable, QueryResponse, ResultFormat, ResultMode, QueryTab } from "~/types";
 import type { PreviewProps } from "./previews";
 import { CombinedPreview } from "./previews/combined";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
+import { useQueryStore } from "~/stores/query";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -66,20 +66,13 @@ const PREVIEW_MODES: Record<ResultMode, React.FC<PreviewProps>> = {
 };
 
 export interface ResultPaneProps {
-	activeTab: TabQuery;
-	isQueryValid: boolean;
+	activeTab: QueryTab;
 	selection: SelectionRange | undefined;
 	editor: EditorView | null;
 	corners?: string;
 }
 
-export function ResultPane({
-	activeTab,
-	isQueryValid,
-	selection,
-	editor,
-	corners,
-}: ResultPaneProps) {
+export function ResultPane({ activeTab, selection, editor, corners }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
@@ -96,6 +89,7 @@ export function ResultPane({
 	const showCombined = resultMode === "combined" || resultMode === "live";
 	const showQueries = !showCombined && responses.length > 1;
 
+	const isValid = useQueryStore((s) => s.isBufferValid);
 	const isLive = liveTabs.has(activeTab.id);
 
 	const queryList = useMemo(() => {
@@ -268,7 +262,7 @@ export function ResultPane({
 						size="xs"
 						radius="xs"
 						color="slate"
-						variant={isQueryValid ? "gradient" : "light"}
+						variant={isValid ? "gradient" : "light"}
 						style={{ border: "none" }}
 						className={classes.run}
 						loading={isQuerying}

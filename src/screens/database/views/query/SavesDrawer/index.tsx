@@ -1,14 +1,6 @@
 import classes from "./style.module.scss";
 
-import {
-	Accordion,
-	Badge,
-	Button,
-	ScrollArea,
-	Text,
-	TextInput,
-	Tooltip,
-} from "@mantine/core";
+import { Accordion, Badge, Button, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
 import { ActionIcon, Drawer, Group } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
@@ -21,6 +13,7 @@ import { Spacer } from "~/components/Spacer";
 import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
+import { useQueryStore } from "~/stores/query";
 import type { SavedQuery } from "~/types";
 import {
 	iconClose,
@@ -36,12 +29,18 @@ export interface SavesDrawerProps {
 	opened: boolean;
 	onClose: () => void;
 	onSaveQuery: () => void;
+	onUpdateBuffer: (query: string) => void;
 	onEditQuery: (query: SavedQuery) => void;
 }
 
-export function SavesDrawer(props: SavesDrawerProps) {
-	const { addQueryTab, updateQueryTab, removeSavedQuery } =
-		useConfigStore.getState();
+export function SavesDrawer({
+	opened,
+	onClose,
+	onSaveQuery,
+	onUpdateBuffer,
+	onEditQuery,
+}: SavesDrawerProps) {
+	const { addQueryTab, removeSavedQuery } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
 	const queries = useConfigStore((s) => s.savedQueries);
@@ -65,26 +64,22 @@ export function SavesDrawer(props: SavesDrawerProps) {
 		);
 	}, [queries, filterText, filterTag]);
 
-	const handleUseQuery = useStable(
-		(entry: SavedQuery, e?: React.MouseEvent) => {
-			e?.stopPropagation();
+	const handleUseQuery = useStable((entry: SavedQuery, e?: React.MouseEvent) => {
+		e?.stopPropagation();
 
-			props.onClose();
-			addQueryTab({
-				query: entry.query,
-				name: entry.name,
-			});
-		},
-	);
+		onClose();
+		addQueryTab({
+			type: "config",
+			query: entry.query,
+			name: entry.name,
+		});
+	});
 
 	const handleReplaceQuery = useStable((entry: SavedQuery) => {
 		if (!activeTab) return;
 
-		props.onClose();
-		updateQueryTab({
-			id: activeTab.id,
-			query: entry.query,
-		});
+		onClose();
+		onUpdateBuffer(entry.query);
 	});
 
 	const handleDeleteQuery = useStable((entry: SavedQuery) => {
@@ -99,8 +94,8 @@ export function SavesDrawer(props: SavesDrawerProps) {
 
 	return (
 		<Drawer
-			opened={props.opened}
-			onClose={props.onClose}
+			opened={opened}
+			onClose={onClose}
 			position="right"
 			trapFocus={false}
 		>
@@ -111,7 +106,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 
 				<Tooltip label="Save current query">
 					<ActionIcon
-						onClick={props.onSaveQuery}
+						onClick={onSaveQuery}
 						aria-label="Save current query"
 					>
 						<Icon path={iconPlus} />
@@ -119,7 +114,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 				</Tooltip>
 
 				<ActionIcon
-					onClick={props.onClose}
+					onClick={onClose}
 					aria-label="Close saved query drawer"
 				>
 					<Icon path={iconClose} />
@@ -135,15 +130,19 @@ export function SavesDrawer(props: SavesDrawerProps) {
 				mb="sm"
 			/>
 			{showTags && (
-				<ScrollArea w="100%" scrollbars="x" type="scroll">
-					<Group gap={6} pb="sm">
+				<ScrollArea
+					w="100%"
+					scrollbars="x"
+					type="scroll"
+				>
+					<Group
+						gap={6}
+						pb="sm"
+					>
 						<Button
 							size="xs"
 							color="slate"
-							className={clsx(
-								classes.tag,
-								showAll && classes.tagActive,
-							)}
+							className={clsx(classes.tag, showAll && classes.tagActive)}
 							variant={showAll ? "filled" : "subtle"}
 							onClick={() => setFilterTag(null)}
 						>
@@ -157,10 +156,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 									key={i}
 									size="xs"
 									color="slate"
-									className={clsx(
-										classes.tag,
-										isActive && classes.tagActive,
-									)}
+									className={clsx(classes.tag, isActive && classes.tagActive)}
 									variant={isActive ? "filled" : "subtle"}
 									onClick={() => setFilterTag(tag)}
 								>
@@ -173,7 +169,11 @@ export function SavesDrawer(props: SavesDrawerProps) {
 			)}
 
 			{filtered.length === 0 && (
-				<Text ta="center" mt="sm" c="slate">
+				<Text
+					ta="center"
+					mt="sm"
+					c="slate"
+				>
 					No queries to display
 				</Text>
 			)}
@@ -213,7 +213,7 @@ export function SavesDrawer(props: SavesDrawerProps) {
 								key: "edit",
 								title: "Edit query",
 								icon: <Icon path={iconEdit} />,
-								onClick: () => props.onEditQuery(entry),
+								onClick: () => onEditQuery(entry),
 							},
 							{
 								key: "delete",
@@ -225,8 +225,15 @@ export function SavesDrawer(props: SavesDrawerProps) {
 						])}
 					>
 						<Accordion.Control>
-							<Group gap="sm" mr="md" h={46}>
-								<Text c="surreal" fw={600}>
+							<Group
+								gap="sm"
+								mr="md"
+								h={46}
+							>
+								<Text
+									c="surreal"
+									fw={600}
+								>
 									{entry.name}
 								</Text>
 								<Spacer />
@@ -235,20 +242,30 @@ export function SavesDrawer(props: SavesDrawerProps) {
 										component="div"
 										variant="gradient"
 										className={classes.queryAction}
-										onClick={(e) =>
-											handleUseQuery(entry, e)
-										}
+										onClick={(e) => handleUseQuery(entry, e)}
 										aria-label="Open query in new tab"
 									>
-										<Icon path={iconQuery} size={0.9} />
+										<Icon
+											path={iconQuery}
+											size={0.9}
+										/>
 									</ActionIcon>
 								</Tooltip>
 							</Group>
 						</Accordion.Control>
-						<Accordion.Panel p={0} px={4}>
-							<CodePreview value={entry.query} withWrapping />
+						<Accordion.Panel
+							p={0}
+							px={4}
+						>
+							<CodePreview
+								value={entry.query}
+								withWrapping
+							/>
 							{entry.tags.length > 0 && (
-								<Group mt="sm" gap="xs">
+								<Group
+									mt="sm"
+									gap="xs"
+								>
 									{entry.tags.map((tag, i) => (
 										<Badge
 											key={i}

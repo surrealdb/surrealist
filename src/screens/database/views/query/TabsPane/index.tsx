@@ -29,10 +29,15 @@ import { useIntent } from "~/hooks/url";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import type { TabQuery } from "~/types";
+import type { QueryTab, QueryType } from "~/types";
 import classes from "./style.module.scss";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
+
+const TYPE_ICONS: Record<QueryType, string> = {
+	config: iconQuery,
+	file: iconFile,
+};
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -53,7 +58,7 @@ export function TabsPane(props: TabsPaneProps) {
 	const isLight = useIsLight();
 
 	const newTab = useStable(() => {
-		addQueryTab();
+		addQueryTab({ type: "config" });
 	});
 
 	const removeTab = useStable((id: string, e?: React.MouseEvent) => {
@@ -86,7 +91,7 @@ export function TabsPane(props: TabsPaneProps) {
 		});
 	});
 
-	const saveQueryOrder = useStable((queries: TabQuery[]) => {
+	const saveQueryOrder = useStable((queries: QueryTab[]) => {
 		updateCurrentConnection({
 			queries,
 		});
@@ -98,15 +103,16 @@ export function TabsPane(props: TabsPaneProps) {
 		});
 	});
 
-	const duplicateQuery = ({ query, name, variables }: TabQuery) => {
+	const duplicateQuery = ({ query, name, variables }: QueryTab) => {
 		addQueryTab({
+			type: "config",
 			name: name?.replace(/ \d+$/, ""),
 			query,
 			variables,
 		});
 	};
 
-	useIntent("new-query", addQueryTab);
+	useIntent("new-query", newTab);
 
 	return (
 		<ContentPane
@@ -223,9 +229,7 @@ export function TabsPane(props: TabsPaneProps) {
 												onClick: () => removeOthers(query.id, 1),
 											},
 										])}
-										leftSection={
-											<Icon path={query.systemPath ? iconFile : iconQuery} />
-										}
+										leftSection={<Icon path={TYPE_ICONS[query.type]} />}
 										rightSection={
 											<>
 												{isLive && (

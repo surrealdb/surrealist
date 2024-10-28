@@ -18,22 +18,22 @@ import type {
 	SurrealistConfig,
 	SurrealistServingSettings,
 	SurrealistTemplateSettings,
-	TabQuery,
+	QueryTab,
 	ViewMode,
+	QueryType,
 } from "~/types";
 import { isConnectionValid } from "~/util/connection";
-import { createBaseConfig, createBaseTab } from "~/util/defaults";
+import { createBaseConfig, createBaseQuery } from "~/util/defaults";
 import type { schema } from "~/util/feature-flags";
 import { newId } from "~/util/helpers";
-import { validateQuery } from "~/util/surrealql";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
 interface NewQueryTab {
+	type: QueryType;
 	query?: string;
 	name?: string;
 	variables?: string;
-	systemPath?: string;
 }
 
 function updateConnection(state: ConfigStore, modifier: ConnectionUpdater) {
@@ -69,9 +69,9 @@ export type ConfigStore = SurrealistConfig & {
 	setActiveView: (activeView: ViewMode) => void;
 	setActiveCloudPage: (activePage: CloudPage) => void;
 	setActiveCloudOrg: (activeOrg: string) => void;
-	addQueryTab: (options?: NewQueryTab) => void;
+	addQueryTab: (options: NewQueryTab) => void;
 	removeQueryTab: (tabId: string) => void;
-	updateQueryTab: (payload: PartialId<TabQuery>) => void;
+	updateQueryTab: (payload: PartialId<QueryTab>) => void;
 	setActiveQueryTab: (tabId: string) => void;
 	saveQuery: (query: SavedQuery) => void;
 	removeSavedQuery: (savedId: string) => void;
@@ -208,9 +208,8 @@ export const useConfigStore = create<ConfigStore>()(
 						queries: [
 							...connection.queries,
 							{
-								...createBaseTab(state.settings, options?.query),
+								...createBaseQuery(state.settings, options?.type, options?.query),
 								variables: options?.variables || "{}",
-								systemPath: options?.systemPath,
 								name: queryName,
 								id: tabId,
 							},
@@ -248,21 +247,17 @@ export const useConfigStore = create<ConfigStore>()(
 		updateQueryTab: (payload) =>
 			set((state) =>
 				updateConnection(state, (connection) => {
-					const index = connection.queries.findIndex(
-						(query) => query.id === connection.activeQuery,
-					);
+					const index = connection.queries.findIndex((query) => query.id === payload.id);
 
 					if (index < 0) {
 						return {};
 					}
 
-					const query = {
-						...connection.queries[index],
-						...payload,
-					};
-
 					return {
-						queries: connection.queries.with(index, query),
+						queries: connection.queries.with(index, {
+							...connection.queries[index],
+							...payload,
+						}),
 					};
 				}),
 			),

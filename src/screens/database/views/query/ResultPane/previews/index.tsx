@@ -1,11 +1,11 @@
 import { tryit } from "radash";
 import type { Formatter } from "~/hooks/surrealql";
-import type { TabQuery } from "~/types";
+import type { QueryTab } from "~/types";
 
 export interface PreviewProps {
 	responses: any[];
 	selected: number;
-	query: TabQuery;
+	query: QueryTab;
 	isLive: boolean;
 }
 

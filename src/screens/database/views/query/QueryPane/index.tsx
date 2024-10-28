@@ -35,22 +35,22 @@ import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
-import type { TabQuery } from "~/types";
+import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
-import { useEffect } from "react";
-import { DesktopAdapter } from "~/adapter/desktop";
-import { adapter } from "~/adapter";
+import { formatQuery, formatValue } from "~/util/surrealql";
+import { useLayoutEffect } from "react";
+import { readQuery } from "../QueryView/strategy";
+import { useQueryStore } from "~/stores/query";
 
 export interface QueryPaneProps {
-	activeTab: TabQuery;
+	activeTab: QueryTab;
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
 	lineNumbers: boolean;
 	corners?: string;
-	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
+	onUpdateBuffer: (query: string) => void;
 	onSaveQuery: () => void;
 	onSelectionChange: (value: SelectionRange) => void;
 	onEditorMounted: (editor: EditorView) => void;
@@ -59,34 +59,21 @@ export interface QueryPaneProps {
 export function QueryPane({
 	activeTab,
 	showVariables,
-	setIsValid,
 	selection,
 	switchPortal,
 	setShowVariables,
 	lineNumbers,
 	corners,
+	onUpdateBuffer,
 	onSaveQuery,
 	onSelectionChange,
 	onEditorMounted,
 }: QueryPaneProps) {
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { inspect } = useInspector();
-
 	const connection = useActiveConnection();
 
-	const setQueryForced = useStable((query: string, save: boolean) => {
-		setIsValid(!validateQuery(query));
-		updateQueryTab({
-			id: activeTab.id,
-			query,
-		});
-
-		if (save && adapter instanceof DesktopAdapter) {
-			adapter.writeQueryFile(activeTab, query);
-		}
-	});
-
-	const scheduleSetQuery = useDebouncedFunction((v) => setQueryForced(v, true), 50);
+	const buffer = useQueryStore((s) => s.queryBuffer);
 
 	const openQueryList = useStable(() => {
 		updateCurrentConnection({
@@ -96,16 +83,13 @@ export function QueryPane({
 
 	const handleFormat = useStable(() => {
 		try {
-			const query = hasSelection
-				? activeTab.query.slice(0, selection.from) +
-					formatQuery(activeTab.query.slice(selection.from, selection.to)) +
-					activeTab.query.slice(selection.to)
-				: formatQuery(activeTab.query);
+			const formatted = hasSelection
+				? buffer.slice(0, selection.from) +
+					formatQuery(buffer.slice(selection.from, selection.to)) +
+					buffer.slice(selection.to)
+				: formatQuery(buffer);
 
-			updateQueryTab({
-				id: activeTab.id,
-				query,
-			});
+			onUpdateBuffer(formatted);
 		} catch {
 			showError({
 				title: "Failed to format",
@@ -121,10 +105,9 @@ export function QueryPane({
 	const inferVariables = useStable(() => {
 		if (!activeTab) return;
 
-		const query = activeTab.query;
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(query).filter((v) => !currentKeys.includes(v));
+		const variables = extractVariables(buffer).filter((v) => !currentKeys.includes(v));
 
 		const newVars = variables.reduce(
 			(acc, v) => {
@@ -150,31 +133,8 @@ export function QueryPane({
 		return Object.keys(tryParseParams(activeTab.variables));
 	});
 
-	const loadQueryFromFile = useStable(async (id: string) => {
-		const tab = connection.queries.find((q) => q.id === id);
-
-		if (tab && adapter instanceof DesktopAdapter) {
-			try {
-				const query = await adapter.readQueryFile(activeTab);
-
-				if (query !== tab.query) {
-					setQueryForced(query, false);
-				}
-			} catch {
-				showError({
-					title: "Failed to load query",
-					subtitle: "The query file could not be read",
-				});
-			}
-		}
-	});
-
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
-
-	useEffect(() => {
-		loadQueryFromFile(activeTab.id);
-	}, [activeTab.id]);
 
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);
@@ -202,7 +162,7 @@ export function QueryPane({
 					<OutPortal node={switchPortal} />
 				) : (
 					<Group gap="sm">
-						{activeTab.query.length > MAX_HISTORY_QUERY_LENGTH && (
+						{buffer.length > MAX_HISTORY_QUERY_LENGTH && (
 							<HoverCard position="bottom">
 								<HoverCard.Target>
 									<ThemeIcon
@@ -278,8 +238,8 @@ export function QueryPane({
 			}
 		>
 			<CodeEditor
-				value={activeTab.query}
-				onChange={scheduleSetQuery}
+				value={buffer}
+				onChange={onUpdateBuffer}
 				historyKey={activeTab.id}
 				onMount={onEditorMounted}
 				lineNumbers={lineNumbers}
