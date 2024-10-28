@@ -1,15 +1,37 @@
 use std::fs::{self, read_to_string};
+use std::path::Path;
+use std::sync::Mutex;
 
 use log::info;
 use serde::Serialize;
-use tauri::State;
+use tauri::{AppHandle, Emitter, Manager, State, Window};
+use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_dialog::FilePath;
 
-use crate::{
-    whitelist::{read_allowed_files, write_allowed_files},
-    OpenResourceState,
-};
+use crate::whitelist::{append_allowed_file, read_allowed_files, write_allowed_files};
 
 const MAX_FILE_SIZE: u64 = 5 * 1024 * 1024;
+
+/// The state holding resources requested for opening
+pub struct OpenResourceState(pub Mutex<Vec<url::Url>>);
+
+pub fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
+    let mut urls = Vec::new();
+
+    for arg in args.into_iter().skip(1) {
+        let path = Path::new(&arg);
+
+        if let Ok(url) = url::Url::from_file_path(path) {
+            urls.push(url);
+        } else if let Ok(url) = url::Url::parse(&arg) {
+            urls.push(url);
+        }
+    }
+
+    if !urls.is_empty() {
+        *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
+    }
+}
 
 #[derive(Serialize)]
 pub enum OpenedResource {
@@ -33,7 +55,9 @@ pub struct LinkResource {
 
 #[tauri::command]
 pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResource> {
-    info!("Fetching requested resources");
+    {
+        info!("Fetching requested resources {:?}", state.0.lock().unwrap());
+    }
 
     state
         .0
@@ -42,27 +66,12 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
         .iter()
         .filter_map(|u| match u.scheme() {
             "file" => {
-                let path = u.to_file_path().unwrap();
-                let ext = path
-                    .extension()
-                    .unwrap_or_default()
-                    .to_str()
-                    .unwrap_or_default();
+                let buf = u.to_file_path().unwrap();
+                let success = buf.metadata().unwrap().len() < MAX_FILE_SIZE;
+                let name = buf.file_stem().unwrap().to_owned().into_string().unwrap();
+                let path = buf.canonicalize().unwrap().to_str().unwrap().to_owned();
 
-                if ext != "surql" && ext != "surrealql" {
-                    return None;
-                }
-
-                let success = path.metadata().unwrap().len() < MAX_FILE_SIZE;
-                let name = path.file_stem().unwrap().to_owned().into_string().unwrap();
-                let path = path.canonicalize().unwrap().to_str().unwrap().to_owned();
-                let mut whitelist = read_allowed_files();
-
-                if !whitelist.contains(&path) {
-                    whitelist.push(path.clone());
-                }
-
-                write_allowed_files(whitelist);
+                append_allowed_file(&buf);
 
                 Some(OpenedResource::File(FileResource {
                     success,
@@ -117,4 +126,38 @@ pub fn prune_allowed_files(paths: Vec<String>) {
 
     whitelist.retain(|p| paths.contains(p));
     write_allowed_files(whitelist);
+}
+
+#[derive(Serialize)]
+pub struct QueryFile {
+    name: String,
+    path: String,
+}
+
+#[tauri::command]
+pub async fn open_query_file(app: AppHandle, window: Window) {
+    let mut dialog = app.dialog().file();
+
+    #[cfg(desktop)]
+    {
+        dialog = dialog.set_parent(&window);
+    }
+
+    let files = dialog.blocking_pick_files().unwrap_or_default();
+    let urls: Vec<url::Url> = files
+        .iter()
+        .filter_map(|f| match f {
+            FilePath::Url(_) => None,
+            FilePath::Path(buf) => Some(buf.display().to_string()),
+        })
+        .filter_map(|f| match url::Url::from_file_path(f) {
+            Ok(u) => Some(u),
+            Err(_) => None,
+        })
+        .collect();
+
+    info!("My paths: {:?}", urls);
+
+    *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
+    app.emit("open-resource", ()).unwrap();
 }

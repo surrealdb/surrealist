@@ -1,4 +1,7 @@
-use std::fs::{read_to_string, write};
+use std::{
+    fs::{read_to_string, write},
+    path::PathBuf,
+};
 
 use crate::paths::get_file_whitelist_path;
 
@@ -19,4 +22,16 @@ pub fn write_allowed_files(list: Vec<String>) {
     let content = list.join("\n");
 
     write(path, content).expect("whitelist should be writable");
+}
+
+/// Append a file to the list of allowed files
+pub fn append_allowed_file(path: &PathBuf) {
+    let path = path.canonicalize().unwrap().to_str().unwrap().to_owned();
+    let mut whitelist = read_allowed_files();
+
+    if !whitelist.contains(&path) {
+        whitelist.push(path.clone());
+    }
+
+    write_allowed_files(whitelist);
 }

@@ -306,6 +306,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return invoke<void>("write_query_file", { path: query.query, content });
 	}
 
+	public openQueryFile() {
+		return invoke<string>("open_query_file");
+	}
+
 	public pruneQueryFiles() {
 		const { sandbox, connections } = useConfigStore.getState();
 		const paths = [sandbox, ...connections]

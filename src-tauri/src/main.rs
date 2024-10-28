@@ -4,12 +4,12 @@
     windows_subsystem = "windows"
 )]
 
-use std::{env, path::Path, sync::Mutex};
+use std::env;
 
 use database::DatabaseState;
 use log::info;
 use paths::get_logs_directory;
-use tauri::{AppHandle, Emitter, Manager, RunEvent};
+use tauri::{Emitter, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
@@ -19,26 +19,6 @@ mod open;
 mod paths;
 mod whitelist;
 mod window;
-
-struct OpenResourceState(pub Mutex<Vec<url::Url>>);
-
-fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
-    let mut urls = Vec::new();
-
-    for arg in args.into_iter().skip(1) {
-        let path = Path::new(&arg);
-
-        if let Ok(url) = url::Url::from_file_path(path) {
-            urls.push(url);
-        } else if let Ok(url) = url::Url::parse(&arg) {
-            urls.push(url);
-        }
-    }
-
-    if !urls.is_empty() {
-        *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
-    }
-}
 
 fn main() {
     let context = tauri::generate_context!();
@@ -61,14 +41,14 @@ fn main() {
 
             let emit_event = args.len() > 1;
 
-            store_resources(app, args);
+            open::store_resources(app, args);
 
             if emit_event {
                 app.emit("open-resource", ()).unwrap();
+            }
 
-                if let Some((_, window)) = app.webview_windows().iter().next() {
-                    window.set_focus().unwrap();
-                }
+            if let Some((_, window)) = app.webview_windows().iter().next() {
+                window.set_focus().unwrap();
             }
         }))
         .plugin(
@@ -89,7 +69,7 @@ fn main() {
                 ])
                 .build(),
         )
-        .manage(OpenResourceState(Default::default()))
+        .manage(open::OpenResourceState(Default::default()))
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
             config::load_config,
@@ -104,6 +84,7 @@ fn main() {
             open::read_query_file,
             open::write_query_file,
             open::prune_allowed_files,
+            open::open_query_file,
         ])
         .setup(|app| {
             info!("Launch args: {:?}", env::args());
@@ -136,7 +117,7 @@ fn main() {
         RunEvent::Opened { urls } => {
             info!("Opened resources: {:?}", urls);
 
-            *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
+            *app.state::<open::OpenResourceState>().0.lock().unwrap() = urls;
             app.emit("open-resource", ()).unwrap();
 
             info!("Emitted open-resource event");
