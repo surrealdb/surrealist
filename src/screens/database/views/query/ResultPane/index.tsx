@@ -37,13 +37,13 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Listable, QueryResponse, ResultFormat, ResultMode, QueryTab } from "~/types";
+import { useQueryStore } from "~/stores/query";
+import type { Listable, QueryResponse, QueryTab, ResultFormat, ResultMode } from "~/types";
 import type { PreviewProps } from "./previews";
 import { CombinedPreview } from "./previews/combined";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
-import { useQueryStore } from "~/stores/query";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {

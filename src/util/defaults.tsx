@@ -4,10 +4,10 @@ import type {
 	CloudInstance,
 	Connection,
 	ConnectionSchema,
-	SurrealistConfig,
-	SurrealistSettings,
 	QueryTab,
 	QueryType,
+	SurrealistConfig,
+	SurrealistSettings,
 } from "~/types";
 import { newId } from "./helpers";
 import { validateQuery } from "./surrealql";

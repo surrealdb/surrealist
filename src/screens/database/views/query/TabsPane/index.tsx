@@ -15,6 +15,8 @@ import {
 import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
+import { adapter } from "~/adapter";
+import { DesktopAdapter } from "~/adapter/desktop";
 import { ActionButton } from "~/components/ActionButton";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
@@ -31,8 +33,6 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryTab, QueryType } from "~/types";
 import classes from "./style.module.scss";
-import { adapter } from "~/adapter";
-import { DesktopAdapter } from "~/adapter/desktop";
 
 const TYPE_ICONS: Record<QueryType, string> = {
 	config: iconQuery,

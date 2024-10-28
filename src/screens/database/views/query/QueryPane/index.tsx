@@ -23,6 +23,7 @@ import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { useLayoutEffect } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -35,12 +36,11 @@ import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
+import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
-import { useLayoutEffect } from "react";
 import { readQuery } from "../QueryView/strategy";
-import { useQueryStore } from "~/stores/query";
 
 export interface QueryPaneProps {
 	activeTab: QueryTab;

@@ -39,6 +39,7 @@ import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
+import { useQueryStore } from "~/stores/query";
 import type { SavedQuery } from "~/types";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
@@ -48,7 +49,6 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import { useQueryStore } from "~/stores/query";
 import { readQuery, writeQuery } from "./strategy";
 
 const switchPortal = createHtmlPortalNode();

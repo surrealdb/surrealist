@@ -2,9 +2,9 @@ import { RESULT_MODES } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
+import { useQueryStore } from "~/stores/query";
 import type { ResultMode } from "~/types";
 import { getActiveQuery } from "./connection";
-import { useQueryStore } from "~/stores/query";
 
 /**
  * Handle incoming window messages

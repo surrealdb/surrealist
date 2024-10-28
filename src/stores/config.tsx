@@ -10,6 +10,8 @@ import type {
 	ConnectionGroup,
 	HistoryQuery,
 	PartialId,
+	QueryTab,
+	QueryType,
 	SavedQuery,
 	Screen,
 	SurrealistAppearanceSettings,
@@ -18,9 +20,7 @@ import type {
 	SurrealistConfig,
 	SurrealistServingSettings,
 	SurrealistTemplateSettings,
-	QueryTab,
 	ViewMode,
-	QueryType,
 } from "~/types";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConfig, createBaseQuery } from "~/util/defaults";
