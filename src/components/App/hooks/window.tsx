@@ -1,3 +1,5 @@
+import { adapter } from "~/adapter";
+import { DesktopAdapter } from "~/adapter/desktop";
 import { useSetting } from "~/hooks/config";
 import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
@@ -29,12 +31,19 @@ export function useWindowSettings() {
 		setWindowPinned(!windowPinned);
 	});
 
+	const openQueryFile = useStable(() => {
+		if (adapter instanceof DesktopAdapter) {
+			adapter.openQueryFile();
+		}
+	});
+
 	useKeymap([
 		["mod+equal", increaseWindowScale],
 		["mod+minus", decreaseWindowScale],
 		["mod+shift+equal", increaseEditorScale],
 		["mod+shift+minus", decreaseEditorScale],
 		["f10", toggleWindowPinned],
+		["mod+o", openQueryFile],
 	]);
 
 	useIntent("increase-window-scale", increaseWindowScale);

@@ -1,12 +1,4 @@
-import {
-	Box,
-	Group,
-	Modal,
-	Paper,
-	SimpleGrid,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Box, Group, Modal, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { isDesktop } from "~/adapter";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Shortcut } from "~/components/Shortcut";
@@ -48,11 +40,18 @@ export function KeymapModal() {
 			>
 				<Stack gap="xl">
 					<Box>
-						<Text fz="xl" fw="bold" mb="sm">
+						<Text
+							fz="xl"
+							fw="bold"
+							mb="sm"
+						>
 							Global shortcuts
 						</Text>
 
-						<Paper bg={isLight ? "slate.0" : "slate.9"} p="xl">
+						<Paper
+							bg={isLight ? "slate.0" : "slate.9"}
+							p="xl"
+						>
 							<SimpleGrid cols={2}>
 								<Key
 									keys="mod k"
@@ -72,7 +71,7 @@ export function KeymapModal() {
 										description="Increase application zoom"
 									/>
 								)}
-								
+
 								{isDesktop && (
 									<Key
 										keys="mod -"
@@ -85,6 +84,12 @@ export function KeymapModal() {
 										description="Toggle window pinned"
 									/>
 								)}
+								{isDesktop && (
+									<Key
+										keys="mod o"
+										description="Open query file"
+									/>
+								)}
 								<Key
 									keys="mod ,"
 									description="Open the settings dialog"
@@ -93,11 +98,18 @@ export function KeymapModal() {
 						</Paper>
 					</Box>
 					<Box>
-						<Text fz="xl" fw="bold" mb="sm">
+						<Text
+							fz="xl"
+							fw="bold"
+							mb="sm"
+						>
 							Query view shortcuts
 						</Text>
 
-						<Paper bg={isLight ? "slate.0" : "slate.9"} p="xl">
+						<Paper
+							bg={isLight ? "slate.0" : "slate.9"}
+							p="xl"
+						>
 							<SimpleGrid cols={2}>
 								<Key
 									keys="F9"
@@ -107,11 +119,18 @@ export function KeymapModal() {
 						</Paper>
 					</Box>
 					<Box>
-						<Text fz="xl" fw="bold" mb="sm">
+						<Text
+							fz="xl"
+							fw="bold"
+							mb="sm"
+						>
 							Editor shortcuts
 						</Text>
 
-						<Paper bg={isLight ? "slate.0" : "slate.9"} p="xl">
+						<Paper
+							bg={isLight ? "slate.0" : "slate.9"}
+							p="xl"
+						>
 							<SimpleGrid cols={2}>
 								<Key
 									keys="mod f"
@@ -137,13 +156,22 @@ export function KeymapModal() {
 									keys="mod c"
 									description="Copy selection"
 								/>
-								<Key keys="mod x" description="Cut selection" />
+								<Key
+									keys="mod x"
+									description="Cut selection"
+								/>
 								<Key
 									keys="mod v"
 									description="Paste selection"
 								/>
-								<Key keys="mod z" description="Undo changes" />
-								<Key keys="mod a" description="Select all" />
+								<Key
+									keys="mod z"
+									description="Undo changes"
+								/>
+								<Key
+									keys="mod a"
+									description="Select all"
+								/>
 								<Key
 									keys="mod shift z"
 									description="Redo changes"
