@@ -8,11 +8,22 @@ import {
 	surqlVariableCompletion,
 } from "~/editor";
 
+import {
+	iconAutoFix,
+	iconChevronRight,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+	iconWarning,
+} from "~/util/icons";
+
 import { Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { trim } from "radash";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -25,29 +36,20 @@ import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
-import type { TabQuery } from "~/types";
+import { useQueryStore } from "~/stores/query";
+import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import {
-	iconAutoFix,
-	iconChevronLeft,
-	iconChevronRight,
-	iconDollar,
-	iconServer,
-	iconStar,
-	iconText,
-	iconWarning,
-} from "~/util/icons";
-import { formatQuery, formatValue, validateQuery } from "~/util/surrealql";
+import { formatQuery, formatValue } from "~/util/surrealql";
 
 export interface QueryPaneProps {
-	activeTab: TabQuery;
+	activeTab: QueryTab;
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
 	lineNumbers: boolean;
 	corners?: string;
-	setIsValid: (isValid: boolean) => void;
 	setShowVariables: (show: boolean) => void;
+	onUpdateBuffer: (query: string) => void;
 	onSaveQuery: () => void;
 	onSelectionChange: (value: SelectionRange) => void;
 	onEditorMounted: (editor: EditorView) => void;
@@ -56,30 +58,21 @@ export interface QueryPaneProps {
 export function QueryPane({
 	activeTab,
 	showVariables,
-	setIsValid,
 	selection,
 	switchPortal,
 	setShowVariables,
 	lineNumbers,
 	corners,
+	onUpdateBuffer,
 	onSaveQuery,
 	onSelectionChange,
 	onEditorMounted,
 }: QueryPaneProps) {
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { inspect } = useInspector();
-
 	const connection = useActiveConnection();
 
-	const setQueryForced = useStable((query: string) => {
-		setIsValid(!validateQuery(query));
-		updateQueryTab({
-			id: activeTab.id,
-			query,
-		});
-	});
-
-	const scheduleSetQuery = useDebouncedFunction(setQueryForced, 50);
+	const buffer = useQueryStore((s) => s.queryBuffer);
 
 	const openQueryList = useStable(() => {
 		updateCurrentConnection({
@@ -89,16 +82,13 @@ export function QueryPane({
 
 	const handleFormat = useStable(() => {
 		try {
-			const query = hasSelection
-				? activeTab.query.slice(0, selection.from) +
-					formatQuery(activeTab.query.slice(selection.from, selection.to)) +
-					activeTab.query.slice(selection.to)
-				: formatQuery(activeTab.query);
+			const formatted = hasSelection
+				? buffer.slice(0, selection.from) +
+				formatQuery(buffer.slice(selection.from, selection.to)) +
+				buffer.slice(selection.to)
+				: formatQuery(buffer);
 
-			updateQueryTab({
-				id: activeTab.id,
-				query,
-			});
+			onUpdateBuffer(formatted);
 		} catch {
 			showError({
 				title: "Failed to format",
@@ -114,10 +104,9 @@ export function QueryPane({
 	const inferVariables = useStable(() => {
 		if (!activeTab) return;
 
-		const query = activeTab.query;
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(query).filter((v) => !currentKeys.includes(v));
+		const variables = extractVariables(buffer).filter((v) => !currentKeys.includes(v));
 
 		const newVars = variables.reduce(
 			(acc, v) => {
@@ -167,12 +156,19 @@ export function QueryPane({
 					</ActionButton>
 				)
 			}
+			infoSection={
+				activeTab.type === "file" && (
+					<Text c="slate" truncate>
+						{trim(activeTab.query, "\\\\?")}
+					</Text>
+				)
+			}
 			rightSection={
 				switchPortal ? (
 					<OutPortal node={switchPortal} />
 				) : (
-					<Group gap="sm">
-						{activeTab.query.length > MAX_HISTORY_QUERY_LENGTH && (
+					<Group gap="sm" style={{ flexShrink: 0 }}>
+						{buffer.length > MAX_HISTORY_QUERY_LENGTH && (
 							<HoverCard position="bottom">
 								<HoverCard.Target>
 									<ThemeIcon
@@ -248,8 +244,8 @@ export function QueryPane({
 			}
 		>
 			<CodeEditor
-				value={activeTab.query}
-				onChange={scheduleSetQuery}
+				value={buffer}
+				onChange={onUpdateBuffer}
 				historyKey={activeTab.id}
 				onMount={onEditorMounted}
 				lineNumbers={lineNumbers}

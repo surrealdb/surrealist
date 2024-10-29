@@ -13,6 +13,7 @@ import {
 	iconCommand,
 	iconConsole,
 	iconDownload,
+	iconFile,
 	iconFlag,
 	iconFolderSecure,
 	iconHelp,
@@ -50,7 +51,7 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnection } from "./connection";
 import { featureFlags } from "./feature-flags";
-import { newId } from "./helpers";
+import { newId, optional } from "./helpers";
 import type { IntentPayload, IntentType } from "./intents";
 import { type PreferenceController, computePreferences } from "./preferences";
 import { syncConnectionSchema } from "./schema";
@@ -238,41 +239,37 @@ export function computeCommands(): CommandCategory[] {
 			{
 				name: "Query",
 				commands: [
-					...(activeView === "query"
-						? [
-								{
-									id: newId(),
-									name: "Run query",
-									icon: iconPlay,
-									shortcut: ["F9", "mod enter"],
-									action: intent("run-query"),
-								},
-								{
-									id: newId(),
-									name: "Save query",
-									icon: iconStarPlus,
-									action: intent("save-query"),
-								},
-								{
-									id: newId(),
-									name: "Format query",
-									icon: iconText,
-									action: intent("format-query"),
-								},
-								{
-									id: newId(),
-									name: "Toggle variables panel",
-									icon: iconBraces,
-									action: intent("toggle-variables"),
-								},
-								{
-									id: newId(),
-									name: "Infer variables from query",
-									icon: iconAutoFix,
-									action: intent("infer-variables"),
-								},
-							]
-						: []),
+					{
+						id: newId(),
+						name: "Run query",
+						icon: iconPlay,
+						shortcut: ["F9", "mod enter"],
+						action: intent("run-query"),
+					},
+					{
+						id: newId(),
+						name: "Save query",
+						icon: iconStarPlus,
+						action: intent("save-query"),
+					},
+					{
+						id: newId(),
+						name: "Format query",
+						icon: iconText,
+						action: intent("format-query"),
+					},
+					{
+						id: newId(),
+						name: "Toggle variables panel",
+						icon: iconBraces,
+						action: intent("toggle-variables"),
+					},
+					{
+						id: newId(),
+						name: "Infer variables from query",
+						icon: iconAutoFix,
+						action: intent("infer-variables"),
+					},
 					{
 						id: newId(),
 						name: "View saved queries",
@@ -291,6 +288,16 @@ export function computeCommands(): CommandCategory[] {
 						icon: iconPlus,
 						action: intent("new-query"),
 					},
+					...optional(
+						isDesktop && {
+							id: newId(),
+							name: "Open query file...",
+							icon: iconFile,
+							action: launch(() => {
+								(adapter as DesktopAdapter).openQueryFile();
+							}),
+						},
+					),
 				],
 			},
 			{
@@ -312,36 +319,33 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				name: "GraphQL",
-				commands:
-					activeView === "graphql"
-						? [
-								{
-									id: newId(),
-									name: "Run query",
-									icon: iconPlay,
-									shortcut: ["F9", "mod enter"],
-									action: intent("run-graphql-query"),
-								},
-								{
-									id: newId(),
-									name: "Format query",
-									icon: iconText,
-									action: intent("format-graphql-query"),
-								},
-								{
-									id: newId(),
-									name: "Toggle variables panel",
-									icon: iconBraces,
-									action: intent("toggle-graphql-variables"),
-								},
-								{
-									id: newId(),
-									name: "Infer variables from query",
-									icon: iconAutoFix,
-									action: intent("infer-graphql-variables"),
-								},
-							]
-						: [],
+				commands: [
+					{
+						id: newId(),
+						name: "Run query",
+						icon: iconPlay,
+						shortcut: ["F9", "mod enter"],
+						action: intent("run-graphql-query"),
+					},
+					{
+						id: newId(),
+						name: "Format query",
+						icon: iconText,
+						action: intent("format-graphql-query"),
+					},
+					{
+						id: newId(),
+						name: "Toggle variables panel",
+						icon: iconBraces,
+						action: intent("toggle-graphql-variables"),
+					},
+					{
+						id: newId(),
+						name: "Infer variables from query",
+						icon: iconAutoFix,
+						action: intent("infer-graphql-variables"),
+					},
+				],
 			},
 			{
 				name: "Authentication",

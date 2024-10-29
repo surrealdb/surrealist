@@ -18,7 +18,7 @@ import { Image } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import posthog from "posthog-js";
-import { memo, useState } from "react";
+import { memo, useLayoutEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { adapter, isMini } from "~/adapter";
@@ -39,6 +39,7 @@ import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
+import { useQueryStore } from "~/stores/query";
 import type { SavedQuery } from "~/types";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
@@ -48,6 +49,7 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
+import { readQuery, writeQuery } from "./strategy";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -57,13 +59,13 @@ const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
 	const { saveQuery, updateQueryTab } = useConfigStore.getState();
+	const { updateQueryBuffer } = useQueryStore.getState();
 	const { queryTabList } = useActiveConnection();
 	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [editor, setEditor] = useState<EditorView | null>(null);
 	const [variablesValid, setVariablesValid] = useState(true);
-	const [queryValid, setQueryValid] = useState(true);
 
 	const [showHistory, showHistoryHandle] = useDisclosure();
 	const [showSaved, showSavedHandle] = useDisclosure();
@@ -123,6 +125,28 @@ export function QueryView() {
 		posthog.capture("query_save");
 	});
 
+	const saveTasks = useRef<Map<string, any>>(new Map());
+
+	const handleUpdateBuffer = useStable((query: string) => {
+		const { queryBuffer } = useQueryStore.getState();
+
+		if (!active || query === queryBuffer) {
+			return;
+		}
+
+		const oldTask = saveTasks.current.get(active.id);
+
+		updateQueryBuffer(query);
+		clearTimeout(oldTask);
+
+		const newTask = setTimeout(() => {
+			saveTasks.current.delete(active.id);
+			writeQuery(active, query);
+		}, 500);
+
+		saveTasks.current.set(active.id, newTask);
+	});
+
 	const showVariables = !!active?.showVariables;
 
 	const setShowVariables = useStable((showVariables: boolean) => {
@@ -137,6 +161,15 @@ export function QueryView() {
 	const closeVariables = useStable(() => {
 		setShowVariables(false);
 	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Read query on tab change
+	useLayoutEffect(() => {
+		if (active) {
+			Promise.resolve(readQuery(active)).then((query) => {
+				updateQueryBuffer(query);
+			});
+		}
+	}, [active?.id]);
 
 	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
 
@@ -169,13 +202,13 @@ export function QueryView() {
 						<QueryPaneLazy
 							corners={miniCorners}
 							activeTab={active}
-							setIsValid={setQueryValid}
 							switchPortal={switchPortal}
 							selection={selection}
 							showVariables={showVariables}
 							lineNumbers={!hideLineNumbers}
 							onSaveQuery={handleSaveRequest}
 							setShowVariables={setShowVariables}
+							onUpdateBuffer={handleUpdateBuffer}
 							onSelectionChange={setSelection}
 							onEditorMounted={setEditor}
 						/>
@@ -189,12 +222,12 @@ export function QueryView() {
 						>
 							<QueryPaneLazy
 								activeTab={active}
-								setIsValid={setQueryValid}
 								showVariables={showVariables}
 								selection={selection}
 								lineNumbers={!hideLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
+								onUpdateBuffer={handleUpdateBuffer}
 								onSelectionChange={setSelection}
 								onEditorMounted={setEditor}
 							/>
@@ -225,7 +258,6 @@ export function QueryView() {
 			<Panel minSize={15}>
 				<ResultPaneLazy
 					activeTab={active}
-					isQueryValid={queryValid}
 					selection={selection}
 					editor={editor}
 					corners={miniCorners}
@@ -308,12 +340,14 @@ export function QueryView() {
 
 			<HistoryDrawer
 				opened={showHistory}
+				onUpdateBuffer={handleUpdateBuffer}
 				onClose={showHistoryHandle.close}
 			/>
 
 			<SavesDrawer
 				opened={showSaved}
 				onClose={showSavedHandle.close}
+				onUpdateBuffer={handleUpdateBuffer}
 				onSaveQuery={handleSaveRequest}
 				onEditQuery={handleEditRequest}
 			/>

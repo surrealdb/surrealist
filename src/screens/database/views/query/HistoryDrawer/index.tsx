@@ -14,7 +14,6 @@ import {
 import { Box, Drawer } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { useContextMenu } from "mantine-contextmenu";
 import { capitalize } from "radash";
 import { memo, useMemo } from "react";
 import { CodePreview } from "~/components/CodePreview";
@@ -30,11 +29,12 @@ const MAX_PREVIEW_LENGTH = 500;
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
+	onUpdateBuffer: (query: string) => void;
 	onClose: () => void;
 }
 
-function HistoryRow({ entry, onClose }: HistoryRowProps) {
-	const { updateCurrentConnection, updateQueryTab, addQueryTab } = useConfigStore.getState();
+function HistoryRow({ entry, onUpdateBuffer, onClose }: HistoryRowProps) {
+	const { updateCurrentConnection, addQueryTab } = useConfigStore.getState();
 
 	const connection = useActiveConnection();
 	const activeTab = useActiveQuery();
@@ -42,6 +42,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 	const handleUseQuery = useStable(() => {
 		onClose();
 		addQueryTab({
+			type: "config",
 			query: entry.query,
 		});
 	});
@@ -50,10 +51,7 @@ function HistoryRow({ entry, onClose }: HistoryRowProps) {
 		if (!activeTab) return;
 
 		onClose();
-		updateQueryTab({
-			id: activeTab.id,
-			query: entry.query,
-		});
+		onUpdateBuffer(entry.query);
 	});
 
 	const handleDeleteQuery = useStable(() => {
@@ -148,10 +146,11 @@ const HistoryRowLazy = memo(HistoryRow);
 
 export interface HistoryDrawerProps {
 	opened: boolean;
+	onUpdateBuffer: (query: string) => void;
 	onClose: () => void;
 }
 
-export function HistoryDrawer(props: HistoryDrawerProps) {
+export function HistoryDrawer({ opened, onUpdateBuffer, onClose }: HistoryDrawerProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
 
 	const connection = useActiveConnection();
@@ -175,8 +174,8 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 
 	return (
 		<Drawer
-			opened={props.opened}
-			onClose={props.onClose}
+			opened={opened}
+			onClose={onClose}
 			position="right"
 			trapFocus={false}
 		>
@@ -200,7 +199,7 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 				</Tooltip>
 
 				<ActionIcon
-					onClick={props.onClose}
+					onClick={onClose}
 					aria-label="Close history drawer"
 				>
 					<Icon path={iconClose} />
@@ -230,7 +229,8 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
 					<HistoryRowLazy
 						key={i}
 						entry={entry}
-						onClose={props.onClose}
+						onUpdateBuffer={onUpdateBuffer}
+						onClose={onClose}
 					/>
 				))}
 			</Stack>

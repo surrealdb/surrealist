@@ -32,6 +32,7 @@ export type SyntaxTheme = "default" | "vivid";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
+export type QueryType = "config" | "file";
 
 export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
@@ -106,7 +107,7 @@ export interface Connection {
 	group?: string;
 	lastNamespace: string;
 	lastDatabase: string;
-	queries: TabQuery[];
+	queries: QueryTab[];
 	activeQuery: string;
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
@@ -196,12 +197,13 @@ export interface QueryResponse {
 	result: any;
 }
 
-export interface TabQuery {
+export interface QueryTab {
 	id: string;
-	query: string;
+	type: QueryType;
+	query: string; // NOTE Query string for config type, path for file type
 	name?: string;
 	variables: string;
-	valid: boolean;
+	valid: boolean; // TODO Remove
 	resultMode: ResultMode;
 	resultFormat: ResultFormat;
 	showVariables: boolean;

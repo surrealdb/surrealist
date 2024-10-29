@@ -131,6 +131,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		const openQuery = (id: RecordId, prefix: string) => {
 			setActiveView("query");
 			addQueryTab({
+				type: "config",
 				query: `${prefix} ${formatValue(id)}`,
 			});
 		};

@@ -7,7 +7,7 @@ import { uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { decodeCbor, escape_ident } from "surrealdb";
 import { adapter } from "~/adapter";
-import type { Authentication, TabQuery } from "~/types";
+import type { Authentication, QueryTab } from "~/types";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -291,7 +291,7 @@ export function getFileName(name: string) {
  * @param tab The tab to check
  * @returns True if the tab is unnamed
  */
-export function isUnnamedTab(tab: TabQuery) {
+export function isUnnamedTab(tab: QueryTab) {
 	return !!tab.name?.startsWith("New query");
 }
 

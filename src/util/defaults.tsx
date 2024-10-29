@@ -4,9 +4,10 @@ import type {
 	CloudInstance,
 	Connection,
 	ConnectionSchema,
+	QueryTab,
+	QueryType,
 	SurrealistConfig,
 	SurrealistSettings,
-	TabQuery,
 } from "~/types";
 import { newId } from "./helpers";
 import { validateQuery } from "./surrealql";
@@ -108,7 +109,7 @@ export function createBaseAuthentication(): Authentication {
 }
 
 export function createBaseConnection(settings: SurrealistSettings): Connection {
-	const baseTab = createBaseTab(settings);
+	const baseTab = createBaseQuery(settings, "config");
 
 	return {
 		id: newId(),
@@ -140,13 +141,18 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseTab(settings: SurrealistSettings, query?: string): TabQuery {
+export function createBaseQuery(
+	settings: SurrealistSettings,
+	type: QueryType,
+	query?: string,
+): QueryTab {
 	return {
 		id: newId(),
-		query: query || "",
+		type,
+		query: query ?? "",
 		name: "",
 		variables: "{}",
-		valid: query ? !validateQuery(query) : true,
+		valid: true,
 		resultMode: settings.appearance.defaultResultMode,
 		resultFormat: settings.appearance.defaultResultFormat,
 		showVariables: false,

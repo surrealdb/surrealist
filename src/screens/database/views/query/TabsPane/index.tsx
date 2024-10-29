@@ -1,6 +1,25 @@
+import {
+	iconArrowUpRight,
+	iconChevronLeft,
+	iconChevronRight,
+	iconClose,
+	iconCopy,
+	iconExitToAp,
+	iconFile,
+	iconHistory,
+	iconList,
+	iconOpen,
+	iconPlus,
+	iconQuery,
+	iconSearch,
+	iconStar,
+} from "~/util/icons";
+
 import { ActionIcon, Badge, Divider, ScrollArea, Stack, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
+import { adapter } from "~/adapter";
+import { DesktopAdapter } from "~/adapter/desktop";
 import { ActionButton } from "~/components/ActionButton";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
@@ -15,20 +34,13 @@ import { useIntent } from "~/hooks/url";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import type { TabQuery } from "~/types";
-import {
-	iconArrowUpRight,
-	iconChevronLeft,
-	iconChevronRight,
-	iconClose,
-	iconCopy,
-	iconHistory,
-	iconList,
-	iconPlus,
-	iconQuery,
-	iconStar,
-} from "~/util/icons";
+import type { QueryTab, QueryType } from "~/types";
 import classes from "./style.module.scss";
+
+const TYPE_ICONS: Record<QueryType, string> = {
+	config: iconQuery,
+	file: iconFile,
+};
 
 export interface TabsPaneProps {
 	openHistory: () => void;
@@ -43,19 +55,24 @@ export function TabsPane(props: TabsPaneProps) {
 		updateQueryTab,
 		setActiveQueryTab,
 	} = useConfigStore.getState();
+
 	const { queries, activeQuery } = useActiveConnection();
 	const { showContextMenu } = useContextMenu();
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();
 
 	const newTab = useStable(() => {
-		addQueryTab();
+		addQueryTab({ type: "config" });
 	});
 
 	const removeTab = useStable((id: string, e?: React.MouseEvent) => {
 		e?.stopPropagation();
 		removeQueryTab(id);
 		cancelLiveQueries(id);
+
+		if (adapter instanceof DesktopAdapter) {
+			adapter.pruneQueryFiles();
+		}
 	});
 
 	const removeOthers = useStable((id: string, dir: number) => {
@@ -78,7 +95,7 @@ export function TabsPane(props: TabsPaneProps) {
 		});
 	});
 
-	const saveQueryOrder = useStable((queries: TabQuery[]) => {
+	const saveQueryOrder = useStable((queries: QueryTab[]) => {
 		updateCurrentConnection({
 			queries,
 		});
@@ -90,15 +107,18 @@ export function TabsPane(props: TabsPaneProps) {
 		});
 	});
 
-	const duplicateQuery = ({ query, name, variables }: TabQuery) => {
+	const duplicateQuery = ({ query, name, variables }: QueryTab) => {
 		addQueryTab({
+			type: "config",
 			name: name?.replace(/ \d+$/, ""),
 			query,
 			variables,
 		});
 	};
 
-	useIntent("new-query", addQueryTab);
+	const explorerName = adapter.platform === "darwin" ? "Finder" : "Explorer";
+
+	useIntent("new-query", newTab);
 
 	return (
 		<ContentPane
@@ -182,6 +202,17 @@ export function TabsPane(props: TabsPaneProps) {
 												onClick: () => duplicateQuery(query),
 											},
 											{
+												hidden: query.type !== "file",
+												key: "open-in-explorer",
+												title: `Reveal in ${explorerName}`,
+												icon: <Icon path={iconSearch} />,
+												onClick: () => {
+													if (adapter instanceof DesktopAdapter) {
+														adapter.openInExplorer(query);
+													}
+												},
+											},
+											{
 												key: "close-div",
 											},
 											{
@@ -215,7 +246,7 @@ export function TabsPane(props: TabsPaneProps) {
 												onClick: () => removeOthers(query.id, 1),
 											},
 										])}
-										leftSection={<Icon path={iconQuery} />}
+										leftSection={<Icon path={TYPE_ICONS[query.type]} />}
 										rightSection={
 											<>
 												{isLive && (

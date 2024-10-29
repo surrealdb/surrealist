@@ -2,6 +2,7 @@ import { klona } from "klona";
 import { assign, debounce, isEqual, pick } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { adapter } from "~/adapter";
+import { DesktopAdapter } from "~/adapter/desktop";
 import { useConfigStore } from "~/stores/config";
 import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION } from "./defaults";
@@ -80,6 +81,11 @@ export async function startConfigSync() {
 			},
 		),
 	);
+
+	// Prune removed query files
+	if (adapter instanceof DesktopAdapter) {
+		adapter.pruneQueryFiles();
+	}
 }
 
 export interface ConfigBackupOptions {
@@ -107,6 +113,11 @@ export function backupConfig({ stripSensitive, connections }: ConfigBackupOption
 	// Limit connections
 	if (connections.length > 0) {
 		config.connections = current.connections.filter((c) => connections.includes(c.id));
+	}
+
+	// Remove non-config queries
+	for (const connection of config.connections ?? []) {
+		connection.queries = connection.queries.filter((q) => q.type === "config");
 	}
 
 	// Remove sensitive data

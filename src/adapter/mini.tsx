@@ -4,7 +4,7 @@ import { ORIENTATIONS, SANDBOX } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
 import type { MiniAppearance, Orientation, SurrealistConfig } from "~/types";
 import { dedent } from "~/util/dedent";
-import { createBaseSettings, createBaseTab, createSandboxConnection } from "~/util/defaults";
+import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
 import { broadcastMessage } from "~/util/messaging";
 import { parseDatasetURL } from "~/util/surrealql";
@@ -27,7 +27,7 @@ export class MiniAdapter extends BrowserAdapter {
 
 	public async loadConfig() {
 		const settings = createBaseSettings();
-		const mainTab = createBaseTab(settings);
+		const mainTab = createBaseQuery(settings, "config");
 		const params = new URL(document.location.toString()).searchParams;
 
 		const {
