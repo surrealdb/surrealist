@@ -87,6 +87,10 @@ export function buildDefinitionQueries({
 			query += ` OUT ${outTables}`;
 		}
 
+		if (isRelation && current.schema.kind.enforced) {
+			query += " ENFORCED";
+		}
+
 		if (current.schema.view) {
 			query += ` ${current.schema.view}`;
 		}
@@ -147,6 +151,10 @@ export function buildDefinitionQueries({
 
 		if (field.default) {
 			query += ` DEFAULT ${field.default}`;
+		}
+
+		if (field.readonly) {
+			query += " READONLY";
 		}
 
 		query += " PERMISSIONS";

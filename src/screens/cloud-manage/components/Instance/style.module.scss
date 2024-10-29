@@ -6,3 +6,23 @@
 		opacity: 1;
 	}
 }
+
+.whitelist-switch {
+	background-color: var(--mantine-color-slate-8);
+
+	:global(.mantine-SegmentedControl-label) {
+		background-color: unset;
+		font-size: var(--mantine-font-size-md);
+		transition-duration: .15s !important;
+		
+		&[data-active] {
+			color: white !important;
+		}
+	}
+	
+	&:not([data-disabled]) :global(.mantine-SegmentedControl-indicator) {
+		background: var(--surrealist-gradient);
+		background-origin: border-box;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+	}
+}

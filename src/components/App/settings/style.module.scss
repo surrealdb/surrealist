@@ -17,3 +17,25 @@
 	user-select: text;
 	-webkit-user-select: text;
 }
+
+.update-button {
+	height: 52px !important;
+	box-shadow: var(--mantine-shadow-sm);
+	border: 1px solid rgba(255, 255, 255, 0.075);
+
+	:global(.mantine-Button-label) {
+		flex-direction: column;
+		justify-content: center;
+		align-items: start;
+	}
+}
+
+.update-icon {
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	background-origin: border-box;
+}
+
+.about-value {
+	user-select: all;
+	-webkit-user-select: all;
+}

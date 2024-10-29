@@ -49,9 +49,8 @@ export function DocsGlobalNamespaces({ language }: TopicProps) {
 				<p>
 					After connecting to a SurrealDB instance, you can specify
 					the namespace to use. Namespaces are used to group related
-					data together this contains information regarding the users,
-					roles, tokens, and databases that are available to the
-					namespace.
+					data together, contains information regarding the users,
+					roles, tokens, and databases it contains.
 				</p>
 			</div>
 			<Box>

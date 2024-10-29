@@ -16,7 +16,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { openConnection } from "~/screens/database/connection/connection";
@@ -29,16 +29,20 @@ export function AccessSignupModal() {
 	const [error, setError] = useState("");
 	const [loading, loadingHandle] = useDisclosure();
 	const opened = useInterfaceStore((s) => s.showAccessSignup);
-	const connection = useActiveConnection();
+	const connection = useConnection();
 
-	const isAccess = connection.authentication.mode === "access";
+	const isAccess = connection?.authentication?.mode === "access";
 
 	const openEditor = useStable(() => {
+		if (!connection) return;
+
 		dispatchIntent("edit-connection", { id: connection.id });
 		closeAccessSignup();
 	});
 
 	const createAccount = useStable(() => {
+		if (!connection) return;
+
 		loadingHandle.open();
 
 		const signupMode = isAccess ? "access-signup" : "scope-signup";
@@ -98,7 +102,7 @@ export function AccessSignupModal() {
 						</Table.Tr>
 					</Table.Thead>
 					<Table.Tbody>
-						{connection.authentication.accessFields?.map((field) => {
+						{connection?.authentication?.accessFields?.map((field) => {
 							const fieldName = field.subject.toLowerCase();
 							const ValueInput = SENSITIVE_ACCESS_FIELDS.has(fieldName)
 								? PasswordInput

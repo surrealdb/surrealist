@@ -1,22 +1,15 @@
-import { clamp } from "reactflow";
+import { adapter } from "~/adapter";
+import { DesktopAdapter } from "~/adapter/desktop";
 import { useSetting } from "~/hooks/config";
 import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
+import { clamp } from "~/util/helpers";
 
 export function useWindowSettings() {
-	const [windowScale, setWindowScale] = useSetting(
-		"appearance",
-		"windowScale",
-	);
-	const [editorScale, setEditorScale] = useSetting(
-		"appearance",
-		"editorScale",
-	);
-	const [windowPinned, setWindowPinned] = useSetting(
-		"behavior",
-		"windowPinned",
-	);
+	const [windowScale, setWindowScale] = useSetting("appearance", "windowScale");
+	const [editorScale, setEditorScale] = useSetting("appearance", "editorScale");
+	const [windowPinned, setWindowPinned] = useSetting("behavior", "windowPinned");
 
 	const increaseWindowScale = useStable(() => {
 		setWindowScale(clamp(windowScale + 10, 75, 150));
@@ -38,12 +31,19 @@ export function useWindowSettings() {
 		setWindowPinned(!windowPinned);
 	});
 
+	const openQueryFile = useStable(() => {
+		if (adapter instanceof DesktopAdapter) {
+			adapter.openQueryFile();
+		}
+	});
+
 	useKeymap([
 		["mod+equal", increaseWindowScale],
 		["mod+minus", decreaseWindowScale],
 		["mod+shift+equal", increaseEditorScale],
 		["mod+shift+minus", decreaseEditorScale],
 		["f10", toggleWindowPinned],
+		["mod+o", openQueryFile],
 	]);
 
 	useIntent("increase-window-scale", increaseWindowScale);

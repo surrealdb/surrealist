@@ -2,31 +2,37 @@ import type { MantineColorScheme } from "@mantine/core";
 import type { AnyAuth, Duration, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
-export type ViewRequirement = "database";
-export type Screen = "start" | "database";
-export type AlertLevel = "info" | "warning" | "important";
-export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
-export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
-export type ResultMode = "table" | "single" | "combined" | "live";
-export type SourceMode = "schema" | "infer";
-export type DiagramMode = "fields" | "summary" | "simple";
-export type DiagramDirection = "ltr" | "rtl";
-export type ColorScheme = "light" | "dark";
-export type Platform = "darwin" | "windows" | "linux";
-export type TableType = "ANY" | "NORMAL" | "RELATION";
-export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
-export type ValueMode = "json" | "sql";
-export type Orientation = "horizontal" | "vertical";
-export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
-export type LineStyle = "metro" | "straight" | "smooth";
-export type SchemaMode = "schemaless" | "schemafull";
-export type UrlTarget = "internal" | "external";
-export type DatabaseListMode = "list" | "grid";
-export type AuthLevel = "root" | "namespace" | "database";
-export type InvoiceStatus = "succeeded" | "pending" | "failed";
-export type AuthType = "user" | "access";
 export type AccessType = "JWT" | "RECORD";
+export type AlertLevel = "info" | "warning" | "important";
+export type AuthLevel = "root" | "namespace" | "database";
+export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
+export type ColorScheme = "light" | "dark";
+export type DatabaseListMode = "list" | "grid";
+export type DiagramAlgorithm = "default" | "aligned" | "spaced";
+export type DiagramDirection = "default" | "ltr" | "rtl";
+export type DiagramLineStyle = "default" | "metro" | "straight" | "smooth";
+export type DiagramLinks = "default" | "hidden" | "visible";
+export type DiagramMode = "default" | "fields" | "summary" | "simple";
+export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
+export type InvoiceStatus = "succeeded" | "pending" | "failed";
+export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
+export type MiniAppearance = "normal" | "compact" | "plain";
+export type Orientation = "horizontal" | "vertical";
+export type Platform = "darwin" | "windows" | "linux";
+export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
+export type ResultFormat = "json" | "sql";
+export type ResultMode = "table" | "single" | "combined" | "live";
+export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
+export type SchemaMode = "schemaless" | "schemafull";
+export type Screen = "start" | "database";
+export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
+export type SourceMode = "schema" | "infer";
+export type SyntaxTheme = "default" | "vivid";
+export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type UrlTarget = "internal" | "external";
+export type ViewRequirement = "database";
+export type QueryType = "config" | "file";
 
 export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
@@ -67,10 +73,14 @@ export type ColumnSort = [string, "asc" | "desc"];
 export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string = string> = { label: string; value: T };
-export type Selection<T extends string> = Selectable<T>[];
-export type Listable<T extends string> = Selectable<T> & { icon: string };
+export type Selection<T extends string = string> = Selectable<T>[];
+export type Listable<T extends string = string> = Selectable<T> & {
+	description?: string;
+	icon?: string;
+};
 export type Snippets = Partial<Record<CodeLang, string>>;
 export type AuthDetails = AnyAuth | Token | undefined;
+export type Identified<T = object, I = string> = T & { id: I };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type Assign<T, O extends object> = Omit<T, keyof O> & O;
 export type AuthTarget = [AuthType, string];
@@ -97,15 +107,19 @@ export interface Connection {
 	group?: string;
 	lastNamespace: string;
 	lastDatabase: string;
-	queries: TabQuery[];
+	queries: QueryTab[];
 	activeQuery: string;
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
 	pinnedTables: string[];
-	diagramMode: DiagramMode;
+	diagramAlgorithm: DiagramAlgorithm;
 	diagramDirection: DiagramDirection;
-	diagramShowLinks: boolean;
+	diagramLineStyle: DiagramLineStyle;
+	diagramLinkMode: DiagramLinks;
+	diagramMode: DiagramMode;
 	designerTableList: boolean;
+	explorerTableList: boolean;
+	queryTabList: boolean;
 	graphqlQuery: string;
 	graphqlVariables: string;
 	graphqlShowVariables: boolean;
@@ -138,16 +152,21 @@ export interface SurrealistBehaviorSettings {
 
 export interface SurrealistAppearanceSettings {
 	colorScheme: MantineColorScheme;
+	syntaxTheme: SyntaxTheme;
 	windowScale: number;
 	editorScale: number;
+	queryLineNumbers: boolean;
+	inspectorLineNumbers: boolean;
+	functionLineNumbers: boolean;
 	resultWordWrap: boolean;
 	defaultResultMode: ResultMode;
-	defaultDiagramMode: DiagramMode;
+	defaultResultFormat: ResultFormat;
+	defaultDiagramAlgorithm: DiagramAlgorithm;
 	defaultDiagramDirection: DiagramDirection;
-	defaultDiagramShowLinks: boolean;
-	lineStyle: LineStyle;
+	defaultDiagramLineStyle: DiagramLineStyle;
+	defaultDiagramLinkMode: DiagramLinks;
+	defaultDiagramMode: DiagramMode;
 	sidebarMode: SidebarMode;
-	valueMode: ValueMode;
 	queryOrientation: Orientation;
 }
 
@@ -179,13 +198,15 @@ export interface QueryResponse {
 	result: any;
 }
 
-export interface TabQuery {
+export interface QueryTab {
 	id: string;
-	query: string;
+	type: QueryType;
+	query: string; // NOTE Query string for config type, path for file type
 	name?: string;
 	variables: string;
-	valid: boolean;
+	valid: boolean; // TODO Remove
 	resultMode: ResultMode;
+	resultFormat: ResultFormat;
 	showVariables: boolean;
 }
 
@@ -225,7 +246,7 @@ export interface SurrealistConfig {
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
-	settings: SurrealistSettings;
+	settings: SurrealistSettings; // TODO Rename to preferences and flatten inner objects
 	featureFlags: Partial<FeatureFlagMap>;
 	openDesignerPanels: string[];
 	commandHistory: string[];
@@ -267,6 +288,7 @@ export interface Permissions {
 
 export interface Kind {
 	kind: TableType;
+	enforced?: boolean;
 	in?: string[];
 	out?: string[];
 }
@@ -379,14 +401,22 @@ export interface TableInfo {
 	events: SchemaEvent[];
 }
 
+export interface SchemaNamespace {
+	name: string;
+}
+
+export interface SchemaDatabase {
+	name: string;
+}
+
 export interface SchemaInfoKV {
-	namespaces: any[];
+	namespaces: SchemaNamespace[];
 	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
 
 export interface SchemaInfoNS {
-	databases: any[];
+	databases: SchemaDatabase[];
 	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
@@ -440,9 +470,16 @@ export interface CloudPageInfo {
 	disabled?: FeatureCondition;
 }
 
-export interface DataSet {
+export interface Dataset {
 	name: string;
-	url: string;
+	path: string;
+}
+
+export interface Driver {
+	id: CodeLang;
+	name: string;
+	icon: React.FC<{ active?: boolean }>;
+	link: string;
 }
 
 export interface CloudSignin {

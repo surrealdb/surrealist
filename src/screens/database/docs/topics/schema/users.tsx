@@ -68,10 +68,8 @@ export function DocsSchemaUsers({ language }: TopicProps) {
 		<Article title="Users">
 			<div>
 				<p>
-					Managing permissions for Users within SurrealDB can be done
-					using Scopes. Scopes are a way to group permissions together
-					and assign them to Users with scopes you can manage
-					authentication and access control for your table and fields.
+					Managing permissions for system Users within SurrealDB can be done
+					using the roles OWNER, EDITOR, and VIEWER.
 				</p>
 			</div>
 			<Box>

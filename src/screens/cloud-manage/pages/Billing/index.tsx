@@ -20,13 +20,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import {
-	iconAccount,
-	iconCheck,
-	iconCreditCard,
-	iconHelp,
-	iconOpen,
-} from "~/util/icons";
+import { iconAccount, iconCheck, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
 
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,7 +38,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstanceType, CloudRegion, InvoiceStatus } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
-import { fetchAPI } from "../../api";
+import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBilling } from "../../hooks/billing";
 import { useCloudInvoices } from "../../hooks/invoices";
@@ -61,7 +55,7 @@ interface BillingPlanProps {
 	name: string;
 	description: string;
 	regions: string[];
-	types: CloudInstanceType[]
+	types: CloudInstanceType[];
 	action?: ReactNode;
 }
 
@@ -85,7 +79,10 @@ function BillingPlan({ name, description, regions, types, action }: BillingPlanP
 
 				<Group align="stretch">
 					<Box>
-						<Text fz="lg" mb="sm">
+						<Text
+							fz="lg"
+							mb="sm"
+						>
 							Included regions
 						</Text>
 
@@ -113,7 +110,10 @@ function BillingPlan({ name, description, regions, types, action }: BillingPlanP
 					<Spacer />
 
 					<Box>
-						<Text fz="lg" mb="sm">
+						<Text
+							fz="lg"
+							mb="sm"
+						>
 							Included instance types
 						</Text>
 
@@ -138,7 +138,7 @@ function BillingPlan({ name, description, regions, types, action }: BillingPlanP
 						</List>
 					</Box>
 				</Group>
-				
+
 				{action}
 			</Stack>
 		</Paper>
@@ -175,14 +175,14 @@ export function BillingPage() {
 				method: "POST",
 				body: JSON.stringify(coupon),
 			});
-	
+
 			showInfo({
 				title: "Discount code applied",
 				subtitle: "The discount code has been successfully applied",
 			});
 
 			setCoupon("");
-		} catch(err: any) {
+		} catch (err: any) {
 			showError({
 				title: "Failed to apply discount code",
 				subtitle: "The discount code is invalid or has already been applied",
@@ -196,6 +196,8 @@ export function BillingPage() {
 		await fetchAPI(`/organizations/${organization?.id}/payment`, {
 			method: "PUT",
 		});
+
+		updateCloudInformation();
 
 		queryClient.invalidateQueries({
 			queryKey: ["cloud", "payments", organization.id],
@@ -445,10 +447,10 @@ export function BillingPage() {
 													{new Date(invoice.date).toLocaleDateString()}
 												</Table.Td>
 												<Table.Td
-													c={status.color}
+													c={status?.color ?? "slate"}
 													fw={600}
 												>
-													{status.name}
+													{status?.name ?? invoice.status}
 												</Table.Td>
 												<Table.Td>
 													${(invoice.amount * 100).toFixed(2)} USD

@@ -1,23 +1,3 @@
-import { Box, Button, Group, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { memo, useState } from "react";
-import { Panel, PanelGroup } from "react-resizable-panels";
-import { adapter } from "~/adapter";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
-import { Introduction } from "~/components/Introduction";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { useIsConnected } from "~/hooks/connection";
-import { useEventSubscription } from "~/hooks/event";
-import { usePanelMinSize } from "~/hooks/panels";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { dispatchIntent, useIntent } from "~/hooks/url";
-import { useViewEffect } from "~/hooks/view";
-import { useDesigner } from "~/providers/Designer";
-import { TablesPane } from "~/screens/database/components/TablesPane";
-import { useInterfaceStore } from "~/stores/interface";
-import { DisconnectedEvent } from "~/util/global-events";
 import {
 	iconChevronRight,
 	iconDesigner,
@@ -28,6 +8,27 @@ import {
 	iconTable,
 	iconUpload,
 } from "~/util/icons";
+
+import { Box, Button, Group, Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { memo, useState } from "react";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import { adapter } from "~/adapter";
+import { Entry } from "~/components/Entry";
+import { Icon } from "~/components/Icon";
+import { Introduction } from "~/components/Introduction";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/connection";
+import { useEventSubscription } from "~/hooks/event";
+import { usePanelMinSize } from "~/hooks/panels";
+import { useStable } from "~/hooks/stable";
+import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useViewEffect } from "~/hooks/view";
+import { useDesigner } from "~/providers/Designer";
+import { TablesPane } from "~/screens/database/components/TablesPane";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { DisconnectedEvent } from "~/util/global-events";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { ExplorerPane } from "../ExplorerPane";
@@ -36,14 +37,16 @@ const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
 
 export function ExplorerView() {
-	const isLight = useIsLight();
+	const { updateCurrentConnection } = useConfigStore.getState();
 	const { openTableCreator } = useInterfaceStore.getState();
+	const { explorerTableList } = useActiveConnection();
 	const { design } = useDesigner();
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [creatorTable, setCreatorTable] = useState<string>();
 
+	const connection = useConnection();
 	const isConnected = useIsConnected();
 
 	const openCreator = useStable((table?: string) => {
@@ -72,6 +75,12 @@ export function ExplorerView() {
 		},
 	]);
 
+	const closeTableList = useStable(() => {
+		updateCurrentConnection({
+			explorerTableList: false,
+		});
+	});
+
 	useEventSubscription(DisconnectedEvent, () => {
 		isCreatingHandle.close();
 		setActiveTable(undefined);
@@ -87,45 +96,69 @@ export function ExplorerView() {
 
 	const [minSize, ref] = usePanelMinSize(275);
 
+	// NOTE - Temporary
+	const protocol = connection?.authentication?.protocol;
+	const isExportDisabled = protocol === "indxdb" || protocol === "mem";
+
 	return (
 		<>
-			<Box h="100%" ref={ref}>
+			<Box
+				h="100%"
+				ref={ref}
+			>
 				<PanelGroup
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
-						<TablesPaneLazy
-							icon={iconExplorer}
-							activeTable={activeTable}
-							onTableSelect={setActiveTable}
-							onTableContextMenu={buildContextMenu}
-							extraSection={
-								<>
-									<Entry
-										leftSection={<Icon path={iconUpload} />}
-										rightSection={<Icon path={iconChevronRight} />}
-										onClick={() => dispatchIntent("export-database")}
-										style={{ flexShrink: 0 }}
-										bg="transparent"
-									>
-										Export data
-									</Entry>
-									<Entry
-										leftSection={<Icon path={iconDownload} />}
-										rightSection={<Icon path={iconChevronRight} />}
-										onClick={() => dispatchIntent("import-database")}
-										style={{ flexShrink: 0 }}
-										bg="transparent"
-									>
-										Import data
-									</Entry>
-								</>
-							}
-						/>
-					</Panel>
-					<PanelDragger />
-					<Panel minSize={minSize}>
+					{(explorerTableList || !activeTable) && (
+						<>
+							<Panel
+								defaultSize={minSize}
+								minSize={minSize}
+								maxSize={35}
+								id="tables"
+								order={1}
+							>
+								<TablesPaneLazy
+									icon={iconExplorer}
+									activeTable={activeTable}
+									closeDisabled={!activeTable}
+									onTableSelect={setActiveTable}
+									onTableContextMenu={buildContextMenu}
+									onClose={closeTableList}
+									extraSection={
+										<>
+											<Entry
+												leftSection={<Icon path={iconUpload} />}
+												rightSection={<Icon path={iconChevronRight} />}
+												onClick={() => dispatchIntent("export-database")}
+												style={{ flexShrink: 0 }}
+												disabled={isExportDisabled}
+												bg="transparent"
+											>
+												Export database
+											</Entry>
+											<Entry
+												leftSection={<Icon path={iconDownload} />}
+												rightSection={<Icon path={iconChevronRight} />}
+												onClick={() => dispatchIntent("import-database")}
+												style={{ flexShrink: 0 }}
+												bg="transparent"
+											>
+												Import database
+											</Entry>
+										</>
+									}
+								/>
+							</Panel>
+							<PanelDragger />
+						</>
+					)}
+					<Panel
+						id="explorer"
+						order={2}
+						minSize={minSize}
+					>
 						{activeTable ? (
 							<ExplorerPaneLazy
 								activeTable={activeTable}
@@ -146,9 +179,8 @@ export function ExplorerView() {
 								}}
 							>
 								<Text>
-									The explorer view provides an easy way to
-									browse your tables and records without
-									writing any queries.
+									The explorer view provides an easy way to browse your tables and
+									records without writing any queries.
 								</Text>
 								<Group>
 									<Button

@@ -1,12 +1,3 @@
-import { adapter, isDesktop } from "~/adapter";
-import type { DesktopAdapter } from "~/adapter/desktop";
-import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
-import { closeConnection, openConnection } from "~/screens/database/connection/connection";
-import { useConfigStore } from "~/stores/config";
-import { useDatabaseStore } from "~/stores/database";
-import { getConnection } from "./connection";
-import { featureFlags } from "./feature-flags";
-import { newId } from "./helpers";
 import {
 	iconAPI,
 	iconAccountPlus,
@@ -22,7 +13,7 @@ import {
 	iconCommand,
 	iconConsole,
 	iconDownload,
-	iconEye,
+	iconFile,
 	iconFlag,
 	iconFolderSecure,
 	iconHelp,
@@ -46,22 +37,37 @@ import {
 	iconText,
 	iconTextBoxMinus,
 	iconTextBoxPlus,
+	iconTransfer,
+	iconTune,
 	iconUpload,
 	iconWrench,
 } from "./icons";
+
+import { adapter, isDesktop } from "~/adapter";
+import type { DesktopAdapter } from "~/adapter/desktop";
+import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
+import { closeConnection, openConnection } from "~/screens/database/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { getConnection } from "./connection";
+import { featureFlags } from "./feature-flags";
+import { newId, optional } from "./helpers";
 import type { IntentPayload, IntentType } from "./intents";
+import { type PreferenceController, computePreferences } from "./preferences";
 import { syncConnectionSchema } from "./schema";
 
 type LaunchAction = { type: "launch"; handler: () => void };
 type InsertAction = { type: "insert"; content: string };
 type HrefAction = { type: "href"; href: string };
+type PreferenceAction = { type: "preference"; controller: PreferenceController };
 type IntentAction = {
 	type: "intent";
 	intent: IntentType;
 	payload?: IntentPayload;
 };
 
-type Action = LaunchAction | InsertAction | HrefAction | IntentAction;
+type Action = LaunchAction | InsertAction | HrefAction | IntentAction | PreferenceAction;
+type CategoryVisibility = "always" | "searched" | "unsearched";
 
 export interface Command {
 	id: string;
@@ -75,7 +81,7 @@ export interface Command {
 
 export interface CommandCategory {
 	name: string;
-	search?: boolean;
+	visibility?: CategoryVisibility;
 	commands: Command[];
 }
 
@@ -87,6 +93,10 @@ const insert = (content: string) => ({ type: "insert", content }) as const;
 
 /** Create an href command */
 const href = (href: string) => ({ type: "href", href }) as const;
+
+/** Create a new preference command */
+const preference = (controller: PreferenceController) =>
+	({ type: "preference", controller }) as const;
 
 /** Create an intent command */
 const intent = (intent: IntentType, payload?: IntentPayload) =>
@@ -111,12 +121,16 @@ export function computeCommands(): CommandCategory[] {
 	const activeCon = getConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
 	const canDisconnect = currentState !== "disconnected" && !isSandbox;
+	const preferences = computePreferences().flatMap(({ name, preferences }) =>
+		preferences.map((pref) => ({ ...pref, name: `${name} > ${pref.name}` })),
+	);
+
 	const categories: CommandCategory[] = [];
 
 	categories.push(
 		{
 			name: "History",
-			search: false,
+			visibility: "unsearched",
 			commands: commandHistory.map((entry) => ({
 				id: newId(),
 				name: entry,
@@ -225,41 +239,37 @@ export function computeCommands(): CommandCategory[] {
 			{
 				name: "Query",
 				commands: [
-					...(activeView === "query"
-						? [
-								{
-									id: newId(),
-									name: "Run query",
-									icon: iconPlay,
-									shortcut: ["F9", "mod enter"],
-									action: intent("run-query"),
-								},
-								{
-									id: newId(),
-									name: "Save query",
-									icon: iconStarPlus,
-									action: intent("save-query"),
-								},
-								{
-									id: newId(),
-									name: "Format query",
-									icon: iconText,
-									action: intent("format-query"),
-								},
-								{
-									id: newId(),
-									name: "Toggle variables panel",
-									icon: iconBraces,
-									action: intent("toggle-variables"),
-								},
-								{
-									id: newId(),
-									name: "Infer variables from query",
-									icon: iconAutoFix,
-									action: intent("infer-variables"),
-								},
-							]
-						: []),
+					{
+						id: newId(),
+						name: "Run query",
+						icon: iconPlay,
+						shortcut: ["F9", "mod enter"],
+						action: intent("run-query"),
+					},
+					{
+						id: newId(),
+						name: "Save query",
+						icon: iconStarPlus,
+						action: intent("save-query"),
+					},
+					{
+						id: newId(),
+						name: "Format query",
+						icon: iconText,
+						action: intent("format-query"),
+					},
+					{
+						id: newId(),
+						name: "Toggle variables panel",
+						icon: iconBraces,
+						action: intent("toggle-variables"),
+					},
+					{
+						id: newId(),
+						name: "Infer variables from query",
+						icon: iconAutoFix,
+						action: intent("infer-variables"),
+					},
 					{
 						id: newId(),
 						name: "View saved queries",
@@ -278,6 +288,16 @@ export function computeCommands(): CommandCategory[] {
 						icon: iconPlus,
 						action: intent("new-query"),
 					},
+					...optional(
+						isDesktop && {
+							id: newId(),
+							name: "Open query file...",
+							icon: iconFile,
+							action: launch(() => {
+								(adapter as DesktopAdapter).openQueryFile();
+							}),
+						},
+					),
 				],
 			},
 			{
@@ -299,36 +319,33 @@ export function computeCommands(): CommandCategory[] {
 			},
 			{
 				name: "GraphQL",
-				commands:
-					activeView === "graphql"
-						? [
-								{
-									id: newId(),
-									name: "Run query",
-									icon: iconPlay,
-									shortcut: ["F9", "mod enter"],
-									action: intent("run-graphql-query"),
-								},
-								{
-									id: newId(),
-									name: "Format query",
-									icon: iconText,
-									action: intent("format-graphql-query"),
-								},
-								{
-									id: newId(),
-									name: "Toggle variables panel",
-									icon: iconBraces,
-									action: intent("toggle-graphql-variables"),
-								},
-								{
-									id: newId(),
-									name: "Infer variables from query",
-									icon: iconAutoFix,
-									action: intent("infer-graphql-variables"),
-								},
-							]
-						: [],
+				commands: [
+					{
+						id: newId(),
+						name: "Run query",
+						icon: iconPlay,
+						shortcut: ["F9", "mod enter"],
+						action: intent("run-graphql-query"),
+					},
+					{
+						id: newId(),
+						name: "Format query",
+						icon: iconText,
+						action: intent("format-graphql-query"),
+					},
+					{
+						id: newId(),
+						name: "Toggle variables panel",
+						icon: iconBraces,
+						action: intent("toggle-graphql-variables"),
+					},
+					{
+						id: newId(),
+						name: "Infer variables from query",
+						icon: iconAutoFix,
+						action: intent("infer-graphql-variables"),
+					},
+				],
 			},
 			{
 				name: "Authentication",
@@ -423,7 +440,7 @@ export function computeCommands(): CommandCategory[] {
 								id: newId(),
 								name: "Toggle window always on top",
 								icon: iconPin,
-								shortcut: "F11",
+								shortcut: "F10",
 								action: intent("toggle-pinned"),
 							},
 						]
@@ -444,15 +461,9 @@ export function computeCommands(): CommandCategory[] {
 				},
 				{
 					id: newId(),
-					name: "Manage Behaviour",
-					icon: iconWrench,
-					action: intent("open-settings", { tab: "behaviour" }),
-				},
-				{
-					id: newId(),
-					name: "Manage Appearance",
-					icon: iconEye,
-					action: intent("open-settings", { tab: "appearance" }),
+					name: "Manage Preferences",
+					icon: iconTune,
+					action: intent("open-settings", { tab: "preferences" }),
 				},
 				{
 					id: newId(),
@@ -474,6 +485,12 @@ export function computeCommands(): CommandCategory[] {
 					: []),
 				{
 					id: newId(),
+					name: "Manage Data",
+					icon: iconTransfer,
+					action: intent("open-settings", { tab: "manage-data" }),
+				},
+				{
+					id: newId(),
 					name: "Manage Feature Flags",
 					icon: iconFlag,
 					action: intent("open-settings", { tab: "feature-flags" }),
@@ -485,7 +502,23 @@ export function computeCommands(): CommandCategory[] {
 					action: intent("open-settings", { tab: "licenses" }),
 					aliases: ["Manage OSS Licenses"],
 				},
+				{
+					id: newId(),
+					name: "View About",
+					icon: iconHelp,
+					action: intent("open-settings", { tab: "about" }),
+				},
 			],
+		},
+		{
+			name: "Preferences",
+			visibility: "searched",
+			commands: preferences.map((pref) => ({
+				id: newId(),
+				name: pref.name,
+				icon: iconWrench,
+				action: preference(pref.controller),
+			})),
 		},
 		{
 			name: "Navigation",
@@ -524,9 +557,11 @@ export function computeCommands(): CommandCategory[] {
 				},
 				{
 					id: newId(),
-					name: "Browse SurrealDB Docs",
+					name: "Search SurrealDB documentation",
+					aliases: ["Docs"],
 					icon: iconBook,
-					action: href("https://surrealdb.com/docs/"),
+					shortcut: "mod j",
+					action: intent("open-documentation"),
 				},
 				{
 					id: newId(),

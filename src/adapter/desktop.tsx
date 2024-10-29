@@ -11,12 +11,14 @@ import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
+import { compareVersions } from "compare-versions";
 import { VIEW_MODES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Platform, ViewMode } from "~/types";
+import type { Platform, QueryTab, SurrealistConfig, ViewMode } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
+import { getActiveConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { showError, showInfo } from "~/util/helpers";
 import { handleIntentRequest } from "~/util/intents";
@@ -33,7 +35,7 @@ interface Resource {
 interface FileResource {
 	success: boolean;
 	name: string;
-	query: string;
+	path: string;
 }
 
 interface LinkResource {
@@ -45,7 +47,7 @@ interface LinkResource {
  * Surrealist adapter for running as Wails desktop app
  */
 export class DesktopAdapter implements SurrealistAdapter {
-	public id = "desktop";
+	public readonly id: string = "desktop";
 
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
@@ -103,6 +105,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			store: useConfigStore,
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
+				console.log("pinned", pinned);
 				getCurrentWindow().setAlwaysOnTop(pinned);
 			},
 		});
@@ -277,14 +280,53 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		adapter.log("Updater", "Checking for updates");
 
-		const result = await check();
+		try {
+			const result = await check();
 
-		if (result && (force || result.version !== lastPromptedVersion)) {
-			adapter.log("Updater", `New version available: ${result.version}`);
+			if (result) {
+				const currentVersion = import.meta.env.VERSION;
+				const latestVersion = result.version;
 
-			setAvailableUpdate(result);
-			setLastPromptedVersion(result.version);
+				adapter.log("Updater", `Current: ${currentVersion}, Latest: ${latestVersion}`);
+
+				if (compareVersions(latestVersion, currentVersion) > 0) {
+					const showAlert = force || result.version !== lastPromptedVersion;
+
+					setAvailableUpdate(result, showAlert);
+					setLastPromptedVersion(result.version);
+				}
+			} else {
+				adapter.log("Updater", "No updates available");
+			}
+		} catch (err: any) {
+			console.warn("Failed to check for updates", err);
 		}
+	}
+
+	public readQueryFile(query: QueryTab) {
+		return invoke<string>("read_query_file", { path: query.query });
+	}
+
+	public writeQueryFile(query: QueryTab, content: string) {
+		return invoke<void>("write_query_file", { path: query.query, content });
+	}
+
+	public openQueryFile() {
+		return invoke<string>("open_query_file");
+	}
+
+	public openInExplorer(query: QueryTab) {
+		return invoke<void>("open_in_explorer", { path: query.query });
+	}
+
+	public pruneQueryFiles() {
+		const { sandbox, connections } = useConfigStore.getState();
+		const paths = [sandbox, ...connections]
+			.flatMap((c) => c.queries)
+			.filter((q) => q.type === "file")
+			.map((q) => q.query);
+
+		return invoke<void>("prune_allowed_files", { paths });
 	}
 
 	private initDatabaseEvents() {
@@ -352,8 +394,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	private async queryOpenRequest() {
-		const { addQueryTab, setActiveView } = useConfigStore.getState();
+		const { addQueryTab, setActiveQueryTab, setActiveView } = useConfigStore.getState();
 		const resources = await invoke<Resource[]>("get_opened_resources");
+		const connection = getActiveConnection();
 
 		if (resources.length === 0) {
 			return;
@@ -361,7 +404,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		for (const { File, Link } of resources) {
 			if (File) {
-				const { success, name, query } = File;
+				const { success, name, path } = File;
 
 				if (!success) {
 					showError({
@@ -372,7 +415,16 @@ export class DesktopAdapter implements SurrealistAdapter {
 					continue;
 				}
 
-				addQueryTab({ name, query });
+				const existing = connection.queries.find(
+					(q) => q.type === "file" && q.query === path,
+				);
+
+				if (existing) {
+					setActiveQueryTab(existing.id);
+				} else {
+					addQueryTab({ type: "file", name: name, query: path });
+				}
+
 				setActiveView("query");
 			} else if (Link) {
 				const { host, params } = Link;

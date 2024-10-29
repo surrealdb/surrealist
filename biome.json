@@ -26,6 +26,7 @@
 							{ "name": "useBoolean", "stableResult": [1] },
 							{ "name": "useOnboarding", "stableResult": [1] },
 							{ "name": "useImmer", "stableResult": [1] },
+							{ "name": "useSetting", "stableResult": [1] },
 							{ "name": "useNodesState", "stableResult": [1, 2] },
 							{ "name": "useEdgesState", "stableResult": [1, 2] },
 							{ "name": "useStable", "stableResult": true },
@@ -42,18 +43,9 @@
 		"indentStyle": "tab",
 		"lineWidth": 100,
 		"attributePosition": "multiline",
-		"ignore": [
-			"src/util/icons.tsx"
-		]
+		"ignore": ["src/util/icons.tsx"]
 	},
 	"files": {
-		"ignore": [
-			".vscode",
-			".github",
-			"node_modules",
-			"src-tauri",
-			"dist",
-			"*.js"
-		]
+		"ignore": [".vscode", ".github", "node_modules", "src-tauri", "dist", "*.js"]
 	}
 }

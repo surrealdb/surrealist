@@ -12,7 +12,6 @@ import {
 } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import dedent from "dedent";
 import {
 	type PropsWithChildren,
 	type ReactNode,
@@ -24,6 +23,7 @@ import {
 import { useImmer } from "use-immer";
 import { DATASETS, ORIENTATIONS, THEMES } from "~/constants";
 import type { ColorScheme, Orientation } from "~/types";
+import { dedent } from "~/util/dedent";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { iconHelp } from "~/util/icons";
 import { CodePreview } from "../CodePreview";
@@ -39,6 +39,7 @@ export const DEFAULT_STATE: EmbedState = {
 	variables: "{}",
 	orientation: "vertical",
 	transparent: false,
+	nonumbers: false,
 };
 
 const DATASET_OPTIONS = [
@@ -55,14 +56,24 @@ function SectionTitle({
 	extra,
 }: PropsWithChildren<{ help?: string; extra?: ReactNode }>) {
 	return (
-		<Group mb="sm" gap="xs">
-			<Text fw={600} fz="lg" c="bright">
+		<Group
+			mb="sm"
+			gap="xs"
+		>
+			<Text
+				fw={600}
+				fz="lg"
+				c="bright"
+			>
 				{children}
 			</Text>
 			{help && (
 				<Tooltip label={help}>
 					<Box>
-						<Icon path={iconHelp} size="sm" />
+						<Icon
+							path={iconHelp}
+							size="sm"
+						/>
 					</Box>
 				</Tooltip>
 			)}
@@ -84,6 +95,7 @@ export interface EmbedState {
 	theme: MantineColorScheme;
 	orientation: Orientation;
 	transparent?: boolean;
+	nonumbers?: boolean;
 }
 
 export interface EmbedderProps {
@@ -103,15 +115,8 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
-		const {
-			dataset,
-			setup,
-			query,
-			variables,
-			orientation,
-			theme,
-			transparent,
-		} = state;
+		const { dataset, setup, query, variables, orientation, theme, transparent, nonumbers } =
+			state;
 
 		if (setup.length > 0) {
 			search.append("setup", setup);
@@ -139,6 +144,10 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 		if (transparent) {
 			search.append("transparent", "true");
+		}
+
+		if (nonumbers) {
+			search.append("nonumbers", "true");
 		}
 
 		const url = new URL(location.toString());
@@ -176,11 +185,10 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 	return (
 		<Stack gap="lg">
 			<Text>
-				This form allows you to build a sharable mini version of
-				Surrealist pre-loaded with configured values, such as queries,
-				variables, and other settings. You can use these embedded mini's
-				in your blog posts, documentation, or other places where you
-				want to share interactive SurrealDB queries.
+				This form allows you to build a sharable mini version of Surrealist pre-loaded with
+				configured values, such as queries, variables, and other settings. You can use these
+				embedded mini's in your blog posts, documentation, or other places where you want to
+				share interactive SurrealDB queries.
 			</Text>
 			<Box>
 				<SectionTitle help="The query placed into the query editor">
@@ -245,9 +253,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 				/>
 			</Box>
 			<Box>
-				<SectionTitle help="The visual orientation of the mini">
-					Orientation
-				</SectionTitle>
+				<SectionTitle help="The visual orientation of the mini">Orientation</SectionTitle>
 				<Select
 					data={ORIENTATIONS}
 					value={state.orientation}
@@ -259,9 +265,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 				/>
 			</Box>
 			<Box>
-				<SectionTitle help="The color scheme used by the mini">
-					Color scheme
-				</SectionTitle>
+				<SectionTitle help="The color scheme used by the mini">Color scheme</SectionTitle>
 				<Select
 					data={THEMES}
 					value={state.theme}
@@ -273,18 +277,27 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 				/>
 			</Box>
 			<Box>
-				<SectionTitle help="Miscellaneous options for the mini">
-					Options
-				</SectionTitle>
-				<Checkbox
-					label="Transparent"
-					checked={state.transparent}
-					onChange={(e) => {
-						setState((draft) => {
-							draft.transparent = e.target.checked;
-						});
-					}}
-				/>
+				<SectionTitle help="Miscellaneous options for the mini">Options</SectionTitle>
+				<Stack>
+					<Checkbox
+						label="Transparent"
+						checked={state.transparent}
+						onChange={(e) => {
+							setState((draft) => {
+								draft.transparent = e.target.checked;
+							});
+						}}
+					/>
+					<Checkbox
+						label="Hide line numbers"
+						checked={state.nonumbers}
+						onChange={(e) => {
+							setState((draft) => {
+								draft.nonumbers = e.target.checked;
+							});
+						}}
+					/>
+				</Stack>
 			</Box>
 			<Divider />
 			<Box>

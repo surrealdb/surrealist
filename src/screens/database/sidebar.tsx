@@ -15,6 +15,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 import type { SidebarMode, ViewInfo, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
@@ -44,6 +45,7 @@ export function DatabaseSidebar({
 	const isLight = useIsLight();
 	const connection = useConnection();
 	const activeView = useConfigStore((s) => s.activeView);
+	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
 
@@ -166,9 +168,7 @@ export function DatabaseSidebar({
 						name={
 							<Group wrap="nowrap">
 								Search
-								{!isMobile() && (
-									<Shortcut value="mod K" />
-								)}
+								{!isMobile() && <Shortcut value="mod K" />}
 							</Group>
 						}
 						icon={iconSearch}
@@ -181,6 +181,7 @@ export function DatabaseSidebar({
 						icon={iconCog}
 						onClick={openSettings}
 						onMouseEnter={hoverSidebarHandle.open}
+						indicator={!!availableUpdate}
 					/>
 				</Stack>
 			</Flex>

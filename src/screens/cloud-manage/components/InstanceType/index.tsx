@@ -54,8 +54,12 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 					</Group>
 					{type.enabled === false ? (
 						<Text c="red">Not available in your current plan</Text>
-					) : isLimited && (
-						<Text c="orange">You have reached the maximum amount of instances of this type</Text>
+					) : (
+						isLimited && (
+							<Text c="orange">
+								You have reached the maximum amount of instances of this type
+							</Text>
+						)
 					)}
 					<Spacer />
 					{category && (
@@ -99,7 +103,7 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 									miw={75}
 									ta="right"
 								>
-									{type.memory} MB
+									{formatMemory(type.memory)}
 								</Table.Td>
 							</Table.Tr>
 						</Table.Tbody>
@@ -108,4 +112,12 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 			</Group>
 		</Tile>
 	);
+}
+
+function formatMemory(amountInMB: number) {
+	if (amountInMB < 1000) {
+		return `${amountInMB} MB`;
+	}
+
+	return `${amountInMB / 1024} GB`;
 }

@@ -4,6 +4,7 @@ import type { ViewMode } from "~/types";
 const INTENT_REGISTRY = {
 	"open-command-palette": null,
 	"open-connections": null,
+	"open-documentation": null,
 	"open-help": null,
 	"open-news": null,
 	"open-changelog": null,
@@ -38,12 +39,14 @@ const INTENT_REGISTRY = {
 	"toggle-graphql-variables": "graphql",
 	"infer-graphql-variables": "graphql",
 	"design-table": "designer",
+	"focus-table": "designer",
 	"create-user": "authentication",
 	"create-access": "authentication",
 	"register-user": "authentication",
 	"docs-switch-language": "documentation",
 	"cloud-signin": "cloud",
 	"cloud-signout": "cloud",
+	"cloud-activate": "cloud",
 } satisfies IntentMap;
 
 export type IntentType = keyof typeof INTENT_REGISTRY;

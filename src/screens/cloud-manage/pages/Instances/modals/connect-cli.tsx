@@ -1,7 +1,9 @@
-import { Group, Modal, Text } from "@mantine/core";
+import { Group, Modal, Skeleton, Text } from "@mantine/core";
+import { useQuery } from "@tanstack/react-query";
 import { useLayoutEffect, useState } from "react";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
+import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { fetchAPI } from "~/screens/cloud-manage/api";
@@ -14,27 +16,18 @@ export interface ConnectCliModalProps {
 	instance: CloudInstance;
 }
 
-export function ConnectCliModal({
-	opened,
-	onClose,
-	instance,
-}: ConnectCliModalProps) {
-	const [token, setToken] = useState("");
-
-	useLayoutEffect(() => {
-		if (opened) {
-			fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
-				(response) => {
-					setToken(response.token);
-				},
+export function ConnectCliModal({ opened, onClose, instance }: ConnectCliModalProps) {
+	const { data, isPending } = useQuery({
+		queryKey: ["cloud", "cli"],
+		queryFn: async () => {
+			return fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
+				(res) => res.token,
 			);
-		}
-	}, [opened, instance.id]);
+		},
+	});
 
 	const endpoint = `wss://${instance.host}`;
-	const command = token
-		? `surreal sql --endpoint ${endpoint} --token ${token}`
-		: "Loading...";
+	const command = `surreal sql --endpoint ${endpoint} --token ${data}`;
 
 	return (
 		<Modal
@@ -45,22 +38,38 @@ export function ConnectCliModal({
 			size="lg"
 			title={
 				<Group>
-					<Icon path={iconConsole} size="xl" />
+					<Icon
+						path={iconConsole}
+						size="xl"
+					/>
 					<PrimaryTitle>Connect with the CLI</PrimaryTitle>
 				</Group>
 			}
 		>
 			<Text size="lg">
-				Before connecting to this database, make sure you have the{" "}
-				<Link href="https://surrealdb.com/docs/surrealdb/installation">
-					SurrealDB CLI
-				</Link>{" "}
-				installed. Once it is installed, simply open the terminal of
-				your choice and run the following command to connect to your
-				Surreal Cloud instance.
+				In order to connect to this instance, make sure you have the{" "}
+				<Link href="https://surrealdb.com/docs/surrealdb/installation">SurrealDB CLI</Link>{" "}
+				installed. Once it is installed, simply open the terminal of your choice and run the
+				following command to connect to your Surreal Cloud instance.
 			</Text>
 
-			<CodePreview mt="xl" value={command} withCopy />
+			<Skeleton
+				mt="xl"
+				visible={isPending}
+			>
+				<CodePreview
+					value={command}
+					withCopy
+				/>
+			</Skeleton>
+
+			<LearnMore
+				mt="xl"
+				href="https://surrealdb.com/docs/surrealdb/cli"
+				display="block"
+			>
+				Learn more about the SurrealDB CLI
+			</LearnMore>
 		</Modal>
 	);
 }

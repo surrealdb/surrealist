@@ -8,17 +8,18 @@ import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
 import { CloudExpiredDialog } from "./modals/cloud-expired";
+import { CommandPaletteModal } from "./modals/commands";
 import { ConnectionModal } from "./modals/connection";
 import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
 import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
+import { DocumentationModal } from "./modals/documentation";
 import { DownloadModal } from "./modals/download";
 import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { KeymapModal } from "./modals/hotkeys";
 import { NewsFeedDrawer } from "./modals/newsfeed";
-import { CommandPaletteModal } from "./modals/palette";
 import { ProvisioningDialog } from "./modals/provisioning";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
@@ -50,6 +51,7 @@ export function App() {
 
 			<ConnectionsModal />
 			<CommandPaletteModal />
+			<DocumentationModal />
 			<ChangelogModal />
 			<ConnectionModal />
 			<DownloadModal />

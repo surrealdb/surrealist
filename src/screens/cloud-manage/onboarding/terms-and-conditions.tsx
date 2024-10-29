@@ -56,7 +56,7 @@ function TermsModal({ conditions }: TermsModalProps) {
 				body: JSON.stringify({
 					use: termsChecked,
 					marketing: newsChecked,
-				})
+				}),
 			});
 
 			const questions = await fetchAPI<Question[]>("/user/form");
@@ -97,13 +97,14 @@ function TermsModal({ conditions }: TermsModalProps) {
 								{i < conditions.length - 1 && <Text span>, </Text>}
 							</>
 						))}
+						.
 					</>
 				}
 			/>
 			<Checkbox
 				checked={newsChecked}
 				onChange={updateNewsChecked}
-				label="By subscribing to SurrealDB, you will receive carefully curated content, information on new products and features plus details of educational events where you can engage with our team and community"
+				label="By subscribing to SurrealDB, you will receive carefully curated content, information on new products and features plus details of educational events where you can engage with our team and community."
 			/>
 			<Group mt="xl">
 				<Button

@@ -1,4 +1,4 @@
-import "reactflow/dist/style.css";
+import "@xyflow/react/dist/style.css";
 import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
 import "mantine-contextmenu/styles.layer.css";

@@ -49,15 +49,15 @@ export function getDefaultConfig({ mode }: { mode?: string }): UserConfig {
 				input:
 					process.env.TAURI_ENV_PLATFORM || mode === "development"
 						? {
-								surrealist: "/index.html",
-							}
+							surrealist: "/index.html",
+						}
 						: {
-								surrealist: "/index.html",
-								"mini-run": "/mini/run/index.html",
-								"mini-new": "/mini/new/index.html",
-								"cloud-manage": "/cloud/manage/index.html",
-								"cloud-callback": "/cloud/callback/index.html",
-							},
+							surrealist: "/index.html",
+							"mini-run": "/mini/run/index.html",
+							"mini-new": "/mini/new/index.html",
+							"cloud-manage": "/cloud/manage/index.html",
+							"cloud-callback": "/cloud/callback/index.html",
+						},
 				output: {
 					experimentalMinChunkSize: 5000,
 					manualChunks: {
@@ -99,11 +99,13 @@ export function getDefaultConfig({ mode }: { mode?: string }): UserConfig {
 			},
 			preprocessorOptions: {
 				scss: {
-					additionalData: '@import "~/assets/styles/mixins.scss";',
+					additionalData: '@use "~/assets/styles/mixins" as *;',
+					api: 'modern-compiler',
 				},
 			},
 		},
 		define: {
+			"import.meta.env.DATE": JSON.stringify(new Date()),
 			"import.meta.env.VERSION": JSON.stringify(version),
 			"import.meta.env.SDB_VERSION": JSON.stringify(surreal),
 			"import.meta.env.POSTHOG_KEY": JSON.stringify(

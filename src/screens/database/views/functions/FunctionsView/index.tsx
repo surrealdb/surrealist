@@ -52,6 +52,8 @@ export function FunctionsView() {
 	const [showCreator, showCreatorHandle] = useDisclosure();
 	const [createName, setCreateName] = useState("");
 
+	const [error, setError] = useState("");
+
 	const handle = useSaveable({
 		valid: !!details && details.args.every(([name, kind]) => name && kind),
 		track: {
@@ -62,13 +64,32 @@ export function FunctionsView() {
 
 			const query = buildFunctionDefinition(details);
 
-			await executeQuery(query).catch(console.error);
-			await syncConnectionSchema();
+			try {
+				const res = await executeQuery(query);
+				const error = res[0].success ? "" : (res[0].result as string).replace(
+					"There was a problem with the database: ",
+					"",
+				);
+				
+				setError(error);
 
-			isCreatingHandle.close();
+				if (error) {
+					return false;
+				}
+
+				syncConnectionSchema();
+
+				isCreatingHandle.close();
+			} catch (err: any) {
+				showError({
+					title: "Failed to apply schema",
+					subtitle: err.message,
+				});
+			}
 		},
 		onRevert({ details }) {
 			setDetails(details);
+			setError("");
 		},
 	});
 
@@ -100,19 +121,12 @@ export function FunctionsView() {
 			return;
 		}
 
-		const isFunctionBlockInvalid = validateQuery(selectedFunction.block);
-
-		if (isFunctionBlockInvalid) {
-			showError({
-				title: "Failed to format",
-				subtitle: "Your function must be valid to format it",
-			});
-			return;
-		}
+		const isInvalid = validateQuery(selectedFunction.block);
+		const block = isInvalid ? selectedFunction.block : formatQuery(selectedFunction.block);
 
 		setDetails({
 			...selectedFunction,
-			block: formatQuery(selectedFunction.block),
+			block,
 		});
 
 		handle.track();
@@ -187,6 +201,7 @@ export function FunctionsView() {
 							<EditorPanelLazy
 								handle={handle}
 								details={details}
+								error={error}
 								isCreating={isCreating}
 								onChange={setDetails as any}
 								onDelete={removeFunction}

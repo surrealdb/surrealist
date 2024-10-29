@@ -1,3 +1,16 @@
+import {
+	iconChevronDown,
+	iconClose,
+	iconDownload,
+	iconEdit,
+	iconList,
+	iconRefresh,
+	iconReset,
+	iconSandbox,
+	iconTable,
+	iconUpload,
+} from "~/util/icons";
+
 import { Button, Group, Indicator, Menu, Modal, Select, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -10,17 +23,7 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
-import {
-	iconChevronDown,
-	iconClose,
-	iconDownload,
-	iconEdit,
-	iconFile,
-	iconList,
-	iconReset,
-	iconSandbox,
-	iconUpload,
-} from "~/util/icons";
+import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
@@ -72,6 +75,10 @@ export function ConnectionStatus() {
 	} as const;
 
 	const [statusText, color, pulse] = statusInfo[currentState];
+
+	// NOTE - Temporary
+	const protocol = connection?.authentication?.protocol;
+	const isExportDisabled = protocol === "indxdb" || protocol === "mem";
 
 	return (
 		<>
@@ -143,31 +150,37 @@ export function ConnectionStatus() {
 								</Menu.Item>
 							)}
 							<Menu.Label mt="sm">Actions</Menu.Label>
-							{!isSandbox && connection.lastDatabase && isSchemaEmpty && (
+							{!isSandbox && connection.lastDatabase && (
 								<Menu.Item
-									leftSection={<Icon path={iconFile} />}
-									disabled={currentState !== "connected"}
+									leftSection={<Icon path={iconTable} />}
+									disabled={currentState !== "connected" || !isSchemaEmpty}
 									onClick={openDatasets}
 								>
-									Initialize with dataset
+									Initialize using dataset
 								</Menu.Item>
 							)}
 							<Menu.Item
 								leftSection={<Icon path={iconUpload} />}
-								disabled={currentState !== "connected"}
+								disabled={currentState !== "connected" || isExportDisabled}
 								onClick={() => dispatchIntent("export-database")}
 							>
-								Export data
+								Export database
 							</Menu.Item>
 							<Menu.Item
 								leftSection={<Icon path={iconDownload} />}
 								disabled={currentState !== "connected"}
 								onClick={() => dispatchIntent("import-database")}
 							>
-								Import data
+								Import database
 							</Menu.Item>
 							{!isSandbox && (
 								<>
+									<Menu.Item
+										leftSection={<Icon path={iconRefresh} />}
+										onClick={() => syncConnectionSchema()}
+									>
+										Sync schema
+									</Menu.Item>
 									<Menu.Item
 										leftSection={<Icon path={iconReset} />}
 										onClick={() => openConnection()}
@@ -222,10 +235,10 @@ export function ConnectionStatus() {
 				title={
 					<Group>
 						<Icon
-							path={iconFile}
+							path={iconTable}
 							size="lg"
 						/>
-						<PrimaryTitle>Initialize with dataset</PrimaryTitle>
+						<PrimaryTitle>Initialize using dataset</PrimaryTitle>
 					</Group>
 				}
 			>

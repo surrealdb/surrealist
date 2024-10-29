@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
+import { Alert, Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -8,35 +8,36 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { EXPORT_TYPES, type ExportType, SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { useIntent } from "~/hooks/url";
-import { createDatabaseExport } from "~/util/exporter";
+import { requestDatabaseExport } from "~/screens/database/connection/connection";
 import { showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 
 export function DataExportModal() {
 	const isLight = useIsLight();
 	const tables = useTableNames();
-	const connection = useActiveConnection();
+	const connection = useConnection();
 
 	const [isOpen, openedHandle] = useBoolean();
 
 	const [isExporting, setIsExporting] = useState(false);
 	const [records, setRecord, setRecords] = useToggleList<string>([]);
-	const [comments, commentsHandle] = useDisclosure(true);
+	// const [comments, commentsHandle] = useDisclosure(true);
+	const [comments, commentsHandle] = useDisclosure(false);
 	const [exportTypes, setExportTypes] = useToggleList<ExportType>([
-		"tables",
-		"analyzers",
-		"functions",
-		"params",
-		"access",
+		// "tables",
+		// "analyzers",
+		// "functions",
+		// "params",
+		// "access",
 	]);
 
-	const fileName = `${slugify(connection.name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
+	const fileName = `${slugify(connection?.name ?? "")}-${dayjs().format("YYYY-MM-DD")}.surql`;
 
 	const handleExport = useStable(async () => {
 		try {
@@ -44,14 +45,18 @@ export function DataExportModal() {
 				"Save database export",
 				fileName,
 				[SURQL_FILTER],
-				() => {
+				async () => {
 					setIsExporting(true);
 
-					return createDatabaseExport({
-						types: exportTypes,
-						records,
-						comments,
-					});
+					// return createDatabaseExport({
+					// 	types: exportTypes,
+					// 	records,
+					// 	comments,
+					// });
+
+					const exported = await requestDatabaseExport();
+
+					return exported ?? null;
 				},
 			);
 
@@ -82,13 +87,21 @@ export function DataExportModal() {
 			opened={isOpen}
 			onClose={openedHandle.close}
 			size="sm"
-			title={<PrimaryTitle>Export data</PrimaryTitle>}
+			title={<PrimaryTitle>Export database</PrimaryTitle>}
 		>
 			<Stack gap="xl">
 				<Text>
 					Select which schema resources and table records you want to include in your
 					export.
 				</Text>
+
+				<Alert
+					title="Notice"
+					color="orange"
+				>
+					Export customization is currently unavailable as it is being integrated directly
+					into SurrealDB
+				</Alert>
 
 				<Stack>
 					<Text
@@ -103,6 +116,7 @@ export function DataExportModal() {
 						label="Include comments"
 						checked={comments}
 						onChange={commentsHandle.toggle}
+						disabled
 					/>
 				</Stack>
 
@@ -122,6 +136,7 @@ export function DataExportModal() {
 								label={`Include ${type}`}
 								checked={exportTypes.includes(type)}
 								onChange={setExportTypes.bind(null, type)}
+								disabled
 							/>
 						))}
 					</SimpleGrid>
@@ -146,6 +161,7 @@ export function DataExportModal() {
 									label="Include all records"
 									checked={records.length === tables.length}
 									onChange={toggleAllRecords}
+									disabled
 									indeterminate={
 										records.length > 0 && records.length < tables.length
 									}
@@ -161,6 +177,7 @@ export function DataExportModal() {
 											label={table}
 											checked={records.includes(table)}
 											onChange={setRecord.bind(null, table)}
+											disabled
 											size="xs"
 										/>
 									))}
@@ -174,7 +191,7 @@ export function DataExportModal() {
 					fullWidth
 					onClick={handleExport}
 					loading={isExporting}
-					disabled={exportTypes.length === 0}
+					// disabled={exportTypes.length === 0}
 					variant="gradient"
 					rightSection={<Icon path={iconDownload} />}
 				>

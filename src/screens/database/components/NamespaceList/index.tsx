@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Button,
@@ -11,9 +13,9 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
 import { useInputState } from "@mantine/hooks";
-import { useQuery } from "@tanstack/react-query";
-import type { SyntheticEvent } from "react";
+import { type MouseEvent, type SyntheticEvent, useMemo } from "react";
 import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -21,14 +23,13 @@ import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { getAuthLevel } from "~/util/connection";
-import { fetchNamespaceList } from "~/util/databases";
+import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
-import { escapeIdent } from "~/util/surrealql";
+import { escapeIdent, parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
-import classes from "./style.module.scss";
 
 export interface NamespaceProps {
 	value: string;
@@ -78,7 +79,10 @@ function Namespace({ value, isActive, onOpen, onRemove }: NamespaceProps) {
 					aria-label="Remove namespace"
 					size="xs"
 				>
-					<Icon path={iconClose} size="sm" />
+					<Icon
+						path={iconClose}
+						size="sm"
+					/>
 				</ActionIcon>
 			}
 		>
@@ -95,15 +99,19 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connection = useActiveConnection();
 	const connected = useIsConnected();
+	const schema = useRootSchema();
+
+	const namespaces = useMemo(() => {
+		const authNS = getAuthNS(connection.authentication);
+
+		if (authNS) {
+			return [authNS];
+		}
+
+		return schema.namespaces.map((ns) => parseIdent(ns.name));
+	}, [schema, connection.authentication]);
 
 	const level = getAuthLevel(connection.authentication);
-
-	const { data, refetch } = useQuery({
-		queryKey: ["namespaces", connection?.id, opened],
-		enabled: connected,
-		queryFn: fetchNamespaceList,
-		initialData: [],
-	});
 
 	const openNamespace = (ns: string) => {
 		if (connection.lastNamespace !== ns) {
@@ -125,77 +133,103 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	const createNamespace = useStable(async () => {
 		await executeQuery(`DEFINE NAMESPACE ${escapeIdent(namespaceName)}`);
 
-		refetch();
-
 		creatorHandle.close();
 		openNamespace(namespaceName);
 	});
 
+	const willCreate = level === "root" && namespaces.length === 0;
+
 	return (
 		<>
-			<Menu
-				opened={opened}
-				onChange={openHandle.set}
-				trigger="click"
-				position="bottom"
-				transitionProps={{
-					transition: "scale-y",
-				}}
-			>
-				<Menu.Target>
-					<Button
-						px="sm"
-						variant={connection.lastNamespace ? "subtle" : "light"}
-						color="slate"
-						leftSection={<Icon path={iconNamespace} />}
-						{...buttonProps}
+			{willCreate ? (
+				<Button
+					px="sm"
+					color="slate"
+					variant="light"
+					leftSection={<Icon path={iconNamespace} />}
+					onClick={openCreator}
+					{...buttonProps}
+				>
+					<Text
+						truncate
+						fw={600}
+						maw={200}
 					>
-						<Text truncate fw={600} maw={200}>
-							{connection.lastNamespace || "Select namespace"}
-						</Text>
-					</Button>
-				</Menu.Target>
-				<Menu.Dropdown w={250}>
-					<Stack flex={1} p="sm" gap="sm">
-						<Group>
-							<Text flex={1} fw={600} c="bright">
-								Namespaces
-							</Text>
-							<ActionIcon
-								color="slate"
-								variant="light"
-								disabled={
-									!connected ||
-									(level !== "root" && level !== "namespace")
-								}
-								onClick={openCreator}
+						Create namespace
+					</Text>
+				</Button>
+			) : (
+				<Menu
+					opened={opened}
+					onChange={openHandle.set}
+					trigger="click"
+					position="bottom"
+					transitionProps={{
+						transition: "scale-y",
+					}}
+				>
+					<Menu.Target>
+						<Button
+							px="sm"
+							variant={connection.lastNamespace ? "subtle" : "light"}
+							color="slate"
+							leftSection={<Icon path={iconNamespace} />}
+							{...buttonProps}
+						>
+							<Text
+								truncate
+								fw={600}
+								maw={200}
 							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
-						</Group>
-						<Divider />
-						<ScrollArea.Autosize mah={250}>
-							{data.length === 0 ? (
-								<Text c="slate">No namespaces defined</Text>
-							) : (
-								<Stack gap="xs">
-									{data.map((ns) => (
-										<Namespace
-											key={ns}
-											value={ns}
-											isActive={
-												ns === connection.lastNamespace
-											}
-											onOpen={openNamespace}
-											onRemove={openHandle.close}
-										/>
-									))}
-								</Stack>
-							)}
-						</ScrollArea.Autosize>
-					</Stack>
-				</Menu.Dropdown>
-			</Menu>
+								{connection.lastNamespace || "Select namespace"}
+							</Text>
+						</Button>
+					</Menu.Target>
+					<Menu.Dropdown w={250}>
+						<Stack
+							flex={1}
+							p="sm"
+							gap="sm"
+						>
+							<Group>
+								<Text
+									flex={1}
+									fw={600}
+									c="bright"
+								>
+									Namespaces
+								</Text>
+								<ActionIcon
+									color="slate"
+									variant="light"
+									disabled={!connected || (level !== "root" && level !== "namespace")}
+									onClick={openCreator}
+								>
+									<Icon path={iconPlus} />
+								</ActionIcon>
+							</Group>
+							<Divider />
+							<ScrollArea.Autosize mah={250}>
+								{namespaces.length === 0 ? (
+									<Text c="slate">No namespaces defined</Text>
+								) : (
+									<Stack gap="xs">
+										{namespaces.map((ns) => (
+											<Namespace
+												key={ns}
+												value={ns}
+												isActive={ns === connection.lastNamespace}
+												onOpen={openNamespace}
+												onRemove={openHandle.close}
+											/>
+										))}
+									</Stack>
+								)}
+							</ScrollArea.Autosize>
+						</Stack>
+					</Menu.Dropdown>
+				</Menu>
+			)}
 
 			<Modal
 				opened={showCreator}
@@ -207,8 +241,8 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 				<Form onSubmit={createNamespace}>
 					<Stack>
 						<Text>
-							Namespaces represent a layer of separation for each
-							organisation, department, or development team.
+							Namespaces represent a layer of separation for each organisation,
+							department, or development team.
 						</Text>
 						<TextInput
 							placeholder="Enter namespace name"

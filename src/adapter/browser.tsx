@@ -1,12 +1,15 @@
-import type { Platform, UrlTarget } from "~/types";
 import { showWarning } from "~/util/helpers";
+import { isFunction, shake } from "radash";
+import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
+import * as idxdb from "~/util/idxdb";
+import { CONFIG_KEY } from "~/util/storage";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
- * Surrealist adapter for running as web app
+ * Base adapter for running as web app
  */
 export class BrowserAdapter implements SurrealistAdapter {
-	public id = "browser";
+	public readonly id: string = "browser";
 
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
@@ -35,14 +38,21 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async loadConfig() {
-		const config = localStorage.getItem("surrealist:config") || "{}";
-		const parsed = JSON.parse(config);
+		const localStorageValue = localStorage.getItem(CONFIG_KEY);
 
-		if (parsed.configVersion === undefined && Object.keys(parsed).length > 0) {
-			return {};
+		// NOTE legacy local storage config
+		if (localStorageValue) {
+			const config = localStorageValue || "{}";
+			const parsed = JSON.parse(config);
+
+			if (parsed.configVersion === undefined && Object.keys(parsed).length > 0) {
+				return {};
+			}
+
+			return parsed;
 		}
 
-		return parsed;
+		return (await idxdb.getConfig()) || {};
 	}
 
 	public async loadEmbeddedConfig() {
@@ -80,8 +90,9 @@ export class BrowserAdapter implements SurrealistAdapter {
 		}
 	}
 
-	public async saveConfig(config: any) {
-		localStorage.setItem("surrealist:config", JSON.stringify(config));
+	public async saveConfig(config: SurrealistConfig) {
+		await idxdb.setConfig(shake(config, isFunction));
+		localStorage.removeItem(CONFIG_KEY);
 	}
 
 	public async startDatabase() {

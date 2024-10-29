@@ -1,21 +1,3 @@
-import { Center, Text } from "@mantine/core";
-import { Accordion, Badge, Group, ScrollArea, Stack } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import { surrealql } from "@surrealdb/codemirror";
-import { useContextMenu } from "mantine-contextmenu";
-import { tryit } from "radash";
-import { useMemo } from "react";
-import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
-import { RelativeTime } from "~/components/RelativeTime";
-import { surqlRecordLinks } from "~/editor";
-import { type Formatter, useValueFormatter } from "~/hooks/surrealql";
-import { useRefreshTimer } from "~/hooks/timer";
-import { useInspector } from "~/providers/Inspector";
-import { executeQuery } from "~/screens/database/connection/connection";
-import { useInterfaceStore } from "~/stores/interface";
-import type { LiveMessage, TabQuery } from "~/types";
-import { ON_FOCUS_SELECT } from "~/util/helpers";
 import {
 	iconBroadcastOff,
 	iconBroadcastOn,
@@ -26,6 +8,23 @@ import {
 	iconHelp,
 	iconPlus,
 } from "~/util/icons";
+
+import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { surrealql } from "@surrealdb/codemirror";
+import { useContextMenu } from "mantine-contextmenu";
+import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { RelativeTime } from "~/components/RelativeTime";
+import { surqlRecordLinks } from "~/editor";
+import { useResultFormatter } from "~/hooks/surrealql";
+import { useRefreshTimer } from "~/hooks/timer";
+import { useInspector } from "~/providers/Inspector";
+import { executeQuery } from "~/screens/database/connection/connection";
+import { useInterfaceStore } from "~/stores/interface";
+import type { LiveMessage } from "~/types";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { type PreviewProps, attemptFormat } from ".";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],
@@ -38,18 +37,6 @@ function hasBody(msg: LiveMessage) {
 	return msg.data !== undefined && msg.data !== "killed";
 }
 
-function attemptFormat(format: Formatter, data: any) {
-	const [err, res] = tryit(format)(data);
-
-	return err ? `"Error: ${err.message}"` : res;
-}
-
-function buildCombinedResult(index: number, { result, execution_time }: any, format: Formatter) {
-	const header = `\n\n-------- Query ${index + 1 + (execution_time ? ` (${execution_time})` : "")} --------\n\n`;
-
-	return header + attemptFormat(format, result);
-}
-
 function killQuery(id: string) {
 	executeQuery("KILL $id", { id });
 
@@ -59,58 +46,12 @@ function killQuery(id: string) {
 	});
 }
 
-export interface CombinedJsonPreviewProps {
-	results: any[];
-}
-
-export function CombinedJsonPreview({ results }: CombinedJsonPreviewProps) {
-	const [format] = useValueFormatter();
-	const { inspect } = useInspector();
-
-	const contents = useMemo(() => {
-		return results
-			.reduce((acc, cur, i) => acc + buildCombinedResult(i, cur, format), "")
-			.trim();
-	}, [results, format]);
-
-	return (
-		<CodeEditor
-			value={contents}
-			readOnly
-			extensions={[surrealql("combined-results"), surqlRecordLinks(inspect)]}
-		/>
-	);
-}
-
-export interface SingleJsonPreviewProps {
-	result: any;
-}
-
-export function SingleJsonPreview({ result }: SingleJsonPreviewProps) {
-	const [format] = useValueFormatter();
-	const { inspect } = useInspector();
-	const contents = useMemo(() => attemptFormat(format, result), [result, format]);
-
-	return (
-		<CodeEditor
-			value={contents}
-			readOnly
-			extensions={[surrealql(), surqlRecordLinks(inspect)]}
-		/>
-	);
-}
-
-export interface LivePreviewProps {
-	query: TabQuery;
-	isLive: boolean;
-}
-
-export function LivePreview({ query, isLive }: LivePreviewProps) {
+export function LivePreview({ query, isLive }: PreviewProps) {
 	const messages = useInterfaceStore((s) => s.liveQueryMessages[query.id] || []);
 	const { inspect } = useInspector();
 
 	const { showContextMenu } = useContextMenu();
-	const [format] = useValueFormatter();
+	const [format] = useResultFormatter();
 
 	useRefreshTimer(30_000);
 

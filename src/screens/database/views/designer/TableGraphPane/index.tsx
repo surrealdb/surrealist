@@ -1,54 +1,44 @@
+import classes from "./style.module.scss";
+
 import {
 	ActionIcon,
 	Badge,
 	Box,
 	Button,
-	Checkbox,
 	Divider,
 	Group,
 	HoverCard,
 	Loader,
 	Popover,
+	Select,
+	SimpleGrid,
 	Stack,
 	Text,
 	Tooltip,
 } from "@mantine/core";
-import { useContextMenu } from "mantine-contextmenu";
-import { sleep } from "radash";
+
 import {
-	type ChangeEvent,
 	type ElementRef,
+	type MouseEvent,
 	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
 } from "react";
+
 import {
 	Background,
-	type NodeChange,
+	type Edge,
+	type Node,
 	ReactFlow,
 	useEdgesState,
+	useNodesInitialized,
 	useNodesState,
 	useReactFlow,
-} from "reactflow";
-import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
-import { Link } from "~/components/Link";
-import { ContentPane } from "~/components/Pane";
-import { RadioSelect } from "~/components/RadioSelect";
-import { DESIGNER_DIRECTIONS, DESIGNER_NODE_MODES } from "~/constants";
-import { useIsConnected } from "~/hooks/connection";
-import { useActiveConnection } from "~/hooks/connection";
-import { useDatabaseSchema } from "~/hooks/schema";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
-import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
-import { showInfo } from "~/util/helpers";
+} from "@xyflow/react";
+
 import {
 	iconAPI,
-	iconChevronLeft,
 	iconChevronRight,
 	iconCog,
 	iconFullscreen,
@@ -58,16 +48,54 @@ import {
 	iconRefresh,
 	iconRelation,
 } from "~/util/icons";
-import { themeColor } from "~/util/mantine";
-import { GraphWarningLine } from "./components";
+
 import {
+	EDGE_TYPES,
 	type GraphWarning,
 	NODE_TYPES,
+	applyDefault,
 	applyNodeLayout,
 	buildFlowNodes,
 	createSnapshot,
 } from "./helpers";
-import classes from "./style.module.scss";
+
+import {
+	DESIGNER_ALGORITHMS,
+	DESIGNER_DIRECTIONS,
+	DESIGNER_LINE_STYLES,
+	DESIGNER_LINKS,
+	DESIGNER_NODE_MODES,
+} from "~/constants";
+
+import type {
+	DiagramAlgorithm,
+	DiagramDirection,
+	DiagramLineStyle,
+	DiagramLinks,
+	DiagramMode,
+	TableInfo,
+} from "~/types";
+
+import { useContextMenu } from "mantine-contextmenu";
+import { sleep } from "radash";
+import { adapter } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
+import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
+import { Link } from "~/components/Link";
+import { ContentPane } from "~/components/Pane";
+import { useSetting } from "~/hooks/config";
+import { useIsConnected } from "~/hooks/connection";
+import { useActiveConnection } from "~/hooks/connection";
+import { useDatabaseSchema } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { showInfo } from "~/util/helpers";
+import { themeColor } from "~/util/mantine";
+import { GraphWarningLine } from "./components";
 
 export interface TableGraphPaneProps {
 	active: string | null;
@@ -85,7 +113,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const connection = useActiveConnection();
 	const isViewActive = useConfigStore((s) => s.activeView === "designer");
 
-	const [isComputing, setIsComputing] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
 	const activeSession = useActiveConnection();
@@ -93,60 +120,51 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
-	const [nodes, setNodes, handleOnNodesChange] = useNodesState([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const [computing, setComputing] = useState(false);
+	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+	const [rendering, setRendering] = useState(false);
 
-	const doLayoutRef = useRef(false);
-	const doFitRef = useRef(false);
+	const { getNodes, getEdges } = useReactFlow();
+	const nodesInitialized = useNodesInitialized({ includeHiddenNodes: true });
+	const isLayedOut = useRef(false);
 
-	const onNodesChange = useStable(async (changes: NodeChange[]) => {
-		handleOnNodesChange(changes);
+	const [defaultAlgorithm] = useSetting("appearance", "defaultDiagramAlgorithm");
+	const [defaultDirection] = useSetting("appearance", "defaultDiagramDirection");
+	const [defaultLineStyle] = useSetting("appearance", "defaultDiagramLineStyle");
+	const [defaultLinkMode] = useSetting("appearance", "defaultDiagramLinkMode");
+	const [defaultNodeMode] = useSetting("appearance", "defaultDiagramMode");
 
-		if (doLayoutRef.current) {
-			doLayoutRef.current = false;
+	const algorithm = applyDefault(activeSession.diagramAlgorithm, defaultAlgorithm);
+	const direction = applyDefault(activeSession.diagramDirection, defaultDirection);
+	const lineStyle = applyDefault(activeSession.diagramLineStyle, defaultLineStyle);
+	const linkMode = applyDefault(activeSession.diagramLinkMode, defaultLinkMode);
+	const nodeMode = applyDefault(activeSession.diagramMode, defaultNodeMode);
 
-			const direction = activeSession.diagramDirection;
-			const dimNodes = changes.flatMap((change) => {
-				if (change.type !== "dimensions" || !change.dimensions) {
-					return [];
-				}
+	useLayoutEffect(() => {
+		if (isLayedOut.current || !nodesInitialized) {
+			return;
+		}
 
-				return {
-					id: change.id,
-					width: change.dimensions.width,
-					height: change.dimensions.height,
-				};
+		isLayedOut.current = true;
+
+		applyNodeLayout(getNodes(), getEdges(), algorithm, direction)
+			.then(([nodes, edges]) => {
+				onNodesChange(nodes);
+				onEdgesChange(edges);
+				setTimeout(fitView, 0);
+			})
+			.finally(() => {
+				setRendering(false);
 			});
-
-			const layoutChanges = await applyNodeLayout(
-				dimNodes,
-				edges,
-				direction,
-			);
-
-			setComputing(false);
-
-			if (changes.length > 0) {
-				doFitRef.current = true;
-				handleOnNodesChange(layoutChanges);
-				fitView();
-			}
-		}
-	});
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Fit view when nodes change
-	useEffect(() => {
-		if (doFitRef.current) {
-			doFitRef.current = false;
-			fitView();
-		}
-	}, [nodes]);
+	}, [nodesInitialized, algorithm, direction]);
 
 	const renderGraph = useStable(async () => {
 		const [nodes, edges, warnings] = buildFlowNodes(
 			props.tables,
-			activeSession.diagramShowLinks,
+			nodeMode,
+			direction,
+			linkMode,
+			lineStyle,
 		);
 
 		setWarnings(warnings);
@@ -154,15 +172,34 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		if (nodes.length === 0) {
 			setNodes([]);
 			setEdges([]);
-			setIsComputing(false);
+			setRendering(false);
 			return;
 		}
 
+		isLayedOut.current = false;
+		setRendering(true);
 		setNodes(nodes);
 		setEdges(edges);
-		setComputing(true);
+	});
 
-		doLayoutRef.current = true;
+	const handleNodeClick = useStable((_: MouseEvent, node: Node) => {
+		props.setActiveTable(node.id);
+	});
+
+	const handleNodeDragStart = useStable((_: MouseEvent, node: Node) => {
+		setEdges((edges) =>
+			edges.map((edge) => {
+				const isDisrupted = edge.source === node.id || edge.target === node.id;
+
+				return {
+					...edge,
+					data: {
+						...edge.data,
+						isDragged: isDisrupted ? true : edge.data?.isDragged ?? false,
+					},
+				};
+			}),
+		);
 	});
 
 	const saveImage = useStable(async (type: "png" | "svg") => {
@@ -201,18 +238,18 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		}
 	});
 
-	const toggleTableList = useStable(() => {
+	const openTableList = useStable(() => {
 		updateCurrentConnection({
-			designerTableList: !connection.designerTableList,
+			designerTableList: true,
 		});
 	});
 
-	const showBox = !isComputing && (!isConnected || props.tables.length === 0);
+	const showBox = !isConnected || props.tables.length === 0;
 
-	const setDiagramMode = useStable((mode: string) => {
+	const setDiagramAlgorithm = useStable((alg: string) => {
 		updateCurrentConnection({
 			id: activeSession?.id,
-			diagramMode: mode as DiagramMode,
+			diagramAlgorithm: alg as DiagramAlgorithm,
 		});
 	});
 
@@ -223,25 +260,28 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		});
 	});
 
-	const setDiagramShowLinks = useStable(
-		(e: ChangeEvent<HTMLInputElement>) => {
-			updateCurrentConnection({
-				id: activeSession?.id,
-				diagramShowLinks: e.target.checked,
-			});
-		},
-	);
+	const setDiagramLineStyle = useStable((style: string) => {
+		updateCurrentConnection({
+			id: activeSession?.id,
+			diagramLineStyle: style as DiagramLineStyle,
+		});
+	});
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on settings change
-	useEffect(() => {
-		renderGraph();
-	}, [
-		activeSession.diagramMode,
-		activeSession.diagramDirection,
-		activeSession.diagramShowLinks,
-	]);
+	const setDiagramLinkMode = useStable((mode: string) => {
+		updateCurrentConnection({
+			id: activeSession?.id,
+			diagramLinkMode: mode as DiagramLinks,
+		});
+	});
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema change
+	const setDiagramMode = useStable((mode: string) => {
+		updateCurrentConnection({
+			id: activeSession?.id,
+			diagramMode: mode as DiagramMode,
+		});
+	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema or setting change
 	useLayoutEffect(() => {
 		if (isViewActive && isConnected) {
 			renderGraph();
@@ -252,7 +292,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			setNodes([]);
 			setEdges([]);
 		}
-	}, [schema, isViewActive, isConnected, activeSession.diagramDirection]);
+	}, [schema, isViewActive, isConnected, algorithm, direction, lineStyle, linkMode, nodeMode]);
 
 	useEffect(() => {
 		setNodes((curr) => {
@@ -268,36 +308,45 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		});
 	}, [props.active]);
 
+	useIntent("focus-table", ({ table }) => {
+		const node = getNodes().find((node) => node.id === table);
+
+		if (node) {
+			fitView({
+				nodes: [node],
+				duration: 300,
+			});
+		}
+	});
+
 	return (
 		<ContentPane
 			title="Table Graph"
 			icon={iconRelation}
 			style={{ overflow: "hidden" }}
 			leftSection={
-				<Tooltip label="Toggle table list">
-					<ActionIcon
+				!connection.designerTableList && (
+					<ActionButton
+						label="Reveal tables"
 						mr="sm"
 						color="slate"
 						variant="light"
-						onClick={toggleTableList}
-						aria-label="Toggle table list"
+						onClick={openTableList}
 					>
-						<Icon
-							path={
-								connection.designerTableList
-									? iconChevronLeft
-									: iconChevronRight
-							}
-						/>
-					</ActionIcon>
-				</Tooltip>
+						<Icon path={iconChevronRight} />
+					</ActionButton>
+				)
 			}
 			rightSection={
 				<Group wrap="nowrap">
 					{warnings.length > 0 && (
 						<HoverCard position="bottom-end">
 							<HoverCard.Target>
-								<Badge variant="light" color="orange" h={26}>
+								<Badge
+									variant="light"
+									color="orange"
+									h={26}
+								>
 									Encountered {warnings.length} warnings
 								</Badge>
 							</HoverCard.Target>
@@ -324,6 +373,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</Tooltip>
 					<Popover
 						position="bottom-end"
+						transitionProps={{ transition: "scale-y" }}
 						offset={{ crossAxis: -4, mainAxis: 8 }}
 						shadow="sm"
 					>
@@ -334,58 +384,98 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								</ActionIcon>
 							</Tooltip>
 						</Popover.Target>
-						<Popover.Dropdown>
-							<Stack w={150}>
-								<RadioSelect
-									label="Table appearance"
+						<Popover.Dropdown maw={325}>
+							<Text
+								c="bright"
+								fw={500}
+								fz={15}
+							>
+								Table graph settings
+							</Text>
+							<Text fz="sm">Local to this connection</Text>
+							<Divider my="md" />
+							<SimpleGrid
+								cols={2}
+								style={{ alignItems: "center" }}
+								verticalSpacing="sm"
+							>
+								<Label>Line style</Label>
+								<Select
+									data={DESIGNER_LINE_STYLES}
+									value={activeSession.diagramLineStyle}
+									onChange={setDiagramLineStyle as any}
+									comboboxProps={{ withinPortal: false }}
+								/>
+
+								<Label>Algorithm</Label>
+								<Select
+									data={DESIGNER_ALGORITHMS}
+									value={activeSession.diagramAlgorithm}
+									onChange={setDiagramAlgorithm as any}
+									comboboxProps={{ withinPortal: false }}
+								/>
+
+								<Label>Appearance</Label>
+								<Select
 									data={DESIGNER_NODE_MODES}
 									value={activeSession.diagramMode}
-									onChange={setDiagramMode}
+									onChange={setDiagramMode as any}
+									comboboxProps={{ withinPortal: false }}
 								/>
-								<RadioSelect
-									label="Direction"
+
+								<Label>Direction</Label>
+								<Select
 									data={DESIGNER_DIRECTIONS}
 									value={activeSession.diagramDirection}
-									onChange={setDiagramDirection}
+									onChange={setDiagramDirection as any}
+									comboboxProps={{ withinPortal: false }}
 								/>
-								<Divider />
-								<Checkbox
-									label="Show record links"
-									checked={activeSession.diagramShowLinks}
-									onChange={setDiagramShowLinks}
+
+								<Label>Record links</Label>
+								<Select
+									data={DESIGNER_LINKS}
+									value={activeSession.diagramLinkMode}
+									onChange={setDiagramLinkMode as any}
+									comboboxProps={{ withinPortal: false }}
 								/>
-							</Stack>
+							</SimpleGrid>
+							<Divider my="md" />
+							<Text fz="sm">
+								You can customise default values in the settings menu
+							</Text>
 						</Popover.Dropdown>
 					</Popover>
-					<Tooltip label="Designer help">
-						<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+					<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+						<Tooltip label="Designer help">
 							<ActionIcon aria-label="Open designer help">
 								<Icon path={iconHelp} />
 							</ActionIcon>
-						</Link>
-					</Tooltip>
+						</Tooltip>
+					</Link>
 				</Group>
 			}
 		>
-			<div
-				style={{ position: "relative", width: "100%", height: "100%" }}
-			>
+			<div style={{ position: "relative", width: "100%", height: "100%" }}>
 				<ReactFlow
 					ref={ref}
 					fitView
 					nodes={nodes}
 					edges={edges}
+					minZoom={0.1}
 					nodeTypes={NODE_TYPES}
+					edgeTypes={EDGE_TYPES}
 					nodesConnectable={false}
 					edgesFocusable={false}
 					proOptions={{ hideAttribution: true }}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					className={classes.diagram}
-					style={{ opacity: computing ? 0 : 1 }}
-					onNodeClick={(_ev, node) => {
-						props.setActiveTable(node.id);
+					style={{
+						opacity: rendering ? 0 : 1,
+						transition: rendering ? undefined : "opacity .15s",
 					}}
+					onNodeClick={handleNodeClick}
+					onNodeDragStart={handleNodeDragStart}
 					onContextMenu={showContextMenu([
 						{
 							key: "create",
@@ -397,7 +487,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							key: "view",
 							icon: <Icon path={iconFullscreen} />,
 							title: "Fit viewport",
-							onClick: () => fitView(),
+							onClick: () => fitView({ duration: 300 }),
 						},
 						{
 							key: "refresh",
@@ -420,9 +510,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						},
 					])}
 				>
-					<Background
-						color={themeColor(isLight ? "slate.2" : "slate.6")}
-					/>
+					<Background color={themeColor(isLight ? "slate.2" : "slate.6")} />
 				</ReactFlow>
 
 				{isExporting && (
@@ -435,7 +523,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						style={{ zIndex: 5 }}
 					>
 						<Loader />
-						<Text fz="xl" fw={600}>
+						<Text
+							fz="xl"
+							fw={600}
+						>
 							Exporting graph...
 						</Text>
 					</Stack>
@@ -450,13 +541,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						gap="xl"
 					>
 						<Box ta="center">
-							<Text fz="xl" fw={600}>
+							<Text
+								fz="xl"
+								fw={600}
+							>
 								No tables defined
 							</Text>
-							<Text>
-								Define tables to visualize them in the table
-								graph
-							</Text>
+							<Text>Define tables to visualize them in the table graph</Text>
 						</Box>
 						<Button
 							variant="gradient"

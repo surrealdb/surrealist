@@ -1,24 +1,26 @@
 import { Box } from "@mantine/core";
+import { ReactFlowProvider } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { ReactFlowProvider } from "reactflow";
 import { Icon } from "~/components/Icon";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
-import { iconDesigner } from "~/util/icons";
+import { useConfigStore } from "~/stores/config";
+import { iconDesigner, iconEye } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
 
 const TableGraphPaneLazy = memo(TableGraphPane);
 
 export function DesignerView() {
+	const { updateCurrentConnection } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
 	const { designerTableList } = useActiveConnection();
 
@@ -32,7 +34,19 @@ export function DesignerView() {
 			icon: <Icon path={iconDesigner} />,
 			onClick: () => design(table),
 		},
+		{
+			key: "open",
+			title: "Focus table",
+			icon: <Icon path={iconEye} />,
+			onClick: () => dispatchIntent("focus-table", { table }),
+		},
 	]);
+
+	const closeTableList = useStable(() => {
+		updateCurrentConnection({
+			designerTableList: false,
+		});
+	});
 
 	useEffect(() => {
 		if (!isOnline) {
@@ -52,7 +66,10 @@ export function DesignerView() {
 
 	return (
 		<>
-			<Box h="100%" ref={ref}>
+			<Box
+				h="100%"
+				ref={ref}
+			>
 				<PanelGroup
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
@@ -70,12 +87,17 @@ export function DesignerView() {
 									icon={iconDesigner}
 									onTableSelect={design}
 									onTableContextMenu={buildContextMenu}
+									onClose={closeTableList}
 								/>
 							</Panel>
 							<PanelDragger />
 						</>
 					)}
-					<Panel minSize={minSize} order={2}>
+					<Panel
+						minSize={minSize}
+						id="graph"
+						order={2}
+					>
 						<ReactFlowProvider>
 							<TableGraphPaneLazy
 								tables={tables}

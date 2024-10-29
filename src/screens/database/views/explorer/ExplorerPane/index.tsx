@@ -3,27 +3,17 @@ import {
 	Box,
 	Button,
 	Center,
-	type ComboboxData,
 	Divider,
 	Group,
 	ScrollArea,
-	Select,
 	Text,
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
 
-import {
-	type FocusEvent,
-	type KeyboardEvent,
-	type MouseEvent,
-	useLayoutEffect,
-	useMemo,
-	useState,
-} from "react";
+import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
 
 import {
-	iconChevronLeft,
 	iconChevronRight,
 	iconCopy,
 	iconDelete,
@@ -38,12 +28,18 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { RecordId } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
+import { Pagination } from "~/components/Pagination";
+import { usePagination } from "~/components/Pagination/hook";
 import { ContentPane } from "~/components/Pane";
+import { RecordLink } from "~/components/RecordLink";
+import { useActiveConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
@@ -51,30 +47,19 @@ import { themeColor } from "~/util/mantine";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 
-const PAGE_SIZES: ComboboxData = [
-	{ label: "10 Results per page", value: "10" },
-	{ label: "25 Results per page", value: "25" },
-	{ label: "50 Results per page", value: "50" },
-	{ label: "100 Results per page", value: "100" },
-];
-
 export interface ExplorerPaneProps {
 	activeTable: string;
 	onCreateRecord: () => void;
 }
 
-export function ExplorerPane({
-	activeTable,
-	onCreateRecord,
-}: ExplorerPaneProps) {
-	const { addQueryTab, setActiveView } = useConfigStore.getState();
+export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
+	const { addQueryTab, setActiveView, updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
+	const connection = useActiveConnection();
+	const pagination = usePagination();
 
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");
-	const [customPage, setCustomPage] = useInputState("");
-	const [currentPage, setCurrentPage] = useState(1);
-	const [pageSize, setPageSize] = useState(25);
 	const [sortMode, setSortMode] = useState<SortMode>(null);
 
 	const [showFilter] = useDebouncedValue(filtering, 250);
@@ -86,8 +71,8 @@ export function ExplorerPane({
 
 	const recordQuery = useRecordQuery({
 		activeTable,
-		currentPage,
-		pageSize,
+		currentPage: pagination.currentPage,
+		pageSize: pagination.pageSize,
 		sortMode,
 		isFilterValid,
 		filter: showFilter ? filterClause : "",
@@ -102,52 +87,42 @@ export function ExplorerPane({
 	const records: unknown[] = recordQuery.data?.records || [];
 	const headers: string[] = recordQuery.data?.headers || [];
 	const recordCount: number = paginationQuery.data || 0;
-	const pageCount = Math.ceil(recordCount / pageSize);
 
 	const toggleFilter = useStable(() => {
 		setFiltering(!filtering);
-	});
-
-	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
-		if (e.type === "keydown" && (e as KeyboardEvent).key !== "Enter") {
-			return;
-		}
-
-		let newPage = Number.parseInt(customPage);
-
-		if (!customPage || Number.isNaN(newPage)) {
-			setCurrentPage(1);
-			setCustomPage("1");
-			return;
-		}
-
-		if (newPage < 1) {
-			newPage = 1;
-		}
-
-		if (newPage > pageCount) {
-			newPage = pageCount;
-		}
-
-		setCurrentPage(newPage);
-		setCustomPage(newPage.toString());
-	});
-
-	const previousPage = useStable(() => {
-		setCurrentPage((p) => Math.max(1, p - 1));
-	});
-
-	const nextPage = useStable(() => {
-		setCurrentPage((p) => Math.min(pageCount, p + 1));
 	});
 
 	const openCreator = useStable(() => {
 		onCreateRecord();
 	});
 
+	const openTableList = useStable(() => {
+		updateCurrentConnection({
+			explorerTableList: true,
+		});
+	});
+
 	const refetch = useStable(() => {
 		recordQuery.refetch();
 		paginationQuery.refetch();
+	});
+
+	const removeRecord = useConfirmation<RecordId>({
+		title: "Delete record",
+		message: (value) => (
+			<Box>
+				Are you sure you want to delete this record?
+				<RecordLink
+					mt="sm"
+					value={value}
+					withOpen={false}
+				/>
+			</Box>
+		),
+		onConfirm: async (id) => {
+			await executeQuery(`DELETE ${formatValue(id)}`);
+			refetch();
+		},
 	});
 
 	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
@@ -156,6 +131,7 @@ export function ExplorerPane({
 		const openQuery = (id: RecordId, prefix: string) => {
 			setActiveView("query");
 			addQueryTab({
+				type: "config",
 				query: `${prefix} ${formatValue(id)}`,
 			});
 		};
@@ -174,9 +150,7 @@ export function ExplorerPane({
 				title: "Copy as JSON",
 				icon: <Icon path={iconJSON} />,
 				onClick: () => {
-					navigator.clipboard.writeText(
-						formatValue(record, true, true),
-					);
+					navigator.clipboard.writeText(formatValue(record, true, true));
 				},
 			},
 			{
@@ -206,25 +180,17 @@ export function ExplorerPane({
 				color: "pink.7",
 				icon: <Icon path={iconDelete} />,
 				onClick: async () => {
-					if (!(record.id instanceof RecordId)) return;
-
-					// TODO Use confirmation
-					await executeQuery(`DELETE ${formatValue(record.id)}`);
-
-					refetch();
+					if (record.id instanceof RecordId) {
+						removeRecord(record.id);
+					}
 				},
 			},
 		])(e);
 	});
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset page on table change
 	useLayoutEffect(() => {
-		setCurrentPage(1);
-	}, [activeTable, filterClause]);
-
-	useLayoutEffect(() => {
-		setCustomPage(currentPage.toString());
-	}, [currentPage]);
+		pagination.setTotal(recordCount);
+	}, [pagination.setTotal, recordCount]);
 
 	useEventSubscription(RecordsChangedEvent, refetch);
 
@@ -232,6 +198,20 @@ export function ExplorerPane({
 		<ContentPane
 			title="Record Explorer"
 			icon={iconTable}
+			leftSection={
+				!connection.explorerTableList && (
+					<ActionButton
+						label="Reveal tables"
+						mr="sm"
+						color="slate"
+						variant="light"
+						onClick={openTableList}
+						aria-label="Reveal tables"
+					>
+						<Icon path={iconChevronRight} />
+					</ActionButton>
+				)
+			}
 			rightSection={
 				activeTable && (
 					<Group align="center">
@@ -253,16 +233,10 @@ export function ExplorerPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip
-							label={filtering ? "Hide filter" : "Filter records"}
-						>
+						<Tooltip label={filtering ? "Hide filter" : "Filter records"}>
 							<ActionIcon
 								onClick={toggleFilter}
-								aria-label={
-									filtering
-										? "Hide filter"
-										: "Show record filter"
-								}
+								aria-label={filtering ? "Hide filter" : "Show record filter"}
 							>
 								<Icon path={iconFilter} />
 							</ActionIcon>
@@ -270,11 +244,12 @@ export function ExplorerPane({
 
 						<Divider orientation="vertical" />
 
-						<Icon path={iconServer} mr={-6} />
+						<Icon
+							path={iconServer}
+							mr={-6}
+						/>
 						<Text lineClamp={1}>
-							{recordQuery.isLoading
-								? "loading..."
-								: `${recordCount || "no"} rows`}
+							{recordQuery.isLoading ? "loading..." : `${recordCount || "no"} rows`}
 						</Text>
 					</Group>
 				)
@@ -343,51 +318,9 @@ export function ExplorerPane({
 					bottom: 12,
 				}}
 			>
-				<Group gap="xs">
-					<ActionIcon
-						onClick={previousPage}
-						disabled={currentPage <= 1}
-						loading={paginationQuery.isLoading}
-						aria-label="Previous page"
-					>
-						<Icon path={iconChevronLeft} />
-					</ActionIcon>
-
-					<TextInput
-						value={customPage}
-						spellCheck={false}
-						onChange={setCustomPage}
-						maw={36}
-						size="xs"
-						withAsterisk
-						onBlur={gotoPage}
-						onKeyDown={gotoPage}
-						disabled={paginationQuery.isLoading}
-						styles={{
-							input: {
-								textAlign: "center",
-								paddingInline: 0,
-							},
-						}}
-					/>
-
-					<Text c="slate">of {pageCount} pages</Text>
-
-					<ActionIcon
-						onClick={nextPage}
-						disabled={currentPage >= pageCount}
-						loading={paginationQuery.isLoading}
-						aria-label="Next page"
-					>
-						<Icon path={iconChevronRight} />
-					</ActionIcon>
-				</Group>
-
-				<Select
-					value={pageSize.toString()}
-					onChange={(v) => setPageSize(Number.parseInt(v ?? "0"))}
-					data={PAGE_SIZES}
-					size="xs"
+				<Pagination
+					store={pagination}
+					loading={recordQuery.isLoading}
 				/>
 			</Group>
 		</ContentPane>

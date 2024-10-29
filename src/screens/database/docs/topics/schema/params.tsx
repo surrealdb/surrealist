@@ -7,7 +7,7 @@ export function DocsSchemaParams({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		// Assign the variable on the connection
+		// Assign a variable on the connection
 		DEFINE PARAM $endpointBase VALUE "https://dummyjson.com";
 
 		// Remove a parameter from the connection
@@ -15,7 +15,7 @@ export function DocsSchemaParams({ language }: TopicProps) {
 
 		`,
 			js: `
-			// Assign the variable on the connection
+			// Assign a variable on the connection
 			await db.let('name', {
 				first: 'Tobie',
 				last: 'Morgan Hitchcock',
@@ -32,7 +32,7 @@ export function DocsSchemaParams({ language }: TopicProps) {
 
 		`,
 			rust: `
-		// Assign the variable on the connection
+		// Assign a variable on the connection
 		db.set("name", Name {
 			first: "Tobie",
 			last: "Morgan Hitchcock",
@@ -47,7 +47,7 @@ export function DocsSchemaParams({ language }: TopicProps) {
 		db.query("SELECT * FROM person WHERE name.first = $name.first").await?;
 		`,
 			py: `
-		# Assign the variable on the connection
+		# Assign a variable on the connection
 		await db.let("name", {
 			"first": "Tobie",
 			"last": "Morgan Hitchcock",
@@ -60,7 +60,7 @@ export function DocsSchemaParams({ language }: TopicProps) {
 		await db.query('SELECT * FROM person WHERE name.first = $name.first')
 		`,
 			go: `
-		// Assign the variable on the connection
+		// Assign a variable on the connection
 
 		db.Let("name", map[string]string{
 			"first": "ElecTwix",
@@ -74,7 +74,7 @@ export function DocsSchemaParams({ language }: TopicProps) {
 		db.Query("SELECT * FROM person WHERE name.first = $name.first", nil);
 		`,
 			csharp: `
-		// Assign the variable on the connection
+		// Assign a variable on the connection
 		await db.Set("name", new { FirstName = "Tobie", LastName = "Morgan Hitchcock" });
 
 		// Use the variable in a subsequent query

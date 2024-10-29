@@ -1,19 +1,18 @@
+import type { Node, NodeProps } from "@xyflow/react";
 import { iconRelation } from "~/util/icons";
-import type { NodeData } from "../helpers";
+import type { SharedNodeData } from "../helpers";
 import { BaseNode } from "./BaseNode";
 
-interface EdgeNodeProps {
-	data: NodeData;
-}
+export type EdgeNode = Node<SharedNodeData, "edge">;
 
-export function EdgeNode({ data }: EdgeNodeProps) {
+export function EdgeNode({ data }: NodeProps<EdgeNode>) {
 	return (
 		<BaseNode
 			icon={iconRelation}
 			table={data.table}
+			mode={data.mode}
+			direction={data.direction}
 			isSelected={data.isSelected}
-			hasIncoming
-			hasOutgoing
 			isEdge
 		/>
 	);

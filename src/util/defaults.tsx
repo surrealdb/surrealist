@@ -4,16 +4,15 @@ import type {
 	CloudInstance,
 	Connection,
 	ConnectionSchema,
+	QueryTab,
+	QueryType,
 	SurrealistConfig,
 	SurrealistSettings,
-	TabQuery,
 } from "~/types";
 import { newId } from "./helpers";
 import { validateQuery } from "./surrealql";
 
 export const CONFIG_VERSION = 2;
-
-const defaultResultMode = "combined";
 
 export function createBaseConfig(): SurrealistConfig {
 	const settings = createBaseSettings();
@@ -54,16 +53,21 @@ export function createBaseSettings(): SurrealistSettings {
 		},
 		appearance: {
 			colorScheme: "dark",
+			syntaxTheme: "default",
 			windowScale: 100,
 			editorScale: 100,
+			queryLineNumbers: true,
+			inspectorLineNumbers: true,
+			functionLineNumbers: true,
 			resultWordWrap: true,
-			defaultResultMode,
-			defaultDiagramMode: "fields",
+			defaultResultMode: "combined",
+			defaultResultFormat: "sql",
+			defaultDiagramAlgorithm: "aligned",
 			defaultDiagramDirection: "ltr",
-			defaultDiagramShowLinks: false,
-			lineStyle: "metro",
+			defaultDiagramLineStyle: "metro",
+			defaultDiagramLinkMode: "visible",
+			defaultDiagramMode: "fields",
 			sidebarMode: "expandable",
-			valueMode: "sql",
 			queryOrientation: "vertical",
 		},
 		templates: {
@@ -105,7 +109,7 @@ export function createBaseAuthentication(): Authentication {
 }
 
 export function createBaseConnection(settings: SurrealistSettings): Connection {
-	const baseTab = createBaseTab(settings);
+	const baseTab = createBaseQuery(settings, "config");
 
 	return {
 		id: newId(),
@@ -124,33 +128,38 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		lastNamespace: "",
 		lastDatabase: "",
 		designerTableList: true,
-		diagramMode: settings.appearance.defaultDiagramMode,
-		diagramDirection: settings.appearance.defaultDiagramDirection,
-		diagramShowLinks: settings.appearance.defaultDiagramShowLinks,
+		explorerTableList: true,
+		queryTabList: true,
+		diagramAlgorithm: "default",
+		diagramDirection: "default",
+		diagramLineStyle: "default",
+		diagramMode: "default",
+		diagramLinkMode: "default",
 		graphqlQuery: "",
 		graphqlVariables: "{}",
 		graphqlShowVariables: false,
 	};
 }
 
-export function createBaseTab(
-	settings?: SurrealistSettings,
+export function createBaseQuery(
+	settings: SurrealistSettings,
+	type: QueryType,
 	query?: string,
-): TabQuery {
+): QueryTab {
 	return {
 		id: newId(),
-		query: query || "",
+		type,
+		query: query ?? "",
 		name: "",
 		variables: "{}",
-		valid: query ? !validateQuery(query) : true,
-		resultMode: settings ? settings.appearance.defaultResultMode : defaultResultMode,
+		valid: true,
+		resultMode: settings.appearance.defaultResultMode,
+		resultFormat: settings.appearance.defaultResultFormat,
 		showVariables: false,
 	};
 }
 
-export function createSandboxConnection(
-	settings: SurrealistSettings,
-): Connection {
+export function createSandboxConnection(settings: SurrealistSettings): Connection {
 	const base = createBaseConnection(settings);
 
 	return {
@@ -185,7 +194,7 @@ export function createConnectionSchema(): ConnectionSchema {
 			users: [],
 			functions: [],
 			models: [],
-		}
+		},
 	};
 }
 

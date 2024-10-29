@@ -1,5 +1,5 @@
-import type { SelectionRange } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import classes from "./style.module.scss";
+
 import {
 	Box,
 	Button,
@@ -11,11 +11,14 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
+import type { SelectionRange } from "@codemirror/state";
+import type { EditorView } from "@codemirror/view";
 import { Image } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import posthog from "posthog-js";
-import { memo, useState } from "react";
+import { memo, useLayoutEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { adapter, isMini } from "~/adapter";
@@ -24,17 +27,19 @@ import surrealistIcon from "~/assets/images/icon.webp";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
+import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
-import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
+import { useActiveConnection, useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { executeUserQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
+import { useQueryStore } from "~/stores/query";
 import type { SavedQuery } from "~/types";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
@@ -44,7 +49,7 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import classes from "./style.module.scss";
+import { readQuery, writeQuery } from "./strategy";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -54,12 +59,13 @@ const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
 	const { saveQuery, updateQueryTab } = useConfigStore.getState();
+	const { updateQueryBuffer } = useQueryStore.getState();
+	const { queryTabList } = useActiveConnection();
 	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [editor, setEditor] = useState<EditorView | null>(null);
 	const [variablesValid, setVariablesValid] = useState(true);
-	const [queryValid, setQueryValid] = useState(true);
 
 	const [showHistory, showHistoryHandle] = useDisclosure();
 	const [showSaved, showSavedHandle] = useDisclosure();
@@ -75,7 +81,8 @@ export function QueryView() {
 	const [saveContent, setSaveContent] = useInputState("");
 	const [saveTags, setSaveTags] = useInputState<string[]>([]);
 
-	const squareCards = adapter instanceof MiniAdapter && adapter.hideBorder;
+	const miniAppearance = adapter instanceof MiniAdapter ? adapter.appearance : "normal";
+	const miniCorners = adapter instanceof MiniAdapter ? adapter.corners : undefined;
 
 	const handleSaveRequest = useStable(async () => {
 		if (!active) {
@@ -118,6 +125,28 @@ export function QueryView() {
 		posthog.capture("query_save");
 	});
 
+	const saveTasks = useRef<Map<string, any>>(new Map());
+
+	const handleUpdateBuffer = useStable((query: string) => {
+		const { queryBuffer } = useQueryStore.getState();
+
+		if (!active || query === queryBuffer) {
+			return;
+		}
+
+		const oldTask = saveTasks.current.get(active.id);
+
+		updateQueryBuffer(query);
+		clearTimeout(oldTask);
+
+		const newTask = setTimeout(() => {
+			saveTasks.current.delete(active.id);
+			writeQuery(active, query);
+		}, 500);
+
+		saveTasks.current.set(active.id, newTask);
+	});
+
 	const showVariables = !!active?.showVariables;
 
 	const setShowVariables = useStable((showVariables: boolean) => {
@@ -133,8 +162,19 @@ export function QueryView() {
 		setShowVariables(false);
 	});
 
-	const variablesOrientation =
-		orientation === "horizontal" ? "vertical" : "horizontal";
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Read query on tab change
+	useLayoutEffect(() => {
+		if (active) {
+			Promise.resolve(readQuery(active)).then((query) => {
+				updateQueryBuffer(query);
+			});
+		}
+	}, [active?.id]);
+
+	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
+
+	const [hasLineNumbers] = useSetting("appearance", "queryLineNumbers");
+	const hideLineNumbers = adapter instanceof MiniAdapter ? adapter.nonumbers : !hasLineNumbers;
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
@@ -154,32 +194,40 @@ export function QueryView() {
 							switchPortal={switchPortal}
 							setIsValid={setVariablesValid}
 							closeVariables={closeVariables}
-							square={squareCards}
+							editor={editor}
+							corners={miniCorners}
+							lineNumbers={!hideLineNumbers}
 						/>
 					) : (
 						<QueryPaneLazy
-							square={squareCards}
+							corners={miniCorners}
 							activeTab={active}
-							setIsValid={setQueryValid}
 							switchPortal={switchPortal}
 							selection={selection}
 							showVariables={showVariables}
+							lineNumbers={!hideLineNumbers}
 							onSaveQuery={handleSaveRequest}
 							setShowVariables={setShowVariables}
+							onUpdateBuffer={handleUpdateBuffer}
 							onSelectionChange={setSelection}
 							onEditorMounted={setEditor}
 						/>
 					)
 				) : (
 					<PanelGroup direction={variablesOrientation}>
-						<Panel minSize={35}>
+						<Panel
+							id="query"
+							order={0}
+							minSize={35}
+						>
 							<QueryPaneLazy
 								activeTab={active}
-								setIsValid={setQueryValid}
 								showVariables={showVariables}
 								selection={selection}
+								lineNumbers={!hideLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
+								onUpdateBuffer={handleUpdateBuffer}
 								onSelectionChange={setSelection}
 								onEditorMounted={setEditor}
 							/>
@@ -187,11 +235,18 @@ export function QueryView() {
 						{showVariables && (
 							<>
 								<PanelDragger />
-								<Panel defaultSize={40} minSize={35}>
+								<Panel
+									id="variables"
+									order={1}
+									defaultSize={40}
+									minSize={35}
+								>
 									<VariablesPaneLazy
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
 										closeVariables={closeVariables}
+										lineNumbers={!hideLineNumbers}
+										editor={editor}
 									/>
 								</Panel>
 							</>
@@ -203,17 +258,19 @@ export function QueryView() {
 			<Panel minSize={15}>
 				<ResultPaneLazy
 					activeTab={active}
-					isQueryValid={queryValid}
 					selection={selection}
 					editor={editor}
-					square={squareCards}
+					corners={miniCorners}
 				/>
 			</Panel>
 		</PanelGroup>
 	);
 
 	return (
-		<Stack gap="md" h="100%">
+		<Stack
+			gap="md"
+			h="100%"
+		>
 			<InPortal node={switchPortal}>
 				<SegmentedControl
 					data={["Query", "Variables"]}
@@ -226,15 +283,22 @@ export function QueryView() {
 
 			{isMini ? (
 				<>
-					{!(adapter as MiniAdapter).hideTitlebar && (
+					{miniAppearance === "normal" && (
 						<Group>
-							<Image
-								src={logoUrl}
-								style={{ pointerEvents: "none" }}
-								height={20}
-								width={20}
-							/>
-							<Image h={16} src={surrealistIcon} />
+							<Link href="https://surrealdb.com/surrealist">
+								<Group>
+									<Image
+										h={16}
+										src={surrealistIcon}
+									/>
+									<Image
+										src={logoUrl}
+										style={{ pointerEvents: "none" }}
+										height={20}
+										width={20}
+									/>
+								</Group>
+							</Link>
 							<Spacer />
 						</Group>
 					)}
@@ -247,30 +311,43 @@ export function QueryView() {
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
 					<PanelGroup direction="horizontal">
+						{queryTabList && (
+							<>
+								<Panel
+									defaultSize={minSize}
+									minSize={minSize}
+									maxSize={35}
+									id="tabs"
+									order={1}
+								>
+									<TabsPane
+										openHistory={showHistoryHandle.open}
+										openSaved={showSavedHandle.open}
+									/>
+								</Panel>
+								<PanelDragger />
+							</>
+						)}
 						<Panel
-							defaultSize={minSize}
-							minSize={minSize}
-							maxSize={35}
+							id="content"
+							order={2}
 						>
-							<TabsPane
-								openHistory={showHistoryHandle.open}
-								openSaved={showSavedHandle.open}
-							/>
+							{queryEditor}
 						</Panel>
-						<PanelDragger />
-						<Panel>{queryEditor}</Panel>
 					</PanelGroup>
 				</Box>
 			)}
 
 			<HistoryDrawer
 				opened={showHistory}
+				onUpdateBuffer={handleUpdateBuffer}
 				onClose={showHistoryHandle.close}
 			/>
 
 			<SavesDrawer
 				opened={showSaved}
 				onClose={showSavedHandle.close}
+				onUpdateBuffer={handleUpdateBuffer}
 				onSaveQuery={handleSaveRequest}
 				onEditQuery={handleEditRequest}
 			/>
@@ -280,11 +357,7 @@ export function QueryView() {
 				opened={isSaving}
 				onClose={isSavingHandle.close}
 				trapFocus={false}
-				title={
-					<PrimaryTitle>
-						{editingId ? "Edit saved query" : "Save query"}
-					</PrimaryTitle>
-				}
+				title={<PrimaryTitle>{editingId ? "Edit saved query" : "Save query"}</PrimaryTitle>}
 			>
 				<Form onSubmit={handleSaveQuery}>
 					<Stack>
@@ -304,7 +377,11 @@ export function QueryView() {
 							label={
 								<Group gap={4}>
 									Labels
-									<Text span size="xs" c="slate">
+									<Text
+										span
+										size="xs"
+										c="slate"
+									>
 										(optional)
 									</Text>
 								</Group>
