@@ -30,7 +30,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { group } from "radash";
+import { group, isEmpty } from "radash";
 import { type HTMLAttributes, type MouseEvent, type ReactNode, useMemo } from "react";
 import { isDesktop } from "~/adapter";
 import { EditableText } from "~/components/EditableText";
@@ -102,6 +102,7 @@ export function ConnectionsModal() {
 		addConnectionGroup({
 			id: newId(),
 			name: `Group ${groups.length + 1}`,
+			editable: true,
 		});
 	});
 

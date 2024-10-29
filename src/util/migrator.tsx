@@ -40,14 +40,6 @@ export function applyMigrations(config: any): SurrealistConfig {
 			con.connection = undefined;
 		});
 
-		for (const con of config.connections) {
-			fixConnection(con);
-		}
-
-		if (config.sandbox) {
-			fixConnection(config.sandbox);
-		}
-
 		config.configVersion++;
 	}
 

@@ -147,7 +147,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return undefined;
 	}
 
-	public saveConfig(config: string) {
+	public saveConfig(config: SurrealistConfig) {
 		return invoke<void>("save_config", {
 			config: JSON.stringify(config),
 		});
