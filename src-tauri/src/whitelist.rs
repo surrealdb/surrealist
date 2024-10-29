@@ -1,6 +1,6 @@
 use std::{
     fs::{read_to_string, write},
-    path::PathBuf,
+    path::Path,
 };
 
 use crate::paths::get_file_whitelist_path;
@@ -25,7 +25,7 @@ pub fn write_allowed_files(list: Vec<String>) {
 }
 
 /// Append a file to the list of allowed files
-pub fn append_allowed_file(path: &PathBuf) {
+pub fn append_allowed_file(path: &Path) {
     let path = path.canonicalize().unwrap().to_str().unwrap().to_owned();
     let mut whitelist = read_allowed_files();
 

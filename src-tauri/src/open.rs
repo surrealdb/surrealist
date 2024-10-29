@@ -64,7 +64,7 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
         .lock()
         .unwrap()
         .iter()
-        .filter_map(|u| match u.scheme() {
+        .map(|u| match u.scheme() {
             "file" => {
                 let buf = u.to_file_path().unwrap();
                 let success = buf.metadata().unwrap().len() < MAX_FILE_SIZE;
@@ -73,19 +73,19 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
 
                 append_allowed_file(&buf);
 
-                Some(OpenedResource::File(FileResource {
+                OpenedResource::File(FileResource {
                     success,
                     name,
                     path,
-                }))
+                })
             }
             "surrealist" => {
                 let host = u.host_str().unwrap_or_default().to_owned();
                 let params = u.query().unwrap_or_default().to_owned();
 
-                Some(OpenedResource::Link(LinkResource { host, params }))
+                OpenedResource::Link(LinkResource { host, params })
             }
-            _ => Some(OpenedResource::Unknown),
+            _ => OpenedResource::Unknown,
         })
         .collect()
 }
