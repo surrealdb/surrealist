@@ -79,9 +79,19 @@ export async function updateCloudInformation() {
 		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
 	]);
 
-	const organization = await fetchAPI<CloudOrganization>(
-		`/organizations/${activeCloudOrg || profile.default_org}`,
-	);
+	let organization: CloudOrganization | undefined;
+
+	try {
+		organization = await fetchAPI<CloudOrganization>(
+			`/organizations/${activeCloudOrg || profile.default_org}`,
+		);
+	} catch {
+		organization = await fetchAPI<CloudOrganization>(`/organizations/${profile.default_org}`);
+	}
+
+	if (organization === undefined) {
+		throw new Error("No organization found");
+	}
 
 	setCloudValues({
 		profile,
