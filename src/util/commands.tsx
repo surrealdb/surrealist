@@ -291,7 +291,7 @@ export function computeCommands(): CommandCategory[] {
 					...optional(
 						isDesktop && {
 							id: newId(),
-							name: "Open query file from disk",
+							name: "Open query file...",
 							icon: iconFile,
 							action: launch(() => {
 								(adapter as DesktopAdapter).openQueryFile();

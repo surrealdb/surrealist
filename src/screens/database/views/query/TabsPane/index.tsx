@@ -8,8 +8,10 @@ import {
 	iconFile,
 	iconHistory,
 	iconList,
+	iconOpen,
 	iconPlus,
 	iconQuery,
+	iconSearch,
 	iconStar,
 } from "~/util/icons";
 
@@ -114,6 +116,8 @@ export function TabsPane(props: TabsPaneProps) {
 		});
 	};
 
+	const explorerName = adapter.platform === "darwin" ? "Finder" : "Explorer";
+
 	useIntent("new-query", newTab);
 
 	return (
@@ -200,8 +204,8 @@ export function TabsPane(props: TabsPaneProps) {
 											{
 												hidden: query.type !== "file",
 												key: "open-in-explorer",
-												title: "Open in explorer",
-												icon: <Icon path={iconExitToAp} />,
+												title: `Reveal in ${explorerName}`,
+												icon: <Icon path={iconSearch} />,
 												onClick: () => {
 													if (adapter instanceof DesktopAdapter) {
 														adapter.openInExplorer(query);
@@ -229,7 +233,7 @@ export function TabsPane(props: TabsPaneProps) {
 												disabled:
 													queries.length === 1 ||
 													queries.findIndex((q) => q.id === query.id) ===
-													0,
+														0,
 												onClick: () => removeOthers(query.id, -1),
 											},
 											{
@@ -238,7 +242,7 @@ export function TabsPane(props: TabsPaneProps) {
 												disabled:
 													queries.length === 1 ||
 													queries.findIndex((q) => q.id === query.id) >=
-													queries.length - 1,
+														queries.length - 1,
 												onClick: () => removeOthers(query.id, 1),
 											},
 										])}

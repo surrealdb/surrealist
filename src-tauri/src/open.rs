@@ -163,10 +163,10 @@ pub async fn open_query_file(app: AppHandle, window: Window) {
 }
 
 #[tauri::command]
-pub fn open_in_explorer(path: String) {
+pub async fn open_in_explorer(path: String) {
     let whitelist = read_allowed_files();
 
     if whitelist.contains(&path) {
-        showfile::show_uri_in_file_manager(path);
+        showfile::show_path_in_file_manager(Path::new(&path));
     }
 }
