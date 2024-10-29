@@ -18,12 +18,12 @@ import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewMode } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
+import { getActiveConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { showError, showInfo } from "~/util/helpers";
 import { handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
-import { getActiveConnection } from "~/util/connection";
 
 const WAIT_DURATION = 1000;
 
