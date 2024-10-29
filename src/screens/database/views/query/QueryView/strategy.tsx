@@ -31,7 +31,9 @@ const FILE_STRATEGY: SaveStrategy = {
 
 		try {
 			return await adapter.readQueryFile(tab);
-		} catch {
+		} catch (err: any) {
+			adapter.warn("Query", err);
+
 			showError({
 				title: "Failed to load query",
 				subtitle: "The query file could not be read",
@@ -40,12 +42,23 @@ const FILE_STRATEGY: SaveStrategy = {
 			return "";
 		}
 	},
-	write: (tab, query) => {
+	write: async (tab, query) => {
 		if (!(adapter instanceof DesktopAdapter)) {
 			return;
 		}
 
-		adapter.writeQueryFile(tab, query);
+		try {
+			await adapter.writeQueryFile(tab, query);
+		} catch (err: any) {
+			adapter.warn("Query", err);
+
+			showError({
+				title: "Failed to save query",
+				subtitle: "The file could not be saved",
+			});
+
+			return "";
+		}
 	},
 };
 
