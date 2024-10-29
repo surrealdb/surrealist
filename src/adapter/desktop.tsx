@@ -23,6 +23,7 @@ import { showError, showInfo } from "~/util/helpers";
 import { handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import { getActiveConnection } from "~/util/connection";
 
 const WAIT_DURATION = 1000;
 
@@ -310,6 +311,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return invoke<string>("open_query_file");
 	}
 
+	public openInExplorer(query: QueryTab) {
+		return invoke<void>("open_in_explorer", { path: query.query });
+	}
+
 	public pruneQueryFiles() {
 		const { sandbox, connections } = useConfigStore.getState();
 		const paths = [sandbox, ...connections]
@@ -385,8 +390,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	private async queryOpenRequest() {
-		const { addQueryTab, setActiveView } = useConfigStore.getState();
+		const { addQueryTab, setActiveQueryTab, setActiveView } = useConfigStore.getState();
 		const resources = await invoke<Resource[]>("get_opened_resources");
+		const connection = getActiveConnection();
 
 		if (resources.length === 0) {
 			return;
@@ -405,7 +411,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 					continue;
 				}
 
-				addQueryTab({ type: "file", name: name, query: path });
+				const existing = connection.queries.find((q) => q.type === "file" && q.query === path);
+
+				if (existing) {
+					setActiveQueryTab(existing.id);
+				} else {
+					addQueryTab({ type: "file", name: name, query: path });
+				}
+
 				setActiveView("query");
 			} else if (Link) {
 				const { host, params } = Link;

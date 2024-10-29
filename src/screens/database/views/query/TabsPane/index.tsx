@@ -4,6 +4,7 @@ import {
 	iconChevronRight,
 	iconClose,
 	iconCopy,
+	iconExitToAp,
 	iconFile,
 	iconHistory,
 	iconList,
@@ -52,6 +53,7 @@ export function TabsPane(props: TabsPaneProps) {
 		updateQueryTab,
 		setActiveQueryTab,
 	} = useConfigStore.getState();
+
 	const { queries, activeQuery } = useActiveConnection();
 	const { showContextMenu } = useContextMenu();
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
@@ -196,6 +198,17 @@ export function TabsPane(props: TabsPaneProps) {
 												onClick: () => duplicateQuery(query),
 											},
 											{
+												hidden: query.type !== "file",
+												key: "open-in-explorer",
+												title: "Open in explorer",
+												icon: <Icon path={iconExitToAp} />,
+												onClick: () => {
+													if (adapter instanceof DesktopAdapter) {
+														adapter.openInExplorer(query);
+													}
+												},
+											},
+											{
 												key: "close-div",
 											},
 											{
@@ -216,7 +229,7 @@ export function TabsPane(props: TabsPaneProps) {
 												disabled:
 													queries.length === 1 ||
 													queries.findIndex((q) => q.id === query.id) ===
-														0,
+													0,
 												onClick: () => removeOthers(query.id, -1),
 											},
 											{
@@ -225,7 +238,7 @@ export function TabsPane(props: TabsPaneProps) {
 												disabled:
 													queries.length === 1 ||
 													queries.findIndex((q) => q.id === query.id) >=
-														queries.length - 1,
+													queries.length - 1,
 												onClick: () => removeOthers(query.id, 1),
 											},
 										])}

@@ -85,13 +85,14 @@ fn main() {
             open::write_query_file,
             open::prune_allowed_files,
             open::open_query_file,
+            open::open_in_explorer,
         ])
         .setup(|app| {
             info!("Launch args: {:?}", env::args());
 
             #[cfg(any(windows, target_os = "linux"))]
             {
-                store_resources(app.handle(), env::args());
+                open::store_resources(app.handle(), env::args());
             }
 
             let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())

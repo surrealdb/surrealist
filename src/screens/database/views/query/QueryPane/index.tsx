@@ -23,7 +23,6 @@ import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { useLayoutEffect } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -40,7 +39,7 @@ import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
-import { readQuery } from "../QueryView/strategy";
+import { trim } from "radash";
 
 export interface QueryPaneProps {
 	activeTab: QueryTab;
@@ -85,8 +84,8 @@ export function QueryPane({
 		try {
 			const formatted = hasSelection
 				? buffer.slice(0, selection.from) +
-					formatQuery(buffer.slice(selection.from, selection.to)) +
-					buffer.slice(selection.to)
+				formatQuery(buffer.slice(selection.from, selection.to)) +
+				buffer.slice(selection.to)
 				: formatQuery(buffer);
 
 			onUpdateBuffer(formatted);
@@ -157,11 +156,18 @@ export function QueryPane({
 					</ActionButton>
 				)
 			}
+			infoSection={
+				activeTab.type === "file" && (
+					<Text c="slate" truncate>
+						{trim(activeTab.query, "\\\\?")}
+					</Text>
+				)
+			}
 			rightSection={
 				switchPortal ? (
 					<OutPortal node={switchPortal} />
 				) : (
-					<Group gap="sm">
+					<Group gap="sm" style={{ flexShrink: 0 }}>
 						{buffer.length > MAX_HISTORY_QUERY_LENGTH && (
 							<HoverCard position="bottom">
 								<HoverCard.Target>

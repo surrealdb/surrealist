@@ -161,3 +161,12 @@ pub async fn open_query_file(app: AppHandle, window: Window) {
     *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
     app.emit("open-resource", ()).unwrap();
 }
+
+#[tauri::command]
+pub fn open_in_explorer(path: String) {
+    let whitelist = read_allowed_files();
+
+    if whitelist.contains(&path) {
+        showfile::show_uri_in_file_manager(path);
+    }
+}
