@@ -82,11 +82,11 @@ export async function updateCloudInformation() {
 	let organization: CloudOrganization | undefined;
 
 	try {
-		organization = await fetchAPI<CloudOrganization>(
-			`/organizations/${activeCloudOrg || profile.default_org}`,
-		);
+		organization = await fetchAPI<CloudOrganization>(`/organizations/${activeCloudOrg}`);
+		setActiveCloudOrg(activeCloudOrg);
 	} catch {
 		organization = await fetchAPI<CloudOrganization>(`/organizations/${profile.default_org}`);
+		setActiveCloudOrg(profile.default_org);
 	}
 
 	if (organization === undefined) {
@@ -100,10 +100,6 @@ export async function updateCloudInformation() {
 		organizations: [organization],
 		billingCountries,
 	});
-
-	if (activeCloudOrg === "") {
-		setActiveCloudOrg(profile.default_org);
-	}
 }
 
 /**
