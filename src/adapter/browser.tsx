@@ -1,14 +1,14 @@
 import { isFunction, shake } from "radash";
 import * as v from "valibot";
+import { INSTANCE_CONFIG, INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { type InstanceConfig, InstanceConfigSchema } from "~/schemas";
 import type { Authentication, Platform, SurrealistConfig, UrlTarget } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
+import { isDevelopment } from "~/util/environment";
+import { showError } from "~/util/helpers";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
-import { showError } from "~/util/helpers";
-import { isDevelopment } from "~/util/environment";
-import { INSTANCE_CONFIG, INSTANCE_GROUP, SANDBOX } from "~/constants";
 
 /**
  * Base adapter for running as web app

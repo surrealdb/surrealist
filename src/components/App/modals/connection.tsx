@@ -9,6 +9,7 @@ import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { INSTANCE_GROUP } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useConnections } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -18,7 +19,6 @@ import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
-import { INSTANCE_GROUP } from "~/constants";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
