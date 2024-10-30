@@ -143,8 +143,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return JSON.parse(config);
 	}
 
-	public async loadEmbeddedConfig() {
-		return undefined;
+	public async processConfig(config: SurrealistConfig) {
+		return config;
 	}
 
 	public saveConfig(config: SurrealistConfig) {

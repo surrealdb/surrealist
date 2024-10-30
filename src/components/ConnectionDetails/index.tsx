@@ -19,7 +19,12 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import { AUTH_MODES, CONNECTION_PROTOCOLS, SENSITIVE_ACCESS_FIELDS } from "~/constants";
+import {
+	AUTH_MODES,
+	CONNECTION_PROTOCOLS,
+	INSTANCE_GROUP,
+	SENSITIVE_ACCESS_FIELDS,
+} from "~/constants";
 
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -142,7 +147,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 		if (isCloud) {
 			return remote;
 		}
-		
+
 		return [
 			{
 				group: "Remote",
@@ -151,8 +156,8 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 			{
 				group: "Local",
 				items: local,
-			}
-		]
+			},
+		];
 	}, [isCloud]);
 
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
@@ -165,10 +170,12 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 				value: "",
 				label: "No group",
 			},
-			...groups.map((group) => ({
-				value: group.id,
-				label: group.name,
-			})),
+			...groups
+				.filter((group) => group.id !== INSTANCE_GROUP)
+				.map((group) => ({
+					value: group.id,
+					label: group.name,
+				})),
 		];
 	}, [groups]);
 
@@ -477,21 +484,25 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					</>
 				)}
 
-				<Subheader
-					title="Configuration"
-					subtitle="Further configuration options"
-				/>
+				{value.group !== INSTANCE_GROUP && (
+					<>
+						<Subheader
+							title="Configuration"
+							subtitle="Further configuration options"
+						/>
 
-				<Select
-					label="Group"
-					data={groupItems}
-					value={value.group || ""}
-					onChange={(group) =>
-						onChange((draft) => {
-							draft.group = group || undefined;
-						})
-					}
-				/>
+						<Select
+							label="Group"
+							data={groupItems}
+							value={value.group || ""}
+							onChange={(group) =>
+								onChange((draft) => {
+									draft.group = group || undefined;
+								})
+							}
+						/>
+					</>
+				)}
 			</Stack>
 
 			<Modal

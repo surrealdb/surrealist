@@ -1,5 +1,5 @@
+import type { InstanceConfig } from "~/schemas";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
-import type { SurrealistEmbeddedConfig } from "~/types.validated";
 
 export interface OpenedTextFile {
 	name: string;
@@ -61,9 +61,12 @@ export interface SurrealistAdapter {
 	loadConfig(): Promise<any>;
 
 	/**
-	 * Load the embedded config from the adapter
+	 * Process the config after loading it. At this point the config
+	 * has been repaired and migrated to the latest version.
+	 *
+	 * @param config The config to process
 	 */
-	loadEmbeddedConfig(): Promise<SurrealistEmbeddedConfig | undefined>;
+	processConfig(config: SurrealistConfig): Result<SurrealistConfig>;
 
 	/**
 	 * Save the config to the adapter

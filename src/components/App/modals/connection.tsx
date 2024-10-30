@@ -18,6 +18,7 @@ import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
+import { INSTANCE_GROUP } from "~/constants";
 
 function buildName(n: number) {
 	return `New connection ${n ? n + 1 : ""}`.trim();
@@ -40,6 +41,8 @@ export function ConnectionModal() {
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
+
+	const isInstanceLocal = details.group === INSTANCE_GROUP;
 
 	const isValid = useMemo(() => {
 		return details.name && isConnectionValid(details.authentication);
@@ -192,7 +195,7 @@ export function ConnectionModal() {
 						Close
 					</Button>
 					<Spacer />
-					{!isCreating && (
+					{!isCreating && !isInstanceLocal && (
 						<Button
 							color="pink.7"
 							variant="light"

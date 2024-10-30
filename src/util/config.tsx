@@ -8,7 +8,6 @@ import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
-import { syncEmbeddedConfig } from "./sync";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
@@ -60,11 +59,8 @@ export function getSetting<C extends Category, K extends keyof Settings<C>>(cate
 export async function startConfigSync() {
 	const loadedConfig = await adapter.loadConfig();
 	const migrateConfig = applyMigrations(loadedConfig);
-	const loadedEmbeddedConfig = await adapter.loadEmbeddedConfig();
-	const currentConfig = loadedEmbeddedConfig
-		? syncEmbeddedConfig(migrateConfig, loadedEmbeddedConfig)
-		: migrateConfig;
-	const config = assign<SurrealistConfig>(useConfigStore.getState(), currentConfig);
+	const processed = await adapter.processConfig(migrateConfig);
+	const config = assign<SurrealistConfig>(useConfigStore.getState(), processed);
 	const compatible = config.configVersion <= CONFIG_VERSION;
 
 	// Handle incompatible config versions

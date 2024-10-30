@@ -62,7 +62,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Dockerfile
+      - name: Check Dockerfile
         run: |
-          docker build .
-      
+          docker build -f ./docker/Dockerfile --check .

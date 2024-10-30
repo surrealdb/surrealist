@@ -5,13 +5,13 @@ RUN npm i -g pnpm
 
 WORKDIR /app
 
-COPY package.json .
-COPY patches patches
-COPY pnpm-lock.yaml .
+COPY ../package.json .
+COPY ../patches patches
+COPY ../pnpm-lock.yaml .
 
 RUN pnpm install
 
-COPY . .
+COPY .. .
 RUN npm run build:embedded
 
 # set up production image (static assets served by nginx)

@@ -30,14 +30,14 @@ import {
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { group, isEmpty } from "radash";
+import { group } from "radash";
 import { type HTMLAttributes, type MouseEvent, type ReactNode, useMemo } from "react";
 import { isDesktop } from "~/adapter";
 import { EditableText } from "~/components/EditableText";
 import { Entry, type EntryProps } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { SANDBOX } from "~/constants";
+import { INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { useKeymap } from "~/hooks/keymap";
@@ -102,7 +102,6 @@ export function ConnectionsModal() {
 		addConnectionGroup({
 			id: newId(),
 			name: `Group ${groups.length + 1}`,
-			editable: true,
 		});
 	});
 
@@ -257,45 +256,52 @@ export function ConnectionsModal() {
 						</Text>
 					)}
 
-					{groupsList.map((group) => (
-						<ItemList
-							key={group.id}
-							connections={grouped[group.id] ?? []}
-							active={connection?.id ?? ""}
-							selected={selected}
-							onClose={openedHandle.close}
-							onActivate={activate}
-							className={classes.connectionGroup}
-							title={
-								<>
-									<EditableText
-										value={group.name}
-										onChange={(name) =>
-											updateConnectionGroup({ id: group.id, name })
-										}
-										c="bright"
-										fz="lg"
-										fw={500}
-									/>
-									<Spacer />
-									<Tooltip label="Remove group">
-										<ActionIcon
-											className={classes.connectionGroupRemove}
-											aria-label="Remove group"
-											onClick={() => removeConnectionGroup(group.id)}
-											variant="subtle"
-											size="sm"
-										>
-											<Icon
-												path={iconDelete}
-												size="sm"
-											/>
-										</ActionIcon>
-									</Tooltip>
-								</>
-							}
-						/>
-					))}
+					{groupsList.map((group) => {
+						const isInstanceLocal = group.id === INSTANCE_GROUP;
+
+						return (
+							<ItemList
+								key={group.id}
+								connections={grouped[group.id] ?? []}
+								active={connection?.id ?? ""}
+								selected={selected}
+								onClose={openedHandle.close}
+								onActivate={activate}
+								className={classes.connectionGroup}
+								title={
+									<>
+										<EditableText
+											value={group.name}
+											disabled={isInstanceLocal}
+											onChange={(name) =>
+												updateConnectionGroup({ id: group.id, name })
+											}
+											c="bright"
+											fz="lg"
+											fw={500}
+										/>
+										<Spacer />
+										{!isInstanceLocal && (
+											<Tooltip label="Remove group">
+												<ActionIcon
+													className={classes.connectionGroupRemove}
+													aria-label="Remove group"
+													onClick={() => removeConnectionGroup(group.id)}
+													variant="subtle"
+													size="sm"
+												>
+													<Icon
+														path={iconDelete}
+														size="sm"
+													/>
+												</ActionIcon>
+											</Tooltip>
+										)}
+									</>
+								}
+							/>
+						);
+					})}
 
 					{grouped[UNGROUPED] && (
 						<ItemList
@@ -383,6 +389,7 @@ interface ItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, 
 function Item({ connection, active, selected, onClose, onActivate, ...other }: ItemProps) {
 	const { showContextMenu } = useContextMenu();
 	const { addConnection, removeConnection } = useConfigStore.getState();
+	const isInstanceLocal = connection.group === INSTANCE_GROUP;
 	const isActive = connection.id === active;
 
 	const activate = useStable(() => {
@@ -435,6 +442,7 @@ function Item({ connection, active, selected, onClose, onActivate, ...other }: I
 							...connection,
 							lastNamespace: "",
 							lastDatabase: "",
+							group: isInstanceLocal ? undefined : connection.group,
 							id: newId(),
 						}),
 				},
@@ -442,6 +450,7 @@ function Item({ connection, active, selected, onClose, onActivate, ...other }: I
 					key: "delete",
 					title: "Delete connection",
 					color: "pink.7",
+					hidden: isInstanceLocal,
 					icon: <Icon path={iconDelete} />,
 					onClick: () => removeConnection(connection.id),
 				},

@@ -1,9 +1,14 @@
-import { showWarning } from "~/util/helpers";
 import { isFunction, shake } from "radash";
-import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
+import * as v from "valibot";
+import { type InstanceConfig, InstanceConfigSchema } from "~/schemas";
+import type { Authentication, Platform, SurrealistConfig, UrlTarget } from "~/types";
+import { createBaseConnection } from "~/util/defaults";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import { showError } from "~/util/helpers";
+import { isDevelopment } from "~/util/environment";
+import { INSTANCE_CONFIG, INSTANCE_GROUP, SANDBOX } from "~/constants";
 
 /**
  * Base adapter for running as web app
@@ -55,38 +60,39 @@ export class BrowserAdapter implements SurrealistAdapter {
 		return (await idxdb.getConfig()) || {};
 	}
 
-	public async loadEmbeddedConfig() {
-		if (!import.meta.env.IS_EMBEDDED) {
-			return undefined;
+	public async processConfig(config: SurrealistConfig) {
+		if (!import.meta.env.IS_EMBEDDED && !isDevelopment) {
+			return config;
 		}
 
-		const errorTitle = "Failed to fetch embedded config";
-		const embeddedFileName = "connections.json";
+		const instanceConfig = await this.fetchInstanceConfig();
 
-		let result: any;
-
-		try {
-			const response = await this.fetch(`/${embeddedFileName}`);
-			result = await response.json();
-		} catch {
-			showWarning({
-				title: errorTitle,
-				subtitle: `The file '${embeddedFileName}' does not seem to be found. Please ensure the file exists.`,
-			});
-			return undefined;
+		if (!instanceConfig) {
+			return config;
 		}
 
 		try {
-			const v = await import("valibot");
-			const { SurrealistEmbeddedConfigSchema } = await import("~/types.validated");
+			const parsed = v.parse(InstanceConfigSchema, instanceConfig);
+			const ids = new Set<string>();
 
-			return v.parse(SurrealistEmbeddedConfigSchema, result);
-		} catch {
-			showWarning({
-				title: errorTitle,
-				subtitle: `Failed to validate the file '${embeddedFileName}'. Please ensure the file is correctly configured.`,
+			for (const con of parsed.connections) {
+				if (ids.has(con.id)) {
+					throw new Error(`Duplicate connection ID: ${con.id}`);
+				}
+
+				ids.add(con.id);
+			}
+
+			return this.applyInstanceConfig(config, parsed);
+		} catch (err: any) {
+			console.warn(err);
+
+			showError({
+				title: "Failed to parse instance config",
+				subtitle: `The file "${INSTANCE_CONFIG}" is incorrectly configured`,
 			});
-			return undefined;
+
+			return config;
 		}
 	}
 
@@ -206,5 +212,87 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
 		return fetch(url, options);
+	}
+
+	private async fetchInstanceConfig() {
+		try {
+			return await this.fetch(`/${INSTANCE_CONFIG}`).then((res) => res.json());
+		} catch {
+			return null;
+		}
+	}
+
+	private applyInstanceConfig(config: SurrealistConfig, instanceConfig: InstanceConfig) {
+		// nothing configured in the instance file
+		// clean instance connections
+		if (instanceConfig.connections.length <= 0) {
+			config.connectionGroups = config.connectionGroups.filter(
+				(group) => group.id !== INSTANCE_GROUP,
+			);
+			config.connections = config.connections.filter(
+				(connection) => connection.group !== INSTANCE_GROUP,
+			);
+
+			return config;
+		}
+
+		// sync connection groups
+		const existingConnectionGroup = config.connectionGroups.find(
+			(group) => group.id === INSTANCE_GROUP,
+		);
+
+		if (existingConnectionGroup) {
+			existingConnectionGroup.name = instanceConfig.groupName;
+		} else {
+			config.connectionGroups.push({
+				id: INSTANCE_GROUP,
+				name: instanceConfig.groupName,
+			});
+		}
+
+		// Add missing connections
+		for (const con of instanceConfig.connections) {
+			const existingConnection = config.connections.find((c) => c.id === con.id);
+
+			if (existingConnection) {
+				continue;
+			}
+
+			const newConnection = createBaseConnection(config.settings);
+
+			newConnection.id = con.id;
+			newConnection.name = con.name;
+			newConnection.group = INSTANCE_GROUP;
+			newConnection.authentication = con.authentication as Authentication;
+
+			if (con.defaultNamespace) {
+				newConnection.lastNamespace = con.defaultNamespace;
+
+				if (con.defaultDatabase) {
+					newConnection.lastDatabase = con.defaultDatabase;
+				}
+			}
+
+			config.connections.push(newConnection);
+		}
+
+		// Remove connections that are not in the instance config
+		config.connections = config.connections.filter(
+			(c) =>
+				c.group !== INSTANCE_GROUP ||
+				instanceConfig.connections.some((ic) => ic.id === c.id),
+		);
+
+		// Change activeScreen if instance config is valid
+		const isValidActiveConnection = config.connections.some(
+			(c) => c.id === instanceConfig.defaultConnection,
+		);
+
+		if (isValidActiveConnection && config.activeScreen === "start") {
+			config.activeScreen = "database";
+			config.activeConnection = instanceConfig.defaultConnection ?? SANDBOX;
+		}
+
+		return config;
 	}
 }
