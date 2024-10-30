@@ -1,5 +1,5 @@
 # build app with node
-FROM node:latest as builder
+FROM node:latest AS builder
 
 RUN npm i -g pnpm
 
