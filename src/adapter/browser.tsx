@@ -61,9 +61,11 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async processConfig(config: SurrealistConfig) {
-		if (!import.meta.env.IS_EMBEDDED && !isDevelopment) {
+		if (!import.meta.env.VITE_SURREALIST_INSTANCE && !isDevelopment) {
 			return config;
 		}
+
+		this.log("Adapter", "Fetching instance config");
 
 		const instanceConfig = await this.fetchInstanceConfig();
 
@@ -82,6 +84,8 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 				ids.add(con.id);
 			}
+
+			this.log("Adapter", "Applying instance config");
 
 			return this.applyInstanceConfig(config, parsed);
 		} catch (err: any) {

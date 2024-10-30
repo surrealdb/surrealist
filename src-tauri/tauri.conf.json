@@ -3,8 +3,8 @@
 	"version": "../package.json",
 	"identifier": "com.surrealdb.surrealist",
 	"build": {
-		"beforeDevCommand": "pnpm dev:desktop",
-		"beforeBuildCommand": "pnpm build:desktop",
+		"beforeDevCommand": "pnpm dev",
+		"beforeBuildCommand": "pnpm build",
 		"frontendDist": "../dist",
 		"devUrl": "http://localhost:1420"
 	},
