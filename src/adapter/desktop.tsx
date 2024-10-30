@@ -143,6 +143,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return JSON.parse(config);
 	}
 
+	public async processConfig(config: SurrealistConfig) {
+		return config;
+	}
+
 	public saveConfig(config: SurrealistConfig) {
 		return invoke<void>("save_config", {
 			config: JSON.stringify(config),
@@ -411,7 +415,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 					continue;
 				}
 
-				const existing = connection.queries.find((q) => q.type === "file" && q.query === path);
+				const existing = connection.queries.find(
+					(q) => q.type === "file" && q.query === path,
+				);
 
 				if (existing) {
 					setActiveQueryTab(existing.id);

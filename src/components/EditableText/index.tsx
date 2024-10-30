@@ -15,11 +15,16 @@ export interface EditableTextProps
 	onChange: (value: string) => void;
 }
 
-export const EditableText = (props: EditableTextProps) => {
+export const EditableText = ({
+	value,
+	disabled,
+	withDoubleClick,
+	withDecoration,
+	onChange,
+	...other
+}: EditableTextProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const [isEditing, setIsEditing] = useState(false);
-
-	const { value, onChange, withDoubleClick, withDecoration, ...rest } = props;
 
 	const doFocus = useLater(() => {
 		if (!ref.current) return;
@@ -42,7 +47,7 @@ export const EditableText = (props: EditableTextProps) => {
 			ref.current?.blur();
 		}
 
-		rest?.onKeyDown?.(e);
+		onKeyDown?.(e);
 	});
 
 	const onBlur = useStable((e: React.FocusEvent<HTMLDivElement>) => {
@@ -51,18 +56,18 @@ export const EditableText = (props: EditableTextProps) => {
 		onChange(textValue || "");
 		setIsEditing(false);
 
-		rest?.onBlur?.(e);
+		onBlur?.(e);
 	});
 
 	const onDoubleClick = useStable((e: React.MouseEvent<HTMLDivElement>) => {
-		if (props.disabled) return;
+		if (disabled) return;
 
 		if (withDoubleClick) {
 			setIsEditing(true);
 			doFocus();
 		}
 
-		rest?.onDoubleClick?.(e);
+		onDoubleClick?.(e);
 	});
 
 	useEffect(() => {
@@ -77,15 +82,11 @@ export const EditableText = (props: EditableTextProps) => {
 			onBlur={onBlur}
 			onKeyDown={onKeyDown}
 			onDoubleClick={onDoubleClick}
-			contentEditable={
-				!withDoubleClick || isEditing
-					? ("plaintext-only" as any)
-					: "false"
-			}
+			contentEditable={!disabled && (!withDoubleClick || isEditing)}
 			className={clsx(classes.root, withDecoration && classes.decorate)}
 			spellCheck={false}
-			role="textbox"
-			{...rest}
+			role={disabled ? undefined : "textbox"}
+			{...other}
 		/>
 	);
 };

@@ -9,6 +9,7 @@ import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { INSTANCE_GROUP } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useConnections } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -40,6 +41,8 @@ export function ConnectionModal() {
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
+
+	const isInstanceLocal = details.group === INSTANCE_GROUP;
 
 	const isValid = useMemo(() => {
 		return details.name && isConnectionValid(details.authentication);
@@ -192,7 +195,7 @@ export function ConnectionModal() {
 						Close
 					</Button>
 					<Spacer />
-					{!isCreating && (
+					{!isCreating && !isInstanceLocal && (
 						<Button
 							color="pink.7"
 							variant="light"

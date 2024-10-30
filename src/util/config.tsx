@@ -11,6 +11,7 @@ import { applyMigrations } from "./migrator";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
+export type StoreType<T> = T extends UseBoundStore<StoreApi<infer I>> ? I : never;
 export type ConfigFields = (keyof SurrealistConfig)[];
 
 /**
@@ -58,7 +59,8 @@ export function getSetting<C extends Category, K extends keyof Settings<C>>(cate
 export async function startConfigSync() {
 	const loadedConfig = await adapter.loadConfig();
 	const migrateConfig = applyMigrations(loadedConfig);
-	const config = assign<SurrealistConfig>(useConfigStore.getState(), migrateConfig);
+	const processed = await adapter.processConfig(migrateConfig);
+	const config = assign<SurrealistConfig>(useConfigStore.getState(), processed);
 	const compatible = config.configVersion <= CONFIG_VERSION;
 
 	// Handle incompatible config versions

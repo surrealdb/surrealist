@@ -1,3 +1,4 @@
+import type { InstanceConfig } from "~/schemas";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
@@ -58,6 +59,14 @@ export interface SurrealistAdapter {
 	 * Load the config from the adapter
 	 */
 	loadConfig(): Promise<any>;
+
+	/**
+	 * Process the config after loading it. At this point the config
+	 * has been repaired and migrated to the latest version.
+	 *
+	 * @param config The config to process
+	 */
+	processConfig(config: SurrealistConfig): Result<SurrealistConfig>;
 
 	/**
 	 * Save the config to the adapter
