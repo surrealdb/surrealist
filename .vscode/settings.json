@@ -1,5 +1,5 @@
 {
-	"typescript.tsdk": "frontend\\node_modules\\typescript\\lib",
+	"typescript.tsdk": "node_modules/typescript/lib",
 	"javascript.preferences.quoteStyle": "double",
 	"editor.formatOnSave": true
 }

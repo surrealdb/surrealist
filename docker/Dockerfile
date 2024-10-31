@@ -12,7 +12,8 @@ COPY ../pnpm-lock.yaml .
 RUN pnpm install
 
 COPY .. .
-RUN npm run build:embedded
+ENV VITE_SURREALIST_INSTANCE=true
+RUN npm run build
 
 # set up production image (static assets served by nginx)
 FROM nginx:stable-alpine

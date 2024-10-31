@@ -1,92 +1,100 @@
-import { Text, type TextProps } from "@mantine/core";
-import clsx from "clsx";
-import { type HTMLAttributes, useEffect, useRef, useState } from "react";
-import { useLater } from "~/hooks/later";
-import { useStable } from "~/hooks/stable";
+import { useInputState, useUncontrolled } from "@mantine/hooks";
 import classes from "./style.module.scss";
 
-export interface EditableTextProps
-	extends TextProps,
-		Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "style" | "color"> {
+import { type ElementProps, Text, TextInput, type TextProps } from "@mantine/core";
+import clsx from "clsx";
+import { type MouseEvent, useLayoutEffect } from "react";
+import { useStable } from "~/hooks/stable";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
+
+export interface EditableTextProps extends TextProps, ElementProps<"div", "onChange" | "color"> {
 	value: string;
-	disabled?: boolean;
-	withDoubleClick?: boolean;
+	editable?: boolean;
+	activationMode?: "none" | "click" | "double-click";
 	withDecoration?: boolean;
 	onChange: (value: string) => void;
+	onEditableChange?: (editable: boolean) => void;
 }
 
 export const EditableText = ({
 	value,
-	disabled,
-	withDoubleClick,
+	editable,
+	activationMode,
 	withDecoration,
 	onChange,
+	onEditableChange,
+	onClick,
+	onDoubleClick,
 	...other
 }: EditableTextProps) => {
-	const ref = useRef<HTMLDivElement>(null);
-	const [isEditing, setIsEditing] = useState(false);
-
-	const doFocus = useLater(() => {
-		if (!ref.current) return;
-
-		ref.current.focus();
-
-		const text = ref.current.childNodes[0] as Text;
-		const range = document.createRange();
-
-		range.selectNode(text);
-		window.getSelection()?.removeAllRanges();
-		window.getSelection()?.addRange(range);
+	const [buffer, setBuffer] = useInputState(value);
+	const [editing, setEditing] = useUncontrolled({
+		defaultValue: false,
+		value: editable,
+		onChange: onEditableChange,
 	});
 
-	const onKeyDown = useStable((e: React.KeyboardEvent<HTMLDivElement>) => {
+	const handleActivation = useStable((e: MouseEvent<HTMLDivElement>) => {
+		e.stopPropagation();
+		setEditing(true);
+
+		if (activationMode === "click") {
+			onClick?.(e);
+		} else {
+			onDoubleClick?.(e);
+		}
+	});
+
+	const handleKeyDown = useStable((e: React.KeyboardEvent<HTMLInputElement>) => {
 		e.stopPropagation();
 
 		if (e.key === "Enter") {
 			e.preventDefault();
-			ref.current?.blur();
+			(e.target as HTMLElement).blur();
 		}
-
-		onKeyDown?.(e);
 	});
 
-	const onBlur = useStable((e: React.FocusEvent<HTMLDivElement>) => {
-		const textValue = ref.current?.textContent?.replaceAll("\n", "");
-
-		onChange(textValue || "");
-		setIsEditing(false);
-
-		onBlur?.(e);
-	});
-
-	const onDoubleClick = useStable((e: React.MouseEvent<HTMLDivElement>) => {
-		if (disabled) return;
-
-		if (withDoubleClick) {
-			setIsEditing(true);
-			doFocus();
+	const handleBlur = useStable(() => {
+		if (buffer !== value) {
+			onChange(buffer);
 		}
 
-		onDoubleClick?.(e);
+		setEditing(false);
 	});
 
-	useEffect(() => {
-		if (ref.current) {
-			ref.current.textContent = value;
+	useLayoutEffect(() => {
+		if (editing) {
+			setBuffer(value);
 		}
-	}, [value]);
+	}, [editing, value]);
 
 	return (
 		<Text
-			ref={ref}
-			onBlur={onBlur}
-			onKeyDown={onKeyDown}
-			onDoubleClick={onDoubleClick}
-			contentEditable={!disabled && (!withDoubleClick || isEditing)}
-			className={clsx(classes.root, withDecoration && classes.decorate)}
-			spellCheck={false}
-			role={disabled ? undefined : "textbox"}
+			w="100%"
+			ta="start"
+			role={editing ? undefined : "button"}
+			component="div"
+			onClick={activationMode === "click" ? handleActivation : undefined}
+			onDoubleClick={activationMode === "double-click" ? handleActivation : undefined}
 			{...other}
-		/>
+		>
+			{editing ? (
+				<TextInput
+					autoFocus
+					w="100%"
+					variant="unstyled"
+					value={buffer}
+					onChange={setBuffer}
+					onKeyDownCapture={handleKeyDown}
+					onBlur={handleBlur}
+					onFocus={ON_FOCUS_SELECT}
+					classNames={{
+						input: clsx(classes.input, withDecoration && classes.decoration),
+					}}
+				/>
+			) : (
+				value
+			)}
+		</Text>
 	);
 };

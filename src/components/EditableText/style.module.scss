@@ -1,9 +1,15 @@
-.root {
-	min-width: 20px;
-	text-align: start;
-	outline: none;
+.input {
+	background: unset !important;
+	font-weight: inherit;
+	font-size: inherit;
+	color: inherit;
+	border: none;
+	line-height: unset;
+	height: unset;
+	min-height: unset;
+	border-radius: unset;
 }
 
-.decorate:focus {
-	font-style: italic;
+.decoration:focus {
+	font-style: italic !important;
 }

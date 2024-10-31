@@ -174,7 +174,7 @@ export const useConfigStore = create<ConfigStore>()(
 				if (!connection) return {};
 
 				if (!isConnectionValid(connection.authentication)) {
-					dispatchIntent("edit-connection", { id: connection.id });
+					dispatchIntent("edit-connection", { id: connection.id, select: "true" });
 					return {};
 				}
 

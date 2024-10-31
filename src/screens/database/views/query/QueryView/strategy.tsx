@@ -66,8 +66,6 @@ const FILE_STRATEGY: SaveStrategy = {
  * Read the query from its source
  */
 export function readQuery(tab: QueryTab): Result<string> {
-	console.log("read query", tab);
-
 	return tab.type === "file" ? FILE_STRATEGY.read(tab) : CONFIG_STRATEGY.read(tab);
 }
 
@@ -75,7 +73,5 @@ export function readQuery(tab: QueryTab): Result<string> {
  * Write a query to its destination
  */
 export function writeQuery(tab: QueryTab, query: string) {
-	console.log("write query", tab, query);
-
 	tab.type === "file" ? FILE_STRATEGY.write(tab, query) : CONFIG_STRATEGY.write(tab, query);
 }

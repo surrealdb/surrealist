@@ -108,7 +108,7 @@ export function ConnectionsModal() {
 	const isSandbox = connection?.id === SANDBOX;
 
 	const groupsList = useMemo(() => {
-		return groups.sort((a, b) => a.name.localeCompare(b.name));
+		return groups.toSorted((a, b) => a.name.localeCompare(b.name));
 	}, [groups]);
 
 	const connectionsList = useMemo(() => {
@@ -272,13 +272,14 @@ export function ConnectionsModal() {
 									<>
 										<EditableText
 											value={group.name}
-											disabled={isInstanceLocal}
-											onChange={(name) =>
-												updateConnectionGroup({ id: group.id, name })
-											}
+											activationMode={isInstanceLocal ? "none" : "click"}
+											withDecoration
 											c="bright"
 											fz="lg"
 											fw={500}
+											onChange={(name) =>
+												updateConnectionGroup({ id: group.id, name })
+											}
 										/>
 										<Spacer />
 										{!isInstanceLocal && (
