@@ -2,6 +2,7 @@ import {
 	type AccessRecordAuth,
 	type ScopeAuth,
 	type Surreal,
+	SurrealDbError,
 	UnsupportedVersion,
 	Uuid,
 	VersionRetrievalFailure,
@@ -25,7 +26,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { AuthDetails, Authentication, Connection, Protocol } from "~/types";
+import type { AuthDetails, Connection, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -299,6 +300,10 @@ export async function executeQuery(query: string, params?: any) {
 
 		return mapResults(responseRaw);
 	} catch (err: any) {
+		if (err instanceof SurrealDbError) {
+			console.warn("executeQuery fail", err);
+		}
+
 		return [
 			{
 				success: false,
@@ -436,6 +441,10 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 				origin: name,
 			});
 		}
+	} catch (err: any) {
+		if (err instanceof SurrealDbError) {
+			console.warn("executeUserQuery fail", err);
+		}
 	} finally {
 		setQueryActive(false);
 	}
@@ -516,6 +525,8 @@ export async function executeGraphql(
 		setGraphqlResponse(connection.id, response);
 		posthog.capture("graphql_execute");
 	} catch (err: any) {
+		console.warn("executeGraphql fail", err);
+
 		return {
 			success: false,
 			result: err.message,
@@ -636,14 +647,11 @@ export function composeHttpConnection(
 	const { protocol, hostname } = connection.authentication;
 
 	const isSecure = protocol === "https" || protocol === "wss";
-	const endpoint = new URL(
-		path,
-		`${isSecure ? "https" : "http"}://${hostname}`,
-	).toString();
+	const endpoint = new URL(path, `${isSecure ? "https" : "http"}://${hostname}`).toString();
 
 	const headers: Record<string, string> = {
 		...extraHeaders,
-		Authorization: `Bearer ${accessToken}`
+		Authorization: `Bearer ${accessToken}`,
 	};
 
 	if (connection.lastNamespace) {
