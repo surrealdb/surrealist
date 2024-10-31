@@ -1,12 +1,5 @@
-import {
-	Box,
-	Button,
-	Group,
-	Modal,
-	Stack,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
+import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { type ChangeEvent, memo, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -27,12 +20,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { SchemaFunction } from "~/types";
 import { showError } from "~/util/helpers";
-import {
-	iconChevronRight,
-	iconFunction,
-	iconOpen,
-	iconPlus,
-} from "~/util/icons";
 import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { EditorPanel } from "../EditorPanel";
@@ -66,11 +53,13 @@ export function FunctionsView() {
 
 			try {
 				const res = await executeQuery(query);
-				const error = res[0].success ? "" : (res[0].result as string).replace(
-					"There was a problem with the database: ",
-					"",
-				);
-				
+				const error = res[0].success
+					? ""
+					: (res[0].result as string).replace(
+							"There was a problem with the database: ",
+							"",
+						);
+
 				setError(error);
 
 				if (error) {
@@ -94,10 +83,7 @@ export function FunctionsView() {
 	});
 
 	const updateCreateName = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		const name = e.target.value
-			.replaceAll(/\s/g, "_")
-			.replaceAll(/[^\w:]/g, "")
-			.toLocaleLowerCase();
+		const name = e.target.value.replaceAll(/\s/g, "_").replaceAll(/[^\w:]/g, "");
 
 		setCreateName(name);
 	});
@@ -160,8 +146,7 @@ export function FunctionsView() {
 	});
 
 	const removeFunction = useConfirmation({
-		message:
-			"You are about to remove this function. This action cannot be undone.",
+		message: "You are about to remove this function. This action cannot be undone.",
 		confirmText: "Remove",
 		onConfirm: async (name: string) => {
 			await executeQuery(`REMOVE FUNCTION fn::${name}`);
@@ -180,12 +165,19 @@ export function FunctionsView() {
 
 	return (
 		<>
-			<Box h="100%" ref={ref}>
+			<Box
+				h="100%"
+				ref={ref}
+			>
 				<PanelGroup
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					<Panel defaultSize={minSize} minSize={minSize} maxSize={35}>
+					<Panel
+						defaultSize={minSize}
+						minSize={minSize}
+						maxSize={35}
+					>
 						<FunctionsPanelLazy
 							active={details?.name || ""}
 							functions={functions}
@@ -223,11 +215,9 @@ export function FunctionsView() {
 								}}
 							>
 								<Text>
-									Schema functions allow you to define stored
-									procedures that can be reused throughout
-									your queries. This view allows you to
-									effortlessly create and manage your
-									functions.
+									Schema functions allow you to define stored procedures that can
+									be reused throughout your queries. This view allows you to
+									effortlessly create and manage your functions.
 								</Text>
 								<Group>
 									<Button
@@ -285,8 +275,7 @@ export function FunctionsView() {
 							}
 							styles={{
 								input: {
-									fontFamily:
-										"var(--mantine-font-family-monospace)",
+									fontFamily: "var(--mantine-font-family-monospace)",
 								},
 							}}
 						/>
