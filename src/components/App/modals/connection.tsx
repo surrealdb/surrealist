@@ -38,6 +38,7 @@ export function ConnectionModal() {
 	const [opened, openedHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
 	const [isCreating, setIsCreating] = useState(false);
+	const [select, setSelect] = useState(false);
 
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
@@ -53,7 +54,6 @@ export function ConnectionModal() {
 
 		if (isCreating) {
 			addConnection(details);
-			setActiveConnection(details.id);
 		} else {
 			updateConnection({
 				id: editingId,
@@ -62,6 +62,10 @@ export function ConnectionModal() {
 				authentication: details.authentication,
 				group: details.group,
 			});
+		}
+
+		if (select) {
+			setActiveConnection(details.id);
 		}
 	});
 
@@ -107,6 +111,7 @@ export function ConnectionModal() {
 		setIsCreating(true);
 		setEditingId("");
 		setDetails(newConnection());
+		setSelect(true);
 		openedHandle.open();
 
 		if (template) {
@@ -114,13 +119,14 @@ export function ConnectionModal() {
 		}
 	});
 
-	useIntent("edit-connection", ({ id }) => {
+	useIntent("edit-connection", ({ id, select }) => {
 		const base = newConnection();
 		const info = connections.find((con) => con.id === id);
 
 		setIsCreating(false);
 		setEditingId(id);
 		setDetails(info || base);
+		setSelect(!!select && select !== "false");
 		openedHandle.open();
 	});
 
