@@ -1,4 +1,3 @@
-import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { type ChangeEvent, memo, useRef, useState } from "react";
@@ -20,6 +19,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { SchemaFunction } from "~/types";
 import { showError } from "~/util/helpers";
+import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { EditorPanel } from "../EditorPanel";
