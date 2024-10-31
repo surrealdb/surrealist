@@ -222,6 +222,8 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 						fz={22}
 						fw={600}
 						flex={1}
+						editable
+						withDecoration
 						value={value.name}
 						onChange={(value) =>
 							onChange((draft) => {
