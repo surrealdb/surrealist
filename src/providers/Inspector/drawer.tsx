@@ -1,13 +1,16 @@
+import classes from "./style.module.scss";
+
 import {
-	ActionIcon,
-	Center,
-	Drawer,
-	Group,
-	Paper,
-	Tabs,
-	Text,
-	Tooltip,
-} from "@mantine/core";
+	iconArrowLeftFat,
+	iconClose,
+	iconDelete,
+	iconJSON,
+	iconRefresh,
+	iconSearch,
+	iconTransfer,
+} from "~/util/icons";
+
+import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { RecordId } from "surrealdb";
@@ -22,18 +25,8 @@ import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/database/connection/connection";
-import {
-	iconArrowLeftFat,
-	iconClose,
-	iconDelete,
-	iconJSON,
-	iconRefresh,
-	iconSearch,
-	iconTransfer,
-} from "~/util/icons";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { useConfirmation } from "../Confirmation";
-import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";
 import { RelationsTab } from "./tabs/relations";
 
@@ -60,22 +53,15 @@ export interface InspectorDrawerProps {
 	onRefresh: () => void;
 }
 
-export function InspectorDrawer({
-	opened,
-	history,
-	onClose,
-	onRefresh,
-}: InspectorDrawerProps) {
-	const [currentRecord, setCurrentRecord] =
-		useState<ActiveRecord>(DEFAULT_RECORD);
+export function InspectorDrawer({ opened, history, onClose, onRefresh }: InspectorDrawerProps) {
+	const [currentRecord, setCurrentRecord] = useState<ActiveRecord>(DEFAULT_RECORD);
 	const [recordId, setRecordId] = useInputState("");
 	const [recordBody, setRecordBody] = useState("");
+	const [error, setError] = useState("");
 	const [isValid, body] = useValueValidator(recordBody);
 
 	const isLight = useIsLight();
-	const inputColor = currentRecord.exists
-		? undefined
-		: "var(--mantine-color-red-6)";
+	const inputColor = currentRecord.exists ? undefined : "var(--mantine-color-red-6)";
 
 	const saveHandle = useSaveable({
 		valid: isValid,
@@ -84,9 +70,26 @@ export function InspectorDrawer({
 		},
 		onRevert(original) {
 			setRecordBody(original.recordBody);
+			setError("");
 		},
-		onSave() {
-			saveRecord();
+		onSave: async () => {
+			const id = history.current;
+
+			const [{ success, result }] = await executeQuery(
+				/* surql */ `UPDATE $id CONTENT $body`,
+				{
+					id,
+					body,
+				},
+			);
+
+			if (!success) {
+				setError(result.replace("There was a problem with the database: ", ""));
+				return false;
+			}
+
+			onRefresh();
+			onClose();
 		},
 	});
 
@@ -95,14 +98,14 @@ export function InspectorDrawer({
 		const inputQuery = /* surql */ `SELECT VALUE <-? FROM ONLY $id`;
 		const outputsQuery = /* surql */ `SELECT VALUE ->? FROM ONLY $id`;
 
-		const [{ result: content }, { result: inputs }, { result: outputs }] =
-			await executeQuery(
-				`${contentQuery};${inputQuery};${outputsQuery}`,
-				{ id },
-			);
+		const [{ result: content }, { result: inputs }, { result: outputs }] = await executeQuery(
+			`${contentQuery};${inputQuery};${outputsQuery}`,
+			{ id },
+		);
 
 		const formatted = formatValue(content, false, true);
 
+		setError("");
 		setRecordId(formatValue(id));
 		setCurrentRecord({
 			isEdge: !!content?.in && !!content?.out,
@@ -125,18 +128,6 @@ export function InspectorDrawer({
 		}
 	});
 
-	const saveRecord = useStable(async () => {
-		const id = history.current;
-
-		await executeQuery(/* surql */ `UPDATE $id CONTENT $body`, {
-			id,
-			body,
-		});
-
-		onRefresh();
-		onClose();
-	});
-
 	const gotoRecord = useStable(() => {
 		const id = parseValue(recordId);
 
@@ -146,13 +137,10 @@ export function InspectorDrawer({
 	});
 
 	const deleteRecord = useConfirmation({
-		message:
-			"You are about to delete this record. This action cannot be undone.",
+		message: "You are about to delete this record. This action cannot be undone.",
 		confirmText: "Delete",
 		onConfirm: async () => {
-			await executeQuery(
-				/* surql */ `DELETE ${formatValue(history.current)}`,
-			);
+			await executeQuery(/* surql */ `DELETE ${formatValue(history.current)}`);
 
 			history.clear();
 
@@ -184,11 +172,22 @@ export function InspectorDrawer({
 				},
 			}}
 		>
-			<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
+			<DrawerResizer
+				minSize={500}
+				maxSize={1500}
+				onResize={setWidth}
+			/>
 
-			<Group mb="md" gap="sm">
+			<Group
+				mb="md"
+				gap="sm"
+			>
 				<PrimaryTitle>
-					<Icon left path={iconSearch} size="sm" />
+					<Icon
+						left
+						path={iconSearch}
+						size="sm"
+					/>
 					Record inspector
 				</PrimaryTitle>
 
@@ -277,17 +276,26 @@ export function InspectorDrawer({
 					<Tabs.List grow>
 						<Tabs.Tab value="content">
 							Content
-							<Icon path={iconJSON} size={0.85} right />
+							<Icon
+								path={iconJSON}
+								size={0.85}
+								right
+							/>
 						</Tabs.Tab>
 						<Tabs.Tab value="relations">
 							Relations
-							<Icon path={iconTransfer} size={0.85} right />
+							<Icon
+								path={iconTransfer}
+								size={0.85}
+								right
+							/>
 						</Tabs.Tab>
 					</Tabs.List>
 
 					<Tabs.Panel value="content">
 						<ContentTab
 							value={recordBody}
+							error={error}
 							saveHandle={saveHandle}
 							onChange={setRecordBody}
 						/>

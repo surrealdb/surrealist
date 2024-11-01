@@ -1,4 +1,3 @@
-import { type EditorView, lineNumbers } from "@codemirror/view";
 import {
 	ActionIcon,
 	Alert,
@@ -13,6 +12,8 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+
+import type { EditorView } from "@codemirror/view";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { useLayoutEffect, useState } from "react";
@@ -33,7 +34,6 @@ import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { extractEdgeRecords } from "~/util/schema";
-import classes from "./style.module.scss";
 
 type EdgeInfo = [boolean, string[], string[]];
 
@@ -184,7 +184,6 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 				{errors.map((error, i) => (
 					<Alert
 						key={i}
-						className={classes.error}
 						icon={<Icon path={iconWarning} />}
 						color="red.5"
 						style={{

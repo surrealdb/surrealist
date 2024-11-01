@@ -1,11 +1,6 @@
 import { useDisclosure } from "@mantine/hooks";
 import posthog from "posthog-js";
-import {
-	type PropsWithChildren,
-	createContext,
-	useContext,
-	useState,
-} from "react";
+import { type PropsWithChildren, createContext, useContext, useState } from "react";
 import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
@@ -48,7 +43,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 
 	const inspect = useStable((record: RecordId | string) => {
 		const recordId =
-			typeof record === "string" ? parseValue(record) : record;
+			typeof record === "string" ? parseValue(record) : new RecordId(record.tb, record.id);
 
 		if (!(recordId instanceof RecordId)) {
 			throw new TypeError("Invalid record id");
