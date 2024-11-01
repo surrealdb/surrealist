@@ -1,14 +1,14 @@
 import { Alert, Paper, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { CodeEditor } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
 import { SaveBox } from "~/components/SaveBox";
 import { surqlLinting, surqlRecordLinks } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
+import { iconWarning } from "~/util/icons";
 import { useInspector } from "..";
 import classes from "../style.module.scss";
-import { Icon } from "~/components/Icon";
-import { iconWarning } from "~/util/icons";
 
 export interface ContentTabProps {
 	value: string;
