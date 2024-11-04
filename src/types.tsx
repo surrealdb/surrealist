@@ -70,6 +70,7 @@ export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" |
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
+export type KeyBindings = Record<string, string>;
 export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string = string> = { label: string; value: T };
@@ -246,6 +247,7 @@ export interface SurrealistConfig {
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
 	settings: SurrealistSettings; // TODO Rename to preferences and flatten inner objects
+	keybindings: KeyBindings;
 	featureFlags: Partial<FeatureFlagMap>;
 	openDesignerPanels: string[];
 	commandHistory: string[];

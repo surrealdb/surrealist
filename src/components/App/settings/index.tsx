@@ -19,6 +19,7 @@ import {
 	iconBalance,
 	iconChevronRight,
 	iconClose,
+	iconCommand,
 	iconDownload,
 	iconFlag,
 	iconHelp,
@@ -49,6 +50,7 @@ import { ManageDataTab } from "./tabs/ManageData";
 import { PreferencesTab } from "./tabs/Preferences";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
+import { KeybindingsTab } from "./tabs/Keybindings";
 
 interface Category {
 	id: string;
@@ -64,6 +66,12 @@ const CATEGORIES: Category[] = [
 		name: "Preferences",
 		icon: iconTune,
 		component: PreferencesTab,
+	},
+	{
+		id: "keybindings",
+		name: "Keybindings",
+		icon: iconCommand,
+		component: KeybindingsTab,
 	},
 	{
 		id: "templates",

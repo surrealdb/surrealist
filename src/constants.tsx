@@ -24,6 +24,7 @@ import type {
 	DiagramLinks,
 	DiagramMode,
 	Driver,
+	KeyBindings,
 	Listable,
 	Orientation,
 	Protocol,
@@ -435,3 +436,7 @@ export const DRIVERS: Driver[] = [
 		link: "https://surrealdb.com/docs/sdk/php",
 	},
 ];
+
+export const DEFAULT_KEYBINDINGS: KeyBindings = {
+	"": "",
+};

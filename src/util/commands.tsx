@@ -51,10 +51,11 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnection } from "./connection";
 import { featureFlags } from "./feature-flags";
-import { newId, optional } from "./helpers";
+import { optional } from "./helpers";
 import type { IntentPayload, IntentType } from "./intents";
 import { type PreferenceController, computePreferences } from "./preferences";
 import { syncConnectionSchema } from "./schema";
+import { dash } from "radash";
 
 type LaunchAction = { type: "launch"; handler: () => void };
 type InsertAction = { type: "insert"; content: string };
@@ -73,7 +74,7 @@ export interface Command {
 	id: string;
 	name: string;
 	icon: string;
-	shortcut?: string | string[];
+	binding?: boolean | string;
 	action: Action;
 	aliases?: string[];
 	disabled?: boolean;
@@ -107,7 +108,6 @@ const intent = (intent: IntentType, payload?: IntentPayload) =>
  */
 export function computeCommands(): CommandCategory[] {
 	const {
-		activeView,
 		connections,
 		commandHistory,
 		setActiveView,
@@ -131,8 +131,8 @@ export function computeCommands(): CommandCategory[] {
 		{
 			name: "History",
 			visibility: "unsearched",
-			commands: commandHistory.map((entry) => ({
-				id: newId(),
+			commands: commandHistory.map((entry, i) => ({
+				id: `history-${i}`,
 				name: entry,
 				icon: iconSearch,
 				action: insert(entry),
@@ -142,43 +142,46 @@ export function computeCommands(): CommandCategory[] {
 			name: "Connections",
 			commands: [
 				{
-					id: newId(),
-					name: `Open the Sandbox`,
+					id: "connect-sandbox",
+					name: "Open the Sandbox",
 					icon: iconSandbox,
+					binding: true,
 					action: launch(() => {
 						setActiveConnection(SANDBOX);
 					}),
 				},
 				...connections.map((connection) => ({
-					id: newId(),
+					id: `connect-${connection.id}`,
 					name: `Connect to ${connection.name}`,
 					icon: iconServer,
+					binding: true,
 					action: launch(() => {
-						setActiveConnection(connection.id);
+						setActiveConnection(connection.id); // TODO Use open-connection intent
 					}),
 				})),
 				{
-					id: newId(),
-					name: `Create new connection`,
+					id: "new-connection",
+					name: "Create new connection",
 					icon: iconPlus,
+					binding: true,
 					action: intent("new-connection"),
 				},
 				{
-					id: newId(),
-					name: `Reconnect to database`,
+					id: "reconnect",
+					name: "Reconnect to database",
 					icon: iconRefresh,
+					binding: true,
 					action: launch(openConnection),
 				},
-				...(canDisconnect
-					? [
-							{
-								id: newId(),
-								name: `Disconnect from database`,
-								icon: iconClose,
-								action: launch(closeConnection),
-							},
-						]
-					: []),
+				...optional(
+					canDisconnect && {
+						id: "disconnect",
+						name: "Disconnect from database",
+						icon: iconClose,
+						binding: true,
+						action: launch(closeConnection),
+					},
+				),
 			],
 		},
 	);
@@ -195,25 +198,24 @@ export function computeCommands(): CommandCategory[] {
 			{
 				name: "Views",
 				commands: Object.values(VIEW_MODES).flatMap((view) =>
-					view.disabled?.(featureFlags.store)
-						? []
-						: [
-								{
-									id: newId(),
-									name: `Open ${view.name} View`,
-									icon: view.icon,
-									action: launch(() => {
-										setActiveView(view.id);
-									}),
-								},
-							],
+					optional(
+						!view.disabled?.(featureFlags.store) && {
+							id: "",
+							name: `Open ${view.name} View`,
+							icon: view.icon,
+							binding: true,
+							action: launch(() => {
+								setActiveView(view.id);
+							}),
+						},
+					),
 				),
 			},
 			{
 				name: "Tables",
 				commands: [
 					...tables.map((table) => ({
-						id: newId(),
+						id: `explore-table-${table.schema.name}`,
 						name: `Explore table ${table.schema.name}`,
 						icon: iconChevronRight,
 						action: intent("explore-table", {
@@ -221,7 +223,7 @@ export function computeCommands(): CommandCategory[] {
 						}),
 					})),
 					...tables.map((table) => ({
-						id: newId(),
+						id: `design-table-${table.schema.name}`,
 						name: `Design table ${table.schema.name}`,
 						icon: iconChevronRight,
 						action: intent("design-table", {
@@ -229,9 +231,10 @@ export function computeCommands(): CommandCategory[] {
 						}),
 					})),
 					{
-						id: newId(),
+						id: "new-table",
 						name: `Create new table`,
 						icon: iconPlus,
+						binding: true,
 						action: intent("new-table"),
 					},
 				],
@@ -240,59 +243,67 @@ export function computeCommands(): CommandCategory[] {
 				name: "Query",
 				commands: [
 					{
-						id: newId(),
+						id: "run-query",
 						name: "Run query",
 						icon: iconPlay,
-						shortcut: ["F9", "mod enter"],
+						binding: "mod + enter",
 						action: intent("run-query"),
 					},
 					{
-						id: newId(),
+						id: "save-query",
 						name: "Save query",
 						icon: iconStarPlus,
+						binding: true,
 						action: intent("save-query"),
 					},
 					{
-						id: newId(),
+						id: "format-query",
 						name: "Format query",
 						icon: iconText,
+						binding: true,
 						action: intent("format-query"),
 					},
 					{
-						id: newId(),
+						id: "toggle-variables",
 						name: "Toggle variables panel",
 						icon: iconBraces,
+						binding: true,
 						action: intent("toggle-variables"),
 					},
 					{
-						id: newId(),
+						id: "infer-variables",
 						name: "Infer variables from query",
 						icon: iconAutoFix,
+						binding: true,
 						action: intent("infer-variables"),
 					},
 					{
-						id: newId(),
+						id: "query-saves",
 						name: "View saved queries",
 						icon: iconStar,
+						binding: true,
 						action: intent("open-saved-queries"),
 					},
 					{
-						id: newId(),
+						id: "query-history",
 						name: "View query history",
 						icon: iconHistory,
+						binding: true,
 						action: intent("open-query-history"),
 					},
 					{
-						id: newId(),
+						id: "new-query",
 						name: "Create new query",
 						icon: iconPlus,
+						binding: true,
 						action: intent("new-query"),
 					},
 					...optional(
 						isDesktop && {
-							id: newId(),
+							id: "open-query-file",
 							name: "Open query file...",
 							icon: iconFile,
+							binding: true,
 							action: launch(() => {
 								(adapter as DesktopAdapter).openQueryFile();
 							}),
@@ -304,15 +315,17 @@ export function computeCommands(): CommandCategory[] {
 				name: "Explorer",
 				commands: [
 					{
-						id: newId(),
+						id: "import-database",
 						name: "Import database",
 						icon: iconUpload,
+						binding: true,
 						action: intent("import-database"),
 					},
 					{
-						id: newId(),
+						id: "export-database",
 						name: "Export database",
 						icon: iconDownload,
+						binding: true,
 						action: intent("export-database"),
 					},
 				],
@@ -321,28 +334,31 @@ export function computeCommands(): CommandCategory[] {
 				name: "GraphQL",
 				commands: [
 					{
-						id: newId(),
+						id: "run-gql-query",
 						name: "Run query",
 						icon: iconPlay,
-						shortcut: ["F9", "mod enter"],
+						binding: "mod + enter",
 						action: intent("run-graphql-query"),
 					},
 					{
-						id: newId(),
+						id: "format-gql-query",
 						name: "Format query",
 						icon: iconText,
+						binding: true,
 						action: intent("format-graphql-query"),
 					},
 					{
-						id: newId(),
+						id: "toggle-gql-variables",
 						name: "Toggle variables panel",
 						icon: iconBraces,
+						binding: true,
 						action: intent("toggle-graphql-variables"),
 					},
 					{
-						id: newId(),
+						id: "infer-gql-variables",
 						name: "Infer variables from query",
 						icon: iconAutoFix,
+						binding: true,
 						action: intent("infer-graphql-variables"),
 					},
 				],
@@ -351,31 +367,35 @@ export function computeCommands(): CommandCategory[] {
 				name: "Authentication",
 				commands: [
 					{
-						id: newId(),
+						id: "new-kv-user",
 						name: "Create root user",
 						icon: iconAuth,
+						binding: true,
 						action: intent("create-user", { level: "ROOT" }),
 					},
 					{
-						id: newId(),
+						id: "new-ns-user",
 						name: "Create namespace user",
 						icon: iconFolderSecure,
+						binding: true,
 						action: intent("create-user", { level: "NAMESPACE" }),
 					},
 					{
-						id: newId(),
+						id: "new-db-user",
 						name: "Create database user",
 						icon: iconServerSecure,
+						binding: true,
 						action: intent("create-user", { level: "DATABASE" }),
 					},
 					{
-						id: newId(),
+						id: "new-access",
 						name: "Create access",
 						icon: iconAccountSecure,
+						binding: true,
 						action: intent("create-access"),
 					},
 					...accessMethods.map((access) => ({
-						id: newId(),
+						id: `register-user-${access.name}`,
 						name: `Register user with access method ${access.name}`,
 						icon: iconAccountPlus,
 						action: intent("register-user", { access: access.name }),
@@ -385,7 +405,7 @@ export function computeCommands(): CommandCategory[] {
 			{
 				name: "API Docs",
 				commands: CODE_LANGUAGES.map((lang) => ({
-					id: newId(),
+					id: `docs-lang-${lang.value}`,
 					name: `Preview snippets in ${lang.label}`,
 					icon: iconAPI,
 					action: intent("docs-switch-language", {
@@ -401,15 +421,17 @@ export function computeCommands(): CommandCategory[] {
 			name: "Serving",
 			commands: [
 				{
-					id: newId(),
+					id: "toggle-serving",
 					name: `${isServing ? "Stop" : "Start"} database serving`,
 					icon: isServing ? iconStop : iconPlay,
+					binding: true,
 					action: intent("toggle-serving"),
 				},
 				{
-					id: newId(),
+					id: "open-serving-console",
 					name: "Open serving console",
 					icon: iconConsole,
+					binding: true,
 					action: intent("open-serving-console"),
 				},
 			],
@@ -420,90 +442,94 @@ export function computeCommands(): CommandCategory[] {
 		{
 			name: "Settings",
 			commands: [
-				...(isDesktop
-					? [
-							{
-								id: newId(),
-								name: "Increase interface zoom",
-								icon: iconMagnifyPlus,
-								shortcut: "mod +",
-								action: intent("increase-window-scale"),
-							},
-							{
-								id: newId(),
-								name: "Decrease interface zoom",
-								icon: iconMagnifyMinus,
-								shortcut: "mod -",
-								action: intent("decrease-window-scale"),
-							},
-							{
-								id: newId(),
-								name: "Toggle window always on top",
-								icon: iconPin,
-								shortcut: "F10",
-								action: intent("toggle-pinned"),
-							},
-						]
-					: []),
+				...optional(
+					isDesktop && [
+						{
+							id: "inc-win-scale",
+							name: "Increase interface zoom",
+							icon: iconMagnifyPlus,
+							binding: "mod +",
+							action: intent("increase-window-scale"),
+						},
+						{
+							id: "dec-win-scale",
+							name: "Decrease interface zoom",
+							icon: iconMagnifyMinus,
+							binding: "mod -",
+							action: intent("decrease-window-scale"),
+						},
+						{
+							id: "toggle-win-pinned",
+							name: "Toggle window always on top",
+							icon: iconPin,
+							binding: "F10",
+							action: intent("toggle-pinned"),
+						},
+					],
+				),
 				{
-					id: newId(),
+					id: "inc-edit-scale",
 					name: "Increase editor zoom",
 					icon: iconTextBoxPlus,
-					shortcut: "mod shift +",
+					binding: "mod shift +",
 					action: intent("increase-editor-scale"),
 				},
 				{
-					id: newId(),
+					id: "dec-edit-scale",
 					name: "Decrease editor zoom",
 					icon: iconTextBoxMinus,
-					shortcut: "mod shift -",
+					binding: "mod shift -",
 					action: intent("decrease-editor-scale"),
 				},
 				{
-					id: newId(),
+					id: "open-preferences",
 					name: "Manage Preferences",
 					icon: iconTune,
 					action: intent("open-settings", { tab: "preferences" }),
 				},
 				{
-					id: newId(),
+					id: "open-keybindings",
+					name: "Configure Keybindings",
+					icon: iconCommand,
+					action: intent("open-settings", { tab: "keybindings" }),
+				},
+				{
+					id: "open-templates",
 					name: "Manage Templates",
 					icon: iconServer,
 					action: intent("open-settings", { tab: "templates" }),
 				},
-				...(isDesktop
-					? [
-							{
-								id: newId(),
-								name: "Manage Database Serving",
-								icon: iconPlay,
-								action: intent("open-settings", {
-									tab: "serving",
-								}),
-							},
-						]
-					: []),
+				...optional(
+					isDesktop && {
+						id: "open-serving",
+						name: "Manage Database Serving",
+						icon: iconPlay,
+						action: intent("open-settings", {
+							tab: "serving",
+						}),
+					},
+				),
 				{
-					id: newId(),
+					id: "open-manage-data",
 					name: "Manage Data",
 					icon: iconTransfer,
 					action: intent("open-settings", { tab: "manage-data" }),
 				},
 				{
-					id: newId(),
+					id: "open-feature-flags",
 					name: "Manage Feature Flags",
 					icon: iconFlag,
 					action: intent("open-settings", { tab: "feature-flags" }),
 				},
 				{
-					id: newId(),
+					id: "open-licenses",
 					name: "View OSS Licenses",
 					icon: iconBalance,
 					action: intent("open-settings", { tab: "licenses" }),
 					aliases: ["Manage OSS Licenses"],
 				},
 				{
-					id: newId(),
+					id: "open-about",
 					name: "View About",
 					icon: iconHelp,
 					action: intent("open-settings", { tab: "about" }),
@@ -514,7 +540,7 @@ export function computeCommands(): CommandCategory[] {
 			name: "Preferences",
 			visibility: "searched",
 			commands: preferences.map((pref) => ({
-				id: newId(),
+				id: `pref-${dash(pref.name.toLowerCase())}`,
 				name: pref.name,
 				icon: iconWrench,
 				action: preference(pref.controller),
@@ -524,84 +550,83 @@ export function computeCommands(): CommandCategory[] {
 			name: "Navigation",
 			commands: [
 				{
-					id: newId(),
+					id: "open-settings",
 					name: "Open Settings",
 					icon: iconCog,
-					shortcut: ["mod", ","],
+					binding: "mod + ,",
 					action: intent("open-settings"),
 				},
 				{
-					id: newId(),
+					id: "open-help",
 					name: "Open Help & Support",
 					icon: iconHelp,
 					action: intent("open-help"),
 				},
+				// TODO Remove
+				// {
+				// 	id: "open-keymap",
+				// 	name: "Open Keyboard Shortcuts",
+				// 	icon: iconCommand,
+				// 	action: intent("open-keymap"),
+				// },
 				{
-					id: newId(),
-					name: "Open Keyboard Shortcuts",
-					icon: iconCommand,
-					action: intent("open-keymap"),
-				},
-				{
-					id: newId(),
+					id: "open-news",
 					name: "Open latest news",
 					icon: iconNewspaper,
 					action: intent("open-news"),
 				},
 				{
-					id: newId(),
+					id: "open-embedder",
 					name: "Open mini generator",
 					icon: iconWrench,
 					aliases: ["mini"],
 					action: intent("open-embedder"),
 				},
 				{
-					id: newId(),
+					id: "open-docs",
 					name: "Search SurrealDB documentation",
 					aliases: ["Docs"],
 					icon: iconBook,
-					shortcut: "mod j",
+					binding: "mod j",
 					action: intent("open-documentation"),
 				},
 				{
-					id: newId(),
+					id: "open-changelog",
 					name: "View release changelogs",
 					icon: iconStar,
 					action: intent("open-changelog"),
 				},
 				{
-					id: newId(),
+					id: "open-desktop-download",
 					name: "Download Desktop App",
 					icon: iconDownload,
 					action: intent("open-desktop-download"),
 				},
 				{
-					id: newId(),
+					id: "open-db-screen",
 					name: "Open Database Screen",
 					icon: iconServer,
 					action: launch(() => {
 						setActiveScreen("database");
 					}),
 				},
-				...(isDesktop
-					? [
-							{
-								id: newId(),
-								name: "Check for updates",
-								icon: iconDownload,
-								action: launch(() => {
-									(adapter as DesktopAdapter).checkForUpdates(true);
-								}),
-							},
-						]
-					: []),
+				...optional(
+					isDesktop && {
+						id: "check-updates",
+						name: "Check for updates",
+						icon: iconDownload,
+						action: launch(() => {
+							(adapter as DesktopAdapter).checkForUpdates(true);
+						}),
+					},
+				),
 			],
 		},
 		{
 			name: "Developer",
 			commands: [
 				{
-					id: newId(),
+					id: "open-start-screen",
 					name: "Open start screen",
 					icon: iconChevronRight,
 					action: launch(() => {
@@ -609,7 +634,7 @@ export function computeCommands(): CommandCategory[] {
 					}),
 				},
 				{
-					id: newId(),
+					id: "reload-win",
 					name: "Reload window",
 					icon: iconRefresh,
 					action: launch(() => {
@@ -617,39 +642,36 @@ export function computeCommands(): CommandCategory[] {
 					}),
 				},
 				{
-					id: newId(),
+					id: "reset-tours",
 					name: "Reset tours",
 					icon: iconRoutes,
 					action: launch(resetOnboardings),
 				},
 				{
-					id: newId(),
+					id: "sync-schema",
 					name: "Sync database schema",
 					icon: iconReset,
+					binding: true,
 					action: launch(syncConnectionSchema),
 				},
-				...(isDesktop
-					? [
-							{
-								id: newId(),
-								name: "Toggle developer tools",
-								icon: iconWrench,
-								action: launch(() => {
-									(adapter as DesktopAdapter).toggleDevTools();
-								}),
-							},
-						]
-					: []),
-				...(featureFlags.store.highlight_tool
-					? [
-							{
-								id: newId(),
-								name: "Highlight Tool",
-								icon: iconWrench,
-								action: intent("highlight-tool"),
-							},
-						]
-					: []),
+				...optional(
+					isDesktop && {
+						id: "toggle-dev-tools",
+						name: "Toggle developer tools",
+						icon: iconWrench,
+						action: launch(() => {
+							(adapter as DesktopAdapter).toggleDevTools();
+						}),
+					},
+				),
+				...optional(
+					featureFlags.store.highlight_tool && {
+						id: "highlight-tool",
+						name: "Highlight Tool",
+						icon: iconWrench,
+						action: intent("highlight-tool"),
+					},
+				),
 			],
 		},
 	);

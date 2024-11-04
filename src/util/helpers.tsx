@@ -454,6 +454,6 @@ export function isEqualApprox(a: number, b: number) {
  * @param value The optional value
  * @returns Array with the value or empty array
  */
-export function optional<T>(value: T | false | undefined | null): T[] {
-	return value ? [value] : [];
+export function optional<T>(value: T | T[] | false | undefined | null): T[] {
+	return value ? (Array.isArray(value) ? value : [value]) : [];
 }
