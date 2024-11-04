@@ -303,6 +303,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 			{responseCount === 0 ? (
 				<Center
 					h="100%"
+					mih={80}
 					c="slate"
 				>
 					<Stack>

@@ -182,48 +182,36 @@ export function QueryView() {
 	useIntent("save-query", handleSaveRequest);
 	useIntent("toggle-variables", () => setShowVariables(!showVariables));
 
-	const [minSize, ref] = usePanelMinSize(275);
+	const [minSidebarSize, rootRef] = usePanelMinSize(275);
+	const [minResultHeight, wrapperRef] = usePanelMinSize(48, "height");
 
 	const queryEditor = active && (
-		<PanelGroup direction={orientation}>
-			<Panel minSize={15}>
-				{isMini ? (
-					showVariables ? (
-						<VariablesPaneLazy
-							isValid={variablesValid}
-							switchPortal={switchPortal}
-							setIsValid={setVariablesValid}
-							closeVariables={closeVariables}
-							editor={editor}
-							corners={miniCorners}
-							lineNumbers={!hideLineNumbers}
-						/>
-					) : (
-						<QueryPaneLazy
-							corners={miniCorners}
-							activeTab={active}
-							switchPortal={switchPortal}
-							selection={selection}
-							showVariables={showVariables}
-							lineNumbers={!hideLineNumbers}
-							onSaveQuery={handleSaveRequest}
-							setShowVariables={setShowVariables}
-							onUpdateBuffer={handleUpdateBuffer}
-							onSelectionChange={setSelection}
-							onEditorMounted={setEditor}
-						/>
-					)
-				) : (
-					<PanelGroup direction={variablesOrientation}>
-						<Panel
-							id="query"
-							order={0}
-							minSize={35}
-						>
+		<Box
+			flex={1}
+			h="100%"
+			ref={wrapperRef}
+			style={{ opacity: minResultHeight === 0 ? 0 : 1 }}
+		>
+			<PanelGroup direction={orientation}>
+				<Panel minSize={15}>
+					{isMini ? (
+						showVariables ? (
+							<VariablesPaneLazy
+								isValid={variablesValid}
+								switchPortal={switchPortal}
+								setIsValid={setVariablesValid}
+								closeVariables={closeVariables}
+								editor={editor}
+								corners={miniCorners}
+								lineNumbers={!hideLineNumbers}
+							/>
+						) : (
 							<QueryPaneLazy
+								corners={miniCorners}
 								activeTab={active}
-								showVariables={showVariables}
+								switchPortal={switchPortal}
 								selection={selection}
+								showVariables={showVariables}
 								lineNumbers={!hideLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
@@ -231,39 +219,62 @@ export function QueryView() {
 								onSelectionChange={setSelection}
 								onEditorMounted={setEditor}
 							/>
-						</Panel>
-						{showVariables && (
-							<>
-								<PanelDragger />
-								<Panel
-									id="variables"
-									order={1}
-									defaultSize={40}
-									minSize={35}
-								>
-									<VariablesPaneLazy
-										isValid={variablesValid}
-										setIsValid={setVariablesValid}
-										closeVariables={closeVariables}
-										lineNumbers={!hideLineNumbers}
-										editor={editor}
-									/>
-								</Panel>
-							</>
-						)}
-					</PanelGroup>
-				)}
-			</Panel>
-			<PanelDragger />
-			<Panel minSize={15}>
-				<ResultPaneLazy
-					activeTab={active}
-					selection={selection}
-					editor={editor}
-					corners={miniCorners}
-				/>
-			</Panel>
-		</PanelGroup>
+						)
+					) : (
+						<PanelGroup direction={variablesOrientation}>
+							<Panel
+								id="query"
+								order={0}
+								minSize={35}
+							>
+								<QueryPaneLazy
+									activeTab={active}
+									showVariables={showVariables}
+									selection={selection}
+									lineNumbers={!hideLineNumbers}
+									onSaveQuery={handleSaveRequest}
+									setShowVariables={setShowVariables}
+									onUpdateBuffer={handleUpdateBuffer}
+									onSelectionChange={setSelection}
+									onEditorMounted={setEditor}
+								/>
+							</Panel>
+							{showVariables && (
+								<>
+									<PanelDragger />
+									<Panel
+										id="variables"
+										order={1}
+										defaultSize={40}
+										minSize={35}
+									>
+										<VariablesPaneLazy
+											isValid={variablesValid}
+											setIsValid={setVariablesValid}
+											closeVariables={closeVariables}
+											lineNumbers={!hideLineNumbers}
+											editor={editor}
+										/>
+									</Panel>
+								</>
+							)}
+						</PanelGroup>
+					)}
+				</Panel>
+				<PanelDragger />
+				<Panel
+					minSize={minResultHeight}
+					defaultSize={50}
+				>
+					<ResultPaneLazy
+						activeTab={active}
+						selection={selection}
+						editor={editor}
+						corners={miniCorners}
+					/>
+				</Panel>
+			</PanelGroup>
+		</Box>
 	);
 
 	return (
@@ -307,15 +318,15 @@ export function QueryView() {
 			) : (
 				<Box
 					flex={1}
-					ref={ref}
-					style={{ opacity: minSize === 0 ? 0 : 1 }}
+					ref={rootRef}
+					style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
 				>
 					<PanelGroup direction="horizontal">
 						{queryTabList && (
 							<>
 								<Panel
-									defaultSize={minSize}
-									minSize={minSize}
+									defaultSize={minSidebarSize}
+									minSize={minSidebarSize}
 									maxSize={35}
 									id="tabs"
 									order={1}
