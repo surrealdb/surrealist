@@ -1,12 +1,12 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 /**
- * Compute a minimum panel width based on a fixed pixel size.
+ * Compute a minimum panel size based on a fixed pixel size.
  *
  * @param minSizePx The minimum size in pixels
  * @returns The minimum size in percentage and a parent ref
  */
-export function usePanelMinSize(minSizePx: number) {
+export function usePanelMinSize(minSizePx: number, metric?: "width" | "height") {
 	const groupRef = useRef<HTMLDivElement | null>(null);
 	const [minSize, setMinSize] = useState(0);
 
@@ -18,22 +18,20 @@ export function usePanelMinSize(minSizePx: number) {
 		}
 
 		const resizeHandles = [
-			...panelGroup.querySelectorAll<HTMLElement>(
-				"[data-panel-resize-handle-id]",
-			),
+			...panelGroup.querySelectorAll<HTMLElement>("[data-panel-resize-handle-id]"),
 		].filter((e) => {
 			return e.parentNode?.parentNode === panelGroup;
 		});
 
 		const observer = new ResizeObserver(() => {
-			let width = panelGroup.offsetWidth;
+			let size = metric === "height" ? panelGroup.offsetHeight : panelGroup.offsetWidth;
 
 			for (const resizeHandle of resizeHandles) {
-				width -= resizeHandle.offsetWidth;
+				size -= metric === "height" ? resizeHandle.offsetHeight : resizeHandle.offsetWidth;
 			}
 
-			if (width > 0) {
-				setMinSize((minSizePx / width) * 100);
+			if (size > 0) {
+				setMinSize((minSizePx / size) * 100);
 			}
 		});
 
@@ -46,7 +44,7 @@ export function usePanelMinSize(minSizePx: number) {
 		return () => {
 			observer.disconnect();
 		};
-	}, [minSizePx]);
+	}, [minSizePx, metric]);
 
 	return [minSize, groupRef] as const;
 }
