@@ -45,12 +45,12 @@ import type { Assign, FeatureCondition } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
+import { KeybindingsTab } from "./tabs/Keybindings";
 import { LicensesTab } from "./tabs/Licenses";
 import { ManageDataTab } from "./tabs/ManageData";
 import { PreferencesTab } from "./tabs/Preferences";
 import { ServingTab } from "./tabs/Serving";
 import { TemplatesTab } from "./tabs/Templates";
-import { KeybindingsTab } from "./tabs/Keybindings";
 
 interface Category {
 	id: string;

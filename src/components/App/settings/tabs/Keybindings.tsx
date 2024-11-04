@@ -3,22 +3,19 @@ import { useInputState } from "@mantine/hooks";
 import { Fragment, useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { computeCommands } from "~/util/commands";
+import { useCommandCategories } from "~/providers/Commands";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconSearch } from "~/util/icons";
 
 export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");
+	const categories = useCommandCategories();
 
-	const original = useMemo(() => {
-		return computeCommands();
-	}, []);
-
-	const categories = useMemo(() => {
-		return original.flatMap((category) => {
+	const filtered = useMemo(() => {
+		return categories.flatMap((category) => {
 			const commands = category.commands.filter((cmd) => {
 				return (
-					cmd.bindable &&
+					cmd.binding &&
 					(fuzzyMatch(search, cmd.name) ||
 						cmd.aliases?.some((alias) => fuzzyMatch(search, alias)))
 				);
@@ -30,7 +27,7 @@ export function KeybindingsTab() {
 
 			return [{ ...category, commands }];
 		});
-	}, [original, search]);
+	}, [categories, search]);
 
 	return (
 		<ScrollArea
@@ -46,7 +43,7 @@ export function KeybindingsTab() {
 						size="sm"
 					/>
 				}
-				placeholder="Search preferences"
+				placeholder="Search commands"
 				value={search}
 				onChange={setSearch}
 				autoFocus
@@ -58,7 +55,7 @@ export function KeybindingsTab() {
 				mt="xl"
 				pb={32}
 			>
-				{categories.length === 0 && (
+				{filtered.length === 0 && (
 					<Text
 						ta="center"
 						c="slate"
@@ -67,7 +64,7 @@ export function KeybindingsTab() {
 						No results matched your search
 					</Text>
 				)}
-				{categories.map((category, i) => (
+				{filtered.map((category, i) => (
 					<Box key={i}>
 						<Text
 							fw={600}
@@ -83,6 +80,10 @@ export function KeybindingsTab() {
 							{category.commands.map((cmd, j) => (
 								<Fragment key={j}>
 									<Group>
+										<Icon
+											path={cmd.icon}
+											size="sm"
+										/>
 										<Text c="bright">{cmd.name}</Text>
 										<Spacer />
 										<TextInput />
