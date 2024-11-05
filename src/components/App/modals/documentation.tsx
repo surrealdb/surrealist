@@ -21,7 +21,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
-import { useKeymap } from "~/hooks/keymap";
+import { useKeymap } from "~/hooks/keybindings";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";

@@ -18,7 +18,7 @@ export interface Command {
 	id: string;
 	name: string;
 	icon: string;
-	binding?: boolean | string;
+	binding?: boolean | string[];
 	action: Action;
 	aliases?: string[];
 	disabled?: boolean;

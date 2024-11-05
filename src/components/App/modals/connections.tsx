@@ -40,7 +40,7 @@ import { Spacer } from "~/components/Spacer";
 import { INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useConnections } from "~/hooks/connection";
-import { useKeymap } from "~/hooks/keymap";
+import { useKeymap } from "~/hooks/keybindings";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";

@@ -15,7 +15,7 @@ function Key({ keys, description }: KeyProps) {
 	return (
 		<Group wrap="nowrap">
 			<Box w={85}>
-				<Shortcut value={keys} />
+				<Shortcut value={keys.split("+").map((k) => k.trim().toLowerCase())} />
 			</Box>
 			<Text c="bright">{description}</Text>
 		</Group>

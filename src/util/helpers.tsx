@@ -413,6 +413,7 @@ export function extractVariables(query: string): string[] {
  *
  * @param event The event to check
  * @returns True if the mod key is pressed
+ * @deprecated
  */
 export function isModKey(event: Event) {
 	if (event instanceof KeyboardEvent)

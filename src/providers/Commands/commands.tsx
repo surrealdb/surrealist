@@ -57,35 +57,7 @@ import { optional } from "~/util/helpers";
 import type { IntentPayload, IntentType } from "~/util/intents";
 import { type PreferenceController, computePreferences } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
-
-type LaunchAction = { type: "launch"; handler: () => void };
-type InsertAction = { type: "insert"; content: string };
-type HrefAction = { type: "href"; href: string };
-type PreferenceAction = { type: "preference"; controller: PreferenceController };
-type IntentAction = {
-	type: "intent";
-	intent: IntentType;
-	payload?: IntentPayload;
-};
-
-type Action = LaunchAction | InsertAction | HrefAction | IntentAction | PreferenceAction;
-type CategoryVisibility = "always" | "searched" | "unsearched";
-
-export interface Command {
-	id: string;
-	name: string;
-	icon: string;
-	binding?: boolean | string;
-	action: Action;
-	aliases?: string[];
-	disabled?: boolean;
-}
-
-export interface CommandCategory {
-	name: string;
-	visibility?: CategoryVisibility;
-	commands: Command[];
-}
+import type { CommandCategory } from "./types";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
@@ -249,7 +221,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							id: "run-query",
 							name: "Run query",
 							icon: iconPlay,
-							binding: "mod + enter",
+							binding: ["mod", "enter"],
 							action: intent("run-query"),
 						},
 						{
@@ -340,7 +312,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							id: "run-gql-query",
 							name: "Run query",
 							icon: iconPlay,
-							binding: "mod + enter",
+							binding: ["mod", "enter"],
 							action: intent("run-graphql-query"),
 						},
 						{
@@ -556,7 +528,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						id: "open-settings",
 						name: "Open Settings",
 						icon: iconCog,
-						binding: "mod + ,",
+						binding: ["mod", ","],
 						action: intent("open-settings"),
 					},
 					{
@@ -590,7 +562,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Search SurrealDB documentation",
 						aliases: ["Docs"],
 						icon: iconBook,
-						binding: "mod j",
+						binding: ["mod", "j"],
 						action: intent("open-documentation"),
 					},
 					{

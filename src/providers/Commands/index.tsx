@@ -1,11 +1,12 @@
 export * from "./types";
 
 import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
-import { type CommandCategory, useInternalCommandBuilder } from "./commands";
+import { useInternalCommandBuilder } from "./commands";
+import type { Command, CommandCategory } from "./types";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];
-	registry: Set<string>;
+	registry: Map<string, Command>;
 } | null>(null);
 
 /**
@@ -18,31 +19,31 @@ export function useCommandCategories() {
 }
 
 /**
- * Access the list of command categories
+ * Access the command registry
  */
-export function useCommandNames() {
+export function useCommandRegistry() {
 	const ctx = useContext(CommandsContext);
 
-	return ctx?.registry ?? new Set();
+	return ctx?.registry ?? new Map<string, Command>();
 }
 
 export function CommandsProvider({ children }: PropsWithChildren) {
 	const categories = useInternalCommandBuilder();
 
 	const registry = useMemo(() => {
-		const set = new Set<string>();
+		const map = new Map<string, Command>();
 
 		for (const category of categories) {
 			for (const command of category.commands) {
-				if (set.has(command.id)) {
+				if (map.has(command.id)) {
 					throw new Error(`Duplicate command name: "${command.id}"`);
 				}
 
-				set.add(command.id);
+				map.set(command.id, command);
 			}
 		}
 
-		return set;
+		return map;
 	}, [categories]);
 
 	return (

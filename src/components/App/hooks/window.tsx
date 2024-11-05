@@ -1,7 +1,7 @@
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { useSetting } from "~/hooks/config";
-import { useKeymap } from "~/hooks/keymap";
+import { useKeymap } from "~/hooks/keybindings";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { clamp } from "~/util/helpers";
