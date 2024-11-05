@@ -1,7 +1,6 @@
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { useSetting } from "~/hooks/config";
-import { useKeymap } from "~/hooks/keybindings";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { clamp } from "~/util/helpers";
@@ -37,14 +36,14 @@ export function useWindowSettings() {
 		}
 	});
 
-	useKeymap([
-		["mod+equal", increaseWindowScale],
-		["mod+minus", decreaseWindowScale],
-		["mod+shift+equal", increaseEditorScale],
-		["mod+shift+minus", decreaseEditorScale],
-		["f10", toggleWindowPinned],
-		["mod+o", openQueryFile],
-	]);
+	// useKeymap([
+	// 	["mod+equal", increaseWindowScale],
+	// 	["mod+minus", decreaseWindowScale],
+	// 	["mod+shift+equal", increaseEditorScale],
+	// 	["mod+shift+minus", decreaseEditorScale],
+	// 	["f10", toggleWindowPinned],
+	// 	["mod+o", openQueryFile],
+	// ]);
 
 	useIntent("increase-window-scale", increaseWindowScale);
 	useIntent("decrease-window-scale", decreaseWindowScale);

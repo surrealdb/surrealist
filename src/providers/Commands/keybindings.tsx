@@ -43,6 +43,13 @@ export function displayBinding(binding: string[]) {
 }
 
 /**
+ * Translate a binding to Mantine format for use with useHotkeys
+ */
+export function translateBinding(binding: string[]) {
+	return binding.join("+");
+}
+
+/**
  * Perform environment-specific key renaming
  */
 export function renameKey(key: string) {

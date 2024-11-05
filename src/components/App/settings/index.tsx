@@ -36,7 +36,6 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useKeymap } from "~/hooks/keybindings";
 import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useIntent } from "~/hooks/url";
@@ -259,14 +258,14 @@ export function Settings() {
 		openHandle.open();
 	});
 
-	useKeymap([
-		[
-			"mod+,",
-			() => {
-				openHandle.open();
-			},
-		],
-	]);
+	// useKeymap([
+	// 	[
+	// 		"mod+,",
+	// 		() => {
+	// 			openHandle.open();
+	// 		},
+	// 	],
+	// ]);
 
 	const [overlaySidebar, overlaySidebarHandle] = useBoolean();
 

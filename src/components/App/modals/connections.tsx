@@ -40,7 +40,6 @@ import { Spacer } from "~/components/Spacer";
 import { INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useConnections } from "~/hooks/connection";
-import { useKeymap } from "~/hooks/keybindings";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
@@ -132,7 +131,7 @@ export function ConnectionsModal() {
 
 	const [handleKeyDown, selected] = useKeyNavigation(flattened, activate, connection?.id);
 
-	useKeymap([["mod+L", openedHandle.open]]);
+	// useKeymap([["mod+L", openedHandle.open]]);
 
 	useIntent("open-connections", ({ search }) => {
 		if (search) {

@@ -1,4 +1,7 @@
+import { type HotkeyItem, useHotkeys } from "@mantine/hooks";
 import { useEffect } from "react";
+import { useCommandDispatcher, useCommandKeybinds } from "~/providers/Commands";
+import { translateBinding } from "~/providers/Commands/keybindings";
 import { isModKey } from "~/util/helpers";
 
 /**
@@ -28,4 +31,17 @@ export function useModKeyTracker() {
 			document.body.removeEventListener("keyup", onKeyUp);
 		};
 	}, []);
+
+	const keybinds = useCommandKeybinds();
+	const dispatch = useCommandDispatcher();
+
+	const hotkeys = Array.from(
+		keybinds.entries().map(([cmd, binding]) => {
+			return [translateBinding(binding), () => dispatch(cmd)] as HotkeyItem;
+		}),
+	);
+
+	useHotkeys(hotkeys, [], true);
+
+	console.log(hotkeys);
 }

@@ -22,9 +22,8 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useKeybindMap } from "~/hooks/keybindings";
 import { useStable } from "~/hooks/stable";
-import { type Command, useCommandCategories } from "~/providers/Commands";
+import { type Command, useCommandCategories, useCommandKeybinds } from "~/providers/Commands";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
@@ -34,7 +33,7 @@ export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");
 	const userKeybinds = useConfigStore((state) => state.keybindings);
 	const categories = useCommandCategories();
-	const keybindMap = useKeybindMap();
+	const keybinds = useCommandKeybinds();
 
 	const [isRecording, recordingHandle] = useBoolean();
 	const [recordCommand, setRecordCommand] = useState<Command | null>(null);
@@ -107,7 +106,7 @@ export function KeybindingsTab() {
 								gap="xs"
 							>
 								{category.commands.map((cmd, j) => {
-									const active = keybindMap.get(cmd.id);
+									const active = keybinds.get(cmd.id);
 									const modified = userKeybinds[cmd.id] !== undefined;
 
 									return (
@@ -153,7 +152,7 @@ export function KeybindingsTab() {
 				{recordCommand && (
 					<RecordingModal
 						command={recordCommand}
-						keybindMap={keybindMap}
+						keybindMap={keybinds}
 						onClose={recordingHandle.close}
 					/>
 				)}

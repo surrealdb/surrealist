@@ -3,33 +3,53 @@ export * from "./types";
 import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory } from "./types";
+import { useConfigStore } from "~/stores/config";
+import { useStable } from "~/hooks/stable";
+import posthog from "posthog-js";
+import { adapter } from "~/adapter";
+import { dispatchIntent } from "~/hooks/url";
+import { noop } from "@mantine/core";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];
 	registry: Map<string, Command>;
+	keybinds: Map<string, string[]>;
+	dispatchCommand: (command: string) => void;
 } | null>(null);
 
 /**
- * Access the list of command categories
+ * Retrieve the list of command categories
  */
 export function useCommandCategories() {
-	const ctx = useContext(CommandsContext);
-
-	return ctx?.categories ?? [];
+	return useContext(CommandsContext)?.categories ?? [];
 }
 
 /**
- * Access the command registry
+ * Retrieve the command registry
  */
 export function useCommandRegistry() {
-	const ctx = useContext(CommandsContext);
+	return useContext(CommandsContext)?.registry ?? new Map<string, Command>();
+}
 
-	return ctx?.registry ?? new Map<string, Command>();
+/**
+ * Retrieve the configured command keybindings
+ */
+export function useCommandKeybinds() {
+	return useContext(CommandsContext)?.keybinds ?? new Map<string, string[]>();
+}
+
+/**
+ * Retrieve the command dispatcher function
+ */
+export function useCommandDispatcher() {
+	return useContext(CommandsContext)?.dispatchCommand ?? noop;
 }
 
 export function CommandsProvider({ children }: PropsWithChildren) {
 	const categories = useInternalCommandBuilder();
+	const userKeybinds = useConfigStore((state) => state.keybindings);
 
+	// Compute unique command registry
 	const registry = useMemo(() => {
 		const map = new Map<string, Command>();
 
@@ -46,8 +66,60 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 		return map;
 	}, [categories]);
 
+	// Compute the final keybinds map
+	const keybinds = useMemo(() => {
+		const base = new Map<string, string[]>();
+
+		for (const [id, { binding }] of registry.entries()) {
+			if (Array.isArray(binding)) {
+				base.set(id, binding);
+			}
+		}
+
+		for (const [id, binding] of Object.entries(userKeybinds)) {
+			if (registry.has(id)) {
+				base.set(id, binding);
+			}
+		}
+
+		return base;
+	}, [registry, userKeybinds]);
+
+	// Dispatch a href, intent, or launch command by id
+	const dispatchCommand = useStable((command: string) => {
+		const cmd = registry.get(command);
+
+		if (!cmd) {
+			throw new Error(`Command "${command}" not found in registry`);
+		}
+
+		posthog.capture("execute_command", {
+			command: cmd.name,
+		});
+
+		switch (cmd.action.type) {
+			case "href": {
+				adapter.openUrl(cmd.action.href);
+				break;
+			}
+			case "intent": {
+				dispatchIntent(cmd.action.intent, cmd.action.payload);
+				break;
+			}
+			case "launch": {
+				cmd.action.handler();
+				break;
+			}
+			default: {
+				throw new Error(
+					`Unsupported command action type "${cmd.action.type}" for dispatch`,
+				);
+			}
+		}
+	});
+
 	return (
-		<CommandsContext.Provider value={{ categories, registry }}>
+		<CommandsContext.Provider value={{ categories, registry, keybinds, dispatchCommand }}>
 			{children}
 		</CommandsContext.Provider>
 	);
