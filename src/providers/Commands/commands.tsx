@@ -278,7 +278,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 								id: "open-query-file",
 								name: "Open query file...",
 								icon: iconFile,
-								binding: true,
+								binding: ["mod", "o"],
 								action: launch(() => {
 									(adapter as DesktopAdapter).openQueryFile();
 								}),
