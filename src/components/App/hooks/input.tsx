@@ -35,13 +35,9 @@ export function useModKeyTracker() {
 	const keybinds = useCommandKeybinds();
 	const dispatch = useCommandDispatcher();
 
-	const hotkeys = Array.from(
-		keybinds.entries().map(([cmd, binding]) => {
-			return [translateBinding(binding), () => dispatch(cmd)] as HotkeyItem;
-		}),
-	);
+	const hotkeys = Array.from(keybinds.entries()).map(([cmd, binding]) => {
+		return [translateBinding(binding), () => dispatch(cmd)] as HotkeyItem;
+	});
 
 	useHotkeys(hotkeys, [], true);
-
-	console.log(hotkeys);
 }
