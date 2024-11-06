@@ -90,7 +90,8 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 		const cmd = registry.get(command);
 
 		if (!cmd) {
-			throw new Error(`Command "${command}" not found in registry`);
+			adapter.warn("Commands", `Attempted to dispatch unknown command "${command}"`);
+			return;
 		}
 
 		posthog.capture("execute_command", {
