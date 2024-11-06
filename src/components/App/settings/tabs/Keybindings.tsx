@@ -24,10 +24,10 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { type Command, useCommandCategories, useCommandKeybinds } from "~/providers/Commands";
+import { displayBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
-import { displayBinding } from "~/providers/Commands/keybindings";
 
 export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");
