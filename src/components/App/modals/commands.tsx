@@ -63,8 +63,9 @@ export function CommandPaletteModal() {
 				? cat.commands
 				: cat.commands.filter(
 						(cmd) =>
-							fuzzyMatch(search, cmd.name) ||
-							cmd.aliases?.find((alias) => fuzzyMatch(search, alias)),
+							cmd.unlisted !== true &&
+							(fuzzyMatch(search, cmd.name) ||
+								cmd.aliases?.find((alias) => fuzzyMatch(search, alias))),
 					);
 
 			return commands.length === 0

@@ -21,6 +21,7 @@ export interface Command {
 	binding?: boolean | string[];
 	action: Action;
 	aliases?: string[];
+	unlisted?: boolean;
 	disabled?: boolean;
 }
 

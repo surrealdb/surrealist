@@ -9,7 +9,7 @@ import { type BoxProps, Group, Kbd, Text } from "@mantine/core";
 import { capitalize } from "radash";
 import { Fragment, type ReactNode, useMemo } from "react";
 import { adapter } from "~/adapter";
-import { renameKey } from "~/providers/Commands/keybindings";
+import { expandMetaKey, expandModKey } from "~/providers/Commands/keybindings";
 import { Icon } from "../Icon";
 
 export interface ShortcutProps extends Omit<BoxProps, "children"> {
@@ -19,7 +19,7 @@ export interface ShortcutProps extends Omit<BoxProps, "children"> {
 export function Shortcut({ value, ...rest }: ShortcutProps) {
 	const content = useMemo(() => {
 		const parts: ReactNode[] = value.map((part, i) => {
-			return <Fragment key={i}>{displayKey(renameKey(part))}</Fragment>;
+			return <Fragment key={i}>{displayKey(expandMetaKey(expandModKey(part)))}</Fragment>;
 		});
 
 		return parts;

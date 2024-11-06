@@ -423,21 +423,21 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 								id: "inc-win-scale",
 								name: "Increase interface zoom",
 								icon: iconMagnifyPlus,
-								binding: "mod +",
+								binding: ["mod", "equal"],
 								action: intent("increase-window-scale"),
 							},
 							{
 								id: "dec-win-scale",
 								name: "Decrease interface zoom",
 								icon: iconMagnifyMinus,
-								binding: "mod -",
+								binding: ["mod", "minus"],
 								action: intent("decrease-window-scale"),
 							},
 							{
 								id: "toggle-win-pinned",
 								name: "Toggle window always on top",
 								icon: iconPin,
-								binding: "F10",
+								binding: ["F10"],
 								action: intent("toggle-pinned"),
 							},
 						],
@@ -446,14 +446,14 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						id: "inc-edit-scale",
 						name: "Increase editor zoom",
 						icon: iconTextBoxPlus,
-						binding: "mod shift +",
+						binding: ["mod", "shift", "equal"],
 						action: intent("increase-editor-scale"),
 					},
 					{
 						id: "dec-edit-scale",
 						name: "Decrease editor zoom",
 						icon: iconTextBoxMinus,
-						binding: "mod shift -",
+						binding: ["mod", "shift", "minus"],
 						action: intent("decrease-editor-scale"),
 					},
 					{
@@ -525,6 +525,22 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 				name: "Navigation",
 				commands: [
 					{
+						id: "open-search",
+						name: "Open Surrealist Search",
+						icon: iconSearch,
+						binding: ["mod", "k"],
+						unlisted: true,
+						action: intent("open-command-palette"),
+					},
+					{
+						id: "open-connections",
+						name: "Open connection list",
+						aliases: ["connections"],
+						icon: iconServer,
+						binding: ["mod", "l"],
+						action: intent("open-connections"),
+					},
+					{
 						id: "open-settings",
 						name: "Open Settings",
 						icon: iconCog,
@@ -537,13 +553,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						icon: iconHelp,
 						action: intent("open-help"),
 					},
-					// TODO Remove
-					// {
-					// 	id: "open-keymap",
-					// 	name: "Open Keyboard Shortcuts",
-					// 	icon: iconCommand,
-					// 	action: intent("open-keymap"),
-					// },
 					{
 						id: "open-news",
 						name: "Open latest news",
