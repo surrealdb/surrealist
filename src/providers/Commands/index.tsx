@@ -70,8 +70,8 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 	const keybinds = useMemo(() => {
 		const base = new Map<string, string[]>();
 
-		for (const [id, { binding }] of registry.entries()) {
-			if (Array.isArray(binding)) {
+		for (const [id, { binding, disabled }] of registry.entries()) {
+			if (Array.isArray(binding) && disabled !== true) {
 				base.set(id, binding);
 			}
 		}

@@ -15,13 +15,21 @@ type Action = LaunchAction | InsertAction | HrefAction | IntentAction | Preferen
 type CategoryVisibility = "always" | "searched" | "unsearched";
 
 export interface Command {
+	/** The unique id of the command */
 	id: string;
+	/** The display name of the command */
 	name: string;
+	/** The icon used to represent the command */
 	icon: string;
+	/** Truthy when bindable, optionally holding a default bind */
 	binding?: boolean | string[];
+	/** The action to trigger */
 	action: Action;
+	/** Aliases used for searching */
 	aliases?: string[];
+	/** Whether the command is hidden from the palette */
 	unlisted?: boolean;
+	/** Whether activation is disabled */
 	disabled?: boolean;
 }
 

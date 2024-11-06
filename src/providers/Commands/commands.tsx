@@ -84,6 +84,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		useConfigStore.getState();
 
 	const connections = useConnections();
+	const activeView = useConfigStore((state) => state.activeView);
 	const commandHistory = useConfigStore((state) => state.commandHistory);
 	const isServing = useDatabaseStore((state) => state.isServing);
 	const currentState = useDatabaseStore((state) => state.currentState);
@@ -101,6 +102,9 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 
 	return useMemo(() => {
 		const categories: CommandCategory[] = [];
+
+		const isQuery = activeView === "query";
+		const isGraphql = activeView === "graphql";
 
 		categories.push(
 			{
@@ -214,7 +218,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						},
 					],
 				},
-				{
+				...optional<CommandCategory>({
 					name: "Query",
 					commands: [
 						{
@@ -223,6 +227,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconPlay,
 							binding: ["mod", "enter"],
 							action: intent("run-query"),
+							disabled: !isQuery,
 						},
 						{
 							id: "save-query",
@@ -230,6 +235,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconStarPlus,
 							binding: true,
 							action: intent("save-query"),
+							disabled: !isQuery,
 						},
 						{
 							id: "format-query",
@@ -237,6 +243,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconText,
 							binding: true,
 							action: intent("format-query"),
+							disabled: !isQuery,
 						},
 						{
 							id: "toggle-variables",
@@ -244,6 +251,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconBraces,
 							binding: true,
 							action: intent("toggle-variables"),
+							disabled: !isQuery,
 						},
 						{
 							id: "infer-variables",
@@ -251,6 +259,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconAutoFix,
 							binding: true,
 							action: intent("infer-variables"),
+							disabled: !isQuery,
 						},
 						{
 							id: "query-saves",
@@ -285,26 +294,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							},
 						),
 					],
-				},
-				{
-					name: "Explorer",
-					commands: [
-						{
-							id: "import-database",
-							name: "Import database",
-							icon: iconUpload,
-							binding: true,
-							action: intent("import-database"),
-						},
-						{
-							id: "export-database",
-							name: "Export database",
-							icon: iconDownload,
-							binding: true,
-							action: intent("export-database"),
-						},
-					],
-				},
+				}),
 				{
 					name: "GraphQL",
 					commands: [
@@ -314,6 +304,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconPlay,
 							binding: ["mod", "enter"],
 							action: intent("run-graphql-query"),
+							disabled: !isGraphql,
 						},
 						{
 							id: "format-gql-query",
@@ -321,6 +312,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconText,
 							binding: true,
 							action: intent("format-graphql-query"),
+							disabled: !isGraphql,
 						},
 						{
 							id: "toggle-gql-variables",
@@ -328,6 +320,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconBraces,
 							binding: true,
 							action: intent("toggle-graphql-variables"),
+							disabled: !isGraphql,
 						},
 						{
 							id: "infer-gql-variables",
@@ -335,6 +328,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconAutoFix,
 							binding: true,
 							action: intent("infer-graphql-variables"),
+							disabled: !isGraphql,
 						},
 					],
 				},
@@ -387,6 +381,25 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							lang: lang.value,
 						}),
 					})),
+				},
+				{
+					name: "Database",
+					commands: [
+						{
+							id: "import-database",
+							name: "Import database",
+							icon: iconUpload,
+							binding: true,
+							action: intent("import-database"),
+						},
+						{
+							id: "export-database",
+							name: "Export database",
+							icon: iconDownload,
+							binding: true,
+							action: intent("export-database"),
+						},
+					],
 				},
 			);
 		}
@@ -663,6 +676,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		return categories;
 	}, [
 		activeCon,
+		activeView,
 		connections,
 		connectionSchema,
 		commandHistory,
