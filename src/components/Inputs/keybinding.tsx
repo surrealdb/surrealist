@@ -2,7 +2,7 @@ import { TextInput, type TextInputProps } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 import { type KeyboardEvent, useRef } from "react";
 import { useStable } from "~/hooks/stable";
-import { displayBinding, isModifierKey, simplifyKey } from "~/providers/Commands/keybindings";
+import { displayBinding, isModifierKey, sanitizeKey } from "~/providers/Commands/keybindings";
 
 export interface KeybindInputProps extends Omit<TextInputProps, "value" | "onChange"> {
 	value?: string[];
@@ -23,7 +23,7 @@ export function KeybindInput({ value, onChange, ...rest }: KeybindInputProps) {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const keyName = simplifyKey(e.code);
+		const keyName = sanitizeKey(e.code);
 		const isMod = isModifierKey(keyName);
 
 		if (isMod) {
@@ -37,7 +37,7 @@ export function KeybindInput({ value, onChange, ...rest }: KeybindInputProps) {
 	});
 
 	const handleKeyUp = useStable((e: KeyboardEvent) => {
-		modifiersRef.current.delete(simplifyKey(e.code));
+		modifiersRef.current.delete(sanitizeKey(e.code));
 	});
 
 	return (

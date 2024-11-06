@@ -40,4 +40,6 @@ export function useModKeyTracker() {
 	});
 
 	useHotkeys(hotkeys, [], true);
+
+	console.log(hotkeys);
 }

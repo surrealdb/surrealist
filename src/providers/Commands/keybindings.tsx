@@ -3,7 +3,7 @@ import { adapter } from "~/adapter";
 
 const MODIFIER_KEYS = ["shift", "alt", "meta", "mod", "ctrl"];
 
-const SIMPLIFY_MAP: Record<string, string> = {
+const SANITIZE_MAP: Record<string, string> = {
 	esc: "escape",
 	return: "enter",
 	ShiftLeft: "shift",
@@ -26,20 +26,24 @@ export function isModifierKey(key: string) {
 }
 
 /**
- * Maps key to simplified version
+ * Sanitized keys with similar meaning into a single key
  */
-export function simplifyKey(key?: string): string {
-	return ((key && SIMPLIFY_MAP[key]) || key || "")
-		.trim()
-		.toLowerCase()
-		.replace(/key|digit|numpad|arrow/, "");
+export function sanitizeKey(key: string): string {
+	return (SANITIZE_MAP[key] ?? key ?? "").trim().toLowerCase().replace(/key/, "");
+}
+
+/**
+ * Prepare a key for display in human-readable format
+ */
+export function beautifyKey(key: string) {
+	return expandMetaKey(expandModKey(key)).replace(/digit|numpad|arrow/i, "");
 }
 
 /**
  * Display a binding in human-readable format
  */
 export function displayBinding(binding: string[]) {
-	return binding.map(expandModKey).map(expandMetaKey).map(capitalize).join(" + ");
+	return binding.map(beautifyKey).map(capitalize).join(" + ");
 }
 
 /**
