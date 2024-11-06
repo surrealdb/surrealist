@@ -436,7 +436,3 @@ export const DRIVERS: Driver[] = [
 		link: "https://surrealdb.com/docs/sdk/php",
 	},
 ];
-
-export const DEFAULT_KEYBINDINGS: KeyBindings = {
-	"": "",
-};
