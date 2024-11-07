@@ -1,16 +1,16 @@
 import classes from "../style.module.scss";
 
 import { Button, Stack, Text, Transition } from "@mantine/core";
+import { format } from "date-fns";
 import { useMemo, useState } from "react";
+import { adapter, isDesktop } from "~/adapter";
+import type { DesktopAdapter } from "~/adapter/desktop";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { useVersionCopy } from "~/hooks/debug";
+import { useStable } from "~/hooks/stable";
 import { isDevelopment, isPreview } from "~/util/environment";
 import { iconCheck, iconReset, iconWrench } from "~/util/icons";
-import { format } from "date-fns";
-import { adapter, isDesktop } from "~/adapter";
-import type { DesktopAdapter } from "~/adapter/desktop";
-import { useStable } from "~/hooks/stable";
 
 export function AboutTab() {
 	const [copyDebug, clipboard] = useVersionCopy();
