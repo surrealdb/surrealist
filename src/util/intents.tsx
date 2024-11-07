@@ -12,7 +12,6 @@ const INTENT_REGISTRY = {
 	"open-settings": null,
 	"open-embedder": null,
 	"open-desktop-download": null,
-	"open-keymap": null,
 	"new-connection": null,
 	"new-table": null,
 	"toggle-serving": null,

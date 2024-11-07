@@ -1,12 +1,4 @@
-import {
-	Box,
-	Group,
-	Stack,
-	Text,
-	Title,
-	Tooltip,
-	UnstyledButton,
-} from "@mantine/core";
+import { Box, Group, Stack, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
 import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import posthog from "posthog-js";
@@ -53,15 +45,14 @@ const ISSUE_REPORT: Topic = {
 	title: "Report an issue",
 	description: "Something isn't working right? Let us know and we'll fix it.",
 	icon: iconBug,
-	onClick: () =>
-		adapter.openUrl("https://github.com/surrealdb/surrealist/issues"),
+	onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues"),
 };
 
 const SHORTCUTS: Topic = {
-	title: "Shortcut guide",
+	title: "Shortcuts",
 	description: "Learn the keyboard shortcuts to navigate the app faster.",
 	icon: iconCommand,
-	onClick: () => dispatchIntent("open-keymap"),
+	onClick: () => dispatchIntent("open-settings", { tab: "keybindings" }),
 };
 
 const DISCORD: Topic = {
@@ -73,8 +64,7 @@ const DISCORD: Topic = {
 
 const CLOUD: Topic = {
 	title: "Cloud Support",
-	description:
-		"Visit the Cloud Support page for help with your cloud account.",
+	description: "Visit the Cloud Support page for help with your cloud account.",
 	icon: iconCloud,
 	onClick: () => {
 		const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
@@ -117,7 +107,12 @@ export function HelpAndSupport() {
 						mx="sm"
 					/>
 					<Box>
-						<Text c="bright" fw={600} fz="lg" mb={4}>
+						<Text
+							c="bright"
+							fw={600}
+							fz="lg"
+							mb={4}
+						>
 							{tile.title}
 						</Text>
 						<Text fz="sm">{tile.description}</Text>
@@ -138,8 +133,18 @@ export function HelpAndSupport() {
 					openHandle.close();
 				}}
 			>
-				<Icon path={tile.icon} c="bright" size="xl" mb="sm" />
-				<Text c="bright" fw={600} fz="lg" mb={4}>
+				<Icon
+					path={tile.icon}
+					c="bright"
+					size="xl"
+					mb="sm"
+				/>
+				<Text
+					c="bright"
+					fw={600}
+					fz="lg"
+					mb={4}
+				>
 					{tile.title}
 				</Text>
 				<Text fz="sm">{tile.description}</Text>
@@ -158,7 +163,10 @@ export function HelpAndSupport() {
 					variant="subtle"
 					aria-label="Open Help and support"
 				>
-					<Icon path={iconHelp} size="lg" />
+					<Icon
+						path={iconHelp}
+						size="lg"
+					/>
 				</ActionIcon>
 			</Tooltip>
 
@@ -168,7 +176,10 @@ export function HelpAndSupport() {
 				ta="center"
 				size="sm"
 			>
-				<Title fz={20} c="bright">
+				<Title
+					fz={20}
+					c="bright"
+				>
 					How can we help you?
 				</Title>
 
@@ -183,7 +194,10 @@ export function HelpAndSupport() {
 				</ActionIcon>
 
 				<Stack>
-					<SimpleGrid cols={2} mt="xl">
+					<SimpleGrid
+						cols={2}
+						mt="xl"
+					>
 						{renderTile(DOCUMENTATION)}
 						{renderTile(ISSUE_REPORT)}
 						{renderTile(SHORTCUTS)}
