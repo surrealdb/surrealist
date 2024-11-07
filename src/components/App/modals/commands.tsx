@@ -4,7 +4,7 @@ import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import posthog from "posthog-js";
-import { type KeyboardEvent, useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -12,12 +12,16 @@ import { PreferenceInput } from "~/components/Inputs/preference";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useKeymap } from "~/hooks/keymap";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
+import {
+	type Command,
+	useCommandCategories,
+	useCommandDispatcher,
+	useCommandKeybinds,
+} from "~/providers/Commands";
 import { useConfigStore } from "~/stores/config";
-import { type Command, type CommandCategory, computeCommands } from "~/util/commands";
 import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { iconOpen, iconSearch } from "~/util/icons";
 
@@ -27,7 +31,10 @@ export function CommandPaletteModal() {
 
 	const [isOpen, openHandle] = useBoolean();
 	const [search, setSearch] = useInputState("");
-	const [categories, setCategories] = useState<CommandCategory[]>([]);
+
+	const dispatch = useCommandDispatcher();
+	const categories = useCommandCategories();
+	const keybinds = useCommandKeybinds();
 
 	const handlePreferenceInput = useStable((e: KeyboardEvent) => {
 		e.stopPropagation();
@@ -56,8 +63,9 @@ export function CommandPaletteModal() {
 				? cat.commands
 				: cat.commands.filter(
 						(cmd) =>
-							fuzzyMatch(search, cmd.name) ||
-							cmd.aliases?.find((alias) => fuzzyMatch(search, alias)),
+							cmd.unlisted !== true &&
+							(fuzzyMatch(search, cmd.name) ||
+								cmd.aliases?.find((alias) => fuzzyMatch(search, alias))),
 					);
 
 			return commands.length === 0
@@ -78,29 +86,10 @@ export function CommandPaletteModal() {
 	const activate = useStable((cmd: Command) => {
 		const query = search.trim();
 
-		posthog.capture("execute_command", {
-			command: cmd.name,
-		});
-
 		switch (cmd.action.type) {
 			case "insert": {
 				setSearch(cmd.action.content);
 				searchRef.current?.focus();
-				break;
-			}
-			case "href": {
-				openHandle.close();
-				adapter.openUrl(cmd.action.href);
-				break;
-			}
-			case "intent": {
-				openHandle.close();
-				dispatchIntent(cmd.action.intent, cmd.action.payload);
-				break;
-			}
-			case "launch": {
-				openHandle.close();
-				cmd.action.handler();
 				break;
 			}
 			case "preference": {
@@ -111,6 +100,11 @@ export function CommandPaletteModal() {
 				(input ?? checkbox)?.click();
 				input?.focus();
 				return;
+			}
+			default: {
+				dispatch(cmd.id);
+				openHandle.close();
+				break;
 			}
 		}
 
@@ -123,22 +117,20 @@ export function CommandPaletteModal() {
 
 	useIntent("open-command-palette", () => {
 		openHandle.open();
-
 		setSearch("");
-		setCategories(computeCommands());
 	});
 
-	useKeymap([
-		[
-			"mod+k",
-			(e) => {
-				// NOTE - Fix #479, needs long term solution
-				if (e.ctrlKey && adapter.platform === "darwin") return;
+	// useKeymap([
+	// 	[
+	// 		"mod+k",
+	// 		(e) => {
+	// 			// NOTE - Fix #479, needs long term solution
+	// 			if (e.ctrlKey && adapter.platform === "darwin") return;
 
-				dispatchIntent("open-command-palette");
-			},
-		],
-	]);
+	// 			dispatchIntent("open-command-palette");
+	// 		},
+	// 	],
+	// ]);
 
 	return (
 		<Modal
@@ -217,20 +209,10 @@ export function CommandPaletteModal() {
 													ml={-8}
 												/>
 											)}
-											{cmd.shortcut && (
+											{keybinds.has(cmd.id) && (
 												<>
 													<Spacer />
-													<Group gap="lg">
-														{(Array.isArray(cmd.shortcut)
-															? cmd.shortcut
-															: [cmd.shortcut]
-														).map((shortcut, i) => (
-															<Shortcut
-																key={i}
-																value={shortcut}
-															/>
-														))}
-													</Group>
+													<Shortcut value={keybinds.get(cmd.id) ?? []} />
 												</>
 											)}
 											{cmd.action.type === "preference" && (

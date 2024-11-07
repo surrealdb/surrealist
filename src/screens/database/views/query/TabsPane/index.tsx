@@ -267,6 +267,12 @@ export function TabsPane(props: TabsPaneProps) {
 
 	useIntent("new-query", newTab);
 
+	useIntent("close-query", () => {
+		if (activeQuery) {
+			removeTab(activeQuery);
+		}
+	});
+
 	return (
 		<ContentPane
 			icon={iconList}

@@ -94,6 +94,8 @@ export type ConfigStore = SurrealistConfig & {
 	completeOnboarding: (key: string) => void;
 	resetOnboardings: () => void;
 	setOpenDesignerPanels: (openDesignerPanels: string[]) => void;
+	setKeybinding: (command: string, action: string[]) => void;
+	removeKeybinding: (command: string) => void;
 };
 
 export const useConfigStore = create<ConfigStore>()(
@@ -439,5 +441,17 @@ export const useConfigStore = create<ConfigStore>()(
 			set(() => ({
 				openDesignerPanels,
 			})),
+
+		setKeybinding: (command, action) =>
+			set((state) => {
+				return { keybindings: { ...state.keybindings, [command]: action } };
+			}),
+
+		removeKeybinding: (command) =>
+			set((state) => {
+				const keybindings = { ...state.keybindings };
+				delete keybindings[command];
+				return { keybindings };
+			}),
 	})),
 );

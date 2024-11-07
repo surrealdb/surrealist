@@ -34,6 +34,7 @@ export function createBaseConfig(): SurrealistConfig {
 		commandHistory: [],
 		lastViewedNewsAt: null,
 		openDesignerPanels: ["general"],
+		keybindings: {},
 		onboarding: [],
 		settings,
 	};

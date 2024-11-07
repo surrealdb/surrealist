@@ -6,7 +6,6 @@ import {
 	Group,
 	Loader,
 	Modal,
-	Progress,
 	ScrollArea,
 	Stack,
 	Text,
@@ -14,17 +13,16 @@ import {
 } from "@mantine/core";
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
-import { useKeymap } from "~/hooks/keymap";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/url";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { iconBook } from "~/util/icons";
 
@@ -132,7 +130,7 @@ export function DocumentationModal() {
 		}
 	});
 
-	useKeymap([["mod+j", () => dispatchIntent("open-documentation")]]);
+	// useKeymap([["mod+j", () => dispatchIntent("open-documentation")]]);
 
 	const isEmpty = data?.length === 0;
 

@@ -168,7 +168,7 @@ export function DatabaseSidebar({
 						name={
 							<Group wrap="nowrap">
 								Search
-								{!isMobile() && <Shortcut value="mod K" />}
+								{!isMobile() && <Shortcut value={["mod", "K"]} />}
 							</Group>
 						}
 						icon={iconSearch}

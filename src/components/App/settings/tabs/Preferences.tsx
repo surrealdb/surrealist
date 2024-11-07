@@ -1,12 +1,12 @@
 import { Box, Divider, Group, Paper, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { PreferenceInput } from "~/components/Inputs/preference";
 import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconSearch } from "~/util/icons";
-import { PreferenceSection, computePreferences } from "~/util/preferences";
+import { computePreferences } from "~/util/preferences";
 
 export function PreferencesTab() {
 	const [search, setSearch] = useInputState("");
@@ -81,8 +81,8 @@ export function PreferencesTab() {
 							gap="lg"
 						>
 							{section.preferences.map((preference, j) => (
-								<>
-									<Group key={j}>
+								<Fragment key={j}>
+									<Group>
 										<Box>
 											<Text c="bright">{preference.name}</Text>
 											{preference.description && (
@@ -98,7 +98,7 @@ export function PreferencesTab() {
 										<PreferenceInput controller={preference.controller} />
 									</Group>
 									{j < section.preferences.length - 1 && <Divider />}
-								</>
+								</Fragment>
 							))}
 						</Stack>
 					</Box>

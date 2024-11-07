@@ -24,6 +24,7 @@ import type {
 	DiagramLinks,
 	DiagramMode,
 	Driver,
+	KeyBindings,
 	Listable,
 	Orientation,
 	Protocol,

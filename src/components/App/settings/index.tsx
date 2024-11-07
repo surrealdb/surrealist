@@ -19,6 +19,7 @@ import {
 	iconBalance,
 	iconChevronRight,
 	iconClose,
+	iconCommand,
 	iconDownload,
 	iconFlag,
 	iconHelp,
@@ -35,7 +36,6 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useKeymap } from "~/hooks/keymap";
 import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useIntent } from "~/hooks/url";
@@ -44,6 +44,7 @@ import type { Assign, FeatureCondition } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
+import { KeybindingsTab } from "./tabs/Keybindings";
 import { LicensesTab } from "./tabs/Licenses";
 import { ManageDataTab } from "./tabs/ManageData";
 import { PreferencesTab } from "./tabs/Preferences";
@@ -64,6 +65,12 @@ const CATEGORIES: Category[] = [
 		name: "Preferences",
 		icon: iconTune,
 		component: PreferencesTab,
+	},
+	{
+		id: "keybindings",
+		name: "Keybindings",
+		icon: iconCommand,
+		component: KeybindingsTab,
 	},
 	{
 		id: "templates",
@@ -251,14 +258,14 @@ export function Settings() {
 		openHandle.open();
 	});
 
-	useKeymap([
-		[
-			"mod+,",
-			() => {
-				openHandle.open();
-			},
-		],
-	]);
+	// useKeymap([
+	// 	[
+	// 		"mod+,",
+	// 		() => {
+	// 			openHandle.open();
+	// 		},
+	// 	],
+	// ]);
 
 	const [overlaySidebar, overlaySidebarHandle] = useBoolean();
 

@@ -413,6 +413,7 @@ export function extractVariables(query: string): string[] {
  *
  * @param event The event to check
  * @returns True if the mod key is pressed
+ * @deprecated
  */
 export function isModKey(event: Event) {
 	if (event instanceof KeyboardEvent)
@@ -454,6 +455,6 @@ export function isEqualApprox(a: number, b: number) {
  * @param value The optional value
  * @returns Array with the value or empty array
  */
-export function optional<T>(value: T | false | undefined | null): T[] {
-	return value ? [value] : [];
+export function optional<T>(value: T | T[] | false | undefined | null): T[] {
+	return value ? (Array.isArray(value) ? value : [value]) : [];
 }

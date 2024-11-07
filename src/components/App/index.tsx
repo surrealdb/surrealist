@@ -18,7 +18,6 @@ import { DocumentationModal } from "./modals/documentation";
 import { DownloadModal } from "./modals/download";
 import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
-import { KeymapModal } from "./modals/hotkeys";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { ProvisioningDialog } from "./modals/provisioning";
 import { RegisterUserModal } from "./modals/register";
@@ -59,7 +58,6 @@ export function App() {
 			<SandboxModal />
 			<AccessSignupModal />
 			<TableCreatorModal />
-			<KeymapModal />
 			<HighlightToolModal />
 			<DataExportModal />
 			<DataImportModal />

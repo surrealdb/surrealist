@@ -3,6 +3,7 @@ import type { ViewMode } from "~/types";
 
 const INTENT_REGISTRY = {
 	"open-command-palette": null,
+	"open-connection": null,
 	"open-connections": null,
 	"open-documentation": null,
 	"open-help": null,
@@ -11,7 +12,6 @@ const INTENT_REGISTRY = {
 	"open-settings": null,
 	"open-embedder": null,
 	"open-desktop-download": null,
-	"open-keymap": null,
 	"new-connection": null,
 	"new-table": null,
 	"toggle-serving": null,
@@ -26,8 +26,10 @@ const INTENT_REGISTRY = {
 	"import-database": null,
 	"export-database": null,
 	"new-query": "query",
+	"close-query": "query",
 	"run-query": "query",
 	"save-query": "query",
+	"open-query-file": "query",
 	"format-query": "query",
 	"toggle-variables": "query",
 	"infer-variables": "query",

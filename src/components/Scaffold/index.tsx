@@ -6,6 +6,7 @@ import { ContextMenuProvider } from "mantine-contextmenu";
 import type { PropsWithChildren } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useIsLight, useThemePreference } from "~/hooks/theme";
+import { CommandsProvider } from "~/providers/Commands";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { MANTINE_THEME } from "~/util/mantine";
@@ -27,26 +28,22 @@ export function Scaffold({ children }: PropsWithChildren) {
 				>
 					<Notifications />
 
-					<ModalsProvider>
-						<ContextMenuProvider
-							borderRadius="md"
-							shadow={
-								isLight
-									? "xs"
-									: "0 6px 12px 2px rgba(0, 0, 0, 0.25)"
-							}
-							submenuDelay={250}
-						>
-							<ConfirmationProvider>
-								<ErrorBoundary
-									FallbackComponent={ScaffoldErrorHandler}
-									onReset={() => location.reload()}
-								>
-									{children}
-								</ErrorBoundary>
-							</ConfirmationProvider>
-						</ContextMenuProvider>
-					</ModalsProvider>
+					<ErrorBoundary
+						FallbackComponent={ScaffoldErrorHandler}
+						onReset={() => location.reload()}
+					>
+						<ModalsProvider>
+							<ContextMenuProvider
+								borderRadius="md"
+								shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
+								submenuDelay={250}
+							>
+								<ConfirmationProvider>
+									<CommandsProvider>{children}</CommandsProvider>
+								</ConfirmationProvider>
+							</ContextMenuProvider>
+						</ModalsProvider>
+					</ErrorBoundary>
 				</MantineProvider>
 			</QueryClientProvider>
 		</FeatureFlagsProvider>
