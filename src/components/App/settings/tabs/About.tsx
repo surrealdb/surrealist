@@ -1,15 +1,20 @@
 import classes from "../style.module.scss";
 
-import { Button, Stack, Text } from "@mantine/core";
-import { useMemo } from "react";
+import { Button, Stack, Text, Transition } from "@mantine/core";
+import { format } from "date-fns";
+import { useMemo, useState } from "react";
+import { adapter, isDesktop } from "~/adapter";
+import type { DesktopAdapter } from "~/adapter/desktop";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { useVersionCopy } from "~/hooks/debug";
+import { useStable } from "~/hooks/stable";
 import { isDevelopment, isPreview } from "~/util/environment";
-import { iconCheck, iconWrench } from "~/util/icons";
+import { iconCheck, iconReset, iconWrench } from "~/util/icons";
 
 export function AboutTab() {
 	const [copyDebug, clipboard] = useVersionCopy();
+	const [isChecking, setChecking] = useState(false);
 
 	const versionText = useMemo(() => {
 		let builder = import.meta.env.VERSION;
@@ -26,12 +31,21 @@ export function AboutTab() {
 	const information = useMemo(
 		() => [
 			["Version", versionText],
-			["Build date", import.meta.env.DATE],
+			["Build date", format(import.meta.env.DATE, "MMMM do, yyyy")],
+			["Build time", format(import.meta.env.DATE, "HH:mm:ss OOO")],
 			["Build mode", import.meta.env.MODE],
-			["Compatibility", import.meta.env.SDB_VERSION],
+			["Compatibility", `SurrealDB ${import.meta.env.SDB_VERSION}+`],
 		],
 		[versionText],
 	);
+
+	const checkForUpdates = useStable(() => {
+		setChecking(true);
+
+		(adapter as DesktopAdapter).checkForUpdates(true).finally(() => {
+			setChecking(false);
+		});
+	});
 
 	return (
 		<>
@@ -74,6 +88,22 @@ export function AboutTab() {
 				>
 					Copy environment information
 				</Button>
+				{isDesktop && (
+					<Button
+						onClick={checkForUpdates}
+						color="slate"
+						variant="light"
+						size="xs"
+						rightSection={
+							<Icon
+								path={iconReset}
+								spin={isChecking}
+							/>
+						}
+					>
+						Check for updates
+					</Button>
+				)}
 			</Stack>
 		</>
 	);
