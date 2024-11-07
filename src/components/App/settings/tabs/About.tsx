@@ -10,9 +10,11 @@ import { iconCheck, iconReset, iconWrench } from "~/util/icons";
 import { format } from "date-fns";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
+import { useStable } from "~/hooks/stable";
 
 export function AboutTab() {
 	const [copyDebug, clipboard] = useVersionCopy();
+	const [isChecking, setChecking] = useState(false);
 
 	const versionText = useMemo(() => {
 		let builder = import.meta.env.VERSION;
@@ -36,6 +38,14 @@ export function AboutTab() {
 		],
 		[versionText],
 	);
+
+	const checkForUpdates = useStable(() => {
+		setChecking(true);
+
+		(adapter as DesktopAdapter).checkForUpdates(true).finally(() => {
+			setChecking(false);
+		});
+	});
 
 	return (
 		<>
@@ -80,13 +90,16 @@ export function AboutTab() {
 				</Button>
 				{isDesktop && (
 					<Button
-						onClick={() => {
-							(adapter as DesktopAdapter).checkForUpdates(true);
-						}}
-						rightSection={<Icon path={iconReset} />}
+						onClick={checkForUpdates}
 						color="slate"
 						variant="light"
 						size="xs"
+						rightSection={
+							<Icon
+								path={iconReset}
+								spin={isChecking}
+							/>
+						}
 					>
 						Check for updates
 					</Button>

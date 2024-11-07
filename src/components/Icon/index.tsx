@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	Box,
 	type BoxProps,
@@ -5,6 +7,8 @@ import {
 	type MantineSize,
 	useMantineTheme,
 } from "@mantine/core";
+import clsx from "clsx";
+
 import { type HTMLAttributes, useMemo } from "react";
 import { getIconSize, themeColor } from "~/util/mantine";
 
@@ -16,12 +20,14 @@ export interface IconProps
 	left?: boolean;
 	right?: boolean;
 	noStroke?: boolean;
+	spin?: boolean;
 	path: string;
 }
 
 export const Icon = ({
 	size,
 	color,
+	spin,
 	path,
 	style,
 	left,
@@ -50,6 +56,7 @@ export const Icon = ({
 			component="svg"
 			viewBox="0 0 24 24"
 			role="presentation"
+			className={clsx(spin && classes.spinning)}
 			style={svgStyle}
 			{...rest}
 		>
