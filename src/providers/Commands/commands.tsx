@@ -213,12 +213,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							id: "new-table",
 							name: `Create new table`,
 							icon: iconPlus,
-							binding: true,
+							binding: ["mod", "n"],
 							action: intent("new-table"),
 						},
 					],
 				},
-				...optional<CommandCategory>({
+				{
 					name: "Query",
 					commands: [
 						{
@@ -279,8 +279,16 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							id: "new-query",
 							name: "Create new query",
 							icon: iconPlus,
-							binding: true,
+							binding: ["mod", "t"],
 							action: intent("new-query"),
+						},
+						{
+							id: "close-query",
+							name: "Close current query",
+							icon: iconClose,
+							binding: ["mod", "w"],
+							action: intent("close-query"),
+							disabled: !isQuery,
 						},
 						...optional(
 							isDesktop && {
@@ -294,7 +302,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							},
 						),
 					],
-				}),
+				},
 				{
 					name: "GraphQL",
 					commands: [

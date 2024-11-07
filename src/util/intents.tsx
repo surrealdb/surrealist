@@ -27,6 +27,7 @@ const INTENT_REGISTRY = {
 	"import-database": null,
 	"export-database": null,
 	"new-query": "query",
+	"close-query": "query",
 	"run-query": "query",
 	"save-query": "query",
 	"open-query-file": "query",
