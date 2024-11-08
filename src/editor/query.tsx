@@ -1,8 +1,9 @@
-import { StateEffect, StateField } from "@codemirror/state";
+import { EditorSelection, StateEffect, StateField } from "@codemirror/state";
 import type { Command, EditorView } from "@codemirror/view";
 import { executeGraphql, executeUserQuery } from "~/screens/database/connection/connection";
 import { getActiveConnection } from "~/util/connection";
 import { tryParseParams } from "~/util/helpers";
+import { getQueryRange } from "./surrealql";
 
 const queryEditorEffect = StateEffect.define<EditorView>();
 
@@ -42,14 +43,36 @@ export function setQueryEditor(currentView: EditorView, queryView?: EditorView) 
  */
 export const executeEditorQuery: Command = (view: EditorView) => {
 	const editor = view.state.field(queryEditorField, false) ?? view;
-	const query = editor.state.doc.toString();
 	const selection = editor.state.selection.main;
+	const override = selection.empty
+		? undefined
+		: editor.state.sliceDoc(selection.from, selection.to);
 
 	executeUserQuery({
-		override: selection?.empty === false ? query.slice(selection.from, selection.to) : query,
+		override,
 	});
 
 	return true;
+};
+
+/**
+ * Select the query the cursor is currently in
+ */
+export const selectCursorQuery: Command = (view: EditorView) => {
+	const range = getQueryRange(view);
+
+	if (range) {
+		const [from, to] = range;
+		const selection = EditorSelection.single(from, to);
+
+		view.dispatch({
+			selection,
+		});
+
+		return true;
+	}
+
+	return false;
 };
 
 /**
