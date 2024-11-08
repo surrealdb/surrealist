@@ -62,16 +62,16 @@ export function ExplorerView() {
 			onClick: () => setActiveTable(table),
 		},
 		{
-			key: "design",
-			title: "Open designer",
-			icon: <Icon path={iconDesigner} />,
-			onClick: () => design(table),
-		},
-		{
 			key: "new",
 			title: "Create new record",
 			icon: <Icon path={iconPlus} />,
 			onClick: () => openCreator(table),
+		},
+		{
+			key: "design",
+			title: "Open designer",
+			icon: <Icon path={iconDesigner} />,
+			onClick: () => design(table),
 		},
 	]);
 
