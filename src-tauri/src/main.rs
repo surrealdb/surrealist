@@ -21,6 +21,8 @@ mod whitelist;
 mod window;
 
 fn main() {
+    env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+
     let context = tauri::generate_context!();
     let log_time_fmt =
         format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]").unwrap();
