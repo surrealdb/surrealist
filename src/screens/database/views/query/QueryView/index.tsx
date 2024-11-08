@@ -50,6 +50,7 @@ import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
 import { readQuery, writeQuery } from "./strategy";
+import { executeEditorQuery } from "~/editor/query";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -178,9 +179,14 @@ export function QueryView() {
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
-	useIntent("run-query", executeUserQuery);
 	useIntent("save-query", handleSaveRequest);
 	useIntent("toggle-variables", () => setShowVariables(!showVariables));
+
+	useIntent("run-query", () => {
+		if (editor) {
+			executeEditorQuery(editor);
+		}
+	});
 
 	const [minSidebarSize, rootRef] = usePanelMinSize(275);
 	const [minResultHeight, wrapperRef] = usePanelMinSize(48, "height");

@@ -43,11 +43,13 @@ export function setQueryEditor(currentView: EditorView, queryView?: EditorView) 
  */
 export const executeEditorQuery: Command = (view: EditorView) => {
 	const editor = view.state.field(queryEditorField, false) ?? view;
-	const query = editor.state.doc.toString();
 	const selection = editor.state.selection.main;
+	const override = selection.empty
+		? undefined
+		: editor.state.sliceDoc(selection.from, selection.to);
 
 	executeUserQuery({
-		override: selection?.empty === false ? query.slice(selection.from, selection.to) : query,
+		override,
 	});
 
 	return true;
@@ -66,9 +68,11 @@ export const selectCursorQuery: Command = (view: EditorView) => {
 		view.dispatch({
 			selection,
 		});
+
+		return true;
 	}
 
-	return true;
+	return false;
 };
 
 /**

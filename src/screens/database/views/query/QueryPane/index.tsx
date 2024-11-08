@@ -84,8 +84,8 @@ export function QueryPane({
 		try {
 			const formatted = hasSelection
 				? buffer.slice(0, selection.from) +
-				formatQuery(buffer.slice(selection.from, selection.to)) +
-				buffer.slice(selection.to)
+					formatQuery(buffer.slice(selection.from, selection.to)) +
+					buffer.slice(selection.to)
 				: formatQuery(buffer);
 
 			onUpdateBuffer(formatted);
@@ -158,7 +158,10 @@ export function QueryPane({
 			}
 			infoSection={
 				activeTab.type === "file" && (
-					<Text c="slate" truncate>
+					<Text
+						c="slate"
+						truncate
+					>
 						{trim(activeTab.query, "\\\\?")}
 					</Text>
 				)
@@ -167,7 +170,10 @@ export function QueryPane({
 				switchPortal ? (
 					<OutPortal node={switchPortal} />
 				) : (
-					<Group gap="sm" style={{ flexShrink: 0 }}>
+					<Group
+						gap="sm"
+						style={{ flexShrink: 0 }}
+					>
 						{buffer.length > MAX_HISTORY_QUERY_LENGTH && (
 							<HoverCard position="bottom">
 								<HoverCard.Target>
