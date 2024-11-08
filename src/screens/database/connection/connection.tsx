@@ -26,6 +26,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
+import { useQueryStore } from "~/stores/query";
 import type { AuthDetails, Connection, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
@@ -370,8 +371,9 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		return;
 	}
 
-	const { id, query, variables, name } = tabQuery;
-	const queryStr = (options?.override || query).trim();
+	const { id, variables, name } = tabQuery;
+	const buffer = useQueryStore.getState().queryBuffer;
+	const query = (options?.override || buffer).trim();
 	const variableJson = variables
 		? decodeCbor(Value.from_string(variables).to_cbor().buffer)
 		: undefined;
@@ -386,7 +388,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		let liveIndexes: number[];
 
 		try {
-			liveIndexes = getLiveQueries(queryStr);
+			liveIndexes = getLiveQueries(query);
 		} catch (err: any) {
 			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
 			console.error(err);
@@ -401,7 +403,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			});
 		}
 
-		const response = (await executeQuery(queryStr, variableJson)) || [];
+		const response = (await executeQuery(query, variableJson)) || [];
 		const liveIds = liveIndexes.flatMap((idx) => {
 			const res = response[idx];
 
@@ -433,10 +435,10 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		setQueryResponse(id, response);
 		posthog.capture("query_execute");
 
-		if (queryStr.length <= MAX_HISTORY_QUERY_LENGTH) {
+		if (query.length <= MAX_HISTORY_QUERY_LENGTH) {
 			addHistoryEntry({
 				id: newId(),
-				query: queryStr,
+				query: query,
 				timestamp: Date.now(),
 				origin: name,
 			});
