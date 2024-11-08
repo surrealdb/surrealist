@@ -279,6 +279,16 @@ export function computePreferences(): PreferenceSection[] {
 						},
 					}),
 				},
+				{
+					name: "Quick query closing",
+					description: "Display query close buttons on hover",
+					controller: new CheckboxController({
+						reader: (config) => config.settings.behavior.queryQuickClose,
+						writer: (config, value) => {
+							config.settings.behavior.queryQuickClose = value;
+						},
+					}),
+				},
 			],
 		},
 		{

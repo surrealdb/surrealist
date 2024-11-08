@@ -8,10 +8,10 @@ import { fetchAPI } from "../api";
  */
 export function useCloudInstances(organization?: string) {
 	const authState = useCloudStore((state) => state.authState);
-	
+
 	return useQuery({
 		queryKey: ["cloud", "databases", organization],
-		refetchInterval: 5_000,
+		refetchInterval: 15_000,
 		enabled: authState === "authenticated",
 		queryFn: async () => {
 			return fetchAPI<CloudInstance[]>(`/organizations/${organization}/instances`);

@@ -31,7 +31,12 @@ export function useModKeyTracker() {
 			document.body.removeEventListener("keyup", onKeyUp);
 		};
 	}, []);
+}
 
+/**
+ * Listen for keybinds and dispatch commands
+ */
+export function useKeybindListener() {
 	const keybinds = useCommandKeybinds();
 	const dispatch = useCommandDispatcher();
 
@@ -40,6 +45,4 @@ export function useModKeyTracker() {
 	});
 
 	useHotkeys(hotkeys, [], true);
-
-	console.log(hotkeys);
 }

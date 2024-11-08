@@ -43,8 +43,6 @@ export function ConnectionModal() {
 	const [templates] = useSetting("templates", "list");
 	const [details, setDetails] = useImmer<Connection>(newConnection());
 
-	const isInstanceLocal = details.group === INSTANCE_GROUP;
-
 	const isValid = useMemo(() => {
 		return details.name && isConnectionValid(details.authentication);
 	}, [details.authentication, details.name]);
@@ -97,15 +95,6 @@ export function ConnectionModal() {
 			});
 		}
 	}, [details.name]);
-
-	const remove = useConfirmation({
-		title: "Remove connection",
-		message: "Are you sure you want to remove this connection?",
-		onConfirm() {
-			removeConnection(details.id);
-			openedHandle.close();
-		},
-	});
 
 	useIntent("new-connection", ({ template }) => {
 		setIsCreating(true);
@@ -201,16 +190,6 @@ export function ConnectionModal() {
 						Close
 					</Button>
 					<Spacer />
-					{!isCreating && !isInstanceLocal && (
-						<Button
-							color="pink.7"
-							variant="light"
-							onClick={remove}
-							leftSection={<Icon path={iconDelete} />}
-						>
-							Remove
-						</Button>
-					)}
 					<Button
 						type="submit"
 						variant="gradient"

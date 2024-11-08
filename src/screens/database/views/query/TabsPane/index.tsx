@@ -39,6 +39,7 @@ import { LiveIndicator } from "~/components/LiveIndicator";
 import { ContentPane } from "~/components/Pane";
 import { Sortable } from "~/components/Sortable";
 import { useBoolean } from "~/hooks/boolean";
+import { useSetting } from "~/hooks/config";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -60,7 +61,7 @@ interface QueryProps extends BoxProps, ElementProps<"button"> {
 	isLive: boolean;
 	isDragging: boolean;
 	onActivate: (id: string) => void;
-	onRemoveQuery: (id: string, e?: React.MouseEvent) => void;
+	onRemoveQuery: (id: string) => void;
 }
 
 function Query({
@@ -76,7 +77,10 @@ function Query({
 	const { addQueryTab, updateQueryTab } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const [isRenaming, setIsRenaming] = useState(false);
+	const [queryQuickClose] = useSetting("behavior", "queryQuickClose");
 	const isLight = useIsLight();
+
+	const explorerName = adapter.platform === "darwin" ? "Finder" : "Explorer";
 
 	const handleActivate = useStable(() => {
 		onActivate(query.id);
@@ -102,7 +106,78 @@ function Query({
 		});
 	});
 
-	const explorerName = adapter.platform === "darwin" ? "Finder" : "Explorer";
+	const handleQuickRemove = useStable((e: React.MouseEvent) => {
+		e.stopPropagation();
+		onRemoveQuery(query.id);
+	});
+
+	const buildContextMenu = showContextMenu([
+		{
+			key: "open",
+			title: "Open",
+			icon: <Icon path={iconArrowUpRight} />,
+			onClick: handleActivate,
+		},
+		{
+			key: "duplicate",
+			title: "Duplicate",
+			icon: <Icon path={iconCopy} />,
+			onClick: () => {
+				addQueryTab({
+					type: "config",
+					name: query.name?.replace(/ \d+$/, ""),
+					query: query.query,
+					variables: query.variables,
+				});
+			},
+		},
+		{
+			key: "rename",
+			title: "Rename",
+			icon: <Icon path={iconText} />,
+			onClick: () => setIsRenaming(true),
+		},
+		{
+			hidden: query.type !== "file",
+			key: "open-in-explorer",
+			title: `Reveal in ${explorerName}`,
+			icon: <Icon path={iconSearch} />,
+			onClick: () => {
+				if (adapter instanceof DesktopAdapter) {
+					adapter.openInExplorer(query);
+				}
+			},
+		},
+		{
+			key: "close-div",
+		},
+		{
+			key: "close",
+			title: "Close",
+			disabled: queries.length === 1,
+			onClick: () => onRemoveQuery(query.id),
+		},
+		{
+			key: "close-others",
+			title: "Close Others",
+			disabled: queries.length === 1,
+			onClick: () => removeOthers(query.id, 0),
+		},
+		{
+			key: "close-before",
+			title: "Close queries Before",
+			disabled: queries.length === 1 || queries.findIndex((q) => q.id === query.id) === 0,
+			onClick: () => removeOthers(query.id, -1),
+		},
+		{
+			key: "close-after",
+			title: "Close queries After",
+			disabled:
+				queries.length === 1 ||
+				queries.findIndex((q) => q.id === query.id) >= queries.length - 1,
+			onClick: () => removeOthers(query.id, 1),
+		},
+	]);
 
 	return (
 		<Entry
@@ -110,74 +185,7 @@ function Query({
 			isActive={isActive}
 			onClick={handleActivate}
 			className={clsx(classes.query, isDragging && classes.queryDragging)}
-			onContextMenu={showContextMenu([
-				{
-					key: "open",
-					title: "Open",
-					icon: <Icon path={iconArrowUpRight} />,
-					onClick: handleActivate,
-				},
-				{
-					key: "duplicate",
-					title: "Duplicate",
-					icon: <Icon path={iconCopy} />,
-					onClick: () => {
-						addQueryTab({
-							type: "config",
-							name: query.name?.replace(/ \d+$/, ""),
-							query: query.query,
-							variables: query.variables,
-						});
-					},
-				},
-				{
-					key: "rename",
-					title: "Rename",
-					icon: <Icon path={iconText} />,
-					onClick: () => setIsRenaming(true),
-				},
-				{
-					hidden: query.type !== "file",
-					key: "open-in-explorer",
-					title: `Reveal in ${explorerName}`,
-					icon: <Icon path={iconSearch} />,
-					onClick: () => {
-						if (adapter instanceof DesktopAdapter) {
-							adapter.openInExplorer(query);
-						}
-					},
-				},
-				{
-					key: "close-div",
-				},
-				{
-					key: "close",
-					title: "Close",
-					disabled: queries.length === 1,
-					onClick: () => onRemoveQuery(query.id),
-				},
-				{
-					key: "close-others",
-					title: "Close Others",
-					disabled: queries.length === 1,
-					onClick: () => removeOthers(query.id, 0),
-				},
-				{
-					key: "close-before",
-					title: "Close queries Before",
-					disabled:
-						queries.length === 1 || queries.findIndex((q) => q.id === query.id) === 0,
-					onClick: () => removeOthers(query.id, -1),
-				},
-				{
-					key: "close-after",
-					title: "Close queries After",
-					disabled:
-						queries.length === 1 ||
-						queries.findIndex((q) => q.id === query.id) >= queries.length - 1,
-					onClick: () => removeOthers(query.id, 1),
-				},
-			])}
+			onContextMenu={buildContextMenu}
 			leftSection={<Icon path={TYPE_ICONS[query.type]} />}
 			rightSection={
 				<>
@@ -189,13 +197,13 @@ function Query({
 						/>
 					)}
 
-					{queries.length > 1 && (
+					{queries.length > 1 && queryQuickClose && (
 						<ActionIcon
 							size="sm"
 							component="div"
-							variant="subtle"
+							variant="transparent"
 							className={classes.queryClose}
-							onClick={(e) => onRemoveQuery(query.id, e)}
+							onClick={handleQuickRemove}
 							color={isActive && isLight ? "white" : undefined}
 							aria-label="Close query tab"
 						>
@@ -243,8 +251,7 @@ export function TabsPane(props: TabsPaneProps) {
 		addQueryTab({ type: "config" });
 	});
 
-	const removeTab = useStable((id: string, e?: React.MouseEvent) => {
-		e?.stopPropagation();
+	const removeTab = useStable((id: string) => {
 		removeQueryTab(id);
 		cancelLiveQueries(id);
 

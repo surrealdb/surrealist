@@ -51,6 +51,7 @@ export function createBaseSettings(): SurrealistSettings {
 			docsLanguage: "cli",
 			versionCheckTimeout: 5,
 			reconnectInterval: 3,
+			queryQuickClose: true,
 		},
 		appearance: {
 			colorScheme: "dark",
