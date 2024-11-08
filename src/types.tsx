@@ -148,6 +148,7 @@ export interface SurrealistBehaviorSettings {
 	docsLanguage: CodeLang;
 	versionCheckTimeout: number;
 	reconnectInterval: number;
+	queryQuickClose: boolean;
 }
 
 export interface SurrealistAppearanceSettings {
