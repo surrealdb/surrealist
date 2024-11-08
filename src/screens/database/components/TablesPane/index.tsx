@@ -1,4 +1,5 @@
 import {
+	iconAPI,
 	iconChevronLeft,
 	iconDelete,
 	iconPin,
@@ -23,6 +24,7 @@ import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { showTableDefinitionModal } from "~/modals/table-definition";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
@@ -197,10 +199,23 @@ export function TablesPane({
 									onContextMenu={showContextMenu([
 										...(onTableContextMenu?.(table.schema.name) || []),
 										{
+											key: "divider-1",
+										},
+										{
 											key: "pin",
 											title: isPinned ? "Unpin table" : "Pin table",
 											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
 											onClick: () => togglePinned(table.schema.name),
+										},
+										{
+											key: "definition",
+											title: "Show definition",
+											icon: <Icon path={iconAPI} />,
+											onClick: () =>
+												showTableDefinitionModal(table.schema.name),
+										},
+										{
+											key: "divider-2",
 										},
 										{
 											key: "remove",
