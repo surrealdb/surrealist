@@ -31,6 +31,7 @@ import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { executeEditorQuery } from "~/editor/query";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
@@ -50,7 +51,6 @@ import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
 import { readQuery, writeQuery } from "./strategy";
-import { executeEditorQuery } from "~/editor/query";
 
 const switchPortal = createHtmlPortalNode();
 
