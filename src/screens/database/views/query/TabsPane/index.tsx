@@ -39,6 +39,7 @@ import { LiveIndicator } from "~/components/LiveIndicator";
 import { ContentPane } from "~/components/Pane";
 import { Sortable } from "~/components/Sortable";
 import { useBoolean } from "~/hooks/boolean";
+import { useSetting } from "~/hooks/config";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -47,7 +48,6 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryTab, QueryType } from "~/types";
-import { useSetting } from "~/hooks/config";
 
 const TYPE_ICONS: Record<QueryType, string> = {
 	config: iconQuery,
