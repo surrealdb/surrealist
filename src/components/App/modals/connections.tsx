@@ -19,6 +19,7 @@ import {
 	iconCloud,
 	iconCopy,
 	iconDelete,
+	iconDotsVertical,
 	iconEdit,
 	iconFolderPlus,
 	iconHomePlus,
@@ -31,7 +32,7 @@ import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { group } from "radash";
-import { type HTMLAttributes, type MouseEvent, type ReactNode, useMemo } from "react";
+import { type HTMLAttributes, type MouseEvent, type ReactNode, useMemo, useState } from "react";
 import { isDesktop } from "~/adapter";
 import { EditableText } from "~/components/EditableText";
 import { Entry, type EntryProps } from "~/components/Entry";
@@ -43,9 +44,10 @@ import { useConnection, useConnections } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import type { Connection } from "~/types";
-import { Y_SLIDE_TRANSITION, fuzzyMatch, newId } from "~/util/helpers";
+import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch, newId } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
 
 const UNGROUPED = "__ungrouped__";
@@ -387,8 +389,9 @@ interface ItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, 
 }
 
 function Item({ connection, active, selected, onClose, onActivate, ...other }: ItemProps) {
-	const { showContextMenu } = useContextMenu();
 	const { addConnection, removeConnection } = useConfigStore.getState();
+	const [showOptions, setShowOptions] = useState(false);
+
 	const isInstanceLocal = connection.group === INSTANCE_GROUP;
 	const isActive = connection.id === active;
 
@@ -404,6 +407,20 @@ function Item({ connection, active, selected, onClose, onActivate, ...other }: I
 		});
 	});
 
+	const handleOptions = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+		setShowOptions(true);
+	});
+
+	const handleDelete = useConfirmation({
+		title: "Remove connection",
+		message: "Are you sure you want to remove this connection?",
+		skippable: true,
+		onConfirm() {
+			removeConnection(connection.id);
+		},
+	});
+
 	return (
 		<Entry
 			key={connection.id}
@@ -416,45 +433,61 @@ function Item({ connection, active, selected, onClose, onActivate, ...other }: I
 			onClick={activate}
 			leftSection={<Icon path={USER_ICONS[connection.icon ?? 0]} />}
 			rightSection={
-				<ActionIcon
-					component="div"
-					variant="transparent"
-					className={classes.connectionOptions}
-					onClick={modify}
-					aria-label="Edit connection"
+				<Menu
+					opened={showOptions}
+					onChange={setShowOptions}
+					transitionProps={{
+						transition: "scale-y",
+					}}
 				>
-					<Icon path={iconEdit} />
-				</ActionIcon>
+					<Menu.Target>
+						<ActionIcon
+							component="div"
+							variant="transparent"
+							onClick={handleOptions}
+							aria-label="Connection options"
+						>
+							<Icon path={iconDotsVertical} />
+						</ActionIcon>
+					</Menu.Target>
+					<Menu.Dropdown onClick={ON_STOP_PROPAGATION}>
+						<Menu.Item
+							leftSection={<Icon path={iconEdit} />}
+							onClick={modify}
+						>
+							Edit details
+						</Menu.Item>
+						<Menu.Item
+							leftSection={<Icon path={iconCopy} />}
+							onClick={() => {
+								addConnection({
+									...connection,
+									lastNamespace: "",
+									lastDatabase: "",
+									group: isInstanceLocal ? undefined : connection.group,
+									id: newId(),
+								});
+							}}
+						>
+							Duplicate
+						</Menu.Item>
+						<Menu.Divider />
+						<Menu.Item
+							leftSection={
+								<Icon
+									path={iconDelete}
+									c="red"
+								/>
+							}
+							onClick={handleDelete}
+							disabled={isInstanceLocal}
+							c="red"
+						>
+							Delete
+						</Menu.Item>
+					</Menu.Dropdown>
+				</Menu>
 			}
-			onContextMenu={showContextMenu([
-				{
-					key: "edit",
-					title: "Edit",
-					icon: <Icon path={iconEdit} />,
-					onClick: modify,
-				},
-				{
-					key: "duplicate",
-					title: "Duplicate",
-					icon: <Icon path={iconCopy} />,
-					onClick: () =>
-						addConnection({
-							...connection,
-							lastNamespace: "",
-							lastDatabase: "",
-							group: isInstanceLocal ? undefined : connection.group,
-							id: newId(),
-						}),
-				},
-				{
-					key: "delete",
-					title: "Delete connection",
-					color: "pink.7",
-					hidden: isInstanceLocal,
-					icon: <Icon path={iconDelete} />,
-					onClick: () => removeConnection(connection.id),
-				},
-			])}
 			{...other}
 		>
 			<Text truncate>{connection.name}</Text>

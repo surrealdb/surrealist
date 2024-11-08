@@ -58,14 +58,6 @@
 	background-origin: border-box;
 }
 
-.connection-options {
-	display: none;
-}
-
-.connection:hover .connection-options {
-	display: flex;
-}
-
 .connection-group {
 	&-remove {
 		display: none;
