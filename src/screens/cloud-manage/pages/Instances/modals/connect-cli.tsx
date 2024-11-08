@@ -1,6 +1,5 @@
 import { Group, Modal, Skeleton, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { useLayoutEffect, useState } from "react";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
@@ -19,6 +18,7 @@ export interface ConnectCliModalProps {
 export function ConnectCliModal({ opened, onClose, instance }: ConnectCliModalProps) {
 	const { data, isPending } = useQuery({
 		queryKey: ["cloud", "cli"],
+		enabled: !!instance?.id,
 		queryFn: async () => {
 			return fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
 				(res) => res.token,
