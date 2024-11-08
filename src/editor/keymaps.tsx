@@ -1,7 +1,7 @@
 import { redo, redoSelection, undo, undoSelection } from "@codemirror/commands";
 import type { KeyBinding } from "@codemirror/view";
 import { suggestCompletions } from "./commands";
-import { executeEditorQuery, executeGraphqlEditorQuery } from "./query";
+import { executeEditorQuery, executeGraphqlEditorQuery, selectCursorQuery } from "./query";
 
 /**
  * A custom variant of the history keymap that uses
@@ -26,6 +26,7 @@ export const customHistoryKeymap: readonly KeyBinding[] = [
 export const runQueryKeymap: readonly KeyBinding[] = [
 	{ key: "Mod-Enter", run: executeEditorQuery },
 	{ key: "F9", run: executeEditorQuery },
+	{ key: "Mod-e", run: selectCursorQuery },
 ];
 
 /**
