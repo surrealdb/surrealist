@@ -25,11 +25,16 @@ textarea,
 	-webkit-user-select: text;
 }
 
-pre {
+pre,
+code {
 	font-size: inherit;
 	background-color: var(--mantine-color-slate-7);
 
 	@include light {
 		background-color: var(--mantine-color-slate-0);
 	}
+}
+
+code {
+	font-size: var(--mantine-font-size-sm);
 }
