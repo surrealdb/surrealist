@@ -60,6 +60,7 @@ export type ViewMode =
 export type CloudPage =
 	| "instances"
 	| "members"
+	| "chat"
 	| "data"
 	| "audits"
 	| "billing"
@@ -584,4 +585,10 @@ export interface CloudPayment {
 export interface CloudBillingCountry {
 	name: string;
 	code: string;
+}
+
+export interface CloudChatMessage {
+	id: string;
+	content: string;
+	sender: "user" | "bot";
 }

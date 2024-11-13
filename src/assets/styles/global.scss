@@ -1,19 +1,21 @@
-html, body, #root {
-    height: 100%;
+html,
+body,
+#root {
+	height: 100%;
 	overscroll-behavior: none;
 	padding: 0;
 	margin: 0;
 }
 
 body {
-    font-weight: 500;
-    user-select: none;
-    -webkit-user-select: none;
+	font-weight: 500;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
 input::-ms-reveal,
 input::-ms-clear {
-    display: none;
+	display: none;
 }
 
 input,
@@ -21,4 +23,18 @@ textarea,
 *[contenteditable] {
 	user-select: text;
 	-webkit-user-select: text;
+}
+
+pre,
+code {
+	font-size: inherit;
+	background-color: var(--mantine-color-slate-7);
+
+	@include light {
+		background-color: var(--mantine-color-slate-0);
+	}
+}
+
+code {
+	font-size: var(--mantine-font-size-sm);
 }

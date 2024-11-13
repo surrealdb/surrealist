@@ -18,6 +18,7 @@ import { fetchAPI } from "./api";
 import { openCloudAuthentication } from "./api/auth";
 import { StatusAlert } from "./components/StatusAlert";
 import { BillingPage } from "./pages/Billing";
+import { SupportPage as ChatPage } from "./pages/Chat";
 import { InstancesPage } from "./pages/Instances";
 import { MembersPage } from "./pages/Members";
 import { PlaceholderPage } from "./pages/Placeholder";
@@ -36,6 +37,7 @@ const PAGE_VIEWS: Record<CloudPage, FC> = {
 	support: SupportPage,
 	settings: SettingsPage,
 	provision: ProvisionPage,
+	chat: ChatPage,
 };
 
 export function CloudView() {

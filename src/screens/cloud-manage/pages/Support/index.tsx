@@ -5,7 +5,7 @@ import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
 import communtyLightUrl from "~/assets/images/light/picto-community.svg";
 import documentationLightUrl from "~/assets/images/light/picto-documentation.svg";
 
-import { type BoxProps, Image, Text, UnstyledButton } from "@mantine/core";
+import { Box, type BoxProps, Image, Text, UnstyledButton } from "@mantine/core";
 import { Group, Paper, Stack } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -54,7 +54,6 @@ function SupportTile({ image, title, onClick, ...props }: SupportTileProps) {
 }
 
 export function SupportPage() {
-
 	const documentationUrl = useThemeImage({
 		dark: documentationDarkUrl,
 		light: documentationLightUrl,
@@ -72,15 +71,17 @@ export function SupportPage() {
 			maw={900}
 			mx="auto"
 		>
-			<PrimaryTitle>Looking for help?</PrimaryTitle>
-			<Text
-				mb="xl"
-				fz="lg"
-			>
-				Running into issues with your cloud account, billing, or instances? We're here to
-				help! Reach out to us through one of the following community support channels for
-				help, or to get in touch with our team.
-			</Text>
+			<Box>
+				<PrimaryTitle>Looking for help?</PrimaryTitle>
+				<Text
+					mb="xl"
+					fz="lg"
+				>
+					Running into issues with your cloud account, billing, or instances? We're here
+					to help! Reach out to us through one of the following community support channels
+					for help, or to get in touch with our team.
+				</Text>
+			</Box>
 			<SupportTile
 				image={documentationUrl}
 				title="Cloud Documentation"

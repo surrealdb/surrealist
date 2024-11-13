@@ -1,7 +1,9 @@
+import { shake } from "radash";
 import { create } from "zustand";
 import type {
 	AuthState,
 	CloudBillingCountry,
+	CloudChatMessage,
 	CloudInstance,
 	CloudInstanceType,
 	CloudOrganization,
@@ -23,6 +25,13 @@ export const EMPTY_PROFILE: CloudProfile = {
 	name: "",
 };
 
+/*
+const [threadId, setThreadId] = useState<string | undefined>(undefined);
+	const [input, setInput] = useInputState("");
+	const [conversation, setConversation] = useState<Message[]>([]);
+	const [lastResponse, setLastResponse] = useState("");
+*/
+
 export type CloudStore = {
 	authState: AuthState;
 	sessionToken: string;
@@ -36,6 +45,9 @@ export type CloudStore = {
 	isProvisioning: boolean;
 	isProvisionDone: boolean;
 	provisioning: CloudInstance | null;
+	chatThreadId: string;
+	chatConversation: CloudChatMessage[];
+	chatLastResponse: string;
 
 	setLoading: () => void;
 	setSessionToken: (token: string) => void;
@@ -47,6 +59,9 @@ export type CloudStore = {
 	finishProvisioning: () => void;
 	hideProvisioning: () => void;
 	clearSession: () => void;
+	setChatThreadId: (threadId: string) => void;
+	pushChatMessage: (message: CloudChatMessage) => void;
+	clearChatSession: () => void;
 };
 
 export const useCloudStore = create<CloudStore>((set) => ({
@@ -63,6 +78,9 @@ export const useCloudStore = create<CloudStore>((set) => ({
 	isProvisioning: false,
 	isProvisionDone: false,
 	provisioning: null,
+	chatThreadId: "",
+	chatConversation: [],
+	chatLastResponse: "",
 
 	setLoading: () => set({ authState: "loading" }),
 
@@ -114,5 +132,25 @@ export const useCloudStore = create<CloudStore>((set) => ({
 	hideProvisioning: () =>
 		set({
 			isProvisioning: false,
+		}),
+
+	setChatThreadId: (threadId) =>
+		set({
+			chatThreadId: threadId,
+		}),
+
+	pushChatMessage: (message) =>
+		set((state) =>
+			shake({
+				chatConversation: [...state.chatConversation, message],
+				chatLastResponse: message.sender === "bot" ? message.id : undefined,
+			}),
+		),
+
+	clearChatSession: () =>
+		set({
+			chatThreadId: "",
+			chatConversation: [],
+			chatLastResponse: "",
 		}),
 }));

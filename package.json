@@ -83,6 +83,7 @@
 		"leaflet": "^1.9.4",
 		"lottie-web": "^5.12.2",
 		"mantine-contextmenu": "^7.5.0",
+		"marked": "^15.0.0",
 		"papaparse": "^5.4.1",
 		"posthog-js": "^1.121.4",
 		"radash": "^11.0.0",

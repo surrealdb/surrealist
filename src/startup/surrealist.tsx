@@ -9,6 +9,7 @@ import "../assets/styles/global.scss";
 import "../assets/styles/override.scss";
 
 import "../adapter";
+import "../util/markdown";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";

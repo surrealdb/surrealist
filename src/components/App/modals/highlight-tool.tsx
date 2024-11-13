@@ -1,48 +1,22 @@
-import { highlightCode } from "@lezer/highlight";
-import { Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
+import { Button, Divider, Modal, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-// @ts-ignore
-import { parser } from "@surrealdb/lezer";
 import { useCallback, useEffect, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";
-import { createStyleHighlighter } from "~/editor";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import type { ColorScheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { formatQuery } from "~/util/surrealql";
+import { formatQuery, renderHighlighting } from "~/util/surrealql";
 
 export function Render({ value, theme }: { value: string; theme: ColorScheme }) {
 	const render = useStable(() => {
-		const rendered = document.createElement("pre");
-		const textColor = getComputedStyle(document.documentElement).getPropertyValue("--mantine-color-text");
-
-		function emit(text: string, classes?: string) {
-			const textNode = document.createTextNode(text);
-			const span = document.createElement("span");
-
-			if (classes) {
-				span.style.color = classes;
-			} else {
-				span.style.color = textColor;
-			}
-
-			span.append(textNode);
-			rendered.append(span);
-		}
-
-		function emitBreak() {
-			emit("\n");
-		}
-
-		highlightCode(value, parser.parse(value), createStyleHighlighter(theme), emit, emitBreak);
-
+		const rendered = renderHighlighting(value, theme);
 		const clipboardItem = new ClipboardItem({
-			"text/html": new Blob([rendered.outerHTML], { type: "text/html" }),
-			"text/plain": new Blob([rendered.outerHTML], { type: "text/plain" }),
+			"text/html": new Blob([rendered], { type: "text/html" }),
+			"text/plain": new Blob([rendered], { type: "text/plain" }),
 		});
 
 		navigator.clipboard.write([clipboardItem]);
