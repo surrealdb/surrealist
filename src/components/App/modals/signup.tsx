@@ -118,7 +118,7 @@ export function AccessSignupModal() {
 											size="xs"
 											readOnly
 											variant="unstyled"
-											value={field.subject}
+											value={field.value}
 											spellCheck={false}
 											styles={{
 												input: {
