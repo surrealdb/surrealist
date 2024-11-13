@@ -1,6 +1,6 @@
 import { marked } from "marked";
-import { renderHighlighting } from "./surrealql";
 import { useInterfaceStore } from "~/stores/interface";
+import { renderHighlighting } from "./surrealql";
 
 // const LINK_PATTERN = /^(.+?)\|(\d+)$/;
 
