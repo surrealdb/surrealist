@@ -24,6 +24,7 @@ import { PlaceholderPage } from "./pages/Placeholder";
 import { ProvisionPage } from "./pages/Provision";
 import { SettingsPage } from "./pages/Settings";
 import { SupportPage } from "./pages/Support";
+import { SupportPage as ChatPage } from "./pages/Chat";
 import { CloudSidebar } from "./sidebar";
 import { CloudToolbar } from "./toolbar";
 
@@ -36,6 +37,7 @@ const PAGE_VIEWS: Record<CloudPage, FC> = {
 	support: SupportPage,
 	settings: SettingsPage,
 	provision: ProvisionPage,
+	chat: ChatPage,
 };
 
 export function CloudView() {

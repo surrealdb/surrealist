@@ -45,6 +45,7 @@ import {
 	iconAccount,
 	iconAuth,
 	iconBraces,
+	iconChat,
 	iconCloud,
 	iconCog,
 	iconCombined,
@@ -301,6 +302,11 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 		id: "provision",
 		name: "Provision instance",
 		icon: iconPlus,
+	},
+	chat: {
+		id: "chat",
+		name: "Sidekick",
+		icon: iconChat,
 	},
 };
 

@@ -196,6 +196,9 @@ importers:
       mantine-contextmenu:
         specifier: ^7.5.0
         version: 7.12.2(@mantine/core@7.13.3(@mantine/hooks@7.13.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.13.3(react@18.3.1))(clsx@2.1.1)(react@18.3.1)
+      marked:
+        specifier: ^15.0.0
+        version: 15.0.0
       papaparse:
         specifier: ^5.4.1
         version: 5.4.1
@@ -2319,6 +2322,11 @@ packages:
 
   markdown-it@12.3.2:
     resolution: {integrity: sha512-TchMembfxfNVpHkbtriWltGWc+m3xszaRD0CZup7GFFhzIgQqxIfn3eGj1yZpfuflzPvfkt611B2Q/Bsk1YnGg==}
+    hasBin: true
+
+  marked@15.0.0:
+    resolution: {integrity: sha512-0mouKmBROJv/WSHJBPZZyYofUgawMChnD5je/g+aOBXsHDjb/IsnTQj7mnhQZu+qPJmRQ0ecX3mLGEUm3BgwYA==}
+    engines: {node: '>= 18'}
     hasBin: true
 
   mdn-data@2.0.28:
@@ -4996,6 +5004,8 @@ snapshots:
       linkify-it: 3.0.3
       mdurl: 1.0.1
       uc.micro: 1.0.6
+
+  marked@15.0.0: {}
 
   mdn-data@2.0.28: {}
 

@@ -31,13 +31,15 @@ import { iconCheck, iconChevronDown, iconViewGrid } from "~/util/icons";
 const NAVIGATION: CloudPage[][] = [
 	[
 		"instances",
+		"billing",
 		// "data",
 	],
 	[
 		// "members",
 		// "audits",
 	],
-	["billing", "support", "settings"],
+	["chat", "support"],
+	["settings"],
 ];
 
 export function CloudSidebar(props: BoxProps) {
