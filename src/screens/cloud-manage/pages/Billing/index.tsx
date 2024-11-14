@@ -453,7 +453,7 @@ export function BillingPage() {
 													{status?.name ?? invoice.status}
 												</Table.Td>
 												<Table.Td>
-													${(invoice.amount * 100).toFixed(2)} USD
+													${(invoice.amount / 100).toFixed(2)} USD
 												</Table.Td>
 												<Table.Td>
 													<Link href={invoice.url}>
