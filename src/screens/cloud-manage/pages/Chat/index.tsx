@@ -1,11 +1,12 @@
 import {
+	ActionIcon,
 	Avatar,
 	Badge,
 	Box,
-	Button,
 	Center,
 	Flex,
 	Group,
+	Image,
 	Loader,
 	Paper,
 	ScrollArea,
@@ -29,7 +30,9 @@ import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudChatMessage } from "~/types";
 import { newId } from "~/util/helpers";
-import { iconCursor, iconSurreal } from "~/util/icons";
+import { iconCursor, iconSidekick } from "~/util/icons";
+
+import sidekickImg from "~/assets/images/sidekick.webp";
 
 const endpoint = "https://api-prod.scoutos.com/v1/apps/execute";
 const appId = "dddef4a4-3fd7-48d1-bbd3-60a0d597e2f2";
@@ -52,7 +55,7 @@ export function SupportPage() {
 	const conversation = useCloudStore((s) => s.chatConversation);
 	const lastResponse = useCloudStore((s) => s.chatLastResponse);
 
-	const { mutateAsync: sendRequest, isPending } = useMutation({
+	const { mutateAsync, isPending } = useMutation({
 		mutationKey: ["cloud", "support", "message"],
 		mutationFn: async (inputs: Request) => {
 			const res = await fetch(endpoint, {
@@ -78,6 +81,8 @@ export function SupportPage() {
 		},
 	});
 
+	// const { mutateAsync, isPending } = useCopilotMutation();
+
 	const sendMessage = useStable(() => {
 		pushChatMessage({
 			id: newId(),
@@ -85,7 +90,7 @@ export function SupportPage() {
 			sender: "user",
 		});
 
-		sendRequest({ input, conversation }).then((res) => {
+		mutateAsync({ input, conversation }).then((res) => {
 			pushChatMessage({
 				id: newId(),
 				content: res,
@@ -96,6 +101,8 @@ export function SupportPage() {
 		setInput("");
 		inputRef.current?.focus();
 	});
+
+	const canSend = input && !isPending;
 
 	return (
 		<Stack
@@ -115,7 +122,7 @@ export function SupportPage() {
 						inset={0}
 					>
 						<Icon
-							path={iconSurreal}
+							path={iconSidekick}
 							size={10}
 							noStroke
 							color="slate.8"
@@ -129,7 +136,7 @@ export function SupportPage() {
 					<Box
 						mx="auto"
 						maw={900}
-						pb="xl"
+						pb={64}
 					>
 						<PrimaryTitle>Sidekick</PrimaryTitle>
 						<Text fz="lg">Chat with your personal Surreal assistant</Text>
@@ -156,19 +163,7 @@ export function SupportPage() {
 									key={i}
 								>
 									{message.sender === "bot" ? (
-										<Avatar
-											radius="md"
-											variant="light"
-											color="surreal"
-											size={40}
-										>
-											<Icon
-												path={iconSurreal}
-												noStroke
-												c="surreal"
-												size="md"
-											/>
-										</Avatar>
+										<SidekickAvatar />
 									) : (
 										<Avatar
 											radius="md"
@@ -222,19 +217,7 @@ export function SupportPage() {
 							))}
 							{isPending && (
 								<Flex gap="md">
-									<Avatar
-										radius="md"
-										variant="light"
-										color="surreal"
-										size={40}
-									>
-										<Icon
-											path={iconSurreal}
-											noStroke
-											c="surreal"
-											size="md"
-										/>
-									</Avatar>
+									<SidekickAvatar />
 									<Paper
 										px="lg"
 										py="sm"
@@ -262,8 +245,11 @@ export function SupportPage() {
 			</Box>
 			<Form
 				onSubmit={sendMessage}
-				maw={950}
+				maw={900}
 				w="100%"
+				style={{
+					transform: "translateY(-24px)",
+				}}
 			>
 				<Group>
 					<TextInput
@@ -276,34 +262,47 @@ export function SupportPage() {
 						value={input}
 						autoFocus
 						onChange={setInput}
-					/>
-					<Button
-						size="lg"
-						px="xl"
-						type="submit"
-						variant="gradient"
-						disabled={status === "pending" || !input}
-						style={{
-							border: "1px solid rgba(255, 255, 255, 0.3)",
-							backgroundOrigin: "border-box",
-						}}
 						rightSection={
-							<Icon
-								path={iconCursor}
-								size="md"
-							/>
+							<ActionIcon
+								size="lg"
+								type="submit"
+								variant="gradient"
+								disabled={!canSend}
+								style={{
+									opacity: canSend ? 1 : 0.5,
+									border: "1px solid rgba(255, 255, 255, 0.3)",
+									backgroundOrigin: "border-box",
+									filter: canSend ? undefined : "saturate(0%)",
+									transition: "all 0.1s",
+								}}
+							>
+								<Icon
+									path={iconCursor}
+									c="white"
+								/>
+							</ActionIcon>
 						}
-					>
-						Send
-					</Button>
+					/>
 				</Group>
 			</Form>
-			<Text
-				mb="md"
-				mt="sm"
-			>
-				You are chatting with an AI assistant, responses may be inaccurate.
-			</Text>
+			<Text mb="md">You are chatting with an AI assistant, responses may be inaccurate.</Text>
 		</Stack>
+	);
+}
+
+function SidekickAvatar() {
+	return (
+		<Avatar
+			radius="md"
+			variant="light"
+			color="surreal"
+			size={40}
+		>
+			<Image
+				src={sidekickImg}
+				w={28}
+				h={28}
+			/>
+		</Avatar>
 	);
 }

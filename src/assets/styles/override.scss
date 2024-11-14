@@ -1,30 +1,30 @@
 :root {
-    --surrealist-divider-size: 6px;
-    --surrealist-gradient: linear-gradient(110deg, var(--mantine-color-surreal-filled) 0%, #9600FF 100%);
+	--surrealist-divider-size: 6px;
+	--surrealist-gradient: linear-gradient(110deg, var(--mantine-color-surreal-filled) 0%, #9600FF 100%);
 }
 
 :root[data-mantine-color-scheme="light"] {
-    --surrealist-divider-color: var(--mantine-color-slate-0);
-    --surrealist-glow: 0 3px 15px rgba(186, 0, 171, 0.5);
+	--surrealist-divider-color: var(--mantine-color-slate-0);
+	--surrealist-glow: 0 3px 15px rgba(186, 0, 171, 0.5);
 	--surrealist-indent-color: var(--mantine-color-slate-1);
 	--surrealist-indent-active-color: var(--mantine-color-slate-2);
 	--surrealist-kind-color: #8d6bff;
 	--surrealist-divider-color: var(--mantine-color-slate-1);
-    --mantine-color-body: var(--mantine-color-white);
+	--mantine-color-body: var(--mantine-color-white);
 }
 
 :root[data-mantine-color-scheme="dark"] {
-    --surrealist-divider-color: var(--mantine-color-slate-9);
-    --surrealist-glow: 0 5px 20px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
+	--surrealist-divider-color: var(--mantine-color-slate-9);
+	--surrealist-glow: 0 5px 20px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
 	--surrealist-indent-color: var(--mantine-color-slate-7);
 	--surrealist-indent-active-color: var(--mantine-color-slate-6);
 	--surrealist-kind-color: #a79fff;
 	--surrealist-divider-color: var(--mantine-color-slate-7);
-    --mantine-color-body: var(--mantine-color-slate-8);
+	--mantine-color-body: var(--mantine-color-slate-8);
 }
 
 .__dbk__container {
-    overflow: visible;
+	overflow: visible;
 }
 
 body.mod .cm-record-link:hover {
@@ -37,26 +37,29 @@ body.mod .cm-record-link:hover {
 	}
 }
 
-.mantine-contextmenu-item-button > div:not(.mantine-contextmenu-item-button-title) {
-    font-size: 0.65rem !important;
+.mantine-contextmenu-item-button>div:not(.mantine-contextmenu-item-button-title) {
+	font-size: 0.65rem !important;
 }
 
 .mantine-contextmenu {
-    padding: var(--mantine-spacing-xs);
+	padding: var(--mantine-spacing-xs);
 }
 
 .mantine-contextmenu-item-button {
-    border-radius: var(--mantine-radius-xs);
+	border-radius: var(--mantine-radius-xs);
 }
 
 .mantine-contextmenu-divider {
-    margin-block: var(--mantine-spacing-xs);
+	margin-block: var(--mantine-spacing-xs);
 }
 
-.mantine-contextmenu, .mantine-Popover-dropdown, .mantine-Menu-dropdown, .mantine-HoverCard-dropdown {
-    background-color: color-mix(in srgb, var(--mantine-color-body) 87.5%, transparent);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+.mantine-contextmenu,
+.mantine-Popover-dropdown,
+.mantine-Menu-dropdown,
+.mantine-HoverCard-dropdown {
+	background-color: color-mix(in srgb, var(--mantine-color-body) 87.5%, transparent);
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
 }
 
 .mantine-Button-root:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])) {
@@ -91,76 +94,81 @@ body.mod .cm-record-link:hover {
 
 .mantine-Tabs-tab {
 
-    &:hover {
-        background-color: var(--mantine-color-slate-7);
-        color: var(--mantine-color-bright);
+	&:hover {
+		background-color: var(--mantine-color-slate-7);
+		color: var(--mantine-color-bright);
 
 		@include light {
 			background-color: var(--mantine-color-slate-0);
 		}
-    }
-    
-    &[data-active] {
-        background: var(--surrealist-gradient);
-        background-origin: border-box;
+	}
+
+	&[data-active] {
+		background: var(--surrealist-gradient);
+		background-origin: border-box;
 		color: var(--mantine-color-white);
-    }
+	}
 }
 
 .mantine-Checkbox-root {
 
-    .mantine-Checkbox-input {
-        background-color: var(--mantine-color-body);
-    }
+	.mantine-Checkbox-input {
+		background-color: var(--mantine-color-body);
+	}
 
-    &[data-checked] .mantine-Checkbox-input {
-        background: var(--surrealist-gradient);
-        background-origin: border-box;
-        border-color: rgba(255, 255, 255, 0.3);
-    }
+	&[data-checked] .mantine-Checkbox-input {
+		background: var(--surrealist-gradient);
+		background-origin: border-box;
+		border-color: rgba(255, 255, 255, 0.3);
+	}
 
 	&[data-checked] .mantine-Checkbox-icon {
-        color: white !important;
-    }
+		color: white !important;
+	}
 }
 
 .mantine-Radio-root {
-    
-    &[data-checked] .mantine-Radio-radio {
-        background: var(--surrealist-gradient);
-        background-origin: border-box;
-        border-color: rgba(255, 255, 255, 0.3);
-    }
+
+	&[data-checked] .mantine-Radio-radio {
+		background: var(--surrealist-gradient);
+		background-origin: border-box;
+		border-color: rgba(255, 255, 255, 0.3);
+	}
 
 }
 
 .mantine-Input-input {
-    transition: all .2s;
-    background-color: var(--mantine-color-body);
-    
-    &:not(:focus-within):not([data-variant="unstyled"]) {
-        border-color: var(--mantine-color-slate-6);
+	transition: all .2s;
+	background-color: var(--mantine-color-body);
 
-        @include light {
-            border-color: var(--mantine-color-slate-1);
-        }
-    }
+	&:not(:focus-within):not([data-variant="unstyled"]) {
+		border-color: var(--mantine-color-slate-6);
 
-    &:hover,  &:focus-within {
-        background-color: var(--mantine-color-slate-7);
+		@include light {
+			border-color: var(--mantine-color-slate-1);
+		}
+	}
 
-        @include light {
-            background-color: var(--mantine-color-slate-0);
-        }
-    }
+	&:hover,
+	&:focus-within {
+		background-color: var(--mantine-color-slate-7);
+
+		@include light {
+			background-color: var(--mantine-color-slate-0);
+		}
+	}
 }
 
-.mantine-Select-option:hover {
-    background-color: rgba(255, 255, 255, 0.075);
+.mantine-Select-option {
+	border-radius: var(--mantine-radius-xs);
 
-    @include light {
-        background-color: rgba(0, 0, 0, 0.075);
-    }
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.075);
+
+		@include light {
+			background-color: rgba(0, 0, 0, 0.075);
+		}
+	}
 }
 
 .mantine-Select-group {
@@ -188,21 +196,21 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Slider-bar {
-    background: var(--surrealist-gradient);
+	background: var(--surrealist-gradient);
 }
 
 .mantine-Slider-mark {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-color: transparent;
+	background-color: rgba(255, 255, 255, 0.3);
+	border-color: transparent;
 }
 
 .mantine-InputWrapper-required {
-    color: var(--mantine-color-surreal-6);
-    color: var(--mantine-color-surreal-6);
+	color: var(--mantine-color-surreal-6);
+	color: var(--mantine-color-surreal-6);
 }
 
 .mantine-InputWrapper-description {
-    font-size: var(--mantine-font-size-xs);
+	font-size: var(--mantine-font-size-xs);
 }
 
 .mantine-InputWrapper-label {
