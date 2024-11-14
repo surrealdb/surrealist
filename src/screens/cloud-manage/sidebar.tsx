@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Avatar,
+	Badge,
 	type BoxProps,
 	Divider,
 	Group,
@@ -74,6 +75,19 @@ export function CloudSidebar(props: BoxProps) {
 					key={info.id}
 					isActive={activePage === info.id}
 					leftSection={<Icon path={info.icon} />}
+					rightSection={
+						info.id === "chat" ? (
+							<Badge
+								variant="light"
+								color="black"
+								radius="xs"
+								bg="#00000025"
+								c="white"
+							>
+								Beta
+							</Badge>
+						) : undefined
+					}
 					onClick={() => {
 						setActiveCloudPage(info.id);
 						navModalHandle.close();
