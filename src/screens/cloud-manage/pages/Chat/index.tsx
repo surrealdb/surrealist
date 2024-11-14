@@ -139,7 +139,10 @@ export function SupportPage() {
 						pb={64}
 					>
 						<PrimaryTitle>Sidekick</PrimaryTitle>
-						<Text fz="lg">Chat with your personal Surreal assistant</Text>
+						<Text fz="lg">
+							Chat with Sidekick, your personal Surreal assistant designed to answer
+							your database questions.
+						</Text>
 
 						<Badge
 							mt="sm"
