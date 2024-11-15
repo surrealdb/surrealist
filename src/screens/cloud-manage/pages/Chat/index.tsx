@@ -19,7 +19,7 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { marked } from "marked";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -38,6 +38,7 @@ export function SupportPage() {
 
 	const isLight = useIsLight();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const scrollRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useInputState("");
 
 	const profile = useCloudStore((s) => s.profile);
@@ -58,6 +59,20 @@ export function SupportPage() {
 		sendMessage(input);
 		setInput("");
 	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		if (scrollRef.current) {
+			const { scrollHeight, clientHeight, scrollTop } = scrollRef.current;
+
+			if (scrollHeight - clientHeight - scrollTop < 50) {
+				scrollRef.current?.scrollTo({
+					top: scrollHeight,
+					behavior: "smooth",
+				});
+			}
+		}
+	}, [conversation]);
 
 	const canSend = input && !isResponding;
 
@@ -88,6 +103,7 @@ export function SupportPage() {
 				)}
 				<ScrollArea
 					pos="absolute"
+					viewportRef={scrollRef}
 					inset={0}
 				>
 					<Box
