@@ -1,11 +1,13 @@
 import {
+	ActionIcon,
 	Avatar,
 	Badge,
 	Box,
-	Button,
 	Center,
 	Flex,
 	Group,
+	Image,
+	List,
 	Loader,
 	Paper,
 	ScrollArea,
@@ -16,10 +18,8 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { useMutation } from "@tanstack/react-query";
 import { marked } from "marked";
-import { useRef } from "react";
-import { adapter } from "~/adapter";
+import { useEffect, useRef } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -27,75 +27,54 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudChatMessage } from "~/types";
 import { newId } from "~/util/helpers";
-import { iconCursor, iconSurreal } from "~/util/icons";
+import { iconCursor, iconSidekick } from "~/util/icons";
 
-const endpoint = "https://api-prod.scoutos.com/v1/apps/execute";
-const appId = "dddef4a4-3fd7-48d1-bbd3-60a0d597e2f2";
-const apiKey = import.meta.env.VITE_SCOUT_API_KEY;
-
-type Request = {
-	input: string;
-	conversation: CloudChatMessage[];
-};
+import sidekickImg from "~/assets/images/sidekick.webp";
+import { useCopilotMutation } from "./copilot";
 
 export function SupportPage() {
-	const { setChatThreadId, pushChatMessage } = useCloudStore.getState();
+	const { pushChatMessage } = useCloudStore.getState();
 
 	const isLight = useIsLight();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const scrollRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useInputState("");
 
 	const profile = useCloudStore((s) => s.profile);
-	const threadId = useCloudStore((s) => s.chatThreadId);
 	const conversation = useCloudStore((s) => s.chatConversation);
 	const lastResponse = useCloudStore((s) => s.chatLastResponse);
 
-	const { mutateAsync: sendRequest, isPending } = useMutation({
-		mutationKey: ["cloud", "support", "message"],
-		mutationFn: async (inputs: Request) => {
-			const res = await fetch(endpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${apiKey}`,
-				},
-				body: JSON.stringify({
-					id: appId,
-					thread_id: threadId,
-					inputs,
-				}),
-			}).then((res) => res.json());
+	const { sendMessage, isResponding } = useCopilotMutation();
 
-			const output = res?.outputs?.output?.output;
-			if (!output) return "Failed to send message";
-
-			adapter.log("Sidekick", `Received response: ${output}`);
-
-			setChatThreadId(res.thread_id);
-			return output;
-		},
-	});
-
-	const sendMessage = useStable(() => {
+	const submitMessage = useStable(() => {
 		pushChatMessage({
 			id: newId(),
 			content: input,
 			sender: "user",
+			loading: false,
 		});
 
-		sendRequest({ input, conversation }).then((res) => {
-			pushChatMessage({
-				id: newId(),
-				content: res,
-				sender: "bot",
-			});
-		});
-
-		setInput("");
 		inputRef.current?.focus();
+		sendMessage(input);
+		setInput("");
 	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		if (scrollRef.current) {
+			const { scrollHeight, clientHeight, scrollTop } = scrollRef.current;
+
+			if (scrollHeight - clientHeight - scrollTop < 50) {
+				scrollRef.current?.scrollTo({
+					top: scrollHeight,
+					behavior: "smooth",
+				});
+			}
+		}
+	}, [conversation]);
+
+	const canSend = input && !isResponding;
 
 	return (
 		<Stack
@@ -115,7 +94,7 @@ export function SupportPage() {
 						inset={0}
 					>
 						<Icon
-							path={iconSurreal}
+							path={iconSidekick}
 							size={10}
 							noStroke
 							color="slate.8"
@@ -124,15 +103,19 @@ export function SupportPage() {
 				)}
 				<ScrollArea
 					pos="absolute"
+					viewportRef={scrollRef}
 					inset={0}
 				>
 					<Box
 						mx="auto"
 						maw={900}
-						pb="xl"
+						pb={96}
 					>
 						<PrimaryTitle>Sidekick</PrimaryTitle>
-						<Text fz="lg">Chat with your personal Surreal assistant</Text>
+						<Text fz="lg">
+							Chat with Sidekick, your personal Surreal assistant designed to answer
+							your database questions.
+						</Text>
 
 						<Badge
 							mt="sm"
@@ -155,20 +138,8 @@ export function SupportPage() {
 									gap="md"
 									key={i}
 								>
-									{message.sender === "bot" ? (
-										<Avatar
-											radius="md"
-											variant="light"
-											color="surreal"
-											size={40}
-										>
-											<Icon
-												path={iconSurreal}
-												noStroke
-												c="surreal"
-												size="md"
-											/>
-										</Avatar>
+									{message.sender === "assistant" ? (
+										<SidekickAvatar />
 									) : (
 										<Avatar
 											radius="md"
@@ -177,33 +148,79 @@ export function SupportPage() {
 											src={profile.picture}
 										/>
 									)}
-									<Paper
-										px="lg"
-										py="sm"
-										maw="80%"
-										bg={
-											message.sender === "user"
-												? isLight
-													? "slate.1"
-													: "slate.6"
-												: isLight
-													? "white"
-													: "slate.8"
-										}
-									>
-										<TypographyStylesProvider
-											fz="lg"
-											fw={400}
-											c="bright"
-											// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-											dangerouslySetInnerHTML={{
-												__html: marked(message.content),
-											}}
-										/>
-										{message.sender === "bot" &&
-											message.id === lastResponse && (
+									{message.loading ? (
+										<Group>
+											<Loader
+												size={14}
+												color="slate.5"
+											/>
+											<Text
+												size="lg"
+												c="white"
+											>
+												Thinking...
+											</Text>
+										</Group>
+									) : (
+										<Paper
+											px="lg"
+											py="sm"
+											maw="80%"
+											bg={
+												message.sender === "user"
+													? isLight
+														? "slate.1"
+														: "slate.6"
+													: isLight
+														? "white"
+														: "slate.8"
+											}
+										>
+											<TypographyStylesProvider
+												fz="lg"
+												fw={400}
+												c="bright"
+												// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+												dangerouslySetInnerHTML={{
+													__html: marked(message.content),
+												}}
+											/>
+											{message.sources && (
+												<Paper
+													bg={isLight ? "slate.0" : "slate.7"}
+													mt="xl"
+													p="md"
+												>
+													<Text
+														fz="lg"
+														fw={500}
+													>
+														{message.sources.header}
+													</Text>
+													<List mt="sm">
+														{message.sources.links.map((item, i) => (
+															<List.Item
+																key={i}
+																icon={
+																	<Image
+																		src={item.img_url}
+																		radius={4}
+																		w={18}
+																		h={18}
+																	/>
+																}
+															>
+																<Link href={item.url}>
+																	{item.title}
+																</Link>
+															</List.Item>
+														))}
+													</List>
+												</Paper>
+											)}
+											{message.id === lastResponse && !isResponding && (
 												<Text
-													mt="xs"
+													mt="md"
 													fz="xs"
 													c="slate"
 												>
@@ -217,53 +234,21 @@ export function SupportPage() {
 													</Link>
 												</Text>
 											)}
-									</Paper>
+										</Paper>
+									)}
 								</Flex>
 							))}
-							{isPending && (
-								<Flex gap="md">
-									<Avatar
-										radius="md"
-										variant="light"
-										color="surreal"
-										size={40}
-									>
-										<Icon
-											path={iconSurreal}
-											noStroke
-											c="surreal"
-											size="md"
-										/>
-									</Avatar>
-									<Paper
-										px="lg"
-										py="sm"
-										radius="xl"
-										maw="80%"
-									>
-										<Group>
-											<Loader
-												size={14}
-												color="slate.5"
-											/>
-											<Text
-												size="lg"
-												c="white"
-											>
-												Responding...
-											</Text>
-										</Group>
-									</Paper>
-								</Flex>
-							)}
 						</Stack>
 					</Box>
 				</ScrollArea>
 			</Box>
 			<Form
-				onSubmit={sendMessage}
-				maw={950}
+				onSubmit={submitMessage}
+				maw={900}
 				w="100%"
+				style={{
+					transform: "translateY(-24px)",
+				}}
 			>
 				<Group>
 					<TextInput
@@ -276,34 +261,47 @@ export function SupportPage() {
 						value={input}
 						autoFocus
 						onChange={setInput}
-					/>
-					<Button
-						size="lg"
-						px="xl"
-						type="submit"
-						variant="gradient"
-						disabled={status === "pending" || !input}
-						style={{
-							border: "1px solid rgba(255, 255, 255, 0.3)",
-							backgroundOrigin: "border-box",
-						}}
 						rightSection={
-							<Icon
-								path={iconCursor}
-								size="md"
-							/>
+							<ActionIcon
+								size="lg"
+								type="submit"
+								variant="gradient"
+								disabled={!canSend}
+								style={{
+									opacity: canSend ? 1 : 0.5,
+									border: "1px solid rgba(255, 255, 255, 0.3)",
+									backgroundOrigin: "border-box",
+									filter: canSend ? undefined : "saturate(0%)",
+									transition: "all 0.1s",
+								}}
+							>
+								<Icon
+									path={iconCursor}
+									c="white"
+								/>
+							</ActionIcon>
 						}
-					>
-						Send
-					</Button>
+					/>
 				</Group>
 			</Form>
-			<Text
-				mb="md"
-				mt="sm"
-			>
-				You are chatting with an AI assistant, responses may be inaccurate.
-			</Text>
+			<Text mb="md">You are chatting with an AI assistant, responses may be inaccurate.</Text>
 		</Stack>
+	);
+}
+
+function SidekickAvatar() {
+	return (
+		<Avatar
+			radius="md"
+			variant="light"
+			color="surreal"
+			size={40}
+		>
+			<Image
+				src={sidekickImg}
+				w={28}
+				h={28}
+			/>
+		</Avatar>
 	);
 }

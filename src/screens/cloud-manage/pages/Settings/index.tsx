@@ -29,8 +29,8 @@ export function SettingsPage() {
 			mx="auto"
 		>
 			<Section
-				title="Organization details"
-				description="Manage your organization profile and information"
+				title="Settings"
+				description="Manage your organization details and information"
 				withMaxWidth
 			>
 				<Box>
@@ -42,6 +42,13 @@ export function SettingsPage() {
 						onChange={setName}
 						disabled
 					/>
+					<Text
+						c="red"
+						fz="xs"
+						mt="xs"
+					>
+						You can't change the name of your personal organization
+					</Text>
 				</Box>
 
 				{/* <Textarea

@@ -17,8 +17,18 @@ export function Section({
 	return (
 		<Box>
 			<PrimaryTitle>{title}</PrimaryTitle>
-			{description && <Text fz="lg">{description}</Text>}
-			<Stack py="xl" maw={withMaxWidth ? 500 : undefined}>
+			{description && (
+				<Text
+					fz="lg"
+					mt="xs"
+				>
+					{description}
+				</Text>
+			)}
+			<Stack
+				py="xl"
+				maw={withMaxWidth ? 500 : undefined}
+			>
 				{children}
 			</Stack>
 		</Box>

@@ -212,9 +212,6 @@ export function BillingPage() {
 		<Box
 			flex={1}
 			pos="relative"
-			w="100%"
-			maw={900}
-			mx="auto"
 		>
 			<ScrollArea
 				pos="absolute"
@@ -226,7 +223,11 @@ export function BillingPage() {
 					style: { paddingBottom: 75 },
 				}}
 			>
-				<Stack>
+				<Stack
+					gap={42}
+					mx="auto"
+					maw={900}
+				>
 					{organization?.plan && (
 						<Section
 							title="Your plan"

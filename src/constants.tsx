@@ -64,6 +64,7 @@ import {
 	iconProgressClock,
 	iconQuery,
 	iconServer,
+	iconSidekick,
 } from "./util/icons";
 
 import type { MantineColorScheme } from "@mantine/core";
@@ -306,7 +307,7 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 	chat: {
 		id: "chat",
 		name: "Sidekick",
-		icon: iconChat,
+		icon: iconSidekick,
 	},
 };
 

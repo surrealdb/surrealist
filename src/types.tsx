@@ -590,5 +590,14 @@ export interface CloudBillingCountry {
 export interface CloudChatMessage {
 	id: string;
 	content: string;
-	sender: "user" | "bot";
+	sender: "user" | "assistant";
+	loading: boolean;
+	sources?: {
+		header: string;
+		links: {
+			url: string;
+			title: string;
+			img_url: string;
+		}[];
+	};
 }
