@@ -108,6 +108,8 @@ jobs:
           VITE_SURREALIST_PREVIEW: "${{ github.event.release.prerelease }}"
           VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
           VITE_CLOUD_CALLBACK_URL: "${{ env.CALLBACK_URL }}"
+          VITE_SCOUT_COPILOT_ID: ${{ secrets.VITE_SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ secrets.VITE_SCOUT_WORKFLOW_ID }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
