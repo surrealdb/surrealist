@@ -17,10 +17,8 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { useMutation } from "@tanstack/react-query";
 import { marked } from "marked";
 import { useRef } from "react";
-import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -35,24 +33,24 @@ import sidekickImg from "~/assets/images/sidekick.webp";
 import { useCopilotMutation } from "./copilot";
 
 export function SupportPage() {
-	const { setChatThreadId, pushChatMessage } = useCloudStore.getState();
+	const { pushChatMessage } = useCloudStore.getState();
 
 	const isLight = useIsLight();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [input, setInput] = useInputState("");
 
 	const profile = useCloudStore((s) => s.profile);
-	const threadId = useCloudStore((s) => s.chatThreadId);
 	const conversation = useCloudStore((s) => s.chatConversation);
 	const lastResponse = useCloudStore((s) => s.chatLastResponse);
 
-	const { sendMessage, isResponding, isLoading } = useCopilotMutation();
+	const { sendMessage, isResponding } = useCopilotMutation();
 
 	const submitMessage = useStable(() => {
 		pushChatMessage({
 			id: newId(),
 			content: input,
 			sender: "user",
+			loading: false,
 		});
 
 		inputRef.current?.focus();
@@ -123,7 +121,7 @@ export function SupportPage() {
 									gap="md"
 									key={i}
 								>
-									{message.sender === "bot" ? (
+									{message.sender === "assistant" ? (
 										<SidekickAvatar />
 									) : (
 										<Avatar
@@ -133,63 +131,61 @@ export function SupportPage() {
 											src={profile.picture}
 										/>
 									)}
-									<Paper
-										px="lg"
-										py="sm"
-										maw="80%"
-										bg={
-											message.sender === "user"
-												? isLight
-													? "slate.1"
-													: "slate.6"
-												: isLight
-													? "white"
-													: "slate.8"
-										}
-									>
-										{message.id === lastResponse && isLoading ? (
-											<Group>
-												<Loader
-													size={14}
-													color="slate.5"
-												/>
+									{message.loading ? (
+										<Group>
+											<Loader
+												size={14}
+												color="slate.5"
+											/>
+											<Text
+												size="lg"
+												c="white"
+											>
+												Thinking...
+											</Text>
+										</Group>
+									) : (
+										<Paper
+											px="lg"
+											py="sm"
+											maw="80%"
+											bg={
+												message.sender === "user"
+													? isLight
+														? "slate.1"
+														: "slate.6"
+													: isLight
+														? "white"
+														: "slate.8"
+											}
+										>
+											<TypographyStylesProvider
+												fz="lg"
+												fw={400}
+												c="bright"
+												// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+												dangerouslySetInnerHTML={{
+													__html: marked(message.content),
+												}}
+											/>
+											{message.id === lastResponse && !isResponding && (
 												<Text
-													size="lg"
-													c="white"
+													mt="md"
+													fz="xs"
+													c="slate"
 												>
-													Thinking...
-												</Text>
-											</Group>
-										) : (
-											<>
-												<TypographyStylesProvider
-													fz="lg"
-													fw={400}
-													c="bright"
-													// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-													dangerouslySetInnerHTML={{
-														__html: marked(message.content),
-													}}
-												/>
-												{message.id === lastResponse && !isResponding && (
-													<Text
-														mt="md"
+													This response may be incorrect. Help us improve
+													the docs by{" "}
+													<Link
 														fz="xs"
-														c="slate"
+														href="https://github.com/surrealdb/docs.surrealdb.com"
 													>
-														This response may be incorrect. Help us
-														improve the docs by{" "}
-														<Link
-															fz="xs"
-															href="https://github.com/surrealdb/docs.surrealdb.com"
-														>
-															clicking here
-														</Link>
-													</Text>
-												)}
-											</>
-										)}
-									</Paper>
+														clicking here
+													</Link>
+												</Text>
+											)}
+										</Paper>
+									)}
 								</Flex>
 							))}
 						</Stack>

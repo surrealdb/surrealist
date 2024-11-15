@@ -1,32 +1,18 @@
 import { useInterval } from "@mantine/hooks";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { set } from "date-fns";
-import { omit } from "radash";
 import { useEffect, useRef, useState } from "react";
-import { is } from "valibot";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudChatMessage } from "~/types";
 import { fastParseJwt, newId, showError } from "~/util/helpers";
 
 const WORKFLOW_ID = import.meta.env.VITE_SCOUT_WORKFLOW_ID;
 const COPILOT_ID = import.meta.env.VITE_SCOUT_COPILOT_ID;
 const BASE_URL = "https://api-prod.scoutos.com";
-// const ENDPOINT = `https://api-prod.scoutos.com/v2/workflows/${APP_ID}/execute`;
-
-type Inputs = {
-	input: string;
-	conversation: CloudChatMessage[];
-};
 
 export function useCopilotMutation() {
+	const { pushChatMessage, updateChatMessage, completeChatResponse } = useCloudStore.getState();
+
 	const [isResponding, setIsResponding] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-
-	const { /*setChatThreadId, */ pushChatMessage, appendChatMessage } = useCloudStore.getState();
-
-	//const threadId = useCloudStore((s) => s.chatThreadId);
 	const token = useCopilotToken();
 
 	const headers = {
@@ -78,19 +64,26 @@ export function useCopilotMutation() {
 			const msgId = newId();
 			const reader = res.body.getReader();
 
-			setIsLoading(true);
 			pushChatMessage({
 				id: msgId,
 				content: "",
 				sender: "assistant",
+				loading: true,
 			});
 
 			await readResponseStream(reader, (event, value) => {
+				console.debug(`Copilot message (${event}):`, value);
+
 				switch (event) {
 					// Listen for workflow failures
 					case "workflow_run_failed": {
 						console.error("Workflow run failed:", value);
-						setIsLoading(false);
+
+						updateChatMessage(msgId, (msg) => {
+							msg.content = "I'm sorry, I encountered an error";
+							msg.loading = false;
+						});
+
 						showError({
 							title: "Chat error",
 							subtitle: "Sidekick encountered an unexpected error",
@@ -98,14 +91,30 @@ export function useCopilotMutation() {
 						break;
 					}
 
+					// Listen for workflow completion
+					case "workflow_run_completed": {
+						completeChatResponse(msgId);
+						break;
+					}
+
 					// Listen for message updates
 					case "block_state_updated": {
-						if (value.data.block_type !== "com.scoutos.copilot.message") {
+						const { block_id, update_type, update_data } = value.data;
+
+						if (block_id !== "copilot_message_i9qyel") {
 							break;
 						}
 
-						appendChatMessage(msgId, value.data.update_data.output);
-						setIsLoading(false);
+						updateChatMessage(msgId, (msg) => {
+							msg.loading = false;
+
+							if (update_type === "partial") {
+								msg.content = msg.content + update_data.output;
+							} else if (update_type === "complete") {
+								msg.content = update_data.output;
+							}
+						});
+
 						break;
 					}
 				}
@@ -115,7 +124,7 @@ export function useCopilotMutation() {
 		}
 	});
 
-	return { sendMessage, isResponding, isLoading };
+	return { sendMessage, isResponding };
 }
 
 export function useCopilotToken() {
