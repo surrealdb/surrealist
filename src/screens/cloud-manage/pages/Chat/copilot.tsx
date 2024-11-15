@@ -1,13 +1,14 @@
 import { useInterval } from "@mantine/hooks";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { set } from "date-fns";
+import { omit } from "radash";
 import { useEffect, useRef, useState } from "react";
 import { is } from "valibot";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudChatMessage } from "~/types";
-import { fastParseJwt, newId } from "~/util/helpers";
+import { fastParseJwt, newId, showError } from "~/util/helpers";
 
 const WORKFLOW_ID = import.meta.env.VITE_SCOUT_WORKFLOW_ID;
 const COPILOT_ID = import.meta.env.VITE_SCOUT_COPILOT_ID;
@@ -23,9 +24,9 @@ export function useCopilotMutation() {
 	const [isResponding, setIsResponding] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const { setChatThreadId, pushChatMessage, appendChatMessage } = useCloudStore.getState();
+	const { /*setChatThreadId, */ pushChatMessage, appendChatMessage } = useCloudStore.getState();
 
-	const threadId = useCloudStore((s) => s.chatThreadId);
+	//const threadId = useCloudStore((s) => s.chatThreadId);
 	const token = useCopilotToken();
 
 	const headers = {
@@ -34,11 +35,11 @@ export function useCopilotMutation() {
 		Origin: window.location.origin,
 	};
 
-	const controller = useRef(new AbortController());
+	const controller = useRef<AbortController>();
 
 	useEffect(() => {
 		return () => {
-			controller.current.abort();
+			controller.current?.abort();
 		};
 	}, []);
 
@@ -46,16 +47,25 @@ export function useCopilotMutation() {
 		setIsResponding(true);
 
 		try {
+			const { chatConversation } = useCloudStore.getState();
+			const history = chatConversation.slice(-3).map((msg) => ({
+				content: msg.content,
+				role: msg.sender,
+			}));
+
+			controller.current = new AbortController();
+
 			const res = await fetch(
 				`${BASE_URL}/v2/copilot/${WORKFLOW_ID}/cook?copilot_id=${COPILOT_ID}`,
 				{
-					signal: controller.current.signal,
+					signal: controller.current?.signal,
 					method: "POST",
 					headers,
 					body: JSON.stringify({
 						streaming: true,
 						inputs: {
 							user_message: message,
+							chat_history: history,
 						},
 					}),
 				},
@@ -72,23 +82,33 @@ export function useCopilotMutation() {
 			pushChatMessage({
 				id: msgId,
 				content: "",
-				sender: "bot",
+				sender: "assistant",
 			});
 
 			await readResponseStream(reader, (event, value) => {
-				// We are only interested in messages
-				if (value.data.block_type !== "com.scoutos.copilot.message") {
-					return;
-				}
+				switch (event) {
+					// Listen for workflow failures
+					case "workflow_run_failed": {
+						console.error("Workflow run failed:", value);
+						setIsLoading(false);
+						showError({
+							title: "Chat error",
+							subtitle: "Sidekick encountered an unexpected error",
+						});
+						break;
+					}
 
-				// Only want updates
-				if (event !== "block_state_updated") {
-					return;
-				}
+					// Listen for message updates
+					case "block_state_updated": {
+						if (value.data.block_type !== "com.scoutos.copilot.message") {
+							break;
+						}
 
-				// Append the text to the chat message
-				appendChatMessage(msgId, value.data.update_data.output);
-				setIsLoading(false);
+						appendChatMessage(msgId, value.data.update_data.output);
+						setIsLoading(false);
+						break;
+					}
+				}
 			});
 		} finally {
 			setIsResponding(false);

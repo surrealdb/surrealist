@@ -590,5 +590,5 @@ export interface CloudBillingCountry {
 export interface CloudChatMessage {
 	id: string;
 	content: string;
-	sender: "user" | "bot";
+	sender: "user" | "assistant";
 }

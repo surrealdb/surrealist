@@ -144,7 +144,7 @@ export const useCloudStore = create<CloudStore>((set) => ({
 		set((state) =>
 			shake({
 				chatConversation: [...state.chatConversation, message],
-				chatLastResponse: message.sender === "bot" ? message.id : undefined,
+				chatLastResponse: message.sender === "assistant" ? message.id : undefined,
 			}),
 		),
 
