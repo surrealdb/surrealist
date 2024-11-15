@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 20 ]
+        node-version: [20]
     steps:
       - name: Information
         run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for web"
@@ -59,6 +59,8 @@ jobs:
           VITE_SURREALIST_PREVIEW: "true"
           VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
           VITE_CLOUD_CALLBACK_URL: "https://dev.surrealist.app/cloud/callback"
+          VITE_SCOUT_COPILOT_ID: ${{ secrets.VITE_SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ secrets.VITE_SCOUT_WORKFLOW_ID }}
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
