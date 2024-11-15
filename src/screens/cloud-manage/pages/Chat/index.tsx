@@ -1,37 +1,29 @@
 import {
 	ActionIcon,
-	Avatar,
 	Badge,
 	Box,
 	Center,
-	Flex,
 	Group,
-	Image,
-	List,
-	Loader,
-	Paper,
 	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
-	TypographyStylesProvider,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { marked } from "marked";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { newId } from "~/util/helpers";
 import { iconCursor, iconSidekick } from "~/util/icons";
-
-import sidekickImg from "~/assets/images/sidekick.webp";
 import { useCopilotMutation } from "./copilot";
+import { ChatMessage } from "./message";
+
+const ChatMessageLazy = memo(ChatMessage);
 
 export function SupportPage() {
 	const { pushChatMessage } = useCloudStore.getState();
@@ -132,111 +124,14 @@ export function SupportPage() {
 							gap={42}
 						>
 							{conversation.map((message, i) => (
-								<Flex
-									justify={message.sender === "user" ? "end" : "start"}
-									direction={message.sender === "user" ? "row-reverse" : "row"}
-									gap="md"
+								<ChatMessageLazy
+									message={message}
+									profile={profile}
+									lastResponse={lastResponse}
+									isResponding={isResponding}
+									isLight={isLight}
 									key={i}
-								>
-									{message.sender === "assistant" ? (
-										<SidekickAvatar />
-									) : (
-										<Avatar
-											radius="md"
-											size={40}
-											name={profile.name}
-											src={profile.picture}
-										/>
-									)}
-									{message.loading ? (
-										<Group>
-											<Loader
-												size={14}
-												color="slate.5"
-											/>
-											<Text
-												size="lg"
-												c="white"
-											>
-												Thinking...
-											</Text>
-										</Group>
-									) : (
-										<Paper
-											px="lg"
-											py="sm"
-											maw="80%"
-											bg={
-												message.sender === "user"
-													? isLight
-														? "slate.1"
-														: "slate.6"
-													: isLight
-														? "white"
-														: "slate.8"
-											}
-										>
-											<TypographyStylesProvider
-												fz="lg"
-												fw={400}
-												c="bright"
-												// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-												dangerouslySetInnerHTML={{
-													__html: marked(message.content),
-												}}
-											/>
-											{message.sources && (
-												<Paper
-													bg={isLight ? "slate.0" : "slate.7"}
-													mt="xl"
-													p="md"
-												>
-													<Text
-														fz="lg"
-														fw={500}
-													>
-														{message.sources.header}
-													</Text>
-													<List mt="sm">
-														{message.sources.links.map((item, i) => (
-															<List.Item
-																key={i}
-																icon={
-																	<Image
-																		src={item.img_url}
-																		radius={4}
-																		w={18}
-																		h={18}
-																	/>
-																}
-															>
-																<Link href={item.url}>
-																	{item.title}
-																</Link>
-															</List.Item>
-														))}
-													</List>
-												</Paper>
-											)}
-											{message.id === lastResponse && !isResponding && (
-												<Text
-													mt="md"
-													fz="xs"
-													c="slate"
-												>
-													This response may be incorrect. Help us improve
-													the docs by{" "}
-													<Link
-														fz="xs"
-														href="https://github.com/surrealdb/docs.surrealdb.com"
-													>
-														clicking here
-													</Link>
-												</Text>
-											)}
-										</Paper>
-									)}
-								</Flex>
+								/>
 							))}
 						</Stack>
 					</Box>
@@ -286,22 +181,5 @@ export function SupportPage() {
 			</Form>
 			<Text mb="md">You are chatting with an AI assistant, responses may be inaccurate.</Text>
 		</Stack>
-	);
-}
-
-function SidekickAvatar() {
-	return (
-		<Avatar
-			radius="md"
-			variant="light"
-			color="surreal"
-			size={40}
-		>
-			<Image
-				src={sidekickImg}
-				w={28}
-				h={28}
-			/>
-		</Avatar>
 	);
 }
