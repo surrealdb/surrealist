@@ -28,20 +28,11 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudChatMessage } from "~/types";
 import { newId } from "~/util/helpers";
 import { iconCursor, iconSidekick } from "~/util/icons";
 
 import sidekickImg from "~/assets/images/sidekick.webp";
-
-const endpoint = "https://api-prod.scoutos.com/v1/apps/execute";
-const appId = "dddef4a4-3fd7-48d1-bbd3-60a0d597e2f2";
-const apiKey = import.meta.env.VITE_SCOUT_API_KEY;
-
-type Request = {
-	input: string;
-	conversation: CloudChatMessage[];
-};
+import { useCopilotMutation } from "./copilot";
 
 export function SupportPage() {
 	const { setChatThreadId, pushChatMessage } = useCloudStore.getState();
@@ -55,54 +46,21 @@ export function SupportPage() {
 	const conversation = useCloudStore((s) => s.chatConversation);
 	const lastResponse = useCloudStore((s) => s.chatLastResponse);
 
-	const { mutateAsync, isPending } = useMutation({
-		mutationKey: ["cloud", "support", "message"],
-		mutationFn: async (inputs: Request) => {
-			const res = await fetch(endpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${apiKey}`,
-				},
-				body: JSON.stringify({
-					id: appId,
-					thread_id: threadId,
-					inputs,
-				}),
-			}).then((res) => res.json());
+	const { sendMessage, isResponding, isLoading } = useCopilotMutation();
 
-			const output = res?.outputs?.output?.output;
-			if (!output) return "Failed to send message";
-
-			adapter.log("Sidekick", `Received response: ${output}`);
-
-			setChatThreadId(res.thread_id);
-			return output;
-		},
-	});
-
-	// const { mutateAsync, isPending } = useCopilotMutation();
-
-	const sendMessage = useStable(() => {
+	const submitMessage = useStable(() => {
 		pushChatMessage({
 			id: newId(),
 			content: input,
 			sender: "user",
 		});
 
-		mutateAsync({ input, conversation }).then((res) => {
-			pushChatMessage({
-				id: newId(),
-				content: res,
-				sender: "bot",
-			});
-		});
-
-		setInput("");
 		inputRef.current?.focus();
+		sendMessage(input);
+		setInput("");
 	});
 
-	const canSend = input && !isPending;
+	const canSend = input && !isResponding;
 
 	return (
 		<Stack
@@ -189,65 +147,57 @@ export function SupportPage() {
 													: "slate.8"
 										}
 									>
-										<TypographyStylesProvider
-											fz="lg"
-											fw={400}
-											c="bright"
-											// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-											dangerouslySetInnerHTML={{
-												__html: marked(message.content),
-											}}
-										/>
-										{message.sender === "bot" &&
-											message.id === lastResponse && (
+										{message.id === lastResponse && isLoading ? (
+											<Group>
+												<Loader
+													size={14}
+													color="slate.5"
+												/>
 												<Text
-													mt="xs"
-													fz="xs"
-													c="slate"
+													size="lg"
+													c="white"
 												>
-													This response may be incorrect. Help us improve
-													the docs by{" "}
-													<Link
-														fz="xs"
-														href="https://github.com/surrealdb/docs.surrealdb.com"
-													>
-														clicking here
-													</Link>
+													Thinking...
 												</Text>
-											)}
+											</Group>
+										) : (
+											<>
+												<TypographyStylesProvider
+													fz="lg"
+													fw={400}
+													c="bright"
+													// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+													dangerouslySetInnerHTML={{
+														__html: marked(message.content),
+													}}
+												/>
+												{message.id === lastResponse && !isResponding && (
+													<Text
+														mt="md"
+														fz="xs"
+														c="slate"
+													>
+														This response may be incorrect. Help us
+														improve the docs by{" "}
+														<Link
+															fz="xs"
+															href="https://github.com/surrealdb/docs.surrealdb.com"
+														>
+															clicking here
+														</Link>
+													</Text>
+												)}
+											</>
+										)}
 									</Paper>
 								</Flex>
 							))}
-							{isPending && (
-								<Flex gap="md">
-									<SidekickAvatar />
-									<Paper
-										px="lg"
-										py="sm"
-										radius="xl"
-										maw="80%"
-									>
-										<Group>
-											<Loader
-												size={14}
-												color="slate.5"
-											/>
-											<Text
-												size="lg"
-												c="white"
-											>
-												Responding...
-											</Text>
-										</Group>
-									</Paper>
-								</Flex>
-							)}
 						</Stack>
 					</Box>
 				</ScrollArea>
 			</Box>
 			<Form
-				onSubmit={sendMessage}
+				onSubmit={submitMessage}
 				maw={900}
 				w="100%"
 				style={{

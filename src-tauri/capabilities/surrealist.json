@@ -52,7 +52,8 @@
 				"https://api.cloud.surrealdb.com/api/*",
 				"https://auth.surrealdb.com/*",
 				"https://checkout.stripe.com/*",
-				"https://lago-production.s3.amazonaws.com/*"
+				"https://lago-production.s3.amazonaws.com/*",
+				"https://api-prod.scoutos.com/*"
 			]
 		}
 	]

@@ -9,9 +9,9 @@ import { Box, type BoxProps, Image, Text, UnstyledButton } from "@mantine/core";
 import { Group, Paper, Stack } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useThemeImage } from "~/hooks/theme";
 import { iconChevronRight } from "~/util/icons";
+import { Section } from "../../components/Section";
 
 interface SupportTileProps extends BoxProps {
 	image: string;
@@ -65,33 +65,31 @@ export function SupportPage() {
 	});
 
 	return (
-		<Stack
-			flex={1}
+		<Box
 			w="100%"
 			maw={900}
 			mx="auto"
 		>
-			<Box>
-				<PrimaryTitle>Looking for help?</PrimaryTitle>
-				<Text
-					mb="xl"
-					fz="lg"
-				>
-					Running into issues with your cloud account, billing, or instances? We're here
-					to help! Reach out to us through one of the following community support channels
-					for help, or to get in touch with our team.
-				</Text>
-			</Box>
-			<SupportTile
-				image={documentationUrl}
-				title="Cloud Documentation"
-				onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
-			/>
-			<SupportTile
-				image={communtyUrl}
-				title="Community Forums"
-				onClick={() => adapter.openUrl("https://surrealdb.com/community/forums")}
-			/>
-		</Stack>
+			<Section
+				title="Looking for help?"
+				description="Running into issues with your cloud account, billing, or instances? We're here to help! Reach out to us through one of the following community support channels for help, or to get in touch with our team."
+			>
+				<SupportTile
+					image={documentationUrl}
+					title="Cloud Documentation"
+					onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
+				/>
+				<SupportTile
+					image={communtyUrl}
+					title="Community Forums"
+					onClick={() => adapter.openUrl("https://surrealdb.com/community/forums")}
+				/>
+				<SupportTile
+					image={communtyUrl}
+					title="Support Email"
+					onClick={() => adapter.openUrl("mailto:support@surrealdb.com")}
+				/>
+			</Section>
+		</Box>
 	);
 }

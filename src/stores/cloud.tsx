@@ -61,6 +61,7 @@ export type CloudStore = {
 	clearSession: () => void;
 	setChatThreadId: (threadId: string) => void;
 	pushChatMessage: (message: CloudChatMessage) => void;
+	appendChatMessage: (id: string, value: string) => void;
 	clearChatSession: () => void;
 };
 
@@ -146,6 +147,24 @@ export const useCloudStore = create<CloudStore>((set) => ({
 				chatLastResponse: message.sender === "bot" ? message.id : undefined,
 			}),
 		),
+
+	appendChatMessage: (id, value) =>
+		set((state) => {
+			const msgIndex = state.chatConversation.findLastIndex((m) => m.id === id);
+
+			if (msgIndex < 0) {
+				return {};
+			}
+
+			const current = state.chatConversation[msgIndex];
+
+			return {
+				chatConversation: state.chatConversation.with(msgIndex, {
+					...current,
+					content: current.content + value,
+				}),
+			};
+		}),
 
 	clearChatSession: () =>
 		set({
