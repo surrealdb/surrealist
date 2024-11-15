@@ -7,6 +7,7 @@ import {
 	Flex,
 	Group,
 	Image,
+	List,
 	Loader,
 	Paper,
 	ScrollArea,
@@ -92,7 +93,7 @@ export function SupportPage() {
 					<Box
 						mx="auto"
 						maw={900}
-						pb={64}
+						pb={96}
 					>
 						<PrimaryTitle>Sidekick</PrimaryTitle>
 						<Text fz="lg">
@@ -168,6 +169,39 @@ export function SupportPage() {
 													__html: marked(message.content),
 												}}
 											/>
+											{message.sources && (
+												<Paper
+													bg={isLight ? "slate.0" : "slate.7"}
+													mt="xl"
+													p="md"
+												>
+													<Text
+														fz="lg"
+														fw={500}
+													>
+														{message.sources.header}
+													</Text>
+													<List mt="sm">
+														{message.sources.links.map((item, i) => (
+															<List.Item
+																key={i}
+																icon={
+																	<Image
+																		src={item.img_url}
+																		radius={4}
+																		w={18}
+																		h={18}
+																	/>
+																}
+															>
+																<Link href={item.url}>
+																	{item.title}
+																</Link>
+															</List.Item>
+														))}
+													</List>
+												</Paper>
+											)}
 											{message.id === lastResponse && !isResponding && (
 												<Text
 													mt="md"

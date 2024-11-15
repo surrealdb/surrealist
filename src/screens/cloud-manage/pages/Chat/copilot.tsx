@@ -9,19 +9,15 @@ const WORKFLOW_ID = import.meta.env.VITE_SCOUT_WORKFLOW_ID;
 const COPILOT_ID = import.meta.env.VITE_SCOUT_COPILOT_ID;
 const BASE_URL = "https://api-prod.scoutos.com";
 
+/**
+ * Send a message to the Copilot assistant and receive a response
+ */
 export function useCopilotMutation() {
 	const { pushChatMessage, updateChatMessage, completeChatResponse } = useCloudStore.getState();
 
 	const [isResponding, setIsResponding] = useState(false);
-	const token = useCopilotToken();
-
-	const headers = {
-		"Content-Type": "application/json",
-		Authorization: `Bearer ${token}`,
-		Origin: window.location.origin,
-	};
-
 	const controller = useRef<AbortController>();
+	const token = useCopilotToken();
 
 	useEffect(() => {
 		return () => {
@@ -46,7 +42,11 @@ export function useCopilotMutation() {
 				{
 					signal: controller.current?.signal,
 					method: "POST",
-					headers,
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+						Origin: window.location.origin,
+					},
 					body: JSON.stringify({
 						streaming: true,
 						inputs: {
@@ -97,23 +97,35 @@ export function useCopilotMutation() {
 						break;
 					}
 
-					// Listen for message updates
+					// Listen for status updates
 					case "block_state_updated": {
 						const { block_id, update_type, update_data } = value.data;
 
-						if (block_id !== "copilot_message_i9qyel") {
-							break;
-						}
+						switch (block_id) {
+							// Incoming response
+							case "copilot_message_i9qyel": {
+								updateChatMessage(msgId, (msg) => {
+									msg.loading = false;
 
-						updateChatMessage(msgId, (msg) => {
-							msg.loading = false;
-
-							if (update_type === "partial") {
-								msg.content = msg.content + update_data.output;
-							} else if (update_type === "complete") {
-								msg.content = update_data.output;
+									if (update_type === "partial") {
+										msg.content = msg.content + update_data.output;
+									} else if (update_type === "complete") {
+										msg.content = update_data.output;
+									}
+								});
+								break;
 							}
-						});
+
+							// Sources list
+							case "list_of_links_dwk1vf": {
+								if (update_type === "complete") {
+									updateChatMessage(msgId, (msg) => {
+										msg.sources = update_data.output;
+									});
+								}
+								break;
+							}
+						}
 
 						break;
 					}
@@ -127,6 +139,9 @@ export function useCopilotMutation() {
 	return { sendMessage, isResponding };
 }
 
+/**
+ * Refresh the Copilot token
+ */
 export function useCopilotToken() {
 	const [token, setToken] = useState("");
 	const [refreshing, setRefreshing] = useState(false);

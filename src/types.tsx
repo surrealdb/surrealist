@@ -592,4 +592,12 @@ export interface CloudChatMessage {
 	content: string;
 	sender: "user" | "assistant";
 	loading: boolean;
+	sources?: {
+		header: string;
+		links: {
+			url: string;
+			title: string;
+			img_url: string;
+		}[];
+	};
 }
