@@ -9,8 +9,8 @@ import type {
 } from "~/types";
 
 import { create } from "zustand";
-import { newId } from "~/util/helpers";
 import { immer } from "zustand/middleware/immer";
+import { newId } from "~/util/helpers";
 
 interface CloudValues {
 	profile: CloudProfile;
