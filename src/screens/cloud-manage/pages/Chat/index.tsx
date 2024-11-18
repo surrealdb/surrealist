@@ -9,8 +9,8 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
-	Textarea,
 	TextInput,
+	Textarea,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
