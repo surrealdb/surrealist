@@ -5,3 +5,9 @@
 		padding-top: 12px;
 	}
 }
+
+.message {
+	li {
+		margin-bottom: var(--mantine-spacing-lg);
+	}
+}
