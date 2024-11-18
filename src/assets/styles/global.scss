@@ -9,8 +9,8 @@ body,
 
 body {
 	font-weight: 500;
-	user-select: none;
-	-webkit-user-select: none;
+	user-select: text;
+	-webkit-user-select: text;
 }
 
 input::-ms-reveal,
