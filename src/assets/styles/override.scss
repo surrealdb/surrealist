@@ -138,7 +138,7 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Input-input {
-	transition: all .2s;
+	// transition: all .2s;
 	background-color: var(--mantine-color-body);
 
 	&:not(:focus-within):not([data-variant="unstyled"]) {

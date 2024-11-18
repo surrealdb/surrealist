@@ -1,0 +1,13 @@
+.input {
+	flex-grow: 1;
+
+	textarea {
+		padding-top: 12px;
+	}
+}
+
+.message {
+	li {
+		margin-bottom: var(--mantine-spacing-lg);
+	}
+}

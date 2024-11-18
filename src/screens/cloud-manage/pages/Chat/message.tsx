@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	Avatar,
 	Flex,
@@ -79,6 +81,7 @@ export function ChatMessage({
 						fz="lg"
 						fw={400}
 						c="bright"
+						className={classes.message}
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown response
 						dangerouslySetInnerHTML={{
 							__html: marked(message.content),
