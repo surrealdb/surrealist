@@ -25,6 +25,7 @@ import {
 	iconPlay,
 	iconPlus,
 	iconRefresh,
+	iconRelation,
 	iconReset,
 	iconRoutes,
 	iconSandbox,
@@ -58,6 +59,7 @@ import type { IntentPayload, IntentType } from "~/util/intents";
 import { type PreferenceController, computePreferences } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
+import { showNodeStatus } from "~/modals/node-status";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
@@ -585,6 +587,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Open mini generator",
 						icon: iconWrench,
 						aliases: ["mini"],
+						binding: true,
 						action: intent("open-embedder"),
 					},
 					{
@@ -614,6 +617,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: launch(() => {
 							setActiveScreen("database");
 						}),
+					},
+					{
+						id: "open-node-status",
+						name: "Open node status",
+						icon: iconRelation,
+						action: launch(showNodeStatus),
 					},
 					...optional(
 						isDesktop && {
