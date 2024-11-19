@@ -89,12 +89,7 @@ export function ProvisionPage() {
 	}, [instance, instanceTypes]);
 
 	const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
-	const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
-
-	// Is the current instance is free
-	const isFree = useMemo(() => {
-		return instanceInfo?.price_hour === 0;
-	}, [instanceInfo]);
+	// const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
 
 	// Whether the user can continue to the next step
 	const canContinue = useMemo(() => {
@@ -116,6 +111,7 @@ export function ProvisionPage() {
 	// Provision the instance
 	const provisionInstance = useStable(async () => {
 		try {
+			const computeUnits = instanceInfo?.price_hour === 0 ? undefined : units;
 			const result = await fetchAPI<CloudInstance>("/instances", {
 				method: "POST",
 				body: JSON.stringify({
@@ -125,7 +121,7 @@ export function ProvisionPage() {
 					specs: {
 						slug: instance,
 						version: version,
-						compute_units: isFree ? undefined : units,
+						compute_units: computeUnits,
 					},
 				}),
 			});
@@ -163,9 +159,9 @@ export function ProvisionPage() {
 	});
 
 	const willCreate = step === 4;
-	const hourlyPriceCents = isFree ? 0 : instanceInfo?.price_hour ?? 0;
+	const hourlyPriceCents = instanceInfo?.price_hour ?? 0;
 	const estimatedCost = (hourlyPriceCents / 100) * units;
-	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
+	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	useLayoutEffect(() => {
 		if (!isAuthed) {

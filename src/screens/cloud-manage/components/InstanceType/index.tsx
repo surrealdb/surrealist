@@ -1,9 +1,9 @@
-import { Box, Group, Stack, Table, Text } from "@mantine/core";
+import { Alert, Box, Group, Stack, Table, Text } from "@mantine/core";
 import { capitalize } from "radash";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import type { CloudInstanceType } from "~/types";
-import { iconHammer, iconMemory, iconQuery } from "~/util/icons";
+import { iconHammer, iconMemory, iconQuery, iconWarning } from "~/util/icons";
 import { Tile } from "../Tile";
 
 const CATEGORIES: Record<string, { name: string; icon: string }> = {
@@ -37,7 +37,7 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 		>
 			<Group
 				wrap="nowrap"
-				align="stretch"
+				align="center"
 			>
 				<Stack
 					flex={1}
@@ -52,18 +52,8 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 							{type.slug}
 						</Text>
 					</Group>
-					{type.enabled === false ? (
-						<Text c="red">Not available in your current plan</Text>
-					) : (
-						isLimited && (
-							<Text c="orange">
-								You have reached the maximum amount of instances of this type
-							</Text>
-						)
-					)}
-					<Spacer />
 					{category && (
-						<Text>
+						<Text mt="xs">
 							<Icon
 								path={category.icon}
 								left
@@ -71,6 +61,22 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 							/>
 							{capitalize(category.name)}
 						</Text>
+					)}
+					{type.enabled === false ? (
+						<Text c="red">Not available in your current plan</Text>
+					) : (
+						isLimited && (
+							<Group
+								gap="xs"
+								mt="lg"
+								c="orange"
+							>
+								<Icon path={iconWarning} />
+								<Text size="sm">
+									Maximum amount of instances of this type in use
+								</Text>
+							</Group>
+						)
 					)}
 				</Stack>
 				<Box>
