@@ -22,7 +22,7 @@ import { Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
-import { surrealql } from "@surrealdb/codemirror";
+import { surrealql, surrealqlVersionLinter } from "@surrealdb/codemirror";
 import { trim } from "radash";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
@@ -40,6 +40,7 @@ import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
+import { useDatabaseStore } from "~/stores/database";
 
 export interface QueryPaneProps {
 	activeTab: QueryTab;
@@ -71,6 +72,7 @@ export function QueryPane({
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { inspect } = useInspector();
 	const connection = useActiveConnection();
+	const version = useDatabaseStore((s) => s.version);
 
 	const buffer = useQueryStore((s) => s.queryBuffer);
 
@@ -257,6 +259,7 @@ export function QueryPane({
 				lineNumbers={lineNumbers}
 				extensions={[
 					surrealql(),
+					surrealqlVersionLinter(version),
 					surqlLinting(),
 					surqlRecordLinks(inspect),
 					surqlTableCompletion(),

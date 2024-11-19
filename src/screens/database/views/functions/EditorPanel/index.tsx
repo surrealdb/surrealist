@@ -33,7 +33,7 @@ import {
 
 import { lineNumbers } from "@codemirror/view";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
-import { surrealql } from "@surrealdb/codemirror";
+import { surrealql, surrealqlVersionLinter } from "@surrealdb/codemirror";
 import { useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
@@ -79,7 +79,7 @@ export function EditorPanel({
 
 	const [hasLineNumbers] = useSetting("appearance", "functionLineNumbers");
 
-	const [hasReturns] = useMinimumVersion(SDB_2_0_0);
+	const [hasReturns, version] = useMinimumVersion(SDB_2_0_0);
 	const [argToFocus, setArgtoFocus] = useState(-1);
 
 	const addArgument = useStable(() => {
@@ -183,6 +183,7 @@ export function EditorPanel({
 							}
 							extensions={[
 								surrealql(),
+								surrealqlVersionLinter(version),
 								surqlLinting(),
 								surqlVariableCompletion(resolveVariables),
 								surqlCustomFunctionCompletion(),
