@@ -31,9 +31,8 @@ import {
 	surqlVariableCompletion,
 } from "~/editor";
 
-import { lineNumbers } from "@codemirror/view";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
-import { surrealql, surrealqlVersionLinter } from "@surrealdb/codemirror";
+import { surrealql } from "@surrealdb/codemirror";
 import { useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
@@ -56,6 +55,8 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
+import { useDatabaseVersionLinter } from "~/hooks/editor";
+import type { EditorView } from "@codemirror/view";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -79,7 +80,9 @@ export function EditorPanel({
 
 	const [hasLineNumbers] = useSetting("appearance", "functionLineNumbers");
 
-	const [hasReturns, version] = useMinimumVersion(SDB_2_0_0);
+	const [editor, setEditor] = useState<EditorView | null>(null);
+	const surqlVersion = useDatabaseVersionLinter(editor);
+	const [hasReturns] = useMinimumVersion(SDB_2_0_0);
 	const [argToFocus, setArgtoFocus] = useState(-1);
 
 	const addArgument = useStable(() => {
@@ -176,6 +179,7 @@ export function EditorPanel({
 							value={details.block}
 							autoFocus
 							lineNumbers={hasLineNumbers}
+							onMount={setEditor}
 							onChange={(value) =>
 								onChange((draft: any) => {
 									draft.block = value;
@@ -183,7 +187,7 @@ export function EditorPanel({
 							}
 							extensions={[
 								surrealql(),
-								surrealqlVersionLinter(version),
+								surqlVersion,
 								surqlLinting(),
 								surqlVariableCompletion(resolveVariables),
 								surqlCustomFunctionCompletion(),

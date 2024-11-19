@@ -40,10 +40,11 @@ import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
-import { useDatabaseStore } from "~/stores/database";
+import { useDatabaseVersionLinter } from "~/hooks/editor";
 
 export interface QueryPaneProps {
 	activeTab: QueryTab;
+	editor: EditorView | null;
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
@@ -58,6 +59,7 @@ export interface QueryPaneProps {
 
 export function QueryPane({
 	activeTab,
+	editor,
 	showVariables,
 	selection,
 	switchPortal,
@@ -72,8 +74,7 @@ export function QueryPane({
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { inspect } = useInspector();
 	const connection = useActiveConnection();
-	const version = useDatabaseStore((s) => s.version);
-
+	const surqlVersion = useDatabaseVersionLinter(editor);
 	const buffer = useQueryStore((s) => s.queryBuffer);
 
 	const openQueryList = useStable(() => {
@@ -259,7 +260,7 @@ export function QueryPane({
 				lineNumbers={lineNumbers}
 				extensions={[
 					surrealql(),
-					surrealqlVersionLinter(version),
+					surqlVersion,
 					surqlLinting(),
 					surqlRecordLinks(inspect),
 					surqlTableCompletion(),

@@ -214,6 +214,7 @@ export function QueryView() {
 						) : (
 							<QueryPaneLazy
 								corners={miniCorners}
+								editor={editor}
 								activeTab={active}
 								switchPortal={switchPortal}
 								selection={selection}
@@ -235,6 +236,7 @@ export function QueryView() {
 							>
 								<QueryPaneLazy
 									activeTab={active}
+									editor={editor}
 									showVariables={showVariables}
 									selection={selection}
 									lineNumbers={!hideLineNumbers}
