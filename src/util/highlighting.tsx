@@ -61,8 +61,6 @@ export function renderHighlighting(
 ) {
 	const parser = PARSER_MAP.get(language as any);
 
-	console.log(language, parser);
-
 	if (!parser) {
 		adapter.warn("Highlight", `Unsupported language: ${language}`);
 		return `<pre>${code}</pre>`;
