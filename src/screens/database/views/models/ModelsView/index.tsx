@@ -1,4 +1,3 @@
-import { python } from "@codemirror/lang-python";
 import { Button, Group, Stack, Text } from "@mantine/core";
 import posthog from "posthog-js";
 import { useMemo } from "react";
@@ -95,10 +94,11 @@ export function ModelsView() {
 		);
 	});
 
-	const snippet = useMemo(() => ({
-		title: "Using Python",
-		extensions: [python()],
-		code: `
+	const snippet = useMemo(
+		() => ({
+			title: "Using Python",
+			language: "python",
+			code: `
 			# Upload your model directly to SurrealDB
 			SurMlFile.upload(
 				path="./model.surml",
@@ -110,7 +110,9 @@ export function ModelsView() {
 				password="..."
 			)							
 		`,
-	}), [authentication, lastDatabase, lastNamespace]);
+		}),
+		[authentication, lastDatabase, lastNamespace],
+	);
 
 	useViewEffect("models", () => {
 		syncConnectionSchema();

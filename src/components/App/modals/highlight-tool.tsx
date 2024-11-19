@@ -1,19 +1,26 @@
 import { Button, Divider, Modal, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useCallback, useEffect, useState } from "react";
+import { s } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
-import type { ColorScheme } from "~/types";
+import { useConfigStore } from "~/stores/config";
+import type { ColorScheme, SyntaxTheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { formatQuery, renderHighlighting } from "~/util/surrealql";
+import { renderHighlighting } from "~/util/highlighting";
+import { formatQuery } from "~/util/surrealql";
 
-export function Render({ value, theme }: { value: string; theme: ColorScheme }) {
+function Render({
+	value,
+	theme,
+	syntaxTheme,
+}: { value: string; theme: ColorScheme; syntaxTheme: SyntaxTheme }) {
 	const render = useStable(() => {
-		const rendered = renderHighlighting(value, theme);
+		const rendered = renderHighlighting(value, "surrealql", theme, syntaxTheme);
 		const clipboardItem = new ClipboardItem({
 			"text/html": new Blob([rendered], { type: "text/html" }),
 			"text/plain": new Blob([rendered], { type: "text/plain" }),
@@ -38,6 +45,7 @@ export function HighlightToolModal() {
 	const [isOpen, openedHandle] = useBoolean();
 	const [_, setFeatureFlags] = useFeatureFlags();
 	const [theme, setTheme] = useState<ColorScheme>("dark");
+	const syntaxTheme = useConfigStore((state) => state.settings.appearance.syntaxTheme);
 
 	const format = useCallback(() => {
 		onChange(formatQuery(value));
@@ -94,6 +102,7 @@ export function HighlightToolModal() {
 						<Render
 							value={value}
 							theme={theme}
+							syntaxTheme={syntaxTheme}
 						/>
 					</SimpleGrid>
 				</Stack>

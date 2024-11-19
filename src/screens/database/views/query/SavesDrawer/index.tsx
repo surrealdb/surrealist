@@ -259,7 +259,7 @@ export function SavesDrawer({
 						>
 							<CodePreview
 								value={entry.query}
-								withWrapping
+								language="surrealql"
 							/>
 							{entry.tags.length > 0 && (
 								<Group

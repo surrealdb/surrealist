@@ -4,3 +4,7 @@ declare module "*.md" {
 
 	export { attributes, html };
 }
+
+declare module "@lezer/php" {
+	export const parser: any;
+}

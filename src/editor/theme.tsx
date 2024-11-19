@@ -85,8 +85,10 @@ export const editorTheme = (colorScheme: ColorScheme, syntaxTheme: SyntaxTheme) 
 	syntaxHighlighting(THEME_CONFIGS[syntaxTheme][colorScheme], { fallback: true });
 
 /**
- * A class-based highlighter using the Surrealist editor color scheme
+ * Create a style highlighter for the given color scheme and syntax theme
  */
-export function createStyleHighlighter(theme: ColorScheme) {
-	return tagHighlighter(DEFAULT_THEME[theme].specs.map((a) => ({ ...a, class: a.color })));
+export function createStyleHighlighter(colorScheme: ColorScheme, syntaxTheme: SyntaxTheme) {
+	return tagHighlighter(
+		THEME_CONFIGS[syntaxTheme][colorScheme].specs.map((a) => ({ ...a, class: a.color })),
+	);
 }

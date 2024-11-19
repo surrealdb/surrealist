@@ -1,4 +1,3 @@
-import type { Extension } from "@codemirror/state";
 import { Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import type { PropsWithChildren, ReactNode } from "react";
 import { useIsLight } from "~/hooks/theme";
@@ -12,7 +11,7 @@ export interface IntroductionProps {
 	snippet?: {
 		title?: string;
 		code?: string;
-		extensions?: Extension[];
+		language?: string;
 	};
 }
 
@@ -26,12 +25,25 @@ export function Introduction({
 	const isLight = useIsLight();
 
 	return (
-		<Center h="100%" flex={1}>
-			<Paper w={450} style={{ overflow: "hidden" }} shadow="md">
+		<Center
+			h="100%"
+			flex={1}
+		>
+			<Paper
+				w={450}
+				style={{ overflow: "hidden" }}
+				shadow="md"
+			>
 				{header}
-				<Stack p="xl" gap="xl">
+				<Stack
+					p="xl"
+					gap="xl"
+				>
 					<Group>
-						<Icon path={icon} size={1.35} />
+						<Icon
+							path={icon}
+							size={1.35}
+						/>
 						<Title c="bright">{title}</Title>
 					</Group>
 					{children}
@@ -48,16 +60,19 @@ export function Introduction({
 								: undefined,
 						}}
 					>
-						<Text c="bright" fz={18} fw={600} mb="md">
+						<Text
+							c="bright"
+							fz={18}
+							fw={600}
+							mb="md"
+						>
 							{snippet.title ?? "Example"}
 						</Text>
 						<CodePreview
 							bg="transparent"
 							p={0}
 							value={snippet.code}
-							extensions={snippet.extensions}
 							withDedent
-							withWrapping
 						/>
 					</Paper>
 				)}
