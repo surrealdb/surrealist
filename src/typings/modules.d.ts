@@ -8,3 +8,7 @@ declare module "*.md" {
 declare module "@lezer/php" {
 	export const parser: any;
 }
+
+declare module "@fig/lezer-bash" {
+	export const parser: any;
+}

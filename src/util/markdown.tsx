@@ -10,7 +10,9 @@ marked.use({
 			const { colorScheme } = useInterfaceStore.getState();
 			const { syntaxTheme } = useConfigStore.getState().settings.appearance;
 
-			return lang ? renderHighlighting(text, lang, colorScheme, syntaxTheme) : text;
+			return lang
+				? renderHighlighting(text, lang.toLowerCase(), colorScheme, syntaxTheme)
+				: text;
 		},
 	},
 });

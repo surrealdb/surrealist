@@ -5,6 +5,7 @@ import type { ColorScheme, SyntaxTheme } from "~/types";
 
 import { StreamLanguage } from "@codemirror/language";
 import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
+import { parser as bashParser } from "@fig/lezer-bash";
 import { parser as goParser } from "@lezer/go";
 import { parser as htmlParser } from "@lezer/html";
 import { parser as jsParser } from "@lezer/javascript";
@@ -19,6 +20,8 @@ const csharpParser = StreamLanguage.define(csharp).parser;
 const javaParser = StreamLanguage.define(java).parser;
 
 const PARSER_MAP = new Map<string, Parser>([
+	["sh", bashParser],
+	["bash", bashParser],
 	["cs", csharpParser],
 	["csharp", csharpParser],
 	["rs", rustParser],
