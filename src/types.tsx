@@ -601,3 +601,14 @@ export interface CloudChatMessage {
 		}[];
 	};
 }
+
+export interface DatabaseExportConfig {
+	users: boolean;
+	accesses: boolean;
+	params: boolean;
+	functions: boolean;
+	analyzers: boolean;
+	versions: boolean;
+	records: boolean;
+	tables: string[];
+}

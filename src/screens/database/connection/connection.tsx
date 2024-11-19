@@ -27,7 +27,7 @@ import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { AuthDetails, Connection, Protocol } from "~/types";
+import type { AuthDetails, Connection, DatabaseExportConfig, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -35,6 +35,7 @@ import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
+import { compareVersions } from "compare-versions";
 
 export interface ConnectOptions {
 	connection?: Connection;
@@ -611,11 +612,14 @@ export async function activateDatabase(namespace: string, database: string) {
 }
 
 /**
- * NOTE - Temporary
+ * Request a database export from the remote connection
+ *
+ * @param config The export configuration
  */
-export async function requestDatabaseExport() {
-	const { currentState } = useDatabaseStore.getState();
+export async function requestDatabaseExport(config?: DatabaseExportConfig) {
+	const { currentState, version } = useDatabaseStore.getState();
 	const connection = getConnection();
+	const withConfig = compareVersions(version, "2.1.0") >= 0 && config;
 
 	if (!connection || currentState !== "connected") {
 		showError({
@@ -629,6 +633,8 @@ export async function requestDatabaseExport() {
 
 	const response = await fetch(endpoint, {
 		headers,
+		method: withConfig ? "POST" : "GET",
+		body: withConfig ? JSON.stringify(config) : undefined,
 	});
 
 	return await response.blob();

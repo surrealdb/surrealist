@@ -70,7 +70,6 @@ import {
 import type { MantineColorScheme } from "@mantine/core";
 
 export type StructureTab = "graph" | "builder";
-export type ExportType = (typeof EXPORT_TYPES)[number];
 export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
 
 export const SANDBOX = "sandbox";
@@ -310,8 +309,6 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 		icon: iconSidekick,
 	},
 };
-
-export const EXPORT_TYPES = ["tables", "analyzers", "functions", "params", "access"] as const;
 
 export const SURREAL_KINDS = [
 	{ label: "No kind specified", value: "" },
