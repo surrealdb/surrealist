@@ -357,7 +357,14 @@ export function ProvisionPage() {
 								your instance.
 							</Text>
 
-							{hasSingleCompute ? (
+							<Alert
+								color="blue"
+								title="Coming soon"
+							>
+								Customising compute nodes will be available soon
+							</Alert>
+
+							{/* {hasSingleCompute ? (
 								<Alert
 									color="blue"
 									title="Upgrade to use compute nodes"
@@ -397,7 +404,7 @@ export function ProvisionPage() {
 										max={maxComputeUnits}
 									/>
 								</>
-							)}
+							)} */}
 						</Stack>
 					)}
 
