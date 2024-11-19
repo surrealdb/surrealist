@@ -23,11 +23,12 @@ export async function showNodeStatus() {
 			title: <PrimaryTitle>Node status</PrimaryTitle>,
 			withCloseButton: true,
 			styles: { header: { paddingBottom: 0 } },
+			size: "lg",
 			children: (
 				<Stack>
 					<Text>
 						There {single ? "is" : "are"} {nodes.length} node{single ? "" : "s"}{" "}
-						registered to the current instance
+						registered in the current cluster
 					</Text>
 					<Stack mt="md">
 						{nodes.map((node) => (
@@ -47,7 +48,16 @@ export async function showNodeStatus() {
 											c="bright"
 											ff="monospace"
 										>
-											{node.id.toString()}
+											Node ID:{" "}
+											<Text
+												span
+												style={{
+													userSelect: "text",
+													WebkitUserSelect: "text",
+												}}
+											>
+												{node.id.toString()}
+											</Text>
 										</Text>
 										<Text>
 											{node.active ? "Online" : "Offline"} - Last seen{" "}
