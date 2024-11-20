@@ -1,12 +1,3 @@
-import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
-import { type RefObject, useMemo } from "react";
-import { Icon } from "~/components/Icon";
-import { ContentPane } from "~/components/Pane";
-import { ScrollFader } from "~/components/ScrollFader";
-import { CODE_LANGUAGES } from "~/constants";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
 import {
 	type DocsArticleTopic,
 	type DocsSectionTopic,
@@ -15,8 +6,19 @@ import {
 	isLink,
 	isSection,
 } from "~/screens/database/docs/types";
+
+import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
+import { type RefObject, useMemo } from "react";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import { ScrollFader } from "~/components/ScrollFader";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useIntent } from "~/hooks/url";
 import type { CodeLang } from "~/types";
-import { iconList } from "~/util/icons";
+import { iconCheck, iconList } from "~/util/icons";
+import { DRIVERS } from "~/constants";
+import { Spacer } from "~/components/Spacer";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
@@ -44,10 +46,7 @@ export function ArticlePane({
 			const items: ReadableArticle[] = [];
 
 			for (const topic of list) {
-				if (
-					topic.excludeLanguages?.includes(language) ||
-					isLink(topic)
-				) {
+				if (topic.excludeLanguages?.includes(language) || isLink(topic)) {
 					continue;
 				}
 
@@ -99,6 +98,14 @@ export function ArticlePane({
 		}
 	});
 
+	const languages = useMemo(() => {
+		return DRIVERS.map((driver) => ({
+			label: driver.name,
+			value: driver.id,
+			icon: driver.icon,
+		}));
+	}, []);
+
 	useIntent("docs-switch-language", ({ lang }) => {
 		onLanguageChange(lang as CodeLang);
 	});
@@ -114,9 +121,22 @@ export function ArticlePane({
 			withTopPadding={false}
 			rightSection={
 				<Select
-					data={CODE_LANGUAGES}
+					data={languages}
 					value={language}
 					onChange={onLanguageChange as any}
+					renderOption={({ option, checked }) => {
+						const DriverIcon = (option as any).icon;
+
+						return (
+							// <Group flex={1}>
+							<>
+								<DriverIcon height={12} />
+								{option.label}
+								<Spacer />
+								{checked && <Icon path={iconCheck} />}
+							</>
+						);
+					}}
 				/>
 			}
 		>
@@ -149,9 +169,18 @@ export function ArticlePane({
 								pb={10}
 								data-topic={doc.id}
 							>
-								<Group c="bright" my="xl">
-									<Icon path={doc.icon} size={1.65} />
-									<Title order={1} fz={28}>
+								<Group
+									c="bright"
+									my="xl"
+								>
+									<Icon
+										path={doc.icon}
+										size={1.65}
+									/>
+									<Title
+										order={1}
+										fz={28}
+									>
 										{doc.title}
 									</Title>
 								</Group>
@@ -168,14 +197,14 @@ export function ArticlePane({
 							py={42}
 							data-topic={doc.id}
 							style={{
-								borderBottom:
-									index < flattened.length - 1
-										? border
-										: "none",
+								borderBottom: index < flattened.length - 1 ? border : "none",
 							}}
 						>
 							<Box maw={1500}>
-								<Content topic={doc} language={language} />
+								<Content
+									topic={doc}
+									language={language}
+								/>
 							</Box>
 						</Box>
 					);

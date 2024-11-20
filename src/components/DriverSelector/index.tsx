@@ -35,7 +35,11 @@ export function DriverSelector({ cols, value, exclude, onChange, ...other }: Dri
 						key={lib.name}
 						radius="xl"
 						bg={isLight ? "slate.0" : "slate.9"}
-						className={clsx(classes.library, isActive && classes.libraryActive)}
+						className={clsx(
+							classes.library,
+							isActive && classes.libraryActive,
+							lib.disabled && classes.libraryDisabled,
+						)}
 						onClick={() => onChange(lib.id)}
 					>
 						<Icon active={isActive} />

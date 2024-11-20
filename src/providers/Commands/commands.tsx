@@ -48,7 +48,7 @@ import { dash } from "radash";
 import { useMemo } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
-import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
+import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { closeConnection, openConnection } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
@@ -383,12 +383,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 				},
 				{
 					name: "API Docs",
-					commands: CODE_LANGUAGES.map((lang) => ({
-						id: `docs-lang-${lang.value}`,
-						name: `Preview snippets in ${lang.label}`,
+					commands: DRIVERS.map((lang) => ({
+						id: `docs-lang-${lang.id}`,
+						name: `Preview snippets in ${lang.id}`,
 						icon: iconAPI,
 						action: intent("docs-switch-language", {
-							lang: lang.value,
+							lang: lang.id,
 						}),
 					})),
 				},

@@ -22,3 +22,7 @@
 		fill: white !important;
 	}
 }
+
+.library-disabled svg {
+	filter: grayscale(100%);
+}
