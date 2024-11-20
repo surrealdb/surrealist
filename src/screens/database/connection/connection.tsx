@@ -19,6 +19,7 @@ import {
 } from "./helpers";
 
 import { Value } from "@surrealdb/ql-wasm";
+import { compareVersions } from "compare-versions";
 import posthog from "posthog-js";
 import { adapter } from "~/adapter";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
@@ -35,7 +36,6 @@ import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
-import { compareVersions } from "compare-versions";
 
 export interface ConnectOptions {
 	connection?: Connection;

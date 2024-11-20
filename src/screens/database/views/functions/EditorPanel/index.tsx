@@ -31,6 +31,7 @@ import {
 	surqlVariableCompletion,
 } from "~/editor";
 
+import type { EditorView } from "@codemirror/view";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useState } from "react";
@@ -46,6 +47,7 @@ import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useMinimumVersion } from "~/hooks/connection";
+import { useDatabaseVersionLinter } from "~/hooks/editor";
 import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -55,8 +57,6 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
-import { useDatabaseVersionLinter } from "~/hooks/editor";
-import type { EditorView } from "@codemirror/view";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;

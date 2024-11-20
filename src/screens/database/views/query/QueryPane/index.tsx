@@ -32,6 +32,7 @@ import { ContentPane } from "~/components/Pane";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
+import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useInspector } from "~/providers/Inspector";
@@ -40,7 +41,6 @@ import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
-import { useDatabaseVersionLinter } from "~/hooks/editor";
 
 export interface QueryPaneProps {
 	activeTab: QueryTab;

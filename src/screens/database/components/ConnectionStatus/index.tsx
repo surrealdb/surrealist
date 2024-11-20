@@ -23,13 +23,13 @@ import { useDatasets } from "~/hooks/dataset";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/hooks/url";
+import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
-import { showNodeStatus } from "~/modals/node-status";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);

@@ -12,13 +12,13 @@ import { type RefObject, useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { ScrollFader } from "~/components/ScrollFader";
+import { Spacer } from "~/components/Spacer";
+import { DRIVERS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/url";
 import type { CodeLang } from "~/types";
 import { iconCheck, iconList } from "~/util/icons";
-import { DRIVERS } from "~/constants";
-import { Spacer } from "~/components/Spacer";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
