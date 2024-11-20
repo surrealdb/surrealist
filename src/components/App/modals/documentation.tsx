@@ -26,11 +26,6 @@ import { useIntent } from "~/hooks/url";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { iconBook } from "~/util/icons";
 
-interface Offset {
-	e: number;
-	s: number;
-}
-
 interface Result {
 	id: string;
 	url: string;
@@ -183,7 +178,7 @@ export function DocumentationModal() {
 				className={classes.docsScroller}
 				scrollbars="y"
 				display="block"
-				mah="calc(100vh - 200px)"
+				mah="calc(100vh - 225px)"
 			>
 				{isEmpty && !search ? (
 					<Text

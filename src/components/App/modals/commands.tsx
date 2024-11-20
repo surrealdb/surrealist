@@ -174,7 +174,7 @@ export function CommandPaletteModal() {
 
 			<ScrollArea.Autosize
 				scrollbars="y"
-				mah="calc(100vh - 200px)"
+				mah="calc(100vh - 225px)"
 			>
 				{filtered.length > 0 ? (
 					<Stack p="lg">
