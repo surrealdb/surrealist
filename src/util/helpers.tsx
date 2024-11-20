@@ -285,14 +285,22 @@ export function getFileName(name: string) {
 }
 
 /**
- * Returns whether the given tab has not been renamed
- * from its default name.
+ * Compute a unique name based on the given name and existing names
  *
- * @param tab The tab to check
- * @returns True if the tab is unnamed
+ * @param baseName The base name
+ * @param existing The list of existing names
+ * @returns
  */
-export function isUnnamedTab(tab: QueryTab) {
-	return !!tab.name?.startsWith("New query");
+export function uniqueName(baseName: string, existing: string[]) {
+	let tempName = "";
+	let counter = 0;
+
+	do {
+		tempName = `${baseName} ${counter ? counter + 1 : ""}`.trim();
+		counter++;
+	} while (existing.includes(tempName));
+
+	return tempName;
 }
 
 /**

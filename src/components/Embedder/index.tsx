@@ -1,4 +1,3 @@
-import { html } from "@codemirror/lang-html";
 import {
 	Box,
 	Checkbox,
@@ -10,8 +9,7 @@ import {
 	Stack,
 	Tooltip,
 } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { surrealql } from "@surrealdb/codemirror";
+
 import {
 	type PropsWithChildren,
 	type ReactNode,
@@ -20,6 +18,9 @@ import {
 	useMemo,
 	useState,
 } from "react";
+
+import { Text } from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
 import { useImmer } from "use-immer";
 import { DATASETS, ORIENTATIONS, THEMES } from "~/constants";
 import type { ColorScheme, Orientation } from "~/types";
@@ -316,8 +317,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 				<CodePreview
 					value={mode === "Iframe" ? snippetCode : frameUrl}
 					withCopy
-					withWrapping
-					extensions={mode === "Iframe" ? [html()] : []}
+					language={mode === "Iframe" ? "html" : undefined}
 				/>
 			</Box>
 		</Stack>

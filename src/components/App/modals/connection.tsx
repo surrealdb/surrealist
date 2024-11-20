@@ -19,10 +19,7 @@ import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
-
-function buildName(n: number) {
-	return `New connection ${n ? n + 1 : ""}`.trim();
-}
+import { uniqueName } from "~/util/helpers";
 
 function newConnection() {
 	const { settings } = useConfigStore.getState();
@@ -67,18 +64,6 @@ export function ConnectionModal() {
 		}
 	});
 
-	const generateName = useStable(() => {
-		let tabName = "";
-		let counter = 0;
-
-		do {
-			tabName = buildName(counter);
-			counter++;
-		} while (connections.some((con) => con.name === tabName));
-
-		return tabName;
-	});
-
 	const applyTemplate = useStable((template: Template) => {
 		setDetails((draft) => {
 			draft.name = template.name;
@@ -91,10 +76,13 @@ export function ConnectionModal() {
 	useLayoutEffect(() => {
 		if (!details.name.trim()) {
 			setDetails((draft) => {
-				draft.name = generateName();
+				const existing = connections.map((con) => con.name);
+				const tabName = uniqueName("New connection", existing);
+
+				draft.name = tabName;
 			});
 		}
-	}, [details.name]);
+	}, [details.name, connections]);
 
 	useIntent("new-connection", ({ template }) => {
 		setIsCreating(true);

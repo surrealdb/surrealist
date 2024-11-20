@@ -25,6 +25,7 @@ import {
 	iconPlay,
 	iconPlus,
 	iconRefresh,
+	iconRelation,
 	iconReset,
 	iconRoutes,
 	iconSandbox,
@@ -47,8 +48,9 @@ import { dash } from "radash";
 import { useMemo } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
-import { CODE_LANGUAGES, SANDBOX, VIEW_MODES } from "~/constants";
+import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
 import { useConnection, useConnections } from "~/hooks/connection";
+import { showNodeStatus } from "~/modals/node-status";
 import { closeConnection, openConnection } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
@@ -381,12 +383,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 				},
 				{
 					name: "API Docs",
-					commands: CODE_LANGUAGES.map((lang) => ({
-						id: `docs-lang-${lang.value}`,
-						name: `Preview snippets in ${lang.label}`,
+					commands: DRIVERS.map((lang) => ({
+						id: `docs-lang-${lang.id}`,
+						name: `Preview snippets in ${lang.id}`,
 						icon: iconAPI,
 						action: intent("docs-switch-language", {
-							lang: lang.value,
+							lang: lang.id,
 						}),
 					})),
 				},
@@ -585,6 +587,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Open mini generator",
 						icon: iconWrench,
 						aliases: ["mini"],
+						binding: true,
 						action: intent("open-embedder"),
 					},
 					{
@@ -614,6 +617,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: launch(() => {
 							setActiveScreen("database");
 						}),
+					},
+					{
+						id: "open-node-status",
+						name: "Open node status",
+						icon: iconRelation,
+						action: launch(showNodeStatus),
 					},
 					...optional(
 						isDesktop && {

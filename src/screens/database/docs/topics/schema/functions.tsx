@@ -11,7 +11,7 @@ export function DocsSchemaFunctions({ language }: TopicProps) {
 		-- This indicates that it's a custom function
 		DEFINE FUNCTION fn::greet($name: string) {
 			RETURN "Hello, " + $name + "!";
-		}
+		};
 
 		-- Returns: "Hello, BOB!"
 		RETURN fn::greet("BOB");
@@ -79,12 +79,11 @@ export function DocsSchemaFunctions({ language }: TopicProps) {
 		<Article title="Functions">
 			<div>
 				<p>
-					Functions are a way to encapsulate logic in a database. To
-					define functions you have to be a system user
-					(namespace, database, or root). They can be used to perform
-					calculations, manipulate data, or perform other operations.
-					In SurrealDB functions can be written just as you would in
-					your programming language of choice.
+					Functions are a way to encapsulate logic in a database. To define functions you
+					have to be a system user (namespace, database, or root). They can be used to
+					perform calculations, manipulate data, or perform other operations. In SurrealDB
+					functions can be written just as you would in your programming language of
+					choice.
 				</p>
 			</div>
 			<Box>

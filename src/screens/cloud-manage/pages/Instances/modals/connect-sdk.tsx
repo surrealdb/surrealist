@@ -250,7 +250,6 @@ export function ConnectSdkModal({ opened, onClose, instance }: ConnectSdkModalPr
 				<CodeSnippet
 					language={lang}
 					values={snippets}
-					withWrapping={false}
 				/>
 
 				{driver && (

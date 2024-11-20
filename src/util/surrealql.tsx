@@ -1,12 +1,6 @@
-import { highlightCode } from "@lezer/highlight";
 import { SurrealQL, Value } from "@surrealdb/ql-wasm";
 import { decodeCbor, encodeCbor, escape_ident } from "surrealdb";
 import { DATASETS } from "~/constants";
-import { createStyleHighlighter } from "~/editor";
-import type { ColorScheme } from "~/types";
-
-// @ts-ignore
-import { parser } from "@surrealdb/lezer";
 
 /**
  * Validate a query and return an error message if invalid
@@ -200,39 +194,4 @@ export function parseDatasetURL(source: string) {
 	}
 
 	return new URL(path, "https://datasets.surrealdb.com");
-}
-
-/**
- * Render a query with syntax highlighting
- *
- * @param theme The color scheme to use
- * @returns HTML string
- */
-export function renderHighlighting(query: string, theme: ColorScheme) {
-	const rendered = document.createElement("pre");
-	const textColor = getComputedStyle(document.documentElement).getPropertyValue(
-		"--mantine-color-text",
-	);
-
-	function emit(text: string, classes?: string) {
-		const textNode = document.createTextNode(text);
-		const span = document.createElement("span");
-
-		if (classes) {
-			span.style.color = classes;
-		} else {
-			span.style.color = textColor;
-		}
-
-		span.append(textNode);
-		rendered.append(span);
-	}
-
-	function emitBreak() {
-		emit("\n");
-	}
-
-	highlightCode(query, parser.parse(query), createStyleHighlighter(theme), emit, emitBreak);
-
-	return rendered.outerHTML;
 }

@@ -1,8 +1,11 @@
-export function SurrealIcon() {
+import type { ElementProps } from "@mantine/core";
+
+export function SurrealIcon(props: ElementProps<"svg">) {
 	return (
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...props}
 		>
 			<title>Surreal icon</title>
 			<linearGradient
@@ -27,11 +30,12 @@ export function SurrealIcon() {
 	);
 }
 
-export function RustIcon() {
+export function RustIcon(props: ElementProps<"svg">) {
 	return (
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...props}
 		>
 			<title>Rust icon</title>
 			<path
@@ -42,11 +46,12 @@ export function RustIcon() {
 	);
 }
 
-export function JavaScriptIcon() {
+export function JavaScriptIcon(props: ElementProps<"svg">) {
 	return (
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...props}
 		>
 			<title>JavaScript icon</title>
 			<path
@@ -57,11 +62,12 @@ export function JavaScriptIcon() {
 	);
 }
 
-export function GoLangIcon() {
+export function GoLangIcon(props: ElementProps<"svg">) {
 	return (
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...props}
 		>
 			<title>GoLang icon</title>
 			<g
@@ -78,11 +84,12 @@ export function GoLangIcon() {
 	);
 }
 
-export function PythonIcon() {
+export function PythonIcon(props: ElementProps<"svg">) {
 	return (
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...props}
 		>
 			<title>Python icon</title>
 			<linearGradient
@@ -159,11 +166,12 @@ export function PythonIcon() {
 	);
 }
 
-export function DotNetIcon({ active }: { active?: boolean }) {
+export function DotNetIcon({ active, ...other }: { active?: boolean } & ElementProps<"svg">) {
 	return active ? (
 		<svg
 			viewBox="0 0 129 129"
 			height={32}
+			{...other}
 		>
 			<title>.NET icon</title>
 			<path
@@ -177,6 +185,7 @@ export function DotNetIcon({ active }: { active?: boolean }) {
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...other}
 		>
 			<title>.NET icon</title>
 			<path
@@ -203,11 +212,12 @@ export function DotNetIcon({ active }: { active?: boolean }) {
 	);
 }
 
-export function JavaIcon() {
+export function JavaIcon(props: ElementProps<"svg">) {
 	return (
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...props}
 		>
 			<title>Java icon</title>
 			<path
@@ -238,16 +248,47 @@ export function JavaIcon() {
 	);
 }
 
-export function PhpIcon() {
+export function PhpIcon(props: ElementProps<"svg">) {
 	return (
 		<svg
 			viewBox="0 0 128 128"
 			height={32}
+			{...props}
 		>
 			<title>PHP icon</title>
 			<path
 				fill="#7078e0"
 				d="M64 30.332C28.654 30.332 0 45.407 0 64s28.654 33.668 64 33.668c35.345 0 64-15.075 64-33.668S99.346 30.332 64 30.332zm-5.982 9.81h7.293v.003l-1.745 8.968h6.496c4.087 0 6.908.714 8.458 2.139 1.553 1.427 2.017 3.737 1.398 6.93l-3.053 15.7h-7.408l2.902-14.929c.33-1.698.208-2.855-.365-3.473-.573-.617-1.793-.925-3.658-.925h-5.828L58.752 73.88h-7.291l6.557-33.738zM26.73 49.114h14.133c4.252 0 7.355 1.116 9.305 3.348 1.95 2.232 2.536 5.346 1.758 9.346-.32 1.649-.863 3.154-1.625 4.52-.763 1.364-1.76 2.613-2.99 3.745-1.468 1.373-3.098 2.353-4.891 2.936-1.794.585-4.08.875-6.858.875h-6.294l-1.745 8.97h-7.35l6.557-33.74zm57.366 0h14.13c4.252 0 7.353 1.116 9.303 3.348h.002c1.95 2.232 2.538 5.346 1.76 9.346-.32 1.649-.861 3.154-1.623 4.52-.763 1.364-1.76 2.613-2.992 3.745-1.467 1.373-3.098 2.353-4.893 2.936-1.794.585-4.077.875-6.855.875h-6.295l-1.744 8.97h-7.35l6.557-33.74zm-51.051 5.325-2.742 14.12h4.468c2.963 0 5.172-.556 6.622-1.673 1.45-1.116 2.428-2.981 2.937-5.592.485-2.507.264-4.279-.666-5.309-.93-1.032-2.79-1.547-5.584-1.547h-5.035zm57.363 0-2.744 14.12h4.47c2.965 0 5.17-.556 6.622-1.673 1.449-1.116 2.427-2.981 2.935-5.592.487-2.507.266-4.279-.664-5.309-.93-1.032-2.792-1.547-5.584-1.547h-5.035z"
+			/>
+		</svg>
+	);
+}
+
+export function CIcon(props: ElementProps<"svg">) {
+	return (
+		<svg
+			viewBox="0 0 128 128"
+			height={32}
+			{...props}
+		>
+			<title>c icon</title>
+			<path
+				id="path2"
+				d="M60.79,3.381C62.777,2.266 65.224,2.266 67.208,3.381C77.026,8.892 106.572,25.479 116.393,30.99C118.381,32.102 119.604,34.162 119.604,36.392L119.604,91.607C119.604,93.837 118.381,95.897 116.393,97.012C106.575,102.522 77.029,119.11 67.208,124.62C65.221,125.735 62.774,125.735 60.79,124.62C50.972,119.11 21.426,102.522 11.604,97.012C9.62,95.897 8.397,93.84 8.397,91.61L8.397,36.395C8.397,34.165 9.62,32.105 11.607,30.99C21.423,25.479 50.974,8.892 60.79,3.381ZM64,23.03C41.387,23.03 23.029,41.388 23.029,64.001C23.029,86.614 41.387,104.972 64,104.972C86.613,104.972 104.971,86.614 104.971,64.001C104.971,41.388 86.613,23.03 64,23.03ZM64,43.515C75.305,43.515 84.486,52.693 84.486,64.001C84.486,75.306 75.305,84.486 64,84.486C52.695,84.486 43.515,75.306 43.515,64.001C43.515,52.693 52.692,43.515 64,43.515Z"
+				// style="fill:#004482;"
+				style={{ fill: "#004482" }}
+			/>
+			<path
+				id="path4"
+				d="M28.087,83.724L9.286,94.448C8.508,93.406 8.397,92.417 8.397,91.086L8.397,36.187C8.397,33.969 9.617,31.921 11.598,30.814C21.382,25.336 50.828,8.845 60.611,3.364C62.593,2.255 65.276,2.278 67.258,3.387C77.041,8.866 106.388,25.216 116.171,30.694C116.961,31.139 117.564,31.675 118.103,32.38L99.257,43.13C92.115,31.1 78.993,23.03 64,23.03C41.387,23.03 23.029,41.388 23.029,64.001C23.029,71.149 24.864,77.872 28.087,83.724ZM45.887,73.571C44.373,70.714 43.515,67.457 43.515,64.001C43.515,52.693 52.692,43.515 64,43.515C71.378,43.515 77.851,47.424 81.458,53.282L45.887,73.571Z"
+				// style="fill:#659ad2;"
+				style={{ fill: "#659ad2" }}
+			/>
+			<path
+				id="path8"
+				d="M118.097,32.409C119.607,33.823 119.577,35.953 119.577,37.63C119.577,48.736 119.484,80.325 119.604,91.431C119.616,92.59 119.232,93.81 118.659,94.729L62.809,64.001L118.097,32.409Z"
+				// style="fill:#00599c;"
+				style={{ fill: "#00599c" }}
 			/>
 		</svg>
 	);

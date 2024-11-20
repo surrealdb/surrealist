@@ -60,11 +60,18 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 			>
 				<Stack>
 					<Text mb="lg">
-						Select the number of compute nodes you would like to use for your instance. Each
-						compute node provides additional processing power to your instance.
+						Select the number of compute nodes you would like to use for your instance.
+						Each compute node provides additional processing power to your instance.
 					</Text>
 
-					{hasSingleCompute ? (
+					<Alert
+						color="blue"
+						title="Coming soon"
+					>
+						Customising compute nodes will be available soon
+					</Alert>
+
+					{/* {hasSingleCompute ? (
 						<Alert
 							color="blue"
 							title="Upgrade to use compute nodes"
@@ -100,7 +107,7 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 								max={maxComputeUnits}
 							/>
 						</>
-					)}
+					)} */}
 				</Stack>
 			</Paper>
 

@@ -1,9 +1,7 @@
 .root {
-	:global(.cm-editor) {
-		outline: none;
-	}
-
-	:global(.cm-line) {
-		padding-left: 0;
+	pre {
+		margin: 0;
+		background-color: unset;
+		tab-size: 4ch;
 	}
 }

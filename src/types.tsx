@@ -1,4 +1,4 @@
-import type { MantineColorScheme } from "@mantine/core";
+import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import type { AnyAuth, Duration, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
@@ -67,7 +67,7 @@ export type CloudPage =
 	| "support"
 	| "settings"
 	| "provision";
-export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php";
+export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
 export type OpenFn = (id: string | null) => void;
 export type ColumnSort = [string, "asc" | "desc"];
@@ -481,8 +481,9 @@ export interface Dataset {
 export interface Driver {
 	id: CodeLang;
 	name: string;
-	icon: React.FC<{ active?: boolean }>;
+	icon: React.FC<{ active?: boolean } & ElementProps<"svg">>;
 	link: string;
+	disabled?: boolean;
 }
 
 export interface CloudSignin {
@@ -600,4 +601,15 @@ export interface CloudChatMessage {
 			img_url: string;
 		}[];
 	};
+}
+
+export interface DatabaseExportConfig {
+	users: boolean;
+	accesses: boolean;
+	params: boolean;
+	functions: boolean;
+	analyzers: boolean;
+	versions: boolean;
+	records: boolean;
+	tables: string[];
 }

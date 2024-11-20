@@ -134,7 +134,7 @@ function HistoryRow({ entry, onUpdateBuffer, onClose }: HistoryRowProps) {
 			<CodePreview
 				mt="xs"
 				value={shortQuery}
-				withWrapping
+				language="surrealql"
 			/>
 
 			<Divider mt="md" />

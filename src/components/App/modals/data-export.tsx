@@ -1,41 +1,66 @@
-import { Alert, Box, Button, Checkbox, Modal, Paper, SimpleGrid, Stack } from "@mantine/core";
+import {
+	Alert,
+	Box,
+	Button,
+	Checkbox,
+	Divider,
+	Group,
+	Modal,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Stack,
+} from "@mantine/core";
 import { Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
+import { toggle } from "radash";
 import { useState } from "react";
+import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { EXPORT_TYPES, type ExportType, SURQL_FILTER } from "~/constants";
+import { SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnection } from "~/hooks/connection";
+import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { useIntent } from "~/hooks/url";
 import { requestDatabaseExport } from "~/screens/database/connection/connection";
+import type { DatabaseExportConfig } from "~/types";
 import { showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 
+export type ExportType = keyof DatabaseExportConfig;
+
+const RESOURCES = [
+	"accesses",
+	"analyzers",
+	"functions",
+	"params",
+	"users",
+	"versions",
+] satisfies ExportType[];
+
 export function DataExportModal() {
-	const isLight = useIsLight();
 	const tables = useTableNames();
 	const connection = useConnection();
 
+	const [configSupport] = useMinimumVersion("2.1.0");
 	const [isOpen, openedHandle] = useBoolean();
 
 	const [isExporting, setIsExporting] = useState(false);
-	const [records, setRecord, setRecords] = useToggleList<string>([]);
-	// const [comments, commentsHandle] = useDisclosure(true);
-	const [comments, commentsHandle] = useDisclosure(false);
-	const [exportTypes, setExportTypes] = useToggleList<ExportType>([
-		// "tables",
-		// "analyzers",
-		// "functions",
-		// "params",
-		// "access",
-	]);
+	const [config, setConfig] = useImmer<DatabaseExportConfig>({
+		accesses: true,
+		analyzers: true,
+		functions: true,
+		params: true,
+		users: true,
+		versions: true,
+		records: true,
+		tables: [],
+	});
 
 	const fileName = `${slugify(connection?.name ?? "")}-${dayjs().format("YYYY-MM-DD")}.surql`;
 
@@ -47,16 +72,7 @@ export function DataExportModal() {
 				[SURQL_FILTER],
 				async () => {
 					setIsExporting(true);
-
-					// return createDatabaseExport({
-					// 	types: exportTypes,
-					// 	records,
-					// 	comments,
-					// });
-
-					const exported = await requestDatabaseExport();
-
-					return exported ?? null;
+					return (await requestDatabaseExport(config)) ?? null;
 				},
 			);
 
@@ -73,12 +89,18 @@ export function DataExportModal() {
 	});
 
 	const toggleAllRecords = useStable(() => {
-		if (records.length === tables.length) {
-			setRecords([]);
+		if (config.tables.length === tables.length) {
+			setConfig((draft) => {
+				draft.tables = [];
+			});
 		} else {
-			setRecords(tables);
+			setConfig((draft) => {
+				draft.tables = tables;
+			});
 		}
 	});
+
+	const isEmpty = Object.values(config).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
 
 	useIntent("export-database", openedHandle.open);
 
@@ -86,7 +108,6 @@ export function DataExportModal() {
 		<Modal
 			opened={isOpen}
 			onClose={openedHandle.close}
-			size="sm"
 			title={<PrimaryTitle>Export database</PrimaryTitle>}
 		>
 			<Stack gap="xl">
@@ -95,104 +116,111 @@ export function DataExportModal() {
 					export.
 				</Text>
 
-				<Alert
-					title="Notice"
-					color="orange"
-				>
-					Export customization is currently unavailable as it is being integrated directly
-					into SurrealDB
-				</Alert>
-
-				<Stack>
-					<Text
-						c="bright"
-						fw={600}
-						fz="lg"
+				{!configSupport ? (
+					<Alert
+						title="Notice"
+						color="orange"
 					>
-						Options
-					</Text>
-
-					<Checkbox
-						label="Include comments"
-						checked={comments}
-						onChange={commentsHandle.toggle}
-						disabled
-					/>
-				</Stack>
-
-				<Stack>
-					<Text
-						c="bright"
-						fw={600}
-						fz="lg"
-					>
-						Definitions
-					</Text>
-
-					<SimpleGrid cols={2}>
-						{EXPORT_TYPES.map((type) => (
-							<Checkbox
-								key={type}
-								label={`Include ${type}`}
-								checked={exportTypes.includes(type)}
-								onChange={setExportTypes.bind(null, type)}
-								disabled
-							/>
-						))}
-					</SimpleGrid>
-				</Stack>
-
-				{tables.length > 0 && (
-					<Stack>
-						<Text
-							c="bright"
-							fw={600}
-							fz="lg"
-						>
-							Records
-						</Text>
-						<Box>
-							<Paper
-								bg={isLight ? "slate.0" : "slate.9"}
-								radius="md"
-								p="sm"
+						The remote database does not support export customization
+					</Alert>
+				) : (
+					<>
+						<Stack>
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
 							>
+								Options
+							</Text>
+
+							<SimpleGrid cols={2}>
 								<Checkbox
-									label="Include all records"
-									checked={records.length === tables.length}
-									onChange={toggleAllRecords}
-									disabled
-									indeterminate={
-										records.length > 0 && records.length < tables.length
-									}
-									size="xs"
+									label="Include table records"
+									checked={config.records}
+									disabled={!configSupport}
+									onChange={() => {
+										setConfig((draft) => {
+											draft.records = !draft.records;
+										});
+									}}
 								/>
-								<Stack
-									gap="sm"
-									mt="xl"
+							</SimpleGrid>
+						</Stack>
+
+						<Stack>
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
+							>
+								Resources
+							</Text>
+
+							<SimpleGrid cols={2}>
+								{RESOURCES.map((opt) => (
+									<Checkbox
+										key={opt}
+										label={`Include ${opt}`}
+										checked={config[opt]}
+										disabled={!configSupport}
+										onChange={() => {
+											setConfig((draft) => {
+												draft[opt] = !draft[opt];
+											});
+										}}
+									/>
+								))}
+							</SimpleGrid>
+						</Stack>
+
+						{tables.length > 0 && (
+							<Stack>
+								<Text
+									c="bright"
+									fw={600}
+									fz="lg"
 								>
+									Tables
+								</Text>
+								<Checkbox
+									label="Include all tables"
+									checked={config.tables.length === tables.length}
+									onChange={toggleAllRecords}
+									disabled={!configSupport}
+									indeterminate={
+										config.tables.length > 0 &&
+										config.tables.length < tables.length
+									}
+								/>
+								<Divider />
+								<Stack gap="sm">
 									{tables.map((table) => (
 										<Checkbox
 											key={table}
 											label={table}
-											checked={records.includes(table)}
-											onChange={setRecord.bind(null, table)}
-											disabled
-											size="xs"
+											disabled={!configSupport}
+											checked={config.tables.includes(table)}
+											onChange={() => {
+												setConfig((draft) => {
+													draft.tables = toggle(draft.tables, table);
+												});
+											}}
 										/>
 									))}
 								</Stack>
-							</Paper>
-						</Box>
-					</Stack>
+							</Stack>
+						)}
+					</>
 				)}
 
 				<Button
+					mt="xl"
 					fullWidth
 					onClick={handleExport}
 					loading={isExporting}
-					// disabled={exportTypes.length === 0}
 					variant="gradient"
+					disabled={isEmpty}
 					rightSection={<Icon path={iconDownload} />}
 				>
 					Save export

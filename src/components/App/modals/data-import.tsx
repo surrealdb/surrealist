@@ -11,7 +11,6 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useIsConnected } from "~/hooks/connection";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -27,7 +26,6 @@ type ImportType = "sql" | "csv";
 export function DataImportModal() {
 	const isLight = useIsLight();
 	const tables = useTableNames();
-	const isOnline = useIsConnected();
 
 	const [isOpen, openedHandle] = useBoolean();
 
@@ -145,11 +143,8 @@ export function DataImportModal() {
 		<Modal
 			opened={isOpen}
 			onClose={openedHandle.close}
-			size="sm"
 			title={
-				<PrimaryTitle>
-					Import {importType === "sql" ? "database" : "table"}
-				</PrimaryTitle>
+				<PrimaryTitle>Import {importType === "sql" ? "database" : "table"}</PrimaryTitle>
 			}
 		>
 			{importType === "sql" ? (
@@ -162,8 +157,8 @@ export function DataImportModal() {
 						mb="xl"
 						c={isLight ? "slate.7" : "slate.2"}
 					>
-						While existing data will be preserved, it may be overwritten by the
-						imported data.
+						While existing data will be preserved, it may be overwritten by the imported
+						data.
 					</Text>
 
 					<Button
@@ -184,14 +179,14 @@ export function DataImportModal() {
 				<Stack>
 					<Text>This importer allows you to parse CSV data into a table.</Text>
 					<Text>
-						The first row of the CSV file will be interpreted as column names.
-						Before importing, make sure these match the columns in the table you are
-						importing to.
+						The first row of the CSV file will be interpreted as column names. Before
+						importing, make sure these match the columns in the table you are importing
+						to.
 					</Text>
 
 					<Text>
-						While existing data will be preserved, it may be overwritten by the
-						imported data.
+						While existing data will be preserved, it may be overwritten by the imported
+						data.
 					</Text>
 
 					<Divider />

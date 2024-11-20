@@ -46,7 +46,7 @@ export async function showTableDefinitionModal(table: string) {
 					<CodePreview
 						mt="xl"
 						withCopy
-						extensions={[surrealql()]}
+						language="surrealql"
 						value={fullDefinition}
 					/>
 				</Stack>

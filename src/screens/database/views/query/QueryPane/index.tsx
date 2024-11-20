@@ -22,7 +22,7 @@ import { Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
-import { surrealql } from "@surrealdb/codemirror";
+import { surrealql, surrealqlVersionLinter } from "@surrealdb/codemirror";
 import { trim } from "radash";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
@@ -32,6 +32,7 @@ import { ContentPane } from "~/components/Pane";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { useActiveConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
+import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/url";
 import { useInspector } from "~/providers/Inspector";
@@ -43,6 +44,7 @@ import { formatQuery, formatValue } from "~/util/surrealql";
 
 export interface QueryPaneProps {
 	activeTab: QueryTab;
+	editor: EditorView | null;
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
@@ -57,6 +59,7 @@ export interface QueryPaneProps {
 
 export function QueryPane({
 	activeTab,
+	editor,
 	showVariables,
 	selection,
 	switchPortal,
@@ -71,7 +74,7 @@ export function QueryPane({
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { inspect } = useInspector();
 	const connection = useActiveConnection();
-
+	const surqlVersion = useDatabaseVersionLinter(editor);
 	const buffer = useQueryStore((s) => s.queryBuffer);
 
 	const openQueryList = useStable(() => {
@@ -257,6 +260,7 @@ export function QueryPane({
 				lineNumbers={lineNumbers}
 				extensions={[
 					surrealql(),
+					surqlVersion,
 					surqlLinting(),
 					surqlRecordLinks(inspect),
 					surqlTableCompletion(),

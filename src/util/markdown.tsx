@@ -1,26 +1,18 @@
 import { marked } from "marked";
+import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { renderHighlighting } from "./surrealql";
-
-// const LINK_PATTERN = /^(.+?)\|(\d+)$/;
+import { renderHighlighting } from "./highlighting";
 
 marked.use({
 	gfm: true,
 	renderer: {
-		code({ text }) {
+		code({ text, lang }) {
 			const { colorScheme } = useInterfaceStore.getState();
+			const { syntaxTheme } = useConfigStore.getState().settings.appearance;
 
-			return renderHighlighting(text, colorScheme);
+			return lang
+				? renderHighlighting(text, lang.toLowerCase(), colorScheme, syntaxTheme)
+				: text;
 		},
-		// link({ href, title, text }) {
-		// 	const [full, clean, source] = href.match(LINK_PATTERN) ?? [];
-
-		// 	if (full) {
-		// 		const isSame = href === text;
-		// 		return `<a href="${clean}" title="${title}" target="_blank">${isSame ? clean : text}</a><sup>${source}</sup>`;
-		// 	}
-
-		// 	return `<a href="${href}" title="${title}" target="_blank">${text}</a>`;
-		// },
 	},
 });

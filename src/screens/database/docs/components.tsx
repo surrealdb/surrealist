@@ -16,11 +16,17 @@ export function Article({ title, children }: ArticleProps) {
 	return (
 		<Box className={classes.article}>
 			{title && (
-				<Title mb="sm" c="bright">
+				<Title
+					mb="sm"
+					c="bright"
+				>
 					{title}
 				</Title>
 			)}
-			<SimpleGrid cols={2} spacing={64}>
+			<SimpleGrid
+				cols={2}
+				spacing={64}
+			>
 				{children}
 			</SimpleGrid>
 		</Box>

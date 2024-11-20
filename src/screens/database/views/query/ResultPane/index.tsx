@@ -2,7 +2,6 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
-	Box,
 	Button,
 	Center,
 	Group,

@@ -1,12 +1,6 @@
 import type { ConnectionSchema } from "~/types";
 import { newId } from "~/util/helpers";
-import {
-	iconAuth,
-	iconBook,
-	iconDesigner,
-	iconStar,
-	iconTable,
-} from "~/util/icons";
+import { iconAuth, iconBook, iconDesigner, iconStar, iconTable } from "~/util/icons";
 import { DocsAuthAccessUserData } from "./topics/authentication/access-user-data";
 import { DocsAuthSignIn } from "./topics/authentication/sign-in";
 // import {DocsGlobalAuthentication} from "./topics/global/authentication";
@@ -53,12 +47,13 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Initialising",
 			component: DocsGlobalInit,
-			excludeLanguages: ["cli"],
+			excludeLanguages: ["cli", "go", "java", "c"],
 		},
 		{
 			id: newId(),
 			title: "Connecting",
 			component: DocsGlobalConnecting,
+			excludeLanguages: ["go", "java", "c"],
 		},
 		// {
 		// 	id: newId(),
@@ -70,16 +65,19 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Namespaces",
 			component: DocsGlobalNamespaces,
+			excludeLanguages: ["go", "java", "c"],
 		},
 		{
 			id: newId(),
 			title: "Databases",
 			component: DocsGlobalDatabases,
+			excludeLanguages: ["go", "java", "c"],
 		},
 		{
 			id: newId(),
 			title: "Authentication",
 			icon: iconAuth,
+			excludeLanguages: ["go", "java", "c"],
 			topics: [
 				// {
 				// 	id: newId(),
@@ -113,7 +111,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 					id: newId(),
 					title: "Access user data",
 					component: DocsAuthAccessUserData,
-					excludeLanguages: ["rust", "py", "go", "java"],
+					excludeLanguages: ["rust", "py", "go", "java", "c"],
 				},
 			],
 		},
@@ -121,6 +119,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Schema",
 			icon: iconDesigner,
+			excludeLanguages: ["go", "java", "c"],
 			topics: [
 				// {
 				// 	id: newId(),
@@ -141,25 +140,25 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 					id: newId(),
 					title: "Scopes",
 					component: DocsSchemaScopes,
-					excludeLanguages: ["rust", "py", "go", "java", "js"],
+					excludeLanguages: ["rust", "py", "go", "java", "c", "js"],
 				},
 				{
 					id: newId(),
 					title: "Users",
 					component: DocsSchemaUsers,
-					excludeLanguages: ["rust", "py", "go", "java", "js", "php"],
+					excludeLanguages: ["rust", "py", "go", "java", "c", "js", "php"],
 				},
 				{
 					id: newId(),
 					title: "Functions",
 					component: DocsSchemaFunctions,
-					excludeLanguages: ["rust", "py", "go", "java", "js", "php"],
+					excludeLanguages: ["rust", "py", "go", "java", "c", "js", "php"],
 				},
 				{
 					id: newId(),
 					title: "Analyzers",
 					component: DocsSchemaAnalyzers,
-					excludeLanguages: ["rust", "py", "go", "java"],
+					excludeLanguages: ["rust", "py", "go", "java", "c"],
 				},
 			],
 		},
@@ -167,6 +166,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: `Tables`,
 			icon: iconTable,
+			excludeLanguages: ["go", "java", "c"],
 			topics: [
 				{
 					id: newId(),
@@ -252,6 +252,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Concepts",
 			icon: iconStar,
+			excludeLanguages: ["go", "java", "c"],
 			topics: [
 				{
 					id: newId(),
@@ -274,6 +275,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Learn more",
 			icon: iconBook,
+			excludeLanguages: ["go", "java", "c"],
 			topics: [
 				{
 					id: newId(),

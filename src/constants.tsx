@@ -2,6 +2,7 @@ import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 
 import {
+	CIcon,
 	DotNetIcon,
 	GoLangIcon,
 	JavaIcon,
@@ -70,7 +71,6 @@ import {
 import type { MantineColorScheme } from "@mantine/core";
 
 export type StructureTab = "graph" | "builder";
-export type ExportType = (typeof EXPORT_TYPES)[number];
 export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
 
 export const SANDBOX = "sandbox";
@@ -170,17 +170,6 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 	{ label: "Scope (Legacy)", value: "scope" },
 ];
 
-export const CODE_LANGUAGES: Selectable<CodeLang>[] = [
-	{ label: "CLI", value: "cli" },
-	{ label: "Rust", value: "rust" },
-	{ label: "JavaScript", value: "js" },
-	// { label: "Go", value: "go" },
-	{ label: "Python", value: "py" },
-	{ label: ".NET", value: "csharp" },
-	// { label: "Java", value: "java" },
-	{ label: "PHP", value: "php" },
-];
-
 export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 	{ label: "Expandable", value: "expandable" },
 	{ label: "Compact", value: "compact" },
@@ -188,13 +177,6 @@ export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 ];
 
 export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
-	cloud: {
-		id: "cloud",
-		name: "Surreal Cloud",
-		icon: iconCloud,
-		desc: "Manage your Surreal Cloud environment",
-		disabled: (flags) => !flags.cloud_view,
-	},
 	query: {
 		id: "query",
 		name: "Query",
@@ -261,6 +243,13 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		require: "database",
 		disabled: (flags) => !flags.apidocs_view,
 	},
+	cloud: {
+		id: "cloud",
+		name: "Surreal Cloud",
+		icon: iconCloud,
+		desc: "Manage your Surreal Cloud environment",
+		disabled: (flags) => !flags.cloud_view,
+	},
 };
 
 export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
@@ -310,8 +299,6 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 		icon: iconSidekick,
 	},
 };
-
-export const EXPORT_TYPES = ["tables", "analyzers", "functions", "params", "access"] as const;
 
 export const SURREAL_KINDS = [
 	{ label: "No kind specified", value: "" },
@@ -412,12 +399,7 @@ export const DRIVERS: Driver[] = [
 		icon: JavaScriptIcon,
 		link: "https://surrealdb.com/docs/sdk/javascript",
 	},
-	{
-		id: "go",
-		name: "GoLang",
-		icon: GoLangIcon,
-		link: "https://surrealdb.com/docs/sdk/golang",
-	},
+
 	{
 		id: "py",
 		name: "Python",
@@ -431,15 +413,30 @@ export const DRIVERS: Driver[] = [
 		link: "https://surrealdb.com/docs/sdk/dotnet",
 	},
 	{
-		id: "java",
-		name: "Java",
-		icon: JavaIcon,
-		link: "https://surrealdb.com/docs/sdk/java",
-	},
-	{
 		id: "php",
 		name: "PHP",
 		icon: PhpIcon,
 		link: "https://surrealdb.com/docs/sdk/php",
+	},
+	{
+		id: "java",
+		name: "Java",
+		icon: JavaIcon,
+		link: "https://surrealdb.com/docs/sdk/java",
+		disabled: true,
+	},
+	{
+		id: "go",
+		name: "GoLang",
+		icon: GoLangIcon,
+		link: "https://surrealdb.com/docs/sdk/golang",
+		disabled: true,
+	},
+	{
+		id: "c",
+		name: "C",
+		icon: CIcon,
+		link: "https://github.com/surrealdb/surrealdb.c",
+		disabled: true,
 	},
 ];
