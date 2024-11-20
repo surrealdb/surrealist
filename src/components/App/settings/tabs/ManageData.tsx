@@ -14,6 +14,7 @@ import { assign, isObject, merge } from "radash";
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
+import { JSON_FILTER } from "~/constants";
 import { useConnections } from "~/hooks/connection";
 import { useCheckbox } from "~/hooks/events";
 import { useStable } from "~/hooks/stable";
@@ -39,18 +40,23 @@ export function ManageDataTab() {
 	const updateIncludeSensitive = useCheckbox(setIncludeSensitive);
 
 	const saveBackup = useStable(() => {
-		adapter.saveFile("Save config backup", "surrealist-backup.json", [], async () => {
-			return backupConfig({
-				stripSensitive: !includeSensitive,
-				connections: filteredConnections,
-			});
-		});
+		adapter.saveFile(
+			"Save config backup",
+			"surrealist-backup.json",
+			[JSON_FILTER],
+			async () => {
+				return backupConfig({
+					stripSensitive: !includeSensitive,
+					connections: filteredConnections,
+				});
+			},
+		);
 	});
 
 	const [restoreConfig, setRestoreConfig] = useState<string | null>(null);
 
 	const restoreFile = useStable(() => {
-		adapter.openTextFile("Select a backup file", [], false).then(([file]) => {
+		adapter.openTextFile("Select a backup file", [JSON_FILTER], false).then(([file]) => {
 			setRestoreConfig(file.content);
 		});
 	});
