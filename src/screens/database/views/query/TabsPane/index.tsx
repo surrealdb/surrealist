@@ -48,6 +48,7 @@ import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryTab, QueryType } from "~/types";
+import { uniqueName } from "~/util/helpers";
 
 const TYPE_ICONS: Record<QueryType, string> = {
 	config: iconQuery,
@@ -99,7 +100,10 @@ function Query({
 		}
 	});
 
-	const renameQuery = useStable((id: string, name: string) => {
+	const renameQuery = useStable((id: string, newName: string) => {
+		const existing = queries.filter((q) => q.id !== id).map((q) => q.name ?? "");
+		const name = uniqueName(newName || "New query", existing);
+
 		updateQueryTab({
 			id,
 			name,

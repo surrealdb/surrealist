@@ -25,7 +25,7 @@ import type {
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConfig, createBaseQuery } from "~/util/defaults";
 import type { schema } from "~/util/feature-flags";
-import { newId } from "~/util/helpers";
+import { newId, uniqueName } from "~/util/helpers";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -196,15 +196,8 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				updateConnection(state, (connection) => {
 					const tabId = newId();
-					const baseName = options?.name || "New query";
-
-					let queryName = "";
-					let counter = 0;
-
-					do {
-						queryName = `${baseName} ${counter ? counter + 1 : ""}`.trim();
-						counter++;
-					} while (connection.queries.some((query) => query.name === queryName));
+					const existing = connection.queries.map((query) => query.name ?? "");
+					const queryName = uniqueName(options?.name || "New query", existing);
 
 					return {
 						queries: [
