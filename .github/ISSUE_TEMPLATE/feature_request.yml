@@ -28,17 +28,6 @@ body:
     attributes:
       label: Have you considered contributing this feature yourself?
       description: Optionally provide further details...
-  - type: textarea
-    id: Environment
-    attributes:
-      label: Surrealist Environment
-      description: |
-        Paste your environment here by following these steps
-        1. Open the settings menu
-        2. Left-click the version text under the logo
-        3. Paste clipboard contents here
-    validations:
-      required: true
   - type: input
     id: contact
     attributes:
@@ -53,8 +42,8 @@ body:
       label: Is there an existing issue for this?
       description: Please search [our issues](https://github.com/surrealdb/surrealist/issues) to see if this feature request already exists.
       options:
-      - label: I have searched the existing issues
-        required: true
+        - label: I have searched the existing issues
+          required: true
   - type: checkboxes
     id: terms
     attributes:
