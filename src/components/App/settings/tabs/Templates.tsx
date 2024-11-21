@@ -1,8 +1,17 @@
-import { Button, Group, Modal, Text } from "@mantine/core";
+import {
+	iconCheck,
+	iconCopy,
+	iconDelete,
+	iconDotsVertical,
+	iconFile,
+	iconPlus,
+} from "~/util/icons";
+
+import { ActionIcon, Button, Group, Menu, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useImmer } from "use-immer";
 import { ConnectionDetails } from "~/components/ConnectionDetails";
-import { Entry } from "~/components/Entry";
+import { Entry, type EntryProps } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -11,9 +20,10 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
-import { newId } from "~/util/helpers";
-import { iconCheck, iconDelete, iconFile, iconPlus } from "~/util/icons";
+import { newId, ON_STOP_PROPAGATION, uniqueName } from "~/util/helpers";
 import { SettingsSection } from "../utilities";
+import { type HTMLAttributes, type MouseEvent, useState } from "react";
+import { useConfirmation } from "~/providers/Confirmation";
 
 const CAT = "templates";
 
@@ -33,7 +43,14 @@ export function TemplatesTab() {
 
 	const openCreator = useStable(() => {
 		showEditorHandle.open();
-		setDetails(createPlaceholder());
+
+		const existing = templates.map((t) => t.name);
+		const name = uniqueName("New template", existing);
+
+		setDetails({
+			...createPlaceholder(),
+			name: name,
+		});
 	});
 
 	const openEditor = useStable((template: Template) => {
@@ -50,7 +67,7 @@ export function TemplatesTab() {
 
 	const saveTemplate = useStable(() => {
 		const draft = [...templates];
-
+		const index = draft.findIndex((t) => t.id === details.id);
 		const template: Template = {
 			id: details.id,
 			name: details.name,
@@ -59,32 +76,38 @@ export function TemplatesTab() {
 			values: details.authentication,
 		};
 
-		if (details.id) {
-			const index = draft.findIndex((t) => t.id === details.id);
-
-			if (index >= 0) {
-				draft[index] = template;
-			}
+		if (index >= 0) {
+			draft[index] = template;
 		} else {
-			draft.push({
-				...template,
-				id: newId(),
-			});
+			draft.push(template);
 		}
 
 		setTemplates(draft);
 		showEditorHandle.close();
 	});
 
-	const deleteConnection = useStable(() => {
-		const draft = [...templates];
-		const index = draft.findIndex((t) => t.id === details.id);
+	const handleRemove = useStable((template: Template) => {
+		const index = templates.findIndex((t) => t.id === template.id);
 
 		if (index >= 0) {
-			draft.splice(index, 1);
-			setTemplates(draft);
-			showEditorHandle.close();
+			setTemplates(templates.toSpliced(index, 1));
 		}
+
+		showEditorHandle.close();
+	});
+
+	const handleDuplicate = useStable((template: Template) => {
+		const existing = templates.map((t) => t.name);
+		const name = uniqueName(template.name, existing);
+
+		setTemplates([
+			...templates,
+			{
+				...template,
+				id: newId(),
+				name: name,
+			},
+		]);
 	});
 
 	return (
@@ -97,14 +120,13 @@ export function TemplatesTab() {
 				</Text>
 
 				{templates.map((template) => (
-					<Entry
+					<Item
 						key={template.id}
-						variant="filled"
-						onClick={() => openEditor(template)}
-						leftSection={<Icon path={iconFile} />}
-					>
-						{template.name}
-					</Entry>
+						template={template}
+						onOpen={openEditor}
+						onRemove={handleRemove}
+						onDuplicate={handleDuplicate}
+					/>
 				))}
 
 				<Entry
@@ -137,15 +159,6 @@ export function TemplatesTab() {
 							Close
 						</Button>
 						<Spacer />
-						{details.id && (
-							<Button
-								color="pink.9"
-								onClick={deleteConnection}
-								leftSection={<Icon path={iconDelete} />}
-							>
-								Remove
-							</Button>
-						)}
 						<Button
 							type="submit"
 							variant="gradient"
@@ -157,5 +170,90 @@ export function TemplatesTab() {
 				</Form>
 			</Modal>
 		</>
+	);
+}
+
+interface ItemProps extends EntryProps, Omit<HTMLAttributes<HTMLButtonElement>, "style" | "color"> {
+	template: Template;
+	onOpen: (template: Template) => void;
+	onRemove: (template: Template) => void;
+	onDuplicate: (template: Template) => void;
+}
+
+function Item({ template, onOpen, onRemove, onDuplicate, ...other }: ItemProps) {
+	const [showOptions, setShowOptions] = useState(false);
+
+	const activate = useStable(() => {
+		onOpen(template);
+	});
+
+	const handleOptions = useStable((e: MouseEvent) => {
+		e.stopPropagation();
+		setShowOptions(true);
+	});
+
+	const handleDelete = useConfirmation({
+		title: "Remove template",
+		message: "Are you sure you want to remove this template?",
+		skippable: true,
+		onConfirm() {
+			onRemove(template);
+		},
+	});
+
+	const handleDuplicate = useStable(() => {
+		onDuplicate(template);
+	});
+
+	return (
+		<Entry
+			key={template.id}
+			onClick={activate}
+			leftSection={<Icon path={iconFile} />}
+			rightSection={
+				<Menu
+					opened={showOptions}
+					onChange={setShowOptions}
+					transitionProps={{
+						transition: "scale-y",
+					}}
+				>
+					<Menu.Target>
+						<ActionIcon
+							component="div"
+							variant="transparent"
+							onClick={handleOptions}
+							aria-label="Connection options"
+						>
+							<Icon path={iconDotsVertical} />
+						</ActionIcon>
+					</Menu.Target>
+					<Menu.Dropdown onClick={ON_STOP_PROPAGATION}>
+						<Menu.Item
+							leftSection={<Icon path={iconCopy} />}
+							onClick={handleDuplicate}
+						>
+							Duplicate
+						</Menu.Item>
+						<Menu.Divider />
+						<Menu.Item
+							leftSection={
+								<Icon
+									path={iconDelete}
+									c="red"
+								/>
+							}
+							onClick={handleDelete}
+							c="red"
+						>
+							Delete
+						</Menu.Item>
+					</Menu.Dropdown>
+				</Menu>
+			}
+			{...other}
+		>
+			<Text truncate>{template.name}</Text>
+		</Entry>
 	);
 }
