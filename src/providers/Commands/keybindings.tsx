@@ -63,7 +63,7 @@ export function expandModKey(key: string) {
 		return key;
 	}
 
-	return adapter.platform === "windows" ? "ctrl" : "meta";
+	return adapter.platform === "darwin" ? "meta" : "ctrl";
 }
 
 /**
