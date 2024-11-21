@@ -352,6 +352,11 @@ export const SURQL_FILTER = {
 	extensions: ["surql", "sql", "surrealql"],
 };
 
+export const JSON_FILTER = {
+	name: "JSON File",
+	extensions: ["json"],
+};
+
 export const ORIENTATIONS: Selectable<Orientation>[] = [
 	{ label: "Horizontal", value: "horizontal" },
 	{ label: "Vertical", value: "vertical" },

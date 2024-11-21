@@ -229,7 +229,7 @@ export function ConnectionsModal() {
 
 			<ScrollArea.Autosize
 				scrollbars="y"
-				mah="calc(100vh - 200px)"
+				mah="calc(100vh - 225px)"
 				mih={64}
 			>
 				<Stack

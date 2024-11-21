@@ -86,7 +86,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const responseCount = responses.length;
 
 	const showCombined = resultMode === "combined" || resultMode === "live";
-	const showQueries = !showCombined && responses.length > 1;
+	const showQueries = !showCombined && responses.length > 0;
 
 	const isValid = useQueryStore((s) => s.isBufferValid);
 	const isLive = liveTabs.has(activeTab.id);
@@ -201,29 +201,6 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						)
 					)}
 
-					{!isMini && (
-						<ListMenu
-							data={RESULT_FORMATS}
-							value={resultFormat}
-							onChange={setResultFormat}
-						>
-							<Tooltip label="Change result format">
-								<Button
-									size="xs"
-									radius="xs"
-									aria-label="Change format mode"
-									variant="light"
-									color="slate"
-									leftSection={
-										activeFormat?.icon && <Icon path={activeFormat.icon} />
-									}
-								>
-									{activeFormat?.label ?? resultFormat}
-								</Button>
-							</Tooltip>
-						</ListMenu>
-					)}
-
 					<ListMenu
 						data={RESULT_MODES}
 						value={resultMode}
@@ -256,6 +233,29 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							)}
 						</Tooltip>
 					</ListMenu>
+
+					{!isMini && (
+						<ListMenu
+							data={RESULT_FORMATS}
+							value={resultFormat}
+							onChange={setResultFormat}
+						>
+							<Tooltip label="Change result format">
+								<Button
+									size="xs"
+									radius="xs"
+									aria-label="Change format mode"
+									variant="light"
+									color="slate"
+									leftSection={
+										activeFormat?.icon && <Icon path={activeFormat.icon} />
+									}
+								>
+									{activeFormat?.label ?? resultFormat}
+								</Button>
+							</Tooltip>
+						</ListMenu>
+					)}
 
 					<Button
 						size="xs"

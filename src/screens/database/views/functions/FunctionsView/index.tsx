@@ -203,6 +203,7 @@ export function FunctionsView() {
 								title="Functions"
 								icon={iconFunction}
 								snippet={{
+									language: "surrealql",
 									code: `
 										-- Define your functions with ease
 										DEFINE FUNCTION fn::greet($name: string) {

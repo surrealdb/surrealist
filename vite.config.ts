@@ -7,6 +7,7 @@ import { ViteImageOptimizer as images } from "vite-plugin-image-optimizer";
 import { Mode, plugin as markdown } from "vite-plugin-markdown";
 import { surreal, version } from "./package.json";
 
+const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 const isInstance = process.env.VITE_SURREALIST_INSTANCE === "true";
 
@@ -14,30 +15,36 @@ export default defineConfig(({ mode }) => {
 	// Required because we cannot pass a custom mode to tauri build
 	mode = isPreview ? "preview" : mode;
 
+	// Define base plugins
+	const plugins = [
+		images(),
+		react(),
+		markdown({
+			mode: [Mode.HTML],
+		}),
+		legacy({
+			modernTargets: "since 2021-01-01, not dead",
+			modernPolyfills: true,
+			renderLegacyChunks: false,
+		}),
+	];
+
+	// Configure compression for web builds
+	if (!isTauri) {
+		plugins.push(
+			compression({
+				deleteOriginalAssets: true,
+				threshold: isInstance ? 100 : undefined,
+				filename: isInstance ? undefined : (id) => id,
+				include: isInstance
+					? /assets\/.+\.(html|xml|css|json|js|mjs|svg|wasm)$/
+					: /\.(wasm)$/,
+			}),
+		);
+	}
+
 	return {
-		plugins: [
-			images(),
-			react(),
-			markdown({
-				mode: [Mode.HTML],
-			}),
-			legacy({
-				modernTargets: "since 2021-01-01, not dead",
-				modernPolyfills: true,
-				renderLegacyChunks: false,
-			}),
-			isInstance
-				? compression({
-						threshold: 100,
-						deleteOriginalAssets: true,
-						include: /assets\/.+\.(html|xml|css|json|js|mjs|svg|wasm)$/,
-					})
-				: compression({
-						deleteOriginalAssets: true,
-						include: /\.(wasm)$/,
-						filename: (id) => id,
-					}),
-		],
+		plugins,
 		clearScreen: false,
 		envPrefix: ["VITE_", "TAURI_"],
 		server: {

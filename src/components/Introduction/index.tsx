@@ -10,8 +10,8 @@ export interface IntroductionProps {
 	header?: ReactNode;
 	snippet?: {
 		title?: string;
-		code?: string;
-		language?: string;
+		code: string;
+		language: string;
 	};
 }
 
@@ -70,8 +70,9 @@ export function Introduction({
 						</Text>
 						<CodePreview
 							bg="transparent"
-							p={0}
+							padding={0}
 							value={snippet.code}
+							language={snippet.language}
 							withDedent
 						/>
 					</Paper>
