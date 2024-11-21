@@ -4,11 +4,13 @@ import {
 	ActionIcon,
 	Box,
 	CopyButton,
+	type MantineSpacing,
 	Paper,
 	type PaperProps,
 	ScrollArea,
 	Text,
 } from "@mantine/core";
+
 import clsx from "clsx";
 import { type ReactNode, useMemo } from "react";
 import { useIsLight, useTheme } from "~/hooks/theme";
@@ -26,6 +28,7 @@ export interface CodePreviewProps extends PaperProps {
 	rightSection?: ReactNode;
 	withCopy?: boolean;
 	withDedent?: boolean;
+	padding?: MantineSpacing;
 }
 
 export function CodePreview({
@@ -35,6 +38,7 @@ export function CodePreview({
 	withCopy,
 	rightSection,
 	withDedent,
+	padding,
 	className,
 	...rest
 }: CodePreviewProps) {
@@ -76,7 +80,7 @@ export function CodePreview({
 			>
 				<ScrollArea.Autosize>
 					<Box
-						p="lg"
+						p={padding ?? "lg"}
 						pr={rightPadding ? 64 : 0}
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: Highlighting
 						dangerouslySetInnerHTML={{ __html: sippet }}

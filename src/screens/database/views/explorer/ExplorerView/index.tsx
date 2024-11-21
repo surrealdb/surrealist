@@ -169,6 +169,7 @@ export function ExplorerView() {
 								title="Explorer"
 								icon={iconExplorer}
 								snippet={{
+									language: "surrealql",
 									code: `
 										-- Declare a new table
 										DEFINE TABLE person;
