@@ -86,7 +86,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const responseCount = responses.length;
 
 	const showCombined = resultMode === "combined" || resultMode === "live";
-	const showQueries = !showCombined && responses.length > 1;
+	const showQueries = !showCombined && responses.length > 0;
 
 	const isValid = useQueryStore((s) => s.isBufferValid);
 	const isLive = liveTabs.has(activeTab.id);
