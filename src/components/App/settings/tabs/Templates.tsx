@@ -9,6 +9,7 @@ import {
 
 import { ActionIcon, Button, Group, Menu, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { type HTMLAttributes, type MouseEvent, useState } from "react";
 import { useImmer } from "use-immer";
 import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { Entry, type EntryProps } from "~/components/Entry";
@@ -17,13 +18,12 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
-import { newId, ON_STOP_PROPAGATION, uniqueName } from "~/util/helpers";
+import { ON_STOP_PROPAGATION, newId, uniqueName } from "~/util/helpers";
 import { SettingsSection } from "../utilities";
-import { type HTMLAttributes, type MouseEvent, useState } from "react";
-import { useConfirmation } from "~/providers/Confirmation";
 
 const CAT = "templates";
 
