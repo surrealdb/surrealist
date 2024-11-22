@@ -95,11 +95,11 @@ importers:
         specifier: ^6.5.0
         version: 6.5.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)
       '@surrealdb/codemirror':
-        specifier: 1.0.0-beta.16
-        version: 1.0.0-beta.16
+        specifier: 1.0.0-beta.17
+        version: 1.0.0-beta.17
       '@surrealdb/lezer':
-        specifier: 1.0.0-beta.16
-        version: 1.0.0-beta.16
+        specifier: 1.0.0-beta.17
+        version: 1.0.0-beta.17
       '@surrealdb/ql-wasm':
         specifier: 0.2.0-beta.7
         version: 0.2.0-beta.7
@@ -1558,11 +1558,11 @@ packages:
     resolution: {integrity: sha512-QWLl2P+rsCJeofkDNIT3WFmb6NrRud1SUYW8dIhXK/46XFV8Q/g7Bsvib0Askb0reRLe+WYPeeE+l5cH7SlkuQ==}
     engines: {node: '>=18'}
 
-  '@surrealdb/codemirror@1.0.0-beta.16':
-    resolution: {integrity: sha512-khN/sGYhfJtXlPxeO9vTKlw7XR3XrKC4ZP1yk4ugWoJmYscHduX6GMZOZEc4KVheuispcT+wk55/hqftrJqBnQ==}
+  '@surrealdb/codemirror@1.0.0-beta.17':
+    resolution: {integrity: sha512-QeYqJBOxP+g4Ol2M+H1lvAw3PkwqTmDKd/VzfkS5Zw6HrqbMlpjd+9l/AOMmP3bO8QqDGX39Mw+BhkboCUUP7w==}
 
-  '@surrealdb/lezer@1.0.0-beta.16':
-    resolution: {integrity: sha512-Mx3pDyflnGiI1y4LDUxowbjsnqyJO3ppZkS14XwiebWpIg+cuiuRp78abJyOYSujrnQvDAWWgRYgHe7kxZC0Ow==}
+  '@surrealdb/lezer@1.0.0-beta.17':
+    resolution: {integrity: sha512-/UdqbcfBJJ6sYIQbOnQagCJJmxpMfph/13Pj5RRcos5xG0NxgIdHi2ByEGvIG1+nzNppY26+568rdQ7EU9jY3A==}
 
   '@surrealdb/ql-wasm@0.2.0-beta.7':
     resolution: {integrity: sha512-xlm/Vkjt96H64QdGiVKyvdCBBdLiENf5LfeAx48DZ/scj9dNWoe6oubwLsFQwCBj9C4o+pSZ1CGgY29oJb3pIw==}
@@ -4137,16 +4137,16 @@ snapshots:
 
   '@sindresorhus/is@7.0.1': {}
 
-  '@surrealdb/codemirror@1.0.0-beta.16':
+  '@surrealdb/codemirror@1.0.0-beta.17':
     dependencies:
       '@codemirror/language': 6.10.3
       '@codemirror/lint': 6.8.2
       '@lezer/common': 1.2.3
       '@lezer/javascript': 1.4.19
-      '@surrealdb/lezer': 1.0.0-beta.16
+      '@surrealdb/lezer': 1.0.0-beta.17
       compare-versions: 6.1.1
 
-  '@surrealdb/lezer@1.0.0-beta.16':
+  '@surrealdb/lezer@1.0.0-beta.17':
     dependencies:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
