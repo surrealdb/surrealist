@@ -16,7 +16,8 @@ import { executeQuerySingle } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
-import { escapeIdent, getStatementCount } from "./surrealql";
+import { getStatementCount } from "./surrealql";
+import { escapeIdent } from "surrealdb";
 
 export interface SchemaSyncOptions {
 	tables?: string[];

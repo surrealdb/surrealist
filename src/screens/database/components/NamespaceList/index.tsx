@@ -28,8 +28,9 @@ import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
-import { escapeIdent, parseIdent } from "~/util/surrealql";
+import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
+import { escapeIdent } from "surrealdb";
 
 export interface NamespaceProps {
 	value: string;
@@ -202,7 +203,9 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 								<ActionIcon
 									color="slate"
 									variant="light"
-									disabled={!connected || (level !== "root" && level !== "namespace")}
+									disabled={
+										!connected || (level !== "root" && level !== "namespace")
+									}
 									onClick={openCreator}
 								>
 									<Icon path={iconPlus} />

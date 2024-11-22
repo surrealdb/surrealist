@@ -329,17 +329,6 @@ export function tryParseParams(paramString: string) {
 }
 
 /**
- * Correctly escape a string for use as table name
- *
- * @param value The value to escape
- * @returns The escaped value
- * @deprecated Use `escapeIdent` from surrealql.tsx instead
- */
-export function tb(value: string) {
-	return escape_ident(value);
-}
-
-/**
  * Parse the JWT payload from the given token
  * without checking for validity. This should
  * never be used in a secure context and only

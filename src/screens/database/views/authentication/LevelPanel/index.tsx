@@ -32,9 +32,9 @@ import type { Base, SchemaAccess, SchemaUser } from "~/types";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
-import { escapeIdent } from "~/util/surrealql";
 import { AccessEditorModal } from "./models/access";
 import { UserEditorModal } from "./models/users";
+import { escapeIdent } from "surrealdb";
 
 interface DisabledState {
 	message: string;
