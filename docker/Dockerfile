@@ -26,7 +26,7 @@ RUN mkdir html
 WORKDIR /
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY ./nginx/nginx.conf /etc/nginx
+COPY ./docker/nginx/nginx.conf /etc/nginx
 
 EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
