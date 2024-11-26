@@ -15,6 +15,7 @@ import { useInputState } from "@mantine/hooks";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
 import { sort } from "radash";
 import { useMemo } from "react";
+import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -32,7 +33,6 @@ import { useInterfaceStore } from "~/stores/interface";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
-import { escapeIdent } from "surrealdb";
 
 export interface TablesPaneProps {
 	icon?: string;

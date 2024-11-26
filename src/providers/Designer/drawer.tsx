@@ -23,6 +23,7 @@ import {
 } from "~/util/icons";
 
 import { useState } from "react";
+import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
@@ -42,7 +43,6 @@ import { FieldsElement } from "./elements/fields";
 import { GeneralElement } from "./elements/general";
 import { IndexesElement } from "./elements/indexes";
 import { PermissionsElement } from "./elements/permissions";
-import { escapeIdent } from "surrealdb";
 
 export interface SchemaDrawerProps {
 	opened: boolean;

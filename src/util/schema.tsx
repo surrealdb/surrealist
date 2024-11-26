@@ -11,13 +11,13 @@ import type {
 } from "~/types";
 
 import { klona } from "klona";
+import { escapeIdent } from "surrealdb";
 import { adapter } from "~/adapter";
 import { executeQuerySingle } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
 import { getStatementCount } from "./surrealql";
-import { escapeIdent } from "surrealdb";
 
 export interface SchemaSyncOptions {
 	tables?: string[];

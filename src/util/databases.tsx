@@ -1,8 +1,8 @@
+import { escapeIdent } from "surrealdb";
 import { executeQuery, executeQuerySingle } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { getAuthDB, getAuthNS, getConnection } from "./connection";
 import { parseIdent } from "./surrealql";
-import { escapeIdent } from "surrealdb";
 
 /**
  * Fetch a list of available namespaces
