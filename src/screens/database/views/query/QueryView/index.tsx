@@ -196,7 +196,6 @@ export function QueryView() {
 			flex={1}
 			h="100%"
 			ref={wrapperRef}
-			style={{ opacity: minResultHeight === 0 ? 0 : 1 }}
 		>
 			<PanelGroup direction={orientation}>
 				<Panel minSize={15}>
@@ -271,7 +270,7 @@ export function QueryView() {
 				</Panel>
 				<PanelDragger />
 				<Panel
-					minSize={minResultHeight}
+					minSize={orientation === "horizontal" ? 35 : minResultHeight}
 					defaultSize={50}
 				>
 					<ResultPaneLazy
@@ -350,6 +349,7 @@ export function QueryView() {
 						<Panel
 							id="content"
 							order={2}
+							className="HELLO"
 						>
 							{queryEditor}
 						</Panel>
