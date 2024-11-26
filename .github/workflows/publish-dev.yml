@@ -6,6 +6,12 @@ on:
 
 permissions: write-all
 
+env:
+  CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
+  CLOUD_CALLBACK_URL_DEV: https://dev.surrealist.app/cloud/callback
+  SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
+  SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
+
 jobs:
   version:
     name: Extract version
@@ -57,10 +63,10 @@ jobs:
         run: pnpm build
         env:
           VITE_SURREALIST_PREVIEW: "true"
-          VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
-          VITE_CLOUD_CALLBACK_URL: "https://dev.surrealist.app/cloud/callback"
-          VITE_SCOUT_COPILOT_ID: ${{ secrets.VITE_SCOUT_COPILOT_ID }}
-          VITE_SCOUT_WORKFLOW_ID: ${{ secrets.VITE_SCOUT_WORKFLOW_ID }}
+          VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
+          VITE_CLOUD_CALLBACK_URL: ${{ env.CLOUD_CALLBACK_URL_DEV }}
+          VITE_SCOUT_COPILOT_ID: ${{ env.SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ env.SCOUT_WORKFLOW_ID }}
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:

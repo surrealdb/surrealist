@@ -16,8 +16,11 @@ on:
 env:
   UPDATE_URL_STABLE: "https://surrealist.app/latest.json"
   UPDATE_URL_BETA: "https://beta.surrealist.app/latest.json"
-  CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
-  CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
+  CLOUD_CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
+  CLOUD_CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
+  CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
+  SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
+  SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
 
 jobs:
   version:
@@ -141,16 +144,16 @@ jobs:
         run: |
           if [ "${{ inputs.prerelease }}" == "true" ]; then
             echo "UPDATE_URL=${{ env.UPDATE_URL_BETA }}" >> $GITHUB_ENV
-            echo "CALLBACK_URL=${{ env.CALLBACK_URL_BETA }}" >> $GITHUB_ENV
+            echo "CLOUD_CALLBACK_URL=${{ env.CLOUD_CALLBACK_URL_BETA }}" >> $GITHUB_ENV
           else
             echo "UPDATE_URL=${{ env.UPDATE_URL_STABLE }}" >> $GITHUB_ENV
-            echo "CALLBACK_URL=${{ env.CALLBACK_URL_STABLE }}" >> $GITHUB_ENV
+            echo "CLOUD_CALLBACK_URL=${{ env.CLOUD_CALLBACK_URL_STABLE }}" >> $GITHUB_ENV
           fi
 
       - name: Debug environment
         run: |
           echo "Update URL: ${{ env.UPDATE_URL }}"
-          echo "Callback URL: ${{ env.CALLBACK_URL }}"
+          echo "Callback URL: ${{ env.CLOUD_CALLBACK_URL }}"
 
       - name: Configure update endpoint
         shell: bash
@@ -166,10 +169,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_SURREALIST_PREVIEW: "${{ inputs.prerelease }}"
-          VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
-          VITE_CLOUD_CALLBACK_URL: "${{ env.CALLBACK_URL }}"
-          VITE_SCOUT_COPILOT_ID: ${{ secrets.VITE_SCOUT_COPILOT_ID }}
-          VITE_SCOUT_WORKFLOW_ID: ${{ secrets.VITE_SCOUT_WORKFLOW_ID }}
+          VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
+          VITE_CLOUD_CALLBACK_URL: "${{ env.CLOUD_CALLBACK_URL }}"
+          VITE_SCOUT_COPILOT_ID: ${{ secrets.SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ secrets.SCOUT_WORKFLOW_ID }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}

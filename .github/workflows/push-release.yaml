@@ -5,8 +5,11 @@ on:
     types: [published]
 
 env:
-  CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
-  CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
+  CLOUD_CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
+  CLOUD_CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
+  CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
+  SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
+  SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
 
 jobs:
   version:
@@ -50,6 +53,11 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v6
+        env:
+          VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
+          VITE_CLOUD_CALLBACK_URL: ${{ env.CLOUD_CALLBACK_URL }}
+          VITE_SCOUT_COPILOT_ID: ${{ env.SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ env.SCOUT_WORKFLOW_ID }}
         with:
           push: true
           file: docker/Dockerfile
@@ -92,24 +100,24 @@ jobs:
       - name: Configure variables
         run: |
           if [ "${{ github.event.release.prerelease }}" == "true" ]; then
-            echo "CALLBACK_URL=${{ env.CALLBACK_URL_BETA }}" >> $GITHUB_ENV
+            echo "CLOUD_CALLBACK_URL=${{ env.CLOUD_CALLBACK_URL_BETA }}" >> $GITHUB_ENV
           else
-            echo "CALLBACK_URL=${{ env.CALLBACK_URL_STABLE }}" >> $GITHUB_ENV
+            echo "CLOUD_CALLBACK_URL=${{ env.CLOUD_CALLBACK_URL_STABLE }}" >> $GITHUB_ENV
           fi
 
       - name: Debug environment
         run: |
           echo "Update URL: ${{ env.UPDATE_URL }}"
-          echo "Callback URL: ${{ env.CALLBACK_URL }}"
+          echo "Callback URL: ${{ env.CLOUD_CALLBACK_URL }}"
 
       - name: Build Website
         run: pnpm build
         env:
           VITE_SURREALIST_PREVIEW: "${{ github.event.release.prerelease }}"
-          VITE_CLOUD_CLIENT_ID: "OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR"
-          VITE_CLOUD_CALLBACK_URL: "${{ env.CALLBACK_URL }}"
-          VITE_SCOUT_COPILOT_ID: ${{ secrets.VITE_SCOUT_COPILOT_ID }}
-          VITE_SCOUT_WORKFLOW_ID: ${{ secrets.VITE_SCOUT_WORKFLOW_ID }}
+          VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
+          VITE_CLOUD_CALLBACK_URL: ${{ env.CLOUD_CALLBACK_URL }}
+          VITE_SCOUT_COPILOT_ID: ${{ env.SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ env.SCOUT_WORKFLOW_ID }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
