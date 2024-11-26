@@ -9,6 +9,7 @@ import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
+import { useConfigStore } from "~/stores/config";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -20,6 +21,13 @@ interface PKCE {
 	verifier: string;
 	challenge: string;
 }
+
+(window as any).resetCloudState = () => {
+	const { setActiveCloudOrg } = useConfigStore.getState();
+
+	invalidateSession();
+	setActiveCloudOrg("");
+};
 
 /**
  * Open the cloud authentication page
