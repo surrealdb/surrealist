@@ -1,7 +1,4 @@
-import classes from "../style.module.scss";
-
 import {
-	Accordion,
 	Button,
 	Checkbox,
 	Group,
@@ -10,27 +7,24 @@ import {
 	ScrollArea,
 	Stack,
 	Tabs,
-	Text,
 	TextInput,
 	Textarea,
-	Title,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
+import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
-import { SectionTitle } from "~/providers/Designer/helpers";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { Base, SchemaUser } from "~/types";
 import { showError } from "~/util/helpers";
-import { iconAccount, iconChat, iconCheck, iconClock, iconHelp, iconPlus } from "~/util/icons";
+import { iconCheck, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
-import { escapeIdent } from "~/util/surrealql";
 
 const ROLES = [
 	{ value: "OWNER", label: "Owner" },
@@ -128,7 +122,10 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 		>
 			<Form onSubmit={saveUser}>
 				<Tabs defaultValue="general">
-					<Tabs.List grow mb="xl">
+					<Tabs.List
+						grow
+						mb="xl"
+					>
 						<Tabs.Tab value="general">General</Tabs.Tab>
 						<Tabs.Tab value="durations">Durations</Tabs.Tab>
 						<Tabs.Tab value="comment">Comment</Tabs.Tab>

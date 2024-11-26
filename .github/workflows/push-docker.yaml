@@ -1,0 +1,64 @@
+name: Push Docker
+
+on:
+  workflow_dispatch:
+
+env:
+  CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
+  CLOUD_CALLBACK_URL: https://surrealist.app/cloud/callback
+  SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
+  SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
+
+jobs:
+  version:
+    name: Extract version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Extract version
+        id: extract_version
+        uses: Saionaro/extract-package-version@v1.3.0
+
+  push_docker_image:
+    name: Push Docker image to Docker Hub
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    needs:
+      - version
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        env:
+          VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
+          VITE_CLOUD_CALLBACK_URL: ${{ env.CLOUD_CALLBACK_URL }}
+          VITE_SCOUT_COPILOT_ID: ${{ env.SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ env.SCOUT_WORKFLOW_ID }}
+        with:
+          push: true
+          file: docker/Dockerfile
+          tags: |
+            surrealdb/surrealist:latest
+            surrealdb/surrealist:${{ needs.version.outputs.version }}

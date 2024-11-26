@@ -1,20 +1,9 @@
-import {
-	Alert,
-	Box,
-	Button,
-	Checkbox,
-	Divider,
-	Group,
-	Modal,
-	Paper,
-	ScrollArea,
-	SimpleGrid,
-	Stack,
-} from "@mantine/core";
+import { Alert, Button, Checkbox, Divider, Modal, SimpleGrid, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";
+import type { ExportOptions as BaseExportOptions } from "surrealdb";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -24,15 +13,14 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { useToggleList } from "~/hooks/toggle";
 import { useIntent } from "~/hooks/url";
 import { requestDatabaseExport } from "~/screens/database/connection/connection";
-import type { DatabaseExportConfig } from "~/types";
 import { showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
+import { syncConnectionSchema } from "~/util/schema";
 
-export type ExportType = keyof DatabaseExportConfig;
+export type ExportOptions = BaseExportOptions & { tables: string[] };
+export type ExportType = keyof ExportOptions;
 
 const RESOURCES = [
 	"accesses",
@@ -51,7 +39,7 @@ export function DataExportModal() {
 	const [isOpen, openedHandle] = useBoolean();
 
 	const [isExporting, setIsExporting] = useState(false);
-	const [config, setConfig] = useImmer<DatabaseExportConfig>({
+	const [config, setConfig] = useImmer<ExportOptions>({
 		accesses: true,
 		analyzers: true,
 		functions: true,
@@ -102,7 +90,10 @@ export function DataExportModal() {
 
 	const isEmpty = Object.values(config).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
 
-	useIntent("export-database", openedHandle.open);
+	useIntent("export-database", () => {
+		openedHandle.open();
+		syncConnectionSchema();
+	});
 
 	return (
 		<Modal

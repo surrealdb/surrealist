@@ -2,26 +2,29 @@ import { Accordion, Group } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { default as equals } from "fast-deep-equal";
 import { objectify } from "radash";
+import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import type { TableInfo } from "~/types";
-import { tb } from "~/util/helpers";
 
 export interface ElementProps {
 	data: TableInfo;
 	setData: Updater<TableInfo>;
 }
 
-export function SectionTitle({
-	children,
-	icon,
-}: { children: string; icon: string }) {
+export function SectionTitle({ children, icon }: { children: string; icon: string }) {
 	return (
 		<Accordion.Control>
 			<Group gap="sm">
-				<Icon path={icon} size={0.85} />
-				<Text fw={600} size="lg">
+				<Icon
+					path={icon}
+					size={0.85}
+				/>
+				<Text
+					fw={600}
+					size="lg"
+				>
 					{children}
 				</Text>
 			</Group>
@@ -42,11 +45,7 @@ export interface BuildOptions {
 /**
  * Build the queries to update the entire table schema
  */
-export function buildDefinitionQueries({
-	previous,
-	current,
-	useOverwrite,
-}: BuildOptions) {
+export function buildDefinitionQueries({ previous, current, useOverwrite }: BuildOptions) {
 	const queries: string[] = [];
 	const name = current.schema.name;
 
@@ -55,8 +54,8 @@ export function buildDefinitionQueries({
 	const eventIndex = objectify(current.events, (e) => e.name);
 
 	const isRelation = current.schema.kind.kind === "RELATION";
-	const inTables = current.schema.kind.in?.map((name) => tb(name))?.join("|") ?? "";
-	const outTables = current.schema.kind.out?.map((name) => tb(name))?.join("|") ?? "";
+	const inTables = current.schema.kind.in?.map((name) => escapeIdent(name))?.join("|") ?? "";
+	const outTables = current.schema.kind.out?.map((name) => escapeIdent(name))?.join("|") ?? "";
 
 	if (!equals(previous.schema, current.schema)) {
 		let query = "DEFINE TABLE";
@@ -65,7 +64,7 @@ export function buildDefinitionQueries({
 			query += " OVERWRITE";
 		}
 
-		query += ` ${tb(current.schema.name)}`;
+		query += ` ${escapeIdent(current.schema.name)}`;
 
 		if (current.schema.drop) {
 			query += " DROP";
@@ -114,7 +113,7 @@ export function buildDefinitionQueries({
 
 	for (const field of previous.fields) {
 		if (!fieldIndex[field.name]) {
-			queries.push(`REMOVE FIELD ${field.name} ON TABLE ${tb(name)}`);
+			queries.push(`REMOVE FIELD ${field.name} ON TABLE ${escapeIdent(name)}`);
 		}
 	}
 
@@ -125,7 +124,7 @@ export function buildDefinitionQueries({
 			query += " OVERWRITE";
 		}
 
-		query += ` ${field.name} ON TABLE ${tb(name)}`;
+		query += ` ${field.name} ON TABLE ${escapeIdent(name)}`;
 
 		if (field.flex) {
 			query += " FLEXIBLE";
@@ -168,7 +167,7 @@ export function buildDefinitionQueries({
 
 	for (const index of previous.indexes) {
 		if (!indexIndex[index.name]) {
-			queries.push(`REMOVE INDEX ${index.name} ON TABLE ${tb(name)}`);
+			queries.push(`REMOVE INDEX ${index.name} ON TABLE ${escapeIdent(name)}`);
 		}
 	}
 
@@ -179,14 +178,14 @@ export function buildDefinitionQueries({
 			query += " OVERWRITE";
 		}
 
-		query += ` ${index.name} ON TABLE ${tb(name)} FIELDS ${index.cols} ${index.index}`;
+		query += ` ${index.name} ON TABLE ${escapeIdent(name)} FIELDS ${index.cols} ${index.index}`;
 
 		queries.push(query);
 	}
 
 	for (const event of previous.events) {
 		if (!eventIndex[event.name]) {
-			queries.push(`REMOVE EVENT ${event.name} ON TABLE ${tb(name)}`);
+			queries.push(`REMOVE EVENT ${event.name} ON TABLE ${escapeIdent(name)}`);
 		}
 	}
 
@@ -197,7 +196,7 @@ export function buildDefinitionQueries({
 			query += " OVERWRITE";
 		}
 
-		query += ` ${event.name} ON TABLE ${tb(name)} WHEN ${event.when} THEN ${event.then.map((th) => `{${th}}`).join(", ")}`;
+		query += ` ${event.name} ON TABLE ${escapeIdent(name)} WHEN ${event.when} THEN ${event.then.map((th) => `{${th}}`).join(", ")}`;
 
 		queries.push(query);
 	}
@@ -222,8 +221,7 @@ export function isSchemaValid(info: TableInfo): boolean {
 		info.schema.permissions.select !== "" &&
 		info.schema.permissions.update !== "" &&
 		info.schema.permissions.delete !== "" &&
-		(info.schema.kind.kind !== "RELATION" ||
-			(info.schema.kind.in && info.schema.kind.out)) &&
+		(info.schema.kind.kind !== "RELATION" || (info.schema.kind.in && info.schema.kind.out)) &&
 		info.fields.every(
 			(field) =>
 				field.name &&
@@ -233,9 +231,7 @@ export function isSchemaValid(info: TableInfo): boolean {
 				field.permissions.delete !== "",
 		) &&
 		info.indexes.every((index) => index.name && index.cols) &&
-		info.events.every(
-			(event) => event.name && event.when && event.then[0].length > 0,
-		);
+		info.events.every((event) => event.name && event.when && event.then[0].length > 0);
 
 	return !!result;
 }

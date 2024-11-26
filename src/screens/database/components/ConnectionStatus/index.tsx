@@ -79,10 +79,6 @@ export function ConnectionStatus() {
 
 	const [statusText, color, pulse] = statusInfo[currentState];
 
-	// NOTE - Temporary
-	const protocol = connection?.authentication?.protocol;
-	const isExportDisabled = protocol === "indxdb" || protocol === "mem";
-
 	return (
 		<>
 			{connection ? (
@@ -183,20 +179,21 @@ export function ConnectionStatus() {
 							)}
 							<Menu.Item
 								leftSection={<Icon path={iconRefresh} />}
+								disabled={currentState !== "connected" || !connection.lastDatabase}
 								onClick={() => syncConnectionSchema()}
 							>
 								Sync schema
 							</Menu.Item>
 							<Menu.Item
 								leftSection={<Icon path={iconUpload} />}
-								disabled={currentState !== "connected" || isExportDisabled}
+								disabled={currentState !== "connected" || !connection.lastDatabase}
 								onClick={() => dispatchIntent("export-database")}
 							>
 								Export database
 							</Menu.Item>
 							<Menu.Item
 								leftSection={<Icon path={iconDownload} />}
-								disabled={currentState !== "connected"}
+								disabled={currentState !== "connected" || !connection.lastDatabase}
 								onClick={() => dispatchIntent("import-database")}
 							>
 								Import database

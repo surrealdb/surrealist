@@ -1,15 +1,7 @@
-import {
-	Button,
-	Group,
-	Modal,
-	MultiSelect,
-	Select,
-	Stack,
-	Tabs,
-	TextInput,
-} from "@mantine/core";
+import { Button, Group, Modal, MultiSelect, Select, Stack, Tabs, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
+import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -21,13 +13,11 @@ import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SchemaMode } from "~/types";
-import { tb } from "~/util/helpers";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 export function TableCreatorModal() {
-	const { openTableCreator, closeTableCreator } =
-		useInterfaceStore.getState();
+	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showTableCreator);
 	const tables = useTableNames();
@@ -39,16 +29,16 @@ export function TableCreatorModal() {
 	const [mode, setMode] = useState<SchemaMode>("schemaless");
 
 	const createTable = useStable(async () => {
-		let query = `DEFINE TABLE ${tb(tableName)} ${mode.toUpperCase()} TYPE `;
+		let query = `DEFINE TABLE ${escapeIdent(tableName)} ${mode.toUpperCase()} TYPE `;
 
 		if (createType === "relation") {
-			const inTables = tableIn.map((t) => tb(t)).join("|");
-			const outTables = tableOut.map((t) => tb(t)).join("|");
+			const inTables = tableIn.map((t) => escapeIdent(t)).join("|");
+			const outTables = tableOut.map((t) => escapeIdent(t)).join("|");
 
 			query += `RELATION IN ${inTables} OUT ${outTables};`;
 
-			query += `DEFINE FIELD in ON ${tb(tableName)} TYPE record<${inTables}>;`;
-			query += `DEFINE FIELD out ON ${tb(tableName)} TYPE record<${outTables}>;`;
+			query += `DEFINE FIELD in ON ${escapeIdent(tableName)} TYPE record<${inTables}>;`;
+			query += `DEFINE FIELD out ON ${escapeIdent(tableName)} TYPE record<${outTables}>;`;
 		} else {
 			query += "NORMAL;";
 		}
@@ -86,9 +76,7 @@ export function TableCreatorModal() {
 				onClose={closeTableCreator}
 				trapFocus={false}
 				size="sm"
-				title={
-					<PrimaryTitle>{`Create new ${createType}`}</PrimaryTitle>
-				}
+				title={<PrimaryTitle>{`Create new ${createType}`}</PrimaryTitle>}
 			>
 				<Tabs
 					mb="xl"
@@ -160,8 +148,7 @@ export function TableCreatorModal() {
 								flex={1}
 								disabled={
 									!tableName ||
-									(createType === "relation" &&
-										(!tableIn || !tableOut))
+									(createType === "relation" && (!tableIn || !tableOut))
 								}
 								rightSection={<Icon path={iconPlus} />}
 							>

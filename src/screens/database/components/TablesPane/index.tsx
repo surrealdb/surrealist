@@ -15,6 +15,7 @@ import { useInputState } from "@mantine/hooks";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
 import { sort } from "radash";
 import { useMemo } from "react";
+import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -29,7 +30,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { fuzzyMultiMatch, tb } from "~/util/helpers";
+import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
 
@@ -89,7 +90,7 @@ export function TablesPane({
 			"You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
 		onConfirm: async (table: string) => {
-			await executeQuery(`REMOVE TABLE ${tb(table)}`);
+			await executeQuery(`REMOVE TABLE ${escapeIdent(table)}`);
 			await syncConnectionSchema({
 				tables: [table],
 			});

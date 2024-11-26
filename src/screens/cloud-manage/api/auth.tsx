@@ -1,5 +1,6 @@
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
+import { useConfigStore } from "~/stores/config";
 import type { CloudSignin } from "~/types";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
@@ -20,6 +21,13 @@ interface PKCE {
 	verifier: string;
 	challenge: string;
 }
+
+(window as any).resetCloudState = () => {
+	const { setActiveCloudOrg } = useConfigStore.getState();
+
+	invalidateSession();
+	setActiveCloudOrg("");
+};
 
 /**
  * Open the cloud authentication page

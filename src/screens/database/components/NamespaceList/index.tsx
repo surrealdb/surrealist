@@ -16,6 +16,7 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { type MouseEvent, type SyntheticEvent, useMemo } from "react";
+import { escapeIdent } from "surrealdb";
 import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -28,7 +29,7 @@ import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
-import { escapeIdent, parseIdent } from "~/util/surrealql";
+import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
 
 export interface NamespaceProps {
@@ -202,7 +203,9 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 								<ActionIcon
 									color="slate"
 									variant="light"
-									disabled={!connected || (level !== "root" && level !== "namespace")}
+									disabled={
+										!connected || (level !== "root" && level !== "namespace")
+									}
 									onClick={openCreator}
 								>
 									<Icon path={iconPlus} />

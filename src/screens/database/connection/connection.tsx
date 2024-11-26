@@ -1,5 +1,6 @@
 import {
 	type AccessRecordAuth,
+	type ExportOptions,
 	type ScopeAuth,
 	type Surreal,
 	SurrealDbError,
@@ -28,7 +29,7 @@ import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { AuthDetails, Connection, DatabaseExportConfig, Protocol } from "~/types";
+import type { AuthDetails, Connection, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -616,10 +617,10 @@ export async function activateDatabase(namespace: string, database: string) {
  *
  * @param config The export configuration
  */
-export async function requestDatabaseExport(config?: DatabaseExportConfig) {
+export async function requestDatabaseExport(config?: ExportOptions) {
 	const { currentState, version } = useDatabaseStore.getState();
 	const connection = getConnection();
-	const withConfig = compareVersions(version, "2.1.0") >= 0 && config;
+	const useModern = compareVersions(version, "2.1.0");
 
 	if (!connection || currentState !== "connected") {
 		showError({
@@ -629,12 +630,15 @@ export async function requestDatabaseExport(config?: DatabaseExportConfig) {
 		return;
 	}
 
+	if (useModern) {
+		return new Blob([await instance.export(config)]);
+	}
+
 	const { endpoint, headers } = composeHttpConnection(connection, "/export");
 
 	const response = await fetch(endpoint, {
 		headers,
-		method: withConfig ? "POST" : "GET",
-		body: withConfig ? JSON.stringify(config) : undefined,
+		method: "GET",
 	});
 
 	return await response.blob();

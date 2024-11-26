@@ -40,8 +40,9 @@ body:
       description: |
         Paste your environment here by following these steps
         1. Open the settings menu
-        2. Left-click the version text under the logo
-        3. Paste clipboard contents here
+        2. Navigate to the About page
+        3. Press "Copy environment information"
+        4. Paste clipboard contents here
     validations:
       required: true
   - type: input
@@ -58,8 +59,8 @@ body:
       label: Is there an existing issue for this?
       description: Please search [our issues](https://github.com/surrealdb/surrealist/issues) to see if this bug already exists.
       options:
-      - label: I have searched the existing issues
-        required: true
+        - label: I have searched the existing issues
+          required: true
   - type: checkboxes
     id: terms
     attributes:

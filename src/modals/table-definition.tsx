@@ -1,11 +1,10 @@
 import { Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { surrealql } from "@surrealdb/codemirror";
+import { escapeIdent } from "surrealdb";
 import { CodePreview } from "~/components/CodePreview";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { executeQuerySingle } from "~/screens/database/connection/connection";
 import { showError } from "~/util/helpers";
-import { escapeIdent } from "~/util/surrealql";
 
 function header(name: string) {
 	return `\n\n-- ------------------------------\n-- ${name}\n-- ------------------------------ \n\n`;

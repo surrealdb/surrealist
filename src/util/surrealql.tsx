@@ -1,5 +1,5 @@
 import { SurrealQL, Value } from "@surrealdb/ql-wasm";
-import { decodeCbor, encodeCbor, escape_ident } from "surrealdb";
+import { decodeCbor, encodeCbor } from "surrealdb";
 import { DATASETS } from "~/constants";
 
 /**
@@ -136,16 +136,6 @@ function parseKindTree(obj: any, records: Set<string>) {
 			parseKindTree(either, records);
 		}
 	}
-}
-
-/**
- * Escape an ident string when required
- *
- * @param ident The raw string
- * @returns Optionally escaped ident
- */
-export function escapeIdent(ident: string) {
-	return escape_ident(ident);
 }
 
 /**
