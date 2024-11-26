@@ -17,6 +17,7 @@ import { useIntent } from "~/hooks/url";
 import { requestDatabaseExport } from "~/screens/database/connection/connection";
 import { showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
+import { syncConnectionSchema } from "~/util/schema";
 
 export type ExportOptions = BaseExportOptions & { tables: string[] };
 export type ExportType = keyof ExportOptions;
@@ -89,7 +90,10 @@ export function DataExportModal() {
 
 	const isEmpty = Object.values(config).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
 
-	useIntent("export-database", openedHandle.open);
+	useIntent("export-database", () => {
+		openedHandle.open();
+		syncConnectionSchema();
+	});
 
 	return (
 		<Modal
