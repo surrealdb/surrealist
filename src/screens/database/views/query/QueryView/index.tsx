@@ -349,7 +349,6 @@ export function QueryView() {
 						<Panel
 							id="content"
 							order={2}
-							className="HELLO"
 						>
 							{queryEditor}
 						</Panel>
