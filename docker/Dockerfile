@@ -25,6 +25,8 @@ RUN mkdir html
 
 WORKDIR /
 
+RUN rm /etc/nginx/conf.d/default.conf
+
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY ./docker/nginx/nginx.conf /etc/nginx
 

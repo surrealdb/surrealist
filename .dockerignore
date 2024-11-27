@@ -6,7 +6,6 @@
 dist/
 node_modules/
 src-tauri/
-docker/
 
 .dockerignore
 .gitignore
