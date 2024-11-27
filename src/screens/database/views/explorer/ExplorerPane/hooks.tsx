@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { escapeIdent } from "surrealdb";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { executeQueryFirst, executeQuerySingle } from "~/screens/database/connection/connection";
+import { parseIdent } from "~/util/surrealql";
 
 export type SortMode = [string, "asc" | "desc"] | null;
 
@@ -48,12 +49,11 @@ export function useRecordQuery(input: RecordQueryInput) {
 				}
 
 				const records = (await executeQueryFirst(fetchQuery)) || [];
-
-				const headers =
-					schema?.tables
-						?.find((t) => t.schema.name === activeTable)
-						?.fields?.filter((f) => !f.name.includes("[*]") && !f.name.includes("."))
-						?.map((f) => f.name) || [];
+				const table = schema.tables.find((t) => t.schema.name === activeTable);
+				const fields = table?.fields || [];
+				const headers = fields
+					.filter((f) => !f.name.includes("[*]") && !f.name.includes("."))
+					.map((f) => parseIdent(f.name));
 
 				return {
 					records,
