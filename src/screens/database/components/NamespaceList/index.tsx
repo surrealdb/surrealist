@@ -260,7 +260,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 						>
 							Learn more about namespaces
 						</LearnMore>
-						<Group mt="lg">
+						<Group>
 							<Button
 								onClick={creatorHandle.close}
 								color="slate"
