@@ -156,15 +156,6 @@ export function FieldsElement({ data, setData }: ElementProps) {
 									})
 								}
 							/>
-							<PermissionInput
-								label="Delete access"
-								value={field.permissions.delete}
-								onChange={(value) =>
-									setField((draft) => {
-										draft.permissions.delete = value;
-									})
-								}
-							/>
 						</>
 					)}
 				</Lister>
