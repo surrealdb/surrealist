@@ -645,6 +645,25 @@ export async function requestDatabaseExport(config?: ExportOptions) {
 }
 
 /**
+ * Reset the current connection, which includes re-connecting and resetting
+ * any temporary state.
+ */
+export function resetConnection() {
+	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
+	const connection = getConnection();
+
+	openConnection();
+
+	if (connection) {
+		for (const query of connection.queries) {
+			clearQueryResponse(query.id);
+		}
+
+		clearGraphqlResponse(connection.id);
+	}
+}
+
+/**
  * Compose HTTP authentication headers
  */
 export function composeHttpConnection(

@@ -29,6 +29,7 @@
 							{ "name": "useSetting", "stableResult": [1] },
 							{ "name": "useNodesState", "stableResult": [1, 2] },
 							{ "name": "useEdgesState", "stableResult": [1, 2] },
+							{ "name": "useDatasets", "stableResult": [1] },
 							{ "name": "useStable", "stableResult": true },
 							{ "name": "useReactFlow", "stableResult": true }
 						]
