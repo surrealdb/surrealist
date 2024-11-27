@@ -213,8 +213,8 @@ export async function acquireSession(accessToken: string) {
 
 		invalidateSession();
 		showError({
-			title: "Authentication failed",
-			subtitle: "An unexpected error occurred while authenticating to Surreal Cloud",
+			title: "Failed to authenticate",
+			subtitle: "Please try signing into Surreal Cloud again",
 		});
 	}
 }

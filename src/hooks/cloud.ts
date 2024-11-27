@@ -45,7 +45,7 @@ export function useAvailableRegions() {
  */
 export function useAvailableInstanceTypes() {
 	const current = useOrganization();
-	
+
 	return current?.plan.instance_types ?? [];
 }
 
@@ -76,12 +76,7 @@ export function useCloudAuthentication() {
 		}
 
 		// Automatically refresh the session before it expires
-		setInterval(
-			() => {
-				checkSessionExpiry();
-			},
-			1000 * 60 * 3,
-		);
+		setInterval(checkSessionExpiry, 1000 * 60 * 3);
 	}, []);
 
 	// React to signin intents
@@ -96,7 +91,6 @@ export function useCloudAuthentication() {
 		verifyAuthentication(code, state);
 	});
 
-	
 	// React to callback intents
 	useIntent("cloud-signout", () => {
 		invalidateSession();
@@ -106,5 +100,4 @@ export function useCloudAuthentication() {
 	useIntent("cloud-activate", () => {
 		featureFlags.set("cloud_access", true);
 	});
-	
 }

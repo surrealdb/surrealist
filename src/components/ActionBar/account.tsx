@@ -65,7 +65,11 @@ function AccountForm({ onClose }: AccountFormProps) {
 	return (
 		<Form onSubmit={saveSettings}>
 			<Stack>
-				<TextInput label="Full name" value={name} onChange={setName} />
+				<TextInput
+					label="Full name"
+					value={name}
+					onChange={setName}
+				/>
 				<Group mt="lg">
 					<Button
 						onClick={onClose}
@@ -134,17 +138,28 @@ export function CloudAccount() {
 						src={profile.picture}
 						component={UnstyledButton}
 					>
-						{state === "loading" && (
-							<Loader size="sm" color="slate.4" />
+						{state === "loading" && !profile.picture && (
+							<Loader
+								size="sm"
+								color="slate.4"
+							/>
 						)}
 					</Avatar>
 				</Menu.Target>
 				<Menu.Dropdown w={200}>
 					<Box p="sm">
-						<Text fz="md" fw={500} c="bright">
+						<Text
+							fz="md"
+							fw={500}
+							c="bright"
+						>
 							{name}
 						</Text>
-						<Text fz="sm" c="slate" mt={-3}>
+						<Text
+							fz="sm"
+							c="slate"
+							mt={-3}
+						>
 							{profile.username}
 						</Text>
 					</Box>
