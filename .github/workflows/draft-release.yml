@@ -171,8 +171,8 @@ jobs:
           VITE_SURREALIST_PREVIEW: "${{ inputs.prerelease }}"
           VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
           VITE_CLOUD_CALLBACK_URL: "${{ env.CLOUD_CALLBACK_URL }}"
-          VITE_SCOUT_COPILOT_ID: ${{ secrets.SCOUT_COPILOT_ID }}
-          VITE_SCOUT_WORKFLOW_ID: ${{ secrets.SCOUT_WORKFLOW_ID }}
+          VITE_SCOUT_COPILOT_ID: ${{ env.SCOUT_COPILOT_ID }}
+          VITE_SCOUT_WORKFLOW_ID: ${{ env.SCOUT_WORKFLOW_ID }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
