@@ -130,6 +130,10 @@ export const featureFlags = new FeatureFlags({
 		if (value) {
 			return JSON.parse(value);
 		}
+
+		if (flag === "cloud_view") {
+			return import.meta.env.VITE_SURREALIST_INSTANCE !== "true";
+		}
 	},
 });
 
