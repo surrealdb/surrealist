@@ -6,15 +6,17 @@ import { getSetting } from "~/util/config";
 import { validateQuery } from "~/util/surrealql";
 
 const findStatement = (stack: any): [number, number] | null => {
+	let last: any = null;
+
 	for (let cur = stack; cur; cur = cur.next) {
 		const { node } = cur;
 
-		if (node.type.is("Statement")) {
-			return [node.from, node.to];
+		if (node.type.is("Statement") || node.type.is("BinaryExpression") || node.type.is("Path")) {
+			last = cur;
 		}
 	}
 
-	return null;
+	return last ? [last.node.from, last.node.to] : null;
 };
 
 /**
