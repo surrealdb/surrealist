@@ -59,14 +59,19 @@ export function CommandPaletteModal() {
 				return [];
 			}
 
-			const commands = fuzzyMatch(search, cat.name)
-				? cat.commands
-				: cat.commands.filter(
-						(cmd) =>
-							cmd.unlisted !== true &&
-							(fuzzyMatch(search, cmd.name) ||
-								cmd.aliases?.find((alias) => fuzzyMatch(search, alias))),
-					);
+			const matchCategory = fuzzyMatch(search, cat.name);
+
+			const commands = cat.commands.filter((cmd) => {
+				if (cmd.unlisted === true) {
+					return false;
+				}
+
+				return (
+					matchCategory ||
+					fuzzyMatch(search, cmd.name) ||
+					cmd.aliases?.find((alias) => fuzzyMatch(search, alias))
+				);
+			});
 
 			return commands.length === 0
 				? []
