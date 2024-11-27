@@ -13,7 +13,11 @@ import type {
 import { klona } from "klona";
 import { escapeIdent } from "surrealdb";
 import { adapter } from "~/adapter";
-import { executeQuerySingle } from "~/screens/database/connection/connection";
+import {
+	executeQuery,
+	executeQueryFirst,
+	executeQuerySingle,
+} from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
@@ -94,12 +98,10 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 		const isLimited = Array.isArray(options?.tables);
 		const tablesToSync = isLimited ? (options.tables as string[]) : tables.map((t) => t.name);
 
-		const tbInfoMap = await Promise.all(
-			tablesToSync.map((table) => {
-				return executeQuerySingle<SchemaInfoTB>(
-					`INFO FOR TABLE ${escapeIdent(table)} STRUCTURE`,
-				);
-			}),
+		const tbInfoMap = await executeQuery(
+			tablesToSync
+				.map((table) => `INFO FOR TABLE ${escapeIdent(table)} STRUCTURE;`)
+				.join("\n"),
 		);
 
 		if (isLimited) {
@@ -109,7 +111,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 		for (const [idx, tableName] of tablesToSync.entries()) {
 			adapter.log("Schema", `Updating table ${tableName}`);
 
-			const tableStruct = tbInfoMap[idx];
+			const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
 			const tableInfo = tables.find((t) => t.name === tableName);
 			const existingIndex = schema.database.tables.findIndex(
 				(t) => t.schema.name === tableName,
