@@ -79,25 +79,18 @@ export async function updateCloudInformation() {
 		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
 	]);
 
-	let organization: CloudOrganization | undefined;
+	const organizations = await fetchAPI<CloudOrganization[]>(`/organizations`);
+	const active = organizations.find((org) => org.id === activeCloudOrg);
 
-	try {
-		organization = await fetchAPI<CloudOrganization>(`/organizations/${activeCloudOrg}`);
-		setActiveCloudOrg(activeCloudOrg);
-	} catch {
-		organization = await fetchAPI<CloudOrganization>(`/organizations/${profile.default_org}`);
+	if (!active) {
 		setActiveCloudOrg(profile.default_org);
-	}
-
-	if (organization === undefined) {
-		throw new Error("No organization found");
 	}
 
 	setCloudValues({
 		profile,
 		instanceVersions,
 		regions,
-		organizations: [organization],
+		organizations,
 		billingCountries,
 	});
 }
