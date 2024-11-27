@@ -163,12 +163,6 @@ export function ProvisionPage() {
 	const estimatedCost = (hourlyPriceCents / 100) * units;
 	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
-	useLayoutEffect(() => {
-		if (!isAuthed) {
-			setActiveCloudPage("instances");
-		}
-	}, [isAuthed, setActiveCloudPage]);
-
 	return (
 		<>
 			<Group
