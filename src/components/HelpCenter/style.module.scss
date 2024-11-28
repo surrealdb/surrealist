@@ -3,9 +3,9 @@
 	background-origin: border-box;
 	border: 1px solid transparent;
 	flex-shrink: 0;
-	text-align: center;
-	width: 182px;
-	height: 182px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
 
 	&:hover {
 		background-image: var(--surrealist-gradient) !important;

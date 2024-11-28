@@ -1,52 +1,25 @@
-import { Title, Tooltip } from "@mantine/core";
-import { ActionIcon, Modal } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import posthog from "posthog-js";
-import { useEffect } from "react";
+import { Tooltip } from "@mantine/core";
+import { ActionIcon } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { useIntent } from "~/hooks/url";
 import { iconHelp } from "~/util/icons";
-import { HelpCenter } from "../HelpCenter";
-import { PrimaryTitle } from "../PrimaryTitle";
+import { openHelpAndSupport } from "~/modals/help-and-support";
 
 export function HelpAndSupport() {
-	const [isOpen, openHandle] = useDisclosure();
-
-	useEffect(() => {
-		if (isOpen) {
-			posthog.capture("support_open");
-		}
-	}, [isOpen]);
-
-	useIntent("open-help", openHandle.open);
-
 	return (
-		<>
-			<Tooltip label="Help and support">
-				<ActionIcon
-					w={36}
-					h={36}
-					radius="md"
-					onClick={openHandle.toggle}
-					variant="subtle"
-					aria-label="Open Help and support"
-				>
-					<Icon
-						path={iconHelp}
-						size="lg"
-					/>
-				</ActionIcon>
-			</Tooltip>
-
-			<Modal
-				opened={isOpen}
-				onClose={openHandle.close}
-				size={900}
-				withCloseButton
-				title={<PrimaryTitle fz={24}>How can we help you?</PrimaryTitle>}
+		<Tooltip label="Help and support">
+			<ActionIcon
+				w={36}
+				h={36}
+				radius="md"
+				onClick={openHelpAndSupport}
+				variant="subtle"
+				aria-label="Open Help and support"
 			>
-				<HelpCenter onBody />
-			</Modal>
-		</>
+				<Icon
+					path={iconHelp}
+					size="lg"
+				/>
+			</ActionIcon>
+		</Tooltip>
 	);
 }

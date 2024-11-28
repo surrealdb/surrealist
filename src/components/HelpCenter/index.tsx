@@ -14,7 +14,7 @@ import {
 	iconSurrealist,
 } from "~/util/icons";
 
-import { Box, Divider, Group, Stack, UnstyledButton } from "@mantine/core";
+import { Box, Divider, Group, SimpleGrid, Stack, UnstyledButton } from "@mantine/core";
 import { Text } from "@mantine/core";
 import clsx from "clsx";
 import type { PropsWithChildren } from "react";
@@ -26,6 +26,7 @@ import { useConfigStore } from "~/stores/config";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 import { Spacer } from "../Spacer";
+import { closeAllModals } from "@mantine/modals";
 
 export interface HelpCenterProps {
 	onBody?: boolean;
@@ -43,10 +44,6 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 				title="Community"
 				description="Explore community resources for learning SurrealDB"
 			>
-				<Box
-					w={182}
-					h={182}
-				/>
 				<HelpTile
 					title="Discord"
 					description="Connect with other users and get help from the community."
@@ -156,18 +153,19 @@ interface HelpSectionProps {
 
 function HelpSection({ title, description, children }: PropsWithChildren<HelpSectionProps>) {
 	return (
-		<Group
-			align="start"
-			wrap="nowrap"
-			gap="xl"
-		>
-			<Box style={{ flexShrink: 1 }}>
-				<PrimaryTitle>{title}</PrimaryTitle>
-				<Text mt="xs">{description}</Text>
-			</Box>
-			<Spacer />
-			{children}
-		</Group>
+		<Box>
+			<PrimaryTitle>{title}</PrimaryTitle>
+			{/* <Text>{description}</Text> */}
+			<SimpleGrid
+				cols={{
+					base: 1,
+					lg: 3,
+				}}
+				mt="xl"
+			>
+				{children}
+			</SimpleGrid>
+		</Box>
 	);
 }
 
@@ -184,27 +182,38 @@ function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileP
 
 	return (
 		<UnstyledButton
+			p="lg"
 			bg={isLight ? "slate.0" : "slate.9"}
-			p="md"
 			className={classes.helpTile}
-			onClick={onClick}
+			onClick={() => {
+				closeAllModals();
+				onClick?.();
+			}}
 		>
 			<Icon
 				path={icon}
 				c="bright"
-				size={1.75}
+				size="xl"
 				noStroke={noIconStroke}
 				mb="lg"
+				mr="xl"
 			/>
-			<Text
-				c="bright"
-				fw={600}
-				fz="lg"
-				mb={4}
-			>
-				{title}
-			</Text>
-			<Text fz="sm">{description}</Text>
+			<Box>
+				<Text
+					c="bright"
+					fw={600}
+					fz="lg"
+					mt={1}
+				>
+					{title}
+				</Text>
+				<Text
+					fz="sm"
+					mt="xs"
+				>
+					{description}
+				</Text>
+			</Box>
 		</UnstyledButton>
 	);
 }

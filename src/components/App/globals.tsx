@@ -5,6 +5,7 @@ import { useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useConfigRouting } from "./hooks/routing";
 import { useTitleSync } from "./hooks/title";
 import { useWindowSettings } from "./hooks/window";
+import { useGlobalModals } from "./hooks/modals";
 
 export function Globals(): ReactNode {
 	useConfigRouting();
@@ -13,6 +14,7 @@ export function Globals(): ReactNode {
 	useWindowSettings();
 	useConnectionSwitch();
 	useCloudAuthentication();
+	useGlobalModals();
 	useTitleSync();
 
 	return;
