@@ -11,10 +11,18 @@ export interface DriverSelectorProps extends BoxProps {
 	cols: StyleProp<number>;
 	value: CodeLang;
 	exclude?: CodeLang[];
+	disabled?: CodeLang[];
 	onChange: (value: CodeLang) => void;
 }
 
-export function DriverSelector({ cols, value, exclude, onChange, ...other }: DriverSelectorProps) {
+export function DriverSelector({
+	cols,
+	value,
+	exclude,
+	disabled,
+	onChange,
+	...other
+}: DriverSelectorProps) {
 	const isLight = useIsLight();
 
 	const drivers = useMemo(() => {
@@ -38,7 +46,7 @@ export function DriverSelector({ cols, value, exclude, onChange, ...other }: Dri
 						className={clsx(
 							classes.library,
 							isActive && classes.libraryActive,
-							lib.disabled && classes.libraryDisabled,
+							disabled?.includes(lib.id) && classes.libraryDisabled,
 						)}
 						onClick={() => onChange(lib.id)}
 					>

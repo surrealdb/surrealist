@@ -151,7 +151,7 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 				<DriverSelector
 					value={lang}
 					onChange={setLang}
-					exclude={["cli", "go"]}
+					exclude={["cli", "go", "c"]}
 					cols={{
 						base: 3,
 						xs: 6,
