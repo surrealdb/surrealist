@@ -521,7 +521,10 @@ export function ProvisionPage() {
 						<Stack>
 							<PrimaryTitle>Finalize your instance</PrimaryTitle>
 
-							<Paper p="xl">
+							<Paper
+								p="xl"
+								style={{ userSelect: "text", WebkitUserSelect: "text" }}
+							>
 								<Table>
 									<Table.Tbody>
 										<Table.Tr>
