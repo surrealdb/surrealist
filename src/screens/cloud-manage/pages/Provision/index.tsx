@@ -339,7 +339,7 @@ export function ProvisionPage() {
 							<PrimaryTitle>Select instance category</PrimaryTitle>
 
 							<Text mb="lg">
-								Optimize your experience by selecting the instance category that
+								Optimise your experience by selecting the instance category that
 								best aligns with your project's goals.
 							</Text>
 
