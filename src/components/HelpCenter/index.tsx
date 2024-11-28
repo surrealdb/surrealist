@@ -38,7 +38,7 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 
 	return (
 		<Stack
-			gap="xl"
+			gap={32}
 			className={clsx(classes.root, onBody && classes.onBody)}
 		>
 			<HelpSection title="Community">
@@ -61,16 +61,15 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 					onClick={() => adapter.openUrl("https://www.youtube.com/@SurrealDB")}
 				/>
 			</HelpSection>
-			<Divider />
 			<HelpSection title="Surrealist">
 				<HelpTile
-					title="Surrealist docs"
+					title="Surrealist Docs"
 					description="Learn how to navigate our user interface"
 					icon={iconSurrealist}
 					onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
 				/>
 				<HelpTile
-					title="Keyboard shortcuts"
+					title="Keyboard Shortcuts"
 					description="Improve productivity & speed up tasks"
 					icon={iconCommand}
 					onClick={() => dispatchIntent("open-settings", { tab: "keybindings" })}
@@ -85,10 +84,9 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 					}
 				/>
 			</HelpSection>
-			<Divider />
 			<HelpSection title="Database">
 				<HelpTile
-					title="Documentation"
+					title="Database Docs"
 					description="Examples, guides and tutorials"
 					icon={iconSurreal}
 					noIconStroke
@@ -107,36 +105,33 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 					onClick={() => adapter.openUrl("https://surrealdb.com/learn/book")}
 				/>
 			</HelpSection>
-			{isAuthed && (
-				<>
-					<Divider />
-					<HelpSection title="Cloud">
-						<HelpTile
-							title="Cloud docs"
-							description="Learn how to set-up, configure and optimise your instances"
-							icon={iconCloud}
-							onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
-						/>
-						<HelpTile
-							title="Sidekick"
-							description="Chat with your personal Surreal AI assistant"
-							icon={iconSidekick}
-							onClick={() => {
-								const { setActiveView, setActiveCloudPage } =
-									useConfigStore.getState();
+			<HelpSection title="Cloud">
+				<HelpTile
+					title="Cloud Docs"
+					description="Learn how to set-up, configure and optimise your instances"
+					icon={iconCloud}
+					disabled={!isAuthed}
+					onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
+				/>
+				<HelpTile
+					title="Sidekick"
+					description="Chat with your personal Surreal AI assistant"
+					icon={iconSidekick}
+					disabled={!isAuthed}
+					onClick={() => {
+						const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
 
-								setActiveView("cloud");
-								setActiveCloudPage("chat");
-							}}
-						/>
-						<HelpTile
-							title="Account"
-							description="Account or billing-related issue? Raise a support ticket"
-							icon={iconEmail}
-						/>
-					</HelpSection>
-				</>
-			)}
+						setActiveView("cloud");
+						setActiveCloudPage("chat");
+					}}
+				/>
+				<HelpTile
+					title="Account"
+					description="Account or billing related issue? Raise a support ticket"
+					icon={iconEmail}
+					disabled={!isAuthed}
+				/>
+			</HelpSection>
 		</Stack>
 	);
 }
@@ -150,11 +145,11 @@ function HelpSection({ title, children }: PropsWithChildren<HelpSectionProps>) {
 		<Box>
 			<PrimaryTitle>{title}</PrimaryTitle>
 			<SimpleGrid
+				mt="md"
 				cols={{
 					base: 1,
 					lg: 3,
 				}}
-				mt="xl"
 			>
 				{children}
 			</SimpleGrid>
@@ -167,10 +162,11 @@ interface HelpTileProps {
 	description: string;
 	icon: string;
 	noIconStroke?: boolean;
+	disabled?: boolean;
 	onClick?: () => void;
 }
 
-function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileProps) {
+function HelpTile({ title, description, icon, noIconStroke, disabled, onClick }: HelpTileProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -178,6 +174,7 @@ function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileP
 			p="lg"
 			bg={isLight ? "slate.0" : "slate.9"}
 			className={classes.helpTile}
+			disabled={disabled}
 			onClick={() => {
 				closeAllModals();
 				onClick?.();
@@ -186,10 +183,10 @@ function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileP
 			<Icon
 				path={icon}
 				c="bright"
-				size="xl"
+				size="lg"
 				noStroke={noIconStroke}
 				mb="lg"
-				mr="xl"
+				mr="md"
 			/>
 			<Box>
 				<Text
