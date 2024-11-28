@@ -1,83 +1,16 @@
-import { Box, Group, Stack, Text, Title, Tooltip, UnstyledButton } from "@mantine/core";
-import { ActionIcon, Modal, SimpleGrid } from "@mantine/core";
+import { Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import posthog from "posthog-js";
 import { useEffect } from "react";
-import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { useIsLight } from "~/hooks/theme";
-import { dispatchIntent, useIntent } from "~/hooks/url";
-import { useConfigStore } from "~/stores/config";
-import {
-	iconBook,
-	iconBug,
-	iconClose,
-	iconCloud,
-	iconCommand,
-	iconDiscord,
-	iconHelp,
-} from "~/util/icons";
-import classes from "./style.module.scss";
-
-interface Topic {
-	title: string;
-	description: string;
-	icon: string;
-	onClick: () => void;
-}
-
-// const SUPPORT_CHAT: Topic = {
-// 	title: "Support Chat",
-// 	description: "Talk to our Surreal Chatbot for help on queries, Surrealist, and more.",
-// 	icon: mdiChatOutline,
-// 	onClick: () => {}
-// };
-
-const DOCUMENTATION: Topic = {
-	title: "Documentation",
-	description: "Need help? Check out our documentation for help.",
-	icon: iconBook,
-	onClick: () => adapter.openUrl("https://surrealdb.com/docs/surrealist"),
-};
-
-const ISSUE_REPORT: Topic = {
-	title: "Report an issue",
-	description: "Something isn't working right? Let us know and we'll fix it.",
-	icon: iconBug,
-	onClick: () => adapter.openUrl("https://github.com/surrealdb/surrealist/issues"),
-};
-
-const SHORTCUTS: Topic = {
-	title: "Shortcuts",
-	description: "Learn the keyboard shortcuts to navigate the app faster.",
-	icon: iconCommand,
-	onClick: () => dispatchIntent("open-settings", { tab: "keybindings" }),
-};
-
-const DISCORD: Topic = {
-	title: "Discord",
-	description: "Connect with other users and get help from the community.",
-	icon: iconDiscord,
-	onClick: () => adapter.openUrl("https://discord.gg/dc4JNWrrMc"),
-};
-
-const CLOUD: Topic = {
-	title: "Cloud Support",
-	description: "Visit the Cloud Support page for help with your cloud account.",
-	icon: iconCloud,
-	onClick: () => {
-		const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
-
-		setActiveView("cloud");
-		setActiveCloudPage("support");
-	},
-};
+import { useIntent } from "~/hooks/url";
+import { iconHelp } from "~/util/icons";
+import { HelpCenter } from "../HelpCenter";
+import { PrimaryTitle } from "../PrimaryTitle";
 
 export function HelpAndSupport() {
 	const [isOpen, openHandle] = useDisclosure();
-	const isAuthed = useIsAuthenticated();
-	const isLight = useIsLight();
 
 	useEffect(() => {
 		if (isOpen) {
@@ -86,71 +19,6 @@ export function HelpAndSupport() {
 	}, [isOpen]);
 
 	useIntent("open-help", openHandle.open);
-
-	function renderRow(tile: Topic) {
-		return (
-			<UnstyledButton
-				p="md"
-				bg={isLight ? "slate.0" : "slate.9"}
-				className={classes.helpRow}
-				onClick={() => {
-					tile.onClick();
-					openHandle.close();
-				}}
-			>
-				<Group wrap="nowrap">
-					<Icon
-						path={tile.icon}
-						c="bright"
-						size="xl"
-						mb="sm"
-						mx="sm"
-					/>
-					<Box>
-						<Text
-							c="bright"
-							fw={600}
-							fz="lg"
-							mb={4}
-						>
-							{tile.title}
-						</Text>
-						<Text fz="sm">{tile.description}</Text>
-					</Box>
-				</Group>
-			</UnstyledButton>
-		);
-	}
-
-	function renderTile(tile: Topic) {
-		return (
-			<UnstyledButton
-				bg={isLight ? "slate.0" : "slate.9"}
-				p="md"
-				className={classes.helpTile}
-				onClick={() => {
-					tile.onClick();
-					openHandle.close();
-				}}
-			>
-				<Icon
-					path={tile.icon}
-					c="bright"
-					size="xl"
-					mb="sm"
-				/>
-				<Text
-					c="bright"
-					fw={600}
-					fz="lg"
-					mb={4}
-				>
-					{tile.title}
-				</Text>
-				<Text fz="sm">{tile.description}</Text>
-			</UnstyledButton>
-		);
-	}
 
 	return (
 		<>
@@ -173,39 +41,10 @@ export function HelpAndSupport() {
 			<Modal
 				opened={isOpen}
 				onClose={openHandle.close}
-				ta="center"
-				size="sm"
+				size={900}
+				title={<PrimaryTitle>How can we help you?</PrimaryTitle>}
 			>
-				<Title
-					fz={20}
-					c="bright"
-				>
-					How can we help you?
-				</Title>
-
-				<ActionIcon
-					pos="absolute"
-					top={20}
-					right={20}
-					onClick={openHandle.close}
-					aria-label="Close modal"
-				>
-					<Icon path={iconClose} />
-				</ActionIcon>
-
-				<Stack>
-					<SimpleGrid
-						cols={2}
-						mt="xl"
-					>
-						{renderTile(DOCUMENTATION)}
-						{renderTile(ISSUE_REPORT)}
-						{renderTile(SHORTCUTS)}
-						{renderTile(DISCORD)}
-					</SimpleGrid>
-
-					{isAuthed && renderRow(CLOUD)}
-				</Stack>
+				<HelpCenter onBody />
 			</Modal>
 		</>
 	);

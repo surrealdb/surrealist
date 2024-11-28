@@ -1,24 +1,23 @@
-.help-tile, .help-row {
+.help-tile {
 	border-radius: var(--mantine-radius-lg);
-	background-origin: border-box !important;
+	background-origin: border-box;
 	border: 1px solid transparent;
+	flex-shrink: 0;
+	text-align: center;
+	width: 182px;
+	height: 182px;
 
 	&:hover {
 		background-image: var(--surrealist-gradient) !important;
 		box-shadow: var(--surrealist-glow);
 		border-color: rgba(255, 255, 255, 0.3);
-		
+
 		* {
 			color: white !important;
 		}
 	}
 }
 
-.help-tile {
-	text-align: center;
-	aspect-ratio: 1;
-}
-
-.help-row {
-	height: 96px;
+.root:not(.on-body) .help-tile {
+	background-color: var(--mantine-color-body) !important;
 }
