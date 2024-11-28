@@ -1,8 +1,8 @@
 import { Tooltip } from "@mantine/core";
 import { ActionIcon } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { iconHelp } from "~/util/icons";
 import { openHelpAndSupport } from "~/modals/help-and-support";
+import { iconHelp } from "~/util/icons";
 
 export function HelpAndSupport() {
 	return (

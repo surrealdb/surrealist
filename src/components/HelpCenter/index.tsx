@@ -18,17 +18,17 @@ import {
 
 import { Box, Divider, SimpleGrid, Stack, UnstyledButton } from "@mantine/core";
 import { Text } from "@mantine/core";
+import { closeAllModals } from "@mantine/modals";
 import clsx from "clsx";
 import type { PropsWithChildren } from "react";
 import { adapter } from "~/adapter";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent } from "~/hooks/url";
+import { openAccountSupport } from "~/screens/cloud-manage/modals/account-support";
 import { useConfigStore } from "~/stores/config";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { closeAllModals } from "@mantine/modals";
-import { openAccountSupport } from "~/screens/cloud-manage/modals/account-support";
 
 export interface HelpCenterProps {
 	onBody?: boolean;
