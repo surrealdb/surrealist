@@ -2,8 +2,7 @@ import {
 	Alert,
 	Box,
 	Button,
-	Center,
-	Divider,
+	Collapse,
 	Grid,
 	Group,
 	Image,
@@ -25,10 +24,9 @@ import {
 } from "~/hooks/cloud";
 
 import { useInputState } from "@mantine/hooks";
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
-import { CounterInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { REGION_FLAGS } from "~/constants";
@@ -38,20 +36,22 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
 import { showError } from "~/util/helpers";
-import { iconChevronLeft, iconChevronRight, iconPlus } from "~/util/icons";
+import {
+	iconChevronLeft,
+	iconChevronRight,
+	iconHammer,
+	iconOpen,
+	iconPlus,
+	iconQuery,
+	iconStar,
+} from "~/util/icons";
 import { fetchAPI } from "../../api";
 import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
 import { useCloudInstances } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 
-const PROVISION_STEPS = [
-	"Instance details",
-	"Select a region",
-	"Select an instance type",
-	"Select compute nodes",
-	"Finalize your instance",
-];
+type Category = "free" | "development" | "production";
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
@@ -61,7 +61,6 @@ export function ProvisionPage() {
 	const isLight = useIsLight();
 
 	const current = useOrganization();
-	const isAuthed = useIsAuthenticated();
 	const organizations = useCloudStore((s) => s.organizations);
 	const instanceTypes = useAvailableInstanceTypes();
 	const versions = useAvailableInstanceVersions();
@@ -72,24 +71,30 @@ export function ProvisionPage() {
 
 	const [name, setName] = useInputState("");
 	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
+	const [category, setCategory] = useState<Category | null>();
 	const [units, setUnits] = useState(1);
 	const [org, setOrg] = useState<string>(current?.id || "");
 	const [instance, setInstance] = useState<string>("");
 	const [region, setRegion] = useState<string>("");
-
-	// Selectable organization list
-	const orgList = organizations.map((org) => ({
-		value: org.id,
-		label: org.name,
-	}));
 
 	// Active instance type information
 	const instanceInfo = useMemo(() => {
 		return instanceTypes.find((t) => t.slug === instance);
 	}, [instance, instanceTypes]);
 
+	const hasBilling = (current?.billing_info && current?.payment_info) ?? false;
 	const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
 	// const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
+	const willCreate = step === 5;
+	const hourlyPriceCents = instanceInfo?.price_hour ?? 0;
+	const estimatedCost = (hourlyPriceCents / 100) * units;
+	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
+
+	// Selectable organization list
+	const orgList = organizations.map((org) => ({
+		value: org.id,
+		label: org.name,
+	}));
 
 	// Whether the user can continue to the next step
 	const canContinue = useMemo(() => {
@@ -102,11 +107,27 @@ export function ProvisionPage() {
 		}
 
 		if (step === 2) {
-			return instance.length > 0;
+			return !!category && (hasBilling || category === "free");
+		}
+
+		if (step === 3) {
+			return instance.length > 0 && instanceInfo?.category === category;
 		}
 
 		return true;
-	}, [step, name, org, instance, region]);
+	}, [step, name, org, category, instance, region, instanceInfo, hasBilling]);
+
+	// Filter instance types on selected category
+	const filteredTypes = useMemo(() => {
+		if (!category) {
+			return [];
+		}
+
+		return instanceTypes.filter((type) => type.category === category);
+	}, [category, instanceTypes]);
+
+	// Check if the selected category has a single instance type
+	const isSingletonCategory = filteredTypes.length === 1;
 
 	// Provision the instance
 	const provisionInstance = useStable(async () => {
@@ -147,25 +168,26 @@ export function ProvisionPage() {
 	};
 
 	const previousStep = useStable(() => {
-		setStep(step - 1);
+		if (step === 5 && isSingletonCategory) {
+			setStep(2);
+		} else {
+			setStep(step - 1);
+		}
 	});
 
 	const nextStep = useStable(() => {
-		if (step === 4) {
+		if (step === 2 && isSingletonCategory) {
+			setStep(5);
+		} else if (step === 5) {
 			provisionInstance();
 		} else {
 			setStep(step + 1);
 		}
 	});
 
-	const willCreate = step === 4;
-	const hourlyPriceCents = instanceInfo?.price_hour ?? 0;
-	const estimatedCost = (hourlyPriceCents / 100) * units;
-	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
-
 	return (
 		<>
-			<Group
+			{/* <Group
 				pb="xl"
 				mx="auto"
 				gap="lg"
@@ -207,7 +229,7 @@ export function ProvisionPage() {
 						</>
 					);
 				})}
-			</Group>
+			</Group> */}
 
 			<ScrollArea
 				scrollbars="y"
@@ -314,6 +336,103 @@ export function ProvisionPage() {
 
 					{step === 2 && (
 						<Stack>
+							<PrimaryTitle>Select instance category</PrimaryTitle>
+
+							<Text mb="lg">
+								Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem rem
+								nam vel quam reprehenderit eum suscipit modi iure quod fugiat
+								assumenda minus.
+							</Text>
+
+							<ScrollArea.Autosize mah="calc(100vh - 350px)">
+								<Stack>
+									<Tile
+										isActive={category === "production"}
+										onClick={() => setCategory("production")}
+									>
+										<Group>
+											<Icon path={iconQuery} />
+											<PrimaryTitle
+												c="bright"
+												fw={600}
+												fz="lg"
+											>
+												Production
+											</PrimaryTitle>
+										</Group>
+										<Text mt="sm">
+											For production environments, data at scale, or
+											professional use cases.
+										</Text>
+									</Tile>
+									<Tile
+										isActive={category === "development"}
+										onClick={() => setCategory("development")}
+									>
+										<Group>
+											<Icon path={iconHammer} />
+											<PrimaryTitle
+												c="bright"
+												fw={600}
+												fz="lg"
+											>
+												Development
+											</PrimaryTitle>
+										</Group>
+										<Text mt="sm">
+											For testing, starter projects, or for low-traffic
+											applications. Clusters under heavy load may experience
+											CPU throttling.
+										</Text>
+									</Tile>
+									<Tile
+										isActive={category === "free"}
+										onClick={() => setCategory("free")}
+									>
+										<Group>
+											<Icon path={iconStar} />
+											<PrimaryTitle
+												c="bright"
+												fw={600}
+												fz="lg"
+											>
+												Free
+											</PrimaryTitle>
+										</Group>
+										<Text mt="sm">
+											Experience Surreal Cloud with a free instance to get
+											started.
+										</Text>
+									</Tile>
+								</Stack>
+								<Collapse in={category !== "free" && !hasBilling}>
+									<Alert
+										mt="xl"
+										color="blue"
+										title="Upgrade to use premium instances"
+									>
+										<Box>
+											Premium instances require a billing plan to be enabled.
+										</Box>
+										<Button
+											rightSection={<Icon path={iconChevronRight} />}
+											color="blue"
+											size="xs"
+											mt="md"
+											onClick={() => {
+												setActiveCloudPage("billing");
+											}}
+										>
+											Enter billing details
+										</Button>
+									</Alert>
+								</Collapse>
+							</ScrollArea.Autosize>
+						</Stack>
+					)}
+
+					{step === 3 && (
+						<Stack>
 							<PrimaryTitle>Select an instance type</PrimaryTitle>
 
 							<Text mb="lg">
@@ -323,7 +442,7 @@ export function ProvisionPage() {
 
 							<ScrollArea.Autosize mah="calc(100vh - 350px)">
 								<Stack>
-									{instanceTypes.map((type) => (
+									{filteredTypes.map((type) => (
 										<InstanceType
 											key={type.slug}
 											type={type}
@@ -337,7 +456,7 @@ export function ProvisionPage() {
 						</Stack>
 					)}
 
-					{step === 3 && (
+					{step === 4 && (
 						<Stack>
 							<PrimaryTitle>Customise compute nodes</PrimaryTitle>
 
@@ -398,7 +517,7 @@ export function ProvisionPage() {
 						</Stack>
 					)}
 
-					{step === 4 && (
+					{step === 5 && (
 						<Stack>
 							<PrimaryTitle>Finalize your instance</PrimaryTitle>
 
