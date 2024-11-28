@@ -20,7 +20,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import { iconAccount, iconCheck, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
+import { iconAccount, iconCheck, iconCopy, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
 
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,6 +44,8 @@ import { useCloudBilling } from "../../hooks/billing";
 import { useCloudInvoices } from "../../hooks/invoices";
 import { useCloudPayments } from "../../hooks/payments";
 import { openBillingDetails } from "../../modals/billing";
+import { ActionButton } from "~/components/ActionButton";
+import { LearnMore } from "~/components/LearnMore";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -347,6 +349,27 @@ export function BillingPage() {
 								</Button>
 							</Group>
 						</Form>
+					</Section>
+
+					<Section
+						title="Referral"
+						description="The Surreal Cloud referral program allows you to invite a friend in exchange for benefits."
+					>
+						<TextInput
+							flex={1}
+							maw={420}
+							value="https://surrealist.app/cloud?referrer=h83c839uc93"
+							readOnly
+							rightSection={
+								<ActionButton
+									variant="gradient"
+									label="Copy link"
+								>
+									<Icon path={iconCopy} />
+								</ActionButton>
+							}
+						/>
+						<LearnMore href="">Learn more about the referral program</LearnMore>
 					</Section>
 
 					<Section
