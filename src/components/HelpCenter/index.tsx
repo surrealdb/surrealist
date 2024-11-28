@@ -28,6 +28,7 @@ import { useConfigStore } from "~/stores/config";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 import { closeAllModals } from "@mantine/modals";
+import { openAccountSupport } from "~/screens/cloud-manage/modals/account-support";
 
 export interface HelpCenterProps {
 	onBody?: boolean;
@@ -110,14 +111,12 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 					title="Cloud Docs"
 					description="Learn how to set-up, configure and optimise your instances"
 					icon={iconCloud}
-					disabled={!isAuthed}
 					onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
 				/>
 				<HelpTile
 					title="Sidekick"
 					description="Chat with your personal Surreal AI assistant"
 					icon={iconSidekick}
-					disabled={!isAuthed}
 					onClick={() => {
 						const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
 
@@ -129,7 +128,15 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 					title="Account"
 					description="Account or billing related issue? Raise a support ticket"
 					icon={iconEmail}
-					disabled={!isAuthed}
+					onClick={() => {
+						const { setActiveView } = useConfigStore.getState();
+
+						if (isAuthed) {
+							openAccountSupport();
+						} else {
+							setActiveView("cloud");
+						}
+					}}
 				/>
 			</HelpSection>
 		</Stack>
@@ -162,11 +169,10 @@ interface HelpTileProps {
 	description: string;
 	icon: string;
 	noIconStroke?: boolean;
-	disabled?: boolean;
 	onClick?: () => void;
 }
 
-function HelpTile({ title, description, icon, noIconStroke, disabled, onClick }: HelpTileProps) {
+function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -174,7 +180,6 @@ function HelpTile({ title, description, icon, noIconStroke, disabled, onClick }:
 			p="lg"
 			bg={isLight ? "slate.0" : "slate.9"}
 			className={classes.helpTile}
-			disabled={disabled}
 			onClick={() => {
 				closeAllModals();
 				onClick?.();
