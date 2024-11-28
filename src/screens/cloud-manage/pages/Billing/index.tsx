@@ -36,7 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { CloudInstanceType, CloudRegion, InvoiceStatus } from "~/types";
+import type { CloudInstanceType, InvoiceStatus } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
@@ -54,93 +54,26 @@ const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> =
 interface BillingPlanProps {
 	name: string;
 	description: string;
-	regions: string[];
-	types: CloudInstanceType[];
-	action?: ReactNode;
 }
 
-function BillingPlan({ name, description, regions, types, action }: BillingPlanProps) {
+function BillingPlan({ name, description }: BillingPlanProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Paper
-			withBorder
-			p="xl"
-			maw={500}
-		>
-			<Stack
-				h="100%"
-				gap="xl"
-			>
-				<Box>
+		<Paper p="xl">
+			<Group>
+				<Box flex={1}>
 					<PrimaryTitle>{name}</PrimaryTitle>
 					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
 				</Box>
-
-				<Group align="stretch">
-					<Box>
-						<Text
-							fz="lg"
-							mb="sm"
-						>
-							Included regions
-						</Text>
-
-						<List
-							className={classes.featureList}
-							icon={
-								<Icon
-									path={iconCheck}
-									color="surreal.5"
-								/>
-							}
-						>
-							{regions.map((region) => (
-								<List.Item
-									key={region}
-									c="bright"
-									mb={4}
-								>
-									{region}
-								</List.Item>
-							))}
-						</List>
-					</Box>
-
-					<Spacer />
-
-					<Box>
-						<Text
-							fz="lg"
-							mb="sm"
-						>
-							Included instance types
-						</Text>
-
-						<List
-							className={classes.featureList}
-							icon={
-								<Icon
-									path={iconCheck}
-									color="surreal.5"
-								/>
-							}
-						>
-							{types.map((type) => (
-								<List.Item
-									key={type.slug}
-									c="bright"
-									mb={4}
-								>
-									{type.slug}
-								</List.Item>
-							))}
-						</List>
-					</Box>
-				</Group>
-
-				{action}
-			</Stack>
+				<Button
+					variant="gradient"
+					rightSection={<Icon path={iconOpen} />}
+					onClick={() => adapter.openUrl("https://surrealdb.com/cloud/plans")}
+				>
+					View plans
+				</Button>
+			</Group>
 		</Paper>
 	);
 }
@@ -228,19 +161,17 @@ export function BillingPage() {
 					mx="auto"
 					maw={900}
 				>
-					{organization?.plan && (
-						<Section
-							title="Your plan"
-							description="The plan active for this organization"
-						>
+					<Section
+						title="Your plan"
+						description="The plan active for this organization"
+					>
+						<Skeleton visible={!organization?.plan}>
 							<BillingPlan
-								name={organization.plan.name}
-								description={organization.plan.description}
-								regions={organization.plan.regions}
-								types={organization.plan.instance_types}
+								name={organization?.plan?.name ?? ""}
+								description={organization?.plan?.description ?? ""}
 							/>
-						</Section>
-					)}
+						</Skeleton>
+					</Section>
 
 					<Section
 						title="Billing Information"
