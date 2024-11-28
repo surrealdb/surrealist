@@ -42,7 +42,8 @@ export function HelpAndSupport() {
 				opened={isOpen}
 				onClose={openHandle.close}
 				size={900}
-				title={<PrimaryTitle>How can we help you?</PrimaryTitle>}
+				withCloseButton
+				title={<PrimaryTitle fz={24}>How can we help you?</PrimaryTitle>}
 			>
 				<HelpCenter onBody />
 			</Modal>
