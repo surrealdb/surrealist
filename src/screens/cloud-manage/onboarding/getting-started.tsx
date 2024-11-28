@@ -1,3 +1,5 @@
+import classes from "../style.module.scss";
+
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
 import communtyDarkUrl from "~/assets/images/dark/picto-community.svg";
 import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
@@ -13,27 +15,25 @@ import { closeAllModals, openModal } from "@mantine/modals";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { Spacer } from "~/components/Spacer";
-import { getIsLight, useIsLight, useThemeImage } from "~/hooks/theme";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { iconChevronRight } from "~/util/icons";
 
 export function openStartingModal() {
 	openModal({
 		size: 525,
 		children: <StartingModal />,
+		classNames: {
+			content: classes.onboardingDialog,
+		},
 		styles: {
-			body: {
-				backgroundImage: `url(${glowUrl})`,
-				backgroundPosition: `center ${getIsLight() ? -150 : 0}px`,
-				backgroundRepeat: "no-repeat",
-				backgroundSize: 900
+			root: {
+				"--image": `url(${glowUrl})`,
 			},
 		},
 	});
 }
 
 function StartingModal() {
-	const isLight = useIsLight();
-
 	const logoUrl = useThemeImage({
 		light: logoLightUrl,
 		dark: logoDarkUrl,
@@ -72,12 +72,6 @@ function StartingModal() {
 			</Text>
 			<Stack mt="xl">
 				<GettingStartedLink
-					image={tutorialUrl}
-					title="Introduction video"
-					href="https://youtube.com/@SurrealDB"
-				/>
-
-				<GettingStartedLink
 					image={documentationUrl}
 					title="Cloud Documentation"
 					href="https://surrealdb.com/docs/cloud"
@@ -85,24 +79,23 @@ function StartingModal() {
 
 				<GettingStartedLink
 					image={communtyUrl}
-					title="Community"
+					title="Community Support"
 					href="https://surrealdb.com/community"
 				/>
 			</Stack>
-			<Group>
-				<Button
-					fullWidth
-					color="slate"
-					variant="gradient"
-					rightSection={<Icon path={iconChevronRight} />}
-					onClick={() => {
-						closeAllModals();
-						localStorage.setItem("surrealist:onboarded", "true");
-					}}
-				>
-					Get started
-				</Button>
-			</Group>
+			<Button
+				mt="xl"
+				fullWidth
+				color="slate"
+				variant="gradient"
+				rightSection={<Icon path={iconChevronRight} />}
+				onClick={() => {
+					closeAllModals();
+					localStorage.setItem("surrealist:onboarded", "true");
+				}}
+			>
+				Get started
+			</Button>
 		</Stack>
 	);
 }
@@ -117,7 +110,10 @@ function GettingStartedLink({ image, title, href }: GettingStartedLinkProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Link href={href}>
+		<Link
+			href={href}
+			underline={false}
+		>
 			<Paper
 				px="md"
 				py="xl"

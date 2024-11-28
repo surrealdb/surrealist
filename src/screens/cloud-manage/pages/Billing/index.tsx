@@ -43,7 +43,7 @@ import { Section } from "../../components/Section";
 import { useCloudBilling } from "../../hooks/billing";
 import { useCloudInvoices } from "../../hooks/invoices";
 import { useCloudPayments } from "../../hooks/payments";
-import { openBillingModal } from "../../modals/billing";
+import { openBillingDetails } from "../../modals/billing";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -201,7 +201,7 @@ export function BillingPage() {
 									<Button
 										color="slate"
 										variant="light"
-										onClick={openBillingModal}
+										onClick={openBillingDetails}
 									>
 										Update
 									</Button>

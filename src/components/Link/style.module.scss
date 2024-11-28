@@ -3,7 +3,7 @@
 	color: var(--mantine-color-surreal-6);
 	transition: color .1s;
 
-	&:hover {
+	&.underline:hover {
 		text-decoration: underline;
 	}
 }

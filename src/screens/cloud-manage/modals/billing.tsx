@@ -2,7 +2,7 @@ import { Alert, Button, Group, Select, SimpleGrid, Stack, Text, TextInput } from
 import { closeModal, openModal } from "@mantine/modals";
 import { useQueryClient } from "@tanstack/react-query";
 import { shake } from "radash";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useImmer } from "use-immer";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -16,7 +16,7 @@ import { iconAccount } from "~/util/icons";
 import { ApiError, fetchAPI, updateCloudInformation } from "../api";
 import { useCloudBilling } from "../hooks/billing";
 
-export async function openBillingModal() {
+export async function openBillingDetails() {
 	return new Promise<void>((resolve) => {
 		openModal({
 			modalId: "billing",
@@ -31,12 +31,12 @@ export async function openBillingModal() {
 					<PrimaryTitle>Billing Details</PrimaryTitle>
 				</Group>
 			),
-			children: <BillingModal />,
+			children: <BillingDetailsModal />,
 		});
 	});
 }
 
-function BillingModal() {
+function BillingDetailsModal() {
 	const organization = useOrganization();
 	const details = useCloudBilling(organization?.id);
 

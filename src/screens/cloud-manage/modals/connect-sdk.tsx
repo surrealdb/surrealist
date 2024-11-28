@@ -1,5 +1,6 @@
 import { Group, Modal, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { openModal } from "@mantine/modals";
 import { useMemo, useState } from "react";
 import { CodeSnippet } from "~/components/CodeSnippet";
 import { DriverSelector } from "~/components/DriverSelector";
@@ -10,13 +11,27 @@ import { DRIVERS } from "~/constants";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
 import { iconAPI, iconAccount, iconDatabase } from "~/util/icons";
 
-export interface ConnectSdkModalProps {
-	opened: boolean;
-	onClose: () => void;
+export function openConnectSdk(instance: CloudInstance) {
+	openModal({
+		size: "lg",
+		title: (
+			<Group>
+				<Icon
+					path={iconAPI}
+					size="xl"
+				/>
+				<PrimaryTitle>Connect with an SDK</PrimaryTitle>
+			</Group>
+		),
+		children: <ConnectSdkModal instance={instance} />,
+	});
+}
+
+interface ConnectSdkModalProps {
 	instance: CloudInstance;
 }
 
-export function ConnectSdkModal({ opened, onClose, instance }: ConnectSdkModalProps) {
+function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 	const [lang, setLang] = useState<CodeLang>("rust");
 
 	const [namespace, setNamespace] = useInputState("");
@@ -115,22 +130,7 @@ export function ConnectSdkModal({ opened, onClose, instance }: ConnectSdkModalPr
 	const driver = DRIVERS.find((d) => d.id === lang);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={onClose}
-			trapFocus={false}
-			withCloseButton
-			size="lg"
-			title={
-				<Group>
-					<Icon
-						path={iconAPI}
-						size="xl"
-					/>
-					<PrimaryTitle>Connect with an SDK</PrimaryTitle>
-				</Group>
-			}
-		>
+		<>
 			<Stack>
 				<Text size="lg">
 					You can connect to this instance with your preferred language using one of our
@@ -261,6 +261,6 @@ export function ConnectSdkModal({ opened, onClose, instance }: ConnectSdkModalPr
 					</LearnMore>
 				)}
 			</Stack>
-		</Modal>
+		</>
 	);
 }

@@ -28,7 +28,7 @@ import {
 	iconViewList,
 } from "~/util/icons";
 
-import { useDebouncedValue, useDisclosure, useInputState } from "@mantine/hooks";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { Fragment, useMemo, useState } from "react";
 import { FloatingButton } from "~/components/FloatingButton";
 import { Icon } from "~/components/Icon";
@@ -40,12 +40,12 @@ import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
-import { createBaseConnection, createCloudInstance } from "~/util/defaults";
+import { createBaseConnection } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { type ConnectMethod, Instance } from "../../components/Instance";
 import { useCloudInstances } from "../../hooks/instances";
-import { ConnectCliModal } from "./modals/connect-cli";
-import { ConnectSdkModal } from "./modals/connect-sdk";
+import { openConnectSdk } from "../../modals/connect-sdk";
+import { openConnectCli } from "../../modals/connect-cli";
 
 interface Filter {
 	type: string;
@@ -68,17 +68,11 @@ export function InstancesPage() {
 
 	const instances = useMemo(() => data || [], [data]);
 
-	const [selectedInstance, setSelectedInstance] = useState(createCloudInstance());
-	const [showSdkConnect, sdkConnectHandle] = useDisclosure();
-	const [showCliConnect, cliConnectHandle] = useDisclosure();
-
 	const handleProvision = useStable(() => {
 		setActiveCloudPage("provision");
 	});
 
 	const handleConnect = useStable((method: ConnectMethod, db: CloudInstance) => {
-		setSelectedInstance(db);
-
 		if (method === "surrealist") {
 			const { connections, settings, addConnection, setActiveConnection, setActiveView } =
 				useConfigStore.getState();
@@ -109,9 +103,9 @@ export function InstancesPage() {
 				setActiveConnection(base.id);
 			}
 		} else if (method === "sdk") {
-			sdkConnectHandle.open();
+			openConnectSdk(db);
 		} else {
-			cliConnectHandle.open();
+			openConnectCli(db);
 		}
 	});
 
@@ -377,18 +371,6 @@ export function InstancesPage() {
 				icon={iconPlus}
 				hiddenFrom="xs"
 				onClick={handleProvision}
-			/>
-
-			<ConnectCliModal
-				opened={showCliConnect}
-				instance={selectedInstance}
-				onClose={cliConnectHandle.close}
-			/>
-
-			<ConnectSdkModal
-				opened={showSdkConnect}
-				instance={selectedInstance}
-				onClose={sdkConnectHandle.close}
 			/>
 		</>
 	);

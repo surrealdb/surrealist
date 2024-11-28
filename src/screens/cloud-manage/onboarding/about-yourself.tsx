@@ -1,12 +1,7 @@
-import {
-	Alert,
-	Button,
-	Group,
-	Select,
-	Stack,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import classes from "../style.module.scss";
+import glowUrl from "~/assets/images/gradient-glow.webp";
+
+import { Alert, Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { ErrorBoundary } from "react-error-boundary";
 import { useImmer } from "use-immer";
@@ -17,6 +12,7 @@ import { useStable } from "~/hooks/stable";
 import { iconChevronRight, iconErrorCircle } from "~/util/icons";
 import { fetchAPI } from "../api";
 import { openStartingModal } from "./getting-started";
+import { getIsLight } from "~/hooks/theme";
 
 export type Question =
 	| {
@@ -35,8 +31,18 @@ export type Question =
 export function openAboutModal(questions: Question[]) {
 	openModal({
 		size: 525,
+		closeOnEscape: false,
+		closeOnClickOutside: false,
 		title: <PrimaryTitle>Tell us about yourself</PrimaryTitle>,
 		children: <AboutModal questions={questions} />,
+		classNames: {
+			content: classes.onboardingDialog,
+		},
+		styles: {
+			root: {
+				"--image": `url(${glowUrl})`,
+			},
+		},
 	});
 }
 
@@ -61,14 +67,20 @@ function AboutModal({ questions }: AboutModalProps) {
 		<>
 			<ErrorBoundary
 				fallback={
-					<Alert color="red.5" icon={<Icon path={iconErrorCircle} />}>
-						An error occurred while rendering this form. Please
-						continue to the next step.
+					<Alert
+						color="red.5"
+						icon={<Icon path={iconErrorCircle} />}
+					>
+						An error occurred while rendering this form. Please continue to the next
+						step.
 					</Alert>
 				}
 			>
-				<Stack>
-					<Text fz="lg">
+				<Stack gap="lg">
+					<Text
+						fz="lg"
+						mb="md"
+					>
 						We would love to know more about you and your use case!
 					</Text>
 					{questions.map((question) => {
@@ -80,8 +92,7 @@ function AboutModal({ questions }: AboutModalProps) {
 									value={values[question.id] || ""}
 									onChange={(value) =>
 										setValues((draft) => {
-											draft[question.id] =
-												value.target.value;
+											draft[question.id] = value.target.value;
 										})
 									}
 								/>
@@ -111,19 +122,27 @@ function AboutModal({ questions }: AboutModalProps) {
 							);
 						}
 					})}
-					<Text c="slate">
-						This information will help us understand your needs and
-						provide you with the best possible experience.
-					</Text>
 				</Stack>
 			</ErrorBoundary>
 
-			<Group mt="xl">
+			<Group
+				mt="xl"
+				wrap="nowrap"
+			>
+				<Text
+					c="slate"
+					fz="sm"
+				>
+					This information will help us understand your needs
+					<br />
+					and provide you with the best possible experience.
+				</Text>
 				<Spacer />
 				<Button
 					variant="gradient"
 					rightSection={<Icon path={iconChevronRight} />}
 					onClick={submitForm}
+					style={{ flexShrink: 0 }}
 				>
 					Continue
 				</Button>

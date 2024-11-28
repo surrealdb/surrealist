@@ -1,3 +1,6 @@
+import glowUrl from "~/assets/images/gradient-glow.webp";
+import classes from "../style.module.scss";
+
 import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useState } from "react";
@@ -27,6 +30,14 @@ export async function openTermsModal() {
 		closeOnClickOutside: false,
 		title: <PrimaryTitle>Terms and Conditions</PrimaryTitle>,
 		children: <TermsModal conditions={conditions} />,
+		classNames: {
+			content: classes.onboardingDialog,
+		},
+		styles: {
+			root: {
+				"--image": `url(${glowUrl})`,
+			},
+		},
 	});
 }
 

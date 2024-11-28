@@ -1,24 +1,39 @@
-import { Group, Modal, Skeleton, Text } from "@mantine/core";
+import { Group, Skeleton, Text } from "@mantine/core";
+import { openModal } from "@mantine/modals";
 import { useQuery } from "@tanstack/react-query";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { fetchAPI } from "~/screens/cloud-manage/api";
 import type { CloudInstance } from "~/types";
 import { iconConsole } from "~/util/icons";
+import { fetchAPI } from "../api";
 
-export interface ConnectCliModalProps {
-	opened: boolean;
-	onClose: () => void;
+export function openConnectCli(instance: CloudInstance) {
+	openModal({
+		size: "lg",
+		title: (
+			<Group>
+				<Icon
+					path={iconConsole}
+					size="xl"
+				/>
+				<PrimaryTitle>Connect with the CLI</PrimaryTitle>
+			</Group>
+		),
+		children: <ConnectCliModal instance={instance} />,
+	});
+}
+
+interface ConnectCliModalProps {
 	instance: CloudInstance;
 }
 
-export function ConnectCliModal({ opened, onClose, instance }: ConnectCliModalProps) {
+function ConnectCliModal({ instance }: ConnectCliModalProps) {
 	const { data, isPending } = useQuery({
 		queryKey: ["cloud", "cli"],
-		enabled: !!instance?.id,
+		refetchInterval: 1000 * 60,
 		queryFn: async () => {
 			return fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
 				(res) => res.token,
@@ -30,22 +45,7 @@ export function ConnectCliModal({ opened, onClose, instance }: ConnectCliModalPr
 	const command = `surreal sql --endpoint ${endpoint} --token ${data}`;
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={onClose}
-			trapFocus={false}
-			withCloseButton
-			size="lg"
-			title={
-				<Group>
-					<Icon
-						path={iconConsole}
-						size="xl"
-					/>
-					<PrimaryTitle>Connect with the CLI</PrimaryTitle>
-				</Group>
-			}
-		>
+		<>
 			<Text size="lg">
 				In order to connect to this instance, make sure you have the{" "}
 				<Link href="https://surrealdb.com/docs/surrealdb/installation">SurrealDB CLI</Link>{" "}
@@ -58,6 +58,7 @@ export function ConnectCliModal({ opened, onClose, instance }: ConnectCliModalPr
 				visible={isPending}
 			>
 				<CodePreview
+					language="bash"
 					value={command}
 					withCopy
 				/>
@@ -70,6 +71,6 @@ export function ConnectCliModal({ opened, onClose, instance }: ConnectCliModalPr
 			>
 				Learn more about the SurrealDB CLI
 			</LearnMore>
-		</Modal>
+		</>
 	);
 }
