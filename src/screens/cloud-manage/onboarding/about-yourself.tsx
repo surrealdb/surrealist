@@ -1,5 +1,5 @@
-import classes from "../style.module.scss";
 import glowUrl from "~/assets/images/gradient-glow.webp";
+import classes from "../style.module.scss";
 
 import { Alert, Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
@@ -9,10 +9,10 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
+import { getIsLight } from "~/hooks/theme";
 import { iconChevronRight, iconErrorCircle } from "~/util/icons";
 import { fetchAPI } from "../api";
 import { openStartingModal } from "./getting-started";
-import { getIsLight } from "~/hooks/theme";
 
 export type Question =
 	| {

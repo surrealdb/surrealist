@@ -1,6 +1,6 @@
-import classes from "./style.module.scss";
 import { Box, ScrollArea } from "@mantine/core";
 import { HelpCenter } from "~/components/HelpCenter";
+import classes from "./style.module.scss";
 
 export function SupportPage() {
 	return (

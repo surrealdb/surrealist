@@ -15,17 +15,17 @@ import {
 } from "~/util/icons";
 
 import { Box, Divider, Group, Stack, UnstyledButton } from "@mantine/core";
-import type { PropsWithChildren } from "react";
-import { PrimaryTitle } from "../PrimaryTitle";
-import { Spacer } from "../Spacer";
-import { useIsLight } from "~/hooks/theme";
 import { Text } from "@mantine/core";
-import { Icon } from "../Icon";
+import clsx from "clsx";
+import type { PropsWithChildren } from "react";
 import { adapter } from "~/adapter";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
-import clsx from "clsx";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { Icon } from "../Icon";
+import { PrimaryTitle } from "../PrimaryTitle";
+import { Spacer } from "../Spacer";
 
 export interface HelpCenterProps {
 	onBody?: boolean;
