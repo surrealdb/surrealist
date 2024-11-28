@@ -86,8 +86,8 @@ export function ProvisionPage() {
 	const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
 	// const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
 	const willCreate = step === 5;
-	const hourlyPriceCents = instanceInfo?.price_hour ?? 0;
-	const estimatedCost = (hourlyPriceCents / 100) * units;
+	const hourlyPriceThousandth = instanceInfo?.price_hour ?? 0;
+	const estimatedCost = (hourlyPriceThousandth / 1000) * units;
 	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	// Selectable organization list
