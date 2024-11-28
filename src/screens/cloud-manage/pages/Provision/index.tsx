@@ -339,9 +339,8 @@ export function ProvisionPage() {
 							<PrimaryTitle>Select instance category</PrimaryTitle>
 
 							<Text mb="lg">
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem rem
-								nam vel quam reprehenderit eum suscipit modi iure quod fugiat
-								assumenda minus.
+								Optimize your experience by selecting the instance category that
+								best aligns with your project's goals.
 							</Text>
 
 							<ScrollArea.Autosize mah="calc(100vh - 350px)">
@@ -381,8 +380,7 @@ export function ProvisionPage() {
 										</Group>
 										<Text mt="sm">
 											For testing, starter projects, or for low-traffic
-											applications. Clusters under heavy load may experience
-											CPU throttling.
+											applications.
 										</Text>
 									</Tile>
 									<Tile
@@ -405,7 +403,7 @@ export function ProvisionPage() {
 										</Text>
 									</Tile>
 								</Stack>
-								<Collapse in={category !== "free" && !hasBilling}>
+								<Collapse in={!!category && category !== "free" && !hasBilling}>
 									<Alert
 										mt="xl"
 										color="blue"
