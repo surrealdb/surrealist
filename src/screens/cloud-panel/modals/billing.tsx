@@ -224,6 +224,7 @@ function BillingForm({ organization, details }: BillingFormProps) {
 						data={countryList}
 						value={data.Country}
 						onBlur={updateValidation}
+						data-1p-ignore
 						onChange={(v) =>
 							setData((d) => {
 								d.Country = v as string;
