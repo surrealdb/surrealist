@@ -380,7 +380,9 @@ export function BillingPage() {
 								}
 							/>
 						</Skeleton>
-						<LearnMore href="">Learn more about the referral program</LearnMore>
+						<LearnMore href="https://surrealdb.com/docs/cloud/billing-and-support/billing#referrals">
+							Learn more about the referral program
+						</LearnMore>
 					</Section>
 
 					<Section
