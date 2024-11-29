@@ -4,9 +4,11 @@ import { sift } from "radash";
 import { useEffect, useMemo } from "react";
 import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudPage, ViewMode } from "~/types";
 import { handleIntentRequest } from "~/util/intents";
+import { REFERRER_KEY } from "~/util/storage";
 
 const VIEWS = Object.keys(VIEW_MODES);
 const CLOUDS = Object.keys(CLOUD_PAGES);
@@ -40,9 +42,7 @@ export function useConfigRouting() {
 
 	// Apply state based on the current URL path
 	const applyState = useStable(() => {
-		const [view, ...other] = sift(
-			location.pathname.toLowerCase().split("/"),
-		);
+		const [view, ...other] = sift(location.pathname.toLowerCase().split("/"));
 		const params = new URLSearchParams(location.search);
 
 		let repair = false;
@@ -69,6 +69,12 @@ export function useConfigRouting() {
 
 		if (intent) {
 			handleIntentRequest(intent);
+		}
+
+		const referrer = params.get("referrer");
+
+		if (referrer) {
+			sessionStorage.setItem(REFERRER_KEY, referrer);
 		}
 	});
 

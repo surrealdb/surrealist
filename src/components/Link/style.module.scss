@@ -1,9 +1,9 @@
 .root {
 	cursor: pointer;
-	color: var(--mantine-color-bright);
+	color: var(--mantine-color-surreal-6);
 	transition: color .1s;
-	
-	&:hover {
-		color: var(--mantine-color-surreal-6);
+
+	&.underline:hover {
+		text-decoration: underline;
 	}
 }

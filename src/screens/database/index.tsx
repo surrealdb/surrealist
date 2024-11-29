@@ -31,7 +31,7 @@ import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { CloudView } from "~/screens/cloud-manage/view";
+import { CloudView } from "~/screens/cloud-panel/view";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewMode } from "~/types";

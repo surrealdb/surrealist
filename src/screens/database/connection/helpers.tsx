@@ -1,22 +1,12 @@
 import { objectify } from "radash";
 import type { AccessRecordAuth, QueryResult, ScopeAuth } from "surrealdb";
-import { fetchAPI } from "~/screens/cloud-manage/api";
+import { fetchAPI } from "~/screens/cloud-panel/api";
 import type { AuthDetails, Authentication, QueryResponse } from "~/types";
 import { getSetting } from "~/util/config";
 import { featureFlags } from "~/util/feature-flags";
 
-export async function composeAuthentication(
-	connection: Authentication,
-): Promise<AuthDetails> {
-	const {
-		mode,
-		username,
-		password,
-		namespace,
-		database,
-		token,
-		cloudInstance,
-	} = connection;
+export async function composeAuthentication(connection: Authentication): Promise<AuthDetails> {
+	const { mode, username, password, namespace, database, token, cloudInstance } = connection;
 
 	switch (mode) {
 		case "root": {

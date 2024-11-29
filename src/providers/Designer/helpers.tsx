@@ -160,7 +160,6 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 		query += buildPermission("create", field.permissions.create);
 		query += buildPermission("select", field.permissions.select);
 		query += buildPermission("update", field.permissions.update);
-		query += buildPermission("delete", field.permissions.delete);
 
 		queries.push(query);
 	}

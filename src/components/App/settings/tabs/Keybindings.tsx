@@ -2,10 +2,12 @@ import equal from "fast-deep-equal";
 
 import {
 	ActionIcon,
+	Alert,
 	Box,
 	Button,
 	Divider,
 	Group,
+	List,
 	Modal,
 	Paper,
 	ScrollArea,
@@ -23,16 +25,22 @@ import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
-import { type Command, useCommandCategories, useCommandKeybinds } from "~/providers/Commands";
+import {
+	type Command,
+	useCommandCategories,
+	useCommandKeybinds,
+	useCommandRegistry,
+} from "~/providers/Commands";
 import { displayBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
+import { iconEdit, iconPlus, iconSearch, iconWarning } from "~/util/icons";
 
 export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");
 	const userKeybinds = useConfigStore((state) => state.keybindings);
 	const categories = useCommandCategories();
+	const commands = useCommandRegistry();
 	const keybinds = useCommandKeybinds();
 
 	const [isRecording, recordingHandle] = useBoolean();
@@ -152,6 +160,7 @@ export function KeybindingsTab() {
 				{recordCommand && (
 					<RecordingModal
 						command={recordCommand}
+						commands={commands}
 						keybindMap={keybinds}
 						onClose={recordingHandle.close}
 					/>
@@ -163,18 +172,27 @@ export function KeybindingsTab() {
 
 interface RecordingModalProps {
 	command: Command;
+	commands: Map<string, Command>;
 	keybindMap: Map<string, string[]>;
 	onClose: () => void;
 }
 
-function RecordingModal({ command, keybindMap, onClose }: RecordingModalProps) {
+function RecordingModal({ command, commands, keybindMap, onClose }: RecordingModalProps) {
 	const { setKeybinding, removeKeybinding } = useConfigStore.getState();
 
 	const [binding, setBinding] = useState<string[]>([]);
 	const active = keybindMap.get(command.id);
 	const hasOldBinding = active && active.length > 0;
-	// const hasNewBinding = binding && binding.length > 0;
 	const isResettable = active && !equal(active, command.binding);
+
+	const duplicates = Array.from(
+		keybindMap
+			.entries()
+			.filter(([id, bind]) => {
+				return id !== command.id && equal(bind, binding);
+			})
+			.map(([id]) => id),
+	);
 
 	const handleReset = useStable(() => {
 		removeKeybinding(command.id);
@@ -211,6 +229,14 @@ function RecordingModal({ command, keybindMap, onClose }: RecordingModalProps) {
 				>
 					Enter your desired keybinding
 				</PrimaryTitle>
+				{hasOldBinding && (
+					<Text
+						fz="sm"
+						mt="xs"
+					>
+						Currently bound to <b>{displayBinding(active)}</b>
+					</Text>
+				)}
 			</Box>
 			<Box>
 				<KeybindInput
@@ -220,17 +246,41 @@ function RecordingModal({ command, keybindMap, onClose }: RecordingModalProps) {
 					onChange={setBinding}
 					placeholder="Listening for input..."
 				/>
-				{hasOldBinding && (
-					<Text
-						fz="sm"
-						ml={2}
-						mt="xs"
-						c="slate"
-					>
-						Currently bound to <b>{displayBinding(active)}</b>
-					</Text>
-				)}
 			</Box>
+			{duplicates.length > 0 && (
+				<Paper
+					bg="slate.9"
+					mt="sm"
+					p="lg"
+				>
+					<Text
+						mb="xs"
+						c="bright"
+						fw={500}
+					>
+						Conflicting keybindings
+					</Text>
+					{duplicates.map((cmd) => {
+						const options = commands.get(cmd);
+
+						return (
+							options && (
+								<Group
+									mt={2}
+									gap="xs"
+									key={cmd}
+								>
+									<Icon
+										path={options.icon ?? ""}
+										size="sm"
+									/>
+									<Text>{options.name}</Text>
+								</Group>
+							)
+						);
+					})}
+				</Paper>
+			)}
 			<Group mt="lg">
 				<Button
 					onClick={onClose}

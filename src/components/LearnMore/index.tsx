@@ -6,9 +6,7 @@ import { Icon } from "../Icon";
 import { Link } from "../Link";
 import classes from "./style.module.scss";
 
-export interface LearnMoreProps
-	extends BoxProps,
-		Omit<HTMLAttributes<HTMLAnchorElement>, "style"> {
+export interface LearnMoreProps extends BoxProps, Omit<HTMLAttributes<HTMLAnchorElement>, "style"> {
 	href: string;
 }
 
@@ -21,6 +19,7 @@ export function LearnMore({
 	return (
 		<Link
 			href={href}
+			underline={false}
 			className={clsx(classes.root, className)}
 			{...other}
 		>

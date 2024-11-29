@@ -428,20 +428,17 @@ export const DRIVERS: Driver[] = [
 		name: "Java",
 		icon: JavaIcon,
 		link: "https://surrealdb.com/docs/sdk/java",
-		disabled: true,
 	},
 	{
 		id: "go",
 		name: "GoLang",
 		icon: GoLangIcon,
 		link: "https://surrealdb.com/docs/sdk/golang",
-		disabled: true,
 	},
 	{
 		id: "c",
 		name: "C",
 		icon: CIcon,
 		link: "https://github.com/surrealdb/surrealdb.c",
-		disabled: true,
 	},
 ];

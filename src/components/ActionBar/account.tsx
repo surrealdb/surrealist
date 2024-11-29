@@ -16,8 +16,8 @@ import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
-import { fetchAPI } from "~/screens/cloud-manage/api";
-import { destroySession } from "~/screens/cloud-manage/api/auth";
+import { fetchAPI } from "~/screens/cloud-panel/api";
+import { destroySession } from "~/screens/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudProfile } from "~/types";
@@ -65,7 +65,11 @@ function AccountForm({ onClose }: AccountFormProps) {
 	return (
 		<Form onSubmit={saveSettings}>
 			<Stack>
-				<TextInput label="Full name" value={name} onChange={setName} />
+				<TextInput
+					label="Full name"
+					value={name}
+					onChange={setName}
+				/>
 				<Group mt="lg">
 					<Button
 						onClick={onClose}
@@ -134,17 +138,28 @@ export function CloudAccount() {
 						src={profile.picture}
 						component={UnstyledButton}
 					>
-						{state === "loading" && (
-							<Loader size="sm" color="slate.4" />
+						{state === "loading" && !profile.picture && (
+							<Loader
+								size="sm"
+								color="slate.4"
+							/>
 						)}
 					</Avatar>
 				</Menu.Target>
 				<Menu.Dropdown w={200}>
 					<Box p="sm">
-						<Text fz="md" fw={500} c="bright">
+						<Text
+							fz="md"
+							fw={500}
+							c="bright"
+						>
 							{name}
 						</Text>
-						<Text fz="sm" c="slate" mt={-3}>
+						<Text
+							fz="sm"
+							c="slate"
+							mt={-3}
+						>
 							{profile.username}
 						</Text>
 					</Box>

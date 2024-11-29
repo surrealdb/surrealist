@@ -3,7 +3,7 @@ import { sleep } from "radash";
 import { useEffect } from "react";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
-import { fetchAPI } from "~/screens/cloud-manage/api";
+import { fetchAPI } from "~/screens/cloud-panel/api";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { iconCheck, iconSurreal } from "~/util/icons";

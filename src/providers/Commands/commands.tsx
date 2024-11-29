@@ -35,6 +35,7 @@ import {
 	iconStar,
 	iconStarPlus,
 	iconStop,
+	iconTable,
 	iconText,
 	iconTextBoxMinus,
 	iconTextBoxPlus,
@@ -50,8 +51,13 @@ import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
 import { useConnection, useConnections } from "~/hooks/connection";
+import { useDatasets } from "~/hooks/dataset";
 import { showNodeStatus } from "~/modals/node-status";
-import { closeConnection, openConnection } from "~/screens/database/connection/connection";
+import {
+	closeConnection,
+	openConnection,
+	resetConnection,
+} from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { featureFlags } from "~/util/feature-flags";
@@ -91,6 +97,8 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	const isServing = useDatabaseStore((state) => state.isServing);
 	const currentState = useDatabaseStore((state) => state.currentState);
 	const connectionSchema = useDatabaseStore((state) => state.connectionSchema);
+
+	const [datasets, applyDataset] = useDatasets();
 
 	const activeCon = useConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
@@ -411,6 +419,35 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						},
 					],
 				},
+				{
+					name: "Sandbox",
+					commands: [
+						{
+							id: "reset-sandbox",
+							name: "Reset sandbox environment",
+							unlisted: !isSandbox,
+							icon: iconReset,
+							binding: true,
+							action: launch(() => {
+								if (isSandbox) {
+									resetConnection();
+								}
+							}),
+						},
+						...datasets.map(({ label, value }) => ({
+							id: `apply-dataset-${value}`,
+							name: `Apply dataset ${label}`,
+							unlisted: !isSandbox,
+							icon: iconTable,
+							binding: true,
+							action: launch(() => {
+								if (isSandbox) {
+									applyDataset(value);
+								}
+							}),
+						})),
+					],
+				},
 			);
 		}
 
@@ -696,8 +733,10 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		activeView,
 		connections,
 		connectionSchema,
+		datasets,
 		commandHistory,
 		canDisconnect,
+		isSandbox,
 		isServing,
 		preferences,
 		setActiveView,

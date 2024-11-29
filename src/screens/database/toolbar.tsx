@@ -28,11 +28,11 @@ import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconReset, iconStar, iconTable } from "~/util/icons";
-import { openCloudAuthentication } from "../cloud-manage/api/auth";
+import { openCloudAuthentication } from "../cloud-panel/api/auth";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
-import { openConnection } from "./connection/connection";
+import { openConnection, resetConnection } from "./connection/connection";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();
@@ -71,17 +71,7 @@ export function DatabaseToolbar() {
 		skippable: true,
 		confirmText: "Reset",
 		confirmProps: { variant: "gradient" },
-		onConfirm: async () => {
-			openConnection();
-
-			if (connection) {
-				for (const query of connection.queries) {
-					clearQueryResponse(query.id);
-				}
-
-				clearGraphqlResponse(connection.id);
-			}
-		},
+		onConfirm: resetConnection,
 	});
 
 	const [datasets, applyDataset, isDatasetLoading] = useDatasets();

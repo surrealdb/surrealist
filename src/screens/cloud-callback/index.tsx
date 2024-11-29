@@ -1,20 +1,21 @@
 import classes from "./style.module.scss";
 
-import { Image, MantineProvider, Stack, Text } from "@mantine/core";
+import { Button, List, MantineProvider, Paper, Stack, Text } from "@mantine/core";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { useLogoUrl } from "~/hooks/brand";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { isDevelopment } from "~/util/environment";
 import { MANTINE_THEME } from "~/util/mantine";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 
-type Result = "redirect" | "launch" | "error" | "close";
+type Result = "redirect" | "launch" | "error" | "close" | "verify";
 
 const REDIRECT_ENDPOINT = isDevelopment ? "http://localhost:1420" : `https://${location.host}`;
+
+// http://localhost:1420/cloud/callback/index.html?error=access_denied&error_description=Please%20verify%20your%20email%20before%20continuing.&state=browser2NP1~m7q8.NGa_Z7RIHDTY6sZN7hUaUPqZhlGsvLKfQ4sJkniN
 
 export function CloudCallbackScreen() {
 	const [result, setResult] = useState<Result>("redirect");
 	const [error, setError] = useState<string | undefined>(undefined);
-	const logoUrl = useLogoUrl();
 	const codeRef = useRef("");
 	const stateRef = useRef("");
 
@@ -23,7 +24,7 @@ export function CloudCallbackScreen() {
 		const state = stateRef.current;
 
 		if (code && state) {
-			location.href = `surrealist://?intent=cloud-signin:code=${code},state=${state}`;
+			location.href = `surrealist://?intent=cloud-auth:code=${code},state=${state}`;
 		} else {
 			location.href = `surrealist://?intent=cloud-signout`;
 		}
@@ -36,12 +37,19 @@ export function CloudCallbackScreen() {
 		const state = params.get("state");
 		const error = params.get("error");
 		const target = params.get("target");
-		const error_description = params.get("error_description");
+		const errorDescription = params.get("error_description");
 
 		// An error occurred, display it
-		if (error || error_description) {
-			setResult("error");
-			setError(`Encountered an error: ${error_description} (${error})`);
+		// Additionally, intercept verify results
+		if (error || errorDescription) {
+			const shouldVerify = errorDescription?.includes("verify your email");
+
+			if (shouldVerify) {
+				setResult("verify");
+			} else {
+				setResult("error");
+				setError(`Encountered an error: ${errorDescription} (${error})`);
+			}
 			return;
 		}
 
@@ -95,22 +103,52 @@ export function CloudCallbackScreen() {
 				align="center"
 				gap="xl"
 			>
-				<Image
-					src={logoUrl}
-					w={175}
-				/>
 				{result === "redirect" ? (
 					<Text fz="lg">Redirecting...</Text>
 				) : result === "close" ? (
 					<Text fz="lg">You can now safely close this page and return to Surrealist</Text>
+				) : result === "verify" ? (
+					<Paper p="xl">
+						<Stack maw={300}>
+							<PrimaryTitle>Verify your email</PrimaryTitle>
+							<Text>
+								Please verify your email before continuing to Surreal Cloud. If you
+								have not received an email, please check your spam folder.
+							</Text>
+							<List>
+								<List.Item>Open your email inbox and find the email</List.Item>
+								<List.Item>Press the button to verify your email</List.Item>
+								<List.Item>Return to Surrealist to enter Surreal Cloud</List.Item>
+							</List>
+							<Text
+								mt="md"
+								c="bright"
+							>
+								Already verified your email?
+							</Text>
+							<Button
+								variant="gradient"
+								radius="xs"
+								style={{
+									backgroundOrigin: "border-box",
+									border: "1px solid rgba(255, 255, 255, 0.3)",
+								}}
+								onClick={() => {
+									location.href = `${REDIRECT_ENDPOINT}?intent=cloud-signin`;
+								}}
+							>
+								Continue to Surreal Cloud
+							</Button>
+						</Stack>
+					</Paper>
 				) : result === "error" ? (
 					<Text
 						fz="lg"
 						c="red"
 					>
-						{error ?? "Authentication could not be completed"}
+						{error}
 					</Text>
-				) : (
+				) : result === "launch" ? (
 					<>
 						<Text fz="lg">Opening Surrealist...</Text>
 						<Text
@@ -119,8 +157,10 @@ export function CloudCallbackScreen() {
 						>
 							If the app does not open automatically, please click here to open it
 						</Text>
-						<Text c="slate">You can close this tab once the app has opened</Text>
+						<Text c="slate">You can close this page once the app has opened</Text>
 					</>
+				) : (
+					<></>
 				)}
 			</Stack>
 		</MantineProvider>

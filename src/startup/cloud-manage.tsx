@@ -13,7 +13,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
-import { CloudManageScreen } from "~/screens/cloud-manage";
+import { CloudManageScreen } from "~/screens/cloud-panel";
 import { startConfigSync } from "~/util/config";
 import { adapter } from "../adapter";
 import { isProduction } from "../util/environment";

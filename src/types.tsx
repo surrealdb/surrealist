@@ -483,7 +483,6 @@ export interface Driver {
 	name: string;
 	icon: React.FC<{ active?: boolean } & ElementProps<"svg">>;
 	link: string;
-	disabled?: boolean;
 }
 
 export interface CloudSignin {
@@ -511,6 +510,7 @@ export interface CloudInstance {
 
 export interface CloudInstanceType {
 	slug: string;
+	display_name: string;
 	description: string;
 	cpu: number;
 	memory: number;

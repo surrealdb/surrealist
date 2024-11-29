@@ -105,6 +105,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			changelog: "hidden",
 			cloud_killswitch: true,
+			cloud_access: true,
 			newsfeed: true,
 			themes: true,
 		},
@@ -120,6 +121,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_view: true,
 			database_version_check: true,
 			cloud_killswitch: true,
+			cloud_access: true,
 			newsfeed: true,
 			themes: true,
 		},
@@ -129,6 +131,10 @@ export const featureFlags = new FeatureFlags({
 
 		if (value) {
 			return JSON.parse(value);
+		}
+
+		if (flag === "cloud_view") {
+			return import.meta.env.VITE_SURREALIST_INSTANCE !== "true";
 		}
 	},
 });

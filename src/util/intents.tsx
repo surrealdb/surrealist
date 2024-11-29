@@ -46,6 +46,7 @@ const INTENT_REGISTRY = {
 	"create-access": "authentication",
 	"register-user": "authentication",
 	"docs-switch-language": "documentation",
+	"cloud-auth": "cloud",
 	"cloud-signin": "cloud",
 	"cloud-signout": "cloud",
 	"cloud-activate": "cloud",

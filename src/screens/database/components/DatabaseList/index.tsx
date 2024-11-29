@@ -260,7 +260,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 						>
 							Learn more about databases
 						</LearnMore>
-						<Group mt="lg">
+						<Group>
 							<Button
 								onClick={creatorHandle.close}
 								color="slate"

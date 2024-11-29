@@ -3,9 +3,10 @@ import { adapter } from "~/adapter";
 import {
 	checkSessionExpiry,
 	invalidateSession,
+	openCloudAuthentication,
 	refreshAccess,
 	verifyAuthentication,
-} from "~/screens/cloud-manage/api/auth";
+} from "~/screens/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { featureFlags } from "~/util/feature-flags";
@@ -45,7 +46,7 @@ export function useAvailableRegions() {
  */
 export function useAvailableInstanceTypes() {
 	const current = useOrganization();
-	
+
 	return current?.plan.instance_types ?? [];
 }
 
@@ -76,16 +77,11 @@ export function useCloudAuthentication() {
 		}
 
 		// Automatically refresh the session before it expires
-		setInterval(
-			() => {
-				checkSessionExpiry();
-			},
-			1000 * 60 * 3,
-		);
+		setInterval(checkSessionExpiry, 1000 * 60 * 3);
 	}, []);
 
-	// React to signin intents
-	useIntent("cloud-signin", (payload) => {
+	// React to authentication intents
+	useIntent("cloud-auth", (payload) => {
 		const { code, state } = payload;
 
 		if (!code || !state) {
@@ -96,7 +92,11 @@ export function useCloudAuthentication() {
 		verifyAuthentication(code, state);
 	});
 
-	
+	// React to signin intents
+	useIntent("cloud-signin", () => {
+		openCloudAuthentication();
+	});
+
 	// React to callback intents
 	useIntent("cloud-signout", () => {
 		invalidateSession();
@@ -106,5 +106,4 @@ export function useCloudAuthentication() {
 	useIntent("cloud-activate", () => {
 		featureFlags.set("cloud_access", true);
 	});
-	
 }
