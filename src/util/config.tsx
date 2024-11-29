@@ -1,11 +1,11 @@
 import { klona } from "klona";
-import { assign, debounce, isEqual, pick } from "radash";
+import { assign, debounce, isEmpty, isEqual, pick } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { useConfigStore } from "~/stores/config";
 import type { SurrealistConfig } from "~/types";
-import { CONFIG_VERSION } from "./defaults";
+import { CONFIG_VERSION, createBaseConfig } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
 
@@ -58,7 +58,8 @@ export function getSetting<C extends Category, K extends keyof Settings<C>>(cate
  */
 export async function startConfigSync() {
 	const loadedConfig = await adapter.loadConfig();
-	const migrateConfig = applyMigrations(loadedConfig);
+	const preAssignedConfig = isEmpty(loadedConfig) ? createBaseConfig() : loadedConfig;
+	const migrateConfig = applyMigrations(preAssignedConfig);
 	const processed = await adapter.processConfig(migrateConfig);
 	const config = assign<SurrealistConfig>(useConfigStore.getState(), processed);
 	const compatible = config.configVersion <= CONFIG_VERSION;
