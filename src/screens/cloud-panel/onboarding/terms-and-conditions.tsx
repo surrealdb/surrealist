@@ -3,7 +3,7 @@ import classes from "../style.module.scss";
 
 import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -97,7 +97,7 @@ function TermsModal({ conditions }: TermsModalProps) {
 					<>
 						<Text span>I have read and agree to the </Text>
 						{conditions.map((condition, i) => (
-							<>
+							<Fragment key={i}>
 								<Link
 									key={i}
 									href={condition.url}
@@ -106,7 +106,7 @@ function TermsModal({ conditions }: TermsModalProps) {
 									{condition.name}
 								</Link>
 								{i < conditions.length - 1 && <Text span>, </Text>}
-							</>
+							</Fragment>
 						))}
 						.
 					</>
