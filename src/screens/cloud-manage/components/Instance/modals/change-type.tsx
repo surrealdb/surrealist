@@ -12,6 +12,7 @@ import { useCloudInstances } from "~/screens/cloud-manage/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-manage/hooks/limits";
 import type { CloudInstance } from "~/types";
 import { InstanceType } from "../../InstanceType";
+import { EstimatedCost } from "../../EstimatedCost";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({
@@ -35,10 +36,11 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const current = useOrganization();
 	const isLight = useIsLight();
 
+	const [selected, setSelected] = useState(instance.type.slug);
+
 	const { data: instances } = useCloudInstances(current?.id);
 	const isAvailable = useCloudTypeLimits(instances ?? []);
-
-	const [selected, setSelected] = useState(instance.type.slug);
+	const instanceInfo = instanceTypes.find((type) => type.slug === selected);
 
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: (slug: string) =>
@@ -78,6 +80,13 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 					</Stack>
 				</ScrollArea.Autosize>
 			</Paper>
+
+			{instanceInfo && (
+				<EstimatedCost
+					type={instanceInfo}
+					units={instance.compute_units}
+				/>
+			)}
 
 			<Group mt="md">
 				<Button

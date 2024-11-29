@@ -35,7 +35,7 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 		<Tile
 			isActive={isActive}
 			onClick={onSelect ? () => onSelect(type.slug) : undefined}
-			disabled={type.enabled === false || isLimited}
+			// disabled={type.enabled === false || isLimited}
 			inactive={inactive}
 		>
 			<Group

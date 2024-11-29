@@ -19,7 +19,6 @@ import {
 	useAvailableInstanceTypes,
 	useAvailableInstanceVersions,
 	useAvailableRegions,
-	useIsAuthenticated,
 	useOrganization,
 } from "~/hooks/cloud";
 
@@ -40,7 +39,6 @@ import {
 	iconChevronLeft,
 	iconChevronRight,
 	iconHammer,
-	iconOpen,
 	iconPlus,
 	iconQuery,
 	iconStar,
@@ -50,15 +48,13 @@ import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
 import { useCloudInstances } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
+import { EstimatedCost } from "../../components/EstimatedCost";
 
 type Category = "free" | "development" | "production";
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
 	const { setActiveCloudPage } = useConfigStore.getState();
-
-	const [step, setStep] = useState(0);
-	const isLight = useIsLight();
 
 	const current = useOrganization();
 	const organizations = useCloudStore((s) => s.organizations);
@@ -69,6 +65,7 @@ export function ProvisionPage() {
 	const { data: instances } = useCloudInstances(current?.id);
 	const isAvailable = useCloudTypeLimits(instances ?? []);
 
+	const [step, setStep] = useState(0);
 	const [name, setName] = useInputState("");
 	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
 	const [category, setCategory] = useState<Category | null>();
@@ -86,8 +83,6 @@ export function ProvisionPage() {
 	const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
 	// const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
 	const willCreate = step === 5;
-	const hourlyPriceThousandth = instanceInfo?.price_hour ?? 0;
-	const estimatedCost = (hourlyPriceThousandth / 1000) * units;
 	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	// Selectable organization list
@@ -187,50 +182,6 @@ export function ProvisionPage() {
 
 	return (
 		<>
-			{/* <Group
-				pb="xl"
-				mx="auto"
-				gap="lg"
-				justify="center"
-			>
-				{PROVISION_STEPS.map((info, index) => {
-					const isDone = index < step;
-					const isActive = index === step;
-
-					return (
-						<>
-							<Group
-								key={info}
-								wrap="nowrap"
-								c={isActive || isDone ? "bright" : isLight ? "slate.3" : "slate.5"}
-							>
-								<Center
-									style={{
-										borderRadius: "50%",
-										width: 24,
-										height: 24,
-										background: isActive
-											? "var(--surrealist-gradient)"
-											: "var(--mantine-color-slate-7)",
-									}}
-								>
-									{index + 1}
-								</Center>
-								<Text
-									fz="lg"
-									fw={500}
-								>
-									{info}
-								</Text>
-							</Group>
-							{index < PROVISION_STEPS.length - 1 && (
-								<Divider orientation="vertical" />
-							)}
-						</>
-					);
-				})}
-			</Group> */}
-
 			<ScrollArea
 				scrollbars="y"
 				flex={1}
@@ -547,46 +498,13 @@ export function ProvisionPage() {
 										</Table.Tr>
 									</Table.Tbody>
 								</Table>
-								<Text
-									fz="xl"
-									fw={500}
-									mt="xl"
-									c={isLight ? "slate.7" : "slate.2"}
-								>
-									Estimated costs
-								</Text>
 
-								<Text
-									fz={13}
-									c={isLight ? "slate.6" : "slate.2"}
-								>
-									<Text
-										span
-										ml={4}
-										fz={22}
-										fw={500}
-										c="bright"
-									>
-										${estimatedCost.toFixed(2)}
-									</Text>
-									/hour
-								</Text>
-
-								<Text
-									fz={13}
-									c={isLight ? "slate.6" : "slate.2"}
-								>
-									Approx.
-									<Text
-										span
-										ml={4}
-										fw={500}
-										c="bright"
-									>
-										${(estimatedCost * 24 * 30).toFixed(2)}
-									</Text>
-									/month
-								</Text>
+								{instanceInfo && (
+									<EstimatedCost
+										type={instanceInfo}
+										units={units}
+									/>
+								)}
 							</Paper>
 						</Stack>
 					)}

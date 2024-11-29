@@ -10,6 +10,7 @@ import { useIsLight } from "~/hooks/theme";
 import { fetchAPI } from "~/screens/cloud-manage/api";
 import type { CloudInstance } from "~/types";
 import { InstanceType } from "../../InstanceType";
+import { EstimatedCost } from "../../EstimatedCost";
 
 export async function openComputeUnitsModal(instance: CloudInstance) {
 	openModal({
@@ -29,12 +30,13 @@ interface ComputeUnitsModalProps {
 }
 
 function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
-	const [units, setUnits] = useState(instance.compute_units);
 	const isLight = useIsLight();
+
+	const [units, setUnits] = useState(instance.compute_units);
 
 	const minComputeUnits = instance.type.compute_units.min;
 	const maxComputeUnits = instance.type.compute_units.max;
-	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
+	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: (compute_units: number) =>
@@ -110,6 +112,11 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 					)} */}
 				</Stack>
 			</Paper>
+
+			<EstimatedCost
+				type={instance.type}
+				units={units}
+			/>
 
 			<Group mt="md">
 				<Button
