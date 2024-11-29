@@ -372,7 +372,7 @@ export function ProvisionPage() {
 												setActiveCloudPage("billing");
 											}}
 										>
-											Enter billing details
+											Enter billing & payment details
 										</Button>
 									</Alert>
 								</Collapse>
