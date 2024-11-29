@@ -44,11 +44,11 @@ import {
 	iconStar,
 } from "~/util/icons";
 import { fetchAPI } from "../../api";
+import { EstimatedCost } from "../../components/EstimatedCost";
 import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
 import { useCloudInstances } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
-import { EstimatedCost } from "../../components/EstimatedCost";
 
 type Category = "free" | "development" | "production";
 

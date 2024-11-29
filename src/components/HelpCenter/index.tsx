@@ -25,7 +25,7 @@ import { adapter } from "~/adapter";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent } from "~/hooks/url";
-import { openAccountSupport } from "~/screens/cloud-manage/modals/account-support";
+import { openAccountSupport } from "~/screens/cloud-panel/modals/account-support";
 import { useConfigStore } from "~/stores/config";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";

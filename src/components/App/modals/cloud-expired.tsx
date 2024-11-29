@@ -3,7 +3,7 @@ import type { MouseEvent } from "react";
 import cloudLogo from "~/assets/images/cloud-icon.webp";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { openCloudAuthentication } from "~/screens/cloud-manage/api/auth";
+import { openCloudAuthentication } from "~/screens/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { iconClose } from "~/util/icons";
 import classes from "../style.module.scss";

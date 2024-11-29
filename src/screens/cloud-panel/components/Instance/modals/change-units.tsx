@@ -7,10 +7,10 @@ import { CounterInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { fetchAPI } from "~/screens/cloud-manage/api";
+import { fetchAPI } from "~/screens/cloud-panel/api";
 import type { CloudInstance } from "~/types";
-import { InstanceType } from "../../InstanceType";
 import { EstimatedCost } from "../../EstimatedCost";
+import { InstanceType } from "../../InstanceType";
 
 export async function openComputeUnitsModal(instance: CloudInstance) {
 	openModal({

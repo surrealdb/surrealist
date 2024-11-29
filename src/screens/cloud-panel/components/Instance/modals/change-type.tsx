@@ -7,12 +7,12 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { fetchAPI } from "~/screens/cloud-manage/api";
-import { useCloudInstances } from "~/screens/cloud-manage/hooks/instances";
-import { useCloudTypeLimits } from "~/screens/cloud-manage/hooks/limits";
+import { fetchAPI } from "~/screens/cloud-panel/api";
+import { useCloudInstances } from "~/screens/cloud-panel/hooks/instances";
+import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import type { CloudInstance } from "~/types";
-import { InstanceType } from "../../InstanceType";
 import { EstimatedCost } from "../../EstimatedCost";
+import { InstanceType } from "../../InstanceType";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({

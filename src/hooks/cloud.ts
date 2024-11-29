@@ -6,7 +6,7 @@ import {
 	openCloudAuthentication,
 	refreshAccess,
 	verifyAuthentication,
-} from "~/screens/cloud-manage/api/auth";
+} from "~/screens/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { featureFlags } from "~/util/feature-flags";
