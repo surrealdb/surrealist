@@ -227,10 +227,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	private applyInstanceConfig(config: SurrealistConfig, instanceConfig: InstanceConfig) {
-		if (!config.connectionGroups) {
-			config.connectionGroups = [];
-		}
-
 		// nothing configured in the instance file
 		// clean instance connections
 		if (instanceConfig.connections.length <= 0) {
