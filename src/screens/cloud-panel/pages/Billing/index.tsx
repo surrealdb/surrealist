@@ -46,8 +46,8 @@ import { Section } from "../../components/Section";
 import { useCloudBillingQuery } from "../../hooks/billing";
 import { useCloudInvoicesQuery } from "../../hooks/invoices";
 import { useCloudPaymentsQuery } from "../../hooks/payments";
-import { openBillingDetails } from "../../modals/billing";
 import { useCloudReferralQuery } from "../../hooks/referral";
+import { openBillingDetails } from "../../modals/billing";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
