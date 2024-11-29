@@ -3,6 +3,7 @@ import { adapter } from "~/adapter";
 import {
 	checkSessionExpiry,
 	invalidateSession,
+	openCloudAuthentication,
 	refreshAccess,
 	verifyAuthentication,
 } from "~/screens/cloud-manage/api/auth";
@@ -79,8 +80,8 @@ export function useCloudAuthentication() {
 		setInterval(checkSessionExpiry, 1000 * 60 * 3);
 	}, []);
 
-	// React to signin intents
-	useIntent("cloud-signin", (payload) => {
+	// React to authentication intents
+	useIntent("cloud-auth", (payload) => {
 		const { code, state } = payload;
 
 		if (!code || !state) {
@@ -89,6 +90,11 @@ export function useCloudAuthentication() {
 		}
 
 		verifyAuthentication(code, state);
+	});
+
+	// React to signin intents
+	useIntent("cloud-signin", () => {
+		openCloudAuthentication();
 	});
 
 	// React to callback intents

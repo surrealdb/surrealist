@@ -10,6 +10,7 @@ import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
+import { sleep } from "radash";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -29,6 +30,10 @@ interface PKCE {
 	setActiveCloudOrg("");
 };
 
+function getState() {
+	return useCloudStore.getState().authState;
+}
+
 /**
  * Open the cloud authentication page
  */
@@ -37,8 +42,19 @@ export async function openCloudAuthentication() {
 	const { authBase } = getCloudEndpoints();
 	const isSupported = await isClientSupported();
 
+	// If the client is not supported, disable the cloud
 	if (!isSupported) {
 		setIsSupported(false);
+		return;
+	}
+
+	// Wait for the auth state to be determined
+	while (getState() === "unknown") {
+		await sleep(100);
+	}
+
+	// If the user is already authenticated, do nothing
+	if (getState() !== "unauthenticated") {
 		return;
 	}
 
