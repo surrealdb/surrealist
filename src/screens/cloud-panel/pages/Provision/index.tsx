@@ -47,7 +47,7 @@ import { fetchAPI } from "../../api";
 import { EstimatedCost } from "../../components/EstimatedCost";
 import { InstanceType } from "../../components/InstanceType";
 import { Tile } from "../../components/Tile";
-import { useCloudInstances } from "../../hooks/instances";
+import { useCloudInstancesQuery } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 
 type Category = "free" | "development" | "production";
@@ -62,7 +62,7 @@ export function ProvisionPage() {
 	const versions = useAvailableInstanceVersions();
 	const regions = useAvailableRegions();
 
-	const { data: instances } = useCloudInstances(current?.id);
+	const { data: instances } = useCloudInstancesQuery(current?.id);
 	const isAvailable = useCloudTypeLimits(instances ?? []);
 
 	const [step, setStep] = useState(0);

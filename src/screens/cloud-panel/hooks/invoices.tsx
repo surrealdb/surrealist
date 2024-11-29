@@ -6,7 +6,7 @@ import { fetchAPI } from "../api";
 /**
  * Fetch organization billing invoices
  */
-export function useCloudInvoices(organization?: string) {
+export function useCloudInvoicesQuery(organization?: string) {
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQuery({

@@ -14,7 +14,7 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
 import { ApiError, fetchAPI, updateCloudInformation } from "../api";
-import { useCloudBilling } from "../hooks/billing";
+import { useCloudBillingQuery } from "../hooks/billing";
 
 export async function openBillingDetails() {
 	return new Promise<void>((resolve) => {
@@ -38,7 +38,7 @@ export async function openBillingDetails() {
 
 function BillingDetailsModal() {
 	const organization = useOrganization();
-	const details = useCloudBilling(organization?.id);
+	const details = useCloudBillingQuery(organization?.id);
 
 	return details.data && organization ? (
 		<BillingForm

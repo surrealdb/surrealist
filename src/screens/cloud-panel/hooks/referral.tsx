@@ -1,20 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudInstance } from "~/types";
 import { fetchAPI } from "../api";
 
 /**
- * Fetch organization instances
+ * Fetch personal referral code
  */
-export function useCloudInstancesQuery(organization?: string) {
+export function useCloudReferralQuery() {
 	const authState = useCloudStore((state) => state.authState);
+	const username = useCloudStore((state) => state.profile.username);
 
 	return useQuery({
-		queryKey: ["cloud", "databases", organization],
-		refetchInterval: 15_000,
+		queryKey: ["cloud", "referral", username],
 		enabled: authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudInstance[]>(`/organizations/${organization}/instances`);
+			return fetchAPI<string>(`/user/referrals/code`);
 		},
 	});
 }

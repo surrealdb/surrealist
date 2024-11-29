@@ -6,6 +6,7 @@ import {
 	Badge,
 	Box,
 	Button,
+	CopyButton,
 	Divider,
 	Group,
 	List,
@@ -42,10 +43,11 @@ import type { CloudInstanceType, InvoiceStatus } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
-import { useCloudBilling } from "../../hooks/billing";
-import { useCloudInvoices } from "../../hooks/invoices";
-import { useCloudPayments } from "../../hooks/payments";
+import { useCloudBillingQuery } from "../../hooks/billing";
+import { useCloudInvoicesQuery } from "../../hooks/invoices";
+import { useCloudPaymentsQuery } from "../../hooks/payments";
 import { openBillingDetails } from "../../modals/billing";
+import { useCloudReferralQuery } from "../../hooks/referral";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -82,9 +84,10 @@ function BillingPlan({ name, description }: BillingPlanProps) {
 
 export function BillingPage() {
 	const organization = useOrganization();
-	const billingQuery = useCloudBilling(organization?.id);
-	const paymentQuery = useCloudPayments(organization?.id);
-	const invoiceQuery = useCloudInvoices(organization?.id);
+	const billingQuery = useCloudBillingQuery(organization?.id);
+	const paymentQuery = useCloudPaymentsQuery(organization?.id);
+	const invoiceQuery = useCloudInvoicesQuery(organization?.id);
+	const referralQuery = useCloudReferralQuery();
 	const queryClient = useQueryClient();
 
 	const [requesting, setRequesting] = useState(false);
@@ -142,6 +145,7 @@ export function BillingPage() {
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
+	const referralLink = `https://surrealist.app/cloud?referrer=${referralQuery.data}`;
 
 	return (
 		<Box
@@ -355,20 +359,27 @@ export function BillingPage() {
 						title="Referral"
 						description="The Surreal Cloud referral program allows you to invite a friend in exchange for benefits."
 					>
-						<TextInput
-							flex={1}
-							maw={420}
-							value="https://surrealist.app/cloud?referrer=h83c839uc93"
-							readOnly
-							rightSection={
-								<ActionButton
-									variant="gradient"
-									label="Copy link"
-								>
-									<Icon path={iconCopy} />
-								</ActionButton>
-							}
-						/>
+						<Skeleton visible={referralQuery.isPending}>
+							<TextInput
+								flex={1}
+								maw={420}
+								value={referralLink}
+								readOnly
+								rightSection={
+									<CopyButton value={referralLink}>
+										{({ copied, copy }) => (
+											<ActionIcon
+												variant={copied ? "gradient" : undefined}
+												aria-label="Copy referral link"
+												onClick={copy}
+											>
+												<Icon path={copied ? iconCheck : iconCopy} />
+											</ActionIcon>
+										)}
+									</CopyButton>
+								}
+							/>
+						</Skeleton>
 						<LearnMore href="">Learn more about the referral program</LearnMore>
 					</Section>
 

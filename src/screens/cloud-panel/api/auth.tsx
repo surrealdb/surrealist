@@ -6,7 +6,7 @@ import type { CloudSignin } from "~/types";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
-import { REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
+import { REFERRER_KEY, REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
@@ -205,10 +205,17 @@ export async function refreshAccess() {
 export async function acquireSession(accessToken: string) {
 	try {
 		const { setSessionToken, setSessionExpired } = useCloudStore.getState();
+		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
-		const result = await fetchAPI<CloudSignin>("/signin", {
+		let endpoint = "/signin";
+
+		if (referralCode) {
+			endpoint += `?referral=${referralCode}`;
+		}
+
+		const result = await fetchAPI<CloudSignin>(endpoint, {
 			method: "POST",
 			body: JSON.stringify(accessToken),
 		});

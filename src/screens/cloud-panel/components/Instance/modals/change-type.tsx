@@ -8,7 +8,7 @@ import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { fetchAPI } from "~/screens/cloud-panel/api";
-import { useCloudInstances } from "~/screens/cloud-panel/hooks/instances";
+import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import type { CloudInstance } from "~/types";
 import { EstimatedCost } from "../../EstimatedCost";
@@ -38,7 +38,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 
 	const [selected, setSelected] = useState(instance.type.slug);
 
-	const { data: instances } = useCloudInstances(current?.id);
+	const { data: instances } = useCloudInstancesQuery(current?.id);
 	const isAvailable = useCloudTypeLimits(instances ?? []);
 	const instanceInfo = instanceTypes.find((type) => type.slug === selected);
 
