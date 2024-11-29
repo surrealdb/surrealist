@@ -199,24 +199,3 @@ export function createConnectionSchema(): ConnectionSchema {
 		},
 	};
 }
-
-export function createCloudInstance(): CloudInstance {
-	return {
-		id: "",
-		host: "",
-		name: "",
-		region: "",
-		version: "",
-		state: "inactive",
-		compute_units: 0,
-		type: {
-			slug: "",
-			description: "",
-			cpu: 0,
-			memory: 0,
-			price_hour: 0,
-			compute_units: {},
-			category: "",
-		},
-	};
-}
