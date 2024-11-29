@@ -112,7 +112,12 @@ export function ChatMessage({
 											/>
 										}
 									>
-										<Link href={item.url}>{item.title}</Link>
+										<Link
+											href={item.url}
+											c="bright"
+										>
+											{item.title}
+										</Link>
 									</List.Item>
 								))}
 							</List>
