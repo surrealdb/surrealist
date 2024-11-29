@@ -52,7 +52,7 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 							fw={600}
 							fz="xl"
 						>
-							{type.slug}
+							{type.display_name || type.slug}
 						</Text>
 					</Group>
 					{category && (

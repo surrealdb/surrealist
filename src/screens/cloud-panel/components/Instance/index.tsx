@@ -274,7 +274,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					size="lg"
 					c="slate"
 				/>
-				<Text c="bright">{value.type.slug}</Text>
+				<Text c="bright">{value.type.display_name || value.type.slug}</Text>
 			</Group>
 			<Group
 				title="Region"
@@ -333,7 +333,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					/>
 				</Group>
 			</Table.Td>
-			<Table.Td>{value.type.slug}</Table.Td>
+			<Table.Td>{value.type.display_name || value.type.slug}</Table.Td>
 			<Table.Td>{regionName}</Table.Td>
 			<Table.Td>SurrealDB 2.0</Table.Td>
 			<Table.Td>

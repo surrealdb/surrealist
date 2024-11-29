@@ -510,6 +510,7 @@ export interface CloudInstance {
 
 export interface CloudInstanceType {
 	slug: string;
+	display_name: string;
 	description: string;
 	cpu: number;
 	memory: number;
