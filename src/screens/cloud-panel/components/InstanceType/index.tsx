@@ -2,23 +2,8 @@ import { Box, Group, Stack, Table, Text } from "@mantine/core";
 import { capitalize } from "radash";
 import { Icon } from "~/components/Icon";
 import type { CloudInstanceType } from "~/types";
-import { iconHammer, iconMemory, iconQuery, iconStar, iconWarning } from "~/util/icons";
+import { iconDollar, iconHammer, iconMemory, iconQuery, iconStar, iconWarning } from "~/util/icons";
 import { Tile } from "../Tile";
-
-const CATEGORIES: Record<string, { name: string; icon: string }> = {
-	free: {
-		name: "Free",
-		icon: iconStar,
-	},
-	development: {
-		name: "Development",
-		icon: iconHammer,
-	},
-	production: {
-		name: "Production",
-		icon: iconQuery,
-	},
-};
 
 export interface InstanceTypeProps {
 	type: CloudInstanceType;
@@ -29,8 +14,6 @@ export interface InstanceTypeProps {
 }
 
 export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: InstanceTypeProps) {
-	const category = CATEGORIES[type.category];
-
 	return (
 		<Tile
 			isActive={isActive}
@@ -52,19 +35,9 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 							fw={600}
 							fz="xl"
 						>
-							{type.display_name || type.slug}
+							{capitalize(type.display_name)}
 						</Text>
 					</Group>
-					{category && (
-						<Text mt="xs">
-							<Icon
-								path={category.icon}
-								left
-								size="sm"
-							/>
-							{capitalize(category.name)}
-						</Text>
-					)}
 					{type.enabled === false ? (
 						<Text c="red">Not available in your current plan</Text>
 					) : (
@@ -86,33 +59,27 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 					<Table>
 						<Table.Tbody>
 							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconQuery} />
-										vCPU
-									</Group>
-								</Table.Td>
 								<Table.Td
 									c="bright"
-									miw={75}
+									miw={45}
 									ta="right"
 								>
 									{type.cpu}
 								</Table.Td>
+								<Table.Td>
+									<Group>vCPU</Group>
+								</Table.Td>
 							</Table.Tr>
 							<Table.Tr>
-								<Table.Td>
-									<Group>
-										<Icon path={iconMemory} />
-										Memory
-									</Group>
-								</Table.Td>
 								<Table.Td
 									c="bright"
-									miw={75}
+									miw={45}
 									ta="right"
 								>
 									{formatMemory(type.memory)}
+								</Table.Td>
+								<Table.Td>
+									<Group>Memory</Group>
 								</Table.Td>
 							</Table.Tr>
 						</Table.Tbody>

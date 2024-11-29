@@ -31,7 +31,8 @@
 							{ "name": "useEdgesState", "stableResult": [1, 2] },
 							{ "name": "useDatasets", "stableResult": [1] },
 							{ "name": "useStable", "stableResult": true },
-							{ "name": "useReactFlow", "stableResult": true }
+							{ "name": "useReactFlow", "stableResult": true },
+							{ "name": "useQueryClient", "stableResult": true }
 						]
 					}
 				}

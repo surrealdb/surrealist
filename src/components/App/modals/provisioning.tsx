@@ -1,3 +1,5 @@
+import classes from "../style.module.scss";
+
 import { Center, Dialog, Group, Loader, Stack, Text } from "@mantine/core";
 import { sleep } from "radash";
 import { useEffect } from "react";
@@ -7,10 +9,11 @@ import { fetchAPI } from "~/screens/cloud-panel/api";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { iconCheck, iconSurreal } from "~/util/icons";
-import classes from "../style.module.scss";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function ProvisioningDialog() {
 	const { finishProvisioning, hideProvisioning } = useCloudStore.getState();
+	const client = useQueryClient();
 	const isLight = useIsLight();
 
 	const isProvisioning = useCloudStore((s) => s.isProvisioning);
@@ -25,6 +28,10 @@ export function ProvisioningDialog() {
 
 					if (instance.state === "ready") {
 						finishProvisioning();
+
+						client.invalidateQueries({
+							queryKey: ["cloud", "databases"],
+						});
 
 						await sleep(1000);
 
