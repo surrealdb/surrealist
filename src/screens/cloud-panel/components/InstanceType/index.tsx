@@ -35,7 +35,7 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 							fw={600}
 							fz="xl"
 						>
-							{capitalize(type.display_name)}
+							{type.display_name}
 						</Text>
 					</Group>
 					{type.enabled === false ? (
