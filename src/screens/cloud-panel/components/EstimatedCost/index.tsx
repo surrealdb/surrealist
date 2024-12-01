@@ -10,7 +10,7 @@ export interface EstimatedCostProps {
 export function EstimatedCost({ type, units }: EstimatedCostProps) {
 	const isLight = useIsLight();
 	const hourlyPriceThousandth = type.price_hour ?? 0;
-	const estimatedCost = (Math.ceil((hourlyPriceThousandth / 1000) * 100) / 100) * units;
+	const estimatedCost = (hourlyPriceThousandth / 1000) * units;
 
 	return (
 		<Box>
@@ -34,7 +34,7 @@ export function EstimatedCost({ type, units }: EstimatedCostProps) {
 					fw={500}
 					c="bright"
 				>
-					${estimatedCost.toFixed(2)}
+					${estimatedCost.toFixed(3)}
 				</Text>
 				/hour
 			</Text>
@@ -50,7 +50,7 @@ export function EstimatedCost({ type, units }: EstimatedCostProps) {
 					fw={500}
 					c="bright"
 				>
-					${(estimatedCost * 24 * 30).toFixed(2)}
+					${(estimatedCost * 24 * 30).toFixed(3)}
 				</Text>
 				/month
 			</Text>
