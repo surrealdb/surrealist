@@ -17,7 +17,6 @@ import type {
 	AuthMode,
 	CloudPage,
 	CloudPageInfo,
-	CodeLang,
 	Dataset,
 	DiagramAlgorithm,
 	DiagramDirection,
@@ -25,7 +24,6 @@ import type {
 	DiagramLinks,
 	DiagramMode,
 	Driver,
-	KeyBindings,
 	Listable,
 	Orientation,
 	Protocol,
@@ -46,7 +44,6 @@ import {
 	iconAccount,
 	iconAuth,
 	iconBraces,
-	iconChat,
 	iconCloud,
 	iconCog,
 	iconCombined,
@@ -242,13 +239,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		desc: "View the database schema and documentation",
 		require: "database",
 		disabled: (flags) => !flags.apidocs_view,
-	},
-	cloud: {
-		id: "cloud",
-		name: "Surreal Cloud",
-		icon: iconCloud,
-		desc: "Manage your Surreal Cloud environment",
-		disabled: (flags) => !flags.cloud_view,
 	},
 };
 

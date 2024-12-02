@@ -48,7 +48,6 @@ export type AuthMode =
 	| "access-signup"
 	| "cloud";
 export type ViewMode =
-	| "cloud"
 	| "query"
 	| "explorer"
 	| "graphql"

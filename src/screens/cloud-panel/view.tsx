@@ -176,3 +176,5 @@ export function CloudView() {
 		</>
 	);
 }
+
+export default CloudView;

@@ -3,6 +3,7 @@ import classes from "./style.module.scss";
 import { type BoxProps, Divider, Flex, Group, Image, ScrollArea, Stack } from "@mantine/core";
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
+import { useLocation } from "wouter";
 import iconUrl from "~/assets/images/icon.webp";
 import { BetaBadge } from "~/components/BetaBadge";
 import { NavigationIcon } from "~/components/NavigationIcon";
@@ -11,6 +12,7 @@ import { Spacer } from "~/components/Spacer";
 import { VIEW_MODES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
+import { useSurrealCloud } from "~/hooks/cloud";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -45,7 +47,8 @@ export function DatabaseSidebar({
 	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
 	const connection = useConnection();
-	const activeView = useConfigStore((s) => s.activeView);
+	const showCloud = useSurrealCloud();
+	const [_, navigate] = useLocation();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
@@ -77,8 +80,6 @@ export function DatabaseSidebar({
 	const isHoverable = sidebarMode === "expandable" && canHoverSidebar;
 	const isCollapsed = sidebarMode === "compact" || sidebarMode === "expandable";
 	const isFilled = sidebarMode === "fill";
-
-	const { cloud } = VIEW_MODES;
 
 	return (
 		<ScrollArea
@@ -140,10 +141,10 @@ export function DatabaseSidebar({
 									>
 										<NavigationIcon
 											name={info.name}
-											isActive={info.id === activeView}
+											path={info.id}
 											icon={info.anim || info.icon}
 											withTooltip={sidebarMode === "compact"}
-											onClick={() => setViewMode(info.id)}
+											onClick={() => navigate(info.id)}
 											onMouseEnter={hoverSidebarHandle.open}
 											style={{
 												opacity: isViewAvailable(info) ? 1 : 0.5,
@@ -159,7 +160,7 @@ export function DatabaseSidebar({
 
 					<Spacer />
 
-					{!cloud.disabled?.(flags) && (
+					{showCloud && (
 						<NavigationIcon
 							name={
 								<Group
@@ -170,10 +171,10 @@ export function DatabaseSidebar({
 									<BetaBadge />
 								</Group>
 							}
-							isActive={"cloud" === activeView}
 							icon={iconCloud}
+							path="cloud"
 							withTooltip={sidebarMode === "compact"}
-							onClick={() => setViewMode("cloud")}
+							onClick={() => navigate("/cloud")}
 							onMouseEnter={hoverSidebarHandle.open}
 						/>
 					)}

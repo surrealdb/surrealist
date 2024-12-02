@@ -36,9 +36,6 @@ export const schema = {
 	apidocs_view: {
 		options: [false, true],
 	},
-	cloud_view: {
-		options: [false, true],
-	},
 	themes: {
 		options: [false, true],
 	},
@@ -55,6 +52,9 @@ export const schema = {
 		options: [false, true],
 	},
 	legacy_serve: {
+		options: [false, true],
+	},
+	cloud_enabled: {
 		options: [false, true],
 	},
 	cloud_endpoints: {
@@ -86,9 +86,9 @@ export const featureFlags = new FeatureFlags({
 			functions_view: true,
 			models_view: "force",
 			apidocs_view: true,
-			cloud_view: true,
 			newsfeed: true,
 			highlight_tool: true,
+			cloud_enabled: true,
 			cloud_access: true,
 			themes: true,
 			syntax_themes: true,
@@ -102,8 +102,8 @@ export const featureFlags = new FeatureFlags({
 			functions_view: true,
 			models_view: true,
 			apidocs_view: true,
-			cloud_view: true,
 			changelog: "hidden",
+			cloud_enabled: true,
 			cloud_killswitch: true,
 			cloud_access: true,
 			newsfeed: true,
@@ -118,8 +118,8 @@ export const featureFlags = new FeatureFlags({
 			functions_view: true,
 			models_view: true,
 			apidocs_view: true,
-			cloud_view: true,
 			database_version_check: true,
+			cloud_enabled: true,
 			cloud_killswitch: true,
 			cloud_access: true,
 			newsfeed: true,
@@ -133,7 +133,7 @@ export const featureFlags = new FeatureFlags({
 			return JSON.parse(value);
 		}
 
-		if (flag === "cloud_view") {
+		if (flag === "cloud_enabled") {
 			return import.meta.env.VITE_SURREALIST_INSTANCE !== "true";
 		}
 	},

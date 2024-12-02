@@ -1,14 +1,7 @@
 import classes from "./style.module.scss";
 
-import {
-	type HtmlPortalNode,
-	InPortal,
-	OutPortal,
-	createHtmlPortalNode,
-} from "react-reverse-portal";
-
 import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import { Suspense, lazy, memo, useLayoutEffect, useState } from "react";
+import { type FC, lazy, memo, useLayoutEffect, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -17,7 +10,6 @@ import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { CloudView } from "~/screens/cloud-panel/view";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewMode } from "~/types";
@@ -26,35 +18,22 @@ import { themeColor } from "~/util/mantine";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
-
-const PORTAL_ATTRS = {
-	attributes: {
-		style: "height: 100%; display: flex; flex-direction: column;",
-	},
-};
-
-const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
-	query: createHtmlPortalNode(PORTAL_ATTRS),
-	explorer: createHtmlPortalNode(PORTAL_ATTRS),
-	graphql: createHtmlPortalNode(PORTAL_ATTRS),
-	designer: createHtmlPortalNode(PORTAL_ATTRS),
-	authentication: createHtmlPortalNode(PORTAL_ATTRS),
-	functions: createHtmlPortalNode(PORTAL_ATTRS),
-	models: createHtmlPortalNode(PORTAL_ATTRS),
-	documentation: createHtmlPortalNode(PORTAL_ATTRS),
-	cloud: createHtmlPortalNode(PORTAL_ATTRS),
-};
+import { useRoute } from "wouter";
+import { LazyRoute } from "~/components/LazyRoute";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
+const CloudPanel = lazy(() => import("../cloud-panel/view"));
 
-const QueryView = lazy(() => import("./views/query/QueryView"));
-const ExplorerView = lazy(() => import("./views/explorer/ExplorerView"));
-const GraphqlView = lazy(() => import("./views/graphql/GraphqlView"));
-const DesignerView = lazy(() => import("./views/designer/DesignerView"));
-const AuthenticationView = lazy(() => import("./views/authentication/AuthenticationView"));
-const FunctionsView = lazy(() => import("./views/functions/FunctionsView"));
-const ModelsView = lazy(() => import("./views/models/ModelsView"));
-const DocumentationView = lazy(() => import("./views/documentation/DocumentationView"));
+const VIEW_COMPONENTS: Record<ViewMode, FC> = {
+	query: lazy(() => import("./views/query/QueryView")),
+	explorer: lazy(() => import("./views/explorer/ExplorerView")),
+	graphql: lazy(() => import("./views/graphql/GraphqlView")),
+	designer: lazy(() => import("./views/designer/DesignerView")),
+	authentication: lazy(() => import("./views/authentication/AuthenticationView")),
+	functions: lazy(() => import("./views/functions/FunctionsView")),
+	models: lazy(() => import("./views/models/ModelsView")),
+	documentation: lazy(() => import("./views/documentation/DocumentationView")),
+};
 
 export function DatabaseScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
@@ -68,8 +47,8 @@ export function DatabaseScreen() {
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const customTitlebar = adapter.platform === "darwin" && isDesktop;
 
+	const [isCloud] = useRoute("/cloud");
 	const viewMode = useConfigStore((s) => s.activeView);
-	const viewNode = VIEW_PORTALS[viewMode];
 	const viewInfo = VIEW_MODES[viewMode];
 
 	const onCloseSidebar = useStable(() => {
@@ -88,7 +67,7 @@ export function DatabaseScreen() {
 		});
 	}, [viewMode]);
 
-	const requireDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
+	const requestDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
 	return (
@@ -134,7 +113,7 @@ export function DatabaseScreen() {
 						"--offset": `${sidebarOffset}px`,
 					}}
 				>
-					{viewMode !== "cloud" && (
+					{!isCloud && (
 						<Group
 							gap="md"
 							pos="relative"
@@ -149,7 +128,7 @@ export function DatabaseScreen() {
 						flex={1}
 						pos="relative"
 					>
-						{requireDatabase ? (
+						{requestDatabase && (
 							<Center flex={1}>
 								<Paper
 									radius="md"
@@ -180,81 +159,21 @@ export function DatabaseScreen() {
 									)}
 								</Paper>
 							</Center>
-						) : (
-							viewNode && <OutPortal node={viewNode} />
 						)}
 
-						{loaded.includes("cloud") && (
-							<InPortal node={VIEW_PORTALS.cloud}>
-								<Suspense fallback={null}>
-									<CloudView />
-								</Suspense>
-							</InPortal>
-						)}
+						{Object.values(VIEW_MODES).map((mode) => (
+							<LazyRoute
+								key={mode.id}
+								path={mode.id}
+								disabled={mode.require === "database" && requestDatabase}
+								component={VIEW_COMPONENTS[mode.id]}
+							/>
+						))}
 
-						{loaded.includes("query") && (
-							<InPortal node={VIEW_PORTALS.query}>
-								<Suspense fallback={null}>
-									<QueryView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("explorer") && (
-							<InPortal node={VIEW_PORTALS.explorer}>
-								<Suspense fallback={null}>
-									<ExplorerView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("graphql") && (
-							<InPortal node={VIEW_PORTALS.graphql}>
-								<Suspense fallback={null}>
-									<GraphqlView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("designer") && (
-							<InPortal node={VIEW_PORTALS.designer}>
-								<Suspense fallback={null}>
-									<DesignerView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("authentication") && (
-							<InPortal node={VIEW_PORTALS.authentication}>
-								<Suspense fallback={null}>
-									<AuthenticationView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("functions") && (
-							<InPortal node={VIEW_PORTALS.functions}>
-								<Suspense fallback={null}>
-									<FunctionsView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("models") && (
-							<InPortal node={VIEW_PORTALS.models}>
-								<Suspense fallback={null}>
-									<ModelsView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("documentation") && (
-							<InPortal node={VIEW_PORTALS.documentation}>
-								<Suspense fallback={null}>
-									<DocumentationView />
-								</Suspense>
-							</InPortal>
-						)}
+						<LazyRoute
+							path="cloud"
+							component={CloudPanel}
+						/>
 					</Stack>
 				</Box>
 			</Flex>
