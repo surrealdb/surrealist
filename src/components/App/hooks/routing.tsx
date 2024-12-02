@@ -4,7 +4,6 @@ import { sift } from "radash";
 import { useEffect, useMemo } from "react";
 import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudPage, ViewMode } from "~/types";
 import { handleIntentRequest } from "~/util/intents";
@@ -25,7 +24,7 @@ function isCloudPage(value: any): value is CloudPage {
  * Synchronize the active view and cloud page with the URL path.
  */
 export function useConfigRouting() {
-	const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
+	const { setActiveView, setActiveCloudPage, setActiveScreen } = useConfigStore.getState();
 	const activeView = useConfigStore((s) => s.activeView);
 	const cloudPage = useConfigStore((s) => s.activeCloudPage);
 
@@ -52,6 +51,7 @@ export function useConfigRouting() {
 
 			if (view === "cloud") {
 				if (isCloudPage(other[0])) {
+					setActiveScreen("database");
 					setActiveCloudPage(other[0]);
 				} else {
 					repair = true;
