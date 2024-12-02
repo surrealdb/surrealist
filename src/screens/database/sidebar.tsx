@@ -4,6 +4,7 @@ import { type BoxProps, Divider, Flex, Group, Image, ScrollArea, Stack } from "@
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import iconUrl from "~/assets/images/icon.webp";
+import { BetaBadge } from "~/components/BetaBadge";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
@@ -19,7 +20,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { SidebarMode, ViewInfo, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
-import { iconCog, iconSearch } from "~/util/icons";
+import { iconCloud, iconCog, iconSearch } from "~/util/icons";
 
 const NAVIGATION: ViewMode[][] = [
 	["query", "explorer", "graphql"],
@@ -66,6 +67,10 @@ export function DatabaseSidebar({
 		});
 	}, [flags]);
 
+	const isViewAvailable = useStable((info: ViewInfo) => {
+		return info.require !== "database" || connection?.lastDatabase;
+	});
+
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
 
@@ -74,24 +79,6 @@ export function DatabaseSidebar({
 	const isFilled = sidebarMode === "fill";
 
 	const { cloud } = VIEW_MODES;
-
-	function renderNavigation(info: ViewInfo) {
-		const isAvailable = info.require !== "database" || connection?.lastDatabase;
-
-		return (
-			<NavigationIcon
-				name={info.name}
-				isActive={info.id === activeView}
-				icon={info.anim || info.icon}
-				withTooltip={sidebarMode === "compact"}
-				onClick={() => setViewMode(info.id)}
-				onMouseEnter={hoverSidebarHandle.open}
-				style={{
-					opacity: isAvailable ? 1 : 0.5,
-				}}
-			/>
-		);
-	}
 
 	return (
 		<ScrollArea
@@ -151,7 +138,17 @@ export function DatabaseSidebar({
 										gap="lg"
 										wrap="nowrap"
 									>
-										{renderNavigation(info)}
+										<NavigationIcon
+											name={info.name}
+											isActive={info.id === activeView}
+											icon={info.anim || info.icon}
+											withTooltip={sidebarMode === "compact"}
+											onClick={() => setViewMode(info.id)}
+											onMouseEnter={hoverSidebarHandle.open}
+											style={{
+												opacity: isViewAvailable(info) ? 1 : 0.5,
+											}}
+										/>
 									</Group>
 								))}
 								{i < navigation.length - 1 && (
@@ -162,7 +159,24 @@ export function DatabaseSidebar({
 
 					<Spacer />
 
-					{!cloud.disabled?.(flags) && renderNavigation(cloud)}
+					{!cloud.disabled?.(flags) && (
+						<NavigationIcon
+							name={
+								<Group
+									wrap="nowrap"
+									gap="xs"
+								>
+									Surreal Cloud
+									<BetaBadge />
+								</Group>
+							}
+							isActive={"cloud" === activeView}
+							icon={iconCloud}
+							withTooltip={sidebarMode === "compact"}
+							onClick={() => setViewMode("cloud")}
+							onMouseEnter={hoverSidebarHandle.open}
+						/>
+					)}
 
 					<NavigationIcon
 						name={

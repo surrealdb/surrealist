@@ -17,6 +17,7 @@ import {
 
 import { Text } from "@mantine/core";
 import { Fragment, useMemo } from "react";
+import { BetaBadge } from "~/components/BetaBadge";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -75,19 +76,7 @@ export function CloudSidebar(props: BoxProps) {
 					key={info.id}
 					isActive={activePage === info.id}
 					leftSection={<Icon path={info.icon} />}
-					rightSection={
-						info.id === "chat" ? (
-							<Badge
-								variant="light"
-								color="black"
-								radius="xs"
-								bg="#00000025"
-								c="white"
-							>
-								Beta
-							</Badge>
-						) : undefined
-					}
+					rightSection={info.id === "chat" ? <BetaBadge /> : undefined}
 					onClick={() => {
 						setActiveCloudPage(info.id);
 						navModalHandle.close();

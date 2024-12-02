@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import classes from "./style.module.scss";
 
 import {
@@ -8,25 +7,12 @@ import {
 	createHtmlPortalNode,
 } from "react-reverse-portal";
 
-import {
-	Alert,
-	Box,
-	Center,
-	Drawer,
-	Flex,
-	Group,
-	Paper,
-	ScrollArea,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
 import { Suspense, lazy, memo, useLayoutEffect, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { VIEW_MODES } from "~/constants";
-import { useBoolean } from "~/hooks/boolean";
-import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
