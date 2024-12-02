@@ -1,36 +1,26 @@
 import { Box, Text } from "@mantine/core";
+import { Label } from "~/components/Label";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstanceType } from "~/types";
 
 export interface EstimatedCostProps {
-	type: CloudInstanceType;
-	units: number;
+	type?: CloudInstanceType;
+	units?: number;
 }
 
 export function EstimatedCost({ type, units }: EstimatedCostProps) {
 	const isLight = useIsLight();
-	const hourlyPriceThousandth = type.price_hour ?? 0;
-	const estimatedCost = (hourlyPriceThousandth / 1000) * units;
+	const hourlyPriceThousandth = type?.price_hour ?? 0;
+	const estimatedCost = (hourlyPriceThousandth / 1000) * (units ?? 0);
 
 	return (
 		<Box>
-			<Text
-				fz="xl"
-				fw={500}
-				mt="xl"
-				c={isLight ? "slate.7" : "slate.2"}
-			>
-				Estimated costs
-			</Text>
+			<Label>Estimated costs</Label>
 
-			<Text
-				fz={13}
-				c={isLight ? "slate.6" : "slate.2"}
-			>
+			<Text c={isLight ? "slate.6" : "slate.2"}>
 				<Text
 					span
-					ml={4}
-					fz={22}
+					fz={24}
 					fw={500}
 					c="bright"
 				>
@@ -39,14 +29,10 @@ export function EstimatedCost({ type, units }: EstimatedCostProps) {
 				/hour
 			</Text>
 
-			<Text
-				fz={13}
-				c={isLight ? "slate.6" : "slate.2"}
-			>
-				Approx.
+			<Text c={isLight ? "slate.6" : "slate.2"}>
+				≈{" "}
 				<Text
 					span
-					ml={4}
 					fw={500}
 					c="bright"
 				>

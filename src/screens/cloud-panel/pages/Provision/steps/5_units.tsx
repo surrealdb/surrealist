@@ -1,11 +1,25 @@
-import { Alert, Stack, Text } from "@mantine/core";
+import { Alert, Divider, Stack, Text } from "@mantine/core";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import type { ProvisionStepProps } from "../types";
 import { StepActions } from "../actions";
+import { useMemo } from "react";
+import { useAvailableInstanceTypes } from "~/hooks/cloud";
+import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
 
-export function ProvisionComputeUnitsStep({ step, onPrevious, onContinue }: ProvisionStepProps) {
+export function ProvisionComputeUnitsStep({
+	step,
+	details,
+	onPrevious,
+	onContinue,
+}: ProvisionStepProps) {
+	const instanceTypes = useAvailableInstanceTypes();
+
 	// const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
 	// const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
+
+	const instanceType = useMemo(() => {
+		return instanceTypes.find((t) => t.slug === details.type);
+	}, [details.type, instanceTypes]);
 
 	return (
 		<Stack>
@@ -64,6 +78,16 @@ export function ProvisionComputeUnitsStep({ step, onPrevious, onContinue }: Prov
 						/>
 					</>
 				)} */}
+
+			{instanceType && (
+				<>
+					<Divider my="md" />
+					<EstimatedCost
+						type={instanceType}
+						units={details.units}
+					/>
+				</>
+			)}
 
 			<StepActions
 				step={step}
