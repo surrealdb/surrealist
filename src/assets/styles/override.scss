@@ -37,6 +37,10 @@ body.mod .cm-record-link:hover {
 	}
 }
 
+button {
+	filter: hue-rotate(207deg);
+}
+
 .mantine-contextmenu-item-button>div:not(.mantine-contextmenu-item-button-title) {
 	font-size: 0.65rem !important;
 }
