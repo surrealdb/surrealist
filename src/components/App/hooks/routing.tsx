@@ -50,8 +50,9 @@ export function useConfigRouting() {
 			setActiveView(view);
 
 			if (view === "cloud") {
+				setActiveScreen("database");
+
 				if (isCloudPage(other[0])) {
-					setActiveScreen("database");
 					setActiveCloudPage(other[0]);
 				} else {
 					repair = true;
