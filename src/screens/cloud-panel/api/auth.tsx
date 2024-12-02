@@ -224,6 +224,7 @@ export async function acquireSession(accessToken: string) {
 		await updateCloudInformation();
 
 		adapter.log("Cloud", `Session acquired`);
+		sessionStorage.removeItem(REFERRER_KEY);
 		CloudAuthEvent.dispatch(null);
 
 		setSessionExpired(false);
