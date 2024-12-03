@@ -34,7 +34,7 @@ export function SettingsPage() {
 				withMaxWidth
 			>
 				<Box>
-					<Label>Name</Label>
+					<Label>Organization name</Label>
 					<Text>The display name of your organization</Text>
 					<TextInput
 						mt="xs"
