@@ -18,6 +18,7 @@ import { ProvisionInstanceTypesStep } from "./steps/4_type";
 import { ProvisionComputeUnitsStep } from "./steps/5_units";
 import { ProvisionFinalizeStep } from "./steps/6_finalize";
 import type { ProvisionConfig, ProvisionStepProps } from "./types";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
@@ -44,6 +45,7 @@ export function ProvisionPage() {
 	const organization = useOrganization();
 	const [step, setStep] = useState(0);
 	const [details, setDetails] = useImmer(DEFAULT);
+	const client = useQueryClient();
 
 	const provisionInstance = useStable(async () => {
 		try {
@@ -64,6 +66,10 @@ export function ProvisionPage() {
 			console.log("Provisioned instance:", result);
 
 			setProvisioning(result);
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "instances"],
+			});
 		} catch (err: any) {
 			console.log("Failed to provision database:", [...err.response.headers.entries()]);
 

@@ -41,6 +41,7 @@ import { fetchAPI } from "../../api";
 import { openCapabilitiesModal } from "./modals/capabilities";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 
@@ -85,6 +86,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const inactive = value.state === "inactive";
 	const regions = useCloudStore((s) => s.regions);
 	const regionName = regions.find((r) => r.slug === value.region)?.description ?? value.region;
+	const client = useQueryClient();
 
 	const handleDelete = useConfirmation({
 		message:
@@ -110,6 +112,10 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 							is being deleted
 						</>
 					),
+				});
+
+				client.invalidateQueries({
+					queryKey: ["cloud", "instances"],
 				});
 			} catch (err: any) {
 				showError({
