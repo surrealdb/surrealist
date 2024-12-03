@@ -18,8 +18,9 @@ import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
 import { LazyRoute } from "~/components/LazyRoute";
-import { useCloudRoute } from "~/hooks/cloud";
+import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useActiveView } from "~/hooks/routing";
+import { Redirect, Route, Switch } from "wouter";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 const CloudPanel = lazy(() => import("../cloud-panel/view"));
@@ -41,6 +42,7 @@ export function DatabaseScreen() {
 	const isLight = useIsLight();
 	const isCloud = useCloudRoute();
 	const isConnected = useIsConnected();
+	const cloudEnabled = useSurrealCloud();
 	const connection = useActiveConnection();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
@@ -114,7 +116,7 @@ export function DatabaseScreen() {
 						flex={1}
 						pos="relative"
 					>
-						{requestDatabase && (
+						{/* {requestDatabase && (
 							<Center flex={1}>
 								<Paper
 									radius="md"
@@ -145,21 +147,29 @@ export function DatabaseScreen() {
 									)}
 								</Paper>
 							</Center>
-						)}
+						)} */}
 
-						{Object.values(VIEW_MODES).map((mode) => (
-							<LazyRoute
-								key={mode.id}
-								path={mode.id}
-								disabled={mode.require === "database" && requestDatabase}
-								component={VIEW_COMPONENTS[mode.id]}
-							/>
-						))}
+						<Switch>
+							{Object.values(VIEW_MODES).map((mode) => (
+								<LazyRoute
+									key={mode.id}
+									path={`/${mode.id}`}
+									disabled={mode.require === "database" && requestDatabase}
+									component={VIEW_COMPONENTS[mode.id]}
+								/>
+							))}
 
-						<LazyRoute
-							path={/^\/cloud\/?.*$/}
-							component={CloudPanel}
-						/>
+							{cloudEnabled && (
+								<LazyRoute
+									path="/cloud/*?"
+									component={CloudPanel}
+								/>
+							)}
+
+							<Route>
+								<Redirect to="/query" />
+							</Route>
+						</Switch>
 					</Stack>
 				</Box>
 			</Flex>

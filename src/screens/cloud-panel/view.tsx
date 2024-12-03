@@ -20,7 +20,7 @@ import { CloudSidebar } from "./sidebar";
 import { CloudToolbar } from "./toolbar";
 import { CLOUD_PAGES } from "~/constants";
 import { LazyRoute } from "~/components/LazyRoute";
-import { useLocation, useRoute } from "wouter";
+import { Redirect, Route, Switch, useLocation, useRoute } from "wouter";
 
 const PAGE_COMPONENTS: Record<CloudPage, FC> = {
 	instances: lazy(() => import("./pages/Instances")),
@@ -171,13 +171,19 @@ export function CloudView() {
 					<Stack flex={1}>
 						{hasAlert && <StatusAlert alert={alertQuery.data} />}
 
-						{Object.values(CLOUD_PAGES).map((page) => (
-							<LazyRoute
-								key={page.id}
-								path={`/cloud/${page.id}`}
-								component={PAGE_COMPONENTS[page.id]}
-							/>
-						))}
+						<Switch>
+							{Object.values(CLOUD_PAGES).map((page) => (
+								<LazyRoute
+									key={page.id}
+									path={`/cloud/${page.id}`}
+									component={PAGE_COMPONENTS[page.id]}
+								/>
+							))}
+
+							<Route>
+								<Redirect to="/cloud/instances" />
+							</Route>
+						</Switch>
 					</Stack>
 				</Flex>
 			)}

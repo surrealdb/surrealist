@@ -1,6 +1,7 @@
+import { useDisclosure } from "@mantine/hooks";
 import { type FC, Suspense, useLayoutEffect, useState } from "react";
 import { createHtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
-import { type PathPattern, useRoute } from "wouter";
+import { type PathPattern, Route } from "wouter";
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -15,29 +16,37 @@ export interface LazyRouteProps {
 }
 
 export function LazyRoute({ path, disabled, component }: LazyRouteProps) {
-	const [portal] = useState(() => createHtmlPortalNode(PORTAL_OPTIONS));
-	const [isLoaded, setLoaded] = useState(false);
-	const [matches] = useRoute(path);
+	const [node] = useState(() => createHtmlPortalNode(PORTAL_OPTIONS));
+	const [isLoaded, loadedHandle] = useDisclosure();
 
 	const Component = component;
-	const isActive = !disabled && matches;
-
-	useLayoutEffect(() => {
-		if (isActive && !isLoaded) {
-			setLoaded(true);
-		}
-	}, [isActive, isLoaded]);
 
 	return (
-		isLoaded && (
-			<>
-				<InPortal node={portal}>
+		<>
+			<InPortal node={node}>
+				{isLoaded && (
 					<Suspense fallback={null}>
 						<Component />
 					</Suspense>
-				</InPortal>
-				{isActive && <OutPortal node={portal} />}
-			</>
-		)
+				)}
+			</InPortal>
+			<Route path={path}>
+				<LazyRouteInner
+					node={node}
+					loaded={loadedHandle.open}
+				/>
+			</Route>
+		</>
 	);
+}
+
+interface LazyRouteInnerProps {
+	node: any;
+	loaded: () => void;
+}
+
+function LazyRouteInner({ node, loaded }: LazyRouteInnerProps) {
+	useLayoutEffect(loaded, []);
+
+	return <OutPortal node={node} />;
 }
