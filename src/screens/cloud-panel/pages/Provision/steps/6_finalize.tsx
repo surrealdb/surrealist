@@ -1,13 +1,15 @@
 import classes from "../style.module.scss";
 
-import { Divider, Paper, Stack, Table } from "@mantine/core";
+import { Divider, Group, Paper, Stack, Table, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
+import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
 import { formatMemory } from "~/util/helpers";
+import { iconHelp } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
 
@@ -80,6 +82,21 @@ export function ProvisionFinalizeStep({
 							<Table.Td>Compute nodes</Table.Td>
 							<Table.Td c="bright">
 								{details.units} Node{details.units === 1 ? "" : "s"}
+							</Table.Td>
+						</Table.Tr>
+						<Table.Tr>
+							<Table.Td>
+								<Group gap="xs">
+									Storage size
+									<Tooltip label="Storage is currently limited for the beta. The cap will be removed in a future release." w={300} style={{ whiteSpace: "unset" }}>
+										<div>
+											<Icon path={iconHelp} size="sm" />
+										</div>
+									</Tooltip>
+								</Group>
+							</Table.Td>
+							<Table.Td c="bright">
+								{formatMemory((instanceType?.memory ?? 0) * 8)}
 							</Table.Td>
 						</Table.Tr>
 					</Table.Tbody>
