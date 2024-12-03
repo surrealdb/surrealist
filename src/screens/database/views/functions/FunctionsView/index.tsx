@@ -11,6 +11,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
@@ -23,7 +24,6 @@ import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { EditorPanel } from "../EditorPanel";
 import { FunctionsPanel } from "../FunctionsPanel";
-import { useViewFocus } from "~/hooks/routing";
 
 const FunctionsPanelLazy = memo(FunctionsPanel);
 const EditorPanelLazy = memo(EditorPanel);

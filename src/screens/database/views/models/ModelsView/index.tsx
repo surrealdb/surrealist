@@ -7,6 +7,7 @@ import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { ML_SUPPORTED } from "~/constants";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
@@ -17,7 +18,6 @@ import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
-import { useViewFocus } from "~/hooks/routing";
 
 const SURML_FILTERS = [
 	{
