@@ -182,7 +182,7 @@ export function InstancesPage() {
 			{!isPending && !isFresh && (
 				<Group
 					gap="lg"
-					mb="xs"
+					mb="xl"
 					wrap="nowrap"
 				>
 					<Button
