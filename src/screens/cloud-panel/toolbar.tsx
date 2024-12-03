@@ -1,4 +1,5 @@
 import { ActionBar } from "~/components/ActionBar";
+import { BetaBadge } from "~/components/BetaBadge";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SidebarToggle } from "~/components/SidebarToggle";
@@ -26,6 +27,7 @@ export function CloudToolbar({ showBreadcrumb }: CloudToolbarProps) {
 					>
 						Surreal Cloud
 					</PrimaryTitle>
+					<BetaBadge visibleFrom="md" />
 					<Icon
 						path={iconChevronRight}
 						visibleFrom="md"
