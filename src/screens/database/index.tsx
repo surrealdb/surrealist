@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
 import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import { type FC, lazy, memo } from "react";
+import { type FC, lazy, memo, Suspense } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -17,14 +17,13 @@ import { themeColor } from "~/util/mantine";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
-import { LazyRoute } from "~/components/LazyRoute";
 import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useActiveView } from "~/hooks/routing";
 import { Redirect, Route, Switch } from "wouter";
-import { createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
+import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
+import CloudView from "../cloud-panel/view";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
-const CloudPanel = lazy(() => import("../cloud-panel/view"));
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -135,40 +134,50 @@ export function DatabaseScreen() {
 						pos="relative"
 					>
 						<Switch>
-							{Object.values(VIEW_MODES).map(
-								(mode) => (
-									// requestDatabase ? (
-									// 	<DatabaseSelection
-									// 		key={mode.id}
-									// 		info={mode}
-									// 	/>
-									// ) : (
-									<LazyRoute
-										id={mode.id}
+							{Object.values(VIEW_MODES).map((mode) =>
+								requestDatabase ? (
+									<DatabaseSelection
+										key={mode.id}
+										info={mode}
+									/>
+								) : (
+									<Route
 										key={mode.id}
 										path={`/${mode.id}`}
-										component={VIEW_COMPONENTS[mode.id]}
-									/>
+									>
+										<OutPortal node={VIEW_PORTALS[mode.id]} />
+									</Route>
 								),
-								// ),
 							)}
 
 							{cloudEnabled && (
-								<LazyRoute
-									id="cloud"
-									path="/cloud/*?"
-									component={CloudPanel}
-								/>
+								<Route path="/cloud/*?">
+									<CloudView />
+								</Route>
 							)}
 
 							<Route>
 								<Redirect to="/query" />
 							</Route>
 						</Switch>
-						</PortalManagerProvider>
 					</Stack>
 				</Box>
 			</Flex>
+
+			{Object.values(VIEW_MODES).map((mode) => {
+				const Content = VIEW_COMPONENTS[mode.id];
+
+				return (
+					<InPortal
+						key={mode.id}
+						node={VIEW_PORTALS[mode.id]}
+					>
+						<Suspense fallback={null}>
+							<Content />
+						</Suspense>
+					</InPortal>
+				);
+			})}
 
 			<Drawer
 				opened={overlaySidebar}

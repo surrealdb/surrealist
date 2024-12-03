@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 
 import { Alert, Box, Button, Flex, Group, Image, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { lazy, useLayoutEffect, type FC } from "react";
+import { lazy, Suspense, useLayoutEffect, type FC } from "react";
 import { adapter } from "~/adapter";
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
@@ -19,8 +19,27 @@ import { StatusAlert } from "./components/StatusAlert";
 import { CloudSidebar } from "./sidebar";
 import { CloudToolbar } from "./toolbar";
 import { CLOUD_PAGES } from "~/constants";
-import { LazyRoute } from "~/components/LazyRoute";
 import { Redirect, Route, Switch, useLocation, useRoute } from "wouter";
+import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
+import { useSurrealCloud } from "~/hooks/cloud";
+
+const PORTAL_OPTIONS = {
+	attributes: {
+		// style: "height: 100%; display: flex; flex-direction: column;",
+	},
+};
+
+const PAGE_PORTALS: Record<CloudPage, HtmlPortalNode> = {
+	instances: createHtmlPortalNode(PORTAL_OPTIONS),
+	members: createHtmlPortalNode(PORTAL_OPTIONS),
+	audits: createHtmlPortalNode(PORTAL_OPTIONS),
+	data: createHtmlPortalNode(PORTAL_OPTIONS),
+	billing: createHtmlPortalNode(PORTAL_OPTIONS),
+	support: createHtmlPortalNode(PORTAL_OPTIONS),
+	settings: createHtmlPortalNode(PORTAL_OPTIONS),
+	provision: createHtmlPortalNode(PORTAL_OPTIONS),
+	chat: createHtmlPortalNode(PORTAL_OPTIONS),
+};
 
 const PAGE_COMPONENTS: Record<CloudPage, FC> = {
 	instances: lazy(() => import("./pages/Instances")),
@@ -41,6 +60,7 @@ export function CloudView() {
 	const state = useCloudStore((s) => s.authState);
 	const isSupported = useCloudStore((s) => s.isSupported);
 
+	const isCloud = useSurrealCloud();
 	const [isCloudHome] = useRoute("/cloud");
 	const [, navigate] = useLocation();
 
@@ -59,13 +79,15 @@ export function CloudView() {
 
 	const hasAlert = alertQuery.data && Object.keys(alertQuery.data).length > 0;
 
-	useLayoutEffect(() => {
-		if (isCloudHome && (state === "authenticated" || state === "loading")) {
-			navigate("/cloud/instances");
-		} else if (!isCloudHome && state === "unauthenticated") {
-			navigate("/cloud");
-		}
-	}, [isCloudHome, state]);
+	// useLayoutEffect(() => {
+	// 	if (!isCloud) return;
+
+	// 	if (isCloudHome && (state === "authenticated" || state === "loading")) {
+	// 		navigate("/cloud/instances");
+	// 	} else if (!isCloudHome && state === "unauthenticated") {
+	// 		navigate("/cloud");
+	// 	}
+	// }, [isCloud, isCloudHome, state]);
 
 	return (
 		<>
@@ -173,18 +195,38 @@ export function CloudView() {
 
 						<Switch>
 							{Object.values(CLOUD_PAGES).map((page) => (
-								<LazyRoute
+								<Route
 									key={page.id}
 									path={`/cloud/${page.id}`}
-									component={PAGE_COMPONENTS[page.id]}
-								/>
+								>
+									<Suspense fallback={null}>
+										<OutPortal node={PAGE_PORTALS[page.id]} />
+									</Suspense>
+								</Route>
 							))}
 
-							<Route>
-								<Redirect to="/cloud/instances" />
-							</Route>
+							{/* {isCloud && (
+								<Route>
+									<Redirect to="/cloud/instances" />
+								</Route>
+							)} */}
 						</Switch>
 					</Stack>
+
+					{Object.values(CLOUD_PAGES).map((page) => {
+						const Content = PAGE_COMPONENTS[page.id];
+
+						return (
+							<InPortal
+								key={page.id}
+								node={PAGE_PORTALS[page.id]}
+							>
+								<Suspense fallback={null}>
+									<Content />
+								</Suspense>
+							</InPortal>
+						);
+					})}
 				</Flex>
 			)}
 		</>

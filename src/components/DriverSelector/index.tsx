@@ -50,7 +50,7 @@ export function DriverSelector({
 						)}
 						onClick={() => onChange(lib.id)}
 					>
-						<Icon active={isActive} />
+						<Icon />
 						<Text mt="xs">{lib.name}</Text>
 					</Paper>
 				);
