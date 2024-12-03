@@ -6,6 +6,7 @@ import { useGlobalModals } from "./hooks/modals";
 import { useTitleSync } from "./hooks/title";
 import { useWindowSettings } from "./hooks/window";
 import { useViewSync } from "./hooks/view";
+import { useAppRouter } from "./hooks/routing";
 
 export function Globals(): ReactNode {
 	useModKeyTracker();
@@ -16,6 +17,7 @@ export function Globals(): ReactNode {
 	useGlobalModals();
 	useTitleSync();
 	useViewSync();
+	useAppRouter();
 
 	return;
 }

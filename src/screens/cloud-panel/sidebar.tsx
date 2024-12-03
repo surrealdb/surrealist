@@ -77,7 +77,7 @@ export function CloudSidebar(props: BoxProps) {
 			<Skeleton visible={isLoading}>
 				<Entry
 					key={info.id}
-					isActive={activePage?.id === info.id}
+					isActive={activePage === info}
 					leftSection={<Icon path={info.icon} />}
 					rightSection={info.id === "chat" ? <BetaBadge /> : undefined}
 					onClick={() => {

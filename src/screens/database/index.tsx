@@ -157,7 +157,7 @@ export function DatabaseScreen() {
 						))}
 
 						<LazyRoute
-							path="cloud"
+							path={/^\/cloud\/?.*$/}
 							component={CloudPanel}
 						/>
 					</Stack>

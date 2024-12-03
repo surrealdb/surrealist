@@ -1,6 +1,6 @@
 import { type FC, Suspense, useLayoutEffect, useState } from "react";
 import { createHtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
-import { useRoute } from "wouter";
+import { type PathPattern, useRoute } from "wouter";
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -9,7 +9,7 @@ const PORTAL_OPTIONS = {
 };
 
 export interface LazyRouteProps {
-	path: string;
+	path: PathPattern;
 	disabled?: boolean;
 	component: FC;
 }

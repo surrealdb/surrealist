@@ -25,7 +25,7 @@ export function useSurrealCloud() {
  * Matches the current route to the cloud panel
  */
 export function useCloudRoute() {
-	return useRoute("/cloud")[0];
+	return useRoute(/^\/cloud\/?.*$/)[0];
 }
 
 /**

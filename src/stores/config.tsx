@@ -65,6 +65,7 @@ export type ConfigStore = SurrealistConfig & {
 	updateCurrentConnection: (payload: Partial<Connection>) => void;
 	setConnections: (connections: Connection[]) => void;
 	setActiveScreen: (screen: Screen) => void;
+	setActiveResource: (resource: string) => void;
 	setActiveConnection: (connectionId: string) => void;
 	setActiveCloudOrg: (activeOrg: string) => void;
 	addQueryTab: (options: NewQueryTab) => void;
@@ -160,6 +161,8 @@ export const useConfigStore = create<ConfigStore>()(
 		setConnections: (connections) => set(() => ({ connections })),
 
 		setActiveScreen: (activeScreen) => set(() => ({ activeScreen })),
+
+		setActiveResource: (activeResource) => set(() => ({ activeResource })),
 
 		setActiveConnection: (activeConnection) =>
 			set(({ connections }) => {

@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 
 import { Alert, Box, Button, Flex, Group, Image, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { lazy, type FC } from "react";
+import { lazy, useLayoutEffect, type FC } from "react";
 import { adapter } from "~/adapter";
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
@@ -10,7 +10,6 @@ import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
 import { Icon } from "~/components/Icon";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import type { CloudAlert, CloudPage } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
@@ -21,6 +20,7 @@ import { CloudSidebar } from "./sidebar";
 import { CloudToolbar } from "./toolbar";
 import { CLOUD_PAGES } from "~/constants";
 import { LazyRoute } from "~/components/LazyRoute";
+import { useLocation, useRoute } from "wouter";
 
 const PAGE_COMPONENTS: Record<CloudPage, FC> = {
 	instances: lazy(() => import("./pages/Instances")),
@@ -41,7 +41,8 @@ export function CloudView() {
 	const state = useCloudStore((s) => s.authState);
 	const isSupported = useCloudStore((s) => s.isSupported);
 
-	const renderCloud = state === "authenticated" || state === "loading";
+	const [isCloudHome] = useRoute("/cloud");
+	const [, navigate] = useLocation();
 
 	const alertQuery = useQuery({
 		queryKey: ["cloud", "message"],
@@ -58,6 +59,14 @@ export function CloudView() {
 
 	const hasAlert = alertQuery.data && Object.keys(alertQuery.data).length > 0;
 
+	useLayoutEffect(() => {
+		if (isCloudHome && (state === "authenticated" || state === "loading")) {
+			navigate("/cloud/instances");
+		} else if (!isCloudHome && state === "unauthenticated") {
+			navigate("/cloud");
+		}
+	}, [isCloudHome, state]);
+
 	return (
 		<>
 			<Group
@@ -66,31 +75,10 @@ export function CloudView() {
 				align="center"
 				wrap="nowrap"
 			>
-				<CloudToolbar showBreadcrumb={renderCloud} />
+				<CloudToolbar showBreadcrumb={!isCloudHome} />
 			</Group>
 
-			{renderCloud ? (
-				<Flex
-					flex={1}
-					className={classes.cloudContent}
-					align="stretch"
-					mt="lg"
-					gap="xl"
-				>
-					<CloudSidebar />
-					<Stack flex={1}>
-						{hasAlert && <StatusAlert alert={alertQuery.data} />}
-
-						{Object.values(CLOUD_PAGES).map((page) => (
-							<LazyRoute
-								key={page.id}
-								path={`/cloud/${page.id}`}
-								component={PAGE_COMPONENTS[page.id]}
-							/>
-						))}
-					</Stack>
-				</Flex>
-			) : (
+			{isCloudHome ? (
 				<>
 					<Stack
 						gap={38}
@@ -171,6 +159,27 @@ export function CloudView() {
 						/>
 					</Box>
 				</>
+			) : (
+				<Flex
+					flex={1}
+					className={classes.cloudContent}
+					align="stretch"
+					mt="lg"
+					gap="xl"
+				>
+					<CloudSidebar />
+					<Stack flex={1}>
+						{hasAlert && <StatusAlert alert={alertQuery.data} />}
+
+						{Object.values(CLOUD_PAGES).map((page) => (
+							<LazyRoute
+								key={page.id}
+								path={`/cloud/${page.id}`}
+								component={PAGE_COMPONENTS[page.id]}
+							/>
+						))}
+					</Stack>
+				</Flex>
 			)}
 		</>
 	);
