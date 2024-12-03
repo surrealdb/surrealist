@@ -24,6 +24,7 @@ import { showError, showInfo } from "~/util/helpers";
 import { handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import { NavigateViewEvent } from "~/util/global-events";
 
 const WAIT_DURATION = 1000;
 
@@ -394,7 +395,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	private async queryOpenRequest() {
-		const { addQueryTab, setActiveQueryTab, setActiveView } = useConfigStore.getState();
+		const { addQueryTab, setActiveQueryTab } = useConfigStore.getState();
 		const resources = await invoke<Resource[]>("get_opened_resources");
 		const connection = getActiveConnection();
 
@@ -425,7 +426,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					addQueryTab({ type: "file", name: name, query: path });
 				}
 
-				setActiveView("query");
+				NavigateViewEvent.dispatch("query");
 			} else if (Link) {
 				const { host, params } = Link;
 
@@ -434,7 +435,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					const target = views.find((v) => host === v);
 
 					if (target) {
-						setActiveView(target);
+						NavigateViewEvent.dispatch(target);
 					}
 				}
 

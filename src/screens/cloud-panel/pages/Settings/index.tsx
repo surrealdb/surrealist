@@ -89,3 +89,5 @@ export function SettingsPage() {
 		</Stack>
 	);
 }
+
+export default SettingsPage;

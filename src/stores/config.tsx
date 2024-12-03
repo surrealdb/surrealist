@@ -1,9 +1,3 @@
-import type { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
-import { unique } from "radash";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
-import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
-import { dispatchIntent } from "~/hooks/url";
 import type {
 	CloudPage,
 	Connection,
@@ -20,12 +14,18 @@ import type {
 	SurrealistConfig,
 	SurrealistServingSettings,
 	SurrealistTemplateSettings,
-	ViewMode,
 } from "~/types";
+
+import type { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
+import { unique } from "radash";
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
+import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConfig, createBaseQuery } from "~/util/defaults";
 import type { schema } from "~/util/feature-flags";
 import { newId, uniqueName } from "~/util/helpers";
+import { dispatchIntent } from "~/util/intents";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -66,8 +66,6 @@ export type ConfigStore = SurrealistConfig & {
 	setConnections: (connections: Connection[]) => void;
 	setActiveScreen: (screen: Screen) => void;
 	setActiveConnection: (connectionId: string) => void;
-	setActiveView: (activeView: ViewMode) => void;
-	setActiveCloudPage: (activePage: CloudPage) => void;
 	setActiveCloudOrg: (activeOrg: string) => void;
 	addQueryTab: (options: NewQueryTab) => void;
 	removeQueryTab: (tabId: string) => void;
@@ -185,10 +183,6 @@ export const useConfigStore = create<ConfigStore>()(
 					activeScreen: "database",
 				};
 			}),
-
-		setActiveView: (activeView) => set(() => ({ activeView })),
-
-		setActiveCloudPage: (activeCloudPage) => set(() => ({ activeCloudPage })),
 
 		setActiveCloudOrg: (activeCloudOrg) => set(() => ({ activeCloudOrg })),
 

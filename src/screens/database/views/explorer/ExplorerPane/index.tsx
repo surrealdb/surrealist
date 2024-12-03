@@ -46,6 +46,7 @@ import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
+import { useActiveView } from "~/hooks/routing";
 
 export interface ExplorerPaneProps {
 	activeTable: string;
@@ -53,10 +54,11 @@ export interface ExplorerPaneProps {
 }
 
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
-	const { addQueryTab, setActiveView, updateCurrentConnection } = useConfigStore.getState();
+	const { addQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const connection = useActiveConnection();
 	const pagination = usePagination();
+	const [, setActiveView] = useActiveView();
 
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");

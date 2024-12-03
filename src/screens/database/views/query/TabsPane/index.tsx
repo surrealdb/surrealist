@@ -43,7 +43,7 @@ import { useSetting } from "~/hooks/config";
 import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";

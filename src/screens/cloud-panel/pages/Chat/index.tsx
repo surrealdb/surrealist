@@ -9,13 +9,11 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
-	TextInput,
 	Textarea,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
 import { memo, useEffect, useRef } from "react";
-import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -28,7 +26,7 @@ import { ChatMessage } from "./message";
 
 const ChatMessageLazy = memo(ChatMessage);
 
-export function SupportPage() {
+export function ChatPage() {
 	const { pushChatMessage } = useCloudStore.getState();
 
 	const isLight = useIsLight();
@@ -193,3 +191,5 @@ export function SupportPage() {
 		</Stack>
 	);
 }
+
+export default ChatPage;

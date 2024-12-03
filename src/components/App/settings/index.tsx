@@ -38,7 +38,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";

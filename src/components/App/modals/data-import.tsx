@@ -14,7 +14,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";

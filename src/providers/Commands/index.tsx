@@ -5,10 +5,10 @@ import posthog from "posthog-js";
 import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory } from "./types";
+import { dispatchIntent } from "~/util/intents";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];

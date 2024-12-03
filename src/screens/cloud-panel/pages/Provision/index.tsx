@@ -17,6 +17,7 @@ import { ProvisionCategoryStep } from "./steps/3_category";
 import { ProvisionInstanceTypesStep } from "./steps/4_type";
 import { ProvisionComputeUnitsStep } from "./steps/5_units";
 import { ProvisionFinalizeStep } from "./steps/6_finalize";
+import { useActiveCloudPage } from "~/hooks/routing";
 
 const PROVISION_STEPS = [
 	ProvisionDetailsStep,
@@ -29,7 +30,7 @@ const PROVISION_STEPS = [
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
-	const { setActiveCloudPage } = useConfigStore.getState();
+	const [, setActivePage] = useActiveCloudPage();
 
 	const organization = useOrganization();
 	const [step, setStep] = useState(0);
@@ -69,13 +70,13 @@ export function ProvisionPage() {
 				subtitle: "Please try again later",
 			});
 		} finally {
-			setActiveCloudPage("instances");
+			setActivePage("instances");
 		}
 	});
 
 	const previousStep = useStable((to?: number) => {
 		if (step === 0) {
-			setActiveCloudPage("instances");
+			setActivePage("instances");
 		} else {
 			setStep(to ?? step - 1);
 		}
@@ -123,3 +124,5 @@ export function ProvisionPage() {
 		</Box>
 	);
 }
+
+export default ProvisionPage;

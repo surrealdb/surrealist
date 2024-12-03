@@ -10,6 +10,7 @@ import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useStable } from "~/hooks/stable";
+import { useActiveCloudPage } from "~/hooks/routing";
 
 export function ProvisionCategoryStep({
 	step,
@@ -18,7 +19,7 @@ export function ProvisionCategoryStep({
 	onPrevious,
 	onContinue,
 }: ProvisionStepProps) {
-	const { setActiveCloudPage } = useConfigStore.getState();
+	const [, setActivePage] = useActiveCloudPage();
 
 	const organization = useOrganization();
 	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
@@ -139,7 +140,7 @@ export function ProvisionCategoryStep({
 						size="xs"
 						mt="md"
 						onClick={() => {
-							setActiveCloudPage("billing");
+							setActivePage("billing");
 						}}
 					>
 						Enter billing & payment details

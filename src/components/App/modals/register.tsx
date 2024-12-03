@@ -12,7 +12,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { authenticate, register } from "~/screens/database/connection/connection";
 import { composeAuthentication } from "~/screens/database/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";

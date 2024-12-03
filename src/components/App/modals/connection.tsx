@@ -13,7 +13,7 @@ import { INSTANCE_GROUP } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useConnections } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";

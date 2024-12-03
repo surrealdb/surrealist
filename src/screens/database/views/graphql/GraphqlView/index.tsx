@@ -14,7 +14,7 @@ import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useViewEffect } from "~/hooks/view";
 import { checkGraphqlSupport } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";

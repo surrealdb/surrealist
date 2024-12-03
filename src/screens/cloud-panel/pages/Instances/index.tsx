@@ -46,6 +46,7 @@ import { type ConnectMethod, Instance } from "../../components/Instance";
 import { useCloudInstancesQuery } from "../../hooks/instances";
 import { openConnectCli } from "../../modals/connect-cli";
 import { openConnectSdk } from "../../modals/connect-sdk";
+import { useActiveCloudPage, useActiveView } from "~/hooks/routing";
 
 interface Filter {
 	type: string;
@@ -54,11 +55,13 @@ interface Filter {
 }
 
 export function InstancesPage() {
-	const { setActiveCloudPage } = useConfigStore.getState();
+	const { addConnection, setActiveConnection } = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
 	const [filter, setFilter] = useState<Filter | null>(null);
 	const [searchQuery] = useDebouncedValue(search, 150);
+	const [, setActiveView] = useActiveView();
+	const [, setActivePage] = useActiveCloudPage();
 
 	const regions = useAvailableRegions();
 	const organization = useOrganization();
@@ -69,13 +72,13 @@ export function InstancesPage() {
 	const instances = useMemo(() => data || [], [data]);
 
 	const handleProvision = useStable(() => {
-		setActiveCloudPage("provision");
+		setActivePage("provision");
 	});
 
 	const handleConnect = useStable((method: ConnectMethod, db: CloudInstance) => {
 		if (method === "surrealist") {
-			const { connections, settings, addConnection, setActiveConnection, setActiveView } =
-				useConfigStore.getState();
+			const { connections, settings } = useConfigStore.getState();
+
 			const existing = connections.find(
 				(conn) => conn.authentication.cloudInstance === db.id,
 			);
@@ -375,3 +378,5 @@ export function InstancesPage() {
 		</>
 	);
 }
+
+export default InstancesPage;

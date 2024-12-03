@@ -16,7 +16,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useDatabaseStore } from "~/stores/database";
 import { iconClose, iconDelete } from "~/util/icons";
 
@@ -83,15 +83,24 @@ export function ConsoleDrawer() {
 				},
 			}}
 		>
-			<Group mb="md" gap="sm">
+			<Group
+				mb="md"
+				gap="sm"
+			>
 				<PrimaryTitle>Serving output</PrimaryTitle>
 
 				{isServing ? (
-					<Badge variant="dot" color="green">
+					<Badge
+						variant="dot"
+						color="green"
+					>
 						Online
 					</Badge>
 				) : (
-					<Badge variant="dot" color="pink.9">
+					<Badge
+						variant="dot"
+						color="pink.9"
+					>
 						Offline
 					</Badge>
 				)}
@@ -127,7 +136,10 @@ export function ConsoleDrawer() {
 				bg={isLight ? "slate.1" : "slate.9"}
 				style={{ position: "absolute", inset: 12, top: 52 }}
 			>
-				<ScrollArea h="100%" viewportRef={scroller}>
+				<ScrollArea
+					h="100%"
+					viewportRef={scroller}
+				>
 					{messages.map((message, index) => (
 						<ConsoleOutputEntry
 							key={index}

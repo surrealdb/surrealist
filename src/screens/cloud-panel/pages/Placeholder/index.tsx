@@ -7,3 +7,5 @@ export function PlaceholderPage() {
 		</Center>
 	);
 }
+
+export default PlaceholderPage;

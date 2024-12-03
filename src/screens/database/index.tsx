@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
 import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import { type FC, lazy, memo, useLayoutEffect, useState } from "react";
+import { type FC, lazy, memo } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -10,7 +10,6 @@ import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewMode } from "~/types";
 import { iconWarning } from "~/util/icons";
@@ -18,8 +17,9 @@ import { themeColor } from "~/util/mantine";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
-import { useRoute } from "wouter";
 import { LazyRoute } from "~/components/LazyRoute";
+import { useCloudRoute } from "~/hooks/cloud";
+import { useActiveView } from "~/hooks/routing";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 const CloudPanel = lazy(() => import("../cloud-panel/view"));
@@ -39,35 +39,21 @@ export function DatabaseScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
+	const isCloud = useCloudRoute();
 	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
+	const [activeView] = useActiveView();
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const customTitlebar = adapter.platform === "darwin" && isDesktop;
-
-	const [isCloud] = useRoute("/cloud");
-	const viewMode = useConfigStore((s) => s.activeView);
-	const viewInfo = VIEW_MODES[viewMode];
 
 	const onCloseSidebar = useStable(() => {
 		setOverlaySidebar(false);
 	});
 
-	const [loaded, setLoaded] = useState<ViewMode[]>([]);
-
-	useLayoutEffect(() => {
-		setLoaded((prev) => {
-			if (!prev.includes(viewMode)) {
-				return [...prev, viewMode];
-			}
-
-			return prev;
-		});
-	}, [viewMode]);
-
-	const requestDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
+	const requestDatabase = !connection?.lastDatabase && activeView?.require === "database";
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
 	return (
@@ -138,7 +124,7 @@ export function DatabaseScreen() {
 									<PrimaryTitle>Before you continue...</PrimaryTitle>
 									<Text mt="md">
 										Please select a namespace and database before accessing the{" "}
-										{viewInfo?.name} view. You can use the buttons below to
+										{activeView?.name} view. You can use the buttons below to
 										choose an existing namespace and database, or create new
 										ones.
 									</Text>

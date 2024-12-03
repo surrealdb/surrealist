@@ -7,7 +7,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import type { ColorScheme, SyntaxTheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";

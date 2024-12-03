@@ -11,13 +11,21 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
-import { useIntent } from "./url";
+import { useIntent } from "./routing";
+import { useRoute } from "wouter";
 
 /**
  * Returns whether cloud functionality is enabled
  */
 export function useSurrealCloud() {
 	return useFeatureFlags()[0].cloud_enabled;
+}
+
+/**
+ * Matches the current route to the cloud panel
+ */
+export function useCloudRoute() {
+	return useRoute("/cloud")[0];
 }
 
 /**

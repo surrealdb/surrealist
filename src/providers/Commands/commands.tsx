@@ -66,6 +66,7 @@ import type { IntentPayload, IntentType } from "~/util/intents";
 import { type PreferenceController, computePreferences } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
+import { useActiveView } from "~/hooks/routing";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
@@ -88,17 +89,16 @@ const intent = (intent: IntentType, payload?: IntentPayload) =>
  * Compute available commands based on the current state
  */
 export function useInternalCommandBuilder(): CommandCategory[] {
-	const { setActiveView, setActiveConnection, setActiveScreen, resetOnboardings } =
-		useConfigStore.getState();
+	const { setActiveConnection, setActiveScreen, resetOnboardings } = useConfigStore.getState();
 
 	const connections = useConnections();
-	const activeView = useConfigStore((state) => state.activeView);
 	const commandHistory = useConfigStore((state) => state.commandHistory);
 	const isServing = useDatabaseStore((state) => state.isServing);
 	const currentState = useDatabaseStore((state) => state.currentState);
 	const connectionSchema = useDatabaseStore((state) => state.connectionSchema);
 
 	const [datasets, applyDataset] = useDatasets();
+	const [activeView, setActiveView] = useActiveView();
 
 	const activeCon = useConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
@@ -113,8 +113,8 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	return useMemo(() => {
 		const categories: CommandCategory[] = [];
 
-		const isQuery = activeView === "query";
-		const isGraphql = activeView === "graphql";
+		const isQuery = activeView?.id === "query";
+		const isGraphql = activeView?.id === "graphql";
 
 		categories.push(
 			{
@@ -739,7 +739,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		isSandbox,
 		isServing,
 		preferences,
-		setActiveView,
 		setActiveConnection,
 		setActiveScreen,
 		resetOnboardings,

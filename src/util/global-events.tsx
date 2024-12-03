@@ -1,5 +1,6 @@
 import { createEventBus } from "~/hooks/event";
 import type { Intent, IntentType } from "./intents";
+import type { ViewMode } from "~/types";
 
 /**
  * Invoked after a connection has been established
@@ -20,6 +21,11 @@ export const RecordsChangedEvent = createEventBus();
  * Invoked when an interface intent is dispatched
  */
 export const IntentEvent = createEventBus<Intent<IntentType>>();
+
+/**
+ * Invoked when the interface should navigate to a new view
+ */
+export const NavigateViewEvent = createEventBus<ViewMode>();
 
 /**
  * Invoked when the cloud account has been authenticated

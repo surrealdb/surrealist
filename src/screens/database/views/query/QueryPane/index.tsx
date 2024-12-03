@@ -34,7 +34,7 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";

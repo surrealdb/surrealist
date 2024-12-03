@@ -13,7 +13,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { requestDatabaseExport } from "~/screens/database/connection/connection";
 import { showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";

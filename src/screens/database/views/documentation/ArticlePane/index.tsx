@@ -16,7 +16,7 @@ import { Spacer } from "~/components/Spacer";
 import { DRIVERS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import type { CodeLang } from "~/types";
 import { iconCheck, iconList } from "~/util/icons";
 

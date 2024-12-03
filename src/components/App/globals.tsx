@@ -5,6 +5,7 @@ import { useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useGlobalModals } from "./hooks/modals";
 import { useTitleSync } from "./hooks/title";
 import { useWindowSettings } from "./hooks/window";
+import { useViewSync } from "./hooks/view";
 
 export function Globals(): ReactNode {
 	useModKeyTracker();
@@ -14,6 +15,7 @@ export function Globals(): ReactNode {
 	useCloudAuthentication();
 	useGlobalModals();
 	useTitleSync();
+	useViewSync();
 
 	return;
 }

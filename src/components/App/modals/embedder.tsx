@@ -2,7 +2,7 @@ import { Modal } from "@mantine/core";
 import { Embedder } from "~/components/Embedder";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 
 export function EmbedderModal() {
 	const [isOpen, openHandle] = useBoolean();

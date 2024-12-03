@@ -1,11 +1,16 @@
 import classes from "../style.module.scss";
 
+import {
+	type Command,
+	useCommandCategories,
+	useCommandDispatcher,
+	useCommandKeybinds,
+} from "~/providers/Commands";
+
 import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
-import posthog from "posthog-js";
 import { type KeyboardEvent, useMemo, useRef } from "react";
-import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { PreferenceInput } from "~/components/Inputs/preference";
@@ -14,13 +19,7 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
-import {
-	type Command,
-	useCommandCategories,
-	useCommandDispatcher,
-	useCommandKeybinds,
-} from "~/providers/Commands";
+import { useIntent } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
 import { iconOpen, iconSearch } from "~/util/icons";

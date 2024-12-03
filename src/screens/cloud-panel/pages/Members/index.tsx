@@ -20,13 +20,7 @@ import { Fragment, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useCloudStore } from "~/stores/cloud";
-import {
-	iconCheck,
-	iconDotsVertical,
-	iconPlus,
-	iconSearch,
-	iconTune,
-} from "~/util/icons";
+import { iconCheck, iconDotsVertical, iconPlus, iconSearch, iconTune } from "~/util/icons";
 import { InviteModal } from "./modals/invite";
 import classes from "./style.module.scss";
 
@@ -40,10 +34,16 @@ type ListType = "members" | "invites";
 
 function Label({ text, value }: { text: string; value: number }) {
 	return (
-		<Group wrap="nowrap" gap="sm">
+		<Group
+			wrap="nowrap"
+			gap="sm"
+		>
 			{text}
 			{value > 0 && (
-				<Text c="bright" fw={600}>
+				<Text
+					c="bright"
+					fw={600}
+				>
 					{value}
 				</Text>
 			)}
@@ -90,7 +90,10 @@ export function MembersPage() {
 				</Center>
 			) : (
 				<>
-					<Group gap="lg" mb="xs">
+					<Group
+						gap="lg"
+						mb="xs"
+					>
 						<Tooltip label="Unavailable for Starter plan">
 							<Button
 								variant="gradient"
@@ -110,12 +113,20 @@ export function MembersPage() {
 							data={[
 								{
 									value: "members",
-									label: <Label text="Members" value={1} />,
+									label: (
+										<Label
+											text="Members"
+											value={1}
+										/>
+									),
 								},
 								{
 									value: "invites",
 									label: (
-										<Label text="Invitations" value={0} />
+										<Label
+											text="Invitations"
+											value={0}
+										/>
 									),
 								},
 							]}
@@ -144,25 +155,16 @@ export function MembersPage() {
 									<Fragment key={type.title}>
 										<Menu.Label>{type.title}</Menu.Label>
 										{type.options.map((option) => {
-											const isActive =
-												filter?.value === option.value;
+											const isActive = filter?.value === option.value;
 
 											return (
 												<Menu.Item
 													key={option.value}
 													onClick={() =>
-														setFilter(
-															isActive
-																? null
-																: option,
-														)
+														setFilter(isActive ? null : option)
 													}
 													rightSection={
-														isActive && (
-															<Icon
-																path={iconCheck}
-															/>
-														)
+														isActive && <Icon path={iconCheck} />
 													}
 												>
 													{option.label}
@@ -177,14 +179,26 @@ export function MembersPage() {
 							value={""}
 							onChange={() => {}}
 							placeholder="Search members"
-							leftSection={<Icon path={iconSearch} size="sm" />}
+							leftSection={
+								<Icon
+									path={iconSearch}
+									size="sm"
+								/>
+							}
 							radius="sm"
 							size="xs"
 							miw={250}
 						/>
 					</Group>
-					<Box flex={1} pos="relative">
-						<ScrollArea pos="absolute" scrollbars="y" inset={0}>
+					<Box
+						flex={1}
+						pos="relative"
+					>
+						<ScrollArea
+							pos="absolute"
+							scrollbars="y"
+							inset={0}
+						>
 							{listType === "members" ? (
 								<Table className={classes.table}>
 									<Table.Thead>
@@ -199,30 +213,24 @@ export function MembersPage() {
 										{members.map((member) => (
 											<Table.Tr key={member.username}>
 												<Table.Td>
-													<Text c="bright" fw={500}>
-														{member.name ||
-															"Unknown"}
+													<Text
+														c="bright"
+														fw={500}
+													>
+														{member.name || "Unknown"}
 													</Text>
 												</Table.Td>
-												<Table.Td>
-													{member.username}
-												</Table.Td>
+												<Table.Td>{member.username}</Table.Td>
 												<Table.Td>Admin</Table.Td>
 												<Table.Td>
 													<Menu position="right-start">
 														<Menu.Target>
 															<ActionIcon>
-																<Icon
-																	path={
-																		iconDotsVertical
-																	}
-																/>
+																<Icon path={iconDotsVertical} />
 															</ActionIcon>
 														</Menu.Target>
 														<Menu.Dropdown>
-															<Menu.Item disabled>
-																Remove
-															</Menu.Item>
+															<Menu.Item disabled>Remove</Menu.Item>
 															<Menu.Item disabled>
 																Deactivate
 															</Menu.Item>
@@ -269,13 +277,20 @@ export function MembersPage() {
 								// 		))}
 								// 	</Table.Tbody>
 								// </Table>
-								<Stack mt={150} align="center" gap="xs">
-									<Text fz="lg" c="bright" fw={500}>
+								<Stack
+									mt={150}
+									align="center"
+									gap="xs"
+								>
+									<Text
+										fz="lg"
+										c="bright"
+										fw={500}
+									>
 										No member invitations are pending
 									</Text>
 									<Text c="slate">
-										Press "Invite member" to send a new
-										invitation
+										Press "Invite member" to send a new invitation
 									</Text>
 								</Stack>
 							)}
@@ -291,3 +306,5 @@ export function MembersPage() {
 		</>
 	);
 }
+
+export default MembersPage;

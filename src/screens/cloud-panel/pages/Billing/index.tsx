@@ -3,13 +3,11 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Alert,
-	Badge,
 	Box,
 	Button,
 	CopyButton,
 	Divider,
 	Group,
-	List,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
@@ -26,9 +24,8 @@ import { iconAccount, iconCheck, iconCopy, iconCreditCard, iconHelp, iconOpen } 
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
-import { type ReactNode, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
-import { ActionButton } from "~/components/ActionButton";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -39,7 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { CloudInstanceType, InvoiceStatus } from "~/types";
+import type { InvoiceStatus } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
@@ -451,3 +448,5 @@ export function BillingPage() {
 		</Box>
 	);
 }
+
+export default BillingPage;

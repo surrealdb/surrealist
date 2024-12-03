@@ -8,7 +8,7 @@ import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
@@ -16,6 +16,7 @@ import { useConfigStore } from "~/stores/config";
 import { iconDesigner, iconEye } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
+import { dispatchIntent } from "~/util/intents";
 
 const TableGraphPaneLazy = memo(TableGraphPane);
 

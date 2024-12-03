@@ -37,7 +37,7 @@ import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { executeUserQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";

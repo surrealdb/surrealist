@@ -8,19 +8,21 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SCHEMA_MODES } from "~/constants";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useActiveView, useIntent } from "~/hooks/routing";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SchemaMode } from "~/types";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
+import { dispatchIntent } from "~/util/intents";
 
 export function TableCreatorModal() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();
 
 	const opened = useInterfaceStore((s) => s.showTableCreator);
 	const tables = useTableNames();
+	const [activeView] = useActiveView();
 
 	const [createType, setCreateType] = useState("table");
 	const [tableName, setTableName] = useInputState("");
@@ -50,9 +52,7 @@ export function TableCreatorModal() {
 			tables: [tableName],
 		});
 
-		const { activeView } = useConfigStore.getState();
-
-		if (activeView === "explorer") {
+		if (activeView?.id === "explorer") {
 			dispatchIntent("explore-table", {
 				table: tableName,
 			});

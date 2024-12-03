@@ -18,12 +18,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import {
-	iconArrowUpRight,
-	iconChevronLeft,
-	iconChevronRight,
-	iconClose,
-} from "~/util/icons";
+import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "~/util/icons";
 
 import { Text } from "@mantine/core";
 import { ActionIcon } from "@mantine/core";
@@ -35,7 +30,7 @@ import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 
 interface NewsItem {
@@ -114,9 +109,16 @@ export function NewsFeedDrawer() {
 					<Icon path={iconClose} />
 				</ActionIcon>
 
-				<Transition mounted={isReading} transition="fade">
+				<Transition
+					mounted={isReading}
+					transition="fade"
+				>
 					{(styles) => (
-						<Box pos="absolute" style={styles} inset={0}>
+						<Box
+							pos="absolute"
+							style={styles}
+							inset={0}
+						>
 							{reading && (
 								<ScrollArea
 									pos="absolute"
@@ -149,11 +151,16 @@ export function NewsFeedDrawer() {
 											Go back
 										</Button>
 									</Box>
-									<Box p="xl" pt="xs" mt={-52}>
-										<Text c="slate">
-											{dayjs(reading.published).fromNow()}
-										</Text>
-										<Title fz={28} c="bright">
+									<Box
+										p="xl"
+										pt="xs"
+										mt={-52}
+									>
+										<Text c="slate">{dayjs(reading.published).fromNow()}</Text>
+										<Title
+											fz={28}
+											c="bright"
+										>
 											{reading.title}
 										</Title>
 										<TypographyStylesProvider
@@ -183,9 +190,7 @@ export function NewsFeedDrawer() {
 													>
 														Read on surrealdb.com
 														<Icon
-															path={
-																iconArrowUpRight
-															}
+															path={iconArrowUpRight}
 															right
 														/>
 													</Text>
@@ -199,10 +204,21 @@ export function NewsFeedDrawer() {
 					)}
 				</Transition>
 
-				<Transition mounted={!isReading} transition="fade">
+				<Transition
+					mounted={!isReading}
+					transition="fade"
+				>
 					{(styles) => (
-						<Box pos="absolute" style={styles} inset={0}>
-							<Title fz={20} c="bright" m="xl">
+						<Box
+							pos="absolute"
+							style={styles}
+							inset={0}
+						>
+							<Title
+								fz={20}
+								c="bright"
+								m="xl"
+							>
 								Latest news
 							</Title>
 							<ScrollArea
@@ -214,20 +230,24 @@ export function NewsFeedDrawer() {
 								p="lg"
 							>
 								{newsQuery.isPending ? (
-									<Loader mt={32} mx="auto" display="block" />
+									<Loader
+										mt={32}
+										mx="auto"
+										display="block"
+									/>
 								) : isEmpty ? (
-									<Text mt={68} c="slate" ta="center">
+									<Text
+										mt={68}
+										c="slate"
+										ta="center"
+									>
 										No news items available
 									</Text>
 								) : (
 									<Stack gap="xl">
 										{newsQuery.data?.map((item, i) => (
 											<Fragment key={i}>
-												<UnstyledButton
-													onClick={() =>
-														readArticle(item)
-													}
-												>
+												<UnstyledButton onClick={() => readArticle(item)}>
 													<Image
 														src={item.thumbnail}
 														radius="lg"
@@ -248,13 +268,18 @@ export function NewsFeedDrawer() {
 															</Badge>
 														)}
 													</Flex>
-													<Title fz={18} c="bright" mt={4}>
+													<Title
+														fz={18}
+														c="bright"
+														mt={4}
+													>
 														{item.title}
 													</Title>
-													<Text py="sm">
-														{item.description}
-													</Text>
-													<Text c="surreal" fw={600}>
+													<Text py="sm">{item.description}</Text>
+													<Text
+														c="surreal"
+														fw={600}
+													>
 														Read more
 														<Icon
 															path={iconChevronRight}
@@ -262,9 +287,7 @@ export function NewsFeedDrawer() {
 														/>
 													</Text>
 												</UnstyledButton>
-												{i < newsQuery.data?.length - 1 && (
-													<Divider />
-												)}
+												{i < newsQuery.data?.length - 1 && <Divider />}
 											</Fragment>
 										))}
 									</Stack>

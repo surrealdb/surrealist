@@ -90,7 +90,7 @@ import { useActiveConnection } from "~/hooks/connection";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/url";
+import { useActiveView, useIntent } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { showInfo } from "~/util/helpers";
@@ -111,7 +111,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const schema = useDatabaseSchema();
 	const isConnected = useIsConnected();
 	const connection = useActiveConnection();
-	const isViewActive = useConfigStore((s) => s.activeView === "designer");
+	const [activeView] = useActiveView();
 
 	const [isExporting, setIsExporting] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
@@ -280,6 +280,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			diagramMode: mode as DiagramMode,
 		});
 	});
+
+	const isViewActive = activeView?.id === "designer";
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema or setting change
 	useLayoutEffect(() => {

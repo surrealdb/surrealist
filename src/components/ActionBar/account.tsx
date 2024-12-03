@@ -26,6 +26,7 @@ import { iconAccount, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
+import { useLocation } from "wouter";
 
 interface AccountFormProps {
 	onClose(): void;
@@ -95,14 +96,14 @@ function AccountForm({ onClose }: AccountFormProps) {
 }
 
 export function CloudAccount() {
-	const { setActiveView } = useConfigStore.getState();
 	const [showSettings, settingsModal] = useBoolean();
+	const [, navigate] = useLocation();
 
 	const profile = useCloudStore((s) => s.profile);
 	const state = useCloudStore((s) => s.authState);
 
 	const openCloud = useStable(() => {
-		setActiveView("cloud");
+		navigate("/cloud");
 	});
 
 	if (state === "unauthenticated") {

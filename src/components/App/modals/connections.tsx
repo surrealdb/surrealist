@@ -43,12 +43,13 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import type { Connection } from "~/types";
 import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch, newId } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
+import { dispatchIntent } from "~/util/intents";
 
 const UNGROUPED = "__ungrouped__";
 

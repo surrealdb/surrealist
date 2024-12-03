@@ -20,7 +20,6 @@ import { Spacer } from "~/components/Spacer";
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent } from "~/hooks/url";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -33,6 +32,7 @@ import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { openConnection, resetConnection } from "./connection/connection";
+import { dispatchIntent } from "~/util/intents";
 
 export function DatabaseToolbar() {
 	const { clearQueryResponse, clearGraphqlResponse } = useDatabaseStore.getState();

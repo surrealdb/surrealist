@@ -14,15 +14,16 @@ import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSurrealCloud } from "~/hooks/cloud";
 import { useConnection } from "~/hooks/connection";
+import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SidebarMode, ViewInfo, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
 import { iconCloud, iconCog, iconSearch } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 
 const NAVIGATION: ViewMode[][] = [
 	["query", "explorer", "graphql"],
@@ -41,20 +42,19 @@ export function DatabaseSidebar({
 	className,
 	...other
 }: SidebarProps) {
-	const { setActiveView } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
 	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
 	const connection = useConnection();
 	const showCloud = useSurrealCloud();
-	const [_, navigate] = useLocation();
+	const [, navigate] = useLocation();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
 
-	const setViewMode = useStable((id: ViewMode) => {
-		setActiveView(id);
+	const setLocation = useStable((location: string) => {
+		navigate(location);
 		hoverSidebarHandle.close();
 	});
 
@@ -144,7 +144,7 @@ export function DatabaseSidebar({
 											path={info.id}
 											icon={info.anim || info.icon}
 											withTooltip={sidebarMode === "compact"}
-											onClick={() => navigate(info.id)}
+											onClick={() => setLocation(`/${info.id}`)}
 											onMouseEnter={hoverSidebarHandle.open}
 											style={{
 												opacity: isViewAvailable(info) ? 1 : 0.5,
@@ -174,7 +174,7 @@ export function DatabaseSidebar({
 							icon={iconCloud}
 							path="cloud"
 							withTooltip={sidebarMode === "compact"}
-							onClick={() => navigate("/cloud")}
+							onClick={() => setLocation("/cloud")}
 							onMouseEnter={hoverSidebarHandle.open}
 						/>
 					)}

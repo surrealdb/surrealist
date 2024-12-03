@@ -22,7 +22,7 @@ import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/conn
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
@@ -32,6 +32,7 @@ import { DisconnectedEvent } from "~/util/global-events";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
 import { ExplorerPane } from "../ExplorerPane";
+import { dispatchIntent } from "~/util/intents";
 
 const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);

@@ -43,8 +43,10 @@ import { SANDBOX } from "~/constants";
 import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { useThemeImage } from "~/hooks/theme";
-import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
+import { useActiveView } from "~/hooks/routing";
+import { dispatchIntent } from "~/util/intents";
+import { useLocation } from "wouter";
 
 interface StartActionProps {
 	title: string;
@@ -160,7 +162,7 @@ function StartNews({ post }: StartNewsProps) {
 					<Paper
 						className={classes.startNewsThumbnail}
 						style={{
-							backgroundImage: `url("${post.thumbnail}")`
+							backgroundImage: `url("${post.thumbnail}")`,
 						}}
 					/>
 					<Group
@@ -195,14 +197,16 @@ function StartNews({ post }: StartNewsProps) {
 }
 
 export function StartScreen() {
-	const { setActiveConnection, setActiveScreen, setActiveView } = useConfigStore.getState();
+	const { setActiveConnection, setActiveScreen } = useConfigStore.getState();
 	const newsQuery = useLatestNewsQuery();
+
+	const [, navigate] = useLocation();
 
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
 	const openSandbox = useStable(() => {
 		setActiveConnection(SANDBOX);
-		setActiveView("query");
+		navigate("/query");
 	});
 
 	const openConnectionCreator = useStable(() => {
@@ -211,11 +215,11 @@ export function StartScreen() {
 
 	const openCloud = useStable(() => {
 		setActiveScreen("database");
-		setActiveView("cloud");
+		navigate("/cloud");
 	});
 
 	const openConnectionList = useStable(() => {
-		dispatchIntent("open-connections")
+		dispatchIntent("open-connections");
 	});
 
 	const openSettings = useStable(() => {

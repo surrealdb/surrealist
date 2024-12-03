@@ -31,7 +31,7 @@ import { ContentPane } from "~/components/Pane";
 import { useActiveConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { showError, showInfo, tryParseParams } from "~/util/helpers";
 import { formatValue } from "~/util/surrealql";
