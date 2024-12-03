@@ -9,21 +9,22 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { getIsLight } from "~/hooks/theme";
 import { iconChevronRight, iconErrorCircle } from "~/util/icons";
 import { fetchAPI } from "../api";
 import { openStartingModal } from "./getting-started";
 
+const REQUIRED = [1, 2];
+
 export type Question =
 	| {
 			data: { min_length?: number; max_length?: number };
-			id: string;
+			id: number;
 			question: string;
 			type: "text";
 	  }
 	| {
 			data: { options: { order: number; text: string; value: string }[] };
-			id: string;
+			id: number;
 			question: string;
 			type: "option";
 	  };
@@ -51,7 +52,7 @@ interface AboutModalProps {
 }
 
 function AboutModal({ questions }: AboutModalProps) {
-	const [values, setValues] = useImmer<Record<string, any>>({});
+	const [values, setValues] = useImmer<Record<number, any>>({});
 
 	const submitForm = useStable(() => {
 		fetchAPI("/user/form", {
@@ -62,6 +63,8 @@ function AboutModal({ questions }: AboutModalProps) {
 		closeAllModals();
 		openStartingModal();
 	});
+
+	const isValid = REQUIRED.every((id) => values[id]);
 
 	return (
 		<>
@@ -89,6 +92,7 @@ function AboutModal({ questions }: AboutModalProps) {
 								<TextInput
 									key={question.id}
 									label={question.question}
+									required={REQUIRED.includes(question.id)}
 									value={values[question.id] || ""}
 									onChange={(value) =>
 										setValues((draft) => {
@@ -142,6 +146,7 @@ function AboutModal({ questions }: AboutModalProps) {
 					variant="gradient"
 					rightSection={<Icon path={iconChevronRight} />}
 					onClick={submitForm}
+					disabled={!isValid}
 					style={{ flexShrink: 0 }}
 				>
 					Continue

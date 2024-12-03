@@ -3,7 +3,6 @@ import {
 	iconClose,
 	iconDownload,
 	iconEdit,
-	iconList,
 	iconRefresh,
 	iconRelation,
 	iconReset,
@@ -22,10 +21,10 @@ import { useConnection } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent } from "~/hooks/url";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
+import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";

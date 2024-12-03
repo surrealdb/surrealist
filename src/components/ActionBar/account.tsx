@@ -14,6 +14,7 @@ import {
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/cloud-panel/api";
@@ -95,14 +96,14 @@ function AccountForm({ onClose }: AccountFormProps) {
 }
 
 export function CloudAccount() {
-	const { setActiveView } = useConfigStore.getState();
 	const [showSettings, settingsModal] = useBoolean();
+	const [, navigate] = useLocation();
 
 	const profile = useCloudStore((s) => s.profile);
 	const state = useCloudStore((s) => s.authState);
 
 	const openCloud = useStable(() => {
-		setActiveView("cloud");
+		navigate("/cloud");
 	});
 
 	if (state === "unauthenticated") {

@@ -7,8 +7,8 @@
 }
 
 .message {
-	user-select: initial;
-	-webkit-user-select: initial;
+	user-select: text;
+	-webkit-user-select: text;
 
 	li {
 		margin-bottom: var(--mantine-spacing-lg);

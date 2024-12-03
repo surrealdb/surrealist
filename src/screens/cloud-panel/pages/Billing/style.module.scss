@@ -10,10 +10,12 @@
 
 	* {
 		color: white
-	};
+	}
+
+	;
 }
 
-.scrollArea :global(.mantine-ScrollArea-viewport) > div {
+.scroll-area :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
 }
 

@@ -1,8 +1,8 @@
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { useSetting } from "~/hooks/config";
+import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
 import { clamp } from "~/util/helpers";
 
 export function useWindowSettings() {

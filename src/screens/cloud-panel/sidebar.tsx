@@ -17,12 +17,15 @@ import {
 
 import { Text } from "@mantine/core";
 import { Fragment, useMemo } from "react";
+import { useRoute } from "wouter";
+import { BetaBadge } from "~/components/BetaBadge";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { CLOUD_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
+import { useActiveCloudPage } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudPage, CloudPageInfo } from "~/types";
@@ -44,15 +47,16 @@ const NAVIGATION: CloudPage[][] = [
 ];
 
 export function CloudSidebar(props: BoxProps) {
-	const { setActiveCloudPage, setActiveCloudOrg } = useConfigStore.getState();
+	const { setActiveCloudOrg } = useConfigStore.getState();
 	const [flags] = useFeatureFlags();
 
 	const [showNavModal, navModalHandle] = useBoolean();
 
 	const state = useCloudStore((s) => s.authState);
-	const activePage = useConfigStore((s) => s.activeCloudPage);
 	const activeOrg = useConfigStore((s) => s.activeCloudOrg);
 	const organizations = useCloudStore((s) => s.organizations);
+
+	const [activePage, setActiveCloudPage] = useActiveCloudPage();
 
 	const navigation = useMemo(() => {
 		return NAVIGATION.flatMap((row) => {
@@ -73,21 +77,9 @@ export function CloudSidebar(props: BoxProps) {
 			<Skeleton visible={isLoading}>
 				<Entry
 					key={info.id}
-					isActive={activePage === info.id}
+					isActive={activePage === info}
 					leftSection={<Icon path={info.icon} />}
-					rightSection={
-						info.id === "chat" ? (
-							<Badge
-								variant="light"
-								color="black"
-								radius="xs"
-								bg="#00000025"
-								c="white"
-							>
-								Beta
-							</Badge>
-						) : undefined
-					}
+					rightSection={info.id === "chat" ? <BetaBadge /> : undefined}
 					onClick={() => {
 						setActiveCloudPage(info.id);
 						navModalHandle.close();

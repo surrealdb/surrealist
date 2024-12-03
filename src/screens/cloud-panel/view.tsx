@@ -2,33 +2,54 @@ import classes from "./style.module.scss";
 
 import { Alert, Box, Button, Flex, Group, Image, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import type { FC } from "react";
+import { type FC, Suspense, lazy, useLayoutEffect } from "react";
+import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { Redirect, Route, Switch, useLocation, useRoute } from "wouter";
 import { adapter } from "~/adapter";
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
 import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
 import { Icon } from "~/components/Icon";
+import { CLOUD_PAGES } from "~/constants";
+import { useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import type { CloudAlert, CloudPage } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
 import { fetchAPI } from "./api";
 import { openCloudAuthentication } from "./api/auth";
 import { StatusAlert } from "./components/StatusAlert";
-import { BillingPage } from "./pages/Billing";
-import { SupportPage as ChatPage } from "./pages/Chat";
-import { InstancesPage } from "./pages/Instances";
-import { MembersPage } from "./pages/Members";
-import { PlaceholderPage } from "./pages/Placeholder";
-import { ProvisionPage } from "./pages/Provision";
-import { SettingsPage } from "./pages/Settings";
-import { SupportPage } from "./pages/Support";
+import BillingPage from "./pages/Billing";
+import ChatPage from "./pages/Chat";
+import InstancesPage from "./pages/Instances";
+import MembersPage from "./pages/Members";
+import PlaceholderPage from "./pages/Placeholder";
+import ProvisionPage from "./pages/Provision";
+import SettingsPage from "./pages/Settings";
+import SupportPage from "./pages/Support";
 import { CloudSidebar } from "./sidebar";
 import { CloudToolbar } from "./toolbar";
 
-const PAGE_VIEWS: Record<CloudPage, FC> = {
+const PORTAL_OPTIONS = {
+	attributes: {
+		style: "height: 100%; display: flex; flex-direction: column;",
+	},
+};
+
+const PAGE_PORTALS: Record<CloudPage, HtmlPortalNode> = {
+	instances: createHtmlPortalNode(PORTAL_OPTIONS),
+	members: createHtmlPortalNode(PORTAL_OPTIONS),
+	audits: createHtmlPortalNode(PORTAL_OPTIONS),
+	data: createHtmlPortalNode(PORTAL_OPTIONS),
+	billing: createHtmlPortalNode(PORTAL_OPTIONS),
+	support: createHtmlPortalNode(PORTAL_OPTIONS),
+	settings: createHtmlPortalNode(PORTAL_OPTIONS),
+	provision: createHtmlPortalNode(PORTAL_OPTIONS),
+	chat: createHtmlPortalNode(PORTAL_OPTIONS),
+};
+
+const PAGE_COMPONENTS: Record<CloudPage, FC> = {
 	instances: InstancesPage,
 	members: MembersPage,
 	audits: PlaceholderPage,
@@ -44,12 +65,12 @@ export function CloudView() {
 	const [{ cloud_access }] = useFeatureFlags();
 	const isLight = useIsLight();
 
-	const page = useConfigStore((s) => s.activeCloudPage);
 	const state = useCloudStore((s) => s.authState);
 	const isSupported = useCloudStore((s) => s.isSupported);
-	const Content = PAGE_VIEWS[page];
 
-	const renderCloud = state === "authenticated" || state === "loading";
+	const isCloud = useSurrealCloud();
+	const [isCloudHome] = useRoute("/cloud");
+	const [, navigate] = useLocation();
 
 	const alertQuery = useQuery({
 		queryKey: ["cloud", "message"],
@@ -66,6 +87,16 @@ export function CloudView() {
 
 	const hasAlert = alertQuery.data && Object.keys(alertQuery.data).length > 0;
 
+	useLayoutEffect(() => {
+		if (!isCloud) return;
+
+		if (isCloudHome && (state === "authenticated" || state === "loading")) {
+			navigate("/cloud/instances");
+		} else if (!isCloudHome && state === "unauthenticated") {
+			navigate("/cloud");
+		}
+	}, [isCloud, isCloudHome, state]);
+
 	return (
 		<>
 			<Group
@@ -74,24 +105,10 @@ export function CloudView() {
 				align="center"
 				wrap="nowrap"
 			>
-				<CloudToolbar showBreadcrumb={renderCloud} />
+				<CloudToolbar showBreadcrumb={!isCloudHome} />
 			</Group>
 
-			{renderCloud ? (
-				<Flex
-					flex={1}
-					className={classes.cloudContent}
-					align="stretch"
-					mt="lg"
-					gap="xl"
-				>
-					<CloudSidebar />
-					<Stack flex={1}>
-						{hasAlert && <StatusAlert alert={alertQuery.data} />}
-						{Content && <Content />}
-					</Stack>
-				</Flex>
-			) : (
+			{isCloudHome ? (
 				<>
 					<Stack
 						gap={38}
@@ -172,7 +189,56 @@ export function CloudView() {
 						/>
 					</Box>
 				</>
+			) : (
+				<Flex
+					flex={1}
+					className={classes.cloudContent}
+					align="stretch"
+					mt="lg"
+					gap="xl"
+				>
+					<CloudSidebar />
+					<Stack flex={1}>
+						{hasAlert && <StatusAlert alert={alertQuery.data} />}
+
+						<Switch>
+							{Object.values(CLOUD_PAGES).map((page) => (
+								<Route
+									key={page.id}
+									path={`/cloud/${page.id}`}
+								>
+									<Suspense fallback={null}>
+										<OutPortal node={PAGE_PORTALS[page.id]} />
+									</Suspense>
+								</Route>
+							))}
+
+							{isCloud && (
+								<Route>
+									<Redirect to="/cloud/instances" />
+								</Route>
+							)}
+						</Switch>
+					</Stack>
+
+					{Object.values(CLOUD_PAGES).map((page) => {
+						const Content = PAGE_COMPONENTS[page.id];
+
+						return (
+							<InPortal
+								key={page.id}
+								node={PAGE_PORTALS[page.id]}
+							>
+								<Suspense fallback={null}>
+									<Content />
+								</Suspense>
+							</InPortal>
+						);
+					})}
+				</Flex>
 			)}
 		</>
 	);
 }
+
+export default CloudView;

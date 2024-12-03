@@ -85,7 +85,7 @@ export function useSavedQueryTags() {
  */
 export function useMinimumVersion(minimum: string) {
 	const version = useDatabaseStore((s) => s.version);
-	const isGreater = !!version && compareVersions(version, minimum) >= 0;
+	const isGreater = !version || compareVersions(version, minimum) >= 0;
 
 	return [isGreater, version] as const;
 }

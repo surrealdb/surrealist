@@ -37,6 +37,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
+import { useActiveCloudPage, useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
@@ -54,11 +55,13 @@ interface Filter {
 }
 
 export function InstancesPage() {
-	const { setActiveCloudPage } = useConfigStore.getState();
+	const { addConnection, setActiveConnection } = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
 	const [filter, setFilter] = useState<Filter | null>(null);
 	const [searchQuery] = useDebouncedValue(search, 150);
+	const [, setActiveView] = useActiveView();
+	const [, setActivePage] = useActiveCloudPage();
 
 	const regions = useAvailableRegions();
 	const organization = useOrganization();
@@ -69,13 +72,13 @@ export function InstancesPage() {
 	const instances = useMemo(() => data || [], [data]);
 
 	const handleProvision = useStable(() => {
-		setActiveCloudPage("provision");
+		setActivePage("provision");
 	});
 
 	const handleConnect = useStable((method: ConnectMethod, db: CloudInstance) => {
 		if (method === "surrealist") {
-			const { connections, settings, addConnection, setActiveConnection, setActiveView } =
-				useConfigStore.getState();
+			const { connections, settings } = useConfigStore.getState();
+
 			const existing = connections.find(
 				(conn) => conn.authentication.cloudInstance === db.id,
 			);
@@ -179,7 +182,7 @@ export function InstancesPage() {
 			{!isPending && !isFresh && (
 				<Group
 					gap="lg"
-					mb="xs"
+					mb="xl"
 					wrap="nowrap"
 				>
 					<Button
@@ -375,3 +378,5 @@ export function InstancesPage() {
 		</>
 	);
 }
+
+export default InstancesPage;

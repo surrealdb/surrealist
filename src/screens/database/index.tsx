@@ -1,108 +1,85 @@
-import clsx from "clsx";
 import classes from "./style.module.scss";
 
-import {
-	type HtmlPortalNode,
-	InPortal,
-	OutPortal,
-	createHtmlPortalNode,
-} from "react-reverse-portal";
-
-import {
-	Alert,
-	Box,
-	Center,
-	Drawer,
-	Flex,
-	Group,
-	Paper,
-	ScrollArea,
-	Stack,
-	Text,
-} from "@mantine/core";
-import { Suspense, lazy, memo, useLayoutEffect, useState } from "react";
+import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
+import { type FC, Suspense, lazy, memo } from "react";
+import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { VIEW_MODES } from "~/constants";
-import { useBoolean } from "~/hooks/boolean";
-import { useLogoUrl } from "~/hooks/brand";
+import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { CloudView } from "~/screens/cloud-panel/view";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import type { ViewMode } from "~/types";
+import type { ViewInfo, ViewMode } from "~/types";
 import { iconWarning } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
+import CloudView from "../cloud-panel/view";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
+import AuthenticationView from "./views/authentication/AuthenticationView";
+import DesignerView from "./views/designer/DesignerView";
+import DocumentationView from "./views/documentation/DocumentationView";
+import ExplorerView from "./views/explorer/ExplorerView";
+import FunctionsView from "./views/functions/FunctionsView";
+import GraphqlView from "./views/graphql/GraphqlView";
+import ModelsView from "./views/models/ModelsView";
+import QueryView from "./views/query/QueryView";
 
-const PORTAL_ATTRS = {
+const DatabaseSidebarLazy = memo(DatabaseSidebar);
+
+const PORTAL_OPTIONS = {
 	attributes: {
 		style: "height: 100%; display: flex; flex-direction: column;",
 	},
 };
 
 const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
-	query: createHtmlPortalNode(PORTAL_ATTRS),
-	explorer: createHtmlPortalNode(PORTAL_ATTRS),
-	graphql: createHtmlPortalNode(PORTAL_ATTRS),
-	designer: createHtmlPortalNode(PORTAL_ATTRS),
-	authentication: createHtmlPortalNode(PORTAL_ATTRS),
-	functions: createHtmlPortalNode(PORTAL_ATTRS),
-	models: createHtmlPortalNode(PORTAL_ATTRS),
-	documentation: createHtmlPortalNode(PORTAL_ATTRS),
-	cloud: createHtmlPortalNode(PORTAL_ATTRS),
+	query: createHtmlPortalNode(PORTAL_OPTIONS),
+	explorer: createHtmlPortalNode(PORTAL_OPTIONS),
+	graphql: createHtmlPortalNode(PORTAL_OPTIONS),
+	designer: createHtmlPortalNode(PORTAL_OPTIONS),
+	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
+	functions: createHtmlPortalNode(PORTAL_OPTIONS),
+	models: createHtmlPortalNode(PORTAL_OPTIONS),
+	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
-const DatabaseSidebarLazy = memo(DatabaseSidebar);
-
-const QueryView = lazy(() => import("./views/query/QueryView"));
-const ExplorerView = lazy(() => import("./views/explorer/ExplorerView"));
-const GraphqlView = lazy(() => import("./views/graphql/GraphqlView"));
-const DesignerView = lazy(() => import("./views/designer/DesignerView"));
-const AuthenticationView = lazy(() => import("./views/authentication/AuthenticationView"));
-const FunctionsView = lazy(() => import("./views/functions/FunctionsView"));
-const ModelsView = lazy(() => import("./views/models/ModelsView"));
-const DocumentationView = lazy(() => import("./views/documentation/DocumentationView"));
+const VIEW_COMPONENTS: Record<ViewMode, FC> = {
+	query: QueryView,
+	explorer: ExplorerView,
+	graphql: GraphqlView,
+	designer: DesignerView,
+	authentication: AuthenticationView,
+	functions: FunctionsView,
+	models: ModelsView,
+	documentation: DocumentationView,
+};
 
 export function DatabaseScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
-	const isConnected = useIsConnected();
+	const isCloud = useCloudRoute();
+	const cloudEnabled = useSurrealCloud();
 	const connection = useActiveConnection();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
+	const [activeView] = useActiveView();
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const customTitlebar = adapter.platform === "darwin" && isDesktop;
-
-	const viewMode = useConfigStore((s) => s.activeView);
-	const viewNode = VIEW_PORTALS[viewMode];
-	const viewInfo = VIEW_MODES[viewMode];
 
 	const onCloseSidebar = useStable(() => {
 		setOverlaySidebar(false);
 	});
 
-	const [loaded, setLoaded] = useState<ViewMode[]>([]);
-
-	useLayoutEffect(() => {
-		setLoaded((prev) => {
-			if (!prev.includes(viewMode)) {
-				return [...prev, viewMode];
-			}
-
-			return prev;
-		});
-	}, [viewMode]);
-
-	const requireDatabase = !connection?.lastDatabase && viewInfo?.require === "database";
+	const requestDatabase = !connection?.lastDatabase && activeView?.require === "database";
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
 	return (
@@ -148,7 +125,7 @@ export function DatabaseScreen() {
 						"--offset": `${sidebarOffset}px`,
 					}}
 				>
-					{viewMode !== "cloud" && (
+					{!isCloud && (
 						<Group
 							gap="md"
 							pos="relative"
@@ -163,115 +140,51 @@ export function DatabaseScreen() {
 						flex={1}
 						pos="relative"
 					>
-						{requireDatabase ? (
-							<Center flex={1}>
-								<Paper
-									radius="md"
-									p="xl"
-									w={500}
-								>
-									<PrimaryTitle>Before you continue...</PrimaryTitle>
-									<Text mt="md">
-										Please select a namespace and database before accessing the{" "}
-										{viewInfo?.name} view. You can use the buttons below to
-										choose an existing namespace and database, or create new
-										ones.
-									</Text>
-									<SelectDatabase
-										withNamespace
-										withDatabase
-										mt="xl"
+						<Switch>
+							{Object.values(VIEW_MODES).map((mode) =>
+								requestDatabase ? (
+									<DatabaseSelection
+										key={mode.id}
+										info={mode}
 									/>
-									{!isConnected && (
-										<Alert
-											mt="xl"
-											color="orange"
-											icon={<Icon path={iconWarning} />}
-										>
-											You must be connected before selecting a namespace and
-											database
-										</Alert>
-									)}
-								</Paper>
-							</Center>
-						) : (
-							viewNode && <OutPortal node={viewNode} />
-						)}
+								) : (
+									<Route
+										key={mode.id}
+										path={`/${mode.id}`}
+									>
+										<OutPortal node={VIEW_PORTALS[mode.id]} />
+									</Route>
+								),
+							)}
 
-						{loaded.includes("cloud") && (
-							<InPortal node={VIEW_PORTALS.cloud}>
-								<Suspense fallback={null}>
+							{cloudEnabled && (
+								<Route path="/cloud/*?">
 									<CloudView />
-								</Suspense>
-							</InPortal>
-						)}
+								</Route>
+							)}
 
-						{loaded.includes("query") && (
-							<InPortal node={VIEW_PORTALS.query}>
-								<Suspense fallback={null}>
-									<QueryView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("explorer") && (
-							<InPortal node={VIEW_PORTALS.explorer}>
-								<Suspense fallback={null}>
-									<ExplorerView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("graphql") && (
-							<InPortal node={VIEW_PORTALS.graphql}>
-								<Suspense fallback={null}>
-									<GraphqlView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("designer") && (
-							<InPortal node={VIEW_PORTALS.designer}>
-								<Suspense fallback={null}>
-									<DesignerView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("authentication") && (
-							<InPortal node={VIEW_PORTALS.authentication}>
-								<Suspense fallback={null}>
-									<AuthenticationView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("functions") && (
-							<InPortal node={VIEW_PORTALS.functions}>
-								<Suspense fallback={null}>
-									<FunctionsView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("models") && (
-							<InPortal node={VIEW_PORTALS.models}>
-								<Suspense fallback={null}>
-									<ModelsView />
-								</Suspense>
-							</InPortal>
-						)}
-
-						{loaded.includes("documentation") && (
-							<InPortal node={VIEW_PORTALS.documentation}>
-								<Suspense fallback={null}>
-									<DocumentationView />
-								</Suspense>
-							</InPortal>
-						)}
+							<Route>
+								<Redirect to="/query" />
+							</Route>
+						</Switch>
 					</Stack>
 				</Box>
 			</Flex>
+
+			{Object.values(VIEW_MODES).map((mode) => {
+				const Content = VIEW_COMPONENTS[mode.id];
+
+				return (
+					<InPortal
+						key={mode.id}
+						node={VIEW_PORTALS[mode.id]}
+					>
+						<Suspense fallback={null}>
+							<Content />
+						</Suspense>
+					</InPortal>
+				);
+			})}
 
 			<Drawer
 				opened={overlaySidebar}
@@ -284,5 +197,44 @@ export function DatabaseScreen() {
 				/>
 			</Drawer>
 		</div>
+	);
+}
+
+interface DatabaseSelectionProps {
+	info: ViewInfo;
+}
+
+function DatabaseSelection({ info }: DatabaseSelectionProps) {
+	const isConnected = useIsConnected();
+
+	return (
+		<Center flex={1}>
+			<Paper
+				radius="md"
+				p="xl"
+				w={500}
+			>
+				<PrimaryTitle>Before you continue...</PrimaryTitle>
+				<Text mt="md">
+					Please select a namespace and database before accessing the {info?.name} view.
+					You can use the buttons below to choose an existing namespace and database, or
+					create new ones.
+				</Text>
+				<SelectDatabase
+					withNamespace
+					withDatabase
+					mt="xl"
+				/>
+				{!isConnected && (
+					<Alert
+						mt="xl"
+						color="orange"
+						icon={<Icon path={iconWarning} />}
+					>
+						You must be connected before selecting a namespace and database
+					</Alert>
+				)}
+			</Paper>
+		</Center>
 	);
 }

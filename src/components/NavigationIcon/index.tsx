@@ -2,6 +2,7 @@ import { Box, Indicator, type IndicatorProps, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
+import { useRoute } from "wouter";
 import { useHoverIcon } from "~/hooks/hover-icon";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
@@ -13,7 +14,7 @@ export interface NavigationIconProps
 	extends EntryProps,
 		Omit<HTMLProps<HTMLButtonElement>, "name" | "color" | "size" | "style" | "type" | "ref"> {
 	name: ReactNode;
-	isActive?: boolean;
+	path?: string;
 	indicator?: boolean | IndicatorProps;
 	icon: string | any;
 	withTooltip?: boolean;
@@ -22,7 +23,7 @@ export interface NavigationIconProps
 
 export function NavigationIcon({
 	name,
-	isActive,
+	path,
 	icon,
 	withTooltip,
 	onClick,
@@ -30,7 +31,9 @@ export function NavigationIcon({
 	...rest
 }: NavigationIconProps) {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
+	const [active] = useRoute(path || "");
 	const hasIcon = typeof icon === "string";
+	const isActive = active && !!path;
 
 	const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
 		animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,

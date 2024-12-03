@@ -1,5 +1,5 @@
-import { dispatchIntent } from "~/hooks/url";
 import type { ViewMode } from "~/types";
+import { IntentEvent, NavigateViewEvent } from "./global-events";
 
 const INTENT_REGISTRY = {
 	"open-command-palette": null,
@@ -25,6 +25,10 @@ const INTENT_REGISTRY = {
 	"highlight-tool": null,
 	"import-database": null,
 	"export-database": null,
+	"cloud-auth": null,
+	"cloud-signin": null,
+	"cloud-signout": null,
+	"cloud-activate": null,
 	"new-query": "query",
 	"close-query": "query",
 	"run-query": "query",
@@ -46,10 +50,6 @@ const INTENT_REGISTRY = {
 	"create-access": "authentication",
 	"register-user": "authentication",
 	"docs-switch-language": "documentation",
-	"cloud-auth": "cloud",
-	"cloud-signin": "cloud",
-	"cloud-signout": "cloud",
-	"cloud-activate": "cloud",
 } satisfies IntentMap;
 
 export type IntentType = keyof typeof INTENT_REGISTRY;
@@ -90,4 +90,38 @@ export function handleIntentRequest(intentStr: string) {
 
 		dispatchIntent(type, payload);
 	}
+}
+
+const INTENT_BUFFER: Intent<IntentType>[] = [];
+
+/**
+ * Dispatch an intent with the specified payload
+ *
+ * @param intent The intent type to dispatch
+ * @param payload Optional payload
+ */
+export function dispatchIntent(intent: IntentType, payload?: IntentPayload) {
+	const view = getIntentView(intent);
+
+	INTENT_BUFFER.push({ type: intent, payload });
+
+	if (view) {
+		NavigateViewEvent.dispatch(view);
+	}
+
+	IntentEvent.dispatch(null);
+}
+
+/**
+ * Consume the next intent of the specified type
+ */
+export function consumeIntent(type: IntentType) {
+	const index = INTENT_BUFFER.findIndex((intent) => intent.type === type);
+
+	if (index !== -1) {
+		const [intent] = INTENT_BUFFER.splice(index, 1);
+		return intent;
+	}
+
+	return null;
 }

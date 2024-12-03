@@ -1,7 +1,9 @@
+import { mkdirSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { type PluginOption, defineConfig } from "vite";
 import { compression } from "vite-plugin-compression2";
 import { ViteImageOptimizer as images } from "vite-plugin-image-optimizer";
 import { Mode, plugin as markdown } from "vite-plugin-markdown";
@@ -11,12 +13,27 @@ const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 const isInstance = process.env.VITE_SURREALIST_INSTANCE === "true";
 
+const ENTRYPOINTS = {
+	surrealist: "/index.html",
+	mini_run: "/tools/mini-run.html",
+	mini_new: "/tools/mini-new.html",
+	cloud_manage: "/tools/cloud-manage.html",
+	cloud_callback: "/tools/cloud-callback.html",
+};
+
+const TOOLS = {
+	"tools/mini-run.html": "mini/run/index.html",
+	"tools/mini-new.html": "mini/new/index.html",
+	"tools/cloud-manage.html": "cloud/manage/index.html",
+	"tools/cloud-callback.html": "cloud/callback/index.html",
+};
+
 export default defineConfig(({ mode }) => {
 	// Required because we cannot pass a custom mode to tauri build
 	mode = isPreview ? "preview" : mode;
 
 	// Define base plugins
-	const plugins = [
+	const plugins: PluginOption[] = [
 		images(),
 		react(),
 		markdown({
@@ -27,6 +44,20 @@ export default defineConfig(({ mode }) => {
 			modernPolyfills: true,
 			renderLegacyChunks: false,
 		}),
+		{
+			name: "rename-html",
+			enforce: "post",
+			generateBundle(_, bundle) {
+				for (const chunk of Object.values(bundle)) {
+					if (TOOLS[chunk.fileName]) {
+						const endpoint = TOOLS[chunk.fileName];
+						const target = dirname(resolve("dist", endpoint));
+						mkdirSync(target, { recursive: true });
+						chunk.fileName = endpoint;
+					}
+				}
+			},
+		},
 	];
 
 	// Configure compression for web builds
@@ -56,18 +87,7 @@ export default defineConfig(({ mode }) => {
 			minify: process.env.TAURI_DEBUG ? false : "esbuild",
 			sourcemap: !!process.env.TAURI_DEBUG,
 			rollupOptions: {
-				input:
-					process.env.TAURI_ENV_PLATFORM || mode === "development"
-						? {
-								surrealist: "/index.html",
-							}
-						: {
-								surrealist: "/index.html",
-								"mini-run": "/mini/run/index.html",
-								"mini-new": "/mini/new/index.html",
-								"cloud-manage": "/cloud/manage/index.html",
-								"cloud-callback": "/cloud/callback/index.html",
-							},
+				input: !isTauri ? ENTRYPOINTS : undefined,
 				output: {
 					experimentalMinChunkSize: 5000,
 					manualChunks: {

@@ -5,8 +5,8 @@ import posthog from "posthog-js";
 import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent } from "~/hooks/url";
 import { useConfigStore } from "~/stores/config";
+import { dispatchIntent } from "~/util/intents";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory } from "./types";
 

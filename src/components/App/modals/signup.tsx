@@ -18,10 +18,10 @@ import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent } from "~/hooks/url";
 import { openConnection } from "~/screens/database/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconWarning } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 
 export function AccessSignupModal() {
 	const { closeAccessSignup } = useInterfaceStore.getState();

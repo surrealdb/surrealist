@@ -1,4 +1,4 @@
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { openHelpAndSupport } from "~/modals/help-and-support";
 
 export function useGlobalModals() {

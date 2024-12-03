@@ -15,7 +15,7 @@ import { isClientSupported } from "./version";
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 const CALLBACK_ENDPOINT = isDevelopment
-	? "http://localhost:1420/cloud/callback/index.html"
+	? "http://localhost:1420/tools/cloud-callback.html"
 	: import.meta.env.VITE_CLOUD_CALLBACK_URL;
 
 interface PKCE {
@@ -224,6 +224,7 @@ export async function acquireSession(accessToken: string) {
 		await updateCloudInformation();
 
 		adapter.log("Cloud", `Session acquired`);
+		sessionStorage.removeItem(REFERRER_KEY);
 		CloudAuthEvent.dispatch(null);
 
 		setSessionExpired(false);

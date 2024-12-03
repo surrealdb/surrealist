@@ -3,8 +3,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
-import { CLOUD_PAGES } from "~/constants";
-import { useConfigStore } from "~/stores/config";
+import { useActiveCloudPage } from "~/hooks/routing";
 import { iconChevronRight } from "~/util/icons";
 
 export interface CloudToolbarProps {
@@ -12,8 +11,8 @@ export interface CloudToolbarProps {
 }
 
 export function CloudToolbar({ showBreadcrumb }: CloudToolbarProps) {
-	const activePage = useConfigStore((s) => s.activeCloudPage);
-	const pageName = CLOUD_PAGES[activePage]?.name ?? "Unknown";
+	const [activePage] = useActiveCloudPage();
+	const pageName = activePage?.name ?? "Unknown";
 
 	return (
 		<>

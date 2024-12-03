@@ -4,7 +4,6 @@ import {
 	iconAPI,
 	iconBook,
 	iconBug,
-	iconChat,
 	iconCloud,
 	iconCommand,
 	iconDiscord,
@@ -16,17 +15,18 @@ import {
 	iconVideo,
 } from "~/util/icons";
 
-import { Box, Divider, SimpleGrid, Stack, UnstyledButton } from "@mantine/core";
+import { Box, SimpleGrid, Stack, UnstyledButton } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { closeAllModals } from "@mantine/modals";
 import clsx from "clsx";
 import type { PropsWithChildren } from "react";
+import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useIsAuthenticated, useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
-import { dispatchIntent } from "~/hooks/url";
 import { openAccountSupport } from "~/screens/cloud-panel/modals/account-support";
 import { useConfigStore } from "~/stores/config";
+import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 
@@ -36,6 +36,9 @@ export interface HelpCenterProps {
 
 export function HelpCenter({ onBody }: HelpCenterProps) {
 	const isAuthed = useIsAuthenticated();
+	const showCloud = useSurrealCloud();
+
+	const [, navigate] = useLocation();
 
 	return (
 		<Stack
@@ -106,39 +109,34 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 					onClick={() => adapter.openUrl("https://surrealdb.com/learn/book")}
 				/>
 			</HelpSection>
-			<HelpSection title="Cloud">
-				<HelpTile
-					title="Cloud Docs"
-					description="Learn how to set-up, configure and optimise your instances"
-					icon={iconCloud}
-					onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
-				/>
-				<HelpTile
-					title="Sidekick"
-					description="Chat with your personal Surreal AI assistant"
-					icon={iconSidekick}
-					onClick={() => {
-						const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
-
-						setActiveView("cloud");
-						setActiveCloudPage("chat");
-					}}
-				/>
-				<HelpTile
-					title="Account"
-					description="Account or billing related issue? Raise a support ticket"
-					icon={iconEmail}
-					onClick={() => {
-						const { setActiveView } = useConfigStore.getState();
-
-						if (isAuthed) {
-							openAccountSupport();
-						} else {
-							setActiveView("cloud");
-						}
-					}}
-				/>
-			</HelpSection>
+			{showCloud && (
+				<HelpSection title="Cloud">
+					<HelpTile
+						title="Cloud Docs"
+						description="Learn how to set-up, configure and optimise your instances"
+						icon={iconCloud}
+						onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
+					/>
+					<HelpTile
+						title="Sidekick"
+						description="Chat with your personal Surreal AI assistant"
+						icon={iconSidekick}
+						onClick={() => navigate("/cloud/chat")}
+					/>
+					<HelpTile
+						title="Account"
+						description="Account or billing related issue? Raise a support ticket"
+						icon={iconEmail}
+						onClick={() => {
+							if (isAuthed) {
+								openAccountSupport();
+							} else {
+								navigate("cloud");
+							}
+						}}
+					/>
+				</HelpSection>
+			)}
 		</Stack>
 	);
 }

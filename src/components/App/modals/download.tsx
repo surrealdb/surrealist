@@ -2,7 +2,7 @@ import { ActionIcon, Button, Image, List, Modal, Stack, Text } from "@mantine/co
 import banner from "~/assets/images/desktop.webp";
 import { Icon } from "~/components/Icon";
 import { useBoolean } from "~/hooks/boolean";
-import { useIntent } from "~/hooks/url";
+import { useIntent } from "~/hooks/routing";
 import { iconArrowUpRight, iconCircleFilled, iconClose } from "~/util/icons";
 
 export function DownloadModal() {

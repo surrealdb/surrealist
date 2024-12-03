@@ -99,11 +99,11 @@ export function useCopilotMutation() {
 
 					// Listen for status updates
 					case "block_state_updated": {
-						const { block_id, update_type, update_data } = value.data;
+						const { block_type, update_type, update_data } = value.data;
 
-						switch (block_id) {
+						switch (block_type) {
 							// Incoming response
-							case "copilot_message_i9qyel": {
+							case "com.scoutos.copilot.message": {
 								updateChatMessage(msgId, (msg) => {
 									msg.loading = false;
 
@@ -117,7 +117,7 @@ export function useCopilotMutation() {
 							}
 
 							// Sources list
-							case "list_of_links_dwk1vf": {
+							case "com.scoutos.copilot_list_of_links": {
 								if (update_type === "complete") {
 									updateChatMessage(msgId, (msg) => {
 										msg.sources = update_data.output;

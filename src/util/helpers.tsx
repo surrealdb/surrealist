@@ -455,3 +455,10 @@ export function isEqualApprox(a: number, b: number) {
 export function optional<T>(value: T | T[] | false | undefined | null): T[] {
 	return value ? (Array.isArray(value) ? value : [value]) : [];
 }
+
+/**
+ * Throw the passed error as part of an expression
+ */
+export function __throw(error: Error | string): never {
+	throw typeof error === "string" ? new Error(error) : error;
+}

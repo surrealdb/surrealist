@@ -1,143 +1,60 @@
-import {
-	Alert,
-	Box,
-	Button,
-	Collapse,
-	Grid,
-	Group,
-	Image,
-	Paper,
-	ScrollArea,
-	Select,
-	Stack,
-	Table,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import classes from "./style.module.scss";
 
-import {
-	useAvailableInstanceTypes,
-	useAvailableInstanceVersions,
-	useAvailableRegions,
-	useOrganization,
-} from "~/hooks/cloud";
-
-import { useInputState } from "@mantine/hooks";
-import { useMemo, useState } from "react";
-import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
-import { REGION_FLAGS } from "~/constants";
+import { Box, ScrollArea } from "@mantine/core";
+import { type FC, useState } from "react";
+import { useImmer } from "use-immer";
+import { useOrganization } from "~/hooks/cloud";
+import { useActiveCloudPage } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
-import { showError } from "~/util/helpers";
-import {
-	iconChevronLeft,
-	iconChevronRight,
-	iconHammer,
-	iconPlus,
-	iconQuery,
-	iconStar,
-} from "~/util/icons";
+import { __throw, showError } from "~/util/helpers";
 import { fetchAPI } from "../../api";
-import { EstimatedCost } from "../../components/EstimatedCost";
-import { InstanceType } from "../../components/InstanceType";
-import { Tile } from "../../components/Tile";
-import { useCloudInstancesQuery } from "../../hooks/instances";
-import { useCloudTypeLimits } from "../../hooks/limits";
+import { ProvisionDetailsStep } from "./steps/1_details";
+import { ProvisionRegionsStep } from "./steps/2_regions";
+import { ProvisionCategoryStep } from "./steps/3_category";
+import { ProvisionInstanceTypesStep } from "./steps/4_type";
+import { ProvisionComputeUnitsStep } from "./steps/5_units";
+import { ProvisionFinalizeStep } from "./steps/6_finalize";
+import type { ProvisionConfig, ProvisionStepProps } from "./types";
 
-type Category = "free" | "development" | "production";
+const PROVISION_STEPS = [
+	ProvisionDetailsStep,
+	ProvisionRegionsStep,
+	ProvisionCategoryStep,
+	ProvisionInstanceTypesStep,
+	ProvisionComputeUnitsStep,
+	ProvisionFinalizeStep,
+] satisfies FC<ProvisionStepProps>[];
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
-	const { setActiveCloudPage } = useConfigStore.getState();
+	const [, setActivePage] = useActiveCloudPage();
 
-	const current = useOrganization();
-	const organizations = useCloudStore((s) => s.organizations);
-	const instanceTypes = useAvailableInstanceTypes();
-	const versions = useAvailableInstanceVersions();
-	const regions = useAvailableRegions();
-
-	const { data: instances } = useCloudInstancesQuery(current?.id);
-	const isAvailable = useCloudTypeLimits(instances ?? []);
-
+	const organization = useOrganization();
 	const [step, setStep] = useState(0);
-	const [name, setName] = useInputState("");
-	const [version, setVersion] = useState<string>(versions.at(-1) ?? "");
-	const [category, setCategory] = useState<Category | null>();
-	const [units, setUnits] = useState(1);
-	const [org, setOrg] = useState<string>(current?.id || "");
-	const [instance, setInstance] = useState<string>("");
-	const [region, setRegion] = useState<string>("");
+	const [details, setDetails] = useImmer<ProvisionConfig>({
+		name: "",
+		region: "",
+		category: "",
+		type: "",
+		units: 1,
+		version: "",
+	});
 
-	// Active instance type information
-	const instanceInfo = useMemo(() => {
-		return instanceTypes.find((t) => t.slug === instance);
-	}, [instance, instanceTypes]);
-
-	const hasBilling = (current?.billing_info && current?.payment_info) ?? false;
-	const minComputeUnits = instanceInfo?.compute_units?.min ?? 1;
-	// const maxComputeUnits = instanceInfo?.compute_units?.max ?? 1;
-	const willCreate = step === 5;
-	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
-
-	// Selectable organization list
-	const orgList = organizations.map((org) => ({
-		value: org.id,
-		label: org.name,
-	}));
-
-	// Whether the user can continue to the next step
-	const canContinue = useMemo(() => {
-		if (step === 0) {
-			return name.length > 0 && org.length > 0;
-		}
-
-		if (step === 1) {
-			return region.length > 0;
-		}
-
-		if (step === 2) {
-			return !!category && (hasBilling || category === "free");
-		}
-
-		if (step === 3) {
-			return instance.length > 0 && instanceInfo?.category === category;
-		}
-
-		return true;
-	}, [step, name, org, category, instance, region, instanceInfo, hasBilling]);
-
-	// Filter instance types on selected category
-	const filteredTypes = useMemo(() => {
-		if (!category) {
-			return [];
-		}
-
-		return instanceTypes.filter((type) => type.category === category);
-	}, [category, instanceTypes]);
-
-	// Check if the selected category has a single instance type
-	const isSingletonCategory = filteredTypes.length === 1;
-
-	// Provision the instance
 	const provisionInstance = useStable(async () => {
 		try {
-			const computeUnits = instanceInfo?.price_hour === 0 ? undefined : units;
 			const result = await fetchAPI<CloudInstance>("/instances", {
 				method: "POST",
 				body: JSON.stringify({
-					name,
-					org,
-					region,
+					name: details.name,
+					org: organization?.id,
+					region: details.region,
 					specs: {
-						slug: instance,
-						version: version,
-						compute_units: computeUnits,
+						slug: details.type,
+						version: details.version,
+						compute_units: details.type === "free" ? undefined : details.units,
 					},
 				}),
 			});
@@ -153,397 +70,59 @@ export function ProvisionPage() {
 				subtitle: "Please try again later",
 			});
 		} finally {
-			setActiveCloudPage("instances");
+			setActivePage("instances");
 		}
 	});
 
-	const updateInstance = (value: string) => {
-		setInstance(value);
-		setUnits(minComputeUnits);
-	};
-
-	const previousStep = useStable(() => {
-		if (step === 5 && isSingletonCategory) {
-			setStep(2);
+	const previousStep = useStable((to?: number) => {
+		if (step === 0) {
+			setActivePage("instances");
 		} else {
-			setStep(step - 1);
+			setStep(to ?? step - 1);
 		}
 	});
 
-	const nextStep = useStable(() => {
-		if (step === 2 && isSingletonCategory) {
-			setStep(5);
-		} else if (step === 5) {
+	const nextStep = useStable((to?: number) => {
+		if (step === 5) {
 			provisionInstance();
-		} else {
-			setStep(step + 1);
+			return;
 		}
+
+		setStep(to ?? step + 1);
 	});
+
+	const ProvisionStep = PROVISION_STEPS[step];
 
 	return (
-		<>
+		<Box
+			flex={1}
+			pos="relative"
+		>
 			<ScrollArea
+				pos="absolute"
 				scrollbars="y"
-				flex={1}
+				type="scroll"
+				inset={0}
+				className={classes.scrollArea}
+				viewportProps={{
+					style: { paddingBottom: 75 },
+				}}
 			>
-				<Form
-					onSubmit={nextStep}
-					w="100%"
-					maw={652}
+				<Box
+					maw={650}
 					mx="auto"
 				>
-					{step === 0 && (
-						<Stack>
-							<PrimaryTitle>Instance details</PrimaryTitle>
-
-							<Text mb="lg">
-								Please enter a name for your new instance, and select the
-								organization you would like to create it under.
-							</Text>
-
-							<Grid
-								mb="xl"
-								styles={{
-									col: { alignContent: "center" },
-								}}
-							>
-								<Grid.Col span={4}>
-									<Text>Instance name</Text>
-								</Grid.Col>
-								<Grid.Col span={8}>
-									<TextInput
-										placeholder="Instance name"
-										value={name}
-										onChange={setName}
-										autoFocus
-									/>
-								</Grid.Col>
-								<Grid.Col span={4}>
-									<Text>Organization</Text>
-								</Grid.Col>
-								<Grid.Col span={8}>
-									<Select
-										placeholder="Organization"
-										data={orgList}
-										value={org}
-										onChange={setOrg as any}
-									/>
-								</Grid.Col>
-								<Grid.Col span={4}>
-									<Text>SurrealDB Version</Text>
-								</Grid.Col>
-								<Grid.Col span={8}>
-									<Select
-										data={versions}
-										value={version}
-										onChange={setVersion as any}
-									/>
-								</Grid.Col>
-							</Grid>
-						</Stack>
-					)}
-
-					{step === 1 && (
-						<Stack>
-							<PrimaryTitle>Select a region</PrimaryTitle>
-
-							<Text mb="lg">
-								Regions define the physical location of your instance. Choosing a
-								region close to your users can improve performance.
-							</Text>
-
-							<ScrollArea.Autosize mah="calc(100vh - 350px)">
-								<Stack>
-									{regions.map((type) => (
-										<Tile
-											key={type.slug}
-											isActive={type.slug === region}
-											onClick={() => setRegion(type.slug)}
-										>
-											<Group
-												gap="xl"
-												pl="xs"
-											>
-												<Image
-													src={REGION_FLAGS[type.slug]}
-													w={24}
-												/>
-												<Box>
-													<Text
-														c="bright"
-														fw={500}
-														fz="lg"
-													>
-														{type.description}
-													</Text>
-												</Box>
-											</Group>
-										</Tile>
-									))}
-								</Stack>
-							</ScrollArea.Autosize>
-						</Stack>
-					)}
-
-					{step === 2 && (
-						<Stack>
-							<PrimaryTitle>Select instance category</PrimaryTitle>
-
-							<Text mb="lg">
-								Optimise your experience by selecting the instance category that
-								best aligns with your project's goals.
-							</Text>
-
-							<ScrollArea.Autosize mah="calc(100vh - 350px)">
-								<Stack>
-									<Tile
-										isActive={category === "production"}
-										onClick={() => setCategory("production")}
-									>
-										<Group>
-											<Icon path={iconQuery} />
-											<PrimaryTitle
-												c="bright"
-												fw={600}
-												fz="lg"
-											>
-												Production
-											</PrimaryTitle>
-										</Group>
-										<Text mt="sm">
-											For production environments, data at scale, or
-											professional use cases.
-										</Text>
-									</Tile>
-									<Tile
-										isActive={category === "development"}
-										onClick={() => setCategory("development")}
-									>
-										<Group>
-											<Icon path={iconHammer} />
-											<PrimaryTitle
-												c="bright"
-												fw={600}
-												fz="lg"
-											>
-												Development
-											</PrimaryTitle>
-										</Group>
-										<Text mt="sm">
-											For testing, starter projects, or for low-traffic
-											applications.
-										</Text>
-									</Tile>
-									<Tile
-										isActive={category === "free"}
-										onClick={() => setCategory("free")}
-									>
-										<Group>
-											<Icon path={iconStar} />
-											<PrimaryTitle
-												c="bright"
-												fw={600}
-												fz="lg"
-											>
-												Free
-											</PrimaryTitle>
-										</Group>
-										<Text mt="sm">
-											Experience Surreal Cloud with a free instance to get
-											started.
-										</Text>
-									</Tile>
-								</Stack>
-								<Collapse in={!!category && category !== "free" && !hasBilling}>
-									<Alert
-										mt="xl"
-										color="blue"
-										title="Upgrade to use premium instances"
-									>
-										<Box>
-											Premium instances require a billing plan to be enabled.
-										</Box>
-										<Button
-											rightSection={<Icon path={iconChevronRight} />}
-											color="blue"
-											size="xs"
-											mt="md"
-											onClick={() => {
-												setActiveCloudPage("billing");
-											}}
-										>
-											Enter billing & payment details
-										</Button>
-									</Alert>
-								</Collapse>
-							</ScrollArea.Autosize>
-						</Stack>
-					)}
-
-					{step === 3 && (
-						<Stack>
-							<PrimaryTitle>Select an instance type</PrimaryTitle>
-
-							<Text mb="lg">
-								Instance types define the resources allocated to your cloud
-								instance. Choose a configuration that best fits your needs.
-							</Text>
-
-							<ScrollArea.Autosize mah="calc(100vh - 350px)">
-								<Stack>
-									{filteredTypes.map((type) => (
-										<InstanceType
-											key={type.slug}
-											type={type}
-											isActive={type.slug === instance}
-											isLimited={!isAvailable(type)}
-											onSelect={updateInstance}
-										/>
-									))}
-								</Stack>
-							</ScrollArea.Autosize>
-						</Stack>
-					)}
-
-					{step === 4 && (
-						<Stack>
-							<PrimaryTitle>Customise compute nodes</PrimaryTitle>
-
-							<Text mb="lg">
-								Select the number of compute nodes you would like to use for your
-								instance. Each compute node provides additional processing power to
-								your instance.
-							</Text>
-
-							<Alert
-								color="blue"
-								title="Coming soon"
-							>
-								Customising compute nodes will be available soon
-							</Alert>
-
-							{/* {hasSingleCompute ? (
-								<Alert
-									color="blue"
-									title="Upgrade to use compute nodes"
-								>
-									Compute nodes are not customisable for free instances
-								</Alert>
-							) : (
-								<>
-									{instanceInfo && (
-										<>
-											<Text
-												fw={600}
-												fz="xl"
-												c="bright"
-											>
-												Your selected instance
-											</Text>
-											<InstanceType
-												type={instanceInfo}
-												inactive
-											/>
-										</>
-									)}
-									<Text
-										mt="xl"
-										fw={600}
-										fz="xl"
-										c="bright"
-									>
-										Desired compute nodes
-									</Text>
-
-									<CounterInput
-										value={units}
-										onChange={setUnits}
-										min={minComputeUnits}
-										max={maxComputeUnits}
-									/>
-								</>
-							)} */}
-						</Stack>
-					)}
-
-					{step === 5 && (
-						<Stack>
-							<PrimaryTitle>Finalize your instance</PrimaryTitle>
-
-							<Paper
-								p="xl"
-								style={{ userSelect: "text", WebkitUserSelect: "text" }}
-							>
-								<Table>
-									<Table.Tbody>
-										<Table.Tr>
-											<Table.Td>Name</Table.Td>
-											<Table.Td c="bright">{name}</Table.Td>
-										</Table.Tr>
-										<Table.Tr>
-											<Table.Td>Instance Type</Table.Td>
-											<Table.Td c="bright">{instance}</Table.Td>
-										</Table.Tr>
-										<Table.Tr>
-											<Table.Td>Compute nodes</Table.Td>
-											<Table.Td c="bright">{units}</Table.Td>
-										</Table.Tr>
-										<Table.Tr>
-											<Table.Td>Region</Table.Td>
-											<Table.Td c="bright">{region}</Table.Td>
-										</Table.Tr>
-										<Table.Tr>
-											<Table.Td>Version</Table.Td>
-											<Table.Td c="bright">{version}</Table.Td>
-										</Table.Tr>
-									</Table.Tbody>
-								</Table>
-
-								{instanceInfo && (
-									<EstimatedCost
-										type={instanceInfo}
-										units={units}
-									/>
-								)}
-							</Paper>
-						</Stack>
-					)}
-
-					<Group mt={38}>
-						{step === 0 ? (
-							<Button
-								w={150}
-								color="slate"
-								variant="light"
-								onClick={() => setActiveCloudPage("instances")}
-								leftSection={<Icon path={iconChevronLeft} />}
-							>
-								Go back
-							</Button>
-						) : (
-							<Button
-								w={150}
-								color="slate"
-								variant="light"
-								onClick={previousStep}
-								leftSection={<Icon path={iconChevronLeft} />}
-							>
-								Previous
-							</Button>
-						)}
-						<Spacer />
-						<Button
-							w={150}
-							type="submit"
-							variant="gradient"
-							disabled={!canContinue}
-							rightSection={<Icon path={willCreate ? iconPlus : iconChevronRight} />}
-						>
-							{willCreate ? "Create" : "Continue"}
-						</Button>
-					</Group>
-				</Form>
+					<ProvisionStep
+						step={step}
+						details={details}
+						setDetails={setDetails}
+						onPrevious={previousStep}
+						onContinue={nextStep}
+					/>
+				</Box>
 			</ScrollArea>
-		</>
+		</Box>
 	);
 }
+
+export default ProvisionPage;

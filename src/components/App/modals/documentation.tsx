@@ -21,8 +21,8 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeyNavigation } from "~/hooks/keys";
+import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIntent } from "~/hooks/url";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { iconBook } from "~/util/icons";
 

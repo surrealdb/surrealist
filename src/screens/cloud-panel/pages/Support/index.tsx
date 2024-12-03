@@ -29,3 +29,5 @@ export function SupportPage() {
 		</Box>
 	);
 }
+
+export default SupportPage;

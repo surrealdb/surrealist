@@ -48,7 +48,6 @@ export type AuthMode =
 	| "access-signup"
 	| "cloud";
 export type ViewMode =
-	| "cloud"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -240,10 +239,9 @@ export interface SurrealistConfig {
 	connections: Connection[];
 	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
-	activeView: ViewMode;
+	activeResource: string;
 	activeScreen: Screen;
 	activeConnection: string;
-	activeCloudPage: CloudPage;
 	activeCloudOrg: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;

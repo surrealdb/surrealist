@@ -38,6 +38,7 @@ import { ContentPane } from "~/components/Pane";
 import { RecordLink } from "~/components/RecordLink";
 import { useActiveConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
+import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
@@ -53,10 +54,11 @@ export interface ExplorerPaneProps {
 }
 
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
-	const { addQueryTab, setActiveView, updateCurrentConnection } = useConfigStore.getState();
+	const { addQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const connection = useActiveConnection();
 	const pagination = usePagination();
+	const [, setActiveView] = useActiveView();
 
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");

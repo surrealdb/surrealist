@@ -2,12 +2,13 @@ import { ActionIcon, Tooltip } from "@mantine/core";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
+import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
 import { openConnection } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveConnection } from "~/util/connection";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 
 export function DatabaseServing() {
@@ -49,9 +50,7 @@ export function DatabaseServing() {
 		const {
 			authentication: { hostname },
 		} = getActiveConnection();
-		const isLocal =
-			hostname.startsWith("localhost") ||
-			hostname.startsWith("127.0.0.1");
+		const isLocal = hostname.startsWith("localhost") || hostname.startsWith("127.0.0.1");
 
 		if (isServing && isLocal) {
 			openConnection();
@@ -70,13 +69,14 @@ export function DatabaseServing() {
 					loading={isPending}
 					color={isServing ? "pink.7" : undefined}
 					aria-label={
-						isServing
-							? "Stop serving local database"
-							: "Start serving local database"
+						isServing ? "Stop serving local database" : "Start serving local database"
 					}
 					variant="subtle"
 				>
-					<Icon path={isServing ? iconStop : iconPlay} size="lg" />
+					<Icon
+						path={isServing ? iconStop : iconPlay}
+						size="lg"
+					/>
 				</ActionIcon>
 			</Tooltip>
 
@@ -89,7 +89,10 @@ export function DatabaseServing() {
 						aria-label="Open serving console drawer"
 						variant="subtle"
 					>
-						<Icon path={iconConsole} size="lg" />
+						<Icon
+							path={iconConsole}
+							size="lg"
+						/>
 					</ActionIcon>
 				</Tooltip>
 			)}

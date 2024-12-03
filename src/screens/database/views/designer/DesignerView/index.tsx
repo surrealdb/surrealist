@@ -6,14 +6,15 @@ import { Icon } from "~/components/Icon";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useIntent } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { dispatchIntent, useIntent } from "~/hooks/url";
 import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
 import { iconDesigner, iconEye } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
 

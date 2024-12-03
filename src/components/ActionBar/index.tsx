@@ -1,4 +1,5 @@
 import { adapter } from "~/adapter";
+import { useSurrealCloud } from "~/hooks/cloud";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { CloudAccount } from "./account";
 import { NewsFeed } from "./newsfeed";
@@ -7,6 +8,7 @@ import { HelpAndSupport } from "./support";
 
 export function ActionBar() {
 	const [flags] = useFeatureFlags();
+	const showCloud = useSurrealCloud();
 
 	return (
 		<>
@@ -16,7 +18,7 @@ export function ActionBar() {
 
 			<HelpAndSupport />
 
-			{flags.cloud_view && flags.cloud_access && <CloudAccount />}
+			{showCloud && flags.cloud_access && <CloudAccount />}
 		</>
 	);
 }

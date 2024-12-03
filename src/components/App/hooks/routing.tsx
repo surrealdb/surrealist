@@ -1,94 +1,40 @@
-import { useDidUpdate, useWindowEvent } from "@mantine/hooks";
-import posthog from "posthog-js";
-import { sift } from "radash";
-import { useEffect, useMemo } from "react";
-import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
-import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
+import { useEffect, useLayoutEffect } from "react";
+import { useLocation } from "wouter";
+import { useCloudRoute } from "~/hooks/cloud";
+import { useSearchParams } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
-import type { CloudPage, ViewMode } from "~/types";
 import { handleIntentRequest } from "~/util/intents";
-import { REFERRER_KEY } from "~/util/storage";
 
-const VIEWS = Object.keys(VIEW_MODES);
-const CLOUDS = Object.keys(CLOUD_PAGES);
+export function useAppRouter() {
+	const { setActiveResource, setActiveScreen } = useConfigStore.getState();
 
-function isViewMode(value: any): value is ViewMode {
-	return value && VIEWS.includes(value);
-}
+	const [path, setPath] = useLocation();
+	const { intent } = useSearchParams();
+	const isCloud = useCloudRoute();
+	const resource = useConfigStore((s) => s.activeResource);
+	const screen = useConfigStore((s) => s.activeScreen);
 
-function isCloudPage(value: any): value is CloudPage {
-	return value && CLOUDS.includes(value);
-}
-
-/**
- * Synchronize the active view and cloud page with the URL path.
- */
-export function useConfigRouting() {
-	const { setActiveView, setActiveCloudPage } = useConfigStore.getState();
-	const activeView = useConfigStore((s) => s.activeView);
-	const cloudPage = useConfigStore((s) => s.activeCloudPage);
-
-	// The expected URL path based on the current state
-	const actualPath = useMemo(() => {
-		let urlPath = `/${activeView}`;
-
-		if (activeView === "cloud") {
-			urlPath += `/${cloudPage}`;
+	// Restore active resource
+	useLayoutEffect(() => {
+		if (path === "/") {
+			setPath(resource ?? "/query");
 		}
 
-		return urlPath;
-	}, [activeView, cloudPage]);
+		setActiveResource(path);
+	}, [path, resource, setActiveResource]);
 
-	// Apply state based on the current URL path
-	const applyState = useStable(() => {
-		const [view, ...other] = sift(location.pathname.toLowerCase().split("/"));
-		const params = new URLSearchParams(location.search);
-
-		let repair = false;
-
-		if (isViewMode(view)) {
-			setActiveView(view);
-
-			if (view === "cloud") {
-				if (isCloudPage(other[0])) {
-					setActiveCloudPage(other[0]);
-				} else {
-					repair = true;
-				}
-			}
-		} else {
-			repair = true;
-		}
-
-		if (repair) {
-			history.replaceState(null, document.title, actualPath);
-		}
-
-		const intent = params.get("intent");
-
+	// Handle intent requests
+	useLayoutEffect(() => {
 		if (intent) {
+			setPath(path, { replace: true });
 			handleIntentRequest(intent);
 		}
+	}, [intent, path]);
 
-		const referrer = params.get("referrer");
-
-		if (referrer) {
-			sessionStorage.setItem(REFERRER_KEY, referrer);
+	// Skip cloud screen
+	useLayoutEffect(() => {
+		if (screen === "start" && isCloud) {
+			setActiveScreen("database");
 		}
-	});
-
-	// Sync initial URL to active view
-	useEffect(applyState, []);
-
-	// Sync history change to active view
-	useWindowEvent("popstate", applyState);
-
-	// Sync active view to URL
-	useDidUpdate(() => {
-		if (location.pathname !== actualPath) {
-			history.pushState(null, document.title, actualPath);
-			posthog.capture("$pageview");
-		}
-	}, [actualPath]);
+	}, [screen, isCloud, setActiveScreen]);
 }
