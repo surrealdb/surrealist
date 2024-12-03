@@ -10,6 +10,7 @@
 	&:hover {
 		background-image: var(--surrealist-gradient) !important;
 		box-shadow: var(--surrealist-glow);
+		background-origin: border-box !important;
 		border-color: rgba(255, 255, 255, 0.3);
 
 		* {
