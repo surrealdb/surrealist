@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useConfigStore } from "~/stores/config";
 import type { ViewMode } from "~/types";
-import { useStable } from "./stable";
 import { useActiveView } from "./routing";
+import { useStable } from "./stable";
 
 /**
  * Accepts a function to invoke when the specified view

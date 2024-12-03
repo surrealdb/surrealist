@@ -6,9 +6,9 @@ import { type PropsWithChildren, createContext, useContext, useMemo } from "reac
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
+import { dispatchIntent } from "~/util/intents";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory } from "./types";
-import { dispatchIntent } from "~/util/intents";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];

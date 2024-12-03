@@ -52,6 +52,7 @@ import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
 import { useConnection, useConnections } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
+import { useActiveView } from "~/hooks/routing";
 import { showNodeStatus } from "~/modals/node-status";
 import {
 	closeConnection,
@@ -66,7 +67,6 @@ import type { IntentPayload, IntentType } from "~/util/intents";
 import { type PreferenceController, computePreferences } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
-import { useActiveView } from "~/hooks/routing";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;

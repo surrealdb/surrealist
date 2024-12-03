@@ -36,17 +36,17 @@ import {
 } from "~/util/icons";
 
 import { useRef } from "react";
+import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
+import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useThemeImage } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
-import { useActiveView } from "~/hooks/routing";
 import { dispatchIntent } from "~/util/intents";
-import { useLocation } from "wouter";
 
 interface StartActionProps {
 	title: string;

@@ -15,8 +15,8 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useIsLight } from "~/hooks/theme";
 import { useIntent } from "~/hooks/routing";
+import { useIsLight } from "~/hooks/theme";
 import { useDatabaseStore } from "~/stores/database";
 import { iconClose, iconDelete } from "~/util/icons";
 

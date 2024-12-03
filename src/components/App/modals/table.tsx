@@ -6,16 +6,16 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SCHEMA_MODES } from "~/constants";
+import { useActiveView, useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useActiveView, useIntent } from "~/hooks/routing";
 import { executeQuery } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SchemaMode } from "~/types";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
-import { syncConnectionSchema } from "~/util/schema";
 import { dispatchIntent } from "~/util/intents";
+import { syncConnectionSchema } from "~/util/schema";
 
 export function TableCreatorModal() {
 	const { openTableCreator, closeTableCreator } = useInterfaceStore.getState();

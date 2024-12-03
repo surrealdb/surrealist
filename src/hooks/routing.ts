@@ -1,11 +1,11 @@
-import { IntentEvent } from "~/util/global-events";
-import { consumeIntent, type Intent, type IntentPayload, type IntentType } from "~/util/intents";
-import { useEventSubscription } from "./event";
-import type { CloudPage, ViewMode } from "~/types";
+import { useEffect, useMemo } from "react";
 import { useLocation, useSearch } from "wouter";
 import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
+import type { CloudPage, ViewMode } from "~/types";
+import { IntentEvent } from "~/util/global-events";
+import { type Intent, type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
+import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
-import { useEffect, useMemo } from "react";
 
 /**
  * Returns the active view mode and a function to set it

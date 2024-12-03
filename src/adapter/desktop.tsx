@@ -20,11 +20,11 @@ import type { Platform, QueryTab, SurrealistConfig, ViewMode } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
 import { getActiveConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
+import { NavigateViewEvent } from "~/util/global-events";
 import { showError, showInfo } from "~/util/helpers";
 import { handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
-import { NavigateViewEvent } from "~/util/global-events";
 
 const WAIT_DURATION = 1000;
 

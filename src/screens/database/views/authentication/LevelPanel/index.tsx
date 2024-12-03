@@ -20,9 +20,9 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsConnected } from "~/hooks/connection";
+import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useIntent } from "~/hooks/routing";
 import { useConfirmation } from "~/providers/Confirmation";
 import {
 	SelectDatabase,

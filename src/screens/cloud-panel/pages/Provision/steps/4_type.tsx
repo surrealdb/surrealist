@@ -1,13 +1,13 @@
 import { Collapse, Divider, SimpleGrid, Stack, Text } from "@mantine/core";
+import { useMemo } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import type { ProvisionStepProps } from "../types";
+import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
 import { InstanceType } from "~/screens/cloud-panel/components/InstanceType";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
-import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useMemo } from "react";
 import { StepActions } from "../actions";
-import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionInstanceTypesStep({
 	step,

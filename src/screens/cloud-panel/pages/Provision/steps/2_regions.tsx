@@ -1,11 +1,11 @@
 import { Box, Group, Stack, Text } from "@mantine/core";
+import { Image } from "@mantine/core";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import type { ProvisionStepProps } from "../types";
+import { REGION_FLAGS } from "~/constants";
 import { useAvailableRegions } from "~/hooks/cloud";
 import { Tile } from "~/screens/cloud-panel/components/Tile";
-import { Image } from "@mantine/core";
-import { REGION_FLAGS } from "~/constants";
 import { StepActions } from "../actions";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionRegionsStep({
 	step,

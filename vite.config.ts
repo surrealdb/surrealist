@@ -1,13 +1,13 @@
+import { mkdirSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type PluginOption } from "vite";
+import { type PluginOption, defineConfig } from "vite";
 import { compression } from "vite-plugin-compression2";
 import { ViteImageOptimizer as images } from "vite-plugin-image-optimizer";
 import { Mode, plugin as markdown } from "vite-plugin-markdown";
 import { surreal, version } from "./package.json";
-import { mkdirSync } from "node:fs";
-import { dirname, resolve } from "node:path";
 
 const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";

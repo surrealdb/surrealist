@@ -1,6 +1,7 @@
 import classes from "../style.module.scss";
 
 import { Center, Dialog, Group, Loader, Stack, Text } from "@mantine/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { sleep } from "radash";
 import { useEffect } from "react";
 import { Icon } from "~/components/Icon";
@@ -9,7 +10,6 @@ import { fetchAPI } from "~/screens/cloud-panel/api";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { iconCheck, iconSurreal } from "~/util/icons";
-import { useQueryClient } from "@tanstack/react-query";
 
 export function ProvisioningDialog() {
 	const { finishProvisioning, hideProvisioning } = useCloudStore.getState();

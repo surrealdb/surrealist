@@ -24,11 +24,11 @@ import { useStable } from "~/hooks/stable";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import type { Connection } from "~/types";
+import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
-import { dispatchIntent } from "~/util/intents";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);

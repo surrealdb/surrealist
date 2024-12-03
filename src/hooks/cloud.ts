@@ -1,4 +1,5 @@
 import { useLayoutEffect } from "react";
+import { useRoute } from "wouter";
 import { adapter } from "~/adapter";
 import {
 	checkSessionExpiry,
@@ -12,7 +13,6 @@ import { useConfigStore } from "~/stores/config";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./routing";
-import { useRoute } from "wouter";
 
 /**
  * Returns whether cloud functionality is enabled

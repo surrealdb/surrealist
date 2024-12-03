@@ -2,13 +2,13 @@ import { Box, Indicator, type IndicatorProps, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
+import { useRoute } from "wouter";
 import { useHoverIcon } from "~/hooks/hover-icon";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { Entry, type EntryProps } from "../Entry";
 import { Icon } from "../Icon";
 import classes from "./style.module.scss";
-import { useRoute } from "wouter";
 
 export interface NavigationIconProps
 	extends EntryProps,

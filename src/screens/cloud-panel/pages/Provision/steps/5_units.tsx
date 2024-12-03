@@ -1,10 +1,10 @@
 import { Alert, Divider, Stack, Text } from "@mantine/core";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import type { ProvisionStepProps } from "../types";
-import { StepActions } from "../actions";
 import { useMemo } from "react";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
+import { StepActions } from "../actions";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionComputeUnitsStep({
 	step,

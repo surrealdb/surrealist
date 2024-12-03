@@ -1,16 +1,16 @@
 import { Alert, Badge, Box, Button, Collapse, Group, Stack, Text } from "@mantine/core";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import type { ProvisionStepProps } from "../types";
-import { Tile } from "~/screens/cloud-panel/components/Tile";
 import { Icon } from "~/components/Icon";
-import { iconChevronRight, iconHammer, iconQuery, iconStar, iconWarning } from "~/util/icons";
-import { useConfigStore } from "~/stores/config";
-import { StepActions } from "../actions";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
-import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
-import { useStable } from "~/hooks/stable";
 import { useActiveCloudPage } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
+import { Tile } from "~/screens/cloud-panel/components/Tile";
+import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
+import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
+import { useConfigStore } from "~/stores/config";
+import { iconChevronRight, iconHammer, iconQuery, iconStar, iconWarning } from "~/util/icons";
+import { StepActions } from "../actions";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionCategoryStep({
 	step,

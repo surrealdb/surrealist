@@ -37,6 +37,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
+import { useActiveCloudPage, useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
@@ -46,7 +47,6 @@ import { type ConnectMethod, Instance } from "../../components/Instance";
 import { useCloudInstancesQuery } from "../../hooks/instances";
 import { openConnectCli } from "../../modals/connect-cli";
 import { openConnectSdk } from "../../modals/connect-sdk";
-import { useActiveCloudPage, useActiveView } from "~/hooks/routing";
 
 interface Filter {
 	type: string;

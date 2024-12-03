@@ -29,8 +29,8 @@ import { Fragment, useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
-import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 
 interface NewsItem {

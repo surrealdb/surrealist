@@ -2,14 +2,14 @@ import { ActionIcon, Tooltip } from "@mantine/core";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
-import { useStable } from "~/hooks/stable";
 import { useIntent } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
 import { openConnection } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveConnection } from "~/util/connection";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
-import { Icon } from "../Icon";
 import { dispatchIntent } from "~/util/intents";
+import { Icon } from "../Icon";
 
 export function DatabaseServing() {
 	const [hasStarted, setHasStarted] = useState(false);

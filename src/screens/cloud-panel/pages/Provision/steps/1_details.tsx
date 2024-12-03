@@ -1,11 +1,11 @@
 import { Grid, Select, Stack, Text, TextInput } from "@mantine/core";
+import { type ChangeEvent, useLayoutEffect } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import type { ProvisionStepProps } from "../types";
-import { useCloudStore } from "~/stores/cloud";
 import { useAvailableInstanceVersions, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { useLayoutEffect, type ChangeEvent } from "react";
+import { useCloudStore } from "~/stores/cloud";
 import { StepActions } from "../actions";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionDetailsStep({
 	step,

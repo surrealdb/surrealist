@@ -1,35 +1,35 @@
 import classes from "./style.module.scss";
 
 import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import { type FC, lazy, memo, Suspense } from "react";
+import { type FC, Suspense, lazy, memo } from "react";
+import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { VIEW_MODES } from "~/constants";
+import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewInfo, ViewMode } from "~/types";
 import { iconWarning } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
+import CloudView from "../cloud-panel/view";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
 import { DatabaseToolbar } from "./toolbar";
-import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
-import { useActiveView } from "~/hooks/routing";
-import { Redirect, Route, Switch } from "wouter";
-import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
-import CloudView from "../cloud-panel/view";
-import QueryView from "./views/query/QueryView";
-import ExplorerView from "./views/explorer/ExplorerView";
-import GraphqlView from "./views/graphql/GraphqlView";
-import DesignerView from "./views/designer/DesignerView";
 import AuthenticationView from "./views/authentication/AuthenticationView";
-import FunctionsView from "./views/functions/FunctionsView";
-import ModelsView from "./views/models/ModelsView";
+import DesignerView from "./views/designer/DesignerView";
 import DocumentationView from "./views/documentation/DocumentationView";
+import ExplorerView from "./views/explorer/ExplorerView";
+import FunctionsView from "./views/functions/FunctionsView";
+import GraphqlView from "./views/graphql/GraphqlView";
+import ModelsView from "./views/models/ModelsView";
+import QueryView from "./views/query/QueryView";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 

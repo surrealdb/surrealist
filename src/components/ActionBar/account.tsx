@@ -14,6 +14,7 @@ import {
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/cloud-panel/api";
@@ -26,7 +27,6 @@ import { iconAccount, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { useLocation } from "wouter";
 
 interface AccountFormProps {
 	onClose(): void;

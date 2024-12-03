@@ -20,15 +20,15 @@ import { Text } from "@mantine/core";
 import { closeAllModals } from "@mantine/modals";
 import clsx from "clsx";
 import type { PropsWithChildren } from "react";
+import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
 import { useIsAuthenticated, useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { openAccountSupport } from "~/screens/cloud-panel/modals/account-support";
 import { useConfigStore } from "~/stores/config";
+import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { dispatchIntent } from "~/util/intents";
-import { useLocation } from "wouter";
 
 export interface HelpCenterProps {
 	onBody?: boolean;
