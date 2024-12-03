@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useLocation } from "wouter";
 import { useCloudRoute } from "~/hooks/cloud";
 import { useSearchParams } from "~/hooks/routing";
@@ -17,10 +17,11 @@ export function useAppRouter() {
 	// Restore active resource
 	useLayoutEffect(() => {
 		if (path === "/") {
-			setPath(resource ?? "/query");
+			console.log("resource", resource || "/query");
+			setPath(resource || "/query");
+		} else {
+			setActiveResource(path);
 		}
-
-		setActiveResource(path);
 	}, [path, resource, setActiveResource]);
 
 	// Handle intent requests
