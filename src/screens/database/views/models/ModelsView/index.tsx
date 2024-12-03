@@ -7,10 +7,10 @@ import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { ML_SUPPORTED } from "~/constants";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useViewEffect } from "~/hooks/view";
 import { composeHttpConnection } from "~/screens/database/connection/connection";
 import type { SchemaModel } from "~/types";
 import { connectionUri } from "~/util/helpers";
@@ -114,7 +114,7 @@ export function ModelsView() {
 		[authentication, lastDatabase, lastNamespace],
 	);
 
-	useViewEffect("models", () => {
+	useViewFocus("models", () => {
 		syncConnectionSchema();
 	});
 

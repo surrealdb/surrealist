@@ -10,7 +10,7 @@ export function useCloudInstancesQuery(organization?: string) {
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQuery({
-		queryKey: ["cloud", "databases", organization],
+		queryKey: ["cloud", "instances", organization],
 		refetchInterval: 15_000,
 		enabled: authState === "authenticated",
 		queryFn: async () => {

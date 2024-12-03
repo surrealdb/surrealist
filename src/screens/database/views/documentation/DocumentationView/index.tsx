@@ -1,7 +1,7 @@
 import { Group } from "@mantine/core";
 import { memo, useMemo, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
-import { useViewEffect } from "~/hooks/view";
+import { useViewFocus } from "~/hooks/routing";
 import { buildDocumentation } from "~/screens/database/docs";
 import { useDatabaseStore } from "~/stores/database";
 import { syncConnectionSchema } from "~/util/schema";
@@ -20,7 +20,7 @@ export function DocumentationView() {
 
 	const docs = useMemo(() => (schema ? buildDocumentation(schema) : []), [schema]);
 
-	useViewEffect("documentation", () => {
+	useViewFocus("documentation", () => {
 		syncConnectionSchema();
 	});
 

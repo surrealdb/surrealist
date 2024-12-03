@@ -1,3 +1,13 @@
 .scroll-area :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
 }
+
+.table {
+	tr {
+		border-bottom: none;
+	}
+
+	td {
+		padding-block: 4px !important;
+	}
+}

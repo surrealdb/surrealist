@@ -4,12 +4,13 @@ import { useCloudRoute } from "~/hooks/cloud";
 import { useSearchParams } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { handleIntentRequest } from "~/util/intents";
+import { REFERRER_KEY } from "~/util/storage";
 
 export function useAppRouter() {
 	const { setActiveResource, setActiveScreen } = useConfigStore.getState();
 
 	const [path, setPath] = useLocation();
-	const { intent } = useSearchParams();
+	const { intent, referrer } = useSearchParams();
 	const isCloud = useCloudRoute();
 	const resource = useConfigStore((s) => s.activeResource);
 	const screen = useConfigStore((s) => s.activeScreen);
@@ -38,4 +39,11 @@ export function useAppRouter() {
 			setActiveScreen("database");
 		}
 	}, [screen, isCloud, setActiveScreen]);
+
+	// Cloud referral codes
+	useLayoutEffect(() => {
+		if (referrer) {
+			sessionStorage.setItem(REFERRER_KEY, referrer);
+		}
+	}, [referrer]);
 }

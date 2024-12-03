@@ -281,7 +281,7 @@ export function InstancesPage() {
 								instance to get started with Surreal Cloud.
 							</Text>
 							<Group>
-								<Link href="https://surrealdb.com/docs/cloud">
+								<Link href="https://surrealdb.com/docs/cloud/getting-started/create-an-instance">
 									<Button
 										mt="xl"
 										color="slate"

@@ -31,6 +31,7 @@ import {
 	iconTune,
 } from "~/util/icons";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -85,6 +86,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const inactive = value.state === "inactive";
 	const regions = useCloudStore((s) => s.regions);
 	const regionName = regions.find((r) => r.slug === value.region)?.description ?? value.region;
+	const client = useQueryClient();
 
 	const handleDelete = useConfirmation({
 		message:
@@ -110,6 +112,10 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 							is being deleted
 						</>
 					),
+				});
+
+				client.invalidateQueries({
+					queryKey: ["cloud", "instances"],
 				});
 			} catch (err: any) {
 				showError({

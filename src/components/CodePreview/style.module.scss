@@ -3,5 +3,7 @@
 		margin: 0;
 		background-color: unset;
 		tab-size: 4ch;
+		user-select: text;
+		-webkit-user-select: text;
 	}
 }

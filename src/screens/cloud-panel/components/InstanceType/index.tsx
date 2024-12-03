@@ -2,6 +2,7 @@ import { Box, Group, Stack, Table, Text } from "@mantine/core";
 import { capitalize } from "radash";
 import { Icon } from "~/components/Icon";
 import type { CloudInstanceType } from "~/types";
+import { formatMemory } from "~/util/helpers";
 import { iconDollar, iconHammer, iconMemory, iconQuery, iconStar, iconWarning } from "~/util/icons";
 import { Tile } from "../Tile";
 
@@ -88,12 +89,4 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 			</Group>
 		</Tile>
 	);
-}
-
-function formatMemory(amountInMB: number) {
-	if (amountInMB < 1000) {
-		return `${amountInMB} MB`;
-	}
-
-	return `${amountInMB / 1024} GB`;
 }

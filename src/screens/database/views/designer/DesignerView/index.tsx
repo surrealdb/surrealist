@@ -6,10 +6,9 @@ import { Icon } from "~/components/Icon";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useIntent } from "~/hooks/routing";
+import { useIntent, useViewFocus } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
@@ -59,7 +58,7 @@ export function DesignerView() {
 		design(table);
 	});
 
-	useViewEffect("designer", () => {
+	useViewFocus("designer", () => {
 		syncConnectionSchema();
 	});
 

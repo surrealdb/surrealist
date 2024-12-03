@@ -12,10 +12,9 @@ import { GQL_SUPPORTED } from "~/constants";
 import { executeGraphqlEditorQuery } from "~/editor/query";
 import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
-import { useIntent } from "~/hooks/routing";
+import { useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useViewEffect } from "~/hooks/view";
 import { checkGraphqlSupport } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
@@ -66,7 +65,7 @@ export function GraphqlView() {
 
 	const isValid = queryValid && variablesValid && isEnabled;
 
-	useViewEffect(
+	useViewFocus(
 		"graphql",
 		() => {
 			if (isAvailable && isConnected) {

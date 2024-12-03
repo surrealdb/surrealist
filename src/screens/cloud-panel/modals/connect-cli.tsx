@@ -48,7 +48,7 @@ function ConnectCliModal({ instance }: ConnectCliModalProps) {
 		<>
 			<Text size="lg">
 				In order to connect to this instance, make sure you have the{" "}
-				<Link href="https://surrealdb.com/docs/surrealdb/installation">SurrealDB CLI</Link>{" "}
+				<Link href="https://surrealdb.com/docs/surrealdb/cli">SurrealDB CLI</Link>{" "}
 				installed. Once it is installed, simply open the terminal of your choice and run the
 				following command to connect to your Surreal Cloud instance.
 			</Text>

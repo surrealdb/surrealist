@@ -462,3 +462,14 @@ export function optional<T>(value: T | T[] | false | undefined | null): T[] {
 export function __throw(error: Error | string): never {
 	throw typeof error === "string" ? new Error(error) : error;
 }
+
+/**
+ * Format the given memory amount in MB to a human readable string
+ */
+export function formatMemory(amountInMB: number) {
+	if (amountInMB < 1000) {
+		return `${amountInMB} MB`;
+	}
+
+	return `${amountInMB / 1024} GB`;
+}

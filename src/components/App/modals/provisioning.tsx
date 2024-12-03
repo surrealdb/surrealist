@@ -30,7 +30,7 @@ export function ProvisioningDialog() {
 						finishProvisioning();
 
 						client.invalidateQueries({
-							queryKey: ["cloud", "databases"],
+							queryKey: ["cloud", "instances"],
 						});
 
 						await sleep(1000);

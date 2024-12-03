@@ -11,10 +11,10 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useViewEffect } from "~/hooks/view";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { SchemaFunction } from "~/types";
@@ -157,7 +157,7 @@ export function FunctionsView() {
 		},
 	});
 
-	useViewEffect("functions", () => {
+	useViewFocus("functions", () => {
 		syncConnectionSchema();
 	});
 
