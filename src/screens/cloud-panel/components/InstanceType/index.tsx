@@ -4,6 +4,7 @@ import { Icon } from "~/components/Icon";
 import type { CloudInstanceType } from "~/types";
 import { iconDollar, iconHammer, iconMemory, iconQuery, iconStar, iconWarning } from "~/util/icons";
 import { Tile } from "../Tile";
+import { formatMemory } from "~/util/helpers";
 
 export interface InstanceTypeProps {
 	type: CloudInstanceType;
@@ -88,12 +89,4 @@ export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: 
 			</Group>
 		</Tile>
 	);
-}
-
-function formatMemory(amountInMB: number) {
-	if (amountInMB < 1000) {
-		return `${amountInMB} MB`;
-	}
-
-	return `${amountInMB / 1024} GB`;
 }

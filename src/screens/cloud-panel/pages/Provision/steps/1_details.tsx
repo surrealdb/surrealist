@@ -14,7 +14,6 @@ export function ProvisionDetailsStep({
 	onPrevious,
 	onContinue,
 }: ProvisionStepProps) {
-	const organizations = useCloudStore((s) => s.organizations);
 	const versions = useAvailableInstanceVersions();
 
 	const versionList = versions.map((ver) => ({
@@ -47,8 +46,8 @@ export function ProvisionDetailsStep({
 			<PrimaryTitle>Instance details</PrimaryTitle>
 
 			<Text mb="lg">
-				Please enter a name for your new instance, and select the organization you would
-				like to create it under.
+				Please enter a name for your new instance, and the version of SurrealDB you would
+				like to use.
 			</Text>
 
 			<Grid
