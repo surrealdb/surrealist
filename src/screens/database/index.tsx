@@ -11,7 +11,7 @@ import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
-import type { ViewMode } from "~/types";
+import type { ViewInfo, ViewMode } from "~/types";
 import { iconWarning } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { SelectDatabase } from "./components/SelectDatabase";
@@ -21,9 +21,27 @@ import { LazyRoute } from "~/components/LazyRoute";
 import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useActiveView } from "~/hooks/routing";
 import { Redirect, Route, Switch } from "wouter";
+import { createHtmlPortalNode, HtmlPortalNode } from "react-reverse-portal";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 const CloudPanel = lazy(() => import("../cloud-panel/view"));
+
+const PORTAL_OPTIONS = {
+	attributes: {
+		style: "height: 100%; display: flex; flex-direction: column;",
+	},
+};
+
+const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
+	query: createHtmlPortalNode(PORTAL_OPTIONS),
+	explorer: createHtmlPortalNode(PORTAL_OPTIONS),
+	graphql: createHtmlPortalNode(PORTAL_OPTIONS),
+	designer: createHtmlPortalNode(PORTAL_OPTIONS),
+	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
+	functions: createHtmlPortalNode(PORTAL_OPTIONS),
+	models: createHtmlPortalNode(PORTAL_OPTIONS),
+	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
+};
 
 const VIEW_COMPONENTS: Record<ViewMode, FC> = {
 	query: lazy(() => import("./views/query/QueryView")),
@@ -116,51 +134,28 @@ export function DatabaseScreen() {
 						flex={1}
 						pos="relative"
 					>
-						{/* {requestDatabase && (
-							<Center flex={1}>
-								<Paper
-									radius="md"
-									p="xl"
-									w={500}
-								>
-									<PrimaryTitle>Before you continue...</PrimaryTitle>
-									<Text mt="md">
-										Please select a namespace and database before accessing the{" "}
-										{activeView?.name} view. You can use the buttons below to
-										choose an existing namespace and database, or create new
-										ones.
-									</Text>
-									<SelectDatabase
-										withNamespace
-										withDatabase
-										mt="xl"
-									/>
-									{!isConnected && (
-										<Alert
-											mt="xl"
-											color="orange"
-											icon={<Icon path={iconWarning} />}
-										>
-											You must be connected before selecting a namespace and
-											database
-										</Alert>
-									)}
-								</Paper>
-							</Center>
-						)} */}
-
 						<Switch>
-							{Object.values(VIEW_MODES).map((mode) => (
-								<LazyRoute
-									key={mode.id}
-									path={`/${mode.id}`}
-									disabled={mode.require === "database" && requestDatabase}
-									component={VIEW_COMPONENTS[mode.id]}
-								/>
-							))}
+							{Object.values(VIEW_MODES).map(
+								(mode) => (
+									// requestDatabase ? (
+									// 	<DatabaseSelection
+									// 		key={mode.id}
+									// 		info={mode}
+									// 	/>
+									// ) : (
+									<LazyRoute
+										id={mode.id}
+										key={mode.id}
+										path={`/${mode.id}`}
+										component={VIEW_COMPONENTS[mode.id]}
+									/>
+								),
+								// ),
+							)}
 
 							{cloudEnabled && (
 								<LazyRoute
+									id="cloud"
 									path="/cloud/*?"
 									component={CloudPanel}
 								/>
@@ -170,6 +165,7 @@ export function DatabaseScreen() {
 								<Redirect to="/query" />
 							</Route>
 						</Switch>
+						</PortalManagerProvider>
 					</Stack>
 				</Box>
 			</Flex>
@@ -185,5 +181,44 @@ export function DatabaseScreen() {
 				/>
 			</Drawer>
 		</div>
+	);
+}
+
+interface DatabaseSelectionProps {
+	info: ViewInfo;
+}
+
+function DatabaseSelection({ info }: DatabaseSelectionProps) {
+	const isConnected = useIsConnected();
+
+	return (
+		<Center flex={1}>
+			<Paper
+				radius="md"
+				p="xl"
+				w={500}
+			>
+				<PrimaryTitle>Before you continue...</PrimaryTitle>
+				<Text mt="md">
+					Please select a namespace and database before accessing the {info?.name} view.
+					You can use the buttons below to choose an existing namespace and database, or
+					create new ones.
+				</Text>
+				<SelectDatabase
+					withNamespace
+					withDatabase
+					mt="xl"
+				/>
+				{!isConnected && (
+					<Alert
+						mt="xl"
+						color="orange"
+						icon={<Icon path={iconWarning} />}
+					>
+						You must be connected before selecting a namespace and database
+					</Alert>
+				)}
+			</Paper>
+		</Center>
 	);
 }

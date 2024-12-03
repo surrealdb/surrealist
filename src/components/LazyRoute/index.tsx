@@ -1,25 +1,19 @@
 import { useDisclosure } from "@mantine/hooks";
-import { type FC, Suspense, useLayoutEffect, useState } from "react";
-import { createHtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
+import { type FC, Suspense, useLayoutEffect } from "react";
+import { InPortal, OutPortal } from "react-reverse-portal";
 import { type PathPattern, Route } from "wouter";
-
-const PORTAL_OPTIONS = {
-	attributes: {
-		style: "height: 100%; display: flex; flex-direction: column;",
-	},
-};
+import { usePortal } from "~/providers/PortalManager";
 
 export interface LazyRouteProps {
+	id: string;
 	path: PathPattern;
-	disabled?: boolean;
 	component: FC;
 }
 
-export function LazyRoute({ path, disabled, component }: LazyRouteProps) {
-	const [node] = useState(() => createHtmlPortalNode(PORTAL_OPTIONS));
+export function LazyRoute({ id, path, component }: LazyRouteProps) {
 	const [isLoaded, loadedHandle] = useDisclosure();
-
 	const Component = component;
+	const node = usePortal(id, <Component />);
 
 	return (
 		<>

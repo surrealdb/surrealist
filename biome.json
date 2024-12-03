@@ -14,7 +14,8 @@
 				"noArrayIndexKey": "off"
 			},
 			"style": {
-				"noUnusedTemplateLiteral": "off"
+				"noUnusedTemplateLiteral": "off",
+				"useImportType": "off"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": {

@@ -13,7 +13,7 @@ import { useEffect, useMemo } from "react";
 export function useActiveView() {
 	const [location, navigate] = useLocation();
 
-	const activeView = Object.values(VIEW_MODES).find((view) => location.startsWith(`/${view}`));
+	const activeView = Object.values(VIEW_MODES).find((info) => location.startsWith(`/${info.id}`));
 	const setActiveView = useStable((view: ViewMode) => {
 		navigate(`/${view}`);
 	});
