@@ -2,6 +2,7 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
+	Alert,
 	Badge,
 	Box,
 	Button,
@@ -26,7 +27,6 @@ import {
 	iconPower,
 	iconQuery,
 	iconServer,
-	iconSurrealist,
 	iconTag,
 	iconTune,
 } from "~/util/icons";
@@ -89,8 +89,21 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const client = useQueryClient();
 
 	const handleDelete = useConfirmation({
-		message:
-			"You are about to delete this instance. This will cause all associated resources to be destroyed",
+		message: (
+			<Stack>
+				<Text>
+					You are about to delete this instance. This will cause all associated resources
+					to be destroyed
+				</Text>
+				<Alert
+					title="Important"
+					color="red"
+				>
+					Data stored within this instance will be permanently deleted and cannot be
+					recovered.
+				</Alert>
+			</Stack>
+		),
 		confirmText: "Delete",
 		title: "Delete instance",
 		onConfirm: async () => {
