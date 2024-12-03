@@ -14,7 +14,6 @@ import { usePanelMinSize } from "~/hooks/panels";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useViewEffect } from "~/hooks/view";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/database/connection/connection";
 import type { SchemaFunction } from "~/types";
@@ -24,6 +23,7 @@ import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { EditorPanel } from "../EditorPanel";
 import { FunctionsPanel } from "../FunctionsPanel";
+import { useViewFocus } from "~/hooks/routing";
 
 const FunctionsPanelLazy = memo(FunctionsPanel);
 const EditorPanelLazy = memo(EditorPanel);
@@ -157,7 +157,7 @@ export function FunctionsView() {
 		},
 	});
 
-	useViewEffect("functions", () => {
+	useViewFocus("functions", () => {
 		syncConnectionSchema();
 	});
 

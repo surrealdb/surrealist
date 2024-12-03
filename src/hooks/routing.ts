@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import { useLocation, useSearch } from "wouter";
 import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
 import type { CloudPage, ViewMode } from "~/types";
@@ -62,4 +62,41 @@ export function useSearchParams() {
 	const search = useSearch();
 
 	return useMemo(() => Object.fromEntries(new URLSearchParams(search)), [search]);
+}
+
+/**
+ * Accepts a function to invoke when the specified view
+ * is activated.
+ *
+ * @param view The view to listen for
+ * @param callback The function to invoke
+ */
+export function useViewFocus(view: ViewMode, callback: () => void, deps: any[] = []) {
+	const [activeView] = useActiveView();
+	const stable = useStable(callback);
+
+	// NOTE - should this be useLayoutEffect?
+	useEffect(() => {
+		if (activeView?.id === view) {
+			stable();
+		}
+	}, [activeView, view, ...deps]);
+}
+
+/**
+ * Accepts a function to invoke when the specified cloud page
+ * is activated.
+ *
+ * @param page The cloud page to listen for
+ * @param callback The function to invoke
+ */
+export function useCloudPageFocus(page: CloudPage, callback: () => void, deps: any[] = []) {
+	const [activePage] = useActiveCloudPage();
+	const stable = useStable(callback);
+
+	useLayoutEffect(() => {
+		if (activePage?.id === page) {
+			stable();
+		}
+	}, [activePage, page, ...deps]);
 }

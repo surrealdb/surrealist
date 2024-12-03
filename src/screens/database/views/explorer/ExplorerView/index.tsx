@@ -21,9 +21,8 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useIntent } from "~/hooks/routing";
+import { useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useViewEffect } from "~/hooks/view";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/database/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
@@ -91,7 +90,7 @@ export function ExplorerView() {
 		setActiveTable(table);
 	});
 
-	useViewEffect("explorer", () => {
+	useViewFocus("explorer", () => {
 		syncConnectionSchema();
 	});
 

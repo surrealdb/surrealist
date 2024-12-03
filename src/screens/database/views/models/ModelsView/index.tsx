@@ -10,7 +10,6 @@ import { useActiveConnection, useIsConnected } from "~/hooks/connection";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useViewEffect } from "~/hooks/view";
 import { composeHttpConnection } from "~/screens/database/connection/connection";
 import type { SchemaModel } from "~/types";
 import { connectionUri } from "~/util/helpers";
@@ -18,6 +17,7 @@ import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
+import { useViewFocus } from "~/hooks/routing";
 
 const SURML_FILTERS = [
 	{
@@ -114,7 +114,7 @@ export function ModelsView() {
 		[authentication, lastDatabase, lastNamespace],
 	);
 
-	useViewEffect("models", () => {
+	useViewFocus("models", () => {
 		syncConnectionSchema();
 	});
 

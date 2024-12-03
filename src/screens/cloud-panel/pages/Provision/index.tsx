@@ -4,7 +4,7 @@ import { Box, ScrollArea } from "@mantine/core";
 import { type FC, useState } from "react";
 import { useImmer } from "use-immer";
 import { useOrganization } from "~/hooks/cloud";
-import { useActiveCloudPage } from "~/hooks/routing";
+import { useActiveCloudPage, useCloudPageFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -18,6 +18,15 @@ import { ProvisionInstanceTypesStep } from "./steps/4_type";
 import { ProvisionComputeUnitsStep } from "./steps/5_units";
 import { ProvisionFinalizeStep } from "./steps/6_finalize";
 import type { ProvisionConfig, ProvisionStepProps } from "./types";
+
+const DEFAULT: ProvisionConfig = {
+	name: "",
+	region: "",
+	category: "",
+	type: "",
+	units: 1,
+	version: "",
+};
 
 const PROVISION_STEPS = [
 	ProvisionDetailsStep,
@@ -34,14 +43,7 @@ export function ProvisionPage() {
 
 	const organization = useOrganization();
 	const [step, setStep] = useState(0);
-	const [details, setDetails] = useImmer<ProvisionConfig>({
-		name: "",
-		region: "",
-		category: "",
-		type: "",
-		units: 1,
-		version: "",
-	});
+	const [details, setDetails] = useImmer(DEFAULT);
 
 	const provisionInstance = useStable(async () => {
 		try {
@@ -89,6 +91,11 @@ export function ProvisionPage() {
 		}
 
 		setStep(to ?? step + 1);
+	});
+
+	useCloudPageFocus("provision", () => {
+		setDetails(DEFAULT);
+		setStep(0);
 	});
 
 	const ProvisionStep = PROVISION_STEPS[step];

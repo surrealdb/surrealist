@@ -6,9 +6,9 @@ import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useActiveConnection } from "~/hooks/connection";
 import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
-import { useViewEffect } from "~/hooks/view";
 import { syncConnectionSchema } from "~/util/schema";
 import { LevelPanel } from "../LevelPanel";
+import { useViewFocus } from "~/hooks/routing";
 
 const LevelPanelLazy = memo(LevelPanel);
 
@@ -29,7 +29,7 @@ export function AuthenticationView() {
 		[kvSchema.accesses, nsSchema.accesses, dbSchema.accesses],
 	);
 
-	useViewEffect("authentication", () => {
+	useViewFocus("authentication", () => {
 		syncConnectionSchema();
 	});
 
@@ -54,10 +54,13 @@ export function AuthenticationView() {
 							icon={iconFolderSecure}
 							users={users}
 							accesses={accesses}
-							disabled={!lastNamespace && {
-								message: "You need to select a namespace before viewing namespace authentication",
-								selector: { withNamespace: true }
-							}}
+							disabled={
+								!lastNamespace && {
+									message:
+										"You need to select a namespace before viewing namespace authentication",
+									selector: { withNamespace: true },
+								}
+							}
 						/>
 					</Panel>
 					<PanelDragger />
@@ -68,10 +71,13 @@ export function AuthenticationView() {
 							icon={iconDatabaseSecure}
 							users={users}
 							accesses={accesses}
-							disabled={!lastDatabase && {
-								message: "You need to select a database before viewing database authentication",
-								selector: { withDatabase: true }
-							}}
+							disabled={
+								!lastDatabase && {
+									message:
+										"You need to select a database before viewing database authentication",
+									selector: { withDatabase: true },
+								}
+							}
 						/>
 					</Panel>
 				</PanelGroup>

@@ -1,12 +1,12 @@
 import { Group } from "@mantine/core";
 import { memo, useMemo, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
-import { useViewEffect } from "~/hooks/view";
 import { buildDocumentation } from "~/screens/database/docs";
 import { useDatabaseStore } from "~/stores/database";
 import { syncConnectionSchema } from "~/util/schema";
 import { ArticlePane } from "../ArticlePane";
 import { TocPane } from "../TopicsPane";
+import { useViewFocus } from "~/hooks/routing";
 
 const ArticlePaneLazy = memo(ArticlePane);
 const TocPaneLazy = memo(TocPane);
@@ -20,7 +20,7 @@ export function DocumentationView() {
 
 	const docs = useMemo(() => (schema ? buildDocumentation(schema) : []), [schema]);
 
-	useViewEffect("documentation", () => {
+	useViewFocus("documentation", () => {
 		syncConnectionSchema();
 	});
 
