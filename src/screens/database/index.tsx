@@ -141,6 +141,8 @@ export function DatabaseScreen() {
 						pos="relative"
 					>
 						<Switch>
+							<Route path="/" />
+
 							{Object.values(VIEW_MODES).map((mode) =>
 								requestDatabase ? (
 									<DatabaseSelection
