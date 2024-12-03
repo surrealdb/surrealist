@@ -2,14 +2,14 @@ import classes from "../style.module.scss";
 
 import { Divider, Paper, Stack, Table } from "@mantine/core";
 import { useMemo } from "react";
+import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
+import { formatMemory } from "~/util/helpers";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
-import { formatMemory } from "~/util/helpers";
-import { Label } from "~/components/Label";
 
 export function ProvisionFinalizeStep({
 	step,
