@@ -31,6 +31,7 @@ import {
 	iconTune,
 } from "~/util/icons";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -41,7 +42,6 @@ import { fetchAPI } from "../../api";
 import { openCapabilitiesModal } from "./modals/capabilities";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
-import { useQueryClient } from "@tanstack/react-query";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 

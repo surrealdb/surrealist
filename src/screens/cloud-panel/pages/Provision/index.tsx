@@ -1,6 +1,7 @@
 import classes from "./style.module.scss";
 
 import { Box, ScrollArea } from "@mantine/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { type FC, useState } from "react";
 import { useImmer } from "use-immer";
 import { useOrganization } from "~/hooks/cloud";
@@ -18,7 +19,6 @@ import { ProvisionInstanceTypesStep } from "./steps/4_type";
 import { ProvisionComputeUnitsStep } from "./steps/5_units";
 import { ProvisionFinalizeStep } from "./steps/6_finalize";
 import type { ProvisionConfig, ProvisionStepProps } from "./types";
-import { useQueryClient } from "@tanstack/react-query";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
