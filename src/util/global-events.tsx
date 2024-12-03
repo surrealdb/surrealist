@@ -1,5 +1,4 @@
 import { createEventBus } from "~/hooks/event";
-import type { Intent, IntentType } from "./intents";
 import type { ViewMode } from "~/types";
 
 /**
@@ -20,7 +19,7 @@ export const RecordsChangedEvent = createEventBus();
 /**
  * Invoked when an interface intent is dispatched
  */
-export const IntentEvent = createEventBus<Intent<IntentType>>();
+export const IntentEvent = createEventBus();
 
 /**
  * Invoked when the interface should navigate to a new view

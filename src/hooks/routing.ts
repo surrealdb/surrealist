@@ -1,11 +1,11 @@
 import { IntentEvent } from "~/util/global-events";
-import type { IntentPayload, IntentType } from "~/util/intents";
+import { consumeIntent, type Intent, type IntentPayload, type IntentType } from "~/util/intents";
 import { useEventSubscription } from "./event";
 import type { CloudPage, ViewMode } from "~/types";
 import { useLocation, useSearch } from "wouter";
 import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
 import { useStable } from "./stable";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 /**
  * Returns the active view mode and a function to set it
@@ -45,11 +45,14 @@ export function useActiveCloudPage() {
  * @param handler The handler to invoke when the intent is dispatched
  */
 export function useIntent(type: IntentType, handler: (payload: IntentPayload) => void) {
-	useEventSubscription(IntentEvent, (event) => {
-		if (event.type === type) {
-			handler(event.payload || {});
+	const handleIntent = useStable(() => {
+		for (let intent = consumeIntent(type); intent; intent = consumeIntent(type)) {
+			handler(intent.payload || {});
 		}
 	});
+
+	useEffect(() => handleIntent(), []);
+	useEventSubscription(IntentEvent, handleIntent);
 }
 
 /**

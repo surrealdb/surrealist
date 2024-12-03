@@ -1,8 +1,8 @@
-import { useLayoutEffect } from "react";
-import { useLocation, useSearch } from "wouter";
+import { useEffect, useLayoutEffect } from "react";
+import { useLocation } from "wouter";
 import { useSearchParams } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
-import { dispatchIntent, handleIntentRequest } from "~/util/intents";
+import { handleIntentRequest } from "~/util/intents";
 
 export function useAppRouter() {
 	const { setActiveResource } = useConfigStore.getState();

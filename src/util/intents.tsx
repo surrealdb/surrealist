@@ -92,6 +92,8 @@ export function handleIntentRequest(intentStr: string) {
 	}
 }
 
+const INTENT_BUFFER: Intent<IntentType>[] = [];
+
 /**
  * Dispatch an intent with the specified payload
  *
@@ -101,9 +103,25 @@ export function handleIntentRequest(intentStr: string) {
 export function dispatchIntent(intent: IntentType, payload?: IntentPayload) {
 	const view = getIntentView(intent);
 
+	INTENT_BUFFER.push({ type: intent, payload });
+
 	if (view) {
 		NavigateViewEvent.dispatch(view);
 	}
 
-	IntentEvent.dispatch({ type: intent, payload });
+	IntentEvent.dispatch(null);
+}
+
+/**
+ * Consume the next intent of the specified type
+ */
+export function consumeIntent(type: IntentType) {
+	const index = INTENT_BUFFER.findIndex((intent) => intent.type === type);
+
+	if (index !== -1) {
+		const [intent] = INTENT_BUFFER.splice(index, 1);
+		return intent;
+	}
+
+	return null;
 }
