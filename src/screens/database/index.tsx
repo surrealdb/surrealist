@@ -22,6 +22,14 @@ import { useActiveView } from "~/hooks/routing";
 import { Redirect, Route, Switch } from "wouter";
 import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
 import CloudView from "../cloud-panel/view";
+import QueryView from "./views/query/QueryView";
+import ExplorerView from "./views/explorer/ExplorerView";
+import GraphqlView from "./views/graphql/GraphqlView";
+import DesignerView from "./views/designer/DesignerView";
+import AuthenticationView from "./views/authentication/AuthenticationView";
+import FunctionsView from "./views/functions/FunctionsView";
+import ModelsView from "./views/models/ModelsView";
+import DocumentationView from "./views/documentation/DocumentationView";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 
@@ -43,14 +51,14 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 };
 
 const VIEW_COMPONENTS: Record<ViewMode, FC> = {
-	query: lazy(() => import("./views/query/QueryView")),
-	explorer: lazy(() => import("./views/explorer/ExplorerView")),
-	graphql: lazy(() => import("./views/graphql/GraphqlView")),
-	designer: lazy(() => import("./views/designer/DesignerView")),
-	authentication: lazy(() => import("./views/authentication/AuthenticationView")),
-	functions: lazy(() => import("./views/functions/FunctionsView")),
-	models: lazy(() => import("./views/models/ModelsView")),
-	documentation: lazy(() => import("./views/documentation/DocumentationView")),
+	query: QueryView,
+	explorer: ExplorerView,
+	graphql: GraphqlView,
+	designer: DesignerView,
+	authentication: AuthenticationView,
+	functions: FunctionsView,
+	models: ModelsView,
+	documentation: DocumentationView,
 };
 
 export function DatabaseScreen() {
@@ -58,7 +66,6 @@ export function DatabaseScreen() {
 
 	const isLight = useIsLight();
 	const isCloud = useCloudRoute();
-	const isConnected = useIsConnected();
 	const cloudEnabled = useSurrealCloud();
 	const connection = useActiveConnection();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);

@@ -22,10 +22,18 @@ import { CLOUD_PAGES } from "~/constants";
 import { Redirect, Route, Switch, useLocation, useRoute } from "wouter";
 import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
 import { useSurrealCloud } from "~/hooks/cloud";
+import InstancesPage from "./pages/Instances";
+import MembersPage from "./pages/Members";
+import PlaceholderPage from "./pages/Placeholder";
+import BillingPage from "./pages/Billing";
+import SupportPage from "./pages/Support";
+import SettingsPage from "./pages/Settings";
+import ProvisionPage from "./pages/Provision";
+import ChatPage from "./pages/Chat";
 
 const PORTAL_OPTIONS = {
 	attributes: {
-		// style: "height: 100%; display: flex; flex-direction: column;",
+		style: "height: 100%; display: flex; flex-direction: column;",
 	},
 };
 
@@ -42,15 +50,15 @@ const PAGE_PORTALS: Record<CloudPage, HtmlPortalNode> = {
 };
 
 const PAGE_COMPONENTS: Record<CloudPage, FC> = {
-	instances: lazy(() => import("./pages/Instances")),
-	members: lazy(() => import("./pages/Members")),
-	audits: lazy(() => import("./pages/Placeholder")),
-	data: lazy(() => import("./pages/Placeholder")),
-	billing: lazy(() => import("./pages/Billing")),
-	support: lazy(() => import("./pages/Support")),
-	settings: lazy(() => import("./pages/Settings")),
-	provision: lazy(() => import("./pages/Provision")),
-	chat: lazy(() => import("./pages/Chat")),
+	instances: InstancesPage,
+	members: MembersPage,
+	audits: PlaceholderPage,
+	data: PlaceholderPage,
+	billing: BillingPage,
+	support: SupportPage,
+	settings: SettingsPage,
+	provision: ProvisionPage,
+	chat: ChatPage,
 };
 
 export function CloudView() {
@@ -79,15 +87,15 @@ export function CloudView() {
 
 	const hasAlert = alertQuery.data && Object.keys(alertQuery.data).length > 0;
 
-	// useLayoutEffect(() => {
-	// 	if (!isCloud) return;
+	useLayoutEffect(() => {
+		if (!isCloud) return;
 
-	// 	if (isCloudHome && (state === "authenticated" || state === "loading")) {
-	// 		navigate("/cloud/instances");
-	// 	} else if (!isCloudHome && state === "unauthenticated") {
-	// 		navigate("/cloud");
-	// 	}
-	// }, [isCloud, isCloudHome, state]);
+		if (isCloudHome && (state === "authenticated" || state === "loading")) {
+			navigate("/cloud/instances");
+		} else if (!isCloudHome && state === "unauthenticated") {
+			navigate("/cloud");
+		}
+	}, [isCloud, isCloudHome, state]);
 
 	return (
 		<>
@@ -205,11 +213,11 @@ export function CloudView() {
 								</Route>
 							))}
 
-							{/* {isCloud && (
+							{isCloud && (
 								<Route>
 									<Redirect to="/cloud/instances" />
 								</Route>
-							)} */}
+							)}
 						</Switch>
 					</Stack>
 
