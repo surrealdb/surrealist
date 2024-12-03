@@ -244,7 +244,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 				<Form onSubmit={createNamespace}>
 					<Stack>
 						<Text>
-							Namespaces represent a layer of separation for each organisation,
+							Namespaces represent a layer of separation for each organization,
 							department, or development team.
 						</Text>
 						<TextInput
