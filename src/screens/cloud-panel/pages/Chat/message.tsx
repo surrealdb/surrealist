@@ -16,8 +16,8 @@ import sidekickImg from "~/assets/images/sidekick.webp";
 
 import { marked } from "marked";
 import { Link } from "~/components/Link";
-import type { CloudChatMessage, CloudProfile } from "~/types";
 import { useIsLight } from "~/hooks/theme";
+import type { CloudChatMessage, CloudProfile } from "~/types";
 
 export interface ChatMessageProps {
 	message: CloudChatMessage;
