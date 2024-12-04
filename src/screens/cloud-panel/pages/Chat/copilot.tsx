@@ -69,6 +69,7 @@ export function useCopilotMutation() {
 				content: "",
 				sender: "assistant",
 				loading: true,
+				thinking: "Thinking...",
 			});
 
 			await readResponseStream(reader, (event, value) => {
@@ -121,6 +122,16 @@ export function useCopilotMutation() {
 								if (update_type === "complete") {
 									updateChatMessage(msgId, (msg) => {
 										msg.sources = update_data.output;
+									});
+								}
+								break;
+							}
+
+							// Thinking text
+							case "com.scoutos.copilot_thinking_text": {
+								if (update_type === "complete") {
+									updateChatMessage(msgId, (msg) => {
+										msg.thinking = update_data.output.trim();
 									});
 								}
 								break;

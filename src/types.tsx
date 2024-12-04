@@ -591,6 +591,7 @@ export interface CloudChatMessage {
 	content: string;
 	sender: "user" | "assistant";
 	loading: boolean;
+	thinking: string;
 	sources?: {
 		header: string;
 		links: {

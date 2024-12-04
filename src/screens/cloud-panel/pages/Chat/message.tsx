@@ -59,7 +59,7 @@ export function ChatMessage({
 						size="lg"
 						c="white"
 					>
-						Thinking...
+						{message.thinking}
 					</Text>
 				</Group>
 			) : (
