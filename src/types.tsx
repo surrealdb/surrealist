@@ -600,3 +600,12 @@ export interface CloudChatMessage {
 		}[];
 	};
 }
+
+export interface CloudMeasurement {
+	instance_id: string;
+	instance_type?: string;
+	compute_hours?: number;
+	disk_used_bytes?: number;
+	measured_period_start: string;
+	measured_period_end: string;
+}
