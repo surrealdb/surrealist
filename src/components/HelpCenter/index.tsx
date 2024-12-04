@@ -25,7 +25,6 @@ import { adapter } from "~/adapter";
 import { useIsAuthenticated, useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { openAccountSupport } from "~/screens/cloud-panel/modals/account-support";
-import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";

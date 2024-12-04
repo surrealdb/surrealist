@@ -15,6 +15,14 @@
 			border-color: var(--mantine-color-surreal-3);
 		}
 	}
+
+	&.on-body {
+		background-color: var(--mantine-color-slate-7);
+
+		@include light {
+			background-color: var(--mantine-color-slate-1);
+		}
+	}
 }
 
 .disabled {
