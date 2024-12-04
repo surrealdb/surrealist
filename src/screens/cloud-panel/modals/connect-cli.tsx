@@ -22,6 +22,7 @@ export function openConnectCli(instance: CloudInstance) {
 				<PrimaryTitle>Connect with the CLI</PrimaryTitle>
 			</Group>
 		),
+		withCloseButton: true,
 		children: <ConnectCliModal instance={instance} />,
 	});
 }

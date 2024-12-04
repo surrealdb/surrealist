@@ -23,6 +23,7 @@ export function openConnectSdk(instance: CloudInstance) {
 				<PrimaryTitle>Connect with an SDK</PrimaryTitle>
 			</Group>
 		),
+		withCloseButton: true,
 		children: <ConnectSdkModal instance={instance} />,
 	});
 }
