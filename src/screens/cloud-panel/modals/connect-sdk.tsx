@@ -73,16 +73,13 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 			`,
 			py: `
 				# Open a connection
-				async with Surreal("wss://${instance.host}") as db:
+				async with Surreal(url="wss://${instance.host}") as db:
 
 					# Select a namespace and database
 					await db.use("${namespace}", "${database}")
 
 					# Authenticate
-					await db.signin({
-						"user": "${username}",
-						"pass": "${password}"
-					})
+					await db.sign_in(username="${username}", password="${password}")
 			`,
 			php: `
 				$db = new \\Surreal\\Surreal();
