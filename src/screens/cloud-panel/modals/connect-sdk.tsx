@@ -8,6 +8,7 @@ import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";
+import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
 import { iconAPI, iconAccount, iconDatabase } from "~/util/icons";
 
@@ -33,6 +34,7 @@ interface ConnectSdkModalProps {
 }
 
 function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
+	const isLight = useIsLight();
 	const [lang, setLang] = useState<CodeLang>("rust");
 
 	const [namespace, setNamespace] = useInputState("");
@@ -172,7 +174,7 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 
 				<SimpleGrid cols={2}>
 					<Paper
-						bg="slate.9"
+						bg={isLight ? "slate.0" : "slate.9"}
 						p="md"
 					>
 						<Group>
@@ -204,7 +206,7 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 						</SimpleGrid>
 					</Paper>
 					<Paper
-						bg="slate.9"
+						bg={isLight ? "slate.0" : "slate.9"}
 						p="md"
 					>
 						<Group>

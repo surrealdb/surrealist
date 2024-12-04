@@ -15,6 +15,7 @@ import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useIsLight } from "~/hooks/theme";
 import { useCloudUsageQuery } from "~/screens/cloud-panel/hooks/usage";
 import type { CloudInstance } from "~/types";
 import { iconDatabase, iconQuery } from "~/util/icons";
@@ -37,6 +38,7 @@ interface InstanceUsageModalProps {
 }
 
 function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
+	const isLight = useIsLight();
 	const { data, isPending } = useCloudUsageQuery(instance);
 
 	const totalCompute = useMemo(() => {
@@ -102,14 +104,14 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 			</Paper> */}
 
 			<Paper
-				bg="slate.9"
 				p="xl"
+				bg={isLight ? "slate.0" : "slate.9"}
 				style={{ userSelect: "text", WebkitUserSelect: "text" }}
 			>
 				<Group>
 					<ThemeIcon
 						size="xl"
-						color="surreal"
+						color={isLight ? "surreal.6" : "surreal"}
 						variant="light"
 					>
 						<Icon
