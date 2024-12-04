@@ -79,8 +79,8 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 				/>
 
 				<HelpTile
-					title="Issue"
-					description="Report bugs or problems by creating a GitHub issue"
+					title="Issue or Feature Request"
+					description="Report bugs or submit a feature request by creating a GitHub issue"
 					icon={iconBug}
 					onClick={() =>
 						adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
