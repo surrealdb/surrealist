@@ -34,7 +34,7 @@ export function ProvisionComputeUnitsStep({
 				color="blue"
 				title="Coming soon"
 			>
-				Customising compute nodes will be available soon
+				Compute node customisation will be available soon
 			</Alert>
 
 			{/* {hasSingleCompute ? (
