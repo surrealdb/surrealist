@@ -1,4 +1,4 @@
-import { Box, Divider, Group, Paper, Text, ThemeIcon } from "@mantine/core";
+import { Box, Divider, Group, Loader, Paper, Skeleton, Text, ThemeIcon } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { useMemo } from "react";
@@ -27,7 +27,7 @@ interface InstanceUsageModalProps {
 }
 
 function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
-	const { data } = useCloudUsageQuery(instance);
+	const { data, isPending } = useCloudUsageQuery(instance);
 
 	const totalCompute = useMemo(() => {
 		if (!data) return 0;
@@ -72,41 +72,52 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 						</Text>
 						<Text fz="sm">Since the current billing period</Text>
 					</Box>
-					<Text
-						c="bright"
-						fw={700}
-						fz={22}
-					>
-						{totalCompute}h
-					</Text>
+					{isPending ? (
+						<Loader
+							size="sm"
+							mr="xs"
+						/>
+					) : (
+						<Text
+							c="bright"
+							fw={700}
+							fz={22}
+						>
+							{totalCompute}h
+						</Text>
+					)}
 				</Group>
 
-				<Divider
-					my="xl"
-					color="slate.6"
-				/>
+				{computeHistory.length > 0 && (
+					<>
+						<Divider
+							my="xl"
+							color="slate.6"
+						/>
 
-				<Label>Instance types</Label>
+						<Label>Instance types</Label>
 
-				{computeHistory.map(({ compute_hours, instance_type }) => (
-					<Group key={instance_type}>
-						<Text
-							c="bright"
-							fw={500}
-							fz="lg"
-							flex={1}
-						>
-							{instance_type}
-						</Text>
-						<Text
-							c="bright"
-							fw={600}
-							fz="xl"
-						>
-							{compute_hours}h
-						</Text>
-					</Group>
-				))}
+						{computeHistory.map(({ compute_hours, instance_type }) => (
+							<Group key={instance_type}>
+								<Text
+									c="bright"
+									fw={500}
+									fz="lg"
+									flex={1}
+								>
+									{instance_type}
+								</Text>
+								<Text
+									c="bright"
+									fw={600}
+									fz="xl"
+								>
+									{compute_hours}h
+								</Text>
+							</Group>
+						))}
+					</>
+				)}
 			</Paper>
 
 			{/* <Paper
