@@ -17,8 +17,7 @@ export function useAppRouter() {
 
 	// Restore active resource
 	useLayoutEffect(() => {
-		if (path === "/") {
-			console.log("resource", resource || "/query");
+		if (path === "/" && resource !== "/") {
 			setPath(resource || "/query");
 		} else {
 			setActiveResource(path);
