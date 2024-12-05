@@ -30,6 +30,7 @@ import { isProduction } from "../util/environment";
 		posthog.init(import.meta.env.POSTHOG_KEY, {
 			api_host: import.meta.env.POSTHOG_URL,
 			autocapture: false,
+			capture_pageview: false,
 		});
 	}
 
