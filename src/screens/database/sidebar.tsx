@@ -12,7 +12,7 @@ import { Spacer } from "~/components/Spacer";
 import { VIEW_MODES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useSurrealCloud } from "~/hooks/cloud";
+import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useConnection } from "~/hooks/connection";
 import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -49,6 +49,7 @@ export function DatabaseSidebar({
 	const connection = useConnection();
 	const showCloud = useSurrealCloud();
 	const [, navigate] = useLocation();
+	const cloudActive = useCloudRoute();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
@@ -172,6 +173,7 @@ export function DatabaseSidebar({
 								</Group>
 							}
 							icon={iconCloud}
+							isActive={cloudActive}
 							path="cloud"
 							withTooltip={sidebarMode === "compact"}
 							onClick={() => setLocation("/cloud")}
