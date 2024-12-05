@@ -99,6 +99,23 @@ export function CloudSidebar(props: BoxProps) {
 			{...props}
 		>
 			<Group wrap="nowrap">
+				<Tooltip
+					label="Manage organization"
+					position="bottom"
+				>
+					<ActionIcon
+						size={38}
+						hiddenFrom="sm"
+						variant="gradient"
+						className={classes.openNavigation}
+						onClick={navModalHandle.open}
+					>
+						<Icon
+							path={iconViewGrid}
+							size="lg"
+						/>
+					</ActionIcon>
+				</Tooltip>
 				<Popover
 					width="target"
 					position="bottom-start"
@@ -153,23 +170,6 @@ export function CloudSidebar(props: BoxProps) {
 						</Text>
 					</Popover.Dropdown>
 				</Popover>
-				<Tooltip
-					label="Manage organization"
-					position="bottom"
-				>
-					<ActionIcon
-						size={38}
-						hiddenFrom="sm"
-						variant="gradient"
-						className={classes.openNavigation}
-						onClick={navModalHandle.open}
-					>
-						<Icon
-							path={iconViewGrid}
-							size="lg"
-						/>
-					</ActionIcon>
-				</Tooltip>
 			</Group>
 
 			<Stack
