@@ -1,3 +1,4 @@
+import posthog from "posthog-js";
 import { useLayoutEffect } from "react";
 import { useLocation } from "wouter";
 import { useCloudRoute } from "~/hooks/cloud";
@@ -14,6 +15,15 @@ export function useAppRouter() {
 	const isCloud = useCloudRoute();
 	const resource = useConfigStore((s) => s.activeResource);
 	const screen = useConfigStore((s) => s.activeScreen);
+
+	// Pageviews
+	useLayoutEffect(() => {
+		if (path !== "/") {
+			posthog.capture("$pageview", {
+				$current_url: path,
+			});
+		}
+	}, [path]);
 
 	// Restore active resource
 	useLayoutEffect(() => {
