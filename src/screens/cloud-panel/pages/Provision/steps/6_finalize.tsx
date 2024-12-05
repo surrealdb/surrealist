@@ -8,11 +8,11 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
+import { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { iconHelp } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
-import { CloudInstanceType } from "~/types";
 
 export function ProvisionFinalizeStep({
 	step,
