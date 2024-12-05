@@ -4,25 +4,23 @@ import banner from "~/assets/images/sandbox.webp";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useCloudRoute } from "~/hooks/cloud";
 import { useConnection } from "~/hooks/connection";
 import { useOnboarding } from "~/hooks/onboarding";
-import { useConfigStore } from "~/stores/config";
+import { useActiveView } from "~/hooks/routing";
 import { iconChevronRight, iconClose } from "~/util/icons";
 
 export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [completed, complete] = useOnboarding("sandbox");
-	const isCloud = useCloudRoute();
-	const screen = useConfigStore((state) => state.activeScreen);
+	const [activeView] = useActiveView();
 	const connection = useConnection();
 
 	useEffect(() => {
-		if (connection?.id === SANDBOX && screen === "database" && !isCloud && !completed) {
+		if (connection?.id === SANDBOX && activeView && !completed) {
 			openHandle.open();
 			complete();
 		}
-	}, [connection, screen, isCloud, completed]);
+	}, [connection, activeView, completed]);
 
 	return (
 		<Modal
