@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { Divider, Group, Paper, Stack, Table, Text, Tooltip } from "@mantine/core";
+import { Divider, Group, Paper, Stack, Table, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -12,6 +12,7 @@ import { formatMemory } from "~/util/helpers";
 import { iconHelp } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
+import { CloudInstanceType } from "~/types";
 
 export function ProvisionFinalizeStep({
 	step,
@@ -88,15 +89,22 @@ export function ProvisionFinalizeStep({
 							<Table.Td>
 								<Group gap="xs">
 									Storage size
-									<Tooltip label="Storage is currently limited for the beta. The cap will be removed in a future release." w={300} style={{ whiteSpace: "unset" }}>
+									<Tooltip
+										label="Storage is currently limited for the beta. The cap will be removed in a future release."
+										w={300}
+										style={{ whiteSpace: "unset" }}
+									>
 										<div>
-											<Icon path={iconHelp} size="sm" />
+											<Icon
+												path={iconHelp}
+												size="sm"
+											/>
 										</div>
 									</Tooltip>
 								</Group>
 							</Table.Td>
 							<Table.Td c="bright">
-								{formatMemory((instanceType?.memory ?? 0) * 8)}
+								{formatMemory(computeStorageSize(instanceType))}
 							</Table.Td>
 						</Table.Tr>
 					</Table.Tbody>
@@ -120,4 +128,16 @@ export function ProvisionFinalizeStep({
 			/>
 		</Stack>
 	);
+}
+
+function computeStorageSize(type: CloudInstanceType | undefined) {
+	if (!type) {
+		return 0;
+	}
+
+	if (type.price_hour === 0) {
+		return 1024;
+	}
+
+	return type.memory * 8;
 }
