@@ -2,6 +2,7 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
+	Alert,
 	Badge,
 	Box,
 	Button,
@@ -16,18 +17,22 @@ import {
 
 import {
 	iconAPI,
+	iconChat,
 	iconChevronDown,
+	iconCloudClock,
 	iconConsole,
 	iconCopy,
 	iconDelete,
 	iconDotsVertical,
+	iconEye,
 	iconMarker,
 	iconMemory,
 	iconPower,
 	iconQuery,
+	iconSearch,
 	iconServer,
-	iconSurrealist,
 	iconTag,
+	iconTransfer,
 	iconTune,
 } from "~/util/icons";
 
@@ -42,6 +47,7 @@ import { fetchAPI } from "../../api";
 import { openCapabilitiesModal } from "./modals/capabilities";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
+import { openUsageModal } from "./modals/view-usage";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
 
@@ -89,8 +95,21 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const client = useQueryClient();
 
 	const handleDelete = useConfirmation({
-		message:
-			"You are about to delete this instance. This will cause all associated resources to be destroyed",
+		message: (
+			<Stack>
+				<Text>
+					You are about to delete this instance. This will cause all associated resources
+					to be destroyed
+				</Text>
+				<Alert
+					title="Important"
+					color="red"
+				>
+					Data stored within this instance will be permanently deleted and cannot be
+					recovered.
+				</Alert>
+			</Stack>
+		),
 		confirmText: "Delete",
 		title: "Delete instance",
 		onConfirm: async () => {
@@ -175,6 +194,12 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					}}
 				>
 					Copy hostname
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconCloudClock} />}
+					onClick={() => openUsageModal(value)}
+				>
+					View usage
 				</Menu.Item>
 				<Menu.Label mt="sm">Dangerous</Menu.Label>
 				<Menu.Item

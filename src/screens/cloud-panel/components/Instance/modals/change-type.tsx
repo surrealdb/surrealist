@@ -1,28 +1,24 @@
-import { Box, Button, Group, Paper, ScrollArea, Text } from "@mantine/core";
+import { Box, Button, Collapse, Divider, Group, SimpleGrid, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { fetchAPI } from "~/screens/cloud-panel/api";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import type { CloudInstance } from "~/types";
+import { iconChevronLeft, iconChevronRight } from "~/util/icons";
 import { EstimatedCost } from "../../EstimatedCost";
+import { InstanceCategoryPicker } from "../../InstanceCategoryPicker";
 import { InstanceType } from "../../InstanceType";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({
 		size: "lg",
-		title: (
-			<Box>
-				<PrimaryTitle>Change instance type</PrimaryTitle>
-				<Text fz="lg">{instance.name}</Text>
-			</Box>
-		),
 		children: <InstanceTypeModal instance={instance} />,
 	});
 }
@@ -33,14 +29,18 @@ interface InstanceTypeModalProps {
 
 function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const instanceTypes = useAvailableInstanceTypes();
-	const current = useOrganization();
-	const isLight = useIsLight();
+	const organization = useOrganization();
 
-	const [selected, setSelected] = useState(instance.type.slug);
+	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
 
-	const { data: instances } = useCloudInstancesQuery(current?.id);
+	const [category, setCategory] = useState("");
+	const [instanceType, setInstanceType] = useState("");
+
+	const { data: instances } = useCloudInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instances ?? []);
-	const instanceInfo = instanceTypes.find((type) => type.slug === selected);
+
+	const instanceInfo = instanceTypes.find((type) => type.slug === instanceType);
+	const filteredTypes = instanceTypes.filter((type) => type.category === category);
 
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: (slug: string) =>
@@ -53,39 +53,71 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	});
 
 	const requestChange = useStable(() => {
-		mutateAsync(selected).then(() => {
+		mutateAsync(instanceType).then(() => {
 			closeAllModals();
 		});
 	});
 
 	return (
 		<Stack>
-			<Text mb="lg">
-				Instance types define the resources allocated to your cloud instance. Choose a
-				configuration that best fits your needs.
-			</Text>
-
-			<Paper bg={isLight ? "slate.0" : "slate.9"}>
-				<ScrollArea.Autosize mah={350}>
-					<Stack p="xl">
-						{instanceTypes.map((type) => (
+			{category ? (
+				<>
+					<Group mb="md">
+						<Box flex={1}>
+							<PrimaryTitle>Select instance type</PrimaryTitle>
+							<Text fz="lg">{instance.name}</Text>
+						</Box>
+						<Box>
+							<Button
+								leftSection={<Icon path={iconChevronLeft} />}
+								color="slate"
+								variant="subtle"
+								py={0}
+								onClick={() => {
+									setCategory("");
+									setInstanceType("");
+								}}
+							>
+								Change category
+							</Button>
+						</Box>
+					</Group>
+					<SimpleGrid cols={{ base: 1, md: 2 }}>
+						{filteredTypes.map((type) => (
 							<InstanceType
 								key={type.slug}
 								type={type}
-								isActive={type.slug === selected}
+								isActive={type.slug === instanceType}
 								isLimited={!isAvailable(type)}
-								onSelect={setSelected}
+								onSelect={() => setInstanceType(type.slug)}
+								onBody
 							/>
 						))}
-					</Stack>
-				</ScrollArea.Autosize>
-			</Paper>
+					</SimpleGrid>
 
-			{instanceInfo && (
-				<EstimatedCost
-					type={instanceInfo}
-					units={instance.compute_units}
-				/>
+					<Collapse in={!!instanceInfo}>
+						<Divider my="md" />
+						<EstimatedCost
+							type={instanceInfo}
+							units={instance.compute_units}
+						/>
+					</Collapse>
+				</>
+			) : (
+				<>
+					<Box mb="md">
+						<PrimaryTitle>Select instance category</PrimaryTitle>
+						<Text fz="lg">{instance.name}</Text>
+					</Box>
+					{organization && (
+						<InstanceCategoryPicker
+							organization={organization}
+							value={category}
+							onChange={setCategory}
+							onBody
+						/>
+					)}
+				</>
 			)}
 
 			<Group mt="md">
@@ -101,7 +133,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 					type="submit"
 					variant="gradient"
 					onClick={requestChange}
-					disabled={instance.type.slug === selected}
+					disabled={!instanceType || instance.type.slug === instanceType}
 					loading={isPending}
 					flex={1}
 				>

@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -40,11 +40,19 @@ export function ChatPage() {
 
 	const { sendMessage, isResponding } = useCopilotMutation();
 
+	console.log("isResponding", isResponding);
+
+	const hasMessage = useMemo(() => input.trim() !== "", [input]);
+	const canSend = input && !isResponding && hasMessage;
+
 	const submitMessage = useStable(() => {
+		if (!canSend) return;
+
 		pushChatMessage({
 			id: newId(),
 			content: input,
 			sender: "user",
+			thinking: "",
 			loading: false,
 		});
 
@@ -73,8 +81,6 @@ export function ChatPage() {
 			}
 		}
 	}, [conversation]);
-
-	const canSend = input && !isResponding;
 
 	return (
 		<Stack
@@ -171,6 +177,7 @@ export function ChatPage() {
 							variant="gradient"
 							disabled={!canSend}
 							onClick={submitMessage}
+							loading={isResponding}
 							style={{
 								opacity: canSend ? 1 : 0.5,
 								border: "1px solid rgba(255, 255, 255, 0.3)",

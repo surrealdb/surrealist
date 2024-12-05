@@ -25,7 +25,6 @@ import { adapter } from "~/adapter";
 import { useIsAuthenticated, useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { openAccountSupport } from "~/screens/cloud-panel/modals/account-support";
-import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
@@ -80,8 +79,8 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 				/>
 
 				<HelpTile
-					title="Issue"
-					description="Report bugs or problems by creating a GitHub issue"
+					title="Issue or Feature Request"
+					description="Report bugs or submit a feature request by creating a GitHub issue"
 					icon={iconBug}
 					onClick={() =>
 						adapter.openUrl("https://github.com/surrealdb/surrealist/issues")

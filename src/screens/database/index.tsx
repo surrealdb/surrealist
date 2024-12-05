@@ -143,21 +143,21 @@ export function DatabaseScreen() {
 						<Switch>
 							<Route path="/" />
 
-							{Object.values(VIEW_MODES).map((mode) =>
-								requestDatabase ? (
-									<DatabaseSelection
-										key={mode.id}
-										info={mode}
-									/>
-								) : (
-									<Route
-										key={mode.id}
-										path={`/${mode.id}`}
-									>
+							{Object.values(VIEW_MODES).map((mode) => (
+								<Route
+									key={mode.id}
+									path={`/${mode.id}`}
+								>
+									{requestDatabase ? (
+										<DatabaseSelection
+											key={mode.id}
+											info={mode}
+										/>
+									) : (
 										<OutPortal node={VIEW_PORTALS[mode.id]} />
-									</Route>
-								),
-							)}
+									)}
+								</Route>
+							))}
 
 							{cloudEnabled && (
 								<Route path="/cloud/*?">

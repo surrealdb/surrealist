@@ -16,6 +16,7 @@ import sidekickImg from "~/assets/images/sidekick.webp";
 
 import { marked } from "marked";
 import { Link } from "~/components/Link";
+import { useIsLight } from "~/hooks/theme";
 import type { CloudChatMessage, CloudProfile } from "~/types";
 
 export interface ChatMessageProps {
@@ -59,7 +60,7 @@ export function ChatMessage({
 						size="lg"
 						c="white"
 					>
-						Thinking...
+						{message.thinking}
 					</Text>
 				</Group>
 			) : (
@@ -145,10 +146,12 @@ export function ChatMessage({
 }
 
 function SidekickAvatar() {
+	const isLight = useIsLight();
+
 	return (
 		<Avatar
 			radius="md"
-			variant="light"
+			variant={isLight ? "filled" : "light"}
 			color="surreal"
 			size={40}
 		>

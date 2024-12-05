@@ -1,9 +1,8 @@
 import { Box, Group, Stack, Table, Text } from "@mantine/core";
-import { capitalize } from "radash";
 import { Icon } from "~/components/Icon";
 import type { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
-import { iconDollar, iconHammer, iconMemory, iconQuery, iconStar, iconWarning } from "~/util/icons";
+import { iconWarning } from "~/util/icons";
 import { Tile } from "../Tile";
 
 export interface InstanceTypeProps {
@@ -11,16 +10,25 @@ export interface InstanceTypeProps {
 	isActive?: boolean;
 	isLimited?: boolean;
 	inactive?: boolean;
+	onBody?: boolean;
 	onSelect?: (type: string) => void;
 }
 
-export function InstanceType({ type, isActive, isLimited, inactive, onSelect }: InstanceTypeProps) {
+export function InstanceType({
+	type,
+	isActive,
+	isLimited,
+	inactive,
+	onBody,
+	onSelect,
+}: InstanceTypeProps) {
 	return (
 		<Tile
 			isActive={isActive}
 			onClick={onSelect ? () => onSelect(type.slug) : undefined}
 			disabled={type.enabled === false || isLimited}
 			inactive={inactive}
+			onBody={onBody}
 		>
 			<Group
 				wrap="nowrap"

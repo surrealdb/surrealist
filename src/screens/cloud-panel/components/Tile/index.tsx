@@ -7,12 +7,13 @@ export interface TileProps extends PaperProps {
 	isActive?: boolean;
 	disabled?: boolean;
 	inactive?: boolean;
+	onBody?: boolean;
 	children: React.ReactNode;
 }
 
 export const Tile = createPolymorphicComponent<"button", TileProps>(
 	forwardRef<HTMLDivElement, TileProps>(
-		({ isActive, disabled, inactive, children, className, ...other }, ref) => (
+		({ isActive, disabled, inactive, onBody, children, className, ...other }, ref) => (
 			<Paper
 				p="md"
 				ref={ref}
@@ -26,7 +27,12 @@ export const Tile = createPolymorphicComponent<"button", TileProps>(
 						/>
 					)
 				}
-				className={clsx(classes.root, disabled && classes.disabled, className)}
+				className={clsx(
+					classes.root,
+					disabled && classes.disabled,
+					onBody && classes.onBody,
+					className,
+				)}
 				mod={{ active: isActive }}
 				{...other}
 			>

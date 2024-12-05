@@ -162,6 +162,7 @@ function newConversation(): CloudChatMessage[] {
 			sender: "assistant",
 			content: "Hello! How can I help you today?",
 			loading: false,
+			thinking: "",
 		},
 	];
 }

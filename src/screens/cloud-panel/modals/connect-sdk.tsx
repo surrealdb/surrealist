@@ -8,6 +8,7 @@ import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";
+import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
 import { iconAPI, iconAccount, iconDatabase } from "~/util/icons";
 
@@ -23,6 +24,7 @@ export function openConnectSdk(instance: CloudInstance) {
 				<PrimaryTitle>Connect with an SDK</PrimaryTitle>
 			</Group>
 		),
+		withCloseButton: true,
 		children: <ConnectSdkModal instance={instance} />,
 	});
 }
@@ -32,6 +34,7 @@ interface ConnectSdkModalProps {
 }
 
 function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
+	const isLight = useIsLight();
 	const [lang, setLang] = useState<CodeLang>("rust");
 
 	const [namespace, setNamespace] = useInputState("");
@@ -70,16 +73,13 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 			`,
 			py: `
 				# Open a connection
-				async with Surreal("wss://${instance.host}") as db:
+				async with Surreal(url="wss://${instance.host}") as db:
 
 					# Select a namespace and database
 					await db.use("${namespace}", "${database}")
 
 					# Authenticate
-					await db.signin({
-						"user": "${username}",
-						"pass": "${password}"
-					})
+					await db.sign_in(username="${username}", password="${password}")
 			`,
 			php: `
 				$db = new \\Surreal\\Surreal();
@@ -138,8 +138,8 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 				</Text>
 
 				<Text
-					mt="lg"
-					fz="lg"
+					mt="xl"
+					fz="xl"
 					ff="mono"
 					tt="uppercase"
 					fw={600}
@@ -159,92 +159,92 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 				/>
 
 				<Text
-					mt="lg"
-					fz="lg"
+					mt="xl"
+					fz="xl"
 					ff="mono"
 					tt="uppercase"
 					fw={600}
 					c="bright"
 				>
-					2. Enter optional connection details
+					2. Specify namespace and database
 				</Text>
 
-				<SimpleGrid cols={2}>
-					<Paper
-						bg="slate.9"
-						p="md"
+				<Paper
+					bg={isLight ? "slate.0" : "slate.9"}
+					p="md"
+				>
+					<SimpleGrid
+						cols={2}
+						mb="md"
 					>
-						<Group>
-							<Icon path={iconDatabase} />
-							<Text
-								fw={500}
-								c="bright"
-							>
-								Namespace and database
-							</Text>
-						</Group>
-						<SimpleGrid
-							cols={2}
-							mt="lg"
-						>
-							<TextInput
-								placeholder="Namespace"
-								size="xs"
-								value={namespace}
-								onChange={setNamespace}
-							/>
+						<TextInput
+							placeholder="Namespace"
+							size="xs"
+							value={namespace}
+							onChange={setNamespace}
+						/>
 
-							<TextInput
-								placeholder="Database"
-								size="xs"
-								value={database}
-								onChange={setDatabase}
-							/>
-						</SimpleGrid>
-					</Paper>
-					<Paper
-						bg="slate.9"
-						p="md"
-					>
-						<Group>
-							<Icon path={iconAccount} />
-							<Text
-								fw={500}
-								c="bright"
-							>
-								Username and password
-							</Text>
-						</Group>
-						<SimpleGrid
-							cols={2}
-							mt="lg"
-						>
-							<TextInput
-								placeholder="Username"
-								size="xs"
-								value={username}
-								onChange={setUsername}
-							/>
+						<TextInput
+							placeholder="Database"
+							size="xs"
+							value={database}
+							onChange={setDatabase}
+						/>
+					</SimpleGrid>
 
-							<TextInput
-								placeholder="Password"
-								size="xs"
-								value={password}
-								onChange={setPassword}
-							/>
-						</SimpleGrid>
-					</Paper>
-				</SimpleGrid>
+					<LearnMore href="https://surrealdb.com/docs/surrealdb/introduction/concepts/namespace">
+						Learn more about namespaces and databases
+					</LearnMore>
+				</Paper>
 
 				<Text
-					mt="lg"
-					fz="lg"
+					mt="xl"
+					fz="xl"
 					ff="mono"
 					tt="uppercase"
 					fw={600}
 					c="bright"
 				>
-					3. Use the following code snippet
+					3. Authentication
+				</Text>
+
+				<Paper
+					bg={isLight ? "slate.0" : "slate.9"}
+					p="md"
+				>
+					<SimpleGrid
+						cols={2}
+						mb="md"
+					>
+						<TextInput
+							placeholder="Username"
+							size="xs"
+							value={username}
+							onChange={setUsername}
+						/>
+
+						<TextInput
+							placeholder="Password"
+							size="xs"
+							value={password}
+							onChange={setPassword}
+						/>
+					</SimpleGrid>
+
+					<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication">
+						Learn more about authentication
+					</LearnMore>
+				</Paper>
+
+				<Text
+					mt="xl"
+					fz="xl"
+					ff="mono"
+					tt="uppercase"
+					fw={600}
+					c="bright"
+				>
+					4. Use the following code snippet
 				</Text>
 
 				<CodeSnippet

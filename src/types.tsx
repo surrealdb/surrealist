@@ -591,6 +591,7 @@ export interface CloudChatMessage {
 	content: string;
 	sender: "user" | "assistant";
 	loading: boolean;
+	thinking: string;
 	sources?: {
 		header: string;
 		links: {
@@ -599,4 +600,13 @@ export interface CloudChatMessage {
 			img_url: string;
 		}[];
 	};
+}
+
+export interface CloudMeasurement {
+	instance_id: string;
+	instance_type?: string;
+	compute_hours?: number;
+	disk_used_bytes?: number;
+	measured_period_start: string;
+	measured_period_end: string;
 }
