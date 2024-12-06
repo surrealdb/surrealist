@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Divider, Group, SimpleGrid, Text } from "@mantine/core";
+import { Alert, Box, Button, Collapse, Divider, Group, SimpleGrid, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useMutation } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ import { fetchAPI } from "~/screens/cloud-panel/api";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import type { CloudInstance } from "~/types";
-import { iconChevronLeft, iconChevronRight } from "~/util/icons";
+import { iconChevronLeft, iconChevronRight, iconWarning } from "~/util/icons";
 import { EstimatedCost } from "../../EstimatedCost";
 import { InstanceCategoryPicker } from "../../InstanceCategoryPicker";
 import { InstanceType } from "../../InstanceType";
@@ -30,8 +30,6 @@ interface InstanceTypeModalProps {
 function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const instanceTypes = useAvailableInstanceTypes();
 	const organization = useOrganization();
-
-	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
 
 	const [category, setCategory] = useState("");
 	const [instanceType, setInstanceType] = useState("");
@@ -57,6 +55,8 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 			closeAllModals();
 		});
 	});
+
+	const isUnavailable = instanceInfo && !isAvailable(instanceInfo);
 
 	return (
 		<Stack>
@@ -87,13 +87,22 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 							<InstanceType
 								key={type.slug}
 								type={type}
-								isActive={type.slug === instanceType}
-								isLimited={!isAvailable(type)}
+								isSelected={type.slug === instanceType}
+								isActive={type.slug === instance.type.slug}
 								onSelect={() => setInstanceType(type.slug)}
 								onBody
 							/>
 						))}
 					</SimpleGrid>
+
+					{isUnavailable && (
+						<Alert
+							color="orange"
+							icon={<Icon path={iconWarning} />}
+						>
+							Maximum instance limit reached for this type
+						</Alert>
+					)}
 
 					<Collapse in={!!instanceInfo}>
 						<Divider my="md" />
@@ -133,7 +142,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 					type="submit"
 					variant="gradient"
 					onClick={requestChange}
-					disabled={!instanceType || instance.type.slug === instanceType}
+					disabled={!instanceType || instance.type.slug === instanceType || isUnavailable}
 					loading={isPending}
 					flex={1}
 				>

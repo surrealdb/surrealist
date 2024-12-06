@@ -2,13 +2,13 @@ import { Box, Group, Stack, Table, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import type { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
-import { iconWarning } from "~/util/icons";
+import { iconCheck } from "~/util/icons";
 import { Tile } from "../Tile";
 
 export interface InstanceTypeProps {
 	type: CloudInstanceType;
+	isSelected: boolean;
 	isActive?: boolean;
-	isLimited?: boolean;
 	inactive?: boolean;
 	onBody?: boolean;
 	onSelect?: (type: string) => void;
@@ -16,17 +16,17 @@ export interface InstanceTypeProps {
 
 export function InstanceType({
 	type,
+	isSelected,
 	isActive,
-	isLimited,
 	inactive,
 	onBody,
 	onSelect,
 }: InstanceTypeProps) {
 	return (
 		<Tile
-			isActive={isActive}
+			isActive={isSelected}
 			onClick={onSelect ? () => onSelect(type.slug) : undefined}
-			disabled={type.enabled === false || isLimited}
+			disabled={type.enabled === false || isActive}
 			inactive={inactive}
 			onBody={onBody}
 		>
@@ -46,23 +46,13 @@ export function InstanceType({
 						>
 							{type.display_name}
 						</Text>
+						{isActive && (
+							<Icon
+								path={iconCheck}
+								c="surreal"
+							/>
+						)}
 					</Group>
-					{type.enabled === false ? (
-						<Text c="red">Not available in your current plan</Text>
-					) : (
-						isLimited && (
-							<Group
-								gap="xs"
-								mt="lg"
-								c="orange"
-							>
-								<Icon path={iconWarning} />
-								<Text size="sm">
-									Maximum amount of instances of this type in use
-								</Text>
-							</Group>
-						)
-					)}
 				</Stack>
 				<Box>
 					<Table>
