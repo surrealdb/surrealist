@@ -168,9 +168,9 @@ export function DatabaseSidebar({
 											name={info.name}
 											path={info.id}
 											icon={info.anim || info.icon}
-											withTooltip={sidebarMode === "compact"}
 											onClick={() => setLocation(`/${info.id}`)}
 											onMouseEnter={hoverSidebarHandle.open}
+											withTooltip={sidebarMode === "compact"}
 											style={{
 												opacity: isViewAvailable(info) ? 1 : 0.5,
 											}}
@@ -195,6 +195,7 @@ export function DatabaseSidebar({
 						icon={iconSearch}
 						onClick={openCommands}
 						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
 					/>
 
 					<NavigationIcon
@@ -202,6 +203,7 @@ export function DatabaseSidebar({
 						icon={iconCog}
 						onClick={openSettings}
 						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
 						indicator={!!availableUpdate}
 					/>
 				</Stack>
