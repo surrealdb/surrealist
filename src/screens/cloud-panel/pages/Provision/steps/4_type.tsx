@@ -1,11 +1,13 @@
-import { Collapse, Divider, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Alert, Collapse, Divider, SimpleGrid, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
+import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
 import { InstanceType } from "~/screens/cloud-panel/components/InstanceType";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
+import { iconWarning } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
 
@@ -33,6 +35,8 @@ export function ProvisionInstanceTypesStep({
 		return instanceTypes.find((t) => t.slug === details.type);
 	}, [details.type, instanceTypes]);
 
+	const isUnavailable = instanceType && !isAvailable(instanceType);
+
 	return (
 		<Stack>
 			<PrimaryTitle>Select an instance type</PrimaryTitle>
@@ -47,8 +51,7 @@ export function ProvisionInstanceTypesStep({
 					<InstanceType
 						key={type.slug}
 						type={type}
-						isActive={type.slug === details.type}
-						isLimited={!isAvailable(type)}
+						isSelected={type.slug === details.type}
 						onSelect={() =>
 							setDetails((draft) => {
 								draft.type = type.slug;
@@ -58,6 +61,15 @@ export function ProvisionInstanceTypesStep({
 					/>
 				))}
 			</SimpleGrid>
+
+			{isUnavailable && (
+				<Alert
+					color="orange"
+					icon={<Icon path={iconWarning} />}
+				>
+					Maximum instance limit reached for this type
+				</Alert>
+			)}
 
 			<Collapse in={!!instanceType}>
 				<Divider my="md" />
@@ -71,7 +83,9 @@ export function ProvisionInstanceTypesStep({
 				step={step}
 				onPrevious={onPrevious}
 				onContinue={onContinue}
-				disabled={!details.type || details.category !== instanceType?.category}
+				disabled={
+					!details.type || details.category !== instanceType?.category || isUnavailable
+				}
 			/>
 		</Stack>
 	);

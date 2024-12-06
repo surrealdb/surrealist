@@ -14,6 +14,7 @@ const BASE_URL = "https://api-prod.scoutos.com";
  */
 export function useCopilotMutation() {
 	const { pushChatMessage, updateChatMessage, completeChatResponse } = useCloudStore.getState();
+	const { profile } = useCloudStore.getState();
 
 	const [isResponding, setIsResponding] = useState(false);
 	const controller = useRef<AbortController>();
@@ -52,6 +53,8 @@ export function useCopilotMutation() {
 						inputs: {
 							user_message: message,
 							chat_history: history,
+							user_avatar: profile.picture,
+							user_name: profile.name,
 						},
 					}),
 				},

@@ -27,8 +27,12 @@ export function useAppRouter() {
 
 	// Restore active resource
 	useLayoutEffect(() => {
-		if (path === "/" && resource !== "/") {
-			setPath(resource || "/query");
+		if (path === "/") {
+			if (!resource || resource === "/") {
+				setPath("/query");
+			} else {
+				setPath(resource);
+			}
 		} else {
 			setActiveResource(path);
 		}
@@ -37,10 +41,9 @@ export function useAppRouter() {
 	// Handle intent requests
 	useLayoutEffect(() => {
 		if (intent) {
-			setPath(path, { replace: true });
 			handleIntentRequest(intent);
 		}
-	}, [intent, path]);
+	}, [intent]);
 
 	// Skip cloud screen
 	useLayoutEffect(() => {

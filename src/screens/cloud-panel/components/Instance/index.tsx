@@ -17,19 +17,17 @@ import {
 
 import {
 	iconAPI,
-	iconChat,
+	iconBroadcastOn,
 	iconChevronDown,
 	iconCloudClock,
 	iconConsole,
 	iconCopy,
 	iconDelete,
 	iconDotsVertical,
-	iconEye,
 	iconMarker,
 	iconMemory,
 	iconPower,
 	iconQuery,
-	iconSearch,
 	iconServer,
 	iconTag,
 	iconTransfer,
@@ -49,7 +47,13 @@ import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
 import { openUsageModal } from "./modals/view-usage";
 
-export type ConnectMethod = "sdk" | "cli" | "surrealist";
+export type ConnectMethod = "sdk" | "cli" | "curl" | "surrealist";
+
+const CATEGORY_NAMES: Record<string, string> = {
+	production: "Production",
+	development: "Development",
+	free: "Free instance",
+};
 
 const BADGE_INFO = {
 	creating: ["blue", "Creating"],
@@ -91,6 +95,7 @@ export interface Instance {
 export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const inactive = value.state === "inactive";
 	const regions = useCloudStore((s) => s.regions);
+	const categoryName = CATEGORY_NAMES[value.type.category];
 	const regionName = regions.find((r) => r.slug === value.region)?.description ?? value.region;
 	const client = useQueryClient();
 
@@ -249,13 +254,19 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					leftSection={<Icon path={iconConsole} />}
 					onClick={() => onConnect("cli", value)}
 				>
-					Command-line
+					Surreal CLI
 				</Menu.Item>
 				<Menu.Item
 					leftSection={<Icon path={iconAPI} />}
 					onClick={() => onConnect("sdk", value)}
 				>
 					Client SDK
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconTransfer} />}
+					onClick={() => onConnect("curl", value)}
+				>
+					HTTP cURL
 				</Menu.Item>
 			</Menu.Dropdown>
 		</Menu>
@@ -305,7 +316,10 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					size="lg"
 					c="slate"
 				/>
-				<Text c="bright">{value.type.display_name || value.type.slug}</Text>
+				<Group gap="xs">
+					<Text c="bright">{value.type.display_name}</Text>
+					{categoryName && <Text>({categoryName})</Text>}
+				</Group>
 			</Group>
 			<Group
 				title="Region"
@@ -364,9 +378,18 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					/>
 				</Group>
 			</Table.Td>
-			<Table.Td>{value.type.display_name || value.type.slug}</Table.Td>
-			<Table.Td>{regionName}</Table.Td>
-			<Table.Td>SurrealDB 2.0</Table.Td>
+			<Table.Td>
+				<Group gap="xs">
+					<Text c="bright">{value.type.display_name}</Text>
+					{categoryName && <Text>({categoryName})</Text>}
+				</Group>
+			</Table.Td>
+			<Table.Td>
+				<Text c="bright">{regionName}</Text>
+			</Table.Td>
+			<Table.Td>
+				<Text c="bright">SurrealDB {value.version}</Text>
+			</Table.Td>
 			<Table.Td>
 				<Group wrap="nowrap">
 					{actionList}
