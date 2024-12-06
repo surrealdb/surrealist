@@ -131,6 +131,30 @@ export function DatabaseSidebar({
 					component="nav"
 					flex={1}
 				>
+					{showCloud && (
+						<>
+							<NavigationIcon
+								name={
+									<Group
+										wrap="nowrap"
+										gap="xs"
+									>
+										Surreal Cloud
+										<BetaBadge />
+									</Group>
+								}
+								icon={iconCloud}
+								isActive={cloudActive}
+								path="cloud"
+								withTooltip={sidebarMode === "compact"}
+								onClick={() => setLocation("/cloud")}
+								onMouseEnter={hoverSidebarHandle.open}
+							/>
+
+							<Divider color={isLight ? "slate.2" : "slate.7"} />
+						</>
+					)}
+
 					{connection &&
 						navigation.map((items, i) => (
 							<Fragment key={i}>
@@ -160,26 +184,6 @@ export function DatabaseSidebar({
 						))}
 
 					<Spacer />
-
-					{showCloud && (
-						<NavigationIcon
-							name={
-								<Group
-									wrap="nowrap"
-									gap="xs"
-								>
-									Surreal Cloud
-									<BetaBadge />
-								</Group>
-							}
-							icon={iconCloud}
-							isActive={cloudActive}
-							path="cloud"
-							withTooltip={sidebarMode === "compact"}
-							onClick={() => setLocation("/cloud")}
-							onMouseEnter={hoverSidebarHandle.open}
-						/>
-					)}
 
 					<NavigationIcon
 						name={
