@@ -73,7 +73,7 @@ function ConnectCurlModal({ instance }: ConnectCurlModalProps) {
 					fw={600}
 					c="bright"
 				>
-					2. Specify namespace and database
+					1. Specify namespace and database
 				</Text>
 
 				<Paper
@@ -112,7 +112,7 @@ function ConnectCurlModal({ instance }: ConnectCurlModalProps) {
 					fw={600}
 					c="bright"
 				>
-					3. Authentication
+					2. Authentication
 				</Text>
 
 				<Paper
