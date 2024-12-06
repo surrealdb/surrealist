@@ -17,22 +17,18 @@ import {
 
 import {
 	iconAPI,
-	iconChat,
 	iconChevronDown,
 	iconCloudClock,
 	iconConsole,
 	iconCopy,
 	iconDelete,
 	iconDotsVertical,
-	iconEye,
 	iconMarker,
 	iconMemory,
 	iconPower,
 	iconQuery,
-	iconSearch,
 	iconServer,
 	iconTag,
-	iconTransfer,
 	iconTune,
 } from "~/util/icons";
 
@@ -50,6 +46,12 @@ import { openComputeUnitsModal } from "./modals/change-units";
 import { openUsageModal } from "./modals/view-usage";
 
 export type ConnectMethod = "sdk" | "cli" | "surrealist";
+
+const CATEGORY_NAMES: Record<string, string> = {
+	production: "Production",
+	development: "Development",
+	free: "Free instance",
+};
 
 const BADGE_INFO = {
 	creating: ["blue", "Creating"],
@@ -91,6 +93,7 @@ export interface Instance {
 export function Instance({ type, value, onDelete, onConnect }: Instance) {
 	const inactive = value.state === "inactive";
 	const regions = useCloudStore((s) => s.regions);
+	const categoryName = CATEGORY_NAMES[value.type.category];
 	const regionName = regions.find((r) => r.slug === value.region)?.description ?? value.region;
 	const client = useQueryClient();
 
@@ -305,7 +308,10 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					size="lg"
 					c="slate"
 				/>
-				<Text c="bright">{value.type.display_name || value.type.slug}</Text>
+				<Group gap="xs">
+					<Text c="bright">{value.type.display_name}</Text>
+					{categoryName && <Text>({categoryName})</Text>}
+				</Group>
 			</Group>
 			<Group
 				title="Region"
