@@ -70,7 +70,7 @@ function BillingPlan({ name, description }: BillingPlanProps) {
 				<Button
 					variant="gradient"
 					rightSection={<Icon path={iconOpen} />}
-					onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
+					onClick={() => adapter.openUrl("https://surrealdb.com/pricing")}
 				>
 					View plans
 				</Button>
