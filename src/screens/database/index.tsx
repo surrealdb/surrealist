@@ -125,21 +125,23 @@ export function DatabaseScreen() {
 						"--offset": `${sidebarOffset}px`,
 					}}
 				>
-					{!isCloud && (
-						<Group
-							gap="md"
-							pos="relative"
-							align="center"
-							wrap="nowrap"
-							className={classes.toolbar}
-						>
-							<DatabaseToolbar />
-						</Group>
-					)}
 					<Stack
 						flex={1}
 						pos="relative"
+						gap="lg"
 					>
+						{!isCloud && (
+							<Group
+								gap="md"
+								pos="relative"
+								align="center"
+								wrap="nowrap"
+								className={classes.toolbar}
+							>
+								<DatabaseToolbar />
+							</Group>
+						)}
+
 						<Switch>
 							<Route path="/" />
 

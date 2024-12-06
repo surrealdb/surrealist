@@ -194,7 +194,6 @@ export function CloudView() {
 					flex={1}
 					className={classes.cloudContent}
 					align="stretch"
-					mt="lg"
 					gap="xl"
 				>
 					<CloudSidebar />
