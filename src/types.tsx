@@ -486,6 +486,10 @@ export interface Driver {
 export interface CloudSignin {
 	token: string;
 	terms_accepted_at?: string;
+	picture: string;
+	name: string;
+	username: string;
+	default_org: string;
 }
 
 export interface CloudProfile {

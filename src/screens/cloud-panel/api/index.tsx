@@ -69,11 +69,10 @@ export async function fetchAPI<T = unknown>(
  * Fetch essential information from the API
  */
 export async function updateCloudInformation() {
-	const { setCloudValues } = useCloudStore.getState();
+	const { setCloudValues, profile } = useCloudStore.getState();
 	const { activeCloudOrg, setActiveCloudOrg } = useConfigStore.getState();
 
-	const [profile, instanceVersions, regions, billingCountries] = await Promise.all([
-		fetchAPI<CloudProfile>("/user/profile"),
+	const [instanceVersions, regions, billingCountries] = await Promise.all([
 		fetchAPI<string[]>("/instanceversions"),
 		fetchAPI<CloudRegion[]>("/regions"),
 		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
@@ -87,7 +86,6 @@ export async function updateCloudInformation() {
 	}
 
 	setCloudValues({
-		profile,
 		instanceVersions,
 		regions,
 		organizations,

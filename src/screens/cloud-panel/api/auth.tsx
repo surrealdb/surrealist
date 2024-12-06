@@ -204,7 +204,7 @@ export async function refreshAccess() {
  */
 export async function acquireSession(accessToken: string) {
 	try {
-		const { setSessionToken, setSessionExpired } = useCloudStore.getState();
+		const { setSessionToken, setSessionExpired, setProfile } = useCloudStore.getState();
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 
 		adapter.log("Cloud", "Acquiring cloud session");
@@ -221,6 +221,12 @@ export async function acquireSession(accessToken: string) {
 		});
 
 		setSessionToken(result.token);
+		setProfile({
+			default_org: result.default_org,
+			username: result.username,
+			name: result.name,
+			picture: result.picture,
+		})
 		await updateCloudInformation();
 
 		adapter.log("Cloud", `Session acquired`);
