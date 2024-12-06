@@ -24,7 +24,7 @@
 }
 
 .splash-image-container {
-	position: fixed;
+	position: absolute;
 	bottom: -16px;
 	left: 0;
 	right: 0;
@@ -33,10 +33,6 @@
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
-
-	@include md-and-up {
-		left: 64px;
-	}
 }
 
 .splash-image {
