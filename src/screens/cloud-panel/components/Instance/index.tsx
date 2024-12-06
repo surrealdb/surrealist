@@ -17,6 +17,7 @@ import {
 
 import {
 	iconAPI,
+	iconBroadcastOn,
 	iconChevronDown,
 	iconCloudClock,
 	iconConsole,
@@ -29,6 +30,7 @@ import {
 	iconQuery,
 	iconServer,
 	iconTag,
+	iconTransfer,
 	iconTune,
 } from "~/util/icons";
 
@@ -45,7 +47,7 @@ import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
 import { openUsageModal } from "./modals/view-usage";
 
-export type ConnectMethod = "sdk" | "cli" | "surrealist";
+export type ConnectMethod = "sdk" | "cli" | "curl" | "surrealist";
 
 const CATEGORY_NAMES: Record<string, string> = {
 	production: "Production",
@@ -252,13 +254,19 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					leftSection={<Icon path={iconConsole} />}
 					onClick={() => onConnect("cli", value)}
 				>
-					Command-line
+					Surreal CLI
 				</Menu.Item>
 				<Menu.Item
 					leftSection={<Icon path={iconAPI} />}
 					onClick={() => onConnect("sdk", value)}
 				>
 					Client SDK
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconTransfer} />}
+					onClick={() => onConnect("curl", value)}
+				>
+					HTTP cURL
 				</Menu.Item>
 			</Menu.Dropdown>
 		</Menu>

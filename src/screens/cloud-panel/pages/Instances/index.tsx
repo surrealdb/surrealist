@@ -46,6 +46,7 @@ import { fuzzyMatch } from "~/util/helpers";
 import { type ConnectMethod, Instance } from "../../components/Instance";
 import { useCloudInstancesQuery } from "../../hooks/instances";
 import { openConnectCli } from "../../modals/connect-cli";
+import { openConnectCurl } from "../../modals/connect-curl";
 import { openConnectSdk } from "../../modals/connect-sdk";
 
 interface Filter {
@@ -107,8 +108,10 @@ export function InstancesPage() {
 			}
 		} else if (method === "sdk") {
 			openConnectSdk(db);
-		} else {
+		} else if (method === "cli") {
 			openConnectCli(db);
+		} else if (method === "curl") {
+			openConnectCurl(db);
 		}
 	});
 
