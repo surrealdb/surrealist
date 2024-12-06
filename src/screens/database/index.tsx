@@ -193,7 +193,7 @@ export function DatabaseScreen() {
 			<Drawer
 				opened={overlaySidebar}
 				onClose={onCloseSidebar}
-				size={275}
+				size={215}
 			>
 				<DatabaseSidebarLazy
 					sidebarMode="fill"
