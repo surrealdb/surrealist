@@ -1,7 +1,7 @@
 import { Alert, Box, Button, Collapse, Divider, Group, SimpleGrid, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -30,6 +30,7 @@ interface InstanceTypeModalProps {
 function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const instanceTypes = useAvailableInstanceTypes();
 	const organization = useOrganization();
+	const client = useQueryClient();
 
 	const [category, setCategory] = useState("");
 	const [instanceType, setInstanceType] = useState("");
@@ -41,13 +42,18 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const filteredTypes = instanceTypes.filter((type) => type.category === category);
 
 	const { mutateAsync, isPending } = useMutation({
-		mutationFn: (slug: string) =>
-			fetchAPI(`/instances/${instance.id}/type`, {
+		mutationFn: async (slug: string) => {
+			await fetchAPI(`/instances/${instance.id}/type`, {
 				method: "PATCH",
 				body: JSON.stringify({
 					slug,
 				}),
-			}),
+			});
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "instances"],
+			});
+		},
 	});
 
 	const requestChange = useStable(() => {
