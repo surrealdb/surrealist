@@ -378,9 +378,18 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					/>
 				</Group>
 			</Table.Td>
-			<Table.Td>{value.type.display_name || value.type.slug}</Table.Td>
-			<Table.Td>{regionName}</Table.Td>
-			<Table.Td>SurrealDB 2.0</Table.Td>
+			<Table.Td>
+				<Group gap="xs">
+					<Text c="bright">{value.type.display_name}</Text>
+					{categoryName && <Text>({categoryName})</Text>}
+				</Group>
+			</Table.Td>
+			<Table.Td>
+				<Text c="bright">{regionName}</Text>
+			</Table.Td>
+			<Table.Td>
+				<Text c="bright">SurrealDB {value.version}</Text>
+			</Table.Td>
 			<Table.Td>
 				<Group wrap="nowrap">
 					{actionList}
