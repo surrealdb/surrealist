@@ -21,7 +21,7 @@ export interface VariablesPaneProps {
 	switchPortal?: HtmlPortalNode<any>;
 	corners?: string;
 	lineNumbers: boolean;
-	editor: EditorView | null;
+	editor: EditorView;
 	setIsValid: (isValid: boolean) => void;
 	closeVariables: () => void;
 }

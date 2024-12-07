@@ -374,8 +374,8 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	}
 
 	const { id, variables, name } = tabQuery;
-	const buffer = useQueryStore.getState().queryBuffer;
-	const query = (options?.override || buffer).trim();
+
+	const query = getQueryOr(id, options?.override).trim();
 	const variableJson = variables
 		? decodeCbor(Value.from_string(variables).to_cbor().buffer)
 		: undefined;
@@ -452,6 +452,14 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	} finally {
 		setQueryActive(false);
 	}
+}
+
+function getQueryOr(id: string, override?: string) {
+	if (override) {
+		return override;
+	}
+
+	return useQueryStore.getState().queryState[id]?.doc ?? "";
 }
 
 function isGraphqlSupportedError(err: string) {

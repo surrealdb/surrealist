@@ -1,106 +1,93 @@
 import { history } from "@codemirror/commands";
 import { forceLinting } from "@codemirror/lint";
 import { Compartment, EditorState, type Extension } from "@codemirror/state";
-import { EditorView, lineNumbers as renderLineNumbers } from "@codemirror/view";
+import { EditorView, ViewUpdate, lineNumbers as renderLineNumbers } from "@codemirror/view";
 import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
-import { useEffect, useRef } from "react";
+import equal from "fast-deep-equal";
+import { useEffect, useMemo, useRef } from "react";
 import { editorBase, editorTheme } from "~/editor";
 import { useSetting } from "~/hooks/config";
+import { useStable } from "~/hooks/stable";
 import { useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import classes from "./style.module.scss";
 
-interface EditorRef {
-	editor: EditorView;
-	readOnlyComp: Compartment;
-	historyComp: Compartment;
-	themeComp: Compartment;
-	numbersComp: Compartment;
-}
+export type StateSnapshot = {
+	doc: string;
+	[key: string]: any;
+};
 
 export interface CodeEditorProps extends BoxProps {
 	value?: string;
+	state?: StateSnapshot;
 	extensions?: Extension[];
 	readOnly?: boolean;
 	autoFocus?: boolean;
-	historyKey?: string;
 	lineNumbers?: boolean;
+	serialize?: Record<string, any>;
 	onMount?: (editor: EditorView) => void;
-	onChange?: (value: string) => void;
+	onChange?: (value: string, state: StateSnapshot) => void;
 }
 
 export function CodeEditor(props: CodeEditorProps) {
 	const {
 		value,
+		state,
 		onChange,
 		extensions,
 		className,
 		readOnly,
 		autoFocus,
-		historyKey,
 		lineNumbers,
+		serialize,
 		onMount,
 		...rest
 	} = props;
 
 	const colorScheme = useTheme();
 	const syntaxTheme = useConfigStore((s) => s.settings.appearance.syntaxTheme);
-	const ref = useRef<HTMLDivElement | null>(null);
-	const editorRef = useRef<EditorRef>();
+	const elementRef = useRef<HTMLDivElement | null>(null);
+	const editorRef = useRef<EditorView>();
+	const initializedRef = useRef(false);
 	const [editorScale] = useSetting("appearance", "editorScale");
-
 	const textSize = Math.floor(15 * (editorScale / 100));
+
+	// Persistent extension compartment
+	const internalCompartment = useRef(new Compartment());
+	const externalCompartment = useRef(new Compartment());
+	const handleChange = useStable((update: ViewUpdate) => {
+		onChange?.(update.state.doc.toString(), update.state.toJSON(serialize));
+	});
+
+	// The internally controlled extensions
+	const internalExtensions = useMemo(
+		() => [
+			editorBase(),
+			history({ newGroupDelay: 250 }),
+			EditorState.readOnly.of(!!readOnly),
+			editorTheme(colorScheme, syntaxTheme),
+			lineNumbers ? renderLineNumbers() : [],
+			EditorView.updateListener.of((update) => {
+				if (update.docChanged || update.selectionSet) {
+					handleChange(update);
+				}
+			}),
+		],
+		[readOnly, colorScheme, syntaxTheme, lineNumbers],
+	);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: One-time initialization
 	useEffect(() => {
-		if (!ref.current) return;
-
-		const readOnlyComp = new Compartment();
-		const historyComp = new Compartment();
-		const themeComp = new Compartment();
-		const numbersComp = new Compartment();
-
-		const changeHandler = EditorView.updateListener.of((update) => {
-			if (update.docChanged) {
-				onChange?.(update.state.doc.toString());
-			}
-		});
-
-		const initialState = EditorState.create({
-			doc: value,
-			extensions: [
-				editorBase(),
-				readOnlyComp.of(EditorState.readOnly.of(!!readOnly)),
-				historyComp.of(newHistory()),
-				themeComp.of(editorTheme(colorScheme, syntaxTheme)),
-				numbersComp.of(lineNumbers ? renderLineNumbers() : []),
-				changeHandler,
-				extensions || [],
-			],
-		});
+		if (!elementRef.current) return;
 
 		const editor = new EditorView({
-			state: initialState,
-			parent: ref.current,
+			parent: elementRef.current,
 			scrollTo: EditorView.scrollIntoView(0),
+			state: EditorState.create(),
 		});
 
-		editorRef.current = {
-			editor,
-			readOnlyComp,
-			historyComp,
-			themeComp,
-			numbersComp,
-		};
-
-		if (autoFocus) {
-			const timer = setInterval(() => {
-				editor.focus();
-				if (editor.hasFocus) clearInterval(timer);
-			}, 50);
-		}
-
+		editorRef.current = editor;
 		onMount?.(editor);
 
 		return () => {
@@ -108,10 +95,36 @@ export function CodeEditor(props: CodeEditorProps) {
 		};
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Update only state
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor } = editorRef.current;
+		const editor = editorRef.current;
+		const current = editor.state.toJSON(serialize);
+
+		if (equal(current, state) && initializedRef.current) {
+			return;
+		}
+
+		const combined = [
+			internalCompartment.current.of(internalExtensions),
+			externalCompartment.current.of(extensions ?? []),
+		];
+
+		const newState = state
+			? EditorState.fromJSON(state, { extensions: combined }, serialize)
+			: EditorState.create({ extensions: combined });
+
+		editor.setState(newState);
+		forceLinting(editor);
+		initializedRef.current = true;
+	}, [state]);
+
+	// Update textual editor contents
+	useEffect(() => {
+		if (!editorRef.current) return;
+
+		const editor = editorRef.current;
 
 		if (value === editor.state.doc.toString()) {
 			return;
@@ -130,59 +143,40 @@ export function CodeEditor(props: CodeEditorProps) {
 		forceLinting(editor);
 	}, [value]);
 
+	// Update internal extension state
+	useEffect(() => {
+		editorRef.current?.dispatch({
+			effects: internalCompartment.current?.reconfigure(internalExtensions),
+		});
+	}, [internalExtensions]);
+
+	// Update external extension state
+	useEffect(() => {
+		editorRef.current?.dispatch({
+			effects: externalCompartment.current?.reconfigure(extensions ?? []),
+		});
+	}, [extensions]);
+
+	// Automatically focus the editor
 	useEffect(() => {
 		if (!editorRef.current) return;
 
-		const { editor, readOnlyComp } = editorRef.current;
+		const editor = editorRef.current;
 
-		editor.dispatch({
-			effects: readOnlyComp.reconfigure(EditorState.readOnly.of(!!readOnly)),
-		});
-	}, [readOnly]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: History key used for reconfiguration
-	useEffect(() => {
-		if (!editorRef.current) return;
-
-		const { editor, historyComp } = editorRef.current;
-
-		editor.dispatch({
-			effects: [historyComp.reconfigure([])],
-		});
-
-		editor.dispatch({
-			effects: [historyComp.reconfigure([newHistory()])],
-		});
-	}, [historyKey]);
-
-	useEffect(() => {
-		if (!editorRef.current) return;
-
-		const { editor, themeComp } = editorRef.current;
-
-		editor.dispatch({
-			effects: themeComp.reconfigure(editorTheme(colorScheme, syntaxTheme)),
-		});
-	}, [colorScheme, syntaxTheme]);
-
-	useEffect(() => {
-		if (!editorRef.current) return;
-
-		const { editor, numbersComp } = editorRef.current;
-
-		editor.dispatch({
-			effects: numbersComp.reconfigure(lineNumbers ? renderLineNumbers() : []),
-		});
-	}, [lineNumbers]);
+		if (autoFocus) {
+			const timer = setInterval(() => {
+				editor.focus();
+				if (editor.hasFocus) clearInterval(timer);
+			}, 50);
+		}
+	}, [autoFocus]);
 
 	return (
 		<Box
-			ref={ref}
+			ref={elementRef}
 			className={clsx(classes.root, className)}
 			fz={textSize}
 			{...rest}
 		/>
 	);
 }
-
-const newHistory = () => history({ newGroupDelay: 250 });
