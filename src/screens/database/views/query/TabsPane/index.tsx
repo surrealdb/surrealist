@@ -49,6 +49,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { QueryTab, QueryType } from "~/types";
 import { uniqueName } from "~/util/helpers";
+import { useQueryStore } from "~/stores/query";
 
 const TYPE_ICONS: Record<QueryType, string> = {
 	config: iconQuery,
@@ -244,6 +245,7 @@ export interface TabsPaneProps {
 }
 
 export function TabsPane(props: TabsPaneProps) {
+	const { removeQueryState } = useQueryStore.getState();
 	const { updateCurrentConnection, addQueryTab, removeQueryTab, setActiveQueryTab } =
 		useConfigStore.getState();
 
@@ -258,6 +260,7 @@ export function TabsPane(props: TabsPaneProps) {
 	const removeTab = useStable((id: string) => {
 		removeQueryTab(id);
 		cancelLiveQueries(id);
+		removeQueryState(id);
 
 		if (adapter instanceof DesktopAdapter) {
 			adapter.pruneQueryFiles();
