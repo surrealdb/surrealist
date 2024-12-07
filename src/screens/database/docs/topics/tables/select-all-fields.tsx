@@ -1,16 +1,12 @@
 import { Box } from "@mantine/core";
 import { pascal } from "radash";
 import { useMemo } from "react";
-import {
-	Article,
-	DocsPreview,
-	TableTitle,
-} from "~/screens/database/docs/components";
-import { getTable } from "~/screens/database/docs/helpers";
+import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useDocsTable } from "../../hooks/table";
 
-export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
-	const table = getTable(topic);
+export function DocsTablesSelectAllFields({ language }: TopicProps) {
+	const table = useDocsTable();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -53,10 +49,9 @@ export function DocsTablesSelectAllFields({ language, topic }: TopicProps) {
 		>
 			<div>
 				<p>
-					Selecting all fields in a table is a common operation when
-					you want to retrieve all the fields in a table. This
-					operation is useful when you want to retrieve all the fields
-					in a table without specifying the fields explicitly.
+					Selecting all fields in a table is a common operation when you want to retrieve
+					all the fields in a table. This operation is useful when you want to retrieve
+					all the fields in a table without specifying the fields explicitly.
 				</p>
 			</div>
 			<Box>

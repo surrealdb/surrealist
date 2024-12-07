@@ -60,11 +60,10 @@ export function DocsTablesManageEvents({ language, topic }: TopicProps) {
 	return (
 		<Article title="Manage Events">
 			<div>
-				<h3>Table: {topic.extra?.table?.schema?.name}</h3>
 				<p>
-					Events can be used to trigger actions in your application
-					when any change or modification is made to data in a record.
-					This can be useful for updating a UI, sending notifications.
+					Events can be used to trigger actions in your application when any change or
+					modification is made to data in a record. This can be useful for updating a UI,
+					sending notifications.
 				</p>
 			</div>
 			<Box>

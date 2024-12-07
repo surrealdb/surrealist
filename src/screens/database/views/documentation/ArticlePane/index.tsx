@@ -160,6 +160,8 @@ export function ArticlePane({
 				}}
 			>
 				{flattened.map((doc, index) => {
+					const Content = doc.component;
+
 					if (isSection(doc)) {
 						return (
 							<Box
@@ -184,29 +186,37 @@ export function ArticlePane({
 										{doc.title}
 									</Title>
 								</Group>
+								{Content && (
+									<Box maw={1500}>
+										<Content
+											topic={doc}
+											language={language}
+										/>
+									</Box>
+								)}
 							</Box>
 						);
 					}
 
-					const Content = doc.component;
-
 					return (
-						<Box
-							key={index}
-							mx="xl"
-							py={42}
-							data-topic={doc.id}
-							style={{
-								borderBottom: index < flattened.length - 1 ? border : "none",
-							}}
-						>
-							<Box maw={1500}>
-								<Content
-									topic={doc}
-									language={language}
-								/>
+						Content && (
+							<Box
+								key={index}
+								mx="xl"
+								py={42}
+								data-topic={doc.id}
+								style={{
+									borderBottom: index < flattened.length - 1 ? border : "none",
+								}}
+							>
+								<Box maw={1500}>
+									<Content
+										topic={doc}
+										language={language}
+									/>
+								</Box>
 							</Box>
-						</Box>
+						)
 					);
 				})}
 			</ScrollArea>

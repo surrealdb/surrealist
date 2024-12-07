@@ -1,15 +1,11 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import {
-	Article,
-	DocsPreview,
-	TableTitle,
-} from "~/screens/database/docs/components";
-import { getTable } from "~/screens/database/docs/helpers";
+import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useDocsTable } from "../../hooks/table";
 
-export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
-	const table = getTable(topic);
+export function DocsTablesDeletingRecords({ language }: TopicProps) {
+	const table = useDocsTable();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -52,10 +48,9 @@ export function DocsTablesDeletingRecords({ language, topic }: TopicProps) {
 		>
 			<div>
 				<p>
-					Deleting records is a common operation when you want to
-					remove records from a table. This operation is useful when
-					you want to remove records from a table and can also be
-					based on certain conditions using the Where clause.
+					Deleting records is a common operation when you want to remove records from a
+					table. This operation is useful when you want to remove records from a table and
+					can also be based on certain conditions using the Where clause.
 				</p>
 			</div>
 			<Box>

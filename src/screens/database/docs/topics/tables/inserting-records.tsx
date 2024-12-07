@@ -1,15 +1,11 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import {
-	Article,
-	DocsPreview,
-	TableTitle,
-} from "~/screens/database/docs/components";
-import { getTable } from "~/screens/database/docs/helpers";
+import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useDocsTable } from "../../hooks/table";
 
-export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
-	const table = getTable(topic);
+export function DocsTablesInsertingRecords({ language }: TopicProps) {
+	const table = useDocsTable();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -65,8 +61,8 @@ export function DocsTablesInsertingRecords({ language, topic }: TopicProps) {
 		>
 			<div>
 				<p>
-					Insert records into a table in the database. It could also
-					be used to update existing fields in records within a table.
+					Insert records into a table in the database. It could also be used to update
+					existing fields in records within a table.
 				</p>
 			</div>
 			<Box>

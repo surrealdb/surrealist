@@ -1,49 +1,63 @@
-import { Box } from "@mantine/core";
+import { Alert, Box, Group, Select, Text, TextInput } from "@mantine/core";
 import { useMemo } from "react";
+import { Icon } from "~/components/Icon";
+import { useTableNames } from "~/hooks/schema";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { iconWarning } from "~/util/icons";
 
 export function DocsTablesIntroduction({ language }: TopicProps) {
+	const { setDocsTable } = useInterfaceStore.getState();
+
+	const tables = useTableNames();
+
+	const options = useMemo(() => {
+		return tables.map((table) => ({ value: table, label: table }));
+	}, [tables]);
+
+	const activeTable = useInterfaceStore((state) => state.docsTable);
+
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
 
 		-- Create schemafull user table.
-		DEFINE TABLE table_name SCHEMAFULL;
+		DEFINE TABLE ${activeTable} SCHEMAFULL;
 		`,
 			js: `
-		db.create('table_name');
+		db.create('${activeTable}');
 		`,
 			rust: `
-		db.create("table_name").await?;
+		db.create("${activeTable}").await?;
 		`,
 			py: `
-		db.create('table_name')
+		db.create('${activeTable}')
 		`,
 			go: `
-		db.Create("table_name", map[string]interface{}{})
+		db.Create("${activeTable}", map[string]interface{}{})
 		`,
 			csharp: `
-		await db.Create<TableName>("table_name");
+		await db.Create<TableName>("${activeTable}");
 		`,
 			java: `
 		// Connect to a local endpoint
 		SurrealWebSocketConnection.connect(timeout)
 		`,
 			php: `
-		$db->create("table_name");
+		$db->create("${activeTable}");
 		`,
 		}),
-		[],
+		[activeTable],
 	);
 
 	return (
 		<Article title="Tables">
 			<div>
 				<p>
-					All the tables available in your database are listed in this
-					section. You can view the schema of each table, the columns,
-					and the data types of each column.
+					Tables are the primary data structure in a database. They store data in the form
+					of records, and can be further configured with indexes and events.
 				</p>
 			</div>
 			<Box>
