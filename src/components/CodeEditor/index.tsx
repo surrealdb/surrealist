@@ -88,14 +88,6 @@ export function CodeEditor(props: CodeEditorProps) {
 		});
 
 		editorRef.current = editor;
-
-		if (autoFocus) {
-			const timer = setInterval(() => {
-				editor.focus();
-				if (editor.hasFocus) clearInterval(timer);
-			}, 50);
-		}
-
 		onMount?.(editor);
 
 		return () => {
@@ -103,29 +95,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		};
 	}, []);
 
-	useEffect(() => {
-		if (!editorRef.current) return;
-
-		const editor = editorRef.current;
-
-		if (value === editor.state.doc.toString()) {
-			return;
-		}
-
-		const transaction = editor.state.update({
-			changes: {
-				from: 0,
-				to: editor.state.doc.length,
-				insert: value,
-			},
-			effects: [EditorView.scrollIntoView(0)],
-		});
-
-		editor.dispatch(transaction);
-		forceLinting(editor);
-	}, [value]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Ignore extensions
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Update only state
 	useEffect(() => {
 		if (!editorRef.current) return;
 
@@ -150,6 +120,29 @@ export function CodeEditor(props: CodeEditorProps) {
 		initializedRef.current = true;
 	}, [state]);
 
+	// Update textual editor contents
+	useEffect(() => {
+		if (!editorRef.current) return;
+
+		const editor = editorRef.current;
+
+		if (value === editor.state.doc.toString()) {
+			return;
+		}
+
+		const transaction = editor.state.update({
+			changes: {
+				from: 0,
+				to: editor.state.doc.length,
+				insert: value,
+			},
+			effects: [EditorView.scrollIntoView(0)],
+		});
+
+		editor.dispatch(transaction);
+		forceLinting(editor);
+	}, [value]);
+
 	// Update internal extension state
 	useEffect(() => {
 		editorRef.current?.dispatch({
@@ -163,6 +156,20 @@ export function CodeEditor(props: CodeEditorProps) {
 			effects: externalCompartment.current?.reconfigure(extensions ?? []),
 		});
 	}, [extensions]);
+
+	// Automatically focus the editor
+	useEffect(() => {
+		if (!editorRef.current) return;
+
+		const editor = editorRef.current;
+
+		if (autoFocus) {
+			const timer = setInterval(() => {
+				editor.focus();
+				if (editor.hasFocus) clearInterval(timer);
+			}, 50);
+		}
+	}, [autoFocus]);
 
 	return (
 		<Box

@@ -5,6 +5,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { useQueryStore } from "~/stores/query";
 import type { ResultMode } from "~/types";
 import { getActiveQuery } from "./connection";
+import { SetQueryEvent } from "./global-events";
 
 /**
  * Handle incoming window messages
@@ -31,8 +32,7 @@ export function handleWindowMessage(event: MessageEvent) {
 			const { query, variables } = options;
 
 			if (query) {
-				// FIXME
-				// updateQueryBuffer(query);
+				SetQueryEvent.dispatch(query);
 			}
 
 			if (variables) {

@@ -48,6 +48,9 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
+import { useEventSubscription } from "~/hooks/event";
+import { SetQueryEvent } from "~/util/global-events";
+import { setEditorText } from "~/editor/helpers";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -150,6 +153,12 @@ export function QueryView() {
 	useIntent("run-query", () => {
 		if (editor) {
 			executeEditorQuery(editor);
+		}
+	});
+
+	useEventSubscription(SetQueryEvent, (query) => {
+		if (editor) {
+			setEditorText(editor, query);
 		}
 	});
 
