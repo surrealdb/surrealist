@@ -31,6 +31,7 @@ export interface DocsSectionTopic extends BaseDocsTopic {
 	topics: DocsTopic[];
 	icon: string;
 	component?: FC<TopicProps>;
+	extra?: Record<string, any>;
 }
 
 export type DocsTopic = DocsSectionTopic | DocsLinkTopic | DocsArticleTopic | DocsGroupTopic;
