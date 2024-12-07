@@ -31,15 +31,18 @@ import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { setEditorText } from "~/editor/helpers";
 import { executeEditorQuery } from "~/editor/query";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveConnection, useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
+import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
+import { SetQueryEvent } from "~/util/global-events";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import { HistoryDrawer } from "../HistoryDrawer";
@@ -48,9 +51,6 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import { useEventSubscription } from "~/hooks/event";
-import { SetQueryEvent } from "~/util/global-events";
-import { setEditorText } from "~/editor/helpers";
 
 const switchPortal = createHtmlPortalNode();
 

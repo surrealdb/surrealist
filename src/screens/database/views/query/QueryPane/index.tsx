@@ -18,17 +18,21 @@ import {
 	iconWarning,
 } from "~/util/icons";
 
+import { historyField } from "@codemirror/commands";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { trim } from "radash";
+import { useMemo, useRef } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
+import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
+import { setEditorText } from "~/editor/helpers";
 import { useActiveConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
@@ -40,11 +44,7 @@ import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
-import { historyField } from "@codemirror/commands";
-import { setEditorText } from "~/editor/helpers";
-import { useMemo, useRef } from "react";
 import { readQuery, writeQuery } from "../QueryView/strategy";
-import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 
 const SERIALIZE = {
 	history: historyField,

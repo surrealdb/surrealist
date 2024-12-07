@@ -47,9 +47,9 @@ import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/database/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { useQueryStore } from "~/stores/query";
 import type { QueryTab, QueryType } from "~/types";
 import { uniqueName } from "~/util/helpers";
-import { useQueryStore } from "~/stores/query";
 
 const TYPE_ICONS: Record<QueryType, string> = {
 	config: iconQuery,

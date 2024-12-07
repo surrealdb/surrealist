@@ -11,6 +11,7 @@ import {
 	iconText,
 } from "~/util/icons";
 
+import { EditorView } from "@codemirror/view";
 import { Box, Drawer } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -20,12 +21,11 @@ import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { setEditorText } from "~/editor/helpers";
 import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
-import { EditorView } from "@codemirror/view";
-import { setEditorText } from "~/editor/helpers";
 
 const MAX_PREVIEW_LENGTH = 500;
 

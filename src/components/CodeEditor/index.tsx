@@ -1,17 +1,17 @@
 import { history } from "@codemirror/commands";
 import { forceLinting } from "@codemirror/lint";
 import { Compartment, EditorState, type Extension } from "@codemirror/state";
-import { EditorView, lineNumbers as renderLineNumbers, ViewUpdate } from "@codemirror/view";
+import { EditorView, ViewUpdate, lineNumbers as renderLineNumbers } from "@codemirror/view";
 import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
+import equal from "fast-deep-equal";
 import { useEffect, useMemo, useRef } from "react";
 import { editorBase, editorTheme } from "~/editor";
 import { useSetting } from "~/hooks/config";
+import { useStable } from "~/hooks/stable";
 import { useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import classes from "./style.module.scss";
-import { useStable } from "~/hooks/stable";
-import equal from "fast-deep-equal";
 
 export type StateSnapshot = {
 	doc: string;

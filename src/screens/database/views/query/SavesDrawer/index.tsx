@@ -10,6 +10,7 @@ import {
 	iconText,
 } from "~/util/icons";
 
+import { EditorView } from "@codemirror/view";
 import { Accordion, Badge, Button, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
 import { ActionIcon, Drawer, Group } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
@@ -20,12 +21,11 @@ import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { setEditorText } from "~/editor/helpers";
 import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
-import { EditorView } from "@codemirror/view";
-import { setEditorText } from "~/editor/helpers";
 
 export interface SavesDrawerProps {
 	opened: boolean;
