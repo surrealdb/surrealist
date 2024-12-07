@@ -78,7 +78,7 @@ export function QueryPane({
 	onEditorMounted,
 }: QueryPaneProps) {
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
-	const { updateQueryState } = useQueryStore.getState();
+	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
 	const connection = useActiveConnection();
 	const surqlVersion = useDatabaseVersionLinter(editor);
@@ -180,6 +180,10 @@ export function QueryPane({
 
 	const resolveVariables = useStable(() => {
 		return Object.keys(tryParseParams(activeTab.variables));
+	});
+
+	const updateValid = useStable((status: string) => {
+		setQueryValid(!status.length);
 	});
 
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
@@ -308,7 +312,7 @@ export function QueryPane({
 				extensions={[
 					surrealql(),
 					surqlVersion,
-					surqlLinting(),
+					surqlLinting(updateValid),
 					surqlRecordLinks(inspect),
 					surqlTableCompletion(),
 					surqlVariableCompletion(resolveVariables),

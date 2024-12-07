@@ -4,15 +4,16 @@ import { StateSnapshot } from "~/components/CodeEditor";
 
 export type QueryStore = {
 	queryState: Record<string, StateSnapshot>;
+	isQueryValid: boolean;
 
 	updateQueryState: (key: string, state: StateSnapshot) => void;
 	removeQueryState: (key: string) => void;
+	setQueryValid: (valid: boolean) => void;
 };
 
 export const useQueryStore = create<QueryStore>((set) => ({
-	queryBuffer: "",
-	isBufferValid: true,
 	queryState: {},
+	isQueryValid: true,
 
 	updateQueryState: (key, value) =>
 		set((state) => ({
@@ -23,4 +24,6 @@ export const useQueryStore = create<QueryStore>((set) => ({
 		set((state) => {
 			return { queryState: omit(state.queryState, [key]) };
 		}),
+
+	setQueryValid: (valid) => set({ isQueryValid: valid }),
 }));

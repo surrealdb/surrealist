@@ -77,6 +77,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isQuerying = useDatabaseStore((s) => s.isQueryActive);
 	const responseMap = useDatabaseStore((s) => s.queryResponses);
+	const isQueryValid = useQueryStore((s) => s.isQueryValid);
 
 	const isLight = useIsLight();
 	const [resultTab, setResultTab] = useState<number>(1);
@@ -87,10 +88,6 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const showCombined = resultMode === "combined" || resultMode === "live";
 	const showQueries = !showCombined && responses.length > 0;
-
-	// FIXME store validation in state
-	const isValid = true;
-	// const isValid = useQueryStore((s) => s.isBufferValid);
 	const isLive = liveTabs.has(activeTab.id);
 
 	const queryList = useMemo(() => {
@@ -263,7 +260,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						size="xs"
 						radius="xs"
 						color="slate"
-						variant={isValid ? "gradient" : "light"}
+						variant={isQueryValid ? "gradient" : "light"}
 						style={{ border: "none" }}
 						className={classes.run}
 						loading={isQuerying}
