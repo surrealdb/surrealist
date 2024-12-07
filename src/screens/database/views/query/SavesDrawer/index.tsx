@@ -1,5 +1,15 @@
 import classes from "./style.module.scss";
 
+import {
+	iconClose,
+	iconDelete,
+	iconEdit,
+	iconPlus,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "~/util/icons";
+
 import { Accordion, Badge, Button, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
 import { ActionIcon, Drawer, Group } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
@@ -13,31 +23,23 @@ import { Spacer } from "~/components/Spacer";
 import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { useQueryStore } from "~/stores/query";
 import type { SavedQuery } from "~/types";
-import {
-	iconClose,
-	iconDelete,
-	iconEdit,
-	iconPlus,
-	iconQuery,
-	iconSearch,
-	iconText,
-} from "~/util/icons";
+import { EditorView } from "@codemirror/view";
+import { setEditorText } from "~/editor/helpers";
 
 export interface SavesDrawerProps {
 	opened: boolean;
+	editor: EditorView;
 	onClose: () => void;
 	onSaveQuery: () => void;
-	onUpdateBuffer: (query: string) => void;
 	onEditQuery: (query: SavedQuery) => void;
 }
 
 export function SavesDrawer({
 	opened,
+	editor,
 	onClose,
 	onSaveQuery,
-	onUpdateBuffer,
 	onEditQuery,
 }: SavesDrawerProps) {
 	const { addQueryTab, removeSavedQuery } = useConfigStore.getState();
@@ -79,7 +81,7 @@ export function SavesDrawer({
 		if (!activeTab) return;
 
 		onClose();
-		onUpdateBuffer(entry.query);
+		setEditorText(editor, entry.query);
 	});
 
 	const handleDeleteQuery = useStable((entry: SavedQuery) => {

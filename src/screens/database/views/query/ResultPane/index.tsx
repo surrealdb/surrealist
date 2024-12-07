@@ -67,7 +67,7 @@ const PREVIEW_MODES: Record<ResultMode, React.FC<PreviewProps>> = {
 export interface ResultPaneProps {
 	activeTab: QueryTab;
 	selection: SelectionRange | undefined;
-	editor: EditorView | null;
+	editor: EditorView;
 	corners?: string;
 }
 
@@ -88,7 +88,9 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const showCombined = resultMode === "combined" || resultMode === "live";
 	const showQueries = !showCombined && responses.length > 0;
 
-	const isValid = useQueryStore((s) => s.isBufferValid);
+	// FIXME store validation in state
+	const isValid = true;
+	// const isValid = useQueryStore((s) => s.isBufferValid);
 	const isLive = liveTabs.has(activeTab.id);
 
 	const queryList = useMemo(() => {

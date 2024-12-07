@@ -23,7 +23,6 @@ export function handleWindowMessage(event: MessageEvent) {
 		return;
 	}
 
-	const { updateQueryBuffer } = useQueryStore.getState();
 	const { updateQueryTab } = useConfigStore.getState();
 	const { clearQueryResponse } = useDatabaseStore.getState();
 
@@ -32,7 +31,8 @@ export function handleWindowMessage(event: MessageEvent) {
 			const { query, variables } = options;
 
 			if (query) {
-				updateQueryBuffer(query);
+				// FIXME
+				// updateQueryBuffer(query);
 			}
 
 			if (variables) {

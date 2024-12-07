@@ -1,20 +1,26 @@
+import { omit } from "radash";
 import { create } from "zustand";
-import { validateQuery } from "~/util/surrealql";
+import { StateSnapshot } from "~/components/CodeEditor";
 
 export type QueryStore = {
-	queryBuffer: string;
-	isBufferValid: boolean;
+	queryState: Record<string, StateSnapshot>;
 
-	updateQueryBuffer: (queryBuffer: string) => void;
+	updateQueryState: (key: string, state: StateSnapshot) => void;
+	removeQueryState: (key: string) => void;
 };
 
 export const useQueryStore = create<QueryStore>((set) => ({
 	queryBuffer: "",
 	isBufferValid: true,
+	queryState: {},
 
-	updateQueryBuffer: (queryBuffer) =>
-		set(() => ({
-			queryBuffer,
-			isBufferValid: !validateQuery(queryBuffer),
+	updateQueryState: (key, value) =>
+		set((state) => ({
+			queryState: { ...state.queryState, [key]: value },
 		})),
+
+	removeQueryState: (key) =>
+		set((state) => {
+			return { queryState: omit(state.queryState, [key]) };
+		}),
 }));

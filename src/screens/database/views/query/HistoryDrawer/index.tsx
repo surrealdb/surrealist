@@ -24,16 +24,18 @@ import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
+import { EditorView } from "@codemirror/view";
+import { setEditorText } from "~/editor/helpers";
 
 const MAX_PREVIEW_LENGTH = 500;
 
 interface HistoryRowProps {
 	entry: HistoryQuery;
-	onUpdateBuffer: (query: string) => void;
+	editor: EditorView;
 	onClose: () => void;
 }
 
-function HistoryRow({ entry, onUpdateBuffer, onClose }: HistoryRowProps) {
+function HistoryRow({ entry, editor, onClose }: HistoryRowProps) {
 	const { updateCurrentConnection, addQueryTab } = useConfigStore.getState();
 
 	const connection = useActiveConnection();
@@ -51,7 +53,7 @@ function HistoryRow({ entry, onUpdateBuffer, onClose }: HistoryRowProps) {
 		if (!activeTab) return;
 
 		onClose();
-		onUpdateBuffer(entry.query);
+		setEditorText(editor, entry.query);
 	});
 
 	const handleDeleteQuery = useStable(() => {
@@ -146,11 +148,11 @@ const HistoryRowLazy = memo(HistoryRow);
 
 export interface HistoryDrawerProps {
 	opened: boolean;
-	onUpdateBuffer: (query: string) => void;
+	editor: EditorView;
 	onClose: () => void;
 }
 
-export function HistoryDrawer({ opened, onUpdateBuffer, onClose }: HistoryDrawerProps) {
+export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
 
 	const connection = useActiveConnection();
@@ -229,7 +231,7 @@ export function HistoryDrawer({ opened, onUpdateBuffer, onClose }: HistoryDrawer
 					<HistoryRowLazy
 						key={i}
 						entry={entry}
-						onUpdateBuffer={onUpdateBuffer}
+						editor={editor}
 						onClose={onClose}
 					/>
 				))}
