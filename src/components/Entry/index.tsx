@@ -1,8 +1,4 @@
-import {
-	Button,
-	type ButtonProps,
-	createPolymorphicComponent,
-} from "@mantine/core";
+import { Button, type ButtonProps, createPolymorphicComponent } from "@mantine/core";
 import clsx from "clsx";
 import { forwardRef } from "react";
 import { useIsLight } from "~/hooks/theme";
@@ -23,16 +19,12 @@ export const Entry = createPolymorphicComponent<"button", EntryProps>(
 				ref={ref}
 				fullWidth
 				miw={0}
-				h={38}
+				h={40}
 				px={8}
 				color={isLight ? "slate.0" : "slate.7"}
 				{...rest}
 				variant={isActive ? "gradient" : rest.variant || "subtle"}
-				className={clsx(
-					classes.root,
-					isActive && classes.active,
-					className,
-				)}
+				className={clsx(classes.root, isActive && classes.active, className)}
 			>
 				{children}
 			</Button>

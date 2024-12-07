@@ -1,11 +1,4 @@
-import {
-	Box,
-	Divider,
-	Group,
-	Paper,
-	type PaperProps,
-	Text,
-} from "@mantine/core";
+import { Box, Divider, Group, Paper, type PaperProps, Text } from "@mantine/core";
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
@@ -77,7 +70,11 @@ export function ContentPane({
 						<Spacer />
 						{rightSection}
 					</Group>
-					<Divider mx="sm" className={classes.divider} />
+					<Divider
+						mx="sm"
+						mt={2}
+						className={classes.divider}
+					/>
 				</>
 			)}
 			<Box

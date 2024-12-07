@@ -131,6 +131,30 @@ export function DatabaseSidebar({
 					component="nav"
 					flex={1}
 				>
+					{showCloud && (
+						<>
+							<NavigationIcon
+								name={
+									<Group
+										wrap="nowrap"
+										gap="xs"
+									>
+										Surreal Cloud
+										<BetaBadge />
+									</Group>
+								}
+								icon={iconCloud}
+								isActive={cloudActive}
+								path="cloud"
+								withTooltip={sidebarMode === "compact"}
+								onClick={() => setLocation("/cloud")}
+								onMouseEnter={hoverSidebarHandle.open}
+							/>
+
+							<Divider color={isLight ? "slate.2" : "slate.7"} />
+						</>
+					)}
+
 					{connection &&
 						navigation.map((items, i) => (
 							<Fragment key={i}>
@@ -144,9 +168,9 @@ export function DatabaseSidebar({
 											name={info.name}
 											path={info.id}
 											icon={info.anim || info.icon}
-											withTooltip={sidebarMode === "compact"}
 											onClick={() => setLocation(`/${info.id}`)}
 											onMouseEnter={hoverSidebarHandle.open}
+											withTooltip={sidebarMode === "compact"}
 											style={{
 												opacity: isViewAvailable(info) ? 1 : 0.5,
 											}}
@@ -161,26 +185,6 @@ export function DatabaseSidebar({
 
 					<Spacer />
 
-					{showCloud && (
-						<NavigationIcon
-							name={
-								<Group
-									wrap="nowrap"
-									gap="xs"
-								>
-									Surreal Cloud
-									<BetaBadge />
-								</Group>
-							}
-							icon={iconCloud}
-							isActive={cloudActive}
-							path="cloud"
-							withTooltip={sidebarMode === "compact"}
-							onClick={() => setLocation("/cloud")}
-							onMouseEnter={hoverSidebarHandle.open}
-						/>
-					)}
-
 					<NavigationIcon
 						name={
 							<Group wrap="nowrap">
@@ -191,6 +195,7 @@ export function DatabaseSidebar({
 						icon={iconSearch}
 						onClick={openCommands}
 						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
 					/>
 
 					<NavigationIcon
@@ -198,6 +203,7 @@ export function DatabaseSidebar({
 						icon={iconCog}
 						onClick={openSettings}
 						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
 						indicator={!!availableUpdate}
 					/>
 				</Stack>

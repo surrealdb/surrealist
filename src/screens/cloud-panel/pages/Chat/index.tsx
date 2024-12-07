@@ -40,8 +40,6 @@ export function ChatPage() {
 
 	const { sendMessage, isResponding } = useCopilotMutation();
 
-	console.log("isResponding", isResponding);
-
 	const hasMessage = useMemo(() => input.trim() !== "", [input]);
 	const canSend = input && !isResponding && hasMessage;
 
