@@ -29,6 +29,7 @@ import { DocsTablesSelect } from "./topics/tables/select";
 import { DocsTablesSelectAllFields } from "./topics/tables/select-all-fields";
 import { DocsTablesUpdatingRecords } from "./topics/tables/updating-records";
 import type { DocsTopic } from "./types";
+import { DocsTablesSelector } from "./topics/tables/selector";
 
 /**
  * Build the structure of the documentation based on the given schema.
@@ -167,85 +168,68 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			title: `Tables`,
 			icon: iconTable,
 			excludeLanguages: ["go", "java", "c"],
+			component: DocsTablesSelector,
 			topics: [
 				{
 					id: newId(),
 					title: "Introduction",
 					component: DocsTablesIntroduction,
 				},
-				...schema.database.tables.map((table) => ({
+				{
 					id: newId(),
-					title: `${table.schema.name}`,
-					children: [
-						// {
-						// 	id: newId(),
-						// 	title: "Table information",
-						// 	component: DocsTablesInfo,
-						// 	extra: { table }
-						// },
-						{
-							id: newId(),
-							title: "Selecting fields",
-							component: DocsTablesSelect,
-							extra: { table },
-						},
-						{
-							id: newId(),
-							title: "Selecting all fields",
-							component: DocsTablesSelectAllFields,
-							extra: { table },
-						},
-						{
-							id: newId(),
-							title: "Creating records",
-							component: DocsTablesCreatingRecords,
-							extra: { table },
-						},
-						{
-							id: newId(),
-							title: "Inserting records",
-							component: DocsTablesInsertingRecords,
-							extra: { table },
-						},
-						{
-							id: newId(),
-							title: "Updating records",
-							component: DocsTablesUpdatingRecords,
-							extra: { table },
-						},
-						{
-							id: newId(),
-							title: "Deleting records",
-							component: DocsTablesDeletingRecords,
-							extra: { table },
-						},
-						{
-							id: newId(),
-							title: "Live selecting",
-							component: DocsTablesLiveSelecting,
-							extra: { table },
-							excludeLanguages: ["php"],
-						},
-						// {
-						// 	id: newId(),
-						// 	title: "Manage indexes",
-						// 	component: DocsTablesManageIndexes,
-						// 	extra: { table }
-						// },
-						// {
-						// 	id: newId(),
-						// 	title: "Manage fields",
-						// 	component: DocsTablesManageFields,
-						// 	extra: { table }
-						// },
-						// {
-						// 	id: newId(),
-						// 	title: "Manage events",
-						// 	component: DocsTablesManageEvents,
-						// 	extra: { table }
-						// }
-					] satisfies DocsTopic[],
-				})),
+					title: "Selecting fields",
+					component: DocsTablesSelect,
+				},
+				{
+					id: newId(),
+					title: "Selecting all fields",
+					component: DocsTablesSelectAllFields,
+				},
+				{
+					id: newId(),
+					title: "Creating records",
+					component: DocsTablesCreatingRecords,
+				},
+				{
+					id: newId(),
+					title: "Inserting records",
+					component: DocsTablesInsertingRecords,
+				},
+				{
+					id: newId(),
+					title: "Updating records",
+					component: DocsTablesUpdatingRecords,
+				},
+				{
+					id: newId(),
+					title: "Deleting records",
+					component: DocsTablesDeletingRecords,
+				},
+				{
+					id: newId(),
+					title: "Live selecting",
+					component: DocsTablesLiveSelecting,
+					excludeLanguages: ["php"],
+				},
+
+				// {
+				// 	id: newId(),
+				// 	title: "Manage indexes",
+				// 	component: DocsTablesManageIndexes,
+				// 	extra: { table }
+				// },
+				// {
+				// 	id: newId(),
+				// 	title: "Manage fields",
+				// 	component: DocsTablesManageFields,
+				// 	extra: { table }
+				// },
+				// {
+				// 	id: newId(),
+				// 	title: "Manage events",
+				// 	component: DocsTablesManageEvents,
+				// 	extra: { table }
+				// }
 			],
 		},
 		{

@@ -2,8 +2,11 @@ import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
+	const table = useDocsTable();
+
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -60,10 +63,9 @@ export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
 	return (
 		<Article title="Manage Indexes">
 			<div>
-				<h3>Table: {topic.extra?.table?.schema?.name} </h3>
 				<p>
-					Indexes are used to speed up the retrieval of records from a
-					table. They are created on columns in a table.
+					Indexes are used to speed up the retrieval of records from a table. They are
+					created on columns in a table.
 				</p>
 			</div>
 			<Box>

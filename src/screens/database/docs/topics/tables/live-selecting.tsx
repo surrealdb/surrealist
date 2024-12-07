@@ -1,16 +1,12 @@
 import { Box } from "@mantine/core";
 import { pascal } from "radash";
 import { useMemo } from "react";
-import {
-	Article,
-	DocsPreview,
-	TableTitle,
-} from "~/screens/database/docs/components";
-import { getTable } from "~/screens/database/docs/helpers";
+import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useDocsTable } from "../../hooks/table";
 
-export function DocsTablesLiveSelecting({ language, topic }: TopicProps) {
-	const table = getTable(topic);
+export function DocsTablesLiveSelecting({ language }: TopicProps) {
+	const table = useDocsTable();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -99,14 +95,17 @@ table_name
 	return (
 		<Article
 			title={
-				<TableTitle title="Live queries" table={table.schema.name} />
+				<TableTitle
+					title="Live queries"
+					table={table.schema.name}
+				/>
 			}
 		>
 			<div>
 				<p>
-					Create realtime query notifications for changes to selected
-					records on <b>{table.schema.name}</b> and see live updates
-					in the live message view in the console.
+					Create realtime query notifications for changes to selected records on{" "}
+					<b>{table.schema.name}</b> and see live updates in the live message view in the
+					console.
 				</p>
 			</div>
 			<Box>

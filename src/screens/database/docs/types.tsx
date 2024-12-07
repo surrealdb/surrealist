@@ -10,7 +10,7 @@ interface BaseDocsTopic {
 }
 
 export interface TopicProps {
-	topic: DocsArticleTopic;
+	topic: DocsArticleTopic | DocsSectionTopic;
 	language: CodeLang;
 }
 
@@ -30,13 +30,10 @@ export interface DocsGroupTopic extends BaseDocsTopic {
 export interface DocsSectionTopic extends BaseDocsTopic {
 	topics: DocsTopic[];
 	icon: string;
+	component?: FC<TopicProps>;
 }
 
-export type DocsTopic =
-	| DocsSectionTopic
-	| DocsLinkTopic
-	| DocsArticleTopic
-	| DocsGroupTopic;
+export type DocsTopic = DocsSectionTopic | DocsLinkTopic | DocsArticleTopic | DocsGroupTopic;
 
 export function isSection(topic: DocsTopic): topic is DocsSectionTopic {
 	return (topic as DocsSectionTopic).topics !== undefined;

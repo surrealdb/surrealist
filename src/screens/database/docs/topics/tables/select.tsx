@@ -1,25 +1,20 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import {
-	Article,
-	DocsPreview,
-	TableTitle,
-} from "~/screens/database/docs/components";
-import { getTable } from "~/screens/database/docs/helpers";
+import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useDocsTable } from "../../hooks/table";
 
-export function DocsTablesSelect({ language, topic }: TopicProps) {
-	const table = getTable(topic);
+export function DocsTablesSelect({ language }: TopicProps) {
+	const table = useDocsTable();
+
 	const fieldName =
-		table.fields.find(
-			({ name }: { name: string }) => !["id", "in", "out"].includes(name),
-		)?.name ?? "table:id";
-	const tableName = topic.extra?.table?.schema?.name;
+		table.fields.find(({ name }: { name: string }) => !["id", "in", "out"].includes(name))
+			?.name ?? "id";
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		SELECT ${fieldName} FROM ${tableName}
+		SELECT ${fieldName} FROM ${table.schema.name}
 		`,
 			js: `
 		// Select a specific record from a table
@@ -42,7 +37,7 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		$db->select($record);
 		`,
 		}),
-		[fieldName, tableName],
+		[fieldName, table],
 	);
 
 	return (
@@ -56,10 +51,9 @@ export function DocsTablesSelect({ language, topic }: TopicProps) {
 		>
 			<div>
 				<p>
-					Selecting fields operation is useful when you want to
-					retrieve specific fields in a table without retrieving all
-					the fields. To do this, you need to know the field name in
-					the table you want to retrieve.
+					Selecting fields operation is useful when you want to retrieve specific fields
+					in a table without retrieving all the fields. To do this, you need to know the
+					field name in the table you want to retrieve.
 				</p>
 			</div>
 			<Box>

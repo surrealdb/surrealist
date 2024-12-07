@@ -1,19 +1,15 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import {
-	Article,
-	DocsPreview,
-	TableTitle,
-} from "~/screens/database/docs/components";
-import { getTable } from "~/screens/database/docs/helpers";
+import { Article, DocsPreview, TableTitle } from "~/screens/database/docs/components";
 import type { Snippets, TopicProps } from "~/screens/database/docs/types";
+import { useDocsTable } from "../../hooks/table";
 
-export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
-	const table = getTable(topic);
+export function DocsTablesUpdatingRecords({ language }: TopicProps) {
+	const table = useDocsTable();
+
 	const fieldName =
-		table.fields.find(
-			({ name }: { name: string }) => !["id", "in", "out"].includes(name),
-		)?.name ?? "id";
+		table.fields.find(({ name }: { name: string }) => !["id", "in", "out"].includes(name))
+			?.name ?? "id";
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -86,10 +82,9 @@ export function DocsTablesUpdatingRecords({ language, topic }: TopicProps) {
 			}
 		>
 			<div>
-				<h3>Table: {table.schema.name} </h3>
 				<p>
-					Update or modify all existing record in the table{" "}
-					<b>{table.schema.name}</b> or specific records.
+					Update or modify all existing record in the table <b>{table.schema.name}</b> or
+					specific records.
 				</p>
 			</div>
 			<Box>

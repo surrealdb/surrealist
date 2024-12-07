@@ -14,6 +14,7 @@ export type InterfaceStore = {
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
 	overlaySidebar: boolean;
+	docsTable: string;
 
 	setWindowTitle: (title: string) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
@@ -29,6 +30,7 @@ export type InterfaceStore = {
 	showChangelog: () => void;
 	readChangelog: () => void;
 	setOverlaySidebar: (overlaySidebar: boolean) => void;
+	setDocsTable: (table: string) => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
@@ -48,6 +50,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	showQueryVariables: false,
 	showGraphqlVariables: false,
 	overlaySidebar: false,
+	docsTable: "",
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
@@ -135,4 +138,6 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 		set(() => ({
 			overlaySidebar,
 		})),
+
+	setDocsTable: (docsTable) => set(() => ({ docsTable })),
 }));
