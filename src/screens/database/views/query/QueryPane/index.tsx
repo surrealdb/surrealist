@@ -42,8 +42,8 @@ import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
 import { historyField } from "@codemirror/commands";
 import { setEditorText } from "~/editor/helpers";
-import { useMemo } from "react";
-import { readQuery } from "../QueryView/strategy";
+import { useMemo, useRef } from "react";
+import { readQuery, writeQuery } from "../QueryView/strategy";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 
 const SERIALIZE = {
@@ -83,7 +83,9 @@ export function QueryPane({
 	const connection = useActiveConnection();
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
+	const saveTasks = useRef<Map<string, any>>(new Map());
 
+	// Retrieve a cached editor state, or compute when missing
 	const queryState = useMemo(() => {
 		const cache = queryStateMap[activeTab.id];
 
@@ -100,8 +102,20 @@ export function QueryPane({
 		return state;
 	}, [queryStateMap, activeTab, updateQueryState]);
 
-	const updateState = useStable((_: string, state: StateSnapshot) => {
+	// Cache the editor state and schedule query writing
+	const updateState = useStable((query: string, state: StateSnapshot) => {
+		const id = activeTab.id;
+		const task = saveTasks.current.get(id);
+
 		updateQueryState(activeTab.id, state);
+		clearTimeout(task);
+
+		const newTask = setTimeout(() => {
+			saveTasks.current.delete(id);
+			writeQuery(activeTab, query);
+		}, 500);
+
+		saveTasks.current.set(id, newTask);
 	});
 
 	const openQueryList = useStable(() => {
