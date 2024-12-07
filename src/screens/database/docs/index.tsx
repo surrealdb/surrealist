@@ -27,9 +27,9 @@ import { DocsTablesIntroduction } from "./topics/tables/introduction";
 import { DocsTablesLiveSelecting } from "./topics/tables/live-selecting";
 import { DocsTablesSelect } from "./topics/tables/select";
 import { DocsTablesSelectAllFields } from "./topics/tables/select-all-fields";
+import { DocsTablesSelector } from "./topics/tables/selector";
 import { DocsTablesUpdatingRecords } from "./topics/tables/updating-records";
 import type { DocsTopic } from "./types";
-import { DocsTablesSelector } from "./topics/tables/selector";
 
 /**
  * Build the structure of the documentation based on the given schema.
