@@ -58,8 +58,11 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 				});
 			`,
 			csharp: `
+				using SurrealDb.Net;
+				using SurrealDb.Net.Models.Auth;
+
 				// Open a connection
-				var db = new SurrealDbClient("wss://${instance.host}");
+				using var db = new SurrealDbClient("wss://${instance.host}/rpc");
 
 				// Select a namespace and database
 				await db.Use("${namespace}", "${database}");
