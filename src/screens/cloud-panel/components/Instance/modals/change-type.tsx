@@ -2,21 +2,21 @@ import { Alert, Box, Button, Collapse, Divider, Group, SimpleGrid, Text } from "
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { capitalize } from "radash";
 import { useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { useActiveCloudPage } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/cloud-panel/api";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import type { CloudInstance } from "~/types";
 import { iconChevronLeft, iconChevronRight, iconWarning } from "~/util/icons";
-import { EstimatedCost } from "../../EstimatedCost";
 import { CategoryPicker } from "../../CategoryPicker";
+import { EstimatedCost } from "../../EstimatedCost";
 import { InstanceType } from "../../InstanceType";
-import { useActiveCloudPage } from "~/hooks/routing";
-import { capitalize } from "radash";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({

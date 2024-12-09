@@ -1,8 +1,10 @@
 import { Alert, Box, Button, Collapse, Divider, SimpleGrid, Stack, Text } from "@mantine/core";
+import { capitalize } from "radash";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { useActiveCloudPage } from "~/hooks/routing";
 import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
 import { InstanceType } from "~/screens/cloud-panel/components/InstanceType";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
@@ -10,8 +12,6 @@ import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import { iconChevronRight, iconWarning } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
-import { useActiveCloudPage } from "~/hooks/routing";
-import { capitalize } from "radash";
 
 export function ProvisionInstanceTypesStep({
 	step,
