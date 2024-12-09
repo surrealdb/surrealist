@@ -31,7 +31,7 @@ export function ServingTab() {
 	const [historySize, setHistorySize] = useSetting(CAT, "historySize");
 	const [port, setPort] = useSetting(CAT, "port");
 
-	const isFileDriver = driver === "file";
+	const isFileDriver = driver === "file" || driver === "surrealkv";
 
 	const updatePort = useStable((value: string | number) => {
 		setPort(value as number);
@@ -47,6 +47,7 @@ export function ServingTab() {
 			flex={1}
 			scrollbars="y"
 			type="always"
+			pb={32}
 		>
 			<Text
 				mb="xl"

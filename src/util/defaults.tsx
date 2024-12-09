@@ -95,7 +95,7 @@ export function createBaseSettings(): SurrealistSettings {
 
 export function createBaseAuthentication(): Authentication {
 	return {
-		protocol: "ws",
+		protocol: "wss",
 		hostname: "",
 		username: "",
 		password: "",

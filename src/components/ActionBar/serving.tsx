@@ -7,6 +7,7 @@ import { useStable } from "~/hooks/stable";
 import { openConnection } from "~/screens/database/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveConnection } from "~/util/connection";
+import { isHostLocal } from "~/util/helpers";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
@@ -47,10 +48,8 @@ export function DatabaseServing() {
 	});
 
 	useEffect(() => {
-		const {
-			authentication: { hostname },
-		} = getActiveConnection();
-		const isLocal = hostname.startsWith("localhost") || hostname.startsWith("127.0.0.1");
+		const { authentication } = getActiveConnection();
+		const isLocal = isHostLocal(authentication.hostname);
 
 		if (isServing && isLocal) {
 			openConnection();
