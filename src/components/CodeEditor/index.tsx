@@ -77,7 +77,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		[readOnly, colorScheme, syntaxTheme, lineNumbers],
 	);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: One-time initialization
+	// Mount the editor
 	useEffect(() => {
 		if (!elementRef.current) return;
 
@@ -88,7 +88,6 @@ export function CodeEditor(props: CodeEditorProps) {
 		});
 
 		editorRef.current = editor;
-		onMount?.(editor);
 
 		return () => {
 			editor.destroy();
@@ -102,7 +101,8 @@ export function CodeEditor(props: CodeEditorProps) {
 		const editor = editorRef.current;
 		const current = editor.state.toJSON(serialize);
 
-		if (equal(current, state) && initializedRef.current) {
+		// Always update state on initialization
+		if (initializedRef.current && equal(current, state)) {
 			return;
 		}
 
@@ -117,7 +117,6 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		editor.setState(newState);
 		forceLinting(editor);
-		initializedRef.current = true;
 	}, [state]);
 
 	// Update textual editor contents
@@ -170,6 +169,16 @@ export function CodeEditor(props: CodeEditorProps) {
 			}, 50);
 		}
 	}, [autoFocus]);
+
+	// Complete one-time initialization
+	useEffect(() => {
+		if (!editorRef.current || initializedRef.current) return;
+
+		const editor = editorRef.current;
+
+		onMount?.(editor);
+		initializedRef.current = true;
+	}, [onMount]);
 
 	return (
 		<Box
