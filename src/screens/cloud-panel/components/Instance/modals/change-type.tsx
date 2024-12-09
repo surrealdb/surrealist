@@ -13,8 +13,10 @@ import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
 import type { CloudInstance } from "~/types";
 import { iconChevronLeft, iconChevronRight, iconWarning } from "~/util/icons";
 import { EstimatedCost } from "../../EstimatedCost";
-import { InstanceCategoryPicker } from "../../InstanceCategoryPicker";
+import { CategoryPicker } from "../../CategoryPicker";
 import { InstanceType } from "../../InstanceType";
+import { useActiveCloudPage } from "~/hooks/routing";
+import { capitalize } from "radash";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({
@@ -31,6 +33,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const instanceTypes = useAvailableInstanceTypes();
 	const organization = useOrganization();
 	const client = useQueryClient();
+	const [, setActivePage] = useActiveCloudPage();
 
 	const [category, setCategory] = useState("");
 	const [instanceType, setInstanceType] = useState("");
@@ -62,6 +65,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 		});
 	});
 
+	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
 	const isUnavailable = instanceInfo && !isAvailable(instanceInfo);
 
 	return (
@@ -88,6 +92,32 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 							</Button>
 						</Box>
 					</Group>
+
+					{!hasBilling && category !== "free" && (
+						<Alert
+							mb="lg"
+							color="blue"
+							title={`Upgrade to use ${category} instances`}
+						>
+							<Box>
+								{capitalize(category)} instances require a billing plan to be
+								enabled.
+							</Box>
+							<Button
+								rightSection={<Icon path={iconChevronRight} />}
+								color="blue"
+								size="xs"
+								mt="md"
+								onClick={() => {
+									setActivePage("billing");
+									closeAllModals();
+								}}
+							>
+								Enter billing & payment details
+							</Button>
+						</Alert>
+					)}
+
 					<SimpleGrid cols={{ base: 1, md: 2 }}>
 						{filteredTypes.map((type) => (
 							<InstanceType
@@ -125,7 +155,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 						<Text fz="lg">{instance.name}</Text>
 					</Box>
 					{organization && (
-						<InstanceCategoryPicker
+						<CategoryPicker
 							organization={organization}
 							value={category}
 							onChange={setCategory}

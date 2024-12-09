@@ -2,7 +2,7 @@ import { Stack, Text } from "@mantine/core";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { InstanceCategoryPicker } from "~/screens/cloud-panel/components/InstanceCategoryPicker";
+import { CategoryPicker } from "~/screens/cloud-panel/components/CategoryPicker";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
 
@@ -14,7 +14,6 @@ export function ProvisionCategoryStep({
 	onContinue,
 }: ProvisionStepProps) {
 	const organization = useOrganization();
-	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
 
 	const updateCategory = (value: string) => {
 		setDetails((draft) => {
@@ -43,7 +42,7 @@ export function ProvisionCategoryStep({
 			</Text>
 
 			{organization && (
-				<InstanceCategoryPicker
+				<CategoryPicker
 					organization={organization}
 					value={details.category}
 					onChange={updateCategory}
@@ -54,7 +53,7 @@ export function ProvisionCategoryStep({
 				step={step}
 				onPrevious={onPrevious}
 				onContinue={handleContinue}
-				disabled={!details.category || (details.category !== "free" && !hasBilling)}
+				disabled={!details.category}
 			/>
 		</Stack>
 	);

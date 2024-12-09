@@ -10,27 +10,25 @@ import { useCloudInstancesQuery } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 import { Tile } from "../Tile";
 
-export interface InstanceCategoryPickerProps extends BoxProps {
+export interface CategoryPickerProps extends BoxProps {
 	organization: CloudOrganization;
 	value?: string;
 	onBody?: boolean;
 	onChange?: (value: string) => void;
 }
 
-export function InstanceCategoryPicker({
+export function CategoryPicker({
 	organization,
 	value,
 	onBody,
 	onChange,
 	...other
-}: InstanceCategoryPickerProps) {
-	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
+}: CategoryPickerProps) {
 	const instanceTypes = useAvailableInstanceTypes();
 	const freeInstance = instanceTypes.find((t) => t.slug === "free");
 	const instancesQuery = useCloudInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instancesQuery.data ?? []);
 	const freeInstanceAvailable = freeInstance && isAvailable(freeInstance);
-	const [, setActivePage] = useActiveCloudPage();
 
 	return (
 		<Stack {...other}>
@@ -108,27 +106,6 @@ export function InstanceCategoryPicker({
 					</Group>
 				)}
 			</Tile>
-
-			<Collapse in={!!value && value !== "free" && !hasBilling}>
-				<Alert
-					mt="xl"
-					color="blue"
-					title="Upgrade to use premium instances"
-				>
-					<Box>Premium instances require a billing plan to be enabled.</Box>
-					<Button
-						rightSection={<Icon path={iconChevronRight} />}
-						color="blue"
-						size="xs"
-						mt="md"
-						onClick={() => {
-							setActivePage("billing");
-						}}
-					>
-						Enter billing & payment details
-					</Button>
-				</Alert>
-			</Collapse>
 		</Stack>
 	);
 }

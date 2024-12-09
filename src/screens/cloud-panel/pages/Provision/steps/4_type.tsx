@@ -1,4 +1,4 @@
-import { Alert, Collapse, Divider, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Alert, Box, Button, Collapse, Divider, SimpleGrid, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -7,9 +7,11 @@ import { EstimatedCost } from "~/screens/cloud-panel/components/EstimatedCost";
 import { InstanceType } from "~/screens/cloud-panel/components/InstanceType";
 import { useCloudInstancesQuery } from "~/screens/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/cloud-panel/hooks/limits";
-import { iconWarning } from "~/util/icons";
+import { iconChevronRight, iconWarning } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
+import { useActiveCloudPage } from "~/hooks/routing";
+import { capitalize } from "radash";
 
 export function ProvisionInstanceTypesStep({
 	step,
@@ -22,6 +24,9 @@ export function ProvisionInstanceTypesStep({
 	const instanceTypes = useAvailableInstanceTypes();
 	const instancesQuery = useCloudInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instancesQuery.data ?? []);
+	const [, setActivePage] = useActiveCloudPage();
+
+	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
 
 	const filteredTypes = useMemo(() => {
 		if (!details.category) {
@@ -45,6 +50,30 @@ export function ProvisionInstanceTypesStep({
 				Instance types define the resources allocated to your cloud instance. Choose a
 				configuration that best fits your needs.
 			</Text>
+
+			{!hasBilling && details.category !== "free" && (
+				<Alert
+					mb="lg"
+					color="blue"
+					title={`Upgrade to use ${details.category} instances`}
+				>
+					<Box>
+						{capitalize(details.category)} instances require a billing plan to be
+						enabled.
+					</Box>
+					<Button
+						rightSection={<Icon path={iconChevronRight} />}
+						color="blue"
+						size="xs"
+						mt="md"
+						onClick={() => {
+							setActivePage("billing");
+						}}
+					>
+						Enter billing & payment details
+					</Button>
+				</Alert>
+			)}
 
 			<SimpleGrid cols={{ base: 1, md: 2 }}>
 				{filteredTypes.map((type) => (
