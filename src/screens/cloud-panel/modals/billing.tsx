@@ -22,6 +22,7 @@ export async function openBillingDetails() {
 			modalId: "billing",
 			size: "lg",
 			onClose: resolve,
+			closeOnClickOutside: false,
 			title: (
 				<Group>
 					<Icon
