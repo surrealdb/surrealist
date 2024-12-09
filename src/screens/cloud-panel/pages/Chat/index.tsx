@@ -6,6 +6,7 @@ import {
 	Box,
 	Center,
 	Group,
+	Menu,
 	ScrollArea,
 	Stack,
 	Text,
@@ -14,20 +15,21 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { memo, useEffect, useMemo, useRef } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { newId } from "~/util/helpers";
-import { iconCursor, iconSidekick } from "~/util/icons";
+import { iconCursor, iconReset, iconSidekick } from "~/util/icons";
 import { useCopilotMutation } from "./copilot";
 import { ChatMessage } from "./message";
 
 const ChatMessageLazy = memo(ChatMessage);
 
 export function ChatPage() {
-	const { pushChatMessage } = useCloudStore.getState();
+	const { pushChatMessage, clearChatSession } = useCloudStore.getState();
 
 	const isLight = useIsLight();
 	const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -115,22 +117,42 @@ export function ChatPage() {
 						maw={900}
 						pb={96}
 					>
-						<PrimaryTitle>Sidekick</PrimaryTitle>
-						<Text fz="lg">
-							Chat with Sidekick, your personal Surreal assistant designed to answer
-							your database questions.
-						</Text>
-
-						<Badge
-							mt="sm"
-							color="orange"
-							variant="light"
-							tt="unset"
-							fw="unset"
-							lts="unset"
+						<Group
+							wrap="nowrap"
+							align="start"
 						>
-							Sidekick is still in beta, responses may be inaccurate.
-						</Badge>
+							<Box flex={1}>
+								<PrimaryTitle>Sidekick</PrimaryTitle>
+								<Text fz="lg">
+									Chat with Sidekick, your personal Surreal assistant designed to
+									answer your database questions.
+								</Text>
+
+								<Badge
+									mt="sm"
+									color="orange"
+									variant="light"
+									tt="unset"
+									fw="unset"
+									lts="unset"
+								>
+									Sidekick is still in beta, responses may be inaccurate.
+								</Badge>
+							</Box>
+							{!isResponding && conversation.length > 1 && (
+								<ActionButton
+									label="Reset chat"
+									variant="subtle"
+									size="lg"
+									onClick={clearChatSession}
+								>
+									<Icon
+										path={iconReset}
+										size="lg"
+									/>
+								</ActionButton>
+							)}
+						</Group>
 						<Stack
 							mt={42}
 							gap={42}
