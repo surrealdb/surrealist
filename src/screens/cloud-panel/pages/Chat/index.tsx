@@ -15,6 +15,7 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { memo, useEffect, useMemo, useRef } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -24,7 +25,6 @@ import { newId } from "~/util/helpers";
 import { iconCursor, iconReset, iconSidekick } from "~/util/icons";
 import { useCopilotMutation } from "./copilot";
 import { ChatMessage } from "./message";
-import { ActionButton } from "~/components/ActionButton";
 
 const ChatMessageLazy = memo(ChatMessage);
 
