@@ -567,29 +567,20 @@ export function cancelLiveQueries(tab: string) {
 export async function activateDatabase(namespace: string, database: string) {
 	const { updateCurrentConnection } = useConfigStore.getState();
 
-	try {
-		// Select a namespace only
-		if (namespace) {
-			const isValid = await isNamespaceValid(namespace);
+	// Select a namespace only
+	if (namespace) {
+		const isValid = await isNamespaceValid(namespace);
 
-			if (isValid) {
-				updateCurrentConnection({
-					lastNamespace: namespace,
-					lastDatabase: database,
-				});
+		if (isValid) {
+			updateCurrentConnection({
+				lastNamespace: namespace,
+				lastDatabase: database,
+			});
 
-				await instance.use({
-					namespace,
-					database: null,
-				});
-			} else {
-				updateCurrentConnection({
-					lastNamespace: "",
-					lastDatabase: "",
-				});
-
-				return;
-			}
+			await instance.use({
+				namespace,
+				database: null,
+			});
 		} else {
 			updateCurrentConnection({
 				lastNamespace: "",
@@ -598,25 +589,39 @@ export async function activateDatabase(namespace: string, database: string) {
 
 			return;
 		}
+	} else {
+		updateCurrentConnection({
+			lastNamespace: "",
+			lastDatabase: "",
+		});
 
-		// Select a database
-		if (namespace && database) {
-			const isValid = await isDatabaseValid(database);
+		return;
+	}
 
-			if (isValid) {
-				updateCurrentConnection({
-					lastDatabase: database,
-				});
+	// Select a database
+	if (namespace && database) {
+		const isValid = await isDatabaseValid(database);
 
-				await instance.use({ database });
-			} else {
-				updateCurrentConnection({
-					lastDatabase: "",
-				});
-			}
+		if (isValid) {
+			updateCurrentConnection({
+				lastDatabase: database,
+			});
+
+			await instance.use({ database });
+		} else {
+			updateCurrentConnection({
+				lastDatabase: "",
+			});
 		}
-	} finally {
+	}
+
+	try {
 		await syncConnectionSchema();
+	} catch (err: any) {
+		showError({
+			title: "Failed to parse schema",
+			subtitle: err.message,
+		});
 	}
 }
 
